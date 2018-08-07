@@ -33,6 +33,8 @@ lein eastwood
 lein bikeshed
 ```
 
+### Lisätietoja
+
 + [kibit](https://github.com/jonase/kibit)
 + [eastwood](https://github.com/jonase/eastwood)
 + [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
