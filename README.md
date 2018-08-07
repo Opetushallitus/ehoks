@@ -9,6 +9,8 @@
 + [Clojure 1.9.0](https://clojure.org/)
 + [Compojure-api 1.1.1](https://github.com/metosin/compojure-api/tree/1.1.x)
 + [Leiningen](https://leiningen.org/)
++ [PostgreSQL 10.4](https://www.postgresql.org/) tietokantana
++ [Flyway](https://flywaydb.org/) tietokantamigraatioille
 
 ## Laadunvarmistus
 
