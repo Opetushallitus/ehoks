@@ -21,7 +21,7 @@ Repossa on `.editorconfig`-tiedosto, jota kannattaa hyödyntää.
 
 Backendin staattiset tarkistustyökalut voi ajaa kerralla seuraavalla komennolla:
 
-```shell
+``` shell
 lein checkall
 ```
 
@@ -40,6 +40,15 @@ lein bikeshed
 + [kibit](https://github.com/jonase/kibit)
 + [eastwood](https://github.com/jonase/eastwood)
 + [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
+
+## Integraatiot
+
+Palvelu | Dokumentaatio
+--------|--------------
+Opintohallintojärjestelmät |
+AMOSAA |
+ePerusteet | [palvelukortti](https://confluence.csc.fi/display/OPHPALV/ePerusteet)
+KOSKI | [palvelukortti](https://confluence.csc.fi/display/OPHPALV/Koski-palvelukortti)
 
 ## Linkkejä
 
