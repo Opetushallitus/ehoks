@@ -35,6 +35,21 @@ lein eastwood
 lein bikeshed
 ```
 
+## Sovelluksen ajo
+
+`lein ring server`
+
+## Testit
+
+`lein test`
+
+## Julkaisu
+
+```
+lein do clean, ring uberjar
+java -jar target/ehoks-backend.jar
+```
+
 ### Lisätietoja
 
 + [kibit](https://github.com/jonase/kibit)
