@@ -1,70 +1,70 @@
 # eHOKS
 
-## Teknologiat
+## Technologies
 
-### Käyttöliittymä
+### Frontend
 
 ### Backend
 
 + [Clojure 1.9.0](https://clojure.org/)
 + [Compojure-api 1.1.1](https://github.com/metosin/compojure-api/tree/1.1.x)
 + [Leiningen](https://leiningen.org/)
-+ [PostgreSQL 10.4](https://www.postgresql.org/) tietokantana
-+ [Flyway](https://flywaydb.org/) tietokantamigraatioille
++ [PostgreSQL 10.4](https://www.postgresql.org/) database
++ [Flyway](https://flywaydb.org/) database migrations
 
-## Laadunvarmistus
+## Quality assurance
 
-Koodin tyylissä tavoitellaan
 [The Clojure Style Guidea](https://github.com/bbatsov/clojure-style-guide).
 
-Repossa on `.editorconfig`-tiedosto, jota kannattaa hyödyntää.
+Repository has `.editorconfig` file for configuring your editor.
 
-Backendin staattiset tarkistustyökalut voi ajaa kerralla seuraavalla komennolla:
+Static linters for backend can be run with command:
 
 ``` shell
 lein checkall
 ```
 
-Tämä ajaa lein check, kibit, eastwood ja bikeshed -työkalut yhdellä kerralla.
-Työkaluja voi ajaa myös yksittäin:
+It runs Kibit, Eastwood, Bikeshed and cljfmt all at once. Every tool can also be
+run individually:
 
 ``` shell
-lein check
 lein kibit
 lein eastwood
 lein bikeshed
+lein cljfmtcheck
 ```
 
-## Sovelluksen ajo
+## Running application
 
 `lein ring server`
 
-## Testit
+## Running tests
 
 `lein test`
 
-## Julkaisu
+## Creating runnable JAR
 
 ```
 lein do clean, ring uberjar
 java -jar target/ehoks-backend.jar
 ```
 
-### Lisätietoja
+### More info
 
 + [kibit](https://github.com/jonase/kibit)
 + [eastwood](https://github.com/jonase/eastwood)
 + [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
++ [cljfmt](https://github.com/weavejester/cljfmt)
 
-## Integraatiot
+## Integrations
 
-Palvelu | Dokumentaatio
+Service | Documentation
 --------|--------------
 Opintohallintojärjestelmät |
 AMOSAA |
 ePerusteet | [palvelukortti](https://confluence.csc.fi/display/OPHPALV/ePerusteet)
 KOSKI | [palvelukortti](https://confluence.csc.fi/display/OPHPALV/Koski-palvelukortti)
 
-## Linkkejä
+## Links
 
 + [eHOKS Confluence](https://confluence.csc.fi/display/OPHPALV/eHOKS+-+hanke)
