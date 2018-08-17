@@ -4,6 +4,8 @@
 
 ### Frontend
 
+[Github Repository](https://github.com/Opetushallitus/ehoks-ui)
+
 ### Backend
 
 + [Clojure 1.9.0](https://clojure.org/)
