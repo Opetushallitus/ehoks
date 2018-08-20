@@ -11,7 +11,6 @@
   :plugins [[lein-ring "0.12.4"]
             [lein-cljfmt "0.6.0"]
             [lein-kibit "0.1.6"]
-            [jonase/eastwood "0.2.9"]
             [lein-bikeshed "0.5.1"]]
   :ring {:handler oph.ehoks.handler/app}
   :uberjar-name "ehoks-backend.jar"

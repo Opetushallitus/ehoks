@@ -26,15 +26,21 @@ Static linters for backend can be run with command:
 lein checkall
 ```
 
-It runs Kibit, Eastwood, Bikeshed and cljfmt all at once. Every tool can also be
+It runs Kibit, Bikeshed and cljfmt all at once. Every tool can also be
 run individually:
 
 ``` shell
 lein kibit
-lein eastwood
 lein bikeshed
 lein cljfmt check
 ```
+
+### More info
+
++ [kibit](https://github.com/jonase/kibit)
++ [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
++ [cljfmt](https://github.com/weavejester/cljfmt)
+
 
 ## Running application
 
@@ -67,13 +73,6 @@ lein test
 lein do clean, ring uberjar
 java -jar target/ehoks-backend.jar
 ```
-
-### More info
-
-+ [kibit](https://github.com/jonase/kibit)
-+ [eastwood](https://github.com/jonase/eastwood)
-+ [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
-+ [cljfmt](https://github.com/weavejester/cljfmt)
 
 ## Integrations
 
