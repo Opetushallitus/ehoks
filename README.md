@@ -9,7 +9,7 @@
 ### Backend
 
 + [Clojure 1.9.0](https://clojure.org/)
-+ [Compojure-api 1.1.1](https://github.com/metosin/compojure-api/tree/1.1.x)
++ [Compojure-api 2](https://github.com/metosin/compojure-api/)
 + [Leiningen](https://leiningen.org/)
 + [PostgreSQL 10.4](https://www.postgresql.org/) database
 + [Flyway](https://flywaydb.org/) database migrations
@@ -26,23 +26,46 @@ Static linters for backend can be run with command:
 lein checkall
 ```
 
-It runs Kibit, Eastwood, Bikeshed and cljfmt all at once. Every tool can also be
+It runs Kibit, Bikeshed and cljfmt all at once. Every tool can also be
 run individually:
 
 ``` shell
 lein kibit
-lein eastwood
 lein bikeshed
-lein cljfmtcheck
+lein cljfmt check
 ```
+
+### More info
+
++ [kibit](https://github.com/jonase/kibit)
++ [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
++ [cljfmt](https://github.com/weavejester/cljfmt)
+
 
 ## Running application
 
-`lein ring server`
+``` shell
+lein ring server-headless
+```
+
+Or inside repl with file reload:
+
+``` repl
+user> (use 'ehoks.dev-server)
+user> (def server (start-server))
+```
+
+And shutting down:
+
+``` repl
+user> (.stop server)
+```
 
 ## Running tests
 
-`lein test`
+``` shell
+lein test
+```
 
 ## Creating runnable JAR
 
@@ -50,13 +73,6 @@ lein cljfmtcheck
 lein do clean, ring uberjar
 java -jar target/ehoks-backend.jar
 ```
-
-### More info
-
-+ [kibit](https://github.com/jonase/kibit)
-+ [eastwood](https://github.com/jonase/eastwood)
-+ [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
-+ [cljfmt](https://github.com/weavejester/cljfmt)
 
 ## Integrations
 
