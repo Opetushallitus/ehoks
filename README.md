@@ -51,7 +51,7 @@ lein ring server-headless
 Or inside repl with file reload:
 
 ``` repl
-user> (use 'ehoks.dev-server)
+user> (use 'oph.ehoks.dev-server)
 user> (def server (start-server))
 ```
 
