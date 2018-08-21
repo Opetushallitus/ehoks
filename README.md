@@ -48,10 +48,16 @@ lein cljfmt check
 lein ring server-headless
 ```
 
+Or in development mode (for example development CORS)
+
+``` shell
+lein with-profile dev ring server-headless
+```
+
 Or inside repl with file reload:
 
 ``` repl
-user> (use 'ehoks.dev-server)
+user> (use 'oph.ehoks.dev-server)
 user> (def server (start-server))
 ```
 

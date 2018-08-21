@@ -1,6 +1,7 @@
 (ns oph.ehoks.handler
   (:require [compojure.api.sweet :refer [api context GET POST]]
-            [ring.util.http-response :refer [ok]]
+            [compojure.route :as compojure-route]
+            [ring.util.http-response :refer [ok not-found]]
             [oph.ehoks.restful :refer [response]]
             [oph.ehoks.common.schema :as common-schema]))
 
@@ -27,4 +28,9 @@
               [{:basic-information
                 {:fi "Perustietoa eHOKS-palvelusta"}
                 :hoks-process
-                {:fi "Perustietoa HOKS-prosessista"}}])))))))
+                {:fi "Perustietoa HOKS-prosessista"}}])))))
+    (context
+      "*" []
+      (GET
+        "*" []
+        (not-found {:reason "Route not found"})))))
