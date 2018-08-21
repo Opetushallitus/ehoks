@@ -21,14 +21,14 @@
       (context
         "/student" []
         (GET "/info/" []
-             :return (response [common-schema/Information])
-             :summary "System information for student"
-             (ok
-               (response
-                 [{:basic-information
-                   {:fi "Perustietoa eHOKS-palvelusta"}
-                   :hoks-process
-                   {:fi "Perustietoa HOKS-prosessista"}}])))))
+          :return (response [common-schema/Information])
+          :summary "System information for student"
+          (ok
+            (response
+              [{:basic-information
+                {:fi "Perustietoa eHOKS-palvelusta"}
+                :hoks-process
+                {:fi "Perustietoa HOKS-prosessista"}}])))))
     (context
       "*" []
       (GET
