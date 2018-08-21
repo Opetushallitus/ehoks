@@ -48,6 +48,12 @@ lein cljfmt check
 lein ring server-headless
 ```
 
+Or in development mode (for example development CORS)
+
+``` shell
+lein with-profile dev ring server-headless
+```
+
 Or inside repl with file reload:
 
 ``` repl
