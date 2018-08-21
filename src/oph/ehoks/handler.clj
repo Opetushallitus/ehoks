@@ -31,4 +31,6 @@
                    {:fi "Perustietoa HOKS-prosessista"}}])))))
     (context
       "*" []
-      (compojure-route/not-found {:reason "Route not found"}))))
+      (GET
+        "*" []
+        (not-found {:reason "Route not found"})))))
