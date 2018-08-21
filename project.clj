@@ -24,4 +24,5 @@
                                   [cheshire "5.8.0"]
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.0-RC1"]]
-                   :resource-paths ["resources/dev"]}})
+                   :resource-paths ["resources/dev"]
+                   :ring {:handler oph.ehoks.dev-server/dev-app}}})
