@@ -3,7 +3,8 @@
             [compojure.route :as compojure-route]
             [ring.util.http-response :refer [ok not-found]]
             [oph.ehoks.restful :refer [response]]
-            [oph.ehoks.common.schema :as common-schema]))
+            [oph.ehoks.common.schema :as common-schema]
+            [oph.ehoks.info :as info]))
 
 (def app
   (api
@@ -19,16 +20,26 @@
       :tags ["api v1"]
 
       (context
+        "/education" []
+        (GET "/info/" []
+          :return (response [common-schema/Information])
+          :summary "System information for education provider"
+          (ok (response [(info/get-ehoks-info :education)]))))
+
+      (context
+        "/work" []
+        (GET "/info/" []
+          :return (response [common-schema/Information])
+          :summary "System information for workplace provider"
+          (ok (response [(info/get-ehoks-info :work)]))))
+
+      (context
         "/student" []
         (GET "/info/" []
           :return (response [common-schema/Information])
           :summary "System information for student"
-          (ok
-            (response
-              [{:basic-information
-                {:fi "Perustietoa eHOKS-palvelusta"}
-                :hoks-process
-                {:fi "Perustietoa HOKS-prosessista"}}])))))
+          (ok (response [(info/get-ehoks-info :student)])))))
+
     (context
       "*" []
       (GET
