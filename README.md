@@ -13,6 +13,8 @@
 + [Leiningen](https://leiningen.org/)
 + [PostgreSQL 10.4](https://www.postgresql.org/) database
 + [Flyway](https://flywaydb.org/) database migrations
++ [clj-http](https://github.com/dakrone/clj-http) http requests with
+integrations
 
 ## Quality assurance
 
