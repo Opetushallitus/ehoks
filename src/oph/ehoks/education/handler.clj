@@ -6,9 +6,8 @@
             [oph.ehoks.info :as info]))
 
 (def routes
-  (context
-    "/education" []
+  (context "/education" []
     (GET "/info/" []
-         :return (response [common-schema/Information])
-         :summary "System information for education provider"
-         (ok (response [(info/get-ehoks-info :education)])))))
+      :return (response [common-schema/Information])
+      :summary "System information for education provider"
+      (ok (response [(info/get-ehoks-info :education)])))))

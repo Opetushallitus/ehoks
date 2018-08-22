@@ -6,9 +6,8 @@
             [oph.ehoks.info :as info]))
 
 (def routes
-  (context
-    "/work" []
+  (context "/work" []
     (GET "/info/" []
-         :return (response [common-schema/Information])
-         :summary "System information for workplace provider"
-         (ok (response [(info/get-ehoks-info :work)])))))
+      :return (response [common-schema/Information])
+      :summary "System information for workplace provider"
+      (ok (response [(info/get-ehoks-info :work)])))))
