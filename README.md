@@ -15,6 +15,7 @@
 + [Flyway](https://flywaydb.org/) database migrations
 + [clj-http](https://github.com/dakrone/clj-http) http requests with
 integrations
++ [cheshire](https://github.com/dakrone/cheshire) JSON decoding/encoding
 
 ## Quality assurance
 
