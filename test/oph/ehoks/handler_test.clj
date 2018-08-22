@@ -36,3 +36,8 @@
       (is (= (count (:data body)) 1))
       (is (some? (get-in info [:basic-information :fi])))
       (is (some? (get-in info [:hoks-process :fi]))))))
+
+(deftest not-found
+  (testing "GET route which does not exists"
+    (let [response (app (mock/request :get "/api/v1/non-existing-resource/"))]
+      (is (= (:status response) 404)))))
