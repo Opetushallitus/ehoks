@@ -1,6 +1,10 @@
-(ns oph.ehoks.restful)
+(ns oph.ehoks.restful
+  (:require [ring.util.http-response :refer [ok]]))
 
-(defn response [body & data]
-  (let [data-map (apply hash-map data)]
-    {:meta (get :meta data-map {})
+(defn response [body & meta]
+  (let [meta-map (apply hash-map meta)]
+    {:meta (get :meta meta-map {})
      :data body}))
+
+(defn rest-ok [body & data]
+  (ok (apply response body data)))

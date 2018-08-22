@@ -1,7 +1,6 @@
 (ns oph.ehoks.handler
   (:require [compojure.api.sweet :refer [api context GET]]
-            [ring.util.http-response :refer [ok not-found]]
-            [oph.ehoks.restful :refer [response]]
+            [ring.util.http-response :refer [not-found]]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.education.handler :as education-handler]
             [oph.ehoks.work.handler :as work-handler]
