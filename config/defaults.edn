@@ -1,1 +1,5 @@
-{:eperusteet-url "https://eperusteet.opintopolku.fi/eperusteet-service/api"}
+{:eperusteet-url "https://eperusteet.opintopolku.fi/eperusteet-service/api"
+ :port 3000
+ :frontend-port 8080
+ :frontend-url "http://localhost"
+ :database-url ""}
