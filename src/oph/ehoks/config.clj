@@ -3,13 +3,13 @@
             [clojure.java.io :as io]
             [clojure.edn :as edn]))
 
-(def ^:private env-file (get env :config "config/prod.edn"))
-
 (def ^:private defaults-file "config/defaults.edn")
 
 (defn- load-config [file]
   (with-open [reader (io/reader file)]
     (edn/read (java.io.PushbackReader. reader))))
 
-(def config (merge (load-config defaults-file)
-                   (load-config env-file)))
+(def ^:private default-config (load-config defaults-file))
+
+(def config (merge default-config
+                   (select-keys env (keys default-config))))
