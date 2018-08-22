@@ -9,9 +9,8 @@
     (let [response (handler request)]
       (-> response
           (assoc-in [:headers "Access-Control-Allow-Origin"]
-                    (format "%s:%d"
-                            (get-in config [:frontend :url])
-                            (get-in config [:frontend :port])))
+                    (format
+                      "%s:%d" (:frontend-url config) (:frontend-port config)))
           (assoc-in [:headers "Access-Control-Allow-Credentials"] "true")))))
 
 (def dev-app
