@@ -25,11 +25,9 @@
                         ["eastwood"]
                         ["cljfmt" "check"]]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
-  :profiles {:test {:env {:config "config/test.edn"}}
-             :dev {:dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
+  :profiles {:dev {:dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
                                   [cheshire "5.8.0"]
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.0-RC1"]]
                    :resource-paths ["resources/dev"]
-                   :env {:config "config/dev.edn"}
                    :ring {:handler oph.ehoks.dev-server/dev-app}}})
