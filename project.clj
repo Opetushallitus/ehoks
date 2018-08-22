@@ -14,6 +14,7 @@
             [lein-cljfmt "0.6.0"]
             [lein-kibit "0.1.6"]
             [lein-bikeshed "0.5.1"]
+            [jonase/eastwood "0.2.9"]
             [lein-environ "1.1.0"]]
   :ring {:handler oph.ehoks.handler/app}
   :uberjar-name "ehoks-backend.jar"
@@ -21,6 +22,7 @@
   :aliases {"checkall" ["do"
                         ["kibit"]
                         ["bikeshed"]
+                        ["eastwood"]
                         ["cljfmt" "check"]]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:test {:env {:config "config/test.edn"}}
