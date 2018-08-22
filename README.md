@@ -16,6 +16,7 @@
 + [clj-http](https://github.com/dakrone/clj-http) http requests with
 integrations
 + [cheshire](https://github.com/dakrone/cheshire) JSON decoding/encoding
++ [environ](https://github.com/weavejester/environ) environment variables
 
 ## Quality assurance
 
@@ -73,12 +74,10 @@ user> (.stop server)
 
 ### Configure
 
-Config files are located in `config` folder. `defaults.edn` file will be base
-for other configures and it's for shared configurations between environments.
-Environment specific configures will be merged with defaults. Environment config
-will override defaults with
-[Clojure merge](https://clojuredocs.org/clojure.core/merge). Environment config
-files are defined in `project.clj`. `config/prod.edn` is the default one.
+Default configure is located in `config/defaults.edn` file. Values, and only
+those values, in defaults file can be overriden with environment variables.
+Variables are imported with [environ](https://github.com/weavejester/environ)
+so keys with underscore can is allowed.
 
 ## Running tests
 
