@@ -26,12 +26,13 @@ Static linters for backend can be run with command:
 lein checkall
 ```
 
-It runs Kibit, Bikeshed and cljfmt all at once. Every tool can also be
-run individually:
+It runs Kibit, Bikeshed, Eastwood, and cljfmt all at once. Every tool can also
+be run individually:
 
 ``` shell
 lein kibit
 lein bikeshed
+lein eastwood
 lein cljfmt check
 ```
 
@@ -39,8 +40,8 @@ lein cljfmt check
 
 + [kibit](https://github.com/jonase/kibit)
 + [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
++ [eastwood](https://github.com/jonase/eastwood)
 + [cljfmt](https://github.com/weavejester/cljfmt)
-
 
 ## Running application
 
