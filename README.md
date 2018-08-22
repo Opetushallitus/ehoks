@@ -12,6 +12,7 @@
 + [Compojure-api 2](https://github.com/metosin/compojure-api/)
 + [Leiningen](https://leiningen.org/)
 + [PostgreSQL 10.4](https://www.postgresql.org/) database
++ [HugSQL](https://www.hugsql.org/)
 + [Flyway](https://flywaydb.org/) database migrations
 + [clj-http](https://github.com/dakrone/clj-http) http requests with
 integrations
