@@ -67,6 +67,15 @@ And shutting down:
 user> (.stop server)
 ```
 
+### Configure
+
+Config files are located in `config` folder. `defaults.edn` file will be base
+for other configures and it's for shared configurations between environments.
+Environment specific configures will be merged with defaults. Environment config
+will override defaults with
+[Clojure merge](https://clojuredocs.org/clojure.core/merge). Environment config
+files are defined in `project.clj`. `config/prod.edn` is the default one.
+
 ## Running tests
 
 ``` shell
