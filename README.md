@@ -9,10 +9,15 @@
 ### Backend
 
 + [Clojure 1.9.0](https://clojure.org/)
-+ [Compojure-api 1.1.1](https://github.com/metosin/compojure-api/tree/1.1.x)
++ [Compojure-api 2](https://github.com/metosin/compojure-api/)
 + [Leiningen](https://leiningen.org/)
 + [PostgreSQL 10.4](https://www.postgresql.org/) database
++ [HugSQL](https://www.hugsql.org/)
 + [Flyway](https://flywaydb.org/) database migrations
++ [clj-http](https://github.com/dakrone/clj-http) http requests with
+integrations
++ [cheshire](https://github.com/dakrone/cheshire) JSON decoding/encoding
++ [environ](https://github.com/weavejester/environ) environment variables
 
 ## Quality assurance
 
@@ -26,23 +31,60 @@ Static linters for backend can be run with command:
 lein checkall
 ```
 
-It runs Kibit, Eastwood, Bikeshed and cljfmt all at once. Every tool can also be
-run individually:
+It runs Kibit, Bikeshed, Eastwood, and cljfmt all at once. Every tool can also
+be run individually:
 
 ``` shell
 lein kibit
-lein eastwood
 lein bikeshed
-lein cljfmtcheck
+lein eastwood
+lein cljfmt check
 ```
+
+### More info
+
++ [kibit](https://github.com/jonase/kibit)
++ [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
++ [eastwood](https://github.com/jonase/eastwood)
++ [cljfmt](https://github.com/weavejester/cljfmt)
 
 ## Running application
 
-`lein ring server`
+``` shell
+lein ring server-headless
+```
+
+Or in development mode (for example development CORS)
+
+``` shell
+lein with-profile dev ring server-headless
+```
+
+Or inside repl with file reload:
+
+``` repl
+user> (use 'oph.ehoks.dev-server)
+user> (def server (start-server))
+```
+
+And shutting down:
+
+``` repl
+user> (.stop server)
+```
+
+### Configure
+
+Default configure is located in `config/defaults.edn` file. Values, and only
+those values, in defaults file can be overriden with environment variables.
+Variables are imported with [environ](https://github.com/weavejester/environ)
+so keys with underscore can is allowed.
 
 ## Running tests
 
-`lein test`
+``` shell
+lein test
+```
 
 ## Creating runnable JAR
 
@@ -50,13 +92,6 @@ lein cljfmtcheck
 lein do clean, ring uberjar
 java -jar target/ehoks-backend.jar
 ```
-
-### More info
-
-+ [kibit](https://github.com/jonase/kibit)
-+ [eastwood](https://github.com/jonase/eastwood)
-+ [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
-+ [cljfmt](https://github.com/weavejester/cljfmt)
 
 ## Integrations
 
