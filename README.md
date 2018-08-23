@@ -18,6 +18,7 @@
 integrations
 + [cheshire](https://github.com/dakrone/cheshire) for JSON decoding/encoding
 + [environ](https://github.com/weavejester/environ) for environment variables
++ [redis](https://redis.io/) for session storage
 
 ## Quality assurance
 
