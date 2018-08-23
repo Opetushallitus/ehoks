@@ -11,7 +11,8 @@
 + [Clojure 1.9.0](https://clojure.org/)
 + [Compojure-api 2](https://github.com/metosin/compojure-api/)
 + [Leiningen](https://leiningen.org/)
-+ [PostgreSQL 10.4](https://www.postgresql.org/) as a database
++ [PostgreSQL 9.5](https://www.postgresql.org/docs/9.5/static/index.html) as a
+database
 + [HugSQL](https://www.hugsql.org/)
 + [Flyway](https://flywaydb.org/) for database migrations
 + [clj-http](https://github.com/dakrone/clj-http) for http requests with
