@@ -17,7 +17,7 @@
             [jonase/eastwood "0.2.9"]
             [lein-environ "1.1.0"]]
   :ring {:handler oph.ehoks.handler/app}
-  :uberjar-name "ehoks-backend.jar"
+  :uberjar-name "ehoks.jar"
   :source-paths ["src"]
   :aliases {"checkall" ["do"
                         ["kibit"]
