@@ -11,13 +11,13 @@
 + [Clojure 1.9.0](https://clojure.org/)
 + [Compojure-api 2](https://github.com/metosin/compojure-api/)
 + [Leiningen](https://leiningen.org/)
-+ [PostgreSQL 10.4](https://www.postgresql.org/) database
++ [PostgreSQL 10.4](https://www.postgresql.org/) as a database
 + [HugSQL](https://www.hugsql.org/)
-+ [Flyway](https://flywaydb.org/) database migrations
-+ [clj-http](https://github.com/dakrone/clj-http) http requests with
++ [Flyway](https://flywaydb.org/) for database migrations
++ [clj-http](https://github.com/dakrone/clj-http) for http requests with
 integrations
-+ [cheshire](https://github.com/dakrone/cheshire) JSON decoding/encoding
-+ [environ](https://github.com/weavejester/environ) environment variables
++ [cheshire](https://github.com/dakrone/cheshire) for JSON decoding/encoding
++ [environ](https://github.com/weavejester/environ) for environment variables
 
 ## Quality assurance
 
