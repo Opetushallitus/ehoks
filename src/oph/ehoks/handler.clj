@@ -1,12 +1,15 @@
 (ns oph.ehoks.handler
   (:require [compojure.api.sweet :refer [api context GET]]
             [ring.util.http-response :refer [not-found]]
+            [ring.middleware.session :refer [wrap-session]]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.education.handler :as education-handler]
             [oph.ehoks.work.handler :as work-handler]
-            [oph.ehoks.student.handler :as student-handler]))
+            [oph.ehoks.student.handler :as student-handler]
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.redis :refer [redis-store]]))
 
-(def app
+(def api-routes
   (api
     {:swagger
      {:ui "/doc/"
@@ -25,3 +28,9 @@
     (context "*" []
       (GET "*" []
         (not-found {:reason "Route not found"})))))
+
+(def app
+  (wrap-session
+    api-routes
+    (when (:redis-url config)
+      {:store (redis-store {:pool {} :spec {:uri (:redis-url config)}})})))
