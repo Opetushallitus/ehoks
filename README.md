@@ -75,6 +75,25 @@ And shutting down:
 user> (.stop server)
 ```
 
+### Database
+
+For database there is proper Docker script in `scripts/psql-docker` folder. Use
+this only in development environment.
+
+Initializing
+
+``` shell
+cd scripts/psql-docker
+docker build -t ehoks-psql:9.5 .
+mkdir -p data
+```
+
+Running
+
+``` shell
+docker run --rm --name ehoks-psql -p 5432:5432 --volume data:/var/lib/postgresql/data ehoks-psql:9.5
+```
+
 ### Configure
 
 Default configure is located in `config/defaults.edn` file. Values, and only
