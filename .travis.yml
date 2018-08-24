@@ -1,0 +1,16 @@
+dist: trusty
+
+sudo: required
+
+language: clojure
+
+jdk:
+  - oraclejdk8
+
+install: []
+
+script:
+  - lein deps
+  - lein checkall
+  - lein test
+  - lein uberjar
