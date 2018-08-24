@@ -32,5 +32,6 @@
 (def app
   (wrap-session
     api-routes
-    (when (:redis-url config)
-      {:store (redis-store {:pool {} :spec {:uri (:redis-url config)}})})))
+    (if (:redis-url config)
+      {:store (redis-store {:pool {} :spec {:uri (:redis-url config)}})}
+      {})))
