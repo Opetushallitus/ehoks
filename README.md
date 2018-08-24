@@ -94,6 +94,30 @@ Running
 docker run --rm --name ehoks-psql -p 5432:5432 --volume data:/var/lib/postgresql/data ehoks-psql:9.5
 ```
 
+### Redis
+
+Redis is being used as a session storage.
+
+For local development use you can use Docker script in `scripts/redis-docker`
+folder.
+
+Initializing
+
+``` shell
+cd scripts/redis-docker
+docker build -t ehoks-redis .
+mkdir -p data
+```
+
+Running
+
+``` shell
+docker run --rm --name ehoks-redis -p 6379:6379 --volume data:/data ehoks-redis
+```
+
+Or you can always skip runnign Redis with leaving `REDIS_URL` environment
+variable or `:redis-url` cofigure option nil.
+
 ### Configure
 
 Default configure is located in `config/defaults.edn` file. Values, and only
