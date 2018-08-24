@@ -3,4 +3,4 @@
  :frontend-port 8080
  :frontend-url "http://localhost"
  :database-url ""
- :redis-url "redis://localhost:6379"}
+ :redis-url nil}
