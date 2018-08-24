@@ -17,9 +17,10 @@ database
 + [Flyway](https://flywaydb.org/) for database migrations
 + [clj-http](https://github.com/dakrone/clj-http) for http requests with
 integrations
-+ [cheshire](https://github.com/dakrone/cheshire) for JSON decoding/encoding
-+ [environ](https://github.com/weavejester/environ) for environment variables
-+ [redis](https://redis.io/) for session storage
++ [Cheshire](https://github.com/dakrone/cheshire) for JSON decoding/encoding
++ [Environ](https://github.com/weavejester/environ) for environment variables
++ [Redis](https://redis.io/) for session storage
++ [Redis Client](https://github.com/ptaoussanis/carmine)
 
 ## Quality assurance
 
