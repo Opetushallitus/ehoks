@@ -50,7 +50,9 @@ lein cljfmt check
 + [eastwood](https://github.com/jonase/eastwood)
 + [cljfmt](https://github.com/weavejester/cljfmt)
 
-## Running application
+## Development
+
+### Running application
 
 ``` shell
 lein ring server-headless
