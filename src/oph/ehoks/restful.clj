@@ -3,7 +3,7 @@
 
 (defn response [body & meta-data]
   (let [meta-map (apply hash-map meta-data)]
-    {:meta (get :meta meta-map {})
+    {:meta (or meta-map {})
      :data body}))
 
 (defn rest-ok [body & meta-data]
