@@ -131,8 +131,16 @@ so keys with underscore can is allowed.
 
 ## Running tests
 
+Running tests once
+
 ``` shell
 lein test
+```
+
+Or on change
+
+``` shell
+lein auto test
 ```
 
 ## Creating runnable JAR
