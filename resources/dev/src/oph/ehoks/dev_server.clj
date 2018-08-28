@@ -14,8 +14,8 @@
           (assoc-in [:headers "Access-Control-Allow-Credentials"] "true")))))
 
 (def dev-app
-  (wrap-dev-cors app))
+  (wrap-dev-cors (wrap-reload #'app)))
 
 (defn start-server []
-  (jetty/run-jetty (wrap-reload dev-app)
+  (jetty/run-jetty dev-app
      {:port (:port config) :join? false}))
