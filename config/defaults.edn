@@ -3,4 +3,6 @@
  :frontend-port 8080
  :frontend-url "http://localhost"
  :database-url ""
- :redis-url nil}
+ :redis-url nil
+ :opintopolku-login-url "http://localhost:3000/auth-dev/opintopolku-login/"
+ :opintopolku-result-url "/api/v1/session/opintopolku/"}
