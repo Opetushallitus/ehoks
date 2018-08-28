@@ -9,6 +9,7 @@
 ### Backend
 
 + [Clojure 1.9.0](https://clojure.org/)
++ [Clojure.test](https://clojure.github.io/clojure/clojure.test-api.html)
 + [Compojure-api 2](https://github.com/metosin/compojure-api/)
 + [Leiningen](https://leiningen.org/)
 + [PostgreSQL 9.5](https://www.postgresql.org/docs/9.5/static/index.html) as a
