@@ -1,8 +1,24 @@
 (ns oph.ehoks.dev-server
   (:require [oph.ehoks.handler :refer [app]]
+            [compojure.core :refer [GET defroutes routes]]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.reload :refer [wrap-reload]]
-            [oph.ehoks.config :refer [config]]))
+            [oph.ehoks.config :refer [config]]
+            [hiccup.core :refer [html]]))
+
+(def dev-login-form
+  [:div
+   [:form {:action (:opintopolku-result-url config) :method "POST"}
+    [:input {:type "hidden" :name "FirstName" :value "Teuvo Taavetti"}]
+    [:input {:type "hidden" :name "cn" :value "Teuvo"}]
+    [:input {:type "hidden" :name "givenName" :value "Teuvo"}]
+    [:input {:type "hidden" :name "hetu" :value "010203-XXXXX"}]
+    [:input {:type "hidden" :name "sn" :value "Testaaja"}]
+    [:button {:type "submit" :value "submit"} "Login"]]])
+
+(defroutes dev-routes
+  (GET "/auth-dev/opintopolku-login/" [] (html dev-login-form)))
+
 
 (defn wrap-dev-cors [handler]
   (fn [request]
@@ -14,7 +30,7 @@
           (assoc-in [:headers "Access-Control-Allow-Credentials"] "true")))))
 
 (def dev-app
-  (wrap-dev-cors (wrap-reload #'app)))
+  (wrap-dev-cors (wrap-reload (routes dev-routes app))))
 
 (defn start-server []
   (jetty/run-jetty dev-app
