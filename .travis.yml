@@ -14,3 +14,7 @@ script:
   - lein checkall
   - lein test
   - lein uberjar
+
+cache:
+  directories:
+    - "$HOME/.m2"
