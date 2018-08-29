@@ -25,7 +25,7 @@
                        "hetu" "010203-XXXX"
                        "sn" "Testaaja"}]
       (is (= (parse auth-header)
-             {:first-name "Teuvo"
+             {:first-name "Teuvo Taavetti"
               :common-name "Teuvo"
               :given-name "Teuvo"
               :hetu "010203-XXXX"
