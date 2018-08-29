@@ -9,8 +9,7 @@
 
 (def routes
   (context "/session" []
-    (context "/opintopolku" []
-      (GET "/" [:as request]
+    (GET "/opintopolku/" [:as request]
         :summary "Get current Opintopolku session"
         :return (response [schema/User] :opintopolku-login-url s/Str)
         (let [{{:keys [user]} :session} request]
@@ -20,16 +19,16 @@
               [])
             :opintopolku-login-url (:opintopolku-login-url config))))
 
-      (DELETE "/" []
+      (DELETE "/opintopolku/" []
         :summary "Delete Opintopolku session (logout)"
         :return (response [])
         (assoc (rest-ok []) :session nil))
 
-      (POST "/" [:as request]
+      (POST "/opintopolku/" [:as request]
         :summary "Creates new Opintopolku session"
         :return (response [])
         (when (not= (get-in request [:headers "referer"])
                     (:opintopolku-login-url config))
           (bad-request! "Misconfigured authentication"))
         (let [values (opintopolku/parse (:form-params request))]
-          (assoc-in (rest-ok []) [:session :user] values))))))
+          (assoc-in (rest-ok []) [:session :user] values)))))
