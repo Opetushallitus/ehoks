@@ -6,7 +6,7 @@
             [oph.ehoks.education.handler :as education-handler]
             [oph.ehoks.work.handler :as work-handler]
             [oph.ehoks.student.handler :as student-handler]
-            [oph.ehoks.auth.auth-handler :as auth-handler]
+            [oph.ehoks.auth.handler :as auth-handler]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.redis :refer [redis-store]]))
 
