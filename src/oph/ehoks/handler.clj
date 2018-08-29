@@ -6,6 +6,7 @@
             [oph.ehoks.education.handler :as education-handler]
             [oph.ehoks.work.handler :as work-handler]
             [oph.ehoks.student.handler :as student-handler]
+            [oph.ehoks.auth.handler :as auth-handler]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.redis :refer [redis-store]]))
 
@@ -19,11 +20,12 @@
              :tags [{:name "api", :description ""}]}}}
 
     (context "/api/v1" []
-      :tags ["api v1"]
+      :tags ["api" "v1"]
 
       education-handler/routes
       work-handler/routes
-      student-handler/routes)
+      student-handler/routes
+      auth-handler/routes)
 
     (context "*" []
       (GET "*" []

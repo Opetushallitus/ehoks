@@ -9,6 +9,7 @@
 ### Backend
 
 + [Clojure 1.9.0](https://clojure.org/)
++ [Clojure.test](https://clojure.github.io/clojure/clojure.test-api.html)
 + [Compojure-api 2](https://github.com/metosin/compojure-api/)
 + [Leiningen](https://leiningen.org/)
 + [PostgreSQL 9.5](https://www.postgresql.org/docs/9.5/static/index.html) as a
@@ -130,8 +131,16 @@ so keys with underscore can is allowed.
 
 ## Running tests
 
+Running tests once
+
 ``` shell
 lein test
+```
+
+Or on change
+
+``` shell
+lein auto test
 ```
 
 ## Creating runnable JAR

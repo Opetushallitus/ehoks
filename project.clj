@@ -10,13 +10,15 @@
                  [com.layerware/hugsql "0.4.9"]
                  [environ "1.1.0"]
                  [clj-http "3.9.1"]
-                 [com.taoensso/carmine "2.18.1"]]
+                 [com.taoensso/carmine "2.18.1"]
+                 [hiccup "1.0.5"]]
   :plugins [[lein-ring "0.12.4"]
             [lein-cljfmt "0.6.0"]
             [lein-kibit "0.1.6"]
             [lein-bikeshed "0.5.1"]
             [jonase/eastwood "0.2.9"]
-            [lein-environ "1.1.0"]]
+            [lein-environ "1.1.0"]
+            [lein-auto "0.1.3"]]
   :ring {:handler oph.ehoks.handler/app}
   :uberjar-name "ehoks.jar"
   :source-paths ["src"]
@@ -30,5 +32,5 @@
                                   [cheshire "5.8.0"]
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.0-RC1"]]
-                   :resource-paths ["resources/dev"]
+                   :resource-paths ["resources/dev" "resources/dev/src"]
                    :ring {:handler oph.ehoks.dev-server/dev-app}}})
