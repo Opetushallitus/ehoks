@@ -21,12 +21,12 @@
 
       (DELETE "/opintopolku/" []
         :summary "Delete Opintopolku session (logout)"
-        :return (response [])
+        :return (response [s/Any])
         (assoc (rest-ok []) :session nil))
 
       (POST "/opintopolku/" [:as request]
         :summary "Creates new Opintopolku session"
-        :return (response [])
+        :return (response [s/Any])
         (when (not= (get-in request [:headers "referer"])
                     (:opintopolku-login-url config))
           (bad-request! "Misconfigured authentication"))
