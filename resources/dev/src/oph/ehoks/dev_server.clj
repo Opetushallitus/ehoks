@@ -30,7 +30,7 @@
           (assoc-in [:headers "Access-Control-Allow-Credentials"] "true")))))
 
 (def dev-app
-  (wrap-dev-cors (wrap-reload (routes dev-routes app))))
+  (wrap-dev-cors (routes (wrap-reload #'dev-routes) (wrap-reload #'app))))
 
 (defn start-server []
   (jetty/run-jetty dev-app
