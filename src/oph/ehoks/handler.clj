@@ -20,7 +20,7 @@
              :tags [{:name "api", :description ""}]}}}
 
     (context "/api/v1" []
-      :tags ["api v1"]
+      :tags ["api" "v1"]
 
       education-handler/routes
       work-handler/routes
