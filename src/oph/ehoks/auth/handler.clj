@@ -9,26 +9,27 @@
 
 (def routes
   (context "/session" []
+
     (GET "/opintopolku/" [:as request]
-        :summary "Get current Opintopolku session"
-        :return (response [schema/User] :opintopolku-login-url s/Str)
-        (let [{{:keys [user]} :session} request]
-          (rest-ok
-            (if (some? user)
-              [(select-keys user [:first-name :common-name :surname])]
-              [])
-            :opintopolku-login-url (:opintopolku-login-url config))))
+      :summary "Get current Opintopolku session"
+      :return (response [schema/User] :opintopolku-login-url s/Str)
+      (let [{{:keys [user]} :session} request]
+        (rest-ok
+          (if (some? user)
+            [(select-keys user [:first-name :common-name :surname])]
+            [])
+          :opintopolku-login-url (:opintopolku-login-url config))))
 
-      (DELETE "/opintopolku/" []
-        :summary "Delete Opintopolku session (logout)"
-        :return (response [s/Any])
-        (assoc (rest-ok []) :session nil))
+    (DELETE "/opintopolku/" []
+      :summary "Delete Opintopolku session (logout)"
+      :return (response [s/Any])
+      (assoc (rest-ok []) :session nil))
 
-      (POST "/opintopolku/" [:as request]
-        :summary "Creates new Opintopolku session"
-        :return (response [s/Any])
-        (when (not= (get-in request [:headers "referer"])
-                    (:opintopolku-login-url config))
-          (bad-request! "Misconfigured authentication"))
-        (let [values (opintopolku/parse (:form-params request))]
-          (assoc-in (rest-ok []) [:session :user] values)))))
+    (POST "/opintopolku/" [:as request]
+      :summary "Creates new Opintopolku session"
+      :return (response [s/Any])
+      (when (not= (get-in request [:headers "referer"])
+                  (:opintopolku-login-url config))
+        (bad-request! "Misconfigured authentication"))
+      (let [values (opintopolku/parse (:form-params request))]
+        (assoc-in (rest-ok []) [:session :user] values)))))
