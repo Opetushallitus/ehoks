@@ -1,4 +1,4 @@
-(ns oph.ehoks.auth.auth-handler
+(ns oph.ehoks.auth.handler
   (:require [compojure.api.sweet :refer [context GET POST DELETE]]
             [ring.util.http-response :refer [bad-request! no-content]]
             [schema.core :as s]
