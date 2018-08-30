@@ -33,13 +33,13 @@
 
 (deftest prevent-illegal-authentication
   (testing "Prevents illegal authentication"
-    (let [response (app (-> (mock/request
-                              :post "/api/v1/session/opintopolku/"
-                              {"FirstName" "Teuvo Taavetti"
-                               "cn" "Teuvo"
-                               "givenName" "Teuvo"
-                               "hetu" "010203-XXXX"
-                               "sn" "Testaaja"})))]
+    (let [response (app (mock/request
+                          :post "/api/v1/session/opintopolku/"
+                          {"FirstName" "Teuvo Taavetti"
+                           "cn" "Teuvo"
+                           "givenName" "Teuvo"
+                           "hetu" "010203-XXXX"
+                           "sn" "Testaaja"}))]
       (is (= (:status response) 400)))))
 
 (deftest session-authenticated
