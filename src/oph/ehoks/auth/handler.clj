@@ -1,6 +1,6 @@
 (ns oph.ehoks.auth.handler
   (:require [compojure.api.sweet :refer [context GET POST DELETE]]
-            [ring.util.http-response :refer [bad-request! no-content]]
+            [ring.util.http-response :refer [bad-request! see-other]]
             [schema.core :as s]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.restful :refer [response rest-ok]]
@@ -26,10 +26,15 @@
       (assoc (rest-ok []) :session nil))
 
     (POST "/opintopolku/" [:as request]
-      :summary "Creates new Opintopolku session"
-      :return (response [s/Any])
+      :summary "Creates new Opintopolku session and redirects to frontend"
+      :description "Creates new Opintopolku session. After storing session
+                    http status 'See Other' (303) will be returned with url of
+                    frontend in configuration."
       (when (not= (get-in request [:headers "referer"])
                   (:opintopolku-login-url config))
         (bad-request! "Misconfigured authentication"))
       (let [values (opintopolku/parse (:form-params request))]
-        (assoc-in (rest-ok []) [:session :user] values)))))
+        (assoc-in
+          (see-other
+            (format "%s:%d" (:frontend-url config) (:frontend-port config)))
+          [:session :user] values)))))
