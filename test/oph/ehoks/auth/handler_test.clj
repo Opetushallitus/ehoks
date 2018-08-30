@@ -29,9 +29,7 @@
 (deftest session-authenticate
   (testing "POST authenticate"
     (let [response (authenticate)]
-      (is (= (:status response) 200))
-      (is (empty? (get-in response [:body :data])))
-      (is (empty? (get-in response [:body :meta]))))))
+      (is (= (:status response) 303)))))
 
 (deftest session-authenticated
   (testing "GET current authenticated session"
