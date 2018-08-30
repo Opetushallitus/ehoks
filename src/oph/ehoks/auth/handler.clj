@@ -1,7 +1,6 @@
 (ns oph.ehoks.auth.handler
   (:require [compojure.api.sweet :refer [context GET POST DELETE]]
-            [ring.util.http-response
-             :refer [bad-request! no-content see-other]]
+            [ring.util.http-response :refer [bad-request! see-other]]
             [schema.core :as s]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.restful :refer [response rest-ok]]
