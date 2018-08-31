@@ -47,6 +47,6 @@
                    [[javax.servlet/javax.servlet-api "4.0.1"]
                     [cheshire "5.8.0"]
                     [ring/ring-mock "0.3.2"]
-                    [ring/ring-devel "1.7.0-RC2"]]
+                    [ring/ring-devel "1.7.0-RC2" :exclusions [ring/ring-core]]]
                    :resource-paths ["resources/dev" "resources/dev/src"]
                    :ring {:handler oph.ehoks.dev-server/dev-app}}})
