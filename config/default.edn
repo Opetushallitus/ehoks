@@ -5,4 +5,4 @@
  :database-url ""
  :redis-url nil
  :opintopolku-login-url "http://localhost:3000/auth-dev/opintopolku-login/"
- :opintopolku-result-url "/api/v1/session/opintopolku/"}
+ :opintopolku-return-url "/api/v1/session/opintopolku/"}
