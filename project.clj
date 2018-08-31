@@ -1,6 +1,7 @@
 (defproject oph.ehoks "0.1.0"
   :description "OPH eHOKS Backend"
   :min-lein-version "2.8.1"
+  :pedantic? :abort
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [metosin/compojure-api "2.0.0-alpha23"]
                  [ring/ring-jetty-adapter "1.6.3"]
