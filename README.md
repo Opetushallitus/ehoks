@@ -122,12 +122,11 @@ docker run --rm --name ehoks-redis -p 6379:6379 --volume data:/data ehoks-redis
 Or you can always skip runnign Redis with leaving `REDIS_URL` environment
 variable or `:redis-url` cofigure option nil.
 
-### Configure
+## Configuration
 
-Default configure is located in `config/defaults.edn` file. Values, and only
-those values, in defaults file can be overriden with environment variables.
-Variables are imported with [environ](https://github.com/weavejester/environ)
-so keys with underscore can is allowed.
+Default configuration file is `config/default.edn`. You may override these
+values by creating your own config file and giving path to created file as an
+environment variable `CONFIG`.
 
 ## Running tests
 

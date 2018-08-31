@@ -1,8 +1,8 @@
-{:eperusteet-url "https://eperusteet.opintopolku.fi/eperusteet-service/api"
- :port 3000
+{:port 3000
  :frontend-port 8080
  :frontend-url "http://localhost"
  :database-url ""
  :redis-url nil
  :opintopolku-login-url "http://localhost:3000/auth-dev/opintopolku-login/"
- :opintopolku-result-url "/api/v1/session/opintopolku/"}
+ :opintopolku-return-url "/api/v1/session/opintopolku/"
+ :eperusteet-url "https://eperusteet.opintopolku.fi/eperusteet-service/api"}

@@ -8,7 +8,7 @@
 
 (def dev-login-form
   [:div
-   [:form {:action (:opintopolku-result-url config) :method "POST"}
+   [:form {:action (:opintopolku-return-url config) :method "POST"}
     [:input {:type "hidden" :name "FirstName" :value "Teuvo Taavetti"}]
     [:input {:type "hidden" :name "cn" :value "Teuvo"}]
     [:input {:type "hidden" :name "givenName" :value "Teuvo"}]
