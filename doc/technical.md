@@ -26,4 +26,4 @@ sn | :surname | Surname | Yes
 
 ### Sequence diagram
 
-![Sequence diagram of authentication](https://github.com/Opetushallitus/ehoks/raw/master/doc/authenticate-seq.svg "Authentication sequence diagram")
+![Sequence diagram of authentication](./authenticate-seq.svg "Authentication sequence diagram")
