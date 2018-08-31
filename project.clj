@@ -23,7 +23,6 @@
             [lein-kibit "0.1.6"]
             [lein-bikeshed "0.5.1"]
             [jonase/eastwood "0.2.9"]
-            [lein-environ "1.1.0"]
             [lein-auto "0.1.3"]
             [lein-ancient "0.6.15"]]
   :ring {:handler oph.ehoks.handler/app}
