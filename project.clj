@@ -11,8 +11,8 @@
                   :exclusions [ring/ring-core commons-fileupload joda-time
                                ring/ring-servlet]]
                  [org.flywaydb/flyway-core "5.1.4"]
-                 [org.clojure/java.jdbc "0.7.6"]
-                 [org.postgresql/postgresql "42.2.2"]
+                 [org.clojure/java.jdbc "0.7.8"]
+                 [org.postgresql/postgresql "42.2.5"]
                  [com.layerware/hugsql "0.4.9"]
                  [environ "1.1.0"]
                  [clj-http "3.9.1"]
@@ -36,7 +36,7 @@
                         ["cljfmt" "check"]]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:dev {:dependencies
-                   [[javax.servlet/javax.servlet-api "3.1.0"]
+                   [[javax.servlet/javax.servlet-api "4.0.1"]
                     [cheshire "5.8.0"]
                     [ring/ring-mock "0.3.2"]
                     [ring/ring-devel "1.7.0-RC2"
