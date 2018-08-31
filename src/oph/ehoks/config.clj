@@ -8,4 +8,4 @@
   (with-open [reader (io/reader file)]
     (edn/read (java.io.PushbackReader. reader))))
 
-(def config (load-config (or (System/getenv "CONFIG_FILE") default-file)))
+(def config (load-config (or (System/getenv "CONFIG") default-file)))
