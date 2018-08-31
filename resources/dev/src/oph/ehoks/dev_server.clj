@@ -29,7 +29,7 @@
                       "%s:%d" (:frontend-url config) (:frontend-port config)))
           (assoc-in [:headers "Access-Control-Allow-Credentials"] "true")
           (assoc-in [:headers "Access-Control-Allow-Methods"]
-                    "GET PUT POST DELETE OPTIONS")))))
+                    "GET, PUT, POST, DELETE, OPTIONS")))))
 
 (def dev-app
   (wrap-dev-cors (routes (wrap-reload #'dev-routes) (wrap-reload #'app))))
