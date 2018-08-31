@@ -15,6 +15,7 @@
                  [commons-io "2.6"]
                  [ring/ring-servlet "1.6.3"]
                  [ring/ring-core "1.6.3"]
+                 [com.fasterxml.jackson.core/jackson-core "2.9.6"]
 
                  [metosin/compojure-api "2.0.0-alpha23"]
                  [ring/ring-jetty-adapter "1.6.3"]
