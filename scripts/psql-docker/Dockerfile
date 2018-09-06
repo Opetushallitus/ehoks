@@ -2,5 +2,5 @@
 
 FROM postgres:9.5
 
-COPY ./init.sql /docker-entrypoint-initdb.d/
-COPY ./configure.sh /docker-entrypoint-initdb/
+COPY ./configure-database.sh /docker-entrypoint-initdb.d/
+COPY ./configure-postgres.sh /docker-entrypoint-initdb.d/
