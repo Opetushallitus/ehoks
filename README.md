@@ -23,6 +23,16 @@ integrations
 + [Redis](https://redis.io/) for session storage
 + [Redis Client](https://github.com/ptaoussanis/carmine)
 
+#### RESTful API
+Backend does its best to follow
+[RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer)
+guidelines. For example resources URI's of collections, create and update are
+with trailing slash and items (representation) are withoute one. Every response
+has `meta` and `data` keys.
+
+Keys are following Clojure notation. Because of this all keys are with dash
+instead of form of camelCase.
+
 ## Quality assurance
 
 [The Clojure Style Guidea](https://github.com/bbatsov/clojure-style-guide).
