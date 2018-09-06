@@ -3,6 +3,7 @@
             [ring.util.http-response :refer [not-found]]
             [ring.middleware.session :refer [wrap-session]]
             [oph.ehoks.common.schema :as common-schema]
+            [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.education.handler :as education-handler]
             [oph.ehoks.work.handler :as work-handler]
             [oph.ehoks.student.handler :as student-handler]
@@ -22,6 +23,7 @@
     (context "/api/v1" []
       :tags ["api" "v1"]
 
+      healthcheck-handler/routes
       education-handler/routes
       work-handler/routes
       student-handler/routes
