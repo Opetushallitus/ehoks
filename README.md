@@ -97,15 +97,14 @@ this only in development environment.
 Initializing
 
 ``` shell
-cd scripts/psql-docker
-docker build -t ehoks-psql:9.5 .
-mkdir -p data
+cd scripts/postgres-docker
+docker build -t ehoks-postgres:9.5 .
 ```
 
 Running
 
 ``` shell
-docker run --rm --name ehoks-psql -p 5432:5432 --volume data:/var/lib/postgresql/data ehoks-psql:9.5
+docker run --rm --name ehoks-postgres -p 5432:5432 --volume ~/path/to/ehoks-postgres-data:/var/lib/postgresql/data ehoks-postgres:9.5
 ```
 
 ### Redis
@@ -120,13 +119,12 @@ Initializing
 ``` shell
 cd scripts/redis-docker
 docker build -t ehoks-redis .
-mkdir -p data
 ```
 
 Running
 
 ``` shell
-docker run --rm --name ehoks-redis -p 6379:6379 --volume data:/data ehoks-redis
+docker run --rm --name ehoks-redis -p 6379:6379 --volume ~/path/to/ehoks-redis-data:/data ehoks-redis
 ```
 
 Or you can always skip runnign Redis with leaving `REDIS_URL` environment

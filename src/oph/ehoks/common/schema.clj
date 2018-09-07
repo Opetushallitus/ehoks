@@ -11,3 +11,7 @@
              "Basic service and process information"
              {:basic-information Translated
               :hoks-process Translated})
+
+(s/defschema HealthcheckStatus
+             "Service healthcheck status"
+             {})
