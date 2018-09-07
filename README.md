@@ -122,9 +122,10 @@ variable or `:redis-url` cofigure option nil.
 
 ## Configuration
 
-Default configuration file is `config/default.edn`. You may override these
-values by creating your own config file and giving path to created file as an
-environment variable `CONFIG`.
+Default configuration file is `config/default.edn`. You may override
+these values by creating your own config file and supplying path to the
+file either via environment variable `CONFIG` or JVM system property
+`config`.
 
 ## Running tests
 

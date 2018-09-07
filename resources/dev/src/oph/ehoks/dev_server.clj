@@ -25,8 +25,7 @@
     (let [response (handler request)]
       (-> response
           (assoc-in [:headers "Access-Control-Allow-Origin"]
-                    (format
-                      "%s:%d" (:frontend-url config) (:frontend-port config)))
+                    (:frontend-url config))
           (assoc-in [:headers "Access-Control-Allow-Credentials"] "true")
           (assoc-in [:headers "Access-Control-Allow-Methods"]
                     "GET, PUT, POST, DELETE, OPTIONS")))))
@@ -36,4 +35,5 @@
 
 (defn start-server []
   (jetty/run-jetty dev-app
-     {:port (:port config) :join? false}))
+                   {:port  (:port config)
+                    :join? false}))

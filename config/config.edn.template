@@ -1,0 +1,7 @@
+{:port {{ehoks_backend_port}}
+ :frontend-url "{{ehoks_frontend_url}}"
+ :database-url "{{ehoks_database_url}}"
+ :redis-url nil
+ :opintopolku-login-url "{{ehoks_opintopolku_login_url}}"
+ :opintopolku-return-url "{{ehoks_opintopolku_return_url}}"
+ :eperusteet-url "{{ehoks_eperusteet_url}}"}
