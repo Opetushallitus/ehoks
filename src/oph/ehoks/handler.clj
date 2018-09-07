@@ -8,7 +8,8 @@
             [oph.ehoks.student.handler :as student-handler]
             [oph.ehoks.auth.handler :as auth-handler]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.redis :refer [redis-store]]))
+            [oph.ehoks.redis :refer [redis-store]]
+            [oph.ehoks.hoks.handler :as hoks-handler]))
 
 (def api-routes
   (api
@@ -25,7 +26,8 @@
       education-handler/routes
       work-handler/routes
       student-handler/routes
-      auth-handler/routes)
+      auth-handler/routes
+      hoks-handler/routes)
 
     (context "*" []
       (GET "*" []
