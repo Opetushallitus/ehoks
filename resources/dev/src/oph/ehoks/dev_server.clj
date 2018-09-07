@@ -35,4 +35,5 @@
 
 (defn start-server []
   (jetty/run-jetty dev-app
-     {:port (:port config) :join? false}))
+                   {:port  (:port config)
+                    :join? false}))

@@ -35,6 +35,8 @@
             [lein-auto "0.1.3"]
             [lein-ancient "0.6.15"]]
   :ring {:handler oph.ehoks.handler/app}
+  :main oph.ehoks.main
+  :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
   :source-paths ["src"]
   :aliases {"checkall" ["do"
