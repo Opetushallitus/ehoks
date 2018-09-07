@@ -35,6 +35,5 @@
         (bad-request! "Misconfigured authentication"))
       (let [values (opintopolku/parse (:form-params request))]
         (assoc-in
-          (see-other
-            (format "%s:%d" (:frontend-url config) (:frontend-port config)))
+          (see-other (:frontend-url config))
           [:session :user] values)))))
