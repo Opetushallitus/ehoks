@@ -6,7 +6,7 @@
 
 (deftest healthcheck
   (testing "GET healthcheck"
-    (let [response (app (mock/request :get "/api/v1/healthcheck"))
+    (let [response (app (mock/request :get "/ehoks/api/v1/healthcheck"))
           body (parse-body (:body response))]
       (is (= (:status response) 200))
       (is (= body {})))))

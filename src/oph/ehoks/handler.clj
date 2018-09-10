@@ -11,31 +11,32 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.redis :refer [redis-store]]))
 
-(def api-routes
-  (api
-    {:swagger
-     {:ui "/doc/"
-      :spec "/swagger.json"
-      :data {:info {:title "eHOKS backend"
-                    :description "Backend for eHOKS"}
-             :tags [{:name "api", :description ""}]}}}
+(def ehoks-routes
+  (context "/ehoks" []
+    (api
+      {:swagger
+       {:ui "/doc"
+        :spec "/swagger.json"
+        :data {:info {:title "eHOKS backend"
+                      :description "Backend for eHOKS"}
+               :tags [{:name "api", :description ""}]}}}
 
-    (context "/api/v1" []
-      :tags ["api" "v1"]
+      (context "/api/v1" []
+        :tags ["api" "v1"]
 
-      healthcheck-handler/routes
-      education-handler/routes
-      work-handler/routes
-      student-handler/routes
-      auth-handler/routes)
+        healthcheck-handler/routes
+        education-handler/routes
+        work-handler/routes
+        student-handler/routes
+        auth-handler/routes)
 
-    (context "*" []
-      (GET "*" []
-        (not-found {:reason "Route not found"})))))
+      (context "*" []
+        (GET "*" []
+          (not-found {:reason "Route not found"}))))))
 
 (def app
-  (wrap-session
-    api-routes
-    (if (:redis-url config)
-      {:store (redis-store {:pool {} :spec {:uri (:redis-url config)}})}
-      {})))
+  (wrap-session ehoks-routes
+                (if (:redis-url config)
+                  {:store (redis-store {:pool {}
+                                        :spec {:uri (:redis-url config)}})}
+                  {})))
