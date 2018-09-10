@@ -2,31 +2,55 @@
   :description "OPH eHOKS Backend"
   :min-lein-version "2.8.1"
   :pedantic? :abort
-  :dependencies [[org.clojure/clojure "1.9.0"]
-                 ; Force dependency versions of dependenciens for avoiding
-                 ; confusing overrides
-                 [joda-time "2.10"]
-                 [org.clojure/tools.namespace "0.2.11"]
-                 [org.clojure/tools.cli "0.3.7"]
-                 [ring/ring-codec "1.1.1"]
-                 [commons-codec "1.11"]
-                 [clj-time "0.14.4"]
-                 [commons-fileupload "1.3.3"]
-                 [commons-io "2.6"]
-                 [ring/ring-servlet "1.6.3"]
-                 [ring/ring-core "1.6.3"]
-                 [com.fasterxml.jackson.core/jackson-core "2.9.6"]
+  :dependencies [[org.clojure/clojure]
+                 [clj-http]
+                 [com.layerware/hugsql]
+                 [com.taoensso/carmine]
+                 [metosin/compojure-api]
+                 [org.flywaydb/flyway-core]
+                 [org.postgresql/postgresql]
+                 [ring/ring-jetty-adapter]]
+  :managed-dependencies [[org.clojure/clojure "1.9.0"]
 
-                 [metosin/compojure-api "2.0.0-alpha23"]
-                 [ring/ring-jetty-adapter "1.6.3"]
-                 [org.flywaydb/flyway-core "5.1.4"]
-                 [org.clojure/java.jdbc "0.7.8"]
-                 [org.postgresql/postgresql "42.2.5"]
-                 [com.layerware/hugsql "0.4.9"]
-                 [environ "1.1.0"]
-                 [clj-http "3.9.1"]
-                 [com.taoensso/carmine "2.18.1"]
-                 [hiccup "1.0.5"]]
+                         ;; config
+                         [environ "1.1.0"]
+
+                         ;; http server
+                         [metosin/compojure-api "2.0.0-alpha23"]
+                         [ring/ring-codec "1.1.1"]
+                         [ring/ring-core "1.6.3"]
+                         [ring/ring-jetty-adapter "1.6.3"]
+                         [ring/ring-servlet "1.6.3"]
+
+                         ;; http client
+                         [clj-http "3.9.1"]
+
+                         ;; date, time
+                         [clj-time "0.14.4"]
+                         [joda-time "2.10"]
+
+                         ;; json
+                         [com.fasterxml.jackson.core/jackson-annotations "2.9.6"]
+                         [com.fasterxml.jackson.core/jackson-core "2.9.6"]
+                         [com.fasterxml.jackson.core/jackson-databind "2.9.6"]
+                         [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.9.6"]
+
+                         ;; postresql
+                         [com.layerware/hugsql "0.4.9"]
+                         [org.clojure/java.jdbc "0.7.8"]
+                         [org.flywaydb/flyway-core "5.1.4"]
+                         [org.postgresql/postgresql "42.2.5"]
+
+                         ;; redis
+                         [com.taoensso/carmine "2.18.1"]
+
+                         ;; other
+                         [commons-codec "1.11"]
+                         [commons-fileupload "1.3.3"]
+                         [commons-io "2.6"]
+                         [hiccup "1.0.5"]
+                         [org.clojure/tools.cli "0.3.7"]
+                         [org.clojure/tools.namespace "0.2.11"]]
   :plugins [[lein-ring "0.12.4"]
             [lein-cljfmt "0.6.0" :exclusions [org.clojure/tools.cli]]
             [lein-kibit "0.1.6"]
