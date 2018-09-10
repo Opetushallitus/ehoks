@@ -31,7 +31,7 @@ script:
 
 deploy:
   provider: script
-  script: ./ci-tools/build/upload-image.sh konfo-backend
+  script: ./ci-tools/build/upload-image.sh ehoks
 
 cache:
   directories:
