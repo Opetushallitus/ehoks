@@ -66,5 +66,7 @@
       (wrap-reload #'app))))
 
 (defn start-server []
+  (prn "Starting development server...")
+  (prn "Not safe for production or public environments.")
   (jetty/run-jetty dev-app
      {:port (:port config) :join? false}))
