@@ -130,6 +130,14 @@ docker run --rm --name ehoks-redis -p 6379:6379 --volume ~/path/to/ehoks-redis-d
 Or you can always skip runnign Redis with leaving `REDIS_URL` environment
 variable or `:redis-url` cofigure option nil.
 
+### Development routes
+
+Application supports creating JSON-files for returning dummy data. Place files
+in `resource/dev/dev-routes` folder. Files are matched with translating uri to
+filename. For example `/hello/world` translates to `hello_world.json`. For
+security reasons only files in `dev-routes` folders are read. Dummy data routes
+works only when running development server.
+
 ## Configuration
 
 Default configuration file is `config/default.edn`. You may override these
