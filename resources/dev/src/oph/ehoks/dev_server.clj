@@ -60,7 +60,10 @@
                     "GET, PUT, POST, DELETE, OPTIONS")))))
 
 (def dev-app
-  (wrap-dev-cors (routes (wrap-reload #'dev-routes) (wrap-reload #'app))))
+  (wrap-dev-cors
+    (routes
+      (wrap-reload #'dev-routes)
+      (wrap-reload #'app))))
 
 (defn start-server []
   (jetty/run-jetty dev-app
