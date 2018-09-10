@@ -21,6 +21,12 @@
 
                          ;; http client
                          [clj-http "3.9.1"]
+                         [org.apache.httpcomponents/httpasyncclient "4.1.4"]
+                         [org.apache.httpcomponents/httpclient "4.5.6"]
+                         [org.apache.httpcomponents/httpclient-cache "4.5.6"]
+                         [org.apache.httpcomponents/httpcore "4.4.10"]
+                         [org.apache.httpcomponents/httpcore-nio "4.4.10"]
+                         [org.apache.httpcomponents/httpmime "4.5.6"]
 
                          ;; date, time
                          [joda-time "2.10"]
