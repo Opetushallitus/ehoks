@@ -12,9 +12,6 @@
                  [ring/ring-jetty-adapter]]
   :managed-dependencies [[org.clojure/clojure "1.9.0"]
 
-                         ;; config
-                         [environ "1.1.0"]
-
                          ;; http server
                          [metosin/compojure-api "2.0.0-alpha23"]
                          [ring/ring-codec "1.1.1"]
@@ -26,7 +23,6 @@
                          [clj-http "3.9.1"]
 
                          ;; date, time
-                         [clj-time "0.14.4"]
                          [joda-time "2.10"]
 
                          ;; json
@@ -49,7 +45,6 @@
                          [commons-fileupload "1.3.3"]
                          [commons-io "2.6"]
                          [hiccup "1.0.5"]
-                         [org.clojure/tools.cli "0.3.7"]
                          [org.clojure/tools.namespace "0.2.11"]]
   :plugins [[lein-ring "0.12.4"]
             [lein-cljfmt "0.6.0" :exclusions [org.clojure/tools.cli]]
