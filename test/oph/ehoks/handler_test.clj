@@ -5,5 +5,6 @@
 
 (deftest not-found
   (testing "GET route which does not exists"
-    (let [response (app (mock/request :get "/api/v1/non-existing-resource/"))]
+    (let [response (app (mock/request :get
+                                      "/ehoks/api/v1/non-existing-resource/"))]
       (is (= (:status response) 404)))))

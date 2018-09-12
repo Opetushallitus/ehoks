@@ -7,7 +7,7 @@
 
 (deftest education-info
   (testing "GET education info"
-    (let [response (app (mock/request :get "/api/v1/education/info/"))
+    (let [response (app (mock/request :get "/ehoks/api/v1/education/info/"))
           body (parse-body (:body response))
           info (first (:data body))]
       (is (= (:status response) 200))

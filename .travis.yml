@@ -29,6 +29,10 @@ script:
   - ./ci-tools/common/pull-image.sh
   - ./ci-tools/build/build-fatjar.sh ehoks
 
+deploy:
+  provider: script
+  script: ./ci-tools/build/upload-image.sh konfo-backend
+
 cache:
   directories:
     - "$HOME/.m2"
