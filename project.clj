@@ -30,6 +30,7 @@
 
                          ;; date, time
                          [joda-time "2.10"]
+                         [clj-time "0.14.4"]
 
                          ;; json
                          [com.fasterxml.jackson.core/jackson-annotations "2.9.6"]
