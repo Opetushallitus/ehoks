@@ -71,7 +71,8 @@
                         ["eastwood"]
                         ["cljfmt" "check"]]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
-  :profiles {:dev {:dependencies
+  :profiles {:dev {:main oph.ehoks.dev-server
+                   :dependencies
                    [[javax.servlet/javax.servlet-api "4.0.1"]
                     [cheshire "5.8.0"]
                     [ring/ring-mock "0.3.2"]

@@ -70,3 +70,6 @@
   (jetty/run-jetty dev-app
                    {:port  (:port config)
                     :join? false}))
+
+(defn -main []
+  (start-server))
