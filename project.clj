@@ -13,6 +13,7 @@
   :managed-dependencies [[org.clojure/clojure "1.9.0"]
 
                          ;; http server
+                         [javax.servlet/javax.servlet-api "4.0.1"]
                          [metosin/compojure-api "2.0.0-alpha23"]
                          [ring/ring-codec "1.1.1"]
                          [ring/ring-core "1.6.3"]
@@ -69,8 +70,7 @@
                         ["cljfmt" "check"]]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:dev {:main oph.ehoks.dev-server
-                   :dependencies [[javax.servlet/javax.servlet-api "4.0.1"]
-                                  [cheshire "5.8.0"]
+                   :dependencies [[cheshire "5.8.0"]
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.0-RC2" :exclusions [ring/ring-core]]]
                    :resource-paths ["resources/dev" "resources/dev/src"]}})
