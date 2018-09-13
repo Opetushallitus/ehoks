@@ -1,5 +1,9 @@
 (ns oph.ehoks.handler
-  (:require [compojure.api.sweet :refer [ANY api context defroutes undocumented]]
+  (:require [compojure.api.sweet :refer [ANY
+                                         api
+                                         context
+                                         defroutes
+                                         undocumented]]
             [compojure.route :as compojure-route]
             [ring.util.http-response :refer [not-found]]
             [ring.middleware.session :refer [wrap-session]]
@@ -32,7 +36,7 @@
         auth-handler/routes))
 
     (undocumented
-     (compojure-route/not-found (not-found {:reason "Route not found"})))))
+      (compojure-route/not-found (not-found {:reason "Route not found"})))))
 
 (def app
   (wrap-session app-routes
