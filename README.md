@@ -67,13 +67,13 @@ lein cljfmt check
 ### Running application
 
 ``` shell
-lein ring server-headless
+lein ring run
 ```
 
 Or in development mode (for example development CORS)
 
 ``` shell
-lein with-profile dev ring server-headless
+lein with-profile dev run
 ```
 
 Or inside repl with file reload:
