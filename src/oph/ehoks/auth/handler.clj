@@ -7,7 +7,7 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.auth.opintopolku :as opintopolku]
             [oph.ehoks.external.oppijanumerorekisteri
-             :refer [convert-student-info
+             :refer [find-student-by-nat-id convert-student-info
                      find-student-by-oid]]))
 
 (def routes
@@ -44,11 +44,17 @@
       :summary "Creates new Opintopolku session and redirects to frontend"
       :description "Creates new Opintopolku session. After storing session
                     http status 'See Other' (303) will be returned with url of
-                    frontend in configuration."
+                    frontend in configuration.
+                    User info is being downloaded from Oppijanumerorekisteri."
       (when (not= (get-in request [:headers "referer"])
                   (:opintopolku-login-url config))
         (bad-request! "Misconfigured authentication"))
-      (let [values (opintopolku/parse (:form-params request))]
-        (assoc-in
-          (see-other (:frontend-url config))
-          [:session :user] values)))))
+      (let [values (opintopolku/parse (:form-params request))
+            user-info-response (find-student-by-nat-id (:hetu values))
+            user-info (get-in user-info-response [:body :results])
+            user (assoc values :oid (:oidHenkilo (first user-info)))]
+        (if (and (= (:status user-info-response) 200)
+                 (seq user-info))
+          (assoc-in (see-other (:frontend-url config))
+                    [:session :user] user)
+          (throw (ex-info "No user found" user-info-response)))))))
