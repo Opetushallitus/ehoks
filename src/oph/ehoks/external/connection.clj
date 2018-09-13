@@ -23,19 +23,29 @@
       (throw (ex-info "Failed to refresh CAS Service Ticket"
                       {:response response})))))
 
-(defn add-cas-ticket [url data]
+(defn get-service-ticket [url service]
+  (:body
+   (client/post
+     url
+     {:debug (:debug config false)
+      :form-params {:service (str service "/j_spring_cas_security_check")}})))
+
+(defn add-cas-ticket [service data]
   (when (or (nil? (:url @service-ticket))
             (t/after? (t/now) (:expires @service-ticket)))
     (refresh-service-ticket!))
-  (let [ticket (:body (client/post (:url @service-ticket)
-                                   {:form-params {:service url}}))]
+  (let [ticket (get-service-ticket (:url @service-ticket) service)]
     (-> data
         (assoc-in
           [:headers "clientSubSystemCode"] (:client-sub-system-code config))
+        (assoc-in [:headers "accept"] "*/*")
         (assoc-in [:query-params :ticket] ticket))))
 
-(defn api-get [url data]
-  (let [response (client/get url (add-cas-ticket url data))]
+(defn api-get [service path data]
+  (let [response (client/get (format "%s/%s" service path)
+                             (assoc (add-cas-ticket service data)
+                                    :debug (:debug config false)))]
     (try
       (update response :body cheshire/parse-string true)
-      (catch JsonParseException _ response))))
+      (catch JsonParseException _
+        response))))
