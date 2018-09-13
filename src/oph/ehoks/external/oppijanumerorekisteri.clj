@@ -9,6 +9,12 @@
     "henkilo"
     {:query-params {:hetu nat-id}}))
 
+(defn find-student-by-oid [oid]
+  (connection/api-get
+    (:oppijanumerorekisteri-url config)
+    (str "henkilo/" oid)
+    {}))
+
 (defn- convert-contact-values [contact-item]
   (map
     (fn [c]
