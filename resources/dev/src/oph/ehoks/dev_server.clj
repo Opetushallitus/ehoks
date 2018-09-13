@@ -12,11 +12,11 @@
 (def dev-login-form
   [:div
    [:form {:action (:opintopolku-return-url config) :method "POST"}
-    [:input {:type "hidden" :name "FirstName" :value "Teuvo Taavetti"}]
-    [:input {:type "hidden" :name "cn" :value "Teuvo"}]
-    [:input {:type "hidden" :name "givenName" :value "Teuvo"}]
-    [:input {:type "hidden" :name "hetu" :value "010203-XXXXX"}]
-    [:input {:type "hidden" :name "sn" :value "Testaaja"}]
+    [:input {:type "text" :name "FirstName" :value "Teuvo Taavetti"}]
+    [:input {:type "text" :name "cn" :value "Teuvo"}]
+    [:input {:type "text" :name "givenName" :value "Teuvo"}]
+    [:input {:type "text" :name "hetu" :value "010203-XXXXX"}]
+    [:input {:type "text" :name "sn" :value "Testaaja"}]
     [:button {:type "submit" :value "submit"} "Login"]]])
 
 (defn uri-to-filename [uri]
