@@ -4,7 +4,6 @@
             [cheshire.core :as cheshire]))
 
 (defn get-localization-results  [& {:keys [category] :or {category "ehoks"}}]
-  (-> (client/get (format "%s/cxf/rest/v1/localisation" (:localization-url
-  config))
+  (-> (client/get (:localization-url config)
                   {:query-params {"category" category}})
       :body (cheshire/parse-string true)))
