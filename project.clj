@@ -52,14 +52,12 @@
                          [commons-io "2.6"]
                          [hiccup "1.0.5"]
                          [org.clojure/tools.namespace "0.2.11"]]
-  :plugins [[lein-ring "0.12.4"]
-            [lein-cljfmt "0.6.0" :exclusions [org.clojure/tools.cli]]
+  :plugins [[lein-cljfmt "0.6.0" :exclusions [org.clojure/tools.cli]]
             [lein-kibit "0.1.6"]
             [lein-bikeshed "0.5.1"]
             [jonase/eastwood "0.2.9"]
             [lein-auto "0.1.3"]
             [lein-ancient "0.6.15"]]
-  :ring {:handler oph.ehoks.handler/app}
   :main oph.ehoks.main
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
@@ -71,10 +69,8 @@
                         ["cljfmt" "check"]]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:dev {:main oph.ehoks.dev-server
-                   :dependencies
-                   [[javax.servlet/javax.servlet-api "4.0.1"]
-                    [cheshire "5.8.0"]
-                    [ring/ring-mock "0.3.2"]
-                    [ring/ring-devel "1.7.0-RC2" :exclusions [ring/ring-core]]]
-                   :resource-paths ["resources/dev" "resources/dev/src"]
-                   :ring {:handler oph.ehoks.dev-server/dev-app}}})
+                   :dependencies [[javax.servlet/javax.servlet-api "4.0.1"]
+                                  [cheshire "5.8.0"]
+                                  [ring/ring-mock "0.3.2"]
+                                  [ring/ring-devel "1.7.0-RC2" :exclusions [ring/ring-core]]]
+                   :resource-paths ["resources/dev" "resources/dev/src"]}})
