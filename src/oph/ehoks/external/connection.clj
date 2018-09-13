@@ -24,11 +24,11 @@
                       {:response response})))))
 
 (defn get-service-ticket [url service]
-  (:body
-   (client/post
-     url
-     {:debug (:debug config false)
-      :form-params {:service (str service "/j_spring_cas_security_check")}})))
+  (:body (client/post
+           url
+           {:debug (:debug config false)
+            :form-params
+            {:service (str service "/j_spring_cas_security_check")}})))
 
 (defn add-cas-ticket [service data]
   (when (or (nil? (:url @service-ticket))
