@@ -1,5 +1,6 @@
 (ns oph.ehoks.handler
-  (:require [compojure.api.sweet :refer [api context GET]]
+  (:require [compojure.api.sweet :refer [ANY api context defroutes undocumented]]
+            [compojure.route :as compojure-route]
             [ring.util.http-response :refer [not-found]]
             [ring.middleware.session :refer [wrap-session]]
             [oph.ehoks.common.schema :as common-schema]
@@ -11,31 +12,30 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.redis :refer [redis-store]]))
 
-(def ehoks-routes
-  (context "/ehoks" []
-    (api
-      {:swagger
-       {:ui "/doc"
-        :spec "/swagger.json"
-        :data {:info {:title "eHOKS backend"
-                      :description "Backend for eHOKS"}
-               :tags [{:name "api", :description ""}]}}}
+(def app-routes
+  (api
+    {:swagger
+     {:ui "/ehoks/doc"
+      :spec "/ehoks/doc/swagger.json"
+      :data {:info {:title "eHOKS backend"
+                    :description "Backend for eHOKS"}
+             :tags [{:name "api", :description ""}]}}}
 
+    (context "/ehoks" []
       (context "/api/v1" []
-        :tags ["api" "v1"]
+        :tags ["api-v1"]
 
         healthcheck-handler/routes
         education-handler/routes
         work-handler/routes
         student-handler/routes
-        auth-handler/routes)
+        auth-handler/routes))
 
-      (context "*" []
-        (GET "*" []
-          (not-found {:reason "Route not found"}))))))
+    (undocumented
+     (compojure-route/not-found (not-found {:reason "Route not found"})))))
 
 (def app
-  (wrap-session ehoks-routes
+  (wrap-session app-routes
                 (if (:redis-url config)
                   {:store (redis-store {:pool {}
                                         :spec {:uri (:redis-url config)}})}
