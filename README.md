@@ -66,17 +66,19 @@ lein cljfmt check
 
 ### Running application
 
-``` shell
-lein ring run
-```
-
-Or in development mode (for example development CORS)
+Run in development mode:
 
 ``` shell
-lein with-profile dev run
+lein run
 ```
 
-Or inside repl with file reload:
+Run in production mode:
+
+``` shell
+lein with-profile -dev run
+```
+
+Or inside REPL with file reload, starting with `lein repl`, then:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
@@ -94,14 +96,14 @@ user> (.stop server)
 For database there is proper Docker script in `scripts/psql-docker` folder. Use
 this only in development environment.
 
-Initializing
+Build Docker image:
 
 ``` shell
 cd scripts/postgres-docker
 docker build -t ehoks-postgres:9.5 .
 ```
 
-Running
+Riun Docker image in a container:
 
 ``` shell
 docker run --rm --name ehoks-postgres -p 5432:5432 --volume ~/path/to/ehoks-postgres-data:/var/lib/postgresql/data ehoks-postgres:9.5
@@ -114,14 +116,14 @@ Redis is being used as a session storage.
 For local development use you can use Docker script in `scripts/redis-docker`
 folder.
 
-Initializing
+Build Docker image:
 
 ``` shell
 cd scripts/redis-docker
 docker build -t ehoks-redis .
 ```
 
-Running
+Run Docker image in a container:
 
 ``` shell
 docker run --rm --name ehoks-redis -p 6379:6379 --volume ~/path/to/ehoks-redis-data:/data ehoks-redis
@@ -147,23 +149,30 @@ file either via environment variable `CONFIG` or JVM system property
 
 ## Running tests
 
-Running tests once
+Running tests once:
 
 ``` shell
 lein test
 ```
 
-Or on change
+Or automatically on change:
 
 ``` shell
 lein auto test
 ```
 
-## Creating runnable JAR
+## Standalone jar
+
+Create self-contained jar that includes all the dependencies:
 
 ```
-lein do clean, ring uberjar
-java -jar target/ehoks-backend.jar
+lein uberjar
+```
+
+Run:
+
+``` shell
+java -jar target/ehoks-standalone.jar
 ```
 
 ## Integrations
