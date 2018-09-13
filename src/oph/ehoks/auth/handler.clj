@@ -5,10 +5,25 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.restful :refer [response rest-ok]]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.auth.opintopolku :as opintopolku]))
+            [oph.ehoks.auth.opintopolku :as opintopolku]
+            [oph.ehoks.external.oppijanumerorekisteri
+             :refer [convert-student-info
+                     find-student-by-oid]]))
 
 (def routes
   (context "/session" []
+
+    (GET "/user-info" [:as request]
+      :summary "Get current user info"
+      :return (response [schema/UserInfo])
+      (let [user-info-response
+            (find-student-by-oid
+              (get-in request [:session :user :oid]))
+            user-info (:body user-info-response)]
+        (if (and (= (:status user-info-response) 200)
+                 (seq user-info))
+          (rest-ok [(convert-student-info user-info)])
+          (throw (ex-info "External system error" user-info-response)))))
 
     (GET "/opintopolku/" [:as request]
       :summary "Get current Opintopolku session"
