@@ -16,17 +16,17 @@
               :sukunimi "Maksullinen"
               :yhteystiedotRyhma
               '({:id 0,
-                :readOnly true,
-                :ryhmaAlkuperaTieto "testiservice",
-                :ryhmaKuvaus "testiryhmä",
-                :yhteystieto
-                [{:yhteystietoArvo "kayttaja@domain.local",
-                  :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})})
+                 :readOnly true,
+                 :ryhmaAlkuperaTieto "testiservice",
+                 :ryhmaKuvaus "testiryhmä",
+                 :yhteystieto
+                 [{:yhteystietoArvo "kayttaja@domain.local",
+                   :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})})
            {:oid "1.2.246.562.24.78058065184"
             :first-names "Vapautettu"
             :surname "Maksullinen"
             :common-name "Testi"
             :contact-values-group
             '({:id 0
-              :contact [{:value "kayttaja@domain.local"
-                         :type "YHTEYSTIETO_SAHKOPOSTI"}]})}))))
+               :contact [{:value "kayttaja@domain.local"
+                          :type "YHTEYSTIETO_SAHKOPOSTI"}]})}))))
