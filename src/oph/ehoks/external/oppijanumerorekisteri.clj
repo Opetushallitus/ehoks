@@ -5,4 +5,4 @@
 (defn find-student-by-nat-id [nat-id]
   (connection/api-get (format "%s/henkilo/"
                               (:oppijanumerorekisteri-url config))
-                      {:query-params {"hetu" nat-id}}))
+                      {:query-params {:hetu nat-id}}))
