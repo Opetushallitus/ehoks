@@ -11,7 +11,8 @@
 
 (defn refresh-service-ticket! []
   (let [response (client/post (:cas-service-ticket-url config)
-                              {:form-params {:username (:cas-username config)
+                              {:debug (:debug config false)
+                               :form-params {:username (:cas-username config)
                                              :password (:cas-password config)}})
         url (get-in response [:headers "location"])]
     (if (and (= (:status response) 201)
