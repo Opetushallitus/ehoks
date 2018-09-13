@@ -29,8 +29,7 @@
     #(-> %
          (select-keys [:id :yhteystieto])
          (rename-keys {:yhteystieto :contact})
-         (update :contact convert-contact-values)
-         )
+         (update :contact convert-contact-values))
     group))
 
 (defn convert-student-info [values]
