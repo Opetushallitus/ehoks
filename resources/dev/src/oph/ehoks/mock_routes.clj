@@ -26,6 +26,9 @@
 (defroutes mock-routes
   (GET "/auth-dev/opintopolku-login/" [] (html dev-login-form))
   (POST "/cas-dev/tickets" request
-    (response/created "/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc")))
+    (response/created
+      (format
+        "http://localhost:%d/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc"
+        (:port config))))
   (POST "/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc" []
     (response/ok "ST-1234-aBcDeFgHiJkLmN123456-cas.1234567890ab")))
