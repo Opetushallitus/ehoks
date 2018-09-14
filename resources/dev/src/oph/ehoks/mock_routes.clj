@@ -53,9 +53,9 @@
       {:results
        [{:oidHenkilo "1.2.246.562.24.78058065184"
          :hetu "190384-9245"
-         :etunimet "Vapautettu"
-         :kutsumanimi "Testi"
-         :sukunimi "Maksullinen"
+         :etunimet "Teuvo Taavetti"
+         :kutsumanimi "Teuvo"
+         :sukunimi "Testaaja"
          :yhteystiedotRyhma
          '({:id 0,
             :readOnly true,
