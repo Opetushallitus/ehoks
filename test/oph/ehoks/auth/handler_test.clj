@@ -13,7 +13,7 @@
              {"FirstName" "Teuvo Taavetti"
               "cn" "Teuvo"
               "givenName" "Teuvo"
-              "hetu" "010203-XXXX"
+              "hetu" "190384-9245"
               "sn" "Testaaja"})
            (mock/header "referer" (:opintopolku-login-url config)))))
 
@@ -39,7 +39,7 @@
                                       {"FirstName" "Teuvo Taavetti"
                                        "cn" "Teuvo"
                                        "givenName" "Teuvo"
-                                       "hetu" "010203-XXXX"
+                                       "hetu" "190384-9245"
                                        "sn" "Testaaja"}))]
       (is (= (:status response) 400)))))
 
