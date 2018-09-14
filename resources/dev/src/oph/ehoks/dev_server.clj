@@ -7,22 +7,8 @@
             [oph.ehoks.config :refer [config]]
             [hiccup.core :refer [html]]
             [clojure.java.io :as io]
-            [clojure.string :as c-str]))
-
-(def dev-login-form
-  [:div
-   [:form {:action (:opintopolku-return-url config) :method "POST"}
-    [:label "FirstName"
-     [:input {:type "text" :name "FirstName" :value "Teuvo Taavetti"}]]
-    [:label "cn"
-     [:input {:type "text" :name "cn" :value "Teuvo"}]]
-    [:label "givenName"
-     [:input {:type "text" :name "givenName" :value "Teuvo"}]]
-    [:label "hetu"
-     [:input {:type "text" :name "hetu" :value "190384-9245"}]]
-    [:label "sn"
-     [:input {:type "text" :name "sn" :value "Testaaja"}]]
-    [:button {:type "submit" :value "submit"} "Login"]]])
+            [clojure.string :as c-str]
+            [oph.ehoks.mock-routes :as mock]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -40,7 +26,6 @@
     (file-seq (io/file (io/resource "dev-routes")))))
 
 (defroutes dev-routes
-  (GET "/auth-dev/opintopolku-login/" [] (html dev-login-form))
   (GET "/dev-routes/*" request
     (let [filename (uri-to-filename (:uri request))
           file (find-dev-route-file filename)]
@@ -66,6 +51,7 @@
 (def dev-app
   (wrap-dev-cors
     (routes
+      (wrap-reload #'mock/mock-routes)
       (wrap-reload #'dev-routes)
       (wrap-reload #'app))))
 
