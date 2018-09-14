@@ -70,7 +70,8 @@
                         ["eastwood"]
                         ["cljfmt" "check"]]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
-  :profiles {:dev {:main oph.ehoks.dev-server
+  :profiles {:test {:resource-paths ["resources/dev" "resources/test"]}
+             :dev {:main oph.ehoks.dev-server
                    :dependencies [[cheshire "5.8.0"]
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.0-RC2" :exclusions [ring/ring-core]]]
