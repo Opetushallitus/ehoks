@@ -6,7 +6,8 @@
             [oph.ehoks.config :refer [config]]
             [hiccup.core :refer [html]]
             [clojure.java.io :as io]
-            [clojure.string :as c-str]))
+            [clojure.string :as c-str]
+            [cheshire.core :as cheshire]))
 
 (def dev-login-form
   [:div
@@ -23,6 +24,13 @@
      [:input {:type "text" :name "sn" :value "Testaaja"}]]
     [:button {:type "submit" :value "submit"} "Login"]]])
 
+(defn- json-response [value]
+  (assoc-in
+      (response/ok
+        (cheshire/generate-string
+          value))
+      [:headers "Content-Type"] "application/json"))
+
 (defroutes mock-routes
   (GET "/auth-dev/opintopolku-login/" [] (html dev-login-form))
   (POST "/cas-dev/tickets" request
@@ -31,4 +39,28 @@
         "http://localhost:%d/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc"
         (:port config))))
   (POST "/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc" []
-    (response/ok "ST-1234-aBcDeFgHiJkLmN123456-cas.1234567890ab")))
+    (response/ok "ST-1234-aBcDeFgHiJkLmN123456-cas.1234567890ab"))
+  (GET "/oppijanumerorekisteri-service/henkilo" request
+    (json-response
+      {:results
+       [{:oidHenkilo "1.2.246.562.24.78058065184"
+         :hetu "190384-9245"
+         :etunimet "Vapautettu"
+         :kutsumanimi "Testi"
+         :sukunimi "Maksullinen"}]}))
+  (GET "/oppijanumerorekisteri-service/henkilo/*" []
+    (json-response
+      {:results
+       [{:oidHenkilo "1.2.246.562.24.78058065184"
+         :hetu "190384-9245"
+         :etunimet "Vapautettu"
+         :kutsumanimi "Testi"
+         :sukunimi "Maksullinen"
+         :yhteystiedotRyhma
+         '({:id 0,
+            :readOnly true,
+            :ryhmaAlkuperaTieto "testiservice",
+            :ryhmaKuvaus "testiryhmä",
+            :yhteystieto
+            [{:yhteystietoArvo "kayttaja@domain.local",
+              :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})}]})))
