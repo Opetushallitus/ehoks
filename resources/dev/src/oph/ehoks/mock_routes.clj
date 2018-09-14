@@ -1,6 +1,6 @@
 (ns oph.ehoks.mock-routes
   (:require [oph.ehoks.handler :refer [app]]
-            [compojure.core :refer [GET defroutes routes]]
+            [compojure.core :refer [GET POST defroutes routes]]
             [ring.util.http-response :as response]
             [ring.middleware.reload :refer [wrap-reload]]
             [oph.ehoks.config :refer [config]]
@@ -24,4 +24,6 @@
     [:button {:type "submit" :value "submit"} "Login"]]])
 
 (defroutes mock-routes
-  (GET "/auth-dev/opintopolku-login/" [] (html dev-login-form)))
+  (GET "/auth-dev/opintopolku-login/" [] (html dev-login-form))
+  (POST "/cas-dev/tickets" request
+    (response/created "/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc")))
