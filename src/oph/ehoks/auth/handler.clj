@@ -14,9 +14,8 @@
     (c-api/GET "/user-info" [:as request]
       :summary "Get current user info"
       :return (rest/response [schema/UserInfo])
-      (let [user-info-response
-            (onr/find-student-by-oid
-              (get-in request [:session :user :oid]))
+      (let [session-user (get-in request [:session :user])
+            user-info-response (onr/find-student-by-oid (:oid session-user))
             user-info (:body user-info-response)]
         (if (and (= (:status user-info-response) 200)
                  (seq user-info))
@@ -28,15 +27,17 @@
       :return (rest/response [schema/User])
       (let [session-user (get-in request [:session :user])
             user-info-response (onr/find-student-by-nat-id (:hetu session-user))
-            user-info (get-in user-info-response [:body :results])
-            oid (:oidHenkilo (first user-info))]
+            user-info (first (get-in user-info-response [:body :results]))
+            oid (:oidHenkilo user-info)]
         (when-not (= (:status user-info-response) 200)
           (throw (ex-info "External integration error" user-info-response)))
         (if (seq user-info)
           (assoc-in
-            (rest/rest-ok [(-> (get-in request [:session :user])
-                               (select-keys [:first-name :common-name :surname])
-                               (assoc :oid oid))])
+            (rest/rest-ok
+              [(assoc
+                 (select-keys session-user
+                              [:first-name :common-name :surname])
+                 :oid oid)])
             [:session :user] (assoc session-user :oid oid))
           (throw (ex-info "No user found" user-info-response)))))
 
