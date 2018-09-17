@@ -1,8 +1,6 @@
 (ns oph.ehoks.handler
-  (:require [compojure.api.sweet :refer [ANY
-                                         api
+  (:require [compojure.api.sweet :refer [api
                                          context
-                                         defroutes
                                          undocumented]]
             [compojure.route :as compojure-route]
             [ring.util.http-response :refer [not-found]]
