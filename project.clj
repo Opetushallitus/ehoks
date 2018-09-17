@@ -29,7 +29,6 @@
                          [org.apache.httpcomponents/httpcore "4.4.10"]
                          [org.apache.httpcomponents/httpcore-nio "4.4.10"]
                          [org.apache.httpcomponents/httpmime "4.5.6"]
-                         [se.haleby/stub-http "0.2.5"]
 
                          ;; date, time
                          [joda-time "2.10"]
