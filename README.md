@@ -147,6 +147,11 @@ these values by creating your own config file and supplying path to the
 file either via environment variable `CONFIG` or JVM system property
 `config`.
 
+Config files are being merged as custom config overrides default values. So you
+can use some default values and some custom values.
+
+Merged configuration is being validated on load.
+
 ### CAS authentication
 
 Application uses CAS authentication with external APIs. Fill out CAS credentials
