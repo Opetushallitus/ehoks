@@ -50,17 +50,16 @@
          :sukunimi "Maksullinen"}]}))
   (GET "/oppijanumerorekisteri-service/henkilo/*" []
     (json-response
-      {:results
-       [{:oidHenkilo "1.2.246.562.24.78058065184"
-         :hetu "190384-9245"
-         :etunimet "Teuvo Taavetti"
-         :kutsumanimi "Teuvo"
-         :sukunimi "Testaaja"
-         :yhteystiedotRyhma
-         '({:id 0,
-            :readOnly true,
-            :ryhmaAlkuperaTieto "testiservice",
-            :ryhmaKuvaus "testiryhmä",
-            :yhteystieto
-            [{:yhteystietoArvo "kayttaja@domain.local",
-              :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})}]})))
+      {:oidHenkilo "1.2.246.562.24.78058065184"
+       :hetu "190384-9245"
+       :etunimet "Teuvo Taavetti"
+       :kutsumanimi "Teuvo"
+       :sukunimi "Testaaja"
+       :yhteystiedotRyhma
+       '({:id 0,
+          :readOnly true,
+          :ryhmaAlkuperaTieto "testiservice",
+          :ryhmaKuvaus "testiryhmä",
+          :yhteystieto
+          [{:yhteystietoArvo "kayttaja@domain.local",
+            :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})})))
