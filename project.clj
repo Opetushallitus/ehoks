@@ -9,7 +9,8 @@
                  [metosin/compojure-api]
                  [org.flywaydb/flyway-core]
                  [org.postgresql/postgresql]
-                 [ring/ring-jetty-adapter]]
+                 [ring/ring-jetty-adapter]
+                 [clj-time]]
   :managed-dependencies [[org.clojure/clojure "1.9.0"]
 
                          ;; http server
