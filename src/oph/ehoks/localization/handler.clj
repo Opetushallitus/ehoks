@@ -16,7 +16,7 @@
         (localization/get-localization-results :category category)))
 
     (GET "/healthcheck" [:as request]
-      :return (response common-schema/LocalizationHealtcheckStatus)
+      :return (restful/response common-schema/LocalizationHealtcheckStatus)
       :summary "Localization Service healthcheck status"
       (if-let [response (localization/get-localization-results)]
         (restful/rest-ok {})
