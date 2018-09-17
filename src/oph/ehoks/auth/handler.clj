@@ -46,7 +46,7 @@
       (let [{{:keys [user]} :session} request]
         (rest/rest-ok
           (if (some? user)
-            [(select-keys user [:first-name :common-name :surname])]
+            [(select-keys user [:oid :first-name :common-name :surname])]
             [])
           :opintopolku-login-url (:opintopolku-login-url config))))
 
