@@ -1,7 +1,5 @@
 (ns oph.ehoks.handler
-  (:require [compojure.api.sweet :refer [api
-                                         context
-                                         undocumented]]
+  (:require [compojure.api.sweet :as c-api]
             [compojure.route :as compojure-route]
             [ring.util.http-response :refer [not-found]]
             [ring.middleware.session :refer [wrap-session]]
@@ -15,7 +13,7 @@
             [oph.ehoks.redis :refer [redis-store]]))
 
 (def app-routes
-  (api
+  (c-api/api
     {:swagger
      {:ui "/ehoks/doc"
       :spec "/ehoks/doc/swagger.json"
@@ -23,8 +21,8 @@
                     :description "Backend for eHOKS"}
              :tags [{:name "api", :description ""}]}}}
 
-    (context "/ehoks" []
-      (context "/api/v1" []
+    (c-api/context "/ehoks" []
+      (c-api/context "/api/v1" []
         :tags ["api-v1"]
 
         healthcheck-handler/routes
@@ -33,7 +31,7 @@
         student-handler/routes
         auth-handler/routes))
 
-    (undocumented
+    (c-api/undocumented
       (compojure-route/not-found (not-found {:reason "Route not found"})))))
 
 (def app
