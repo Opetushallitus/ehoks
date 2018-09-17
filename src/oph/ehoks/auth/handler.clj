@@ -37,7 +37,7 @@
             (rest/rest-ok [(-> (get-in request [:session :user])
                                (select-keys [:first-name :common-name :surname])
                                (assoc :oid oid))])
-            [:session :user :oid] oid)
+            [:session :user] (assoc session-user :oid oid))
           (throw (ex-info "No user found" user-info-response)))))
 
     (c-api/GET "/opintopolku/" [:as request]
