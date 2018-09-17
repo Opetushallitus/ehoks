@@ -15,3 +15,24 @@
 (s/defschema HealthcheckStatus
              "Service healthcheck status"
              {})
+
+(s/defschema Localization
+             "Localization Service"
+             [(s/either
+             {}
+             {:category s/Str
+             :createdBy  s/Str
+             :key  s/Str
+             :force s/Bool
+             :locale  s/Str
+             :value  s/Str
+             :created s/Num
+             :modified s/Any
+             :accessed s/Any
+             :accesscount s/Int
+             :id s/Int
+             :modifiedBy  s/Str})])
+
+(s/defschema LocalizationHealtcheckStatus
+            "Healthcheck status of Localization Service"
+            {})
