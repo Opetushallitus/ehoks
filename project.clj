@@ -10,7 +10,7 @@
                  [org.flywaydb/flyway-core]
                  [org.postgresql/postgresql]
                  [ring/ring-jetty-adapter]
-                 [se.haleby/stub-http]]
+                 [clj-time]]
   :managed-dependencies [[org.clojure/clojure "1.9.0"]
 
                          ;; http server
@@ -33,6 +33,7 @@
 
                          ;; date, time
                          [joda-time "2.10"]
+                         [clj-time "0.14.4"]
 
                          ;; json
                          [com.fasterxml.jackson.core/jackson-annotations "2.9.6"]
@@ -71,7 +72,8 @@
                         ["eastwood"]
                         ["cljfmt" "check"]]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
-  :profiles {:dev {:main oph.ehoks.dev-server
+  :profiles {:test {:resource-paths ["resources/dev" "resources/test"]}
+             :dev {:main oph.ehoks.dev-server
                    :dependencies [[cheshire "5.8.0"]
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.0-RC2" :exclusions [ring/ring-core]]]
