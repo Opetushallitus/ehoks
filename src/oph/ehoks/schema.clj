@@ -3,7 +3,8 @@
 
 (s/defschema User
              "User"
-             {:first-name s/Str
+             {(s/optional-key :oid) s/Str
+              :first-name s/Str
               :common-name s/Str
               :surname s/Str})
 
