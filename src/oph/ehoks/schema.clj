@@ -30,6 +30,7 @@
               :opintopolku-login-url s/Str
               :opintopolku-return-url s/Str
               :eperusteet-url (s/maybe s/Str)
+              :localization-url (s/maybe s/Str)
               (s/optional-key :oppijanumerorekisteri-url) (s/maybe s/Str)
               (s/optional-key :cas-service-ticket-url) (s/maybe s/Str)
               (s/optional-key :cas-username) (s/maybe s/Str)
