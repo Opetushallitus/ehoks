@@ -1,4 +1,4 @@
-(ns oph.ehoks.external.handler
+(ns oph.ehoks.localization.handler
   (:require [compojure.api.sweet :refer [context GET]]
             [oph.ehoks.restful :refer [response rest-ok]]
             [oph.ehoks.common.schema :as common-schema]
