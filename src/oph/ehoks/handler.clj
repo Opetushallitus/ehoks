@@ -55,8 +55,9 @@
       (unauthorized))))
 
 (def app
-  (wrap-session app-routes
-                (if (:redis-url config)
-                  {:store (redis-store {:pool {}
-                                        :spec {:uri (:redis-url config)}})}
-                  {})))
+  (wrap-session
+    (wrap-authorize app-routes)
+    (if (:redis-url config)
+      {:store (redis-store {:pool {}
+                            :spec {:uri (:redis-url config)}})}
+      {})))
