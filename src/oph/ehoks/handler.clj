@@ -1,7 +1,7 @@
 (ns oph.ehoks.handler
   (:require [compojure.api.sweet :as c-api]
             [compojure.route :as compojure-route]
-            [ring.util.http-response :refer [not-found]]
+            [ring.util.http-response :refer [not-found unauthorized]]
             [ring.middleware.session :refer [wrap-session]]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
@@ -38,6 +38,21 @@
   [{:uri "/ehoks/api/v1/session/opintopolku/" :request-method :get}
    {:uri "/ehoks/api/v1/session/opintopolku/" :request-method :post}
    {:uri "/ehoks/api/v1/healthcheck" :method :get}])
+
+(defn- matches-route? [request route]
+  (and (= (:uri request) (:uri route))
+       (= (:request-method request) (:request-method route))))
+
+(defn- public-route? [request]
+  (some?
+    (some #(when (matches-route? request %) %) public-routes)))
+
+(defn- wrap-authorize [handler]
+  (fn [request]
+    (if (or (seq (:session request))
+            (public-route? (select-keys request [:uri :request-method])))
+      (handler request)
+      (unauthorized))))
 
 (def app
   (wrap-session app-routes
