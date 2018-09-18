@@ -12,8 +12,7 @@
              "Full user info"
              (merge
                User
-               {:oid s/Str
-                (s/optional-key :contact-values-group)
+               {(s/optional-key :contact-values-group)
                 [{:id s/Int
                   :contact [{:value s/Str
                              :type s/Str}]}]}))
