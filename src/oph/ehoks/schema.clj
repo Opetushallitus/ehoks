@@ -10,14 +10,13 @@
 
 (s/defschema UserInfo
              "Full user info"
-             {:first-names s/Str
-              :surname s/Str
-              :common-name s/Str
-              :oid s/Str
-              (s/optional-key :contact-values-group)
-              [{:id s/Int
-                :contact [{:value s/Str
-                           :type s/Str}]}]})
+             (merge
+               User
+               {:oid s/Str
+                (s/optional-key :contact-values-group)
+                [{:id s/Int
+                  :contact [{:value s/Str
+                             :type s/Str}]}]}))
 
 (s/defschema Config
              "Application configuration file"
