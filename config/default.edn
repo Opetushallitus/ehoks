@@ -5,6 +5,7 @@
  :opintopolku-login-url "http://localhost:3000/auth-dev/opintopolku-login/"
  :opintopolku-return-url "/ehoks/api/v1/session/opintopolku/"
  :eperusteet-url "https://eperusteet.opintopolku.fi/eperusteet-service/api"
+ :localization-url "https://virkailija.testiopintopolku.fi/lokalisointi/cxf/rest/v1/localisation"
  :oppijanumerorekisteri-url "http://localhost:3000/oppijanumerorekisteri-service"
  :cas-service-ticket-url "http://localhost:3000/cas-dev/tickets"
  :cas-username ""
