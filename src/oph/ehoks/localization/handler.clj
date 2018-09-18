@@ -13,11 +13,4 @@
       :return (restful/response common-schema/Localization)
       :query-params [{category :- String "ehoks"}]
       (restful/rest-ok
-        (localization/get-localization-results :category category)))
-
-    (GET "/healthcheck" [:as request]
-      :return (restful/response common-schema/LocalizationHealtcheckStatus)
-      :summary "Localization Service healthcheck status"
-      (if-let [response (localization/get-localization-results)]
-        (restful/rest-ok {})
-        (http-response/not-found)))))
+        (localization/get-localization-results :category category)))))
