@@ -38,7 +38,7 @@
             (select-keys [:oidHenkilo :etunimet :sukunimi
                           :kutsumanimi :oid :yhteystiedotRyhma])
             (rename-keys {:oidHenkilo :oid
-                          :etunimet :first-names
+                          :etunimet :first-name
                           :sukunimi :surname
                           :kutsumanimi :common-name
                           :yhteystiedotRyhma :contact-values-group}))]
