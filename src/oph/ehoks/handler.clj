@@ -34,6 +34,11 @@
     (c-api/undocumented
       (compojure-route/not-found (not-found {:reason "Route not found"})))))
 
+(def public-routes
+  [{:uri "/ehoks/api/v1/session/opintopolku/" :request-method :get}
+   {:uri "/ehoks/api/v1/session/opintopolku/" :request-method :post}
+   {:uri "/ehoks/api/v1/healthcheck" :method :get}])
+
 (def app
   (wrap-session app-routes
                 (if (:redis-url config)
