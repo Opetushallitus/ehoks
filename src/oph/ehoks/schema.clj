@@ -10,14 +10,12 @@
 
 (s/defschema UserInfo
              "Full user info"
-             {:first-names s/Str
-              :surname s/Str
-              :common-name s/Str
-              :oid s/Str
-              (s/optional-key :contact-values-group)
-              [{:id s/Int
-                :contact [{:value s/Str
-                           :type s/Str}]}]})
+             (merge
+               User
+               {(s/optional-key :contact-values-group)
+                [{:id s/Int
+                  :contact [{:value s/Str
+                             :type s/Str}]}]}))
 
 (s/defschema Config
              "Application configuration file"
@@ -30,6 +28,7 @@
               :opintopolku-login-url s/Str
               :opintopolku-return-url s/Str
               :eperusteet-url (s/maybe s/Str)
+              :localization-url (s/maybe s/Str)
               (s/optional-key :oppijanumerorekisteri-url) (s/maybe s/Str)
               (s/optional-key :cas-service-ticket-url) (s/maybe s/Str)
               (s/optional-key :cas-username) (s/maybe s/Str)

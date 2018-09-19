@@ -23,7 +23,7 @@
                  [{:yhteystietoArvo "kayttaja@domain.local",
                    :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})})
            {:oid "1.2.246.562.24.78058065184"
-            :first-names "Teuvo Taavetti"
+            :first-name "Teuvo Taavetti"
             :surname "Testaaja"
             :common-name "Teuvo"
             :contact-values-group
