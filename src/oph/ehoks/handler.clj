@@ -36,12 +36,12 @@
       (compojure-route/not-found (not-found {:reason "Route not found"})))))
 
 (def public-routes
-  [{:uri "/ehoks/api/v1/session/opintopolku/" :request-method :get}
-   {:uri "/ehoks/api/v1/session/opintopolku/" :request-method :post}
-   {:uri "/ehoks/api/v1/healthcheck" :method :get}])
+  [{:uri #"/ehoks/api/v1/session/opintopolku/" :request-method :get}
+   {:uri #"/ehoks/api/v1/session/opintopolku/" :request-method :post}
+   {:uri #"/ehoks/api/v1/healthcheck" :method :get}])
 
 (defn- matches-route? [request route]
-  (and (= (:uri request) (:uri route))
+  (and (re-seq (:uri route) (:uri request))
        (= (:request-method request) (:request-method route))))
 
 (defn- public-route? [request]
