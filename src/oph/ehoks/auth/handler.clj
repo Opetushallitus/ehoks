@@ -51,6 +51,10 @@
             [])
           :opintopolku-login-url (:opintopolku-login-url config))))
 
+    (c-api/OPTIONS "/opintopolku/" []
+      :summary "Options for session DELETE (logout)"
+      (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, POST, DELETE"))
+
     (c-api/DELETE "/opintopolku/" []
       :summary "Delete Opintopolku session (logout)"
       :return (rest/response [s/Any])
