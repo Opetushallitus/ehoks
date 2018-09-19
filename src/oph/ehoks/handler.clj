@@ -4,7 +4,7 @@
             [ring.util.http-response :refer [not-found]]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]
-            [ring.middleware.defaults :as defaults]
+            [ring.middleware.defaults :as ring-defaults]
             [oph.ehoks.middleware :as middleware]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
@@ -48,7 +48,7 @@
 
 (def app
   (-> app-routes
-      (defaults/wrap-defaults defaults/site-defaults)
+      (ring-defaults/wrap-defaults ring-defaults/site-defaults)
       (middleware/wrap-public public-routes)
       (session/wrap-session
         {:store (if (seq (:redis-url config))
