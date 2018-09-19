@@ -1,10 +1,11 @@
 (ns oph.ehoks.handler
   (:require [compojure.api.sweet :as c-api]
             [compojure.route :as compojure-route]
-            [ring.util.http-response :refer [not-found unauthorized]]
+            [ring.util.http-response :refer [not-found]]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]
             [ring.middleware.defaults :as defaults]
+            [oph.ehoks.middleware :as middleware]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.education.handler :as education-handler]
@@ -44,25 +45,11 @@
    {:uri #"/ehoks/api/v1/healthcheck" :request-method :get}
    {:uri #"/ehoks/doc/*" :request-method :get}])
 
-(defn- matches-route? [request route]
-  (and (re-seq (:uri route) (:uri request))
-       (= (:request-method request) (:request-method route))))
-
-(defn- public-route? [request]
-  (some?
-    (some #(when (matches-route? request %) %) public-routes)))
-
-(defn- wrap-authorize [handler]
-  (fn [request]
-    (if (or (seq (:session request))
-            (public-route? (select-keys request [:uri :request-method])))
-      (handler request)
-      (unauthorized))))
 
 (def app
   (-> app-routes
       (defaults/wrap-defaults defaults/site-defaults)
-      wrap-authorize
+      (middleware/wrap-public public-routes)
       (session/wrap-session
         {:store (if (seq (:redis-url config))
                   (redis-store {:pool {}
