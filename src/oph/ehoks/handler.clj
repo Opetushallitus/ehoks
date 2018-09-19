@@ -40,7 +40,8 @@
    {:uri #"/ehoks/api/v1/session/opintopolku/" :request-method :delete}
    {:uri #"/ehoks/api/v1/session/opintopolku/" :request-method :options}
    {:uri #"/ehoks/api/v1/session/opintopolku/" :request-method :post}
-   {:uri #"/ehoks/api/v1/healthcheck" :request-method :get}])
+   {:uri #"/ehoks/api/v1/healthcheck" :request-method :get}
+   {:uri #"/ehoks/doc/*" :request-method :get}])
 
 (defn- matches-route? [request route]
   (and (re-seq (:uri route) (:uri request))
