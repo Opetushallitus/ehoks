@@ -2,7 +2,8 @@
   (:require [compojure.api.sweet :as c-api]
             [compojure.route :as compojure-route]
             [ring.util.http-response :refer [not-found unauthorized]]
-            [ring.middleware.session :refer [wrap-session]]
+            [ring.middleware.session :as session]
+            [ring.middleware.session.memory :as mem]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.education.handler :as education-handler]
@@ -55,9 +56,10 @@
       (unauthorized))))
 
 (def app
-  (wrap-session
+  (session/wrap-session
     (wrap-authorize app-routes)
-    (if (:redis-url config)
-      {:store (redis-store {:pool {}
-                            :spec {:uri (:redis-url config)}})}
-      {})))
+    {:store (if (seq (:redis-url config))
+              (redis-store {:pool {}
+                            :spec {:uri (:redis-url config)}})
+              (mem/memory-store))
+     :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}}))
