@@ -59,10 +59,11 @@
       (unauthorized))))
 
 (def app
-  (session/wrap-session
-    (wrap-authorize app-routes)
-    {:store (if (seq (:redis-url config))
-              (redis-store {:pool {}
-                            :spec {:uri (:redis-url config)}})
-              (mem/memory-store))
-     :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}}))
+  (-> app-routes
+      wrap-authorize
+      (session/wrap-session
+        {:store (if (seq (:redis-url config))
+                  (redis-store {:pool {}
+                                :spec {:uri (:redis-url config)}})
+                  (mem/memory-store))
+         :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}})))
