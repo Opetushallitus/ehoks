@@ -4,6 +4,7 @@
             [ring.util.http-response :refer [not-found unauthorized]]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]
+            [ring.middleware.defaults :as defaults]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.education.handler :as education-handler]
@@ -60,6 +61,7 @@
 
 (def app
   (-> app-routes
+      (defaults/wrap-defaults defaults/site-defaults)
       wrap-authorize
       (session/wrap-session
         {:store (if (seq (:redis-url config))
