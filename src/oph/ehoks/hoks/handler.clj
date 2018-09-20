@@ -17,4 +17,16 @@
       :summary "Creates new HOKS document"
       :body [_ hoks-schema/DocumentValues]
       :return (response schema/POSTResponse)
+      (rest-ok {:uri ""}))
+
+    (c-api/POST "/:id/competences/" []
+      :summary "Creates competence for HOKS document"
+      :body [_ hoks-schema/Competence]
+      :return (response schema/POSTResponse)
+      (rest-ok {:uri ""}))
+
+    (c-api/POST "/:id/educations/" []
+      :summary "Creates education for HOKS document"
+      :body [_ hoks-schema/Education]
+      :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))))
