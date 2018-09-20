@@ -3,7 +3,11 @@
 
 (s/defschema DocumentValues
              "HOKS document values for creating one"
-             {:student-oid s/Str})
+             {:student-oid s/Str
+              :career-objective s/Str
+              :study-objective s/Str
+              :qualification-register-number s/Str
+              :competence-area-code s/Str})
 
 (s/defschema Document
              "HOKS document"
