@@ -8,6 +8,11 @@
 (def routes
   (c-api/context "/hoks" []
 
+    (c-api/GET "/:id" [:as id]
+      :summary "Get HOKS document"
+      :return (response hoks-schema/Document)
+      (rest-ok {}))
+
     (c-api/POST "/" []
       :summary "Creates new HOKS document"
       :body [_ hoks-schema/DocumentValues]
