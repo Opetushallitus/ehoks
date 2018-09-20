@@ -7,7 +7,7 @@
 
 (deftest work-info
   (testing "GET work info"
-    (let [response (app (mock/request :get "/api/v1/work/info/"))
+    (let [response (app (mock/request :get "/ehoks/api/v1/work/info/"))
           body (parse-body (:body response))
           info (first (:data body))]
       (is (= (:status response) 200))

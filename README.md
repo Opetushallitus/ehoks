@@ -66,17 +66,19 @@ lein cljfmt check
 
 ### Running application
 
-``` shell
-lein ring server-headless
-```
-
-Or in development mode (for example development CORS)
+Run in development mode:
 
 ``` shell
-lein with-profile dev ring server-headless
+lein run
 ```
 
-Or inside repl with file reload:
+Run in production mode:
+
+``` shell
+lein with-profile -dev run
+```
+
+Or inside REPL with file reload, starting with `lein repl`, then:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
@@ -94,18 +96,17 @@ user> (.stop server)
 For database there is proper Docker script in `scripts/psql-docker` folder. Use
 this only in development environment.
 
-Initializing
+Build Docker image:
 
 ``` shell
-cd scripts/psql-docker
-docker build -t ehoks-psql:9.5 .
-mkdir -p data
+cd scripts/postgres-docker
+docker build -t ehoks-postgres:9.5 .
 ```
 
-Running
+Riun Docker image in a container:
 
 ``` shell
-docker run --rm --name ehoks-psql -p 5432:5432 --volume data:/var/lib/postgresql/data ehoks-psql:9.5
+docker run --rm --name ehoks-postgres -p 5432:5432 --volume ~/path/to/ehoks-postgres-data:/var/lib/postgresql/data ehoks-postgres:9.5
 ```
 
 ### Redis
@@ -115,48 +116,74 @@ Redis is being used as a session storage.
 For local development use you can use Docker script in `scripts/redis-docker`
 folder.
 
-Initializing
+Build Docker image:
 
 ``` shell
 cd scripts/redis-docker
 docker build -t ehoks-redis .
-mkdir -p data
 ```
 
-Running
+Run Docker image in a container:
 
 ``` shell
-docker run --rm --name ehoks-redis -p 6379:6379 --volume data:/data ehoks-redis
+docker run --rm --name ehoks-redis -p 6379:6379 --volume ~/path/to/ehoks-redis-data:/data ehoks-redis
 ```
 
 Or you can always skip runnign Redis with leaving `REDIS_URL` environment
 variable or `:redis-url` cofigure option nil.
 
+### Development routes
+
+Application supports creating JSON-files for returning dummy data. Place files
+in `resource/dev/dev-routes` folder. Files are matched with translating uri to
+filename. For example `/hello/world` translates to `hello_world.json`. For
+security reasons only files in `dev-routes` folders are read. Dummy data routes
+works only when running development server.
+
 ## Configuration
 
-Default configuration file is `config/default.edn`. You may override these
-values by creating your own config file and giving path to created file as an
-environment variable `CONFIG`.
+Default configuration file is `config/default.edn`. You may override
+these values by creating your own config file and supplying path to the
+file either via environment variable `CONFIG` or JVM system property
+`config`.
+
+Config files are being merged as custom config overrides default values. So you
+can use some default values and some custom values.
+
+Merged configuration is being validated on load.
+
+### CAS authentication
+
+Application uses CAS authentication with external APIs. Fill out CAS credentials
+and client sub system code before using external APIS. Application has mock APIs
+for local development.
 
 ## Running tests
 
-Running tests once
+Running tests once:
 
 ``` shell
 lein test
 ```
 
-Or on change
+Or automatically on change:
 
 ``` shell
 lein auto test
 ```
 
-## Creating runnable JAR
+## Standalone jar
+
+Create self-contained jar that includes all the dependencies:
 
 ```
-lein do clean, ring uberjar
-java -jar target/ehoks-backend.jar
+lein uberjar
+```
+
+Run:
+
+``` shell
+java -jar target/ehoks-standalone.jar
 ```
 
 ## Integrations
