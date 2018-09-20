@@ -12,8 +12,4 @@
       :summary "Creates new HOKS document"
       :body [_ hoks-schema/DocumentValues]
       :return (response schema/POSTResponse)
-      (rest-ok {:uri ""}))
-
-    (DELETE "/:id" [:as id]
-      :summary "Delete HOKS document"
-      (accepted))))
+      (rest-ok {:uri ""}))))
