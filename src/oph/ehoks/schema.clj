@@ -2,8 +2,8 @@
   (:require [schema.core :as s]))
 
 (s/defschema POSTResponse
-  "RESTful POST response"
-  {:uri s/Str})
+             "RESTful POST response"
+             {:uri s/Str})
 
 (s/defschema User
              "User"
