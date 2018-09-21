@@ -1,13 +1,6 @@
 (ns oph.ehoks.hoks.schema
   (:require [schema.core :as s]))
 
-(s/defschema Koulutus
-             "HOKS koulutus"
-             {:id s/Int
-              :tyyppi s/Str
-              :diaarinumero s/Str
-              :hoks-id s/Int})
-
 (s/defschema OsaamisenTyyppi
              "Osaamisen tyyppi"
              (s/enum
@@ -66,5 +59,5 @@
                 :hyvaksytty s/Inst
                 :paivitetty s/Inst
                 :osaamiset [Osaaminen]
-                :koulutukset [Koulutus]
+                :koulutukset [Osaaminen]
                 :suunnitellut-osaamiset [SuunniteltuOsaaminen]}))
