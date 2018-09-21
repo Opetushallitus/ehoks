@@ -24,7 +24,8 @@ script:
   - lein test
   - lein uberjar
   - mv target/ehoks-standalone.jar $DOCKER_BUILD_DIR/artifact/ehoks.jar
-  - cp -v config/default.edn config/config.edn.template $DOCKER_BUILD_DIR/config/
+  - mkdir -p $DOCKER_BUILD_DIR/config/config
+  - cp -v config/default.edn config/config.edn.template $DOCKER_BUILD_DIR/config/config/
   - export BASE_IMAGE="base-legacy:0.1"
   - ./ci-tools/common/pull-image.sh
   - ./ci-tools/build/build-fatjar.sh ehoks
