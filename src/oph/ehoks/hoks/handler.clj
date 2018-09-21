@@ -26,8 +26,8 @@
       (rest-ok {:uri ""}))
 
     (c-api/POST "/:id/koulutukset/" []
-      :body [_ hoks-schema/Koulutus]
       :summary "Lisää HOKSiin koulutus"
+      :body [_ hoks-schema/Osaaminen]
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))
 
