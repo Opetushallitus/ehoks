@@ -20,7 +20,7 @@
               :osaamisala Osaamisala
               :suorituspvm s/Inst
               :todentaja s/Str
-              :liitteet [s/Str]})
+              (s/optional-key :liitteet) [s/Str]})
 
 (s/defschema SuunniteltuOsaaminen
              "HOKSin puuttuvan osaamisen hankkimisen suunnitelma"
