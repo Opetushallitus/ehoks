@@ -18,7 +18,9 @@
               :hoks-id s/Int
               :perusteet-diaarinumero s/Str
               :osaamisala Osaamisala
-              :suorituspvm s/Inst})
+              :suorituspvm s/Inst
+              :todentaja s/Str
+              :liitteet [s/Str]})
 
 (s/defschema SuunniteltuOsaaminen
              "HOKSin puuttuvan osaamisen hankkimisen suunnitelma"
