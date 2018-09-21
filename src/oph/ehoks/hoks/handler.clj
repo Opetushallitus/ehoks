@@ -20,19 +20,19 @@
       (rest-ok {:uri ""}))
 
     (c-api/POST "/:id/osaamiset/" []
-      :summary "Listaa HOKSiin liitetyt osaamiset"
+      :summary "Lisää HOKSiin olemassa oleva osaaminen"
       :body [_ hoks-schema/Osaaminen]
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))
 
     (c-api/POST "/:id/koulutukset/" []
-      :summary "Listaa HOKSiin liitetyt koulutukset"
       :body [_ hoks-schema/Koulutus]
+      :summary "Lisää HOKSiin koulutus"
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))
 
     (c-api/POST "/:id/suunnitellut-osaamiset/" []
-      :summary "Listaa HOKSiin suunnitellut osaamiset"
+      :summary "Lisää HOKSiin suunniteltu osaaminen"
       :body [_ hoks-schema/SuunniteltuOsaaminen]
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))))
