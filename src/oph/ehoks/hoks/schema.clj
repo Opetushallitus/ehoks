@@ -16,7 +16,7 @@
              "HOKSin olemassa oleva osaaminen"
              {:tyyppi OsaamisenTyyppi
               :hoks-id s/Int
-              :diaarinumero s/Str
+              :perusteet-diaarinumero s/Str
               :osaamisala Osaamisala
               :suorituspvm s/Inst})
 
@@ -24,7 +24,7 @@
              "HOKSin puuttuvan osaamisen hankkimisen suunnitelma"
              {:tyyppi OsaamisenTyyppi
               :hoks-id s/Int
-              :diaarinumero s/Str
+              :perusteet-diaarinumero s/Str
               :osaamisala Osaamisala
               :suoritustapa s/Str
               :sisalto s/Str
@@ -40,7 +40,7 @@
              {:oppijan-oid s/Str
               :urasuunnitelma s/Str
               :tutkintotavoite s/Str
-              :tutkinto-diaarinumero s/Str
+              :tutkinnon-perusteet-diaarinumero s/Str
               :osaamisala Osaamisala
               :opiskeluoikeus-alkupvm s/Inst
               :opiskeluoikeus-paattymispvm s/Inst})
