@@ -28,7 +28,9 @@
               :hoks-id s/Int
               :perusteet-diaarinumero s/Str
               :osaamisala Osaamisala
-              :suoritustapa s/Str
+              :suoritustapa (s/enum
+                              :lahiopetus :verkko-oppimisymparisto
+                              :monimuoto :tyopaikalla)
               :sisalto s/Str
               :alku s/Inst
               :loppu s/Inst
