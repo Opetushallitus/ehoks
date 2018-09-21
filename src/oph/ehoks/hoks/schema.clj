@@ -8,12 +8,17 @@
               :diaarinumero s/Str
               :hoks-id s/Int})
 
+(s/defschema Osaamisala
+             "Osaamisala koodistosta"
+             {:versio s/Int
+              :uri s/Str})
+
 (s/defschema Osaaminen
              "HOKSin olemassa oleva osaaminen"
              {:tyyppi s/Str
               :hoks-id s/Int
               :diaarinumero s/Str
-              :osaamisalakoodi s/Str
+              :osaamisala Osaamisala
               :suorituspvm s/Inst})
 
 (s/defschema SuunniteltuOsaaminen
@@ -21,7 +26,7 @@
              {:tyyppi s/Str
               :hoks-id s/Int
               :diaarinumero s/Str
-              :osaamisalakoodi s/Str
+              :osaamisala Osaamisala
               :suoritustapa s/Str
               :sisalto s/Str
               :alku s/Inst
@@ -37,7 +42,7 @@
               :uratavoite s/Str
               :tutkintotavoite s/Str
               :tutkinto-diaarinumero s/Str
-              :osaamisalakoodi s/Str
+              :osaamisala Osaamisala
               :opiskeluoikeus-alkupvm s/Inst
               :opiskeluoikeus-paattymispvm s/Inst})
 
