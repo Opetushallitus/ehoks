@@ -8,6 +8,12 @@
               :diaarinumero s/Str
               :hoks-id s/Int})
 
+(s/defschema OsaamisenTyyppi
+             "Osaamisen tyyppi"
+             (s/enum
+               :valmentava :valmistava :syventava :olemassaoleva
+               :muu-todennettu :muu))
+
 (s/defschema Osaamisala
              "Osaamisala koodistosta"
              {:versio s/Int
@@ -15,7 +21,7 @@
 
 (s/defschema Osaaminen
              "HOKSin olemassa oleva osaaminen"
-             {:tyyppi s/Str
+             {:tyyppi OsaamisenTyyppi
               :hoks-id s/Int
               :diaarinumero s/Str
               :osaamisala Osaamisala
@@ -23,7 +29,7 @@
 
 (s/defschema SuunniteltuOsaaminen
              "HOKSin puuttuvan osaamisen hankkimisen suunnitelma"
-             {:tyyppi s/Str
+             {:tyyppi OsaamisenTyyppi
               :hoks-id s/Int
               :diaarinumero s/Str
               :osaamisala Osaamisala
@@ -39,7 +45,7 @@
 (s/defschema HOKSArvot
              "HOKS arvot uuden HOKSin luomiseen"
              {:oppijan-oid s/Str
-              :uratavoite s/Str
+              :urasuunnitelma s/Str
               :tutkintotavoite s/Str
               :tutkinto-diaarinumero s/Str
               :osaamisala Osaamisala
