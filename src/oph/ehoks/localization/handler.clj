@@ -6,7 +6,7 @@
             [oph.ehoks.external.localization :as localization]))
 
 (def routes
-  (context "/localization" []
+  (context "/lokalisaatio" []
 
     (GET "/" [:as request]
       :summary "Localizations for ehoks"
