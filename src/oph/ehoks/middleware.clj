@@ -1,5 +1,5 @@
 (ns oph.ehoks.middleware
-  (:require [ring.util.http-response :refer [unauthorized!]]))
+  (:require [ring.util.http-response :refer [unauthorized unauthorized!]]))
 
 (defn- matches-route? [request route]
   (and (re-seq (:uri route) (:uri request))
@@ -10,9 +10,22 @@
     (some #(when (matches-route? request %) %) routes)))
 
 (defn wrap-public [handler public-routes]
-  (fn [request]
-    (if (or (seq (:session request))
-            (route-in?
-              (select-keys request [:uri :request-method]) public-routes))
-      (handler request)
-      (unauthorized!))))
+  (fn
+    ([request respond raise]
+     (if (or (seq (:session request))
+             (route-in?
+               (select-keys request [:uri :request-method]) public-routes))
+       (handler request respond raise)
+       (let [response (unauthorized)]
+         (raise
+           (ex-info
+             (str "HTTP "(:status response))
+             {:type (keyword "ring.util.http-response" "response")
+              :response response})))))
+    ([request]
+     (prn request)
+     (if (or (seq (:session request))
+             (route-in?
+               (select-keys request [:uri :request-method]) public-routes))
+       (handler request)
+       (unauthorized!)))))
