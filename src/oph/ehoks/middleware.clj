@@ -23,7 +23,6 @@
              {:type (keyword "ring.util.http-response" "response")
               :response response})))))
     ([request]
-     (prn request)
      (if (or (seq (:session request))
              (route-in?
                (select-keys request [:uri :request-method]) public-routes))
