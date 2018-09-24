@@ -11,3 +11,9 @@
                      (mock/request
                        :get "/ehoks/api/v1/non-existing-resource/"))]
       (is (= (:status response) 404)))))
+
+(deftest unatuhenticated
+  (testing "GET unauthenticated route"
+    (is (thrown-with-msg?
+          clojure.lang.ExceptionInfo #"HTTP 401"
+          (app (mock/request :get "/some-non-existing/route"))))))
