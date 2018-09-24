@@ -1,4 +1,4 @@
-(ns oph.ehoks.external.localization
+(ns oph.ehoks.external.lokalisaatio
   (:require [oph.ehoks.config :refer [config]]
             [clj-http.client :as client]
             [cheshire.core :as cheshire]))
