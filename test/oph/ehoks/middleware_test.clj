@@ -52,39 +52,39 @@
    {:uri #"^/sync/public$" :request-method :get}
    {:uri #"^/sync/authenticate$" :request-method :post}])
 
-(def app
+(def test-app
   (-> (c-api/api async-routes sync-routes)
       (middleware/wrap-public public-routes)
       (session/wrap-session)))
 
 (deftest private-sync
   (testing "Private sync route"
-    (let [response (with-authentication app (mock/request :get "/sync"))]
+    (let [response (with-authentication test-app (mock/request :get "/sync"))]
       (is (= (:status response) 200)))))
 
 (deftest public-sync
   (testing "Public sync route"
-    (let [response (app (mock/request :get "/sync/public"))]
+    (let [response (test-app (mock/request :get "/sync/public"))]
       (is (= (:status response) 200)))))
 
 (deftest private-sync-unauthorized
   (testing "Private sync route without authorization"
     (is (thrown-with-msg?
           clojure.lang.ExceptionInfo #"HTTP 401"
-          (app (mock/request :get "/sync/"))))))
+          (test-app (mock/request :get "/sync/"))))))
 
 (deftest private-async
   (testing "Private async route"
-    (let [response (with-authentication-async app (mock/request :get "/async"))]
+    (let [response (with-authentication-async test-app (mock/request :get "/async"))]
       (is (= (:status response) 200)))))
 
 (deftest public-async
   (testing "Public async route"
-    (let [response (handle-async app (mock/request :get "/async/public"))]
+    (let [response (handle-async test-app (mock/request :get "/async/public"))]
       (is (= (:status response) 200)))))
 
 (deftest private-async-unauthorized
   (testing "Private async route without authorization"
     (is (thrown-with-msg?
           clojure.lang.ExceptionInfo #"HTTP 401"
-          (handle-async app (mock/request :get "/async/"))))))
+          (handle-async test-app (mock/request :get "/async/"))))))
