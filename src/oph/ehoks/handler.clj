@@ -7,9 +7,6 @@
             [oph.ehoks.middleware :as middleware]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
-            [oph.ehoks.education.handler :as education-handler]
-            [oph.ehoks.work.handler :as work-handler]
-            [oph.ehoks.student.handler :as student-handler]
             [oph.ehoks.auth.handler :as auth-handler]
             [oph.ehoks.localization.handler :as localization-handler]
             [oph.ehoks.config :refer [config]]
@@ -29,9 +26,6 @@
         :tags ["api-v1"]
 
         healthcheck-handler/routes
-        education-handler/routes
-        work-handler/routes
-        student-handler/routes
         auth-handler/routes
         localization-handler/routes))
 
