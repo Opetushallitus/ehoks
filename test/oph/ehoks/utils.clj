@@ -16,7 +16,6 @@
       (get-in [:headers "Set-Cookie"])
       (first)))
 
-
 (defn with-authentication [app request]
   (let [cookie (get-auth-cookie app)]
     (app (mock/header request :cookie cookie))))
