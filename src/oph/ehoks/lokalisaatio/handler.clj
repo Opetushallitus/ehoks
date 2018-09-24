@@ -10,7 +10,7 @@
 
     (GET "/" [:as request]
       :summary "Localizations for ehoks"
-      :return (restful/response common-schema/Localization)
+      :return (restful/response common-schema/Lokalisaatio)
       :query-params [{category :- String "ehoks"}]
       (restful/rest-ok
         (lokalisaatio/get-localization-results :category category)))))

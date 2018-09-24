@@ -16,7 +16,7 @@
              "Service healthcheck status"
              {})
 
-(s/defschema Localization
+(s/defschema Lokalisaatio
              "Localization Service"
              [{:category s/Str
                :createdBy  s/Str
