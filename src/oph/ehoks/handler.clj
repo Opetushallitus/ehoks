@@ -46,7 +46,6 @@
    {:uri #"^/ehoks/api/v1/healthcheck$" :request-method :get}
    {:uri #"^/ehoks/doc/*" :request-method :get}])
 
-
 (def app
   (-> app-routes
       (middleware/wrap-public public-routes)
