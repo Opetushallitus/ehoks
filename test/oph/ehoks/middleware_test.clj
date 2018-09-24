@@ -12,10 +12,10 @@
     (async/go
       (app
         request
-       (fn [r]
-         (async/go (async/>! c r)))
-       (fn [e]
-         (async/go (async/>! c {:exception e})))))
+        (fn [r]
+          (async/go (async/>! c r)))
+        (fn [e]
+          (async/go (async/>! c {:exception e})))))
     (let [result (async/<!! c)]
       (when-let [e (:exception result)]
         (throw (:exception result)))
@@ -75,7 +75,8 @@
 
 (deftest private-async
   (testing "Private async route"
-    (let [response (with-authentication-async test-app (mock/request :get "/async"))]
+    (let [response (with-authentication-async
+                     test-app (mock/request :get "/async"))]
       (is (= (:status response) 200)))))
 
 (deftest public-async
