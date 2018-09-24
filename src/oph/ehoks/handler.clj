@@ -2,12 +2,11 @@
   (:require [compojure.api.sweet :as c-api]
             [compojure.route :as compojure-route]
             [ring.util.http-response :refer [not-found]]
-            [ring.middleware.session :refer [wrap-session]]
+            [ring.middleware.session :as session]
+            [ring.middleware.session.memory :as mem]
+            [oph.ehoks.middleware :as middleware]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
-            [oph.ehoks.education.handler :as education-handler]
-            [oph.ehoks.work.handler :as work-handler]
-            [oph.ehoks.student.handler :as student-handler]
             [oph.ehoks.auth.handler :as auth-handler]
             [oph.ehoks.lokalisaatio.handler :as lokalisaatio-handler]
             [oph.ehoks.config :refer [config]]
@@ -27,18 +26,26 @@
         :tags ["api-v1"]
 
         healthcheck-handler/routes
-        education-handler/routes
-        work-handler/routes
-        student-handler/routes
         auth-handler/routes
         lokalisaatio-handler/routes))
 
     (c-api/undocumented
       (compojure-route/not-found (not-found {:reason "Route not found"})))))
 
+(def public-routes
+  [{:uri #"^/ehoks/api/v1/session/opintopolku/$" :request-method :get}
+   {:uri #"^/ehoks/api/v1/session/opintopolku/$" :request-method :delete}
+   {:uri #"^/ehoks/api/v1/session/opintopolku/$" :request-method :options}
+   {:uri #"^/ehoks/api/v1/session/opintopolku/$" :request-method :post}
+   {:uri #"^/ehoks/api/v1/healthcheck$" :request-method :get}
+   {:uri #"^/ehoks/doc/*" :request-method :get}])
+
 (def app
-  (wrap-session app-routes
-                (if (:redis-url config)
-                  {:store (redis-store {:pool {}
-                                        :spec {:uri (:redis-url config)}})}
-                  {})))
+  (-> app-routes
+      (middleware/wrap-public public-routes)
+      (session/wrap-session
+        {:store (if (seq (:redis-url config))
+                  (redis-store {:pool {}
+                                :spec {:uri (:redis-url config)}})
+                  (mem/memory-store))
+         :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}})))

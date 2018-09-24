@@ -33,4 +33,5 @@
               (s/optional-key :cas-service-ticket-url) (s/maybe s/Str)
               (s/optional-key :cas-username) (s/maybe s/Str)
               (s/optional-key :cas-password) (s/maybe s/Str)
-              (s/optional-key :client-sub-system-code) (s/maybe s/Str)})
+              (s/optional-key :client-sub-system-code) (s/maybe s/Str)
+              (s/optional-key :session-max-age) s/Int})

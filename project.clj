@@ -10,7 +10,8 @@
                  [org.flywaydb/flyway-core]
                  [org.postgresql/postgresql]
                  [ring/ring-jetty-adapter]
-                 [clj-time]]
+                 [clj-time]
+                 [org.clojure/core.async]]
   :managed-dependencies [[org.clojure/clojure "1.9.0"]
 
                          ;; http server
@@ -50,6 +51,7 @@
                          [com.taoensso/carmine "2.18.1"]
 
                          ;; other
+                         [org.clojure/core.async "0.4.474"]
                          [commons-codec "1.11"]
                          [commons-fileupload "1.3.3"]
                          [commons-io "2.6"]
