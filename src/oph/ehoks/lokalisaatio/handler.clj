@@ -1,4 +1,4 @@
-(ns oph.ehoks.localization.handler
+(ns oph.ehoks.lokalisaatio.handler
   (:require [compojure.api.sweet :refer [context GET]]
             [oph.ehoks.restful :as restful]
             [ring.util.http-response :as http-response]

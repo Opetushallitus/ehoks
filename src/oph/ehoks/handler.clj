@@ -9,7 +9,7 @@
             [oph.ehoks.work.handler :as work-handler]
             [oph.ehoks.student.handler :as student-handler]
             [oph.ehoks.auth.handler :as auth-handler]
-            [oph.ehoks.localization.handler :as localization-handler]
+            [oph.ehoks.lokalisaatio.handler :as lokalisaatio-handler]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.redis :refer [redis-store]]))
 
@@ -31,7 +31,7 @@
         work-handler/routes
         student-handler/routes
         auth-handler/routes
-        localization-handler/routes))
+        lokalisaatio-handler/routes))
 
     (c-api/undocumented
       (compojure-route/not-found (not-found {:reason "Route not found"})))))
