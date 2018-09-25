@@ -53,7 +53,7 @@
 
     (c-api/OPTIONS "/opintopolku/" []
       :summary "Options for session DELETE (logout)"
-      (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, POST, DELETE"))
+      (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, DELETE"))
 
     (c-api/DELETE "/opintopolku/" []
       :summary "Delete Opintopolku session (logout)"
