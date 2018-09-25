@@ -3,6 +3,14 @@
             [clojure.set :refer [rename-keys]])
   (:import [java.nio.charset StandardCharsets]))
 
+(def valid-headers
+  ["FirstName" "cn" "givenName" "hetu" "sn"])
+
+(defn valid? [headers]
+  (let [header-values (select-keys headers valid-headers)]
+    (and (= (keys header-values) valid-headers)
+         (every? some? header-values))))
+
 (defn convert [value src dest]
   (-> value
       String.

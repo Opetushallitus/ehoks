@@ -30,3 +30,18 @@
               :given-name "Teuvo"
               :hetu "010203-XXXX"
               :surname "Testaaja"})))))
+
+(deftest valid-headers
+  (testing "Validating Opintopolku headers"
+    (is (o/valid? {"FirstName" "Teuvo Taavetti"
+                   "cn" "Teuvo"
+                   "givenName" "Teuvo"
+                   "hetu" "010203-XXXX"
+                   "sn" "Testaaja"
+                   "other" "Header"}))
+    (is (not (o/valid? {"FirstName" "Teuvo Taavetti"
+                        "givenName" "Teuvo"
+                        "hetu" "010203-XXXX"
+                        "sn" "Testaaja"})))
+    (is (not (o/valid? {})))
+    (is (not (o/valid? nil)))))
