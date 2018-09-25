@@ -5,7 +5,7 @@
 
 (defn get-auth-cookie [app]
   (-> (mock/request
-        :post "/ehoks/api/v1/session/opintopolku/"
+        :post "/ehoks-backend/api/v1/session/opintopolku/"
         {"FirstName" "Teuvo Taavetti"
          "cn" "Teuvo"
          "givenName" "Teuvo"

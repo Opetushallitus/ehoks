@@ -15,13 +15,13 @@
 (def app-routes
   (c-api/api
     {:swagger
-     {:ui "/ehoks/doc"
-      :spec "/ehoks/doc/swagger.json"
+     {:ui "/ehoks-backend/doc"
+      :spec "/ehoks-backend/doc/swagger.json"
       :data {:info {:title "eHOKS backend"
                     :description "Backend for eHOKS"}
              :tags [{:name "api", :description ""}]}}}
 
-    (c-api/context "/ehoks" []
+    (c-api/context "/ehoks-backend" []
       (c-api/context "/api/v1" []
         :tags ["api-v1"]
 
@@ -33,12 +33,18 @@
       (compojure-route/not-found (not-found {:reason "Route not found"})))))
 
 (def public-routes
-  [{:uri #"^/ehoks/api/v1/session/opintopolku/$" :request-method :get}
-   {:uri #"^/ehoks/api/v1/session/opintopolku/$" :request-method :delete}
-   {:uri #"^/ehoks/api/v1/session/opintopolku/$" :request-method :options}
-   {:uri #"^/ehoks/api/v1/session/opintopolku/$" :request-method :post}
-   {:uri #"^/ehoks/api/v1/healthcheck$" :request-method :get}
-   {:uri #"^/ehoks/doc/*" :request-method :get}])
+  [{:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
+    :request-method :get}
+   {:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
+    :request-method :delete}
+   {:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
+    :request-method :options}
+   {:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
+    :request-method :post}
+   {:uri #"^/ehoks-backend/api/v1/healthcheck$"
+    :request-method :get}
+   {:uri #"^/ehoks-backend/doc/*"
+    :request-method :get}])
 
 (def app
   (-> app-routes

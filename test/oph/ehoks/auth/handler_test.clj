@@ -9,7 +9,7 @@
 
 (defn authenticate []
   (app (-> (mock/request
-             :post "/ehoks/api/v1/session/opintopolku/"
+             :post "/ehoks-backend/api/v1/session/opintopolku/"
              {"FirstName" "Teuvo Taavetti"
               "cn" "Teuvo"
               "givenName" "Teuvo"
@@ -19,8 +19,9 @@
 
 (deftest session-without-authentication
   (testing "GET current session without authentication"
-    (let [response (app (mock/request :get
-                                      "/ehoks/api/v1/session/opintopolku/"))
+    (let [response (app (mock/request
+                          :get
+                          "/ehoks-backend/api/v1/session/opintopolku/"))
           body (parse-body (:body response))]
       (is (= (:status response) 200))
       (is (empty? (:data body)))
@@ -34,21 +35,23 @@
 
 (deftest prevent-illegal-authentication
   (testing "Prevents illegal authentication"
-    (let [response (app (mock/request :post
-                                      "/ehoks/api/v1/session/opintopolku/"
-                                      {"FirstName" "Teuvo Taavetti"
-                                       "cn" "Teuvo"
-                                       "givenName" "Teuvo"
-                                       "hetu" "190384-9245"
-                                       "sn" "Testaaja"}))]
+    (let [response (app (mock/request
+                          :post
+                          "/ehoks-backend/api/v1/session/opintopolku/"
+                          {"FirstName" "Teuvo Taavetti"
+                           "cn" "Teuvo"
+                           "givenName" "Teuvo"
+                           "hetu" "190384-9245"
+                           "sn" "Testaaja"}))]
       (is (= (:status response) 400)))))
 
 (deftest session-authenticated
   (testing "GET current authenticated session"
     (let [auth-response (authenticate)
           session-cookie (first (get-in auth-response [:headers "Set-Cookie"]))
-          response (app (-> (mock/request :get
-                                          "/ehoks/api/v1/session/opintopolku/")
+          response (app (-> (mock/request
+                              :get
+                              "/ehoks-backend/api/v1/session/opintopolku/")
                             (mock/header :cookie session-cookie)))
           body (parse-body (:body response))]
       (is (= (:status response) 200))
@@ -58,8 +61,9 @@
 
 (deftest session-delete-unauthenticated
   (testing "DELETE unauthenticated session"
-    (let [response (app (mock/request :delete
-                                      "/ehoks/api/v1/session/opintopolku/"))
+    (let [response (app (mock/request
+                          :delete
+                          "/ehoks-backend/api/v1/session/opintopolku/"))
           body (parse-body (:body response))]
       (is (= (:status response) 200))
       (is (empty? (:data body))))))
@@ -69,16 +73,19 @@
     (let [auth-response (authenticate)
           session-cookie (first (get-in auth-response [:headers "Set-Cookie"]))
           authenticated-response
-          (app (-> (mock/request :get
-                                 "/ehoks/api/v1/session/opintopolku/")
+          (app (-> (mock/request
+                     :get
+                     "/ehoks-backend/api/v1/session/opintopolku/")
                    (mock/header :cookie session-cookie)))
           authenticated-body (parse-body (:body authenticated-response))
           delete-response
-          (app (-> (mock/request :delete
-                                 "/ehoks/api/v1/session/opintopolku/")
+          (app (-> (mock/request
+                     :delete
+                     "/ehoks-backend/api/v1/session/opintopolku/")
                    (mock/header :cookie session-cookie)))
-          response (app (-> (mock/request :get
-                                          "/ehoks/api/v1/session/opintopolku/")
+          response (app (-> (mock/request
+                              :get
+                              "/ehoks-backend/api/v1/session/opintopolku/")
                             (mock/header :cookie session-cookie)))
           body (parse-body (:body response))]
       (is (= (:status authenticated-response) 200))
