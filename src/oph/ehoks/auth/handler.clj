@@ -58,7 +58,11 @@
     (c-api/DELETE "/opintopolku/" []
       :summary "Delete Opintopolku session (logout)"
       :return (rest/response [s/Any])
-      (assoc (rest/rest-ok []) :session nil))
+      (assoc
+        (response/see-other
+          (format "%s?return=%"
+                  (:opintopolku-logout-url config) (:frontend-url config)))
+        :session nil))
 
     (c-api/GET "/opintopolku/" [:as request]
       :summary "Tunnistaa Opintopolku-käyttäjän"
