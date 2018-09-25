@@ -24,7 +24,7 @@
 
 (defn parse [headers]
   (-> headers
-      (select-keys ["FirstName" "cn" "givenName" "hetu" "oid" "security" "sn"])
+      (select-keys valid-headers)
       keywordize-keys
       (rename-keys {:FirstName :first-name :givenName :given-name
                     :sn :surname :cn :common-name})
