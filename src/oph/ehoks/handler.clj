@@ -8,7 +8,7 @@
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.auth.handler :as auth-handler]
-            [oph.ehoks.lokalisaatio.handler :as lokalisointi-handler]
+            [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.redis :refer [redis-store]]))
 
