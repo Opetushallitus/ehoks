@@ -4,7 +4,7 @@
   (:import [java.nio.charset StandardCharsets]))
 
 (def valid-headers
-  ["FirstName" "cn" "givenName" "hetu" "sn"])
+  ["firstname" "cn" "givenname" "hetu" "sn"])
 
 (defn validate [headers]
   (let [header-values (select-keys headers valid-headers)]
@@ -29,7 +29,7 @@
   (-> headers
       (select-keys valid-headers)
       keywordize-keys
-      (rename-keys {:FirstName :first-name :givenName :given-name
+      (rename-keys {:firstname :first-name :givenname :given-name
                     :sn :surname :cn :common-name})
       (update :first-name convert-to-utf-8)
       (update :given-name convert-to-utf-8)
