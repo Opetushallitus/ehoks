@@ -41,7 +41,7 @@
             [:session :user] (assoc session-user :oid oid))
           (throw (ex-info "No user found" user-info-response)))))
 
-    (c-api/GET "/opintopolku/" [:as request]
+    (c-api/GET "/" [:as request]
       :summary "Get current Opintopolku session"
       :return (rest/response [schema/User] :opintopolku-login-url s/Str)
       (let [{{:keys [user]} :session} request]
