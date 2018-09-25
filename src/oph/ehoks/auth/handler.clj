@@ -60,14 +60,16 @@
       :return (rest/response [s/Any])
       (assoc (rest/rest-ok []) :session nil))
 
-    (c-api/POST "/opintopolku/" [:as request]
-      :summary "Creates new Opintopolku session and redirects to frontend"
-      :description "Creates new Opintopolku session. After storing session
-                    http status 'See Other' (303) will be returned with url of
-                    frontend in configuration."
-      (when (not= (get-in request [:headers "referer"])
-                  (:opintopolku-login-url config))
-        (response/bad-request! "Misconfigured authentication"))
-      (let [user (opintopolku/parse (:form-params request))]
-        (assoc-in (response/see-other (:frontend-url config))
-                  [:session :user] user)))))
+    (c-api/GET "/opintopolku/" [:as request]
+      :summary "Tunnistaa Opintopolku-käyttäjän"
+      :description "Tunnistaa Opintopolku-käyttäjän ja luo uuden session
+                    proxyn headereista. Lopuksi käyttäjä ohjataan
+                    käyttöliittymän urliin."
+      (let [headers (:headers request)]
+        (when-let [result (opintopolku/validate headers)]
+          (throw (ex-info "Invalid headers"
+                          {:validation result
+                           :request request})))
+        (let [user (opintopolku/parse headers)]
+          (assoc-in (response/see-other (:frontend-url config))
+                    [:session :user] user))))))
