@@ -17,9 +17,9 @@ env:
 install:
   - git clone https://github.com/Opetushallitus/ci-tools.git
   - source ci-tools/common/setup-tools.sh
+  - lein deps
 
 script:
-  - lein deps
   - lein checkall
   - lein test
   - lein uberjar

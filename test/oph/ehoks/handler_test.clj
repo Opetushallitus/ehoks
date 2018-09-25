@@ -9,7 +9,7 @@
     (let [response (with-authentication
                      app
                      (mock/request
-                       :get "/ehoks/api/v1/non-existing-resource/"))]
+                       :get "/ehoks-backend/api/v1/non-existing-resource/"))]
       (is (= (:status response) 404)))))
 
 (deftest unatuhenticated
