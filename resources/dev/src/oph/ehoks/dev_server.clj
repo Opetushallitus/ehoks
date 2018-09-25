@@ -8,7 +8,8 @@
             [hiccup.core :refer [html]]
             [clojure.java.io :as io]
             [clojure.string :as c-str]
-            [oph.ehoks.mock-routes :as mock]))
+            [oph.ehoks.mock-routes :as mock]
+            [ring.middleware.cookies :refer [wrap-cookies]]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -60,7 +61,7 @@
 (def dev-app
   (wrap-dev-cors
     (routes
-      (wrap-reload #'mock/mock-routes)
+      (wrap-cookies (wrap-reload #'mock/mock-routes))
       (wrap-reload #'dev-routes)
       (wrap-reload #'app))))
 
