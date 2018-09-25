@@ -8,7 +8,7 @@
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.auth.handler :as auth-handler]
-            [oph.ehoks.lokalisaatio.handler :as lokalisaatio-handler]
+            [oph.ehoks.lokalisaatio.handler :as lokalisointi-handler]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.redis :refer [redis-store]]))
 
@@ -27,7 +27,7 @@
 
         healthcheck-handler/routes
         auth-handler/routes
-        lokalisaatio-handler/routes))
+        lokalisointi-handler/routes))
 
     (c-api/undocumented
       (compojure-route/not-found (not-found {:reason "Route not found"})))))
@@ -44,6 +44,8 @@
    {:uri #"^/ehoks-backend/api/v1/healthcheck$"
     :request-method :get}
    {:uri #"^/ehoks-backend/doc/*"
+    :request-method :get}
+    {:uri #"^/ehoks-backend/api/v1/lokalisointi$"
     :request-method :get}])
 
 (def app
