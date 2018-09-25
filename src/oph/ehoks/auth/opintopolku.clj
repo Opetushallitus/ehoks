@@ -6,10 +6,13 @@
 (def valid-headers
   ["FirstName" "cn" "givenName" "hetu" "sn"])
 
-(defn valid? [headers]
+(defn validate [headers]
   (let [header-values (select-keys headers valid-headers)]
-    (and (= (keys header-values) valid-headers)
-         (every? some? header-values))))
+    (loop [valid-keys valid-headers]
+      (when-let [k (peek valid-keys)]
+        (if (nil? (get headers k))
+          (format "Header %s is missing" k)
+          (recur (pop valid-keys)))))))
 
 (defn convert [value src dest]
   (-> value
