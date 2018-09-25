@@ -45,7 +45,7 @@
     :request-method :get}
    {:uri #"^/ehoks-backend/doc/*"
     :request-method :get}
-    {:uri #"^/ehoks-backend/api/v1/lokalisointi$"
+   {:uri #"^/ehoks-backend/api/v1/lokalisointi$"
     :request-method :get}])
 
 (def app
