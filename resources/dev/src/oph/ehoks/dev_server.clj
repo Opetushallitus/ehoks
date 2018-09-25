@@ -38,15 +38,24 @@
           (not-found "{}"))
         [:headers "Content-Type"] "application/json"))))
 
+(defn set-cors [response]
+  (-> response
+      (assoc-in [:headers "Access-Control-Allow-Origin"]
+                (:frontend-url config))
+      (assoc-in [:headers "Access-Control-Allow-Credentials"] "true")
+      (assoc-in [:headers "Access-Control-Allow-Methods"]
+                "GET, PUT, POST, DELETE, OPTIONS")))
+
 (defn wrap-dev-cors [handler]
-  (fn [request]
-    (let [response (handler request)]
-      (-> response
-          (assoc-in [:headers "Access-Control-Allow-Origin"]
-                    (:frontend-url config))
-          (assoc-in [:headers "Access-Control-Allow-Credentials"] "true")
-          (assoc-in [:headers "Access-Control-Allow-Methods"]
-                    "GET, PUT, POST, DELETE, OPTIONS")))))
+  (fn
+    ([request respond raise]
+       (handler
+         request
+         (fn [response] (respond (set-cors response)))
+         raise))
+    ([request]
+      (let [response (handler request)]
+        (set-cors response)))))
 
 (def dev-app
   (wrap-dev-cors
@@ -60,7 +69,8 @@
   (prn "Not safe for production or public environments.")
   (jetty/run-jetty dev-app
                    {:port  (:port config)
-                    :join? false}))
+                    :join? false
+                    :async? true}))
 
 (defn -main []
   (start-server))
