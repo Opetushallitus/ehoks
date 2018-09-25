@@ -47,9 +47,15 @@
                 "GET, PUT, POST, DELETE, OPTIONS")))
 
 (defn wrap-dev-cors [handler]
-  (fn [request]
-    (let [response (handler request)]
-      (set-cors response))))
+  (fn
+    ([request respond raise]
+       (handler
+         request
+         (fn [response] (respond (set-cors response)))
+         raise))
+    ([request]
+      (let [response (handler request)]
+        (set-cors response)))))
 
 (def dev-app
   (wrap-dev-cors
@@ -63,7 +69,8 @@
   (prn "Not safe for production or public environments.")
   (jetty/run-jetty dev-app
                    {:port  (:port config)
-                    :join? false}))
+                    :join? false
+                    :async? true}))
 
 (defn -main []
   (start-server))
