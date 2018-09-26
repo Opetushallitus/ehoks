@@ -5,6 +5,20 @@
             [clojure.java.io :as io])
   (:import [java.nio.charset StandardCharsets]))
 
+(deftest keys-to-lower-test
+  (testing "Converting map keys to lower"
+    (is (= (o/keys-to-lower
+             {"camelCase" "camelCase-value"
+              "snake-case" "snake-case-value"
+              "UPPER" "UPPER value"
+              "lower" "lower value"})
+           {"camelcase" "camelCase-value"
+            "snake-case" "snake-case-value"
+            "upper" "UPPER value"
+            "lower" "lower value"}))
+    (is (= (o/keys-to-lower {}) {}))
+    (is (= (o/keys-to-lower nil) {}))))
+
 (deftest convert-test
   (testing "Converting string encoding"
     (let [str-utf-8 "Example string"]
