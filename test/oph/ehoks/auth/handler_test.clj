@@ -9,40 +9,38 @@
 
 (defn authenticate []
   (app (-> (mock/request
-             :post "/ehoks-backend/api/v1/session/opintopolku/"
-             {"FirstName" "Teuvo Taavetti"
-              "cn" "Teuvo"
-              "givenName" "Teuvo"
-              "hetu" "190384-9245"
-              "sn" "Testaaja"})
-           (mock/header "referer" (:opintopolku-login-url config)))))
+             :get "/ehoks-backend/api/v1/session/opintopolku/")
+           (mock/header "FirstName" "Teuvo Testi")
+           (mock/header "cn" "Teuvo")
+           (mock/header "givenname" "Teuvo")
+           (mock/header "hetu" "190384-9245")
+           (mock/header "sn" "Testaaja"))))
 
 (deftest session-without-authentication
   (testing "GET current session without authentication"
     (let [response (app (mock/request
                           :get
-                          "/ehoks-backend/api/v1/session/opintopolku/"))
-          body (parse-body (:body response))]
-      (is (= (:status response) 200))
-      (is (empty? (:data body)))
-      (is (= (get-in body [:meta :opintopolku-login-url])
-             (:opintopolku-login-url config))))))
+                          "/ehoks-backend/api/v1/session/"))]
+      (is (= (:status response) 401))
+      (is (empty? (:body response))))))
 
 (deftest session-authenticate
   (testing "POST authenticate"
     (let [response (authenticate)]
-      (is (= (:status response) 303)))))
+      (is (= (:status response) 200)))))
 
-(deftest prevent-illegal-authentication
-  (testing "Prevents illegal authentication"
-    (let [response (app (mock/request
-                          :post
-                          "/ehoks-backend/api/v1/session/opintopolku/"
-                          {"FirstName" "Teuvo Taavetti"
-                           "cn" "Teuvo"
-                           "givenName" "Teuvo"
-                           "hetu" "190384-9245"
-                           "sn" "Testaaja"}))]
+(deftest prevent-malformed-authentication
+  (testing "Prevents malformed authentication"
+    (let [response (app (-> (mock/request
+                              :get "/ehoks-backend/api/v1/session/opintopolku/"
+                              {"FirstName" "Teuvo Testi"
+                               "cn" "Teuvo"
+                               "hetu" "190384-9245"
+                               "sn" "Testaaja"})
+                            (mock/header "FirstName" "Teuvo Testi")
+                            (mock/header "cn" "Teuvo")
+                            (mock/header "givenname" "Teuvo")
+                            (mock/header "sn" "Testaaja")))]
       (is (= (:status response) 400)))))
 
 (deftest session-authenticated
