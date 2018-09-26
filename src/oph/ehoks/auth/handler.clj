@@ -60,7 +60,7 @@
       :return (rest/response [s/Any])
       (assoc
         (response/see-other
-          (format "%s?return=%"
+          (format "%s?return=%s"
                   (:opintopolku-logout-url config) (:frontend-url config)))
         :session nil))
 
