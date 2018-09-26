@@ -47,15 +47,17 @@
 
 (deftest valid-headers
   (testing "Validating Opintopolku headers"
-    (is (o/valid? {"FirstName" "Teuvo Taavetti"
-                   "cn" "Teuvo"
-                   "givenName" "Teuvo"
-                   "hetu" "010203-XXXX"
-                   "sn" "Testaaja"
-                   "other" "Header"}))
-    (is (not (o/valid? {"FirstName" "Teuvo Taavetti"
+    (is (nil?
+          (o/validate {"FirstName" "Teuvo Taavetti"
+                       "cn" "Teuvo"
+                       "givenName" "Teuvo"
+                       "hetu" "010203-XXXX"
+                       "sn" "Testaaja"
+                       "other" "Header"})))
+    (is (= (o/validate {"FirstName" "Teuvo Taavetti"
                         "givenName" "Teuvo"
                         "hetu" "010203-XXXX"
-                        "sn" "Testaaja"})))
-    (is (not (o/valid? {})))
-    (is (not (o/valid? nil)))))
+                        "sn" "Testaaja"})
+           "Header cn is missing"))
+    (is (some? (o/validate {})))
+    (is (some? (o/validate nil)))))
