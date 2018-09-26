@@ -57,15 +57,6 @@
                             :common-name "Teuvo"
                             :surname "Testaaja"}])))))
 
-(deftest session-delete-unauthenticated
-  (testing "DELETE unauthenticated session"
-    (let [response (app (mock/request
-                          :delete
-                          "/ehoks-backend/api/v1/session/opintopolku/"))
-          body (parse-body (:body response))]
-      (is (= (:status response) 200))
-      (is (empty? (:data body))))))
-
 (deftest session-delete-authenticated
   (testing "DELETE authenticated session"
     (let [auth-response (authenticate)
