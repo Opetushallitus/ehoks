@@ -70,10 +70,8 @@
                     proxyn headereista. Lopuksi käyttäjä ohjataan
                     käyttöliittymän urliin."
       (let [headers (:headers request)]
-        (when-let [result (opintopolku/validate headers)]
-          (throw (ex-info "Invalid headers"
-                          {:validation result
-                           :request request})))
-        (let [user (opintopolku/parse headers)]
-          (assoc-in (response/see-other (:frontend-url config))
-                    [:session :user] user))))))
+        (if-let [result (opintopolku/validate headers)]
+          (response/bad-request) ; TODO log validate result
+          (let [user (opintopolku/parse headers)]
+            (assoc-in (response/ok "")
+                      [:session :user] user)))))))
