@@ -1,13 +1,21 @@
 (ns oph.ehoks.auth.opintopolku
   (:require [clojure.walk :refer [keywordize-keys]]
-            [clojure.set :refer [rename-keys]])
+            [clojure.set :refer [rename-keys]]
+            [clojure.string :refer [lower-case]])
   (:import [java.nio.charset StandardCharsets]))
 
 (def valid-headers
   ["firstname" "cn" "givenname" "hetu" "sn"])
 
+(defn keys-to-lower [m]
+  (reduce
+    (fn [p [k v]]
+      (assoc p (lower-case k) v))
+    {}
+    m))
+
 (defn validate [headers]
-  (let [header-values (select-keys headers valid-headers)]
+  (let [header-values (select-keys (keys-to-lower headers) valid-headers)]
     (loop [valid-keys valid-headers]
       (when-let [k (peek valid-keys)]
         (if (nil? (get headers k))
@@ -27,6 +35,7 @@
 
 (defn parse [headers]
   (-> headers
+      keys-to-lower
       (select-keys valid-headers)
       keywordize-keys
       (rename-keys {:firstname :first-name :givenname :given-name
