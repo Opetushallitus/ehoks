@@ -81,6 +81,6 @@
              [{:first-name "Teuvo Testi"
                :common-name "Teuvo"
                :surname "Testaaja"}]))
-      (is (= (:status response) 200))
-      (is (= (:status delete-response) 200))
-      (is (empty? (:data body))))))
+      (is (= (:status response) 401))
+      (is (= (:status delete-response) 303))
+      (is (empty? (:body response))))))
