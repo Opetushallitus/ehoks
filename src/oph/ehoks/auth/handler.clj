@@ -42,7 +42,7 @@
           (throw (ex-info "No user found" user-info-response)))))
 
     (c-api/GET "/" [:as request]
-      :summary "Get current Opintopolku session"
+      :summary "Käyttäjän istunto"
       :return (rest/response [schema/User] :opintopolku-login-url s/Str)
       (let [{{:keys [user]} :session} request]
         (rest/rest-ok
