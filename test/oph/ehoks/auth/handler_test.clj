@@ -49,7 +49,7 @@
           session-cookie (first (get-in auth-response [:headers "Set-Cookie"]))
           response (app (-> (mock/request
                               :get
-                              "/ehoks-backend/api/v1/session/opintopolku/")
+                              "/ehoks-backend/api/v1/session/")
                             (mock/header :cookie session-cookie)))
           body (parse-body (:body response))]
       (is (= (:status response) 200))
@@ -64,19 +64,18 @@
           authenticated-response
           (app (-> (mock/request
                      :get
-                     "/ehoks-backend/api/v1/session/opintopolku/")
+                     "/ehoks-backend/api/v1/session/")
                    (mock/header :cookie session-cookie)))
           authenticated-body (parse-body (:body authenticated-response))
           delete-response
           (app (-> (mock/request
                      :delete
-                     "/ehoks-backend/api/v1/session/opintopolku/")
+                     "/ehoks-backend/api/v1/session/")
                    (mock/header :cookie session-cookie)))
           response (app (-> (mock/request
                               :get
-                              "/ehoks-backend/api/v1/session/opintopolku/")
-                            (mock/header :cookie session-cookie)))
-          body (parse-body (:body response))]
+                              "/ehoks-backend/api/v1/session/")
+                            (mock/header :cookie session-cookie)))]
       (is (= (:status authenticated-response) 200))
       (is (= (:data authenticated-body)
              [{:first-name "Teuvo Taavetti"
