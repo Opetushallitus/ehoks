@@ -53,7 +53,7 @@
                             (mock/header :cookie session-cookie)))
           body (parse-body (:body response))]
       (is (= (:status response) 200))
-      (is (= (:data body) [{:first-name "Teuvo Taavetti"
+      (is (= (:data body) [{:first-name "Teuvo Testi"
                             :common-name "Teuvo"
                             :surname "Testaaja"}])))))
 
@@ -78,7 +78,7 @@
                             (mock/header :cookie session-cookie)))]
       (is (= (:status authenticated-response) 200))
       (is (= (:data authenticated-body)
-             [{:first-name "Teuvo Taavetti"
+             [{:first-name "Teuvo Testi"
                :common-name "Teuvo"
                :surname "Testaaja"}]))
       (is (= (:status response) 200))
