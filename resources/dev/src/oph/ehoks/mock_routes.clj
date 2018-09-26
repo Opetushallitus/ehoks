@@ -8,7 +8,8 @@
             [clojure.java.io :as io]
             [clojure.string :as c-str]
             [cheshire.core :as cheshire]
-            [clj-http.client :as client]))
+            [clj-http.client :as client]
+            [ring.middleware.cookies :as cookies]))
 
 (defn- json-response [value]
   (assoc-in
@@ -18,7 +19,23 @@
       [:headers "Content-Type"] "application/json"))
 
 (defroutes mock-routes
-  (GET "/auth-dev/opintopolku-login/" [] (html dev-login-form))
+  (GET "/auth-dev/opintopolku-login/" request
+    (let [result
+          (client/get
+            (:opintopolku-return-url config)
+            {:headers {"firstname" "Teuvo Taavetti"
+                       "cn" "Teuvo"
+                       "givenname" "Teuvo"
+                       "hetu" "190384-9245"
+                       "sn" "Testaaja"}})
+          cookie (-> (get-in result [:cookies "ring-session"])
+                     (update :expires str)
+                     (dissoc :version :discard))]
+      (assoc
+        (response/ok)
+        :cookies
+        {"ring-session" cookie})))
+
   (POST "/cas-dev/tickets" request
     (response/created
       (format
