@@ -18,7 +18,7 @@
   (let [header-values (select-keys (keys-to-lower headers) valid-headers)]
     (loop [valid-keys valid-headers]
       (when-let [k (peek valid-keys)]
-        (if (nil? (get headers k))
+        (if (nil? (get header-values k))
           (format "Header %s is missing" k)
           (recur (pop valid-keys)))))))
 
