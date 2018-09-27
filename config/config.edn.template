@@ -5,7 +5,7 @@
  :opintopolku-login-url "{{ehoks_opintopolku_login_url}}"
  :opintopolku-return-url "{{ehoks_opintopolku_return_url}}"
  :eperusteet-url "{{ehoks_eperusteet_url}}"
- :localization-url "{{ehoks_localization_url}}"
+ :lokalisointi-url "{{ehoks_localization_url}}"
  :oppijanumerorekisteri-url "{{ehoks_oppijanumerorekisteri_url}}"
  :cas-service-ticket-url "{{ehoks_cas_service_ticket_url}}"
  :cas-username "{{ehoks_cas_username}}"

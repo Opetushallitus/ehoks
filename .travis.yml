@@ -17,14 +17,15 @@ env:
 install:
   - git clone https://github.com/Opetushallitus/ci-tools.git
   - source ci-tools/common/setup-tools.sh
+  - lein deps
 
 script:
-  - lein deps
   - lein checkall
   - lein test
   - lein uberjar
   - mv target/ehoks-standalone.jar $DOCKER_BUILD_DIR/artifact/ehoks.jar
-  - cp config/config.edn.template $DOCKER_BUILD_DIR/config/
+  - mkdir -p $DOCKER_BUILD_DIR/config/config
+  - cp -v config/default.edn config/config.edn.template $DOCKER_BUILD_DIR/config/config/
   - export BASE_IMAGE="base-legacy:0.1"
   - ./ci-tools/common/pull-image.sh
   - ./ci-tools/build/build-fatjar.sh ehoks
@@ -32,6 +33,8 @@ script:
 deploy:
   provider: script
   script: ./ci-tools/build/upload-image.sh ehoks
+  on:
+    all_branches: true
 
 cache:
   directories:

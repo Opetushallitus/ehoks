@@ -30,11 +30,13 @@
               :database-url s/Str
               :redis-url (s/maybe s/Str)
               :opintopolku-login-url s/Str
+              :opintopolku-logout-url s/Str
               :opintopolku-return-url s/Str
               :eperusteet-url (s/maybe s/Str)
-              :localization-url (s/maybe s/Str)
+              :lokalisointi-url (s/maybe s/Str)
               (s/optional-key :oppijanumerorekisteri-url) (s/maybe s/Str)
               (s/optional-key :cas-service-ticket-url) (s/maybe s/Str)
               (s/optional-key :cas-username) (s/maybe s/Str)
               (s/optional-key :cas-password) (s/maybe s/Str)
-              (s/optional-key :client-sub-system-code) (s/maybe s/Str)})
+              (s/optional-key :client-sub-system-code) (s/maybe s/Str)
+              (s/optional-key :session-max-age) s/Int})

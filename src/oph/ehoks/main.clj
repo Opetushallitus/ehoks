@@ -9,4 +9,5 @@
         config    (var-get (resolve 'oph.ehoks.config/config))
         app       (resolve 'oph.ehoks.handler/app)]
     (run-jetty app {:port  (:port config)
-                    :join? true})))
+                    :join? true
+                    :async? true})))
