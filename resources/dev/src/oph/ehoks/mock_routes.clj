@@ -33,7 +33,7 @@
                      (update :expires str)
                      (dissoc :version :discard))]
       (assoc
-        (response/see-other (:frontend-url config))
+        (response/see-other (get-in result [:headers "Location"]))
         :cookies
         {"ring-session" cookie})))
 
