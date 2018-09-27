@@ -75,5 +75,5 @@
         (if-let [result (opintopolku/validate headers)]
           (response/bad-request) ; TODO log validate result
           (let [user (opintopolku/parse headers)]
-            (assoc-in (see-other/ok (:frontend-url config))
+            (assoc-in (response/see-other (:frontend-url config))
                       [:session :user] user)))))))
