@@ -1,41 +1,47 @@
 (ns oph.ehoks.hoks.schema
   (:require [schema.core :as s]))
 
-(s/defschema OsaamisenTyyppi
-             "Osaamisen tyyppi"
-             (s/enum
-               :valmentava :valmistava :syventava :olemassaoleva
-               :muu-todennettu :muu))
-
-(s/defschema Osaamisala
-             "Osaamisala koodistosta"
-             {:versio s/Int
-              :uri s/Str})
-
-(s/defschema Osaaminen
-             "HOKSin olemassa oleva osaaminen"
-             {:tyyppi OsaamisenTyyppi
-              :hoks-id s/Int
-              :perusteet-diaarinumero s/Str
-              :osaamisala Osaamisala
-              :suorituspvm s/Inst
-              :todentaja s/Str
+(s/defschema TodennettuOsaaminen
+             "Todennettu osaaminen"
+             {:tutkinnon-osan-koodi s/Str
               (s/optional-key :liitteet) [s/Str]})
 
-(s/defschema SuunniteltuOsaaminen
-             "HOKSin puuttuvan osaamisen hankkimisen suunnitelma"
-             {:tyyppi OsaamisenTyyppi
-              :hoks-id s/Int
-              :perusteet-diaarinumero s/Str
-              :osaamisala Osaamisala
-              :suoritustapa (s/enum
-                              :lahiopetus :verkko-oppimisymparisto
-                              :monimuoto :tyopaikalla)
-              :sisalto s/Str
+(s/defschema TodentamatonOsaaminen
+             "Todentamaton osaaminen"
+             {:nimi s/Str
+              :kuvaus s/Str
+              :laajuus s/Str
+              :kesto s/Str
+              :suorituspvm s/Inst
+              (s/optional-key :liitteet) [s/Str]})
+
+(s/defschema TukevaOpinto
+             "Opiskeluvalmiuksia tukevat opinnot"
+             {:nimi s/Str
+              :kuvaus s/Str
+              :kesto-paivina s/Int
               :alku s/Inst
-              :loppu s/Inst
+              :loppu s/Inst})
+
+
+
+(s/defschema PuuttuvaOsaaminen
+             "Puuttuva osaaminen"
+             {:tutkinnon-osan-koodi s/Str
+              :tutkinnon-koodi s/Str
+              :ohjaaja s/Str
+              :osaamisen-hankkimistavat
+              [{:alku s/Inst
+                :loppu s/Inst
+                :osaamisen-hankkimistapa
+                {:tunniste {:koodisto-koodi s/Str
+                            :koodisto-uri s/Str
+                            :versio s/Int}}}]
+
+              :sisalto s/Str
               :organisaatio s/Str
               :keskeiset-tehtavat [s/Str]
+
               :ohjaus-ja-tuki s/Bool
               :erityinen-tuki s/Bool})
 
@@ -57,6 +63,7 @@
                 :luotu s/Inst
                 :hyvaksytty s/Inst
                 :paivitetty s/Inst
-                :osaamiset [Osaaminen]
-                :koulutukset [Osaaminen]
-                :suunnitellut-osaamiset [SuunniteltuOsaaminen]}))
+                :todennetut-osaamiset [TodennettuOsaaminen]
+                :todentamattomat-osaamiset [TodentamatonOsaaminen]
+                :tukevat-opinnot [TukevaOpinto]
+                :puuttuvat-osaamiset [PuuttuvaOsaaminen]}))
