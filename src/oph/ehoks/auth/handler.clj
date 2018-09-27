@@ -12,7 +12,7 @@
   (c-api/context "/session" []
 
     (c-api/GET "/user-info" [:as request]
-      :summary "Get current user info"
+      :summary "Palauttaa istunnon käyttäjän tiedot"
       :return (rest/response [schema/UserInfo])
       (let [session-user (get-in request [:session :user])
             user-info-response (onr/find-student-by-oid (:oid session-user))
@@ -23,7 +23,7 @@
           (throw (ex-info "External system error" user-info-response)))))
 
     (c-api/POST "/update-user-info" [:as request]
-      :summary "Updates session user info from Oppijanumerorekisteri"
+      :summary "Päivittää istunnon käyttäjän tiedot Oppijanumerorekisteristä"
       :return (rest/response [schema/User])
       (let [session-user (get-in request [:session :user])
             user-info-response (onr/find-student-by-nat-id (:hetu session-user))
@@ -41,8 +41,8 @@
             [:session :user] (assoc session-user :oid oid))
           (throw (ex-info "No user found" user-info-response)))))
 
-    (c-api/GET "/opintopolku/" [:as request]
-      :summary "Get current Opintopolku session"
+    (c-api/GET "/" [:as request]
+      :summary "Käyttäjän istunto"
       :return (rest/response [schema/User] :opintopolku-login-url s/Str)
       (let [{{:keys [user]} :session} request]
         (rest/rest-ok
@@ -51,23 +51,28 @@
             [])
           :opintopolku-login-url (:opintopolku-login-url config))))
 
-    (c-api/OPTIONS "/opintopolku/" []
-      :summary "Options for session DELETE (logout)"
-      (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, POST, DELETE"))
+    (c-api/OPTIONS "/" []
+      (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, DELETE"))
 
-    (c-api/DELETE "/opintopolku/" []
-      :summary "Delete Opintopolku session (logout)"
-      :return (rest/response [s/Any])
-      (assoc (rest/rest-ok []) :session nil))
+    (c-api/DELETE "/" []
+      :summary "Uloskirjautuminen. Palauttaa uudelleenohjauksen Opintopolun
+                uloskirjautumiseen."
+      (assoc
+        (response/see-other
+          (format "%s?return=%s"
+                  (:opintopolku-logout-url config) (:frontend-url config)))
+        :session nil))
 
-    (c-api/POST "/opintopolku/" [:as request]
-      :summary "Creates new Opintopolku session and redirects to frontend"
-      :description "Creates new Opintopolku session. After storing session
-                    http status 'See Other' (303) will be returned with url of
-                    frontend in configuration."
-      (when (not= (get-in request [:headers "referer"])
-                  (:opintopolku-login-url config))
-        (response/bad-request! "Misconfigured authentication"))
-      (let [user (opintopolku/parse (:form-params request))]
-        (assoc-in (response/see-other (:frontend-url config))
-                  [:session :user] user)))))
+    (c-api/GET "/opintopolku/" [:as request]
+      :summary "Opintopolkutunnistautumisen päätepiste"
+      :description "Opintopolkutunnistautumisen jälkeen päädytään tänne.
+                    Sovellus ottaa käyttäjän tunnistetiedot headereista ja
+                    huolimatta metodin tyypistä luodaan uusi istunto. Tämä
+                    ulkoisen järjestelmän vuoksi.
+                    Lopuksi käyttäjä ohjataan käyttöliittymän urliin."
+      (let [headers (:headers request)]
+        (if-let [result (opintopolku/validate headers)]
+          (response/bad-request) ; TODO log validate result
+          (let [user (opintopolku/parse headers)]
+            (assoc-in (response/see-other (:frontend-url config))
+                      [:session :user] user)))))))

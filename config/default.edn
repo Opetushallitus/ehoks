@@ -3,7 +3,8 @@
  :database-url ""
  :redis-url nil
  :opintopolku-login-url "http://localhost:3000/auth-dev/opintopolku-login/"
- :opintopolku-return-url "/ehoks-backend/api/v1/session/opintopolku/"
+ :opintopolku-logout-url "http://localhost:3000/auth-dev/Logout"
+ :opintopolku-return-url "http://localhost:3000/ehoks-backend/api/v1/session/opintopolku/"
  :eperusteet-url "https://eperusteet.opintopolku.fi/eperusteet-service/api"
  :lokalisointi-url "https://virkailija.testiopintopolku.fi/lokalisointi/cxf/rest/v1/localisation"
  :oppijanumerorekisteri-url "http://localhost:3000/oppijanumerorekisteri-service"

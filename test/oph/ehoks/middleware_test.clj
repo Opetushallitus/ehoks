@@ -69,9 +69,8 @@
 
 (deftest private-sync-unauthorized
   (testing "Private sync route without authorization"
-    (is (thrown-with-msg?
-          clojure.lang.ExceptionInfo #"HTTP 401"
-          (test-app (mock/request :get "/sync/"))))))
+    (let [response (test-app (mock/request :get "/sync/"))]
+      (is (= (:status response) 401)))))
 
 (deftest private-async
   (testing "Private async route"
@@ -86,6 +85,5 @@
 
 (deftest private-async-unauthorized
   (testing "Private async route without authorization"
-    (is (thrown-with-msg?
-          clojure.lang.ExceptionInfo #"HTTP 401"
-          (handle-async test-app (mock/request :get "/async/"))))))
+    (let [response (handle-async test-app (mock/request :get "/async/"))]
+      (is (= (:status response) 401)))))

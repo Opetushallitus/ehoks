@@ -14,6 +14,5 @@
 
 (deftest unatuhenticated
   (testing "GET unauthenticated route"
-    (is (thrown-with-msg?
-          clojure.lang.ExceptionInfo #"HTTP 401"
-          (app (mock/request :get "/some-non-existing/route"))))))
+    (let [response (app (mock/request :get "/some-non-existing/route"))]
+      (is (= (:status response) 401)))))

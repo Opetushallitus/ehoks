@@ -4,14 +4,12 @@
             [oph.ehoks.config :refer [config]]))
 
 (defn get-auth-cookie [app]
-  (-> (mock/request
-        :post "/ehoks-backend/api/v1/session/opintopolku/"
-        {"FirstName" "Teuvo Taavetti"
-         "cn" "Teuvo"
-         "givenName" "Teuvo"
-         "hetu" "190384-9245"
-         "sn" "Testaaja"})
-      (mock/header "referer" (:opintopolku-login-url config))
+  (-> (mock/request :get "/ehoks-backend/api/v1/session/opintopolku/")
+      (mock/header "FirstName" "Teuvo Testi")
+      (mock/header "cn" "Teuvo")
+      (mock/header "givenname" "Teuvo")
+      (mock/header "hetu" "190384-9245")
+      (mock/header "sn" "Testaaja")
       (app)
       (get-in [:headers "Set-Cookie"])
       (first)))

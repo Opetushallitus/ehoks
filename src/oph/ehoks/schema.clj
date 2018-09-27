@@ -26,6 +26,7 @@
               :database-url s/Str
               :redis-url (s/maybe s/Str)
               :opintopolku-login-url s/Str
+              :opintopolku-logout-url s/Str
               :opintopolku-return-url s/Str
               :eperusteet-url (s/maybe s/Str)
               :lokalisointi-url (s/maybe s/Str)

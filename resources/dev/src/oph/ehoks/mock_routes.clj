@@ -7,22 +7,9 @@
             [hiccup.core :refer [html]]
             [clojure.java.io :as io]
             [clojure.string :as c-str]
-            [cheshire.core :as cheshire]))
-
-(def dev-login-form
-  [:div
-   [:form {:action (:opintopolku-return-url config) :method "POST"}
-    [:label "FirstName"
-     [:input {:type "text" :name "FirstName" :value "Teuvo Taavetti"}]]
-    [:label "cn"
-     [:input {:type "text" :name "cn" :value "Teuvo"}]]
-    [:label "givenName"
-     [:input {:type "text" :name "givenName" :value "Teuvo"}]]
-    [:label "hetu"
-     [:input {:type "text" :name "hetu" :value "190384-9245"}]]
-    [:label "sn"
-     [:input {:type "text" :name "sn" :value "Testaaja"}]]
-    [:button {:type "submit" :value "submit"} "Login"]]])
+            [cheshire.core :as cheshire]
+            [clj-http.client :as client]
+            [ring.middleware.cookies :as cookies]))
 
 (defn- json-response [value]
   (assoc-in
@@ -32,14 +19,33 @@
       [:headers "Content-Type"] "application/json"))
 
 (defroutes mock-routes
-  (GET "/auth-dev/opintopolku-login/" [] (html dev-login-form))
+  (GET "/auth-dev/opintopolku-login/" request
+    (let [result
+          (client/get
+            (:opintopolku-return-url config)
+            {:redirect-strategy :none
+             :headers {"firstname" "Teuvo Taavetti"
+                       "cn" "Teuvo"
+                       "givenname" "Teuvo"
+                       "hetu" "190384-9245"
+                       "sn" "Testaaja"}})
+          cookie (-> (get-in result [:cookies "ring-session"])
+                     (update :expires str)
+                     (dissoc :version :discard))]
+      (assoc
+        (response/see-other (get-in result [:headers "Location"]))
+        :cookies
+        {"ring-session" cookie})))
+
   (POST "/cas-dev/tickets" request
     (response/created
       (format
         "http://localhost:%d/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc"
         (:port config))))
+
   (POST "/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc" []
     (response/ok "ST-1234-aBcDeFgHiJkLmN123456-cas.1234567890ab"))
+
   (GET "/oppijanumerorekisteri-service/henkilo" request
     (json-response
       {:results
@@ -48,6 +54,7 @@
          :etunimet "Vapautettu"
          :kutsumanimi "Testi"
          :sukunimi "Maksullinen"}]}))
+
   (GET "/oppijanumerorekisteri-service/henkilo/*" []
     (json-response
       {:oidHenkilo "1.2.246.562.24.78058065184"
