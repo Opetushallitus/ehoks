@@ -65,13 +65,15 @@
         :session nil))
 
     (c-api/GET "/opintopolku/" [:as request]
-      :summary "Tunnistaa Opintopolku-käyttäjän"
-      :description "Tunnistaa Opintopolku-käyttäjän ja luo uuden session
-                    proxyn headereista. Lopuksi käyttäjä ohjataan
-                    käyttöliittymän urliin."
+      :summary "Opintopolkutunnistautumisen päätepiste"
+      :description "Opintopolkutunnistautumisen jälkeen päädytään tänne.
+                    Sovellus ottaa käyttäjän tunnistetiedot headereista ja
+                    huolimatta metodin tyypistä luodaan uusi istunto. Tämä
+                    ulkoisen järjestelmän vuoksi.
+                    Lopuksi käyttäjä ohjataan käyttöliittymän urliin."
       (let [headers (:headers request)]
         (if-let [result (opintopolku/validate headers)]
           (response/bad-request) ; TODO log validate result
           (let [user (opintopolku/parse headers)]
-            (assoc-in (response/ok "")
+            (assoc-in (see-other/ok (:frontend-url config))
                       [:session :user] user)))))))
