@@ -12,7 +12,7 @@
   (c-api/context "/session" []
 
     (c-api/GET "/user-info" [:as request]
-      :summary "Get current user info"
+      :summary "Palauttaa istunnon käyttäjän tiedot"
       :return (rest/response [schema/UserInfo])
       (let [session-user (get-in request [:session :user])
             user-info-response (onr/find-student-by-oid (:oid session-user))
@@ -23,7 +23,7 @@
           (throw (ex-info "External system error" user-info-response)))))
 
     (c-api/POST "/update-user-info" [:as request]
-      :summary "Updates session user info from Oppijanumerorekisteri"
+      :summary "Päivittää istunnon käyttäjän tiedot Oppijanumerorekisteristä"
       :return (rest/response [schema/User])
       (let [session-user (get-in request [:session :user])
             user-info-response (onr/find-student-by-nat-id (:hetu session-user))
@@ -52,11 +52,11 @@
           :opintopolku-login-url (:opintopolku-login-url config))))
 
     (c-api/OPTIONS "/" []
-      :summary "Options for session DELETE (logout)"
       (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, DELETE"))
 
     (c-api/DELETE "/" []
-      :summary "Delete Opintopolku session (logout)"
+      :summary "Uloskirjautuminen. Palauttaa uudelleenohjauksen Opintopolun
+                uloskirjautumiseen."
       :return (rest/response [s/Any])
       (assoc
         (response/see-other
