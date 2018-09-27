@@ -41,13 +41,7 @@
 
 (s/defschema HOKSArvot
              "HOKS arvot uuden HOKSin luomiseen"
-             {:oppijan-oid s/Str
-              :urasuunnitelma s/Str
-              :tutkintotavoite s/Str
-              :tutkinnon-perusteet-diaarinumero s/Str
-              :osaamisala Osaamisala
-              :opiskeluoikeus-alkupvm s/Inst
-              :opiskeluoikeus-paattymispvm s/Inst})
+             {:urasuunnitelma s/Str})
 
 (s/defschema HOKS
              "HOKS"
