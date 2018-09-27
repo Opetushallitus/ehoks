@@ -4,7 +4,7 @@ Backend for eHOKS
 
 **Version:** 0.0.1
 
-### /ehoks/api/v1/healthcheck
+### /ehoks-backend/api/v1/healthcheck
 ---
 ##### ***GET***
 **Summary:** Service healthcheck status
@@ -15,75 +15,40 @@ Backend for eHOKS
 | ---- | ----------- | ------ |
 | 200 |  | [HealthcheckStatus](#healthcheckstatus) |
 
-### /ehoks/api/v1/education/info/
+### /ehoks-backend/api/v1/session/user-info
 ---
 ##### ***GET***
-**Summary:** System information for education provider
+**Summary:** Palauttaa istunnon käyttäjän tiedot
 
 **Responses**
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response104521](#response104521) |
+| 200 |  | [Response97672](#response97672) |
 
-### /ehoks/api/v1/work/info/
----
-##### ***GET***
-**Summary:** System information for workplace provider
-
-**Responses**
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 |  | [Response104522](#response104522) |
-
-### /ehoks/api/v1/student/info/
----
-##### ***GET***
-**Summary:** System information for student
-
-**Responses**
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 |  | [Response104523](#response104523) |
-
-### /ehoks/api/v1/session/user-info
----
-##### ***GET***
-**Summary:** Get current user info
-
-**Responses**
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 |  | [Response104524](#response104524) |
-
-### /ehoks/api/v1/session/update-user-info
+### /ehoks-backend/api/v1/session/update-user-info
 ---
 ##### ***POST***
-**Summary:** Updates session user info from Oppijanumerorekisteri
+**Summary:** Päivittää istunnon käyttäjän tiedot Oppijanumerorekisteristä
 
 **Responses**
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response104525](#response104525) |
+| 200 |  | [Response97673](#response97673) |
 
-### /ehoks/api/v1/session/opintopolku/
+### /ehoks-backend/api/v1/session
 ---
 ##### ***GET***
-**Summary:** Get current Opintopolku session
+**Summary:** Käyttäjän istunto
 
 **Responses**
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response104526](#response104526) |
+| 200 |  | [Response97674](#response97674) |
 
 ##### ***OPTIONS***
-**Summary:** Options for session DELETE (logout)
-
 **Responses**
 
 | Code | Description |
@@ -91,20 +56,8 @@ Backend for eHOKS
 | default |  |
 
 ##### ***DELETE***
-**Summary:** Delete Opintopolku session (logout)
-
-**Responses**
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 |  | [Response104527](#response104527) |
-
-##### ***POST***
-**Summary:** Creates new Opintopolku session and redirects to frontend
-
-**Description:** Creates new Opintopolku session. After storing session
-                    http status 'See Other' (303) will be returned with url of
-                    frontend in configuration.
+**Summary:** Uloskirjautuminen. Palauttaa uudelleenohjauksen Opintopolun
+                uloskirjautumiseen.
 
 **Responses**
 
@@ -112,24 +65,24 @@ Backend for eHOKS
 | ---- | ----------- |
 | default |  |
 
-### /ehoks/api/v1/localization
+### /ehoks-backend/api/v1/session/opintopolku/
 ---
 ##### ***GET***
-**Summary:** Localizations for ehoks
+**Summary:** Opintopolkutunnistautumisen päätepiste
 
-**Parameters**
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| category | query |  | No | string |
+**Description:** Opintopolkutunnistautumisen jälkeen päädytään tänne.
+                    Sovellus ottaa käyttäjän tunnistetiedot headereista ja
+                    huolimatta metodin tyypistä luodaan uusi istunto. Tämä
+                    ulkoisen järjestelmän vuoksi.
+                    Lopuksi käyttäjä ohjataan käyttöliittymän urliin.
 
 **Responses**
 
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 |  | [Response104528](#response104528) |
+| Code | Description |
+| ---- | ----------- |
+| default |  |
 
-### /ehoks/api/v1/hoks/{id}
+### /ehoks-backend/api/v1/hoks/{id}
 ---
 ##### ***GET***
 **Summary:** Palauttaa HOKSin
@@ -144,9 +97,9 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response104529](#response104529) |
+| 200 |  | [Response97675](#response97675) |
 
-### /ehoks/api/v1/hoks
+### /ehoks-backend/api/v1/hoks
 ---
 ##### ***POST***
 **Summary:** Luo uuden HOKSin
@@ -161,9 +114,9 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response104530](#response104530) |
+| 200 |  | [Response97676](#response97676) |
 
-### /ehoks/api/v1/hoks/{id}/osaamiset/
+### /ehoks-backend/api/v1/hoks/{id}/osaamiset/
 ---
 ##### ***POST***
 **Summary:** Lisää HOKSiin olemassa oleva osaaminen
@@ -179,9 +132,9 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response104531](#response104531) |
+| 200 |  | [Response97677](#response97677) |
 
-### /ehoks/api/v1/hoks/{id}/koulutukset/
+### /ehoks-backend/api/v1/hoks/{id}/koulutukset/
 ---
 ##### ***POST***
 **Summary:** Lisää HOKSiin koulutus
@@ -197,9 +150,9 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response104532](#response104532) |
+| 200 |  | [Response97678](#response97678) |
 
-### /ehoks/api/v1/hoks/{id}/suunnitellut-osaamiset/
+### /ehoks-backend/api/v1/hoks/{id}/suunnitellut-osaamiset/
 ---
 ##### ***POST***
 **Summary:** Lisää HOKSiin suunniteltu osaaminen
@@ -215,7 +168,24 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response104533](#response104533) |
+| 200 |  | [Response97679](#response97679) |
+
+### /ehoks-backend/api/v1/lokalisointi
+---
+##### ***GET***
+**Summary:** Localizations for ehoks
+
+**Parameters**
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| category | query |  | No | string |
+
+**Responses**
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 |  | [Response97680](#response97680) |
 
 ### Models
 ---
@@ -227,47 +197,30 @@ Backend for eHOKS
 | suunnitellut-osaamiset | [ [SuunniteltuOsaaminen](#suunniteltuosaaminen) ] |  | Yes |
 | paivittajan-oid | string |  | Yes |
 | koulutukset | [ [Osaaminen](#osaaminen) ] |  | Yes |
-| oppijan-oid | string |  | Yes |
 | luotu | dateTime |  | Yes |
 | osaamiset | [ [Osaaminen](#osaaminen) ] |  | Yes |
-| osaamisala | [Osaamisala](#osaamisala) |  | Yes |
-| tutkintotavoite | string |  | Yes |
 | hyvaksytty | dateTime |  | Yes |
 | luonnin-hyvaksyjan-oid | string |  | Yes |
-| opiskeluoikeus-paattymispvm | dateTime |  | Yes |
+| opiskeluoikeus-oid | string |  | Yes |
 | id | long |  | Yes |
 | versio | long |  | Yes |
 | paivityksen-hyvaksyjan-oid | string |  | Yes |
 | paivitetty | dateTime |  | Yes |
-| tutkinnon-perusteet-diaarinumero | string |  | Yes |
 | luojan-oid | string |  | Yes |
 | urasuunnitelma | string |  | Yes |
-| opiskeluoikeus-alkupvm | dateTime |  | Yes |
 
 ### HOKSArvot  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| oppijan-oid | string |  | Yes |
+| opiskeluoikeus-oid | string |  | Yes |
 | urasuunnitelma | string |  | Yes |
-| tutkintotavoite | string |  | Yes |
-| tutkinnon-perusteet-diaarinumero | string |  | Yes |
-| osaamisala | [Osaamisala](#osaamisala) |  | Yes |
-| opiskeluoikeus-alkupvm | dateTime |  | Yes |
-| opiskeluoikeus-paattymispvm | dateTime |  | Yes |
 
 ### HealthcheckStatus  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | HealthcheckStatus | object |  |  |
-
-### Information  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| basic-information | [Translated](#translated) |  | Yes |
-| hoks-process | [Translated](#translated) |  | Yes |
 
 ### Osaaminen  
 
@@ -279,7 +232,7 @@ Backend for eHOKS
 | osaamisala | [Osaamisala](#osaamisala) |  | Yes |
 | suorituspvm | dateTime |  | Yes |
 | todentaja | string |  | Yes |
-| liitteet | [ string ] |  | Yes |
+| liitteet | [ string ] |  | No |
 
 ### Osaamisala  
 
@@ -294,119 +247,132 @@ Backend for eHOKS
 | ---- | ---- | ----------- | -------- |
 | uri | string |  | Yes |
 
-### Response104521  
+### Response97672  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response104521Meta](#response104521meta) |  | Yes |
-| data | [ [Information](#information) ] |  | Yes |
-
-### Response104521Meta  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| Response104521Meta | object |  |  |
-
-### Response104522  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| meta | [Response104522Meta](#response104522meta) |  | Yes |
-| data | [ [Information](#information) ] |  | Yes |
-
-### Response104522Meta  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| Response104522Meta | object |  |  |
-
-### Response104523  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| meta | [Response104523Meta](#response104523meta) |  | Yes |
-| data | [ [Information](#information) ] |  | Yes |
-
-### Response104523Meta  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| Response104523Meta | object |  |  |
-
-### Response104524  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| meta | [Response104524Meta](#response104524meta) |  | Yes |
+| meta | [Response97672Meta](#response97672meta) |  | Yes |
 | data | [ [UserInfo](#userinfo) ] |  | Yes |
 
-### Response104524DataContactValuesGroup  
+### Response97672DataContactValuesGroup  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | id | long |  | Yes |
-| contact | [ [Response104524DataContactValuesGroupContact](#response104524datacontactvaluesgroupcontact) ] |  | Yes |
+| contact | [ [Response97672DataContactValuesGroupContact](#response97672datacontactvaluesgroupcontact) ] |  | Yes |
 
-### Response104524DataContactValuesGroupContact  
+### Response97672DataContactValuesGroupContact  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | value | string |  | Yes |
 | type | string |  | Yes |
 
-### Response104524Meta  
+### Response97672Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response104524Meta | object |  |  |
+| Response97672Meta | object |  |  |
 
-### Response104525  
+### Response97673  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response104525Meta](#response104525meta) |  | Yes |
+| meta | [Response97673Meta](#response97673meta) |  | Yes |
 | data | [ [User](#user) ] |  | Yes |
 
-### Response104525Meta  
+### Response97673Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response104525Meta | object |  |  |
+| Response97673Meta | object |  |  |
 
-### Response104526  
+### Response97674  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response104526Meta](#response104526meta) |  | Yes |
+| meta | [Response97674Meta](#response97674meta) |  | Yes |
 | data | [ [User](#user) ] |  | Yes |
 
-### Response104526Meta  
+### Response97674Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | opintopolku-login-url | string |  | Yes |
 
-### Response104527  
+### Response97675  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response104527Meta](#response104527meta) |  | Yes |
-| data | [  ] |  | Yes |
+| meta | [Response97675Meta](#response97675meta) |  | Yes |
+| data | [HOKS](#hoks) |  | Yes |
 
-### Response104527Meta  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| Response104527Meta | object |  |  |
-
-### Response104528  
+### Response97675Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response104528Meta](#response104528meta) |  | Yes |
-| data | [ [Response104528Data](#response104528data) ] |  | Yes |
+| Response97675Meta | object |  |  |
 
-### Response104528Data  
+### Response97676  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| meta | [Response97676Meta](#response97676meta) |  | Yes |
+| data | [POSTResponse](#postresponse) |  | Yes |
+
+### Response97676Meta  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| Response97676Meta | object |  |  |
+
+### Response97677  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| meta | [Response97677Meta](#response97677meta) |  | Yes |
+| data | [POSTResponse](#postresponse) |  | Yes |
+
+### Response97677Meta  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| Response97677Meta | object |  |  |
+
+### Response97678  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| meta | [Response97678Meta](#response97678meta) |  | Yes |
+| data | [POSTResponse](#postresponse) |  | Yes |
+
+### Response97678Meta  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| Response97678Meta | object |  |  |
+
+### Response97679  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| meta | [Response97679Meta](#response97679meta) |  | Yes |
+| data | [POSTResponse](#postresponse) |  | Yes |
+
+### Response97679Meta  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| Response97679Meta | object |  |  |
+
+### Response97680  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| meta | [Response97680Meta](#response97680meta) |  | Yes |
+| data | [ [Response97680Data](#response97680data) ] |  | Yes |
+
+### Response97680Data  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -423,76 +389,11 @@ Backend for eHOKS
 | id | long |  | Yes |
 | modifiedBy | string |  | Yes |
 
-### Response104528Meta  
+### Response97680Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response104528Meta | object |  |  |
-
-### Response104529  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| meta | [Response104529Meta](#response104529meta) |  | Yes |
-| data | [HOKS](#hoks) |  | Yes |
-
-### Response104529Meta  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| Response104529Meta | object |  |  |
-
-### Response104530  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| meta | [Response104530Meta](#response104530meta) |  | Yes |
-| data | [POSTResponse](#postresponse) |  | Yes |
-
-### Response104530Meta  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| Response104530Meta | object |  |  |
-
-### Response104531  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| meta | [Response104531Meta](#response104531meta) |  | Yes |
-| data | [POSTResponse](#postresponse) |  | Yes |
-
-### Response104531Meta  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| Response104531Meta | object |  |  |
-
-### Response104532  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| meta | [Response104532Meta](#response104532meta) |  | Yes |
-| data | [POSTResponse](#postresponse) |  | Yes |
-
-### Response104532Meta  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| Response104532Meta | object |  |  |
-
-### Response104533  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| meta | [Response104533Meta](#response104533meta) |  | Yes |
-| data | [POSTResponse](#postresponse) |  | Yes |
-
-### Response104533Meta  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| Response104533Meta | object |  |  |
+| Response97680Meta | object |  |  |
 
 ### SuunniteltuOsaaminen  
 
@@ -511,14 +412,6 @@ Backend for eHOKS
 | organisaatio | string |  | Yes |
 | ohjaus-ja-tuki | boolean |  | Yes |
 
-### Translated  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| fi | string |  | Yes |
-| en | string |  | No |
-| sv | string |  | No |
-
 ### User  
 
 | Name | Type | Description | Required |
@@ -536,4 +429,4 @@ Backend for eHOKS
 | first-name | string |  | Yes |
 | common-name | string |  | Yes |
 | surname | string |  | Yes |
-| contact-values-group | [ [Response104524DataContactValuesGroup](#response104524datacontactvaluesgroup) ] |  | No |
+| contact-values-group | [ [Response97672DataContactValuesGroup](#response97672datacontactvaluesgroup) ] |  | No |
