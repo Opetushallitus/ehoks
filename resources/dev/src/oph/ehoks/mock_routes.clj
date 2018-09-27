@@ -42,8 +42,10 @@
       (format
         "http://localhost:%d/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc"
         (:port config))))
+
   (POST "/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc" []
     (response/ok "ST-1234-aBcDeFgHiJkLmN123456-cas.1234567890ab"))
+
   (GET "/oppijanumerorekisteri-service/henkilo" request
     (json-response
       {:results
@@ -52,6 +54,7 @@
          :etunimet "Vapautettu"
          :kutsumanimi "Testi"
          :sukunimi "Maksullinen"}]}))
+
   (GET "/oppijanumerorekisteri-service/henkilo/*" []
     (json-response
       {:oidHenkilo "1.2.246.562.24.78058065184"
