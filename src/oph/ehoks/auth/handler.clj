@@ -57,7 +57,6 @@
     (c-api/DELETE "/" []
       :summary "Uloskirjautuminen. Palauttaa uudelleenohjauksen Opintopolun
                 uloskirjautumiseen."
-      :return (rest/response [s/Any])
       (assoc
         (response/see-other
           (format "%s?return=%s"
