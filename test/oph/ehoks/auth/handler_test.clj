@@ -27,7 +27,7 @@
 (deftest session-authenticate
   (testing "POST authenticate"
     (let [response (authenticate)]
-      (is (= (:status response) 200)))))
+      (is (= (:status response) 303)))))
 
 (deftest prevent-malformed-authentication
   (testing "Prevents malformed authentication"
