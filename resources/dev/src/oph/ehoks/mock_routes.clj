@@ -23,7 +23,8 @@
     (let [result
           (client/get
             (:opintopolku-return-url config)
-            {:headers {"firstname" "Teuvo Taavetti"
+            {:redirect-strategy :none
+             :headers {"firstname" "Teuvo Taavetti"
                        "cn" "Teuvo"
                        "givenname" "Teuvo"
                        "hetu" "190384-9245"
