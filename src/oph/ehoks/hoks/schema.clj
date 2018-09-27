@@ -41,7 +41,8 @@
 
 (s/defschema HOKSArvot
              "HOKS arvot uuden HOKSin luomiseen"
-             {:urasuunnitelma s/Str})
+             {:opiskeluoikeus-oid s/Str
+              :urasuunnitelma s/Str})
 
 (s/defschema HOKS
              "HOKS"
