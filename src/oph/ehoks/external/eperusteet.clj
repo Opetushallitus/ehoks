@@ -5,7 +5,10 @@
 
 (defn search-perusteet-info [quali-name]
   (-> (client/get (format "%s/perusteet/info" (:eperusteet-url config))
-                  {:query-params {"nimi" quali-name}})
+                  {:query-params {:nimi nimi
+                                  :tutkintonimikkeet true
+                                  :tutkinnonosat true
+                                  :osaamisalat true}})
       :body
       (cheshire/parse-string true)
       :data))
