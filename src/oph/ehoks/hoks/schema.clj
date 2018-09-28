@@ -1,5 +1,8 @@
 (ns oph.ehoks.hoks.schema
-  (:require [schema.core :as s]))
+  (:require [schema.core :as s])
+  (:import (java.time LocalDate)))
+
+(def KoskiDate LocalDate)
 
 (s/defschema KoodistoKoodi
              "Koodisto-koodi"
@@ -18,7 +21,7 @@
               :kuvaus s/Str
               :laajuus s/Str
               :kesto s/Str
-              :suorituspvm s/Inst
+              :suorituspvm KoskiDate
               :tyyppi (s/enum :arvioijan-kautta :nayton-kautta)
               (s/optional-key :tunniste) (s/maybe KoodistoKoodi)
               (s/optional-key :yto-koodi) (s/maybe s/Str)
@@ -29,10 +32,8 @@
              {:nimi s/Str
               :kuvaus s/Str
               :kesto-paivina s/Int
-              :alku s/Inst
-              :loppu s/Inst})
-
-
+              :alku KoskiDate
+              :loppu KoskiDate})
 
 (s/defschema PuuttuvaOsaaminen
              "Puuttuva osaaminen"
@@ -40,8 +41,8 @@
               :tutkinnon-koodi s/Str
               :vastaava-ohjaaja s/Str
               :osaamisen-hankkimistavat
-              [{:alku s/Inst
-                :loppu s/Inst
+              [{:alku KoskiDate
+                :loppu KoskiDate
                 :osaamisen-hankkimistapa
                 {:tunniste KoodistoKoodi}}]
 
