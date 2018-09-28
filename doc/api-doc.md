@@ -24,7 +24,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response245153](#response245153) |
+| 200 |  | [Response178716](#response178716) |
 
 ### /ehoks-backend/api/v1/session/update-user-info
 ---
@@ -35,7 +35,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response245154](#response245154) |
+| 200 |  | [Response178717](#response178717) |
 
 ### /ehoks-backend/api/v1/session
 ---
@@ -46,7 +46,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response245155](#response245155) |
+| 200 |  | [Response178718](#response178718) |
 
 ##### ***OPTIONS***
 **Responses**
@@ -97,7 +97,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response245156](#response245156) |
+| 200 |  | [Response178719](#response178719) |
 
 ### /ehoks-backend/api/v1/hoks
 ---
@@ -114,7 +114,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response245157](#response245157) |
+| 200 |  | [Response178720](#response178720) |
 
 ### /ehoks-backend/api/v1/hoks/{id}/todennetut-osaamiset/
 ---
@@ -125,14 +125,14 @@ Backend for eHOKS
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Osaaminen | body |  | Yes | [Osaaminen](#osaaminen) |
+| TodennettuOsaaminen | body |  | Yes | [TodennettuOsaaminen](#todennettuosaaminen) |
 | id | path |  | Yes | string |
 
 **Responses**
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response245158](#response245158) |
+| 200 |  | [Response178721](#response178721) |
 
 ### /ehoks-backend/api/v1/hoks/{id}/todentamattomat-osaamiset/
 ---
@@ -143,14 +143,14 @@ Backend for eHOKS
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Osaaminen | body |  | Yes | [Osaaminen](#osaaminen) |
+| TodentamatonOsaaminen | body |  | Yes | [TodentamatonOsaaminen](#todentamatonosaaminen) |
 | id | path |  | Yes | string |
 
 **Responses**
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response245159](#response245159) |
+| 200 |  | [Response178722](#response178722) |
 
 ### /ehoks-backend/api/v1/hoks/{id}/tukevat-opinnot/
 ---
@@ -161,14 +161,14 @@ Backend for eHOKS
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Osaaminen | body |  | Yes | [Osaaminen](#osaaminen) |
+| TukevaOpinto | body |  | Yes | [TukevaOpinto](#tukevaopinto) |
 | id | path |  | Yes | string |
 
 **Responses**
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response245160](#response245160) |
+| 200 |  | [Response178723](#response178723) |
 
 ### /ehoks-backend/api/v1/hoks/{id}/puuttuvat-osaamiset/
 ---
@@ -179,14 +179,14 @@ Backend for eHOKS
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| Osaaminen | body |  | Yes | [Osaaminen](#osaaminen) |
+| PuuttuvaOsaaminen | body |  | Yes | [PuuttuvaOsaaminen](#puuttuvaosaaminen) |
 | id | path |  | Yes | string |
 
 **Responses**
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response245161](#response245161) |
+| 200 |  | [Response178724](#response178724) |
 
 ### /ehoks-backend/api/v1/lokalisointi
 ---
@@ -203,7 +203,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response245162](#response245162) |
+| 200 |  | [Response178725](#response178725) |
 
 ### Models
 ---
@@ -241,24 +241,13 @@ Backend for eHOKS
 | ---- | ---- | ----------- | -------- |
 | HealthcheckStatus | object |  |  |
 
-### Osaaminen  
+### KoodistoKoodi  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| todentaja | string |  | Yes |
-| osaamisala | [Osaamisala](#osaamisala) |  | Yes |
-| liitteet | [ string ] |  | No |
-| suorituspvm | dateTime |  | Yes |
-| perusteet-diaarinumero | string |  | Yes |
-| hoks-id | long |  | Yes |
-| tyyppi | string |  | Yes |
-
-### Osaamisala  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
+| koodisto-koodi | string |  | Yes |
+| koodisto-uri | string |  | Yes |
 | versio | long |  | Yes |
-| uri | string |  | Yes |
 
 ### POSTResponse  
 
@@ -272,175 +261,195 @@ Backend for eHOKS
 | ---- | ---- | ----------- | -------- |
 | tutkinnon-osan-koodi | string |  | Yes |
 | tutkinnon-koodi | string |  | Yes |
-| osaamisen-hankkimistavat | [ [Response245156DataPuuttuvatOsaamisetOsaamisenHankkimistavat](#response245156datapuuttuvatosaamisetosaamisenhankkimistavat) ] |  | Yes |
+| osaamisen-hankkimistavat | [ [PuuttuvaOsaaminenOsaamisenHankkimistavat](#puuttuvaosaaminenosaamisenhankkimistavat) ] |  | Yes |
 | keskeiset-tehtavat | [ string ] |  | Yes |
 | erityinen-tuki | boolean |  | Yes |
-| ohjaaja | string |  | Yes |
+| vastaava-ohjaaja | string |  | Yes |
 | sisalto | string |  | Yes |
-| organisaatio | string |  | Yes |
+| organisaatio | [PuuttuvaOsaaminenOrganisaatio](#puuttuvaosaaminenorganisaatio) |  | Yes |
 | ohjaus-ja-tuki | boolean |  | Yes |
 
-### Response245153  
+### PuuttuvaOsaaminenOrganisaatio  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response245153Meta](#response245153meta) |  | Yes |
+| nimi | string |  | Yes |
+| y-tunnus | string |  | Yes |
+
+### PuuttuvaOsaaminenOsaamisenHankkimistavat  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| alku | date |  | Yes |
+| loppu | date |  | Yes |
+| osaamisen-hankkimistapa | [PuuttuvaOsaaminenOsaamisenHankkimistavatOsaamisenHankkimistapa](#puuttuvaosaaminenosaamisenhankkimistavatosaamisenhankkimistapa) |  | Yes |
+
+### PuuttuvaOsaaminenOsaamisenHankkimistavatOsaamisenHankkimistapa  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| tunniste | [KoodistoKoodi](#koodistokoodi) |  | Yes |
+
+### Response178716  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| meta | [Response178716Meta](#response178716meta) |  | Yes |
 | data | [ [UserInfo](#userinfo) ] |  | Yes |
 
-### Response245153DataContactValuesGroup  
+### Response178716DataContactValuesGroup  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | id | long |  | Yes |
-| contact | [ [Response245153DataContactValuesGroupContact](#response245153datacontactvaluesgroupcontact) ] |  | Yes |
+| contact | [ [Response178716DataContactValuesGroupContact](#response178716datacontactvaluesgroupcontact) ] |  | Yes |
 
-### Response245153DataContactValuesGroupContact  
+### Response178716DataContactValuesGroupContact  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | value | string |  | Yes |
 | type | string |  | Yes |
 
-### Response245153Meta  
+### Response178716Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response245153Meta | object |  |  |
+| Response178716Meta | object |  |  |
 
-### Response245154  
+### Response178717  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response245154Meta](#response245154meta) |  | Yes |
+| meta | [Response178717Meta](#response178717meta) |  | Yes |
 | data | [ [User](#user) ] |  | Yes |
 
-### Response245154Meta  
+### Response178717Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response245154Meta | object |  |  |
+| Response178717Meta | object |  |  |
 
-### Response245155  
+### Response178718  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response245155Meta](#response245155meta) |  | Yes |
+| meta | [Response178718Meta](#response178718meta) |  | Yes |
 | data | [ [User](#user) ] |  | Yes |
 
-### Response245155Meta  
+### Response178718Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | opintopolku-login-url | string |  | Yes |
 
-### Response245156  
+### Response178719  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response245156Meta](#response245156meta) |  | Yes |
+| meta | [Response178719Meta](#response178719meta) |  | Yes |
 | data | [HOKS](#hoks) |  | Yes |
 
-### Response245156DataPuuttuvatOsaamisetOsaamisenHankkimistavat  
+### Response178719DataPuuttuvatOsaamisetOrganisaatio  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| alku | dateTime |  | Yes |
-| loppu | dateTime |  | Yes |
-| osaamisen-hankkimistapa | [Response245156DataPuuttuvatOsaamisetOsaamisenHankkimistavatOsaamisenHankkimistapa](#response245156datapuuttuvatosaamisetosaamisenhankkimistavatosaamisenhankkimistapa) |  | Yes |
+| nimi | string |  | Yes |
+| y-tunnus | string |  | Yes |
 
-### Response245156DataPuuttuvatOsaamisetOsaamisenHankkimistavatOsaamisenHankkimistapa  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| tunniste | [Response245156DataPuuttuvatOsaamisetOsaamisenHankkimistavatOsaamisenHankkimistapaTunniste](#response245156datapuuttuvatosaamisetosaamisenhankkimistavatosaamisenhankkimistapatunniste) |  | Yes |
-
-### Response245156DataPuuttuvatOsaamisetOsaamisenHankkimistavatOsaamisenHankkimistapaTunniste  
+### Response178719DataPuuttuvatOsaamisetOsaamisenHankkimistavat  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| koodisto-koodi | string |  | Yes |
-| koodisto-uri | string |  | Yes |
-| versio | long |  | Yes |
+| alku | date |  | Yes |
+| loppu | date |  | Yes |
+| osaamisen-hankkimistapa | [Response178719DataPuuttuvatOsaamisetOsaamisenHankkimistavatOsaamisenHankkimistapa](#response178719datapuuttuvatosaamisetosaamisenhankkimistavatosaamisenhankkimistapa) |  | Yes |
 
-### Response245156Meta  
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| Response245156Meta | object |  |  |
-
-### Response245157  
+### Response178719DataPuuttuvatOsaamisetOsaamisenHankkimistavatOsaamisenHankkimistapa  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response245157Meta](#response245157meta) |  | Yes |
+| tunniste | [KoodistoKoodi](#koodistokoodi) |  | Yes |
+
+### Response178719Meta  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| Response178719Meta | object |  |  |
+
+### Response178720  
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| meta | [Response178720Meta](#response178720meta) |  | Yes |
 | data | [POSTResponse](#postresponse) |  | Yes |
 
-### Response245157Meta  
+### Response178720Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response245157Meta | object |  |  |
+| Response178720Meta | object |  |  |
 
-### Response245158  
+### Response178721  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response245158Meta](#response245158meta) |  | Yes |
+| meta | [Response178721Meta](#response178721meta) |  | Yes |
 | data | [POSTResponse](#postresponse) |  | Yes |
 
-### Response245158Meta  
+### Response178721Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response245158Meta | object |  |  |
+| Response178721Meta | object |  |  |
 
-### Response245159  
+### Response178722  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response245159Meta](#response245159meta) |  | Yes |
+| meta | [Response178722Meta](#response178722meta) |  | Yes |
 | data | [POSTResponse](#postresponse) |  | Yes |
 
-### Response245159Meta  
+### Response178722Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response245159Meta | object |  |  |
+| Response178722Meta | object |  |  |
 
-### Response245160  
+### Response178723  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response245160Meta](#response245160meta) |  | Yes |
+| meta | [Response178723Meta](#response178723meta) |  | Yes |
 | data | [POSTResponse](#postresponse) |  | Yes |
 
-### Response245160Meta  
+### Response178723Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response245160Meta | object |  |  |
+| Response178723Meta | object |  |  |
 
-### Response245161  
+### Response178724  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response245161Meta](#response245161meta) |  | Yes |
+| meta | [Response178724Meta](#response178724meta) |  | Yes |
 | data | [POSTResponse](#postresponse) |  | Yes |
 
-### Response245161Meta  
+### Response178724Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response245161Meta | object |  |  |
+| Response178724Meta | object |  |  |
 
-### Response245162  
+### Response178725  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response245162Meta](#response245162meta) |  | Yes |
-| data | [ [Response245162Data](#response245162data) ] |  | Yes |
+| meta | [Response178725Meta](#response178725meta) |  | Yes |
+| data | [ [Response178725Data](#response178725data) ] |  | Yes |
 
-### Response245162Data  
+### Response178725Data  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -457,29 +466,32 @@ Backend for eHOKS
 | id | long |  | Yes |
 | modifiedBy | string |  | Yes |
 
-### Response245162Meta  
+### Response178725Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response245162Meta | object |  |  |
+| Response178725Meta | object |  |  |
 
 ### TodennettuOsaaminen  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| tutkinnon-osan-koodi | string |  | Yes |
+| tunniste | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 | liitteet | [ string ] |  | No |
 
 ### TodentamatonOsaaminen  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| nimi | string |  | Yes |
 | kuvaus | string |  | Yes |
+| suorituspvm | date |  | Yes |
+| yto-koodi | string |  | No |
+| nimi | string |  | Yes |
 | laajuus | string |  | Yes |
 | kesto | string |  | Yes |
-| suorituspvm | dateTime |  | Yes |
 | liitteet | [ string ] |  | No |
+| tunniste | [KoodistoKoodi](#koodistokoodi) |  | No |
+| tyyppi | string |  | Yes |
 
 ### TukevaOpinto  
 
@@ -488,8 +500,8 @@ Backend for eHOKS
 | nimi | string |  | Yes |
 | kuvaus | string |  | Yes |
 | kesto-paivina | long |  | Yes |
-| alku | dateTime |  | Yes |
-| loppu | dateTime |  | Yes |
+| alku | date |  | Yes |
+| loppu | date |  | Yes |
 
 ### User  
 
@@ -508,4 +520,4 @@ Backend for eHOKS
 | first-name | string |  | Yes |
 | common-name | string |  | Yes |
 | surname | string |  | Yes |
-| contact-values-group | [ [Response245153DataContactValuesGroup](#response245153datacontactvaluesgroup) ] |  | No |
+| contact-values-group | [ [Response178716DataContactValuesGroup](#response178716datacontactvaluesgroup) ] |  | No |
