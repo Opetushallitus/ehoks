@@ -7,16 +7,6 @@
             [oph.ehoks.external.eperusteet :as eperusteet]
             [clojure.core.async :as a]))
 
-(defn- map-perusteet [values]
-  (map
-    (fn [v]
-      (-> (select-keys v [:id :nimi :osaamisalat :tutkintonmimikkeet])
-          (update :nimi select-keys [:fi :en :sv])
-          (update :osaamisalat (fn [x] (map #(select-keys % [:nimi]) x)))
-          (update :tutkintonimikkeet
-                  (fn [x] (map #(select-keys % [:nimi]) x)))))
-    values))
-
 (def routes
   (c-api/context "/external" []
 
@@ -26,5 +16,5 @@
       :return (rest/response [schema/Peruste])
       (a/go
         (let [data (eperusteet/search-perusteet-info nimi)
-              values (map-perusteet data)]
+              values (eperusteet/map-perusteet data)]
           (rest/rest-ok values))))))
