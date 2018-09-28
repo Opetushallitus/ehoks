@@ -3,7 +3,7 @@
             [clj-http.client :as client]
             [cheshire.core :as cheshire]))
 
-(defn search-qualification-info [quali-name]
+(defn search-perusteet-info [quali-name]
   (-> (client/get (format "%s/perusteet/info" (:eperusteet-url config))
                   {:query-params {"nimi" quali-name}})
       :body
