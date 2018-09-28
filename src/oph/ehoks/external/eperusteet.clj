@@ -3,7 +3,7 @@
             [clj-http.client :as client]
             [cheshire.core :as cheshire]))
 
-(defn search-perusteet-info [quali-name]
+(defn search-perusteet-info [nimi]
   (-> (client/get (format "%s/perusteet/info" (:eperusteet-url config))
                   {:query-params {:nimi nimi
                                   :tutkintonimikkeet true
