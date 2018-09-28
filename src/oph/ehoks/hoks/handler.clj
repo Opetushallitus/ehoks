@@ -21,24 +21,24 @@
 
     (c-api/POST "/:id/todennetut-osaamiset/" []
       :summary "Lisää HOKSiin todennettu osaaminen"
-      :body [_ hoks-schema/Osaaminen]
+      :body [_ hoks-schema/TodennettuOsaaminen]
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))
 
     (c-api/POST "/:id/todentamattomat-osaamiset/" []
       :summary "Lisää HOKSiin todentamaton osaaminen"
-      :body [_ hoks-schema/Osaaminen]
+      :body [_ hoks-schema/TodentamatonOsaaminen]
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))
 
     (c-api/POST "/:id/tukevat-opinnot/" []
       :summary "Lisää HOKSiin opiskeluvalmiuksia tukeva opinto"
-      :body [_ hoks-schema/Osaaminen]
+      :body [_ hoks-schema/TukevaOpinto]
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))
 
     (c-api/POST "/:id/puuttuvat-osaamiset/" []
       :summary "Lisää HOKSiin puuttuvan osaamisen hankkiminen"
-      :body [_ hoks-schema/Osaaminen]
+      :body [_ hoks-schema/PuuttuvaOsaaminen]
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))))
