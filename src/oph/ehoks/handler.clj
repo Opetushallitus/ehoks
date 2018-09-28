@@ -48,6 +48,8 @@
    {:uri #"^/ehoks-backend/doc/*"
     :request-method :get}
    {:uri #"^/ehoks-backend/api/v1/lokalisointi$"
+    :request-method :get}
+   {:uri #"^/ehoks-backend/api/v1/external/eperusteet/$"
     :request-method :get}])
 
 (def app
