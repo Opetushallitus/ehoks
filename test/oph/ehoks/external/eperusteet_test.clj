@@ -22,5 +22,7 @@
                      :en "Test"}
               :osaamisalat (vector {:nimi {:fi "Testiala"
                                            :sv "Test kunskapsområde"}})
-              :tutkintonimikkeet (vector {:nimi {:fi "Testinimike"
-                                                 :en "Test qualification title"}})})))))
+              :tutkintonimikkeet
+              (vector
+                {:nimi {:fi "Testinimike"
+                        :en "Test qualification title"}})})))))
