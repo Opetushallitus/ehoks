@@ -1,9 +1,15 @@
 (ns oph.ehoks.hoks.schema
   (:require [schema.core :as s]))
 
+(s/defschema KoodistoKoodi
+             "Koodisto-koodi"
+             {:koodisto-koodi s/Str
+              :koodisto-uri s/Str
+              :versio s/Int})
+
 (s/defschema TodennettuOsaaminen
              "Todennettu osaaminen"
-             {:tutkinnon-osan-koodi s/Str
+             {:tunniste KoodistoKoodi
               (s/optional-key :liitteet) [s/Str]})
 
 (s/defschema TodentamatonOsaaminen
@@ -13,6 +19,9 @@
               :laajuus s/Str
               :kesto s/Str
               :suorituspvm s/Inst
+              :tyyppi (s/enum :arvioijan-kautta :nayton-kautta)
+              (s/optional-key :tunniste) (s/maybe KoodistoKoodi)
+              (s/optional-key :yto-koodi) (s/maybe s/Str)
               (s/optional-key :liitteet) [s/Str]})
 
 (s/defschema TukevaOpinto
@@ -29,17 +38,16 @@
              "Puuttuva osaaminen"
              {:tutkinnon-osan-koodi s/Str
               :tutkinnon-koodi s/Str
-              :ohjaaja s/Str
+              :vastaava-ohjaaja s/Str
               :osaamisen-hankkimistavat
               [{:alku s/Inst
                 :loppu s/Inst
                 :osaamisen-hankkimistapa
-                {:tunniste {:koodisto-koodi s/Str
-                            :koodisto-uri s/Str
-                            :versio s/Int}}}]
+                {:tunniste KoodistoKoodi}}]
 
               :sisalto s/Str
-              :organisaatio s/Str
+              :organisaatio {:nimi s/Str
+                             :y-tunnus s/Str}
               :keskeiset-tehtavat [s/Str]
 
               :ohjaus-ja-tuki s/Bool
