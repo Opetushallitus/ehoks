@@ -12,4 +12,5 @@
     (c-api/GET "/environment" [:as request]
       :summary "Palauttaa ympäristön tiedot ja asetukset"
       :return (rest/response schema/Environment)
-      (rest/rest-ok (select-keys config [:opintopolku-login-url])))))
+      (rest/rest-ok (select-keys config [:opintopolku-login-url
+                                         :eperusteet-peruste-url])))))

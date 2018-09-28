@@ -3,4 +3,5 @@
 
 (s/defschema Environment
              "Ympäristön tiedot ja asetukset"
-             {:opintopolku-login-url s/Str})
+             {:opintopolku-login-url s/Str
+              :eperusteet-peruste-url s/Str})
