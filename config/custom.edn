@@ -1,6 +1,6 @@
 {:version "17.9.2018 testiympäristöjen käyttöön"
  :opintopolku-login-url "http://localhost:3000/auth-dev/opintopolku-login/"
- :opintopolku-return-url "/ehoks/api/v1/session/opintopolku/"
+ :opintopolku-return-url "http://localhost:3000/ehoks-backend/api/v1/session/opintopolku/"
  :eperusteet-url "https://eperusteet.opintopolku.fi/eperusteet-service/api"
  :oppijanumerorekisteri-url
  "https://virkailija.testiopintopolku.fi/oppijanumerorekisteri-service"
