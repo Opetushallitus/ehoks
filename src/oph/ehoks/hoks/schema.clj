@@ -23,8 +23,7 @@
               :kesto s/Str
               :suorituspvm KoskiDate
               :lahde (s/enum :arvioija :naytto)
-              (s/optional-key :tunniste) (s/maybe KoodistoKoodi)
-              (s/optional-key :yto-koodi) (s/maybe s/Str)
+              :koulutusmoduuli KoulutusModuuli
               (s/optional-key :liitteet) [s/Str]})
 
 (s/defschema TukevaOpinto
@@ -37,10 +36,10 @@
 
 (s/defschema KoulutusModuuli
              "Koulutusmoduuli"
-             :tunniste KoodistoKoodi
-             :kieli KoodistoKoodi
-             :pakollinen s/Bool
-             :laajuus s/Int)
+             {:tunniste KoodistoKoodi
+              :kieli KoodistoKoodi
+              :pakollinen s/Bool
+              :laajuus s/Int})
 
 (s/defschema PuuttuvaOsaaminen
              "Puuttuva osaaminen"
