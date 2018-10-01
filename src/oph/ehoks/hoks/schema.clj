@@ -43,7 +43,7 @@
 
 (s/defschema PuuttuvaOsaaminen
              "Puuttuva osaaminen"
-             {:koulutusmoduuli KoulutusModuuli
+             {:koulutusmoduuli Koulutusmoduuli
               :vastaava-ohjaaja s/Str
               :osaamisen-hankkimistavat
               [{:alku KoskiDate
