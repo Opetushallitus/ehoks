@@ -83,10 +83,4 @@
                :surname "Testaaja"}]))
       (is (= (:status response) 401))
       (is (= (:status delete-response) 200))
-      (is (= (:status delete-response) 200))
-      (let [body (parse-body (:body delete-response))]
-        (is (= (get-in body [:meta :opintopolku-logout-url])
-               (format "%s?return=%s/%s"
-                       (:opintopolku-logout-url config)
-                       (:frontend-url config)
-                       (:frontend-url-path config))))))))
+      (is (= (:status delete-response) 200)))))
