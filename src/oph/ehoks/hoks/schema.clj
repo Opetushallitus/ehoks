@@ -10,9 +10,16 @@
               :koodisto-uri s/Str
               :versio s/Int})
 
+(s/defschema Koulutusmoduuli
+             "Koulutusmoduuli"
+             {:tunniste KoodistoKoodi
+              :kieli KoodistoKoodi
+              :pakollinen s/Bool
+              :laajuus s/Int})
+
 (s/defschema TodennettuOsaaminen
              "Todennettu osaaminen"
-             {:tunniste KoodistoKoodi
+             {:koulutusmoduuli Koulutusmoduuli
               (s/optional-key :liitteet) [s/Str]})
 
 (s/defschema TodentamatonOsaaminen
@@ -33,13 +40,6 @@
               :kesto-paivina s/Int
               :alku KoskiDate
               :loppu KoskiDate})
-
-(s/defschema KoulutusModuuli
-             "Koulutusmoduuli"
-             {:tunniste KoodistoKoodi
-              :kieli KoodistoKoodi
-              :pakollinen s/Bool
-              :laajuus s/Int})
 
 (s/defschema PuuttuvaOsaaminen
              "Puuttuva osaaminen"
