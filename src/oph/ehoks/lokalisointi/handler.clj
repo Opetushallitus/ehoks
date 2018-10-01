@@ -14,4 +14,4 @@
       :return (restful/response common-schema/Lokalisointi)
       :query-params [{category :- String "ehoks"}]
       (a/go (restful/rest-ok
-        (lokalisointi/get-localization-results :category category))))))
+              (lokalisointi/get-localization-results :category category))))))
