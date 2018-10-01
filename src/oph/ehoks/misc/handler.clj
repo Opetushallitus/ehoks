@@ -13,4 +13,5 @@
       :summary "Palauttaa ympäristön tiedot ja asetukset"
       :return (rest/response schema/Environment)
       (rest/rest-ok (select-keys config [:opintopolku-login-url
-                                         :eperusteet-peruste-url])))))
+                                         :eperusteet-peruste-url
+                                         :opintopolku-logout-url])))))
