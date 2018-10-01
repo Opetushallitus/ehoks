@@ -11,7 +11,10 @@
                  [org.postgresql/postgresql]
                  [ring/ring-jetty-adapter]
                  [clj-time]
-                 [org.clojure/core.async]]
+                 [org.clojure/core.async]
+                 [org.clojure/tools.logging]
+                 [ch.qos.logback/logback-classic]
+                 [ch.qos.logback/logback-core]]
   :managed-dependencies [[org.clojure/clojure "1.9.0"]
 
                          ;; http server
@@ -21,6 +24,9 @@
                          [ring/ring-core "1.6.3"]
                          [ring/ring-jetty-adapter "1.6.3"]
                          [ring/ring-servlet "1.6.3"]
+                         [org.clojure/tools.logging "0.4.1"]
+                         [ch.qos.logback/logback-classic "1.2.3"]
+                         [ch.qos.logback/logback-core "1.2.3"]
 
                          ;; http client
                          [clj-http "3.9.1"]
