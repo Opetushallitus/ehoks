@@ -57,8 +57,11 @@
     (c-api/DELETE "/" []
       :summary "Uloskirjautuminen. Palauttaa uudelleenohjauksen Opintopolun
                 uloskirjautumiseen."
+      :return (rest/response [] :opintopolku-logout-url s/Str)
       (assoc
-        (response/see-other
+        (rest/rest-ok
+          []
+          :opintopolku-logout-url
           (format "%s?return=%s/%s"
                   (:opintopolku-logout-url config)
                   (:frontend-url config)
