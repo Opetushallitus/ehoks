@@ -22,7 +22,7 @@
               :laajuus s/Str
               :kesto s/Str
               :suorituspvm KoskiDate
-              :tyyppi (s/enum :arvioijan-kautta :nayton-kautta)
+              :lahde (s/enum :arvioija :naytto)
               (s/optional-key :tunniste) (s/maybe KoodistoKoodi)
               (s/optional-key :yto-koodi) (s/maybe s/Str)
               (s/optional-key :liitteet) [s/Str]})
@@ -35,10 +35,16 @@
               :alku KoskiDate
               :loppu KoskiDate})
 
+(s/defschema KoulutusModuuli
+             "Koulutusmoduuli"
+             :tunniste KoodistoKoodi
+             :kieli KoodistoKoodi
+             :pakollinen s/Bool
+             :laajuus s/Int)
+
 (s/defschema PuuttuvaOsaaminen
              "Puuttuva osaaminen"
-             {:tutkinnon-osan-koodi s/Str
-              :tutkinnon-koodi s/Str
+             {:koulutusmoduuli KoulutusModuuli
               :vastaava-ohjaaja s/Str
               :osaamisen-hankkimistavat
               [{:alku KoskiDate
@@ -50,6 +56,8 @@
               :organisaatio {:nimi s/Str
                              :y-tunnus s/Str}
               :keskeiset-tehtavat [s/Str]
+
+              :tyyppi KoodistoKoodi
 
               :ohjaus-ja-tuki s/Bool
               :erityinen-tuki s/Bool})
