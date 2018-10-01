@@ -6,7 +6,8 @@
             [oph.ehoks.restful :as rest]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.auth.opintopolku :as opintopolku]
-            [oph.ehoks.external.oppijanumerorekisteri :as onr]))
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
+            [clojure.tools.logging :as log]))
 
 (def routes
   (c-api/context "/session" []
@@ -74,7 +75,9 @@
                     Lopuksi käyttäjä ohjataan käyttöliittymän urliin."
       (let [headers (:headers request)]
         (if-let [result (opintopolku/validate headers)]
-          (response/bad-request) ; TODO log validate result
+          (do
+            (log/error "Invalid headers: " result)
+            (response/bad-request))
           (let [user (opintopolku/parse headers)]
             (assoc-in (response/see-other
                         (format "%s/%s"

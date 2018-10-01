@@ -10,7 +10,8 @@
             [clojure.string :as c-str]
             [oph.ehoks.mock-routes :as mock]
             [ring.middleware.cookies :refer [wrap-cookies]]
-            [ring.middleware.params :refer [wrap-params]]))
+            [ring.middleware.params :refer [wrap-params]]
+            [clojure.tools.logging :as log]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -67,8 +68,8 @@
       (wrap-reload #'app))))
 
 (defn start-server []
-  (prn "Starting development server...")
-  (prn "Not safe for production or public environments.")
+  (log/info "Starting development server...")
+  (log/info "Not safe for production or public environments.")
   (jetty/run-jetty dev-app
                    {:port  (:port config)
                     :join? false
