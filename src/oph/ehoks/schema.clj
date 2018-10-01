@@ -27,12 +27,14 @@
               (s/optional-key :debug) s/Bool
               :port s/Int
               :frontend-url s/Str
+              :frontend-url-path s/Str
               :database-url s/Str
               :redis-url (s/maybe s/Str)
               :opintopolku-login-url s/Str
               :opintopolku-logout-url s/Str
               :opintopolku-return-url s/Str
               :eperusteet-url (s/maybe s/Str)
+              :eperusteet-peruste-url (s/maybe s/Str)
               :lokalisointi-url (s/maybe s/Str)
               (s/optional-key :oppijanumerorekisteri-url) (s/maybe s/Str)
               (s/optional-key :cas-service-ticket-url) (s/maybe s/Str)

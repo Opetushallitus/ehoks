@@ -9,6 +9,8 @@
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.auth.handler :as auth-handler]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
+            [oph.ehoks.external.handler :as external-handler]
+            [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.redis :refer [redis-store]]
             [oph.ehoks.hoks.handler :as hoks-handler]))
@@ -28,7 +30,9 @@
         healthcheck-handler/routes
         auth-handler/routes
         hoks-handler/routes
-        lokalisointi-handler/routes))
+        lokalisointi-handler/routes
+        external-handler/routes
+        misc-handler/routes))
 
     (c-api/undocumented
       (compojure-route/not-found (not-found {:reason "Route not found"})))))
@@ -36,17 +40,17 @@
 (def public-routes
   [{:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
     :request-method :get}
-   {:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
-    :request-method :delete}
-   {:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
+   {:uri #"^/ehoks-backend/api/v1/session$"
     :request-method :options}
-   {:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
-    :request-method :post}
    {:uri #"^/ehoks-backend/api/v1/healthcheck$"
     :request-method :get}
    {:uri #"^/ehoks-backend/doc/*"
     :request-method :get}
    {:uri #"^/ehoks-backend/api/v1/lokalisointi$"
+    :request-method :get}
+   {:uri #"^/ehoks-backend/api/v1/external/eperusteet/$"
+    :request-method :get}
+   {:uri #"^/ehoks-backend/api/v1/misc/environment$"
     :request-method :get}])
 
 (def app
