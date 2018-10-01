@@ -62,22 +62,31 @@
                          [commons-fileupload "1.3.3"]
                          [commons-io "2.6"]
                          [hiccup "1.0.5"]
-                         [org.clojure/tools.namespace "0.2.11"]]
+                         [org.clojure/tools.namespace "0.2.11"]
+
+                         ;; Plugins
+                         [org.clojure/tools.reader "1.3.0"]
+                         [io.aviso/pretty "0.1.35"]
+                         [instaparse "1.4.9"]]
   :plugins [[lein-cljfmt "0.6.0" :exclusions [org.clojure/tools.cli]]
             [lein-kibit "0.1.6"]
             [lein-bikeshed "0.5.1"]
             [jonase/eastwood "0.2.9"]
             [lein-auto "0.1.3"]
-            [lein-ancient "0.6.15"]]
+            [lein-ancient "0.6.15"]
+            [lein-cloverage "1.0.13"]]
   :main oph.ehoks.main
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
   :source-paths ["src"]
+  :cloverage {;:fail-threshold 90
+              :html? false}
   :aliases {"checkall" ["do"
                         ["kibit"]
                         ["bikeshed"]
                         ["eastwood"]
-                        ["cljfmt" "check"]]}
+                        ["cljfmt" "check"]]
+            "test" ["cloverage"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:test {:resource-paths ["resources/dev" "resources/test"]}
              :dev {:main oph.ehoks.dev-server
