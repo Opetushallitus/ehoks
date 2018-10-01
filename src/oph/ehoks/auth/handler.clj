@@ -55,14 +55,9 @@
       (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, DELETE"))
 
     (c-api/DELETE "/" []
-      :summary "Uloskirjautuminen. Palauttaa uudelleenohjauksen Opintopolun
-                uloskirjautumiseen."
+      :summary "Uloskirjautuminen."
       (assoc
-        (response/see-other
-          (format "%s?return=%s/%s"
-                  (:opintopolku-logout-url config)
-                  (:frontend-url config)
-                  (:frontend-url-path config)))
+        (response/ok)
         :session nil))
 
     (c-api/GET "/opintopolku/" [:as request]
