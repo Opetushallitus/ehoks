@@ -39,12 +39,8 @@
 (def public-routes
   [{:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
     :request-method :get}
-   {:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
-    :request-method :delete}
-   {:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
+   {:uri #"^/ehoks-backend/api/v1/session$"
     :request-method :options}
-   {:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
-    :request-method :post}
    {:uri #"^/ehoks-backend/api/v1/healthcheck$"
     :request-method :get}
    {:uri #"^/ehoks-backend/doc/*"

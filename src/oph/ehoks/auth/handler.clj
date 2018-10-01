@@ -59,8 +59,10 @@
                 uloskirjautumiseen."
       (assoc
         (response/see-other
-          (format "%s?return=%s"
-                  (:opintopolku-logout-url config) (:frontend-url config)))
+          (format "%s?return=%s/%s"
+                  (:opintopolku-logout-url config)
+                  (:frontend-url config)
+                  (:frontend-url-path config)))
         :session nil))
 
     (c-api/GET "/opintopolku/" [:as request]
@@ -74,5 +76,8 @@
         (if-let [result (opintopolku/validate headers)]
           (response/bad-request) ; TODO log validate result
           (let [user (opintopolku/parse headers)]
-            (assoc-in (response/see-other (:frontend-url config))
+            (assoc-in (response/see-other
+                        (format "%s/%s"
+                                (:frontend-url config)
+                                (:frontend-url-path config)))
                       [:session :user] user)))))))
