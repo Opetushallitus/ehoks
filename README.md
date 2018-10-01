@@ -22,6 +22,8 @@ integrations
 + [Environ](https://github.com/weavejester/environ) for environment variables
 + [Redis](https://redis.io/) for session storage
 + [Redis Client](https://github.com/ptaoussanis/carmine)
++ [Logback](https://logback.qos.ch/)
++ [tools.logging](https://github.com/clojure/tools.logging)
 
 #### RESTful API
 Backend does its best to follow
