@@ -4,7 +4,7 @@
  :database-url ""
  :redis-url nil
  :opintopolku-login-url "http://localhost:3000/auth-dev/opintopolku-login/"
- :opintopolku-logout-url "http://localhost:3000/auth-dev/opintopolku-logout/"
+ :opintopolku-logout-url "http://localhost:3000/auth-dev/opintopolku-logout/?return=http://localhost:8080/ehoks"
  :opintopolku-return-url "http://localhost:3000/ehoks-backend/api/v1/session/opintopolku/"
  :eperusteet-url "http://localhost:3000/dev-routes/eperusteet/api"
  :eperusteet-peruste-url "https://eperusteet.testiopintopolku.fi/#/fi/kooste"
