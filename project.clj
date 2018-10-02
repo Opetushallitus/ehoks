@@ -2,19 +2,19 @@
   :description "OPH eHOKS Backend"
   :min-lein-version "2.8.1"
   :pedantic? :abort
-  :dependencies [[org.clojure/clojure]
-                 [clj-http]
-                 [com.layerware/hugsql]
-                 [com.taoensso/carmine]
-                 [metosin/compojure-api]
-                 [org.flywaydb/flyway-core]
-                 [org.postgresql/postgresql]
-                 [ring/ring-jetty-adapter]
-                 [clj-time]
-                 [org.clojure/core.async]
-                 [org.clojure/tools.logging]
-                 [ch.qos.logback/logback-classic]
-                 [ch.qos.logback/logback-core]]
+  :dependencies [[org.clojure/clojure "1.9.0"]
+                 [clj-http "3.9.1"]
+                 [com.layerware/hugsql "0.4.9"]
+                 [com.taoensso/carmine "2.19.0"]
+                 [metosin/compojure-api "2.0.0-alpha26"]
+                 [org.flywaydb/flyway-core "5.1.4"]
+                 [org.postgresql/postgresql "42.2.5"]
+                 [ring/ring-jetty-adapter "1.7.0"]
+                 [clj-time "0.14.4"]
+                 [org.clojure/core.async "0.4.474"]
+                 [org.clojure/tools.logging "0.4.1"]
+                 [ch.qos.logback/logback-classic "1.2.3"]
+                 [ch.qos.logback/logback-core "1.2.3"]]
   :managed-dependencies [[org.clojure/clojure "1.9.0"]
 
                          ;; http server
