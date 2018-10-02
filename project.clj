@@ -1,4 +1,4 @@
-(defproject oph.ehoks "0.1.0"
+(defproject oph.ehoks "0.1.1"
   :description "OPH eHOKS Backend"
   :min-lein-version "2.8.1"
   :pedantic? :abort
