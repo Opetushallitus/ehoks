@@ -86,7 +86,8 @@
                         ["bikeshed"]
                         ["eastwood"]
                         ["cljfmt" "check"]]
-            "test" ["cloverage"]}
+            ;"test" ["cloverage"]
+            }
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:test {:resource-paths ["resources/dev" "resources/test"]}
              :dev {:main oph.ehoks.dev-server
