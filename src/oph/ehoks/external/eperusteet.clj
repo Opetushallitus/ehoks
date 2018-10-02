@@ -14,7 +14,7 @@
     values))
 
 (defn search-perusteet-info [nimi]
-  (-> (client/get (format "%s/perusteet/info" (:eperusteet-url config))
+  (-> (client/get (format "%s/perusteet" (:eperusteet-url config))
                   {:query-params {:nimi nimi
                                   :tutkintonimikkeet true
                                   :tutkinnonosat true
