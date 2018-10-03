@@ -3,7 +3,7 @@
             [ring.util.http-response :as response]
             [schema.core :as s]
             [oph.ehoks.external.schema :as schema]
-            [oph.ehoks.external.connection :as utils]
+            [oph.ehoks.external.utils :as utils]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.external.eperusteet :as eperusteet]
             [oph.ehoks.config :refer [config]]))
