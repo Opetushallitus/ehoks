@@ -38,4 +38,5 @@
               (s/optional-key :cas-password) (s/maybe s/Str)
               (s/optional-key :client-sub-system-code) (s/maybe s/Str)
               (s/optional-key :session-max-age) s/Int
-              :service-timeout-ms s/Int})
+              :service-timeout-ms s/Int
+              :koodisto-url s/Str})
