@@ -16,14 +16,14 @@
 (deftest test-find-student-by-nat-id
   (testing "Finding student by national ID returns unmangled data"
     (let [response (with-service-ticket
-                    onr/find-student-by-nat-id "010101-1100")]
+                     onr/find-student-by-nat-id "010101-1100")]
       (is (= (:body response) {:data [{:cn "Testi"}]}))
       (is (= (:status response) 200)))))
 
 (deftest test-find-student-by-oid
   (testing "Finding student by oid returns unmangled data"
     (let [response (with-service-ticket
-                    onr/find-student-by-nat-id "1234.4567.89")]
+                     onr/find-student-by-nat-id "1234.4567.89")]
       (is (= (:body response) {:data [{:cn "Testi"}]}))
       (is (= (:status response) 200)))))
 
