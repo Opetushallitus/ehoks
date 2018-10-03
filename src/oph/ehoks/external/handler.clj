@@ -3,7 +3,7 @@
             [ring.util.http-response :as response]
             [schema.core :as s]
             [oph.ehoks.external.schema :as schema]
-            [oph.ehoks.external.connection :as c]
+            [oph.ehoks.external.connection :as utils]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.external.eperusteet :as eperusteet]
             [clojure.core.async :as a]
@@ -16,7 +16,7 @@
       :summary "Hakee perusteiden tietoja ePerusteet-palvelusta"
       :query-params [nimi :- String]
       :return (rest/response [schema/Peruste])
-      (c/with-timeout
+      (utils/with-timeout
         (:service-timeout-ms config)
         (-> (eperusteet/search-perusteet-info nimi)
             eperusteet/map-perusteet
