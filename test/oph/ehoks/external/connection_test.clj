@@ -5,7 +5,8 @@
             [clj-time.core :as t]))
 
 (deftest test-refresh-service-ticket
-  (testing "Refresh service ticket"
+  (testing "Refresh service ticket successfully"
+    (reset! c/service-ticket {:url nil :expires nil})
     (is (= (deref c/service-ticket) {:url nil :expires nil}))
     (with-redefs [clj-http.client/post
                   (fn [_ options]
@@ -17,7 +18,16 @@
                      :headers {"location" "test-url"}})]
       (c/refresh-service-ticket!)
       (is (= (:url (deref c/service-ticket)) "test-url"))
-      (is (some? (:expires (deref c/service-ticket)))))))
+      (is (some? (:expires (deref c/service-ticket))))))
+
+  (testing "Refresh service ticket unsuccessfully"
+    (reset! c/service-ticket {:url nil :expires nil})
+    (with-redefs [clj-http.client/post
+                  (fn [_ options]
+                    {:status 404})]
+      (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                            #"Failed to refresh CAS Service Ticket"
+                            (c/refresh-service-ticket!))))))
 
 (deftest test-get-service-ticket
   (testing "Get service ticket"
