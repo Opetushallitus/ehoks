@@ -4,7 +4,8 @@
 (defmacro with-timeout
   "Simple macro for creating asyncronous timeout-safe function calls.
    `body` will be wrapped inside go block.
-   Returns either result of body or error depending on if given time exceeds."
+  Returns channel which returns either result of `body` or `error` depending on
+  if given time exceeds."
   [time-ms body error]
   `(a/go
      (let [c# (a/go ~body)
