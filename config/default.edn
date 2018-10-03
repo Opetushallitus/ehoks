@@ -1,17 +1,18 @@
 {:port 3000
  :frontend-url "http://localhost:8080"
-  :frontend-url-path "ehoks"
+ :frontend-url-path "ehoks"
  :database-url ""
  :redis-url nil
  :opintopolku-login-url "http://localhost:3000/auth-dev/opintopolku-login/"
- :opintopolku-logout-url "http://localhost:3000/auth-dev/opintopolku-logout/"
+ :opintopolku-logout-url "http://localhost:3000/auth-dev/opintopolku-logout/?return=http://localhost:8080/ehoks"
  :opintopolku-return-url "http://localhost:3000/ehoks-backend/api/v1/session/opintopolku/"
  :eperusteet-url "http://localhost:3000/dev-routes/eperusteet/api"
- :eperusteet-peruste-url "https://eperusteet.testiopintopolku.fi/#/fi/kooste"
+ :eperusteet-peruste-url "https://eperusteet.testiopintopolku.fi"
  :lokalisointi-url "https://virkailija.testiopintopolku.fi/lokalisointi/cxf/rest/v1/localisation"
  :oppijanumerorekisteri-url "http://localhost:3000/oppijanumerorekisteri-service"
  :cas-service-ticket-url "http://localhost:3000/cas-dev/tickets"
  :cas-username ""
  :cas-password ""
  :client-sub-system-code ""
- :session-max-age 14400}
+ :session-max-age 14400
+ :service-timeout-ms 60000}
