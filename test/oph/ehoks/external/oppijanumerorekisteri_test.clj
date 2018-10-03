@@ -20,7 +20,7 @@
       (is (= (:body response) {:data [{:cn "Testi"}]}))
       (is (= (:status response) 200)))))
 
-(deftest test-find-student-by-nat-id
+(deftest test-find-student-by-oid
   (testing "Finding student by oid returns unmangled data"
     (let [response (with-service-ticket
                     onr/find-student-by-nat-id "1234.4567.89")]
