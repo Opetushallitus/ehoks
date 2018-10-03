@@ -9,7 +9,8 @@
             [clojure.string :as c-str]
             [cheshire.core :as cheshire]
             [clj-http.client :as client]
-            [ring.middleware.cookies :as cookies]))
+            [ring.middleware.cookies :as cookies]
+            [cheshire.core :as cheshire]))
 
 (defn- json-response [value]
   (assoc-in
@@ -72,4 +73,11 @@
           :ryhmaKuvaus "testiryhmä",
           :yhteystieto
           [{:yhteystietoArvo "kayttaja@domain.local",
-            :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})})))
+            :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})}))
+
+  (GET "/koodisto-service/rest/codeelement/*/*" []
+    (-> (io/resource
+          "dev-routes/rest_codeelement_ravintolakokinatjarjestys__4_2.json")
+        slurp
+        (cheshire/parse-string true)
+        json-response)))
