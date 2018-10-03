@@ -81,6 +81,7 @@
   :source-paths ["src"]
   :cloverage {;:fail-threshold 90
               :html? false}
+  :bikeshed {:var-redefs false}
   :aliases {"checkall" ["do"
                         ["kibit"]
                         ["bikeshed"]
