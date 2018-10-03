@@ -2,7 +2,8 @@
   (:require [oph.ehoks.config :refer [config]]
             [clj-http.client :as client]
             [cheshire.core :as cheshire]
-            [clj-time.core :as t])
+            [clj-time.core :as t]
+            [clojure.core.async :as a])
   (:import [com.fasterxml.jackson.core JsonParseException]))
 
 (defonce service-ticket
@@ -49,3 +50,15 @@
       (update response :body cheshire/parse-string true)
       (catch JsonParseException _
         response))))
+
+(defmacro with-timeout
+  "Simple macro for creating asyncronous timeout-safe function calls.
+   `body` will be wrapped inside go block.
+   Returns either result of body or error depending on if given time exceeds."
+  [time-ms body error]
+  `(a/go
+     (let [c# (a/go ~body)
+           [v# p#] (a/alts! [c# (a/timeout ~time-ms)])]
+       (if (and (not= p# c#) (nil? v#))
+         ~error
+         v#))))
