@@ -6,6 +6,7 @@
 (deftest test-with-timeout
   (testing "With timeout"
     (is (= (a/<!! (u/with-timeout 100000 :success :timeout)) :success))
-    (is (= (a/<!! (u/with-timeout 1
+    (is (= (a/<!! (u/with-timeout
+                    1
                     (do (a/<! (a/timeout 1000000)) :success) :timeout))
            :timeout))))
