@@ -6,7 +6,6 @@
             [oph.ehoks.external.connection :as utils]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.external.eperusteet :as eperusteet]
-            [clojure.core.async :as a]
             [oph.ehoks.config :refer [config]]))
 
 (def routes
