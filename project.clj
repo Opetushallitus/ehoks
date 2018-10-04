@@ -71,7 +71,7 @@
   :plugins [[lein-cljfmt "0.6.0" :exclusions [org.clojure/tools.cli]]
             [lein-kibit "0.1.6"]
             [lein-bikeshed "0.5.1"]
-            [jonase/eastwood "0.2.9"]
+            [jonase/eastwood "0.3.1"]
             [lein-auto "0.1.3"]
             [lein-ancient "0.6.15"]
             [lein-cloverage "1.0.13"]]
