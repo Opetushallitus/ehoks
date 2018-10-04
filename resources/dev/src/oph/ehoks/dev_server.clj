@@ -16,6 +16,7 @@
 (defn uri-to-filename [uri]
   (-> uri
       (c-str/replace #"/dev-routes/" "")
+      (c-str/replace #"_" "__")
       (c-str/replace #"/" "_")
       (str ".json")))
 

@@ -15,4 +15,5 @@
  :cas-password ""
  :client-sub-system-code ""
  :session-max-age 14400
- :service-timeout-ms 60000}
+ :service-timeout-ms 60000
+ :koodisto-url "http://localhost:3000/koodisto-service"}
