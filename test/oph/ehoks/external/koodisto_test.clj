@@ -4,8 +4,8 @@
             [clojure.java.io :as io]
             [cheshire.core :as cheshire]))
 
-(def mock-koodisto-value
-  (-> (io/resource "mock/koodisto-value.json")
+(defn get-mock-koodisto-value [file]
+  (-> (io/resource file)
       slurp
       (cheshire/parse-string true)))
 
@@ -13,8 +13,9 @@
   (testing "Filtering Koodisto values"
     (is (= (k/filter-koodisto-values {}) {}))
     (is (= (k/filter-koodisto-values nil) {}))
-    (let [filtered (k/filter-koodisto-values mock-koodisto-value)]
-      (is (get #{"PASSIIVINEN" "LUONNOS" "HYVAKSYTTY"} (:tila filtered)))
+    (let [filtered (k/filter-koodisto-values
+                     (get-mock-koodisto-value "mock/koodisto-value.json"))]
+      (is (= (:tila filtered) "HYVAKSYTTY"))
       (is (= (:koodiArvo filtered) "4"))
       (is (nil? (:voimassaLoppuPvm filtered)))
       (is (string? (:voimassaAlkuPvm filtered)))
