@@ -79,6 +79,7 @@
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
   :source-paths ["src"]
+  :resource-paths []
   :cloverage {;:fail-threshold 90
               :html? false}
   :bikeshed {:var-redefs false}
