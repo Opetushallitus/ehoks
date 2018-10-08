@@ -1,0 +1,507 @@
+{
+  "koodiUri": "ravintolakokinatjarjestys_4",
+  "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ravintolakokinatjarjestys_4",
+  "version": 12,
+  "versio": 2,
+  "koodisto": {
+    "koodistoUri": "ravintolakokinatjarjestys",
+    "organisaatioOid": "1.2.246.562.10.00000000001",
+    "koodistoVersios": [
+      2
+    ]
+  },
+  "koodiArvo": "4",
+  "paivitysPvm": 1519984328560,
+  "voimassaAlkuPvm": "2015-05-01",
+  "voimassaLoppuPvm": null,
+  "tila": "HYVAKSYTTY",
+  "metadata": [
+    {
+      "nimi": "Fine dining ‑ruoanvalmistus",
+      "kuvaus": "valinnainen",
+      "lyhytNimi": "at",
+      "kayttoohje": "",
+      "kasite": "",
+      "sisaltaaMerkityksen": "",
+      "eiSisallaMerkitysta": "",
+      "huomioitavaKoodi": "",
+      "sisaltaaKoodiston": "",
+      "kieli": "FI"
+    }
+  ],
+  "withinCodeElements": [
+    {
+      "codeElementUri": "koulutus_384109",
+      "codeElementVersion": 8,
+      "codeElementValue": "384109",
+      "relationMetadata": [
+        {
+          "nimi": "Restaurant Cookery, FQ",
+          "kieli": "EN",
+          "kuvaus": "Restaurant Cookery, FQ"
+        },
+        {
+          "nimi": "Yrkesexamen för restaurangkock",
+          "kieli": "SV",
+          "kuvaus": "Yrkesexamen för restaurangkock\n"
+        },
+        {
+          "nimi": "Ravintolakokin ammattitutkinto",
+          "kieli": "FI",
+          "kuvaus": "Ravintolakokin ammattitutkinto"
+        }
+      ],
+      "parentMetadata": [
+        {
+          "nimi": "koulutus",
+          "kieli": "FI",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "SV",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "EN",
+          "kuvaus": "koulutus"
+        }
+      ],
+      "passive": true
+    },
+    {
+      "codeElementUri": "koulutus_384109",
+      "codeElementVersion": 3,
+      "codeElementValue": "384109",
+      "relationMetadata": [
+        {
+          "nimi": "Yrkesexamen för restaurangkock",
+          "kieli": "SV",
+          "kuvaus": "Yrkesexamen för restaurangkock\n"
+        },
+        {
+          "nimi": "Ravintolakokin ammattitutkinto",
+          "kieli": "FI",
+          "kuvaus": "Ravintolakokin ammattitutkinto"
+        },
+        {
+          "nimi": "Restaurant Cookery, FQ",
+          "kieli": "EN",
+          "kuvaus": "Restaurant Cookery, FQ"
+        }
+      ],
+      "parentMetadata": [
+        {
+          "nimi": "koulutus",
+          "kieli": "FI",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "EN",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "SV",
+          "kuvaus": "koulutus"
+        }
+      ],
+      "passive": true
+    },
+    {
+      "codeElementUri": "koulutus_384109",
+      "codeElementVersion": 11,
+      "codeElementValue": "384109",
+      "relationMetadata": [
+        {
+          "nimi": "Ravintolakokin ammattitutkinto",
+          "kieli": "FI",
+          "kuvaus": "Ravintolakokin ammattitutkinto"
+        },
+        {
+          "nimi": "Yrkesexamen för restaurangkock",
+          "kieli": "SV",
+          "kuvaus": "Yrkesexamen för restaurangkock\n"
+        },
+        {
+          "nimi": "Restaurant Cookery, FQ",
+          "kieli": "EN",
+          "kuvaus": "Restaurant Cookery, FQ"
+        }
+      ],
+      "parentMetadata": [
+        {
+          "nimi": "koulutus",
+          "kieli": "SV",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "EN",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "FI",
+          "kuvaus": "koulutus"
+        }
+      ],
+      "passive": false
+    },
+    {
+      "codeElementUri": "koulutus_384109",
+      "codeElementVersion": 7,
+      "codeElementValue": "384109",
+      "relationMetadata": [
+        {
+          "nimi": "Yrkesexamen för restaurangkock",
+          "kieli": "SV",
+          "kuvaus": "Yrkesexamen för restaurangkock\n"
+        },
+        {
+          "nimi": "Ravintolakokin ammattitutkinto",
+          "kieli": "FI",
+          "kuvaus": "Ravintolakokin ammattitutkinto"
+        },
+        {
+          "nimi": "Restaurant Cookery, FQ",
+          "kieli": "EN",
+          "kuvaus": "Restaurant Cookery, FQ"
+        }
+      ],
+      "parentMetadata": [
+        {
+          "nimi": "koulutus",
+          "kieli": "FI",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "EN",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "SV",
+          "kuvaus": "koulutus"
+        }
+      ],
+      "passive": true
+    },
+    {
+      "codeElementUri": "koulutus_384109",
+      "codeElementVersion": 2,
+      "codeElementValue": "384109",
+      "relationMetadata": [
+        {
+          "nimi": "Yrkesexamen för restaurangkock",
+          "kieli": "SV",
+          "kuvaus": "Yrkesexamen för restaurangkock\n"
+        },
+        {
+          "nimi": "Restaurant Cookery, FQ",
+          "kieli": "EN",
+          "kuvaus": "Restaurant Cookery, FQ"
+        },
+        {
+          "nimi": "Ravintolakokin ammattitutkinto",
+          "kieli": "FI",
+          "kuvaus": "Ravintolakokin ammattitutkinto"
+        }
+      ],
+      "parentMetadata": [
+        {
+          "nimi": "koulutus",
+          "kieli": "EN",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "SV",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "FI",
+          "kuvaus": "koulutus"
+        }
+      ],
+      "passive": true
+    },
+    {
+      "codeElementUri": "koulutus_384109",
+      "codeElementVersion": 4,
+      "codeElementValue": "384109",
+      "relationMetadata": [
+        {
+          "nimi": "Yrkesexamen för restaurangkock",
+          "kieli": "SV",
+          "kuvaus": "Yrkesexamen för restaurangkock\n"
+        },
+        {
+          "nimi": "Ravintolakokin ammattitutkinto",
+          "kieli": "FI",
+          "kuvaus": "Ravintolakokin ammattitutkinto"
+        },
+        {
+          "nimi": "Restaurant Cookery, FQ",
+          "kieli": "EN",
+          "kuvaus": "Restaurant Cookery, FQ"
+        }
+      ],
+      "parentMetadata": [
+        {
+          "nimi": "koulutus",
+          "kieli": "EN",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "FI",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "SV",
+          "kuvaus": "koulutus"
+        }
+      ],
+      "passive": true
+    },
+    {
+      "codeElementUri": "koulutus_384109",
+      "codeElementVersion": 5,
+      "codeElementValue": "384109",
+      "relationMetadata": [
+        {
+          "nimi": "Ravintolakokin ammattitutkinto",
+          "kieli": "FI",
+          "kuvaus": "Ravintolakokin ammattitutkinto"
+        },
+        {
+          "nimi": "Yrkesexamen för restaurangkock",
+          "kieli": "SV",
+          "kuvaus": "Yrkesexamen för restaurangkock\n"
+        },
+        {
+          "nimi": "Restaurant Cookery, FQ",
+          "kieli": "EN",
+          "kuvaus": "Restaurant Cookery, FQ"
+        }
+      ],
+      "parentMetadata": [
+        {
+          "nimi": "koulutus",
+          "kieli": "FI",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "EN",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "SV",
+          "kuvaus": "koulutus"
+        }
+      ],
+      "passive": true
+    },
+    {
+      "codeElementUri": "koulutus_384109",
+      "codeElementVersion": 6,
+      "codeElementValue": "384109",
+      "relationMetadata": [
+        {
+          "nimi": "Restaurant Cookery, FQ",
+          "kieli": "EN",
+          "kuvaus": "Restaurant Cookery, FQ"
+        },
+        {
+          "nimi": "Yrkesexamen för restaurangkock",
+          "kieli": "SV",
+          "kuvaus": "Yrkesexamen för restaurangkock\n"
+        },
+        {
+          "nimi": "Ravintolakokin ammattitutkinto",
+          "kieli": "FI",
+          "kuvaus": "Ravintolakokin ammattitutkinto"
+        }
+      ],
+      "parentMetadata": [
+        {
+          "nimi": "koulutus",
+          "kieli": "FI",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "EN",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "SV",
+          "kuvaus": "koulutus"
+        }
+      ],
+      "passive": true
+    },
+    {
+      "codeElementUri": "koulutus_384109",
+      "codeElementVersion": 9,
+      "codeElementValue": "384109",
+      "relationMetadata": [
+        {
+          "nimi": "Yrkesexamen för restaurangkock",
+          "kieli": "SV",
+          "kuvaus": "Yrkesexamen för restaurangkock\n"
+        },
+        {
+          "nimi": "Ravintolakokin ammattitutkinto",
+          "kieli": "FI",
+          "kuvaus": "Ravintolakokin ammattitutkinto"
+        },
+        {
+          "nimi": "Restaurant Cookery, FQ",
+          "kieli": "EN",
+          "kuvaus": "Restaurant Cookery, FQ"
+        }
+      ],
+      "parentMetadata": [
+        {
+          "nimi": "koulutus",
+          "kieli": "FI",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "EN",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "SV",
+          "kuvaus": "koulutus"
+        }
+      ],
+      "passive": true
+    },
+    {
+      "codeElementUri": "koulutus_384109",
+      "codeElementVersion": 10,
+      "codeElementValue": "384109",
+      "relationMetadata": [
+        {
+          "nimi": "Ravintolakokin ammattitutkinto",
+          "kieli": "FI",
+          "kuvaus": "Ravintolakokin ammattitutkinto"
+        },
+        {
+          "nimi": "Yrkesexamen för restaurangkock",
+          "kieli": "SV",
+          "kuvaus": "Yrkesexamen för restaurangkock\n"
+        },
+        {
+          "nimi": "Restaurant Cookery, FQ",
+          "kieli": "EN",
+          "kuvaus": "Restaurant Cookery, FQ"
+        }
+      ],
+      "parentMetadata": [
+        {
+          "nimi": "koulutus",
+          "kieli": "SV",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "EN",
+          "kuvaus": "koulutus"
+        },
+        {
+          "nimi": "koulutus",
+          "kieli": "FI",
+          "kuvaus": "koulutus"
+        }
+      ],
+      "passive": true
+    }
+  ],
+  "includesCodeElements": [],
+  "levelsWithCodeElements": [
+    {
+      "codeElementUri": "tutkinnonosat_102707",
+      "codeElementVersion": 1,
+      "codeElementValue": "102707",
+      "relationMetadata": [
+        {
+          "nimi": "Fine dining-matlagning",
+          "kieli": "SV",
+          "kuvaus": "Fine dining-matlagning"
+        },
+        {
+          "nimi": "Fine dining ‑ruoanvalmistus",
+          "kieli": "FI",
+          "kuvaus": "Fine dining ‑ruoanvalmistus"
+        }
+      ],
+      "parentMetadata": [
+        {
+          "nimi": "tutkinnon osat",
+          "kieli": "EN",
+          "kuvaus": "tutkinnon osat"
+        },
+        {
+          "nimi": "examensdeler",
+          "kieli": "SV",
+          "kuvaus": "examensdeler"
+        },
+        {
+          "nimi": "tutkinnon osat",
+          "kieli": "FI",
+          "kuvaus": "tutkinnon osat"
+        }
+      ],
+      "passive": true
+    },
+    {
+      "codeElementUri": "tutkinnonosat_102707",
+      "codeElementVersion": 2,
+      "codeElementValue": "102707",
+      "relationMetadata": [
+        {
+          "nimi": "Fine dining-matlagning",
+          "kieli": "SV",
+          "kuvaus": "Fine dining-matlagning"
+        },
+        {
+          "nimi": "Fine dining ‑ruoanvalmistus",
+          "kieli": "FI",
+          "kuvaus": "Fine dining ‑ruoanvalmistus"
+        }
+      ],
+      "parentMetadata": [
+        {
+          "nimi": "tutkinnon osat",
+          "kieli": "EN",
+          "kuvaus": "tutkinnon osat"
+        },
+        {
+          "nimi": "tutkinnon osat",
+          "kieli": "FI",
+          "kuvaus": "tutkinnon osat"
+        },
+        {
+          "nimi": "examensdeler",
+          "kieli": "SV",
+          "kuvaus": "examensdeler"
+        }
+      ],
+      "passive": false
+    }
+  ]
+}

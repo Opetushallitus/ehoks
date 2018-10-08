@@ -6,7 +6,8 @@
             [oph.ehoks.restful :as rest]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.auth.opintopolku :as opintopolku]
-            [oph.ehoks.external.oppijanumerorekisteri :as onr]))
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
+            [clojure.tools.logging :as log]))
 
 (def routes
   (c-api/context "/session" []
@@ -55,14 +56,9 @@
       (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, DELETE"))
 
     (c-api/DELETE "/" []
-      :summary "Uloskirjautuminen. Palauttaa uudelleenohjauksen Opintopolun
-                uloskirjautumiseen."
+      :summary "Uloskirjautuminen."
       (assoc
-        (response/see-other
-          (format "%s?return=%s/%s"
-                  (:opintopolku-logout-url config)
-                  (:frontend-url config)
-                  (:frontend-url-path config)))
+        (response/ok)
         :session nil))
 
     (c-api/GET "/opintopolku/" [:as request]
@@ -74,7 +70,9 @@
                     Lopuksi käyttäjä ohjataan käyttöliittymän urliin."
       (let [headers (:headers request)]
         (if-let [result (opintopolku/validate headers)]
-          (response/bad-request) ; TODO log validate result
+          (do
+            (log/error "Invalid headers: " result)
+            (response/bad-request))
           (let [user (opintopolku/parse headers)]
             (assoc-in (response/see-other
                         (format "%s/%s"

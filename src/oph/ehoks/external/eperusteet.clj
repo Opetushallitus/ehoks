@@ -1,7 +1,6 @@
 (ns oph.ehoks.external.eperusteet
   (:require [oph.ehoks.config :refer [config]]
-            [clj-http.client :as client]
-            [cheshire.core :as cheshire]))
+            [oph.ehoks.external.connection :as c]))
 
 (defn map-perusteet [values]
   (map
@@ -14,11 +13,13 @@
     values))
 
 (defn search-perusteet-info [nimi]
-  (-> (client/get (format "%s/perusteet/info" (:eperusteet-url config))
-                  {:query-params {:nimi nimi
-                                  :tutkintonimikkeet true
-                                  :tutkinnonosat true
-                                  :osaamisalat true}})
-      :body
-      (cheshire/parse-string true)
-      :data))
+  (get-in
+    (c/with-api-headers
+      :get
+      (format "%s/perusteet" (:eperusteet-url config))
+      {:as :json
+       :query-params {:nimi nimi
+                      :tutkintonimikkeet true
+                      :tutkinnonosat true
+                      :osaamisalat true}})
+    [:body :data]))

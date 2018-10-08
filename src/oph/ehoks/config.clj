@@ -2,7 +2,8 @@
   (:require [clojure.java.io :as io]
             [clojure.edn :as edn]
             [oph.ehoks.schema :as schema]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [clojure.tools.logging :as log]))
 
 (def ^:private default-file "config/default.edn")
 
@@ -15,7 +16,8 @@
         custom-file (or (System/getenv "CONFIG")
                         (System/getProperty "config"))
         custom-config (if (seq custom-file) (load-config custom-file) {})]
-    ;TODO log used files and current configuration (with credential masking)
+    (when (seq custom-file)
+      (log/info "Loading custom config file: " custom-file))
     (s/validate
       schema/Config
       (merge default-config custom-config))))

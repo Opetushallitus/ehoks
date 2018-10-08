@@ -1,14 +1,15 @@
 (ns oph.ehoks.external.oppijanumerorekisteri-test
   (:require [clojure.test :refer [deftest testing is]]
-            [oph.ehoks.external.oppijanumerorekisteri
-             :refer [convert-student-info]]))
+            [oph.ehoks.external.connection :as c]
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
+            [clj-time.core :as t]))
 
 (deftest test-convert-student-info
   (testing "Converting Oppijanumerorekisteri student info"
-    (is (= (convert-student-info
+    (is (= (onr/convert-student-info
              {})
            {}))
-    (is (= (convert-student-info
+    (is (= (onr/convert-student-info
              {:oidHenkilo "1.2.246.562.24.78058065184"
               :hetu "190384-9245"
               :etunimet "Teuvo Taavetti"
