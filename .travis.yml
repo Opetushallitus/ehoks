@@ -20,6 +20,7 @@ install:
   - lein deps
 
 script:
+  - ARTIFACT_NAME=ehoks BUILD_ID="ci-$TRAVIS_BUILD_NUMBER" ./scripts/buildversion.sh > resources/dev/buildversion.txt
   - lein checkall
   - lein test
   - lein uberjar
