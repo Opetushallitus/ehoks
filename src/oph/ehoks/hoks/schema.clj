@@ -4,34 +4,40 @@
 
 (def KoskiDate LocalDate)
 
+(s/defschema Organisaatio
+             "Organisaatio"
+             {:nimi s/Str
+              :y-tunnus s/Str})
+
 (s/defschema KoodistoKoodi
              "Koodisto-koodi"
              {:koodisto-koodi s/Str
               :koodisto-uri s/Str
               :versio s/Int})
 
-(s/defschema Koulutusmoduuli
-             "Koulutusmoduuli"
+(s/defschema TutkinnonOsa
+             "Tutkinnon osa"
              {:tunniste KoodistoKoodi
-              :kieli KoodistoKoodi
-              :pakollinen s/Bool
               :laajuus s/Int})
 
-(s/defschema TodennettuOsaaminen
-             "Todennettu osaaminen"
-             {:koulutusmoduuli Koulutusmoduuli
-              (s/optional-key :liitteet) [s/Str]})
+(s/defschema Henkilo
+             "Henkilö"
+             {:organisaatio Organisaatio
+              :nimi s/Str
+              :rooli s/Str})
 
-(s/defschema TodentamatonOsaaminen
-             "Todentamaton osaaminen"
-             {:nimi s/Str
+(s/defschema OlemassaOlevaOsaaminen
+             "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi
+              opiskelijan tutkintoa"
+             {:tutkinnon-osa TutkinnonOsa
+              :tutkinnon-diaarinumero s/Str})
+
+(s/defschema MuuTodennettuOsaaminen
+             "Muu opiskelijan aiemmin hankkima ja osoittama osaaminen, joka
+              liittyy suoritettavaan tutkintoon tai valmentavaan koulutukseen"
+             {:tutkinnon-osa TutkinnonOsa
               :kuvaus s/Str
-              :laajuus s/Str
-              :kesto s/Str
-              :suorituspvm KoskiDate
-              :lahde (s/enum :arvioija :naytto)
-              :koulutusmoduuli KoulutusModuuli
-              (s/optional-key :liitteet) [s/Str]})
+              :liitteet [s/Str]})
 
 (s/defschema TukevaOpinto
              "Opiskeluvalmiuksia tukevat opinnot"
@@ -43,28 +49,57 @@
 
 (s/defschema PuuttuvaOsaaminen
              "Puuttuva osaaminen"
-             {:koulutusmoduuli Koulutusmoduuli
-              :vastaava-ohjaaja s/Str
+             {:tutkinnon-osa TutkinnonOsa
+              :poikkeama {:alkuperainen-tutkinnon-osa TutkinnonOsa
+                          :kuvaus s/Str}
               :osaamisen-hankkimistavat
               [{:alku KoskiDate
                 :loppu KoskiDate
                 :osaamisen-hankkimistapa
                 {:tunniste KoodistoKoodi}}]
+              :ajankohta {:alku KoskiDate
+                          :loppu KoskiDate}
+              :koulutuksen-jarjestaja-oid s/Str
+              :tarvittava-opetus s/Str})
 
-              :sisalto s/Str
-              :organisaatio {:nimi s/Str
-                             :y-tunnus s/Str}
+(s/defschema TyopaikallaTapahtuvaOsaaminen
+             "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
+             {:ajankohta {:alku KoskiDate
+                          :loppu KoskiDate}
+              :muut-oppimisymparistot [{:paikka s/Str
+                                        :alku KoskiDate
+                                        :loppu KoskiDate}]
+              :hankkijan-edustaja Henkilo
+              :vastuullinen-ohjaaja Henkilo
+              :jarjestajan-edustaja Henkilo
+              :muut-osallistujat [Henkilo]
               :keskeiset-tehtavat [s/Str]
-
-              :tyyppi KoodistoKoodi
-
               :ohjaus-ja-tuki s/Bool
-              :erityinen-tuki s/Bool})
+              :erityinen-tuki s/Bool
+              :erityisen-tuen-aika {:alku KoskiDate
+                                    :loppu KoskiDate}})
+
+(s/defschema HankitunOsaamisenNaytto
+             "Hankitun osaamisen osoittaminen"
+             {:jarjestaja {:nimi s/Str
+                           :oid s/Str}
+              :nayttoymparisto Organisaatio
+              :kuvaus s/Str
+              :ajankohta {:alku KoskiDate
+                          :loppu KoskiDate}
+              :sisalto s/Str
+              :ammattitaitovaatimukset [KoodistoKoodi]
+              :osaamistavoitteet [KoodistoKoodi]
+              :arvioijat [{:nimi s/Str
+                           :rooli KoodistoKoodi
+                           :organisaatio Organisaatio}]
+              :arviointikriteerit [{:arvosana s/Int
+                                    :kuvaus s/Str}]})
 
 (s/defschema HOKSArvot
              "HOKS arvot uuden HOKSin luomiseen"
              {:opiskeluoikeus-oid s/Str
-              :urasuunnitelma s/Str})
+              :urasuunnitelma KoodistoKoodi})
 
 (s/defschema HOKS
              "HOKS"
@@ -79,7 +114,9 @@
                 :luotu s/Inst
                 :hyvaksytty s/Inst
                 :paivitetty s/Inst
-                :todennetut-osaamiset [TodennettuOsaaminen]
-                :todentamattomat-osaamiset [TodentamatonOsaaminen]
+                :olemassa-olevat-osaamiset [OlemassaOlevaOsaaminen]
+                :muut-todennetut-osaamiset [MuuTodennettuOsaaminen]
                 :tukevat-opinnot [TukevaOpinto]
-                :puuttuvat-osaamiset [PuuttuvaOsaaminen]}))
+                :puuttuvat-osaamiset [PuuttuvaOsaaminen]
+                :tyoaikalla-tapahtuvat-osaamiset [TyopaikallaTapahtuvaOsaaminen]
+                :osaamisen-osoittamiset [HankitunOsaamisenNaytto]}))

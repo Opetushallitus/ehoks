@@ -19,15 +19,15 @@
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))
 
-    (c-api/POST "/:id/todennetut-osaamiset/" []
-      :summary "Lisää HOKSiin todennettu osaaminen"
-      :body [_ hoks-schema/TodennettuOsaaminen]
+    (c-api/POST "/:id/olemassa-olevat-osaamiset/" []
+      :summary "Lisää HOKSiin olemassa oleva osaaminen"
+      :body [_ hoks-schema/OlemassaOlevaOsaaminen]
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))
 
-    (c-api/POST "/:id/todentamattomat-osaamiset/" []
-      :summary "Lisää HOKSiin todentamaton osaaminen"
-      :body [_ hoks-schema/TodentamatonOsaaminen]
+    (c-api/POST "/:id/muut-todennetut-osaamiset/" []
+      :summary "Lisää HOKSiin muu todennettu osaaminen"
+      :body [_ hoks-schema/MuuTodennettuOsaaminen]
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))
 
@@ -40,5 +40,17 @@
     (c-api/POST "/:id/puuttuvat-osaamiset/" []
       :summary "Lisää HOKSiin puuttuvan osaamisen hankkiminen"
       :body [_ hoks-schema/PuuttuvaOsaaminen]
+      :return (response schema/POSTResponse)
+      (rest-ok {:uri ""}))
+
+    (c-api/POST "/:id/tyopaikalla-tapahtuvat-osaamiset/" []
+      :summary "Lisää HOKSiin työpaikalla tapahtuvan osaamisen tiedot"
+      :body [_ hoks-schema/TyopaikallaTapahtuvaOsaaminen]
+      :return (response schema/POSTResponse)
+      (rest-ok {:uri ""}))
+
+    (c-api/POST "/:id/osaamisen-osoittamiset/" []
+      :summary "Lisää HOKSiin hankitun osaamisen osoittaminen/näyttö"
+      :body [_ hoks-schema/HankitunOsaamisenNaytto]
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))))
