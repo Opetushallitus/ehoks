@@ -19,6 +19,7 @@
       (utils/with-timeout
         (:service-timeout-ms config)
         (-> (koodisto/get-koodi-versio uri versio)
+            :body
             koodisto/filter-koodisto-values
             rest/rest-ok)
         (response/internal-server-error {:error "Service timeout exceeded"})))
