@@ -13,7 +13,7 @@
  :cas-service-ticket-url "http://localhost:3000/cas-dev/tickets"
  :cas-username ""
  :cas-password ""
- :client-sub-system-code ""
+ :client-sub-system-code "example-code"
  :session-max-age 14400
  :service-timeout-ms 60000
  :koodisto-url "http://localhost:3000/koodisto-service"}
