@@ -13,7 +13,7 @@
       (is (re-find #"^artifactId=" body)))))
 
 (deftest not-found
-  (testing "GET route which does not exists"
+  (testing "GET route which does not exist"
     (let [response (with-authentication
                      app
                      (mock/request
