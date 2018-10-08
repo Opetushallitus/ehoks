@@ -1,0 +1,4 @@
+artifactId=ehoks
+buildNumber=0
+vcsRevision=deadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+buildTime=2018-10-08T01:02:03Z
