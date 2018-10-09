@@ -26,6 +26,11 @@
               :nimi s/Str
               :rooli s/Str})
 
+(s/defschema DateRange
+             "Aikaväli"
+             {:alku KoskiDate
+              :loppu KoskiDate})
+
 (s/defschema OlemassaOlevaOsaaminen
              "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi
               opiskelijan tutkintoa"
@@ -44,8 +49,7 @@
              {:nimi s/Str
               :kuvaus s/Str
               :kesto-paivina s/Int
-              :alku KoskiDate
-              :loppu KoskiDate})
+              :ajankohta DateRange})
 
 (s/defschema PuuttuvaOsaaminen
              "Puuttuva osaaminen"
@@ -53,22 +57,17 @@
               :poikkeama {:alkuperainen-tutkinnon-osa TutkinnonOsa
                           :kuvaus s/Str}
               :osaamisen-hankkimistavat
-              [{:alku KoskiDate
-                :loppu KoskiDate
-                :osaamisen-hankkimistapa
-                {:tunniste KoodistoKoodi}}]
-              :ajankohta {:alku KoskiDate
-                          :loppu KoskiDate}
+              [{:ajankohta DateRange
+                :osaamisen-hankkimistavan-tunniste KoodistoKoodi}]
+              :ajankohta DateRange
               :koulutuksen-jarjestaja-oid s/Str
               :tarvittava-opetus s/Str})
 
 (s/defschema TyopaikallaTapahtuvaOsaaminen
              "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
-             {:ajankohta {:alku KoskiDate
-                          :loppu KoskiDate}
+             {:ajankohta DateRange
               :muut-oppimisymparistot [{:paikka s/Str
-                                        :alku KoskiDate
-                                        :loppu KoskiDate}]
+                                        :ajankohta DateRange}]
               :hankkijan-edustaja Henkilo
               :vastuullinen-ohjaaja Henkilo
               :jarjestajan-edustaja Henkilo
@@ -85,8 +84,7 @@
                            :oid s/Str}
               :nayttoymparisto Organisaatio
               :kuvaus s/Str
-              :ajankohta {:alku KoskiDate
-                          :loppu KoskiDate}
+              :ajankohta DateRange
               :sisalto s/Str
               :ammattitaitovaatimukset [KoodistoKoodi]
               :osaamistavoitteet [KoodistoKoodi]
