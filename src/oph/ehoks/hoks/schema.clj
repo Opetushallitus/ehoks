@@ -23,6 +23,7 @@
 (s/defschema Henkilo
              "Henkilö"
              {:organisaatio Organisaatio
+              :oid s/Str
               :nimi s/Str
               :rooli s/Str})
 
