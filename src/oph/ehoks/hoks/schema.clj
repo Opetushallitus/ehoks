@@ -1,4 +1,4 @@
-(ns oph.ehoks.hoks.schema
+-(ns oph.ehoks.hoks.schema
   (:require [schema.core :as s])
   (:import (java.time LocalDate)))
 
@@ -64,7 +64,7 @@
               :koulutuksen-jarjestaja-oid s/Str
               :tarvittava-opetus s/Str})
 
-(s/defschema TyopaikallaTapahtuvaOsaaminen
+(s/defschema TyopaikallaHankittavaOsaaminen
              "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
              {:ajankohta DateRange
               :muut-oppimisymparistot [{:paikka s/Str
@@ -117,5 +117,6 @@
                 :muut-todennetut-osaamiset [MuuTodennettuOsaaminen]
                 :tukevat-opinnot [TukevaOpinto]
                 :puuttuvat-osaamiset [PuuttuvaOsaaminen]
-                :tyoaikalla-tapahtuvat-osaamiset [TyopaikallaTapahtuvaOsaaminen]
+                :tyopaikalla-hankittavat-osaamiset
+                [TyopaikallaHankittavaOsaaminen]
                 :osaamisen-osoittamiset [HankitunOsaamisenNaytto]}))

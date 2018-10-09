@@ -43,9 +43,9 @@
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))
 
-    (c-api/POST "/:id/tyopaikalla-tapahtuvat-osaamiset/" []
+    (c-api/POST "/:id/tyopaikalla-hankittavat-osaamiset/" []
       :summary "Lisää HOKSiin työpaikalla tapahtuvan osaamisen tiedot"
-      :body [_ hoks-schema/TyopaikallaTapahtuvaOsaaminen]
+      :body [_ hoks-schema/TyopaikallaHankittavaOsaaminen]
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))
 
