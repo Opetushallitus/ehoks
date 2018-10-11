@@ -1,7 +1,6 @@
 (ns oph.ehoks.handler
   (:require [clojure.java.io :as io]
             [compojure.api.sweet :as c-api]
-            [compojure.api.meta :as meta]
             [compojure.core :refer [GET]]
             [compojure.route :as compojure-route]
             [ring.util.http-response :as response]
@@ -16,16 +15,6 @@
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.redis :refer [redis-store]]))
-
-(defn require-role! [required roles]
-  (when-not (seq (clojure.set/intersection required roles))
-    (response/unauthorized!
-      {:message "User has insufficient privileges"})))
-
-(defmethod meta/restructure-param :roles [_ roles acc]
-  (update-in
-    acc [:lets]
-    into ['_ `(require-role! ~roles (:roles ~'+compojure-api-request+))]))
 
 (def app-routes
   (c-api/api
