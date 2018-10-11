@@ -1,4 +1,4 @@
--(ns oph.ehoks.hoks.schema
+(ns oph.ehoks.hoks.schema
   (:require [schema.core :as s])
   (:import (java.time LocalDate)))
 
