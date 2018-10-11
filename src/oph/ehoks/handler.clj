@@ -3,10 +3,7 @@
             [compojure.api.sweet :as c-api]
             [compojure.core :refer [GET]]
             [compojure.route :as compojure-route]
-            [ring.util.http-response :refer [content-type
-                                             not-found
-                                             ok
-                                             resource-response]]
+            [ring.util.http-response :as response]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]
             [oph.ehoks.middleware :as middleware]
@@ -40,10 +37,11 @@
 
       (c-api/undocumented
         (GET "/buildversion.txt" _
-          (content-type (resource-response "buildversion.txt") "text/plain"))))
+          (content-type (response/resource-response "buildversion.txt") "text/plain"))))
 
     (c-api/undocumented
-      (compojure-route/not-found (not-found {:reason "Route not found"})))))
+      (compojure-route/not-found
+        (response/not-found {:reason "Route not found"})))))
 
 (def public-routes
   [{:uri #"^/ehoks-backend/buildversion.txt$"
