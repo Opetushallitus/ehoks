@@ -48,7 +48,8 @@
 
       (c-api/undocumented
         (GET "/buildversion.txt" _
-          (content-type (response/resource-response "buildversion.txt") "text/plain"))))
+          (content-type
+            (response/resource-response "buildversion.txt") "text/plain"))))
 
     (c-api/undocumented
       (compojure-route/not-found
