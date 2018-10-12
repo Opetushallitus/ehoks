@@ -7,6 +7,7 @@
             [oph.ehoks.restful :as rest]
             [oph.ehoks.external.eperusteet :as eperusteet]
             [oph.ehoks.external.koodisto :as koodisto]
+            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.config :refer [config]]))
 
 (def routes
@@ -32,5 +33,17 @@
         (:service-timeout-ms config)
         (-> (eperusteet/search-perusteet-info nimi)
             eperusteet/map-perusteet
+            rest/rest-ok)
+        (response/internal-server-error {:error "Service timeout exceeded"})))
+
+    (c-api/GET "/koski/oppija" [:as request]
+      :summary "Hakee oppijan tietoja Koski-palvelusta"
+      :return (rest/response schema/KoskiOppija)
+      (utils/with-timeout
+        (:service-timeout-ms config)
+        (-> (get-in request [:session :user :oid])
+            (koski/get-student-info)
+            :body
+            koski/filter-oppija
             rest/rest-ok)
         (response/internal-server-error {:error "Service timeout exceeded"})))))
