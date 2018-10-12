@@ -14,7 +14,7 @@
   (c-api/context "/external" []
 
     (c-api/GET "/koodistokoodi/:uri/:versio" []
-      :summary "Hakee koodisto koodin tietoja Kooidsto-palvelusta"
+      :summary "Hakee koodisto koodin tietoja Koodisto-palvelusta"
       :path-params [uri :- s/Str, versio :- s/Int]
       :return (rest/response schema/ExtendedKoodistoKoodi)
       (utils/with-timeout
