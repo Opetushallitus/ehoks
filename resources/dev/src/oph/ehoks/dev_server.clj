@@ -69,13 +69,18 @@
       (wrap-reload #'dev-routes)
       (wrap-reload #'app))))
 
-(defn start-server []
-  (log/info "Starting development server...")
-  (log/info "Not safe for production or public environments.")
-  (jetty/run-jetty dev-app
-                   {:port  (:port config)
-                    :join? false
-                    :async? true}))
+(defn start-server
+  ([config-file]
+   (when (some? config-file)
+     (System/setProperty "config" config-file)
+     (require 'oph.ehoks.config :reload))
+   (log/info "Starting development server...")
+   (log/info "Not safe for production or public environments.")
+   (jetty/run-jetty dev-app
+                    {:port  (:port config)
+                     :join? false
+                     :async? true}))
+  ([] (start-server nil)))
 
 (defn -main []
   (start-server))
