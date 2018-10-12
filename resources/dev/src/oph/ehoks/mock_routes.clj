@@ -25,11 +25,11 @@
           (client/get
             (:opintopolku-return-url config)
             {:redirect-strategy :none
-             :headers {"firstname" "Teuvo Taavetti"
-                       "cn" "Teuvo"
-                       "givenname" "Teuvo"
-                       "hetu" "190384-9245"
-                       "sn" "Testaaja"}})
+             :headers {"firstname" "Aarto Maurits"
+                       "cn" "Aarto"
+                       "givenname" "Aarto"
+                       "hetu" "250103-5360"
+                       "sn" "Väisänen-perftest"}})
           cookie (-> (get-in result [:cookies "ring-session"])
                      (update :expires str)
                      (dissoc :version :discard))]
@@ -53,19 +53,19 @@
   (GET "/oppijanumerorekisteri-service/henkilo" request
     (json-response
       {:results
-       [{:oidHenkilo "1.2.246.562.24.78058065184"
-         :hetu "190384-9245"
-         :etunimet "Vapautettu"
-         :kutsumanimi "Testi"
-         :sukunimi "Maksullinen"}]}))
+       [{:oidHenkilo "1.2.246.562.24.44651722625"
+         :hetu "1.2.246.562.24.44651722625"
+         :etunimet "Aarto Maurits"
+         :kutsumanimi "Aarto"
+         :sukunimi "Väisänen-perftest"}]}))
 
   (GET "/oppijanumerorekisteri-service/henkilo/*" []
     (json-response
-      {:oidHenkilo "1.2.246.562.24.78058065184"
-       :hetu "190384-9245"
-       :etunimet "Teuvo Taavetti"
-       :kutsumanimi "Teuvo"
-       :sukunimi "Testaaja"
+      {:oidHenkilo "1.2.246.562.24.44651722625"
+       :hetu "1.2.246.562.24.44651722625"
+       :etunimet "Aarto Maurits"
+       :kutsumanimi "Aarto"
+       :sukunimi "Väisänen-perftest"
        :yhteystiedotRyhma
        '({:id 0,
           :readOnly true,
