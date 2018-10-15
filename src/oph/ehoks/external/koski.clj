@@ -1,7 +1,6 @@
 (ns oph.ehoks.external.koski
   (:require [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.connection :as c]
-            [clojure.set :refer [rename-keys]]))
+            [oph.ehoks.external.connection :as c]))
 
 (defn filter-oppija [values]
   (update values :henkilö select-keys
