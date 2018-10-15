@@ -1,6 +1,5 @@
 (ns oph.ehoks.external.schema
-  (:require [schema.core :as s])
-  (:import (java.time LocalDate)))
+  (:require [schema.core :as s]))
 
 (def KoskiDate s/Str)
 (def KoskiTimestamp s/Str)
