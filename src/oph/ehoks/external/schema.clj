@@ -60,13 +60,13 @@
               :sukunimi s/Str})
 
 (s/defschema TranslatedValue
-             ""
-             {:fi s/Str
+             "Arvo jolle on käännökset"
+             {(s/optional-key :fi) s/Str
               (s/optional-key :sv) s/Str
               (s/optional-key :en) s/Str})
 
 (s/defschema KoodistoKoodi
-             ""
+             "Koodisto-koodi"
              {:koodiarvo s/Str
               :nimi TranslatedValue
               (s/optional-key :lyhytNimi) TranslatedValue
@@ -74,49 +74,49 @@
               (s/optional-key :koodistoVersio) s/Int})
 
 (s/defschema KoskiOppilaitos
-             ""
+             "Oppilaitos Koskessa"
              {:oid s/Str
               :oppilaitosnumero KoodistoKoodi
               :nimi TranslatedValue
               :kotipaikka KoodistoKoodi})
 
-(s/defschema KoskiOpiskeluoikeusJakso
-             ""
+(s/defschema KoskiOpiskeluoikeusjakso
+             "Opiskeluoikeusjakso Koskessa"
              {:alku KoskiDate
               :tila KoodistoKoodi
               (s/optional-key :opintojenRahoitus) KoodistoKoodi})
 
 (s/defschema KoskiOpiskeluoikeusTila
-             ""
-             {:opiskeluoikeusjaksot [KoskiOpiskeluoikeusJakso]})
+             "Opiskeluoikeuden tila Koskessa"
+             {:opiskeluoikeusjaksot [KoskiOpiskeluoikeusjakso]})
 
 (s/defschema KoskiKoulutustoimija
-             ""
+             "Koulutustoimija Koskessa"
              {:oid s/Str
               :nimi TranslatedValue
               :yTunnus s/Str
               :kotipaikka KoodistoKoodi})
 
 (s/defschema KoskiOrganisaatio
-             ""
+             "Organisaatio Koskessa"
              {:oid s/Str
               :oppilaitosnumero KoodistoKoodi
               (s/optional-key :nimi) TranslatedValue
               (s/optional-key :kotipaikka) KoodistoKoodi})
 
 (s/defschema KoskiMyontajaHenkilo
-             ""
+             "Myöntäjä-henkilö Koskessa"
              {:nimi s/Str
               :titteli TranslatedValue
               :organisaatio KoskiOrganisaatio})
 
 (s/defschema KoskiLaajuus
-             ""
+             "Laajuustieto Koskessa"
              {:arvo s/Num
               :yksikkö KoodistoKoodi})
 
 (s/defschema KoskiKoulutusmoduuli
-             ""
+             "Koulutusmoduuli Koskessa"
              {:tunniste KoodistoKoodi
               (s/optional-key :kieli) KoodistoKoodi
               (s/optional-key :pakollinen) s/Bool
@@ -127,7 +127,7 @@
               (s/optional-key :perusteenNimi) TranslatedValue})
 
 (s/defschema KoskiArviointi
-             ""
+             "Arviointi Koskessa"
              {:arvosana KoodistoKoodi
               :hyväksytty s/Bool
               (s/optional-key :päivä) KoskiDate
@@ -141,12 +141,12 @@
                 :arviointikeskusteluunOsallistuneet) [KoodistoKoodi]})
 
 (s/defschema KoskiTunnisteKuvaus
-             ""
+             "Tunnisteen kuvaus Koskessa"
              {:tunniste KoodistoKoodi
               :kuvaus TranslatedValue})
 
 (s/defschema KoskiNaytto
-             ""
+             "Näyttö Koskessa"
              {:kuvaus TranslatedValue
               :suorituspaikka KoskiTunnisteKuvaus
               :suoritusaika {:alku KoskiDate
@@ -155,14 +155,14 @@
               :arviointi KoskiArviointi})
 
 (s/defschema KoskiTunnustettu
-             ""
+             "Tunnustettu osaaminen Koskessa"
              {:osaaminen {:koulutusmoduuli KoskiKoulutusmoduuli
                           :tyyppi KoodistoKoodi}
               :selite TranslatedValue
               :rahoituksenPiirissä s/Bool})
 
 (s/defschema KoskiOsasuoritus
-             ""
+             "Osasuoritus Koskessa"
              {:koulutusmoduuli KoskiKoulutusmoduuli
               (s/optional-key :yksilöllistettyOppimäärä) s/Bool
               (s/optional-key :painotettuOpetus) s/Bool
@@ -177,7 +177,7 @@
               (s/optional-key :tunnustettu) KoskiTunnustettu})
 
 (s/defschema KoskiTyossaoppimisjakso
-             ""
+             "Työssäoppimisjakso Koskessa"
              {:alku KoskiDate
               :loppu KoskiDate
               :työssäoppimispaikka TranslatedValue
@@ -187,7 +187,7 @@
               :laajuus KoskiLaajuus})
 
 (s/defschema KoskiSuoritus
-             ""
+             "Suoritus Koskessa"
              {:vahvistus {:päivä KoskiDate
                           :paikkakunta KoodistoKoodi
                           :myöntäjäOrganisaatio KoskiOrganisaatio
