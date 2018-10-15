@@ -16,4 +16,5 @@
  :client-sub-system-code "example-code"
  :session-max-age 14400
  :service-timeout-ms 60000
- :koodisto-url "http://localhost:3000/koodisto-service"}
+ :koodisto-url "http://localhost:3000/koodisto-service"
+ :koski-url "http://localhost:3000/koski"}
