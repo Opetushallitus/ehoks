@@ -77,7 +77,7 @@
    (log/info "Starting development server...")
    (log/info "Not safe for production or public environments.")
    (jetty/run-jetty dev-app
-                    {:port  (:port config)
+                    {:port (:port config)
                      :join? false
                      :async? true}))
   ([] (start-server nil)))
