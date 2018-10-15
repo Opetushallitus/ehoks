@@ -161,6 +161,20 @@
               :selite TranslatedValue
               :rahoituksenPiirissä s/Bool})
 
+(s/defschema KoskiOsasuoritusOsasuoritus
+             "Osasuorituksen osasuoritus Koskessa"
+             {:koulutusmoduuli KoskiKoulutusmoduuli
+              (s/optional-key :yksilöllistettyOppimäärä) s/Bool
+              (s/optional-key :painotettuOpetus) s/Bool
+              :arviointi [KoskiArviointi]
+              :tyyppi KoodistoKoodi
+              (s/optional-key :tutkinnonOsanRyhmä) KoodistoKoodi
+              (s/optional-key :toimipiste) KoskiOppilaitos
+              (s/optional-key :näyttö) KoskiNaytto
+              (s/optional-key :lisätiedot) [KoskiTunnisteKuvaus]
+              (s/optional-key :alkamispäivä) KoskiDate
+              (s/optional-key :tunnustettu) KoskiTunnustettu})
+
 (s/defschema KoskiOsasuoritus
              "Osasuoritus Koskessa"
              {:koulutusmoduuli KoskiKoulutusmoduuli
@@ -172,7 +186,7 @@
               (s/optional-key :toimipiste) KoskiOppilaitos
               (s/optional-key :näyttö) KoskiNaytto
               (s/optional-key :lisätiedot) [KoskiTunnisteKuvaus]
-              (s/optional-key :osasuoritukset) [KoskiOsasuoritus]
+              (s/optional-key :osasuoritukset) [KoskiOsasuoritusOsasuoritus]
               (s/optional-key :alkamispäivä) KoskiDate
               (s/optional-key :tunnustettu) KoskiTunnustettu})
 
