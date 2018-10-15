@@ -39,4 +39,5 @@
               :client-sub-system-code s/Str
               :session-max-age s/Int
               :service-timeout-ms s/Int
-              :koodisto-url s/Str})
+              :koodisto-url s/Str
+              :koski-url s/Str})

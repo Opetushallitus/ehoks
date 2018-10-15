@@ -80,4 +80,11 @@
           "dev-routes/rest_codeelement_ravintolakokinatjarjestys__4_2.json")
         slurp
         (cheshire/parse-string true)
+        json-response))
+
+  (GET "/koski/api/oppija/*" []
+    (-> (io/resource
+          "dev-routes/koski_api_oppija_1.2.246.562.24.44651722625.json")
+        slurp
+        (cheshire/parse-string true)
         json-response)))
