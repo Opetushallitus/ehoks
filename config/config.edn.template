@@ -2,12 +2,16 @@
  :frontend-url "{{ehoks_frontend_url}}"
  :database-url "{{ehoks_database_url}}"
  :redis-url nil
- :opintopolku-login-url "{{ehoks_opintopolku_login_url}}"
- :opintopolku-return-url "{{ehoks_opintopolku_return_url}}"
- :eperusteet-url "{{ehoks_eperusteet_url}}"
- :lokalisointi-url "{{ehoks_localization_url}}"
- :oppijanumerorekisteri-url "{{ehoks_oppijanumerorekisteri_url}}"
  :cas-service-ticket-url "{{ehoks_cas_service_ticket_url}}"
  :cas-username "{{ehoks_cas_username}}"
  :cas-password "{{ehoks_cas_password}}"
- :client-sub-system-code "{{ehoks_client_sub_system_code}}"}
+ :client-sub-system-code "{{ehoks_client_sub_system_code}}"
+ :opintopolku-login-url "{{ehoks_opintopolku_login_url}}"
+ :opintopolku-logout-url "{{ehoks_opintopolku_logout_url}}"
+ :opintopolku-return-url "{{ehoks_opintopolku_return_url}}"
+ :eperusteet-url "{{ehoks_eperusteet_url}}"
+ :eperusteet-peruste-url "{{ehoks_eperusteet_peruste_url}}"
+ :oppijanumerorekisteri-url "{{ehoks_oppijanumerorekisteri_url}}"
+ :koski-url "{{ehoks_koski_url}}"
+ :koodisto-url "{{ehoks_koodisto_url}}"
+ :lokalisointi-url "{{ehoks_lokalisointi_url}}"}
