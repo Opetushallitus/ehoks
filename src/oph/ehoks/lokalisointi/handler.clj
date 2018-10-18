@@ -1,7 +1,6 @@
 (ns oph.ehoks.lokalisointi.handler
   (:require [compojure.api.sweet :as c-api]
             [oph.ehoks.restful :as restful]
-            [ring.util.http-response :as http-response]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.external.lokalisointi :as lokalisointi]
             [clojure.core.async :as a]))

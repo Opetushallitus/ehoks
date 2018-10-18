@@ -1,7 +1,6 @@
 (ns oph.ehoks.external.connection
   (:require [oph.ehoks.config :refer [config]]
             [clj-http.client :as client]
-            [cheshire.core :as cheshire]
             [clj-time.core :as t])
   (:import [com.fasterxml.jackson.core JsonParseException]))
 

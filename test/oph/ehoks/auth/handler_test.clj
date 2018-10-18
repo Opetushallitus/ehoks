@@ -1,11 +1,8 @@
 (ns oph.ehoks.auth.handler-test
-  (:require [cheshire.core :as cheshire]
-            [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest testing is]]
             [oph.ehoks.handler :refer [app]]
             [ring.mock.request :as mock]
-            [oph.ehoks.utils :refer [parse-body]]
-            [oph.ehoks.config :refer [config]]
-            [cheshire.core :as cheshire]))
+            [oph.ehoks.utils :refer [parse-body]]))
 
 (defn authenticate []
   (app (-> (mock/request

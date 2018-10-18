@@ -1,7 +1,6 @@
 (ns oph.ehoks.utils
   (:require [cheshire.core :as cheshire]
-            [ring.mock.request :as mock]
-            [oph.ehoks.config :refer [config]]))
+            [ring.mock.request :as mock]))
 
 (defn get-auth-cookie [app]
   (-> (mock/request :get "/ehoks-backend/api/v1/session/opintopolku/")

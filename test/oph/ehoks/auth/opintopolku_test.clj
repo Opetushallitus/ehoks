@@ -1,8 +1,6 @@
 (ns oph.ehoks.auth.opintopolku-test
   (:require [clojure.test :refer [deftest testing is]]
-            [clojure.edn :as edn]
-            [oph.ehoks.auth.opintopolku :as o]
-            [clojure.java.io :as io])
+            [oph.ehoks.auth.opintopolku :as o])
   (:import [java.nio.charset StandardCharsets]))
 
 (deftest keys-to-lower-test

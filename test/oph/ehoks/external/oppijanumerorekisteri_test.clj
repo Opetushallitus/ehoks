@@ -1,8 +1,6 @@
 (ns oph.ehoks.external.oppijanumerorekisteri-test
   (:require [clojure.test :refer [deftest testing is]]
-            [oph.ehoks.external.connection :as c]
-            [oph.ehoks.external.oppijanumerorekisteri :as onr]
-            [clj-time.core :as t]))
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]))
 
 (deftest test-convert-student-info
   (testing "Converting Oppijanumerorekisteri student info"
