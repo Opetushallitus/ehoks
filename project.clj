@@ -79,6 +79,7 @@
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
   :source-paths ["src"]
+  :resource-paths []
   :cloverage {;:fail-threshold 90
               :html? false}
   :bikeshed {:var-redefs false}
@@ -95,4 +96,5 @@
                    :dependencies [[cheshire "5.8.1"]
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.0" :exclusions [ring/ring-core]]]
-                   :resource-paths ["resources/dev" "resources/dev/src"]}})
+                   :resource-paths ["resources/dev" "resources/dev/src"]}
+             :uberjar {:resource-paths ["resources/uberjar"]}})

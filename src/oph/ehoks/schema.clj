@@ -36,11 +36,12 @@
               :eperusteet-url (s/maybe s/Str)
               :eperusteet-peruste-url (s/maybe s/Str)
               :lokalisointi-url (s/maybe s/Str)
-              (s/optional-key :oppijanumerorekisteri-url) (s/maybe s/Str)
-              (s/optional-key :cas-service-ticket-url) (s/maybe s/Str)
-              (s/optional-key :cas-username) (s/maybe s/Str)
-              (s/optional-key :cas-password) (s/maybe s/Str)
-              (s/optional-key :client-sub-system-code) (s/maybe s/Str)
-              (s/optional-key :session-max-age) s/Int
+              :oppijanumerorekisteri-url s/Str
+              :cas-service-ticket-url s/Str
+              :cas-username s/Str
+              :cas-password s/Str
+              :client-sub-system-code s/Str
+              :session-max-age s/Int
               :service-timeout-ms s/Int
-              :koodisto-url s/Str})
+              :koodisto-url s/Str
+              :koski-url s/Str})

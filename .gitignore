@@ -7,6 +7,7 @@
 /checkouts
 /classes
 /lib
+/resources/uberjar/buildversion.txt
 /target
 pom.xml
 pom.xml.asc

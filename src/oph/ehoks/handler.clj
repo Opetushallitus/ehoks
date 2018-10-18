@@ -1,7 +1,9 @@
 (ns oph.ehoks.handler
-  (:require [compojure.api.sweet :as c-api]
+  (:require [clojure.java.io :as io]
+            [compojure.api.sweet :as c-api]
+            [compojure.core :refer [GET]]
             [compojure.route :as compojure-route]
-            [ring.util.http-response :refer [not-found]]
+            [ring.util.http-response :as response]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]
             [oph.ehoks.middleware :as middleware]
@@ -32,13 +34,21 @@
         hoks-handler/routes
         lokalisointi-handler/routes
         external-handler/routes
-        misc-handler/routes))
+        misc-handler/routes)
+
+      (c-api/undocumented
+        (GET "/buildversion.txt" _
+          (response/content-type
+            (response/resource-response "buildversion.txt") "text/plain"))))
 
     (c-api/undocumented
-      (compojure-route/not-found (not-found {:reason "Route not found"})))))
+      (compojure-route/not-found
+        (response/not-found {:reason "Route not found"})))))
 
 (def public-routes
-  [{:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
+  [{:uri #"^/ehoks-backend/buildversion.txt$"
+    :request-method :get}
+   {:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
     :request-method :get}
    {:uri #"^/ehoks-backend/api/v1/session$"
     :request-method :options}
