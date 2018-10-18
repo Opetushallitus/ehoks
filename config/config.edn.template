@@ -1,7 +1,5 @@
 {:port {{ehoks_backend_port}}
  :frontend-url "{{ehoks_frontend_url}}"
- :database-url "{{ehoks_database_url}}"
- :redis-url nil
  :cas-service-ticket-url "{{ehoks_cas_service_ticket_url}}"
  :cas-username "{{ehoks_cas_username}}"
  :cas-password "{{ehoks_cas_password}}"
