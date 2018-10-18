@@ -1,7 +1,5 @@
 (ns oph.ehoks.misc.handler
   (:require [compojure.api.sweet :as c-api]
-            [ring.util.http-response :as response]
-            [schema.core :as s]
             [oph.ehoks.misc.schema :as schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.config :refer [config]]))

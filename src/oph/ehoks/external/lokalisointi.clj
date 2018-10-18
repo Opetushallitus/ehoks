@@ -1,7 +1,6 @@
 (ns oph.ehoks.external.lokalisointi
   (:require [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.connection :as c]
-            [cheshire.core :as cheshire]))
+            [oph.ehoks.external.connection :as c]))
 
 (defn get-localization-results  [& {:keys [category] :or {category "ehoks"}}]
   (get-in
