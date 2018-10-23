@@ -1,6 +1,7 @@
 (ns oph.ehoks.redis
-  (:require [ring.middleware.session.store :refer [SessionStore]])
-  (:require [taoensso.carmine :as car])
+  (:require [ring.middleware.session.store :refer [SessionStore]]
+            [taoensso.carmine :as car]
+            [clojure.tools.logging :as log])
   (:import java.util.UUID))
 
 (defn create-session-key []
@@ -20,4 +21,5 @@
     nil))
 
 (defn redis-store [conn-opts]
+  (log/info "Redis session store enabled")
   (RedisStore. conn-opts))
