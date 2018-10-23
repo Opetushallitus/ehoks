@@ -1,6 +1,6 @@
 (ns oph.ehoks.hoks.handler
   (:require [compojure.api.sweet :as c-api]
-            [ring.util.http-response :refer [accepted]]
+            [ring.util.http-response :refer [no-content]]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :refer [response rest-ok]]))
@@ -19,3 +19,6 @@
       :return (response schema/POSTResponse)
       (rest-ok {:uri ""}))
 
+    (c-api/PUT "/:id" []
+      :summary "Päivittää olemassa olevaa HOKSia"
+      (no-content))))
