@@ -18,7 +18,22 @@
 (s/defschema TutkinnonOsa
              "Tutkinnon osa"
              {:tunniste KoodistoKoodi
-              :laajuus s/Int})
+              :laajuus s/Int
+              :eperusteet-diaarinumero s/Str
+              :kuvas s/Str
+              :koulutustyyppi KoodistoKoodi})
+
+(s/defschema YTOTutkinnonOsa
+             "YTO tutkinnon osa"
+             (assoc TutkinnonOsa :osa-alue-tunniste KoodistoKoodi))
+
+(s/defschema MuuTutkinnonOsa
+             "Muu tutkinnon osa"
+             {:nimi s/Str
+              :kuvaus s/Str
+              :laajuus s/Int
+              :kesto s/Int
+              :suorituspvm KoskiDate})
 
 (s/defschema Henkilo
              "Henkilö"
@@ -32,11 +47,27 @@
              {:alku KoskiDate
               :loppu KoskiDate})
 
+(s/defschema OpiskeluvalmiuksiaTukevatOpinnot
+             "Opiskeluvalmiuksia tukevat opinnot"
+             MuuTutkinnonOsa)
+
 (s/defschema OlemassaOlevaOsaaminen
              "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi
               opiskelijan tutkintoa"
-             {:tutkinnon-osa TutkinnonOsa
-              :tutkinnon-diaarinumero s/Str})
+             {:tunnustettu-osaaminen {:ammatilliset-opinnot [TutkinnonOsa]
+                                      :yhteiset-tutkinnon-osat [YTOTutkinnonOsa]
+                                      :muut-osaamiset [MuuTutkinnonOsa]}
+              :aiempi-tunnustettava-osaaminen
+              {:ammatilliset-opinnot [TutkinnonOsa]
+               :yhteiset-tutkinnon-osat [YTOTutkinnonOsa]
+               :muut-osaamiset [MuuTutkinnonOsa]}
+              :tunnustettavana-olevat
+              {:ammatilliset-opinnot [TutkinnonOsa]
+               :yhteiset-tutkinnon-osat [YTOTutkinnonOsa]
+               :muut-osaamiset [MuuTutkinnonOsa]}
+              :muut-opinnot {:ammatilliset-opinnot [TutkinnonOsa]
+                             :yhteiset-tutkinnon-osat [YTOTutkinnonOsa]
+                             :muut-osaamiset [MuuTutkinnonOsa]}})
 
 (s/defschema MuuTodennettuOsaaminen
              "Muu opiskelijan aiemmin hankkima ja osoittama osaaminen, joka
@@ -52,18 +83,6 @@
               :kesto-paivina s/Int
               :ajankohta DateRange})
 
-(s/defschema PuuttuvaOsaaminen
-             "Puuttuva osaaminen"
-             {:tutkinnon-osa TutkinnonOsa
-              :poikkeama {:alkuperainen-tutkinnon-osa TutkinnonOsa
-                          :kuvaus s/Str}
-              :osaamisen-hankkimistavat
-              [{:ajankohta DateRange
-                :osaamisen-hankkimistavan-tunniste KoodistoKoodi}]
-              :ajankohta DateRange
-              :koulutuksen-jarjestaja-oid s/Str
-              :tarvittava-opetus s/Str})
-
 (s/defschema TyopaikallaHankittavaOsaaminen
              "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
              {:ajankohta DateRange
@@ -78,6 +97,23 @@
               :erityinen-tuki s/Bool
               :erityisen-tuen-aika {:alku KoskiDate
                                     :loppu KoskiDate}})
+
+(s/defschema PuuttuvaOsaaminen
+             "Puuttuva osaaminen"
+             {:ammatilliset-opinnot [TutkinnonOsa]
+              :yhteiset-tutkinnon-osat [YTOTutkinnonOsa]
+              :muut [TutkinnonOsa]
+              :poikkeama {:alkuperainen-tutkinnon-osa TutkinnonOsa
+                          :kuvaus s/Str}
+              :osaamisen-hankkimistavat
+              [{:ajankohta DateRange
+                :osaamisen-hankkimistavan-tunniste KoodistoKoodi}]
+              :ajankohta DateRange
+              :koulutuksen-jarjestaja-oid s/Str
+              :tarvittava-opetus s/Str
+              :tyopaikalla-tapahtuva TyopaikallaHankittavaOsaaminen})
+
+
 
 (s/defschema HankitunOsaamisenNaytto
              "Hankitun osaamisen osoittaminen"
@@ -95,28 +131,26 @@
               :arviointikriteerit [{:arvosana s/Int
                                     :kuvaus s/Str}]})
 
-(s/defschema HOKSArvot
-             "HOKS arvot uuden HOKSin luomiseen"
-             {:opiskeluoikeus-oid s/Str
-              :urasuunnitelma KoodistoKoodi})
-
 (s/defschema HOKS
              "HOKS"
-             (merge
-               HOKSArvot
-               {:id s/Int
-                :versio s/Int
-                :luojan-oid s/Str
-                :paivittajan-oid s/Str
-                :luonnin-hyvaksyjan-oid s/Str
-                :paivityksen-hyvaksyjan-oid s/Str
-                :luotu s/Inst
-                :hyvaksytty s/Inst
-                :paivitetty s/Inst
-                :olemassa-olevat-osaamiset [OlemassaOlevaOsaaminen]
-                :muut-todennetut-osaamiset [MuuTodennettuOsaaminen]
-                :tukevat-opinnot [TukevaOpinto]
-                :puuttuvat-osaamiset [PuuttuvaOsaaminen]
-                :tyopaikalla-hankittavat-osaamiset
-                [TyopaikallaHankittavaOsaaminen]
-                :osaamisen-osoittamiset [HankitunOsaamisenNaytto]}))
+             {:id s/Int
+              :opiskeluoikeus-oid s/Str
+              :urasuunnitelma KoodistoKoodi
+              :versio s/Int
+              :luojan-oid s/Str
+              :paivittajan-oid s/Str
+              :luonnin-hyvaksyjan-oid s/Str
+              :paivityksen-hyvaksyjan-oid s/Str
+              :luotu s/Inst
+              :hyvaksytty s/Inst
+              :paivitetty s/Inst
+              :olemassa-oleva-osaaminen OlemassaOlevaOsaaminen
+              ; OSAAMISEN TUNNISTAMIS- JA TUNNUSTAMISPROSESSIN LOPPUTULOS
+              :opiskeluvalmiuksia-tukevat-opinnot
+              OpiskeluvalmiuksiaTukevatOpinnot
+              :puuttuva-osaaminen PuuttuvaOsaaminen
+              :hankitun-osaamisen-naytto HankitunOsaamisenNaytto})
+
+(s/defschema HOKSArvot
+             "HOKS arvot uuden HOKSin luomiseen"
+             (dissoc HOKS :id))
