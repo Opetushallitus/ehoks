@@ -69,20 +69,6 @@
                              :yhteiset-tutkinnon-osat [YTOTutkinnonOsa]
                              :muut-osaamiset [MuuTutkinnonOsa]}})
 
-(s/defschema MuuTodennettuOsaaminen
-             "Muu opiskelijan aiemmin hankkima ja osoittama osaaminen, joka
-              liittyy suoritettavaan tutkintoon tai valmentavaan koulutukseen"
-             {:tutkinnon-osa TutkinnonOsa
-              :kuvaus s/Str
-              :liitteet [s/Str]})
-
-(s/defschema TukevaOpinto
-             "Opiskeluvalmiuksia tukevat opinnot"
-             {:nimi s/Str
-              :kuvaus s/Str
-              :kesto-paivina s/Int
-              :ajankohta DateRange})
-
 (s/defschema TyopaikallaHankittavaOsaaminen
              "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
              {:ajankohta DateRange
