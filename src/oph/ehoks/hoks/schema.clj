@@ -20,7 +20,7 @@
              {:tunniste KoodistoKoodi
               :laajuus s/Int
               :eperusteet-diaarinumero s/Str
-              :kuvas s/Str
+              :kuvaus s/Str
               :koulutustyyppi KoodistoKoodi})
 
 (s/defschema YTOTutkinnonOsa
