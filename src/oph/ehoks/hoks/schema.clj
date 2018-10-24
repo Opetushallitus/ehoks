@@ -97,7 +97,7 @@
               :ajankohta DateRange
               :koulutuksen-jarjestaja-oid s/Str
               :tarvittava-opetus s/Str
-              :tyopaikalla-tapahtuva TyopaikallaHankittavaOsaaminen})
+              :tyopaikalla-hankittava-osaaminen TyopaikallaHankittavaOsaaminen})
 
 
 
