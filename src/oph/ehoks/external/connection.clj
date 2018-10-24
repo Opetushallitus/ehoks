@@ -18,7 +18,8 @@
       url
       (-> options
           (assoc-in [:headers "Caller-Id"] (:client-sub-system-code config))
-          (assoc :debug (:debug config false))))))
+          (assoc :debug (:debug config false))
+          (assoc :cookie-policy :standard)))))
 
 (defn refresh-service-ticket! []
   (let [response (with-api-headers
