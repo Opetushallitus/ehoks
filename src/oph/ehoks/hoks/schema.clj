@@ -54,8 +54,8 @@
   (describe
     "Henkilö"
     :organisaatio Organisaatio "Henkilön organisaatio"
-    :oid s/Str "Oppijanumero 'oid' on oppijan yksilöivä tunniste
-                Opintopolku-palvelussa ja Koskessa."
+    :oid s/Str (str "Oppijanumero 'oid' on oppijan yksilöivä tunniste "
+                    "Opintopolku-palvelussa ja Koskessa.")
     :nimi s/Str "Henkilön nimi"
     :rooli s/Str "Henkilön rooli"))
 
@@ -83,8 +83,8 @@
 (s/defschema
   OlemassaOlevaOsaaminen
   (describe
-    "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi
-     opiskelijan tutkintoa"
+    (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
+         "opiskelijan tutkintoa")
     :tunnustettu-osaaminen Opinnot "Tunnustettu osaaminen"
     :aiempi-tunnustettava-osaaminen Opinnot "Aiempi tunnustettava osaaminen"
     :tunnustettavana-olevat Opinnot "Tunnustettavana oleva osaaminen"
@@ -113,11 +113,12 @@
     :ohjaus-ja-tuki s/Bool
     "Onko opiskelijalla tunnistettu ohjauksen ja tuen tarvetta"
     :erityinen-tuki s/Bool
-    "Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä erityisen
-     tuen päätös"
+    (str "Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä "
+         "erityisen tuen päätös")
+
     :erityisen-tuen-aika DateRange
-    "Erityisen tuen alkamispvm ja päättymispvm kyseisessä tutkinnon tai
-     koulutuksen osassa"))
+    (str "Erityisen tuen alkamispvm ja päättymispvm kyseisessä tutkinnon tai"
+         "koulutuksen osassa")))
 
 (s/defschema
   PuuttuvanSaamisenPoikkeama
@@ -147,9 +148,9 @@
     "Osaamisen hankkimistavat"
     :ajankohta DateRange "Puuttuvan osaamisen hankkimisen ajankohta"
     :koulutuksen-jarjestaja-oid s/Str
-    "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla
-     organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän
-     oid."
+    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+         "koulutuksen järjestäjän oid.")
     :tarvittava-opetus s/Str "Tarvittava opetus"
     :tyopaikalla-hankittava-osaaminen TyopaikallaHankittavaOsaaminen
     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"))
@@ -160,9 +161,9 @@
     "Näytön tai osaamisen osoittamisen järjestäjä"
     :nimi s/Str "Näytön tai osaamisen osoittamisen järjestäjän nimi"
     :oid s/Str
-    "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla
-     organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän
-     oid."))
+    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+         "koulutuksen järjestäjän oid.")))
 
 (s/defschema
   Arvioija
@@ -187,9 +188,10 @@
     :nayttoymparisto Organisaatio
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
     :kuvaus s/Str
-    "Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen näyttöympäristö
-     on kyseessä. Kuvataan ympäristön luonne lyhyesti, esim. kukkakauppa,
-     varaosaliike, ammatillinen oppilaitos, simulaattori"
+    (str "Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen "
+         "näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, "
+         "esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, "
+         "simulaattori")
     :ajankohta DateRange "Näytön tai osaamisen osoittamisen ajankohta"
     :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
     :ammattitaitovaatimukset [KoodistoKoodi]
@@ -197,7 +199,8 @@
     :osaamistavoitteet [KoodistoKoodi]
     "Osaamistavoitteet, jonka arvioinnin kriteereitä mukautetaan"
     :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"
-    :arviointikriteerit [Arviointikriteeri] "Yksilölliset arvioinnin kriteerit"))
+    :arviointikriteerit [Arviointikriteeri]
+    "Yksilölliset arvioinnin kriteerit"))
 
 (s/defschema
   HOKS
@@ -212,20 +215,20 @@
     :luojan-oid s/Str
     "HOKS-dokumentin luoneen henkilön yksilöivä tunniste Koski-järjestelmässä"
     :paivittajan-oid s/Str
-    "HOKS-dokumenttia viimeksi päivittäneen henkilön yksilöivä tunniste
-     Koski-järjestelmässä"
+    (str "HOKS-dokumenttia viimeksi päivittäneen henkilön yksilöivä tunniste "
+         "Koski-järjestelmässä")
     :luonnin-hyvaksyjan-oid s/Str
     "Luodun HOKS-dokumentin hyväksyjän yksilöivä tunniste Koski-järjestelmässä"
     :paivityksen-hyvaksyjan-oid s/Str
-    "HOKS-dokumentin viimeisen päivityksen hyväksyjän yksilöivä tunniste
-     Koski-järjestelmässä"
+    (str "HOKS-dokumentin viimeisen päivityksen hyväksyjän yksilöivä tunniste "
+         "Koski-järjestelmässä")
     :luotu s/Inst "HOKS-dokumentin luontiaika"
     :hyvaksytty s/Inst "HOKS-dokumentin hyväksymisaika"
     :paivitetty s/Inst "HOKS-dokumentin viimeisin päivitysaika"
     :olemassa-oleva-osaaminen OlemassaOlevaOsaaminen
-    "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan
-     tutkintoa"
-                                        ; OSAAMISEN TUNNISTAMIS- JA TUNNUSTAMISPROSESSIN LOPPUTULOS
+    (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
+         "opiskelijan tutkintoa")
+    ; OSAAMISEN TUNNISTAMIS- JA TUNNUSTAMISPROSESSIN LOPPUTULOS
     :opiskeluvalmiuksia-tukevat-opinnot OpiskeluvalmiuksiaTukevatOpinnot
     "Opiskeluvalmiuksia tukevat opinnot"
     :puuttuva-osaaminen PuuttuvaOsaaminen
@@ -235,6 +238,5 @@
 
 (s/defschema
   HOKSArvot
-  "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentin arvot uutta
-   merkintää luotaessa"
+  "HOKS-dokumentin arvot uutta merkintää luotaessa"
   (st/dissoc HOKS :id))
