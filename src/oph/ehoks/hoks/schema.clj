@@ -23,7 +23,7 @@
               :kuvaus s/Str
               :koulutustyyppi KoodistoKoodi})
 
-(s/defschema YTOTutkinnonOsa
+(s/defschema YhteinenTutkinnonOsa
              "YTO tutkinnon osa"
              (assoc TutkinnonOsa :osa-alue-tunniste KoodistoKoodi))
 
@@ -55,18 +55,18 @@
              "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi
               opiskelijan tutkintoa"
              {:tunnustettu-osaaminen {:ammatilliset-opinnot [TutkinnonOsa]
-                                      :yhteiset-tutkinnon-osat [YTOTutkinnonOsa]
+                                      :yhteiset-tutkinnon-osat [YhteinenTutkinnonOsa]
                                       :muut-osaamiset [MuuTutkinnonOsa]}
               :aiempi-tunnustettava-osaaminen
               {:ammatilliset-opinnot [TutkinnonOsa]
-               :yhteiset-tutkinnon-osat [YTOTutkinnonOsa]
+               :yhteiset-tutkinnon-osat [YhteinenTutkinnonOsa]
                :muut-osaamiset [MuuTutkinnonOsa]}
               :tunnustettavana-olevat
               {:ammatilliset-opinnot [TutkinnonOsa]
-               :yhteiset-tutkinnon-osat [YTOTutkinnonOsa]
+               :yhteiset-tutkinnon-osat [YhteinenTutkinnonOsa]
                :muut-osaamiset [MuuTutkinnonOsa]}
               :muut-opinnot {:ammatilliset-opinnot [TutkinnonOsa]
-                             :yhteiset-tutkinnon-osat [YTOTutkinnonOsa]
+                             :yhteiset-tutkinnon-osat [YhteinenTutkinnonOsa]
                              :muut-osaamiset [MuuTutkinnonOsa]}})
 
 (s/defschema TyopaikallaHankittavaOsaaminen
@@ -87,7 +87,7 @@
 (s/defschema PuuttuvaOsaaminen
              "Puuttuva osaaminen"
              {:ammatilliset-opinnot [TutkinnonOsa]
-              :yhteiset-tutkinnon-osat [YTOTutkinnonOsa]
+              :yhteiset-tutkinnon-osat [YhteinenTutkinnonOsa]
               :muut [TutkinnonOsa]
               :poikkeama {:alkuperainen-tutkinnon-osa TutkinnonOsa
                           :kuvaus s/Str}
