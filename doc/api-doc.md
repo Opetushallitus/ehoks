@@ -24,7 +24,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response2880995](#response2880995) |
+| 200 |  | [Response4030683](#response4030683) |
 
 ### /ehoks-backend/api/v1/session/update-user-info
 ---
@@ -35,7 +35,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response2880996](#response2880996) |
+| 200 |  | [Response4030684](#response4030684) |
 
 ### /ehoks-backend/api/v1/session
 ---
@@ -46,7 +46,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response2880997](#response2880997) |
+| 200 |  | [Response4030685](#response4030685) |
 
 ##### ***OPTIONS***
 **Responses**
@@ -96,7 +96,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response2880998](#response2880998) |
+| 200 |  | [Response4030686](#response4030686) |
 
 ##### ***PUT***
 **Summary:** Päivittää olemassa olevaa HOKSia
@@ -128,7 +128,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response2880999](#response2880999) |
+| 200 |  | [Response4030687](#response4030687) |
 
 ### /ehoks-backend/api/v1/lokalisointi
 ---
@@ -145,7 +145,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response2881000](#response2881000) |
+| 200 |  | [Response4030688](#response4030688) |
 
 ### /ehoks-backend/api/v1/external/koodistokoodi/{uri}/{versio}
 ---
@@ -163,7 +163,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response2881001](#response2881001) |
+| 200 |  | [Response4030689](#response4030689) |
 
 ### /ehoks-backend/api/v1/external/eperusteet/
 ---
@@ -180,7 +180,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response2881002](#response2881002) |
+| 200 |  | [Response4030690](#response4030690) |
 
 ### /ehoks-backend/api/v1/external/koski/oppija
 ---
@@ -191,7 +191,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response2881003](#response2881003) |
+| 200 |  | [Response4030691](#response4030691) |
 
 ### /ehoks-backend/api/v1/misc/environment
 ---
@@ -202,7 +202,7 @@ Backend for eHOKS
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 |  | [Response2881004](#response2881004) |
+| 200 |  | [Response4030692](#response4030692) |
 
 ### Models
 ---
@@ -265,8 +265,7 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| paivittajan-oid | string | HOKS-dokumenttia viimeksi päivittäneen henkilön yksilöivä tunniste
-     Koski-järjestelmässä | Yes |
+| paivittajan-oid | string | HOKS-dokumenttia viimeksi päivittäneen henkilön yksilöivä tunniste Koski-järjestelmässä | Yes |
 | luotu | dateTime | HOKS-dokumentin luontiaika | Yes |
 | hankitun-osaamisen-naytto | [HankitunOsaamisenNaytto](#hankitunosaamisennaytto) |  | Yes |
 | hyvaksytty | dateTime | HOKS-dokumentin hyväksymisaika | Yes |
@@ -274,8 +273,7 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti
 | puuttuva-osaaminen | [PuuttuvaOsaaminen](#puuttuvaosaaminen) |  | Yes |
 | opiskeluoikeus-oid | string | Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä. | Yes |
 | versio | long | HOKS-dokumentin versio | Yes |
-| paivityksen-hyvaksyjan-oid | string | HOKS-dokumentin viimeisen päivityksen hyväksyjän yksilöivä tunniste
-     Koski-järjestelmässä | Yes |
+| paivityksen-hyvaksyjan-oid | string | HOKS-dokumentin viimeisen päivityksen hyväksyjän yksilöivä tunniste Koski-järjestelmässä | Yes |
 | paivitetty | dateTime | HOKS-dokumentin viimeisin päivitysaika | Yes |
 | eid | long | eHOKS-id eli tunniste eHOKS-järjestelmässä | Yes |
 | luojan-oid | string | HOKS-dokumentin luoneen henkilön yksilöivä tunniste Koski-järjestelmässä | Yes |
@@ -289,8 +287,7 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| paivittajan-oid | string | HOKS-dokumenttia viimeksi päivittäneen henkilön yksilöivä tunniste
-     Koski-järjestelmässä | Yes |
+| paivittajan-oid | string | HOKS-dokumenttia viimeksi päivittäneen henkilön yksilöivä tunniste Koski-järjestelmässä | Yes |
 | luotu | dateTime | HOKS-dokumentin luontiaika | Yes |
 | hankitun-osaamisen-naytto | [HankitunOsaamisenNaytto](#hankitunosaamisennaytto) |  | Yes |
 | hyvaksytty | dateTime | HOKS-dokumentin hyväksymisaika | Yes |
@@ -298,8 +295,7 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti
 | puuttuva-osaaminen | [PuuttuvaOsaaminen](#puuttuvaosaaminen) |  | Yes |
 | opiskeluoikeus-oid | string | Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä. | Yes |
 | versio | long | HOKS-dokumentin versio | Yes |
-| paivityksen-hyvaksyjan-oid | string | HOKS-dokumentin viimeisen päivityksen hyväksyjän yksilöivä tunniste
-     Koski-järjestelmässä | Yes |
+| paivityksen-hyvaksyjan-oid | string | HOKS-dokumentin viimeisen päivityksen hyväksyjän yksilöivä tunniste Koski-järjestelmässä | Yes |
 | paivitetty | dateTime | HOKS-dokumentin viimeisin päivitysaika | Yes |
 | eid | long | eHOKS-id eli tunniste eHOKS-järjestelmässä | Yes |
 | luojan-oid | string | HOKS-dokumentin luoneen henkilön yksilöivä tunniste Koski-järjestelmässä | Yes |
@@ -314,9 +310,7 @@ Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | arvioijat | [ [Arvioija](#arvioija) ] | Näytön tai osaamisen osoittamisen arvioijat | Yes |
-| kuvaus | string | Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen näyttöympäristö
-     on kyseessä. Kuvataan ympäristön luonne lyhyesti, esim. kukkakauppa,
-     varaosaliike, ammatillinen oppilaitos, simulaattori | Yes |
+| kuvaus | string | Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, simulaattori | Yes |
 | osaamistavoitteet | [ [KoodistoKoodi](#koodistokoodi) ] | Osaamistavoitteet, jonka arvioinnin kriteereitä mukautetaan | Yes |
 | ammattitaitovaatimukset | [ [KoodistoKoodi](#koodistokoodi) ] | Ammattitaitovaatimukset, jonka arvioinnin kriteereitä mukautetaan | Yes |
 | nayttoymparisto | [Organisaatio](#organisaatio) |  | Yes |
@@ -338,8 +332,7 @@ Vastuullinen työpaikkaohjaaja
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | organisaatio | [Organisaatio](#organisaatio) |  | Yes |
-| oid | string | Oppijanumero 'oid' on oppijan yksilöivä tunniste
-                Opintopolku-palvelussa ja Koskessa. | Yes |
+| oid | string | Oppijanumero 'oid' on oppijan yksilöivä tunniste Opintopolku-palvelussa ja Koskessa. | Yes |
 | nimi | string | Henkilön nimi | Yes |
 | rooli | string | Henkilön rooli | Yes |
 
@@ -384,8 +377,8 @@ Arvioijan roolin Koodisto-koodi
 | hyväksytty | boolean |  | Yes |
 | päivä | string |  | No |
 | kuvaus | [TranslatedValue](#translatedvalue) |  | No |
-| arvioitsijat | [ [Response2881003DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArvioitsijat](#response2881003dataopiskeluoikeudetsuorituksetkäyttäytymisenarvioarvioitsijat) ] |  | No |
-| arviointikohteet | [ [Response2881003DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArviointikohteet](#response2881003dataopiskeluoikeudetsuorituksetkäyttäytymisenarvioarviointikohteet) ] |  | No |
+| arvioitsijat | [ [Response4030691DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArvioitsijat](#response4030691dataopiskeluoikeudetsuorituksetkäyttäytymisenarvioarvioitsijat) ] |  | No |
+| arviointikohteet | [ [Response4030691DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArviointikohteet](#response4030691dataopiskeluoikeudetsuorituksetkäyttäytymisenarvioarviointikohteet) ] |  | No |
 | arvioinnistaPäättäneet | [ [KoodistoKoodi](#koodistokoodi) ] |  | No |
 | arviointikeskusteluunOsallistuneet | [ [KoodistoKoodi](#koodistokoodi) ] |  | No |
 
@@ -443,7 +436,7 @@ Arvioijan roolin Koodisto-koodi
 | ---- | ---- | ----------- | -------- |
 | kuvaus | [TranslatedValue](#translatedvalue) |  | Yes |
 | suorituspaikka | [KoskiTunnisteKuvaus](#koskitunnistekuvaus) |  | Yes |
-| suoritusaika | [Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöSuoritusaika](#response2881003dataopiskeluoikeudetsuorituksetosasuorituksetnäyttösuoritusaika) |  | Yes |
+| suoritusaika | [Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöSuoritusaika](#response4030691dataopiskeluoikeudetsuorituksetosasuorituksetnäyttösuoritusaika) |  | Yes |
 | työssäoppimisenYhteydessä | boolean |  | Yes |
 | arviointi | [KoskiArviointi](#koskiarviointi) |  | Yes |
 
@@ -461,7 +454,7 @@ Arvioijan roolin Koodisto-koodi
 | koulutustoimija | [KoskiKoulutustoimija](#koskikoulutustoimija) |  | Yes |
 | versionumero | long |  | Yes |
 | suoritukset | [ [KoskiSuoritus](#koskisuoritus) ] |  | Yes |
-| lähdejärjestelmänId | [Response2881003DataOpiskeluoikeudetLähdejärjestelmänId](#response2881003dataopiskeluoikeudetlähdejärjestelmänid) |  | Yes |
+| lähdejärjestelmänId | [Response4030691DataOpiskeluoikeudetLähdejärjestelmänId](#response4030691dataopiskeluoikeudetlähdejärjestelmänid) |  | Yes |
 | tyyppi | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 
 ### KoskiOpiskeluoikeusTila  
@@ -541,9 +534,9 @@ Arvioijan roolin Koodisto-koodi
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | muutSuorituskielet | [ [KoodistoKoodi](#koodistokoodi) ] |  | No |
-| vahvistus | [Response2881003DataOpiskeluoikeudetSuorituksetVahvistus](#response2881003dataopiskeluoikeudetsuorituksetvahvistus) |  | Yes |
+| vahvistus | [Response4030691DataOpiskeluoikeudetSuorituksetVahvistus](#response4030691dataopiskeluoikeudetsuorituksetvahvistus) |  | Yes |
 | suorituskieli | [KoodistoKoodi](#koodistokoodi) |  | Yes |
-| osaamisala | [ [Response2881003DataOpiskeluoikeudetSuorituksetOsaamisala](#response2881003dataopiskeluoikeudetsuorituksetosaamisala) ] |  | No |
+| osaamisala | [ [Response4030691DataOpiskeluoikeudetSuorituksetOsaamisala](#response4030691dataopiskeluoikeudetsuorituksetosaamisala) ] |  | No |
 | kielikylpykieli | [KoodistoKoodi](#koodistokoodi) |  | No |
 | luokka | string |  | No |
 | koulutusmoduuli | [KoskiKoulutusmoduuli](#koskikoulutusmoduuli) |  | Yes |
@@ -555,7 +548,7 @@ Arvioijan roolin Koodisto-koodi
 | tyyppi | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 | suoritustapa | [KoodistoKoodi](#koodistokoodi) |  | No |
 | tutkintonimike | [ [KoodistoKoodi](#koodistokoodi) ] |  | No |
-| järjestämismuodot | [ [Response2881003DataOpiskeluoikeudetSuorituksetJärjestämismuodot](#response2881003dataopiskeluoikeudetsuorituksetjärjestämismuodot) ] |  | No |
+| järjestämismuodot | [ [Response4030691DataOpiskeluoikeudetSuorituksetJärjestämismuodot](#response4030691dataopiskeluoikeudetsuorituksetjärjestämismuodot) ] |  | No |
 | työssäoppimisjaksot | [ [KoskiTyossaoppimisjakso](#koskityossaoppimisjakso) ] |  | No |
 | jääLuokalle | boolean |  | No |
 
@@ -570,7 +563,7 @@ Arvioijan roolin Koodisto-koodi
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| osaaminen | [Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetTunnustettuOsaaminen](#response2881003dataopiskeluoikeudetsuorituksetosasuorituksettunnustettuosaaminen) |  | Yes |
+| osaaminen | [Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetTunnustettuOsaaminen](#response4030691dataopiskeluoikeudetsuorituksetosasuorituksettunnustettuosaaminen) |  | Yes |
 | selite | [TranslatedValue](#translatedvalue) |  | Yes |
 | rahoituksenPiirissä | boolean |  | Yes |
 
@@ -605,9 +598,7 @@ Näytön tai osaamisen osoittamisen järjestäjä
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | nimi | string | Näytön tai osaamisen osoittamisen järjestäjän nimi | Yes |
-| oid | string | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla
-     organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän
-     oid. | Yes |
+| oid | string | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Yes |
 
 ### Nimi  
 
@@ -619,8 +610,7 @@ Näytön tai osaamisen osoittamisen järjestäjä
 
 ### OlemassaOlevaOsaaminen  
 
-Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan
-     tutkintoa
+Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -690,8 +680,8 @@ Osaamisen hankkimisen tapa
 | ---- | ---- | ----------- | -------- |
 | id | long |  | Yes |
 | nimi | [Nimi](#nimi) |  | No |
-| osaamisalat | [ [Response2881002DataOsaamisalat](#response2881002dataosaamisalat) ] |  | No |
-| tutkintonimikkeet | [ [Response2881002DataTutkintonimikkeet](#response2881002datatutkintonimikkeet) ] |  | No |
+| osaamisalat | [ [Response4030690DataOsaamisalat](#response4030690dataosaamisalat) ] |  | No |
+| tutkintonimikkeet | [ [Response4030690DataTutkintonimikkeet](#response4030690datatutkintonimikkeet) ] |  | No |
 
 ### PuuttuvaOsaaminen  
 
@@ -705,9 +695,7 @@ Puuttuvan osaamisen hankkimisen suunnitelma
 | osaamisen-hankkimistavat | [ [OsaamisenHankkimistapa](#osaamisenhankkimistapa) ] | Osaamisen hankkimistavat | Yes |
 | yhteiset-tutkinnon-osat | [ [YhteinenTutkinnonOsa](#yhteinentutkinnonosa) ] | Yhteiset tutkinnon osat | Yes |
 | tyopaikalla-hankittava-osaaminen | [TyopaikallaHankittavaOsaaminen](#tyopaikallahankittavaosaaminen) |  | Yes |
-| koulutuksen-jarjestaja-oid | string | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla
-     organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän
-     oid. | Yes |
+| koulutuksen-jarjestaja-oid | string | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Yes |
 | muut | [ [MuuTutkinnonOsa](#muututkinnonosa) ] | Muut tutkinnon osaa pienemmät osaamiskokonaisuudet | Yes |
 | ajankohta | [DateRange](#daterange) |  | Yes |
 
@@ -720,93 +708,93 @@ Puutuvan osaamisen poikkeama
 | alkuperainen-tutkinnon-osa | [TutkinnonOsa](#tutkinnonosa) |  | Yes |
 | kuvaus | string | Poikkeaman kuvaus | Yes |
 
-### Response2880995  
+### Response4030683  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response2880995Meta](#response2880995meta) |  | Yes |
+| meta | [Response4030683Meta](#response4030683meta) |  | Yes |
 | data | [ [UserInfo](#userinfo) ] |  | Yes |
 
-### Response2880995DataContactValuesGroup  
+### Response4030683DataContactValuesGroup  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | id | long |  | Yes |
-| contact | [ [Response2880995DataContactValuesGroupContact](#response2880995datacontactvaluesgroupcontact) ] |  | Yes |
+| contact | [ [Response4030683DataContactValuesGroupContact](#response4030683datacontactvaluesgroupcontact) ] |  | Yes |
 
-### Response2880995DataContactValuesGroupContact  
+### Response4030683DataContactValuesGroupContact  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | value | string |  | Yes |
 | type | string |  | Yes |
 
-### Response2880995Meta  
+### Response4030683Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response2880995Meta | object |  |  |
+| Response4030683Meta | object |  |  |
 
-### Response2880996  
+### Response4030684  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response2880996Meta](#response2880996meta) |  | Yes |
+| meta | [Response4030684Meta](#response4030684meta) |  | Yes |
 | data | [ [User](#user) ] |  | Yes |
 
-### Response2880996Meta  
+### Response4030684Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response2880996Meta | object |  |  |
+| Response4030684Meta | object |  |  |
 
-### Response2880997  
+### Response4030685  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response2880997Meta](#response2880997meta) |  | Yes |
+| meta | [Response4030685Meta](#response4030685meta) |  | Yes |
 | data | [ [User](#user) ] |  | Yes |
 
-### Response2880997Meta  
+### Response4030685Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | opintopolku-login-url | string |  | Yes |
 
-### Response2880998  
+### Response4030686  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response2880998Meta](#response2880998meta) |  | Yes |
+| meta | [Response4030686Meta](#response4030686meta) |  | Yes |
 | data | [HOKS](#hoks) |  | Yes |
 
-### Response2880998Meta  
+### Response4030686Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response2880998Meta | object |  |  |
+| Response4030686Meta | object |  |  |
 
-### Response2880999  
+### Response4030687  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response2880999Meta](#response2880999meta) |  | Yes |
+| meta | [Response4030687Meta](#response4030687meta) |  | Yes |
 | data | [POSTResponse](#postresponse) |  | Yes |
 
-### Response2880999Meta  
+### Response4030687Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response2880999Meta | object |  |  |
+| Response4030687Meta | object |  |  |
 
-### Response2881000  
+### Response4030688  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response2881000Meta](#response2881000meta) |  | Yes |
-| data | [ [Response2881000Data](#response2881000data) ] |  | Yes |
+| meta | [Response4030688Meta](#response4030688meta) |  | Yes |
+| data | [ [Response4030688Data](#response4030688data) ] |  | Yes |
 
-### Response2881000Data  
+### Response4030688Data  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -823,182 +811,182 @@ Puutuvan osaamisen poikkeama
 | id | long |  | Yes |
 | modifiedBy | string |  | Yes |
 
-### Response2881000Meta  
+### Response4030688Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response2881000Meta | object |  |  |
+| Response4030688Meta | object |  |  |
 
-### Response2881001  
+### Response4030689  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response2881001Meta](#response2881001meta) |  | Yes |
+| meta | [Response4030689Meta](#response4030689meta) |  | Yes |
 | data | [ExtendedKoodistoKoodi](#extendedkoodistokoodi) |  | Yes |
 
-### Response2881001Meta  
+### Response4030689Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response2881001Meta | object |  |  |
+| Response4030689Meta | object |  |  |
 
-### Response2881002  
+### Response4030690  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response2881002Meta](#response2881002meta) |  | Yes |
+| meta | [Response4030690Meta](#response4030690meta) |  | Yes |
 | data | [ [Peruste](#peruste) ] |  | Yes |
 
-### Response2881002DataOsaamisalat  
+### Response4030690DataOsaamisalat  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | nimi | [Nimi](#nimi) |  | Yes |
 
-### Response2881002DataTutkintonimikkeet  
+### Response4030690DataTutkintonimikkeet  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | nimi | [Nimi](#nimi) |  | Yes |
 
-### Response2881002Meta  
+### Response4030690Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response2881002Meta | object |  |  |
+| Response4030690Meta | object |  |  |
 
-### Response2881003  
+### Response4030691  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response2881003Meta](#response2881003meta) |  | Yes |
+| meta | [Response4030691Meta](#response4030691meta) |  | Yes |
 | data | [KoskiOppija](#koskioppija) |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetLähdejärjestelmänId  
+### Response4030691DataOpiskeluoikeudetLähdejärjestelmänId  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | id | string |  | Yes |
 | lähdejärjestelmä | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetJärjestämismuodot  
+### Response4030691DataOpiskeluoikeudetSuorituksetJärjestämismuodot  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | alku | string |  | Yes |
-| järjestämismuoto | [Response2881003DataOpiskeluoikeudetSuorituksetJärjestämismuodotJärjestämismuoto](#response2881003dataopiskeluoikeudetsuorituksetjärjestämismuodotjärjestämismuoto) |  | Yes |
+| järjestämismuoto | [Response4030691DataOpiskeluoikeudetSuorituksetJärjestämismuodotJärjestämismuoto](#response4030691dataopiskeluoikeudetsuorituksetjärjestämismuodotjärjestämismuoto) |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetJärjestämismuodotJärjestämismuoto  
+### Response4030691DataOpiskeluoikeudetSuorituksetJärjestämismuodotJärjestämismuoto  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | tunniste | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArviointikohteet  
+### Response4030691DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArviointikohteet  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | tunniste | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 | arvosana | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArvioitsijat  
+### Response4030691DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArvioitsijat  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | nimi | string |  | Yes |
 | ntm | boolean |  | No |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsaamisala  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsaamisala  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | osaamisala | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetArviointiArviointikohteet  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetArviointiArviointikohteet  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | tunniste | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 | arvosana | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetArviointiArvioitsijat  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetArviointiArvioitsijat  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | nimi | string |  | Yes |
 | ntm | boolean |  | No |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöArviointiArviointikohteet  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöArviointiArviointikohteet  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | tunniste | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 | arvosana | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöArviointiArvioitsijat  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöArviointiArvioitsijat  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | nimi | string |  | Yes |
 | ntm | boolean |  | No |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöSuoritusaika  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöSuoritusaika  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | alku | string |  | Yes |
 | loppu | string |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetArviointiArviointikohteet  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetArviointiArviointikohteet  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | tunniste | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 | arvosana | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetArviointiArvioitsijat  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetArviointiArvioitsijat  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | nimi | string |  | Yes |
 | ntm | boolean |  | No |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetNäyttöArviointiArviointikohteet  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetNäyttöArviointiArviointikohteet  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | tunniste | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 | arvosana | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetNäyttöArviointiArvioitsijat  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetNäyttöArviointiArvioitsijat  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | nimi | string |  | Yes |
 | ntm | boolean |  | No |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetNäyttöSuoritusaika  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetNäyttöSuoritusaika  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | alku | string |  | Yes |
 | loppu | string |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetTunnustettuOsaaminen  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetTunnustettuOsaaminen  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | koulutusmoduuli | [KoskiKoulutusmoduuli](#koskikoulutusmoduuli) |  | Yes |
 | tyyppi | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetOsasuorituksetTunnustettuOsaaminen  
+### Response4030691DataOpiskeluoikeudetSuorituksetOsasuorituksetTunnustettuOsaaminen  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | koulutusmoduuli | [KoskiKoulutusmoduuli](#koskikoulutusmoduuli) |  | Yes |
 | tyyppi | [KoodistoKoodi](#koodistokoodi) |  | Yes |
 
-### Response2881003DataOpiskeluoikeudetSuorituksetVahvistus  
+### Response4030691DataOpiskeluoikeudetSuorituksetVahvistus  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
@@ -1007,24 +995,24 @@ Puutuvan osaamisen poikkeama
 | myöntäjäOrganisaatio | [KoskiOrganisaatio](#koskiorganisaatio) |  | Yes |
 | myöntäjäHenkilöt | [ [KoskiMyontajaHenkilo](#koskimyontajahenkilo) ] |  | Yes |
 
-### Response2881003Meta  
+### Response4030691Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response2881003Meta | object |  |  |
+| Response4030691Meta | object |  |  |
 
-### Response2881004  
+### Response4030692  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| meta | [Response2881004Meta](#response2881004meta) |  | Yes |
+| meta | [Response4030692Meta](#response4030692meta) |  | Yes |
 | data | [Environment](#environment) |  | Yes |
 
-### Response2881004Meta  
+### Response4030692Meta  
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| Response2881004Meta | object |  |  |
+| Response4030692Meta | object |  |  |
 
 ### TranslatedValue  
 
@@ -1055,8 +1043,7 @@ Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot
 | vastuullinen-ohjaaja | [Henkilo](#henkilo) |  | Yes |
 | keskeiset-tyotehtavat | [ string ] | Keskeiset työtehtävät | Yes |
 | hankkijan-edustaja | [Henkilo](#henkilo) |  | Yes |
-| erityinen-tuki | boolean | Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä erityisen
-     tuen päätös | Yes |
+| erityinen-tuki | boolean | Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä erityisen tuen päätös | Yes |
 | jarjestajan-edustaja | [Henkilo](#henkilo) |  | Yes |
 | erityisen-tuen-aika | [DateRange](#daterange) |  | Yes |
 | muut-osallistujat | [ [Henkilo](#henkilo) ] | Muut ohjaukseen osallistuvat henkilöt | Yes |
@@ -1081,7 +1068,7 @@ Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot
 | first-name | string |  | Yes |
 | common-name | string |  | Yes |
 | surname | string |  | Yes |
-| contact-values-group | [ [Response2880995DataContactValuesGroup](#response2880995datacontactvaluesgroup) ] |  | No |
+| contact-values-group | [ [Response4030683DataContactValuesGroup](#response4030683datacontactvaluesgroup) ] |  | No |
 
 ### YhteinenTutkinnonOsa  
 
