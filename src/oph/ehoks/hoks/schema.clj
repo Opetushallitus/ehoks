@@ -209,7 +209,7 @@
     :eid s/Int "eHOKS-id eli tunniste eHOKS-järjestelmässä"
     :opiskeluoikeus-oid s/Str
     "Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä."
-    :urasuunnitelma KoodistoKoodi
+    (s/optional-key :urasuunnitelma) KoodistoKoodi
     "Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi"
     :versio s/Int "HOKS-dokumentin versio"
     :luojan-oid s/Str
