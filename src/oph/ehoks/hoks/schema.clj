@@ -239,4 +239,4 @@
 (s/defschema
   HOKSArvot
   "HOKS-dokumentin arvot uutta merkintää luotaessa"
-  (st/dissoc HOKS :id))
+  (st/dissoc HOKS :id :versio))
