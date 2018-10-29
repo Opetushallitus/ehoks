@@ -81,12 +81,13 @@
 (s/defschema
   TunnustettavanaOlevaOsaaminen
   (describe
-    "Opinnot"
+    "Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten"
     :ammatilliset-opinnot [TutkinnonOsa] "Osaamisen ammattilliset opinnot"
     :yhteiset-tutkinnon-osat [YhteinenTutkinnonOsa]
     "Osaamisen yhteiset tutkinnon osat (YTO)"
     :muut-osaamiset [MuuTutkinnonOsa] "Muut osaamisen opinnot"
-    :todentajan-nimi s/Str))
+    :todentajan-nimi s/Str
+    "Osaamisen todentaneen toimivaltaisen viranomaisen nimi"))
 
 (s/defschema
   OlemassaOlevaOsaaminen
