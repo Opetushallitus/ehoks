@@ -79,6 +79,16 @@
     :muut-osaamiset [MuuTutkinnonOsa] "Muut osaamisen opinnot"))
 
 (s/defschema
+  TunnustettavanaOlevaOsaaminen
+  (describe
+    "Opinnot"
+    :ammatilliset-opinnot [TutkinnonOsa] "Osaamisen ammattilliset opinnot"
+    :yhteiset-tutkinnon-osat [YhteinenTutkinnonOsa]
+    "Osaamisen yhteiset tutkinnon osat (YTO)"
+    :muut-osaamiset [MuuTutkinnonOsa] "Muut osaamisen opinnot"
+    :todentajan-nimi s/Str))
+
+(s/defschema
   OlemassaOlevaOsaaminen
   (describe
     (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
