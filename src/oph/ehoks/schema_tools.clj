@@ -2,7 +2,9 @@
   (:require [ring.swagger.json-schema :as rsjs]))
 
 (defn describe [description & kvds]
-  {:pre [(zero? (mod (count kvds) 3))]}
+  (assert (zero? (mod (count kvds) 3))
+          (format "%s: Invalid key-value-descriotion triples: %s"
+                  description kvds))
   (rsjs/field
     (reduce
       (fn [c [k v d]]
