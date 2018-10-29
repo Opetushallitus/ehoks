@@ -42,7 +42,7 @@
 (s/defschema
   MuuTutkinnonOsa
   (describe
-    "Muu tutkinnon osa"
+    "Muu tutkinnon osa (ei ePerusteet-palvelussa)"
     :nimi s/Str "Tutkinnon osan nimi"
     :kuvaus s/Str "Tutkinnon osan kuvaus"
     :laajuus s/Int "Tutkinnon osan laajuus osaamispisteiss'"
@@ -64,7 +64,7 @@
   (describe
     "Aikaväli"
     :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
-    :loppu LocalDate "Loppupäivämäärä muodoss YYYY-MM-DD"))
+    :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"))
 
 (s/defschema
   OpiskeluvalmiuksiaTukevatOpinnot
@@ -121,7 +121,7 @@
          "koulutuksen osassa")))
 
 (s/defschema
-  PuuttuvanSaamisenPoikkeama
+  PuuttuvanOsaamisenPoikkeama
   (describe
     "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen"
     :alkuperainen-tutkinnon-osa TutkinnonOsa
@@ -212,19 +212,20 @@
     (s/optional-key :urasuunnitelma) KoodistoKoodi
     "Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi"
     :versio s/Int "HOKS-dokumentin versio"
-    :luojan-oid s/Str
-    "HOKS-dokumentin luoneen henkilön yksilöivä tunniste Koski-järjestelmässä"
+    :virkailijan-oid s/Str
+    (str "HOKS-dokumentin luoneen virkailijan yksilöivä tunniste "
+         "oppijanumerorekisterissä")
     :paivittajan-oid s/Str
-    (str "HOKS-dokumenttia viimeksi päivittäneen henkilön yksilöivä tunniste "
-         "Koski-järjestelmässä")
-    :luonnin-hyvaksyjan-oid s/Str
-    "Luodun HOKS-dokumentin hyväksyjän yksilöivä tunniste Koski-järjestelmässä"
-    :paivityksen-hyvaksyjan-oid s/Str
-    (str "HOKS-dokumentin viimeisen päivityksen hyväksyjän yksilöivä tunniste "
-         "Koski-järjestelmässä")
-    :luotu s/Inst "HOKS-dokumentin luontiaika"
-    :hyvaksytty s/Inst "HOKS-dokumentin hyväksymisaika"
-    :paivitetty s/Inst "HOKS-dokumentin viimeisin päivitysaika"
+    (str "HOKS-dokumenttia viimeksi päivittäneen virkailijan yksilöivä tunniste "
+         "oppijanumerorekisterissä")
+    :hyvaksyjan-oid s/Str
+    (str "Luodun HOKS-dokumentin hyväksyjän yksilöivä tunniste "
+         "oppijanumerorekisterissä")
+    :luotu s/Inst "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"
+    :hyvaksytty s/Inst
+    "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"
+    :paivitetty s/Inst
+    "HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"
     :olemassa-oleva-osaaminen OlemassaOlevaOsaaminen
     (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
          "opiskelijan tutkintoa")
