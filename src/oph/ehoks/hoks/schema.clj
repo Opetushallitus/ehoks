@@ -54,8 +54,6 @@
   (describe
     "Henkilö"
     :organisaatio Organisaatio "Henkilön organisaatio"
-    :oid s/Str (str "Oppijanumero 'oid' on oppijan yksilöivä tunniste "
-                    "Opintopolku-palvelussa ja Koskessa.")
     :nimi s/Str "Henkilön nimi"
     :rooli s/Str "Henkilön rooli"))
 
