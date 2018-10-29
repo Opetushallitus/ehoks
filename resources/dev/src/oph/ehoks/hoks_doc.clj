@@ -1,7 +1,8 @@
 (ns oph.ehoks.hoks-doc
   (:require [clojure.string :as cstr]
             [schema.core :as s]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [oph.ehoks.hoks.schema]))
 
 (def schemas (ns-publics 'oph.ehoks.hoks.schema))
 
