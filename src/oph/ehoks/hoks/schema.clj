@@ -95,8 +95,11 @@
          "opiskelijan tutkintoa")
     :tunnustettu-osaaminen Opinnot "Tunnustettu osaaminen"
     :aiempi-tunnustettava-osaaminen Opinnot "Aiempi tunnustettava osaaminen"
-    :tunnustettavana-olevat Opinnot "Tunnustettavana oleva osaaminen"
-    :muut-opinnot Opinnot "Muu olemassa oleva osaaminen"))
+    :tunnustettavana-olevat TunnustettavanaOlevaOsaaminen
+    "Tunnustettavana oleva osaaminen"
+    :muut-opinnot Opinnot "Muu olemassa oleva osaaminen"
+    :muut-arvioidut-ja-todennetut-tunnustettavat-opinnot MuuTutkinnonOsa
+    "Muut arvioidut ja todennetut tunnustettavat opinnot"))
 
 (s/defschema
   Oppimisymparisto
@@ -151,10 +154,9 @@
     :ammatilliset-opinnot [TutkinnonOsa] "Ammatilliset opinnot"
     :yhteiset-tutkinnon-osat [YhteinenTutkinnonOsa] "Yhteiset tutkinnon osat"
     :muut [MuuTutkinnonOsa] "Muut tutkinnon osaa pienemmät osaamiskokonaisuudet"
-    :poikkeama PuuttuvanSaamisenPoikkeama "Puutuvan osaamisen poikkeama"
-    :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
+    :poikkeama PuuttuvanOsaamisenPoikkeama "Puutuvan osaamisen poikkeama"
+    :osaamisen-hankkimistapa OsaamisenHankkimistapa
     "Osaamisen hankkimistavat"
-    :ajankohta DateRange "Puuttuvan osaamisen hankkimisen ajankohta"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
