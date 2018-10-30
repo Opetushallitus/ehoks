@@ -35,7 +35,7 @@
   YhteinenTutkinnonOsa
   (st/merge
     (describe
-      "YTO tutkinnon osa"
+      "Yhteinen tutkinnon osa (YTO)"
       :osa-alue-tunniste KoodistoKoodi
       "Tutkinnon osan osa-alueen tunnisteen Koodisto-koodi")
     TutkinnonOsa))
@@ -177,7 +177,7 @@
     "Näytön tai osaamisen osoittamisen järjestäjä"
     :nimi s/Str "Näytön tai osaamisen osoittamisen järjestäjän nimi"
     :oid s/Str
-    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+    (str "Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")))
 
@@ -222,7 +222,7 @@
   HOKS
   (describe
     "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
-    :eid s/Int "eHOKS-id eli tunniste eHOKS-järjestelmässä"
+    :id s/Int "tunniste eHOKS-järjestelmässä"
     :opiskeluoikeus-oid s/Str
     "Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä."
     (s/optional-key :urasuunnitelma) KoodistoKoodi
