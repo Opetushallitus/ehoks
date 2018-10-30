@@ -83,14 +83,12 @@
 
 (s/defschema
   TunnustettavanaOlevaOsaaminen
-  (describe
-    "Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten"
-    :ammatilliset-opinnot [TutkinnonOsa] "Osaamisen ammattilliset opinnot"
-    :yhteiset-tutkinnon-osat [YhteinenTutkinnonOsa]
-    "Osaamisen yhteiset tutkinnon osat (YTO)"
-    :muut-osaamiset [MuuTutkinnonOsa] "Muut osaamisen opinnot"
-    :todentajan-nimi s/Str
-    "Osaamisen todentaneen toimivaltaisen viranomaisen nimi"))
+  (st/merge
+    (describe
+     "Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten"
+     :todentajan-nimi s/Str
+     "Osaamisen todentaneen toimivaltaisen viranomaisen nimi")
+    Opinnot))
 
 (s/defschema
   OlemassaOlevaOsaaminen
@@ -155,21 +153,22 @@
 
 (s/defschema
   PuuttuvaOsaaminen
-  (describe
-    "Puuttuvan osaamisen hankkimisen suunnitelma"
-    :ammatilliset-opinnot [TutkinnonOsa] "Ammatilliset opinnot"
-    :yhteiset-tutkinnon-osat [YhteinenTutkinnonOsa] "Yhteiset tutkinnon osat"
-    :muut [MuuTutkinnonOsa] "Muut tutkinnon osaa pienemmät osaamiskokonaisuudet"
-    :poikkeama PuuttuvanOsaamisenPoikkeama "Puutuvan osaamisen poikkeama"
-    :osaamisen-hankkimistapa OsaamisenHankkimistapa
-    "Osaamisen hankkimistavat"
-    :koulutuksen-jarjestaja-oid s/Str
-    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
-         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
-         "koulutuksen järjestäjän oid.")
-    :tarvittava-opetus s/Str "Tarvittava opetus"
-    :tyopaikalla-hankittava-osaaminen TyopaikallaHankittavaOsaaminen
-    "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"))
+  (st/merge
+    (describe
+     "Puuttuvan osaamisen hankkimisen suunnitelma"
+     (s/optional-key :poikkeama) PuuttuvanOsaamisenPoikkeama
+     "Puutuvan osaamisen poikkeama"
+     :osaamisen-hankkimistapa OsaamisenHankkimistapa
+     "Osaamisen hankkimistavat"
+     :koulutuksen-jarjestaja-oid s/Str
+     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+          "koulutuksen järjestäjän oid.")
+     :tarvittava-opetus s/Str "Tarvittava opetus"
+     (s/optional-key :tyopaikalla-hankittava-osaaminen)
+     TyopaikallaHankittavaOsaaminen
+     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot")
+    Opinnot))
 
 (s/defschema
   NaytonJarjestaja
@@ -255,5 +254,7 @@
 
 (s/defschema
   HOKSArvot
-  "HOKS-dokumentin arvot uutta merkintää luotaessa"
-  (st/dissoc HOKS :id :versio))
+  (st/merge
+    (describe
+      "HOKS-dokumentin arvot uutta merkintää luotaessa")
+    (st/dissoc HOKS :id :versio :luotu)))
