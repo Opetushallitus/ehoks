@@ -21,8 +21,16 @@
       filtered)))
 
 (defn get-koodi-versio [uri versio]
-  (c/with-api-headers
-    :get
-    (format "%s/rest/codeelement/%s/%d"
-            (:koodisto-url config) uri versio)
-    {:as :json}))
+  (try
+    (c/with-api-headers
+      :get
+      (format "%s/rest/codeelement/%s/%d"
+              (:koodisto-url config) uri versio)
+      {:as :json})
+    (catch clojure.lang.ExceptionInfo e
+      ; Koodisto returns Internal Server Error 500 with NotFoundException
+      ; if element is not found.
+      (throw
+        (if (= (:body (ex-data e)) "error.codeelement.not.found")
+          (ex-info "Code Element not found" {:type :not-found} e)
+          e)))))
