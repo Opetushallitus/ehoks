@@ -13,13 +13,13 @@ Opinnot
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| ammatilliset-opinnot | [[TutkinnonOsa](#TutkinnonOsa)] | Osaamisen ammattilliset opinnot | Kyllä |
-| yhteiset-tutkinnon-osat | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Osaamisen yhteiset tutkinnon osat (YTO) | Kyllä |
-| muut-osaamiset | [[MuuTutkinnonOsa](#MuuTutkinnonOsa)] | Muut osaamisen opinnot | Kyllä |
+| ammatilliset-opinnot | [[TutkinnonOsa](#TutkinnonOsa)] | Osaamisen ammattilliset opinnot | Ei |
+| yhteiset-tutkinnon-osat | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Osaamisen yhteiset tutkinnon osat (YTO) | Ei |
+| muut-osaamiset | [[MuuTutkinnonOsa](#MuuTutkinnonOsa)] | Muut osaamisen opinnot | Ei |
 
 ### YhteinenTutkinnonOsa  
 
-YTO tutkinnon osa
+Yhteinen tutkinnon osa (YTO)
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
@@ -36,14 +36,14 @@ Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
+| muut-oppimisymparistot | [[Oppimisymparisto](#Oppimisymparisto)] | Muissa oppimisympäristöissä tapahtuvat osaamisen hankkimiset | Ei |
 | vastuullinen-ohjaaja | [Henkilo](#Henkilo) | Vastuullinen työpaikkaohjaaja | Kyllä |
+| erityisen-tuen-aika | [DateRange](#DateRange) | Erityisen tuen alkamispvm ja päättymispvm kyseisessä tutkinnon taikoulutuksen osassa | Ei |
 | keskeiset-tyotehtavat | [Merkkijono] | Keskeiset työtehtävät | Kyllä |
 | hankkijan-edustaja | [Henkilo](#Henkilo) | Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja | Kyllä |
 | erityinen-tuki | Totuusarvo | Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä erityisen tuen päätös | Kyllä |
 | jarjestajan-edustaja | [Henkilo](#Henkilo) | Koulutuksen järjestäjän edustaja | Kyllä |
-| erityisen-tuen-aika | [DateRange](#DateRange) | Erityisen tuen alkamispvm ja päättymispvm kyseisessä tutkinnon taikoulutuksen osassa | Kyllä |
-| muut-osallistujat | [[Henkilo](#Henkilo)] | Muut ohjaukseen osallistuvat henkilöt | Kyllä |
-| muut-oppimisymparistot | [[Oppimisymparisto](#Oppimisymparisto)] | Muissa oppimisympäristöissä tapahtuvat osaamisen hankkimiset | Kyllä |
+| muut-osallistujat | [[Henkilo](#Henkilo)] | Muut ohjaukseen osallistuvat henkilöt | Ei |
 | ajankohta | [DateRange](#DateRange) | Työpaikalla järjestettävän koulutuksen ajoittuminen | Kyllä |
 | ohjaus-ja-tuki | Totuusarvo | Onko opiskelijalla tunnistettu ohjauksen ja tuen tarvetta | Kyllä |
 
@@ -63,10 +63,10 @@ Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| ammatilliset-opinnot | [[TutkinnonOsa](#TutkinnonOsa)] | Osaamisen ammattilliset opinnot | Kyllä |
-| yhteiset-tutkinnon-osat | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Osaamisen yhteiset tutkinnon osat (YTO) | Kyllä |
-| muut-osaamiset | [[MuuTutkinnonOsa](#MuuTutkinnonOsa)] | Muut osaamisen opinnot | Kyllä |
 | todentajan-nimi | Merkkijono | Osaamisen todentaneen toimivaltaisen viranomaisen nimi | Kyllä |
+| ammatilliset-opinnot | [[TutkinnonOsa](#TutkinnonOsa)] | Osaamisen ammattilliset opinnot | Ei |
+| yhteiset-tutkinnon-osat | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Osaamisen yhteiset tutkinnon osat (YTO) | Ei |
+| muut-osaamiset | [[MuuTutkinnonOsa](#MuuTutkinnonOsa)] | Muut osaamisen opinnot | Ei |
 
 ### Oppimisymparisto  
 
@@ -122,9 +122,9 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti
 | hyvaksyjan-oid | Merkkijono | Luodun HOKS-dokumentin hyväksyjän yksilöivä tunniste oppijanumerorekisterissä | Kyllä |
 | puuttuva-osaaminen | [PuuttuvaOsaaminen](#PuuttuvaOsaaminen) | Puuttuvan osaamisen hankkimisen suunnitelma | Kyllä |
 | opiskeluoikeus-oid | Merkkijono | Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä. | Kyllä |
+| id | Kokonaisluku | tunniste eHOKS-järjestelmässä | Kyllä |
 | versio | Kokonaisluku | HOKS-dokumentin versio | Kyllä |
 | paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
-| eid | Kokonaisluku | eHOKS-id eli tunniste eHOKS-järjestelmässä | Kyllä |
 | virkailijan-oid | Merkkijono | HOKS-dokumentin luoneen virkailijan yksilöivä tunniste oppijanumerorekisterissä | Kyllä |
 | olemassa-oleva-osaaminen | [OlemassaOlevaOsaaminen](#OlemassaOlevaOsaaminen) | Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa | Kyllä |
 | opiskeluvalmiuksia-tukevat-opinnot | [OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot) | Opiskeluvalmiuksia tukevat opinnot | Kyllä |
@@ -151,6 +151,7 @@ Koodisto-koodi
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
+| koodi-arvo | Merkkijono | Koodisto-koodin arvo | Ei |
 | koodisto-koodi | Merkkijono | Koodiston koodi | Kyllä |
 | koodisto-uri | Merkkijono | Koodiston URI | Kyllä |
 | versio | Kokonaisluku | Koodisto-koodin versio | Kyllä |
@@ -162,7 +163,7 @@ Organisaatio
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | nimi | Merkkijono | Organisaation nimi | Kyllä |
-| y-tunnus | Merkkijono | Organisaation y-tunnus | Kyllä |
+| y-tunnus | Merkkijono | Organisaation y-tunnus | Ei |
 
 ### OsaamisenHankkimistapa  
 
@@ -179,31 +180,29 @@ Puuttuvan osaamisen hankkimisen suunnitelma
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| ammatilliset-opinnot | [[TutkinnonOsa](#TutkinnonOsa)] | Ammatilliset opinnot | Kyllä |
-| yhteiset-tutkinnon-osat | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Yhteiset tutkinnon osat | Kyllä |
-| muut | [[MuuTutkinnonOsa](#MuuTutkinnonOsa)] | Muut tutkinnon osaa pienemmät osaamiskokonaisuudet | Kyllä |
-| poikkeama | [PuuttuvanOsaamisenPoikkeama](#PuuttuvanOsaamisenPoikkeama) | Puutuvan osaamisen poikkeama | Kyllä |
+| poikkeama | [PuuttuvanOsaamisenPoikkeama](#PuuttuvanOsaamisenPoikkeama) | Puutuvan osaamisen poikkeama | Ei |
 | osaamisen-hankkimistapa | [OsaamisenHankkimistapa](#OsaamisenHankkimistapa) | Osaamisen hankkimistavat | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
 | tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
-| tyopaikalla-hankittava-osaaminen | [TyopaikallaHankittavaOsaaminen](#TyopaikallaHankittavaOsaaminen) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot | Kyllä |
+| tyopaikalla-hankittava-osaaminen | [TyopaikallaHankittavaOsaaminen](#TyopaikallaHankittavaOsaaminen) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot | Ei |
+| ammatilliset-opinnot | [[TutkinnonOsa](#TutkinnonOsa)] | Osaamisen ammattilliset opinnot | Ei |
+| yhteiset-tutkinnon-osat | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Osaamisen yhteiset tutkinnon osat (YTO) | Ei |
+| muut-osaamiset | [[MuuTutkinnonOsa](#MuuTutkinnonOsa)] | Muut osaamisen opinnot | Ei |
 
 ### HOKSArvot  
 
-Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti
+HOKS-dokumentin arvot uutta merkintää luotaessa
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | urasuunnitelma | [KoodistoKoodi](#KoodistoKoodi) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
 | paivittajan-oid | Merkkijono | HOKS-dokumenttia viimeksi päivittäneen virkailijan yksilöivä tunniste oppijanumerorekisterissä | Kyllä |
-| luotu | Aikaleima | HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | hankitun-osaamisen-naytto | [HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | hyvaksyjan-oid | Merkkijono | Luodun HOKS-dokumentin hyväksyjän yksilöivä tunniste oppijanumerorekisterissä | Kyllä |
 | puuttuva-osaaminen | [PuuttuvaOsaaminen](#PuuttuvaOsaaminen) | Puuttuvan osaamisen hankkimisen suunnitelma | Kyllä |
 | opiskeluoikeus-oid | Merkkijono | Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä. | Kyllä |
 | paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
-| eid | Kokonaisluku | eHOKS-id eli tunniste eHOKS-järjestelmässä | Kyllä |
 | virkailijan-oid | Merkkijono | HOKS-dokumentin luoneen virkailijan yksilöivä tunniste oppijanumerorekisterissä | Kyllä |
 | olemassa-oleva-osaaminen | [OlemassaOlevaOsaaminen](#OlemassaOlevaOsaaminen) | Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa | Kyllä |
 | opiskeluvalmiuksia-tukevat-opinnot | [OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot) | Opiskeluvalmiuksia tukevat opinnot | Kyllä |
@@ -226,11 +225,11 @@ Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tut
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| tunnustettu-osaaminen | [Opinnot](#Opinnot) | Tunnustettu osaaminen | Kyllä |
-| aiempi-tunnustettava-osaaminen | [Opinnot](#Opinnot) | Aiempi tunnustettava osaaminen | Kyllä |
-| tunnustettavana-olevat | [TunnustettavanaOlevaOsaaminen](#TunnustettavanaOlevaOsaaminen) | Tunnustettavana oleva osaaminen | Kyllä |
-| muut-opinnot | [Opinnot](#Opinnot) | Muu olemassa oleva osaaminen | Kyllä |
-| muut-arvioidut-ja-todennetut-tunnustettavat-opinnot | [MuuTutkinnonOsa](#MuuTutkinnonOsa) | Muut arvioidut ja todennetut tunnustettavat opinnot | Kyllä |
+| tunnustettu-osaaminen | [Opinnot](#Opinnot) | Tunnustettu osaaminen | Ei |
+| aiempi-tunnustettava-osaaminen | [Opinnot](#Opinnot) | Aiempi tunnustettava osaaminen | Ei |
+| tunnustettavana-olevat | [TunnustettavanaOlevaOsaaminen](#TunnustettavanaOlevaOsaaminen) | Tunnustettavana oleva osaaminen | Ei |
+| muut-opinnot | [Opinnot](#Opinnot) | Muu olemassa oleva osaaminen | Ei |
+| muut-arvioidut-ja-todennetut-tunnustettavat-opinnot | [MuuTutkinnonOsa](#MuuTutkinnonOsa) | Muut arvioidut ja todennetut tunnustettavat opinnot | Ei |
 
 ### OpiskeluvalmiuksiaTukevatOpinnot  
 
@@ -251,7 +250,7 @@ Näytön tai osaamisen osoittamisen järjestäjä
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | nimi | Merkkijono | Näytön tai osaamisen osoittamisen järjestäjän nimi | Kyllä |
-| oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
+| oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
 
 ### PuuttuvanOsaamisenPoikkeama  
 
