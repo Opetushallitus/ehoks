@@ -15,6 +15,7 @@
   KoodistoKoodi
   (describe
     "Koodisto-koodi"
+    :koodi-arvo s/Str "Koodisto-koodin arvo"
     :koodisto-koodi s/Str "Koodiston koodi"
     :koodisto-uri s/Str "Koodiston URI"
     :versio s/Int "Koodisto-koodin versio"))
