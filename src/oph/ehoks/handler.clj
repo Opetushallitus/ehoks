@@ -25,7 +25,7 @@
      :exceptions
      {:handlers
       {:not-found (fn [_ __ ___]
-                     (response/not-found))}}}
+                    (response/not-found))}}}
 
     (c-api/context "/ehoks-backend" []
       (c-api/context "/api/v1" []
