@@ -9,13 +9,13 @@
   (describe
     "Organisaatio"
     :nimi s/Str "Organisaation nimi"
-    :y-tunnus s/Str "Organisaation y-tunnus"))
+    (s/optional-key :y-tunnus) s/Str "Organisaation y-tunnus"))
 
 (s/defschema
   KoodistoKoodi
   (describe
     "Koodisto-koodi"
-    :koodi-arvo s/Str "Koodisto-koodin arvo"
+    (s/optional-key :koodi-arvo) s/Str "Koodisto-koodin arvo"
     :koodisto-koodi s/Str "Koodiston koodi"
     :koodisto-uri s/Str "Koodiston URI"
     :versio s/Int "Koodisto-koodin versio"))
@@ -74,10 +74,12 @@
   Opinnot
   (describe
     "Opinnot"
-    :ammatilliset-opinnot [TutkinnonOsa] "Osaamisen ammattilliset opinnot"
-    :yhteiset-tutkinnon-osat [YhteinenTutkinnonOsa]
+    (s/optional-key :ammatilliset-opinnot) [TutkinnonOsa]
+    "Osaamisen ammattilliset opinnot"
+    (s/optional-key :yhteiset-tutkinnon-osat) [YhteinenTutkinnonOsa]
     "Osaamisen yhteiset tutkinnon osat (YTO)"
-    :muut-osaamiset [MuuTutkinnonOsa] "Muut osaamisen opinnot"))
+    (s/optional-key :muut-osaamiset) [MuuTutkinnonOsa]
+    "Muut osaamisen opinnot"))
 
 (s/defschema
   TunnustettavanaOlevaOsaaminen
@@ -95,12 +97,14 @@
   (describe
     (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
          "opiskelijan tutkintoa")
-    :tunnustettu-osaaminen Opinnot "Tunnustettu osaaminen"
-    :aiempi-tunnustettava-osaaminen Opinnot "Aiempi tunnustettava osaaminen"
-    :tunnustettavana-olevat TunnustettavanaOlevaOsaaminen
+    (s/optional-key :tunnustettu-osaaminen) Opinnot "Tunnustettu osaaminen"
+    (s/optional-key :aiempi-tunnustettava-osaaminen) Opinnot
+    "Aiempi tunnustettava osaaminen"
+    (s/optional-key :tunnustettavana-olevat) TunnustettavanaOlevaOsaaminen
     "Tunnustettavana oleva osaaminen"
-    :muut-opinnot Opinnot "Muu olemassa oleva osaaminen"
-    :muut-arvioidut-ja-todennetut-tunnustettavat-opinnot MuuTutkinnonOsa
+    (s/optional-key :muut-opinnot) Opinnot "Muu olemassa oleva osaaminen"
+    (s/optional-key :muut-arvioidut-ja-todennetut-tunnustettavat-opinnot)
+    MuuTutkinnonOsa
     "Muut arvioidut ja todennetut tunnustettavat opinnot"))
 
 (s/defschema
@@ -115,21 +119,21 @@
   (describe
     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
     :ajankohta DateRange "Työpaikalla järjestettävän koulutuksen ajoittuminen"
-    :muut-oppimisymparistot [Oppimisymparisto]
+    (s/optional-key :muut-oppimisymparistot) [Oppimisymparisto]
     "Muissa oppimisympäristöissä tapahtuvat osaamisen hankkimiset"
     :hankkijan-edustaja Henkilo
     "Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja"
     :vastuullinen-ohjaaja Henkilo "Vastuullinen työpaikkaohjaaja"
     :jarjestajan-edustaja Henkilo "Koulutuksen järjestäjän edustaja"
-    :muut-osallistujat [Henkilo] "Muut ohjaukseen osallistuvat henkilöt"
+    (s/optional-key :muut-osallistujat) [Henkilo]
+    "Muut ohjaukseen osallistuvat henkilöt"
     :keskeiset-tyotehtavat [s/Str] "Keskeiset työtehtävät"
     :ohjaus-ja-tuki s/Bool
     "Onko opiskelijalla tunnistettu ohjauksen ja tuen tarvetta"
     :erityinen-tuki s/Bool
     (str "Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä "
          "erityisen tuen päätös")
-
-    :erityisen-tuen-aika DateRange
+    (s/optional-key :erityisen-tuen-aika) DateRange
     (str "Erityisen tuen alkamispvm ja päättymispvm kyseisessä tutkinnon tai"
          "koulutuksen osassa")))
 
