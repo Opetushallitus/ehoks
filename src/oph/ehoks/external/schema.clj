@@ -28,12 +28,12 @@
              {:nimi s/Str
               :kuvaus s/Str
               :lyhytNimi s/Str
-              :kayttoohje s/Str
-              :kasite s/Str
-              :sisaltaaMerkityksen s/Str
-              :eiSisallaMerkitysta s/Str
-              :huomioitavaKoodi s/Str
-              :sisaltaaKoodiston s/Str
+              :kayttoohje (s/maybe s/Str)
+              :kasite (s/maybe s/Str)
+              :sisaltaaMerkityksen (s/maybe s/Str)
+              :eiSisallaMerkitysta (s/maybe s/Str)
+              :huomioitavaKoodi (s/maybe s/Str)
+              :sisaltaaKoodiston (s/maybe s/Str)
               :kieli (s/enum "FI" "SV" "EN")})
 
 (s/defschema ExtendedKoodistoKoodi
