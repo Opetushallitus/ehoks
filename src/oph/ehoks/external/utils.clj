@@ -8,7 +8,9 @@
   on if given time exceeds."
   [time-ms body timeout]
   `(a/go
-     (let [c# (a/go ~body)
+     (let [c# (a/go (try
+                      ~body
+                      (catch Exception e# e#)))
            [v# p#] (a/alts! [c# (a/timeout ~time-ms)])]
        (if (and (not= p# c#) (nil? v#))
          ~timeout

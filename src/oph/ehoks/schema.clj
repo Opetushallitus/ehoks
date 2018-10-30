@@ -40,4 +40,5 @@
               :session-max-age s/Int
               :service-timeout-ms s/Int
               :koodisto-url s/Str
-              :koski-url s/Str})
+              :koski-url s/Str
+              (s/optional-key :log-level) s/Keyword})

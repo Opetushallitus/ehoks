@@ -38,8 +38,8 @@
         :cookies
         {"ring-session" cookie})))
 
-    (GET "/auth-dev/opintopolku-logout/" request
-      (response/see-other (get-in request [:query-params "return"])))
+  (GET "/auth-dev/opintopolku-logout/" request
+    (response/see-other (get-in request [:query-params "return"])))
 
   (POST "/cas-dev/tickets" request
     (response/created

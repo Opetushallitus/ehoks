@@ -21,7 +21,11 @@
       :spec "/ehoks-backend/doc/swagger.json"
       :data {:info {:title "eHOKS backend"
                     :description "Backend for eHOKS"}
-             :tags [{:name "api", :description ""}]}}}
+             :tags [{:name "api", :description ""}]}}
+     :exceptions
+     {:handlers
+      {:not-found (fn [_ __ ___]
+                    (response/not-found))}}}
 
     (c-api/context "/ehoks-backend" []
       (c-api/context "/api/v1" []
