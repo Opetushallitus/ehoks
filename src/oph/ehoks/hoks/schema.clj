@@ -27,7 +27,7 @@
     :koodi-arvo s/Str "Koodisto-koodin arvo"
     :koodi-uri s/Str "Koodiston URI"
     :versio s/Int "Koodisto-koodin versio"
-    (s/optional-key :metadata) [KoodiMetadata]))
+    (s/optional-key :metadata) [KoodiMetadata] "Koodisto-koodi metadata"))
 
 (s/defschema
   TutkinnonOsa
