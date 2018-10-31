@@ -76,8 +76,12 @@
 
 (s/defschema
   OpiskeluvalmiuksiaTukevatOpinnot
-  "Opiskeluvalmiuksia tukevat opinnot"
-  MuuTutkinnonOsa)
+  (describe
+    "Opiskeluvalmiuksia tukevat opinnot"
+    :nimi s/Str "Opintojen nimi"
+    :kuvaus s/Str "Opintojen kuvaus"
+    :kesto s/Int "Opintojen kesto päivinä"
+    :ajankohta DateRange "Opintojen ajoittuminen"))
 
 (s/defschema
   Opinnot
