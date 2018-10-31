@@ -55,7 +55,7 @@
     "Muu tutkinnon osa (ei ePerusteet-palvelussa)"
     :nimi s/Str "Tutkinnon osan nimi"
     :kuvaus s/Str "Tutkinnon osan kuvaus"
-    :laajuus s/Int "Tutkinnon osan laajuus osaamispisteiss'"
+    :laajuus s/Int "Tutkinnon osan laajuus osaamispisteissä"
     :kesto s/Int "Tutkinnon osan kesto päivinä"
     :suorituspvm LocalDate "Tutkinnon suorituspäivä muodossa YYYY-MM-DD"))
 
