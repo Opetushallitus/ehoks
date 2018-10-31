@@ -21,4 +21,5 @@
 
     (c-api/PUT "/:id" []
       :summary "Päivittää olemassa olevaa HOKSia"
+      :body [_ hoks-schema/HOKSArvot]
       (no-content))))
