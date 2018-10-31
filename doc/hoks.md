@@ -165,6 +165,7 @@ Koodisto-koodi
 | koodi-arvo | Merkkijono | Koodisto-koodin arvo | Kyllä |
 | koodi-uri | Merkkijono | Koodiston URI | Kyllä |
 | versio | Kokonaisluku | Koodisto-koodin versio | Kyllä |
+| metadata | [[KoodiMetadata](#KoodiMetadata)] | Koodisto-koodi metadata | Ei |
 
 ### Organisaatio  
 
@@ -212,7 +213,6 @@ HOKS-dokumentin arvot uutta merkintää luotaessa
 | hyvaksyjan-oid | Merkkijono | Luodun HOKS-dokumentin hyväksyjän yksilöivä tunniste oppijanumerorekisterissä | Kyllä |
 | puuttuva-osaaminen | [PuuttuvaOsaaminen](#PuuttuvaOsaaminen) | Puuttuvan osaamisen hankkimisen suunnitelma | Kyllä |
 | opiskeluoikeus-oid | Merkkijono | Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä. | Kyllä |
-| paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | virkailijan-oid | Merkkijono | HOKS-dokumentin luoneen virkailijan yksilöivä tunniste oppijanumerorekisterissä | Kyllä |
 | olemassa-oleva-osaaminen | [OlemassaOlevaOsaaminen](#OlemassaOlevaOsaaminen) | Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa | Kyllä |
 | opiskeluvalmiuksia-tukevat-opinnot | [OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot) | Opiskeluvalmiuksia tukevat opinnot | Kyllä |
