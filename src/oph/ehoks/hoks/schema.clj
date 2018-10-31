@@ -12,13 +12,22 @@
     (s/optional-key :y-tunnus) s/Str "Organisaation y-tunnus"))
 
 (s/defschema
+  KoodiMetadata
+  (describe
+    "Koodisto-koodin metadata"
+    (s/optional-key :nimi) (s/maybe s/Str) "Koodisto-koodin nimi"
+    (s/optional-key :lyhyt-nimi) (s/maybe s/Str) "Koodisto-koodin lyhyt nimi"
+    (s/optional-key :kuvaus) (s/maybe s/Str) "Koodisto-koodin kuvaus"
+    :kieli s/Str "Koodisto-koodin kieli"))
+
+(s/defschema
   KoodistoKoodi
   (describe
     "Koodisto-koodi"
-    (s/optional-key :koodi-arvo) s/Str "Koodisto-koodin arvo"
-    :koodisto-koodi s/Str "Koodiston koodi"
-    :koodisto-uri s/Str "Koodiston URI"
-    :versio s/Int "Koodisto-koodin versio"))
+    :koodi-arvo s/Str "Koodisto-koodin arvo"
+    :koodi-uri s/Str "Koodiston URI"
+    :versio s/Int "Koodisto-koodin versio"
+    (s/optional-key :metadata) [KoodiMetadata]))
 
 (s/defschema
   TutkinnonOsa
