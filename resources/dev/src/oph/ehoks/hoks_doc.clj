@@ -4,7 +4,11 @@
             [clojure.java.io :as io]
             [oph.ehoks.hoks.schema]))
 
-(def schemas (ns-publics 'oph.ehoks.hoks.schema))
+(def schemas (let [m (ns-publics 'oph.ehoks.hoks.schema)]
+               (select-keys
+                m
+                (for [[k v] m :when (not (fn? (deref v)))]
+                  k))))
 
 (defn required-str [k]
   (if (= (type k) schema.core.OptionalKey)
