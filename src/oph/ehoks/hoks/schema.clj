@@ -244,7 +244,7 @@
     :osaamistavoitteet [KoodistoKoodi]
     "Osaamistavoitteet, jonka arvioinnin kriteereitä mukautetaan"
     :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"
-    :arviointikriteerit [Arviointikriteeri]
+    :yksilölliset-arviointikriteerit [Arviointikriteeri]
     "Yksilölliset arvioinnin kriteerit"))
 
 (s/defschema
