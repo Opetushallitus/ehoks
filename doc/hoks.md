@@ -85,7 +85,7 @@ Muu tutkinnon osa (ei ePerusteet-palvelussa)
 | ---- | ------ | ------ | --------- |
 | nimi | Merkkijono | Tutkinnon osan nimi | Kyllä |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
-| laajuus | Kokonaisluku | Tutkinnon osan laajuus osaamispisteiss' | Kyllä |
+| laajuus | Kokonaisluku | Tutkinnon osan laajuus osaamispisteissä | Kyllä |
 | kesto | Kokonaisluku | Tutkinnon osan kesto päivinä | Kyllä |
 | suorituspvm | Päivämäärä | Tutkinnon suorituspäivä muodossa YYYY-MM-DD | Kyllä |
 
@@ -154,7 +154,7 @@ Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen
 | ammattitaitovaatimukset | [[KoodistoKoodi](#KoodistoKoodi)] | Ammattitaitovaatimukset, jonka arvioinnin kriteereitä mukautetaan | Kyllä |
 | osaamistavoitteet | [[KoodistoKoodi](#KoodistoKoodi)] | Osaamistavoitteet, jonka arvioinnin kriteereitä mukautetaan | Kyllä |
 | arvioijat | [[Arvioija](#Arvioija)] | Näytön tai osaamisen osoittamisen arvioijat | Kyllä |
-| arviointikriteerit | [[Arviointikriteeri](#Arviointikriteeri)] | Yksilölliset arvioinnin kriteerit | Kyllä |
+| yksilölliset-arviointikriteerit | [[Arviointikriteeri](#Arviointikriteeri)] | Yksilölliset arvioinnin kriteerit | Kyllä |
 
 ### KoodistoKoodi  
 
@@ -191,14 +191,8 @@ Puuttuvan osaamisen hankkimisen suunnitelma
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| poikkeama | [PuuttuvanOsaamisenPoikkeama](#PuuttuvanOsaamisenPoikkeama) | Puutuvan osaamisen poikkeama | Ei |
-| osaamisen-hankkimistapa | [OsaamisenHankkimistapa](#OsaamisenHankkimistapa) | Osaamisen hankkimistavat | Kyllä |
-| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
-| tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
-| tyopaikalla-hankittava-osaaminen | [TyopaikallaHankittavaOsaaminen](#TyopaikallaHankittavaOsaaminen) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot | Ei |
-| ammatilliset-opinnot | [[TutkinnonOsa](#TutkinnonOsa)] | Osaamisen ammattilliset opinnot | Ei |
-| yhteiset-tutkinnon-osat | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Osaamisen yhteiset tutkinnon osat (YTO) | Ei |
-| muut-osaamiset | [[MuuTutkinnonOsa](#MuuTutkinnonOsa)] | Muut osaamisen opinnot | Ei |
+| ammatillinen-osaaminen | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Kyllä |
+| yhteinen-tutkinnon-osa | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Kyllä |
 
 ### HOKSArvot  
 
@@ -216,6 +210,19 @@ HOKS-dokumentin arvot uutta merkintää luotaessa
 | virkailijan-oid | Merkkijono | HOKS-dokumentin luoneen virkailijan yksilöivä tunniste oppijanumerorekisterissä | Kyllä |
 | olemassa-oleva-osaaminen | [OlemassaOlevaOsaaminen](#OlemassaOlevaOsaaminen) | Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa | Kyllä |
 | opiskeluvalmiuksia-tukevat-opinnot | [OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot) | Opiskeluvalmiuksia tukevat opinnot | Kyllä |
+
+### PuuttuvaAmmatillinenOsaaminen  
+
+Puuttuvan ammatillisen osaamisen tiedot
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| tutkinnon-osa | [TutkinnonOsa](#TutkinnonOsa) | Tutkinnon osa | Kyllä |
+| tutkinnon-osa-josta-poiketaan | [TutkinnonOsa](#TutkinnonOsa) | Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen | Kyllä |
+| osaamisen-hankkimistapa | [OsaamisenHankkimistapa](#OsaamisenHankkimistapa) | Osaamisen hankkimistavat | Kyllä |
+| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
+| tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
+| tyopaikalla-hankittava-osaaminen | [TyopaikallaHankittavaOsaaminen](#TyopaikallaHankittavaOsaaminen) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot | Ei |
 
 ### TutkinnonOsa  
 
@@ -243,15 +250,14 @@ Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tut
 
 ### OpiskeluvalmiuksiaTukevatOpinnot  
 
-Muu tutkinnon osa (ei ePerusteet-palvelussa)
+Opiskeluvalmiuksia tukevat opinnot
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| nimi | Merkkijono | Tutkinnon osan nimi | Kyllä |
-| kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
-| laajuus | Kokonaisluku | Tutkinnon osan laajuus osaamispisteiss' | Kyllä |
-| kesto | Kokonaisluku | Tutkinnon osan kesto päivinä | Kyllä |
-| suorituspvm | Päivämäärä | Tutkinnon suorituspäivä muodossa YYYY-MM-DD | Kyllä |
+| nimi | Merkkijono | Opintojen nimi | Kyllä |
+| kuvaus | Merkkijono | Opintojen kuvaus | Kyllä |
+| kesto | Kokonaisluku | Opintojen kesto päivinä | Kyllä |
+| ajankohta | [DateRange](#DateRange) | Opintojen ajoittuminen | Kyllä |
 
 ### NaytonJarjestaja  
 
@@ -262,12 +268,27 @@ Näytön tai osaamisen osoittamisen järjestäjä
 | nimi | Merkkijono | Näytön tai osaamisen osoittamisen järjestäjän nimi | Kyllä |
 | oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
 
-### PuuttuvanOsaamisenPoikkeama  
+### PuuttuvanOsaamisenTiedot  
 
-Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen
+Puuttuvan osaamisen hankkimisen suunnitelman tiedot
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| alkuperainen-tutkinnon-osa | [TutkinnonOsa](#TutkinnonOsa) | Tutkinnon osa, johon poikkeus pohjautuu | Kyllä |
-| kuvaus | Merkkijono | Poikkeaman kuvaus | Kyllä |
+| osaamisen-hankkimistapa | [OsaamisenHankkimistapa](#OsaamisenHankkimistapa) | Osaamisen hankkimistavat | Kyllä |
+| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
+| tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
+| tyopaikalla-hankittava-osaaminen | [TyopaikallaHankittavaOsaaminen](#TyopaikallaHankittavaOsaaminen) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot | Ei |
+
+### PuuttuvaYTO  
+
+Puuttuvan yhteinen tutkinnon osan tiedot
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| tutkinnon-osa | [YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa) | Tutkinnon osa | Kyllä |
+| tutkinnon-osa-josta-poiketaan | [YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa) | Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen | Kyllä |
+| osaamisen-hankkimistapa | [OsaamisenHankkimistapa](#OsaamisenHankkimistapa) | Osaamisen hankkimistavat | Kyllä |
+| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
+| tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
+| tyopaikalla-hankittava-osaaminen | [TyopaikallaHankittavaOsaaminen](#TyopaikallaHankittavaOsaaminen) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot | Ei |
 
