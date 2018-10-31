@@ -266,4 +266,4 @@
   (st/merge
     (describe
       "HOKS-dokumentin arvot uutta merkintää luotaessa")
-    (st/dissoc HOKS :id :versio :luotu)))
+    (st/dissoc HOKS :id :versio :luotu :paivitetty)))
