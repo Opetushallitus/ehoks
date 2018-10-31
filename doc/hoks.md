@@ -129,6 +129,17 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti
 | olemassa-oleva-osaaminen | [OlemassaOlevaOsaaminen](#OlemassaOlevaOsaaminen) | Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa | Kyllä |
 | opiskeluvalmiuksia-tukevat-opinnot | [OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot) | Opiskeluvalmiuksia tukevat opinnot | Kyllä |
 
+### KoodiMetadata  
+
+Koodisto-koodin metadata
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| nimi | (maybe Str) | Koodisto-koodin nimi | Ei |
+| lyhyt-nimi | (maybe Str) | Koodisto-koodin lyhyt nimi | Ei |
+| kuvaus | (maybe Str) | Koodisto-koodin kuvaus | Ei |
+| kieli | Merkkijono | Koodisto-koodin kieli | Kyllä |
+
 ### HankitunOsaamisenNaytto  
 
 Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen
@@ -151,9 +162,8 @@ Koodisto-koodi
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| koodi-arvo | Merkkijono | Koodisto-koodin arvo | Ei |
-| koodisto-koodi | Merkkijono | Koodiston koodi | Kyllä |
-| koodisto-uri | Merkkijono | Koodiston URI | Kyllä |
+| koodi-arvo | Merkkijono | Koodisto-koodin arvo | Kyllä |
+| koodi-uri | Merkkijono | Koodiston URI | Kyllä |
 | versio | Kokonaisluku | Koodisto-koodin versio | Kyllä |
 
 ### Organisaatio  
