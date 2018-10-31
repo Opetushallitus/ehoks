@@ -149,14 +149,6 @@
          "koulutuksen osassa")))
 
 (s/defschema
-  PuuttuvanOsaamisenPoikkeama
-  (describe
-    "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen"
-    :alkuperainen-tutkinnon-osa TutkinnonOsa
-    "Tutkinnon osa, johon poikkeus pohjautuu"
-    :kuvaus s/Str "Poikkeaman kuvaus"))
-
-(s/defschema
   OsaamisenHankkimistapa
   (describe
     "Osaamisen hankkimisen tapa"
@@ -165,12 +157,9 @@
     "Osaamisen hankkimisen Koodisto-koodi"))
 
 (s/defschema
-  PuuttuvaOsaaminen
-  (st/merge
-    (describe
-     "Puuttuvan osaamisen hankkimisen suunnitelma"
-     (s/optional-key :poikkeama) PuuttuvanOsaamisenPoikkeama
-     "Puutuvan osaamisen poikkeama"
+  PuuttuvanOsaamisenTiedot
+  (describe
+     "Puuttuvan osaamisen hankkimisen suunnitelman tiedot"
      :osaamisen-hankkimistapa OsaamisenHankkimistapa
      "Osaamisen hankkimistavat"
      :koulutuksen-jarjestaja-oid s/Str
@@ -180,8 +169,36 @@
      :tarvittava-opetus s/Str "Tarvittava opetus"
      (s/optional-key :tyopaikalla-hankittava-osaaminen)
      TyopaikallaHankittavaOsaaminen
-     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot")
-    Opinnot))
+     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"))
+
+(s/defschema
+  PuuttuvaAmmatillinenOsaaminen
+  (st/merge
+    (describe
+     "Puuttuvan ammatillisen osaamisen tiedot"
+     :tutkinnon-osa TutkinnonOsa "Tutkinnon osa"
+     :tutkinnon-osa-josta-poiketaan TutkinnonOsa
+     "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen")
+    PuuttuvanOsaamisenTiedot))
+
+(s/defschema
+  PuuttuvaYTO
+  (st/merge
+    (describe
+     "Puuttuvan yhteinen tutkinnon osan tiedot"
+     :tutkinnon-osa YhteinenTutkinnonOsa "Tutkinnon osa"
+     :tutkinnon-osa-josta-poiketaan YhteinenTutkinnonOsa
+     "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen")
+    PuuttuvanOsaamisenTiedot))
+
+(s/defschema
+  PuuttuvaOsaaminen
+  (describe
+    "Puuttuvan osaamisen hankkimisen suunnitelma"
+    :ammatillinen-osaaminen [PuuttuvaAmmatillinenOsaaminen]
+    "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"
+    :yhteinen-tutkinnon-osa [PuuttuvaYTO]
+    "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"))
 
 (s/defschema
   NaytonJarjestaja
