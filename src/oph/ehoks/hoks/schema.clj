@@ -14,7 +14,7 @@
 (s/defschema
   KoodiMetadata
   (describe
-    "Koodisto-koodin metadata"
+    "Koodisto-koodin metadata, joka haetaan Koodisto-palvelusta"
     (s/optional-key :nimi) (s/maybe s/Str) "Koodisto-koodin nimi"
     (s/optional-key :lyhyt-nimi) (s/maybe s/Str) "Koodisto-koodin lyhyt nimi"
     (s/optional-key :kuvaus) (s/maybe s/Str) "Koodisto-koodin kuvaus"
@@ -27,7 +27,8 @@
     :koodi-arvo s/Str "Koodisto-koodin arvo"
     :koodi-uri s/Str "Koodiston URI"
     :versio s/Int "Koodisto-koodin versio"
-    (s/optional-key :metadata) [KoodiMetadata] "Koodisto-koodi metadata"))
+    (s/optional-key :metadata) [KoodiMetadata]
+    "Koodisto-koodin metadata, joka haetaan Koodisto-palvelusta"))
 
 (s/defschema
   TutkinnonOsa
@@ -154,7 +155,7 @@
     "Osaamisen hankkimisen tapa"
     :ajankohta DateRange "Hankkimisen ajankohta"
     :osaamisen-hankkimistavan-tunniste KoodistoKoodi
-    "Osaamisen hankkimisen Koodisto-koodi"))
+    "Osaamisen hankkimisen Koodisto-koodi (URI: osaamisenhankkimistapa)"))
 
 (s/defschema
   PuuttuvanOsaamisenTiedot
