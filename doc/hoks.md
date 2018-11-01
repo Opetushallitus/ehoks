@@ -37,7 +37,7 @@ Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| muut-oppimisymparistot | [[Oppimisymparisto](#Oppimisymparisto)] | Muissa oppimisympäristöissä tapahtuvat osaamisen hankkimiset | Ei |
+| muut-oppimisymparistot | [Merkkijono] | Muissa oppimisympäristöissä tapahtuvat osaamisen hankkimiset | Ei |
 | vastuullinen-ohjaaja | [Henkilo](#Henkilo) | Vastuullinen työpaikkaohjaaja | Kyllä |
 | erityisen-tuen-aika | [DateRange](#DateRange) | Erityisen tuen alkamispvm ja päättymispvm kyseisessä tutkinnon taikoulutuksen osassa | Ei |
 | keskeiset-tyotehtavat | [Merkkijono] | Keskeiset työtehtävät | Kyllä |
@@ -68,15 +68,6 @@ Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten
 | ammatilliset-opinnot | [[TutkinnonOsa](#TutkinnonOsa)] | Osaamisen ammattilliset opinnot | Ei |
 | yhteiset-tutkinnon-osat | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Osaamisen yhteiset tutkinnon osat (YTO) | Ei |
 | muut-osaamiset | [[MuuTutkinnonOsa](#MuuTutkinnonOsa)] | Muut osaamisen opinnot | Ei |
-
-### Oppimisymparisto  
-
-Oppimisympäristö
-
-| Nimi | Tyyppi | Selite | Vaaditaan |
-| ---- | ------ | ------ | --------- |
-| paikka | Merkkijono | Oppimisympäristön paikan nimi | Kyllä |
-| ajankohta | [DateRange](#DateRange) | Ajankohta kyseisessä oppimisympäristössä | Kyllä |
 
 ### MuuTutkinnonOsa  
 
@@ -117,7 +108,6 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti
 | ---- | ------ | ------ | --------- |
 | urasuunnitelma | [KoodistoKoodi](#KoodistoKoodi) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
 | luotu | Aikaleima | HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
-| hankitun-osaamisen-naytto | [HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
 | luonut | Merkkijono | HOKS-dokumentin luoneen henkilön nimi | Kyllä |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | puuttuva-osaaminen | [PuuttuvaOsaaminen](#PuuttuvaOsaaminen) | Puuttuvan osaamisen hankkimisen suunnitelma | Kyllä |
@@ -202,7 +192,6 @@ HOKS-dokumentin arvot uutta merkintää luotaessa
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | urasuunnitelma | [KoodistoKoodi](#KoodistoKoodi) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
-| hankitun-osaamisen-naytto | [HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
 | luonut | Merkkijono | HOKS-dokumentin luoneen henkilön nimi | Kyllä |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | puuttuva-osaaminen | [PuuttuvaOsaaminen](#PuuttuvaOsaaminen) | Puuttuvan osaamisen hankkimisen suunnitelma | Kyllä |
@@ -220,6 +209,7 @@ Puuttuvan ammatillisen osaamisen tiedot
 | ---- | ------ | ------ | --------- |
 | tutkinnon-osa | [TutkinnonOsa](#TutkinnonOsa) | Tutkinnon osa | Kyllä |
 | tutkinnon-osa-josta-poiketaan | [TutkinnonOsa](#TutkinnonOsa) | Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
+| hankitun-osaamisen-naytto | [HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
 | osaamisen-hankkimistapa | [OsaamisenHankkimistapa](#OsaamisenHankkimistapa) | Osaamisen hankkimistavat | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
 | tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
