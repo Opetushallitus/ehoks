@@ -179,7 +179,7 @@
     (describe
      "Puuttuvan ammatillisen osaamisen tiedot"
      :tutkinnon-osa TutkinnonOsa "Tutkinnon osa"
-     :tutkinnon-osa-josta-poiketaan TutkinnonOsa
+     (s/optional-key :tutkinnon-osa-josta-poiketaan) TutkinnonOsa
      "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen")
     PuuttuvanOsaamisenTiedot))
 
@@ -189,7 +189,7 @@
     (describe
      "Puuttuvan yhteinen tutkinnon osan tiedot"
      :tutkinnon-osa YhteinenTutkinnonOsa "Tutkinnon osa"
-     :tutkinnon-osa-josta-poiketaan YhteinenTutkinnonOsa
+     (s/optional-key :tutkinnon-osa-josta-poiketaan) YhteinenTutkinnonOsa
      "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen")
     PuuttuvanOsaamisenTiedot))
 
