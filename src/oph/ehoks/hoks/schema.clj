@@ -257,15 +257,9 @@
     (s/optional-key :urasuunnitelma) KoodistoKoodi
     "Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi"
     :versio s/Int "HOKS-dokumentin versio"
-    :virkailijan-oid s/Str
-    (str "HOKS-dokumentin luoneen virkailijan yksilöivä tunniste "
-         "oppijanumerorekisterissä")
-    :paivittajan-oid s/Str
-    (str "HOKS-dokumenttia viimeksi päivittäneen virkailijan yksilöivä tunniste "
-         "oppijanumerorekisterissä")
-    :hyvaksyjan-oid s/Str
-    (str "Luodun HOKS-dokumentin hyväksyjän yksilöivä tunniste "
-         "oppijanumerorekisterissä")
+    :luonut s/Str "HOKS-dokumentin luoneen henkilön nimi"
+    :paivittanyt s/Str "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi"
+    :hyvaksynyt s/Str "Luodun HOKS-dokumentn hyväksyjän nimi"
     :luotu s/Inst "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"
     :hyvaksytty s/Inst
     "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"
