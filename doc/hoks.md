@@ -27,6 +27,7 @@ Yhteinen tutkinnon osa (YTO)
 | tunniste | [KoodistoKoodi](#KoodistoKoodi) | Koodisto-koodi | Kyllä |
 | laajuus | Kokonaisluku | Tutkinnon laajuus | Kyllä |
 | eperusteet-diaarinumero | Merkkijono | Diaarinumero ePerusteet-palvelussa | Kyllä |
+| nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
 | koulutustyyppi | [KoodistoKoodi](#KoodistoKoodi) | Tutkinnon osan koulutustyypin Koodisto-koodi | Kyllä |
 
@@ -131,7 +132,7 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti
 
 ### KoodiMetadata  
 
-Koodisto-koodin metadata
+Koodisto-koodin metadata, joka haetaan Koodisto-palvelusta
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
@@ -165,7 +166,7 @@ Koodisto-koodi
 | koodi-arvo | Merkkijono | Koodisto-koodin arvo | Kyllä |
 | koodi-uri | Merkkijono | Koodiston URI | Kyllä |
 | versio | Kokonaisluku | Koodisto-koodin versio | Kyllä |
-| metadata | [[KoodiMetadata](#KoodiMetadata)] | Koodisto-koodi metadata | Ei |
+| metadata | [[KoodiMetadata](#KoodiMetadata)] | Koodisto-koodin metadata, joka haetaan Koodisto-palvelusta | Ei |
 
 ### Organisaatio  
 
@@ -183,7 +184,7 @@ Osaamisen hankkimisen tapa
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | ajankohta | [DateRange](#DateRange) | Hankkimisen ajankohta | Kyllä |
-| osaamisen-hankkimistavan-tunniste | [KoodistoKoodi](#KoodistoKoodi) | Osaamisen hankkimisen Koodisto-koodi | Kyllä |
+| osaamisen-hankkimistavan-tunniste | [KoodistoKoodi](#KoodistoKoodi) | Osaamisen hankkimisen Koodisto-koodi (URI: osaamisenhankkimistapa) | Kyllä |
 
 ### PuuttuvaOsaaminen  
 
@@ -218,7 +219,7 @@ Puuttuvan ammatillisen osaamisen tiedot
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | tutkinnon-osa | [TutkinnonOsa](#TutkinnonOsa) | Tutkinnon osa | Kyllä |
-| tutkinnon-osa-josta-poiketaan | [TutkinnonOsa](#TutkinnonOsa) | Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen | Kyllä |
+| tutkinnon-osa-josta-poiketaan | [TutkinnonOsa](#TutkinnonOsa) | Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 | osaamisen-hankkimistapa | [OsaamisenHankkimistapa](#OsaamisenHankkimistapa) | Osaamisen hankkimistavat | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
 | tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
@@ -233,6 +234,7 @@ Tutkinnon osa
 | tunniste | [KoodistoKoodi](#KoodistoKoodi) | Koodisto-koodi | Kyllä |
 | laajuus | Kokonaisluku | Tutkinnon laajuus | Kyllä |
 | eperusteet-diaarinumero | Merkkijono | Diaarinumero ePerusteet-palvelussa | Kyllä |
+| nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
 | koulutustyyppi | [KoodistoKoodi](#KoodistoKoodi) | Tutkinnon osan koulutustyypin Koodisto-koodi | Kyllä |
 
@@ -286,7 +288,7 @@ Puuttuvan yhteinen tutkinnon osan tiedot
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | tutkinnon-osa | [YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa) | Tutkinnon osa | Kyllä |
-| tutkinnon-osa-josta-poiketaan | [YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa) | Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen | Kyllä |
+| tutkinnon-osa-josta-poiketaan | [YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa) | Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 | osaamisen-hankkimistapa | [OsaamisenHankkimistapa](#OsaamisenHankkimistapa) | Osaamisen hankkimistavat | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
 | tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
