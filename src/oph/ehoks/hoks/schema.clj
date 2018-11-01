@@ -212,9 +212,7 @@
     :ajankohta Aikavali "Näytön tai osaamisen osoittamisen ajankohta"
     :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
     :ammattitaitovaatimukset [KoodistoKoodi]
-    "Ammattitaitovaatimukset, jonka arvioinnin kriteereitä mukautetaan"
-    :osaamistavoitteet [KoodistoKoodi]
-    "Osaamistavoitteet, jonka arvioinnin kriteereitä mukautetaan"
+    "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan"
     :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"
     :yksilolliset-arviointikriteerit [Arviointikriteeri]
     "Yksilölliset arvioinnin kriteerit"))
