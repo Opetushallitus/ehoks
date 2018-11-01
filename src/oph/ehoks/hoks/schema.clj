@@ -267,9 +267,7 @@
     :opiskeluvalmiuksia-tukevat-opinnot OpiskeluvalmiuksiaTukevatOpinnot
     "Opiskeluvalmiuksia tukevat opinnot"
     :puuttuva-osaaminen PuuttuvaOsaaminen
-    "Puuttuvan osaamisen hankkimisen suunnitelma"
-    :hankitun-osaamisen-naytto HankitunOsaamisenNaytto
-    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"))
+    "Puuttuvan osaamisen hankkimisen suunnitelma"))
 
 (s/defschema
   HOKSArvot
