@@ -35,7 +35,7 @@
   (describe
     "Tutkinnon osa"
     :tunniste KoodistoKoodi "Koodisto-koodi"
-    :laajuus s/Int "Tutkinnon laajuus"
+    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
     :eperusteet-diaarinumero s/Str "Diaarinumero ePerusteet-palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     :kuvaus s/Str "Tutkinnon osan kuvaus"
@@ -207,7 +207,7 @@
   (describe
     "Näytön tai osaamisen osoittamisen järjestäjä"
     :nimi s/Str "Näytön tai osaamisen osoittamisen järjestäjän nimi"
-    :oid s/Str
+    (s/optional-key :oid) s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")))
