@@ -25,11 +25,10 @@ Yhteinen tutkinnon osa (YTO)
 | ---- | ------ | ------ | --------- |
 | osa-alue-tunniste | [KoodistoKoodi](#KoodistoKoodi) | Tutkinnon osan osa-alueen tunnisteen Koodisto-koodi | Kyllä |
 | tunniste | [KoodistoKoodi](#KoodistoKoodi) | Koodisto-koodi | Kyllä |
-| laajuus | Kokonaisluku | Tutkinnon laajuus | Kyllä |
+| laajuus | Kokonaisluku | Tutkinnon laajuus ePerusteet palvelussa | Ei |
 | eperusteet-diaarinumero | Merkkijono | Diaarinumero ePerusteet-palvelussa | Kyllä |
 | nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
-| koulutustyyppi | [KoodistoKoodi](#KoodistoKoodi) | Tutkinnon osan koulutustyypin Koodisto-koodi | Kyllä |
 
 ### TyopaikallaHankittavaOsaaminen  
 
@@ -208,7 +207,7 @@ Puuttuvan ammatillisen osaamisen tiedot
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | tutkinnon-osa | [TutkinnonOsa](#TutkinnonOsa) | Tutkinnon osa | Kyllä |
-| tutkinnon-osa-josta-poiketaan | [TutkinnonOsa](#TutkinnonOsa) | Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
+| vaatimuksista-tai-tavoitteista | Merkkijono | Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 | hankitun-osaamisen-naytto | [HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
 | osaamisen-hankkimistapa | [OsaamisenHankkimistapa](#OsaamisenHankkimistapa) | Osaamisen hankkimistavat | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
@@ -222,11 +221,10 @@ Tutkinnon osa
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | tunniste | [KoodistoKoodi](#KoodistoKoodi) | Koodisto-koodi | Kyllä |
-| laajuus | Kokonaisluku | Tutkinnon laajuus | Kyllä |
+| laajuus | Kokonaisluku | Tutkinnon laajuus ePerusteet palvelussa | Ei |
 | eperusteet-diaarinumero | Merkkijono | Diaarinumero ePerusteet-palvelussa | Kyllä |
 | nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
-| koulutustyyppi | [KoodistoKoodi](#KoodistoKoodi) | Tutkinnon osan koulutustyypin Koodisto-koodi | Kyllä |
 
 ### OlemassaOlevaOsaaminen  
 
