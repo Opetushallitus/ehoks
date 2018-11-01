@@ -122,9 +122,6 @@
   TyopaikallaHankittavaOsaaminen
   (describe
     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
-    :ajankohta Aikavali "Työpaikalla järjestettävän koulutuksen ajoittuminen"
-    (s/optional-key :muut-oppimisymparistot) [s/Str]
-    "Muissa oppimisympäristöissä tapahtuvat osaamisen hankkimiset"
     :hankkijan-edustaja Henkilo
     "Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja"
     :vastuullinen-ohjaaja Henkilo "Vastuullinen työpaikkaohjaaja"
