@@ -194,7 +194,7 @@
   Arviointikriteeri
   (describe
     "Arviointikriteeri"
-    :arvosana s/Int "Arvosana"
+    :osaamistaso s/Int "Osaamistaso"
     :kuvaus s/Str "Arviointikriteerin kuvaus"))
 
 (s/defschema
