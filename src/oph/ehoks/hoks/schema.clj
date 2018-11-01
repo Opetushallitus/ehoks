@@ -139,27 +139,38 @@
          "koulutuksen osassa")))
 
 (s/defschema
+  MuuOppimisymparisto
+  (describe
+    "Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu"
+    :tarkenne KoodistoKoodi "Oppimisympäristön tarkenne, eHOS Koodisto-koodi"
+    :selite s/Str "Oppimisympäristön nimi"))
+
+(s/defschema
   OsaamisenHankkimistapa
   (describe
     "Osaamisen hankkimisen tapa"
     :ajankohta Aikavali "Hankkimisen ajankohta"
     :osaamisen-hankkimistavan-tunniste KoodistoKoodi
-    "Osaamisen hankkimisen Koodisto-koodi (URI: osaamisenhankkimistapa)"))
+    "Osaamisen hankkimisen Koodisto-koodi (URI: osaamisenhankkimistapa)"
+    (s/optional-key :tyopaikalla-hankittava-osaaminen)
+    TyopaikallaHankittavaOsaaminen
+    "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
+    (s/optional-key :muut-oppimisymparisto)
+    MuuOppimisymparisto
+    (str "Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen "
+         "liittyvät tiedot")))
 
 (s/defschema
   PuuttuvanOsaamisenTiedot
   (describe
      "Puuttuvan osaamisen hankkimisen suunnitelman tiedot"
-     :osaamisen-hankkimistapa OsaamisenHankkimistapa
+     :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
      "Osaamisen hankkimistavat"
      :koulutuksen-jarjestaja-oid s/Str
      (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
           "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
           "koulutuksen järjestäjän oid.")
-     :tarvittava-opetus s/Str "Tarvittava opetus"
-     (s/optional-key :tyopaikalla-hankittava-osaaminen)
-     TyopaikallaHankittavaOsaaminen
-     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"))
+     :tarvittava-opetus s/Str "Tarvittava opetus"))
 
 (s/defschema
   NaytonJarjestaja
