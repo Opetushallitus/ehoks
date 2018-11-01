@@ -68,7 +68,7 @@
     :rooli s/Str "Henkilön rooli"))
 
 (s/defschema
-  DateRange
+  Aikavali
   (describe
     "Aikaväli"
     :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
@@ -81,7 +81,7 @@
     :nimi s/Str "Opintojen nimi"
     :kuvaus s/Str "Opintojen kuvaus"
     :kesto s/Int "Opintojen kesto päivinä"
-    :ajankohta DateRange "Opintojen ajoittuminen"))
+    :ajankohta Aikavali "Opintojen ajoittuminen"))
 
 (s/defschema
   Opinnot
@@ -129,7 +129,7 @@
   TyopaikallaHankittavaOsaaminen
   (describe
     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
-    :ajankohta DateRange "Työpaikalla järjestettävän koulutuksen ajoittuminen"
+    :ajankohta Aikavali "Työpaikalla järjestettävän koulutuksen ajoittuminen"
     (s/optional-key :muut-oppimisymparistot) [Oppimisymparisto]
     "Muissa oppimisympäristöissä tapahtuvat osaamisen hankkimiset"
     :hankkijan-edustaja Henkilo
@@ -144,7 +144,7 @@
     :erityinen-tuki s/Bool
     (str "Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä "
          "erityisen tuen päätös")
-    (s/optional-key :erityisen-tuen-aika) DateRange
+    (s/optional-key :erityisen-tuen-aika) Aikavali
     (str "Erityisen tuen alkamispvm ja päättymispvm kyseisessä tutkinnon tai"
          "koulutuksen osassa")))
 
@@ -152,7 +152,7 @@
   OsaamisenHankkimistapa
   (describe
     "Osaamisen hankkimisen tapa"
-    :ajankohta DateRange "Hankkimisen ajankohta"
+    :ajankohta Aikavali "Hankkimisen ajankohta"
     :osaamisen-hankkimistavan-tunniste KoodistoKoodi
     "Osaamisen hankkimisen Koodisto-koodi (URI: osaamisenhankkimistapa)"))
 
@@ -208,7 +208,7 @@
          "näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, "
          "esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, "
          "simulaattori")
-    :ajankohta DateRange "Näytön tai osaamisen osoittamisen ajankohta"
+    :ajankohta Aikavali "Näytön tai osaamisen osoittamisen ajankohta"
     :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
     :ammattitaitovaatimukset [KoodistoKoodi]
     "Ammattitaitovaatimukset, jonka arvioinnin kriteereitä mukautetaan"
