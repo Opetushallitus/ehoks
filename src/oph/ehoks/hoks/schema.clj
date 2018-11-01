@@ -38,9 +38,7 @@
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
     :eperusteet-diaarinumero s/Str "Diaarinumero ePerusteet-palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
-    :kuvaus s/Str "Tutkinnon osan kuvaus"
-    :koulutustyyppi KoodistoKoodi
-    "Tutkinnon osan koulutustyypin Koodisto-koodi"))
+    :kuvaus s/Str "Tutkinnon osan kuvaus"))
 
 (s/defschema
   YhteinenTutkinnonOsa
