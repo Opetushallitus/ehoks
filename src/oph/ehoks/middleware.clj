@@ -12,16 +12,16 @@
 (defn- authorized-or-public-route-request? [request public-routes]
   (or (seq (:session request))
       (route-in?
-       (select-keys request [:uri :request-method]) public-routes)))
+        (select-keys request [:uri :request-method]) public-routes)))
 
 (defn wrap-public [handler public-routes]
   (fn
     ([request respond raise]
-     (if (authorized-or-public-route-request? request public-routes)
+      (if (authorized-or-public-route-request? request public-routes)
         (handler request respond raise)
         (respond (unauthorized))))
     ([request]
-     (if (authorized-or-public-route-request? request public-routes)
+      (if (authorized-or-public-route-request? request public-routes)
         (handler request)
         (unauthorized)))))
 
@@ -33,8 +33,9 @@
 (defn wrap-cache-control-no-cache [handler]
   (fn
     ([request respond raise]
-     (handler request
-              (fn [response] (respond (cache-control-no-cache-response response)))
-              raise))
+      (handler request
+               (fn [response]
+                 (respond (cache-control-no-cache-response response)))
+               raise))
     ([request]
-     (-> (handler request) cache-control-no-cache-response))))
+      (cache-control-no-cache-response (handler request)))))

@@ -92,11 +92,15 @@
 (deftest cache-control-no-cache-async
   (testing "Cache control async route"
     (let [response (handle-async test-app (mock/request :get "/async/public"))]
-      (is (= (get-in response [:headers "Cache-Control"]) "no-cache, max-age=0"))
-      (is (= (get-in response [:headers "Expires"]) "0")))))
+      (is (= (get-in response [:headers "Cache-Control"])
+             "no-cache, max-age=0"))
+      (is (= (get-in response [:headers "Expires"])
+             "0")))))
 
 (deftest cache-control-no-cache-sync
   (testing "Cache control sync route"
     (let [response (test-app (mock/request :get "/sync/public"))]
-      (is (= (get-in response [:headers "Cache-Control"]) "no-cache, max-age=0"))
-      (is (= (get-in response [:headers "Expires"]) "0")))))
+      (is (= (get-in response [:headers "Cache-Control"])
+             "no-cache, max-age=0"))
+      (is (= (get-in response [:headers "Expires"])
+             "0")))))
