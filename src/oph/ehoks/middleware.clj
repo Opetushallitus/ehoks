@@ -16,16 +16,18 @@
   (route-in?
     (select-keys request [:uri :request-method]) public-routes))
 
+(defn- access-granted? [request public-routes]
+  (or (authenticated? request)
+      (public-route? request public-routes)))
+
 (defn wrap-public [handler public-routes]
   (fn
     ([request respond raise]
-      (if (or (authenticated? request)
-              (public-route? request public-routes))
+      (if (access-granted? request public-routes)
         (handler request respond raise)
         (respond (unauthorized))))
     ([request]
-      (if (or (authenticated? request)
-              (public-route? request public-routes))
+      (if (access-granted? request public-routes)
         (handler request)
         (unauthorized)))))
 
