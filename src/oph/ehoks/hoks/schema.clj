@@ -98,9 +98,9 @@
   TunnustettavanaOlevaOsaaminen
   (st/merge
     (describe
-     "Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten"
-     :todentajan-nimi s/Str
-     "Osaamisen todentaneen toimivaltaisen viranomaisen nimi")
+      "Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten"
+      :todentajan-nimi s/Str
+      "Osaamisen todentaneen toimivaltaisen viranomaisen nimi")
     Opinnot))
 
 (s/defschema
@@ -163,14 +163,14 @@
 (s/defschema
   PuuttuvanOsaamisenTiedot
   (describe
-     "Puuttuvan osaamisen hankkimisen suunnitelman tiedot"
-     :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
-     "Osaamisen hankkimistavat"
-     :koulutuksen-jarjestaja-oid s/Str
-     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
-          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
-          "koulutuksen järjestäjän oid.")
-     :tarvittava-opetus s/Str "Tarvittava opetus"))
+    "Puuttuvan osaamisen hankkimisen suunnitelman tiedot"
+    :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
+    "Osaamisen hankkimistavat"
+    :koulutuksen-jarjestaja-oid s/Str
+    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+         "koulutuksen järjestäjän oid.")
+    :tarvittava-opetus s/Str "Tarvittava opetus"))
 
 (s/defschema
   NaytonJarjestaja
@@ -221,22 +221,22 @@
   PuuttuvaAmmatillinenOsaaminen
   (st/merge
     (describe
-     "Puuttuvan ammatillisen osaamisen tiedot"
-     :tutkinnon-osa TutkinnonOsa "Tutkinnon osa"
-     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
-     "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen"
-     :hankitun-osaamisen-naytto HankitunOsaamisenNaytto
-     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen")
+      "Puuttuvan ammatillisen osaamisen tiedot"
+      :tutkinnon-osa TutkinnonOsa "Tutkinnon osa"
+      (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
+      "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen"
+      :hankitun-osaamisen-naytto HankitunOsaamisenNaytto
+      "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen")
     PuuttuvanOsaamisenTiedot))
 
 (s/defschema
   PuuttuvaYTO
   (st/merge
     (describe
-     "Puuttuvan yhteinen tutkinnon osan tiedot"
-     :tutkinnon-osa YhteinenTutkinnonOsa "Tutkinnon osa"
-     (s/optional-key :tutkinnon-osa-josta-poiketaan) YhteinenTutkinnonOsa
-     "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen")
+      "Puuttuvan yhteinen tutkinnon osan tiedot"
+      :tutkinnon-osa YhteinenTutkinnonOsa "Tutkinnon osa"
+      (s/optional-key :tutkinnon-osa-josta-poiketaan) YhteinenTutkinnonOsa
+      "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen")
     PuuttuvanOsaamisenTiedot))
 
 (s/defschema
