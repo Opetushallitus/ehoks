@@ -9,18 +9,19 @@
   (some?
     (some #(when (matches-route? request %) %) routes)))
 
+(defn- authorized-or-public-route-request? [request public-routes]
+  (or (seq (:session request))
+      (route-in?
+       (select-keys request [:uri :request-method]) public-routes)))
+
 (defn wrap-public [handler public-routes]
   (fn
     ([request respond raise]
-      (if (or (seq (:session request))
-              (route-in?
-                (select-keys request [:uri :request-method]) public-routes))
+     (if (authorized-or-public-route-request? request public-routes)
         (handler request respond raise)
         (respond (unauthorized))))
     ([request]
-      (if (or (seq (:session request))
-              (route-in?
-                (select-keys request [:uri :request-method]) public-routes))
+     (if (authorized-or-public-route-request? request public-routes)
         (handler request)
         (unauthorized)))))
 
