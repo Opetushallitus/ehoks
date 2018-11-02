@@ -1,5 +1,5 @@
 (ns oph.ehoks.middleware
-  (:require [ring.util.http-response :refer [unauthorized]]))
+  (:require [ring.util.http-response :refer [unauthorized header]]))
 
 (defn- matches-route? [request route]
   (and (re-seq (:uri route) (:uri request))
@@ -23,3 +23,17 @@
                 (select-keys request [:uri :request-method]) public-routes))
         (handler request)
         (unauthorized)))))
+
+(defn- cache-control-no-cache-response [response]
+  (-> response
+      (header "Expires" 0)
+      (header "Cache-Control" "no-cache, max-age=0")))
+
+(defn wrap-cache-control-no-cache [handler]
+  (fn
+    ([request respond raise]
+     (handler request
+              (fn [response] (respond (cache-control-no-cache-response response)))
+              raise))
+    ([request]
+     (-> (handler request) cache-control-no-cache-response))))

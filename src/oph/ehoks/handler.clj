@@ -66,6 +66,7 @@
 
 (def app
   (-> app-routes
+      (middleware/wrap-cache-control-no-cache)
       (middleware/wrap-public public-routes)
       (session/wrap-session
         {:store (if (seq (:redis-url config))
