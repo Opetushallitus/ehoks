@@ -28,7 +28,8 @@
                     Inst "Aikaleima"
                     Str "Merkkijono"
                     Bool "Totuusarvo"
-                    java.time.LocalDate "Päivämäärä"})
+                    java.time.LocalDate "Päivämäärä"
+                    (maybe Str) "Valinnainen merkkijono"})
 
 (defn translate-fi [n]
   (get translations n (str n)))
