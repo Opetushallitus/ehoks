@@ -72,5 +72,10 @@
 (defn write-doc! [target]
   (with-open [w (io/writer target)]
     (doseq [line (flatten (generate-doc))]
-      (.write w line)
+      (assert (string? line) (str "Line must be string. Got: " line))
+      (try
+        (.write w line)
+        (catch Exception e
+          (println (str "Error in line: " line))
+          (throw e)))
       (.newLine w))))
