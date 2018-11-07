@@ -38,15 +38,25 @@
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
     :eperusteet-diaarinumero s/Str "Diaarinumero ePerusteet-palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
-    :kuvaus s/Str "Tutkinnon osan kuvaus"))
+    (s/optional-key :kuvaus) s/Str
+    "Tutkinnon osan kuvaus ePerusteet-palvelussa"))
+
+(s/defschema
+  YhteisenTutkinnonOsanOsa
+  (describe
+    "Yhteisen tutkinnon osan (YTO) osa"
+    :eperusteet-tunniste s/Int
+    "Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua"
+    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
+    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"))
 
 (s/defschema
   YhteinenTutkinnonOsa
   (st/merge
     (describe
-      "Yhteinen tutkinnon osa (YTO)"
-      :osa-alue-tunniste KoodistoKoodi
-      "Tutkinnon osan osa-alueen tunnisteen Koodisto-koodi")
+      "Yhteinen Tutkinnon osa (YTO)"
+      :tutkinnon-osat [YhteisenTutkinnonOsanOsa]
+      "Yhteisen tutkinnon osan osat")
     TutkinnonOsa))
 
 (s/defschema
@@ -161,18 +171,6 @@
          "liittyvät tiedot")))
 
 (s/defschema
-  PuuttuvanOsaamisenTiedot
-  (describe
-    "Puuttuvan osaamisen hankkimisen suunnitelman tiedot"
-    :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
-    "Osaamisen hankkimistavat"
-    :koulutuksen-jarjestaja-oid s/Str
-    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
-         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
-         "koulutuksen järjestäjän oid.")
-    :tarvittava-opetus s/Str "Tarvittava opetus"))
-
-(s/defschema
   NaytonJarjestaja
   (describe
     "Näytön tai osaamisen osoittamisen järjestäjä"
@@ -211,33 +209,115 @@
          "simulaattori")
     :ajankohta Aikavali "Näytön tai osaamisen osoittamisen ajankohta"
     :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
-    :ammattitaitovaatimukset [KoodistoKoodi]
-    "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan"
+    :ammattitaitovaatimukset [s/Int]
+    (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan. Lista "
+         "ePerusteet tunnisteita. Tunnisteen tyyppi voi vielä päivittyä.")
+    :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"
+    :yksilolliset-arviointikriteerit [Arviointikriteeri]
+    "Yksilölliset arvioinnin kriteerit"))
+
+(s/defschema
+  HankitunYTOOsaamisenNaytto
+  (describe
+    "Hankitun YTO osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    :jarjestaja NaytonJarjestaja "Näytön tai osaamisen osoittamisen järjestäjä"
+    :nayttoymparisto Organisaatio
+    "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
+    :kuvaus s/Str
+    (str "Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen "
+         "näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, "
+         "esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, "
+         "simulaattori")
+    :ajankohta Aikavali "Näytön tai osaamisen osoittamisen ajankohta"
+    :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
+    :osaamistavoitteet [s/Int]
+    (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan. Lista "
+         "ePerusteet tunnisteita. Tunnisteen tyyppi voi vielä päivittyä.")
+    :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"
+    :yksilolliset-arviointikriteerit [Arviointikriteeri]
+    "Yksilölliset arvioinnin kriteerit"))
+
+(s/defschema
+  HankitunPaikallisenOsaamisenNaytto
+  (describe
+    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    :jarjestaja NaytonJarjestaja "Näytön tai osaamisen osoittamisen järjestäjä"
+    :nayttoymparisto Organisaatio
+    "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
+    :kuvaus s/Str
+    (str "Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen "
+         "näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, "
+         "esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, "
+         "simulaattori")
+    :ajankohta Aikavali "Näytön tai osaamisen osoittamisen ajankohta"
+    :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
+    :ammattitaitovaatimukset [s/Str]
+    "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan."
     :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"
     :yksilolliset-arviointikriteerit [Arviointikriteeri]
     "Yksilölliset arvioinnin kriteerit"))
 
 (s/defschema
   PuuttuvaAmmatillinenOsaaminen
-  (st/merge
-    (describe
-      "Puuttuvan ammatillisen osaamisen tiedot"
-      :tutkinnon-osa TutkinnonOsa "Tutkinnon osa"
-      (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
-      "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen"
-      :hankitun-osaamisen-naytto HankitunOsaamisenNaytto
-      "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen")
-    PuuttuvanOsaamisenTiedot))
+  (describe
+    "Puuttuvan ammatillisen osaamisen tiedot"
+    :tutkinnon-osa TutkinnonOsa "Tutkinnon osa"
+    (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
+    "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen"
+    :hankitun-osaamisen-naytto HankitunOsaamisenNaytto
+    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
+    "Osaamisen hankkimistavat"
+    :koulutuksen-jarjestaja-oid s/Str
+    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+         "koulutuksen järjestäjän oid.")
+    :tarvittava-opetus s/Str "Tarvittava opetus"))
+
+(s/defschema
+  PuuttuvaYTOOsa
+  (describe
+    "Puuttuvan yhteinen tutkinnon osan (YTO) osan tiedot"
+    :tunniste KoodistoKoodi "Koodisto-koodi"
+    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
+    :eperusteet-diaarinumero s/Str "Diaarinumero ePerusteet-palvelussa"
+    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
+    :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
+    "Osaamisen hankkimistavat"
+    (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
+    "vaatimuksista tai osaamistavoitteista poikkeaminen"
+    :hankitun-osaamisen-naytto HankitunYTOOsaamisenNaytto
+    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    :tarvittava-opetus s/Str "Tarvittava opetus"))
 
 (s/defschema
   PuuttuvaYTO
-  (st/merge
-    (describe
-      "Puuttuvan yhteinen tutkinnon osan tiedot"
-      :tutkinnon-osa YhteinenTutkinnonOsa "Tutkinnon osa"
-      (s/optional-key :tutkinnon-osa-josta-poiketaan) YhteinenTutkinnonOsa
-      "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen")
-    PuuttuvanOsaamisenTiedot))
+  (describe
+    "Puuttuvan yhteinen tutkinnon osan tiedot"
+    :tutkinnon-osat [PuuttuvaYTOOsa] "Puuttuvat YTO osat"
+    :koulutuksen-jarjestaja-oid s/Str
+    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+         "koulutuksen järjestäjän oid.")))
+
+(s/defschema
+  PuuttuvaPaikallinenTutkinnonOsa
+  (describe
+    "Puuttuva paikallinen tutkinnon osa"
+    (s/optional-key :amosaa-tunniste) s/Str
+    "Tunniste ePerusteet AMOSAA -palvelussa"
+    :nimi s/Str "Tutkinnon osan nimi"
+    :laajuus s/Int "Tutkinnon osan laajuus"
+    :kuvaus s/Str "Tutkinnon osan kuvaus"
+    :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
+    "Osaamisen hankkimistavat"
+    :koulutuksen-jarjestaja-oid s/Str
+    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+         "koulutuksen järjestäjän oid.")
+    :hankitun-osaamisen-naytto HankitunPaikallisenOsaamisenNaytto
+    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    :tarvittava-opetus s/Str "Tarvittava opetus"))
 
 (s/defschema
   PuuttuvaOsaaminen
@@ -245,8 +325,10 @@
     "Puuttuvan osaamisen hankkimisen suunnitelma"
     :ammatillinen-osaaminen [PuuttuvaAmmatillinenOsaaminen]
     "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"
-    :yhteinen-tutkinnon-osa [PuuttuvaYTO]
-    "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"))
+    :yhteisen-tutkinnon-osat [PuuttuvaYTO]
+    "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"
+    :paikallinen-tutkinnon-osa [PuuttuvaPaikallinenTutkinnonOsa]
+    "Puuttuvat paikallisen tutkinnon osat"))
 
 (s/defschema
   HOKS
@@ -269,7 +351,6 @@
     :olemassa-oleva-osaaminen OlemassaOlevaOsaaminen
     (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
          "opiskelijan tutkintoa")
-    ; OSAAMISEN TUNNISTAMIS- JA TUNNUSTAMISPROSESSIN LOPPUTULOS
     :opiskeluvalmiuksia-tukevat-opinnot OpiskeluvalmiuksiaTukevatOpinnot
     "Opiskeluvalmiuksia tukevat opinnot"
     :puuttuva-osaaminen PuuttuvaOsaaminen
