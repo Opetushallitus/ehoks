@@ -294,6 +294,8 @@
   PuuttuvaYTO
   (describe
     "Puuttuvan yhteinen tutkinnon osan tiedot"
+    :eperusteet-id s/Int
+    "Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua"
     :tutkinnon-osat [PuuttuvaYTOOsa] "Puuttuvat YTO osat"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
