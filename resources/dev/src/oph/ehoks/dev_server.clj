@@ -11,9 +11,7 @@
             [oph.ehoks.mock-routes :as mock]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.params :refer [wrap-params]]
-            [clojure.tools.logging :as log])
-  (:import [org.slf4j LoggerFactory]
-           [ch.qos.logback.classic Logger Level]))
+            [clojure.tools.logging :as log]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -21,10 +19,6 @@
       (c-str/replace #"_" "__")
       (c-str/replace #"/" "_")
       (str ".json")))
-
-(defn set-log-level! [level]
-  (.. (LoggerFactory/getLogger org.slf4j.Logger/ROOT_LOGGER_NAME)
-      (setLevel (Level/valueOf (.toUpperCase (name level))))))
 
 (defn find-dev-route-file
   "Finds response file for dev route.
@@ -80,7 +74,6 @@
    (when (some? config-file)
      (System/setProperty "config" config-file)
      (require 'oph.ehoks.config :reload))
-   (set-log-level! (:log-level config-file :info))
    (log/info "Starting development server...")
    (log/info "Not safe for production or public environments.")
    (jetty/run-jetty dev-app

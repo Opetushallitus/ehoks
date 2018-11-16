@@ -13,8 +13,9 @@
                  [clj-time "0.14.4"]
                  [org.clojure/core.async "0.4.474"]
                  [org.clojure/tools.logging "0.4.1"]
-                 [ch.qos.logback/logback-classic "1.2.3"]
-                 [ch.qos.logback/logback-core "1.2.3"]]
+                 [org.apache.logging.log4j/log4j-api "2.11.1"]
+                 [org.apache.logging.log4j/log4j-core "2.11.1"]
+                 [org.apache.logging.log4j/log4j-slf4j-impl "2.11.1"]]
   :managed-dependencies [[org.clojure/clojure "1.9.0"]
 
                          ;; http server
@@ -24,9 +25,6 @@
                          [ring/ring-core "1.7.0"]
                          [ring/ring-jetty-adapter "1.7.0"]
                          [ring/ring-servlet "1.7.0"]
-                         [org.clojure/tools.logging "0.4.1"]
-                         [ch.qos.logback/logback-classic "1.2.3"]
-                         [ch.qos.logback/logback-core "1.2.3"]
 
                          ;; http client
                          [clj-http "3.9.1"]
@@ -36,6 +34,12 @@
                          [org.apache.httpcomponents/httpcore "4.4.10"]
                          [org.apache.httpcomponents/httpcore-nio "4.4.10"]
                          [org.apache.httpcomponents/httpmime "4.5.6"]
+
+                         ;; logging
+                         [org.clojure/tools.logging "0.4.1"]
+                         [org.apache.logging.log4j/log4j-api "2.11.1"]
+                         [org.apache.logging.log4j/log4j-core "2.11.1"]
+                         [org.apache.logging.log4j/log4j-slf4j-impl "2.11.1"]
 
                          ;; date, time
                          [joda-time "2.10"]
