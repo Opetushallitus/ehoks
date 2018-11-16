@@ -13,14 +13,29 @@
   {:get client/get
    :post client/post})
 
+(defn sanitaze-params [options]
+  ; TODO Sanitaze all personal info https://jira.csc.fi/browse/EH-150
+  ;      Add tests as well
+  (if (some? (get-in options [:query-params :hetu]))
+    (assoc-in options [:query-params :hetu] "XXXXXXxXXXX")
+    options))
+
 (defn with-api-headers [method url options]
-  (let [client-method-fn (get client-functions method)]
-    (client-method-fn
-      url
-      (-> options
-          (assoc-in [:headers "Caller-Id"] (:client-sub-system-code config))
-          (assoc :debug (:debug config false))
-          (assoc :cookie-policy :standard)))))
+  (try
+    (let [client-method-fn (get client-functions method)]
+     (client-method-fn
+       url
+       (-> options
+           (assoc-in [:headers "Caller-Id"] (:client-sub-system-code config))
+           (assoc :debug (:debug config false))
+           (assoc :cookie-policy :standard))))
+    (catch Exception e
+      (throw (ex-info "HTTP request error"
+                      {:type :http-error
+                       :method method
+                       :url url
+                       :options (sanitaze-params options)}
+                      e)))))
 
 (defn refresh-service-ticket! []
   (let [response (with-api-headers
