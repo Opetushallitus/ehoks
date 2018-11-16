@@ -1,5 +1,6 @@
 (ns oph.ehoks.external.connection
   (:require [oph.ehoks.config :refer [config]]
+            [ring.util.http-predicates :as http-predicates]
             [clj-http.client :as client]
             [clj-time.core :as t])
   (:import [com.fasterxml.jackson.core JsonParseException]))
@@ -28,7 +29,7 @@
                    {:form-params {:username (:cas-username config)
                                   :password (:cas-password config)}})
         url (get-in response [:headers "location"])]
-    (if (and (= (:status response) 201)
+    (if (and (http-predicates/success? response)
              (seq url))
       (reset! service-ticket
               {:url url
