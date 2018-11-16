@@ -44,7 +44,6 @@
     (c/expire-response! "https://some.url/")
     (is (nil? (c/get-cached! "https://some.url/")))))
 
-
 (deftest test-clean-cache
   (testing "Clean cache"
     (reset! c/cache example-responses)
