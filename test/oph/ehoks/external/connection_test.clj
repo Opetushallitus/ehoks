@@ -4,6 +4,62 @@
             [oph.ehoks.config :refer [config]]
             [clj-time.core :as t]))
 
+(def example-responses
+  {"https://some.url/"
+   {:status 200
+     :body {}
+     :timestamp (t/now)}
+   "https://someother.url/"
+   {:status 200
+     :body {}
+     :timestamp
+     (t/minus
+       (t/now)
+       (t/minutes
+         (inc (:ext-cache-lifetime-minutes config))))}})
+
+(deftest test-get-cached
+  (testing "Cache"
+    (reset! c/cache example-responses)
+    (is (= (c/get-cached! "https://some.url/")
+           (get example-responses "https://some.url/")))
+    (is (nil? (c/get-cached! "https://someother.url/")))))
+
+(deftest test-expired
+  (testing "Expired"
+    (is (not (c/expired? {})))
+    (is (not (c/expired? {:timestamp (t/now)})))
+    (is (c/expired?
+          {:timestamp
+           (t/minus
+             (t/now)
+             (t/minutes
+               (inc (:ext-cache-lifetime-minutes config))))}))))
+
+(deftest test-get-expire-response
+  (testing "Expiring cached response"
+    (reset! c/cache example-responses)
+    (is (= (c/get-cached! "https://some.url/")
+           (get example-responses "https://some.url/")))
+    (c/expire-response! "https://some.url/")
+    (is (nil? (c/get-cached! "https://some.url/")))))
+
+
+(deftest test-clean-cache
+  (testing "Clean cache"
+    (reset! c/cache example-responses)
+    (c/clean-cache!)
+    (is (= @c/cache (dissoc example-responses "https://someother.url/")))))
+
+(deftest test-encode-url
+  (testing "Encoding URL"
+    (is (= (c/encode-url "http://example.com"
+                         {})
+           "http://example.com"))
+    (is (= (c/encode-url "http://example.com"
+                         {:param1 "Param1" :param2 "Param2"})
+           "http://example.com?param1=Param1&param2=Param2"))))
+
 (deftest test-refresh-service-ticket
   (testing "Refresh service ticket successfully"
     (reset! c/service-ticket {:url nil :expires nil})
