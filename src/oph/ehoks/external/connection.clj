@@ -31,10 +31,7 @@
            (assoc :cookie-policy :standard))))
     (catch Exception e
       (throw (ex-info "HTTP request error"
-                      {:type :http-error
-                       :method method
-                       :url url
-                       :options (sanitaze-params options)}
+                      {:log-data {:method method :url url}}
                       e)))))
 
 (defn refresh-service-ticket! []
