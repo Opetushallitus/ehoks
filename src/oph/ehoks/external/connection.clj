@@ -34,7 +34,9 @@
               {:url url
                :expires (t/plus (t/now) (t/hours 2))})
       (throw (ex-info "Failed to refresh CAS Service Ticket"
-                      {:response response})))))
+                      {:response response
+                       :log-data {:status (:status response)
+                                  :body (:body response)}})))))
 
 (defn get-service-ticket [url service]
   (:body (with-api-headers
