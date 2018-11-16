@@ -7,16 +7,16 @@
 (def example-responses
   {"https://some.url/"
    {:status 200
-     :body {}
-     :timestamp (t/now)}
+    :body {}
+    :timestamp (t/now)}
    "https://someother.url/"
    {:status 200
-     :body {}
-     :timestamp
-     (t/minus
-       (t/now)
-       (t/minutes
-         (inc (:ext-cache-lifetime-minutes config))))}})
+    :body {}
+    :timestamp
+    (t/minus
+      (t/now)
+      (t/minutes
+        (inc (:ext-cache-lifetime-minutes config))))}})
 
 (deftest test-get-cached
   (testing "Cache"
@@ -49,7 +49,8 @@
   (testing "Clean cache"
     (reset! c/cache example-responses)
     (c/clean-cache!)
-    (is (= @c/cache (dissoc example-responses "https://someother.url/")))))
+    (is (= @c/cache
+           (dissoc example-responses "https://someother.url/")))))
 
 (deftest test-encode-url
   (testing "Encoding URL"
