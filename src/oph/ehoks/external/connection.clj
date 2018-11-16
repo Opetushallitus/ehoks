@@ -23,12 +23,12 @@
 (defn with-api-headers [method url options]
   (try
     (let [client-method-fn (get client-functions method)]
-     (client-method-fn
-       url
-       (-> options
-           (assoc-in [:headers "Caller-Id"] (:client-sub-system-code config))
-           (assoc :debug (:debug config false))
-           (assoc :cookie-policy :standard))))
+      (client-method-fn url
+                        (-> options
+                            (assoc-in [:headers "Caller-Id"]
+                                      (:client-sub-system-code config))
+                            (assoc :debug (:debug config false))
+                            (assoc :cookie-policy :standard))))
     (catch Exception e
       (throw (ex-info "HTTP request error"
                       {:log-data {:method method :url url}}
