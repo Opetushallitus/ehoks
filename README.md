@@ -87,6 +87,13 @@ user> (use 'oph.ehoks.dev-server)
 user> (def server (start-server))
 ```
 
+Or with custom config:
+
+``` repl
+user> (use 'oph.ehoks.dev-server)
+user> (def server (start-server "config/custom.edn"))
+```
+
 And shutting down:
 
 ``` repl
@@ -146,8 +153,8 @@ works only when running development server.
 
 Default configuration file is `config/default.edn`. You may override
 these values by creating your own config file and supplying path to the
-file either via environment variable `CONFIG` or JVM system property
-`config`.
+file either via environment variable `CONFIG`, JVM system property
+`config` or as a development server parameter.
 
 Config files are being merged as custom config overrides default values. So you
 can use some default values and some custom values.
