@@ -21,9 +21,9 @@
 (deftest test-get-cached
   (testing "Cache"
     (reset! c/cache example-responses)
-    (is (= (c/get-cached! "https://some.url/")
+    (is (= (c/get-cached "https://some.url/")
            (get example-responses "https://some.url/")))
-    (is (nil? (c/get-cached! "https://someother.url/")))))
+    (is (nil? (c/get-cached "https://someother.url/")))))
 
 (deftest test-add-cached-response
   (testing "Add cached response"
@@ -31,7 +31,7 @@
       "https://some.cached.url/ping?pong=true"
       {:status 200
        :body {}})
-    (let [response (c/get-cached! "https://some.cached.url/ping?pong=true")]
+    (let [response (c/get-cached "https://some.cached.url/ping?pong=true")]
       (is (= (:status response) 200))
       (is (= (:body response) {}))
       (is (some? (:timestamp response)))
@@ -52,10 +52,10 @@
 (deftest test-get-expire-response
   (testing "Expiring cached response"
     (reset! c/cache example-responses)
-    (is (= (c/get-cached! "https://some.url/")
+    (is (= (c/get-cached "https://some.url/")
            (get example-responses "https://some.url/")))
     (c/expire-response! "https://some.url/")
-    (is (nil? (c/get-cached! "https://some.url/")))))
+    (is (nil? (c/get-cached "https://some.url/")))))
 
 (deftest test-clean-cache
   (testing "Clean cache"

@@ -39,7 +39,7 @@
           @cache)]
     (reset! cache non-expired)))
 
-(defn get-cached! [url]
+(defn get-cached [url]
   (when-let [response (get @cache url)]
     (if (expired? response)
       (expire-response! url)
@@ -81,7 +81,7 @@
     (format "%s?%s" url (codec/form-encode params))))
 
 (defn with-cache! [method url options]
-  (or (get-cached! (encode-url url (:query-params options)))
+  (or (get-cached (encode-url url (:query-params options)))
       (let [response (with-api-headers method url options)]
         (add-cached-response! (encode-url url (:query-params options)) response)
         (assoc response :cached :MISS))))
