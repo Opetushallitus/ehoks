@@ -29,12 +29,14 @@
   nil)
 
 (defn clean-cache! []
-  (let [non-expired (reduce (fn [n [k v]]
-                              (if (expired? v)
-                                n
-                                (assoc n k v)))
-                            {}
-                            @cache)]
+  (let [non-expired
+        (reduce
+          (fn [n [k v]]
+            (if (expired? v)
+              n
+              (assoc n k v)))
+          {}
+          @cache)]
     (reset! cache non-expired)))
 
 (defn get-cached! [url]
