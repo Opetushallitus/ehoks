@@ -1,5 +1,6 @@
 (ns oph.ehoks.external.connection
   (:require [oph.ehoks.config :refer [config]]
+            [ring.util.http-predicates :as http-predicates]
             [clj-http.client :as client]
             [clj-time.core :as t]
             [ring.util.codec :as codec]
@@ -51,14 +52,26 @@
                 :ehoks-cached true
                 :cached :HIT)))
 
+(defn sanitaze-params [options]
+  ; TODO Sanitaze all personal info https://jira.csc.fi/browse/EH-150
+  ;      Add tests as well
+  (if (some? (get-in options [:query-params :hetu]))
+    (assoc-in options [:query-params :hetu] "XXXXXXxXXXX")
+    options))
+
 (defn with-api-headers [method url options]
-  (let [client-method-fn (get client-functions method)]
-    (client-method-fn
-      url
-      (-> options
-          (assoc-in [:headers "Caller-Id"] (:client-sub-system-code config))
-          (assoc :debug (:debug config false))
-          (assoc :cookie-policy :standard)))))
+  (try
+    (let [client-method-fn (get client-functions method)]
+      (client-method-fn url
+                        (-> options
+                            (assoc-in [:headers "Caller-Id"]
+                                      (:client-sub-system-code config))
+                            (assoc :debug (:debug config false))
+                            (assoc :cookie-policy :standard))))
+    (catch Exception e
+      (throw (ex-info "HTTP request error"
+                      {:log-data {:method method :url url}}
+                      e)))))
 
 (defn encode-url [url params]
   (if (empty? params)
@@ -80,13 +93,15 @@
                    {:form-params {:username (:cas-username config)
                                   :password (:cas-password config)}})
         url (get-in response [:headers "location"])]
-    (if (and (= (:status response) 201)
+    (if (and (http-predicates/created? response)
              (seq url))
       (reset! service-ticket
               {:url url
                :expires (t/plus (t/now) (t/hours 2))})
       (throw (ex-info "Failed to refresh CAS Service Ticket"
-                      {:response response})))))
+                      {:response response
+                       :log-data {:status (:status response)
+                                  :body (:body response)}})))))
 
 (defn get-service-ticket [url service]
   (:body (with-api-headers
