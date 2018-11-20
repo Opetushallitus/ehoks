@@ -123,7 +123,7 @@
                   {:post (fn [_ options] {:body "test-ticket"})}]
       (reset! c/service-ticket {:url "http://ticket.url"
                                 :expires (t/plus (t/now) (t/hours 2))})
-      (let [data (c/add-cas-ticket "http://test-service" {})]
+      (let [data (c/add-cas-ticket {} "http://test-service")]
         (is (= (get-in data [:headers "accept"]) "*/*"))
         (is (= (get-in data [:query-params :ticket]) "test-ticket"))))))
 
@@ -135,5 +135,9 @@
                                     :status 200})}]
       (reset! c/service-ticket {:url "http://ticket.url"
                                 :expires (t/plus (t/now) (t/hours 2))})
-      (let [response (c/with-service-ticket :get "http://test-service" "/" {})]
+      (let [response (c/with-service-ticket
+                       {:method :get
+                        :service "http://test-service"
+                        :path "/"
+                        :options {}})]
         (is (= (:body response) {:value true}))))))

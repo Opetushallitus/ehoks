@@ -15,11 +15,12 @@
 (defn search-perusteet-info [nimi]
   (get-in
     (c/with-api-headers
-      :get
-      (format "%s/perusteet" (:eperusteet-url config))
-      {:as :json
-       :query-params {:nimi nimi
-                      :tutkintonimikkeet true
-                      :tutkinnonosat true
-                      :osaamisalat true}})
+      {:method :get
+       :service (:eperusteet-url config)
+       :path "perusteet"
+       :options {:as :json
+                 :query-params {:nimi nimi
+                                :tutkintonimikkeet true
+                                :tutkinnonosat true
+                                :osaamisalat true}}})
     [:body :data]))

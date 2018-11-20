@@ -5,8 +5,8 @@
 (defn get-localization-results  [& {:keys [category] :or {category "ehoks"}}]
   (get-in
     (c/with-api-headers
-      :get
-      (:lokalisointi-url config)
-      {:query-params {:category category}
-       :cookie-policy :standard})
+      {:method :get
+       :service (:lokalisointi-url config)
+       :options {:query-params {:category category}
+                 :cookie-policy :standard}})
     [:body :data]))
