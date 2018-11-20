@@ -18,6 +18,9 @@
   {:get client/get
    :post client/post})
 
+(def allowed-params
+  #{:tutkintonimikkeet :tutkinnonosat :osaamisalat :category})
+
 (defn expired? [response]
   (and (some? (:timestamp response))
        (t/before?
@@ -53,11 +56,16 @@
                 :cached :HIT)))
 
 (defn sanitaze-params [options]
-  ; TODO Sanitaze all personal info https://jira.csc.fi/browse/EH-150
-  ;      Add tests as well
-  (if (some? (get-in options [:query-params :hetu]))
-    (assoc-in options [:query-params :hetu] "XXXXXXxXXXX")
-    options))
+  (assoc
+    options
+    :query-params
+    (reduce
+      (fn [n [k v]]
+        (if (contains? allowed-params k)
+          (assoc n k v)
+          (assoc n k "*FILTERED*")))
+      {}
+      (:query-params options))))
 
 (defn with-api-headers [method url options]
   (try

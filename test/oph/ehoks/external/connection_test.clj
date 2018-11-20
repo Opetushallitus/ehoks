@@ -64,6 +64,13 @@
     (is (= @c/cache
            (dissoc example-responses "https://someother.url/")))))
 
+(deftest test-sanitaze-params
+  (testing "Sanitazing params"
+    (is (= (c/sanitaze-params {:query-params {:user-id "12345.12345"
+                                            :category "user"}})
+           {:query-params {:user-id "*FILTERED*"
+                           :category "user"}}))))
+
 (deftest test-encode-url
   (testing "Encoding URL"
     (is (= (c/encode-url "http://example.com"
