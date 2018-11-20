@@ -81,12 +81,10 @@
     (format "%s?%s" url (codec/form-encode params))))
 
 (defn with-cache! [method url options]
-  (if-some [cached-response (get-cached!
-                              (encode-url url (:query-params options)))]
-    cached-response
-    (let [response (with-api-headers method url options)]
-      (add-cached-response! (encode-url url (:query-params options)) response)
-      (assoc response :cached :MISS))))
+  (or (get-cached! (encode-url url (:query-params options)))
+      (let [response (with-api-headers method url options)]
+        (add-cached-response! (encode-url url (:query-params options)) response)
+        (assoc response :cached :MISS))))
 
 (defn refresh-service-ticket! []
   (let [response (with-api-headers
