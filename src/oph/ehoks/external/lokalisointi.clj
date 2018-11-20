@@ -7,6 +7,6 @@
     (c/with-api-headers
       :get
       (:lokalisointi-url config)
-      {:query-params {"category" category}
+      {:query-params {:category category}
        :cookie-policy :standard})
     [:body :data]))
