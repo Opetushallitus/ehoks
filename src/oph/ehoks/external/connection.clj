@@ -41,7 +41,7 @@
                    {:form-params {:username (:cas-username config)
                                   :password (:cas-password config)}})
         url (get-in response [:headers "location"])]
-    (if (and (http-predicates/success? response)
+    (if (and (http-predicates/created? response)
              (seq url))
       (reset! service-ticket
               {:url url
