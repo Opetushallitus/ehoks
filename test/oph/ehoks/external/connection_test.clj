@@ -25,6 +25,19 @@
            (get example-responses "https://some.url/")))
     (is (nil? (c/get-cached! "https://someother.url/")))))
 
+(deftest test-add-cached-response
+  (testing "Add cached response"
+    (c/add-cached-response!
+      "https://some.cached.url/ping?pong=true"
+      {:status 200
+       :body {}})
+    (let [response (c/get-cached! "https://some.cached.url/ping?pong=true")]
+      (is (= (:status response) 200))
+      (is (= (:body response) {}))
+      (is (some? (:timestamp response)))
+      (is (:ehoks-cached response))
+      (is (= (:cached response) :HIT)))))
+
 (deftest test-expired
   (testing "Expired"
     (is (not (c/expired? {})))
