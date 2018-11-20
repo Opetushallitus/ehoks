@@ -67,7 +67,7 @@
 (deftest test-sanitaze-params
   (testing "Sanitazing params"
     (is (= (c/sanitaze-params {:query-params {:user-id "12345.12345"
-                                            :category "user"}})
+                                              :category "user"}})
            {:query-params {:user-id "*FILTERED*"
                            :category "user"}}))))
 
