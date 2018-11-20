@@ -22,7 +22,7 @@
 
 (defn get-koodi-versio [uri versio]
   (try
-    (c/with-api-headers
+    (c/with-cache!
       :get
       (format "%s/rest/codeelement/%s/%d"
               (:koodisto-url config) uri versio)
