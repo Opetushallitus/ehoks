@@ -55,6 +55,12 @@ Or automatically on change:
 lein auto test
 ```
 
+Or with test coverage (cloverage):
+
+``` shell
+lein with-profile test cloverage
+```
+
 ### Linters
 
 Static linters for backend can be run with command:
