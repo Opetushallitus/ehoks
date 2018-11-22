@@ -8,5 +8,6 @@
       {:method :get
        :service (:lokalisointi-url config)
        :options {:query-params {:category category}
-                 :cookie-policy :standard}})
+                 :cookie-policy :standard
+                 :as :json}})
     :body))
