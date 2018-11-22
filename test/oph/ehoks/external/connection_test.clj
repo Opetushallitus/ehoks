@@ -71,6 +71,13 @@
            {:query-params {:user-id "*FILTERED*"
                            :category "user"}}))))
 
+(deftest test-sanitaze-path
+  (testing "Sanitizing path"
+    (is (= (c/sanitaze-path "/hello/1.2.345.678.90.12345678901/")
+           "/hello/*FILTERED*/"))
+    (is (= (c/sanitaze-path "/hello/1.2.345.678.90.12345678901")
+           "/hello/*FILTERED*"))))
+
 (deftest test-encode-url
   (testing "Encoding URL"
     (is (= (c/encode-url "http://example.com"
