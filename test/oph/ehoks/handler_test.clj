@@ -20,7 +20,7 @@
                        :get "/ehoks-backend/api/v1/non-existing-resource/"))]
       (is (= (:status response) 404)))))
 
-(deftest unatuhenticated
+(deftest unauthenticated
   (testing "GET unauthenticated route"
     (let [response (app (mock/request :get "/some-non-existing/route"))]
       (is (= (:status response) 401)))))

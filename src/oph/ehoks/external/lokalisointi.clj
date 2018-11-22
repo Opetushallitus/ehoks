@@ -3,10 +3,11 @@
             [oph.ehoks.external.connection :as c]))
 
 (defn get-localization-results  [& {:keys [category] :or {category "ehoks"}}]
-  (get-in
+  (get
     (c/with-api-headers
-      :get
-      (:lokalisointi-url config)
-      {:query-params {"category" category}
-       :cookie-policy :standard})
-    [:body :data]))
+      {:method :get
+       :service (:lokalisointi-url config)
+       :options {:query-params {:category category}
+                 :cookie-policy :standard
+                 :as :json}})
+    :body))

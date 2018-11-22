@@ -1,5 +1,5 @@
 (ns oph.ehoks.middleware
-  (:require [ring.util.http-response :refer [unauthorized]]))
+  (:require [ring.util.http-response :refer [unauthorized header]]))
 
 (defn- matches-route? [request route]
   (and (re-seq (:uri route) (:uri request))
@@ -9,17 +9,39 @@
   (some?
     (some #(when (matches-route? request %) %) routes)))
 
+(defn- authenticated? [request]
+  (some? (seq (:session request))))
+
+(defn- public-route? [request public-routes]
+  (route-in?
+    (select-keys request [:uri :request-method]) public-routes))
+
+(defn- access-granted? [request public-routes]
+  (or (authenticated? request)
+      (public-route? request public-routes)))
+
 (defn wrap-public [handler public-routes]
   (fn
     ([request respond raise]
-      (if (or (seq (:session request))
-              (route-in?
-                (select-keys request [:uri :request-method]) public-routes))
+      (if (access-granted? request public-routes)
         (handler request respond raise)
         (respond (unauthorized))))
     ([request]
-      (if (or (seq (:session request))
-              (route-in?
-                (select-keys request [:uri :request-method]) public-routes))
+      (if (access-granted? request public-routes)
         (handler request)
         (unauthorized)))))
+
+(defn- cache-control-no-cache-response [response]
+  (-> response
+      (header "Expires" 0)
+      (header "Cache-Control" "no-cache, max-age=0")))
+
+(defn wrap-cache-control-no-cache [handler]
+  (fn
+    ([request respond raise]
+      (handler request
+               (fn [response]
+                 (respond (cache-control-no-cache-response response)))
+               raise))
+    ([request]
+      (cache-control-no-cache-response (handler request)))))

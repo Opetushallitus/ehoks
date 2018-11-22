@@ -41,6 +41,28 @@ instead of form of camelCase.
 
 Repository has `.editorconfig` file for configuring your editor.
 
+### Running tests
+
+Running tests once:
+
+``` shell
+lein test
+```
+
+Or automatically on change:
+
+``` shell
+lein auto test
+```
+
+Or with test coverage (cloverage):
+
+``` shell
+lein with-profile test cloverage
+```
+
+### Linters
+
 Static linters for backend can be run with command:
 
 ``` shell
@@ -85,6 +107,13 @@ Or inside REPL with file reload, starting with `lein repl`, then:
 ``` repl
 user> (use 'oph.ehoks.dev-server)
 user> (def server (start-server))
+```
+
+Or with custom config:
+
+``` repl
+user> (use 'oph.ehoks.dev-server)
+user> (def server (start-server "config/custom.edn"))
 ```
 
 And shutting down:
@@ -146,8 +175,8 @@ works only when running development server.
 
 Default configuration file is `config/default.edn`. You may override
 these values by creating your own config file and supplying path to the
-file either via environment variable `CONFIG` or JVM system property
-`config`.
+file either via environment variable `CONFIG`, JVM system property
+`config` or as a development server parameter.
 
 Config files are being merged as custom config overrides default values. So you
 can use some default values and some custom values.
@@ -159,20 +188,6 @@ Merged configuration is being validated on load.
 Application uses CAS authentication with external APIs. Fill out CAS credentials
 and client sub system code before using external APIS. Application has mock APIs
 for local development.
-
-## Running tests
-
-Running tests once:
-
-``` shell
-lein test
-```
-
-Or automatically on change:
-
-``` shell
-lein auto test
-```
 
 ## Standalone jar
 

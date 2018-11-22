@@ -5,18 +5,18 @@
 
 (defn find-student-by-nat-id [nat-id]
   (c/with-service-ticket
-    :get
-    (:oppijanumerorekisteri-url config)
-    "henkilo"
-    {:query-params {:hetu nat-id}
-     :as :json}))
+    {:method :get
+     :service (:oppijanumerorekisteri-url config)
+     :path "henkilo"
+     :options {:query-params {:hetu nat-id}
+               :as :json}}))
 
 (defn find-student-by-oid [oid]
   (c/with-service-ticket
-    :get
-    (:oppijanumerorekisteri-url config)
-    (str "henkilo/" oid)
-    {:as :json}))
+    {:method :get
+     :service (:oppijanumerorekisteri-url config)
+     :path (str "henkilo/" oid)
+     :options {:as :json}}))
 
 (defn- convert-contact-values [contact-item]
   (map

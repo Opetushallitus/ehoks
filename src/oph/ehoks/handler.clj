@@ -1,5 +1,7 @@
 (ns oph.ehoks.handler
-  (:require [compojure.api.sweet :as c-api]
+  (:require [clojure.tools.logging :as log]
+            [compojure.api.sweet :as c-api]
+            [compojure.api.exception :as c-ex]
             [compojure.core :refer [GET]]
             [compojure.route :as compojure-route]
             [ring.util.http-response :as response]
@@ -25,8 +27,15 @@
              :tags [{:name "api", :description ""}]}}
      :exceptions
      {:handlers
-      {:not-found (fn [_ __ ___]
-                    (response/not-found))}}}
+      {:not-found
+       (fn [_ __ ___] (response/not-found))
+
+       ::c-ex/default
+       (fn [^Exception ex ex-data _]
+         (if (contains? ex-data :log-data)
+           (log/errorf ex "%s (data=%s)" (.getMessage ex) (:log-data ex-data))
+           (log/error ex (.getMessage ex)))
+         (response/internal-server-error {:type "unknown-exception"}))}}}
 
     (c-api/context "/ehoks-backend" []
       (c-api/context "/api/v1" []
@@ -67,6 +76,7 @@
 
 (def app
   (-> app-routes
+      (middleware/wrap-cache-control-no-cache)
       (middleware/wrap-public public-routes)
       (session/wrap-session
         {:store (if (seq (:redis-url config))
