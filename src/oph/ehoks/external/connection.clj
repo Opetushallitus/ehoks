@@ -22,6 +22,9 @@
 (def allowed-params
   #{:tutkintonimikkeet :tutkinnonosat :osaamisalat :category})
 
+(def oid-pattern
+  #"(\d+\.){5}\d+")
+
 (defn expired? [response]
   (and (some? (:timestamp response))
        (t/before?
@@ -59,7 +62,7 @@
 (defn sanitaze-path [path]
   (cstr/replace
     path
-    #"(\d+\.){5}\d+"
+    oid-pattern
     "*FILTERED*"))
 
 (defn sanitaze-params [options]
