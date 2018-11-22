@@ -4,7 +4,8 @@
             [clj-http.client :as client]
             [clj-time.core :as t]
             [ring.util.codec :as codec]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [clojure.string :as cstr])
   (:import [com.fasterxml.jackson.core JsonParseException]))
 
 (defonce service-ticket
@@ -17,6 +18,12 @@
 (def client-functions
   {:get client/get
    :post client/post})
+
+(def allowed-params
+  #{:tutkintonimikkeet :tutkinnonosat :osaamisalat :category})
+
+(def oid-pattern
+  #"(\d+\.){5}\d+")
 
 (defn expired? [response]
   (and (some? (:timestamp response))
@@ -52,17 +59,29 @@
                 :ehoks-cached true
                 :cached :HIT)))
 
-(defn sanitaze-params [options]
-  ; TODO Sanitaze all personal info https://jira.csc.fi/browse/EH-150
-  ;      Add tests as well
-  (if (some? (get-in options [:query-params :hetu]))
-    (assoc-in options [:query-params :hetu] "XXXXXXxXXXX")
-    options))
+(defn sanitaze-path [path]
+  (cstr/replace
+    path
+    oid-pattern
+    "*FILTERED*"))
 
-(defn with-api-headers [method url options]
+(defn sanitaze-params [options]
+  (assoc
+    options
+    :query-params
+    (reduce
+      (fn [n [k v]]
+        (if (contains? allowed-params k)
+          (assoc n k v)
+          (assoc n k "*FILTERED*")))
+      {}
+      (:query-params options))))
+
+(defn with-api-headers
+  [{method :method service :service options :options path :path}]
   (try
     (let [client-method-fn (get client-functions method)]
-      (client-method-fn url
+      (client-method-fn (format "%s/%s" service (or path ""))
                         (-> options
                             (assoc-in [:headers "Caller-Id"]
                                       (:client-sub-system-code config))
@@ -70,7 +89,11 @@
                             (assoc :cookie-policy :standard))))
     (catch Exception e
       (throw (ex-info "HTTP request error"
-                      {:log-data {:method method :url url}}
+                      {:log-data {:method method
+                                  :service service
+                                  :path (sanitaze-path path)
+                                  :query-params (sanitaze-params
+                                                  (:query-params options))}}
                       e)))))
 
 (defn encode-url [url params]
@@ -78,18 +101,20 @@
     url
     (format "%s?%s" url (codec/form-encode params))))
 
-(defn with-cache! [method url options]
-  (or (get-cached (encode-url url (:query-params options)))
-      (let [response (with-api-headers method url options)]
-        (add-cached-response! (encode-url url (:query-params options)) response)
+(defn with-cache!
+  [{service :service options :options :as data}]
+  (or (get-cached (encode-url service (:query-params options)))
+      (let [response (with-api-headers data)]
+        (add-cached-response!
+          (encode-url service (:query-params options)) response)
         (assoc response :cached :MISS))))
 
 (defn refresh-service-ticket! []
   (let [response (with-api-headers
-                   :post
-                   (:cas-service-ticket-url config)
-                   {:form-params {:username (:cas-username config)
-                                  :password (:cas-password config)}})
+                   {:method :post
+                    :service (:cas-service-ticket-url config)
+                    :options {:form-params {:username (:cas-username config)
+                                            :password (:cas-password config)}}})
         url (get-in response [:headers "location"])]
     (if (and (http-predicates/created? response)
              (seq url))
@@ -103,12 +128,13 @@
 
 (defn get-service-ticket [url service]
   (:body (with-api-headers
-           :post
-           url
-           {:form-params
-            {:service (str service "/j_spring_cas_security_check")}})))
+           {:method :post
+            :service url
+            :options {:form-params
+                      {:service (str
+                                  service "/j_spring_cas_security_check")}}})))
 
-(defn add-cas-ticket [service data]
+(defn add-cas-ticket [data service]
   (when (or (nil? (:url @service-ticket))
             (t/after? (t/now) (:expires @service-ticket)))
     (refresh-service-ticket!))
@@ -117,8 +143,6 @@
         (assoc-in [:headers "accept"] "*/*")
         (assoc-in [:query-params :ticket] ticket))))
 
-(defn with-service-ticket [method service path options]
+(defn with-service-ticket [data]
   (with-api-headers
-    method
-    (format "%s/%s" service path)
-    (add-cas-ticket service options)))
+    (update data :options add-cas-ticket (:service data))))

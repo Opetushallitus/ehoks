@@ -64,6 +64,20 @@
     (is (= @c/cache
            (dissoc example-responses "https://someother.url/")))))
 
+(deftest test-sanitaze-params
+  (testing "Sanitazing params"
+    (is (= (c/sanitaze-params {:query-params {:user-id "12345.12345"
+                                              :category "user"}})
+           {:query-params {:user-id "*FILTERED*"
+                           :category "user"}}))))
+
+(deftest test-sanitaze-path
+  (testing "Sanitizing path"
+    (is (= (c/sanitaze-path "/hello/1.2.345.678.90.12345678901/")
+           "/hello/*FILTERED*/"))
+    (is (= (c/sanitaze-path "/hello/1.2.345.678.90.12345678901")
+           "/hello/*FILTERED*"))))
+
 (deftest test-encode-url
   (testing "Encoding URL"
     (is (= (c/encode-url "http://example.com"
@@ -116,7 +130,7 @@
                   {:post (fn [_ options] {:body "test-ticket"})}]
       (reset! c/service-ticket {:url "http://ticket.url"
                                 :expires (t/plus (t/now) (t/hours 2))})
-      (let [data (c/add-cas-ticket "http://test-service" {})]
+      (let [data (c/add-cas-ticket {} "http://test-service")]
         (is (= (get-in data [:headers "accept"]) "*/*"))
         (is (= (get-in data [:query-params :ticket]) "test-ticket"))))))
 
@@ -128,5 +142,9 @@
                                     :status 200})}]
       (reset! c/service-ticket {:url "http://ticket.url"
                                 :expires (t/plus (t/now) (t/hours 2))})
-      (let [response (c/with-service-ticket :get "http://test-service" "/" {})]
+      (let [response (c/with-service-ticket
+                       {:method :get
+                        :service "http://test-service"
+                        :path "/"
+                        :options {}})]
         (is (= (:body response) {:value true}))))))

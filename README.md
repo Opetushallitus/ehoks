@@ -41,6 +41,28 @@ instead of form of camelCase.
 
 Repository has `.editorconfig` file for configuring your editor.
 
+### Running tests
+
+Running tests once:
+
+``` shell
+lein test
+```
+
+Or automatically on change:
+
+``` shell
+lein auto test
+```
+
+Or with test coverage (cloverage):
+
+``` shell
+lein with-profile test cloverage
+```
+
+### Linters
+
 Static linters for backend can be run with command:
 
 ``` shell
@@ -166,20 +188,6 @@ Merged configuration is being validated on load.
 Application uses CAS authentication with external APIs. Fill out CAS credentials
 and client sub system code before using external APIS. Application has mock APIs
 for local development.
-
-## Running tests
-
-Running tests once:
-
-``` shell
-lein test
-```
-
-Or automatically on change:
-
-``` shell
-lein auto test
-```
 
 ## Standalone jar
 

@@ -8,7 +8,8 @@
 
 (defn get-student-info [oid]
   (c/with-api-headers
-    :get
-    (format "%s/api/oppija/%s" (:koski-url config) oid)
-    {:basic-auth [(:cas-username config) (:cas-password config)]
-     :as :json}))
+    {:method :get
+     :service (:koski-url config)
+     :path (format "api/oppija/%s" oid)
+     :options {:basic-auth [(:cas-username config) (:cas-password config)]
+               :as :json}}))

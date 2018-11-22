@@ -23,10 +23,10 @@
 (defn get-koodi-versio [uri versio]
   (try
     (c/with-cache!
-      :get
-      (format "%s/rest/codeelement/%s/%d"
-              (:koodisto-url config) uri versio)
-      {:as :json})
+      {:method :get
+       :service (:koodisto-url config)
+       :path (format "rest/codeelement/%s/%d" uri versio)
+       :options {:as :json}})
     (catch clojure.lang.ExceptionInfo e
       ; Koodisto returns Internal Server Error 500 with NotFoundException
       ; if element is not found.
