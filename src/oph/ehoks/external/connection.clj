@@ -4,7 +4,8 @@
             [clj-http.client :as client]
             [clj-time.core :as t]
             [ring.util.codec :as codec]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [clojure.string :as cstr])
   (:import [com.fasterxml.jackson.core JsonParseException]))
 
 (defonce service-ticket
@@ -55,6 +56,12 @@
                 :ehoks-cached true
                 :cached :HIT)))
 
+(defn sanitaze-path [path]
+  (cstr/replace
+    path
+    #"(\d+\.){5}\d+"
+    "*FILTERED*"))
+
 (defn sanitaze-params [options]
   (assoc
     options
@@ -81,7 +88,9 @@
       (throw (ex-info "HTTP request error"
                       {:log-data {:method method
                                   :service service
-                                  :query-params (:query-params options)}}
+                                  :path (sanitaze-path path)
+                                  :query-params (sanitaze-params
+                                                  (:query-params options))}}
                       e)))))
 
 (defn encode-url [url params]
