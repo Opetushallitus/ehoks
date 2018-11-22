@@ -27,3 +27,17 @@ sn | :surname | Surname | Yes
 ### Sequence diagram
 
 ![Sequence diagram of authentication](./authenticate-seq.svg "Authentication sequence diagram")
+
+### API rajapintakuvaukset
+
+Generointiin voi käyttää esimerkiksi
+[swagger-markdown](https://www.npmjs.com/package/swagger-markdown) työkalua.
+
+Käynnistä sovellus (oletuksena http://localhost:3000).
+
+
+``` shell
+curl -o api-doc.json http://localhost:3000/ehoks/doc/swagger.json
+swagger-markdown -i api-doc.json
+rm api-doc.json
+```

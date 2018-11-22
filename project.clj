@@ -92,6 +92,7 @@
                         ["bikeshed"]
                         ["eastwood"]
                         ["cljfmt" "check"]]
+            "gendoc" ["run" "-m" "oph.ehoks.hoks-doc/write-doc!" "doc/hoks.md"]
             ;"test" ["cloverage"]
             }
   :cljfmt {:indents {#".*" [[:block 0]]}}

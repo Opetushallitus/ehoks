@@ -14,7 +14,8 @@
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.redis :refer [redis-store]]))
+            [oph.ehoks.redis :refer [redis-store]]
+            [oph.ehoks.hoks.handler :as hoks-handler]))
 
 (def app-routes
   (c-api/api
@@ -39,9 +40,9 @@
     (c-api/context "/ehoks-backend" []
       (c-api/context "/api/v1" []
         :tags ["api-v1"]
-
         healthcheck-handler/routes
         auth-handler/routes
+        hoks-handler/routes
         lokalisointi-handler/routes
         external-handler/routes
         misc-handler/routes)
