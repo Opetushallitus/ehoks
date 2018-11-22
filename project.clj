@@ -95,10 +95,15 @@
             ;"test" ["cloverage"]
             }
   :cljfmt {:indents {#".*" [[:block 0]]}}
-  :profiles {:test {:resource-paths ["resources/dev" "resources/test"]}
+  :profiles {:test {:resource-paths ["resources/dev" "resources/test"]
+                    :dependencies [[cheshire "5.8.1"]
+                                  [ring/ring-mock "0.3.2"]
+                                  [ring/ring-devel "1.7.0"
+                                   :exclusions [ring/ring-core]]]}
              :dev {:main oph.ehoks.dev-server
                    :dependencies [[cheshire "5.8.1"]
                                   [ring/ring-mock "0.3.2"]
-                                  [ring/ring-devel "1.7.0" :exclusions [ring/ring-core]]]
+                                  [ring/ring-devel "1.7.0"
+                                   :exclusions [ring/ring-core]]]
                    :resource-paths ["resources/dev" "resources/dev/src"]}
              :uberjar {:resource-paths ["resources/uberjar"]}})
