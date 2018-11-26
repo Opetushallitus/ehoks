@@ -36,7 +36,7 @@
     "Tutkinnon osa"
     :tunniste KoodistoKoodi "Koodisto-koodi"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-    :eperusteet-diaarinumero s/Str "Diaarinumero ePerusteet-palvelussa"
+    :eperusteet-id s/Str "Tunniste ePerusteet-palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     (s/optional-key :kuvaus) s/Str
     "Tutkinnon osan kuvaus ePerusteet-palvelussa"))
@@ -48,16 +48,22 @@
     :eperusteet-tunniste s/Int
     "Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"))
+    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
+    :tunniste KoodistoKoodi "Koodisto-koodi (ammatillisenoppiaineet)"))
 
 (s/defschema
   YhteinenTutkinnonOsa
-  (st/merge
-    (describe
-      "Yhteinen Tutkinnon osa (YTO)"
-      :tutkinnon-osat [YhteisenTutkinnonOsanOsa]
-      "Yhteisen tutkinnon osan osat")
-    TutkinnonOsa))
+  (describe
+    "Yhteinen Tutkinnon osa (YTO)"
+    :tutkinnon-osat [YhteisenTutkinnonOsanOsa]
+    "Yhteisen tutkinnon osan osat"
+    :tunniste KoodistoKoodi "Koodisto-koodi (tutkinnonosat)"
+    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
+    :eperusteet-id s/Str "Tunniste ePerusteet-palvelussa"
+    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
+    (s/optional-key :kuvaus) s/Str
+    "Tutkinnon osan kuvaus ePerusteet-palvelussa"
+    :pakollinen s/Bool "Onko tutkinnon osa pakollinen vai ei"))
 
 (s/defschema
   MuuTutkinnonOsa
@@ -280,7 +286,7 @@
     "Puuttuvan yhteinen tutkinnon osan (YTO) osan tiedot"
     :tunniste KoodistoKoodi "Koodisto-koodi"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-    :eperusteet-diaarinumero s/Str "Diaarinumero ePerusteet-palvelussa"
+    :eperusteet-id s/Str "Tunniste ePerusteet-palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
