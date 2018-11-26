@@ -15,7 +15,7 @@ Puuttuvan yhteinen tutkinnon osan (YTO) osan tiedot
 | ---- | ------ | ------ | --------- |
 | tunniste | [KoodistoKoodi](#KoodistoKoodi) | Koodisto-koodi | Kyllä |
 | laajuus | Kokonaisluku | Tutkinnon laajuus ePerusteet palvelussa | Ei |
-| eperusteet-diaarinumero | Merkkijono | Diaarinumero ePerusteet-palvelussa | Kyllä |
+| eperusteet-id | Merkkijono | Tunniste ePerusteet-palvelussa | Kyllä |
 | nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
@@ -39,11 +39,12 @@ Yhteinen Tutkinnon osa (YTO)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | tutkinnon-osat | [[YhteisenTutkinnonOsanOsa](#YhteisenTutkinnonOsanOsa)] | Yhteisen tutkinnon osan osat | Kyllä |
-| tunniste | [KoodistoKoodi](#KoodistoKoodi) | Koodisto-koodi | Kyllä |
+| tunniste | [KoodistoKoodi](#KoodistoKoodi) | Koodisto-koodi (tutkinnonosat) | Kyllä |
 | laajuus | Kokonaisluku | Tutkinnon laajuus ePerusteet palvelussa | Ei |
-| eperusteet-diaarinumero | Merkkijono | Diaarinumero ePerusteet-palvelussa | Kyllä |
+| eperusteet-id | Merkkijono | Tunniste ePerusteet-palvelussa | Kyllä |
 | nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus ePerusteet-palvelussa | Ei |
+| pakollinen | Totuusarvo | Onko tutkinnon osa pakollinen vai ei | Kyllä |
 
 ### TyopaikallaHankittavaOsaaminen  
 
@@ -176,6 +177,7 @@ Yhteisen tutkinnon osan (YTO) osa
 | eperusteet-tunniste | Kokonaisluku | Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua | Kyllä |
 | laajuus | Kokonaisluku | Tutkinnon laajuus ePerusteet palvelussa | Ei |
 | nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
+| tunniste | [KoodistoKoodi](#KoodistoKoodi) | Koodisto-koodi (ammatillisenoppiaineet) | Kyllä |
 
 ### HankitunOsaamisenNaytto  
 
@@ -270,7 +272,7 @@ Tutkinnon osa
 | ---- | ------ | ------ | --------- |
 | tunniste | [KoodistoKoodi](#KoodistoKoodi) | Koodisto-koodi | Kyllä |
 | laajuus | Kokonaisluku | Tutkinnon laajuus ePerusteet palvelussa | Ei |
-| eperusteet-diaarinumero | Merkkijono | Diaarinumero ePerusteet-palvelussa | Kyllä |
+| eperusteet-id | Merkkijono | Tunniste ePerusteet-palvelussa | Kyllä |
 | nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus ePerusteet-palvelussa | Ei |
 
