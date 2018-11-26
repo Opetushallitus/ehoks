@@ -15,10 +15,6 @@
 (defonce cache
   (atom {}))
 
-(def client-functions
-  {:get client/get
-   :post client/post})
-
 (def allowed-params
   #{:tutkintonimikkeet :tutkinnonosat :osaamisalat :category})
 
