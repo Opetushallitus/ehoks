@@ -9,9 +9,22 @@
     (is (thrown-with-msg?
           Exception
           #"Mocking HTTP is not allowed"
-          (client/set-get (fn [])))))
+          (client/set-get! (fn [])))))
 
   (testing "Setting mock get"
     (config/reload-config! "config/test.edn")
-    (client/set-get (fn [] "Test"))
+    (client/set-get! (fn [] "Test"))
     (is (= "Test"(client/get)))))
+
+(deftest test-set-get
+  (testing "Prevent setting post"
+    (config/reload-config! nil)
+    (is (thrown-with-msg?
+          Exception
+          #"Mocking HTTP is not allowed"
+          (client/set-post! (fn [])))))
+
+  (testing "Setting mock get"
+    (config/reload-config! "config/test.edn")
+    (client/set-post! (fn [] "Test"))
+    (is (= "Test"(client/post)))))
