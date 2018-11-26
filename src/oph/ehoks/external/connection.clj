@@ -76,11 +76,15 @@
         (:query-params options)))
     options))
 
+(defn- get-client-fn [method]
+  (if (= method :post)
+    client/post
+    client/get))
 
 (defn with-api-headers
   [{method :method service :service options :options path :path}]
   (try
-    (let [client-method-fn (get client-functions method)]
+    (let [client-method-fn (get-client-fn method)]
       (client-method-fn (format "%s/%s" service (or path ""))
                         (-> options
                             (assoc-in [:headers "Caller-Id"]
