@@ -56,22 +56,26 @@
                 :cached :HIT)))
 
 (defn sanitaze-path [path]
-  (cstr/replace
-    path
-    oid-pattern
-    "*FILTERED*"))
+  (when (some? path)
+    (cstr/replace
+      path
+      oid-pattern
+      "*FILTERED*")))
 
 (defn sanitaze-params [options]
-  (assoc
-    options
-    :query-params
-    (reduce
-      (fn [n [k v]]
-        (if (contains? allowed-params k)
-          (assoc n k v)
-          (assoc n k "*FILTERED*")))
-      {}
-      (:query-params options))))
+  (if (and (some? options) (some? (:query-params options)))
+    (assoc
+      options
+      :query-params
+      (reduce
+        (fn [n [k v]]
+          (if (contains? allowed-params k)
+            (assoc n k v)
+            (assoc n k "*FILTERED*")))
+        {}
+        (:query-params options)))
+    options))
+
 
 (defn with-api-headers
   [{method :method service :service options :options path :path}]
