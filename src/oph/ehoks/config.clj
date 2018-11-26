@@ -11,13 +11,18 @@
   (with-open [reader (io/reader file)]
     (edn/read (java.io.PushbackReader. reader))))
 
-(def config
+(defn load-combined-config [custom-file]
   (let [default-config (load-config default-file)
-        custom-file (or (System/getenv "CONFIG")
-                        (System/getProperty "config"))
         custom-config (if (seq custom-file) (load-config custom-file) {})]
     (when (seq custom-file)
       (log/info "Loading custom config file: " custom-file))
     (s/validate
       schema/Config
       (merge default-config custom-config))))
+
+(def config (load-combined-config
+              (or (System/getenv "CONFIG")
+                  (System/getProperty "config"))))
+
+(defn reload-config! [f]
+  (def config (load-combined-config f)))
