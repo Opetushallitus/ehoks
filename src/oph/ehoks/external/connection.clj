@@ -1,7 +1,7 @@
 (ns oph.ehoks.external.connection
   (:require [oph.ehoks.config :refer [config]]
             [ring.util.http-predicates :as http-predicates]
-            [clj-http.client :as client]
+            [oph.ehoks.external.http-client :as client]
             [clj-time.core :as t]
             [ring.util.codec :as codec]
             [clojure.tools.logging :as log]
