@@ -5,9 +5,14 @@
 
 (def get client/get)
 
-(defn set-get [f]
+(defn set-get! [f]
   (when (not (:allow-mock-http? config))
     (throw (Exception. "Mocking HTTP is not allowed")))
   (def get f))
 
 (def post client/post)
+
+(defn set-post! [f]
+  (when (not (:allow-mock-http? config))
+    (throw (Exception. "Mocking HTTP is not allowed")))
+  (def post f))
