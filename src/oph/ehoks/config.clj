@@ -23,6 +23,3 @@
 (def config (load-combined-config
               (or (System/getenv "CONFIG")
                   (System/getProperty "config"))))
-
-(defn reload-config! [f]
-  (def config (load-combined-config f)))
