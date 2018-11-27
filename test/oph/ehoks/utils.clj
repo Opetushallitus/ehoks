@@ -19,3 +19,7 @@
 
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
+
+(defn reload-config! [f]
+  (System/setProperty "config" f)
+  (require 'oph.ehoks.config :reload))
