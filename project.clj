@@ -83,7 +83,7 @@
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
   :source-paths ["src"]
-  :resource-paths ["resources/prod/src"]
+  :resource-paths ["resources/prod" "resources/prod/src"]
   :cloverage {;:fail-threshold 90
               :html? false}
   :aliases {"checkall" ["do"
@@ -108,5 +108,4 @@
                                     "resources/test/src"
                                     "resources/dev/src"
                                     "resources/prod/src"]}
-             :uberjar {:resource-paths
-                       ["resources/uberjar" "resources/prod/src"]}})
+             :uberjar {:resource-paths ["resources/uberjar"]}})
