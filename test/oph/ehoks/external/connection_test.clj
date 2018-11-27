@@ -127,10 +127,10 @@
     (client/set-post! (fn [_ options] {:body "test-ticket"}))
 
     (reset! c/service-ticket {:url "http://ticket.url"
-                                :expires (t/plus (t/now) (t/hours 2))})
-      (let [data (c/add-cas-ticket {} "http://test-service")]
-        (is (= (get-in data [:headers "accept"]) "*/*"))
-        (is (= (get-in data [:query-params :ticket]) "test-ticket")))))
+                              :expires (t/plus (t/now) (t/hours 2))})
+    (let [data (c/add-cas-ticket {} "http://test-service")]
+      (is (= (get-in data [:headers "accept"]) "*/*"))
+      (is (= (get-in data [:query-params :ticket]) "test-ticket")))))
 
 (deftest test-with-service-ticket
   (testing "Request with API headers"
