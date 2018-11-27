@@ -85,7 +85,9 @@
   [{method :method service :service options :options path :path}]
   (try
     (let [client-method-fn (get-client-fn method)]
-      (client-method-fn (format "%s/%s" service (or path ""))
+      (client-method-fn (if (some? path)
+                          (format "%s/%s" service path)
+                          service)
                         (-> options
                             (assoc-in [:headers "Caller-Id"]
                                       (:client-sub-system-code config))
