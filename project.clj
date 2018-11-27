@@ -95,7 +95,8 @@
             ;"test" ["cloverage"]
             }
   :cljfmt {:indents {#".*" [[:block 0]]}}
-  :profiles {:test {:resource-paths ["resources/dev" "resources/test"]
+  :profiles {:test {:resource-paths
+                    ["resources/dev" "resources/test" "resources/test/src"]
                     :dependencies [[cheshire "5.8.1"]
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.1"
@@ -105,5 +106,7 @@
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.1"
                                    :exclusions [ring/ring-core]]]
-                   :resource-paths ["resources/dev" "resources/dev/src"]}
-             :uberjar {:resource-paths ["resources/uberjar"]}})
+                   :resource-paths
+                   ["resources/dev" "resources/dev/src" "resources/prod/src"]}
+             :uberjar {:resource-paths
+                       ["resources/uberjar" "resources/prod/src"]}})
