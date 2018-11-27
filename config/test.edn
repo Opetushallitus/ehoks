@@ -1,3 +1,2 @@
 {:port 3001
- :ext-cache-lifetime-minutes 180
- :allow-mock-http? true}
+ :ext-cache-lifetime-minutes 180}
