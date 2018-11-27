@@ -3,16 +3,22 @@
   (:require [clj-http.client :as client]
             [oph.ehoks.config :refer [config]]))
 
-(def get client/get)
+(def ^:private client-functions
+  (atom {:get client/get
+         :post client/post}))
+
+(defn get [url options]
+  ((:get @client-functions) url options))
 
 (defn set-get! [f]
   (when-not (:allow-mock-http? config)
     (throw (Exception. "Mocking HTTP is not allowed")))
-  (def get f))
+  (swap! client-functions assoc :get f))
 
-(def post client/post)
+(defn post [url options]
+  ((:post @client-functions) url options))
 
 (defn set-post! [f]
   (when-not (:allow-mock-http? config)
     (throw (Exception. "Mocking HTTP is not allowed")))
-  (def post f))
+  (swap! client-functions assoc :post f))
