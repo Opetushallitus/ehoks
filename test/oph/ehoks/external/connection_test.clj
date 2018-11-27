@@ -3,7 +3,6 @@
             [oph.ehoks.external.connection :as c]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.utils :refer [reload-config!]]
             [clj-time.core :as t]))
 
 (def example-responses
@@ -93,7 +92,6 @@
   (testing "Refresh service ticket successfully"
     (reset! c/service-ticket {:url nil :expires nil})
     (is (= (deref c/service-ticket) {:url nil :expires nil}))
-    (reload-config! "config/test.edn")
     (client/set-post!
       (fn [_ options]
         (is (= (get-in options [:form-params :username])
@@ -108,7 +106,6 @@
 
   (testing "Refresh service ticket unsuccessfully"
     (reset! c/service-ticket {:url nil :expires nil})
-    (reload-config! "config/test.edn")
     (client/set-post! (fn [_ options]
                         {:status 404}))
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
@@ -117,7 +114,6 @@
 
 (deftest test-get-service-ticket
   (testing "Get service ticket"
-    (reload-config! "config/test.edn")
     (client/set-post!
       (fn [_ options]
         (is (= (get-in options [:form-params :service])
@@ -128,7 +124,6 @@
 
 (deftest test-add-cas-ticket
   (testing "Add service ticket"
-    (reload-config! "config/test.edn")
     (client/set-post! (fn [_ options] {:body "test-ticket"}))
 
     (reset! c/service-ticket {:url "http://ticket.url"
@@ -139,7 +134,6 @@
 
 (deftest test-with-service-ticket
   (testing "Request with API headers"
-    (reload-config! "config/test.edn")
     (client/set-get! (fn [_ __] {:body {:value true}
                                  :status 200}))
     (client/set-post! (fn [_ __] {:body "test-ticket"}))
