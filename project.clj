@@ -83,28 +83,29 @@
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
   :source-paths ["src"]
-  :resource-paths []
+  :resource-paths ["resources/prod" "resources/prod/src"]
   :cloverage {;:fail-threshold 90
               :html? false}
-  :bikeshed {:var-redefs false}
   :aliases {"checkall" ["do"
                         ["kibit"]
                         ["bikeshed"]
                         ["eastwood"]
                         ["cljfmt" "check"]]
-            "gendoc" ["run" "-m" "oph.ehoks.hoks-doc/write-doc!" "doc/hoks.md"]
-            ;"test" ["cloverage"]
-            }
+            "gendoc" ["run" "-m" "oph.ehoks.hoks-doc/write-doc!" "doc/hoks.md"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
-  :profiles {:test {:resource-paths ["resources/dev" "resources/test"]
+  :profiles {:test {:resource-paths
+                    ["resources/test" "resources/test/src"]
                     :dependencies [[cheshire "5.8.1"]
-                                  [ring/ring-mock "0.3.2"]
-                                  [ring/ring-devel "1.7.1"
-                                   :exclusions [ring/ring-core]]]}
+                                   [ring/ring-mock "0.3.2"]
+                                   [ring/ring-devel "1.7.1"
+                                    :exclusions [ring/ring-core]]]}
              :dev {:main oph.ehoks.dev-server
                    :dependencies [[cheshire "5.8.1"]
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.1"
                                    :exclusions [ring/ring-core]]]
-                   :resource-paths ["resources/dev" "resources/dev/src"]}
+                   :resource-paths ["resources/dev"
+                                    "resources/test/src"
+                                    "resources/dev/src"
+                                    "resources/prod/src"]}
              :uberjar {:resource-paths ["resources/uberjar"]}})

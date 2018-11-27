@@ -122,6 +122,12 @@ And shutting down:
 user> (.stop server)
 ```
 
+### Tests
+
+You can mock external API calls for tests. There is http client with redefinable
+get and post functions which you can override. This works only with `test`
+profile.
+
 ### Database
 
 For database there is proper Docker script in `scripts/psql-docker` folder. Use

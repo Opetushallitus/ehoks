@@ -1,7 +1,7 @@
 (ns oph.ehoks.external.connection
   (:require [oph.ehoks.config :refer [config]]
             [ring.util.http-predicates :as http-predicates]
-            [clj-http.client :as client]
+            [oph.ehoks.external.http-client :as client]
             [clj-time.core :as t]
             [ring.util.codec :as codec]
             [clojure.tools.logging :as log]
@@ -14,10 +14,6 @@
 
 (defonce cache
   (atom {}))
-
-(def client-functions
-  {:get client/get
-   :post client/post})
 
 (def allowed-params
   #{:tutkintonimikkeet :tutkinnonosat :osaamisalat :category})
@@ -60,28 +56,38 @@
                 :cached :HIT)))
 
 (defn sanitaze-path [path]
-  (cstr/replace
-    path
-    oid-pattern
-    "*FILTERED*"))
+  (when (some? path)
+    (cstr/replace
+      path
+      oid-pattern
+      "*FILTERED*")))
 
 (defn sanitaze-params [options]
-  (assoc
-    options
-    :query-params
-    (reduce
-      (fn [n [k v]]
-        (if (contains? allowed-params k)
-          (assoc n k v)
-          (assoc n k "*FILTERED*")))
-      {}
-      (:query-params options))))
+  (if (and (some? options) (some? (:query-params options)))
+    (assoc
+      options
+      :query-params
+      (reduce
+        (fn [n [k v]]
+          (if (contains? allowed-params k)
+            (assoc n k v)
+            (assoc n k "*FILTERED*")))
+        {}
+        (:query-params options)))
+    options))
+
+(defn- get-client-fn [method]
+  (if (= method :post)
+    client/post
+    client/get))
 
 (defn with-api-headers
   [{method :method service :service options :options path :path}]
   (try
-    (let [client-method-fn (get client-functions method)]
-      (client-method-fn (format "%s/%s" service (or path ""))
+    (let [client-method-fn (get-client-fn method)]
+      (client-method-fn (if (some? path)
+                          (format "%s/%s" service path)
+                          service)
                         (-> options
                             (assoc-in [:headers "Caller-Id"]
                                       (:client-sub-system-code config))
