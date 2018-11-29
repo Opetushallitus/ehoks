@@ -49,4 +49,9 @@
       :summary "Päivittää olemassa olevaa HOKSia"
       :body [_ hoks-schema/HOKSArvot]
       (response/no-content))
+
+    (c-api/PATCH "/:eid" []
+      :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
+      :body [_ hoks-schema/HOKSArvot]
+      (response/no-content))
     ))
