@@ -349,18 +349,6 @@
     :tarvittava-opetus s/Str "Tarvittava opetus"))
 
 (s/defschema
-  PuuttuvaOsaaminen
-  (describe
-    "Puuttuvan osaamisen hankkimisen suunnitelma"
-    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
-    :ammatillinen-osaaminen [PuuttuvaAmmatillinenOsaaminen]
-    "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"
-    :yhteisen-tutkinnon-osat [PuuttuvaYTO]
-    "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"
-    :paikallinen-tutkinnon-osa [PuuttuvaPaikallinenTutkinnonOsa]
-    "Puuttuvat paikallisen tutkinnon osat"))
-
-(s/defschema
   HOKS
   (describe
     "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
@@ -383,8 +371,12 @@
          "opiskelijan tutkintoa")
     :opiskeluvalmiuksia-tukevat-opinnot OpiskeluvalmiuksiaTukevatOpinnot
     "Opiskeluvalmiuksia tukevat opinnot"
-    :puuttuva-osaaminen PuuttuvaOsaaminen
-    "Puuttuvan osaamisen hankkimisen suunnitelma"))
+    :puuttuva-ammatillinen-osaaminen [PuuttuvaAmmatillinenOsaaminen]
+    "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"
+    :puuttuva-yhteisen-tutkinnon-osat [PuuttuvaYTO]
+    "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"
+    :puuttuva-paikallinen-tutkinnon-osa [PuuttuvaPaikallinenTutkinnonOsa]
+    "Puuttuvat paikallisen tutkinnon osat"))
 
 (s/defschema
   HOKSArvot
