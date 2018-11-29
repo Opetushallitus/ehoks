@@ -34,7 +34,7 @@
   (c-api/context "/hoks" []
     :tags ["hoks"]
 
-    (c-api/GET "/:id" [:as id]
+    (c-api/GET "/:eid" [:as eid]
       :summary "Palauttaa HOKSin"
       :return (rest/response hoks-schema/HOKS)
       (rest/rest-ok {}))
@@ -45,7 +45,7 @@
       :return (rest/response schema/POSTResponse)
       (rest/rest-ok {:uri ""}))
 
-    (c-api/PUT "/:id" []
+    (c-api/PUT "/:eid" []
       :summary "Päivittää olemassa olevaa HOKSia"
       :body [_ hoks-schema/HOKSArvot]
       (response/no-content))
