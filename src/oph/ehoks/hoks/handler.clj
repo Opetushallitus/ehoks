@@ -54,4 +54,6 @@
       :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
       :body [_ hoks-schema/HOKSArvot]
       (response/no-content))
+
+    puuttuva-ammatillinen-osaaminen
     ))
