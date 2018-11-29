@@ -5,6 +5,7 @@
 
 (def routes
   (context "/healthcheck" []
+    :tags ["healthcheck"]
     (GET "/" []
       :return common-schema/HealthcheckStatus
       :summary "Service healthcheck status"

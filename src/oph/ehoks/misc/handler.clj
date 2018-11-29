@@ -6,6 +6,7 @@
 
 (def routes
   (c-api/context "/misc" []
+    :tags ["misc"]
 
     (c-api/GET "/environment" [:as request]
       :summary "Palauttaa ympäristön tiedot ja asetukset"

@@ -7,6 +7,7 @@
 
 (def routes
   (c-api/context "/hoks" []
+    :tags ["hoks"]
 
     (c-api/GET "/:id" [:as id]
       :summary "Palauttaa HOKSin"
