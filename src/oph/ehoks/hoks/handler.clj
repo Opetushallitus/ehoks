@@ -41,7 +41,7 @@
 
     (c-api/POST "/" []
       :summary "Luo uuden HOKSin"
-      :body [_ hoks-schema/HOKSArvot]
+      :body [_ hoks-schema/HOKSLuonti]
       :return (rest/response schema/POSTResponse)
       (rest/rest-ok {:uri ""}))
 
