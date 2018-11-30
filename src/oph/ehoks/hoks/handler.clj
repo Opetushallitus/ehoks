@@ -47,12 +47,12 @@
 
     (c-api/PUT "/:eid" []
       :summary "Päivittää olemassa olevaa HOKSia"
-      :body [_ hoks-schema/HOKSArvot]
+      :body [_ hoks-schema/HOKSPaivitys]
       (response/no-content))
 
     (c-api/PATCH "/:eid" []
       :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
-      :body [_ hoks-schema/HOKSArvot]
+      :body [_ hoks-schema/HOKSKentanPaivitys]
       (response/no-content))
 
     puuttuva-ammatillinen-osaaminen
