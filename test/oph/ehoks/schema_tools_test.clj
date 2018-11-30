@@ -33,3 +33,8 @@
              "Schema with one extra optional and first removed"
              {:removed [:key1]
               :optionals [:key2 :key3]})))))
+
+(deftest test-modify-illegal-options
+  (testing "Modify schema with illegal options"
+    (is (thrown? java.lang.AssertionError
+           (st/modify TestSchema "" {:illegal []})))))

@@ -19,8 +19,12 @@
 (defn modify
   ([schema
     description
-    {removed :removed optionals :optionals, :or
-     {removed [] optionals []}}]
+    {removed :removed optionals :optionals,
+     :or {removed [] optionals []}, :as options}]
+    (assert (empty? (dissoc options :removed :optionals))
+            (format
+              "Only keys :removed and :optionals is allowed. Got %s"
+              (keys options)))
     (st/merge
       (describe description)
       (as-> schema x
