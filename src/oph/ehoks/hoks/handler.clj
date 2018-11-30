@@ -55,5 +55,4 @@
       :body [_ hoks-schema/HOKSKentanPaivitys]
       (response/no-content))
 
-    puuttuva-ammatillinen-osaaminen
-    ))
+    puuttuva-ammatillinen-osaaminen))
