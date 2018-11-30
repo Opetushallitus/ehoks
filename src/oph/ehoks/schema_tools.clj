@@ -25,11 +25,5 @@
        (describe description)
        (as-> schema x
          (apply st/dissoc x removed)
-         (rename-keys
-           x
-           (reduce
-             (fn [c n]
-               (assoc c n (s/optional-key n)))
-             {}
-             optionals)))))
+         (st/optional-keys x optionals))))
   ([schema description] (modify schema description [])))
