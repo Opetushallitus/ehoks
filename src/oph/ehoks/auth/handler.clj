@@ -11,6 +11,7 @@
 
 (def routes
   (c-api/context "/session" []
+    :tags ["auth"]
 
     (c-api/GET "/user-info" [:as request]
       :summary "Palauttaa istunnon käyttäjän tiedot"

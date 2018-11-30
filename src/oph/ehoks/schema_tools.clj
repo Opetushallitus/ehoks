@@ -1,5 +1,8 @@
 (ns oph.ehoks.schema-tools
-  (:require [ring.swagger.json-schema :as rsjs]))
+  (:require [ring.swagger.json-schema :as rsjs]
+            [schema.core :as s]
+            [schema-tools.core :as st]
+            [clojure.set :refer [rename-keys]]))
 
 (defn describe [description & kvds]
   (assert (or (seq kvds) (zero? (mod (count kvds) 3)))
@@ -12,3 +15,19 @@
       {}
       (partition 3 kvds))
     {:description description}))
+
+(defn modify
+  ([schema
+    description
+    {removed :removed optionals :optionals,
+     :or {removed [] optionals []}, :as options}]
+    (assert (empty? (dissoc options :removed :optionals))
+            (format
+              "Only keys :removed and :optionals is allowed. Got %s"
+              (keys options)))
+    (st/merge
+      (describe description)
+      (as-> schema x
+        (apply st/dissoc x removed)
+        (st/optional-keys x optionals))))
+  ([schema description] (modify schema description {})))

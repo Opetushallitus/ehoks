@@ -1,13 +1,14 @@
 (ns oph.ehoks.hoks.schema
   (:require [schema.core :as s]
             [schema-tools.core :as st]
-            [oph.ehoks.schema-tools :refer [describe]])
+            [oph.ehoks.schema-tools :refer [describe modify]])
   (:import (java.time LocalDate)))
 
 (s/defschema
   Organisaatio
   (describe
     "Organisaatio"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :nimi s/Str "Organisaation nimi"
     (s/optional-key :y-tunnus) s/Str "Organisaation y-tunnus"))
 
@@ -34,6 +35,7 @@
   TutkinnonOsa
   (describe
     "Tutkinnon osa"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :tunniste KoodistoKoodi "Koodisto-koodi"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
     :eperusteet-id s/Str "Tunniste ePerusteet-palvelussa"
@@ -45,6 +47,7 @@
   YhteisenTutkinnonOsanOsa
   (describe
     "Yhteisen tutkinnon osan (YTO) osa"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :eperusteet-tunniste s/Int
     "Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
@@ -55,6 +58,7 @@
   YhteinenTutkinnonOsa
   (describe
     "Yhteinen Tutkinnon osa (YTO)"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :tutkinnon-osat [YhteisenTutkinnonOsanOsa]
     "Yhteisen tutkinnon osan osat"
     :tunniste KoodistoKoodi "Koodisto-koodi (tutkinnonosat)"
@@ -69,6 +73,7 @@
   MuuTutkinnonOsa
   (describe
     "Muu tutkinnon osa (ei ePerusteet-palvelussa)"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :nimi s/Str "Tutkinnon osan nimi"
     :kuvaus s/Str "Tutkinnon osan kuvaus"
     :laajuus s/Int "Tutkinnon osan laajuus osaamispisteissä"
@@ -79,6 +84,7 @@
   Henkilo
   (describe
     "Henkilö"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :organisaatio Organisaatio "Henkilön organisaatio"
     :nimi s/Str "Henkilön nimi"
     :rooli s/Str "Henkilön rooli"))
@@ -94,6 +100,7 @@
   OpiskeluvalmiuksiaTukevatOpinnot
   (describe
     "Opiskeluvalmiuksia tukevat opinnot"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :nimi s/Str "Opintojen nimi"
     :kuvaus s/Str "Opintojen kuvaus"
     :kesto s/Int "Opintojen kesto päivinä"
@@ -103,6 +110,7 @@
   Opinnot
   (describe
     "Opinnot"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :ammatilliset-opinnot) [TutkinnonOsa]
     "Osaamisen ammattilliset opinnot"
     (s/optional-key :yhteiset-tutkinnon-osat) [YhteinenTutkinnonOsa]
@@ -124,6 +132,7 @@
   (describe
     (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
          "opiskelijan tutkintoa")
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :tunnustettu-osaaminen) Opinnot "Tunnustettu osaaminen"
     (s/optional-key :aiempi-tunnustettava-osaaminen) Opinnot
     "Aiempi tunnustettava osaaminen"
@@ -138,6 +147,7 @@
   TyopaikallaHankittavaOsaaminen
   (describe
     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :hankkijan-edustaja Henkilo
     "Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja"
     :vastuullinen-ohjaaja Henkilo "Vastuullinen työpaikkaohjaaja"
@@ -165,6 +175,7 @@
   OsaamisenHankkimistapa
   (describe
     "Osaamisen hankkimisen tapa"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :ajankohta Aikavali "Hankkimisen ajankohta"
     :osaamisen-hankkimistavan-tunniste KoodistoKoodi
     "Osaamisen hankkimisen Koodisto-koodi (URI: osaamisenhankkimistapa)"
@@ -180,6 +191,7 @@
   NaytonJarjestaja
   (describe
     "Näytön tai osaamisen osoittamisen järjestäjä"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :nimi s/Str "Näytön tai osaamisen osoittamisen järjestäjän nimi"
     (s/optional-key :oid) s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on "
@@ -190,6 +202,7 @@
   Arvioija
   (describe
     "Arvioija"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :nimi s/Str "Arvioijan nimi"
     :rooli KoodistoKoodi "Arvioijan roolin Koodisto-koodi"
     :organisaatio Organisaatio "Arvioijan organisaatio"))
@@ -198,6 +211,7 @@
   Arviointikriteeri
   (describe
     "Arviointikriteeri"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :osaamistaso s/Int "Osaamistaso"
     :kuvaus s/Str "Arviointikriteerin kuvaus"))
 
@@ -205,6 +219,7 @@
   HankitunOsaamisenNaytto
   (describe
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :jarjestaja NaytonJarjestaja "Näytön tai osaamisen osoittamisen järjestäjä"
     :nayttoymparisto Organisaatio
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
@@ -226,6 +241,7 @@
   HankitunYTOOsaamisenNaytto
   (describe
     "Hankitun YTO osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :jarjestaja NaytonJarjestaja "Näytön tai osaamisen osoittamisen järjestäjä"
     :nayttoymparisto Organisaatio
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
@@ -247,6 +263,7 @@
   HankitunPaikallisenOsaamisenNaytto
   (describe
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :jarjestaja NaytonJarjestaja "Näytön tai osaamisen osoittamisen järjestäjä"
     :nayttoymparisto Organisaatio
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
@@ -266,11 +283,12 @@
 (s/defschema
   PuuttuvaAmmatillinenOsaaminen
   (describe
-    "Puuttuvan ammatillisen osaamisen tiedot"
+    "Puuttuvan ammatillisen osaamisen tiedot (GET)"
+    :eid s/Int "Tunniste eHOKS-järjestelmässä"
     :tutkinnon-osa TutkinnonOsa "Tutkinnon osa"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen"
-    :hankitun-osaamisen-naytto HankitunOsaamisenNaytto
+    (s/optional-key :hankitun-osaamisen-naytto) HankitunOsaamisenNaytto
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
@@ -278,12 +296,35 @@
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
-    :tarvittava-opetus s/Str "Tarvittava opetus"))
+    (s/optional-key :tarvittava-opetus) s/Str "Tarvittava opetus"))
+
+(s/defschema
+  PuuttuvaAmmatillinenOsaaminenLuonti
+  (modify
+    PuuttuvaAmmatillinenOsaaminen
+    "Puuttuvan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)"
+    {:removed [:eid]}))
+
+(s/defschema
+  PuuttuvaAmmatillinenOsaaminenPaivitys
+  (modify
+    PuuttuvaAmmatillinenOsaaminen
+    "Puuttuvan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa (PUT)"))
+
+(s/defschema
+  PuuttuvaAmmatillinenOsaaminenKentanPaivitys
+  (modify
+    PuuttuvaAmmatillinenOsaaminen
+    (str "Puuttuvan ammatillisen osaamisen tiedot kenttää tai kenttiä "
+         "päivittäessä (PATCH)")
+    {:optionals
+     [:tutkinnon-osa :osaamisen-hankkimistavat :koulutuksen-jarjestaja-oid]}))
 
 (s/defschema
   PuuttuvaYTOOsa
   (describe
     "Puuttuvan yhteinen tutkinnon osan (YTO) osan tiedot"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :tunniste KoodistoKoodi "Koodisto-koodi"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
     :eperusteet-id s/Str "Tunniste ePerusteet-palvelussa"
@@ -300,6 +341,7 @@
   PuuttuvaYTO
   (describe
     "Puuttuvan yhteinen tutkinnon osan tiedot"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :eperusteet-id s/Int
     "Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua"
     :tutkinnon-osat [PuuttuvaYTOOsa] "Puuttuvat YTO osat"
@@ -312,6 +354,7 @@
   PuuttuvaPaikallinenTutkinnonOsa
   (describe
     "Puuttuva paikallinen tutkinnon osa"
+    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :amosaa-tunniste) s/Str
     "Tunniste ePerusteet AMOSAA -palvelussa"
     :nimi s/Str "Tutkinnon osan nimi"
@@ -328,21 +371,10 @@
     :tarvittava-opetus s/Str "Tarvittava opetus"))
 
 (s/defschema
-  PuuttuvaOsaaminen
-  (describe
-    "Puuttuvan osaamisen hankkimisen suunnitelma"
-    :ammatillinen-osaaminen [PuuttuvaAmmatillinenOsaaminen]
-    "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"
-    :yhteisen-tutkinnon-osat [PuuttuvaYTO]
-    "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"
-    :paikallinen-tutkinnon-osa [PuuttuvaPaikallinenTutkinnonOsa]
-    "Puuttuvat paikallisen tutkinnon osat"))
-
-(s/defschema
   HOKS
   (describe
-    "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
-    :id s/Int "tunniste eHOKS-järjestelmässä"
+    "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
+    :eid s/Int "Tunniste eHOKS-järjestelmässä"
     :opiskeluoikeus-oid s/Str
     "Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä."
     (s/optional-key :urasuunnitelma) KoodistoKoodi
@@ -356,17 +388,39 @@
     "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"
     :paivitetty s/Inst
     "HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"
-    :olemassa-oleva-osaaminen OlemassaOlevaOsaaminen
+    (s/optional-key :olemassa-oleva-osaaminen) OlemassaOlevaOsaaminen
     (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
          "opiskelijan tutkintoa")
-    :opiskeluvalmiuksia-tukevat-opinnot OpiskeluvalmiuksiaTukevatOpinnot
+    (s/optional-key :opiskeluvalmiuksia-tukevat-opinnot)
+    OpiskeluvalmiuksiaTukevatOpinnot
     "Opiskeluvalmiuksia tukevat opinnot"
-    :puuttuva-osaaminen PuuttuvaOsaaminen
-    "Puuttuvan osaamisen hankkimisen suunnitelma"))
+    (s/optional-key :puuttuva-ammatillinen-osaaminen)
+    [PuuttuvaAmmatillinenOsaaminen]
+    "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"
+    (s/optional-key :puuttuva-yhteisen-tutkinnon-osat) [PuuttuvaYTO]
+    "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"
+    (s/optional-key :puuttuva-paikallinen-tutkinnon-osa)
+    [PuuttuvaPaikallinenTutkinnonOsa]
+    "Puuttuvat paikallisen tutkinnon osat"))
 
 (s/defschema
-  HOKSArvot
-  (st/merge
-    (describe
-      "HOKS-dokumentin arvot uutta merkintää luotaessa")
-    (st/dissoc HOKS :id :versio :luotu :paivitetty)))
+  HOKSPaivitys
+  (modify
+    HOKS
+    "HOKS-dokumentin ylikirjoitus (PUT)"
+    {:removed [:versio :luotu :hyvaksytty :paivitetty]}))
+
+(s/defschema
+  HOKSKentanPaivitys
+  (modify
+    HOKS
+    "HOKS-dokumentin arvon tai arvojen päivitys (PATCH)"
+    {:removed [:versio :luotu :hyvaksytty :paivitetty]
+     :optionals [:opiskeluoikeus-oid :luonut :paivittanyt :hyvaksynyt]}))
+
+(s/defschema
+  HOKSLuonti
+  (modify
+    HOKS
+    "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
+    {:removed [:eid :versio :luotu :hyvaksytty :paivitetty]}))

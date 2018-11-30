@@ -12,6 +12,7 @@
 
 (def routes
   (c-api/context "/external" []
+    :tags ["external"]
 
     (c-api/GET "/koodistokoodi/:uri/:versio" []
       :summary "Hakee koodisto koodin tietoja Koodisto-palvelusta"

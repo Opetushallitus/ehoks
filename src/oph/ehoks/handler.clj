@@ -38,14 +38,17 @@
          (response/internal-server-error {:type "unknown-exception"}))}}}
 
     (c-api/context "/ehoks-backend" []
-      (c-api/context "/api/v1" []
-        :tags ["api-v1"]
-        healthcheck-handler/routes
-        auth-handler/routes
-        hoks-handler/routes
-        lokalisointi-handler/routes
-        external-handler/routes
-        misc-handler/routes)
+      :tags ["ehoks"]
+      (c-api/context "/api" []
+        :tags ["api"]
+        (c-api/context "/v1" []
+          :tags ["v1"]
+          healthcheck-handler/routes
+          auth-handler/routes
+          hoks-handler/routes
+          lokalisointi-handler/routes
+          external-handler/routes
+          misc-handler/routes))
 
       (c-api/undocumented
         (GET "/buildversion.txt" _
