@@ -26,10 +26,10 @@
 (deftest test-modify
   (testing "Modify schema"
     (is (= ModifiedTestSchema
-           (st/modify TestSchema "Modified Test Schema" [] [])))
+           (st/modify TestSchema "Modified Test Schema")))
     (is (= ExtraOptional
            (st/modify
              TestSchema
              "Schema with one extra optional and first removed"
-             [:key1]
-             [:key2 :key3])))))
+             {:removed [:key1]
+              :optionals [:key2 :key3]})))))

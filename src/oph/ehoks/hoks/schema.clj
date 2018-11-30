@@ -303,16 +303,13 @@
   (modify
     PuuttuvaAmmatillinenOsaaminen
     "Puuttuvan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)"
-    [:eid]
-    []))
+    {:removed [:eid]}))
 
 (s/defschema
   PuuttuvaAmmatillinenOsaaminenPaivitys
   (modify
     PuuttuvaAmmatillinenOsaaminen
-    "Puuttuvan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa (PUT)"
-    []
-    []))
+    "Puuttuvan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa (PUT)"))
 
 (s/defschema
   PuuttuvaAmmatillinenOsaaminenKentanPaivitys
@@ -320,8 +317,8 @@
     PuuttuvaAmmatillinenOsaaminen
     (str "Puuttuvan ammatillisen osaamisen tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
-    []
-    [:tutkinnon-osa :osaamisen-hankkimistavat :koulutuksen-jarjestaja-oid]))
+    {:optionals
+     [:tutkinnon-osa :osaamisen-hankkimistavat :koulutuksen-jarjestaja-oid]}))
 
 (s/defschema
   PuuttuvaYTOOsa
@@ -411,21 +408,19 @@
   (modify
     HOKS
     "HOKS-dokumentin ylikirjoitus (PUT)"
-    [:versio :luotu :hyvaksytty :paivitetty]
-    []))
+    {:removed [:versio :luotu :hyvaksytty :paivitetty]}))
 
 (s/defschema
   HOKSKentanPaivitys
   (modify
     HOKS
     "HOKS-dokumentin arvon tai arvojen päivitys (PATCH)"
-    [:versio :luotu :hyvaksytty :paivitetty]
-    [:opiskeluoikeus-oid :luonut :paivittanyt :hyvaksynyt]))
+    {:removed [:versio :luotu :hyvaksytty :paivitetty]
+     :optionals [:opiskeluoikeus-oid :luonut :paivittanyt :hyvaksynyt]}))
 
 (s/defschema
   HOKSLuonti
   (modify
     HOKS
     "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
-    [:eid :versio :luotu :hyvaksytty :paivitetty]
-    []))
+    {:removed [:eid :versio :luotu :hyvaksytty :paivitetty]}))

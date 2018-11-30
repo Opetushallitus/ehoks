@@ -16,15 +16,20 @@
       (partition 3 kvds))
     {:description description}))
 
-(defn modify [schema description removed optionals]
-  (st/merge
-    (describe description)
-    (as-> schema x
-      (apply st/dissoc x removed)
-      (rename-keys
-        x
-        (reduce
-          (fn [c n]
-            (assoc c n (s/optional-key n)))
-          {}
-          optionals)))))
+(defn modify
+  ([schema
+    description
+    {removed :removed optionals :optionals, :or
+     {removed [] optionals []}}]
+   (st/merge
+     (describe description)
+     (as-> schema x
+       (apply st/dissoc x removed)
+       (rename-keys
+         x
+         (reduce
+           (fn [c n]
+             (assoc c n (s/optional-key n)))
+           {}
+           optionals)))))
+  ([schema description] (modify schema description [])))
