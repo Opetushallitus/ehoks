@@ -15,19 +15,19 @@
     (c-api/POST "/" []
       :summary
       "Luo (tai korvaa vanhan) puuttuvan ammatillisen osaamisen HOKSiin"
-      :body [_ hoks-schema/PuuttuvaAmmatillinenOsaaminen]
+      :body [_ hoks-schema/PuuttuvaAmmatillinenOsaaminenLuonti]
       :return (rest/response schema/POSTResponse)
       (rest/rest-ok {:uri ""}))
 
     (c-api/PUT "/:eid" []
       :summary "Päivittää HOKSin puuttuvan ammatillisen osaamisen"
-      :body [_ hoks-schema/PuuttuvaAmmatillinenOsaaminen]
+      :body [_ hoks-schema/PuuttuvaAmmatillinenOsaaminenPaivitys]
       (response/no-content))
 
     (c-api/PATCH "/:eid" []
       :summary
       "Päivittää HOKSin puuttuvan ammatillisen osaamisen arvoa tai arvoja"
-      :body [_ hoks-schema/PuuttuvaAmmatillinenOsaaminen]
+      :body [_ hoks-schema/PuuttuvaAmmatillinenOsaaminenKentanPaivitys]
       (response/no-content))))
 
 (def routes
