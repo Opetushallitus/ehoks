@@ -1,7 +1,7 @@
 (ns oph.ehoks.hoks.schema
   (:require [schema.core :as s]
             [schema-tools.core :as st]
-            [oph.ehoks.schema-tools :refer [describe]])
+            [oph.ehoks.schema-tools :refer [describe modify]])
   (:import (java.time LocalDate)))
 
 (s/defschema
@@ -379,8 +379,9 @@
     "Puuttuvat paikallisen tutkinnon osat"))
 
 (s/defschema
-  HOKSArvot
-  (st/merge
-    (describe
-      "HOKS-dokumentin arvot uutta merkintää luotaessa")
-    (st/dissoc HOKS :eid :versio :luotu :paivitetty)))
+  HOKSLuonti
+  (modify
+    HOKS
+    "HOKS-dokumentin arvot uutta merkintää luotaessa"
+    [:eid :versio :luonut :luotu :hyvaksytty :paivitetty]
+    []))
