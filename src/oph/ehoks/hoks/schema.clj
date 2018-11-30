@@ -283,12 +283,12 @@
 (s/defschema
   PuuttuvaAmmatillinenOsaaminen
   (describe
-    "Puuttuvan ammatillisen osaamisen tiedot"
-    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
+    "Puuttuvan ammatillisen osaamisen tiedot (GET)"
+    :eid s/Int "Tunniste eHOKS-järjestelmässä"
     :tutkinnon-osa TutkinnonOsa "Tutkinnon osa"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen"
-    :hankitun-osaamisen-naytto HankitunOsaamisenNaytto
+    (s/optional-key :hankitun-osaamisen-naytto) HankitunOsaamisenNaytto
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
@@ -296,7 +296,7 @@
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
-    :tarvittava-opetus s/Str "Tarvittava opetus"))
+    (s/optional-key :tarvittava-opetus) s/Str "Tarvittava opetus"))
 
 (s/defschema
   PuuttuvaYTOOsa
@@ -366,16 +366,19 @@
     "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"
     :paivitetty s/Inst
     "HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"
-    :olemassa-oleva-osaaminen OlemassaOlevaOsaaminen
+    (s/optional-key :olemassa-oleva-osaaminen) OlemassaOlevaOsaaminen
     (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
          "opiskelijan tutkintoa")
-    :opiskeluvalmiuksia-tukevat-opinnot OpiskeluvalmiuksiaTukevatOpinnot
+    (s/optional-key :opiskeluvalmiuksia-tukevat-opinnot)
+    OpiskeluvalmiuksiaTukevatOpinnot
     "Opiskeluvalmiuksia tukevat opinnot"
-    :puuttuva-ammatillinen-osaaminen [PuuttuvaAmmatillinenOsaaminen]
+    (s/optional-key :puuttuva-ammatillinen-osaaminen)
+    [PuuttuvaAmmatillinenOsaaminen]
     "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"
-    :puuttuva-yhteisen-tutkinnon-osat [PuuttuvaYTO]
+    (s/optional-key :puuttuva-yhteisen-tutkinnon-osat) [PuuttuvaYTO]
     "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"
-    :puuttuva-paikallinen-tutkinnon-osa [PuuttuvaPaikallinenTutkinnonOsa]
+    (s/optional-key :puuttuva-paikallinen-tutkinnon-osa)
+    [PuuttuvaPaikallinenTutkinnonOsa]
     "Puuttuvat paikallisen tutkinnon osat"))
 
 (s/defschema
@@ -383,5 +386,4 @@
   (modify
     HOKS
     "HOKS-dokumentin arvot uutta merkintää luotaessa"
-    [:eid :versio :luonut :luotu :hyvaksytty :paivitetty]
     []))
