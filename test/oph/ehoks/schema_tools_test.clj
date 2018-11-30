@@ -37,4 +37,4 @@
 (deftest test-modify-illegal-options
   (testing "Modify schema with illegal options"
     (is (thrown? java.lang.AssertionError
-           (st/modify TestSchema "" {:illegal []})))))
+                 (st/modify TestSchema "" {:illegal []})))))
