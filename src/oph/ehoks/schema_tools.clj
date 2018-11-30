@@ -26,4 +26,4 @@
        (as-> schema x
          (apply st/dissoc x removed)
          (st/optional-keys x optionals))))
-  ([schema description] (modify schema description [])))
+  ([schema description] (modify schema description {})))
