@@ -376,8 +376,8 @@
 (s/defschema
   HOKS
   (describe
-    "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
-    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
+    "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
+    :eid s/Int "Tunniste eHOKS-järjestelmässä"
     :opiskeluoikeus-oid s/Str
     "Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä."
     (s/optional-key :urasuunnitelma) KoodistoKoodi
@@ -426,5 +426,6 @@
   HOKSLuonti
   (modify
     HOKS
-    "HOKS-dokumentin arvot uutta merkintää luotaessa"
+    "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
+    [:eid :versio :luotu :hyvaksytty :paivitetty]
     []))
