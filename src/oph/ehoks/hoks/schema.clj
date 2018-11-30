@@ -299,6 +299,31 @@
     (s/optional-key :tarvittava-opetus) s/Str "Tarvittava opetus"))
 
 (s/defschema
+  PuuttuvaAmmatillinenOsaaminenLuonti
+  (modify
+    PuuttuvaAmmatillinenOsaaminen
+    "Puuttuvan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)"
+    [:eid]
+    []))
+
+(s/defschema
+  PuuttuvaAmmatillinenOsaaminenPaivitys
+  (modify
+    PuuttuvaAmmatillinenOsaaminen
+    "Puuttuvan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa (PUT)"
+    []
+    []))
+
+(s/defschema
+  PuuttuvaAmmatillinenOsaaminenKentanPaivitys
+  (modify
+    PuuttuvaAmmatillinenOsaaminen
+    (str "Puuttuvan ammatillisen osaamisen tiedot kenttää tai kenttiä "
+         "päivittäessä (PATCH)")
+    []
+    [:tutkinnon-osa :osaamisen-hankkimistavat :koulutuksen-jarjestaja-oid]))
+
+(s/defschema
   PuuttuvaYTOOsa
   (describe
     "Puuttuvan yhteinen tutkinnon osan (YTO) osan tiedot"
@@ -380,6 +405,22 @@
     (s/optional-key :puuttuva-paikallinen-tutkinnon-osa)
     [PuuttuvaPaikallinenTutkinnonOsa]
     "Puuttuvat paikallisen tutkinnon osat"))
+
+(s/defschema
+  HOKSPaivitys
+  (modify
+    HOKS
+    "HOKS-dokumentin ylikirjoitus (PUT)"
+    [:versio :luotu :hyvaksytty :paivitetty]
+    []))
+
+(s/defschema
+  HOKSKentanPaivitys
+  (modify
+    HOKS
+    "HOKS-dokumentin arvon tai arvojen päivitys (PATCH)"
+    [:versio :luotu :hyvaksytty :paivitetty]
+    [:opiskeluoikeus-oid :luonut :paivittanyt :hyvaksynyt]))
 
 (s/defschema
   HOKSLuonti
