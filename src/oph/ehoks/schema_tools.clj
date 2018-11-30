@@ -21,9 +21,9 @@
     description
     {removed :removed optionals :optionals, :or
      {removed [] optionals []}}]
-     (st/merge
-       (describe description)
-       (as-> schema x
-         (apply st/dissoc x removed)
-         (st/optional-keys x optionals))))
+    (st/merge
+      (describe description)
+      (as-> schema x
+        (apply st/dissoc x removed)
+        (st/optional-keys x optionals))))
   ([schema description] (modify schema description {})))
