@@ -8,6 +8,9 @@ Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu
 | ---- | ------ | ------ | --------- |
 | tarkenne | [KoodistoKoodi](#KoodistoKoodi) | Oppimisympäristön tarkenne, eHOS Koodisto-koodi | Kyllä |
 | selite | Merkkijono | Oppimisympäristön nimi | Kyllä |
+| ohjaus-ja-tuki | Totuusarvo | Onko opiskelijalla tunnistettu ohjauksen ja tuen tarvetta | Kyllä |
+| erityinen-tuki | Totuusarvo | Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä erityisen tuen päätös | Kyllä |
+| erityisen-tuen-aika | [Aikavali](#Aikavali) | Erityisen tuen alkamispvm ja päättymispvm kyseisessä tutkinnon taikoulutuksen osassa | Ei |
 
 ### PuuttuvaAmmatillinenOsaaminenLuonti  
 
@@ -47,7 +50,7 @@ Opinnot
 | eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
 | ammatilliset-opinnot | [[TutkinnonOsa](#TutkinnonOsa)] | Osaamisen ammattilliset opinnot | Ei |
 | yhteiset-tutkinnon-osat | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Osaamisen yhteiset tutkinnon osat (YTO) | Ei |
-| muut-osaamiset | [[MuuTutkinnonOsa](#MuuTutkinnonOsa)] | Muut osaamisen opinnot | Ei |
+| paikalliset-osaamiset | [[MuuTutkinnonOsa](#MuuTutkinnonOsa)] | Osaamisen paikallisen tutkinnon osat | Ei |
 
 ### YhteinenTutkinnonOsa  
 
@@ -128,7 +131,7 @@ Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten
 | eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
 | ammatilliset-opinnot | [[TutkinnonOsa](#TutkinnonOsa)] | Osaamisen ammattilliset opinnot | Ei |
 | yhteiset-tutkinnon-osat | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Osaamisen yhteiset tutkinnon osat (YTO) | Ei |
-| muut-osaamiset | [[MuuTutkinnonOsa](#MuuTutkinnonOsa)] | Muut osaamisen opinnot | Ei |
+| paikalliset-osaamiset | [[MuuTutkinnonOsa](#MuuTutkinnonOsa)] | Osaamisen paikallisen tutkinnon osat | Ei |
 
 ### HankitunPaikallisenOsaamisenNaytto  
 
