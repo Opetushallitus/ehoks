@@ -86,4 +86,4 @@
           (println (str "Error in line: " line))
           (throw e)))
       (.newLine w)))
-  (println "Markdown document has beem generated."))
+  (println "Markdown document has been generated."))
