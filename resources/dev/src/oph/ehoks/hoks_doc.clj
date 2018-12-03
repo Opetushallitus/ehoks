@@ -73,11 +73,11 @@
 (defn write-doc! [target]
   (println (str "Generating markdown formatted document to " target))
   (with-open [w (io/writer target)]
-    (.write w "# HOKS API doc")
+    (.write w "# HOKS API doc\n")
     (.write
       w
       (str "Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin "
-           "esittämiseen"))
+           "esittämiseen.\n"))
     (doseq [line (flatten (generate-doc))]
       (assert (string? line) (str "Line must be string. Got: " line))
       (try
