@@ -71,6 +71,7 @@
     (vals schemas)))
 
 (defn write-doc! [target]
+  (println (str "Generating markdown formatted document to " target))
   (with-open [w (io/writer target)]
     (doseq [line (flatten (generate-doc))]
       (assert (string? line) (str "Line must be string. Got: " line))
@@ -79,4 +80,5 @@
         (catch Exception e
           (println (str "Error in line: " line))
           (throw e)))
-      (.newLine w))))
+      (.newLine w)))
+  (println "Markdown document has beem generated."))
