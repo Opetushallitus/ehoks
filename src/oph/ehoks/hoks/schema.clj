@@ -371,6 +371,32 @@
     :tarvittava-opetus s/Str "Tarvittava opetus"))
 
 (s/defschema
+  PuuttuvaPaikallinenTutkinnonOsaLuonti
+  (modify
+    PuuttuvaPaikallinenTutkinnonOsa
+    (str "Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää "
+         "luotaessa (POST)")
+    {:removed [:eid]}))
+
+(s/defschema
+  PuuttuvaPaikallinenTutkinnonOsaPaivitys
+  (modify
+    PuuttuvaPaikallinenTutkinnonOsa
+    (str "Puuttuvan paikallisen tutkinnon osan tiedot merkintää "
+         "ylikirjoittaessa (PUT)")))
+
+(s/defschema
+  PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys
+  (modify
+    PuuttuvaPaikallinenTutkinnonOsa
+    (str "Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
+         "päivittäessä (PATCH)")
+    {:optionals
+     [:nimi :laajuus :kuvaus :osaamisen-hankkimistavat
+      :koulutuksen-jarjestaja-oid :hankitun-osaamisen-naytto
+      :tarvittava-opetus]}))
+
+(s/defschema
   HOKS
   (describe
     "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
