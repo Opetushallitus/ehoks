@@ -343,11 +343,9 @@ Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tut
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
-| tunnustettu-osaaminen | [Opinnot](#Opinnot) | Tunnustettu osaaminen | Ei |
-| aiempi-tunnustettava-osaaminen | [Opinnot](#Opinnot) | Aiempi tunnustettava osaaminen | Ei |
-| tunnustettavana-olevat | [TunnustettavanaOlevaOsaaminen](#TunnustettavanaOlevaOsaaminen) | Tunnustettavana oleva osaaminen | Ei |
-| muut-opinnot | [Opinnot](#Opinnot) | Muu olemassa oleva osaaminen | Ei |
-| muut-arvioidut-ja-todennetut-tunnustettavat-opinnot | [MuuTutkinnonOsa](#MuuTutkinnonOsa) | Muut arvioidut ja todennetut tunnustettavat opinnot | Ei |
+| olemassaoleva-ammatillinen-osaaminen | [[OlemassaOlevaAmmatillinenOsaaminen](#OlemassaOlevaAmmatillinenOsaaminen)] | Olemassa oleva ammatillinen osaaminen | Ei |
+| olemassaolevat-yto-osa-alueet | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Olemassaolevat yton osa-alueet | Ei |
+| olemassaoleva-paikallinen-tutkinnon-osa | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassaoleva paikallinen tutkinnon osa | Ei |
 
 ### PuuttuvaAmmatillinenOsaaminenKentanPaivitys  
 
@@ -374,6 +372,16 @@ Opiskeluvalmiuksia tukevat opinnot
 | kuvaus | Merkkijono | Opintojen kuvaus | Kyllä |
 | kesto | Kokonaisluku | Opintojen kesto päivinä | Kyllä |
 | ajankohta | [Aikavali](#Aikavali) | Opintojen ajoittuminen | Kyllä |
+
+### ValitunTodentamisenProsessi  
+
+Todentamisen prosessin kuvaus
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| valittu-todentaminen-suoraan | Totuusarvo | Todentaminen suoraan | Kyllä |
+| valittu-todentaminen-arvioijat | Totuusarvo | Todentaminen arvioijien kautta | Kyllä |
+| valittu-todentaminen-naytto | Totuusarvo | Todentaminen näytön kautta | Kyllä |
 
 ### PuuttuvaPaikallinenTutkinnonOsaPaivitys  
 
@@ -446,6 +454,31 @@ Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä päivittäess
 | tarvittava-opetus | Merkkijono | Tarvittava opetus | Ei |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus | Ei |
 | eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Kyllä |
+
+### OlemassaOlevaPaikallinenTutkinnonOsa  
+
+Paikallinen tutkinnon osa, joka osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Kyllä |
+| amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
+| nimi | Merkkijono | Tutkinnon osan nimi | Kyllä |
+| laajuus | Kokonaisluku | Tutkinnon osan laajuus | Kyllä |
+| kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
+| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
+| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
+| hankitun-osaamisen-naytto | [HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
+| tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
+
+### OlemassaOlevaAmmatillinenOsaaminen  
+
+Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| eid | Kokonaisluku | Tutkinnon osan id, johon tunnistettava olemassaoleva osaaminen liittyy | Ei |
+| valittu-todentamisen-prosessi | [[ValitunTodentamisenProsessi](#ValitunTodentamisenProsessi)] | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Ei |
 
 ### PuuttuvaPaikallinenTutkinnonOsaLuonti  
 
