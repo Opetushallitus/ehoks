@@ -5,6 +5,31 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as rest]))
 
+(def ^:private puuttuva-paikallinen-tutkinnon-osa
+  (c-api/context "/:hoks-eid/puuttuva-paikallinen-tutkinnon-osa" [hoks-eid]
+    (c-api/GET "/:eid" [:as eid]
+      :summary "Palauttaa HOKSin puuttuvan paikallisen tutkinnon osan"
+      :return (rest/response hoks-schema/PuuttuvaPaikallinenTutkinnonOsa)
+      (rest/rest-ok {}))
+
+    (c-api/POST "/" []
+      :summary
+      "Luo (tai korvaa vanhan) puuttuvan paikallisen tutkinnon osan"
+      :body [_ hoks-schema/PuuttuvaPaikallinenTutkinnonOsaLuonti]
+      :return (rest/response schema/POSTResponse)
+      (rest/rest-ok {:uri ""}))
+
+    (c-api/PUT "/:eid" []
+      :summary "Päivittää HOKSin puuttuvan paikallisen tutkinnon osan"
+      :body [_ hoks-schema/PuuttuvaPaikallinenTutkinnonOsaPaivitys]
+      (response/no-content))
+
+    (c-api/PATCH "/:eid" []
+      :summary
+      "Päivittää HOKSin puuttuvan paikallisen tutkinnon osan arvoa tai arvoja"
+      :body [_ hoks-schema/PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys]
+      (response/no-content))))
+
 (def ^:private puuttuva-ammatillinen-osaaminen
   (c-api/context "/:hoks-eid/puuttuva-ammatillinen-osaaminen" [hoks-eid]
     (c-api/GET "/:eid" [:as eid]
@@ -55,4 +80,5 @@
       :body [_ hoks-schema/HOKSKentanPaivitys]
       (response/no-content))
 
-    puuttuva-ammatillinen-osaaminen))
+    puuttuva-ammatillinen-osaaminen
+    puuttuva-paikallinen-tutkinnon-osa))
