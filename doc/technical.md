@@ -30,14 +30,8 @@ sn | :surname | Surname | Yes
 
 ### API rajapintakuvaukset
 
-Generointiin voi käyttää esimerkiksi
-[swagger-markdown](https://www.npmjs.com/package/swagger-markdown) työkalua.
-
-Käynnistä sovellus (oletuksena http://localhost:3000).
-
+Markdown [hoks.md](hoks.md) generoidaan Leiningenin taskilla. 
 
 ``` shell
-curl -o api-doc.json http://localhost:3000/ehoks/doc/swagger.json
-swagger-markdown -i api-doc.json
-rm api-doc.json
+lein gendoc
 ```
