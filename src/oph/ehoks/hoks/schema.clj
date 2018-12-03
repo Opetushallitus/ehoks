@@ -354,7 +354,7 @@
   PuuttuvaPaikallinenTutkinnonOsa
   (describe
     "Puuttuva paikallinen tutkinnon osa"
-    (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
+    :eid s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :amosaa-tunniste) s/Str
     "Tunniste ePerusteet AMOSAA -palvelussa"
     :nimi s/Str "Tutkinnon osan nimi"
@@ -369,6 +369,32 @@
     :hankitun-osaamisen-naytto HankitunPaikallisenOsaamisenNaytto
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     :tarvittava-opetus s/Str "Tarvittava opetus"))
+
+(s/defschema
+  PuuttuvaPaikallinenTutkinnonOsaLuonti
+  (modify
+    PuuttuvaPaikallinenTutkinnonOsa
+    (str "Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää "
+         "luotaessa (POST)")
+    {:removed [:eid]}))
+
+(s/defschema
+  PuuttuvaPaikallinenTutkinnonOsaPaivitys
+  (modify
+    PuuttuvaPaikallinenTutkinnonOsa
+    (str "Puuttuvan paikallisen tutkinnon osan tiedot merkintää "
+         "ylikirjoittaessa (PUT)")))
+
+(s/defschema
+  PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys
+  (modify
+    PuuttuvaPaikallinenTutkinnonOsa
+    (str "Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
+         "päivittäessä (PATCH)")
+    {:optionals
+     [:nimi :laajuus :kuvaus :osaamisen-hankkimistavat
+      :koulutuksen-jarjestaja-oid :hankitun-osaamisen-naytto
+      :tarvittava-opetus]}))
 
 (s/defschema
   HOKS
