@@ -382,9 +382,9 @@ Todentamisen prosessin kuvaus
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| valittu-todentaminen-suoraan | Totuusarvo | Todentaminen suoraan | Kyllä |
-| valittu-todentaminen-arvioijat | Totuusarvo | Todentaminen arvioijien kautta | Kyllä |
-| valittu-todentaminen-naytto | Totuusarvo | Todentaminen näytön kautta | Kyllä |
+| valittu-todentaminen-suoraan | Merkkijono | Todentaminen suoraan | Ei |
+| valittu-todentaminen-arvioijat | Merkkijono | Todentaminen arvioijien kautta | Ei |
+| valittu-todentaminen-naytto | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Todentaminen näytön kautta | Ei |
 
 ### PuuttuvaPaikallinenTutkinnonOsaPaivitys  
 

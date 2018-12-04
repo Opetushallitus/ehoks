@@ -115,7 +115,7 @@
   "Osaamisen ammattilliset opinnot"
   (s/optional-key :yhteiset-tutkinnon-osat) [YhteinenTutkinnonOsa]
   "Osaamisen yhteiset tutkinnon osat (YTO)"
-  (s/optional-key :paikalliset-osaamiset) [PuuttuvaPaikallinenTutkinnonOsa]
+  (s/optional-key :paikalliset-osaamiset) [MuuTutkinnonOsa]
   "Osaamisen paikallisen tutkinnon osat"))
 
 (s/defschema
@@ -407,13 +407,15 @@
   {:optionals
    [:nimi :laajuus :kuvaus :osaamisen-hankkimistavat
     :koulutuksen-jarjestaja-oid :hankitun-osaamisen-naytto
-    :tarvittava-opetus]})) (s/defschema
-                            ValitunTodentamisenProsessi
-                            (describe
-                             (str "Todentamisen prosessin kuvaus")
-                             :valittu-todentaminen-suoraan s/Bool "Todentaminen suoraan"
-                             :valittu-todentaminen-arvioijat s/Bool "Todentaminen arvioijien kautta"
-                             :valittu-todentaminen-naytto s/Bool "Todentaminen näytön kautta"))
+    :tarvittava-opetus]}))
+
+(s/defschema
+ ValitunTodentamisenProsessi
+ (describe
+  (str "Todentamisen prosessin kuvaus")
+  (s/optional-key :valittu-todentaminen-suoraan) s/Str "Todentaminen suoraan"
+  (s/optional-key :valittu-todentaminen-arvioijat) s/Str "Todentaminen arvioijien kautta"
+  (s/optional-key :valittu-todentaminen-naytto) [HankitunOsaamisenNaytto] "Todentaminen näytön kautta"))
 
 (s/defschema
  OlemassaOlevaAmmatillinenOsaaminen
