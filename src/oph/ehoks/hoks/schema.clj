@@ -381,7 +381,7 @@
  (describe
   (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
        "opiskelijan tutkintoa")
-  (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
+  :eid s/Int "Tunniste eHOKS-järjestelmässä"
   (s/optional-key :olemassaoleva-ammatillinen-osaaminen) [OlemassaOlevaAmmatillinenOsaaminen] "Olemassa oleva ammatillinen osaaminen"
   (s/optional-key :olemassaolevat-yto-osa-alueet) [YhteinenTutkinnonOsa]
   "Olemassaolevat yton osa-alueet"
