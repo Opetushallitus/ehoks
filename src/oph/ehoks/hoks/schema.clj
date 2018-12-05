@@ -107,27 +107,6 @@
   :ajankohta Aikavali "Opintojen ajoittuminen"))
 
 (s/defschema
- Opinnot
- (describe
-  "Opinnot"
-  (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
-  (s/optional-key :ammatilliset-opinnot) [TutkinnonOsa]
-  "Osaamisen ammattilliset opinnot"
-  (s/optional-key :yhteiset-tutkinnon-osat) [YhteinenTutkinnonOsa]
-  "Osaamisen yhteiset tutkinnon osat (YTO)"
-  (s/optional-key :paikalliset-osaamiset) [MuuTutkinnonOsa]
-  "Osaamisen paikallisen tutkinnon osat"))
-
-(s/defschema
- TunnustettavanaOlevaOsaaminen
- (st/merge
-  (describe
-   "Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten"
-   :todentajan-nimi s/Str
-   "Osaamisen todentaneen toimivaltaisen viranomaisen nimi")
-  Opinnot))
-
-(s/defschema
  TyopaikallaHankittavaOsaaminen
  (describe
   "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
@@ -343,28 +322,7 @@
        "koulutuksen järjestäjän oid.")))
 
 (s/defschema
- OlemassaOlevaPaikallinenTutkinnonOsa
- (describe
-  (str "Paikallinen tutkinnon osa, joka osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
-       "opiskelijan tutkintoa")
-  :eid s/Int "Tunniste eHOKS-järjestelmässä"
-  (s/optional-key :amosaa-tunniste) s/Str
-  "Tunniste ePerusteet AMOSAA -palvelussa"
-  :nimi s/Str "Tutkinnon osan nimi"
-  :laajuus s/Int "Tutkinnon osan laajuus"
-  :kuvaus s/Str "Tutkinnon osan kuvaus"
-  :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
-  "Osaamisen hankkimistavat"
-  :koulutuksen-jarjestaja-oid s/Str
-  (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
-       "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
-       "koulutuksen järjestäjän oid.")
-  :hankitun-osaamisen-naytto HankitunPaikallisenOsaamisenNaytto
-  "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
-  :tarvittava-opetus s/Str "Tarvittava opetus"))
-
-(s/defschema
- PuuttuvaPaikallinenTutkinnonOsa
+ PaikallinenTutkinnonOsa
  (describe
   "Puuttuva paikallinen tutkinnon osa"
   :eid s/Int "Tunniste eHOKS-järjestelmässä"
@@ -386,7 +344,7 @@
 (s/defschema
  PuuttuvaPaikallinenTutkinnonOsaLuonti
  (modify
-  PuuttuvaPaikallinenTutkinnonOsa
+  PaikallinenTutkinnonOsa
   (str "Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää "
        "luotaessa (POST)")
   {:removed [:eid]}))
@@ -394,14 +352,14 @@
 (s/defschema
  PuuttuvaPaikallinenTutkinnonOsaPaivitys
  (modify
-  PuuttuvaPaikallinenTutkinnonOsa
+  PaikallinenTutkinnonOsa
   (str "Puuttuvan paikallisen tutkinnon osan tiedot merkintää "
        "ylikirjoittaessa (PUT)")))
 
 (s/defschema
  PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys
  (modify
-  PuuttuvaPaikallinenTutkinnonOsa
+  PaikallinenTutkinnonOsa
   (str "Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
        "päivittäessä (PATCH)")
   {:optionals
@@ -410,20 +368,13 @@
     :tarvittava-opetus]}))
 
 (s/defschema
- ValitunTodentamisenProsessi
- (describe
-  (str "Todentamisen prosessin kuvaus")
-  (s/optional-key :valittu-todentaminen-suoraan) s/Str "Todentaminen suoraan"
-  (s/optional-key :valittu-todentaminen-arvioijat) s/Str "Todentaminen arvioijien kautta"
-  (s/optional-key :valittu-todentaminen-naytto) [HankitunOsaamisenNaytto] "Todentaminen näytön kautta"))
-
-(s/defschema
  OlemassaOlevaAmmatillinenOsaaminen
  (describe
   (str "Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
        "opiskelijan tutkintoa")
-  (s/optional-key :eid) s/Int "Tutkinnon osan id, johon tunnistettava olemassaoleva osaaminen liittyy"
-  (s/optional-key :valittu-todentamisen-prosessi) [ValitunTodentamisenProsessi] "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"))
+  (s/optional-key :tutkinnon-id) s/Int "Tutkinnon osan id, johon tunnistettava olemassaoleva osaaminen liittyy"
+  :valittu-todentamisen-prosessi (s/enum :valittu-todentaminen-suoraan :valittu-todentaminen-arvioijat :valittu-todentaminen-naytto) "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+  (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto] "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
 
 (s/defschema
  OlemassaOlevaOsaaminen
@@ -434,7 +385,28 @@
   (s/optional-key :olemassaoleva-ammatillinen-osaaminen) [OlemassaOlevaAmmatillinenOsaaminen] "Olemassa oleva ammatillinen osaaminen"
   (s/optional-key :olemassaolevat-yto-osa-alueet) [YhteinenTutkinnonOsa]
   "Olemassaolevat yton osa-alueet"
-  (s/optional-key :olemassaoleva-paikallinen-tutkinnon-osa) [OlemassaOlevaPaikallinenTutkinnonOsa] "Olemassaoleva paikallinen tutkinnon osa"))
+  (s/optional-key :olemassaoleva-paikallinen-tutkinnon-osa) [PaikallinenTutkinnonOsa] "Olemassaoleva paikallinen tutkinnon osa"))
+
+(s/defschema
+ Opinnot
+ (describe
+  "Opinnot"
+  (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
+  (s/optional-key :ammatilliset-opinnot) [TutkinnonOsa]
+  "Osaamisen ammattilliset opinnot"
+  (s/optional-key :yhteiset-tutkinnon-osat) [YhteinenTutkinnonOsa]
+  "Osaamisen yhteiset tutkinnon osat (YTO)"
+  (s/optional-key :paikalliset-osaamiset) [PaikallinenTutkinnonOsa]
+  "Osaamisen paikallisen tutkinnon osat"))
+
+(s/defschema
+ TunnustettavanaOlevaOsaaminen
+ (st/merge
+  (describe
+   "Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten"
+   :todentajan-nimi s/Str
+   "Osaamisen todentaneen toimivaltaisen viranomaisen nimi")
+  Opinnot))
 
 (s/defschema
  HOKS
@@ -466,7 +438,7 @@
   (s/optional-key :puuttuva-yhteisen-tutkinnon-osat) [PuuttuvaYTO]
   "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"
   (s/optional-key :puuttuva-paikallinen-tutkinnon-osa)
-  [PuuttuvaPaikallinenTutkinnonOsa]
+  [PaikallinenTutkinnonOsa]
   "Puuttuvat paikallisen tutkinnon osat"))
 
 (s/defschema
