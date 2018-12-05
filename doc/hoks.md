@@ -345,7 +345,7 @@ Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tut
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
+| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Kyllä |
 | olemassaoleva-ammatillinen-osaaminen | [[OlemassaOlevaAmmatillinenOsaaminen](#OlemassaOlevaAmmatillinenOsaaminen)] | Olemassa oleva ammatillinen osaaminen | Ei |
 | olemassaolevat-yto-osa-alueet | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Olemassaolevat yton osa-alueet | Ei |
 | olemassaoleva-paikallinen-tutkinnon-osa | [[PaikallinenTutkinnonOsa](#PaikallinenTutkinnonOsa)] | Olemassaoleva paikallinen tutkinnon osa | Ei |
