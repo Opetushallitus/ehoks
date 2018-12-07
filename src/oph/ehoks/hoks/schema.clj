@@ -370,11 +370,17 @@
 (s/defschema
  OlemassaOlevaAmmatillinenOsaaminen
  (describe
-  (str "Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
+  (str "Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella
+    sisällytetty suoraan osaksi "
        "opiskelijan tutkintoa")
-  (s/optional-key :tutkinnon-id) s/Int "Tutkinnon osan id, johon tunnistettava olemassaoleva osaaminen liittyy"
-  :valittu-todentamisen-prosessi (s/enum :valittu-todentaminen-suoraan :valittu-todentaminen-arvioijat :valittu-todentaminen-naytto) "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
-  (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto] "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
+  (s/optional-key :tutkinnon-id) s/Int "Tutkinnon osan id,
+  johon tunnistettava olemassaoleva osaaminen liittyy"
+  :valittu-todentamisen-prosessi
+  (s/enum :valittu-todentaminen-suoraan :valittu-todentaminen-arvioijat
+          :valittu-todentaminen-naytto)
+  "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+  (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
+  "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
 
 (s/defschema
  OlemassaOlevaOsaaminen
@@ -382,10 +388,12 @@
   (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
        "opiskelijan tutkintoa")
   :eid s/Int "Tunniste eHOKS-järjestelmässä"
-  (s/optional-key :olemassaoleva-ammatillinen-osaaminen) [OlemassaOlevaAmmatillinenOsaaminen] "Olemassa oleva ammatillinen osaaminen"
+  (s/optional-key :olemassaoleva-ammatillinen-osaaminen)
+  [OlemassaOlevaAmmatillinenOsaaminen] "Olemassa oleva ammatillinen osaaminen"
   (s/optional-key :olemassaolevat-yto-osa-alueet) [YhteinenTutkinnonOsa]
   "Olemassaolevat yton osa-alueet"
-  (s/optional-key :olemassaoleva-paikallinen-tutkinnon-osa) [PaikallinenTutkinnonOsa] "Olemassaoleva paikallinen tutkinnon osa"))
+  (s/optional-key :olemassaoleva-paikallinen-tutkinnon-osa)
+  [PaikallinenTutkinnonOsa] "Olemassaoleva paikallinen tutkinnon osa"))
 
 (s/defschema
  Opinnot
