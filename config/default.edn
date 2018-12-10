@@ -1,6 +1,7 @@
 {:port 3000
  :frontend-url "http://localhost:8080"
  :frontend-url-path "ehoks"
+ :tyopaikan-toimija-frontend-path "tyopaikan-toimija"
  :database-url ""
  :redis-url nil
  :cas-service-ticket-url "http://localhost:3000/cas-dev/tickets"
@@ -12,6 +13,7 @@
  :opintopolku-login-url "http://localhost:3000/auth-dev/opintopolku-login/"
  :opintopolku-logout-url "http://localhost:3000/auth-dev/opintopolku-logout/?return=http://localhost:8080/ehoks"
  :opintopolku-return-url "http://localhost:3000/ehoks-backend/api/v1/session/opintopolku/"
+ :opintopolku-tt-auth-url "http://localhost:3000/auth-dev/opintopolku-tt-login/"
  :eperusteet-url "http://localhost:3000/dev-routes/eperusteet/api"
  :eperusteet-peruste-url "https://eperusteet.testiopintopolku.fi"
  :oppijanumerorekisteri-url "http://localhost:3000/oppijanumerorekisteri-service"
