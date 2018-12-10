@@ -6,9 +6,9 @@
 
 (def schemas (let [m (ns-publics 'oph.ehoks.hoks.schema)]
                (select-keys
-                m
-                (for [[k v] m :when (not (fn? (deref v)))]
-                  k))))
+                 m
+                 (for [[k v] m :when (not (fn? (deref v)))]
+                   k))))
 
 (defn required-str [k]
   (if (= (type k) schema.core.OptionalKey)
