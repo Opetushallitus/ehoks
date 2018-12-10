@@ -9,8 +9,7 @@
   (c-api/context "/:hoks-eid/puuttuva-paikallinen-tutkinnon-osa" [hoks-eid]
 
     (c-api/GET "/:eid" [:as eid]
-      :summary "Palauttaa HOKSin puuttuvan
-paikallisen tutkinnon osan"
+      :summary "Palauttaa HOKSin puuttuvan paikallisen tutkinnon osan"
       :return (rest/response
                 hoks-schema/PaikallinenTutkinnonOsa)
       (rest/rest-ok {}))
