@@ -15,7 +15,8 @@
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.redis :refer [redis-store]]
-            [oph.ehoks.hoks.handler :as hoks-handler]))
+            [oph.ehoks.hoks.handler :as hoks-handler]
+            [oph.ehoks.tyopaikan-toimija.handler :as tt-handler]))
 
 (def app-routes
   (c-api/api
@@ -48,7 +49,8 @@
           hoks-handler/routes
           lokalisointi-handler/routes
           external-handler/routes
-          misc-handler/routes))
+          misc-handler/routes
+          tt-handler/routes))
 
       (c-api/undocumented
         (GET "/buildversion.txt" _
@@ -75,6 +77,8 @@
    {:uri #"^/ehoks-backend/api/v1/external/eperusteet/$"
     :request-method :get}
    {:uri #"^/ehoks-backend/api/v1/misc/environment$"
+    :request-method :get}
+   {:uri #"^/ehoks-backend/api/v1/tyopaikan-toimija/auth$"
     :request-method :get}])
 
 (def app
