@@ -397,12 +397,28 @@
       :tarvittava-opetus]}))
 
 (s/defschema
+  Tutkinto
+  (describe
+    "Tutkinnon perustiedot ePerusteet järjestelmässä"
+    :laajuus s/Int "Tutkinnon laajuus"
+    :nimi s/Str "Tutkinnon nimi"))
+
+(s/defschema
+  Opiskeluoikeus
+  (describe
+    "Opiskeluoikeuden tiedot Koski-järjestelmässä"
+    :oid s/Str "Opinto-oikeuden tunniste Opintopolku-ympäristössä"
+    :tutkinto Tutkinto "Opinto-oikeuden tutkinto"))
+
+(s/defschema
   HOKS
   (describe
     "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
     :eid s/Int "Tunniste eHOKS-järjestelmässä"
     :opiskeluoikeus-oid s/Str
     "Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä."
+    :opiskeluoikeus Opiskeluoikeus
+    "Opiskeluoikeuden tiedot Koski-järjestelmässä"
     (s/optional-key :urasuunnitelma) KoodistoKoodi
     "Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi"
     :versio s/Int "HOKS-dokumentin versio"
