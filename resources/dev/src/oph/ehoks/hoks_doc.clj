@@ -6,9 +6,9 @@
 
 (def schemas (let [m (ns-publics 'oph.ehoks.hoks.schema)]
                (select-keys
-                m
-                (for [[k v] m :when (not (fn? (deref v)))]
-                  k))))
+                 m
+                 (for [[k v] m :when (not (fn? (deref v)))]
+                   k))))
 
 (defn required-str [k]
   (if (= (type k) schema.core.OptionalKey)
@@ -17,9 +17,9 @@
 
 (defn key-str [k]
   (name
-   (if (= (type k) schema.core.OptionalKey)
-     (:k k)
-     k)))
+    (if (= (type k) schema.core.OptionalKey)
+      (:k k)
+      k)))
 
 (defn generate-link [{t :name}]
   (format "[%s](#%s)" t t))
@@ -43,41 +43,41 @@
 (defn generate-md-row [k v]
   (let [m (meta v)]
     (format
-     "| %s | %s | %s | %s |"
-     (key-str k)
-     (if (sequential? v)
-       (format "[%s]" (get-name (first v)))
-       (get-name v))
-     (get-in m [:json-schema :description])
-     (required-str k))))
+      "| %s | %s | %s | %s |"
+      (key-str k)
+      (if (sequential? v)
+        (format "[%s]" (get-name (first v)))
+        (get-name v))
+      (get-in m [:json-schema :description])
+      (required-str k))))
 
 (defn generate-markdown [m]
   (let [m-meta (meta m)]
     (conj
-     (apply
-      conj
-      [(str "### " (:name m-meta) "  ")
-       ""
-       (get-in m-meta [:json-schema :description])
-       ""
-       "| Nimi | Tyyppi | Selite | Vaaditaan |"
-       "| ---- | ------ | ------ | --------- |"]
-      (map #(generate-md-row % (get m %)) (keys m)))
-     "")))
+      (apply
+        conj
+        [(str "### " (:name m-meta) "  ")
+         ""
+         (get-in m-meta [:json-schema :description])
+         ""
+         "| Nimi | Tyyppi | Selite | Vaaditaan |"
+         "| ---- | ------ | ------ | --------- |"]
+        (map #(generate-md-row % (get m %)) (keys m)))
+      "")))
 
 (defn generate-doc []
   (map
-   #(generate-markdown (deref %))
-   (vals schemas)))
+    #(generate-markdown (deref %))
+    (vals schemas)))
 
 (defn write-doc! [target]
   (println (str "Generating markdown formatted document to " target))
   (with-open [w (io/writer target)]
     (.write w "# HOKS API doc\n")
     (.write
-     w
-     (str "Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin "
-          "esittämiseen.\n"))
+      w
+      (str "Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin "
+           "esittämiseen.\n"))
     (doseq [line (flatten (generate-doc))]
       (assert (string? line) (str "Line must be string. Got: " line))
       (try
