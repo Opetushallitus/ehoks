@@ -34,3 +34,11 @@
 (s/defschema LocalizationHealtcheckStatus
              "Healthcheck status of Localization Service"
              {})
+
+(s/defschema
+  Oppija
+  "Oppijan perustiedot"
+  {:eid s/Int
+   :oid s/Str
+   :etunimi s/Str
+   :sukunimi s/Str})
