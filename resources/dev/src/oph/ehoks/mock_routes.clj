@@ -38,6 +38,13 @@
         :cookies
         {"ring-session" cookie})))
 
+  (GET "/auth-dev/opintopolku-tt-login/" request
+    (response/see-other
+      (format "%s/%s/%s"
+              (:frontend-url config)
+              (:frontend-url-path config)
+              (:tyopaikan-toimija-frontend-path config))))
+
   (GET "/auth-dev/opintopolku-logout/" request
     (response/see-other (get-in request [:query-params "return"])))
 
