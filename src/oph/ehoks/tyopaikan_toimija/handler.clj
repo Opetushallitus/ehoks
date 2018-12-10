@@ -22,12 +22,12 @@
         :return (rest/response [common-schema/Oppija])
         (rest/rest-ok []))
 
-      (c-api/GET "/oppijat/:eid" []
+      (c-api/GET "/oppijat/:oid" []
         :summary "Palauttaa työpaikalla olevan oppijan tiedot"
         :return (rest/response [common-schema/Oppija])
         (rest/rest-ok {}))
 
-      (c-api/GET "/oppijat/:eid/tutkinto" []
+      (c-api/GET "/oppijat/:oid/tutkinto" []
         :summary "Palauttaa työpaikalla olevan oppijan tutkinnon perustiedot"
         :return (rest/response [hoks-schema/Tutkinto])
         (rest/rest-ok {})))))

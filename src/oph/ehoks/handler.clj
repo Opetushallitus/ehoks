@@ -16,7 +16,8 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.redis :refer [redis-store]]
             [oph.ehoks.hoks.handler :as hoks-handler]
-            [oph.ehoks.tyopaikan-toimija.handler :as tt-handler]))
+            [oph.ehoks.tyopaikan-toimija.handler :as tt-handler]
+            [oph.ehoks.oppija.handler :as oppija-handler]))
 
 (def app-routes
   (c-api/api
@@ -50,7 +51,8 @@
           lokalisointi-handler/routes
           external-handler/routes
           misc-handler/routes
-          tt-handler/routes))
+          tt-handler/routes
+          oppija-handler/routes))
 
       (c-api/undocumented
         (GET "/buildversion.txt" _
