@@ -415,6 +415,7 @@
   (describe
     "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
     :eid s/Int "Tunniste eHOKS-järjestelmässä"
+    :oppijan-oid s/Str "Oppijan tunniste Opintopolku-ympäristössä"
     :opiskeluoikeus-oid s/Str
     "Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä."
     :opiskeluoikeus Opiskeluoikeus
