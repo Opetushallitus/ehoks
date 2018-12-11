@@ -20,7 +20,7 @@
       "Luo (tai korvaa vanhan) puuttuvan paikallisen
  tutkinnon osan"
       :body
-      [_ hoks-schema/PuuttuvaPaikallinenTutkinnonOsaLuonti]
+      [_ hoks-schema/PaikallinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse)
       (rest/rest-ok {:uri ""}))
 
@@ -30,7 +30,7 @@
       :summary "Päivittää HOKSin puuttuvan paikallisen
 tutkinnon osan"
       :body
-      [_ hoks-schema/PuuttuvaPaikallinenTutkinnonOsaPaivitys]
+      [_ hoks-schema/PaikallinenTutkinnonOsaPaivitys]
       (response/no-content))
 
     (c-api/PATCH
@@ -40,7 +40,7 @@ tutkinnon osan"
       "Päivittää HOKSin puuttuvan paikallisen tutkinnon
   osan arvoa tai arvoja"
       :body
-      [_ hoks-schema/PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys]
+      [_ hoks-schema/PaikallinenTutkinnonOsaKentanPaivitys]
       (response/no-content))))
 
 (def ^:private puuttuva-ammatillinen-osaaminen

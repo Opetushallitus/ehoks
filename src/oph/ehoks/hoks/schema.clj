@@ -342,7 +342,7 @@
     :tarvittava-opetus s/Str "Tarvittava opetus"))
 
 (s/defschema
-  PuuttuvaPaikallinenTutkinnonOsaLuonti
+  PaikallinenTutkinnonOsaLuonti
   (modify
     PaikallinenTutkinnonOsa
     (str "Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää "
@@ -350,14 +350,14 @@
     {:removed [:eid]}))
 
 (s/defschema
-  PuuttuvaPaikallinenTutkinnonOsaPaivitys
+  PaikallinenTutkinnonOsaPaivitys
   (modify
     PaikallinenTutkinnonOsa
     (str "Puuttuvan paikallisen tutkinnon osan tiedot merkintää "
          "ylikirjoittaessa (PUT)")))
 
 (s/defschema
-  PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys
+  PaikallinenTutkinnonOsaKentanPaivitys
   (modify
     PaikallinenTutkinnonOsa
     (str "Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
