@@ -1,5 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
+
+Generoitu 11.12.2018 08.30
 ### MuuOppimisymparisto  
 
 Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu
@@ -74,6 +76,8 @@ HOKS-dokumentin ylikirjoitus (PUT)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | urasuunnitelma | [KoodistoKoodi](#KoodistoKoodi) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
+| opiskeluoikeus | [Opiskeluoikeus](#Opiskeluoikeus) | Opiskeluoikeuden tiedot Koski-järjestelmässä | Kyllä |
+| oppijan-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
 | olemassa-oleva-osaaminen | [OlemassaOlevaOsaaminen](#OlemassaOlevaOsaaminen) | Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | luonut | Merkkijono | HOKS-dokumentin luoneen henkilön nimi | Kyllä |
@@ -156,6 +160,8 @@ HOKS-dokumentin arvot uutta merkintää luotaessa (POST)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | urasuunnitelma | [KoodistoKoodi](#KoodistoKoodi) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
+| opiskeluoikeus | [Opiskeluoikeus](#Opiskeluoikeus) | Opiskeluoikeuden tiedot Koski-järjestelmässä | Kyllä |
+| oppijan-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
 | olemassa-oleva-osaaminen | [OlemassaOlevaOsaaminen](#OlemassaOlevaOsaaminen) | Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | luonut | Merkkijono | HOKS-dokumentin luoneen henkilön nimi | Kyllä |
@@ -190,6 +196,15 @@ Arvioija
 | rooli | [KoodistoKoodi](#KoodistoKoodi) | Arvioijan roolin Koodisto-koodi | Kyllä |
 | organisaatio | [Organisaatio](#Organisaatio) | Arvioijan organisaatio | Kyllä |
 
+### Opiskeluoikeus  
+
+Opiskeluoikeuden tiedot Koski-järjestelmässä
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| oid | Merkkijono | Opinto-oikeuden tunniste Opintopolku-ympäristössä | Kyllä |
+| tutkinto | [Tutkinto](#Tutkinto) | Opinto-oikeuden tutkinto | Kyllä |
+
 ### Arviointikriteeri  
 
 Arviointikriteeri
@@ -207,6 +222,8 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | urasuunnitelma | [KoodistoKoodi](#KoodistoKoodi) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
+| opiskeluoikeus | [Opiskeluoikeus](#Opiskeluoikeus) | Opiskeluoikeuden tiedot Koski-järjestelmässä | Kyllä |
+| oppijan-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
 | luotu | Aikaleima | HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | olemassa-oleva-osaaminen | [OlemassaOlevaOsaaminen](#OlemassaOlevaOsaaminen) | Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
@@ -289,8 +306,10 @@ HOKS-dokumentin arvon tai arvojen päivitys (PATCH)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | urasuunnitelma | [KoodistoKoodi](#KoodistoKoodi) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
+| opiskeluoikeus | [Opiskeluoikeus](#Opiskeluoikeus) | Opiskeluoikeuden tiedot Koski-järjestelmässä | Kyllä |
 | luonut | Merkkijono | HOKS-dokumentin luoneen henkilön nimi | Ei |
 | opiskeluoikeus-oid | Merkkijono | Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä. | Ei |
+| oppijan-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
 | olemassa-oleva-osaaminen | [OlemassaOlevaOsaaminen](#OlemassaOlevaOsaaminen) | Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa | Ei |
 | paivittanyt | Merkkijono | HOKS-dokumenttia viimeksi päivittäneen henkilön nimi | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
@@ -464,14 +483,25 @@ Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä päivittäess
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus | Ei |
 | eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Kyllä |
 
-### OlemassaOlevaAmmatillinenOsaaminen  
+### Tutkinto  
 
-Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa
+Tutkinnon perustiedot ePerusteet järjestelmässä
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| tutkinnon-id | Kokonaisluku | Tutkinnon osan id, johon tunnistettava olemassaoleva osaaminen liittyy | Ei |
-| valittu-todentamisen-prosessi | (enum :valittu-todentaminen-naytto :valittu-todentaminen-arvioijat :valittu-todentaminen-suoraan) | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
+| laajuus | Kokonaisluku | Tutkinnon laajuus | Kyllä |
+| nimi | Merkkijono | Tutkinnon nimi | Kyllä |
+
+### OlemassaOlevaAmmatillinenOsaaminen  
+
+Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella
+    sisällytetty suoraan osaksi opiskelijan tutkintoa
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| tutkinnon-id | Kokonaisluku | Tutkinnon osan id,
+  johon tunnistettava olemassaoleva osaaminen liittyy | Ei |
+| valittu-todentamisen-prosessi | Joukon alkio (valittu-todentaminen-naytto, valittu-todentaminen-arvioijat, valittu-todentaminen-suoraan) | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
 | tarkentavat-tiedot | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
 
 ### PuuttuvaPaikallinenTutkinnonOsaLuonti  
