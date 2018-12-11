@@ -4,7 +4,8 @@
             [clojure.java.io :as io]
             [oph.ehoks.hoks.schema]
             [clj-time.local :as l]
-            [clj-time.format :as f]))
+            [clj-time.format :as f]
+            [clojure.string :as cstr]))
 
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
@@ -35,8 +36,16 @@
                     java.time.LocalDate "Päivämäärä"
                     (maybe Str) "Valinnainen merkkijono"})
 
+(defn get-enum-translation [n]
+  (format "Joukon alkio (%s)" (cstr/join ", " (map name (rest n)))))
+
+(defn enum? [n]
+  (= (and (coll? n) (first n)) 'enum))
+
 (defn translate-fi [n]
-  (get translations n (str n)))
+  (if (enum? n)
+    (get-enum-translation n)
+    (get translations n (str n))))
 
 (defn get-name [v]
   (let [m (meta v)]
