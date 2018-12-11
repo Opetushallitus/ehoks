@@ -3,7 +3,8 @@
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.restful :as rest]))
+            [oph.ehoks.restful :as rest])
+  (:import (java.time LocalDate)))
 
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
   (c-api/context "/:hoks-eid/puuttuva-paikallinen-tutkinnon-osa" [hoks-eid]
@@ -12,7 +13,23 @@
       :summary "Palauttaa HOKSin puuttuvan paikallisen tutkinnon osan"
       :return (rest/response
                 hoks-schema/PaikallinenTutkinnonOsa)
-      (rest/rest-ok {}))
+      (rest/rest-ok {:eid 1
+                     :amosaa-tunniste ""
+                     :nimi ""
+                     :laajuus 0
+                     :kuvaus ""
+                     :osaamisen-hankkimistavat []
+                     :koulutuksen-jarjestaja-oid ""
+                     :hankitun-osaamisen-naytto
+                     {:jarjestaja {:nimi ""}
+                      :nayttoymparisto {:nimi ""}
+                      :kuvaus ""
+                      :ajankohta {:alku (LocalDate/of 2018 12 12)
+                                  :loppu (LocalDate/of 2018 12 20)}
+                      :sisalto ""
+                      :ammattitaitovaatimukset []
+                      :arvioijat []}
+                     :tarvittava-opetus ""}))
 
     (c-api/POST
       "/" []
@@ -20,7 +37,7 @@
       "Luo (tai korvaa vanhan) puuttuvan paikallisen
  tutkinnon osan"
       :body
-      [_ hoks-schema/PuuttuvaPaikallinenTutkinnonOsaLuonti]
+      [_ hoks-schema/PaikallinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse)
       (rest/rest-ok {:uri ""}))
 
@@ -30,7 +47,7 @@
       :summary "Päivittää HOKSin puuttuvan paikallisen
 tutkinnon osan"
       :body
-      [_ hoks-schema/PuuttuvaPaikallinenTutkinnonOsaPaivitys]
+      [_ hoks-schema/PaikallinenTutkinnonOsaPaivitys]
       (response/no-content))
 
     (c-api/PATCH
@@ -40,17 +57,26 @@ tutkinnon osan"
       "Päivittää HOKSin puuttuvan paikallisen tutkinnon
   osan arvoa tai arvoja"
       :body
-      [_ hoks-schema/PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys]
+      [_ hoks-schema/PaikallinenTutkinnonOsaKentanPaivitys]
       (response/no-content))))
 
 (def ^:private puuttuva-ammatillinen-osaaminen
   (c-api/context "/:hoks-eid/puuttuva-ammatillinen-osaaminen" [hoks-eid]
+
     (c-api/GET "/:eid" [:as eid]
       :summary "Palauttaa HOKSin puuttuvan ammatillisen
 osaamisen"
       :return (rest/response
                 hoks-schema/PuuttuvaAmmatillinenOsaaminen)
-      (rest/rest-ok {}))
+      (rest/rest-ok {:eid 1
+                     :tutkinnon-osa {:tunniste {:koodi-arvo "1"
+                                                :koodi-uri "esimerkki_uri"
+                                                :versio 1}
+                                     :eperusteet-id ""}
+                     :vaatimuksista-tai-tavoitteista-poikkeaminen ""
+                     :osaamisen-hankkimistavat []
+                     :koulutuksen-jarjestaja-oid ""
+                     :tarvittava-opetus ""}))
 
     (c-api/POST "/" []
       :summary
