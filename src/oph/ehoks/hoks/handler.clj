@@ -3,8 +3,8 @@
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.restful :as rest]
-            [clj-time.core :as t]))
+            [oph.ehoks.restful :as rest])
+  (:import (java.time LocalDate)))
 
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
   (c-api/context "/:hoks-eid/puuttuva-paikallinen-tutkinnon-osa" [hoks-eid]
@@ -14,22 +14,22 @@
       :return (rest/response
                 hoks-schema/PaikallinenTutkinnonOsa)
       (rest/rest-ok {:eid 1
-                    :amosaa-tunniste ""
-                    :nimi ""
-                    :laajuus 0
-                    :kuvaus ""
-                    :osaamisen-hankkimistavat []
-                    :koulutuksen-jarjestaja-oid ""
-                    :hankitun-osaamisen-naytto
-                    {:jarjestaja {:nimi ""}
-                     :nayttoymparisto {:nimi ""}
+                     :amosaa-tunniste ""
+                     :nimi ""
+                     :laajuus 0
                      :kuvaus ""
-                     :ajankohta {:alku (t/local-date 2018 12 12)
-                                 :loppu (t/local-date 2018 12 20)}
-                     :sisalto ""
-                     :ammattitaitovaatimukset []
-                     :arvioijat []}
-                    :tarvittava-opetus ""}))
+                     :osaamisen-hankkimistavat []
+                     :koulutuksen-jarjestaja-oid ""
+                     :hankitun-osaamisen-naytto
+                     {:jarjestaja {:nimi ""}
+                      :nayttoymparisto {:nimi ""}
+                      :kuvaus ""
+                      :ajankohta {:alku (LocalDate/of 2018 12 12)
+                                  :loppu (LocalDate/of 2018 12 20)}
+                      :sisalto ""
+                      :ammattitaitovaatimukset []
+                      :arvioijat []}
+                     :tarvittava-opetus ""}))
 
     (c-api/POST
       "/" []
