@@ -2,7 +2,11 @@
   (:require [clojure.string :as cstr]
             [schema.core :as s]
             [clojure.java.io :as io]
-            [oph.ehoks.hoks.schema]))
+            [oph.ehoks.hoks.schema]
+            [clj-time.local :as l]
+            [clj-time.format :as f]))
+
+(def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
 (def schemas (let [m (ns-publics 'oph.ehoks.hoks.schema)]
                (select-keys
@@ -77,7 +81,10 @@
     (.write
       w
       (str "Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin "
-           "esittämiseen.\n"))
+           "esittämiseen.\n\n"
+           "Generoitu "
+           (f/unparse local-formatter (l/to-local-date-time (l/local-now)))
+           "\n"))
     (doseq [line (flatten (generate-doc))]
       (assert (string? line) (str "Line must be string. Got: " line))
       (try
