@@ -221,8 +221,7 @@
                    :vaatimuksista-tai-tavoitteista-poikkeaminen ""
                    :osaamisen-hankkimistavat []
                    :koulutuksen-jarjestaja-oid ""
-                   :tarvittava-opetus ""}
-                  )))]
+                   :tarvittava-opetus ""})))]
       (is (= (:status response) 204)))))
 
 (deftest patch-all-pao
