@@ -322,6 +322,30 @@
          "koulutuksen järjestäjän oid.")))
 
 (s/defschema
+  PuuttuvaYTOLuonti
+  (modify
+    PuuttuvaYTO
+    (str "Puuttuvan yhteinen tutkinnon osan tiedot uutta merkintää "
+         "luotaessa (POST)")
+    {:removed [:eid]}))
+
+(s/defschema
+  PuuttuvaYTOPaivitys
+  (modify
+    PuuttuvaYTO
+    (str "Puuttuvan yhteinen tutkinnon osa tiedot merkintää "
+         "ylikirjoittaessa (PUT)")))
+
+(s/defschema
+  PuuttuvaYTOKentanPaivitys
+  (modify
+    PuuttuvaYTO
+    (str "Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
+         "päivittäessä (PATCH)")
+    {:optionals
+     [:eperusteet-id :tutkinnon-osat :koulutuksen-jarjestaja-oid]}))
+
+(s/defschema
   PaikallinenTutkinnonOsa
   (describe
     "Puuttuva paikallinen tutkinnon osa"
