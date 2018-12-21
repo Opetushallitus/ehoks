@@ -260,3 +260,92 @@
                   {:eid 1
                    :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
       (is (= (:status response) 204)))))
+
+(def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
+
+(deftest get-pyto
+  (testing "GET puuttuvat yhteisen tutkinnon osat"
+    (let [response
+          (utils/with-authentication
+            app
+            (mock/request
+              :get
+              (format
+                "%s/1/%s/1"
+                url pyto-path)))]
+      (is (= (:status response) 200))
+      (eq (utils/parse-body
+            (:body response))
+          {:data {:eid 1
+                  :eperusteet-id 1
+                  :tutkinnon-osat []
+                  :koulutuksen-jarjestaja-oid "1"}
+           :meta {}}))))
+
+(deftest post-pyto
+  (testing "POST puuttuvat yhteisen tutkinnon osat"
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/%s/"
+                    url pyto-path))
+                (mock/json-body
+                  {:eperusteet-id 1
+                   :tutkinnon-osat []
+                   :koulutuksen-jarjestaja-oid "1"})))]
+      (is (= (:status response) 200))
+      (eq (utils/parse-body
+            (:body response))
+          {:data {:uri ""} :meta {}}))))
+
+(deftest put-pyto
+  (testing "PUT puuttuvat yhteisen tutkinnon osat"
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :put
+                  (format
+                    "%s/1/%s/1"
+                    url pyto-path))
+                (mock/json-body
+                  {:eid 1
+                   :eperusteet-id 1
+                   :tutkinnon-osat []
+                   :koulutuksen-jarjestaja-oid "1"})))]
+      (is (= (:status response) 204)))))
+
+(deftest patch-one-pyto
+  (testing "PATCH one value puuttuvat yhteisen tutkinnon osat"
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :patch
+                  (format
+                    "%s/1/%s/1"
+                    url pyto-path))
+                (mock/json-body
+                  {:eid 1
+                   :koulutuksen-jarjestaja-oid "123"})))]
+      (is (= (:status response) 204)))))
+
+(deftest patch-all-pyto
+  (testing "PATCH all puuttuvat yhteisen tutkinnon osat"
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :patch
+                  (format
+                    "%s/1/%s/1"
+                    url pyto-path))
+                (mock/json-body
+                  {:eid 1
+                   :eperusteet-id 1
+                   :tutkinnon-osat []
+                   :koulutuksen-jarjestaja-oid "1"})))]
+      (is (= (:status response) 204)))))
