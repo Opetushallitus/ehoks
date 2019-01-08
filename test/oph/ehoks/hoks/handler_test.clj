@@ -349,3 +349,28 @@
                    :tutkinnon-osat []
                    :koulutuksen-jarjestaja-oid "1"})))]
       (is (= (:status response) 204)))))
+
+(deftest get-created-hoks
+  (testing "GET newly created HOKS"
+    (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
+                                      :tutkinto {:laajuus 5 :nimi "Test"}}
+                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :luonut "Teppo Tekijä"
+                     :opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+                     :paivittanyt "Pekka Päivittäjä"
+                     :hyvaksynyt "Heiki Hyväksyjä"}
+          response
+          (utils/with-authentication
+            app
+            (-> (mock/request :post url)
+                (mock/json-body hoks-data
+                                )))
+          body (utils/parse-body (:body response))]
+      (is (= (:status response) 200))
+      (eq body {:data {:uri (format "%s/1" url )} :meta {}})
+      (let [get-response
+            (utils/with-authentication
+              app
+              (mock/request :get (get-in body [:data :uri])))
+            get-body (utils/parse-body (:body get-response))]
+        (eq get-body (assoc hoks-data :eid 1))))))
