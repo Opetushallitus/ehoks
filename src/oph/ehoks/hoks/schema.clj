@@ -118,7 +118,8 @@
   OpiskeluvalmiuksiaTukevatOpinnotPaivitys
   (modify
     OpiskeluvalmiuksiaTukevatOpinnot
-    "Opiskeluvalmiuksia tukevien opintojen tiedot merkintää ylikirjoittaessa (PUT)"))
+    "Opiskeluvalmiuksia tukevien opintojen tiedot merkintää ylikirjoittaessa
+     (PUT)"))
 
 (s/defschema
   OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys
