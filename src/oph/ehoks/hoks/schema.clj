@@ -107,6 +107,29 @@
     :ajankohta Aikavali "Opintojen ajoittuminen"))
 
 (s/defschema
+  OpiskeluvalmiuksiaTukevatOpinnotLuonti
+  (modify
+    OpiskeluvalmiuksiaTukevatOpinnot
+    (str "Opiskeluvalmiuksia tukevien opintojen tiedot uutta merkintää "
+         "luotaessa (POST)")
+    {:removed [:eid]}))
+
+(s/defschema
+  OpiskeluvalmiuksiaTukevatOpinnotPaivitys
+  (modify
+    OpiskeluvalmiuksiaTukevatOpinnot
+    "Opiskeluvalmiuksia tukevien opintojen tiedot merkintää ylikirjoittaessa (PUT)"))
+
+(s/defschema
+  OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys
+  (modify
+    OpiskeluvalmiuksiaTukevatOpinnot
+    (str "Opiskeluvalmiuksia tukevien opintojen tiedot kenttää tai kenttiä "
+         "päivittäessä (PATCH)")
+    {:optionals
+     [:nimi :kuvaus :kesto :ajankohta]}))
+
+(s/defschema
   TyopaikallaHankittavaOsaaminen
   (describe
     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"

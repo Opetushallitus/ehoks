@@ -141,6 +141,43 @@ osaamisen"
       [_ hoks-schema/PuuttuvaYTOKentanPaivitys]
       (response/no-content))))
 
+(def ^:private opiskeluvalmiuksia-tukevat-opinnot
+  (c-api/context "/:hoks-eid/opiskeluvalmiuksia-tukevat-opinnot" [hoks-eid]
+
+    (c-api/GET "/:eid" [:as eid]
+      :summary "Palauttaa HOKSin opiskeluvalmiuksia tukevat opinnot	"
+      :return (rest/response
+                hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot)
+      (rest/rest-ok {:eid 1
+                     :nimi ""
+                     :kuvaus ""
+                     :kesto 1
+                     :ajankohta {:alku (LocalDate/of 2018 12 12)
+                                 :loppu (LocalDate/of 2018 12 20)}}))
+
+    (c-api/POST "/" []
+      :summary
+      "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin"
+      :body
+      [_ hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
+      :return (rest/response schema/POSTResponse)
+      (rest/rest-ok {:uri ""}))
+
+    (c-api/PUT
+      "/:eid" []
+      :summary "Päivittää HOKSin opiskeluvalmiuksia tukevat opinnot"
+      :body
+      [_ hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
+      (response/no-content))
+
+    (c-api/PATCH
+      "/:eid" []
+      :summary
+      "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
+      :body
+      [_ hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
+      (response/no-content))))
+
 (def routes
   (c-api/context "/hoks" []
     :tags ["hoks"]
@@ -169,4 +206,5 @@ tai arvoja"
 
     puuttuva-ammatillinen-osaaminen
     puuttuva-paikallinen-tutkinnon-osa
-    puuttuvat-yhteisen-tutkinnon-osat))
+    puuttuvat-yhteisen-tutkinnon-osat
+    opiskeluvalmiuksia-tukevat-opinnot))
