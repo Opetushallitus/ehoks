@@ -3,7 +3,8 @@
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.restful :as rest])
+            [oph.ehoks.restful :as rest]
+            [oph.ehoks.db.memory :as db])
   (:import (java.time LocalDate)))
 
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
@@ -148,13 +149,14 @@ osaamisen"
     (c-api/GET "/:eid" [:as eid]
       :summary "Palauttaa HOKSin"
       :return (rest/response hoks-schema/HOKS)
-      (rest/rest-ok {}))
+      (rest/rest-ok (db/get-hoks eid)))
 
-    (c-api/POST "/" []
+    (c-api/POST "/" [:as request]
       :summary "Luo uuden HOKSin"
-      :body [_ hoks-schema/HOKSLuonti]
+      :body [hoks hoks-schema/HOKSLuonti]
       :return (rest/response schema/POSTResponse)
-      (rest/rest-ok {:uri ""}))
+      (let [h (db/create-hoks! hoks)]
+        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid h))})))
 
     (c-api/PUT "/:eid" []
       :summary "Päivittää olemassa olevaa HOKSia"
