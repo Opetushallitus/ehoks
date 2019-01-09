@@ -31,6 +31,3 @@
             :paivitetty (java.util.Date.))]
     (swap! hoks-store conj h)
     h))
-
-(defn get-hoks [eid]
-  (some #(when (= (:eid %) eid) %) @hoks-store))
