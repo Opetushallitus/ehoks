@@ -445,6 +445,5 @@
                    :kuvaus ""
                    :kesto 1
                    :ajankohta {:alku "2018-12-12"
-                               :loppu "2018-12-20"}}
-              )))]
+                               :loppu "2018-12-20"}})))]
       (is (= (:status response) 204)))))
