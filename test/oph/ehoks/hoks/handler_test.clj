@@ -365,11 +365,10 @@
           (utils/with-authentication
             app
             (-> (mock/request :post url)
-                (mock/json-body hoks-data
-                                )))
+                (mock/json-body hoks-data)))
           body (utils/parse-body (:body response))]
       (is (= (:status response) 200))
-      (eq body {:data {:uri (format "%s/1" url )} :meta {}})
+      (eq body {:data {:uri (format "%s/1" url)} :meta {}})
       (let [get-response
             (utils/with-authentication
               app
@@ -395,28 +394,28 @@
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}]
       (utils/with-authentication
-            app
-            (-> (mock/request :post url)
-                (mock/json-body hoks-data)))
+        app
+        (-> (mock/request :post url)
+            (mock/json-body hoks-data)))
       (let [response
-          (utils/with-authentication
-            app
-            (-> (mock/request :post url)
-                (mock/json-body hoks-data
-                                )))
-          body (utils/parse-body (:body response))]
-      (is (= (:status response) 200))
-      (eq body {:data {:uri (format "%s/1" url )} :meta {}})
-      (let [get-response
             (utils/with-authentication
               app
-              (mock/request :get (get-in body [:data :uri])))
-            get-body (utils/parse-body (:body get-response))]
-        (eq get-body {:meta {}
-                      :data (assoc
-                              hoks-data
-                              :eid 1
-                              :luotu (get-in get-body [:data :luotu])
-                              :hyvaksytty (get-in get-body [:data :hyvaksytty])
-                              :paivitetty (get-in get-body [:data :paivitetty])
-                              :versio 2)}))))))
+              (-> (mock/request :post url)
+                  (mock/json-body hoks-data)))
+            body (utils/parse-body (:body response))]
+        (is (= (:status response) 200))
+        (eq body {:data {:uri (format "%s/1" url)} :meta {}})
+        (let [get-response
+              (utils/with-authentication
+                app
+                (mock/request :get (get-in body [:data :uri])))
+              get-body (utils/parse-body (:body get-response))]
+          (eq get-body
+              {:meta {}
+               :data (assoc
+                       hoks-data
+                       :eid 1
+                       :luotu (get-in get-body [:data :luotu])
+                       :hyvaksytty (get-in get-body [:data :hyvaksytty])
+                       :paivitetty (get-in get-body [:data :paivitetty])
+                       :versio 2)}))))))
