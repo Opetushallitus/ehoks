@@ -4,7 +4,8 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as rest]
-            [oph.ehoks.db.memory :as db])
+            [oph.ehoks.db.memory :as db]
+            [schema.core :as s])
   (:import (java.time LocalDate)))
 
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
@@ -146,10 +147,11 @@ osaamisen"
   (c-api/context "/hoks" []
     :tags ["hoks"]
 
-    (c-api/GET "/:eid" [:as eid]
+    (c-api/GET "/:eid" [eid]
       :summary "Palauttaa HOKSin"
+      :path-params [eid :- s/Int]
       :return (rest/response hoks-schema/HOKS)
-      (rest/rest-ok (db/get-hoks eid)))
+      (rest/rest-ok (db/get-hoks-by-eid eid)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo uuden HOKSin"
