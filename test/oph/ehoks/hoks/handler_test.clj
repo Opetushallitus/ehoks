@@ -3,7 +3,8 @@
             [oph.ehoks.handler :refer [app]]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [clj-time.core :as t]))
+            [clj-time.core :as t]
+            [oph.ehoks.db.memory :as db]))
 
 (def url "/ehoks-backend/api/v1/hoks")
 
@@ -352,13 +353,14 @@
 
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
+    (db/clear)
     (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
                      :oppijan-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :paivittanyt "Pekka Päivittäjä"
-                     :hyvaksynyt "Heiki Hyväksyjä"}
+                     :hyvaksynyt "Heikki Hyväksyjä"}
           response
           (utils/with-authentication
             app
@@ -373,4 +375,48 @@
               app
               (mock/request :get (get-in body [:data :uri])))
             get-body (utils/parse-body (:body get-response))]
-        (eq get-body (assoc hoks-data :eid 1))))))
+        (eq get-body {:meta {}
+                      :data (assoc
+                              hoks-data
+                              :eid 1
+                              :luotu (get-in get-body [:data :luotu])
+                              :hyvaksytty (get-in get-body [:data :hyvaksytty])
+                              :paivitetty (get-in get-body [:data :paivitetty])
+                              :versio 1)})))))
+
+(deftest get-last-version-of-hoks
+  (testing "GET latest (second) version of HOKS"
+    (db/clear)
+    (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
+                                      :tutkinto {:laajuus 5 :nimi "Test"}}
+                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :luonut "Teppo Tekijä"
+                     :opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+                     :paivittanyt "Pekka Päivittäjä"
+                     :hyvaksynyt "Heikki Hyväksyjä"}]
+      (utils/with-authentication
+            app
+            (-> (mock/request :post url)
+                (mock/json-body hoks-data)))
+      (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request :post url)
+                (mock/json-body hoks-data
+                                )))
+          body (utils/parse-body (:body response))]
+      (is (= (:status response) 200))
+      (eq body {:data {:uri (format "%s/1" url )} :meta {}})
+      (let [get-response
+            (utils/with-authentication
+              app
+              (mock/request :get (get-in body [:data :uri])))
+            get-body (utils/parse-body (:body get-response))]
+        (eq get-body {:meta {}
+                      :data (assoc
+                              hoks-data
+                              :eid 1
+                              :luotu (get-in get-body [:data :luotu])
+                              :hyvaksytty (get-in get-body [:data :hyvaksytty])
+                              :paivitetty (get-in get-body [:data :paivitetty])
+                              :versio 2)}))))))
