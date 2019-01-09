@@ -2,6 +2,9 @@
 
 (defonce hoks-store (atom '()))
 
+(defn clear []
+  (reset! hoks-store '()))
+
 (defn get-next-id []
   (if (empty? @hoks-store)
     1
