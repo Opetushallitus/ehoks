@@ -1,6 +1,6 @@
 (ns oph.ehoks.db.memory)
 
-(defonce hoks-store (atom []))
+(defonce hoks-store (atom '()))
 
 (defn get-next-id []
   (if (empty? @hoks-store)
