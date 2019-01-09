@@ -351,6 +351,13 @@
                    :koulutuksen-jarjestaja-oid "1"})))]
       (is (= (:status response) 204)))))
 
+(defn get-authenticated [url]
+  (-> (utils/with-authentication
+        app
+        (mock/request :get url))
+      :body
+      utils/parse-body))
+
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
     (db/clear)
@@ -369,19 +376,16 @@
           body (utils/parse-body (:body response))]
       (is (= (:status response) 200))
       (eq body {:data {:uri (format "%s/1" url)} :meta {}})
-      (let [get-response
-            (utils/with-authentication
-              app
-              (mock/request :get (get-in body [:data :uri])))
-            get-body (utils/parse-body (:body get-response))]
-        (eq get-body {:meta {}
-                      :data (assoc
-                              hoks-data
-                              :eid 1
-                              :luotu (get-in get-body [:data :luotu])
-                              :hyvaksytty (get-in get-body [:data :hyvaksytty])
-                              :paivitetty (get-in get-body [:data :paivitetty])
-                              :versio 1)})))))
+      (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
+        (eq
+          hoks
+          (assoc
+            hoks-data
+            :eid 1
+            :luotu (:luotu hoks)
+            :hyvaksytty (:hyvaksytty hoks)
+            :paivitetty (:paivitetty hoks)
+            :versio 1))))))
 
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"
@@ -405,17 +409,13 @@
             body (utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (eq body {:data {:uri (format "%s/1" url)} :meta {}})
-        (let [get-response
-              (utils/with-authentication
-                app
-                (mock/request :get (get-in body [:data :uri])))
-              get-body (utils/parse-body (:body get-response))]
-          (eq get-body
-              {:meta {}
-               :data (assoc
-                       hoks-data
-                       :eid 1
-                       :luotu (get-in get-body [:data :luotu])
-                       :hyvaksytty (get-in get-body [:data :hyvaksytty])
-                       :paivitetty (get-in get-body [:data :paivitetty])
-                       :versio 2)}))))))
+        (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
+          (eq
+            hoks
+            (assoc
+              hoks-data
+              :eid 1
+              :luotu (:luotu hoks)
+              :hyvaksytty (:hyvaksytty hoks)
+              :paivitetty (:paivitetty hoks)
+              :versio 2)))))))
