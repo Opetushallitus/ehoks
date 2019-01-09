@@ -31,3 +31,15 @@
             :paivitetty (java.util.Date.))]
     (swap! hoks-store conj h)
     h))
+
+(defn update-hoks! [eid values]
+  (when-let [hoks (get-hoks-by-eid eid)]
+    (let [updated-hoks
+          (assoc
+            values
+            :paivitetty (java.util.Date.)
+            :versio (inc (:versio hoks))
+            :luotu (:luotu hoks)
+            :luonut (:luonut hoks))]
+      (swap! hoks-store conj updated-hoks)
+      updated-hoks)))
