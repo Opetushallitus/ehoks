@@ -175,7 +175,7 @@ osaamisen"
       :summary
       "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
       :body
-      [_ hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
+      [_ hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
       (response/no-content))))
 
 (def routes

@@ -3,7 +3,8 @@
             [oph.ehoks.handler :refer [app]]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [clj-time.core :as t]))
+            [clj-time.core :as t])
+  (:import (java.time LocalDate)))
 
 (def url "/ehoks-backend/api/v1/hoks")
 
@@ -348,4 +349,102 @@
                    :eperusteet-id 1
                    :tutkinnon-osat []
                    :koulutuksen-jarjestaja-oid "1"})))]
+      (is (= (:status response) 204)))))
+
+(def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")
+
+(deftest get-ovatu
+  (testing "GET opiskeluvalmiuksia tukevat opinnot"
+    (let [response
+          (utils/with-authentication
+            app
+            (mock/request
+              :get
+              (format
+                "%s/1/%s/1"
+                url ovatu-path)))]
+      (is (= (:status response) 200))
+      (eq (utils/parse-body
+            (:body response))
+          {:data {:eid 1
+                  :nimi ""
+                  :kuvaus ""
+                  :kesto 1
+                  :ajankohta {:alku "2018-12-12"
+                              :loppu "2018-12-20"}}
+           :meta {}}))))
+
+(deftest post-ovatu
+  (testing "POST opiskeluvalmiuksia tukevat opinnot"
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/%s/"
+                    url ovatu-path))
+                (mock/json-body
+                  {:nimi ""
+                   :kuvaus ""
+                   :kesto 1
+                   :ajankohta {:alku "2018-12-12"
+                               :loppu "2018-12-20"}})))]
+      (is (= (:status response) 200))
+      (eq (utils/parse-body
+            (:body response))
+          {:data {:uri ""} :meta {}}))))
+
+(deftest put-ovatu
+  (testing "PUT opiskeluvalmiuksia tukevat opinnot"
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :put
+                  (format
+                    "%s/1/%s/1"
+                    url ovatu-path))
+                (mock/json-body
+                  {:eid 1
+                   :nimi ""
+                   :kuvaus ""
+                   :kesto 1
+                   :ajankohta {:alku "2018-12-12"
+                               :loppu "2018-12-20"}})))]
+      (is (= (:status response) 204)))))
+
+(deftest patch-one-ovatu
+  (testing "PATCH one value opiskeluvalmiuksia tukevat opinnot"
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :patch
+                  (format
+                    "%s/1/%s/1"
+                    url ovatu-path))
+                (mock/json-body
+                  {:eid 1
+                   :nimi ""})))]
+      (is (= (:status response) 204)))))
+
+(deftest patch-all-ovatu
+  (testing "PATCH all opiskeluvalmiuksia tukevat opinnot"
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :patch
+                  (format
+                    "%s/1/%s/1"
+                    url ovatu-path))
+                (mock/json-body
+                  {:eid 1
+                   :nimi ""
+                   :kuvaus ""
+                   :kesto 1
+                   :ajankohta {:alku "2018-12-12"
+                               :loppu "2018-12-20"}}
+              )))]
       (is (= (:status response) 204)))))
