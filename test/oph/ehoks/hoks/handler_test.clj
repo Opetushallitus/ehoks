@@ -455,3 +455,21 @@
               :paivitetty (:paivitetty updated-hoks)
               :versio 2
               :paivittanyt "Teuvo Testaaja")))))))
+
+(deftest put-non-existing-hoks
+  (testing "PUT prevents updating non existing HOKS"
+    (db/clear)
+    (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
+                                      :tutkinto {:laajuus 5 :nimi "Test"}}
+                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+                     :paivittanyt "Teuvo Testaaja"
+                     :hyvaksytty (java.util.Date.)
+                     :eid 1
+                     :hyvaksynyt "Heikki Hyväksyjä"}
+          response
+          (utils/with-authentication
+            app
+            (-> (mock/request :put (format "%s/1" url))
+                (mock/json-body hoks-data)))]
+      (is (= (:status response) 404)))))
