@@ -160,14 +160,16 @@ osaamisen"
       (let [h (db/create-hoks! hoks)]
         (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid h))})))
 
-    (c-api/PUT "/:eid" []
+    (c-api/PUT "/:eid" [eid]
       :summary "Päivittää olemassa olevaa HOKSia"
-      :body [_ hoks-schema/HOKSPaivitys]
-      (response/no-content))
+      :path-params [eid :- s/Int]
+      :body [values hoks-schema/HOKSPaivitys]
+      (if (db/update-hoks! eid values)
+        (response/no-content)
+        (response/not-found "HOKS not found with given eHOKS ID")))
 
     (c-api/PATCH "/:eid" []
-      :summary "Päivittää olemassa olevan HOKSin arvoa
-tai arvoja"
+      :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
       :body [_ hoks-schema/HOKSKentanPaivitys]
       (response/no-content))
 
