@@ -19,7 +19,16 @@
       (last (sort-by :versio h)))))
 
 (defn create-hoks! [hoks]
-  (let [h (assoc hoks :eid (get-next-id))]
+  (let [old (or
+              (get-hoks-by-eid (:eid hoks))
+              (get-hoks-by-opiskeluoikeus (get-in hoks [:opiskeluoikeus :oid])))
+        h (assoc
+            hoks
+            :eid (or (:eid old) (get-next-id))
+            :luotu (java.util.Date.)
+            :hyvaksytty (java.util.Date.)
+            :versio (if (some? old) (inc (:versio old)) 1)
+            :paivitetty (java.util.Date.))]
     (swap! hoks-store conj h)
     h))
 
