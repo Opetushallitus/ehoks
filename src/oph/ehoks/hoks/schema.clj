@@ -495,7 +495,7 @@
   (modify
     HOKS
     "HOKS-dokumentin ylikirjoitus (PUT)"
-    {:removed [:versio :luotu :hyvaksytty :paivitetty]}))
+    {:removed [:versio :luotu :luonut :paivitetty]}))
 
 (s/defschema
   HOKSKentanPaivitys
