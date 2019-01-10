@@ -2,6 +2,8 @@
 
 (defonce hoks-store (atom '()))
 
+(defonce oppijat-store (atom '()))
+
 (defn clear []
   (reset! hoks-store '()))
 
