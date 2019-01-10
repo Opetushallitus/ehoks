@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 11.12.2018 08.30
+Generoitu 08.01.2019 13.43
 ### MuuOppimisymparisto  
 
 Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu
@@ -26,6 +26,16 @@ Puuttuvan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
 | tarvittava-opetus | Merkkijono | Tarvittava opetus | Ei |
+
+### PuuttuvaYTOLuonti  
+
+Puuttuvan yhteinen tutkinnon osan tiedot uutta merkintää luotaessa (POST)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| eperusteet-id | Kokonaisluku | Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua | Kyllä |
+| tutkinnon-osat | [[PuuttuvaYTOOsa](#PuuttuvaYTOOsa)] | Puuttuvat YTO osat | Kyllä |
+| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
 
 ### PuuttuvaYTOOsa  
 
@@ -69,6 +79,18 @@ Yhteinen Tutkinnon osa (YTO)
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus ePerusteet-palvelussa | Ei |
 | pakollinen | Totuusarvo | Onko tutkinnon osa pakollinen vai ei | Kyllä |
 
+### OpiskeluvalmiuksiaTukevatOpinnotPaivitys  
+
+Opiskeluvalmiuksia tukevien opintojen tiedot merkintää ylikirjoittaessa (PUT)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
+| nimi | Merkkijono | Opintojen nimi | Kyllä |
+| kuvaus | Merkkijono | Opintojen kuvaus | Kyllä |
+| kesto | Kokonaisluku | Opintojen kesto päivinä | Kyllä |
+| ajankohta | [Aikavali](#Aikavali) | Opintojen ajoittuminen | Kyllä |
+
 ### HOKSPaivitys  
 
 HOKS-dokumentin ylikirjoitus (PUT)
@@ -105,6 +127,18 @@ Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot
 | erityinen-tuki | Totuusarvo | Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä erityisen tuen päätös | Kyllä |
 | erityisen-tuen-aika | [Aikavali](#Aikavali) | Erityisen tuen alkamispvm ja päättymispvm kyseisessä tutkinnon taikoulutuksen osassa | Ei |
 
+### OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys  
+
+Opiskeluvalmiuksia tukevien opintojen tiedot kenttää tai kenttiä päivittäessä (PATCH)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
+| nimi | Merkkijono | Opintojen nimi | Ei |
+| kuvaus | Merkkijono | Opintojen kuvaus | Ei |
+| kesto | Kokonaisluku | Opintojen kesto päivinä | Ei |
+| ajankohta | [Aikavali](#Aikavali) | Opintojen ajoittuminen | Ei |
+
 ### Henkilo  
 
 Henkilö
@@ -115,6 +149,33 @@ Henkilö
 | organisaatio | [Organisaatio](#Organisaatio) | Henkilön organisaatio | Kyllä |
 | nimi | Merkkijono | Henkilön nimi | Kyllä |
 | rooli | Merkkijono | Henkilön rooli | Kyllä |
+
+### PuuttuvaYTOPaivitys  
+
+Puuttuvan yhteinen tutkinnon osa tiedot merkintää ylikirjoittaessa (PUT)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
+| eperusteet-id | Kokonaisluku | Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua | Kyllä |
+| tutkinnon-osat | [[PuuttuvaYTOOsa](#PuuttuvaYTOOsa)] | Puuttuvat YTO osat | Kyllä |
+| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
+
+### PaikallinenTutkinnonOsaKentanPaivitys  
+
+Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä päivittäessä (PATCH)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| hankitun-osaamisen-naytto | [HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
+| laajuus | Kokonaisluku | Tutkinnon osan laajuus | Ei |
+| nimi | Merkkijono | Tutkinnon osan nimi | Ei |
+| amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
+| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
+| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| tarvittava-opetus | Merkkijono | Tarvittava opetus | Ei |
+| kuvaus | Merkkijono | Tutkinnon osan kuvaus | Ei |
+| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Kyllä |
 
 ### Aikavali  
 
@@ -215,6 +276,21 @@ Arviointikriteeri
 | osaamistaso | Kokonaisluku | Osaamistaso | Kyllä |
 | kuvaus | Merkkijono | Arviointikriteerin kuvaus | Kyllä |
 
+### PaikallinenTutkinnonOsaLuonti  
+
+Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää luotaessa (POST)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
+| nimi | Merkkijono | Tutkinnon osan nimi | Kyllä |
+| laajuus | Kokonaisluku | Tutkinnon osan laajuus | Kyllä |
+| kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
+| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
+| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
+| hankitun-osaamisen-naytto | [HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
+| tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
+
 ### HOKS  
 
 Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
@@ -238,6 +314,22 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
 | eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Kyllä |
 | hyvaksynyt | Merkkijono | Luodun HOKS-dokumentn hyväksyjän nimi | Kyllä |
 | puuttuva-ammatillinen-osaaminen | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
+
+### PaikallinenTutkinnonOsaPaivitys  
+
+Puuttuvan paikallisen tutkinnon osan tiedot merkintää ylikirjoittaessa (PUT)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Kyllä |
+| amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
+| nimi | Merkkijono | Tutkinnon osan nimi | Kyllä |
+| laajuus | Kokonaisluku | Tutkinnon osan laajuus | Kyllä |
+| kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
+| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
+| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
+| hankitun-osaamisen-naytto | [HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
+| tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
 
 ### KoodiMetadata  
 
@@ -277,6 +369,17 @@ Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen
 | ammattitaitovaatimukset | [Kokonaisluku] | Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan. Lista ePerusteet tunnisteita. Tunnisteen tyyppi voi vielä päivittyä. | Kyllä |
 | arvioijat | [[Arvioija](#Arvioija)] | Näytön tai osaamisen osoittamisen arvioijat | Kyllä |
 | yksilolliset-arviointikriteerit | [[Arviointikriteeri](#Arviointikriteeri)] | Yksilölliset arvioinnin kriteerit | Ei |
+
+### OpiskeluvalmiuksiaTukevatOpinnotLuonti  
+
+Opiskeluvalmiuksia tukevien opintojen tiedot uutta merkintää luotaessa (POST)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| nimi | Merkkijono | Opintojen nimi | Kyllä |
+| kuvaus | Merkkijono | Opintojen kuvaus | Kyllä |
+| kesto | Kokonaisluku | Opintojen kesto päivinä | Kyllä |
+| ajankohta | [Aikavali](#Aikavali) | Opintojen ajoittuminen | Kyllä |
 
 ### KoodistoKoodi  
 
@@ -395,22 +498,6 @@ Opiskeluvalmiuksia tukevat opinnot
 | kesto | Kokonaisluku | Opintojen kesto päivinä | Kyllä |
 | ajankohta | [Aikavali](#Aikavali) | Opintojen ajoittuminen | Kyllä |
 
-### PuuttuvaPaikallinenTutkinnonOsaPaivitys  
-
-Puuttuvan paikallisen tutkinnon osan tiedot merkintää ylikirjoittaessa (PUT)
-
-| Nimi | Tyyppi | Selite | Vaaditaan |
-| ---- | ------ | ------ | --------- |
-| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Kyllä |
-| amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
-| nimi | Merkkijono | Tutkinnon osan nimi | Kyllä |
-| laajuus | Kokonaisluku | Tutkinnon osan laajuus | Kyllä |
-| kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
-| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
-| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
-| hankitun-osaamisen-naytto | [HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
-| tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
-
 ### PuuttuvaAmmatillinenOsaaminenPaivitys  
 
 Puuttuvan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa (PUT)
@@ -434,6 +521,17 @@ Näytön tai osaamisen osoittamisen järjestäjä
 | eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
 | nimi | Merkkijono | Näytön tai osaamisen osoittamisen järjestäjän nimi | Kyllä |
 | oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+
+### PuuttuvaYTOKentanPaivitys  
+
+Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä päivittäessä (PATCH)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
+| eperusteet-id | Kokonaisluku | Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua | Ei |
+| tutkinnon-osat | [[PuuttuvaYTOOsa](#PuuttuvaYTOOsa)] | Puuttuvat YTO osat | Ei |
+| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### HankitunYTOOsaamisenNaytto  
 
@@ -467,22 +565,6 @@ Puuttuva paikallinen tutkinnon osa
 | hankitun-osaamisen-naytto | [HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
 | tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
 
-### PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys  
-
-Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä päivittäessä (PATCH)
-
-| Nimi | Tyyppi | Selite | Vaaditaan |
-| ---- | ------ | ------ | --------- |
-| hankitun-osaamisen-naytto | [HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
-| laajuus | Kokonaisluku | Tutkinnon osan laajuus | Ei |
-| nimi | Merkkijono | Tutkinnon osan nimi | Ei |
-| amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
-| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
-| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
-| tarvittava-opetus | Merkkijono | Tarvittava opetus | Ei |
-| kuvaus | Merkkijono | Tutkinnon osan kuvaus | Ei |
-| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Kyllä |
-
 ### Tutkinto  
 
 Tutkinnon perustiedot ePerusteet järjestelmässä
@@ -503,21 +585,6 @@ Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella
   johon tunnistettava olemassaoleva osaaminen liittyy | Ei |
 | valittu-todentamisen-prosessi | Joukon alkio (valittu-todentaminen-naytto, valittu-todentaminen-arvioijat, valittu-todentaminen-suoraan) | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
 | tarkentavat-tiedot | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
-
-### PuuttuvaPaikallinenTutkinnonOsaLuonti  
-
-Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää luotaessa (POST)
-
-| Nimi | Tyyppi | Selite | Vaaditaan |
-| ---- | ------ | ------ | --------- |
-| amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
-| nimi | Merkkijono | Tutkinnon osan nimi | Kyllä |
-| laajuus | Kokonaisluku | Tutkinnon osan laajuus | Kyllä |
-| kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
-| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
-| koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
-| hankitun-osaamisen-naytto | [HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
-| tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
 
 ### PuuttuvaYTO  
 
