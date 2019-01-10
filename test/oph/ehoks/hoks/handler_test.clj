@@ -473,3 +473,49 @@
             (-> (mock/request :put (format "%s/1" url))
                 (mock/json-body hoks-data)))]
       (is (= (:status response) 404)))))
+
+(deftest patch-created-hoks
+  (testing "PATCH updates value of created HOKS"
+    (db/clear)
+    (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
+                                      :tutkinto {:laajuus 5 :nimi "Test"}}
+                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :luonut "Teppo Tekijä"
+                     :opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+                     :paivittanyt "Pekka Päivittäjä"
+                     :hyvaksynyt "Heikki Hyväksyjä"}
+          response
+          (utils/with-authentication
+            app
+            (-> (mock/request :post url)
+                (mock/json-body hoks-data)))
+          body (utils/parse-body (:body response))]
+      (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)
+            patch-response
+            (utils/with-authentication
+              app
+              (-> (mock/request :patch (get-in body [:data :uri]))
+                  (mock/json-body
+                    {:eid (:eid hoks)
+                     :paivittanyt "Kalle Käyttäjä"})))]
+        (is (= (:status patch-response) 204))
+        (let [updated-hoks
+              (-> (get-in body [:data :uri]) get-authenticated :data)]
+          (eq
+            updated-hoks
+            (assoc
+              hoks
+              :paivitetty (:paivitetty updated-hoks)
+              :versio 2
+              :paivittanyt "Kalle Käyttäjä")))))))
+
+(deftest patch-non-existing-hoks
+  (testing "PATCH prevents updating non existing HOKS"
+    (db/clear)
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request :patch (format "%s/1" url))
+                (mock/json-body {:eid 1
+                                 :paivittanyt "Kalle Käyttäjä"})))]
+      (is (= (:status response) 404)))))
