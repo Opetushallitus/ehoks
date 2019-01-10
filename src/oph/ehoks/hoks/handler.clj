@@ -170,8 +170,11 @@ osaamisen"
 
     (c-api/PATCH "/:eid" []
       :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
-      :body [_ hoks-schema/HOKSKentanPaivitys]
-      (response/no-content))
+      :path-params [eid :- s/Int]
+      :body [values hoks-schema/HOKSKentanPaivitys]
+      (if (db/update-hoks-values! eid values)
+        (response/no-content)
+        (response/not-found "HOKS not found with given eHOKS ID")))
 
     puuttuva-ammatillinen-osaaminen
     puuttuva-paikallinen-tutkinnon-osa
