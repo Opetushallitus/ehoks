@@ -43,3 +43,16 @@
             :luonut (:luonut hoks))]
       (swap! hoks-store conj updated-hoks)
       updated-hoks)))
+
+(defn update-hoks-values! [eid values]
+  (when-let [hoks (get-hoks-by-eid eid)]
+    (let [updated-hoks
+          (-> hoks
+              (merge values)
+              (assoc
+                :paivitetty (java.util.Date.)
+                :versio (inc (:versio hoks))
+                :luotu (:luotu hoks)
+                :luonut (:luonut hoks)))]
+      (swap! hoks-store conj updated-hoks)
+      updated-hoks)))
