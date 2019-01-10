@@ -2,12 +2,12 @@
   :description "OPH eHOKS Backend"
   :min-lein-version "2.8.1"
   :pedantic? :abort
-  :dependencies [[org.clojure/clojure "1.9.0"]
+  :dependencies [[org.clojure/clojure "1.10.0"]
                  [clj-http "3.9.1"]
                  [com.layerware/hugsql "0.4.9"]
                  [com.taoensso/carmine "2.19.1"]
                  [metosin/compojure-api "2.0.0-alpha26"]
-                 [org.flywaydb/flyway-core "5.2.1"]
+                 [org.flywaydb/flyway-core "5.2.4"]
                  [org.postgresql/postgresql "42.2.5"]
                  [ring/ring-jetty-adapter "1.7.1"]
                  [clj-time "0.15.1"]
@@ -16,7 +16,7 @@
                  [org.apache.logging.log4j/log4j-api "2.11.1"]
                  [org.apache.logging.log4j/log4j-core "2.11.1"]
                  [org.apache.logging.log4j/log4j-slf4j-impl "2.11.1"]]
-  :managed-dependencies [[org.clojure/clojure "1.9.0"]
+  :managed-dependencies [[org.clojure/clojure "1.10.0"]
 
                          ;; http server
                          [javax.servlet/javax.servlet-api "4.0.1"]
@@ -46,15 +46,15 @@
                          [clj-time "0.15.1"]
 
                          ;; json
-                         [com.fasterxml.jackson.core/jackson-annotations "2.9.7"]
-                         [com.fasterxml.jackson.core/jackson-core "2.9.7"]
-                         [com.fasterxml.jackson.core/jackson-databind "2.9.7"]
-                         [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.9.7"]
+                         [com.fasterxml.jackson.core/jackson-annotations "2.9.8"]
+                         [com.fasterxml.jackson.core/jackson-core "2.9.8"]
+                         [com.fasterxml.jackson.core/jackson-databind "2.9.8"]
+                         [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.9.8"]
 
                          ;; postresql
                          [com.layerware/hugsql "0.4.9"]
                          [org.clojure/java.jdbc "0.7.8"]
-                         [org.flywaydb/flyway-core "5.2.1"]
+                         [org.flywaydb/flyway-core "5.2.4"]
                          [org.postgresql/postgresql "42.2.5"]
 
                          ;; redis
@@ -63,15 +63,15 @@
                          ;; other
                          [org.clojure/core.async "0.4.490"]
                          [commons-codec "1.11"]
-                         [commons-fileupload "1.3.3"]
+                         [commons-fileupload "1.4"]
                          [commons-io "2.6"]
                          [hiccup "1.0.5"]
                          [org.clojure/tools.namespace "0.2.11"]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.3.2"]
-                         [io.aviso/pretty "0.1.35"]
-                         [instaparse "1.4.9"]]
+                         [io.aviso/pretty "0.1.36"]
+                         [instaparse "1.4.10"]]
   :plugins [[lein-cljfmt "0.6.0" :exclusions [org.clojure/tools.cli]]
             [lein-kibit "0.1.6"]
             [lein-bikeshed "0.5.1"]

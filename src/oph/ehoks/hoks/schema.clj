@@ -519,7 +519,7 @@
   (modify
     HOKS
     "HOKS-dokumentin ylikirjoitus (PUT)"
-    {:removed [:versio :luotu :hyvaksytty :paivitetty]}))
+    {:removed [:versio :luotu :luonut :paivitetty]}))
 
 (s/defschema
   HOKSKentanPaivitys
@@ -527,7 +527,8 @@
     HOKS
     "HOKS-dokumentin arvon tai arvojen päivitys (PATCH)"
     {:removed [:versio :luotu :hyvaksytty :paivitetty]
-     :optionals [:opiskeluoikeus-oid :luonut :paivittanyt :hyvaksynyt]}))
+     :optionals [:opiskeluoikeus-oid :luonut :paivittanyt
+                 :hyvaksynyt :opiskeluoikeus :oppijan-oid]}))
 
 (s/defschema
   HOKSLuonti
