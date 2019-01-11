@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 08.01.2019 13.43
+Generoitu 11.01.2019 13.47
 ### MuuOppimisymparisto  
 
 Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu
@@ -81,7 +81,8 @@ Yhteinen Tutkinnon osa (YTO)
 
 ### OpiskeluvalmiuksiaTukevatOpinnotPaivitys  
 
-Opiskeluvalmiuksia tukevien opintojen tiedot merkintää ylikirjoittaessa (PUT)
+Opiskeluvalmiuksia tukevien opintojen tiedot merkintää ylikirjoittaessa
+     (PUT)
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
@@ -266,6 +267,16 @@ Opiskeluoikeuden tiedot Koski-järjestelmässä
 | oid | Merkkijono | Opinto-oikeuden tunniste Opintopolku-ympäristössä | Kyllä |
 | tutkinto | [Tutkinto](#Tutkinto) | Opinto-oikeuden tutkinto | Kyllä |
 
+### OlemassaOlevaOsaaminenLuonti  
+
+Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyosaaminen uutta merkintää luotaessa (POST)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| olemassaoleva-ammatillinen-osaaminen | [[OlemassaOlevaAmmatillinenOsaaminen](#OlemassaOlevaAmmatillinenOsaaminen)] | Olemassa oleva ammatillinen osaaminen | Ei |
+| olemassaolevat-yto-osa-alueet | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Olemassaolevat yton osa-alueet | Ei |
+| olemassaoleva-paikallinen-tutkinnon-osa | [[PaikallinenTutkinnonOsa](#PaikallinenTutkinnonOsa)] | Olemassaoleva paikallinen tutkinnon osa | Ei |
+
 ### Arviointikriteeri  
 
 Arviointikriteeri
@@ -275,6 +286,17 @@ Arviointikriteeri
 | eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
 | osaamistaso | Kokonaisluku | Osaamistaso | Kyllä |
 | kuvaus | Merkkijono | Arviointikriteerin kuvaus | Kyllä |
+
+### OlemassaOlevaOsaaminenPaivitys  
+
+Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjenosaamisten tiedot merkintää ylikirjoittaessa (PUT)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Kyllä |
+| olemassaoleva-ammatillinen-osaaminen | [[OlemassaOlevaAmmatillinenOsaaminen](#OlemassaOlevaAmmatillinenOsaaminen)] | Olemassa oleva ammatillinen osaaminen | Ei |
+| olemassaolevat-yto-osa-alueet | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Olemassaolevat yton osa-alueet | Ei |
+| olemassaoleva-paikallinen-tutkinnon-osa | [[PaikallinenTutkinnonOsa](#PaikallinenTutkinnonOsa)] | Olemassaoleva paikallinen tutkinnon osa | Ei |
 
 ### PaikallinenTutkinnonOsaLuonti  
 
@@ -585,6 +607,17 @@ Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella
   johon tunnistettava olemassaoleva osaaminen liittyy | Ei |
 | valittu-todentamisen-prosessi | Joukon alkio (valittu-todentaminen-naytto, valittu-todentaminen-arvioijat, valittu-todentaminen-suoraan) | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
 | tarkentavat-tiedot | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
+
+### OlemassaOlevaOsaaminenKentanPaivitys  
+
+Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjenosaamisten tiedot kenttää tai kenttiä päivittäessä (PATCH)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| eid | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Kyllä |
+| olemassaoleva-ammatillinen-osaaminen | [[OlemassaOlevaAmmatillinenOsaaminen](#OlemassaOlevaAmmatillinenOsaaminen)] | Olemassa oleva ammatillinen osaaminen | Ei |
+| olemassaolevat-yto-osa-alueet | [[YhteinenTutkinnonOsa](#YhteinenTutkinnonOsa)] | Olemassaolevat yton osa-alueet | Ei |
+| olemassaoleva-paikallinen-tutkinnon-osa | [[PaikallinenTutkinnonOsa](#PaikallinenTutkinnonOsa)] | Olemassaoleva paikallinen tutkinnon osa | Ei |
 
 ### PuuttuvaYTO  
 
