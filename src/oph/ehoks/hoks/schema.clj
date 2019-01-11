@@ -461,7 +461,7 @@
   OlemassaOlevaOsaaminenLuonti
   (modify
     OlemassaOlevaOsaaminen
-    (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytetty"
+    (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytetty "
          "osaaminen uutta merkintää luotaessa (POST)")
     {:removed [:eid]}))
 
@@ -469,14 +469,14 @@
   OlemassaOlevaOsaaminenPaivitys
   (modify
     OlemassaOlevaOsaaminen
-    (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen"
+    (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen "
          "osaamisten tiedot merkintää ylikirjoittaessa (PUT)")))
 
 (s/defschema
   OlemassaOlevaOsaaminenKentanPaivitys
   (modify
     OlemassaOlevaOsaaminen
-    (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen"
+    (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen "
          "osaamisten tiedot kenttää tai kenttiä päivittäessä (PATCH)")
     {:optionals
      [:olemassaoleva-ammatillinen-osaaminen
