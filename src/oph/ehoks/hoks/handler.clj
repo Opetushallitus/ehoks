@@ -3,7 +3,9 @@
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.restful :as rest])
+            [oph.ehoks.restful :as rest]
+            [oph.ehoks.db.memory :as db]
+            [schema.core :as s])
   (:import (java.time LocalDate)))
 
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
@@ -221,27 +223,34 @@ osaamisen"
   (c-api/context "/hoks" []
     :tags ["hoks"]
 
-    (c-api/GET "/:eid" [:as eid]
+    (c-api/GET "/:eid" [eid]
       :summary "Palauttaa HOKSin"
+      :path-params [eid :- s/Int]
       :return (rest/response hoks-schema/HOKS)
-      (rest/rest-ok {}))
+      (rest/rest-ok (db/get-hoks-by-eid eid)))
 
-    (c-api/POST "/" []
+    (c-api/POST "/" [:as request]
       :summary "Luo uuden HOKSin"
-      :body [_ hoks-schema/HOKSLuonti]
+      :body [hoks hoks-schema/HOKSLuonti]
       :return (rest/response schema/POSTResponse)
-      (rest/rest-ok {:uri ""}))
+      (let [h (db/create-hoks! hoks)]
+        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid h))})))
 
-    (c-api/PUT "/:eid" []
+    (c-api/PUT "/:eid" [eid]
       :summary "Päivittää olemassa olevaa HOKSia"
-      :body [_ hoks-schema/HOKSPaivitys]
-      (response/no-content))
+      :path-params [eid :- s/Int]
+      :body [values hoks-schema/HOKSPaivitys]
+      (if (db/update-hoks! eid values)
+        (response/no-content)
+        (response/not-found "HOKS not found with given eHOKS ID")))
 
     (c-api/PATCH "/:eid" []
-      :summary "Päivittää olemassa olevan HOKSin arvoa
-tai arvoja"
-      :body [_ hoks-schema/HOKSKentanPaivitys]
-      (response/no-content))
+      :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
+      :path-params [eid :- s/Int]
+      :body [values hoks-schema/HOKSKentanPaivitys]
+      (if (db/update-hoks-values! eid values)
+        (response/no-content)
+        (response/not-found "HOKS not found with given eHOKS ID")))
 
     puuttuva-ammatillinen-osaaminen
     puuttuva-paikallinen-tutkinnon-osa

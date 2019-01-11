@@ -27,9 +27,9 @@
   (when (not= value expect)
     (let [diff (d/diff value expect)]
       (when (seq (first diff))
-        (prn "Not expected:")
+        (println "Not expected:")
         (p/pprint (first diff)))
       (when (seq (second diff))
-        (prn "Missing:")
+        (println "Missing:")
         (p/pprint (second diff)))))
   (is (= value expect)))
