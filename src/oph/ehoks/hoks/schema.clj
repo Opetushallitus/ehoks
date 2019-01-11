@@ -458,6 +458,32 @@
     [PaikallinenTutkinnonOsa] "Olemassaoleva paikallinen tutkinnon osa"))
 
 (s/defschema
+  OlemassaOlevaOsaaminenLuonti
+  (modify
+    OlemassaOlevaOsaaminen
+    (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytetty"
+         "osaaminen uutta merkintää luotaessa (POST)")
+    {:removed [:eid]}))
+
+(s/defschema
+  OlemassaOlevaOsaaminenPaivitys
+  (modify
+    OlemassaOlevaOsaaminen
+    (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen"
+         "osaamisten tiedot merkintää ylikirjoittaessa (PUT)")))
+
+(s/defschema
+  OlemassaOlevaOsaaminenKentanPaivitys
+  (modify
+    OlemassaOlevaOsaaminen
+    (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen"
+         "osaamisten tiedot kenttää tai kenttiä päivittäessä (PATCH)")
+    {:optionals
+     [:olemassaoleva-ammatillinen-osaaminen
+      :olemassaolevat-yto-osa-alueet
+      :olemassaoleva-paikallinen-tutkinnon-osa]}))
+
+(s/defschema
   Opinnot
   (describe
     "Opinnot"
