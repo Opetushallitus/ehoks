@@ -151,7 +151,7 @@ tapahtuu asettamalla `:redis-url` konfiguraation nil:ksi.
 ### Kehityksen endpointit
 
 Sovellus tukee dummy-JSON-rajapintoja. Laita valmiit JSON-tiedostot kansioon
-`resource/dev/dev-routes`. Tiedostoa vastaava endpoint luodaan automaattisesti
+`resources/dev/dev-routes`. Tiedostoa vastaava endpoint luodaan automaattisesti
 muuttamalla alaviivat kauttaviivoiksi. Esimerkiksi `/hello/world` endpoint
 tarjoilee `hello_world.json`-tiedoston. Turvallisuussyistä ainoastaan tiedostot
 kansiossa `dev-routes` luetaan ja endpointit toimivat ainoastaan
