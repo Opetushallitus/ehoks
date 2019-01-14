@@ -1,0 +1,50 @@
+[
+  {
+    "eid": 1,
+    "oid": "1.2.333.444.55.16666666666",
+    "etunimi": "Asko",
+    "sukunimi": "Annala"
+  },
+  {
+    "eid": 2,
+    "oid": "1.2.333.444.55.26666666666",
+    "etunimi": "Kerkko",
+    "sukunimi": "Pohjola"
+  },
+  {
+    "eid": 3,
+    "oid": "1.2.333.444.55.36666666666",
+    "etunimi": "Johannes",
+    "sukunimi": "Otila"
+  },
+  {
+    "eid": 4,
+    "oid": "1.2.333.444.55.46666666666",
+    "etunimi": "Alina",
+    "sukunimi": "Ojalahti"
+  },
+  {
+    "eid": 5,
+    "oid": "1.2.333.444.55.56666666666",
+    "etunimi": "Kirsi",
+    "sukunimi": "Ylöstalo"
+  },
+  {
+    "eid": 6,
+    "oid": "1.2.333.444.55.66666666666",
+    "etunimi": "Sonja",
+    "sukunimi": "Miettunen"
+  },
+  {
+    "eid": 7,
+    "oid": "1.2.333.444.55.76666666666",
+    "etunimi": "Otto",
+    "sukunimi": "Niiranen"
+  },
+  {
+    "eid": 8,
+    "oid": "1.2.333.444.55.86666666666",
+    "etunimi": "Riikka",
+    "sukunimi": "Nikkonen"
+  }
+]

@@ -551,7 +551,6 @@
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
                      :oppijan-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
-                     :opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}
           response
@@ -580,7 +579,6 @@
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
                      :oppijan-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
-                     :opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}]
       (utils/with-authentication
@@ -613,7 +611,6 @@
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
                      :oppijan-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
-                     :opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}
           response
@@ -648,7 +645,6 @@
     (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
                      :oppijan-oid "1.2.333.444.55.66666666666"
-                     :opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :paivittanyt "Teuvo Testaaja"
                      :hyvaksytty (java.util.Date.)
                      :eid 1
@@ -667,7 +663,6 @@
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
                      :oppijan-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
-                     :opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}
           response

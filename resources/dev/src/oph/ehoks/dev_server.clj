@@ -11,7 +11,9 @@
             [oph.ehoks.mock-routes :as mock]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.params :refer [wrap-params]]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [cheshire.core :as cheshire]
+            [oph.ehoks.db.memory :as db]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -28,6 +30,16 @@
   (some
     #(when (= (.getName %) filename) %)
     (file-seq (io/file (io/resource "dev-routes")))))
+
+(defn import-data! [file a]
+  (when-let [data (slurp file)]
+    (reset! a (cheshire/parse-string data true))))
+
+(defn import-initial-demo-data! []
+  (import-data!
+    (-> "demo-data/hoksit.json" io/resource io/file) db/hoks-store)
+  (import-data!
+    (-> "demo-data/oppijat.json" io/resource io/file) db/oppijat-store))
 
 (defroutes dev-routes
   (GET "/dev-routes/*" request
@@ -74,6 +86,9 @@
    (when (some? config-file)
      (System/setProperty "config" config-file)
      (require 'oph.ehoks.config :reload))
+   (log/info "Loading demodata...")
+   (import-initial-demo-data!)
+   (log/info "...done.")
    (log/info "Starting development server...")
    (log/info "Not safe for production or public environments.")
    (jetty/run-jetty dev-app

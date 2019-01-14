@@ -510,8 +510,6 @@
     "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
     :eid s/Int "Tunniste eHOKS-järjestelmässä"
     :oppijan-oid s/Str "Oppijan tunniste Opintopolku-ympäristössä"
-    :opiskeluoikeus-oid s/Str
-    "Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä."
     :opiskeluoikeus Opiskeluoikeus
     "Opiskeluoikeuden tiedot Koski-järjestelmässä"
     (s/optional-key :urasuunnitelma) KoodistoKoodi
@@ -553,7 +551,7 @@
     HOKS
     "HOKS-dokumentin arvon tai arvojen päivitys (PATCH)"
     {:removed [:versio :luotu :hyvaksytty :paivitetty]
-     :optionals [:opiskeluoikeus-oid :luonut :paivittanyt
+     :optionals [:luonut :paivittanyt
                  :hyvaksynyt :opiskeluoikeus :oppijan-oid]}))
 
 (s/defschema
