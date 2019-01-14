@@ -1,6 +1,6 @@
 # eHOKS
 
-## Technologies
+## Teknologiat
 
 ### Frontend
 
@@ -12,65 +12,63 @@
 + [Clojure.test](https://clojure.github.io/clojure/clojure.test-api.html)
 + [Compojure-api 2](https://github.com/metosin/compojure-api/)
 + [Leiningen](https://leiningen.org/)
-+ [PostgreSQL 9.5](https://www.postgresql.org/docs/9.5/static/index.html) as a
-database
++ [PostgreSQL 9.5](https://www.postgresql.org/docs/9.5/static/index.html)
 + [HugSQL](https://www.hugsql.org/)
-+ [Flyway](https://flywaydb.org/) for database migrations
-+ [clj-http](https://github.com/dakrone/clj-http) for http requests with
-integrations
-+ [Cheshire](https://github.com/dakrone/cheshire) for JSON decoding/encoding
-+ [Environ](https://github.com/weavejester/environ) for environment variables
-+ [Redis](https://redis.io/) for session storage
++ [Flyway](https://flywaydb.org/)
++ [clj-http](https://github.com/dakrone/clj-http)
++ [Cheshire](https://github.com/dakrone/cheshire)
++ [Environ](https://github.com/weavejester/environ)
++ [Redis](https://redis.io/)
 + [Redis Client](https://github.com/ptaoussanis/carmine)
 + [Logback](https://logback.qos.ch/)
 + [tools.logging](https://github.com/clojure/tools.logging)
 
 #### RESTful API
-Backend does its best to follow
+Backend pyrkii seuraamaan
 [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer)
-guidelines. For example resources URI's of collections, create and update are
-with trailing slash and items (representation) are withoute one. Every response
-has `meta` and `data` keys.
+periaatteita. Kaikki vataukset (paitsi no content) sisältävät meta- ja
+dataobjektit.
 
-Keys are following Clojure notation. Because of this all keys are with dash
-instead of form of camelCase.
+Avaimet seuraavat Clojuren notaatiota.
 
-## Quality assurance
+## QA
 
 [The Clojure Style Guidea](https://github.com/bbatsov/clojure-style-guide).
 
-Repository has `.editorconfig` file for configuring your editor.
 
-### Running tests
+Repossa on `.editorconfig` jonka avulla voit kertoa editorillesi käytettävät
+tyylit.
 
-Running tests once:
+### Testien ajaminen
+
+Kerran:
 
 ``` shell
 lein test
 ```
 
-Or automatically on change:
+Muutoksista:
 
 ``` shell
 lein auto test
 ```
 
-Or with test coverage (cloverage):
+Testien kattavuus:
 
 ``` shell
 lein with-profile test cloverage
 ```
 
-### Linters
+### Lintterit
 
-Static linters for backend can be run with command:
+Staattiset linterit ajetaan:
 
 ``` shell
 lein checkall
 ```
 
-It runs Kibit, Bikeshed, Eastwood, and cljfmt all at once. Every tool can also
-be run individually:
+tämä ajaa Kibit, Bikeshed, Eastwood ja cljfmt kerralla. Jokainen työkalu on
+ajettavissa myös erikseen:
 
 ``` shell
 lein kibit
@@ -79,137 +77,116 @@ lein eastwood
 lein cljfmt check
 ```
 
-### More info
+### Lisää tietoa
 
 + [kibit](https://github.com/jonase/kibit)
 + [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
 + [eastwood](https://github.com/jonase/eastwood)
 + [cljfmt](https://github.com/weavejester/cljfmt)
 
-## Development
+## Kehitys
 
-### Running application
+### Ohjelman ajaminen
 
-Run in development mode:
+Kehitysmoodissa:
 
 ``` shell
 lein run
 ```
 
-Run in production mode:
+Tuotantomoodissa:
 
 ``` shell
 lein with-profile -dev run
 ```
 
-Or inside REPL with file reload, starting with `lein repl`, then:
+Replissä `lein repl`:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
 user> (def server (start-server))
 ```
 
-Or with custom config:
+Tai omalla konfiguraatiolla:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
 user> (def server (start-server "config/custom.edn"))
 ```
 
-And shutting down:
+Ja ohjelman sammuttaminen:
 
 ``` repl
 user> (.stop server)
 ```
 
-### Tests
+### Testit
 
-You can mock external API calls for tests. There is http client with redefinable
-get and post functions which you can override. This works only with `test`
-profile.
-
-### Database
-
-For database there is proper Docker script in `scripts/psql-docker` folder. Use
-this only in development environment.
-
-Build Docker image:
-
-``` shell
-cd scripts/postgres-docker
-docker build -t ehoks-postgres:9.5 .
-```
-
-Riun Docker image in a container:
-
-``` shell
-docker run --rm --name ehoks-postgres -p 5432:5432 --volume ~/path/to/ehoks-postgres-data:/var/lib/postgresql/data ehoks-postgres:9.5
-```
+Ulkoiset API-kutsut voidaan mockata. Kehitysresursseissa on konfiguroitava
+HTTP-asiakasohjelma, jonka GET- ja POST-kutsut voidaan yliajaa. Tämä toimii
+ainoastaan `test`-profiililla.
 
 ### Redis
 
-Redis is being used as a session storage.
+Redis toimii istunnon tallennuksessa.
 
-For local development use you can use Docker script in `scripts/redis-docker`
-folder.
+Paikallisessa ajossa voidaan käyttää valmista Docker-imagea:
 
-Build Docker image:
+Kontin luonti:
 
 ``` shell
 cd scripts/redis-docker
 docker build -t ehoks-redis .
 ```
 
-Run Docker image in a container:
+Kontin ajaminen:
 
 ``` shell
 docker run --rm --name ehoks-redis -p 6379:6379 --volume ~/path/to/ehoks-redis-data:/data ehoks-redis
 ```
 
-Or you can always skip runnign Redis with leaving `REDIS_URL` environment
-variable or `:redis-url` cofigure option nil.
+Rediksen voi jättää myös pois, jolloin istuntoa pidetään muistissa. Tämä
+tapahtuu asettamalla `:redis-url` konfiguraation nil:ksi.
 
-### Development routes
+### Kehityksen endpointit
 
-Application supports creating JSON-files for returning dummy data. Place files
-in `resource/dev/dev-routes` folder. Files are matched with translating uri to
-filename. For example `/hello/world` translates to `hello_world.json`. For
-security reasons only files in `dev-routes` folders are read. Dummy data routes
-works only when running development server.
+Sovellus tukee dummy-JSON-rajapintoja. Laita valmiit JSON-tiedostot kansioon
+`resource/dev/dev-routes`. Tiedostoa vastaava endpoint luodaan automaattisesti
+muuttamalla alaviivat kauttaviivoiksi. Esimerkiksi `/hello/world` endpoint
+tarjoilee `hello_world.json`-tiedoston. Turvallisuussyistä ainoastaan tiedostot
+kansiossa `dev-routes` luetaan ja endpointit toimivat ainoastaan
+kehityspalvelimen kanssa.
 
-## Configuration
+## Konfigurointi
 
-Default configuration file is `config/default.edn`. You may override
-these values by creating your own config file and supplying path to the
-file either via environment variable `CONFIG`, JVM system property
-`config` or as a development server parameter.
+Oletuskonfiguraatio on `config/default.edn`. Arvoja voi yliajaa luomalla oman
+konfiguraatiotiedoston ja antamalla sen joko `CONFIG`-ympäristömuuttujassa,
+JVM system propertyssä `config` tai kehityspalvelimen parametrina.
 
-Config files are being merged as custom config overrides default values. So you
-can use some default values and some custom values.
+Konfiguraatiotiedostot yhdistetään niin, että oma kustomoitu tiedosto yliajaa
+vain ne arvot, mitkä siinä on määritelty. Konfiguraatio validoidaan ladattaessa.
 
-Merged configuration is being validated on load.
+### CAS-tunnistus
 
-### CAS authentication
+Sovellus käyttää CAS-tunnistautumista ulkoisten rajapintojen kanssa. Lisää
+CAS-tunnukset ja sovelluksen tunniste (ent. client sub system code) ennen
+rajapintojen käyttämistä.
 
-Application uses CAS authentication with external APIs. Fill out CAS credentials
-and client sub system code before using external APIS. Application has mock APIs
-for local development.
+## Ajettava jar
 
-## Standalone jar
-
-Create self-contained jar that includes all the dependencies:
+Ajettava jar riippuvuuksineen luodaan:
 
 ```
 lein uberjar
 ```
 
-Run:
+Ja ajetaan:
 
 ``` shell
 java -jar target/ehoks-standalone.jar
 ```
 
-## Integrations
+## Integraatiot
 
 Service | Documentation
 --------|--------------
@@ -218,6 +195,6 @@ AMOSAA |
 ePerusteet | [palvelukortti](https://confluence.csc.fi/display/OPHPALV/ePerusteet)
 KOSKI | [palvelukortti](https://confluence.csc.fi/display/OPHPALV/Koski-palvelukortti)
 
-## Links
+## Linkit
 
 + [eHOKS Confluence](https://confluence.csc.fi/display/OPHPALV/eHOKS+-+hanke)
