@@ -32,6 +32,13 @@
     "Koodisto-koodin metadata, joka haetaan Koodisto-palvelusta"))
 
 (s/defschema
+  KoodistoKoodiLuonti
+  (modify
+    KoodistoKoodi
+    "Koodisto-koodin lisäys tai päivitys"
+    {:removed [:metadata]}))
+
+(s/defschema
   TutkinnonOsa
   (describe
     "Tutkinnon osa"
@@ -543,7 +550,8 @@
   (modify
     HOKS
     "HOKS-dokumentin ylikirjoitus (PUT)"
-    {:removed [:versio :luotu :luonut :paivitetty]}))
+    {:removed [:versio :luotu :luonut :paivitetty]
+     :replaced-in {[:urasuunnitelma] KoodistoKoodiLuonti}}))
 
 (s/defschema
   HOKSKentanPaivitys
@@ -552,11 +560,13 @@
     "HOKS-dokumentin arvon tai arvojen päivitys (PATCH)"
     {:removed [:versio :luotu :hyvaksytty :paivitetty]
      :optionals [:luonut :paivittanyt
-                 :hyvaksynyt :opiskeluoikeus :oppijan-oid]}))
+                 :hyvaksynyt :opiskeluoikeus :oppijan-oid]
+     :replaced-in {[:urasuunnitelma] KoodistoKoodiLuonti}}))
 
 (s/defschema
   HOKSLuonti
   (modify
     HOKS
     "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
-    {:removed [:eid :versio :luotu :hyvaksytty :paivitetty]}))
+    {:removed [:eid :versio :luotu :hyvaksytty :paivitetty]
+     :replaced-in {[:urasuunnitelma] KoodistoKoodiLuonti}}))
