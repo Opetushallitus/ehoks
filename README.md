@@ -157,6 +157,13 @@ tarjoilee `hello_world.json`-tiedoston. Turvallisuussyistä ainoastaan tiedostot
 kansiossa `dev-routes` luetaan ja endpointit toimivat ainoastaan
 kehityspalvelimen kanssa.
 
+## Dummy-datan luonti
+
+Sovellus käyttää kehityksessä yksinkertaista muistitietokantaa, jolle voidaan
+ladata alkuarvot tiedostoista. Lisää tiedostot kansioon
+`resources/dev/demo-data/`. Data ladataan ainoastaan kehitysympäristön
+käynnistyksessä.
+
 ## Konfigurointi
 
 Oletuskonfiguraatio on `config/default.edn`. Arvoja voi yliajaa luomalla oman
