@@ -180,6 +180,45 @@ osaamisen"
       [_ hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
       (response/no-content))))
 
+(def ^:private olemassa-oleva-osaaminen
+  (c-api/context "/:hoks-eid/olemassa-oleva-osaaminen" [hoks-eid]
+
+    (c-api/GET "/:eid" [:as eid]
+      :summary "Palauttaa HOKSin olemassa olevan osaamisen tunnustamisen
+       perusteella sisällytetyn osaamisen	"
+      :return (rest/response
+                hoks-schema/OlemassaOlevaOsaaminen)
+      (rest/rest-ok {:eid 1
+                     :olemassaoleva-ammatillinen-osaaminen []
+                     :olemassaolevat-yto-osa-alueet []
+                     :olemassaoleva-paikallinen-tutkinnon-osa []}))
+
+    (c-api/POST "/" []
+      :summary
+      "Luo (tai korvaa vanhan) olemassa olevan osaamisen tunnustamisen
+      perusteella sisällytetyn osaamisen HOKSiin"
+      :body
+      [_ hoks-schema/OlemassaOlevaOsaaminenLuonti]
+      :return (rest/response schema/POSTResponse)
+      (rest/rest-ok {:uri ""}))
+
+    (c-api/PUT
+      "/:eid" []
+      :summary "Päivittää HOKSin olemassa olevan osaamisen tunnustamisen
+      perusteella sisällytetyn osaamisen"
+      :body
+      [_ hoks-schema/OlemassaOlevaOsaaminenPaivitys]
+      (response/no-content))
+
+    (c-api/PATCH
+      "/:eid" []
+      :summary
+      "Päivittää HOKSin olemassa olevan osaamisen tunnustamisen perusteella
+      sisällytetyn osaamisen arvoa tai arvoja"
+      :body
+      [_ hoks-schema/OlemassaOlevaOsaaminenKentanPaivitys]
+      (response/no-content))))
+
 (def routes
   (c-api/context "/hoks" []
     :tags ["hoks"]
@@ -216,4 +255,5 @@ osaamisen"
     puuttuva-ammatillinen-osaaminen
     puuttuva-paikallinen-tutkinnon-osa
     puuttuvat-yhteisen-tutkinnon-osat
-    opiskeluvalmiuksia-tukevat-opinnot))
+    opiskeluvalmiuksia-tukevat-opinnot
+    olemassa-oleva-osaaminen))

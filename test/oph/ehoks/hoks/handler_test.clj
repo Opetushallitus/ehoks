@@ -448,6 +448,95 @@
                                :loppu "2018-12-20"}})))]
       (is (= (:status response) 204)))))
 
+(def oos-path "olemassa-oleva-osaaminen")
+
+(deftest get-oos
+  (testing "GET olemassa oleva osaaminen"
+    (let [response
+          (utils/with-authentication
+            app
+            (mock/request
+              :get
+              (format
+                "%s/1/%s/1"
+                url oos-path)))]
+      (is (= (:status response) 200))
+      (eq (utils/parse-body
+            (:body response))
+          {:data {:eid 1
+                  :olemassaoleva-ammatillinen-osaaminen []
+                  :olemassaolevat-yto-osa-alueet []
+                  :olemassaoleva-paikallinen-tutkinnon-osa []}
+           :meta {}}))))
+
+(deftest post-oos
+  (testing "POST olemassa oleva osaaminen"
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/%s/"
+                    url oos-path))
+                (mock/json-body
+                  {:olemassaoleva-ammatillinen-osaaminen []
+                   :olemassaolevat-yto-osa-alueet []
+                   :olemassaoleva-paikallinen-tutkinnon-osa []})))]
+      (is (= (:status response) 200))
+      (eq (utils/parse-body
+            (:body response))
+          {:data {:uri ""} :meta {}}))))
+
+(deftest put-oos
+  (testing "PUT olemassa oleva osaaminen"
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :put
+                  (format
+                    "%s/1/%s/1"
+                    url oos-path))
+                (mock/json-body
+                  {:eid 1
+                   :olemassaoleva-ammatillinen-osaaminen []
+                   :olemassaolevat-yto-osa-alueet []
+                   :olemassaoleva-paikallinen-tutkinnon-osa []})))]
+      (is (= (:status response) 204)))))
+
+(deftest patch-one-oos
+  (testing "PATCH one value olemassa oleva osaaminen"
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :patch
+                  (format
+                    "%s/1/%s/1"
+                    url oos-path))
+                (mock/json-body
+                  {:eid 1
+                   :olemassaoleva-ammatillinen-osaaminen []})))]
+      (is (= (:status response) 204)))))
+
+(deftest patch-all-oos
+  (testing "PATCH all olemassa oleva osaaminen"
+    (let [response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :patch
+                  (format
+                    "%s/1/%s/1"
+                    url oos-path))
+                (mock/json-body
+                  {:eid 1
+                   :olemassaoleva-ammatillinen-osaaminen []
+                   :olemassaolevat-yto-osa-alueet []
+                   :olemassaoleva-paikallinen-tutkinnon-osa []})))]
+      (is (= (:status response) 204)))))
+
 (defn get-authenticated [url]
   (-> (utils/with-authentication
         app
