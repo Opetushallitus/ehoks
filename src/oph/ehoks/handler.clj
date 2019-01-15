@@ -7,6 +7,7 @@
             [ring.util.http-response :as response]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]
+            [oph.ehoks.resources :as resources]
             [oph.ehoks.middleware :as middleware]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.auth.handler :as auth-handler]
@@ -57,7 +58,8 @@
       (c-api/undocumented
         (GET "/buildversion.txt" _
           (response/content-type
-            (response/resource-response "buildversion.txt") "text/plain"))))
+            (response/resource-response "buildversion.txt") "text/plain"))
+        (resources/create-routes "/json-viewer" "json-viewer")))
 
     (c-api/undocumented
       (compojure-route/not-found
@@ -81,6 +83,8 @@
    {:uri #"^/ehoks-backend/api/v1/misc/environment$"
     :request-method :get}
    {:uri #"^/ehoks-backend/api/v1/tyopaikan-toimija/auth$"
+    :request-method :get}
+   {:uri #"^/ehoks-backend/json-viewer/*"
     :request-method :get}])
 
 (def app
