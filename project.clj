@@ -83,7 +83,9 @@
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
   :source-paths ["src"]
-  :resource-paths ["resources/prod" "resources/prod/src"]
+  :resource-paths ["resources/prod"
+                   "resources/prod/src"
+                   "resources/public"]
   :cloverage {;:fail-threshold 90
               :html? false}
   :aliases {"checkall" ["do"
@@ -93,8 +95,8 @@
                         ["cljfmt" "check"]]
             "gendoc" ["run" "-m" "oph.ehoks.hoks-doc/write-doc!" "doc/hoks.md"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
-  :profiles {:test {:resource-paths
-                    ["resources/test" "resources/test/src"]
+  :profiles {:test {:resource-paths ["resources/test"
+                                     "resources/test/src"]
                     :dependencies [[cheshire "5.8.1"]
                                    [ring/ring-mock "0.3.2"]
                                    [ring/ring-devel "1.7.1"
@@ -108,4 +110,5 @@
                                     "resources/test/src"
                                     "resources/dev/src"
                                     "resources/prod/src"]}
-             :uberjar {:resource-paths ["resources/uberjar"]}})
+             :uberjar {:resource-paths ["resources/uberjar"
+                                        "resources/public"]}})
