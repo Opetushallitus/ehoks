@@ -1,6 +1,5 @@
 (ns oph.ehoks.resources
   (:require [compojure.core :refer [GET]]
-            [compojure.route :as compojure-route]
             [ring.util.http-response :as response]
             [ring.util.mime-type :as mime]))
 
