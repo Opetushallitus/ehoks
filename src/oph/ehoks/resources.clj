@@ -6,7 +6,7 @@
 
 (defn create-routes [path root]
   (GET (str path (if (.endsWith path "/") "*" "/*"))
-      {{resource-path :*} :route-params}
+    {{resource-path :*} :route-params}
     (response/content-type
       (response/resource-response (str root "/" resource-path))
       (mime/ext-mime-type resource-path))))
