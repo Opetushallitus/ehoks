@@ -6,7 +6,7 @@
                  [clj-http "3.9.1"]
                  [com.layerware/hugsql "0.4.9"]
                  [com.taoensso/carmine "2.19.1"]
-                 [metosin/compojure-api "2.0.0-alpha26"]
+                 [metosin/compojure-api "2.0.0-alpha28"]
                  [org.flywaydb/flyway-core "5.2.4"]
                  [org.postgresql/postgresql "42.2.5"]
                  [ring/ring-jetty-adapter "1.7.1"]
