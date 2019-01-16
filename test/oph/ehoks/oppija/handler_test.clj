@@ -30,7 +30,10 @@
 
 (deftest get-oppijan-hoks
   (testing "GET oppijan HOKSit"
-    (reset! db/hoks-store [hoks])
+    (reset!
+      db/hoks-store
+      [(assoc hoks :versio 1 :paivittanyt "Tapio Testaaja")
+       hoks])
     (let [store (atom {})
           app (create-app (test-session-store store))
           response
