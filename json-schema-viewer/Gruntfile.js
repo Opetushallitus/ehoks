@@ -162,25 +162,6 @@ module.exports = function(grunt) {
       ]
     },
 
-    /*----------------------------------( ENV )----------------------------------*/
-
-    /**
-     * @member {task} env
-     * Grunt task to automate environment configuration for future tasks.
-     *
-     * @see https://github.com/onehealth/grunt-env
-     */
-
-    env: {
-      dev: {
-        NODE_ENV: "DEVELOPMENT"
-      },
-
-      prod: {
-        NODE_ENV: "PRODUCTION"
-      }
-    },
-
     /*----------------------------------( CLEAN )----------------------------------*/
 
     /**
@@ -300,6 +281,11 @@ module.exports = function(grunt) {
       },
 
       dev: {
+        options: {
+          context: {
+            NODE_ENV: "DEVELOPMENT"
+          }
+        },
         files: [
           {
             src: "./templates/index.html",
@@ -319,6 +305,11 @@ module.exports = function(grunt) {
       },
 
       prod: {
+        options: {
+          context: {
+            NODE_ENV: "PRODUCTION"
+          }
+        },
         files: [
           {
             src: "./templates/index.html",
@@ -380,12 +371,12 @@ module.exports = function(grunt) {
      * @see https://github.com/tschaub/grunt-gh-pages
      */
 
-    "gh-pages": {
-      options: {
-        base: "./prod/"
-      },
-      src: ["**/*"]
-    },
+    // "gh-pages": {
+    //   options: {
+    //     base: "./prod/"
+    //   },
+    //   src: ["**/*"]
+    // },
 
     /**
      * @member {task} jsdoc
@@ -431,8 +422,6 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks("grunt-contrib-jshint");
 
-  grunt.loadNpmTasks("grunt-env");
-
   grunt.loadNpmTasks("grunt-contrib-clean");
 
   grunt.loadNpmTasks("grunt-contrib-uglify");
@@ -443,7 +432,7 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks("grunt-contrib-copy");
 
-  grunt.loadNpmTasks("grunt-gh-pages");
+  // grunt.loadNpmTasks("grunt-gh-pages");
 
   grunt.loadNpmTasks("grunt-jsdoc");
 
@@ -470,7 +459,7 @@ module.exports = function(grunt) {
    * @member {task} dev
    * Build development.
    */
-  grunt.registerTask("dev", ["init", "env:dev", "sass:dev", "preprocess:dev"]);
+  grunt.registerTask("dev", ["init", "sass:dev", "preprocess:dev"]);
   /**
    * @member {task} prod
    * Build production.
@@ -478,7 +467,6 @@ module.exports = function(grunt) {
   grunt.registerTask("prod", [
     "init",
     "dev",
-    "env:prod",
     "doc",
     "clean:prod",
     "sass:prod",
