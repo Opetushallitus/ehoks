@@ -34,3 +34,16 @@
         (if (= (:body (ex-data e)) "error.codeelement.not.found")
           (ex-info "Code Element not found" {:type :not-found} e)
           e)))))
+
+(defn convert-metadata [m]
+  {:nimi (:nimi m)
+   :lyhyt-nimi (:lyhytNimi m)
+   :kuvaus (:kuvaus m)
+   :kieli (:kieli m)})
+
+(defn enrich [m ks]
+  (if-let [k (get-in m ks)]
+    (let [koodisto-value (filter-koodisto-values
+                           (:body (get-koodi-versio (:koodi-uri k) (:versio k))))]
+      (assoc-in m (conj ks :metadata) (map convert-metadata (:metadata koodisto-value))))
+    m))
