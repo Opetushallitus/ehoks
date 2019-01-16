@@ -44,9 +44,9 @@
       (is (= (:status response) 200))
       (let [body (utils/parse-body (:body response))]
         (eq
-         (update-in
-           body
-           [:data 0]
-           dissoc :luotu :paivitetty :hyvaksytty)
-         {:data [(dissoc hoks :luotu :paivitetty :hyvaksytty)]
-          :meta {}})))))
+          (update-in
+            body
+            [:data 0]
+            dissoc :luotu :paivitetty :hyvaksytty)
+          {:data [(dissoc hoks :luotu :paivitetty :hyvaksytty)]
+           :meta {}})))))
