@@ -23,6 +23,12 @@
   (when (some? eid)
     (find-hoks #(= (:eid %) eid))))
 
+(defn get-all-hoks-by-oppija [oppijan-oid]
+  (when (some? oppijan-oid)
+    (->> (filter #(= (:oppijan-oid %) oppijan-oid) @hoks-store)
+         (group-by :eid)
+         (map (fn [[eid h]] (last (sort-by :versio h)))))))
+
 (defn create-hoks! [hoks]
   (let [old (or
               (get-hoks-by-eid (:eid hoks))
