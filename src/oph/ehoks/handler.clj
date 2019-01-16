@@ -87,13 +87,15 @@
    {:uri #"^/ehoks-backend/json-viewer/*"
     :request-method :get}])
 
-(def app
-  (-> app-routes
+(defn create-app [session-store]
+   (-> app-routes
       (middleware/wrap-cache-control-no-cache)
       (middleware/wrap-public public-routes)
       (session/wrap-session
         {:store (if (seq (:redis-url config))
                   (redis-store {:pool {}
                                 :spec {:uri (:redis-url config)}})
-                  (mem/memory-store))
+                  (or session-store (mem/memory-store)))
          :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}})))
+
+(def app (create-app nil))
