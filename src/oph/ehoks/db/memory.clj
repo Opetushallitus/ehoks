@@ -15,10 +15,13 @@
 (defn get-hoks-by-opiskeluoikeus [oid]
   (some #(when (= (get-in % [:opiskeluoikeus :oid]) oid) %) @hoks-store))
 
+(defn find-hoks [p]
+  (let [h (filter p @hoks-store)]
+    (last (sort-by :versio h))))
+
 (defn get-hoks-by-eid [eid]
   (when (some? eid)
-    (let [h (filter #(= (:eid %) eid) @hoks-store)]
-      (last (sort-by :versio h)))))
+    (find-hoks #(= (:eid %) eid))))
 
 (defn create-hoks! [hoks]
   (let [old (or
