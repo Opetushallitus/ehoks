@@ -88,7 +88,7 @@
     :request-method :get}])
 
 (defn create-app [session-store]
-   (-> app-routes
+  (-> app-routes
       (middleware/wrap-cache-control-no-cache)
       (middleware/wrap-public public-routes)
       (session/wrap-session
