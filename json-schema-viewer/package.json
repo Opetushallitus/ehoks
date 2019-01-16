@@ -15,7 +15,7 @@
   "production": "http://jlblcc.github.io/json-schema-viewer",
   "license": "Unlicense",
   "dependencies": {
-    "grunt": "~0",
+    "grunt": "~1",
     "grunt-cli": "~1",
     "grunt-contrib-clean": "~1",
     "grunt-contrib-concat": "~1",
@@ -24,8 +24,7 @@
     "grunt-node-sass": "~1",
     "grunt-contrib-uglify": "~2",
     "grunt-contrib-watch": "~1",
-    "grunt-env": "~0",
-    "grunt-preprocess": "~4"
+    "grunt-preprocess": "~5"
   },
   "scripts": {
     "dev": "grunt",
@@ -35,7 +34,6 @@
   },
   "devDependencies": {
     "grunt-contrib-connect": "^1",
-    "grunt-gh-pages": "^2",
     "grunt-jsdoc": "^2"
   }
 }
