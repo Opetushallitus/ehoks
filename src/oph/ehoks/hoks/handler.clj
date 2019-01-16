@@ -5,6 +5,7 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.memory :as db]
+            [oph.ehoks.external.koodisto :as koodisto]
             [schema.core :as s])
   (:import (java.time LocalDate)))
 
@@ -227,7 +228,10 @@ osaamisen"
       :summary "Palauttaa HOKSin"
       :path-params [eid :- s/Int]
       :return (rest/response hoks-schema/HOKS)
-      (rest/rest-ok (db/get-hoks-by-eid eid)))
+      (rest/rest-ok
+        (koodisto/enrich
+          (db/get-hoks-by-eid eid)
+          [:urasuunnitelma])))
 
     (c-api/POST "/" [:as request]
       :summary "Luo uuden HOKSin"
