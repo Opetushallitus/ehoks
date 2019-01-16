@@ -43,7 +43,9 @@
 
 (defn enrich [m ks]
   (if-let [k (get-in m ks)]
-    (let [koodisto-value (filter-koodisto-values
-                           (:body (get-koodi-versio (:koodi-uri k) (:versio k))))]
-      (assoc-in m (conj ks :metadata) (map convert-metadata (:metadata koodisto-value))))
+    (let [koodisto-value
+          (filter-koodisto-values
+            (:body (get-koodi-versio (:koodi-uri k) (:versio k))))]
+      (assoc-in m (conj ks :metadata)
+                (map convert-metadata (:metadata koodisto-value))))
     m))
