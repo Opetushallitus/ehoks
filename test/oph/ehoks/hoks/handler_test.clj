@@ -605,61 +605,6 @@
               :paivitetty (:paivitetty hoks)
               :versio 2)))))))
 
-(deftest get-koodisto-enriched-hoks
-  (testing "GET koodisto enriched HOKS"
-    (db/clear)
-    (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
-                                      :tutkinto {:laajuus 5 :nimi "Test"}}
-                     :urasuunnitelma {:koodi-arvo "jatkokoulutus"
-                                      :koodi-uri "urasuunnitelma_1"
-                                      :versio 1}
-                     :oppijan-oid "1.2.333.444.55.66666666666"
-                     :luonut "Teppo Tekijä"
-                     :paivittanyt "Pekka Päivittäjä"
-                     :hyvaksynyt "Heikki Hyväksyjä"}]
-      (utils/with-authentication
-        app
-        (-> (mock/request :post url)
-            (mock/json-body hoks-data)))
-      (let [response
-            (utils/with-authentication
-              app
-              (-> (mock/request :post url)
-                  (mock/json-body hoks-data)))
-            body (utils/parse-body (:body response))]
-        (is (= (:status response) 200))
-        (eq body {:data {:uri (format "%s/1" url)} :meta {}})
-        (client/set-get!
-          (fn [p _]
-            (is (.endsWith p "urasuunnitelma_1/1"))
-            {:body {:metadata
-                    [{:kuvaus "Jatko-opinnot ja lisäkoulutus"
-                      :kasite ""
-                      :lyhytNimi "Jatkokoulutus"
-                      :eiSisallaMerkitysta ""
-                      :kieli "FI"
-                      :nimi "Jatkokoulutus"
-                      :sisaltaaMerkityksen ""
-                      :huomioitavaKoodi ""
-                      :kayttoohje ""
-                      :sisaltaaKoodiston ""}]}}))
-        (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
-          (eq
-            hoks
-            (assoc
-              hoks-data
-              :eid 1
-              :luotu (:luotu hoks)
-              :hyvaksytty (:hyvaksytty hoks)
-              :paivitetty (:paivitetty hoks)
-              :versio 2
-              :urasuunnitelma (assoc (:urasuunnitelma hoks)
-                                     :metadata
-                                     [{:kuvaus "Jatko-opinnot ja lisäkoulutus"
-                                       :lyhyt-nimi "Jatkokoulutus"
-                                       :kieli "FI"
-                                       :nimi "Jatkokoulutus"}]))))))))
-
 (deftest put-created-hoks
   (testing "PUT updates created HOKS"
     (db/clear)
