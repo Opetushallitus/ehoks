@@ -32,7 +32,10 @@
       ; if element is not found.
       (throw
         (if (= (:body (ex-data e)) "error.codeelement.not.found")
-          (ex-info "Code Element not found" {:type :not-found} e)
+          (ex-info "Code Element not found"
+                   {:type :not-found
+                    :uri uri
+                    :version versio} e)
           e)))))
 
 (defn convert-metadata [m]
