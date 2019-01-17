@@ -227,7 +227,7 @@ osaamisen"
     (c-api/GET "/:eid" [eid]
       :summary "Palauttaa HOKSin"
       :path-params [eid :- s/Int]
-      :return {rest/rest-ok hoks-schema/HOKS}
+      :return (rest/rest-ok hoks-schema/HOKS)
       (db/get-hoks-by-eid eid))
 
     (c-api/POST "/" [:as request]
