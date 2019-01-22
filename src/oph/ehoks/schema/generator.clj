@@ -14,12 +14,14 @@
     (fn [c [k v]]
       (let [value-type (get-type v method)
             access-type (get-access v method)]
-        (assert (and (some? access-type) (some? value-type))
-                (format "Value type definition is missing for %s with method of %s (%s, %s)" k method value-type access-type))
+        (assert
+          (and (some? access-type) (some? value-type))
+          (format
+            "Value type definition is missing for %s with method of %s (%s, %s)"
+            k method value-type access-type))
         (case access-type
-        :excluded c
-        :optional (assoc c (s/optional-key k) value-type)
-        :required (assoc c k value-type)))
-      )
+          :excluded c
+          :optional (assoc c (s/optional-key k) value-type)
+          :required (assoc c k value-type))))
     {}
     (:schema m)))

@@ -19,5 +19,5 @@
 (deftest generate-simple-schema
   (testing "Generating simple schema"
     (eq {(s/optional-key :first) s/Str
-            :id s/Int}
-           (g/generate example :get))))
+         :id s/Int}
+        (g/generate example :get))))
