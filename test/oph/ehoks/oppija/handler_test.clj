@@ -85,7 +85,7 @@
                       :lyhyt-nimi "Jatkokoulutus"
                       :kieli "FI"
                       :nimi "Jatkokoulutus"}])]
-           :meta {}})))))
+           :meta {:errors []}})))))
 
 (deftest enrich-koodisto-not-found
   (testing "GET not found koodisto enriched HOKS"
@@ -117,7 +117,7 @@
             [:data 0]
             dissoc :luotu :paivitetty :hyvaksytty)
           {:data [(dissoc hoks :luotu :paivitetty :hyvaksytty)]
-           :meta {:error {:error-type "not-found"
-                          :keys ["urasuunnitelma"]
-                          :uri "urasuunnitelma_1"
-                          :version 1}}})))))
+           :meta {:errors [{:error-type "not-found"
+                            :keys ["urasuunnitelma"]
+                            :uri "urasuunnitelma_1"
+                            :version 1}]}})))))

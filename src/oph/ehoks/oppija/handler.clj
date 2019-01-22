@@ -29,15 +29,23 @@
             (if (empty? hokses)
               (response/not-found "No HOKSes found")
               (response/ok
-                (try
-                  {:data (mapv #(koodisto/enrich % [:urasuunnitelma]) hokses)
-                   :meta {}}
-                  (catch Exception e
-                    (let [data (ex-data e)]
-                      (when (not= (:type data) :not-found) (throw e))
-                      {:data hokses
-                       :meta {:error {:error-type :not-found
-                                      :keys [:urasuunnitelma]
-                                      :uri (:uri data)
-                                      :version (:version data)}}}))))))
+                (reduce
+                  (fn [c n]
+                    (try
+                      (update
+                        c :data conj (koodisto/enrich n [:urasuunnitelma]))
+                      (catch Exception e
+                        (let [data (ex-data e)]
+                          (when (not= (:type data) :not-found) (throw e))
+                          (update-in
+                            (update c :data conj n)
+                            [:meta :errors]
+                            conj
+                            {:error-type :not-found
+                             :keys [:urasuunnitelma]
+                             :uri (:uri data)
+                             :version (:version data)})))))
+                  {:data []
+                   :meta {:errors []}}
+                  hokses))))
           (response/unauthorized))))))

@@ -7,10 +7,10 @@
 
 (s/defschema KoodistoErrorMeta
              "Koodiston virhetilanteen metatiedot vastauksessa"
-             {(s/optional-key :error) {:error-type s/Keyword
-                                       :keys [s/Keyword]
-                                       :uri s/Str
-                                       :version s/Int}})
+             {(s/optional-key :errors) [{:error-type s/Keyword
+                                         :keys [s/Keyword]
+                                         :uri s/Str
+                                         :version s/Int}]})
 
 (s/defschema User
              "User"
