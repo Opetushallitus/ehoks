@@ -5,6 +5,13 @@
              "RESTful POST response"
              {:uri s/Str})
 
+(s/defschema KoodistoErrorMeta
+             "Koodiston virhetilanteen metatiedot vastauksessa"
+             {(s/optional-key :errors) [{:error-type s/Keyword
+                                         :keys [s/Keyword]
+                                         :uri s/Str
+                                         :version s/Int}]})
+
 (s/defschema User
              "User"
              {(s/optional-key :oid) s/Str

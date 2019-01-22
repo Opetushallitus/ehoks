@@ -7,6 +7,10 @@
   (atom {:get client/get
          :post client/post}))
 
+(defn reset-functions! []
+  (reset! client-functions {:get client/get
+                            :post client/post}))
+
 (defn get [url options]
   ((:get @client-functions) url options))
 

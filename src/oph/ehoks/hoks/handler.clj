@@ -5,6 +5,7 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.memory :as db]
+            [oph.ehoks.external.koodisto :as koodisto]
             [schema.core :as s])
   (:import (java.time LocalDate)))
 
