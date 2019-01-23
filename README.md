@@ -170,6 +170,12 @@ Lähdescheman tyyppi tulee olla seuraavanlaista:
                   :get s/Int}}}
 ```
 
+Lähdeschemaan täytyy lisätä metadataan nimi `:name`, `:doc` ja `:restful`-vipu
+(`true`), jotta dokumentaatio generoituu oikein.
+
+Restful-tyyppistä schemaa käytetään ainoastaan HTML-muotoisen
+taulukkodokumentaation generointiin.
+
 ### Kehityksen endpointit
 
 Sovellus tukee dummy-JSON-rajapintoja. Laita valmiit JSON-tiedostot kansioon
