@@ -570,3 +570,75 @@
     "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
     {:removed [:eid :versio :luotu :hyvaksytty :paivitetty]
      :replaced-in {[:urasuunnitelma] KoodistoKoodiLuonti}}))
+
+(def HOKSModel
+  "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
+  {:eid {:methods {:post :excluded}
+         :types {:any s/Int}
+         :description "Tunniste eHOKS-järjestelmässä"}
+   :oppijan-oid {:methods {:patch :optional}
+                 :types {:any s/Str}
+                 :description "Oppijan tunniste Opintopolku-ympäristössä"}
+   :opiskeluoikeus
+   {:methods {:patch :optional}
+    :types {:any Opiskeluoikeus}
+    :description "Opiskeluoikeuden tiedot Koski-järjestelmässä"}
+   :urasuunnitelma {:methods {:any :optional}
+                    :types {:any KoodistoKoodiLuonti
+                            :get KoodistoKoodi}
+                    :description
+                    "Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi"}
+   :versio {:methods {:any :excluded
+                      :get :required}
+            :types {:any s/Int}
+            :description "HOKS-dokumentin versio"}
+   :luonut {:methods {:patch :optional
+                      :put :excluded}
+            :types {:any s/Str}
+            :description "HOKS-dokumentin luoneen henkilön nimi"}
+   :paivittanyt {:methods {:patch :optional}
+                 :types {:any s/Str}
+                 :description
+                 "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi"}
+   :hyvaksynyt {:methods {:patch :optional}
+                :types {:any s/Str}
+                :description "Luodun HOKS-dokumentn hyväksyjän nimi"}
+   :luotu {:methods {:any :excluded
+                     :get :required}
+           :types {:any s/Inst}
+           :description
+           "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
+   :hyvaksytty
+   {:methods {:patch :excluded
+              :post :excluded
+              :get :required}
+    :types {:any s/Inst}
+    :description
+    "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
+   :paivitetty {:methods {:any :excluded
+                          :get :required}
+                :types {:any s/Inst}
+                :description (str "HOKS-dokumentin viimeisin päivitysaika "
+                                  "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
+   :olemassa-oleva-osaaminen
+   {:methods {:any :optional}
+    :types {:any OlemassaOlevaOsaaminen}
+    :description (str "Osaamisen tunnustamisen perusteella sisällytetty "
+                      "suoraan osaksi opiskelijan tutkintoa")}
+   :opiskeluvalmiuksia-tukevat-opinnot
+   {:methods {:any :optional}
+    :types {:any OpiskeluvalmiuksiaTukevatOpinnot}
+    :description "Opiskeluvalmiuksia tukevat opinnot"}
+   :puuttuva-ammatillinen-osaaminen
+   {:methods {:any :optional}
+    :types {:any [PuuttuvaAmmatillinenOsaaminen]}
+    :description
+    "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"}
+   :puuttuva-yhteisen-tutkinnon-osat
+   {:methods {:any :optional}
+    :types {:any [PuuttuvaYTO]}
+    :description "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"}
+   :puuttuva-paikallinen-tutkinnon-osa
+   {:methods {:any :optional}
+    :types {:any [PaikallinenTutkinnonOsa]}
+    :description "Puuttuvat paikallisen tutkinnon osat"}})
