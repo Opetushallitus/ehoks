@@ -8,9 +8,24 @@
 (defn get-type [v method]
   (or (get-in v [:types method]) (get-in v [:types :any])))
 
+(s/defschema
+  ModelValue
+  {:methods {(s/optional-key :any) s/Keyword
+             (s/optional-key :get) s/Keyword
+             (s/optional-key :post) s/Keyword
+             (s/optional-key :put) s/Keyword
+             (s/optional-key :patch) s/Keyword}
+   :types {(s/optional-key :any) s/Any
+           (s/optional-key :get) s/Any
+           (s/optional-key :post) s/Any
+           (s/optional-key :put) s/Any
+           (s/optional-key :patch) s/Any}
+   :description s/Str})
+
 (defn generate [m method]
   (reduce
     (fn [c [k v]]
+      (s/validate ModelValue v)
       (let [value-type (get-type v method)
             access-type (get-access v method)]
         (assert
