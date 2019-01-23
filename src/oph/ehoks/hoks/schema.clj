@@ -572,7 +572,9 @@
      :replaced-in {[:urasuunnitelma] KoodistoKoodiLuonti}}))
 
 (def HOKSModel
-  "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
+  ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
+    :restful true
+    :name "HOKSModel"}
   {:eid {:methods {:post :excluded}
          :types {:any s/Int}
          :description "Tunniste eHOKS-järjestelmässä"}
