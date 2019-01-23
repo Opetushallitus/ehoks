@@ -24,4 +24,4 @@
           :optional (assoc c (s/optional-key k) value-type)
           :required (assoc c k value-type))))
     {}
-    (:schema m)))
+    m))
