@@ -1,7 +1,6 @@
 (ns oph.ehoks.schema.generator
-  (:require [schema.core :as s]))
-
-(defn defgenschema [schema])
+  (:require [schema.core :as s]
+            [ring.swagger.json-schema :as rsjs]))
 
 (defn get-access [v method]
   (or (get-in v [:methods method]) (get-in v [:methods :any]) :required))
@@ -21,7 +20,9 @@
             k method value-type access-type))
         (case access-type
           :excluded c
-          :optional (assoc c (s/optional-key k) value-type)
-          :required (assoc c k value-type))))
+          :optional (assoc c (s/optional-key k)
+                           (rsjs/describe value-type (:description v)))
+          :required (assoc c k
+                           (rsjs/describe value-type (:description v))))))
     {}
     m))
