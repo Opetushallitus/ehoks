@@ -105,10 +105,10 @@
            "esittämiseen.\n\n"
            "Generoitu "
            (f/unparse local-formatter (l/to-local-date-time (l/local-now)))
-           "\n"))
+           "\n\n"))
     (.write
       w
-      (format "Katso myös [HOKS doc](%s)" doc-url))
+      (format "Katso myös [HOKS doc](%s)\n\n" doc-url))
     (doseq [line (flatten (generate-doc schemas))]
       (assert
         (string? line)
