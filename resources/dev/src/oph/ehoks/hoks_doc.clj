@@ -88,10 +88,10 @@
         (map #(generate-md-row % (get m %)) (keys m)))
       "")))
 
-(defn generate-doc []
+(defn generate-doc [s]
   (map
     #(generate-markdown (deref %))
-    (vals schemas)))
+    (vals s)))
 
 (defn write-doc! [target]
   (println (str "Generating markdown formatted document to " target))
@@ -104,8 +104,10 @@
            "Generoitu "
            (f/unparse local-formatter (l/to-local-date-time (l/local-now)))
            "\n"))
-    (doseq [line (flatten (generate-doc))]
-      (assert (string? line) (str "Line must be string. Got: " line))
+    (doseq [line (flatten (generate-doc schemas))]
+      (assert
+        (string? line)
+        (format "Line must be string. Got: %s (%s) " line  (type line)))
       (try
         (.write w line)
         (catch Exception e
