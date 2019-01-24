@@ -11,6 +11,9 @@
 
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
+(def github-url
+  "https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md")
+
 (def schemas (let [m (ns-publics 'oph.ehoks.hoks.schema)]
                (select-keys
                  m
@@ -29,7 +32,7 @@
       k)))
 
 (defn generate-link [{t :name}]
-  [:a {:href (str "#" t)} t])
+  [:a {:href (str github-url "#" t)} t])
 
 (def translations '{Int "Kokonaisluku"
                     Inst "Aikaleima"
