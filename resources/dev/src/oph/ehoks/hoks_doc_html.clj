@@ -134,8 +134,9 @@
    (generate-doc (filter-restful schemas))])
 
 (defn gen-hiccup [content]
-  [:html
+  [:html {:lang "fi"}
    [:head
+    [:meta {:charset "utf-8"}]
     [:title "eHOKS RESTful kehitysdokumentaatio"]
     [:style
      "table {border-collapse: collapse;}"
@@ -158,6 +159,7 @@
   (println (str "Generating HTML formatted document to " target))
   (let [hicdoc (gen-doc)]
     (with-open [w (io/writer target)]
+      (.write w "<!doctype html>")
       (.write w (h/html hicdoc))))
 
   (println "HTML document has been generated."))
