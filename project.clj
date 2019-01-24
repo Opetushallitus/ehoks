@@ -93,7 +93,9 @@
                         ["bikeshed"]
                         ["eastwood"]
                         ["cljfmt" "check"]]
-            "gendoc" ["run" "-m" "oph.ehoks.hoks-doc/write-doc!" "doc/hoks.md"]}
+            "gendoc" ["do"
+                      ["run" "-m" "oph.ehoks.hoks-doc/write-doc!" "doc/hoks.md"]
+                      ["run" "-m" "oph.ehoks.hoks-doc-html/write-doc!" "resources/public/hoks-doc/index.html"]]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:test {:resource-paths ["resources/test"
                                      "resources/test/src"]

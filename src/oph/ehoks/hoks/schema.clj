@@ -1,7 +1,8 @@
 (ns oph.ehoks.hoks.schema
   (:require [schema.core :as s]
             [schema-tools.core :as st]
-            [oph.ehoks.schema-tools :refer [describe modify]])
+            [oph.ehoks.schema-tools :refer [describe modify]]
+            [oph.ehoks.schema.generator :as g])
   (:import (java.time LocalDate)))
 
 (s/defschema
@@ -511,62 +512,102 @@
       "Osaamisen todentaneen toimivaltaisen viranomaisen nimi")
     Opinnot))
 
-(s/defschema
-  HOKS
-  (describe
-    "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
-    :eid s/Int "Tunniste eHOKS-järjestelmässä"
-    :oppijan-oid s/Str "Oppijan tunniste Opintopolku-ympäristössä"
-    :opiskeluoikeus Opiskeluoikeus
-    "Opiskeluoikeuden tiedot Koski-järjestelmässä"
-    (s/optional-key :urasuunnitelma) KoodistoKoodi
-    "Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi"
-    :versio s/Int "HOKS-dokumentin versio"
-    :luonut s/Str "HOKS-dokumentin luoneen henkilön nimi"
-    :paivittanyt s/Str "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi"
-    :hyvaksynyt s/Str "Luodun HOKS-dokumentn hyväksyjän nimi"
-    :luotu s/Inst "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"
-    :hyvaksytty s/Inst
-    "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"
-    :paivitetty s/Inst
-    "HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"
-    (s/optional-key :olemassa-oleva-osaaminen) OlemassaOlevaOsaaminen
-    (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
-         "opiskelijan tutkintoa")
-    (s/optional-key :opiskeluvalmiuksia-tukevat-opinnot)
-    OpiskeluvalmiuksiaTukevatOpinnot
-    "Opiskeluvalmiuksia tukevat opinnot"
-    (s/optional-key :puuttuva-ammatillinen-osaaminen)
-    [PuuttuvaAmmatillinenOsaaminen]
-    "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"
-    (s/optional-key :puuttuva-yhteisen-tutkinnon-osat) [PuuttuvaYTO]
-    "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"
-    (s/optional-key :puuttuva-paikallinen-tutkinnon-osa)
-    [PaikallinenTutkinnonOsa]
-    "Puuttuvat paikallisen tutkinnon osat"))
+(def HOKSModel
+  ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
+    :restful true
+    :name "HOKSModel"}
+  {:eid {:methods {:post :excluded}
+         :types {:any s/Int}
+         :description "Tunniste eHOKS-järjestelmässä"}
+   :oppijan-oid {:methods {:patch :optional}
+                 :types {:any s/Str}
+                 :description "Oppijan tunniste Opintopolku-ympäristössä"}
+   :opiskeluoikeus
+   {:methods {:patch :optional}
+    :types {:any Opiskeluoikeus}
+    :description "Opiskeluoikeuden tiedot Koski-järjestelmässä"}
+   :urasuunnitelma {:methods {:any :optional}
+                    :types {:any KoodistoKoodiLuonti
+                            :get KoodistoKoodi}
+                    :description
+                    "Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi"}
+   :versio {:methods {:any :excluded
+                      :get :required}
+            :types {:any s/Int}
+            :description "HOKS-dokumentin versio"}
+   :luonut {:methods {:patch :optional
+                      :put :excluded}
+            :types {:any s/Str}
+            :description "HOKS-dokumentin luoneen henkilön nimi"}
+   :paivittanyt {:methods {:patch :optional}
+                 :types {:any s/Str}
+                 :description
+                 "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi"}
+   :hyvaksynyt {:methods {:patch :optional}
+                :types {:any s/Str}
+                :description "Luodun HOKS-dokumentn hyväksyjän nimi"}
+   :luotu {:methods {:any :excluded
+                     :get :required}
+           :types {:any s/Inst}
+           :description
+           "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
+   :hyvaksytty
+   {:methods {:patch :excluded
+              :post :excluded
+              :get :required}
+    :types {:any s/Inst}
+    :description
+    "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
+   :paivitetty {:methods {:any :excluded
+                          :get :required}
+                :types {:any s/Inst}
+                :description (str "HOKS-dokumentin viimeisin päivitysaika "
+                                  "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
+   :olemassa-oleva-osaaminen
+   {:methods {:any :optional}
+    :types {:any OlemassaOlevaOsaaminen}
+    :description (str "Osaamisen tunnustamisen perusteella sisällytetty "
+                      "suoraan osaksi opiskelijan tutkintoa")}
+   :opiskeluvalmiuksia-tukevat-opinnot
+   {:methods {:any :optional}
+    :types {:any OpiskeluvalmiuksiaTukevatOpinnot}
+    :description "Opiskeluvalmiuksia tukevat opinnot"}
+   :puuttuva-ammatillinen-osaaminen
+   {:methods {:any :optional}
+    :types {:any [PuuttuvaAmmatillinenOsaaminen]}
+    :description
+    "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"}
+   :puuttuva-yhteisen-tutkinnon-osat
+   {:methods {:any :optional}
+    :types {:any [PuuttuvaYTO]}
+    :description "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"}
+   :puuttuva-paikallinen-tutkinnon-osa
+   {:methods {:any :optional}
+    :types {:any [PaikallinenTutkinnonOsa]}
+    :description "Puuttuvat paikallisen tutkinnon osat"}})
 
-(s/defschema
-  HOKSPaivitys
-  (modify
-    HOKS
-    "HOKS-dokumentin ylikirjoitus (PUT)"
-    {:removed [:versio :luotu :luonut :paivitetty]
-     :replaced-in {[:urasuunnitelma] KoodistoKoodiLuonti}}))
+; Following four schemas are only for generated markdown doc
 
-(s/defschema
-  HOKSKentanPaivitys
-  (modify
-    HOKS
-    "HOKS-dokumentin arvon tai arvojen päivitys (PATCH)"
-    {:removed [:versio :luotu :hyvaksytty :paivitetty]
-     :optionals [:luonut :paivittanyt
-                 :hyvaksynyt :opiskeluoikeus :oppijan-oid]
-     :replaced-in {[:urasuunnitelma] KoodistoKoodiLuonti}}))
+(def HOKS
+  (with-meta
+    (g/generate HOKSModel :get)
+    {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
+     :name "HOKS"}))
 
-(s/defschema
-  HOKSLuonti
-  (modify
-    HOKS
-    "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
-    {:removed [:eid :versio :luotu :hyvaksytty :paivitetty]
-     :replaced-in {[:urasuunnitelma] KoodistoKoodiLuonti}}))
+(def HOKSPaivitys
+  (with-meta
+    (g/generate HOKSModel :put)
+    {:doc "HOKS-dokumentin ylikirjoitus (PUT)"
+     :name "HOKSPaivitys"}))
+
+(def HOKSKentanPaivitys
+  (with-meta
+    (g/generate HOKSModel :patch)
+    {:doc "HOKS-dokumentin ylikirjoitus (PATCH)"
+     :name "HOKS"}))
+
+(def HOKSLuonti
+  (with-meta
+    (g/generate HOKSModel :post)
+    {:doc "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
+     :name "HOKS"}))

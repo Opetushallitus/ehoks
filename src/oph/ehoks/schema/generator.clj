@@ -1,0 +1,43 @@
+(ns oph.ehoks.schema.generator
+  (:require [schema.core :as s]
+            [ring.swagger.json-schema :as rsjs]))
+
+(defn get-access [v method]
+  (or (get-in v [:methods method]) (get-in v [:methods :any]) :required))
+
+(defn get-type [v method]
+  (or (get-in v [:types method]) (get-in v [:types :any])))
+
+(s/defschema
+  ModelValue
+  {:methods {(s/optional-key :any) s/Keyword
+             (s/optional-key :get) s/Keyword
+             (s/optional-key :post) s/Keyword
+             (s/optional-key :put) s/Keyword
+             (s/optional-key :patch) s/Keyword}
+   :types {(s/optional-key :any) s/Any
+           (s/optional-key :get) s/Any
+           (s/optional-key :post) s/Any
+           (s/optional-key :put) s/Any
+           (s/optional-key :patch) s/Any}
+   :description s/Str})
+
+(defn generate [m method]
+  (reduce
+    (fn [c [k v]]
+      (s/validate ModelValue v)
+      (let [value-type (get-type v method)
+            access-type (get-access v method)]
+        (assert
+          (and (some? access-type) (some? value-type))
+          (format
+            "Value type definition is missing for %s with method of %s (%s, %s)"
+            k method value-type access-type))
+        (case access-type
+          :excluded c
+          :optional (assoc c (s/optional-key k)
+                           (rsjs/describe value-type (:description v)))
+          :required (assoc c k
+                           (rsjs/describe value-type (:description v))))))
+    {}
+    m))

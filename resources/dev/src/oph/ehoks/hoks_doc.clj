@@ -7,12 +7,18 @@
             [clj-time.format :as f]
             [clojure.string :as cstr]))
 
+(def doc-url "https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html")
+
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
 (def schemas (let [m (ns-publics 'oph.ehoks.hoks.schema)]
                (select-keys
                  m
-                 (for [[k v] m :when (not (fn? (deref v)))]
+                 (for [[k v] m
+                       :when
+                       (and
+                         (not (:restful (meta (deref v))))
+                         (not (fn? (deref v))))]
                    k))))
 
 (defn required-str [k]
@@ -61,7 +67,10 @@
       (if (sequential? v)
         (format "[%s]" (get-name (first v)))
         (get-name v))
-      (get-in m [:json-schema :description])
+      (or
+        (get-in m [:json-schema :description])
+        (:doc m)
+        "")
       (required-str k))))
 
 (defn generate-markdown [m]
@@ -71,17 +80,20 @@
         conj
         [(str "### " (:name m-meta) "  ")
          ""
-         (get-in m-meta [:json-schema :description])
+         (or
+           (get-in m-meta [:json-schema :description])
+           (:doc m-meta)
+           "")
          ""
          "| Nimi | Tyyppi | Selite | Vaaditaan |"
          "| ---- | ------ | ------ | --------- |"]
         (map #(generate-md-row % (get m %)) (keys m)))
       "")))
 
-(defn generate-doc []
+(defn generate-doc [s]
   (map
     #(generate-markdown (deref %))
-    (vals schemas)))
+    (vals s)))
 
 (defn write-doc! [target]
   (println (str "Generating markdown formatted document to " target))
@@ -93,9 +105,14 @@
            "esittämiseen.\n\n"
            "Generoitu "
            (f/unparse local-formatter (l/to-local-date-time (l/local-now)))
-           "\n"))
-    (doseq [line (flatten (generate-doc))]
-      (assert (string? line) (str "Line must be string. Got: " line))
+           "\n\n"))
+    (.write
+      w
+      (format "Katso myös [HOKS doc](%s)\n\n" doc-url))
+    (doseq [line (flatten (generate-doc schemas))]
+      (assert
+        (string? line)
+        (format "Line must be string. Got: %s (%s) " line  (type line)))
       (try
         (.write w line)
         (catch Exception e

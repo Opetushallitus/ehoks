@@ -1,7 +1,10 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 11.01.2019 14.00
+Generoitu 24.01.2019 12.46
+
+Katso myös [HOKS doc](https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html)
+
 ### MuuOppimisymparisto  
 
 Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu
@@ -79,6 +82,16 @@ Yhteinen Tutkinnon osa (YTO)
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus ePerusteet-palvelussa | Ei |
 | pakollinen | Totuusarvo | Onko tutkinnon osa pakollinen vai ei | Kyllä |
 
+### KoodistoKoodiLuonti  
+
+Koodisto-koodin lisäys tai päivitys
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| koodi-arvo | Merkkijono | Koodisto-koodin arvo | Kyllä |
+| koodi-uri | Merkkijono | Koodiston URI | Kyllä |
+| versio | Kokonaisluku | Koodisto-koodin versio | Kyllä |
+
 ### OpiskeluvalmiuksiaTukevatOpinnotPaivitys  
 
 Opiskeluvalmiuksia tukevien opintojen tiedot merkintää ylikirjoittaessa
@@ -98,13 +111,12 @@ HOKS-dokumentin ylikirjoitus (PUT)
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| urasuunnitelma | [KoodistoKoodi](#KoodistoKoodi) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
+| urasuunnitelma | [KoodistoKoodiLuonti](#KoodistoKoodiLuonti) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
 | opiskeluoikeus | [Opiskeluoikeus](#Opiskeluoikeus) | Opiskeluoikeuden tiedot Koski-järjestelmässä | Kyllä |
 | oppijan-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
 | olemassa-oleva-osaaminen | [OlemassaOlevaOsaaminen](#OlemassaOlevaOsaaminen) | Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
-| opiskeluoikeus-oid | Merkkijono | Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä. | Kyllä |
 | paivittanyt | Merkkijono | HOKS-dokumenttia viimeksi päivittäneen henkilön nimi | Kyllä |
 | puuttuva-paikallinen-tutkinnon-osa | [[PaikallinenTutkinnonOsa](#PaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | opiskeluvalmiuksia-tukevat-opinnot | [OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot) | Opiskeluvalmiuksia tukevat opinnot | Ei |
@@ -215,19 +227,18 @@ Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen
 | ajankohta | [Aikavali](#Aikavali) | Näytön tai osaamisen osoittamisen ajankohta | Kyllä |
 | yksilolliset-arviointikriteerit | [[Arviointikriteeri](#Arviointikriteeri)] | Yksilölliset arvioinnin kriteerit | Ei |
 
-### HOKSLuonti  
+### HOKS  
 
 HOKS-dokumentin arvot uutta merkintää luotaessa (POST)
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| urasuunnitelma | [KoodistoKoodi](#KoodistoKoodi) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
+| urasuunnitelma | [KoodistoKoodiLuonti](#KoodistoKoodiLuonti) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
 | opiskeluoikeus | [Opiskeluoikeus](#Opiskeluoikeus) | Opiskeluoikeuden tiedot Koski-järjestelmässä | Kyllä |
 | oppijan-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
 | olemassa-oleva-osaaminen | [OlemassaOlevaOsaaminen](#OlemassaOlevaOsaaminen) | Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | luonut | Merkkijono | HOKS-dokumentin luoneen henkilön nimi | Kyllä |
-| opiskeluoikeus-oid | Merkkijono | Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä. | Kyllä |
 | paivittanyt | Merkkijono | HOKS-dokumenttia viimeksi päivittäneen henkilön nimi | Kyllä |
 | puuttuva-paikallinen-tutkinnon-osa | [[PaikallinenTutkinnonOsa](#PaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | opiskeluvalmiuksia-tukevat-opinnot | [OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot) | Opiskeluvalmiuksia tukevat opinnot | Ei |
@@ -327,7 +338,6 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | luonut | Merkkijono | HOKS-dokumentin luoneen henkilön nimi | Kyllä |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
-| opiskeluoikeus-oid | Merkkijono | Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä. | Kyllä |
 | paivittanyt | Merkkijono | HOKS-dokumenttia viimeksi päivittäneen henkilön nimi | Kyllä |
 | versio | Kokonaisluku | HOKS-dokumentin versio | Kyllä |
 | puuttuva-paikallinen-tutkinnon-osa | [[PaikallinenTutkinnonOsa](#PaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
@@ -424,16 +434,15 @@ Organisaatio
 | nimi | Merkkijono | Organisaation nimi | Kyllä |
 | y-tunnus | Merkkijono | Organisaation y-tunnus | Ei |
 
-### HOKSKentanPaivitys  
+### HOKS  
 
-HOKS-dokumentin arvon tai arvojen päivitys (PATCH)
+HOKS-dokumentin ylikirjoitus (PATCH)
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| urasuunnitelma | [KoodistoKoodi](#KoodistoKoodi) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
+| urasuunnitelma | [KoodistoKoodiLuonti](#KoodistoKoodiLuonti) | Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi | Ei |
 | luonut | Merkkijono | HOKS-dokumentin luoneen henkilön nimi | Ei |
 | oppijan-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Ei |
-| opiskeluoikeus-oid | Merkkijono | Opiskeluoikeuden yksilöivä tunniste Koski-järjestelmässä. | Ei |
 | olemassa-oleva-osaaminen | [OlemassaOlevaOsaaminen](#OlemassaOlevaOsaaminen) | Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa | Ei |
 | paivittanyt | Merkkijono | HOKS-dokumenttia viimeksi päivittäneen henkilön nimi | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |

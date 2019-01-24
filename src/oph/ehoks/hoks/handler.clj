@@ -6,6 +6,7 @@
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.memory :as db]
             [oph.ehoks.external.koodisto :as koodisto]
+            [oph.ehoks.schema.generator :as g]
             [schema.core :as s])
   (:import (java.time LocalDate)))
 
@@ -227,12 +228,12 @@ osaamisen"
     (c-api/GET "/:eid" [eid]
       :summary "Palauttaa HOKSin"
       :path-params [eid :- s/Int]
-      :return (rest/response hoks-schema/HOKS)
+      :return (rest/response (g/generate hoks-schema/HOKSModel :get))
       (rest/rest-ok (db/get-hoks-by-eid eid)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo uuden HOKSin"
-      :body [hoks hoks-schema/HOKSLuonti]
+      :body [hoks (g/generate hoks-schema/HOKSModel :post)]
       :return (rest/response schema/POSTResponse)
       (let [h (db/create-hoks! hoks)]
         (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid h))})))
@@ -240,7 +241,7 @@ osaamisen"
     (c-api/PUT "/:eid" [eid]
       :summary "Päivittää olemassa olevaa HOKSia"
       :path-params [eid :- s/Int]
-      :body [values hoks-schema/HOKSPaivitys]
+      :body [values (g/generate hoks-schema/HOKSModel :put)]
       (if (db/update-hoks! eid values)
         (response/no-content)
         (response/not-found "HOKS not found with given eHOKS ID")))
@@ -248,7 +249,7 @@ osaamisen"
     (c-api/PATCH "/:eid" []
       :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
       :path-params [eid :- s/Int]
-      :body [values hoks-schema/HOKSKentanPaivitys]
+      :body [values (g/generate hoks-schema/HOKSModel :patch)]
       (if (db/update-hoks-values! eid values)
         (response/no-content)
         (response/not-found "HOKS not found with given eHOKS ID")))
