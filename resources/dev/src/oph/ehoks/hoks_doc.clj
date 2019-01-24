@@ -7,6 +7,8 @@
             [clj-time.format :as f]
             [clojure.string :as cstr]))
 
+(def doc-url "https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html")
+
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
 (def schemas (let [m (ns-publics 'oph.ehoks.hoks.schema)]
@@ -104,6 +106,9 @@
            "Generoitu "
            (f/unparse local-formatter (l/to-local-date-time (l/local-now)))
            "\n"))
+    (.write
+      w
+      (format "Katso myös [HOKS doc](%s)" doc-url))
     (doseq [line (flatten (generate-doc schemas))]
       (assert
         (string? line)
