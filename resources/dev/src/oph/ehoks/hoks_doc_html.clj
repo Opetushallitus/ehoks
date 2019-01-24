@@ -29,7 +29,7 @@
       k)))
 
 (defn generate-link [{t :name}]
-  (format "[%s](#%s)" t t))
+  [:a {:href (str "#" t)} t])
 
 (def translations '{Int "Kokonaisluku"
                     Inst "Aikaleima"
@@ -55,9 +55,9 @@
       (generate-link m)
       (translate-fi (s/explain v)))))
 
-(defn gen-type-str [t]
+(defn gen-type-element [t]
   (if (sequential? t)
-    (format "[%s]" (get-name (first t)))
+    [:span "[" (get-name (first t)) "]"]
     (get-name t)))
 
 (defn gen-access-str [a]
@@ -68,12 +68,9 @@
 (defn gen-access-type [v method]
   (let [t (g/get-type v method)
         a (g/get-access v method)]
-    (if (= a :excluded)
-      "-"
-      (format
-        "%s, %s"
-        (gen-type-str t)
-        (gen-access-str a)))))
+    (when (not= a :excluded)
+      [:span
+       (gen-type-element t)", " (gen-access-str a)])))
 
 (defn generate-restful-header [m-meta]
   [:div
@@ -111,9 +108,10 @@
     :div
     (mapv
      (fn [s]
-       (let [m (deref s)]
-         [:div {:class "model"}
-          (generate-restful-header (meta m))
+       (let [m (deref s)
+             m-meta (meta m)]
+         [:div {:class "model" :id (:name m-meta)}
+          (generate-restful-header m-meta)
           (generate-restful-table m)]))
      (vals s-col))))
 
@@ -137,7 +135,8 @@
    [:head
     [:title "eHOKS RESTful kehitysdokumentaatio"]
     [:style
-     "table {border: 1px solid black;} th, td {border: 1px solid gray;}"
+     "table {border-collapse: collapse;}"
+     "table, th, td {border: 1px solid black;}"
      ".model {border-top: 1px solid gray;}"]]
    [:div
    [:div
