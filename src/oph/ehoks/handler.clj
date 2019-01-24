@@ -59,6 +59,7 @@
         (GET "/buildversion.txt" _
           (response/content-type
             (response/resource-response "buildversion.txt") "text/plain"))
+        (resources/create-routes "/hoks-doc" "hoks-doc")
         (resources/create-routes "/json-viewer" "json-viewer")))
 
     (c-api/undocumented
@@ -85,6 +86,8 @@
    {:uri #"^/ehoks-backend/api/v1/tyopaikan-toimija/auth$"
     :request-method :get}
    {:uri #"^/ehoks-backend/json-viewer/*"
+    :request-method :get}
+   {:uri #"^/ehoks-backend/hoks-doc/index.html$"
     :request-method :get}])
 
 (defn create-app [session-store]
