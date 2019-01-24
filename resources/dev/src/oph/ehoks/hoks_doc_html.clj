@@ -144,9 +144,18 @@
      ".model {border-top: 1px solid gray;}"]]
    [:div
    [:div
-    [:h1 "HOKS API doc"]
+    [:h1 "HOKS doc"]
     [:p "Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin"
      "esittämiseen."]
+    [:p
+     "Tämä dokumentaatio keskittyy toistaiseksi ainoastaan HOKS-tietomallin"
+     "esittämiseen."]
+    [:p
+     "Katso myös "
+     [:a
+      {:href "https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md"}
+      "HOKS API doc"]
+     " dokumentaatio."]
     [:p "Generoitu "
      (f/unparse local-formatter (l/to-local-date-time (l/local-now)))]]
    [:div
