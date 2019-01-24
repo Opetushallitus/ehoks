@@ -12,7 +12,11 @@
 (def schemas (let [m (ns-publics 'oph.ehoks.hoks.schema)]
                (select-keys
                  m
-                 (for [[k v] m :when (not (fn? (deref v)))]
+                 (for [[k v] m
+                       :when
+                       (and
+                         (not (:restful (meta (deref v))))
+                         (not (fn? (deref v))))]
                    k))))
 
 (defn required-str [k]
