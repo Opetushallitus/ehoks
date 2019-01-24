@@ -65,7 +65,10 @@
       (if (sequential? v)
         (format "[%s]" (get-name (first v)))
         (get-name v))
-      (get-in m [:json-schema :description])
+      (or
+        (get-in m [:json-schema :description])
+        (:doc m)
+        "")
       (required-str k))))
 
 (defn generate-markdown [m]
@@ -75,7 +78,10 @@
         conj
         [(str "### " (:name m-meta) "  ")
          ""
-         (get-in m-meta [:json-schema :description])
+         (or
+           (get-in m-meta [:json-schema :description])
+           (:doc m-meta)
+           "")
          ""
          "| Nimi | Tyyppi | Selite | Vaaditaan |"
          "| ---- | ------ | ------ | --------- |"]
