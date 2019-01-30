@@ -26,7 +26,7 @@
       [ppto hoks-schema/PaikallinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse)
       (let [p (db/create-ppto! ppto)]
-        (rest/rest-ok (format "%s/%d" (:uri request) (:eid ppto)))))
+        (rest/rest-ok (format "%s/%d" (:uri request) (:eid p)))))
 
     (c-api/PUT
       "/:eid"
