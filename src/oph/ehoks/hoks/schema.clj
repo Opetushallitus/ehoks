@@ -235,10 +235,10 @@
     :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
     (s/optional-key :ammattitaitovaatimukset) [s/Str]
     (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan. "
-         "Tunnisteen tyyppi voi vielä päivittyä.")
-    :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"
-    (s/optional-key :yksilolliset-arviointikriteerit) [Arviointikriteeri]
-    "Yksilölliset arvioinnin kriteerit"))
+         "Tunnisteen tyyppi voi vielä päivittyä. "
+         "Tulevaisuudessa, jos tarvitaan, tähän voidaan lisätä yksilölliset "
+         "arviointikriteerit")
+    :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"))
 
 (s/defschema
   HankitunYTOOsaamisenNaytto
@@ -257,10 +257,9 @@
     :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
     (s/optional-key :osaamistavoitteet) [s/Str]
     (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan."
-         "Tunnisteen tyyppi voi vielä päivittyä.")
-    :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"
-    (s/optional-key :yksilolliset-arviointikriteerit) [Arviointikriteeri]
-    "Yksilölliset arvioinnin kriteerit"))
+         "Tunnisteen tyyppi voi vielä päivittyä ja tähän saattaa tulla vielä "
+         "Yksilölliset arvioinnin kriteerit")
+    :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"))
 
 (s/defschema
   HankitunPaikallisenOsaamisenNaytto
@@ -278,10 +277,9 @@
     :ajankohta Aikavali "Näytön tai osaamisen osoittamisen ajankohta"
     :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
     (s/optional-key :ammattitaitovaatimukset) [s/Str]
-    "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan."
-    :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"
-    (s/optional-key :yksilolliset-arviointikriteerit) [Arviointikriteeri]
-    "Yksilölliset arvioinnin kriteerit"))
+    (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan. "
+         "Saattaa sisältää tulevaisuudessa yksilölliset arviointikriteerit.")
+    :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"))
 
 (s/defschema
   PuuttuvaAmmatillinenOsaaminen
