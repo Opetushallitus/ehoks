@@ -18,7 +18,7 @@
       (rest/rest-ok (db/get-ppto-by-eid eid)))
 
     (c-api/POST
-      "/" [:as request]
+      "/:hoks-eid" [:as request]
       :summary
       "Luo (tai korvaa vanhan) puuttuvan paikallisen
  tutkinnon osan"
