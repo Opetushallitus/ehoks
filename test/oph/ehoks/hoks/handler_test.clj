@@ -27,7 +27,7 @@
       (eq (utils/parse-body
             (:body response))
           {:data {:eid 1
-                  :amosaa-tunniste ""
+                  :amosaa-tunniste 1
                   :nimi ""
                   :laajuus 0
                   :kuvaus ""
@@ -56,7 +56,7 @@
                     "%s/1/puuttuva-paikallinen-tutkinnon-osa"
                     url))
                 (mock/json-body
-                  {:amosaa-tunniste ""
+                  {:amosaa-tunniste 1
                    :nimi ""
                    :laajuus 0
                    :kuvaus ""
@@ -89,7 +89,7 @@
                     url))
                 (mock/json-body
                   {:eid 1
-                   :amosaa-tunniste ""
+                   :amosaa-tunniste 1
                    :nimi ""
                    :laajuus 0
                    :kuvaus ""
@@ -119,7 +119,7 @@
                     url))
                 (mock/json-body
                   {:eid 1
-                   :amosaa-tunniste ""
+                   :amosaa-tunniste 1
                    :nimi ""
                    :laajuus 0
                    :kuvaus ""
@@ -149,7 +149,7 @@
                     url))
                 (mock/json-body
                   {:eid 1
-                   :amosaa-tunniste "1"})))]
+                   :amosaa-tunniste 1})))]
       (is (= (:status response) 204)))))
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
@@ -172,8 +172,7 @@
                   {:tunniste
                    {:koodi-arvo "1"
                     :koodi-uri "esimerkki_uri"
-                    :versio 1}
-                   :eperusteet-id ""}
+                    :versio 1}}
                   :vaatimuksista-tai-tavoitteista-poikkeaminen ""
                   :osaamisen-hankkimistavat []
                   :koulutuksen-jarjestaja-oid ""
@@ -193,8 +192,7 @@
                 (mock/json-body
                   {:tutkinnon-osa {:tunniste {:koodi-arvo "1"
                                               :koodi-uri "esimerkki_uri"
-                                              :versio 1}
-                                   :eperusteet-id ""}
+                                              :versio 1}}
                    :vaatimuksista-tai-tavoitteista-poikkeaminen ""
                    :osaamisen-hankkimistavat []
                    :koulutuksen-jarjestaja-oid ""
@@ -218,8 +216,7 @@
                   {:eid 1
                    :tutkinnon-osa {:tunniste {:koodi-arvo "1"
                                               :koodi-uri "esimerkki_uri"
-                                              :versio 1}
-                                   :eperusteet-id ""}
+                                              :versio 1}}
                    :vaatimuksista-tai-tavoitteista-poikkeaminen ""
                    :osaamisen-hankkimistavat []
                    :koulutuksen-jarjestaja-oid ""
@@ -240,8 +237,7 @@
                   {:eid 1
                    :tutkinnon-osa {:tunniste {:koodi-arvo "1"
                                               :koodi-uri "esimerkki_uri"
-                                              :versio 1}
-                                   :eperusteet-id ""}
+                                              :versio 1}}
                    :vaatimuksista-tai-tavoitteista-poikkeaminen ""
                    :osaamisen-hankkimistavat []
                    :koulutuksen-jarjestaja-oid ""
@@ -279,7 +275,6 @@
       (eq (utils/parse-body
             (:body response))
           {:data {:eid 1
-                  :eperusteet-id 1
                   :tutkinnon-osat []
                   :koulutuksen-jarjestaja-oid "1"}
            :meta {}}))))
@@ -295,8 +290,7 @@
                     "%s/1/%s/"
                     url pyto-path))
                 (mock/json-body
-                  {:eperusteet-id 1
-                   :tutkinnon-osat []
+                  {:tutkinnon-osat []
                    :koulutuksen-jarjestaja-oid "1"})))]
       (is (= (:status response) 200))
       (eq (utils/parse-body
@@ -315,7 +309,6 @@
                     url pyto-path))
                 (mock/json-body
                   {:eid 1
-                   :eperusteet-id 1
                    :tutkinnon-osat []
                    :koulutuksen-jarjestaja-oid "1"})))]
       (is (= (:status response) 204)))))
@@ -347,7 +340,6 @@
                     url pyto-path))
                 (mock/json-body
                   {:eid 1
-                   :eperusteet-id 1
                    :tutkinnon-osat []
                    :koulutuksen-jarjestaja-oid "1"})))]
       (is (= (:status response) 204)))))
