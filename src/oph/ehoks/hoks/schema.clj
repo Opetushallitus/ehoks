@@ -46,7 +46,6 @@
     (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :tunniste KoodistoKoodi "Koodisto-koodi"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-    :eperusteet-id s/Str "Tunniste ePerusteet-palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     (s/optional-key :kuvaus) s/Str
     "Tutkinnon osan kuvaus ePerusteet-palvelussa"))
@@ -71,7 +70,6 @@
     "Yhteisen tutkinnon osan osat"
     :tunniste KoodistoKoodi "Koodisto-koodi (tutkinnonosat)"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-    :eperusteet-id s/Str "Tunniste ePerusteet-palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     (s/optional-key :kuvaus) s/Str
     "Tutkinnon osan kuvaus ePerusteet-palvelussa"
@@ -328,7 +326,6 @@
     (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :tunniste KoodistoKoodi "Koodisto-koodi"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-    :eperusteet-id s/Str "Tunniste ePerusteet-palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
@@ -343,8 +340,6 @@
   (describe
     "Puuttuvan yhteinen tutkinnon osan tiedot"
     (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
-    :eperusteet-id s/Int
-    "Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua"
     :tutkinnon-osat [PuuttuvaYTOOsa] "Puuttuvat YTO osat"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
@@ -373,7 +368,7 @@
     (str "Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
-     [:eperusteet-id :tutkinnon-osat :koulutuksen-jarjestaja-oid]}))
+     [:tutkinnon-osat :koulutuksen-jarjestaja-oid]}))
 
 (s/defschema
   PaikallinenTutkinnonOsa
