@@ -233,9 +233,9 @@
          "simulaattori")
     :ajankohta Aikavali "Näytön tai osaamisen osoittamisen ajankohta"
     :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
-    :ammattitaitovaatimukset [s/Int]
-    (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan. Lista "
-         "ePerusteet tunnisteita. Tunnisteen tyyppi voi vielä päivittyä.")
+    :ammattitaitovaatimukset [s/Str]
+    (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan. "
+         "Tunnisteen tyyppi voi vielä päivittyä.")
     :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"
     (s/optional-key :yksilolliset-arviointikriteerit) [Arviointikriteeri]
     "Yksilölliset arvioinnin kriteerit"))
@@ -255,9 +255,9 @@
          "simulaattori")
     :ajankohta Aikavali "Näytön tai osaamisen osoittamisen ajankohta"
     :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
-    :osaamistavoitteet [s/Int]
-    (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan. Lista "
-         "ePerusteet tunnisteita. Tunnisteen tyyppi voi vielä päivittyä.")
+    :osaamistavoitteet [s/Str]
+    (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan."
+         "Tunnisteen tyyppi voi vielä päivittyä.")
     :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"
     (s/optional-key :yksilolliset-arviointikriteerit) [Arviointikriteeri]
     "Yksilölliset arvioinnin kriteerit"))
