@@ -18,7 +18,7 @@
       :return (rest/response
                 hoks-schema/PaikallinenTutkinnonOsa)
       (rest/rest-ok {:eid 1
-                     :amosaa-tunniste ""
+                     :amosaa-tunniste 1
                      :nimi ""
                      :laajuus 0
                      :kuvaus ""
@@ -75,8 +75,7 @@ osaamisen"
       (rest/rest-ok {:eid 1
                      :tutkinnon-osa {:tunniste {:koodi-arvo "1"
                                                 :koodi-uri "esimerkki_uri"
-                                                :versio 1}
-                                     :eperusteet-id ""}
+                                                :versio 1}}
                      :vaatimuksista-tai-tavoitteista-poikkeaminen ""
                      :osaamisen-hankkimistavat []
                      :koulutuksen-jarjestaja-oid ""
@@ -116,7 +115,6 @@ osaamisen"
       :return (rest/response
                 hoks-schema/PuuttuvaYTO)
       (rest/rest-ok {:eid 1
-                     :eperusteet-id 1
                      :tutkinnon-osat []
                      :koulutuksen-jarjestaja-oid "1"}))
 
