@@ -380,7 +380,7 @@
   (describe
     "Puuttuva paikallinen tutkinnon osa"
     :eid s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :amosaa-tunniste) s/Str
+    (s/optional-key :amosaa-tunniste) s/Int
     "Tunniste ePerusteet AMOSAA -palvelussa"
     :nimi s/Str "Tutkinnon osan nimi"
     :laajuus s/Int "Tutkinnon osan laajuus"
