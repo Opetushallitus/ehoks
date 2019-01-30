@@ -15,42 +15,29 @@
       :summary "Palauttaa HOKSin puuttuvan paikallisen tutkinnon osan"
       :return (rest/response
                 hoks-schema/PaikallinenTutkinnonOsa)
-      (rest/rest-ok {:eid 1
-                     :amosaa-tunniste ""
-                     :nimi ""
-                     :laajuus 0
-                     :kuvaus ""
-                     :osaamisen-hankkimistavat []
-                     :koulutuksen-jarjestaja-oid ""
-                     :hankitun-osaamisen-naytto
-                     {:jarjestaja {:nimi ""}
-                      :nayttoymparisto {:nimi ""}
-                      :kuvaus ""
-                      :ajankohta {:alku (LocalDate/of 2018 12 12)
-                                  :loppu (LocalDate/of 2018 12 20)}
-                      :sisalto ""
-                      :ammattitaitovaatimukset []
-                      :arvioijat []}
-                     :tarvittava-opetus ""}))
+      (rest/rest-ok (db/get-ppto-by-eid eid)))
 
     (c-api/POST
-      "/" []
+      "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) puuttuvan paikallisen
  tutkinnon osan"
       :body
-      [_ hoks-schema/PaikallinenTutkinnonOsaLuonti]
+      [ppto hoks-schema/PaikallinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse)
-      (rest/rest-ok {:uri ""}))
+      (let [p (db/create-ppto! ppto)]
+        (rest/rest-ok (format "%s/%d" (:uri request) (:eid ppto)))))
 
     (c-api/PUT
       "/:eid"
       []
       :summary "Päivittää HOKSin puuttuvan paikallisen
 tutkinnon osan"
-      :body
-      [_ hoks-schema/PaikallinenTutkinnonOsaPaivitys]
-      (response/no-content))
+      :path-params [eid :- s/Int]
+      :body [values hoks-schema/PaikallinenTutkinnonOsaPaivitys]
+      (if (db/update-ppto! eid values)
+        (response/no-content)
+        (response/not-found "PPTO not found with given PPTO ID")))
 
     (c-api/PATCH
       "/:eid"
@@ -58,9 +45,11 @@ tutkinnon osan"
       :summary
       "Päivittää HOKSin puuttuvan paikallisen tutkinnon
   osan arvoa tai arvoja"
-      :body
-      [_ hoks-schema/PaikallinenTutkinnonOsaKentanPaivitys]
-      (response/no-content))))
+      :path-params [eid :- s/Int]
+      :body [values hoks-schema/PaikallinenTutkinnonOsaKentanPaivitys]
+      (if (db/update-ppto-values! eid values)
+        (response/no-content)
+        (response/not-found "PPTO not found with given PPTO ID")))))
 
 (def ^:private puuttuva-ammatillinen-osaaminen
   (c-api/context "/:hoks-eid/puuttuva-ammatillinen-osaaminen" [hoks-eid]
