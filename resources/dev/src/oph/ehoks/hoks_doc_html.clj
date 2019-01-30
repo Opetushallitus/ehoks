@@ -141,8 +141,9 @@
     [:style
      "table {border-collapse: collapse;}"
      "table, th, td {border: 1px solid black;}"
-     ".model {border-top: 1px solid gray;}"]]
-   [:div
+     ".model {border-top: 1px solid gray;}"]
+    [:link {:rel "stylesheet" :href "https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"}]]
+   [:div.container
    [:div
     [:h1 "HOKS doc"]
     [:p "Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin"
