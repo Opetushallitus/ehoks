@@ -59,32 +59,27 @@ tutkinnon osan"
 osaamisen"
       :return (rest/response
                 hoks-schema/PuuttuvaAmmatillinenOsaaminen)
-      (rest/rest-ok {:eid 1
-                     :tutkinnon-osa {:tunniste {:koodi-arvo "1"
-                                                :koodi-uri "esimerkki_uri"
-                                                :versio 1}
-                                     :eperusteet-id ""}
-                     :vaatimuksista-tai-tavoitteista-poikkeaminen ""
-                     :osaamisen-hankkimistavat []
-                     :koulutuksen-jarjestaja-oid ""
-                     :tarvittava-opetus ""}))
+      (rest/rest-ok (rest/rest-ok (db/get-ppao-by-eid eid))))
 
     (c-api/POST "/" []
       :summary
       "Luo (tai korvaa vanhan) puuttuvan ammatillisen
   osaamisen HOKSiin"
       :body
-      [_ hoks-schema/PuuttuvaAmmatillinenOsaaminenLuonti]
+      [ppao hoks-schema/PuuttuvaAmmatillinenOsaaminenLuonti]
       :return (rest/response schema/POSTResponse)
-      (rest/rest-ok {:uri ""}))
+      (let [p (db/create-ppao! ppao)]
+        (rest/rest-ok (format "%s/%d" (:uri request) (:eid p)))))
 
     (c-api/PUT
       "/:eid" []
       :summary "Päivittää HOKSin puuttuvan ammatillisen
     osaamisen"
       :body
-      [_ hoks-schema/PuuttuvaAmmatillinenOsaaminenPaivitys]
-      (response/no-content))
+      [values hoks-schema/PuuttuvaAmmatillinenOsaaminenPaivitys]
+      (if (db/update-ppao! eid values)
+        (response/no-content)
+        (response/not-found "PPAO not found with given PPAO ID")))
 
     (c-api/PATCH
       "/:eid" []
@@ -92,8 +87,10 @@ osaamisen"
       "Päivittää HOKSin puuttuvan ammatillisen
       osaamisen arvoa tai arvoja"
       :body
-      [_ hoks-schema/PuuttuvaAmmatillinenOsaaminenKentanPaivitys]
-      (response/no-content))))
+      [values hoks-schema/PuuttuvaAmmatillinenOsaaminenKentanPaivitys]
+      (if (db/update-ppao-values! eid values)
+        (response/no-content)
+        (response/not-found "PPAO not found with given PPAO ID")))))
 
 (def ^:private puuttuvat-yhteisen-tutkinnon-osat
   (c-api/context "/:hoks-eid/puuttuvat-yhteisen-tutkinnon-osat" [hoks-eid]

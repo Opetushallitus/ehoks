@@ -97,3 +97,42 @@ tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
             :eid (or (:eid old) (get-next-ppto-id)))]
     (swap! ppto-store conj p)
     p))
+
+
+(defn get-next-ppao-id []
+  (if (empty? @ppao-store)
+    1
+    (inc (apply max (map :eid @ppao-store)))))
+
+(defn get-ppao-by-eid
+  "Hakee puuttuvan paikallisen tutkinnon osan tietueen kannasta sen eid-arvolla"
+  [eid]
+  (when (some? eid)
+    (let [p (filter #(= (:eid %) eid) @ppao-store)]
+      (last (sort-by :versio p)))))
+
+(defn update-ppto!
+  "Päivittää HOKSin puuttuvan paikallisen
+tutkinnon osaa"
+  [eid values]
+  (let [updated-ppao values]
+    (swap! ppao-store conj updated-ppao)
+    updated-ppto))
+
+(defn update-ppao-values!
+  "Päivittää HOKSin puuttuvan paikallisen
+tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
+  [eid values]
+  (when-let [ppao (get-ppao-by-eid eid)]
+    (let [updated-ppao
+          (merge ppao values)]
+      (swap! ppao-store conj updated-ppao)
+      updated-ppao)))
+
+(defn create-ppao! [ppao]
+  (let [old (get-ppao-by-eid (:eid ppao))
+        p (assoc
+            ppao
+            :eid (or (:eid old) (get-next-ppao-id)))]
+    (swap! ppao-store conj p)
+    p))
