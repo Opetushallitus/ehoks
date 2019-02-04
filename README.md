@@ -148,6 +148,22 @@ docker run --rm --name ehoks-redis -p 6379:6379 --volume ~/path/to/ehoks-redis-d
 Rediksen voi jättää myös pois, jolloin istuntoa pidetään muistissa. Tämä
 tapahtuu asettamalla `:redis-url` konfiguraation nil:ksi.
 
+### PostgreSQL
+
+Kontin luonti:
+
+``` shell
+cd scripts/postgres-docker
+docker build -t ehoks-postgres .
+```
+
+Kontin ajaminen:
+
+``` shell
+docker run --rm --name ehoks-postgres -p 5432:5432 --volume ~/path/to/ehoks-postgres-data:/data ehoks-postgres
+```
+
+
 ### Schemat
 
 Sovelluksessa on mahdollisuus generoida automaattisesti metodikohtaiset schemat.
