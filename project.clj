@@ -8,6 +8,7 @@
                  [com.taoensso/carmine "2.19.1"]
                  [metosin/compojure-api "2.0.0-alpha28"]
                  [org.flywaydb/flyway-core "5.2.4"]
+                 [org.clojure/java.jdbc "0.7.8"]
                  [org.postgresql/postgresql "42.2.5"]
                  [ring/ring-jetty-adapter "1.7.1"]
                  [clj-time "0.15.1"]
