@@ -226,12 +226,12 @@ osaamisen"
     (c-api/GET "/:eid" [eid]
       :summary "Palauttaa HOKSin"
       :path-params [eid :- s/Int]
-      :return (rest/response (g/generate hoks-schema/HOKSModel :get))
+      :return (rest/response hoks-schema/HOKS)
       (rest/rest-ok (db/get-hoks-by-eid eid)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo uuden HOKSin"
-      :body [hoks (g/generate hoks-schema/HOKSModel :post)]
+      :body [hoks hoks-schema/HOKSLuonti]
       :return (rest/response schema/POSTResponse)
       (let [h (db/create-hoks! hoks)]
         (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid h))})))
@@ -239,7 +239,7 @@ osaamisen"
     (c-api/PUT "/:eid" [eid]
       :summary "Päivittää olemassa olevaa HOKSia"
       :path-params [eid :- s/Int]
-      :body [values (g/generate hoks-schema/HOKSModel :put)]
+      :body [values hoks-schema/HOKSPaivitys]
       (if (db/update-hoks! eid values)
         (response/no-content)
         (response/not-found "HOKS not found with given eHOKS ID")))
@@ -247,7 +247,7 @@ osaamisen"
     (c-api/PATCH "/:eid" []
       :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
       :path-params [eid :- s/Int]
-      :body [values (g/generate hoks-schema/HOKSModel :patch)]
+      :body [values hoks-schema/HOKSKentanPaivitys]
       (if (db/update-hoks-values! eid values)
         (response/no-content)
         (response/not-found "HOKS not found with given eHOKS ID")))
