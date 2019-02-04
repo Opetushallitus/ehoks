@@ -510,8 +510,8 @@
     :restful true
     :name "HOKSModel"}
   {:id {:methods {:post :excluded}
-         :types {:any s/Int}
-         :description "Tunniste eHOKS-järjestelmässä"}
+        :types {:any s/Int}
+        :description "Tunniste eHOKS-järjestelmässä"}
    :oppija-oid {:methods {:patch :optional}
                 :types {:any s/Str}
                 :description "Oppijan tunniste Opintopolku-ympäristössä"}
