@@ -4,9 +4,11 @@
 
 (defonce oppijat-store (atom '()))
 (defonce ppto-store (atom '()))
+(defonce ppao-store (atom '()))
 
 (defn clear []
-  (reset! hoks-store '()))
+  (reset! hoks-store '())
+  (reset! ppto-store '()))
 
 (defn get-next-id []
   (if (empty? @hoks-store)
@@ -70,13 +72,14 @@
   [eid]
   (when (some? eid)
     (let [p (filter #(= (:eid %) eid) @ppto-store)]
-      (last (sort-by :versio p)))))
+      (first p))))
 
 (defn update-ppto!
   "Päivittää HOKSin puuttuvan paikallisen
 tutkinnon osaa"
   [eid values]
-  (let [updated-ppto values]
+  (let [old-ppto (get-ppto-by-eid eid)
+        updated-ppto (merge old-ppto values)]
     (swap! ppto-store conj updated-ppto)
     updated-ppto))
 
@@ -86,7 +89,8 @@ tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
   [eid values]
   (when-let [ppto (get-ppto-by-eid eid)]
     (let [updated-ppto
-          (merge ppto values)]
+          (-> ppto
+              (merge values))]
       (swap! ppto-store conj updated-ppto)
       updated-ppto)))
 
@@ -97,7 +101,6 @@ tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
             :eid (or (:eid old) (get-next-ppto-id)))]
     (swap! ppto-store conj p)
     p))
-
 
 (defn get-next-ppao-id []
   (if (empty? @ppao-store)
@@ -111,13 +114,13 @@ tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
     (let [p (filter #(= (:eid %) eid) @ppao-store)]
       (last (sort-by :versio p)))))
 
-(defn update-ppto!
+(defn update-ppao!
   "Päivittää HOKSin puuttuvan paikallisen
 tutkinnon osaa"
   [eid values]
   (let [updated-ppao values]
     (swap! ppao-store conj updated-ppao)
-    updated-ppto))
+    updated-ppao))
 
 (defn update-ppao-values!
   "Päivittää HOKSin puuttuvan paikallisen
