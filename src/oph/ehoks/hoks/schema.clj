@@ -597,10 +597,10 @@
   (with-meta
     (g/generate HOKSModel :patch)
     {:doc "HOKS-dokumentin ylikirjoitus (PATCH)"
-     :name "HOKS"}))
+     :name "HOKSKentanPaivitys"}))
 
 (def HOKSLuonti
   (with-meta
     (g/generate HOKSModel :post)
     {:doc "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
-     :name "HOKS"}))
+     :name "HOKSLuonti"}))
