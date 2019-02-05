@@ -26,7 +26,7 @@
       (is (= (:status response) 200))
       (eq (utils/parse-body
             (:body response))
-          {:data {:eid 1
+          {:data {:id 1
                   :amosaa-tunniste 1
                   :nimi ""
                   :laajuus 0
@@ -88,7 +88,7 @@
                     "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
                     url))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :amosaa-tunniste 1
                    :nimi ""
                    :laajuus 0
@@ -118,7 +118,7 @@
                     "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
                     url))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :amosaa-tunniste 1
                    :nimi ""
                    :laajuus 0
@@ -148,7 +148,7 @@
                     "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
                     url))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :amosaa-tunniste 1})))]
       (is (= (:status response) 204)))))
 
@@ -167,7 +167,7 @@
       (is (= (:status response) 200))
       (eq (utils/parse-body
             (:body response))
-          {:data {:eid 1
+          {:data {:id 1
                   :tutkinnon-osa
                   {:tunniste
                    {:koodi-arvo "1"
@@ -213,7 +213,7 @@
                     "%s/1/%s/1"
                     url pao-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :tutkinnon-osa {:tunniste {:koodi-arvo "1"
                                               :koodi-uri "esimerkki_uri"
                                               :versio 1}}
@@ -234,7 +234,7 @@
                     "%s/1/%s/1"
                     url pao-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :tutkinnon-osa {:tunniste {:koodi-arvo "1"
                                               :koodi-uri "esimerkki_uri"
                                               :versio 1}}
@@ -255,7 +255,7 @@
                     "%s/1/%s/1"
                     url pao-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
       (is (= (:status response) 204)))))
 
@@ -274,7 +274,7 @@
       (is (= (:status response) 200))
       (eq (utils/parse-body
             (:body response))
-          {:data {:eid 1
+          {:data {:id 1
                   :tutkinnon-osat []
                   :koulutuksen-jarjestaja-oid "1"}
            :meta {}}))))
@@ -308,7 +308,7 @@
                     "%s/1/%s/1"
                     url pyto-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :tutkinnon-osat []
                    :koulutuksen-jarjestaja-oid "1"})))]
       (is (= (:status response) 204)))))
@@ -324,7 +324,7 @@
                     "%s/1/%s/1"
                     url pyto-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :koulutuksen-jarjestaja-oid "123"})))]
       (is (= (:status response) 204)))))
 
@@ -339,7 +339,7 @@
                     "%s/1/%s/1"
                     url pyto-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :tutkinnon-osat []
                    :koulutuksen-jarjestaja-oid "1"})))]
       (is (= (:status response) 204)))))
@@ -359,7 +359,7 @@
       (is (= (:status response) 200))
       (eq (utils/parse-body
             (:body response))
-          {:data {:eid 1
+          {:data {:id 1
                   :nimi ""
                   :kuvaus ""
                   :kesto 1
@@ -399,7 +399,7 @@
                     "%s/1/%s/1"
                     url ovatu-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :nimi ""
                    :kuvaus ""
                    :kesto 1
@@ -418,7 +418,7 @@
                     "%s/1/%s/1"
                     url ovatu-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :nimi ""})))]
       (is (= (:status response) 204)))))
 
@@ -433,7 +433,7 @@
                     "%s/1/%s/1"
                     url ovatu-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :nimi ""
                    :kuvaus ""
                    :kesto 1
@@ -456,7 +456,7 @@
       (is (= (:status response) 200))
       (eq (utils/parse-body
             (:body response))
-          {:data {:eid 1
+          {:data {:id 1
                   :olemassaoleva-ammatillinen-osaaminen []
                   :olemassaolevat-yto-osa-alueet []
                   :olemassaoleva-paikallinen-tutkinnon-osa []}
@@ -492,7 +492,7 @@
                     "%s/1/%s/1"
                     url oos-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :olemassaoleva-ammatillinen-osaaminen []
                    :olemassaolevat-yto-osa-alueet []
                    :olemassaoleva-paikallinen-tutkinnon-osa []})))]
@@ -509,7 +509,7 @@
                     "%s/1/%s/1"
                     url oos-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :olemassaoleva-ammatillinen-osaaminen []})))]
       (is (= (:status response) 204)))))
 
@@ -524,7 +524,7 @@
                     "%s/1/%s/1"
                     url oos-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :olemassaoleva-ammatillinen-osaaminen []
                    :olemassaolevat-yto-osa-alueet []
                    :olemassaoleva-paikallinen-tutkinnon-osa []})))]
@@ -542,7 +542,7 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
-                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}
@@ -559,7 +559,7 @@
           hoks
           (assoc
             hoks-data
-            :eid 1
+            :id 1
             :luotu (:luotu hoks)
             :hyvaksytty (:hyvaksytty hoks)
             :paivitetty (:paivitetty hoks)
@@ -570,7 +570,7 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
-                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}]
@@ -591,7 +591,7 @@
             hoks
             (assoc
               hoks-data
-              :eid 1
+              :id 1
               :luotu (:luotu hoks)
               :hyvaksytty (:hyvaksytty hoks)
               :paivitetty (:paivitetty hoks)
@@ -602,7 +602,7 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
-                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}
@@ -637,10 +637,10 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
-                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.333.444.55.66666666666"
                      :paivittanyt "Teuvo Testaaja"
                      :hyvaksytty (java.util.Date.)
-                     :eid 1
+                     :id 1
                      :hyvaksynyt "Heikki Hyväksyjä"}
           response
           (utils/with-authentication
@@ -654,7 +654,7 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
-                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}
@@ -670,7 +670,7 @@
               app
               (-> (mock/request :patch (get-in body [:data :uri]))
                   (mock/json-body
-                    {:eid (:eid hoks)
+                    {:id (:id hoks)
                      :paivittanyt "Kalle Käyttäjä"})))]
         (is (= (:status patch-response) 204))
         (let [updated-hoks
@@ -690,6 +690,6 @@
           (utils/with-authentication
             app
             (-> (mock/request :patch (format "%s/1" url))
-                (mock/json-body {:eid 1
+                (mock/json-body {:id 1
                                  :paivittanyt "Kalle Käyttäjä"})))]
       (is (= (:status response) 404)))))
