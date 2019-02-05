@@ -243,55 +243,57 @@
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
 
-(deftest get-pao
-  (testing "GET puuttuva ammatillinen osaaminen"
-    (let [response
-          (utils/with-authentication
-            app
-            (mock/request
-              :get
-              (format
-                "%s/1/%s/1"
-                url pao-path)))]
-      (is (= (:status response) 200))
-      (eq (utils/parse-body
-            (:body response))
-          {:data {:eid 1
-                  :tutkinnon-osa
-                  {:tunniste
-                   {:koodi-arvo "1"
-                    :koodi-uri "esimerkki_uri"
-                    :versio 1}
-                   :eperusteet-id ""}
-                  :vaatimuksista-tai-tavoitteista-poikkeaminen ""
-                  :osaamisen-hankkimistavat []
-                  :koulutuksen-jarjestaja-oid ""
-                  :tarvittava-opetus ""}
-           :meta {}}))))
-
-(deftest post-pao
-  (testing "POST puuttuva ammatillinen osaaminen"
-    (let [response
+(deftest post-and-get-pao
+  (testing "POST puuttuva ammatillinen osaaminen and then get the created ppao"
+    (db/clear)
+    (let [post-response
           (utils/with-authentication
             app
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/puuttuva-ammatillinen-osaaminen/"
+                    "%s/1/puuttuva-ammatillinen-osaaminen"
                     url))
                 (mock/json-body
-                  {:tutkinnon-osa {:tunniste {:koodi-arvo "1"
-                                              :koodi-uri "esimerkki_uri"
-                                              :versio 1}
-                                   :eperusteet-id ""}
-                   :vaatimuksista-tai-tavoitteista-poikkeaminen ""
-                   :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid ""
-                   :tarvittava-opetus ""})))]
-      (is (= (:status response) 200))
+                  {:tutkinnon-osa
+                   {:tunniste
+                    {:koodi-arvo "1"
+                     :koodi-uri "esimerkki_uri"
+                     :versio 1}}
+                   :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-12"
+                                                           :loppu "2018-12-20"}
+                                               :osaamisen-hankkimistavan-tunniste {:koodi-arvo "1"
+                                                                                   :koodi-uri "esimerkki_uri"
+                                                                                   :versio 1}}]
+                   :koulutuksen-jarjestaja-oid "123"})))
+          get-response  (utils/with-authentication
+                          app
+                          (mock/request
+                            :get
+                            (format
+                              "%s/1/%s/1"
+                              url pao-path)))]
+      (is (= (:status post-response) 200))
       (eq (utils/parse-body
-            (:body response))
-          {:data {:uri ""} :meta {}}))))
+            (:body post-response))
+          {:meta {} :data {:uri   (format
+                                    "%s/1/puuttuva-ammatillinen-osaaminen/1"
+                                    url)}})
+      (is (= (:status get-response) 200))
+      (eq (utils/parse-body
+            (:body get-response))
+          {:meta {} :data  {:eid 1
+                            :tutkinnon-osa
+                            {:tunniste
+                             {:koodi-arvo "1"
+                              :koodi-uri "esimerkki_uri"
+                              :versio 1}}
+                            :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-12"
+                                                                    :loppu "2018-12-20"}
+                                                        :osaamisen-hankkimistavan-tunniste {:koodi-arvo "1"
+                                                                                            :koodi-uri "esimerkki_uri"
+                                                                                            :versio 1}}]
+                            :koulutuksen-jarjestaja-oid "123"}}))))
 
 (deftest put-pao
   (testing "PUT puuttuva ammatillinen osaaminen"
@@ -305,19 +307,66 @@
                     url pao-path))
                 (mock/json-body
                   {:eid 1
-                   :tutkinnon-osa {:tunniste {:koodi-arvo "1"
-                                              :koodi-uri "esimerkki_uri"
-                                              :versio 1}
-                                   :eperusteet-id ""}
-                   :vaatimuksista-tai-tavoitteista-poikkeaminen ""
-                   :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid ""
-                   :tarvittava-opetus ""})))]
-      (is (= (:status response) 204)))))
+                   :tutkinnon-osa
+                   {:tunniste
+                    {:koodi-arvo "1"
+                     :koodi-uri "esimerkki_uri"
+                     :versio 1}}
+                   :osaamisen-hankkimistavat [{:ajankohta
+                                               {:alku "2018-12-12"
+                                                :loppu "2018-12-20"}
+                                               :osaamisen-hankkimistavan-tunniste
+                                               {:koodi-arvo "1"
+                                                :koodi-uri "esimerkki_uri2"
+                                                :versio 1}}]
+                   :koulutuksen-jarjestaja-oid "123"})))
+          get-response  (utils/with-authentication
+                          app
+                          (mock/request
+                            :get
+                            (format
+                              "%s/1/%s/1"
+                              url pao-path)))]
+      (is (= (:status response) 204))
+      (eq (utils/parse-body
+            (:body get-response))
+          {:meta {} :data  {:eid 1
+                            :tutkinnon-osa
+                            {:tunniste
+                             {:koodi-arvo "1"
+                              :koodi-uri "esimerkki_uri"
+                              :versio 1}}
+                            :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-12"
+                                                                    :loppu "2018-12-20"}
+                                                        :osaamisen-hankkimistavan-tunniste {:koodi-arvo "1"
+                                                                                            :koodi-uri "esimerkki_uri2"
+                                                                                            :versio 1}}]
+                            :koulutuksen-jarjestaja-oid "123"}}))))
 
 (deftest patch-all-pao
-  (testing "PATCH all puuttuva ammatillinen osaaminen"
-    (let [response
+  (testing "PATCH ALL puuttuva ammatillinen osaaminen"
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/puuttuva-ammatillinen-osaaminen"
+                    url))
+                (mock/json-body
+                  {:tutkinnon-osa
+                   {:tunniste
+                    {:koodi-arvo "1"
+                     :koodi-uri "esimerkki_uri"
+                     :versio 1}}
+                   :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-12"
+                                                           :loppu "2018-12-20"}
+                                               :osaamisen-hankkimistavan-tunniste {:koodi-arvo "1"
+                                                                                   :koodi-uri "esimerkki_uri"
+                                                                                   :versio 1}}]
+                   :koulutuksen-jarjestaja-oid "123"})))
+          patch-response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -327,19 +376,66 @@
                     url pao-path))
                 (mock/json-body
                   {:eid 1
-                   :tutkinnon-osa {:tunniste {:koodi-arvo "1"
-                                              :koodi-uri "esimerkki_uri"
-                                              :versio 1}
-                                   :eperusteet-id ""}
-                   :vaatimuksista-tai-tavoitteista-poikkeaminen ""
-                   :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid ""
-                   :tarvittava-opetus ""})))]
-      (is (= (:status response) 204)))))
+                   :tutkinnon-osa
+                   {:tunniste
+                    {:koodi-arvo "41"
+                     :koodi-uri "esimerkki_uri4"
+                     :versio 1}}
+                   :osaamisen-hankkimistavat [{:ajankohta
+                                               {:alku "2018-12-13"
+                                                :loppu "2018-12-21"}
+                                               :osaamisen-hankkimistavan-tunniste
+                                               {:koodi-arvo "2"
+                                                :koodi-uri "esimerkki_uri3"
+                                                :versio 1}}]
+                   :koulutuksen-jarjestaja-oid "1243"})))
+          get-response  (utils/with-authentication
+                          app
+                          (mock/request
+                            :get
+                            (format
+                              "%s/1/%s/1"
+                              url pao-path)))]
+      (is (= (:status patch-response) 204))
+      (eq (utils/parse-body
+            (:body get-response))
+          {:meta {} :data  {:eid 1
+                            :tutkinnon-osa
+                            {:tunniste
+                             {:koodi-arvo "41"
+                              :koodi-uri "esimerkki_uri4"
+                              :versio 1}}
+                            :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-13"
+                                                                    :loppu "2018-12-21"}
+                                                        :osaamisen-hankkimistavan-tunniste {:koodi-arvo "2"
+                                                                                            :koodi-uri "esimerkki_uri3"
+                                                                                            :versio 1}}]
+                            :koulutuksen-jarjestaja-oid "1243"}}))))
 
 (deftest patch-one-pao
   (testing "PATCH one value puuttuva ammatillinen osaaminen"
-    (let [response
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/puuttuva-ammatillinen-osaaminen"
+                    url))
+                (mock/json-body
+                  {:tutkinnon-osa
+                   {:tunniste
+                    {:koodi-arvo "1"
+                     :koodi-uri "esimerkki_uri"
+                     :versio 1}}
+                   :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-12"
+                                                           :loppu "2018-12-20"}
+                                               :osaamisen-hankkimistavan-tunniste {:koodi-arvo "1"
+                                                                                   :koodi-uri "esimerkki_uri"
+                                                                                   :versio 1}}]
+                   :koulutuksen-jarjestaja-oid "123"})))
+          response
           (utils/with-authentication
             app
             (-> (mock/request

@@ -11,22 +11,23 @@
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
   (c-api/context "/:hoks-eid/puuttuva-paikallinen-tutkinnon-osa" [hoks-eid]
 
-    (c-api/GET "/:eid" [:as eid]
+    (c-api/GET "/:eid" [eid]
       :summary "Palauttaa HOKSin puuttuvan paikallisen tutkinnon osan"
+      :path-params [eid :- s/Int]
       :return (rest/response
                 hoks-schema/PaikallinenTutkinnonOsa)
       (rest/rest-ok (db/get-ppto-by-eid eid)))
 
     (c-api/POST
-      "/:hoks-eid" [:as request]
+      "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) puuttuvan paikallisen
  tutkinnon osan"
       :body
       [ppto hoks-schema/PaikallinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse)
-      (let [p (db/create-ppto! ppto)]
-        (rest/rest-ok (format "%s/%d" (:uri request) (:eid p)))))
+      (let [ppto-response (db/create-ppto! ppto)]
+        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid ppto-response))})))
 
     (c-api/PUT
       "/:eid"
@@ -54,43 +55,44 @@ tutkinnon osan"
 (def ^:private puuttuva-ammatillinen-osaaminen
   (c-api/context "/:hoks-eid/puuttuva-ammatillinen-osaaminen" [hoks-eid]
 
-    (c-api/GET "/:eid" [:as eid]
+    (c-api/GET "/:eid" [eid]
       :summary "Palauttaa HOKSin puuttuvan ammatillisen
 osaamisen"
+      :path-params [eid :- s/Int]
       :return (rest/response
                 hoks-schema/PuuttuvaAmmatillinenOsaaminen)
-      (rest/rest-ok (rest/rest-ok (db/get-ppao-by-eid eid))))
+      (rest/rest-ok (db/get-ppao-by-eid eid)))
 
-    (c-api/POST "/" []
+    (c-api/POST
+      "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) puuttuvan ammatillisen
   osaamisen HOKSiin"
       :body
       [ppao hoks-schema/PuuttuvaAmmatillinenOsaaminenLuonti]
       :return (rest/response schema/POSTResponse)
-      (let [p (db/create-ppao! ppao)]
-        (rest/rest-ok (format "%s/%d" (:uri request) (:eid p)))))
+      (let [ppao-response (db/create-ppao! ppao)]
+        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid ppao-response))})))
 
     (c-api/PUT
       "/:eid" []
       :summary "Päivittää HOKSin puuttuvan ammatillisen
     osaamisen"
+      :path-params [eid :- s/Int]
       :body
       [values hoks-schema/PuuttuvaAmmatillinenOsaaminenPaivitys]
       (if (db/update-ppao! eid values)
         (response/no-content)
         (response/not-found "PPAO not found with given PPAO ID")))
 
-    (c-api/PATCH
-      "/:eid" []
-      :summary
-      "Päivittää HOKSin puuttuvan ammatillisen
-      osaamisen arvoa tai arvoja"
-      :body
-      [values hoks-schema/PuuttuvaAmmatillinenOsaaminenKentanPaivitys]
+    (c-api/PATCH "/:eid" []
+      :summary   "Päivittää HOKSin puuttuvan ammatillisen
+        osaamisen arvoa tai arvoja"
+      :path-params [eid :- s/Int]
+      :body [values hoks-schema/PuuttuvaAmmatillinenOsaaminenKentanPaivitys]
       (if (db/update-ppao-values! eid values)
         (response/no-content)
-        (response/not-found "PPAO not found with given PPAO ID")))))
+        (response/not-found  "PPAO not found with given PPAO ID")))))
 
 (def ^:private puuttuvat-yhteisen-tutkinnon-osat
   (c-api/context "/:hoks-eid/puuttuvat-yhteisen-tutkinnon-osat" [hoks-eid]

@@ -38,7 +38,6 @@
     (s/optional-key :eid) s/Int "Tunniste eHOKS-järjestelmässä"
     :tunniste KoodistoKoodi "Koodisto-koodi"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-    :eperusteet-id s/Str "Tunniste ePerusteet-palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     (s/optional-key :kuvaus) s/Str
     "Tutkinnon osan kuvaus ePerusteet-palvelussa"))

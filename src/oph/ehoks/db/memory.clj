@@ -8,7 +8,8 @@
 
 (defn clear []
   (reset! hoks-store '())
-  (reset! ppto-store '()))
+  (reset! ppto-store '())
+  (reset! ppao-store '()))
 
 (defn get-next-id []
   (if (empty? @hoks-store)
@@ -112,7 +113,7 @@ tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
   [eid]
   (when (some? eid)
     (let [p (filter #(= (:eid %) eid) @ppao-store)]
-      (last (sort-by :versio p)))))
+      (first p))))
 
 (defn update-ppao!
   "Päivittää HOKSin puuttuvan paikallisen
