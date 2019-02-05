@@ -11,13 +11,13 @@
   (:import (java.time LocalDate)))
 
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
-  (c-api/context "/:hoks-eid/puuttuva-paikallinen-tutkinnon-osa" [hoks-eid]
+  (c-api/context "/:hoks-id/puuttuva-paikallinen-tutkinnon-osa" [hoks-id]
 
-    (c-api/GET "/:eid" [:as eid]
+    (c-api/GET "/:id" [:as id]
       :summary "Palauttaa HOKSin puuttuvan paikallisen tutkinnon osan"
       :return (rest/response
                 hoks-schema/PaikallinenTutkinnonOsa)
-      (rest/rest-ok {:eid 1
+      (rest/rest-ok {:id 1
                      :amosaa-tunniste 1
                      :nimi ""
                      :laajuus 0
@@ -46,7 +46,7 @@
       (rest/rest-ok {:uri ""}))
 
     (c-api/PUT
-      "/:eid"
+      "/:id"
       []
       :summary "Päivittää HOKSin puuttuvan paikallisen
 tutkinnon osan"
@@ -55,7 +55,7 @@ tutkinnon osan"
       (response/no-content))
 
     (c-api/PATCH
-      "/:eid"
+      "/:id"
       []
       :summary
       "Päivittää HOKSin puuttuvan paikallisen tutkinnon
@@ -65,14 +65,14 @@ tutkinnon osan"
       (response/no-content))))
 
 (def ^:private puuttuva-ammatillinen-osaaminen
-  (c-api/context "/:hoks-eid/puuttuva-ammatillinen-osaaminen" [hoks-eid]
+  (c-api/context "/:hoks-id/puuttuva-ammatillinen-osaaminen" [hoks-id]
 
-    (c-api/GET "/:eid" [:as eid]
+    (c-api/GET "/:id" [:as id]
       :summary "Palauttaa HOKSin puuttuvan ammatillisen
 osaamisen"
       :return (rest/response
                 hoks-schema/PuuttuvaAmmatillinenOsaaminen)
-      (rest/rest-ok {:eid 1
+      (rest/rest-ok {:id 1
                      :tutkinnon-osa {:tunniste {:koodi-arvo "1"
                                                 :koodi-uri "esimerkki_uri"
                                                 :versio 1}}
@@ -91,7 +91,7 @@ osaamisen"
       (rest/rest-ok {:uri ""}))
 
     (c-api/PUT
-      "/:eid" []
+      "/:id" []
       :summary "Päivittää HOKSin puuttuvan ammatillisen
     osaamisen"
       :body
@@ -99,7 +99,7 @@ osaamisen"
       (response/no-content))
 
     (c-api/PATCH
-      "/:eid" []
+      "/:id" []
       :summary
       "Päivittää HOKSin puuttuvan ammatillisen
       osaamisen arvoa tai arvoja"
@@ -108,13 +108,13 @@ osaamisen"
       (response/no-content))))
 
 (def ^:private puuttuvat-yhteisen-tutkinnon-osat
-  (c-api/context "/:hoks-eid/puuttuvat-yhteisen-tutkinnon-osat" [hoks-eid]
+  (c-api/context "/:hoks-id/puuttuvat-yhteisen-tutkinnon-osat" [hoks-id]
 
-    (c-api/GET "/:eid" [:as eid]
+    (c-api/GET "/:id" [:as id]
       :summary "Palauttaa HOKSin puuttuvat paikallisen tutkinnon osat	"
       :return (rest/response
                 hoks-schema/PuuttuvaYTO)
-      (rest/rest-ok {:eid 1
+      (rest/rest-ok {:id 1
                      :tutkinnon-osat []
                      :koulutuksen-jarjestaja-oid "1"}))
 
@@ -127,7 +127,7 @@ osaamisen"
       (rest/rest-ok {:uri ""}))
 
     (c-api/PUT
-      "/:eid" []
+      "/:id" []
       :summary "Päivittää HOKSin puuttuvan ammatillisen
   osaamisen"
       :body
@@ -135,7 +135,7 @@ osaamisen"
       (response/no-content))
 
     (c-api/PATCH
-      "/:eid" []
+      "/:id" []
       :summary
       "Päivittää HOKSin puuttuvan ammatillisen
     osaamisen arvoa tai arvoja"
@@ -144,13 +144,13 @@ osaamisen"
       (response/no-content))))
 
 (def ^:private opiskeluvalmiuksia-tukevat-opinnot
-  (c-api/context "/:hoks-eid/opiskeluvalmiuksia-tukevat-opinnot" [hoks-eid]
+  (c-api/context "/:hoks-id/opiskeluvalmiuksia-tukevat-opinnot" [hoks-id]
 
-    (c-api/GET "/:eid" [:as eid]
+    (c-api/GET "/:id" [:as id]
       :summary "Palauttaa HOKSin opiskeluvalmiuksia tukevat opinnot	"
       :return (rest/response
                 hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot)
-      (rest/rest-ok {:eid 1
+      (rest/rest-ok {:id 1
                      :nimi ""
                      :kuvaus ""
                      :kesto 1
@@ -166,14 +166,14 @@ osaamisen"
       (rest/rest-ok {:uri ""}))
 
     (c-api/PUT
-      "/:eid" []
+      "/:id" []
       :summary "Päivittää HOKSin opiskeluvalmiuksia tukevat opinnot"
       :body
       [_ hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
       (response/no-content))
 
     (c-api/PATCH
-      "/:eid" []
+      "/:id" []
       :summary
       "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
       :body
@@ -181,14 +181,14 @@ osaamisen"
       (response/no-content))))
 
 (def ^:private olemassa-oleva-osaaminen
-  (c-api/context "/:hoks-eid/olemassa-oleva-osaaminen" [hoks-eid]
+  (c-api/context "/:hoks-id/olemassa-oleva-osaaminen" [hoks-id]
 
-    (c-api/GET "/:eid" [:as eid]
+    (c-api/GET "/:id" [:as id]
       :summary "Palauttaa HOKSin olemassa olevan osaamisen tunnustamisen
        perusteella sisällytetyn osaamisen	"
       :return (rest/response
                 hoks-schema/OlemassaOlevaOsaaminen)
-      (rest/rest-ok {:eid 1
+      (rest/rest-ok {:id 1
                      :olemassaoleva-ammatillinen-osaaminen []
                      :olemassaolevat-yto-osa-alueet []
                      :olemassaoleva-paikallinen-tutkinnon-osa []}))
@@ -203,7 +203,7 @@ osaamisen"
       (rest/rest-ok {:uri ""}))
 
     (c-api/PUT
-      "/:eid" []
+      "/:id" []
       :summary "Päivittää HOKSin olemassa olevan osaamisen tunnustamisen
       perusteella sisällytetyn osaamisen"
       :body
@@ -211,7 +211,7 @@ osaamisen"
       (response/no-content))
 
     (c-api/PATCH
-      "/:eid" []
+      "/:id" []
       :summary
       "Päivittää HOKSin olemassa olevan osaamisen tunnustamisen perusteella
       sisällytetyn osaamisen arvoa tai arvoja"
@@ -223,32 +223,32 @@ osaamisen"
   (c-api/context "/hoks" []
     :tags ["hoks"]
 
-    (c-api/GET "/:eid" [eid]
+    (c-api/GET "/:id" [id]
       :summary "Palauttaa HOKSin"
-      :path-params [eid :- s/Int]
+      :path-params [id :- s/Int]
       :return (rest/response hoks-schema/HOKS)
-      (rest/rest-ok (db/get-hoks-by-eid eid)))
+      (rest/rest-ok (db/get-hoks-by-id id)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo uuden HOKSin"
       :body [hoks hoks-schema/HOKSLuonti]
       :return (rest/response schema/POSTResponse)
       (let [h (db/create-hoks! hoks)]
-        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid h))})))
+        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id h))})))
 
-    (c-api/PUT "/:eid" [eid]
+    (c-api/PUT "/:id" [id]
       :summary "Päivittää olemassa olevaa HOKSia"
-      :path-params [eid :- s/Int]
+      :path-params [id :- s/Int]
       :body [values hoks-schema/HOKSPaivitys]
-      (if (db/update-hoks! eid values)
+      (if (db/update-hoks! id values)
         (response/no-content)
         (response/not-found "HOKS not found with given eHOKS ID")))
 
-    (c-api/PATCH "/:eid" []
+    (c-api/PATCH "/:id" []
       :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
-      :path-params [eid :- s/Int]
+      :path-params [id :- s/Int]
       :body [values hoks-schema/HOKSKentanPaivitys]
-      (if (db/update-hoks-values! eid values)
+      (if (db/update-hoks-values! id values)
         (response/no-content)
         (response/not-found "HOKS not found with given eHOKS ID")))
 

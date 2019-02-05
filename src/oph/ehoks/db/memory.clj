@@ -10,7 +10,7 @@
 (defn get-next-id []
   (if (empty? @hoks-store)
     1
-    (inc (apply max (map :eid @hoks-store)))))
+    (inc (apply max (map :id @hoks-store)))))
 
 (defn get-hoks-by-opiskeluoikeus [oid]
   (some #(when (= (get-in % [:opiskeluoikeus :oid]) oid) %) @hoks-store))
@@ -19,23 +19,23 @@
   (let [h (filter p @hoks-store)]
     (last (sort-by :versio h))))
 
-(defn get-hoks-by-eid [eid]
-  (when (some? eid)
-    (find-hoks #(= (:eid %) eid))))
+(defn get-hoks-by-id [id]
+  (when (some? id)
+    (find-hoks #(= (:id %) id))))
 
 (defn get-all-hoks-by-oppija [oppijan-oid]
   (when (some? oppijan-oid)
     (->> (filter #(= (:oppijan-oid %) oppijan-oid) @hoks-store)
-         (group-by :eid)
-         (map (fn [[eid h]] (last (sort-by :versio h)))))))
+         (group-by :id)
+         (map (fn [[id h]] (last (sort-by :versio h)))))))
 
 (defn create-hoks! [hoks]
   (let [old (or
-              (get-hoks-by-eid (:eid hoks))
+              (get-hoks-by-id (:id hoks))
               (get-hoks-by-opiskeluoikeus (get-in hoks [:opiskeluoikeus :oid])))
         h (assoc
             hoks
-            :eid (or (:eid old) (get-next-id))
+            :id (or (:id old) (get-next-id))
             :luotu (java.util.Date.)
             :hyvaksytty (java.util.Date.)
             :versio (if (some? old) (inc (:versio old)) 1)
@@ -43,8 +43,8 @@
     (swap! hoks-store conj h)
     h))
 
-(defn update-hoks! [eid values]
-  (when-let [hoks (get-hoks-by-eid eid)]
+(defn update-hoks! [id values]
+  (when-let [hoks (get-hoks-by-id id)]
     (let [updated-hoks
           (assoc
             values
@@ -55,8 +55,8 @@
       (swap! hoks-store conj updated-hoks)
       updated-hoks)))
 
-(defn update-hoks-values! [eid values]
-  (when-let [hoks (get-hoks-by-eid eid)]
+(defn update-hoks-values! [id values]
+  (when-let [hoks (get-hoks-by-id id)]
     (let [updated-hoks
           (-> hoks
               (merge values)
