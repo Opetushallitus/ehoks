@@ -436,7 +436,7 @@
     sisällytetty suoraan osaksi "
          "opiskelijan tutkintoa")
     (s/optional-key :tutkinnon-id) s/Int "Tutkinnon osan id,
-  johon tunnistettava olemassaoleva osaaminen liittyy"
+  johon tunnistettava olemassa oleva osaaminen liittyy"
     :valittu-todentamisen-prosessi
     (s/enum :valittu-todentaminen-suoraan
             :valittu-todentaminen-arvioijat
@@ -451,12 +451,12 @@
     (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
          "opiskelijan tutkintoa")
     :id s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :olemassaoleva-ammatillinen-osaaminen)
+    (s/optional-key :olemassa-oleva-ammatillinen-osaaminen)
     [OlemassaOlevaAmmatillinenOsaaminen] "Olemassa oleva ammatillinen osaaminen"
-    (s/optional-key :olemassaolevat-yto-osa-alueet) [YhteinenTutkinnonOsa]
-    "Olemassaolevat yton osa-alueet"
-    (s/optional-key :olemassaoleva-paikallinen-tutkinnon-osa)
-    [PaikallinenTutkinnonOsa] "Olemassaoleva paikallinen tutkinnon osa"))
+    (s/optional-key :olemassa-olevat-yto-osa-alueet) [YhteinenTutkinnonOsa]
+    "Olemassa olevat yton osa-alueet"
+    (s/optional-key :olemassa-oleva-paikallinen-tutkinnon-osa)
+    [PaikallinenTutkinnonOsa] "Olemassa oleva paikallinen tutkinnon osa"))
 
 (s/defschema
   OlemassaOlevaOsaaminenLuonti
@@ -480,9 +480,9 @@
     (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen "
          "osaamisten tiedot kenttää tai kenttiä päivittäessä (PATCH)")
     {:optionals
-     [:olemassaoleva-ammatillinen-osaaminen
-      :olemassaolevat-yto-osa-alueet
-      :olemassaoleva-paikallinen-tutkinnon-osa]}))
+     [:olemassa-oleva-ammatillinen-osaaminen
+      :olemassa-olevat-yto-osa-alueet
+      :olemassa-oleva-paikallinen-tutkinnon-osa]}))
 
 (s/defschema
   Opinnot

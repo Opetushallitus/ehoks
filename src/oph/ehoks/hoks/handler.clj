@@ -189,9 +189,9 @@ osaamisen"
       :return (rest/response
                 hoks-schema/OlemassaOlevaOsaaminen)
       (rest/rest-ok {:id 1
-                     :olemassaoleva-ammatillinen-osaaminen []
-                     :olemassaolevat-yto-osa-alueet []
-                     :olemassaoleva-paikallinen-tutkinnon-osa []}))
+                     :olemassa-oleva-ammatillinen-osaaminen []
+                     :olemassa-olevat-yto-osa-alueet []
+                     :olemassa-oleva-paikallinen-tutkinnon-osa []}))
 
     (c-api/POST "/" []
       :summary

@@ -457,9 +457,9 @@
       (eq (utils/parse-body
             (:body response))
           {:data {:id 1
-                  :olemassaoleva-ammatillinen-osaaminen []
-                  :olemassaolevat-yto-osa-alueet []
-                  :olemassaoleva-paikallinen-tutkinnon-osa []}
+                  :olemassa-oleva-ammatillinen-osaaminen []
+                  :olemassa-olevat-yto-osa-alueet []
+                  :olemassa-oleva-paikallinen-tutkinnon-osa []}
            :meta {}}))))
 
 (deftest post-oos
@@ -473,9 +473,9 @@
                     "%s/1/%s/"
                     url oos-path))
                 (mock/json-body
-                  {:olemassaoleva-ammatillinen-osaaminen []
-                   :olemassaolevat-yto-osa-alueet []
-                   :olemassaoleva-paikallinen-tutkinnon-osa []})))]
+                  {:olemassa-oleva-ammatillinen-osaaminen []
+                   :olemassa-olevat-yto-osa-alueet []
+                   :olemassa-oleva-paikallinen-tutkinnon-osa []})))]
       (is (= (:status response) 200))
       (eq (utils/parse-body
             (:body response))
@@ -493,9 +493,9 @@
                     url oos-path))
                 (mock/json-body
                   {:id 1
-                   :olemassaoleva-ammatillinen-osaaminen []
-                   :olemassaolevat-yto-osa-alueet []
-                   :olemassaoleva-paikallinen-tutkinnon-osa []})))]
+                   :olemassa-oleva-ammatillinen-osaaminen []
+                   :olemassa-olevat-yto-osa-alueet []
+                   :olemassa-oleva-paikallinen-tutkinnon-osa []})))]
       (is (= (:status response) 204)))))
 
 (deftest patch-one-oos
@@ -510,7 +510,7 @@
                     url oos-path))
                 (mock/json-body
                   {:id 1
-                   :olemassaoleva-ammatillinen-osaaminen []})))]
+                   :olemassa-oleva-ammatillinen-osaaminen []})))]
       (is (= (:status response) 204)))))
 
 (deftest patch-all-oos
@@ -525,9 +525,9 @@
                     url oos-path))
                 (mock/json-body
                   {:id 1
-                   :olemassaoleva-ammatillinen-osaaminen []
-                   :olemassaolevat-yto-osa-alueet []
-                   :olemassaoleva-paikallinen-tutkinnon-osa []})))]
+                   :olemassa-oleva-ammatillinen-osaaminen []
+                   :olemassa-olevat-yto-osa-alueet []
+                   :olemassa-oleva-paikallinen-tutkinnon-osa []})))]
       (is (= (:status response) 204)))))
 
 (defn get-authenticated [url]
