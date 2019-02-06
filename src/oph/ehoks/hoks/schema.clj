@@ -449,12 +449,7 @@
     (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
          "opiskelijan tutkintoa")
     :id s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :olemassa-oleva-ammatillinen-osaaminen)
-    [OlemassaOlevaAmmatillinenOsaaminen] "Olemassa oleva ammatillinen osaaminen"
-    (s/optional-key :olemassa-olevat-yto-osa-alueet) [YhteinenTutkinnonOsa]
-    "Olemassa olevat yton osa-alueet"
-    (s/optional-key :olemassa-oleva-paikallinen-tutkinnon-osa)
-    [PaikallinenTutkinnonOsa] "Olemassa oleva paikallinen tutkinnon osa"))
+))
 
 (s/defschema
   OlemassaOlevaOsaaminenLuonti
@@ -542,6 +537,18 @@
            :types {:any s/Inst}
            :description
            "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
+   :olemassa-oleva-ammatillinen-osaaminen
+   {:methods {:any :optional}
+    :types {:any [OlemassaOlevaAmmatillinenOsaaminen]}
+    :description "Olemassa oleva ammatillinen osaaminen"}
+   :olemassa-olevat-yhteiset-tutkinnon-osat
+   {:methods {:any :optional}
+    :types {:any [YhteinenTutkinnonOsa]}
+    :description "Olemassa olevat yhteiset tutkinnon osat (YTO)"}
+   :olemassa-oleva-paikallinen-tutkinnon-osa
+   {:methods {:any :optional}
+    :types {:any [PaikallinenTutkinnonOsa]}
+    :description "Olemassa oleva paikallinen tutkinnon osa"}
    :hyvaksytty
    {:methods {:patch :excluded
               :post :excluded
