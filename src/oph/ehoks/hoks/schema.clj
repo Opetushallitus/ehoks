@@ -317,7 +317,7 @@
      [:tutkinnon-osa :osaamisen-hankkimistavat :koulutuksen-jarjestaja-oid]}))
 
 (s/defschema
-  PuuttuvaYTOOsa
+  PuuttuvaYTOOsaAlue
   (describe
     "Puuttuvan yhteinen tutkinnon osan (YTO) osan tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -337,7 +337,7 @@
   (describe
     "Puuttuvan yhteinen tutkinnon osan tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :tutkinnon-osat [PuuttuvaYTOOsa] "Puuttuvat YTO osat"
+    :osa-alueet [PuuttuvaYTOOsaAlue] "Puuttuvat YTO osa-alueet"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -365,7 +365,7 @@
     (str "Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
-     [:tutkinnon-osat :koulutuksen-jarjestaja-oid]}))
+     [:osa-alueet :koulutuksen-jarjestaja-oid]}))
 
 (s/defschema
   PaikallinenTutkinnonOsa
