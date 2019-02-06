@@ -441,7 +441,6 @@
                                :loppu "2018-12-20"}})))]
       (is (= (:status response) 204)))))
 
-
 (defn get-authenticated [url]
   (-> (utils/with-authentication
         app
