@@ -444,9 +444,11 @@
     "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
 
 (s/defschema
-  Opinnot
+  TunnustettavanaOlevaOsaaminen
   (describe
-    "Opinnot"
+    "Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten"
+    :todentajan-nimi s/Str
+    "Osaamisen todentaneen toimivaltaisen viranomaisen nimi"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :ammatilliset-opinnot) [TutkinnonOsa]
     "Osaamisen ammattilliset opinnot"
@@ -454,15 +456,6 @@
     "Osaamisen yhteiset tutkinnon osat (YTO)"
     (s/optional-key :paikalliset-osaamiset) [PaikallinenTutkinnonOsa]
     "Osaamisen paikallisen tutkinnon osat"))
-
-(s/defschema
-  TunnustettavanaOlevaOsaaminen
-  (st/merge
-    (describe
-      "Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten"
-      :todentajan-nimi s/Str
-      "Osaamisen todentaneen toimivaltaisen viranomaisen nimi")
-    Opinnot))
 
 (def HOKSModel
   ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
