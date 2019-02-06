@@ -46,12 +46,14 @@
                 (mock/json-body ppto-data)))
           body (utils/parse-body (:body ppto-response))]
       (is (= (:status ppto-response) 200))
-      (eq body {:data {:uri (format "%s/1/puuttuva-paikallinen-tutkinnon-osa/1" url)} :meta {}})
+      (eq body {:data {:uri (format "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
+                                    url)} :meta {}})
       (let [ppto-new (utils/with-authentication
                        app
-                       (mock/request :get (format
-                                            "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
-                                            url)))]
+                       (mock/request
+                         :get (format
+                                "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
+                                url)))]
         (eq
           (:data (utils/parse-body (:body ppto-new)))
           (assoc
@@ -234,7 +236,8 @@
                     url))
                 (mock/json-body
                   {:eid 1 :tarvittava-opetus "Tarvittavaa opetusta"})))
-          get-response (-> (get-in ppto-body [:data :uri]) get-authenticated :data)]
+          get-response (-> (get-in ppto-body [:data :uri])
+                           get-authenticated :data)]
       (is (= (:status patch-response) 204))
       (eq get-response
           (assoc ppto-data
@@ -260,11 +263,13 @@
                     {:koodi-arvo "1"
                      :koodi-uri "esimerkki_uri"
                      :versio 1}}
-                   :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-12"
-                                                           :loppu "2018-12-20"}
-                                               :osaamisen-hankkimistavan-tunniste {:koodi-arvo "1"
-                                                                                   :koodi-uri "esimerkki_uri"
-                                                                                   :versio 1}}]
+                   :osaamisen-hankkimistavat
+                   [{:ajankohta {:alku "2018-12-12"
+                                 :loppu "2018-12-20"}
+                     :osaamisen-hankkimistavan-tunniste
+                     {:koodi-arvo "1"
+                      :koodi-uri "esimerkki_uri"
+                      :versio 1}}]
                    :koulutuksen-jarjestaja-oid "123"})))
           get-response  (utils/with-authentication
                           app
@@ -288,11 +293,13 @@
                              {:koodi-arvo "1"
                               :koodi-uri "esimerkki_uri"
                               :versio 1}}
-                            :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-12"
-                                                                    :loppu "2018-12-20"}
-                                                        :osaamisen-hankkimistavan-tunniste {:koodi-arvo "1"
-                                                                                            :koodi-uri "esimerkki_uri"
-                                                                                            :versio 1}}]
+                            :osaamisen-hankkimistavat
+                            [{:ajankohta {:alku "2018-12-12"
+                                          :loppu "2018-12-20"}
+                              :osaamisen-hankkimistavan-tunniste
+                              {:koodi-arvo "1"
+                               :koodi-uri "esimerkki_uri"
+                               :versio 1}}]
                             :koulutuksen-jarjestaja-oid "123"}}))))
 
 (deftest put-pao
@@ -312,13 +319,14 @@
                     {:koodi-arvo "1"
                      :koodi-uri "esimerkki_uri"
                      :versio 1}}
-                   :osaamisen-hankkimistavat [{:ajankohta
-                                               {:alku "2018-12-12"
-                                                :loppu "2018-12-20"}
-                                               :osaamisen-hankkimistavan-tunniste
-                                               {:koodi-arvo "1"
-                                                :koodi-uri "esimerkki_uri2"
-                                                :versio 1}}]
+                   :osaamisen-hankkimistavat
+                   [{:ajankohta
+                     {:alku "2018-12-12"
+                      :loppu "2018-12-20"}
+                     :osaamisen-hankkimistavan-tunniste
+                     {:koodi-arvo "1"
+                      :koodi-uri "esimerkki_uri2"
+                      :versio 1}}]
                    :koulutuksen-jarjestaja-oid "123"})))
           get-response  (utils/with-authentication
                           app
@@ -336,11 +344,13 @@
                              {:koodi-arvo "1"
                               :koodi-uri "esimerkki_uri"
                               :versio 1}}
-                            :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-12"
-                                                                    :loppu "2018-12-20"}
-                                                        :osaamisen-hankkimistavan-tunniste {:koodi-arvo "1"
-                                                                                            :koodi-uri "esimerkki_uri2"
-                                                                                            :versio 1}}]
+                            :osaamisen-hankkimistavat
+                            [{:ajankohta {:alku "2018-12-12"
+                                          :loppu "2018-12-20"}
+                              :osaamisen-hankkimistavan-tunniste
+                              {:koodi-arvo "1"
+                               :koodi-uri "esimerkki_uri2"
+                               :versio 1}}]
                             :koulutuksen-jarjestaja-oid "123"}}))))
 
 (deftest patch-all-pao
@@ -360,11 +370,13 @@
                     {:koodi-arvo "1"
                      :koodi-uri "esimerkki_uri"
                      :versio 1}}
-                   :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-12"
-                                                           :loppu "2018-12-20"}
-                                               :osaamisen-hankkimistavan-tunniste {:koodi-arvo "1"
-                                                                                   :koodi-uri "esimerkki_uri"
-                                                                                   :versio 1}}]
+                   :osaamisen-hankkimistavat
+                   [{:ajankohta {:alku "2018-12-12"
+                                 :loppu "2018-12-20"}
+                     :osaamisen-hankkimistavan-tunniste
+                     {:koodi-arvo "1"
+                      :koodi-uri "esimerkki_uri"
+                      :versio 1}}]
                    :koulutuksen-jarjestaja-oid "123"})))
           patch-response
           (utils/with-authentication
@@ -381,13 +393,14 @@
                     {:koodi-arvo "41"
                      :koodi-uri "esimerkki_uri4"
                      :versio 1}}
-                   :osaamisen-hankkimistavat [{:ajankohta
-                                               {:alku "2018-12-13"
-                                                :loppu "2018-12-21"}
-                                               :osaamisen-hankkimistavan-tunniste
-                                               {:koodi-arvo "2"
-                                                :koodi-uri "esimerkki_uri3"
-                                                :versio 1}}]
+                   :osaamisen-hankkimistavat
+                   [{:ajankohta
+                     {:alku "2018-12-13"
+                      :loppu "2018-12-21"}
+                     :osaamisen-hankkimistavan-tunniste
+                     {:koodi-arvo "2"
+                      :koodi-uri "esimerkki_uri3"
+                      :versio 1}}]
                    :koulutuksen-jarjestaja-oid "1243"})))
           get-response  (utils/with-authentication
                           app
@@ -405,11 +418,13 @@
                              {:koodi-arvo "41"
                               :koodi-uri "esimerkki_uri4"
                               :versio 1}}
-                            :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-13"
-                                                                    :loppu "2018-12-21"}
-                                                        :osaamisen-hankkimistavan-tunniste {:koodi-arvo "2"
-                                                                                            :koodi-uri "esimerkki_uri3"
-                                                                                            :versio 1}}]
+                            :osaamisen-hankkimistavat
+                            [{:ajankohta {:alku "2018-12-13"
+                                          :loppu "2018-12-21"}
+                              :osaamisen-hankkimistavan-tunniste
+                              {:koodi-arvo "2"
+                               :koodi-uri "esimerkki_uri3"
+                               :versio 1}}]
                             :koulutuksen-jarjestaja-oid "1243"}}))))
 
 (deftest patch-one-pao
@@ -429,11 +444,13 @@
                     {:koodi-arvo "1"
                      :koodi-uri "esimerkki_uri"
                      :versio 1}}
-                   :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-12"
-                                                           :loppu "2018-12-20"}
-                                               :osaamisen-hankkimistavan-tunniste {:koodi-arvo "1"
-                                                                                   :koodi-uri "esimerkki_uri"
-                                                                                   :versio 1}}]
+                   :osaamisen-hankkimistavat
+                   [{:ajankohta {:alku "2018-12-12"
+                                 :loppu "2018-12-20"}
+                     :osaamisen-hankkimistavan-tunniste
+                     {:koodi-arvo "1"
+                      :koodi-uri "esimerkki_uri"
+                      :versio 1}}]
                    :koulutuksen-jarjestaja-oid "123"})))
           response
           (utils/with-authentication

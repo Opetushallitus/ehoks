@@ -93,9 +93,7 @@ tutkinnon osaa"
 tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
   [eid values]
   (when-let [ppto (get-ppto-by-eid eid)]
-    (let [updated-ppto
-          (-> ppto
-              (merge values))]
+    (let [updated-ppto (merge ppto values)]
       (swap! ppto-store conj updated-ppto)
       updated-ppto)))
 

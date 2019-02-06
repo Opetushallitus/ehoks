@@ -28,7 +28,8 @@
       [ppto hoks-schema/PaikallinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse)
       (let [ppto-response (db/create-ppto! ppto)]
-        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid ppto-response))})))
+        (rest/rest-ok {:uri (format "%s/%d" (:uri request)
+                                    (:eid ppto-response))})))
 
     (c-api/PUT
       "/:eid"
@@ -73,7 +74,8 @@ osaamisen"
       [ppao hoks-schema/PuuttuvaAmmatillinenOsaaminenLuonti]
       :return (rest/response schema/POSTResponse)
       (let [ppao-response (db/create-ppao! ppao)]
-        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid ppao-response))})))
+        (rest/rest-ok {:uri (format "%s/%d" (:uri request)
+                                    (:eid ppao-response))})))
 
     (c-api/PUT
       "/:eid" []
@@ -112,7 +114,8 @@ osaamisen"
       [pyto hoks-schema/PuuttuvaYTOLuonti]
       :return (rest/response schema/POSTResponse)
       (let [pyto-response (db/create-pyto! pyto)]
-        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid pyto-response))})))
+        (rest/rest-ok {:uri (format "%s/%d" (:uri request)
+                                    (:eid pyto-response))})))
 
     (c-api/PUT
       "/:eid" []
@@ -152,7 +155,8 @@ osaamisen"
       [ovatu hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
       :return (rest/response schema/POSTResponse)
       (let [ovatu-response (db/create-ovatu! ovatu)]
-        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid ovatu-response))})))
+        (rest/rest-ok {:uri (format "%s/%d" (:uri request)
+                                    (:eid ovatu-response))})))
 
     (c-api/PUT
       "/:eid" []
