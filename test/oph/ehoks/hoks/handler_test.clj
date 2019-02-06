@@ -449,10 +449,77 @@
       (is (= (:status response) 204)))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
+(def pyto-patch-data
+  {:eperusteet-id 111
+   :tutkinnon-osat
+   [{:tunniste {:koodi-arvo "12"
+                :koodi-uri "esimerkki_uri2"
+                :versio 2}
+     :eperusteet-id "22"
+     :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
+                                             :loppu "2018-12-23"}
+                                 :osaamisen-hankkimistavan-tunniste
+                                 {:koodi-arvo "31"
+                                  :koodi-uri "esimerkki_uri3"
+                                  :versio 3}}]
+     :hankitun-osaamisen-naytto
+     {:jarjestaja {:nimi "ddd"}
+      :nayttoymparisto {:nimi "aaddda"}
+      :kuvaus "fff"
+      :ajankohta {:alku "2018-12-16"
+                  :loppu "2018-12-26"}
+      :sisalto "sisalto uusi"
+      :osaamistavoitteet [2]
+      :arvioijat [{:nimi "Nimi2"
+                   :rooli {:koodi-arvo "2"
+                           :koodi-uri "esimerkki_uri2"
+                           :versio 1}
+                   :organisaatio {:nimi "aaa2"}}]}
+     :tarvittava-opetus "tarvittava opetus2"}]
+   :koulutuksen-jarjestaja-oid "2222"})
 
-(deftest get-pyto
-  (testing "GET puuttuvat yhteisen tutkinnon osat"
-    (let [response
+(def pyto-data
+  {:eperusteet-id 122
+   :tutkinnon-osat
+   [{:tunniste {:koodi-arvo "1"
+                :koodi-uri "esimerkki_uri"
+                :versio 1}
+     :eperusteet-id "123"
+     :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-12"
+                                             :loppu "2018-12-20"}
+                                 :osaamisen-hankkimistavan-tunniste
+                                 {:koodi-arvo "1"
+                                  :koodi-uri "esimerkki_uri"
+                                  :versio 1}}]
+     :hankitun-osaamisen-naytto
+     {:jarjestaja {:nimi "abc"}
+      :nayttoymparisto {:nimi "aaa"}
+      :kuvaus "fff"
+      :ajankohta {:alku "2018-12-12"
+                  :loppu "2018-12-20"}
+      :sisalto "sisalto"
+      :osaamistavoitteet [1]
+      :arvioijat [{:nimi "Nimi"
+                   :rooli {:koodi-arvo "1"
+                           :koodi-uri "esimerkki_uri"
+                           :versio 1}
+                   :organisaatio {:nimi "aaa"}}]}
+     :tarvittava-opetus "tarvittava opetus"}]
+   :koulutuksen-jarjestaja-oid "222"})
+
+(deftest post-and-get-pyto
+  (testing "POST puuttuvat yhteisen tutkinnon osat"
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/%s"
+                    url pyto-path))
+                (mock/json-body pyto-data)))
+          get-response
           (utils/with-authentication
             app
             (mock/request
@@ -460,37 +527,30 @@
               (format
                 "%s/1/%s/1"
                 url pyto-path)))]
-      (is (= (:status response) 200))
+      (is (= (:status post-response) 200))
       (eq (utils/parse-body
-            (:body response))
-          {:data {:eid 1
-                  :eperusteet-id 1
-                  :tutkinnon-osat []
-                  :koulutuksen-jarjestaja-oid "1"}
-           :meta {}}))))
+            (:body post-response))
+          {:data {:uri   (format
+                           "%s/1/%s/1"
+                           url pyto-path)} :meta {}})
+      (is (= (:status get-response) 200))
+      (eq (:eid (:data (utils/parse-body
+                         (:body get-response))))
+          1))))
 
-(deftest post-pyto
-  (testing "POST puuttuvat yhteisen tutkinnon osat"
-    (let [response
+(deftest put-pyto
+  (testing "PUT puuttuvat yhteisen tutkinnon osat"
+    (db/clear)
+    (let [post-response
           (utils/with-authentication
             app
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/%s/"
+                    "%s/1/%s"
                     url pyto-path))
-                (mock/json-body
-                  {:eperusteet-id 1
-                   :tutkinnon-osat []
-                   :koulutuksen-jarjestaja-oid "1"})))]
-      (is (= (:status response) 200))
-      (eq (utils/parse-body
-            (:body response))
-          {:data {:uri ""} :meta {}}))))
-
-(deftest put-pyto
-  (testing "PUT puuttuvat yhteisen tutkinnon osat"
-    (let [response
+                (mock/json-body pyto-data)))
+          response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -499,15 +559,22 @@
                     "%s/1/%s/1"
                     url pyto-path))
                 (mock/json-body
-                  {:eid 1
-                   :eperusteet-id 1
-                   :tutkinnon-osat []
-                   :koulutuksen-jarjestaja-oid "1"})))]
+                  (assoc pyto-data :eid 1))))]
       (is (= (:status response) 204)))))
 
 (deftest patch-one-pyto
   (testing "PATCH one value puuttuvat yhteisen tutkinnon osat"
-    (let [response
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/%s"
+                    url pyto-path))
+                (mock/json-body pyto-data)))
+          response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -517,12 +584,22 @@
                     url pyto-path))
                 (mock/json-body
                   {:eid 1
-                   :koulutuksen-jarjestaja-oid "123"})))]
+                   :koulutuksen-jarjestaja-oid "2522"})))]
       (is (= (:status response) 204)))))
 
 (deftest patch-all-pyto
   (testing "PATCH all puuttuvat yhteisen tutkinnon osat"
-    (let [response
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/%s"
+                    url pyto-path))
+                (mock/json-body pyto-data)))
+          response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -531,10 +608,7 @@
                     "%s/1/%s/1"
                     url pyto-path))
                 (mock/json-body
-                  {:eid 1
-                   :eperusteet-id 1
-                   :tutkinnon-osat []
-                   :koulutuksen-jarjestaja-oid "1"})))]
+                  pyto-patch-data)))]
       (is (= (:status response) 204)))))
 
 (def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")

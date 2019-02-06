@@ -5,11 +5,13 @@
 (defonce oppijat-store (atom '()))
 (defonce ppto-store (atom '()))
 (defonce ppao-store (atom '()))
+(defonce pyto-store (atom '()))
 
 (defn clear []
   (reset! hoks-store '())
   (reset! ppto-store '())
-  (reset! ppao-store '()))
+  (reset! ppao-store '())
+  (reset! pyto-store '()))
 
 (defn get-next-id []
   (if (empty? @hoks-store)
@@ -140,3 +142,41 @@ tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
             :eid (or (:eid old) (get-next-ppao-id)))]
     (swap! ppao-store conj p)
     p))
+
+(defn get-next-pyto-id []
+  (if (empty? @pyto-store)
+    1
+    (inc (apply max (map :eid @pyto-store)))))
+
+(defn get-pyto-by-eid
+  "Hakee puuttuvan paikallisen tutkinnon osan tietueen kannasta sen eid-arvolla"
+  [eid]
+  (when (some? eid)
+    (let [p (filter #(= (:eid %) eid) @pyto-store)]
+      (first p))))
+
+(defn update-pyto!
+  "Päivittää HOKSin puuttuvan paikallisen
+tutkinnon osaa"
+  [eid values]
+  (let [updated-pyto values]
+    (swap! pyto-store conj updated-pyto)
+    updated-pyto))
+
+(defn update-pyto-values!
+  "Päivittää HOKSin puuttuvan paikallisen
+tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
+  [eid values]
+  (when-let [pyto (get-pyto-by-eid eid)]
+    (let [updated-pyto
+          (merge pyto values)]
+      (swap! pyto-store conj updated-pyto)
+      updated-pyto)))
+
+(defn create-pyto! [pyto]
+  (let [old (get-pyto-by-eid (:eid pyto))
+        updated-pyto (assoc
+                       pyto
+                       :eid (or (:eid old) (get-next-pyto-id)))]
+    (swap! pyto-store conj updated-pyto)
+    updated-pyto))
