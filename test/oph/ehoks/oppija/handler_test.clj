@@ -19,7 +19,7 @@
    {:oid "1.2.444.333.55.76666666666"
     :tutkinto {:laajuus 35
                :nimi "Audiovisuaalisen sisällön tuottamisen perustutkinto"}}
-   :oppijan-oid "1.2.333.444.55.76666666666"
+   :oppija-oid "1.2.333.444.55.76666666666"
    :luotu (java.util.Date.)
    :luonut "Olli Opettaja"
    :hyvaksytty (java.util.Date.)
@@ -27,7 +27,7 @@
    :paivitetty (java.util.Date.)
    :paivittanyt "Päivi Päivittäjä"
    :versio 2
-   :eid 1})
+   :id 1})
 
 (defn set-hoks-data! []
   (reset!
@@ -64,11 +64,11 @@
           response
           (utils/with-authenticated-oid
             store
-            (:oppijan-oid hoks)
+            (:oppija-oid hoks)
             app
             (mock/request
               :get
-              (format "%s/%s/hoks" url (:oppijan-oid hoks))))]
+              (format "%s/%s/hoks" url (:oppija-oid hoks))))]
       (is (= (:status response) 200))
       (let [body (utils/parse-body (:body response))]
         (eq
@@ -104,11 +104,11 @@
           response
           (utils/with-authenticated-oid
             store
-            (:oppijan-oid hoks)
+            (:oppija-oid hoks)
             app
             (mock/request
               :get
-              (format "%s/%s/hoks" url (:oppijan-oid hoks))))]
+              (format "%s/%s/hoks" url (:oppija-oid hoks))))]
       (is (= (:status response) 200))
       (let [body (utils/parse-body (:body response))]
         (eq
