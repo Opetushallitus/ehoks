@@ -23,9 +23,9 @@
   (when (some? id)
     (find-hoks #(= (:id %) id))))
 
-(defn get-all-hoks-by-oppija [oppijan-oid]
-  (when (some? oppijan-oid)
-    (->> (filter #(= (:oppijan-oid %) oppijan-oid) @hoks-store)
+(defn get-all-hoks-by-oppija [oppija-oid]
+  (when (some? oppija-oid)
+    (->> (filter #(= (:oppija-oid %) oppija-oid) @hoks-store)
          (group-by :id)
          (map (fn [[id h]] (last (sort-by :versio h)))))))
 
