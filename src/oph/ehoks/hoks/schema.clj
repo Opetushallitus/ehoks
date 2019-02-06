@@ -433,8 +433,10 @@
     (str "Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella
     sisällytetty suoraan osaksi "
          "opiskelijan tutkintoa")
-    (s/optional-key :tutkinnon-id) s/Int "Tutkinnon osan id,
-  johon tunnistettava olemassa oleva osaaminen liittyy"
+
+    (s/optional-key :tutkinnon-tunniste) KoodistoKoodi
+    (str "Tutkinnon osan, johon tunnistettava olemassa oleva osaaminen "
+         "liittyy, Koodisto-koodi")
     :valittu-todentamisen-prosessi
     (s/enum :valittu-todentaminen-suoraan
             :valittu-todentaminen-arvioijat
