@@ -9,3 +9,6 @@
 
 (defn migrate []
   (.migrate flyway))
+
+(defn clean []
+  (.clean flyway))
