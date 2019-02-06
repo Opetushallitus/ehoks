@@ -54,8 +54,6 @@
   (describe
     "Yhteisen tutkinnon osan (YTO) osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :eperusteet-tunniste s/Int
-    "Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     :tunniste KoodistoKoodi "Koodisto-koodi (ammatillisenoppiaineet)"))
