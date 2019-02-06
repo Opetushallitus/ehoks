@@ -444,40 +444,6 @@
     "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
 
 (s/defschema
-  OlemassaOlevaOsaaminen
-  (describe
-    (str "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi "
-         "opiskelijan tutkintoa")
-    :id s/Int "Tunniste eHOKS-järjestelmässä"
-))
-
-(s/defschema
-  OlemassaOlevaOsaaminenLuonti
-  (modify
-    OlemassaOlevaOsaaminen
-    (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytetty "
-         "osaaminen uutta merkintää luotaessa (POST)")
-    {:removed [:id]}))
-
-(s/defschema
-  OlemassaOlevaOsaaminenPaivitys
-  (modify
-    OlemassaOlevaOsaaminen
-    (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen "
-         "osaamisten tiedot merkintää ylikirjoittaessa (PUT)")))
-
-(s/defschema
-  OlemassaOlevaOsaaminenKentanPaivitys
-  (modify
-    OlemassaOlevaOsaaminen
-    (str "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen "
-         "osaamisten tiedot kenttää tai kenttiä päivittäessä (PATCH)")
-    {:optionals
-     [:olemassa-oleva-ammatillinen-osaaminen
-      :olemassa-olevat-yto
-      :olemassa-oleva-paikallinen-tutkinnon-osa]}))
-
-(s/defschema
   Opinnot
   (describe
     "Opinnot"
@@ -561,11 +527,6 @@
                 :types {:any s/Inst}
                 :description (str "HOKS-dokumentin viimeisin päivitysaika "
                                   "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
-   :olemassa-oleva-osaaminen
-   {:methods {:any :optional}
-    :types {:any OlemassaOlevaOsaaminen}
-    :description (str "Osaamisen tunnustamisen perusteella sisällytetty "
-                      "suoraan osaksi opiskelijan tutkintoa")}
    :opiskeluvalmiuksia-tukevat-opinnot
    {:methods {:any :optional}
     :types {:any OpiskeluvalmiuksiaTukevatOpinnot}
