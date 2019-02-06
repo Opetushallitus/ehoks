@@ -115,7 +115,7 @@ osaamisen"
       :return (rest/response
                 hoks-schema/PuuttuvaYTO)
       (rest/rest-ok {:id 1
-                     :tutkinnon-osat []
+                     :osa-alueet []
                      :koulutuksen-jarjestaja-oid "1"}))
 
     (c-api/POST "/" []
@@ -180,45 +180,6 @@ osaamisen"
       [_ hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
       (response/no-content))))
 
-(def ^:private olemassa-oleva-osaaminen
-  (c-api/context "/:hoks-id/olemassa-oleva-osaaminen" [hoks-id]
-
-    (c-api/GET "/:id" [:as id]
-      :summary "Palauttaa HOKSin olemassa olevan osaamisen tunnustamisen
-       perusteella sisällytetyn osaamisen	"
-      :return (rest/response
-                hoks-schema/OlemassaOlevaOsaaminen)
-      (rest/rest-ok {:id 1
-                     :olemassa-oleva-ammatillinen-osaaminen []
-                     :olemassa-olevat-yto-osa-alueet []
-                     :olemassa-oleva-paikallinen-tutkinnon-osa []}))
-
-    (c-api/POST "/" []
-      :summary
-      "Luo (tai korvaa vanhan) olemassa olevan osaamisen tunnustamisen
-      perusteella sisällytetyn osaamisen HOKSiin"
-      :body
-      [_ hoks-schema/OlemassaOlevaOsaaminenLuonti]
-      :return (rest/response schema/POSTResponse)
-      (rest/rest-ok {:uri ""}))
-
-    (c-api/PUT
-      "/:id" []
-      :summary "Päivittää HOKSin olemassa olevan osaamisen tunnustamisen
-      perusteella sisällytetyn osaamisen"
-      :body
-      [_ hoks-schema/OlemassaOlevaOsaaminenPaivitys]
-      (response/no-content))
-
-    (c-api/PATCH
-      "/:id" []
-      :summary
-      "Päivittää HOKSin olemassa olevan osaamisen tunnustamisen perusteella
-      sisällytetyn osaamisen arvoa tai arvoja"
-      :body
-      [_ hoks-schema/OlemassaOlevaOsaaminenKentanPaivitys]
-      (response/no-content))))
-
 (def routes
   (c-api/context "/hoks" []
     :tags ["hoks"]
@@ -255,5 +216,4 @@ osaamisen"
     puuttuva-ammatillinen-osaaminen
     puuttuva-paikallinen-tutkinnon-osa
     puuttuvat-yhteisen-tutkinnon-osat
-    opiskeluvalmiuksia-tukevat-opinnot
-    olemassa-oleva-osaaminen))
+    opiskeluvalmiuksia-tukevat-opinnot))
