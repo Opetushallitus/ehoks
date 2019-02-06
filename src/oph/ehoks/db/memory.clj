@@ -6,12 +6,14 @@
 (defonce ppto-store (atom '()))
 (defonce ppao-store (atom '()))
 (defonce pyto-store (atom '()))
+(defonce ovatu-store (atom '()))
 
 (defn clear []
   (reset! hoks-store '())
   (reset! ppto-store '())
   (reset! ppao-store '())
-  (reset! pyto-store '()))
+  (reset! pyto-store '())
+  (reset! ovatu-store '()))
 
 (defn get-next-id []
   (if (empty? @hoks-store)
@@ -180,3 +182,43 @@ tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
                        :eid (or (:eid old) (get-next-pyto-id)))]
     (swap! pyto-store conj updated-pyto)
     updated-pyto))
+
+;; OPISKELUVALMIUKSIA TUKEVAT OPINNOT
+
+(defn get-next-ovatu-id []
+  (if (empty? @ovatu-store)
+    1
+    (inc (apply max (map :eid @ovatu-store)))))
+
+(defn get-ovatu-by-eid
+  "Hakee puuttuvan paikallisen tutkinnon osan tietueen kannasta sen eid-arvolla"
+  [eid]
+  (when (some? eid)
+    (let [p (filter #(= (:eid %) eid) @ovatu-store)]
+      (first p))))
+
+(defn update-ovatu!
+  "Päivittää HOKSin puuttuvan paikallisen
+tutkinnon osaa"
+  [eid values]
+  (let [updated-ovatu values]
+    (swap! ovatu-store conj updated-ovatu)
+    updated-ovatu))
+
+(defn update-ovatu-values!
+  "Päivittää HOKSin puuttuvan paikallisen
+tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
+  [eid values]
+  (when-let [ovatu (get-ovatu-by-eid eid)]
+    (let [updated-ovatu
+          (merge ovatu values)]
+      (swap! ovatu-store conj updated-ovatu)
+      updated-ovatu)))
+
+(defn create-ovatu! [ovatu]
+  (let [old (get-ovatu-by-eid (:eid ovatu))
+        updated-ovatu (assoc
+                        ovatu
+                        :eid (or (:eid old) (get-next-ovatu-id)))]
+    (swap! ovatu-store conj updated-ovatu)
+    updated-ovatu))

@@ -5,7 +5,8 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.memory :as db]
-            [schema.core :as s])
+            [schema.core :as s]
+            [clojure.tools.logging :as log])
   (:import (java.time LocalDate)))
 
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
@@ -97,76 +98,82 @@ osaamisen"
 (def ^:private puuttuvat-yhteisen-tutkinnon-osat
   (c-api/context "/:hoks-eid/puuttuvat-yhteisen-tutkinnon-osat" [hoks-eid]
 
-    (c-api/GET "/:eid" [:as eid]
-      :summary "Palauttaa HOKSin puuttuvat paikallisen tutkinnon osat	"
+    (c-api/GET "/:eid" [eid]
+      :summary "Palauttaa HOKSin puuttuvat yhteisen tutkinnon osat	"
+      :path-params [eid :- s/Int]
       :return (rest/response
                 hoks-schema/PuuttuvaYTO)
-      (rest/rest-ok {:eid 1
-                     :eperusteet-id 1
-                     :tutkinnon-osat []
-                     :koulutuksen-jarjestaja-oid "1"}))
+      (rest/rest-ok (db/get-pyto-by-eid eid)))
 
-    (c-api/POST "/" []
+    (c-api/POST "/" [:as request]
       :summary
-      "Luo (tai korvaa vanhan) puuttuvan paikallisen tutkinnon osat HOKSiin"
+      "Luo (tai korvaa vanhan) puuttuvan yhteisen tutkinnon osat HOKSiin"
       :body
-      [_ hoks-schema/PuuttuvaYTOLuonti]
+      [pyto hoks-schema/PuuttuvaYTOLuonti]
       :return (rest/response schema/POSTResponse)
-      (rest/rest-ok {:uri ""}))
+      (let [pyto-response (db/create-pyto! pyto)]
+        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid pyto-response))})))
 
     (c-api/PUT
       "/:eid" []
-      :summary "Päivittää HOKSin puuttuvan ammatillisen
-  osaamisen"
+      :summary "Päivittää HOKSin puuttuvan yhteisen tutkinnon osat"
+      :path-params [eid :- s/Int]
       :body
-      [_ hoks-schema/PuuttuvaYTOPaivitys]
-      (response/no-content))
+      [values hoks-schema/PuuttuvaYTOPaivitys]
+      (if (db/update-pyto! eid values)
+        (response/no-content)
+        (response/not-found "PYTO not found with given PYTO ID")))
 
     (c-api/PATCH
       "/:eid" []
       :summary
-      "Päivittää HOKSin puuttuvan ammatillisen
-    osaamisen arvoa tai arvoja"
+      "Päivittää HOKSin puuttuvan yhteisen tutkinnon osat arvoa tai arvoja"
+      :path-params [eid :- s/Int]
       :body
-      [_ hoks-schema/PuuttuvaYTOKentanPaivitys]
-      (response/no-content))))
+      [values hoks-schema/PuuttuvaYTOKentanPaivitys]
+      (if (db/update-pyto-values! eid values)
+        (response/no-content)
+        (response/not-found "PPTO not found with given PPTO ID")))))
 
 (def ^:private opiskeluvalmiuksia-tukevat-opinnot
   (c-api/context "/:hoks-eid/opiskeluvalmiuksia-tukevat-opinnot" [hoks-eid]
 
-    (c-api/GET "/:eid" [:as eid]
+    (c-api/GET "/:eid" [eid]
       :summary "Palauttaa HOKSin opiskeluvalmiuksia tukevat opinnot	"
+      :path-params [eid :- s/Int]
       :return (rest/response
                 hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot)
-      (rest/rest-ok {:eid 1
-                     :nimi ""
-                     :kuvaus ""
-                     :kesto 1
-                     :ajankohta {:alku (LocalDate/of 2018 12 12)
-                                 :loppu (LocalDate/of 2018 12 20)}}))
+      (rest/rest-ok (db/get-ovatu-by-eid eid)))
 
-    (c-api/POST "/" []
+    (c-api/POST "/"  [:as request]
       :summary
       "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin"
       :body
-      [_ hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
+      [ovatu hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
       :return (rest/response schema/POSTResponse)
-      (rest/rest-ok {:uri ""}))
+      (let [ovatu-response (db/create-ovatu! ovatu)]
+        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:eid ovatu-response))})))
 
     (c-api/PUT
       "/:eid" []
       :summary "Päivittää HOKSin opiskeluvalmiuksia tukevat opinnot"
+      :path-params [eid :- s/Int]
       :body
-      [_ hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
-      (response/no-content))
+      [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
+      (if (db/update-ovatu! eid values)
+        (response/no-content)
+        (response/not-found "OVATU not found with given OVATU ID")))
 
     (c-api/PATCH
       "/:eid" []
       :summary
       "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
+      :path-params [eid :- s/Int]
       :body
-      [_ hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
-      (response/no-content))))
+      [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
+      (if (db/update-ovatu-values! eid values)
+        (response/no-content)
+        (response/not-found "OVATU not found with given OVATU ID")))))
 
 (def ^:private olemassa-oleva-osaaminen
   (c-api/context "/:hoks-eid/olemassa-oleva-osaaminen" [hoks-eid]
