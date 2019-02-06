@@ -474,7 +474,7 @@
          "osaamisten tiedot kenttää tai kenttiä päivittäessä (PATCH)")
     {:optionals
      [:olemassa-oleva-ammatillinen-osaaminen
-      :olemassa-olevat-yto-osa-alueet
+      :olemassa-olevat-yto
       :olemassa-oleva-paikallinen-tutkinnon-osa]}))
 
 (s/defschema
