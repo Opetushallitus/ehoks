@@ -13,73 +13,80 @@
 ; TODO Test also role access
 ; TODO update tests to use real-like data
 
-(deftest get-ppto
-  (testing "GET puuttuva paikallinen tutkinnon osa"
-    (let [response
-          (utils/with-authentication
-            app
-            (mock/request
-              :get
-              (format
-                "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
-                url)))]
-      (is (= (:status response) 200))
-      (eq (utils/parse-body
-            (:body response))
-          {:data {:id 1
-                  :amosaa-tunniste 1
-                  :nimi ""
-                  :laajuus 0
-                  :kuvaus ""
-                  :osaamisen-hankkimistavat []
-                  :koulutuksen-jarjestaja-oid ""
-                  :hankitun-osaamisen-naytto
-                  {:jarjestaja {:nimi ""}
-                   :nayttoymparisto {:nimi ""}
-                   :kuvaus ""
-                   :ajankohta {:alku "2018-12-12"
-                               :loppu "2018-12-20"}
-                   :sisalto ""
-                   :ammattitaitovaatimukset []
-                   :arvioijat []}
-                  :tarvittava-opetus ""}
-           :meta {}}))))
+(defn get-authenticated [url]
+  (-> (utils/with-authentication
+        app
+        (mock/request :get url))
+      :body
+      utils/parse-body))
 
-(deftest post-ppto
-  (testing "POST puuttuva paikallinen tutkinnon osa"
-    (let [response
+(deftest post-and-get-ppto
+  (testing "GET newly created puuttuva paikallinen tutkinnon osa"
+    (db/clear)
+    (let [ppto-data   {:nimi "222"
+                       :laajuus 0
+                       :kuvaus "fef"
+                       :osaamisen-hankkimistavat []
+                       :koulutuksen-jarjestaja-oid "124"
+                       :hankitun-osaamisen-naytto
+                       {:jarjestaja {:nimi "abc"}
+                        :nayttoymparisto {:nimi "aaa"}
+                        :kuvaus "fff"
+                        :ajankohta {:alku "2018-12-12"
+                                    :loppu "2018-12-20"}
+                        :sisalto "sisalto"
+                        :ammattitaitovaatimukset []
+                        :arvioijat []}
+                       :tarvittava-opetus "tarvittava opetus"}
+          ppto-response
           (utils/with-authentication
             app
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/puuttuva-paikallinen-tutkinnon-osa"
-                    url))
-                (mock/json-body
-                  {:amosaa-tunniste 1
-                   :nimi ""
-                   :laajuus 0
-                   :kuvaus ""
-                   :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid ""
-                   :hankitun-osaamisen-naytto
-                   {:jarjestaja {:nimi ""}
-                    :nayttoymparisto {:nimi ""}
-                    :kuvaus ""
-                    :ajankohta {:alku (t/local-date 2018 12 12)
-                                :loppu (t/local-date 2018 12 20)}
-                    :sisalto ""
-                    :ammattitaitovaatimukset []
-                    :arvioijat []}
-                   :tarvittava-opetus ""})))]
-      (is (= (:status response) 200))
-      (eq (utils/parse-body
-            (:body response))
-          {:data {:uri ""} :meta {}}))))
+            (-> (mock/request :post (format
+                                      "%s/1/puuttuva-paikallinen-tutkinnon-osa"
+                                      url))
+                (mock/json-body ppto-data)))
+          body (utils/parse-body (:body ppto-response))]
+      (is (= (:status ppto-response) 200))
+      (eq body {:data {:uri (format "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
+                                    url)} :meta {}})
+      (let [ppto-new (utils/with-authentication
+                       app
+                       (mock/request
+                         :get (format
+                                "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
+                                url)))]
+        (eq
+          (:data (utils/parse-body (:body ppto-new)))
+          (assoc
+            ppto-data
+            :id 1))))))
 
 (deftest put-ppto
   (testing "PUT puuttuva paikallinen tutkinnon osa"
-    (let [response
+    (db/clear)
+    (let [ppto-data   {:nimi "22992"
+                       :laajuus 0
+                       :kuvaus "fef"
+                       :osaamisen-hankkimistavat []
+                       :koulutuksen-jarjestaja-oid "124"
+                       :hankitun-osaamisen-naytto
+                       {:jarjestaja {:nimi "abc"}
+                        :nayttoymparisto {:nimi "aaa"}
+                        :kuvaus "ppp"
+                        :ajankohta {:alku "2018-12-12"
+                                    :loppu "2018-12-20"}
+                        :sisalto "sisalto"
+                        :ammattitaitovaatimukset []
+                        :arvioijat []}
+                       :tarvittava-opetus "tarvittava opetus"}
+          ppto-response
+          (utils/with-authentication
+            app
+            (-> (mock/request :post (format
+                                      "%s/1/puuttuva-paikallinen-tutkinnon-osa"
+                                      url))
+                (mock/json-body ppto-data)))
+          put-response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -89,27 +96,50 @@
                     url))
                 (mock/json-body
                   {:id 1
-                   :amosaa-tunniste 1
-                   :nimi ""
-                   :laajuus 0
-                   :kuvaus ""
+                   :amosaa-tunniste 11
+                   :nimi "333"
+                   :laajuus 3
+                   :kuvaus "fef"
                    :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid ""
+                   :koulutuksen-jarjestaja-oid "333"
                    :hankitun-osaamisen-naytto
-                   {:jarjestaja {:nimi ""}
-                    :nayttoymparisto {:nimi ""}
-                    :kuvaus ""
-                    :ajankohta {:alku (t/local-date 2018 12 12)
-                                :loppu (t/local-date 2018 12 20)}
-                    :sisalto ""
+                   {:jarjestaja {:nimi "abc"}
+                    :nayttoymparisto {:nimi "aaa"}
+                    :kuvaus "fff"
+                    :ajankohta {:alku "2018-12-12"
+                                :loppu "2018-12-20"}
+                    :sisalto "sisalto"
                     :ammattitaitovaatimukset []
                     :arvioijat []}
-                   :tarvittava-opetus ""})))]
-      (is (= (:status response) 204)))))
+                   :tarvittava-opetus "tarvittava opetus"})))]
+      (is (= (:status put-response) 204)))))
 
 (deftest patch-all-ppto
   (testing "PATCH all puuttuva paikallinen tutkinnon osa"
-    (let [response
+    (db/clear)
+    (let [ppto-data   {:nimi "22992"
+                       :laajuus 0
+                       :kuvaus "fef"
+                       :osaamisen-hankkimistavat []
+                       :koulutuksen-jarjestaja-oid "124"
+                       :hankitun-osaamisen-naytto
+                       {:jarjestaja {:nimi "abc"}
+                        :nayttoymparisto {:nimi "aaa"}
+                        :kuvaus "ppp"
+                        :ajankohta {:alku "2018-12-12"
+                                    :loppu "2018-12-20"}
+                        :sisalto "sisalto"
+                        :ammattitaitovaatimukset []
+                        :arvioijat []}
+                       :tarvittava-opetus "tarvittava opetus"}
+          ppto-response
+          (utils/with-authentication
+            app
+            (-> (mock/request :post (format
+                                      "%s/1/puuttuva-paikallinen-tutkinnon-osa"
+                                      url))
+                (mock/json-body ppto-data)))
+          patch-response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -124,22 +154,47 @@
                    :laajuus 0
                    :kuvaus ""
                    :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid ""
+                   :koulutuksen-jarjestaja-oid "1214"
                    :hankitun-osaamisen-naytto
-                   {:jarjestaja {:nimi ""}
-                    :nayttoymparisto {:nimi ""}
-                    :kuvaus ""
-                    :ajankohta {:alku (t/local-date 2018 12 12)
-                                :loppu (t/local-date 2018 12 20)}
-                    :sisalto ""
+                   {:jarjestaja {:nimi "a1bc"}
+                    :nayttoymparisto {:nimi "a1aa"}
+                    :kuvaus "ppp"
+                    :ajankohta {:alku "2018-12-12"
+                                :loppu "2018-12-20"}
+                    :sisalto "sisalto"
                     :ammattitaitovaatimukset []
                     :arvioijat []}
-                   :tarvittava-opetus ""})))]
-      (is (= (:status response) 204)))))
+                   :tarvittava-opetus "tarvittavaa opetusta lisää"})))]
+      (is (= (:status patch-response) 204)))))
 
 (deftest patch-one-ppto
   (testing "PATCH one value puuttuva paikallinen tutkinnon osa"
-    (let [response
+    (db/clear)
+    (let [ppto-data   {:nimi "222"
+                       :laajuus 0
+                       :kuvaus "fef"
+                       :osaamisen-hankkimistavat []
+                       :koulutuksen-jarjestaja-oid "124"
+                       :hankitun-osaamisen-naytto
+                       {:jarjestaja {:nimi "abc"}
+                        :nayttoymparisto {:nimi "aaa"}
+                        :kuvaus "fff"
+                        :ajankohta {:alku "2018-12-12"
+                                    :loppu "2018-12-20"}
+                        :sisalto "sisalto"
+                        :ammattitaitovaatimukset []
+                        :arvioijat []}
+                       :tarvittava-opetus "tarvittava opetus"}
+          ppto-response
+          (utils/with-authentication
+            app
+            (-> (mock/request :post (format
+                                      "%s/1/puuttuva-paikallinen-tutkinnon-osa"
+                                      url))
+                (mock/json-body ppto-data)))
+          ppto-body (utils/parse-body
+                      (:body ppto-response))
+          patch-response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -148,63 +203,75 @@
                     "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
                     url))
                 (mock/json-body
-                  {:id 1
-                   :amosaa-tunniste 1})))]
-      (is (= (:status response) 204)))))
+                  {:id 1 :tarvittava-opetus "Tarvittavaa opetusta"})))
+          get-response (-> (get-in ppto-body [:data :uri])
+                           get-authenticated :data)]
+      (is (= (:status patch-response) 204))
+      (eq get-response
+          (assoc ppto-data
+                 :id 1
+                 :tarvittava-opetus "Tarvittavaa opetusta")))))
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
+(def pao-data     {:tutkinnon-osa
+                   {:tunniste
+                    {:koodi-arvo "1"
+                     :koodi-uri "esimerkki_uri"
+                     :versio 1}}
+                   :osaamisen-hankkimistavat
+                   [{:ajankohta {:alku "2018-12-12"
+                                 :loppu "2018-12-20"}
+                     :osaamisen-hankkimistavan-tunniste
+                     {:koodi-arvo "1"
+                      :koodi-uri "esimerkki_uri"
+                      :versio 1}}]
+                   :koulutuksen-jarjestaja-oid "123"})
 
-(deftest get-pao
-  (testing "GET puuttuva ammatillinen osaaminen"
-    (let [response
-          (utils/with-authentication
-            app
-            (mock/request
-              :get
-              (format
-                "%s/1/%s/1"
-                url pao-path)))]
-      (is (= (:status response) 200))
-      (eq (utils/parse-body
-            (:body response))
-          {:data {:id 1
-                  :tutkinnon-osa
-                  {:tunniste
-                   {:koodi-arvo "1"
-                    :koodi-uri "esimerkki_uri"
-                    :versio 1}}
-                  :vaatimuksista-tai-tavoitteista-poikkeaminen ""
-                  :osaamisen-hankkimistavat []
-                  :koulutuksen-jarjestaja-oid ""
-                  :tarvittava-opetus ""}
-           :meta {}}))))
-
-(deftest post-pao
-  (testing "POST puuttuva ammatillinen osaaminen"
-    (let [response
+(deftest post-and-get-pao
+  (testing "POST puuttuva ammatillinen osaaminen and then get the created ppao"
+    (db/clear)
+    (let [post-response
           (utils/with-authentication
             app
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/puuttuva-ammatillinen-osaaminen/"
+                    "%s/1/puuttuva-ammatillinen-osaaminen"
                     url))
                 (mock/json-body
-                  {:tutkinnon-osa {:tunniste {:koodi-arvo "1"
-                                              :koodi-uri "esimerkki_uri"
-                                              :versio 1}}
-                   :vaatimuksista-tai-tavoitteista-poikkeaminen ""
-                   :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid ""
-                   :tarvittava-opetus ""})))]
-      (is (= (:status response) 200))
+                  pao-data)))
+          get-response  (utils/with-authentication
+                          app
+                          (mock/request
+                            :get
+                            (format
+                              "%s/1/%s/1"
+                              url pao-path)))]
+      (is (= (:status post-response) 200))
       (eq (utils/parse-body
-            (:body response))
-          {:data {:uri ""} :meta {}}))))
+            (:body post-response))
+          {:meta {} :data {:uri   (format
+                                    "%s/1/puuttuva-ammatillinen-osaaminen/1"
+                                    url)}})
+      (is (= (:status get-response) 200))
+      (eq (utils/parse-body
+            (:body get-response))
+          {:meta {} :data (assoc pao-data :id 1)}))))
 
 (deftest put-pao
   (testing "PUT puuttuva ammatillinen osaaminen"
-    (let [response
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/puuttuva-ammatillinen-osaaminen"
+                    url))
+                (mock/json-body
+                  pao-data)))
+          put-response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -213,19 +280,49 @@
                     "%s/1/%s/1"
                     url pao-path))
                 (mock/json-body
-                  {:id 1
-                   :tutkinnon-osa {:tunniste {:koodi-arvo "1"
-                                              :koodi-uri "esimerkki_uri"
-                                              :versio 1}}
-                   :vaatimuksista-tai-tavoitteista-poikkeaminen ""
-                   :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid ""
-                   :tarvittava-opetus ""})))]
-      (is (= (:status response) 204)))))
+                  (assoc pao-data :id 1 :koulutuksen-jarjestaja-oid "124"))))
+          get-response  (utils/with-authentication
+                          app
+                          (mock/request
+                            :get
+                            (format
+                              "%s/1/%s/1"
+                              url pao-path)))]
+      (is (= (:status put-response) 204))
+      (eq (utils/parse-body
+            (:body get-response))
+          {:meta {} :data
+           (assoc pao-data :id 1 :koulutuksen-jarjestaja-oid "124")}))))
+
+(def patch-all-pao-data
+  {:tutkinnon-osa
+   {:tunniste
+    {:koodi-arvo "412"
+     :koodi-uri "esimerkki_uri42"
+     :versio 1}}
+   :osaamisen-hankkimistavat
+   [{:ajankohta {:alku "2018-12-12"
+                 :loppu "2018-12-22"}
+     :osaamisen-hankkimistavan-tunniste
+     {:koodi-arvo "22"
+      :koodi-uri "esimerkki_uri32"
+      :versio 1}}]
+   :koulutuksen-jarjestaja-oid "12432"})
 
 (deftest patch-all-pao
-  (testing "PATCH all puuttuva ammatillinen osaaminen"
-    (let [response
+  (testing "PATCH ALL puuttuva ammatillinen osaaminen"
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/puuttuva-ammatillinen-osaaminen"
+                    url))
+                (mock/json-body
+                  pao-data)))
+          patch-response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -234,19 +331,33 @@
                     "%s/1/%s/1"
                     url pao-path))
                 (mock/json-body
-                  {:id 1
-                   :tutkinnon-osa {:tunniste {:koodi-arvo "1"
-                                              :koodi-uri "esimerkki_uri"
-                                              :versio 1}}
-                   :vaatimuksista-tai-tavoitteista-poikkeaminen ""
-                   :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid ""
-                   :tarvittava-opetus ""})))]
-      (is (= (:status response) 204)))))
+                  (assoc patch-all-pao-data :id 1))))
+          get-response  (utils/with-authentication
+                          app
+                          (mock/request
+                            :get
+                            (format
+                              "%s/1/%s/1"
+                              url pao-path)))]
+      (is (= (:status patch-response) 204))
+      (eq (utils/parse-body
+            (:body get-response))
+          {:meta {} :data  (assoc patch-all-pao-data :id 1)}))))
 
 (deftest patch-one-pao
   (testing "PATCH one value puuttuva ammatillinen osaaminen"
-    (let [response
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/puuttuva-ammatillinen-osaaminen"
+                    url))
+                (mock/json-body
+                  pao-data)))
+          response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -261,9 +372,71 @@
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
-(deftest get-pyto
-  (testing "GET puuttuvat yhteisen tutkinnon osat"
-    (let [response
+(def pyto-data
+  {:osa-alueet
+   [{:tunniste {:koodi-arvo "12"
+                :koodi-uri "esimerkki_uri2"
+                :versio 2}
+     :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
+                                             :loppu "2018-12-23"}
+                                 :osaamisen-hankkimistavan-tunniste
+                                 {:koodi-arvo "31"
+                                  :koodi-uri "esimerkki_uri3"
+                                  :versio 3}}]
+     :hankitun-osaamisen-naytto
+     {:jarjestaja {:nimi "ddd"}
+      :nayttoymparisto {:nimi "aaddda"}
+      :kuvaus "fff"
+      :ajankohta {:alku "2018-12-16"
+                  :loppu "2018-12-26"}
+      :sisalto "sisalto uusi"
+      :arvioijat [{:nimi "Nimi2"
+                   :rooli {:koodi-arvo "2"
+                           :koodi-uri "esimerkki_uri2"
+                           :versio 1}
+                   :organisaatio {:nimi "aaa2"}}]}
+     :tarvittava-opetus "tarvittava opetus2"}]
+   :koulutuksen-jarjestaja-oid "1234"})
+
+(def pyto-patch-data
+  {:osa-alueet
+   [{:tunniste {:koodi-arvo "12"
+                :koodi-uri "esimerkki_uri2"
+                :versio 2}
+     :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
+                                             :loppu "2018-12-23"}
+                                 :osaamisen-hankkimistavan-tunniste
+                                 {:koodi-arvo "31"
+                                  :koodi-uri "esimerkki_uri3"
+                                  :versio 3}}]
+     :hankitun-osaamisen-naytto
+     {:jarjestaja {:nimi "ddd"}
+      :nayttoymparisto {:nimi "aaddda"}
+      :kuvaus "fff"
+      :ajankohta {:alku "2018-12-16"
+                  :loppu "2018-12-26"}
+      :sisalto "sisalto uusi"
+      :arvioijat [{:nimi "Nimi2"
+                   :rooli {:koodi-arvo "2"
+                           :koodi-uri "esimerkki_uri2"
+                           :versio 1}
+                   :organisaatio {:nimi "aaa2"}}]}
+     :tarvittava-opetus "tarvittava opetus2"}]
+   :koulutuksen-jarjestaja-oid "1234"})
+
+(deftest post-and-get-pyto
+  (testing "POST puuttuvat yhteisen tutkinnon osat"
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/%s"
+                    url pyto-path))
+                (mock/json-body pyto-data)))
+          get-response
           (utils/with-authentication
             app
             (mock/request
@@ -271,35 +444,30 @@
               (format
                 "%s/1/%s/1"
                 url pyto-path)))]
-      (is (= (:status response) 200))
+      (is (= (:status post-response) 200))
       (eq (utils/parse-body
-            (:body response))
-          {:data {:id 1
-                  :osa-alueet []
-                  :koulutuksen-jarjestaja-oid "1"}
-           :meta {}}))))
+            (:body post-response))
+          {:data {:uri   (format
+                           "%s/1/%s/1"
+                           url pyto-path)} :meta {}})
+      (is (= (:status get-response) 200))
+      (eq (:id (:data (utils/parse-body
+                        (:body get-response))))
+          1))))
 
-(deftest post-pyto
-  (testing "POST puuttuvat yhteisen tutkinnon osat"
-    (let [response
+(deftest put-pyto
+  (testing "PUT puuttuvat yhteisen tutkinnon osat"
+    (db/clear)
+    (let [post-response
           (utils/with-authentication
             app
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/%s/"
+                    "%s/1/%s"
                     url pyto-path))
-                (mock/json-body
-                  {:osa-alueet []
-                   :koulutuksen-jarjestaja-oid "1"})))]
-      (is (= (:status response) 200))
-      (eq (utils/parse-body
-            (:body response))
-          {:data {:uri ""} :meta {}}))))
-
-(deftest put-pyto
-  (testing "PUT puuttuvat yhteisen tutkinnon osat"
-    (let [response
+                (mock/json-body pyto-data)))
+          response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -308,14 +476,22 @@
                     "%s/1/%s/1"
                     url pyto-path))
                 (mock/json-body
-                  {:id 1
-                   :osa-alueet []
-                   :koulutuksen-jarjestaja-oid "1"})))]
+                  (assoc pyto-data :id 1))))]
       (is (= (:status response) 204)))))
 
 (deftest patch-one-pyto
   (testing "PATCH one value puuttuvat yhteisen tutkinnon osat"
-    (let [response
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/%s"
+                    url pyto-path))
+                (mock/json-body pyto-data)))
+          response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -330,7 +506,17 @@
 
 (deftest patch-all-pyto
   (testing "PATCH all puuttuvat yhteisen tutkinnon osat"
-    (let [response
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/%s"
+                    url pyto-path))
+                (mock/json-body pyto-data)))
+          response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -339,16 +525,29 @@
                     "%s/1/%s/1"
                     url pyto-path))
                 (mock/json-body
-                  {:id 1
-                   :osa-alueet []
-                   :koulutuksen-jarjestaja-oid "1"})))]
+                  pyto-patch-data)))]
       (is (= (:status response) 204)))))
 
 (def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")
+(def ovatu-data {:nimi "Nimi"
+                 :kuvaus "Kuvaus"
+                 :kesto 10
+                 :ajankohta {:alku "2018-12-12"
+                             :loppu "2018-12-20"}})
 
-(deftest get-ovatu
+(deftest post-and-get-ovatu
   (testing "GET opiskeluvalmiuksia tukevat opinnot"
-    (let [response
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/%s"
+                    url ovatu-path))
+                (mock/json-body ovatu-data)))
+          get-response
           (utils/with-authentication
             app
             (mock/request
@@ -356,41 +555,36 @@
               (format
                 "%s/1/%s/1"
                 url ovatu-path)))]
-      (is (= (:status response) 200))
+      (is (= (:status post-response) 200))
       (eq (utils/parse-body
-            (:body response))
+            (:body post-response))
+          {:data {:uri (format
+                         "%s/1/%s/1"
+                         url ovatu-path)} :meta {}})
+      (is (= (:status get-response) 200))
+      (eq (utils/parse-body
+            (:body get-response))
           {:data {:id 1
-                  :nimi ""
-                  :kuvaus ""
-                  :kesto 1
+                  :nimi "Nimi"
+                  :kuvaus "Kuvaus"
+                  :kesto 10
                   :ajankohta {:alku "2018-12-12"
                               :loppu "2018-12-20"}}
            :meta {}}))))
 
-(deftest post-ovatu
-  (testing "POST opiskeluvalmiuksia tukevat opinnot"
-    (let [response
+(deftest put-ovatu
+  (testing "PUT opiskeluvalmiuksia tukevat opinnot"
+    (db/clear)
+    (let [post-response
           (utils/with-authentication
             app
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/%s/"
+                    "%s/1/%s"
                     url ovatu-path))
-                (mock/json-body
-                  {:nimi ""
-                   :kuvaus ""
-                   :kesto 1
-                   :ajankohta {:alku "2018-12-12"
-                               :loppu "2018-12-20"}})))]
-      (is (= (:status response) 200))
-      (eq (utils/parse-body
-            (:body response))
-          {:data {:uri ""} :meta {}}))))
-
-(deftest put-ovatu
-  (testing "PUT opiskeluvalmiuksia tukevat opinnot"
-    (let [response
+                (mock/json-body ovatu-data)))
+          put-response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -400,16 +594,26 @@
                     url ovatu-path))
                 (mock/json-body
                   {:id 1
-                   :nimi ""
-                   :kuvaus ""
-                   :kesto 1
-                   :ajankohta {:alku "2018-12-12"
-                               :loppu "2018-12-20"}})))]
-      (is (= (:status response) 204)))))
+                   :nimi "Uusi nimi"
+                   :kuvaus "Uusi kuvaus"
+                   :kesto 2
+                   :ajankohta {:alku "2018-12-15"
+                               :loppu "2018-12-25"}})))]
+      (is (= (:status put-response) 204)))))
 
 (deftest patch-one-ovatu
   (testing "PATCH one value opiskeluvalmiuksia tukevat opinnot"
-    (let [response
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/%s"
+                    url ovatu-path))
+                (mock/json-body ovatu-data)))
+          patch-response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -419,12 +623,22 @@
                     url ovatu-path))
                 (mock/json-body
                   {:id 1
-                   :nimi ""})))]
-      (is (= (:status response) 204)))))
+                   :nimi "Uusi nimi"})))]
+      (is (= (:status patch-response) 204)))))
 
 (deftest patch-all-ovatu
   (testing "PATCH all opiskeluvalmiuksia tukevat opinnot"
-    (let [response
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/%s"
+                    url ovatu-path))
+                (mock/json-body ovatu-data)))
+          patch-response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -434,19 +648,12 @@
                     url ovatu-path))
                 (mock/json-body
                   {:id 1
-                   :nimi ""
-                   :kuvaus ""
-                   :kesto 1
-                   :ajankohta {:alku "2018-12-12"
-                               :loppu "2018-12-20"}})))]
-      (is (= (:status response) 204)))))
-
-(defn get-authenticated [url]
-  (-> (utils/with-authentication
-        app
-        (mock/request :get url))
-      :body
-      utils/parse-body))
+                   :nimi "Uusi nimi"
+                   :kuvaus "Uusi kuvaus"
+                   :kesto 10
+                   :ajankohta {:alku "2018-12-11"
+                               :loppu "2018-12-21"}})))]
+      (is (= (:status patch-response) 204)))))
 
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
