@@ -373,7 +373,10 @@
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
 (def pyto-data
-  {:osa-alueet
+  {:tunniste {:koodi-arvo "11"
+              :koodi-uri "esimerkki_uri1"
+              :versio 2}
+   :osa-alueet
    [{:tunniste {:koodi-arvo "12"
                 :koodi-uri "esimerkki_uri2"
                 :versio 2}
@@ -399,7 +402,10 @@
    :koulutuksen-jarjestaja-oid "1234"})
 
 (def pyto-patch-data
-  {:osa-alueet
+  {:tunniste {:koodi-arvo "14"
+              :koodi-uri "esimerkki_uri4"
+              :versio 3}
+   :osa-alueet
    [{:tunniste {:koodi-arvo "12"
                 :koodi-uri "esimerkki_uri2"
                 :versio 2}

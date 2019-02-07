@@ -354,7 +354,7 @@
     (str "Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
-     [:osa-alueet :koulutuksen-jarjestaja-oid]}))
+     [:osa-alueet :koulutuksen-jarjestaja-oid :tunniste]}))
 
 (s/defschema
   PaikallinenTutkinnonOsa
