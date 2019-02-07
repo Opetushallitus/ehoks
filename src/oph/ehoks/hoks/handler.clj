@@ -106,6 +106,7 @@ osaamisen"
       :path-params [id :- s/Int]
       :return (rest/response
                 hoks-schema/PuuttuvaYTO)
+
       (rest/rest-ok (db/get-pyto-by-id id)))
 
     (c-api/POST "/" [:as request]
