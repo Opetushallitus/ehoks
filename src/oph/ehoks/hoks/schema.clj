@@ -443,13 +443,13 @@
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
-   :valittu-todentamisen-prosessi
-   (s/enum :valittu-todentaminen-suoraan
-           :valittu-todentaminen-arvioijat
-           :valittu-todentaminen-naytto)
-   "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
-   (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
-   "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
+    :valittu-todentamisen-prosessi
+    (s/enum :valittu-todentaminen-suoraan
+            :valittu-todentaminen-arvioijat
+            :valittu-todentaminen-naytto)
+    "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+    (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
+    "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
 
 (s/defschema
   TunnustettavanaOlevaOsaaminen
