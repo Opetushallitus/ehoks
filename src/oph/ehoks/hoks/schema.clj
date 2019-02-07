@@ -187,8 +187,7 @@
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     "vaatimuksista tai osaamistavoitteista poikkeaminen"
     (s/optional-key :hankitun-osaamisen-naytto) HankitunYTOOsaamisenNaytto
-    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
-    (s/optional-key :tarvittava-opetus) s/Str "Tarvittava opetus"))
+    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"))
 
 (s/defschema
   YhteinenTutkinnonOsa
@@ -211,8 +210,7 @@
   (modify
     YhteinenTutkinnonOsa
     "Puuttuvan yhteinen tutkinnon osan (YTO) tiedot"
-    {:removed [:tarvittava-opetus
-               :vaatimuksista-tai-tavoitteista-poikkeaminen
+    {:removed [:vaatimuksista-tai-tavoitteista-poikkeaminen
                :laajuus
                :nimi
                :kuvaus
@@ -306,8 +304,7 @@
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
-         "koulutuksen järjestäjän oid.")
-    (s/optional-key :tarvittava-opetus) s/Str "Tarvittava opetus"))
+         "koulutuksen järjestäjän oid.")))
 
 (s/defschema
   PuuttuvaAmmatillinenOsaaminenLuonti
@@ -372,8 +369,7 @@
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
     :hankitun-osaamisen-naytto HankitunPaikallisenOsaamisenNaytto
-    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
-    :tarvittava-opetus s/Str "Tarvittava opetus"))
+    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"))
 
 (s/defschema
   PaikallinenTutkinnonOsaLuonti
@@ -398,8 +394,7 @@
          "päivittäessä (PATCH)")
     {:optionals
      [:nimi :laajuus :kuvaus :osaamisen-hankkimistavat
-      :koulutuksen-jarjestaja-oid :hankitun-osaamisen-naytto
-      :tarvittava-opetus]}))
+      :koulutuksen-jarjestaja-oid :hankitun-osaamisen-naytto]}))
 
 (s/defschema
   Tutkinto

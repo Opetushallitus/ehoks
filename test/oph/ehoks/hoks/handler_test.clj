@@ -36,8 +36,7 @@
                                     :loppu "2018-12-20"}
                         :sisalto "sisalto"
                         :ammattitaitovaatimukset []
-                        :arvioijat []}
-                       :tarvittava-opetus "tarvittava opetus"}
+                        :arvioijat []}}
           ppto-response
           (utils/with-authentication
             app
@@ -77,8 +76,7 @@
                                     :loppu "2018-12-20"}
                         :sisalto "sisalto"
                         :ammattitaitovaatimukset []
-                        :arvioijat []}
-                       :tarvittava-opetus "tarvittava opetus"}
+                        :arvioijat []}}
           ppto-response
           (utils/with-authentication
             app
@@ -110,8 +108,7 @@
                                 :loppu "2018-12-20"}
                     :sisalto "sisalto"
                     :ammattitaitovaatimukset []
-                    :arvioijat []}
-                   :tarvittava-opetus "tarvittava opetus"})))]
+                    :arvioijat []}})))]
       (is (= (:status put-response) 204)))))
 
 (deftest patch-all-ppto
@@ -130,8 +127,7 @@
                                     :loppu "2018-12-20"}
                         :sisalto "sisalto"
                         :ammattitaitovaatimukset []
-                        :arvioijat []}
-                       :tarvittava-opetus "tarvittava opetus"}
+                        :arvioijat []}}
           ppto-response
           (utils/with-authentication
             app
@@ -163,8 +159,7 @@
                                 :loppu "2018-12-20"}
                     :sisalto "sisalto"
                     :ammattitaitovaatimukset []
-                    :arvioijat []}
-                   :tarvittava-opetus "tarvittavaa opetusta lisää"})))]
+                    :arvioijat []}})))]
       (is (= (:status patch-response) 204)))))
 
 (deftest patch-one-ppto
@@ -183,8 +178,7 @@
                                     :loppu "2018-12-20"}
                         :sisalto "sisalto"
                         :ammattitaitovaatimukset []
-                        :arvioijat []}
-                       :tarvittava-opetus "tarvittava opetus"}
+                        :arvioijat []}}
           ppto-response
           (utils/with-authentication
             app
@@ -203,14 +197,14 @@
                     "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
                     url))
                 (mock/json-body
-                  {:id 1 :tarvittava-opetus "Tarvittavaa opetusta"})))
+                  {:id 1 :nimi "2223"})))
           get-response (-> (get-in ppto-body [:data :uri])
                            get-authenticated :data)]
       (is (= (:status patch-response) 204))
       (eq get-response
           (assoc ppto-data
                  :id 1
-                 :tarvittava-opetus "Tarvittavaa opetusta")))))
+                 :nimi "2223")))))
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
 (def pao-data     {:tutkinnon-osa
@@ -397,8 +391,7 @@
                    :rooli {:koodi-arvo "2"
                            :koodi-uri "esimerkki_uri2"
                            :versio 1}
-                   :organisaatio {:nimi "aaa2"}}]}
-     :tarvittava-opetus "tarvittava opetus2"}]
+                   :organisaatio {:nimi "aaa2"}}]}}]
    :koulutuksen-jarjestaja-oid "1234"})
 
 (def pyto-patch-data
@@ -426,8 +419,7 @@
                    :rooli {:koodi-arvo "2"
                            :koodi-uri "esimerkki_uri2"
                            :versio 1}
-                   :organisaatio {:nimi "aaa2"}}]}
-     :tarvittava-opetus "tarvittava opetus2"}]
+                   :organisaatio {:nimi "aaa2"}}]}}]
    :koulutuksen-jarjestaja-oid "1234"})
 
 (deftest post-and-get-pyto
