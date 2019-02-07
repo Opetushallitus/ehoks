@@ -201,7 +201,6 @@
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     (s/optional-key :kuvaus) s/Str
     "Tutkinnon osan kuvaus ePerusteet-palvelussa"
-    (s/optional-key :pakollinen) s/Bool "Onko tutkinnon osa pakollinen vai ei"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
