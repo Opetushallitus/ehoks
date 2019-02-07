@@ -429,6 +429,29 @@
     "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
 
 (s/defschema
+  OlemassaOlevaYhteinenTutkinnonOsa
+  (describe
+    "Yhteinen Tutkinnon osa (YTO)"
+    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
+    :tunniste KoodistoKoodi "Koodisto-koodi (tutkinnonosat)"
+    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
+    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
+    (s/optional-key :kuvaus) s/Str
+    "Tutkinnon osan kuvaus ePerusteet-palvelussa"
+    :koulutuksen-jarjestaja-oid s/Str
+    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+         "koulutuksen järjestäjän oid.")
+   :valittu-todentamisen-prosessi
+   (s/enum :valittu-todentaminen-suoraan
+           :valittu-todentaminen-arvioijat
+           :valittu-todentaminen-naytto)
+   "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+   (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
+   "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
+
+(s/defschema
   TunnustettavanaOlevaOsaaminen
   (describe
     "Osaaminen, joka on toimitettu arvioijille osaamisen tunnustamista varten"
