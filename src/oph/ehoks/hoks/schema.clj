@@ -211,7 +211,13 @@
   PuuttuvaYTO
   (modify
     YhteinenTutkinnonOsa
-    "Puuttuvan yhteinen tutkinnon osan (YTO) tiedot"))
+    "Puuttuvan yhteinen tutkinnon osan (YTO) tiedot"
+    {:removed [:tarvittava-opetus
+               :vaatimuksista-tai-tavoitteista-poikkeaminen
+               :laajuus
+               :nimi
+               :kuvaus
+               :pakollinen]}))
 
 (s/defschema
   MuuTutkinnonOsa
