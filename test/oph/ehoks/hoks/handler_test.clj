@@ -276,7 +276,10 @@
             (:body response))
           {:data {:id 1
                   :osa-alueet []
-                  :koulutuksen-jarjestaja-oid "1"}
+                  :koulutuksen-jarjestaja-oid "1"
+                  :tunniste {:koodi-arvo "1"
+                             :koodi-uri "esimerkki_uri"
+                             :versio 1}}
            :meta {}}))))
 
 (deftest post-pyto
@@ -291,7 +294,10 @@
                     url pyto-path))
                 (mock/json-body
                   {:osa-alueet []
-                   :koulutuksen-jarjestaja-oid "1"})))]
+                   :koulutuksen-jarjestaja-oid "1"
+                   :tunniste {:koodi-arvo "1"
+                              :koodi-uri "esimerkki_uri"
+                              :versio 1}})))]
       (is (= (:status response) 200))
       (eq (utils/parse-body
             (:body response))
@@ -310,7 +316,10 @@
                 (mock/json-body
                   {:id 1
                    :osa-alueet []
-                   :koulutuksen-jarjestaja-oid "1"})))]
+                   :koulutuksen-jarjestaja-oid "1"
+                   :tunniste {:koodi-arvo "1"
+                              :koodi-uri "esimerkki_uri"
+                              :versio 1}})))]
       (is (= (:status response) 204)))))
 
 (deftest patch-one-pyto
@@ -325,7 +334,10 @@
                     url pyto-path))
                 (mock/json-body
                   {:id 1
-                   :koulutuksen-jarjestaja-oid "123"})))]
+                   :koulutuksen-jarjestaja-oid "123"
+                   :tunniste {:koodi-arvo "1"
+                              :koodi-uri "esimerkki_uri"
+                              :versio 1}})))]
       (is (= (:status response) 204)))))
 
 (deftest patch-all-pyto
@@ -341,7 +353,10 @@
                 (mock/json-body
                   {:id 1
                    :osa-alueet []
-                   :koulutuksen-jarjestaja-oid "1"})))]
+                   :koulutuksen-jarjestaja-oid "1"
+                   :tunniste {:koodi-arvo "1"
+                              :koodi-uri "esimerkki_uri"
+                              :versio 1}})))]
       (is (= (:status response) 204)))))
 
 (def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")

@@ -116,7 +116,10 @@ osaamisen"
                 hoks-schema/PuuttuvaYTO)
       (rest/rest-ok {:id 1
                      :osa-alueet []
-                     :koulutuksen-jarjestaja-oid "1"}))
+                     :koulutuksen-jarjestaja-oid "1"
+                     :tunniste {:koodi-arvo "1"
+                                :koodi-uri "esimerkki_uri"
+                                :versio 1}}))
 
     (c-api/POST "/" []
       :summary
