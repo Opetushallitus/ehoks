@@ -324,13 +324,13 @@
     :tunniste KoodistoKoodi "Koodisto-koodi"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
-    :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
+    (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     "vaatimuksista tai osaamistavoitteista poikkeaminen"
-    :hankitun-osaamisen-naytto HankitunYTOOsaamisenNaytto
+    (s/optional-key :hankitun-osaamisen-naytto) HankitunYTOOsaamisenNaytto
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
-    :tarvittava-opetus s/Str "Tarvittava opetus"))
+    (s/optional-key :tarvittava-opetus) s/Str "Tarvittava opetus"))
 
 (s/defschema
   PuuttuvaYTO
