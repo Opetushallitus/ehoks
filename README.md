@@ -148,6 +148,50 @@ docker run --rm --name ehoks-redis -p 6379:6379 --volume ~/path/to/ehoks-redis-d
 Rediksen voi jättää myös pois, jolloin istuntoa pidetään muistissa. Tämä
 tapahtuu asettamalla `:redis-url` konfiguraation nil:ksi.
 
+### PostgreSQL
+
+Kontin luonti:
+
+``` shell
+cd scripts/postgres-docker
+docker build -t ehoks-postgres .
+```
+
+Kontin ajaminen:
+
+``` shell
+docker run --rm --name ehoks-postgres -p 5432:5432 --volume ~/path/to/ehoks-postgres-data:/data ehoks-postgres
+```
+
+
+### Schemat
+
+Sovelluksessa on mahdollisuus generoida automaattisesti metodikohtaiset schemat.
+Schemaan määritellään jokaiselle metodille sen access-type, joka voi olla
+`:required`, `:optional` tai `:excluded`. Oletuksena access-type on `:required`.
+Metodeiksi voi määritellä joko `:any`, `:get`, `:post`, `:put` tai `:patch`.
+Myös tyypin voi määritellä metodikohtaiseksi.
+
+Lähdescheman tyyppi tulee olla seuraavanlaista:
+
+```
+{:avain {:methods {:any :required
+                   :post :excluded}
+        :description "Jokin selite"
+        :types {:any s/Int}}
+ :toinen {:methods {:any :optional
+                   :post :required}
+          :description "Toinen selite"
+          :types {:any s/Str
+                  :get s/Int}}}
+```
+
+Lähdeschemaan täytyy lisätä metadataan nimi `:name`, `:doc` ja `:restful`-vipu
+(`true`), jotta dokumentaatio generoituu oikein.
+
+Restful-tyyppistä schemaa käytetään ainoastaan HTML-muotoisen
+taulukkodokumentaation generointiin.
+
 ### Kehityksen endpointit
 
 Sovellus tukee dummy-JSON-rajapintoja. Laita valmiit JSON-tiedostot kansioon

@@ -2,7 +2,7 @@
  :frontend-url "http://localhost:8080"
  :frontend-url-path "ehoks"
  :tyopaikan-toimija-frontend-path "tyopaikan-toimija"
- :database-url ""
+ :database-url "jdbc:postgresql://localhost:5432/ehoks?user=ehoks_user&password=ehoks"
  :redis-url nil
  :cas-service-ticket-url "http://localhost:3000/cas-dev/tickets"
  :cas-username ""

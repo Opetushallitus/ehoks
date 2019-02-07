@@ -95,11 +95,13 @@
                             (assoc :cookie-policy :standard))))
     (catch Exception e
       (throw (ex-info "HTTP request error"
-                      {:log-data {:method method
-                                  :service service
-                                  :path (sanitaze-path path)
-                                  :query-params (sanitaze-params
-                                                  (:query-params options))}}
+                      (merge
+                        (ex-data e)
+                        {:log-data {:method method
+                                    :service service
+                                    :path (sanitaze-path path)
+                                    :query-params (sanitaze-params
+                                                    (:query-params options))}})
                       e)))))
 
 (defn encode-url [url params]

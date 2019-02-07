@@ -4,7 +4,8 @@
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
             [clj-time.core :as t]
-            [oph.ehoks.db.memory :as db]))
+            [oph.ehoks.db.memory :as db]
+            [oph.ehoks.external.http-client :as client]))
 
 (def url "/ehoks-backend/api/v1/hoks")
 
@@ -19,7 +20,7 @@
       :body
       utils/parse-body))
 
-(deftest get-created-ppto
+(deftest post-and-get-ppto
   (testing "GET newly created puuttuva paikallinen tutkinnon osa"
     (db/clear)
     (let [ppto-data   {:nimi "222"
@@ -58,42 +59,7 @@
           (:data (utils/parse-body (:body ppto-new)))
           (assoc
             ppto-data
-            :eid 1))))))
-
-(deftest post-ppto
-  (testing "POST puuttuva paikallinen tutkinnon osa"
-    (db/clear)
-    (let [response
-          (utils/with-authentication
-            app
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/puuttuva-paikallinen-tutkinnon-osa"
-                    url))
-                (mock/json-body
-                  {:amosaa-tunniste ""
-                   :nimi ""
-                   :laajuus 0
-                   :kuvaus ""
-                   :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid ""
-                   :hankitun-osaamisen-naytto
-                   {:jarjestaja {:nimi ""}
-                    :nayttoymparisto {:nimi ""}
-                    :kuvaus ""
-                    :ajankohta {:alku (t/local-date 2018 12 12)
-                                :loppu (t/local-date 2018 12 20)}
-                    :sisalto ""
-                    :ammattitaitovaatimukset []
-                    :arvioijat []}
-                   :tarvittava-opetus ""})))]
-      (is (= (:status response) 200))
-      (eq (utils/parse-body
-            (:body response))
-          {:data {:uri   (format
-                           "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
-                           url)} :meta {}}))))
+            :id 1))))))
 
 (deftest put-ppto
   (testing "PUT puuttuva paikallinen tutkinnon osa"
@@ -129,7 +95,8 @@
                     "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
                     url))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
+                   :amosaa-tunniste 11
                    :nimi "333"
                    :laajuus 3
                    :kuvaus "fef"
@@ -181,10 +148,11 @@
                     "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
                     url))
                 (mock/json-body
-                  {:eid 1
-                   :nimi "229922"
-                   :laajuus 1
-                   :kuvaus "f1ef"
+                  {:id 1
+                   :amosaa-tunniste 1
+                   :nimi ""
+                   :laajuus 0
+                   :kuvaus ""
                    :osaamisen-hankkimistavat []
                    :koulutuksen-jarjestaja-oid "1214"
                    :hankitun-osaamisen-naytto
@@ -235,16 +203,29 @@
                     "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
                     url))
                 (mock/json-body
-                  {:eid 1 :tarvittava-opetus "Tarvittavaa opetusta"})))
+                  {:id 1 :tarvittava-opetus "Tarvittavaa opetusta"})))
           get-response (-> (get-in ppto-body [:data :uri])
                            get-authenticated :data)]
       (is (= (:status patch-response) 204))
       (eq get-response
           (assoc ppto-data
-                 :eid 1
+                 :id 1
                  :tarvittava-opetus "Tarvittavaa opetusta")))))
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
+(def pao-data     {:tutkinnon-osa
+                   {:tunniste
+                    {:koodi-arvo "1"
+                     :koodi-uri "esimerkki_uri"
+                     :versio 1}}
+                   :osaamisen-hankkimistavat
+                   [{:ajankohta {:alku "2018-12-12"
+                                 :loppu "2018-12-20"}
+                     :osaamisen-hankkimistavan-tunniste
+                     {:koodi-arvo "1"
+                      :koodi-uri "esimerkki_uri"
+                      :versio 1}}]
+                   :koulutuksen-jarjestaja-oid "123"})
 
 (deftest post-and-get-pao
   (testing "POST puuttuva ammatillinen osaaminen and then get the created ppao"
@@ -258,19 +239,7 @@
                     "%s/1/puuttuva-ammatillinen-osaaminen"
                     url))
                 (mock/json-body
-                  {:tutkinnon-osa
-                   {:tunniste
-                    {:koodi-arvo "1"
-                     :koodi-uri "esimerkki_uri"
-                     :versio 1}}
-                   :osaamisen-hankkimistavat
-                   [{:ajankohta {:alku "2018-12-12"
-                                 :loppu "2018-12-20"}
-                     :osaamisen-hankkimistavan-tunniste
-                     {:koodi-arvo "1"
-                      :koodi-uri "esimerkki_uri"
-                      :versio 1}}]
-                   :koulutuksen-jarjestaja-oid "123"})))
+                  pao-data)))
           get-response  (utils/with-authentication
                           app
                           (mock/request
@@ -287,24 +256,22 @@
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
             (:body get-response))
-          {:meta {} :data  {:eid 1
-                            :tutkinnon-osa
-                            {:tunniste
-                             {:koodi-arvo "1"
-                              :koodi-uri "esimerkki_uri"
-                              :versio 1}}
-                            :osaamisen-hankkimistavat
-                            [{:ajankohta {:alku "2018-12-12"
-                                          :loppu "2018-12-20"}
-                              :osaamisen-hankkimistavan-tunniste
-                              {:koodi-arvo "1"
-                               :koodi-uri "esimerkki_uri"
-                               :versio 1}}]
-                            :koulutuksen-jarjestaja-oid "123"}}))))
+          {:meta {} :data (assoc pao-data :id 1)}))))
 
 (deftest put-pao
   (testing "PUT puuttuva ammatillinen osaaminen"
-    (let [response
+    (db/clear)
+    (let [post-response
+          (utils/with-authentication
+            app
+            (-> (mock/request
+                  :post
+                  (format
+                    "%s/1/puuttuva-ammatillinen-osaaminen"
+                    url))
+                (mock/json-body
+                  pao-data)))
+          put-response
           (utils/with-authentication
             app
             (-> (mock/request
@@ -313,21 +280,7 @@
                     "%s/1/%s/1"
                     url pao-path))
                 (mock/json-body
-                  {:eid 1
-                   :tutkinnon-osa
-                   {:tunniste
-                    {:koodi-arvo "1"
-                     :koodi-uri "esimerkki_uri"
-                     :versio 1}}
-                   :osaamisen-hankkimistavat
-                   [{:ajankohta
-                     {:alku "2018-12-12"
-                      :loppu "2018-12-20"}
-                     :osaamisen-hankkimistavan-tunniste
-                     {:koodi-arvo "1"
-                      :koodi-uri "esimerkki_uri2"
-                      :versio 1}}]
-                   :koulutuksen-jarjestaja-oid "123"})))
+                  (assoc pao-data :id 1 :koulutuksen-jarjestaja-oid "124"))))
           get-response  (utils/with-authentication
                           app
                           (mock/request
@@ -335,23 +288,26 @@
                             (format
                               "%s/1/%s/1"
                               url pao-path)))]
-      (is (= (:status response) 204))
+      (is (= (:status put-response) 204))
       (eq (utils/parse-body
             (:body get-response))
-          {:meta {} :data  {:eid 1
-                            :tutkinnon-osa
-                            {:tunniste
-                             {:koodi-arvo "1"
-                              :koodi-uri "esimerkki_uri"
-                              :versio 1}}
-                            :osaamisen-hankkimistavat
-                            [{:ajankohta {:alku "2018-12-12"
-                                          :loppu "2018-12-20"}
-                              :osaamisen-hankkimistavan-tunniste
-                              {:koodi-arvo "1"
-                               :koodi-uri "esimerkki_uri2"
-                               :versio 1}}]
-                            :koulutuksen-jarjestaja-oid "123"}}))))
+          {:meta {} :data
+           (assoc pao-data :id 1 :koulutuksen-jarjestaja-oid "124")}))))
+
+(def patch-all-pao-data
+  {:tutkinnon-osa
+   {:tunniste
+    {:koodi-arvo "412"
+     :koodi-uri "esimerkki_uri42"
+     :versio 1}}
+   :osaamisen-hankkimistavat
+   [{:ajankohta {:alku "2018-12-12"
+                 :loppu "2018-12-22"}
+     :osaamisen-hankkimistavan-tunniste
+     {:koodi-arvo "22"
+      :koodi-uri "esimerkki_uri32"
+      :versio 1}}]
+   :koulutuksen-jarjestaja-oid "12432"})
 
 (deftest patch-all-pao
   (testing "PATCH ALL puuttuva ammatillinen osaaminen"
@@ -365,19 +321,7 @@
                     "%s/1/puuttuva-ammatillinen-osaaminen"
                     url))
                 (mock/json-body
-                  {:tutkinnon-osa
-                   {:tunniste
-                    {:koodi-arvo "1"
-                     :koodi-uri "esimerkki_uri"
-                     :versio 1}}
-                   :osaamisen-hankkimistavat
-                   [{:ajankohta {:alku "2018-12-12"
-                                 :loppu "2018-12-20"}
-                     :osaamisen-hankkimistavan-tunniste
-                     {:koodi-arvo "1"
-                      :koodi-uri "esimerkki_uri"
-                      :versio 1}}]
-                   :koulutuksen-jarjestaja-oid "123"})))
+                  pao-data)))
           patch-response
           (utils/with-authentication
             app
@@ -387,21 +331,7 @@
                     "%s/1/%s/1"
                     url pao-path))
                 (mock/json-body
-                  {:eid 1
-                   :tutkinnon-osa
-                   {:tunniste
-                    {:koodi-arvo "41"
-                     :koodi-uri "esimerkki_uri4"
-                     :versio 1}}
-                   :osaamisen-hankkimistavat
-                   [{:ajankohta
-                     {:alku "2018-12-13"
-                      :loppu "2018-12-21"}
-                     :osaamisen-hankkimistavan-tunniste
-                     {:koodi-arvo "2"
-                      :koodi-uri "esimerkki_uri3"
-                      :versio 1}}]
-                   :koulutuksen-jarjestaja-oid "1243"})))
+                  (assoc patch-all-pao-data :id 1))))
           get-response  (utils/with-authentication
                           app
                           (mock/request
@@ -412,20 +342,7 @@
       (is (= (:status patch-response) 204))
       (eq (utils/parse-body
             (:body get-response))
-          {:meta {} :data  {:eid 1
-                            :tutkinnon-osa
-                            {:tunniste
-                             {:koodi-arvo "41"
-                              :koodi-uri "esimerkki_uri4"
-                              :versio 1}}
-                            :osaamisen-hankkimistavat
-                            [{:ajankohta {:alku "2018-12-13"
-                                          :loppu "2018-12-21"}
-                              :osaamisen-hankkimistavan-tunniste
-                              {:koodi-arvo "2"
-                               :koodi-uri "esimerkki_uri3"
-                               :versio 1}}]
-                            :koulutuksen-jarjestaja-oid "1243"}}))))
+          {:meta {} :data  (assoc patch-all-pao-data :id 1)}))))
 
 (deftest patch-one-pao
   (testing "PATCH one value puuttuva ammatillinen osaaminen"
@@ -439,19 +356,7 @@
                     "%s/1/puuttuva-ammatillinen-osaaminen"
                     url))
                 (mock/json-body
-                  {:tutkinnon-osa
-                   {:tunniste
-                    {:koodi-arvo "1"
-                     :koodi-uri "esimerkki_uri"
-                     :versio 1}}
-                   :osaamisen-hankkimistavat
-                   [{:ajankohta {:alku "2018-12-12"
-                                 :loppu "2018-12-20"}
-                     :osaamisen-hankkimistavan-tunniste
-                     {:koodi-arvo "1"
-                      :koodi-uri "esimerkki_uri"
-                      :versio 1}}]
-                   :koulutuksen-jarjestaja-oid "123"})))
+                  pao-data)))
           response
           (utils/with-authentication
             app
@@ -461,18 +366,17 @@
                     "%s/1/%s/1"
                     url pao-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
       (is (= (:status response) 204)))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
-(def pyto-patch-data
-  {:eperusteet-id 111
-   :tutkinnon-osat
+
+(def pyto-data
+  {:osa-alueet
    [{:tunniste {:koodi-arvo "12"
                 :koodi-uri "esimerkki_uri2"
                 :versio 2}
-     :eperusteet-id "22"
      :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
                                              :loppu "2018-12-23"}
                                  :osaamisen-hankkimistavan-tunniste
@@ -486,43 +390,39 @@
       :ajankohta {:alku "2018-12-16"
                   :loppu "2018-12-26"}
       :sisalto "sisalto uusi"
-      :osaamistavoitteet [2]
       :arvioijat [{:nimi "Nimi2"
                    :rooli {:koodi-arvo "2"
                            :koodi-uri "esimerkki_uri2"
                            :versio 1}
                    :organisaatio {:nimi "aaa2"}}]}
      :tarvittava-opetus "tarvittava opetus2"}]
-   :koulutuksen-jarjestaja-oid "2222"})
+   :koulutuksen-jarjestaja-oid "1234"})
 
-(def pyto-data
-  {:eperusteet-id 122
-   :tutkinnon-osat
-   [{:tunniste {:koodi-arvo "1"
-                :koodi-uri "esimerkki_uri"
-                :versio 1}
-     :eperusteet-id "123"
-     :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-12"
-                                             :loppu "2018-12-20"}
+(def pyto-patch-data
+  {:osa-alueet
+   [{:tunniste {:koodi-arvo "12"
+                :koodi-uri "esimerkki_uri2"
+                :versio 2}
+     :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
+                                             :loppu "2018-12-23"}
                                  :osaamisen-hankkimistavan-tunniste
-                                 {:koodi-arvo "1"
-                                  :koodi-uri "esimerkki_uri"
-                                  :versio 1}}]
+                                 {:koodi-arvo "31"
+                                  :koodi-uri "esimerkki_uri3"
+                                  :versio 3}}]
      :hankitun-osaamisen-naytto
-     {:jarjestaja {:nimi "abc"}
-      :nayttoymparisto {:nimi "aaa"}
+     {:jarjestaja {:nimi "ddd"}
+      :nayttoymparisto {:nimi "aaddda"}
       :kuvaus "fff"
-      :ajankohta {:alku "2018-12-12"
-                  :loppu "2018-12-20"}
-      :sisalto "sisalto"
-      :osaamistavoitteet [1]
-      :arvioijat [{:nimi "Nimi"
-                   :rooli {:koodi-arvo "1"
-                           :koodi-uri "esimerkki_uri"
+      :ajankohta {:alku "2018-12-16"
+                  :loppu "2018-12-26"}
+      :sisalto "sisalto uusi"
+      :arvioijat [{:nimi "Nimi2"
+                   :rooli {:koodi-arvo "2"
+                           :koodi-uri "esimerkki_uri2"
                            :versio 1}
-                   :organisaatio {:nimi "aaa"}}]}
-     :tarvittava-opetus "tarvittava opetus"}]
-   :koulutuksen-jarjestaja-oid "222"})
+                   :organisaatio {:nimi "aaa2"}}]}
+     :tarvittava-opetus "tarvittava opetus2"}]
+   :koulutuksen-jarjestaja-oid "1234"})
 
 (deftest post-and-get-pyto
   (testing "POST puuttuvat yhteisen tutkinnon osat"
@@ -551,8 +451,8 @@
                            "%s/1/%s/1"
                            url pyto-path)} :meta {}})
       (is (= (:status get-response) 200))
-      (eq (:eid (:data (utils/parse-body
-                         (:body get-response))))
+      (eq (:id (:data (utils/parse-body
+                        (:body get-response))))
           1))))
 
 (deftest put-pyto
@@ -576,7 +476,7 @@
                     "%s/1/%s/1"
                     url pyto-path))
                 (mock/json-body
-                  (assoc pyto-data :eid 1))))]
+                  (assoc pyto-data :id 1))))]
       (is (= (:status response) 204)))))
 
 (deftest patch-one-pyto
@@ -600,8 +500,8 @@
                     "%s/1/%s/1"
                     url pyto-path))
                 (mock/json-body
-                  {:eid 1
-                   :koulutuksen-jarjestaja-oid "2522"})))]
+                  {:id 1
+                   :koulutuksen-jarjestaja-oid "123"})))]
       (is (= (:status response) 204)))))
 
 (deftest patch-all-pyto
@@ -664,7 +564,7 @@
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
             (:body get-response))
-          {:data {:eid 1
+          {:data {:id 1
                   :nimi "Nimi"
                   :kuvaus "Kuvaus"
                   :kesto 10
@@ -693,7 +593,7 @@
                     "%s/1/%s/1"
                     url ovatu-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :nimi "Uusi nimi"
                    :kuvaus "Uusi kuvaus"
                    :kesto 2
@@ -722,7 +622,7 @@
                     "%s/1/%s/1"
                     url ovatu-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :nimi "Uusi nimi"})))]
       (is (= (:status patch-response) 204)))))
 
@@ -747,7 +647,7 @@
                     "%s/1/%s/1"
                     url ovatu-path))
                 (mock/json-body
-                  {:eid 1
+                  {:id 1
                    :nimi "Uusi nimi"
                    :kuvaus "Uusi kuvaus"
                    :kesto 10
@@ -755,101 +655,12 @@
                                :loppu "2018-12-21"}})))]
       (is (= (:status patch-response) 204)))))
 
-(def oos-path "olemassa-oleva-osaaminen")
-
-(deftest get-oos
-  (testing "GET olemassa oleva osaaminen"
-    (let [response
-          (utils/with-authentication
-            app
-            (mock/request
-              :get
-              (format
-                "%s/1/%s/1"
-                url oos-path)))]
-      (is (= (:status response) 200))
-      (eq (utils/parse-body
-            (:body response))
-          {:data {:eid 1
-                  :olemassaoleva-ammatillinen-osaaminen []
-                  :olemassaolevat-yto-osa-alueet []
-                  :olemassaoleva-paikallinen-tutkinnon-osa []}
-           :meta {}}))))
-
-(deftest post-oos
-  (testing "POST olemassa oleva osaaminen"
-    (let [response
-          (utils/with-authentication
-            app
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s/"
-                    url oos-path))
-                (mock/json-body
-                  {:olemassaoleva-ammatillinen-osaaminen []
-                   :olemassaolevat-yto-osa-alueet []
-                   :olemassaoleva-paikallinen-tutkinnon-osa []})))]
-      (is (= (:status response) 200))
-      (eq (utils/parse-body
-            (:body response))
-          {:data {:uri ""} :meta {}}))))
-
-(deftest put-oos
-  (testing "PUT olemassa oleva osaaminen"
-    (let [response
-          (utils/with-authentication
-            app
-            (-> (mock/request
-                  :put
-                  (format
-                    "%s/1/%s/1"
-                    url oos-path))
-                (mock/json-body
-                  {:eid 1
-                   :olemassaoleva-ammatillinen-osaaminen []
-                   :olemassaolevat-yto-osa-alueet []
-                   :olemassaoleva-paikallinen-tutkinnon-osa []})))]
-      (is (= (:status response) 204)))))
-
-(deftest patch-one-oos
-  (testing "PATCH one value olemassa oleva osaaminen"
-    (let [response
-          (utils/with-authentication
-            app
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url oos-path))
-                (mock/json-body
-                  {:eid 1
-                   :olemassaoleva-ammatillinen-osaaminen []})))]
-      (is (= (:status response) 204)))))
-
-(deftest patch-all-oos
-  (testing "PATCH all olemassa oleva osaaminen"
-    (let [response
-          (utils/with-authentication
-            app
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url oos-path))
-                (mock/json-body
-                  {:eid 1
-                   :olemassaoleva-ammatillinen-osaaminen []
-                   :olemassaolevat-yto-osa-alueet []
-                   :olemassaoleva-paikallinen-tutkinnon-osa []})))]
-      (is (= (:status response) 204)))))
-
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
     (db/clear)
     (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
-                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}
@@ -866,7 +677,7 @@
           hoks
           (assoc
             hoks-data
-            :eid 1
+            :id 1
             :luotu (:luotu hoks)
             :hyvaksytty (:hyvaksytty hoks)
             :paivitetty (:paivitetty hoks)
@@ -877,7 +688,7 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
-                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}]
@@ -898,7 +709,7 @@
             hoks
             (assoc
               hoks-data
-              :eid 1
+              :id 1
               :luotu (:luotu hoks)
               :hyvaksytty (:hyvaksytty hoks)
               :paivitetty (:paivitetty hoks)
@@ -909,7 +720,7 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
-                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}
@@ -944,10 +755,10 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
-                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.333.444.55.66666666666"
                      :paivittanyt "Teuvo Testaaja"
                      :hyvaksytty (java.util.Date.)
-                     :eid 1
+                     :id 1
                      :hyvaksynyt "Heikki Hyväksyjä"}
           response
           (utils/with-authentication
@@ -961,7 +772,7 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
                                       :tutkinto {:laajuus 5 :nimi "Test"}}
-                     :oppijan-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :paivittanyt "Pekka Päivittäjä"
                      :hyvaksynyt "Heikki Hyväksyjä"}
@@ -977,7 +788,7 @@
               app
               (-> (mock/request :patch (get-in body [:data :uri]))
                   (mock/json-body
-                    {:eid (:eid hoks)
+                    {:id (:id hoks)
                      :paivittanyt "Kalle Käyttäjä"})))]
         (is (= (:status patch-response) 204))
         (let [updated-hoks
@@ -997,6 +808,6 @@
           (utils/with-authentication
             app
             (-> (mock/request :patch (format "%s/1" url))
-                (mock/json-body {:eid 1
+                (mock/json-body {:id 1
                                  :paivittanyt "Kalle Käyttäjä"})))]
       (is (= (:status response) 404)))))

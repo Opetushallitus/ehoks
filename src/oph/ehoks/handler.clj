@@ -7,6 +7,7 @@
             [ring.util.http-response :as response]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]
+            [oph.ehoks.resources :as resources]
             [oph.ehoks.middleware :as middleware]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.auth.handler :as auth-handler]
@@ -57,7 +58,9 @@
       (c-api/undocumented
         (GET "/buildversion.txt" _
           (response/content-type
-            (response/resource-response "buildversion.txt") "text/plain"))))
+            (response/resource-response "buildversion.txt") "text/plain"))
+        (resources/create-routes "/hoks-doc" "hoks-doc")
+        (resources/create-routes "/json-viewer" "json-viewer")))
 
     (c-api/undocumented
       (compojure-route/not-found
@@ -81,9 +84,13 @@
    {:uri #"^/ehoks-backend/api/v1/misc/environment$"
     :request-method :get}
    {:uri #"^/ehoks-backend/api/v1/tyopaikan-toimija/auth$"
+    :request-method :get}
+   {:uri #"^/ehoks-backend/json-viewer/*"
+    :request-method :get}
+   {:uri #"^/ehoks-backend/hoks-doc/index.html$"
     :request-method :get}])
 
-(def app
+(defn create-app [session-store]
   (-> app-routes
       (middleware/wrap-cache-control-no-cache)
       (middleware/wrap-public public-routes)
@@ -91,5 +98,7 @@
         {:store (if (seq (:redis-url config))
                   (redis-store {:pool {}
                                 :spec {:uri (:redis-url config)}})
-                  (mem/memory-store))
+                  (or session-store (mem/memory-store)))
          :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}})))
+
+(def app (create-app nil))
