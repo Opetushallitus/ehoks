@@ -510,7 +510,7 @@
     :description "Olemassa oleva ammatillinen osaaminen"}
    :olemassa-olevat-yhteiset-tutkinnon-osat
    {:methods {:any :optional}
-    :types {:any [YhteinenTutkinnonOsa]}
+    :types {:any [OlemassaOlevaYhteinenTutkinnonOsa]}
     :description "Olemassa olevat yhteiset tutkinnon osat (YTO)"}
    :olemassa-oleva-paikallinen-tutkinnon-osa
    {:methods {:any :optional}
