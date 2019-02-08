@@ -190,7 +190,7 @@
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"))
 
 (s/defschema
-  OlemassaOlevanYTOnOsaAlue
+  OlemassaOlevanYTOOsaAlue
   (describe
     "Olemassaolevan YTOn osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -455,7 +455,7 @@
   (describe
     "Yhteinen Tutkinnon osa (YTO)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :osa-alueet [OlemassaOlevanYTOnOsaAlue]
+    :osa-alueet [OlemassaOlevanYTOOsaAlue]
     "OlemassaOlevanYhteisenTutkinnonOsanOsa:n osa-alueet"
     :tunniste KoodistoKoodi "Koodisto-koodi (tutkinnonosat)"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
