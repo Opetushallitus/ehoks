@@ -190,6 +190,28 @@
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"))
 
 (s/defschema
+  OlemassaOlevanYhteisenTutkinnonOsanOsaAlue
+  (describe
+    "Olemassaolevan YTOn osa-alueen tiedot"
+    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    :tunniste KoodistoKoodi "Koodisto-koodi"
+    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
+    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
+    (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
+    "Osaamisen hankkimistavat"
+    (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
+    "vaatimuksista tai osaamistavoitteista poikkeaminen"
+    (s/optional-key :hankitun-osaamisen-naytto) HankitunYTOOsaamisenNaytto
+    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    :valittu-todentamisen-prosessi
+    (s/enum :valittu-todentaminen-suoraan
+            :valittu-todentaminen-arvioijat
+            :valittu-todentaminen-naytto)
+    "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+    (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
+    "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
+
+(s/defschema
   YhteinenTutkinnonOsa
   (describe
     "Yhteinen Tutkinnon osa (YTO)"
@@ -433,7 +455,8 @@
   (describe
     "Yhteinen Tutkinnon osa (YTO)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
+    :osa-alueet [OlemassaOlevanYhteisenTutkinnonOsanOsaAlue]
+    "OlemassaOlevanYhteisenTutkinnonOsanOsaAlue osa-alueet"
     :tunniste KoodistoKoodi "Koodisto-koodi (tutkinnonosat)"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
