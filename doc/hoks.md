@@ -1,9 +1,25 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 08.02.2019 13.47
+Generoitu 08.02.2019 14.04
 
 Katso myös [HOKS doc](https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html)
+
+### OlemassaOlevanYTOnOsaAlue  
+
+Olemassaolevan YTOn osa-alueen tiedot
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| hankitun-osaamisen-naytto | [HankitunYTOOsaamisenNaytto](#HankitunYTOOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
+| laajuus | Kokonaisluku | Tutkinnon laajuus ePerusteet palvelussa | Ei |
+| nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
+| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
+| tarkentavat-tiedot | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
+| id | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
+| vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
+| valittu-todentamisen-prosessi | Joukon alkio (valittu-todentaminen-naytto, valittu-todentaminen-arvioijat, valittu-todentaminen-suoraan) | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
+| tunniste | [KoodistoKoodi](#KoodistoKoodi) | Koodisto-koodi | Kyllä |
 
 ### MuuOppimisymparisto  
 
@@ -443,22 +459,6 @@ Puuttuvan ammatillisen osaamisen tiedot kenttää tai kenttiä päivittäessä (
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
-### OlemassaOlevanYhteisenTutkinnonOsanOsaAlue  
-
-Olemassaolevan YTOn osa-alueen tiedot
-
-| Nimi | Tyyppi | Selite | Vaaditaan |
-| ---- | ------ | ------ | --------- |
-| hankitun-osaamisen-naytto | [HankitunYTOOsaamisenNaytto](#HankitunYTOOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
-| laajuus | Kokonaisluku | Tutkinnon laajuus ePerusteet palvelussa | Ei |
-| nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
-| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
-| tarkentavat-tiedot | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
-| id | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
-| vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
-| valittu-todentamisen-prosessi | Joukon alkio (valittu-todentaminen-naytto, valittu-todentaminen-arvioijat, valittu-todentaminen-suoraan) | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
-| tunniste | [KoodistoKoodi](#KoodistoKoodi) | Koodisto-koodi | Kyllä |
-
 ### OlemassaOlevaYhteinenTutkinnonOsa  
 
 Yhteinen Tutkinnon osa (YTO)
@@ -468,7 +468,7 @@ Yhteinen Tutkinnon osa (YTO)
 | laajuus | Kokonaisluku | Tutkinnon laajuus ePerusteet palvelussa | Ei |
 | nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
 | tarkentavat-tiedot | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
-| osa-alueet | [[OlemassaOlevanYhteisenTutkinnonOsanOsaAlue](#OlemassaOlevanYhteisenTutkinnonOsanOsaAlue)] | OlemassaOlevanYhteisenTutkinnonOsanOsaAlue osa-alueet | Kyllä |
+| osa-alueet | [[OlemassaOlevanYTOnOsaAlue](#OlemassaOlevanYTOnOsaAlue)] | OlemassaOlevanYhteisenTutkinnonOsanOsaAlue osa-alueet | Kyllä |
 | id | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus ePerusteet-palvelussa | Ei |
