@@ -196,13 +196,13 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :tunniste KoodistoKoodi "Koodisto-koodi"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
+    :koulutuksen-jarjestaja-oid s/Str
+    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+         "koulutuksen järjestäjän oid.")
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
-    (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
-    "Osaamisen hankkimistavat"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     "vaatimuksista tai osaamistavoitteista poikkeaminen"
-    (s/optional-key :hankitun-osaamisen-naytto) HankitunYTOOsaamisenNaytto
-    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     :valittu-todentamisen-prosessi
     (s/enum :valittu-todentaminen-suoraan
             :valittu-todentaminen-arvioijat
@@ -394,6 +394,28 @@
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"))
 
 (s/defschema
+  OlemassaOlevaPaikallinenTutkinnonOsa
+  (describe
+    "Puuttuva paikallinen tutkinnon osa"
+    :id s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :amosaa-tunniste) s/Int
+    "Tunniste ePerusteet AMOSAA -palvelussa"
+    :nimi s/Str "Tutkinnon osan nimi"
+    :laajuus s/Int "Tutkinnon osan laajuus"
+    :kuvaus s/Str "Tutkinnon osan kuvaus"
+    :valittu-todentamisen-prosessi
+    (s/enum :valittu-todentaminen-suoraan
+            :valittu-todentaminen-arvioijat
+            :valittu-todentaminen-naytto)
+    "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+    (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
+    "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
+    :koulutuksen-jarjestaja-oid s/Str
+    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+         "koulutuksen järjestäjän oid.")))
+
+(s/defschema
   PaikallinenTutkinnonOsaLuonti
   (modify
     PaikallinenTutkinnonOsa
@@ -433,15 +455,23 @@
     :tutkinto Tutkinto "Opinto-oikeuden tutkinto"))
 
 (s/defschema
-  OlemassaOlevaAmmatillinenOsaaminen
+  OlemassaOlevaAmmatillinenTutkinnonOsa
   (describe
     (str "Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella
     sisällytetty suoraan osaksi "
          "opiskelijan tutkintoa")
 
-    (s/optional-key :tutkinnon-tunniste) KoodistoKoodi
+    (s/optional-key :tunniste) KoodistoKoodi
     (str "Tutkinnon osan, johon tunnistettava olemassa oleva osaaminen "
          "liittyy, Koodisto-koodi")
+   (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
+   (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
+   (s/optional-key :kuvaus) s/Str
+   "Tutkinnon osan kuvaus ePerusteet-palvelussa"
+   :koulutuksen-jarjestaja-oid s/Str
+   (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+        "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+        "koulutuksen järjestäjän oid.")
     :valittu-todentamisen-prosessi
     (s/enum :valittu-todentaminen-suoraan
             :valittu-todentaminen-arvioijat
@@ -527,9 +557,9 @@
            :types {:any s/Inst}
            :description
            "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
-   :olemassa-oleva-ammatillinen-osaaminen
+   :olemassa-olevat-ammatilliset-tutkinnon-osat
    {:methods {:any :optional}
-    :types {:any [OlemassaOlevaAmmatillinenOsaaminen]}
+    :types {:any [OlemassaOlevaAmmatillinenTutkinnonOsa]}
     :description "Olemassa oleva ammatillinen osaaminen"}
    :olemassa-olevat-yhteiset-tutkinnon-osat
    {:methods {:any :optional}
@@ -537,7 +567,7 @@
     :description "Olemassa olevat yhteiset tutkinnon osat (YTO)"}
    :olemassa-oleva-paikallinen-tutkinnon-osa
    {:methods {:any :optional}
-    :types {:any [PaikallinenTutkinnonOsa]}
+    :types {:any [OlemassaOlevaPaikallinenTutkinnonOsa]}
     :description "Olemassa oleva paikallinen tutkinnon osa"}
    :hyvaksytty
    {:methods {:patch :excluded
