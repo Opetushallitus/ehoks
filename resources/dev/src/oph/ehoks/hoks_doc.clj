@@ -39,6 +39,7 @@
                     Inst "Aikaleima"
                     Str "Merkkijono"
                     Bool "Totuusarvo"
+                    Long "Suuri kokonaisluku"
                     java.time.LocalDate "Päivämäärä"
                     (maybe Str) "Valinnainen merkkijono"})
 
