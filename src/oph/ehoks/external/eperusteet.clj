@@ -24,3 +24,11 @@
                                 :tutkinnonosat true
                                 :osaamisalat true}}})
     [:body :data]))
+
+(defn get-perusteet [^Long id]
+  (:body
+    (c/with-api-headers
+      {:method :get
+       :service (:eperusteet-url config)
+       :path (format "perusteet/%d" id)
+       :options {:as :json}})))
