@@ -214,10 +214,7 @@
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
 (def pao-data     {:tutkinnon-osa
-                   {:tunniste
-                    {:koodi-arvo "1"
-                     :koodi-uri "esimerkki_uri"
-                     :versio 1}}
+                   {:eperusteet-id 20490}
                    :osaamisen-hankkimistavat
                    [{:ajankohta {:alku "2018-12-12"
                                  :loppu "2018-12-20"}
@@ -296,10 +293,7 @@
 
 (def patch-all-pao-data
   {:tutkinnon-osa
-   {:tunniste
-    {:koodi-arvo "412"
-     :koodi-uri "esimerkki_uri42"
-     :versio 1}}
+   {:eperusteet-id 24245}
    :osaamisen-hankkimistavat
    [{:ajankohta {:alku "2018-12-12"
                  :loppu "2018-12-22"}
@@ -373,13 +367,9 @@
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
 (def pyto-data
-  {:tunniste {:koodi-arvo "11"
-              :koodi-uri "esimerkki_uri1"
-              :versio 2}
+  {:eperusteet-id 2349052
    :osa-alueet
-   [{:tunniste {:koodi-arvo "12"
-                :koodi-uri "esimerkki_uri2"
-                :versio 2}
+   [{:eperusteet-id 23493225
      :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
                                              :loppu "2018-12-23"}
                                  :osaamisen-hankkimistavan-tunniste
@@ -402,13 +392,9 @@
    :koulutuksen-jarjestaja-oid "1234"})
 
 (def pyto-patch-data
-  {:tunniste {:koodi-arvo "14"
-              :koodi-uri "esimerkki_uri4"
-              :versio 3}
+  {:eperusteet-id 23495
    :osa-alueet
-   [{:tunniste {:koodi-arvo "12"
-                :koodi-uri "esimerkki_uri2"
-                :versio 2}
+   [{:eperusteet-id 3421
      :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
                                              :loppu "2018-12-23"}
                                  :osaamisen-hankkimistavan-tunniste
