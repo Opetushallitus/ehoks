@@ -464,14 +464,14 @@
     (s/optional-key :tunniste) KoodistoKoodi
     (str "Tutkinnon osan, johon tunnistettava olemassa oleva osaaminen "
          "liittyy, Koodisto-koodi")
-   (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-   (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
-   (s/optional-key :kuvaus) s/Str
-   "Tutkinnon osan kuvaus ePerusteet-palvelussa"
-   :koulutuksen-jarjestaja-oid s/Str
-   (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
-        "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
-        "koulutuksen järjestäjän oid.")
+    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
+    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
+    (s/optional-key :kuvaus) s/Str
+    "Tutkinnon osan kuvaus ePerusteet-palvelussa"
+    :koulutuksen-jarjestaja-oid s/Str
+    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+         "koulutuksen järjestäjän oid.")
     :valittu-todentamisen-prosessi
     (s/enum :valittu-todentaminen-suoraan
             :valittu-todentaminen-arvioijat
@@ -585,7 +585,7 @@
    {:methods {:any :optional}
     :types {:any OpiskeluvalmiuksiaTukevatOpinnot}
     :description "Opiskeluvalmiuksia tukevat opinnot"}
-   :puuttuva-ammatillinen-osaaminen
+   :puuttuva-ammatillinen-tutkinnon-osa
    {:methods {:any :optional}
     :types {:any [PuuttuvaAmmatillinenOsaaminen]}
     :description
