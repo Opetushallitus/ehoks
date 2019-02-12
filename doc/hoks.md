@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 11.02.2019 07.44
+Generoitu 12.02.2019 18.04
 
 Katso myös [HOKS doc](https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html)
 
@@ -37,7 +37,7 @@ Puuttuvan yhteinen tutkinnon osan tiedot uutta merkintää luotaessa (POST)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
-| eperusteet-id | java.lang.Long | Tunniste ePerusteet-palvelussa | Kyllä |
+| koodi-uri | Merkkijono | Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
 
 ### YhteinenTutkinnonOsa  
@@ -48,7 +48,7 @@ Yhteinen Tutkinnon osa (YTO)
 | ---- | ------ | ------ | --------- |
 | id | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
-| eperusteet-id | java.lang.Long | Tunniste ePerusteet-palvelussa | Kyllä |
+| koodi-uri | Merkkijono | Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 | laajuus | Kokonaisluku | Tutkinnon laajuus ePerusteet palvelussa | Ei |
 | nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus ePerusteet-palvelussa | Ei |
@@ -146,7 +146,7 @@ Puuttuvan yhteinen tutkinnon osa tiedot merkintää ylikirjoittaessa (PUT)
 | ---- | ------ | ------ | --------- |
 | id | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
-| eperusteet-id | java.lang.Long | Tunniste ePerusteet-palvelussa | Kyllä |
+| koodi-uri | Merkkijono | Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
 
 ### PaikallinenTutkinnonOsaKentanPaivitys  
@@ -431,7 +431,7 @@ Tutkinnon osa
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | id | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
-| eperusteet-id | java.lang.Long | Tunniste ePerusteet-palvelussa | Kyllä |
+| koodi-uri | Merkkijono | Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 | laajuus | Kokonaisluku | Tutkinnon laajuus ePerusteet palvelussa | Ei |
 | nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus ePerusteet-palvelussa | Ei |
@@ -469,7 +469,7 @@ Puuttuvan yhteinen tutkinnon osan (YTO) osa-alueen tiedot
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | id | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
-| eperusteet-id | java.lang.Long | Tunniste ePerusteet-palvelussa | Kyllä |
+| koodi-uri | Merkkijono | Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 | laajuus | Kokonaisluku | Tutkinnon laajuus ePerusteet palvelussa | Ei |
 | nimi | Merkkijono | Tutkinnon osan nimi ePerusteet-palvelussa | Ei |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
@@ -509,7 +509,7 @@ Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä päivittäessä 
 | ---- | ------ | ------ | --------- |
 | id | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Ei |
-| eperusteet-id | java.lang.Long | Tunniste ePerusteet-palvelussa | Ei |
+| koodi-uri | Merkkijono | Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Ei |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### HankitunYTOOsaamisenNaytto  
@@ -571,6 +571,6 @@ Puuttuvan yhteinen tutkinnon osan (YTO) tiedot
 | ---- | ------ | ------ | --------- |
 | id | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
-| eperusteet-id | java.lang.Long | Tunniste ePerusteet-palvelussa | Kyllä |
+| koodi-uri | Merkkijono | Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Kyllä |
 
