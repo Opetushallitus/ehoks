@@ -1,7 +1,8 @@
 (ns oph.ehoks.schema-tools-test
   (:require [clojure.test :refer [deftest testing is]]
             [oph.ehoks.schema-tools :as st]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [oph.ehoks.utils :refer [eq]]))
 
 (s/defschema
   TestSchema
@@ -22,19 +23,19 @@
   "Schema with one extra optional and first removed"
   {(s/optional-key :key2) s/Int
    (s/optional-key :key3) s/Bool
-   :key3 s/Str})
+   :key4 s/Str})
 
 (deftest test-modify
   (testing "Modify schema"
-    (is (= ModifiedTestSchema
-           (st/modify TestSchema "Modified Test Schema")))
-    (is (= ExtraOptional
-           (st/modify
-             TestSchema
-             "Schema with one extra optional and first removed"
-             {:removed [:key1]
-              :optionals [:key2 :key3]
-              :added {:key3 s/Str}})))))
+    (eq ModifiedTestSchema
+        (st/modify TestSchema "Modified Test Schema"))
+    (eq ExtraOptional
+        (st/modify
+          TestSchema
+          "Schema with one extra optional and first removed"
+          {:removed [:key1]
+           :optionals [:key2 :key3]
+           :added {:key4 s/Str}}))))
 
 (deftest test-modify-illegal-options
   (testing "Modify schema with illegal options"
