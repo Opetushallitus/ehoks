@@ -21,7 +21,8 @@
   ExtraOptional
   "Schema with one extra optional and first removed"
   {(s/optional-key :key2) s/Int
-   (s/optional-key :key3) s/Bool})
+   (s/optional-key :key3) s/Bool
+   :key3 s/Str})
 
 (deftest test-modify
   (testing "Modify schema"
@@ -32,7 +33,8 @@
              TestSchema
              "Schema with one extra optional and first removed"
              {:removed [:key1]
-              :optionals [:key2 :key3]})))))
+              :optionals [:key2 :key3]
+              :added {:key3 s/Str}})))))
 
 (deftest test-modify-illegal-options
   (testing "Modify schema with illegal options"
