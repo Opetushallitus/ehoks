@@ -32,3 +32,13 @@
        :service (:eperusteet-url config)
        :path (format "perusteet/%d" id)
        :options {:as :json}})))
+
+(defn find-tutkinnon-osat [^String koodi-uri]
+  (get-in
+    (c/with-api-headers
+      {:method :get
+       :service (:eperusteet-url config)
+       :path "tutkinnonosat"
+       :options {:as :json
+                 :query-params {:koodiUri koodi-uri}}})
+    [:body :data]))
