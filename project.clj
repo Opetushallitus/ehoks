@@ -109,7 +109,8 @@
                    :dependencies [[cheshire "5.8.1"]
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.1"
-                                   :exclusions [ring/ring-core]]]
+                                   :exclusions [ring/ring-core]]
+                                  [camel-snake-kebab "0.4.0"]]
                    :resource-paths ["resources/dev"
                                     "resources/test/src"
                                     "resources/dev/src"
