@@ -214,7 +214,7 @@
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
 (def pao-data     {:tutkinnon-osa
-                   {:eperusteet-id 20490}
+                   {:koodi-uri "tutkinnonosat_300268"}
                    :osaamisen-hankkimistavat
                    [{:ajankohta {:alku "2018-12-12"
                                  :loppu "2018-12-20"}
@@ -293,7 +293,7 @@
 
 (def patch-all-pao-data
   {:tutkinnon-osa
-   {:eperusteet-id 24245}
+   {:koodi-uri "tutkinnonosat_300268"}
    :osaamisen-hankkimistavat
    [{:ajankohta {:alku "2018-12-12"
                  :loppu "2018-12-22"}
@@ -367,9 +367,9 @@
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
 (def pyto-data
-  {:eperusteet-id 2349052
+  {:koodi-uri "tutkinnonosat_300268"
    :osa-alueet
-   [{:eperusteet-id 23493225
+   [{:koodi-uri "tutkinnonosat_300268"
      :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
                                              :loppu "2018-12-23"}
                                  :osaamisen-hankkimistavan-tunniste
@@ -392,9 +392,9 @@
    :koulutuksen-jarjestaja-oid "1234"})
 
 (def pyto-patch-data
-  {:eperusteet-id 23495
+  {:koodi-uri "tutkinnonosat_300268"
    :osa-alueet
-   [{:eperusteet-id 3421
+   [{:koodi-uri "tutkinnonosat_300268"
      :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
                                              :loppu "2018-12-23"}
                                  :osaamisen-hankkimistavan-tunniste
