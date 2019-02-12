@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 12.02.2019 18.04
+Generoitu 12.02.2019 18.25
 
 Katso myös [HOKS doc](https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html)
 
@@ -158,7 +158,7 @@ Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä päivittäess
 | hankitun-osaamisen-naytto | [HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 | laajuus | Kokonaisluku | Tutkinnon osan laajuus | Ei |
 | nimi | Merkkijono | Tutkinnon osan nimi | Ei |
-| amosaa-tunniste | java.lang.Long | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
+| amosaa-tunniste | Suuri kokonaisluku | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | tarvittava-opetus | Merkkijono | Tarvittava opetus | Ei |
@@ -271,7 +271,7 @@ Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää luotaessa (POST)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
-| amosaa-tunniste | java.lang.Long | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
+| amosaa-tunniste | Suuri kokonaisluku | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
 | hankitun-osaamisen-naytto | [HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
 | tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
@@ -311,7 +311,7 @@ Puuttuvan paikallisen tutkinnon osan tiedot merkintää ylikirjoittaessa (PUT)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
-| amosaa-tunniste | java.lang.Long | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
+| amosaa-tunniste | Suuri kokonaisluku | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
 | hankitun-osaamisen-naytto | [HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
 | tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
@@ -534,7 +534,7 @@ Puuttuva paikallinen tutkinnon osa
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | kuvaus | Merkkijono | Tutkinnon osan kuvaus | Kyllä |
-| amosaa-tunniste | java.lang.Long | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
+| amosaa-tunniste | Suuri kokonaisluku | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
 | hankitun-osaamisen-naytto | [HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto) | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
 | tarvittava-opetus | Merkkijono | Tarvittava opetus | Kyllä |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
