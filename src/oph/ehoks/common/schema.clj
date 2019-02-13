@@ -48,3 +48,19 @@
   "Tutkinnon perustiedot ePerusteet järjestelmässä"
   {:laajuus s/Int
    :nimi s/Str})
+
+(s/defschema
+  KoodiMetadata
+  "Koodisto-koodin metadata, joka haetaan Koodisto-palvelusta"
+  {(s/optional-key :nimi) (s/maybe s/Str)
+   (s/optional-key :lyhyt-nimi) (s/maybe s/Str)
+   (s/optional-key :kuvaus) (s/maybe s/Str)
+   :kieli s/Str})
+
+(s/defschema
+  KoodistoKoodi
+  "Koodisto-koodi"
+  {:koodi-arvo s/Str
+   :koodi-uri s/Str
+   :versio s/Int
+   :metadata [KoodiMetadata]})
