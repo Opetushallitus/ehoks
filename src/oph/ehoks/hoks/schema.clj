@@ -3,7 +3,8 @@
             [schema-tools.core :as st]
             [ring.swagger.json-schema :as rsjs]
             [oph.ehoks.schema-tools :refer [describe modify]]
-            [oph.ehoks.schema.generator :as g])
+            [oph.ehoks.schema.generator :as g]
+            [oph.ehoks.common.schema :as common-schema])
   (:import (java.time LocalDate)))
 
 (def TutkinnonOsaKoodiUri
@@ -24,13 +25,6 @@
     :koodi-arvo s/Str "Koodisto-koodin arvo"
     :koodi-uri s/Str "Koodiston URI"
     :versio s/Int "Koodisto-koodin versio"))
-
-(s/defschema
-  KoodistoKoodiLuonti
-  (modify
-    KoodistoKoodi
-    "Koodisto-koodin lisäys tai päivitys"
-    {:removed [:metadata]}))
 
 (s/defschema
   TutkinnonOsa
@@ -505,8 +499,7 @@
               :types {:any common-schema/Tutkinto}
               :description "Tutkinnon tiedot ePerusteet palvelussa"}
    :urasuunnitelma {:methods {:any :optional}
-                    :types {:any KoodistoKoodiLuonti
-                            :get KoodistoKoodi}
+                    :types {:any KoodistoKoodi}
                     :description
                     "Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi"}
    :versio {:methods {:any :excluded
