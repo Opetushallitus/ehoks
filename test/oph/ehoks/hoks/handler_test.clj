@@ -165,20 +165,20 @@
 (deftest patch-one-ppto
   (testing "PATCH one value puuttuva paikallinen tutkinnon osa"
     (db/clear)
-    (let [ppto-data   {:nimi "222"
-                       :laajuus 0
-                       :kuvaus "fef"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "124"
-                       :hankitun-osaamisen-naytto
-                       {:jarjestaja {:nimi "abc"}
-                        :nayttoymparisto {:nimi "aaa"}
-                        :kuvaus "fff"
-                        :ajankohta {:alku "2018-12-12"
-                                    :loppu "2018-12-20"}
-                        :sisalto "sisalto"
-                        :ammattitaitovaatimukset []
-                        :arvioijat []}}
+    (let [ppto-data {:nimi "222"
+                     :laajuus 0
+                     :kuvaus "fef"
+                     :osaamisen-hankkimistavat []
+                     :koulutuksen-jarjestaja-oid "124"
+                     :hankitun-osaamisen-naytto
+                     {:jarjestaja {:nimi "abc"}
+                      :nayttoymparisto {:nimi "aaa"}
+                      :kuvaus "fff"
+                      :ajankohta {:alku "2018-12-12"
+                                  :loppu "2018-12-20"}
+                      :sisalto "sisalto"
+                      :ammattitaitovaatimukset []
+                      :arvioijat []}}
           ppto-response
           (utils/with-authentication
             app
@@ -642,8 +642,7 @@
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
-                                      :tutkinto {:laajuus 5 :nimi "Test"}}
+    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :paivittanyt "Pekka Päivittäjä"
@@ -670,8 +669,7 @@
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
-                                      :tutkinto {:laajuus 5 :nimi "Test"}}
+    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :paivittanyt "Pekka Päivittäjä"
@@ -702,8 +700,7 @@
 (deftest put-created-hoks
   (testing "PUT updates created HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
-                                      :tutkinto {:laajuus 5 :nimi "Test"}}
+    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :paivittanyt "Pekka Päivittäjä"
@@ -737,8 +734,7 @@
 (deftest put-non-existing-hoks
   (testing "PUT prevents updating non existing HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
-                                      :tutkinto {:laajuus 5 :nimi "Test"}}
+    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :paivittanyt "Teuvo Testaaja"
                      :hyvaksytty (java.util.Date.)
@@ -754,8 +750,7 @@
 (deftest patch-created-hoks
   (testing "PATCH updates value of created HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus {:oid "1.3.444.555.66.77777777777"
-                                      :tutkinto {:laajuus 5 :nimi "Test"}}
+    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :luonut "Teppo Tekijä"
                      :paivittanyt "Pekka Päivittäjä"
