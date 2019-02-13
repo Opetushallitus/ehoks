@@ -7,7 +7,7 @@
   (:import (java.time LocalDate)))
 
 (def TutkinnonOsaKoodiUri
-  "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosa_1234)."
+  "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosat)."
   #"^tutkinnonosat_\d+$")
 
 (s/defschema
