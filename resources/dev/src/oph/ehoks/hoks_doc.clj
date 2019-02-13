@@ -43,6 +43,11 @@
                     java.time.LocalDate "Päivämäärä"
                     (maybe Str) "Valinnainen merkkijono"})
 
+(defn get-regex-translation [s]
+  (case s
+    "#\"^tutkinnonosat_\\d+$\"" "Merkkijono, esim. tutkinnonosat_123456"
+    s))
+
 (defn get-enum-translation [n]
   (format "Joukon alkio (%s)" (cstr/join ", " (map name (rest n)))))
 
@@ -50,9 +55,10 @@
   (= (and (coll? n) (first n)) 'enum))
 
 (defn translate-fi [n]
-  (if (enum? n)
-    (get-enum-translation n)
-    (get translations n (str n))))
+  (cond
+    (enum? n) (get-enum-translation n)
+    (.startsWith (str n) "#") (get-regex-translation (str n))
+    :else (get translations n (str n))))
 
 (defn get-name [v]
   (let [m (meta v)]
@@ -76,20 +82,20 @@
 
 (defn generate-markdown [m]
   (let [m-meta (meta m)]
-    (conj
-      (apply
-        conj
-        [(str "### " (:name m-meta) "  ")
-         ""
-         (or
-           (get-in m-meta [:json-schema :description])
-           (:doc m-meta)
-           "")
-         ""
+    (concat
+      [(str "### " (:name m-meta) "  ")
+       ""
+       (or
+         (get-in m-meta [:json-schema :description])
+         (:doc m-meta)
+         "")]
+      (when (not= (type m) java.util.regex.Pattern)
+        [""
          "| Nimi | Tyyppi | Selite | Vaaditaan |"
-         "| ---- | ------ | ------ | --------- |"]
+         "| ---- | ------ | ------ | --------- |"])
+      (when (not= (type m) java.util.regex.Pattern)
         (map #(generate-md-row % (get m %)) (keys m)))
-      "")))
+      [""])))
 
 (defn generate-doc [s]
   (map
