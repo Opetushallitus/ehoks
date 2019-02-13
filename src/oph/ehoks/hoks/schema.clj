@@ -87,7 +87,8 @@
      :added
      (describe
        ""
-       :oid s/Str "Oppilaitoksen oid-tunniste Opintopolku-palvelussa.")}))
+       :oppilaitoksen-oid s/Str
+       "Oppilaitoksen oid-tunniste Opintopolku-palvelussa.")}))
 
 (s/defschema
   TyopaikallaHankittavaOsaaminen
