@@ -63,4 +63,4 @@
   {:koodi-arvo s/Str
    :koodi-uri s/Str
    :versio s/Int
-   :metadata [KoodiMetadata]})
+   (s/optional-key :metadata) [KoodiMetadata]})
