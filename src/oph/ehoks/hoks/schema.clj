@@ -72,14 +72,31 @@
     :rooli s/Str "Henkilön rooli"))
 
 (s/defschema
+  VastuullinenOhjaaja
+  (modify
+    Henkilo
+    "Vastuullinen ohjaaja"
+    {:removed [:organisaatio]}))
+
+(s/defschema
+  Oppilaitoshenkilo
+  (modify
+    Henkilo
+    "Oppilaitoksen edustaja"
+    {:removed [:organisaatio]
+     :added
+     (describe
+       ""
+       :oid s/Str "Oppilaitoksen oid-tunniste Opintopolku-palvelussa.")}))
+
+(s/defschema
   TyopaikallaHankittavaOsaaminen
   (describe
     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :hankkijan-edustaja Henkilo
-    "Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja"
-    :vastuullinen-ohjaaja Henkilo "Vastuullinen työpaikkaohjaaja"
-    :jarjestajan-edustaja Henkilo "Koulutuksen järjestäjän edustaja"
+    :vastuullinen-ohjaaja VastuullinenOhjaaja "Vastuullinen työpaikkaohjaaja"
+    :tyopaikan-nimi s/Str "Työpaikan nimi"
+    (s/optional-key :tyopaikan-y-tunnus) s/Str "Työpaikan y-tunnus"
     (s/optional-key :muut-osallistujat) [Henkilo]
     "Muut ohjaukseen osallistuvat henkilöt"
     :keskeiset-tyotehtavat [s/Str] "Keskeiset työtehtävät"
@@ -115,6 +132,10 @@
     :ajankohta Aikavali "Hankkimisen ajankohta"
     :osaamisen-hankkimistavan-tunniste KoodistoKoodi
     "Osaamisen hankkimisen Koodisto-koodi (URI: osaamisenhankkimistapa)"
+    (s/optional-key :jarjestajan-edustaja) Oppilaitoshenkilo
+    "Koulutuksen järjestäjän edustaja"
+    (s/optional-key :hankkijan-edustaja) Oppilaitoshenkilo
+    "Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja"
     (s/optional-key :tyopaikalla-hankittava-osaaminen)
     TyopaikallaHankittavaOsaaminen
     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
