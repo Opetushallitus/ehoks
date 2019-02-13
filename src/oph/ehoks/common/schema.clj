@@ -42,3 +42,9 @@
    :oid s/Str
    :etunimi s/Str
    :sukunimi s/Str})
+
+(s/defschema
+  Tutkinto
+  "Tutkinnon perustiedot ePerusteet järjestelmässä"
+  {:laajuus s/Int
+   :nimi s/Str})
