@@ -63,20 +63,20 @@
 (deftest put-ppto
   (testing "PUT puuttuva paikallinen tutkinnon osa"
     (db/clear)
-    (let [ppto-data   {:nimi "22992"
-                       :laajuus 0
-                       :kuvaus "fef"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "124"
-                       :hankitun-osaamisen-naytto
-                       {:jarjestaja {:nimi "abc"}
-                        :nayttoymparisto {:nimi "aaa"}
-                        :kuvaus "ppp"
-                        :ajankohta {:alku "2018-12-12"
-                                    :loppu "2018-12-20"}
-                        :sisalto "sisalto"
-                        :ammattitaitovaatimukset []
-                        :arvioijat []}}
+    (let [ppto-data {:nimi "22992"
+                     :laajuus 0
+                     :kuvaus "fef"
+                     :osaamisen-hankkimistavat []
+                     :koulutuksen-jarjestaja-oid "124"
+                     :hankitun-osaamisen-naytto
+                     {:jarjestaja {:nimi "abc"}
+                      :nayttoymparisto {:nimi "aaa"}
+                      :kuvaus "ppp"
+                      :ajankohta {:alku "2018-12-12"
+                                  :loppu "2018-12-20"}
+                      :sisalto "sisalto"
+                      :ammattitaitovaatimukset []
+                      :arvioijat []}}
           ppto-response
           (utils/with-authentication
             app
