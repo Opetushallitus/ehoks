@@ -494,7 +494,7 @@
    {:methods {:patch :optional}
     :types {:any s/Str}
     :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä"}
-   :tutkinto {:methods {:get :required
+   :tutkinto {:methods {:get :optional
                         :any :excluded}
               :types {:any common-schema/Tutkinto}
               :description "Tutkinnon tiedot ePerusteet palvelussa"}
