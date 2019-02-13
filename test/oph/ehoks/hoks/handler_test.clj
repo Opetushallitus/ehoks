@@ -94,7 +94,7 @@
                     url))
                 (mock/json-body
                   {:id 1
-                   :amosaa-tunniste 11
+                   :amosaa-tunniste "11"
                    :nimi "333"
                    :laajuus 3
                    :kuvaus "fef"
@@ -145,7 +145,7 @@
                     url))
                 (mock/json-body
                   {:id 1
-                   :amosaa-tunniste 1
+                   :amosaa-tunniste "123"
                    :nimi ""
                    :laajuus 0
                    :kuvaus ""
