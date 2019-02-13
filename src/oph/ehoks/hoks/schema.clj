@@ -18,23 +18,12 @@
     (s/optional-key :y-tunnus) s/Str "Organisaation y-tunnus"))
 
 (s/defschema
-  KoodiMetadata
-  (describe
-    "Koodisto-koodin metadata, joka haetaan Koodisto-palvelusta"
-    (s/optional-key :nimi) (s/maybe s/Str) "Koodisto-koodin nimi"
-    (s/optional-key :lyhyt-nimi) (s/maybe s/Str) "Koodisto-koodin lyhyt nimi"
-    (s/optional-key :kuvaus) (s/maybe s/Str) "Koodisto-koodin kuvaus"
-    :kieli s/Str "Koodisto-koodin kieli"))
-
-(s/defschema
   KoodistoKoodi
   (describe
     "Koodisto-koodi"
     :koodi-arvo s/Str "Koodisto-koodin arvo"
     :koodi-uri s/Str "Koodiston URI"
-    :versio s/Int "Koodisto-koodin versio"
-    (s/optional-key :metadata) [KoodiMetadata]
-    "Koodisto-koodin metadata, joka haetaan Koodisto-palvelusta"))
+    :versio s/Int "Koodisto-koodin versio"))
 
 (s/defschema
   KoodistoKoodiLuonti
@@ -49,11 +38,7 @@
     "Tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :koodi-uri TutkinnonOsaKoodiUri
-    "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
-    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
-    (s/optional-key :kuvaus) s/Str
-    "Tutkinnon osan kuvaus ePerusteet-palvelussa"))
+    "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"))
 
 (s/defschema
   Aikavali
@@ -210,8 +195,6 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
-    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
@@ -225,12 +208,10 @@
     "Olemassaolevan YTOn osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :tunniste KoodistoKoodi "Koodisto-koodi"
-    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
-    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     "vaatimuksista tai osaamistavoitteista poikkeaminen"
     :valittu-todentamisen-prosessi
@@ -249,10 +230,6 @@
     :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
     :koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
-    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
-    (s/optional-key :kuvaus) s/Str
-    "Tutkinnon osan kuvaus ePerusteet-palvelussa"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -263,11 +240,7 @@
   (modify
     YhteinenTutkinnonOsa
     "Puuttuvan yhteinen tutkinnon osan (YTO) tiedot"
-    {:removed [:vaatimuksista-tai-tavoitteista-poikkeaminen
-               :laajuus
-               :nimi
-               :kuvaus
-               :pakollinen]}))
+    {:removed [:vaatimuksista-tai-tavoitteista-poikkeaminen]}))
 
 (s/defschema
   MuuTutkinnonOsa
@@ -465,22 +438,12 @@
     (str "Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
-     [:nimi :laajuus :kuvaus :osaamisen-hankkimistavat
-      :koulutuksen-jarjestaja-oid :hankitun-osaamisen-naytto]}))
-
-(s/defschema
-  Tutkinto
-  (describe
-    "Tutkinnon perustiedot ePerusteet järjestelmässä"
-    :laajuus s/Int "Tutkinnon laajuus"
-    :nimi s/Str "Tutkinnon nimi"))
-
-(s/defschema
-  Opiskeluoikeus
-  (describe
-    "Opiskeluoikeuden tiedot Koski-järjestelmässä"
-    :oid s/Str "Opinto-oikeuden tunniste Opintopolku-ympäristössä"
-    :tutkinto Tutkinto "Opinto-oikeuden tutkinto"))
+     [:osaamisen-hankkimistavat
+      :koulutuksen-jarjestaja-oid
+      :hankitun-osaamisen-naytto
+      :kuvaus
+      :laajuus
+      :nimi]}))
 
 (s/defschema
   OlemassaOlevaAmmatillinenTutkinnonOsa
@@ -491,10 +454,6 @@
     (s/optional-key :tunniste) KoodistoKoodi
     (str "Tutkinnon osan, johon tunnistettava olemassa oleva osaaminen "
          "liittyy, Koodisto-koodi")
-    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
-    (s/optional-key :kuvaus) s/Str
-    "Tutkinnon osan kuvaus ePerusteet-palvelussa"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -515,10 +474,6 @@
     :osa-alueet [OlemassaOlevanYTOOsaAlue]
     "OlemassaOlevanYhteisenTutkinnonOsanOsa:n osa-alueet"
     :tunniste KoodistoKoodi "Koodisto-koodi (tutkinnonosat)"
-    (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
-    (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
-    (s/optional-key :kuvaus) s/Str
-    "Tutkinnon osan kuvaus ePerusteet-palvelussa"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -541,10 +496,10 @@
    :oppija-oid {:methods {:patch :optional}
                 :types {:any s/Str}
                 :description "Oppijan tunniste Opintopolku-ympäristössä"}
-   :opiskeluoikeus
+   :opiskeluoikeus-oid
    {:methods {:patch :optional}
-    :types {:any Opiskeluoikeus}
-    :description "Opiskeluoikeuden tiedot Koski-järjestelmässä"}
+    :types {:any s/Str}
+    :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä"}
    :urasuunnitelma {:methods {:any :optional}
                     :types {:any KoodistoKoodiLuonti
                             :get KoodistoKoodi}
