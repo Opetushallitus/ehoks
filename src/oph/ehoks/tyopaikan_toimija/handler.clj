@@ -29,5 +29,5 @@
 
       (c-api/GET "/oppijat/:oid/tutkinto" []
         :summary "Palauttaa työpaikalla olevan oppijan tutkinnon perustiedot"
-        :return (rest/response [hoks-schema/Tutkinto])
+        :return (rest/response [common-schema/Tutkinto])
         (rest/rest-ok {})))))
