@@ -485,10 +485,9 @@
 (s/defschema
   OlemassaOlevaAmmatillinenTutkinnonOsa
   (describe
-    (str "Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella
-    sisällytetty suoraan osaksi "
-         "opiskelijan tutkintoa")
-
+    (str
+      "Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella "
+      "sisällytetty suoraan osaksi opiskelijan tutkintoa.")
     (s/optional-key :tunniste) KoodistoKoodi
     (str "Tutkinnon osan, johon tunnistettava olemassa oleva osaaminen "
          "liittyy, Koodisto-koodi")
