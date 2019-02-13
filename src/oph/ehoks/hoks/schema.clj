@@ -114,7 +114,7 @@
   MuuOppimisymparisto
   (describe
     "Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu"
-    :tarkenne KoodistoKoodi "Oppimisympäristön tarkenne, eHOS Koodisto-koodi"
+    :tarkenne KoodistoKoodi "Oppimisympäristön tarkenne, eHOKS Koodisto-koodi"
     :selite s/Str "Oppimisympäristön nimi"
     :ohjaus-ja-tuki s/Bool
     "Onko opiskelijalla tunnistettu ohjauksen ja tuen tarvetta"
