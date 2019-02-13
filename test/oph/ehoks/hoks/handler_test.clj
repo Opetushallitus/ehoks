@@ -36,8 +36,7 @@
                                     :loppu "2018-12-20"}
                         :sisalto "sisalto"
                         :ammattitaitovaatimukset []
-                        :arvioijat []}
-                       :tarvittava-opetus "tarvittava opetus"}
+                        :arvioijat []}}
           ppto-response
           (utils/with-authentication
             app
@@ -77,8 +76,7 @@
                                     :loppu "2018-12-20"}
                         :sisalto "sisalto"
                         :ammattitaitovaatimukset []
-                        :arvioijat []}
-                       :tarvittava-opetus "tarvittava opetus"}
+                        :arvioijat []}}
           ppto-response
           (utils/with-authentication
             app
@@ -110,8 +108,7 @@
                                 :loppu "2018-12-20"}
                     :sisalto "sisalto"
                     :ammattitaitovaatimukset []
-                    :arvioijat []}
-                   :tarvittava-opetus "tarvittava opetus"})))]
+                    :arvioijat []}})))]
       (is (= (:status put-response) 204)))))
 
 (deftest patch-all-ppto
@@ -130,8 +127,7 @@
                                     :loppu "2018-12-20"}
                         :sisalto "sisalto"
                         :ammattitaitovaatimukset []
-                        :arvioijat []}
-                       :tarvittava-opetus "tarvittava opetus"}
+                        :arvioijat []}}
           ppto-response
           (utils/with-authentication
             app
@@ -163,8 +159,7 @@
                                 :loppu "2018-12-20"}
                     :sisalto "sisalto"
                     :ammattitaitovaatimukset []
-                    :arvioijat []}
-                   :tarvittava-opetus "tarvittavaa opetusta lisää"})))]
+                    :arvioijat []}})))]
       (is (= (:status patch-response) 204)))))
 
 (deftest patch-one-ppto
@@ -183,8 +178,7 @@
                                     :loppu "2018-12-20"}
                         :sisalto "sisalto"
                         :ammattitaitovaatimukset []
-                        :arvioijat []}
-                       :tarvittava-opetus "tarvittava opetus"}
+                        :arvioijat []}}
           ppto-response
           (utils/with-authentication
             app
@@ -203,21 +197,18 @@
                     "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
                     url))
                 (mock/json-body
-                  {:id 1 :tarvittava-opetus "Tarvittavaa opetusta"})))
+                  {:id 1 :nimi "2223"})))
           get-response (-> (get-in ppto-body [:data :uri])
                            get-authenticated :data)]
       (is (= (:status patch-response) 204))
       (eq get-response
           (assoc ppto-data
                  :id 1
-                 :tarvittava-opetus "Tarvittavaa opetusta")))))
+                 :nimi "2223")))))
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
 (def pao-data     {:tutkinnon-osa
-                   {:tunniste
-                    {:koodi-arvo "1"
-                     :koodi-uri "esimerkki_uri"
-                     :versio 1}}
+                   {:koodi-uri "tutkinnonosat_300268"}
                    :osaamisen-hankkimistavat
                    [{:ajankohta {:alku "2018-12-12"
                                  :loppu "2018-12-20"}
@@ -296,10 +287,7 @@
 
 (def patch-all-pao-data
   {:tutkinnon-osa
-   {:tunniste
-    {:koodi-arvo "412"
-     :koodi-uri "esimerkki_uri42"
-     :versio 1}}
+   {:koodi-uri "tutkinnonosat_300268"}
    :osaamisen-hankkimistavat
    [{:ajankohta {:alku "2018-12-12"
                  :loppu "2018-12-22"}
@@ -373,13 +361,9 @@
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
 (def pyto-data
-  {:tunniste {:koodi-arvo "11"
-              :koodi-uri "esimerkki_uri1"
-              :versio 2}
+  {:koodi-uri "tutkinnonosat_300268"
    :osa-alueet
-   [{:tunniste {:koodi-arvo "12"
-                :koodi-uri "esimerkki_uri2"
-                :versio 2}
+   [{:koodi-uri "tutkinnonosat_300268"
      :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
                                              :loppu "2018-12-23"}
                                  :osaamisen-hankkimistavan-tunniste
@@ -397,18 +381,13 @@
                    :rooli {:koodi-arvo "2"
                            :koodi-uri "esimerkki_uri2"
                            :versio 1}
-                   :organisaatio {:nimi "aaa2"}}]}
-     :tarvittava-opetus "tarvittava opetus2"}]
+                   :organisaatio {:nimi "aaa2"}}]}}]
    :koulutuksen-jarjestaja-oid "1234"})
 
 (def pyto-patch-data
-  {:tunniste {:koodi-arvo "14"
-              :koodi-uri "esimerkki_uri4"
-              :versio 3}
+  {:koodi-uri "tutkinnonosat_300268"
    :osa-alueet
-   [{:tunniste {:koodi-arvo "12"
-                :koodi-uri "esimerkki_uri2"
-                :versio 2}
+   [{:koodi-uri "tutkinnonosat_300268"
      :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
                                              :loppu "2018-12-23"}
                                  :osaamisen-hankkimistavan-tunniste
@@ -426,8 +405,7 @@
                    :rooli {:koodi-arvo "2"
                            :koodi-uri "esimerkki_uri2"
                            :versio 1}
-                   :organisaatio {:nimi "aaa2"}}]}
-     :tarvittava-opetus "tarvittava opetus2"}]
+                   :organisaatio {:nimi "aaa2"}}]}}]
    :koulutuksen-jarjestaja-oid "1234"})
 
 (deftest post-and-get-pyto
