@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 13.02.2019 10.50
+Generoitu 13.02.2019 11.05
 
 Katso myös [HOKS doc](https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html)
 
@@ -138,7 +138,7 @@ Henkilö
 | id | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
 | organisaatio | [Organisaatio](#Organisaatio) | Henkilön organisaatio | Kyllä |
 | nimi | Merkkijono | Henkilön nimi | Kyllä |
-| rooli | Merkkijono | Henkilön rooli | Kyllä |
+| rooli | Merkkijono | Henkilön rooli | Ei |
 
 ### PuuttuvaYTOPaivitys  
 
@@ -159,7 +159,7 @@ Vastuullinen ohjaaja
 | ---- | ------ | ------ | --------- |
 | id | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
 | nimi | Merkkijono | Henkilön nimi | Kyllä |
-| rooli | Merkkijono | Henkilön rooli | Kyllä |
+| rooli | Merkkijono | Henkilön rooli | Ei |
 
 ### PaikallinenTutkinnonOsaKentanPaivitys  
 
@@ -482,8 +482,8 @@ Oppilaitoksen edustaja
 | ---- | ------ | ------ | --------- |
 | id | Kokonaisluku | Tunniste eHOKS-järjestelmässä | Ei |
 | nimi | Merkkijono | Henkilön nimi | Kyllä |
-| rooli | Merkkijono | Henkilön rooli | Kyllä |
-| oid | Merkkijono | Oppilaitoksen oid-tunniste Opintopolku-palvelussa. | Kyllä |
+| rooli | Merkkijono | Henkilön rooli | Ei |
+| oppilaitoksen-oid | Merkkijono | Oppilaitoksen oid-tunniste Opintopolku-palvelussa. | Kyllä |
 
 ### OlemassaOlevaYhteinenTutkinnonOsa  
 
