@@ -69,7 +69,7 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :organisaatio Organisaatio "Henkilön organisaatio"
     :nimi s/Str "Henkilön nimi"
-    :rooli s/Str "Henkilön rooli"))
+    (s/optional-key :rooli) s/Str "Henkilön rooli"))
 
 (s/defschema
   VastuullinenOhjaaja
