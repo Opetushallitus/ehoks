@@ -138,7 +138,9 @@
     "Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja"
     (s/optional-key :tyopaikalla-hankittava-osaaminen)
     TyopaikallaHankittavaOsaaminen
-    "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
+    (str "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. "
+         "Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai "
+         "koulutussopimus.")
     (s/optional-key :muut-oppimisymparisto)
     MuuOppimisymparisto
     (str "Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen "
@@ -346,7 +348,8 @@
     :id s/Int "Tunniste eHOKS-järjestelmässä"
     :tutkinnon-osa TutkinnonOsa "Tutkinnon osa"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
-    "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen"
+    (str "Tekstimuotoinen selite ammattitaitovaatimuksista tai "
+         "osaamistavoitteista poikkeamiseen")
     (s/optional-key :hankitun-osaamisen-naytto) HankitunOsaamisenNaytto
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
