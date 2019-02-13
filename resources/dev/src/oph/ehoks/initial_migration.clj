@@ -80,9 +80,14 @@
     {:to (-> v meta :name)}
     (vector? v)
     {:many-to-many? true
-     :to (format "%s_%s"
-                 (name (csk/->snake_case (get k :k k)))
-                 (csk/->snake_case (str (or (-> v first meta :name) (first v)))))}))
+     :to (format
+           "%s_%s"
+           (name (csk/->snake_case (get k :k k)))
+           (csk/->snake_case
+             (str
+               (or
+                 (-> v first meta :name)
+                 (if (= (first v) java.lang.String) "string" v)))))}))
 
 (defn generate-column [[k v]]
   {:name (if (= (type k) schema.core.OptionalKey)
