@@ -500,6 +500,10 @@
    {:methods {:patch :optional}
     :types {:any s/Str}
     :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä"}
+   :tutkinto {:methods {:get :required
+                        :any :excluded}
+              :types {:any common-schema/Tutkinto}
+              :description "Tutkinnon tiedot ePerusteet palvelussa"}
    :urasuunnitelma {:methods {:any :optional}
                     :types {:any KoodistoKoodiLuonti
                             :get KoodistoKoodi}
@@ -592,3 +596,10 @@
     (g/generate HOKSModel :post)
     {:doc "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
      :name "HOKSLuonti"}))
+
+(s/defschema
+  OppijaHOKS
+  (modify
+    HOKS
+    "Oppijan HOKS"
+    {:replaced-in {[:urasuunnitelma] common-schema/KoodistoKoodi}}))
