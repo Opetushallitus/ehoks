@@ -6,6 +6,10 @@
             [oph.ehoks.schema.generator :as g])
   (:import (java.time LocalDate)))
 
+(def TutkinnonOsaKoodiUri
+  "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosa_1234)."
+  #"^tutkinnonosat_\d+$")
+
 (s/defschema
   Organisaatio
   (describe
@@ -44,7 +48,8 @@
   (describe
     "Tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :tunniste KoodistoKoodi "Koodisto-koodi"
+    :koodi-uri TutkinnonOsaKoodiUri
+    "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     (s/optional-key :kuvaus) s/Str
@@ -179,7 +184,8 @@
   (describe
     "Puuttuvan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :tunniste KoodistoKoodi "Koodisto-koodi"
+    :koodi-uri TutkinnonOsaKoodiUri
+    "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
@@ -196,7 +202,8 @@
     "Yhteinen Tutkinnon osa (YTO)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
-    :tunniste KoodistoKoodi "Koodisto-koodi (tutkinnonosat)"
+    :koodi-uri TutkinnonOsaKoodiUri
+    "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
     (s/optional-key :laajuus) s/Int "Tutkinnon laajuus ePerusteet palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi ePerusteet-palvelussa"
     (s/optional-key :kuvaus) s/Str
@@ -354,14 +361,14 @@
     (str "Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
-     [:osa-alueet :koulutuksen-jarjestaja-oid :tunniste]}))
+     [:osa-alueet :koulutuksen-jarjestaja-oid :koodi-uri]}))
 
 (s/defschema
   PaikallinenTutkinnonOsa
   (describe
     "Puuttuva paikallinen tutkinnon osa"
     :id s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :amosaa-tunniste) s/Int
+    (s/optional-key :amosaa-tunniste) Long
     "Tunniste ePerusteet AMOSAA -palvelussa"
     :nimi s/Str "Tutkinnon osan nimi"
     :laajuus s/Int "Tutkinnon osan laajuus"

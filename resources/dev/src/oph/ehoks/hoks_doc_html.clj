@@ -7,7 +7,8 @@
             [clj-time.local :as l]
             [clj-time.format :as f]
             [clojure.string :as cstr]
-            [oph.ehoks.schema.generator :as g]))
+            [oph.ehoks.schema.generator :as g]
+            [oph.ehoks.hoks-doc :refer [translations]]))
 
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
@@ -33,13 +34,6 @@
 
 (defn generate-link [{t :name}]
   [:a {:href (str github-url "#" t)} t])
-
-(def translations '{Int "Kokonaisluku"
-                    Inst "Aikaleima"
-                    Str "Merkkijono"
-                    Bool "Totuusarvo"
-                    java.time.LocalDate "Päivämäärä"
-                    (maybe Str) "Valinnainen merkkijono"})
 
 (defn get-enum-translation [n]
   (format "Joukon alkio (%s)" (cstr/join ", " (map name (rest n)))))
