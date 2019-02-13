@@ -407,7 +407,7 @@
      [:osa-alueet :koulutuksen-jarjestaja-oid :koodi-uri]}))
 
 (s/defschema
-  PaikallinenTutkinnonOsa
+  PuuttuvaPaikallinenTutkinnonOsa
   (describe
     "Puuttuva paikallinen tutkinnon osa"
     :id s/Int "Tunniste eHOKS-järjestelmässä"
@@ -427,45 +427,41 @@
 
 (s/defschema
   OlemassaOlevaPaikallinenTutkinnonOsa
-  (describe
-    "Puuttuva paikallinen tutkinnon osa"
-    :id s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :amosaa-tunniste) s/Int
-    "Tunniste ePerusteet AMOSAA -palvelussa"
-    :nimi s/Str "Tutkinnon osan nimi"
-    :laajuus s/Int "Tutkinnon osan laajuus"
-    :kuvaus s/Str "Tutkinnon osan kuvaus"
-    :valittu-todentamisen-prosessi
-    (s/enum :valittu-todentaminen-suoraan
-            :valittu-todentaminen-arvioijat
-            :valittu-todentaminen-naytto)
-    "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
-    (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
-    "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
-    :koulutuksen-jarjestaja-oid s/Str
-    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
-         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
-         "koulutuksen järjestäjän oid.")))
+  (modify
+    PuuttuvaPaikallinenTutkinnonOsa
+    "Olemassa oleva paikallinen tutkinnon osa"
+    {:removed [:osaamisen-hankkimistavat
+               :hankitun-osaamisen-naytto]
+     :added
+     (describe
+       ""
+       {:valittu-todentamisen-prosessi
+        (s/enum :valittu-todentaminen-suoraan
+                :valittu-todentaminen-arvioijat
+                :valittu-todentaminen-naytto)
+        "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+        (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
+        "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."})}))
 
 (s/defschema
-  PaikallinenTutkinnonOsaLuonti
+  PuuttuvaPaikallinenTutkinnonOsaLuonti
   (modify
-    PaikallinenTutkinnonOsa
+    PuuttuvaPaikallinenTutkinnonOsa
     (str "Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
     {:removed [:id]}))
 
 (s/defschema
-  PaikallinenTutkinnonOsaPaivitys
+  PuuttuvaPaikallinenTutkinnonOsaPaivitys
   (modify
-    PaikallinenTutkinnonOsa
+    PuuttuvaPaikallinenTutkinnonOsa
     (str "Puuttuvan paikallisen tutkinnon osan tiedot merkintää "
          "ylikirjoittaessa (PUT)")))
 
 (s/defschema
-  PaikallinenTutkinnonOsaKentanPaivitys
+  PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys
   (modify
-    PaikallinenTutkinnonOsa
+    PuuttuvaPaikallinenTutkinnonOsa
     (str "Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
@@ -628,7 +624,7 @@
     :description "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"}
    :puuttuva-paikallinen-tutkinnon-osat
    {:methods {:any :optional}
-    :types {:any [PaikallinenTutkinnonOsa]}
+    :types {:any [PuuttuvaPaikallinenTutkinnonOsa]}
     :description "Puuttuvat paikallisen tutkinnon osat"}})
 
 ; Following four schemas are only for generated markdown doc
