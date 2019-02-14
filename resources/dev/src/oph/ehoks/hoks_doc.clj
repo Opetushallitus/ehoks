@@ -49,8 +49,10 @@
 (defn get-regex-translation [s]
   (case s
     "#\"^tutkinnonosat_\\d+$\"" "Merkkijono, esim. tutkinnonosat_123456"
-    "#\"^osaamisenhankkimistapa_\\d+$\""
-    "Merkkijono, esim. osaamisenhankkimistapa_123456"
+    "#\"^osaamisenhankkimistapa_.+$\""
+    "Merkkijono, esim. osaamisenhankkimistapa_oppisopimus"
+    "#\"^ammatillisenoppiaineet_.+$\""
+    "Merkkijono, esim. ammatillisenoppiaineet_aa"
     s))
 
 (defn get-enum-translation [n]
