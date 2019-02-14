@@ -94,7 +94,9 @@
          "| Nimi | Tyyppi | Selite | Vaaditaan |"
          "| ---- | ------ | ------ | --------- |"])
       (when (not= (type m) java.util.regex.Pattern)
-        (map #(generate-md-row % (get m %)) (keys m)))
+        (map
+          #(generate-md-row % (get m %))
+          (remove #(= (or (:k %) %) :id) (keys m))))
       [""])))
 
 (defn generate-doc [s]
