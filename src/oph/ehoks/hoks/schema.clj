@@ -27,7 +27,7 @@
     "Tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :koodi-uri TutkinnonOsaKoodiUri
-    "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"))
+    "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"))
 
 (s/defschema
   Henkilo
@@ -187,7 +187,7 @@
     "Puuttuvan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :koodi-uri TutkinnonOsaKoodiUri
-    "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
+    "Osa-alueen Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
     (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
@@ -222,7 +222,7 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
     :koodi-uri TutkinnonOsaKoodiUri
-    "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
+    "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -449,7 +449,7 @@
       "Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella "
       "sisällytetty suoraan osaksi opiskelijan tutkintoa.")
     :koodi-uri TutkinnonOsaKoodiUri
-    "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
+    "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -470,7 +470,7 @@
     :osa-alueet [OlemassaOlevanYTOOsaAlue]
     "OlemassaOlevanYhteisenTutkinnonOsanOsa:n osa-alueet"
     :koodi-uri TutkinnonOsaKoodiUri
-    "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
+    "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
