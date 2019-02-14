@@ -11,20 +11,15 @@
   "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosa_1234)."
   #"^tutkinnonosat_\d+$")
 
+(def OsaamisenHankkimistapaKoodiUri
+  #"^osaamisenhankkimistapa_\d+$")
+
 (s/defschema
   Organisaatio
   (describe
     "Organisaatio"
     :nimi s/Str "Organisaation nimi"
     (s/optional-key :y-tunnus) s/Str "Organisaation y-tunnus"))
-
-(s/defschema
-  KoodistoKoodi
-  (describe
-    "Koodisto-koodi"
-    :koodi-arvo s/Str "Koodisto-koodin arvo"
-    :koodi-uri s/Str "Koodiston URI"
-    :versio s/Int "Koodisto-koodin versio"))
 
 (s/defschema
   TutkinnonOsa
@@ -93,7 +88,8 @@
   MuuOppimisymparisto
   (describe
     "Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu"
-    :tarkenne KoodistoKoodi "Oppimisympäristön tarkenne, eHOKS Koodisto-koodi"
+    :tarkenne-koodi-uri s/Str
+    "Oppimisympäristön tarkenne, eHOKS Koodisto-koodi-URI"
     :selite s/Str "Oppimisympäristön nimi"
     :ohjaus-ja-tuki s/Bool
     "Onko opiskelijalla tunnistettu ohjauksen ja tuen tarvetta"
@@ -110,8 +106,8 @@
     "Osaamisen hankkimisen tapa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :ajankohta Aikavali "Hankkimisen ajankohta"
-    :osaamisen-hankkimistavan-tunniste KoodistoKoodi
-    "Osaamisen hankkimisen Koodisto-koodi (URI: osaamisenhankkimistapa)"
+    :koodi-uri OsaamisenHankkimistapaKoodiUri
+    "Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)"
     (s/optional-key :jarjestajan-edustaja) Oppilaitoshenkilo
     "Koulutuksen järjestäjän edustaja"
     (s/optional-key :hankkijan-edustaja) Oppilaitoshenkilo
@@ -143,7 +139,7 @@
     "Arvioija"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :nimi s/Str "Arvioijan nimi"
-    :rooli KoodistoKoodi "Arvioijan roolin Koodisto-koodi"
+    :rooli s/Str "Arvioijan roolin Koodisto-koodi-URI"
     :organisaatio Organisaatio "Arvioijan organisaatio"))
 
 (s/defschema
@@ -201,7 +197,7 @@
   (describe
     "Olemassaolevan YTOn osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :tunniste KoodistoKoodi "Koodisto-koodi"
+    :koodi-uri s/Str "Osa-alueen Koodisto-koodi-URI"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -445,9 +441,8 @@
     (str
       "Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella "
       "sisällytetty suoraan osaksi opiskelijan tutkintoa.")
-    (s/optional-key :tunniste) KoodistoKoodi
-    (str "Tutkinnon osan, johon tunnistettava olemassa oleva osaaminen "
-         "liittyy, Koodisto-koodi")
+    :koodi-uri TutkinnonOsaKoodiUri
+    "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -467,7 +462,8 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alueet [OlemassaOlevanYTOOsaAlue]
     "OlemassaOlevanYhteisenTutkinnonOsanOsa:n osa-alueet"
-    :tunniste KoodistoKoodi "Koodisto-koodi (tutkinnonosat)"
+    :koodi-uri TutkinnonOsaKoodiUri
+    "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -498,10 +494,10 @@
                         :any :excluded}
               :types {:any common-schema/Tutkinto}
               :description "Tutkinnon tiedot ePerusteet palvelussa"}
-   :urasuunnitelma {:methods {:any :optional}
-                    :types {:any KoodistoKoodi}
-                    :description
-                    "Opiskelijan tavoite 1, urasuunnitelman Koodisto-koodi"}
+   :urasuunnitelma
+   {:methods {:any :optional}
+    :types {:any s/Str}
+    :description "Opiskelijan tavoitteen Koodisto-koodi-URI"}
    :versio {:methods {:any :excluded
                       :get :required}
             :types {:any s/Int}
