@@ -94,7 +94,7 @@
                     url))
                 (mock/json-body
                   {:id 1
-                   :amosaa-tunniste 11
+                   :amosaa-tunniste "11"
                    :nimi "333"
                    :laajuus 3
                    :kuvaus "fef"
@@ -114,20 +114,20 @@
 (deftest patch-all-ppto
   (testing "PATCH all puuttuva paikallinen tutkinnon osa"
     (db/clear)
-    (let [ppto-data   {:nimi "22992"
-                       :laajuus 0
-                       :kuvaus "fef"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "124"
-                       :hankitun-osaamisen-naytto
-                       {:jarjestaja {:nimi "abc"}
-                        :nayttoymparisto {:nimi "aaa"}
-                        :kuvaus "ppp"
-                        :alku "2018-12-12"
-                        :loppu "2018-12-20"
-                        :sisalto "sisalto"
-                        :ammattitaitovaatimukset []
-                        :arvioijat []}}
+    (let [ppto-data {:nimi "22992"
+                     :laajuus 0
+                     :kuvaus "fef"
+                     :osaamisen-hankkimistavat []
+                     :koulutuksen-jarjestaja-oid "124"
+                     :hankitun-osaamisen-naytto
+                     {:jarjestaja {:nimi "abc"}
+                      :nayttoymparisto {:nimi "aaa"}
+                      :kuvaus "ppp"
+                      :alku "2018-12-12"
+                      :loppu "2018-12-20"
+                      :sisalto "sisalto"
+                      :ammattitaitovaatimukset []
+                      :arvioijat []}}
           ppto-response
           (utils/with-authentication
             app
@@ -145,7 +145,7 @@
                     url))
                 (mock/json-body
                   {:id 1
-                   :amosaa-tunniste 1
+                   :amosaa-tunniste "1"
                    :nimi ""
                    :laajuus 0
                    :kuvaus ""
