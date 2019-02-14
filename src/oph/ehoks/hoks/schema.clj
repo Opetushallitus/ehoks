@@ -8,7 +8,7 @@
   (:import (java.time LocalDate)))
 
 (def TutkinnonOsaKoodiUri
-  "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosa_1234)."
+  "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosat)."
   #"^tutkinnonosat_\d+$")
 
 (def OsaamisenHankkimistapaKoodiUri
@@ -385,7 +385,7 @@
   (describe
     "Puuttuva paikallinen tutkinnon osa"
     :id s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :amosaa-tunniste) Long
+    (s/optional-key :amosaa-tunniste) s/Str
     "Tunniste ePerusteet AMOSAA -palvelussa"
     :nimi s/Str "Tutkinnon osan nimi"
     :laajuus s/Int "Tutkinnon osan laajuus"
