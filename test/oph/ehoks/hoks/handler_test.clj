@@ -32,8 +32,8 @@
                        {:jarjestaja {:nimi "abc"}
                         :nayttoymparisto {:nimi "aaa"}
                         :kuvaus "fff"
-                        :ajankohta {:alku "2018-12-12"
-                                    :loppu "2018-12-20"}
+                        :alku "2018-12-12"
+                        :loppu "2018-12-20"
                         :sisalto "sisalto"
                         :ammattitaitovaatimukset []
                         :arvioijat []}}
@@ -72,8 +72,8 @@
                        {:jarjestaja {:nimi "abc"}
                         :nayttoymparisto {:nimi "aaa"}
                         :kuvaus "ppp"
-                        :ajankohta {:alku "2018-12-12"
-                                    :loppu "2018-12-20"}
+                        :alku "2018-12-12"
+                        :loppu "2018-12-20"
                         :sisalto "sisalto"
                         :ammattitaitovaatimukset []
                         :arvioijat []}}
@@ -104,8 +104,8 @@
                    {:jarjestaja {:nimi "abc"}
                     :nayttoymparisto {:nimi "aaa"}
                     :kuvaus "fff"
-                    :ajankohta {:alku "2018-12-12"
-                                :loppu "2018-12-20"}
+                    :alku "2018-12-12"
+                    :loppu "2018-12-20"
                     :sisalto "sisalto"
                     :ammattitaitovaatimukset []
                     :arvioijat []}})))]
@@ -123,8 +123,8 @@
                        {:jarjestaja {:nimi "abc"}
                         :nayttoymparisto {:nimi "aaa"}
                         :kuvaus "ppp"
-                        :ajankohta {:alku "2018-12-12"
-                                    :loppu "2018-12-20"}
+                        :alku "2018-12-12"
+                        :loppu "2018-12-20"
                         :sisalto "sisalto"
                         :ammattitaitovaatimukset []
                         :arvioijat []}}
@@ -155,8 +155,8 @@
                    {:jarjestaja {:nimi "a1bc"}
                     :nayttoymparisto {:nimi "a1aa"}
                     :kuvaus "ppp"
-                    :ajankohta {:alku "2018-12-12"
-                                :loppu "2018-12-20"}
+                    :alku "2018-12-12"
+                    :loppu "2018-12-20"
                     :sisalto "sisalto"
                     :ammattitaitovaatimukset []
                     :arvioijat []}})))]
@@ -174,8 +174,8 @@
                      {:jarjestaja {:nimi "abc"}
                       :nayttoymparisto {:nimi "aaa"}
                       :kuvaus "fff"
-                      :ajankohta {:alku "2018-12-12"
-                                  :loppu "2018-12-20"}
+                      :alku "2018-12-12"
+                      :loppu "2018-12-20"
                       :sisalto "sisalto"
                       :ammattitaitovaatimukset []
                       :arvioijat []}}
@@ -210,8 +210,8 @@
 (def pao-data     {:tutkinnon-osa
                    {:koodi-uri "tutkinnonosat_300268"}
                    :osaamisen-hankkimistavat
-                   [{:ajankohta {:alku "2018-12-12"
-                                 :loppu "2018-12-20"}
+                   [{:alku "2018-12-12"
+                     :loppu "2018-12-20"
                      :koodi-uri "osaamisenhankkimistapa_1"}]
                    :koulutuksen-jarjestaja-oid "123"})
 
@@ -286,8 +286,8 @@
   {:tutkinnon-osa
    {:koodi-uri "tutkinnonosat_300268"}
    :osaamisen-hankkimistavat
-   [{:ajankohta {:alku "2018-12-12"
-                 :loppu "2018-12-22"}
+   [{:alku "2018-12-12"
+     :loppu "2018-12-22"
      :koodi-uri "osaamisenhankkimistapa_32"}]
    :koulutuksen-jarjestaja-oid "12432"})
 
@@ -358,15 +358,15 @@
   {:koodi-uri "tutkinnonosat_300268"
    :osa-alueet
    [{:koodi-uri "tutkinnonosat_300268"
-     :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
-                                             :loppu "2018-12-23"}
+     :osaamisen-hankkimistavat [{:alku "2018-12-15"
+                                 :loppu "2018-12-23"
                                  :koodi-uri "osaamisenhankkimistapa_4"}]
      :hankitun-osaamisen-naytto
      {:jarjestaja {:nimi "ddd"}
       :nayttoymparisto {:nimi "aaddda"}
       :kuvaus "fff"
-      :ajankohta {:alku "2018-12-16"
-                  :loppu "2018-12-26"}
+      :alku "2018-12-16"
+      :loppu "2018-12-26"
       :sisalto "sisalto uusi"
       :arvioijat [{:nimi "Nimi2"
                    :rooli "esimerkki_uri2"
@@ -377,15 +377,15 @@
   {:koodi-uri "tutkinnonosat_300268"
    :osa-alueet
    [{:koodi-uri "tutkinnonosat_300268"
-     :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
-                                             :loppu "2018-12-23"}
+     :osaamisen-hankkimistavat [{:alku "2018-12-15"
+                                 :loppu "2018-12-23"
                                  :koodi-uri "osaamisenhankkimistapa_3"}]
      :hankitun-osaamisen-naytto
      {:jarjestaja {:nimi "ddd"}
       :nayttoymparisto {:nimi "aaddda"}
       :kuvaus "fff"
-      :ajankohta {:alku "2018-12-16"
-                  :loppu "2018-12-26"}
+      :alku "2018-12-16"
+      :loppu "2018-12-26"
       :sisalto "sisalto uusi"
       :arvioijat [{:nimi "Nimi2"
                    :rooli "esimerkki_uri2"
@@ -500,8 +500,8 @@
 (def ovatu-data {:nimi "Nimi"
                  :kuvaus "Kuvaus"
                  :kesto 10
-                 :ajankohta {:alku "2018-12-12"
-                             :loppu "2018-12-20"}})
+                 :alku "2018-12-12"
+                 :loppu "2018-12-20"})
 
 (deftest post-and-get-ovatu
   (testing "GET opiskeluvalmiuksia tukevat opinnot"
@@ -536,8 +536,8 @@
                   :nimi "Nimi"
                   :kuvaus "Kuvaus"
                   :kesto 10
-                  :ajankohta {:alku "2018-12-12"
-                              :loppu "2018-12-20"}}
+                  :alku "2018-12-12"
+                  :loppu "2018-12-20"}
            :meta {}}))))
 
 (deftest put-ovatu
@@ -565,8 +565,8 @@
                    :nimi "Uusi nimi"
                    :kuvaus "Uusi kuvaus"
                    :kesto 2
-                   :ajankohta {:alku "2018-12-15"
-                               :loppu "2018-12-25"}})))]
+                   :alku "2018-12-15"
+                   :loppu "2018-12-25"})))]
       (is (= (:status put-response) 204)))))
 
 (deftest patch-one-ovatu
@@ -619,8 +619,8 @@
                    :nimi "Uusi nimi"
                    :kuvaus "Uusi kuvaus"
                    :kesto 10
-                   :ajankohta {:alku "2018-12-11"
-                               :loppu "2018-12-21"}})))]
+                   :alku "2018-12-11"
+                   :loppu "2018-12-21"})))]
       (is (= (:status patch-response) 204)))))
 
 (deftest get-created-hoks
