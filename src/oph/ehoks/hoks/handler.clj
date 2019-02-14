@@ -17,7 +17,7 @@
       :summary "Palauttaa HOKSin puuttuvan paikallisen tutkinnon osan"
       :path-params [id :- s/Int]
       :return (rest/response
-                hoks-schema/PaikallinenTutkinnonOsa)
+                hoks-schema/PuuttuvaPaikallinenTutkinnonOsa)
       (rest/rest-ok (db/get-ppto-by-id id)))
 
     (c-api/POST
@@ -26,7 +26,7 @@
       "Luo (tai korvaa vanhan) puuttuvan paikallisen
  tutkinnon osan"
       :body
-      [ppto hoks-schema/PaikallinenTutkinnonOsaLuonti]
+      [ppto hoks-schema/PuuttuvaPaikallinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse)
       (let [ppto-response (db/create-ppto! ppto)]
         (rest/rest-ok {:uri (format "%s/%d" (:uri request)
@@ -38,7 +38,7 @@
       :summary "Päivittää HOKSin puuttuvan paikallisen
 tutkinnon osan"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/PaikallinenTutkinnonOsaPaivitys]
+      :body [values hoks-schema/PuuttuvaPaikallinenTutkinnonOsaPaivitys]
       (if (db/update-ppto! id values)
         (response/no-content)
         (response/not-found "PPTO not found with given PPTO ID")))
@@ -50,7 +50,7 @@ tutkinnon osan"
       "Päivittää HOKSin puuttuvan paikallisen tutkinnon
   osan arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/PaikallinenTutkinnonOsaKentanPaivitys]
+      :body [values hoks-schema/PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys]
       (if (db/update-ppto-values! id values)
         (response/no-content)
         (response/not-found "PPTO not found with given PPTO ID")))))

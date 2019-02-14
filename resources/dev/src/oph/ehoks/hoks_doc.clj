@@ -11,12 +11,15 @@
 
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
+(def filtered-schemas '#{OppijaHOKS})
+
 (def schemas (let [m (ns-publics 'oph.ehoks.hoks.schema)]
                (select-keys
                  m
                  (for [[k v] m
                        :when
                        (and
+                         (nil? (get filtered-schemas (:name (meta (deref v)))))
                          (not (:restful (meta (deref v))))
                          (not (fn? (deref v))))]
                    k))))
@@ -46,6 +49,10 @@
 (defn get-regex-translation [s]
   (case s
     "#\"^tutkinnonosat_\\d+$\"" "Merkkijono, esim. tutkinnonosat_123456"
+    "#\"^osaamisenhankkimistapa_.+$\""
+    "Merkkijono, esim. osaamisenhankkimistapa_oppisopimus"
+    "#\"^ammatillisenoppiaineet_.+$\""
+    "Merkkijono, esim. ammatillisenoppiaineet_aa"
     s))
 
 (defn get-enum-translation [n]
@@ -94,7 +101,9 @@
          "| Nimi | Tyyppi | Selite | Vaaditaan |"
          "| ---- | ------ | ------ | --------- |"])
       (when (not= (type m) java.util.regex.Pattern)
-        (map #(generate-md-row % (get m %)) (keys m)))
+        (map
+          #(generate-md-row % (get m %))
+          (remove #(= (or (:k %) %) :id) (keys m))))
       [""])))
 
 (defn generate-doc [s]

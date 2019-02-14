@@ -23,7 +23,7 @@
 
       (c-api/GET "/hoks" [:as request]
         :summary "Oppijan HOKSit kokonaisuudessaan"
-        :return {:data [(g/generate hoks-schema/HOKSModel :get)]
+        :return {:data [hoks-schema/OppijaHOKS]
                  :meta schema/KoodistoErrorMeta}
         (if (= (get-in request [:session :user :oid]) oid)
           (let [hokses (db/get-all-hoks-by-oppija oid)]

@@ -15,10 +15,9 @@
   {:urasuunnitelma {:koodi-arvo "jatkokoulutus"
                     :koodi-uri "urasuunnitelma_1"
                     :versio 1}
-   :opiskeluoikeus
-   {:oid "1.2.444.333.55.76666666666"
-    :tutkinto {:laajuus 35
-               :nimi "Audiovisuaalisen sisällön tuottamisen perustutkinto"}}
+   :opiskeluoikeus-oid "1.2.444.333.55.76666666666"
+   :tutkinto {:laajuus 35
+              :nimi "Audiovisuaalisen sisällön tuottamisen perustutkinto"}
    :oppija-oid "1.2.333.444.55.76666666666"
    :luotu (java.util.Date.)
    :luonut "Olli Opettaja"
