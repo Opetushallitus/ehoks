@@ -555,7 +555,7 @@
                                   "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
    :opiskeluvalmiuksia-tukevat-opinnot
    {:methods {:any :optional}
-    :types {:any OpiskeluvalmiuksiaTukevatOpinnot}
+    :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
     :description "Opiskeluvalmiuksia tukevat opinnot"}
    :puuttuva-ammatillinen-tutkinnon-osa
    {:methods {:any :optional}
