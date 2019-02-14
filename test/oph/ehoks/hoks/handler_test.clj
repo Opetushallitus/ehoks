@@ -212,10 +212,7 @@
                    :osaamisen-hankkimistavat
                    [{:ajankohta {:alku "2018-12-12"
                                  :loppu "2018-12-20"}
-                     :osaamisen-hankkimistavan-tunniste
-                     {:koodi-arvo "1"
-                      :koodi-uri "esimerkki_uri"
-                      :versio 1}}]
+                     :koodi-uri "osaamisenhankkimistapa_1"}]
                    :koulutuksen-jarjestaja-oid "123"})
 
 (deftest post-and-get-pao
@@ -291,10 +288,7 @@
    :osaamisen-hankkimistavat
    [{:ajankohta {:alku "2018-12-12"
                  :loppu "2018-12-22"}
-     :osaamisen-hankkimistavan-tunniste
-     {:koodi-arvo "22"
-      :koodi-uri "esimerkki_uri32"
-      :versio 1}}]
+     :koodi-uri "osaamisenhankkimistapa_32"}]
    :koulutuksen-jarjestaja-oid "12432"})
 
 (deftest patch-all-pao
@@ -366,10 +360,7 @@
    [{:koodi-uri "tutkinnonosat_300268"
      :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
                                              :loppu "2018-12-23"}
-                                 :osaamisen-hankkimistavan-tunniste
-                                 {:koodi-arvo "31"
-                                  :koodi-uri "esimerkki_uri3"
-                                  :versio 3}}]
+                                 :koodi-uri "osaamisenhankkimistapa_4"}]
      :hankitun-osaamisen-naytto
      {:jarjestaja {:nimi "ddd"}
       :nayttoymparisto {:nimi "aaddda"}
@@ -378,9 +369,7 @@
                   :loppu "2018-12-26"}
       :sisalto "sisalto uusi"
       :arvioijat [{:nimi "Nimi2"
-                   :rooli {:koodi-arvo "2"
-                           :koodi-uri "esimerkki_uri2"
-                           :versio 1}
+                   :rooli "esimerkki_uri2"
                    :organisaatio {:nimi "aaa2"}}]}}]
    :koulutuksen-jarjestaja-oid "1234"})
 
@@ -390,10 +379,7 @@
    [{:koodi-uri "tutkinnonosat_300268"
      :osaamisen-hankkimistavat [{:ajankohta {:alku "2018-12-15"
                                              :loppu "2018-12-23"}
-                                 :osaamisen-hankkimistavan-tunniste
-                                 {:koodi-arvo "31"
-                                  :koodi-uri "esimerkki_uri3"
-                                  :versio 3}}]
+                                 :koodi-uri "osaamisenhankkimistapa_3"}]
      :hankitun-osaamisen-naytto
      {:jarjestaja {:nimi "ddd"}
       :nayttoymparisto {:nimi "aaddda"}
@@ -402,9 +388,7 @@
                   :loppu "2018-12-26"}
       :sisalto "sisalto uusi"
       :arvioijat [{:nimi "Nimi2"
-                   :rooli {:koodi-arvo "2"
-                           :koodi-uri "esimerkki_uri2"
-                           :versio 1}
+                   :rooli "esimerkki_uri2"
                    :organisaatio {:nimi "aaa2"}}]}}]
    :koulutuksen-jarjestaja-oid "1234"})
 
