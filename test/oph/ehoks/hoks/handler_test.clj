@@ -357,7 +357,7 @@
 (def pyto-data
   {:koodi-uri "tutkinnonosat_300268"
    :osa-alueet
-   [{:koodi-uri "tutkinnonosat_300268"
+   [{:koodi-uri "ammatillisenoppiaineet_ku"
      :osaamisen-hankkimistavat [{:alku "2018-12-15"
                                  :loppu "2018-12-23"
                                  :koodi-uri "osaamisenhankkimistapa_4"}]
@@ -376,7 +376,7 @@
 (def pyto-patch-data
   {:koodi-uri "tutkinnonosat_300268"
    :osa-alueet
-   [{:koodi-uri "tutkinnonosat_300268"
+   [{:koodi-uri "ammatillisenoppiaineet_ai"
      :osaamisen-hankkimistavat [{:alku "2018-12-15"
                                  :loppu "2018-12-23"
                                  :koodi-uri "osaamisenhankkimistapa_3"}]
