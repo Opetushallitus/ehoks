@@ -11,12 +11,15 @@
 
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
+(def filtered-schemas '#{OppijaHOKS})
+
 (def schemas (let [m (ns-publics 'oph.ehoks.hoks.schema)]
                (select-keys
                  m
                  (for [[k v] m
                        :when
                        (and
+                         (nil? (get filtered-schemas (:name (meta (deref v)))))
                          (not (:restful (meta (deref v))))
                          (not (fn? (deref v))))]
                    k))))
