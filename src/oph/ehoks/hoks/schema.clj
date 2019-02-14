@@ -30,13 +30,6 @@
     "Tutkinnon Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"))
 
 (s/defschema
-  Aikavali
-  (describe
-    "Aikaväli"
-    :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
-    :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"))
-
-(s/defschema
   Henkilo
   (describe
     "Henkilö"
@@ -80,8 +73,11 @@
     :erityinen-tuki s/Bool
     (str "Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä "
          "erityisen tuen päätös")
-    (s/optional-key :erityisen-tuen-aika) Aikavali
-    (str "Erityisen tuen alkamispvm ja päättymispvm kyseisessä tutkinnon tai"
+    :erityinen-tuki-alku LocalDate
+    (str "Erityisen tuen alkupäivämäärä muodossa YYYY-MM-DD tutkinnon tai "
+         "koulutuksen osassa")
+    :erityinen-tuki-loppu LocalDate
+    (str "Erityisen tuen loppupäivämäärä muodossa YYYY-MM-DD tutkinnon tai "
          "koulutuksen osassa")))
 
 (s/defschema
@@ -96,8 +92,11 @@
     :erityinen-tuki s/Bool
     (str "Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä "
          "erityisen tuen päätös")
-    (s/optional-key :erityisen-tuen-aika) Aikavali
-    (str "Erityisen tuen alkamispvm ja päättymispvm kyseisessä tutkinnon tai"
+    :erityinen-tuki-alku LocalDate
+    (str "Erityisen tuen alkupäivämäärä muodossa YYYY-MM-DD tutkinnon tai "
+         "koulutuksen osassa")
+    :erityinen-tuki-loppu LocalDate
+    (str "Erityisen tuen loppupäivämäärä muodossa YYYY-MM-DD tutkinnon tai "
          "koulutuksen osassa")))
 
 (s/defschema
@@ -105,7 +104,8 @@
   (describe
     "Osaamisen hankkimisen tapa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :ajankohta Aikavali "Hankkimisen ajankohta"
+    :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
+    :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
     :koodi-uri OsaamisenHankkimistapaKoodiUri
     "Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)"
     (s/optional-key :jarjestajan-edustaja) Oppilaitoshenkilo
@@ -155,7 +155,10 @@
          "näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, "
          "esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, "
          "simulaattori")
-    :ajankohta Aikavali "Näytön tai osaamisen osoittamisen ajankohta"
+    :alku LocalDate
+    "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD"
+    :loppu LocalDate
+    "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD"
     :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
     (s/optional-key :ammattitaitovaatimukset) [s/Str]
     (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan. "
@@ -251,7 +254,8 @@
     :nimi s/Str "Opintojen nimi"
     :kuvaus s/Str "Opintojen kuvaus"
     :kesto s/Int "Opintojen kesto päivinä"
-    :ajankohta Aikavali "Opintojen ajoittuminen"))
+    :alku LocalDate "Opintojen alkupäivämäärä muodossa YYYY-MM-DD"
+    :loppu LocalDate "Opintojen loppupäivämäärä muodossa YYYY-MM-DD"))
 
 (s/defschema
   OpiskeluvalmiuksiaTukevatOpinnotLuonti
@@ -275,7 +279,7 @@
     (str "Opiskeluvalmiuksia tukevien opintojen tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
-     [:nimi :kuvaus :kesto :ajankohta]}))
+     [:nimi :kuvaus :kesto :alku :loppu]}))
 
 (s/defschema
   Arviointikriteeri
@@ -298,7 +302,10 @@
          "näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, "
          "esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, "
          "simulaattori")
-    :ajankohta Aikavali "Näytön tai osaamisen osoittamisen ajankohta"
+    :alku LocalDate
+    "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD"
+    :loppu LocalDate
+    "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD"
     :sisalto s/Str "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät"
     (s/optional-key :ammattitaitovaatimukset) [s/Str]
     (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan. "
