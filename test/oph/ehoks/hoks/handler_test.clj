@@ -212,7 +212,7 @@
                    :osaamisen-hankkimistavat
                    [{:alku "2018-12-12"
                      :loppu "2018-12-20"
-                     :koodi-uri "osaamisenhankkimistapa_1"}]
+                     :koodi-uri "osaamisenhankkimistapa_koulutussopimus"}]
                    :koulutuksen-jarjestaja-oid "123"})
 
 (deftest post-and-get-pao
@@ -288,7 +288,7 @@
    :osaamisen-hankkimistavat
    [{:alku "2018-12-12"
      :loppu "2018-12-22"
-     :koodi-uri "osaamisenhankkimistapa_32"}]
+     :koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
    :koulutuksen-jarjestaja-oid "12432"})
 
 (deftest patch-all-pao
@@ -358,9 +358,10 @@
   {:koodi-uri "tutkinnonosat_300268"
    :osa-alueet
    [{:koodi-uri "ammatillisenoppiaineet_ku"
-     :osaamisen-hankkimistavat [{:alku "2018-12-15"
-                                 :loppu "2018-12-23"
-                                 :koodi-uri "osaamisenhankkimistapa_4"}]
+     :osaamisen-hankkimistavat
+     [{:alku "2018-12-15"
+       :loppu "2018-12-23"
+       :koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
      :hankitun-osaamisen-naytto
      {:jarjestaja {:nimi "ddd"}
       :nayttoymparisto {:nimi "aaddda"}
@@ -377,9 +378,10 @@
   {:koodi-uri "tutkinnonosat_300268"
    :osa-alueet
    [{:koodi-uri "ammatillisenoppiaineet_ai"
-     :osaamisen-hankkimistavat [{:alku "2018-12-15"
-                                 :loppu "2018-12-23"
-                                 :koodi-uri "osaamisenhankkimistapa_3"}]
+     :osaamisen-hankkimistavat
+     [{:alku "2018-12-15"
+       :loppu "2018-12-23"
+       :koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
      :hankitun-osaamisen-naytto
      {:jarjestaja {:nimi "ddd"}
       :nayttoymparisto {:nimi "aaddda"}

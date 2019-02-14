@@ -12,7 +12,7 @@
   #"^tutkinnonosat_\d+$")
 
 (def OsaamisenHankkimistapaKoodiUri
-  #"^osaamisenhankkimistapa_\d+$")
+  #"^osaamisenhankkimistapa_.+$")
 
 (def YhteistenTutkinnonOsienOsaAlueenKoodiUri
   #"^ammatillisenoppiaineet_.+$")
