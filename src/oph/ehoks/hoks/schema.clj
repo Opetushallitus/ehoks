@@ -14,6 +14,9 @@
 (def OsaamisenHankkimistapaKoodiUri
   #"^osaamisenhankkimistapa_\d+$")
 
+(def YhteistenTutkinnonOsienOsaAlueenKoodiUri
+  #"^ammatillisenoppiaineet_.+$")
+
 (s/defschema
   Organisaatio
   (describe
@@ -186,8 +189,8 @@
   (describe
     "Puuttuvan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :koodi-uri TutkinnonOsaKoodiUri
-    "Osa-alueen Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
+    :koodi-uri YhteistenTutkinnonOsienOsaAlueenKoodiUri
+    "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
     (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
@@ -200,7 +203,8 @@
   (describe
     "Olemassaolevan YTOn osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :koodi-uri s/Str "Osa-alueen Koodisto-koodi-URI"
+    :koodi-uri YhteistenTutkinnonOsienOsaAlueenKoodiUri
+    "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
     :koulutuksen-jarjestaja-oid s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
