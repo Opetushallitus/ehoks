@@ -1,6 +1,7 @@
 (ns oph.ehoks.external.cas
   (:require [oph.ehoks.external.connection :as c]
             [oph.ehoks.config :refer [config]]
+            [clojure.data.xml :as xml]
             [clj-time.core :as t]))
 
 (defonce service-ticket
@@ -46,3 +47,17 @@
 (defn with-service-ticket [data]
   (c/with-api-headers
     (update data :options add-cas-ticket (:service data))))
+
+(defn validate-ticket [service ticket]
+  (let [response (c/with-api-headers
+                   {:method :get
+                    :service (str (:cas-service-ticket-url config) "/p3")
+                    :path "serviceValidate"
+                    :options
+                    {:query-params {:service (str service "/j_spring_cas_security_check")
+                                    :ticket ticket}}})]
+    (xml/parse-str (:body response))))
+
+(defn valid-ticket? [service ticket]
+  (let [result (validate-ticket service ticket)]
+    (= :authenticationSuccess (:tag (first (:content result))))))
