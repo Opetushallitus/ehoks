@@ -38,7 +38,7 @@
   (set-hoks-data!)
   (f)
   (client/reset-functions!)
-  (reset! c/cache {}))
+  (reset! oph.ehoks.external.cache/cache {}))
 
 (use-fixtures :each with-cleaning)
 
