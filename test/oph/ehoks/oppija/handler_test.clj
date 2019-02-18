@@ -20,18 +20,18 @@
               :nimi "Audiovisuaalisen sisällön tuottamisen perustutkinto"}
    :oppija-oid "1.2.333.444.55.76666666666"
    :luotu (java.util.Date.)
-   :luonut "Olli Opettaja"
+   :laatinut {:nimi "Olli Opettaja"}
    :hyvaksytty (java.util.Date.)
-   :hyvaksynyt "Heikki Hyväksyjä"
+   :hyvaksynyt {:nimi "Heikki Hyväksyjä"}
    :paivitetty (java.util.Date.)
-   :paivittanyt "Päivi Päivittäjä"
+   :paivittanyt {:nimi "Päivi Päivittäjä"}
    :versio 2
    :id 1})
 
 (defn set-hoks-data! []
   (reset!
     db/hoks-store
-    [(assoc hoks :versio 1 :paivittanyt "Tapio Testaaja")
+    [(assoc hoks :versio 1 :paivittanyt {:nimi "Tapio Testaaja"})
      hoks]))
 
 (defn with-cleaning [f]

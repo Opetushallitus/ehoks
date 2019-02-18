@@ -24,19 +24,16 @@
   (testing "GET newly created puuttuva paikallinen tutkinnon osa"
     (db/clear)
     (let [ppto-data   {:nimi "222"
-                       :laajuus 0
-                       :kuvaus "fef"
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "124"
                        :hankitun-osaamisen-naytto
-                       {:jarjestaja {:nimi "abc"}
-                        :nayttoymparisto {:nimi "aaa"}
-                        :kuvaus "fff"
-                        :alku "2018-12-12"
-                        :loppu "2018-12-20"
-                        :sisalto "sisalto"
-                        :ammattitaitovaatimukset []
-                        :arvioijat []}}
+                       [{:jarjestaja {:oppilaitos-oid "abc"}
+                         :nayttoymparisto {:nimi "aaa"}
+                         :kuvaus "fff"
+                         :alku "2018-12-12"
+                         :loppu "2018-12-20"
+                         :arvioijat [{:nimi "Nimi" :organisaatio
+                                      {:nimi "Organisaation nimi"}}]}]}
           ppto-response
           (utils/with-authentication
             app
@@ -63,20 +60,17 @@
 (deftest put-ppto
   (testing "PUT puuttuva paikallinen tutkinnon osa"
     (db/clear)
-    (let [ppto-data   {:nimi "22992"
-                       :laajuus 0
-                       :kuvaus "fef"
+    (let [ppto-data   {:nimi "222"
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "124"
                        :hankitun-osaamisen-naytto
-                       {:jarjestaja {:nimi "abc"}
-                        :nayttoymparisto {:nimi "aaa"}
-                        :kuvaus "ppp"
-                        :alku "2018-12-12"
-                        :loppu "2018-12-20"
-                        :sisalto "sisalto"
-                        :ammattitaitovaatimukset []
-                        :arvioijat []}}
+                       [{:jarjestaja {:oppilaitos-oid "abc"}
+                         :nayttoymparisto {:nimi "aaa"}
+                         :kuvaus "fff"
+                         :alku "2018-12-12"
+                         :loppu "2018-12-20"
+                         :arvioijat [{:nimi "Nimi" :organisaatio
+                                      {:nimi "Organisaation nimi"}}]}]}
           ppto-response
           (utils/with-authentication
             app
@@ -94,40 +88,33 @@
                     url))
                 (mock/json-body
                   {:id 1
-                   :amosaa-tunniste "11"
-                   :nimi "333"
-                   :laajuus 3
-                   :kuvaus "fef"
+                   :nimi "2223"
                    :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid "333"
+                   :koulutuksen-jarjestaja-oid "124"
                    :hankitun-osaamisen-naytto
-                   {:jarjestaja {:nimi "abc"}
-                    :nayttoymparisto {:nimi "aaa"}
-                    :kuvaus "fff"
-                    :alku "2018-12-12"
-                    :loppu "2018-12-20"
-                    :sisalto "sisalto"
-                    :ammattitaitovaatimukset []
-                    :arvioijat []}})))]
+                   [{:jarjestaja {:oppilaitos-oid "abc"}
+                     :nayttoymparisto {:nimi "aaa"}
+                     :kuvaus "fff"
+                     :alku "2018-12-12"
+                     :loppu "2018-12-20"
+                     :arvioijat [{:nimi "Nimi" :organisaatio
+                                  {:nimi "Organisaation nimi"}}]}]})))]
       (is (= (:status put-response) 204)))))
 
 (deftest patch-all-ppto
   (testing "PATCH all puuttuva paikallinen tutkinnon osa"
     (db/clear)
-    (let [ppto-data {:nimi "22992"
-                     :laajuus 0
-                     :kuvaus "fef"
+    (let [ppto-data {:nimi "222"
                      :osaamisen-hankkimistavat []
                      :koulutuksen-jarjestaja-oid "124"
                      :hankitun-osaamisen-naytto
-                     {:jarjestaja {:nimi "abc"}
-                      :nayttoymparisto {:nimi "aaa"}
-                      :kuvaus "ppp"
-                      :alku "2018-12-12"
-                      :loppu "2018-12-20"
-                      :sisalto "sisalto"
-                      :ammattitaitovaatimukset []
-                      :arvioijat []}}
+                     [{:jarjestaja {:oppilaitos-oid "abc"}
+                       :nayttoymparisto {:nimi "aaa"}
+                       :kuvaus "fff"
+                       :alku "2018-12-12"
+                       :loppu "2018-12-20"
+                       :arvioijat [{:nimi "Nimi" :organisaatio
+                                    {:nimi "Organisaation nimi"}}]}]}
           ppto-response
           (utils/with-authentication
             app
@@ -145,40 +132,33 @@
                     url))
                 (mock/json-body
                   {:id 1
-                   :amosaa-tunniste "1"
-                   :nimi ""
-                   :laajuus 0
-                   :kuvaus ""
+                   :nimi "222"
                    :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid "1214"
+                   :koulutuksen-jarjestaja-oid "1243"
                    :hankitun-osaamisen-naytto
-                   {:jarjestaja {:nimi "a1bc"}
-                    :nayttoymparisto {:nimi "a1aa"}
-                    :kuvaus "ppp"
-                    :alku "2018-12-12"
-                    :loppu "2018-12-20"
-                    :sisalto "sisalto"
-                    :ammattitaitovaatimukset []
-                    :arvioijat []}})))]
+                   [{:jarjestaja {:oppilaitos-oid "abcd"}
+                     :nayttoymparisto {:nimi "aaaf"}
+                     :kuvaus "ffsf"
+                     :alku "2018-12-14"
+                     :loppu "2018-12-22"
+                     :arvioijat [{:nimi "Nimi" :organisaatio
+                                  {:nimi "Organisaation nimi"}}]}]})))]
       (is (= (:status patch-response) 204)))))
 
 (deftest patch-one-ppto
   (testing "PATCH one value puuttuva paikallinen tutkinnon osa"
     (db/clear)
     (let [ppto-data {:nimi "222"
-                     :laajuus 0
-                     :kuvaus "fef"
                      :osaamisen-hankkimistavat []
                      :koulutuksen-jarjestaja-oid "124"
                      :hankitun-osaamisen-naytto
-                     {:jarjestaja {:nimi "abc"}
-                      :nayttoymparisto {:nimi "aaa"}
-                      :kuvaus "fff"
-                      :alku "2018-12-12"
-                      :loppu "2018-12-20"
-                      :sisalto "sisalto"
-                      :ammattitaitovaatimukset []
-                      :arvioijat []}}
+                     [{:jarjestaja {:oppilaitos-oid "abc"}
+                       :nayttoymparisto {:nimi "aaa"}
+                       :kuvaus "fff"
+                       :alku "2018-12-12"
+                       :loppu "2018-12-20"
+                       :arvioijat [{:nimi "Nimi" :organisaatio
+                                    {:nimi "Organisaation nimi"}}]}]}
           ppto-response
           (utils/with-authentication
             app
@@ -212,6 +192,7 @@
                    :osaamisen-hankkimistavat
                    [{:alku "2018-12-12"
                      :loppu "2018-12-20"
+                     :ajanjakson-tarkenne "Tarkenne tässä"
                      :koodi-uri "osaamisenhankkimistapa_koulutussopimus"}]
                    :koulutuksen-jarjestaja-oid "123"})
 
@@ -284,12 +265,13 @@
 
 (def patch-all-pao-data
   {:tutkinnon-osa
-   {:koodi-uri "tutkinnonosat_300268"}
+   {:koodi-uri "tutkinnonosat_3002681"}
    :osaamisen-hankkimistavat
-   [{:alku "2018-12-12"
-     :loppu "2018-12-22"
-     :koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
-   :koulutuksen-jarjestaja-oid "12432"})
+   [{:alku "2018-12-11"
+     :loppu "2018-12-21"
+     :ajanjakson-tarkenne "Tarkenne tässä uusi"
+     :koodi-uri "osaamisenhankkimistapa_koulutussopimus1"}]
+   :koulutuksen-jarjestaja-oid "1231"})
 
 (deftest patch-all-pao
   (testing "PATCH ALL puuttuva ammatillinen osaaminen"
@@ -363,36 +345,32 @@
        :loppu "2018-12-23"
        :koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
      :hankitun-osaamisen-naytto
-     {:jarjestaja {:nimi "ddd"}
-      :nayttoymparisto {:nimi "aaddda"}
-      :kuvaus "fff"
-      :alku "2018-12-16"
-      :loppu "2018-12-26"
-      :sisalto "sisalto uusi"
-      :arvioijat [{:nimi "Nimi2"
-                   :rooli "esimerkki_uri2"
-                   :organisaatio {:nimi "aaa2"}}]}}]
+     [{:jarjestaja {:oppilaitos-oid "abc"}
+       :nayttoymparisto {:nimi "aaa"}
+       :kuvaus "fff"
+       :alku "2018-12-12"
+       :loppu "2018-12-20"
+       :arvioijat [{:nimi "Nimi" :organisaatio
+                    {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1234"})
 
 (def pyto-patch-data
-  {:koodi-uri "tutkinnonosat_300268"
+  {:koodi-uri "tutkinnonosat_3002683"
    :osa-alueet
-   [{:koodi-uri "ammatillisenoppiaineet_ai"
+   [{:koodi-uri "ammatillisenoppiaineet_ku"
      :osaamisen-hankkimistavat
-     [{:alku "2018-12-15"
-       :loppu "2018-12-23"
+     [{:alku "2018-12-13"
+       :loppu "2018-12-22"
        :koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
      :hankitun-osaamisen-naytto
-     {:jarjestaja {:nimi "ddd"}
-      :nayttoymparisto {:nimi "aaddda"}
-      :kuvaus "fff"
-      :alku "2018-12-16"
-      :loppu "2018-12-26"
-      :sisalto "sisalto uusi"
-      :arvioijat [{:nimi "Nimi2"
-                   :rooli "esimerkki_uri2"
-                   :organisaatio {:nimi "aaa2"}}]}}]
-   :koulutuksen-jarjestaja-oid "1234"})
+     [{:jarjestaja {:oppilaitos-oid "abc2"}
+       :nayttoymparisto {:nimi "aaa2"}
+       :kuvaus "ff2f"
+       :alku "2018-12-15"
+       :loppu "2018-12-21"
+       :arvioijat [{:nimi "Nimi" :organisaatio
+                    {:nimi "Organisaation nimi"}}]}]}]
+   :koulutuksen-jarjestaja-oid "12347"})
 
 (deftest post-and-get-pyto
   (testing "POST puuttuvat yhteisen tutkinnon osat"
@@ -501,7 +479,6 @@
 (def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")
 (def ovatu-data {:nimi "Nimi"
                  :kuvaus "Kuvaus"
-                 :kesto 10
                  :alku "2018-12-12"
                  :loppu "2018-12-20"})
 
@@ -537,7 +514,6 @@
           {:data {:id 1
                   :nimi "Nimi"
                   :kuvaus "Kuvaus"
-                  :kesto 10
                   :alku "2018-12-12"
                   :loppu "2018-12-20"}
            :meta {}}))))
@@ -566,7 +542,6 @@
                   {:id 1
                    :nimi "Uusi nimi"
                    :kuvaus "Uusi kuvaus"
-                   :kesto 2
                    :alku "2018-12-15"
                    :loppu "2018-12-25"})))]
       (is (= (:status put-response) 204)))))
@@ -620,7 +595,6 @@
                   {:id 1
                    :nimi "Uusi nimi"
                    :kuvaus "Uusi kuvaus"
-                   :kesto 10
                    :alku "2018-12-11"
                    :loppu "2018-12-21"})))]
       (is (= (:status patch-response) 204)))))
@@ -630,9 +604,9 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
-                     :luonut "Teppo Tekijä"
-                     :paivittanyt "Pekka Päivittäjä"
-                     :hyvaksynyt "Heikki Hyväksyjä"}
+                     :laatinut {:nimi "Teppo Tekijä"}
+                     :paivittanyt {:nimi "Pekka Päivittäjä"}
+                     :hyvaksynyt {:nimi "Heikki Hyväksyjä"}}
           response
           (utils/with-authentication
             app
@@ -657,9 +631,9 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
-                     :luonut "Teppo Tekijä"
-                     :paivittanyt "Pekka Päivittäjä"
-                     :hyvaksynyt "Heikki Hyväksyjä"}]
+                     :laatinut {:nimi "Teppo Tekijä"}
+                     :paivittanyt {:nimi "Pekka Päivittäjä"}
+                     :hyvaksynyt {:nimi "Heikki Hyväksyjä"}}]
       (utils/with-authentication
         app
         (-> (mock/request :post url)
@@ -688,9 +662,9 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
-                     :luonut "Teppo Tekijä"
-                     :paivittanyt "Pekka Päivittäjä"
-                     :hyvaksynyt "Heikki Hyväksyjä"}
+                     :laatinut {:nimi "Teppo Tekijä"}
+                     :paivittanyt {:nimi "Pekka Päivittäjä"}
+                     :hyvaksynyt {:nimi "Heikki Hyväksyjä"}}
           response
           (utils/with-authentication
             app
@@ -704,8 +678,8 @@
               (-> (mock/request :put (get-in body [:data :uri]))
                   (mock/json-body
                     (-> hoks
-                        (assoc :paivittanyt "Teuvo Testaaja")
-                        (dissoc :luonut :luotu :versio :paivitetty)))))]
+                        (assoc :paivittanyt {:nimi "Teuvo Testaaja"})
+                        (dissoc :laatinut :luotu :versio :paivitetty)))))]
         (is (= (:status put-response) 204))
         (let [updated-hoks
               (-> (get-in body [:data :uri]) get-authenticated :data)]
@@ -715,17 +689,17 @@
               hoks
               :paivitetty (:paivitetty updated-hoks)
               :versio 2
-              :paivittanyt "Teuvo Testaaja")))))))
+              :paivittanyt {:nimi "Teuvo Testaaja"})))))))
 
 (deftest put-non-existing-hoks
   (testing "PUT prevents updating non existing HOKS"
     (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
-                     :paivittanyt "Teuvo Testaaja"
+                     :paivittanyt {:nimi "Teuvo Testaaja"}
                      :hyvaksytty (java.util.Date.)
                      :id 1
-                     :hyvaksynyt "Heikki Hyväksyjä"}
+                     :hyvaksynyt {:nimi "Heikki Hyväksyjä"}}
           response
           (utils/with-authentication
             app
@@ -738,9 +712,9 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
-                     :luonut "Teppo Tekijä"
-                     :paivittanyt "Pekka Päivittäjä"
-                     :hyvaksynyt "Heikki Hyväksyjä"}
+                     :laatinut {:nimi "Teppo Tekijä"}
+                     :paivittanyt {:nimi "Pekka Päivittäjä"}
+                     :hyvaksynyt {:nimi "Heikki Hyväksyjä"}}
           response
           (utils/with-authentication
             app
@@ -754,7 +728,7 @@
               (-> (mock/request :patch (get-in body [:data :uri]))
                   (mock/json-body
                     {:id (:id hoks)
-                     :paivittanyt "Kalle Käyttäjä"})))]
+                     :paivittanyt {:nimi "Kalle Käyttäjä"}})))]
         (is (= (:status patch-response) 204))
         (let [updated-hoks
               (-> (get-in body [:data :uri]) get-authenticated :data)]
@@ -764,7 +738,7 @@
               hoks
               :paivitetty (:paivitetty updated-hoks)
               :versio 2
-              :paivittanyt "Kalle Käyttäjä")))))))
+              :paivittanyt {:nimi "Kalle Käyttäjä"})))))))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
@@ -774,5 +748,5 @@
             app
             (-> (mock/request :patch (format "%s/1" url))
                 (mock/json-body {:id 1
-                                 :paivittanyt "Kalle Käyttäjä"})))]
+                                 :paivittanyt {:nimi "Kalle Käyttäjä"}})))]
       (is (= (:status response) 404)))))
