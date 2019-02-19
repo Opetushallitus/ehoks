@@ -2,8 +2,7 @@
   (:require [oph.ehoks.external.connection :as c]
             [oph.ehoks.config :refer [config]]
             [clojure.data.xml :as xml]
-            [clj-time.core :as t]
-            [oph.ehoks.external.kayttooikeus :as ko]))
+            [clj-time.core :as t]))
 
 (defonce service-ticket
   ^:private
@@ -90,8 +89,3 @@
 (defn valid-ticket? [service ticket]
   (let [result (validate-ticket service ticket)]
     (= :authenticationSuccess (:tag (first (:content result))))))
-
-(defn get-ticket-user [ticket]
-  (let [validation-data (validate-ticket (:backend-url config) ticket)]
-    (when (:success? validation-data)
-      (ko/get-user-details (:user validation-data)))))
