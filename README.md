@@ -250,12 +250,13 @@ java -jar target/ehoks-standalone.jar
 
 ## Integraatiot
 
-Service | Documentation
---------|--------------
-Opintohallintojärjestelmät |
-AMOSAA |
-ePerusteet | [palvelukortti](https://confluence.csc.fi/display/OPHPALV/ePerusteet)
-KOSKI | [palvelukortti](https://confluence.csc.fi/display/OPHPALV/Koski-palvelukortti)
+- CAS
+- [ePerusteet](https://confluence.csc.fi/display/OPHPALV/ePerusteet)
+- [Käyttöoikeuspalvelu](https://confluence.csc.fi/pages/viewpage.action?pageId=68725146)
+- [Koodisto](https://confluence.csc.fi/display/OPHPALV/Koodistopalvelu)
+- [KOSKI](https://confluence.csc.fi/display/OPHPALV/Koski-palvelukortti)
+- [Lokalistointi](https://confluence.csc.fi/display/OPHPALV/Lokalisointipalvelu)
+- [Oppijanumerorekisteri](https://confluence.csc.fi/display/OPHPALV/Oppijanumerorekisteri)
 
 ## Linkit
 
