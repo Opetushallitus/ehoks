@@ -223,6 +223,17 @@ Sovellus käyttää CAS-tunnistautumista ulkoisten rajapintojen kanssa. Lisää
 CAS-tunnukset ja sovelluksen tunniste (ent. client sub system code) ennen
 rajapintojen käyttämistä.
 
+## CAS
+
+### Rajapinnat
+
+Sovellus autentikoi rajapinnan kutsut CAS-palvelusta. Jokaisessa pyynnössä tulee
+olla ticket mukana. Tämän perusteella haetaan palvelukäyttäjän tiedot ja
+varmistetaan että käyttäjällä on oppijan opiskeluoikeuden kautta oikeus luoda
+tai päivättää oppijan HOKSia.
+
+![](doc/backend-auth-seq.png)
+
 ## Ajettava jar
 
 Ajettava jar riippuvuuksineen luodaan:
