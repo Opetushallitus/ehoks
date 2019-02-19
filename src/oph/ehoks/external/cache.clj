@@ -3,7 +3,8 @@
             [ring.util.codec :as codec]
             [clojure.tools.logging :as log]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.connection :as c]))
+            [oph.ehoks.external.connection :as c]
+            [oph.ehoks.external.cas :as cas]))
 
 (defonce cache
   ^:private
@@ -51,7 +52,9 @@
 (defn with-cache!
   [{service :service options :options :as data}]
   (or (get-cached (encode-url service (:query-params options)))
-      (let [response (c/with-api-headers data)]
+      (let [response (if (:authenticate? data)
+                       (cas/with-service-ticket data)
+                       (c/with-api-headers data))]
         (add-cached-response!
           (encode-url service (:query-params options)) response)
         (assoc response :cached :MISS))))
