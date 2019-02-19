@@ -25,18 +25,18 @@
     (s/optional-key :y-tunnus) s/Str "Organisaation y-tunnus"))
 
 (s/defschema
-NayttoYmparisto
-(modify
-  Organisaatio
-  "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
-  {:added
-   (describe
-     ""
-     (s/optional-key :kuvaus) s/Str
-     (str "Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen "
-          "näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, "
-          "esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, "
-          "simulaattori"))}))
+  NayttoYmparisto
+  (modify
+    Organisaatio
+    "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
+    {:added
+     (describe
+       ""
+       (s/optional-key :kuvaus) s/Str
+       (str "Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen "
+            "näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, "
+            "esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, "
+            "simulaattori"))}))
 
 (s/defschema
   TutkinnonOsa
@@ -501,17 +501,17 @@ NayttoYmparisto
                       :get :required}
             :types {:any s/Int}
             :description "HOKS-dokumentin versio"}
-   :laatinut {:methods {:patch :optional
-                        :put :excluded}
-              :types {:any HoksToimija}
-              :description "HOKS-dokumentin luoneen henkilön nimi"}
-   :paivittanyt {:methods {:patch :optional}
-                 :types {:any HoksToimija}
-                 :description
-                 "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi"}
-   :hyvaksynyt {:methods {:patch :optional}
+   :laatija {:methods {:patch :optional
+                       :put :excluded}
+             :types {:any HoksToimija}
+             :description "HOKS-dokumentin luoneen henkilön nimi"}
+   :paivittaja {:methods {:patch :optional}
                 :types {:any HoksToimija}
-                :description "Luodun HOKS-dokumentn hyväksyjän nimi"}
+                :description
+                "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi"}
+   :hyvaksyja {:methods {:patch :optional}
+               :types {:any HoksToimija}
+               :description "Luodun HOKS-dokumentn hyväksyjän nimi"}
    :luotu {:methods {:any :excluded
                      :get :required}
            :types {:any s/Inst}

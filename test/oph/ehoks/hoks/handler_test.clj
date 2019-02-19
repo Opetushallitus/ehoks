@@ -29,7 +29,6 @@
                        :hankitun-osaamisen-naytto
                        [{:jarjestaja {:oppilaitos-oid "abc"}
                          :nayttoymparisto {:nimi "aaa"}
-                         :kuvaus "fff"
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
                          :arvioijat [{:nimi "Nimi" :organisaatio
@@ -66,7 +65,6 @@
                        :hankitun-osaamisen-naytto
                        [{:jarjestaja {:oppilaitos-oid "abc"}
                          :nayttoymparisto {:nimi "aaa"}
-                         :kuvaus "fff"
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
                          :arvioijat [{:nimi "Nimi" :organisaatio
@@ -94,7 +92,6 @@
                    :hankitun-osaamisen-naytto
                    [{:jarjestaja {:oppilaitos-oid "abc"}
                      :nayttoymparisto {:nimi "aaa"}
-                     :kuvaus "fff"
                      :alku "2018-12-12"
                      :loppu "2018-12-20"
                      :arvioijat [{:nimi "Nimi" :organisaatio
@@ -110,7 +107,6 @@
                      :hankitun-osaamisen-naytto
                      [{:jarjestaja {:oppilaitos-oid "abc"}
                        :nayttoymparisto {:nimi "aaa"}
-                       :kuvaus "fff"
                        :alku "2018-12-12"
                        :loppu "2018-12-20"
                        :arvioijat [{:nimi "Nimi" :organisaatio
@@ -138,7 +134,6 @@
                    :hankitun-osaamisen-naytto
                    [{:jarjestaja {:oppilaitos-oid "abcd"}
                      :nayttoymparisto {:nimi "aaaf"}
-                     :kuvaus "ffsf"
                      :alku "2018-12-14"
                      :loppu "2018-12-22"
                      :arvioijat [{:nimi "Nimi" :organisaatio
@@ -154,7 +149,6 @@
                      :hankitun-osaamisen-naytto
                      [{:jarjestaja {:oppilaitos-oid "abc"}
                        :nayttoymparisto {:nimi "aaa"}
-                       :kuvaus "fff"
                        :alku "2018-12-12"
                        :loppu "2018-12-20"
                        :arvioijat [{:nimi "Nimi" :organisaatio
@@ -347,7 +341,6 @@
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "abc"}
        :nayttoymparisto {:nimi "aaa"}
-       :kuvaus "fff"
        :alku "2018-12-12"
        :loppu "2018-12-20"
        :arvioijat [{:nimi "Nimi" :organisaatio
@@ -365,7 +358,6 @@
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "abc2"}
        :nayttoymparisto {:nimi "aaa2"}
-       :kuvaus "ff2f"
        :alku "2018-12-15"
        :loppu "2018-12-21"
        :arvioijat [{:nimi "Nimi" :organisaatio
@@ -604,9 +596,9 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
-                     :laatinut {:nimi "Teppo Tekijä"}
-                     :paivittanyt {:nimi "Pekka Päivittäjä"}
-                     :hyvaksynyt {:nimi "Heikki Hyväksyjä"}}
+                     :laatija {:nimi "Teppo Tekijä"}
+                     :paivittaja {:nimi "Pekka Päivittäjä"}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}
           response
           (utils/with-authentication
             app
@@ -631,9 +623,9 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
-                     :laatinut {:nimi "Teppo Tekijä"}
-                     :paivittanyt {:nimi "Pekka Päivittäjä"}
-                     :hyvaksynyt {:nimi "Heikki Hyväksyjä"}}]
+                     :laatija {:nimi "Teppo Tekijä"}
+                     :paivittaja {:nimi "Pekka Päivittäjä"}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}]
       (utils/with-authentication
         app
         (-> (mock/request :post url)
@@ -662,9 +654,9 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
-                     :laatinut {:nimi "Teppo Tekijä"}
-                     :paivittanyt {:nimi "Pekka Päivittäjä"}
-                     :hyvaksynyt {:nimi "Heikki Hyväksyjä"}}
+                     :laatija {:nimi "Teppo Tekijä"}
+                     :paivittaja {:nimi "Pekka Päivittäjä"}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}
           response
           (utils/with-authentication
             app
@@ -678,8 +670,8 @@
               (-> (mock/request :put (get-in body [:data :uri]))
                   (mock/json-body
                     (-> hoks
-                        (assoc :paivittanyt {:nimi "Teuvo Testaaja"})
-                        (dissoc :laatinut :luotu :versio :paivitetty)))))]
+                        (assoc :paivittaja {:nimi "Teuvo Testaaja"})
+                        (dissoc :laatija :luotu :versio :paivitetty)))))]
         (is (= (:status put-response) 204))
         (let [updated-hoks
               (-> (get-in body [:data :uri]) get-authenticated :data)]
@@ -689,17 +681,17 @@
               hoks
               :paivitetty (:paivitetty updated-hoks)
               :versio 2
-              :paivittanyt {:nimi "Teuvo Testaaja"})))))))
+              :paivittaja {:nimi "Teuvo Testaaja"})))))))
 
 (deftest put-non-existing-hoks
   (testing "PUT prevents updating non existing HOKS"
     (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
-                     :paivittanyt {:nimi "Teuvo Testaaja"}
+                     :paivittaja {:nimi "Teuvo Testaaja"}
                      :hyvaksytty (java.util.Date.)
                      :id 1
-                     :hyvaksynyt {:nimi "Heikki Hyväksyjä"}}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}
           response
           (utils/with-authentication
             app
@@ -712,9 +704,9 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
                      :oppija-oid "1.2.333.444.55.66666666666"
-                     :laatinut {:nimi "Teppo Tekijä"}
-                     :paivittanyt {:nimi "Pekka Päivittäjä"}
-                     :hyvaksynyt {:nimi "Heikki Hyväksyjä"}}
+                     :laatija {:nimi "Teppo Tekijä"}
+                     :paivittaja {:nimi "Pekka Päivittäjä"}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}
           response
           (utils/with-authentication
             app
@@ -728,7 +720,7 @@
               (-> (mock/request :patch (get-in body [:data :uri]))
                   (mock/json-body
                     {:id (:id hoks)
-                     :paivittanyt {:nimi "Kalle Käyttäjä"}})))]
+                     :paivittaja {:nimi "Kalle Käyttäjä"}})))]
         (is (= (:status patch-response) 204))
         (let [updated-hoks
               (-> (get-in body [:data :uri]) get-authenticated :data)]
@@ -738,7 +730,7 @@
               hoks
               :paivitetty (:paivitetty updated-hoks)
               :versio 2
-              :paivittanyt {:nimi "Kalle Käyttäjä"})))))))
+              :paivittaja {:nimi "Kalle Käyttäjä"})))))))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
@@ -748,5 +740,5 @@
             app
             (-> (mock/request :patch (format "%s/1" url))
                 (mock/json-body {:id 1
-                                 :paivittanyt {:nimi "Kalle Käyttäjä"}})))]
+                                 :paivittaja {:nimi "Kalle Käyttäjä"}})))]
       (is (= (:status response) 404)))))
