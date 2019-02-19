@@ -48,6 +48,31 @@
   (c/with-api-headers
     (update data :options add-cas-ticket (:service data))))
 
+(defn xml->map [x]
+  (hash-map
+    (:tag x)
+    (map
+      #(if (= (type %) clojure.data.xml.Element)
+         (xml->map %)
+         %)
+      (:content x))))
+
+(defn find-value [m init-ks]
+  (loop [c (get m (first init-ks)) ks (rest init-ks)]
+    (if (empty? ks)
+    c
+    (let [k (first ks)]
+      (recur
+        (if (map? c)
+              (get c k)
+              (some #(get % k) c))
+        (rest ks))))))
+
+(defn convert-response-data [data]
+  (let [m (xml->map data)]
+    {:success (some? (some #(:authenticationSuccess %) (:serviceResponse m)))
+     :user (find-value m [:service :authenticationSuccess :user])}))
+
 (defn validate-ticket [service ticket]
   (let [response (c/with-api-headers
                    {:method :get
@@ -56,7 +81,8 @@
                     :options
                     {:query-params {:service (str service "/j_spring_cas_security_check")
                                     :ticket ticket}}})]
-    (xml/parse-str (:body response))))
+    (let [xml-data (xml/parse-str (:body response))]
+      (convert-response-data xml-data))))
 
 (defn valid-ticket? [service ticket]
   (let [result (validate-ticket service ticket)]

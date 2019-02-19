@@ -3,7 +3,8 @@
             [oph.ehoks.external.cas :as c]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.http-client :as client]
-            [clj-time.core :as t]))
+            [clj-time.core :as t]
+            [clojure.data.xml :as xml]))
 
 (def example-responses
   {"https://some.url/"
@@ -76,3 +77,21 @@
                       :path "/"
                       :options {}})]
       (is (= (:body response) {:value true})))))
+
+(def xml-map '{:v ({:k ("something")} {:o ("other")})})
+
+(deftest test-xml->map
+  (testing "Conversion of XML response to map"
+    (is (= (c/xml->map
+             (xml/sexp-as-element
+               [:v
+                [:k "something"]
+                [:o "other"]]))
+          xml-map ))))
+
+(deftest test-find-value
+  (testing "Finding value in XML map"
+    (is (= (first (c/find-value xml-map [:v :o]))
+           "other"))
+    (is (= (first (c/find-value xml-map [:v :k]))
+           "something"))))
