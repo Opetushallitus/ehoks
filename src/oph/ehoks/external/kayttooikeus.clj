@@ -6,7 +6,7 @@
   (cache/with-cache!
     {:method :get
      :authenticate? true
-     :service (:kayttoikeus-service-url config)
+     :service (:kayttooikeus-service-url config)
      :path "palvelukayttaja"
      :options {:as :json}}))
 
