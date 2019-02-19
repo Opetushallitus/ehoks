@@ -61,13 +61,13 @@
 (defn find-value [m init-ks]
   (loop [c (get m (first init-ks)) ks (rest init-ks)]
     (if (empty? ks)
-    c
-    (let [k (first ks)]
-      (recur
-        (if (map? c)
-              (get c k)
-              (some #(get % k) c))
-        (rest ks))))))
+      c
+      (let [k (first ks)]
+        (recur
+          (if (map? c)
+            (get c k)
+            (some #(get % k) c))
+          (rest ks))))))
 
 (defn convert-response-data [data]
   (let [m (xml->map data)]

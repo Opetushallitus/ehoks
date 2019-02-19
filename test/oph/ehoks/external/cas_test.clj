@@ -87,7 +87,7 @@
                [:v
                 [:k "something"]
                 [:o "other"]]))
-          xml-map ))))
+           xml-map))))
 
 (deftest test-find-value
   (testing "Finding value in XML map"
