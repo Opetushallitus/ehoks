@@ -55,5 +55,5 @@
               :koodisto-url s/Str
               :koski-url s/Str
               :ext-cache-lifetime-minutes s/Int
-              :kayttoikeus-service-url s/Str
+              :kayttooikeus-service-url s/Str
               :backend-url s/Str})
