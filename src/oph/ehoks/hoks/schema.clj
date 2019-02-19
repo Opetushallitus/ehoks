@@ -25,6 +25,20 @@
     (s/optional-key :y-tunnus) s/Str "Organisaation y-tunnus"))
 
 (s/defschema
+NayttoYmparisto
+(modify
+  Organisaatio
+  "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
+  {:added
+   (describe
+     ""
+     (s/optional-key :kuvaus) s/Str
+     (str "Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen "
+          "näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, "
+          "esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, "
+          "simulaattori"))}))
+
+(s/defschema
   TutkinnonOsa
   (describe
     "Tutkinnon osa"
@@ -146,13 +160,8 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
-    :nayttoymparisto Organisaatio
+    :nayttoymparisto NayttoYmparisto
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
-    :kuvaus s/Str
-    (str "Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen "
-         "näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, "
-         "esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, "
-         "simulaattori")
     :alku LocalDate
     "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD"
     :loppu LocalDate
