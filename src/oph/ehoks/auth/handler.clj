@@ -15,7 +15,8 @@
   (c-api/context "/session" []
     :tags ["auth"]
 
-    (route-middleware [wrap-authorize]
+    (route-middleware
+      [wrap-authorize]
       (c-api/GET "/user-info" [:as request]
         :summary "Palauttaa istunnon käyttäjän tiedot"
         :return (rest/response [schema/UserInfo])

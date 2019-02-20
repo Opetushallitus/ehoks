@@ -19,7 +19,8 @@
 
       (c-api/context "/:oid" [oid]
 
-        (route-middleware [wrap-authorize]
+        (route-middleware
+          [wrap-authorize]
           (c-api/GET "/" []
             :summary "Oppijan perustiedot"
             :return (rest/response [common-schema/Oppija])

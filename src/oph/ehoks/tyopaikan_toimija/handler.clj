@@ -18,7 +18,8 @@
         (:opintopolku-tt-auth-url config)))
 
     (c-api/context "/:tt-eid" [tt-eid]
-      (route-middleware [wrap-authorize]
+      (route-middleware
+        [wrap-authorize]
         (c-api/GET "/oppijat" []
           :summary "Palauttaa työpaikalla olevat oppijat"
           :return (rest/response [common-schema/Oppija])

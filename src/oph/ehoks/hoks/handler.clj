@@ -157,7 +157,8 @@
   (c-api/context "/hoks" []
     :tags ["hoks"]
 
-    (route-middleware [wrap-service-ticket]
+    (route-middleware
+      [wrap-service-ticket]
       (c-api/GET "/:id" [id]
         :summary "Palauttaa HOKSin"
         :path-params [id :- s/Int]

@@ -16,7 +16,8 @@
   (c-api/context "/external" []
     :tags ["external"]
 
-    (route-middleware [wrap-authorize]
+    (route-middleware
+      [wrap-authorize]
       (c-api/GET "/koodistokoodi/:uri/:versio" []
         :summary "Hakee koodisto koodin tietoja Koodisto-palvelusta"
         :path-params [uri :- s/Str, versio :- s/Int]

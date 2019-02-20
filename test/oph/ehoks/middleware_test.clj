@@ -38,14 +38,16 @@
 
 (def async-routes
   (c-api/context "/async" []
-    (route-middleware [middleware/wrap-authorize]
+    (route-middleware
+      [middleware/wrap-authorize]
       (c-api/GET "/" [] (async/go (ok ""))))
     (c-api/GET "/public" [] (async/go (ok "")))))
 
 (def sync-routes
   (c-api/context "/sync" []
-    (route-middleware [middleware/wrap-authorize]
-    (c-api/GET "/" [] (ok "")))
+    (route-middleware
+      [middleware/wrap-authorize]
+      (c-api/GET "/" [] (ok "")))
     (c-api/GET "/public" [] (ok ""))
     (c-api/POST "/authenticate" [] (assoc (ok "") :session {:user "User"}))))
 
