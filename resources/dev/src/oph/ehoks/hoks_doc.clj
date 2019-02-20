@@ -81,10 +81,12 @@
       (if (sequential? v)
         (format "[%s]" (get-name (first v)))
         (get-name v))
-      (or
-        (get-in m [:json-schema :description])
-        (:doc m)
-        "")
+      (cstr/replace
+        (or
+          (get-in m [:json-schema :description])
+          (:doc m)
+          "")
+        #"\n" "<br>")
       (required-str k))))
 
 (defn generate-markdown [m]
