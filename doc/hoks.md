@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 19.02.2019 07.58
+Generoitu 20.02.2019 14.33
 
 Katso myös [HOKS doc](https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html)
 
@@ -83,8 +83,7 @@ HOKS-dokumentin ylikirjoitus (PUT)
 | olemassa-olevat-ammatilliset-tutkinnon-osat | [[OlemassaOlevaAmmatillinenTutkinnonOsa](#OlemassaOlevaAmmatillinenTutkinnonOsa)] | Olemassa oleva ammatillinen osaaminen | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
-| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika
-                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
+| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuva-paikallinen-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
@@ -172,8 +171,7 @@ HOKS-dokumentin arvot uutta merkintää luotaessa (POST)
 | olemassa-olevat-ammatilliset-tutkinnon-osat | [[OlemassaOlevaAmmatillinenTutkinnonOsa](#OlemassaOlevaAmmatillinenTutkinnonOsa)] | Olemassa oleva ammatillinen osaaminen | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
-| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika
-                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
+| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuva-paikallinen-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
 | olemassa-oleva-paikallinen-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
@@ -230,8 +228,7 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
 | luotu | Aikaleima | HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
-| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika
-                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
+| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuva-paikallinen-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
@@ -293,8 +290,7 @@ HOKS-dokumentin ylikirjoitus (PATCH)
 | laatija | [HoksToimija](#HoksToimija) | HOKS-dokumentin luoneen henkilön nimi | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
-| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika
-                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
+| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuva-paikallinen-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
 | olemassa-oleva-paikallinen-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
