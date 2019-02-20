@@ -85,7 +85,3 @@
                       :ticket ticket}}})]
     (let [xml-data (xml/parse-str (:body response))]
       (convert-response-data xml-data))))
-
-(defn valid-ticket? [service ticket]
-  (let [result (validate-ticket service ticket)]
-    (= :authenticationSuccess (:tag (first (:content result))))))
