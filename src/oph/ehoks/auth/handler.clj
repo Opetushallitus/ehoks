@@ -31,7 +31,8 @@
         :summary "Päivittää istunnon käyttäjän tiedot Oppijanumerorekisteristä"
         :return (rest/response [schema/User])
         (let [session-user (get-in request [:session :user])
-              user-info-response (onr/find-student-by-nat-id (:hetu session-user))
+              user-info-response (onr/find-student-by-nat-id
+                                   (:hetu session-user))
               user-info (first (get-in user-info-response [:body :results]))
               oid (:oidHenkilo user-info)]
           (when-not (= (:status user-info-response) 200)
