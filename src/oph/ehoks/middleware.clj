@@ -14,22 +14,14 @@
 (defn- authenticated? [request]
   (some? (seq (:session request))))
 
-(defn- public-route? [request public-routes]
-  (route-in?
-    (select-keys request [:uri :request-method]) public-routes))
-
-(defn- access-granted? [request public-routes]
-  (or (authenticated? request)
-      (public-route? request public-routes)))
-
-(defn wrap-public [handler public-routes]
+(defn wrap-authorize [handler]
   (fn
     ([request respond raise]
-      (if (access-granted? request public-routes)
+      (if (authenticated? request)
         (handler request respond raise)
         (respond (unauthorized))))
     ([request]
-      (if (access-granted? request public-routes)
+      (if (authenticated? request)
         (handler request)
         (unauthorized)))))
 
