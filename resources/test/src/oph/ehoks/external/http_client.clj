@@ -12,13 +12,13 @@
                             :post client/post}))
 
 (defn get [url options]
-  ((:get @client-functions) url options))
+  (or ((:get @client-functions) url options) (client/get url options)))
 
 (defn set-get! [f]
   (swap! client-functions assoc :get f))
 
 (defn post [url options]
-  ((:post @client-functions) url options))
+  (or ((:post @client-functions) url options) (client/post url options)))
 
 (defn set-post! [f]
   (swap! client-functions assoc :post f))
