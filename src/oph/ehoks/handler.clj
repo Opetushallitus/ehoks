@@ -1,6 +1,7 @@
 (ns oph.ehoks.handler
   (:require [clojure.tools.logging :as log]
             [compojure.api.sweet :as c-api]
+            [compojure.api.exception :as c-ex]
             [compojure.core :refer [GET]]
             [compojure.route :as compojure-route]
             [ring.util.http-response :as response]
