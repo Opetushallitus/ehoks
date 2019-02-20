@@ -10,14 +10,10 @@
             [oph.ehoks.db.memory :as db]
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.schema.generator :as g]
-            [oph.ehoks.auth.handler :as auth-handler]
             [oph.ehoks.middleware :refer [wrap-authorize]]))
 
 (def routes
   (c-api/context "/oppija" []
-
-    auth-handler/routes
-
     (c-api/context "/oppijat" []
       :tags ["oppijat"]
 

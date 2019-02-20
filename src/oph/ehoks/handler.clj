@@ -17,7 +17,8 @@
             [oph.ehoks.redis :refer [redis-store]]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.tyopaikan-toimija.handler :as tt-handler]
-            [oph.ehoks.oppija.handler :as oppija-handler]))
+            [oph.ehoks.oppija.handler :as oppija-handler]
+            [oph.ehoks.auth.handler :as auth-handler]))
 
 (def app-routes
   (c-api/api
@@ -46,6 +47,7 @@
         (c-api/context "/v1" []
           :tags ["v1"]
           oppija-handler/routes
+          auth-handler/routes
           hoks-handler/routes
           healthcheck-handler/routes
           lokalisointi-handler/routes
