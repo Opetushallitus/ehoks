@@ -14,7 +14,7 @@
 (def OsaamisenHankkimistapaKoodiUri
   #"^osaamisenhankkimistapa_.+$")
 
-(def YhteistenTutkinnonOsienOsaAlueenKoodiUri
+(def OsaAlueenKoodiUri
   #"^ammatillisenoppiaineet_.+$")
 
 (s/defschema
@@ -160,6 +160,9 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
+    (s/optional-key :yto-osa-alue) OsaAlueenKoodiUri
+    (str "Suoritettavan tutkinnon osan näyttöön sisältyvän"
+         "yton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä")
     :nayttoymparisto NayttoYmparisto
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
     :alku LocalDate
@@ -194,7 +197,7 @@
   (describe
     "Puuttuvan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :koodi-uri YhteistenTutkinnonOsienOsaAlueenKoodiUri
+    :koodi-uri OsaAlueenKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
     (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
@@ -208,7 +211,7 @@
   (describe
     "Olemassaolevan YTOn osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :koodi-uri YhteistenTutkinnonOsienOsaAlueenKoodiUri
+    :koodi-uri OsaAlueenKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
     (s/optional-key :koulutuksen-jarjestaja-oid) s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
