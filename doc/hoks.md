@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 20.02.2019 14.37
+Generoitu 19.02.2019 15.29
 
 Katso myös [HOKS doc](https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html)
 
@@ -83,7 +83,8 @@ HOKS-dokumentin ylikirjoitus (PUT)
 | olemassa-olevat-ammatilliset-tutkinnon-osat | [[OlemassaOlevaAmmatillinenTutkinnonOsa](#OlemassaOlevaAmmatillinenTutkinnonOsa)] | Olemassa oleva ammatillinen osaaminen | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
-| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
+| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika
+                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuva-paikallinen-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
@@ -156,6 +157,7 @@ Hankitun paikallisen osaamisen osoittaminen: Näyttö tai muu osaamisen
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
+| yto-osa-alue | Merkkijono, esim. ammatillisenoppiaineet_aa | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
 | nayttoymparisto | [NayttoYmparisto](#NayttoYmparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
@@ -171,7 +173,8 @@ HOKS-dokumentin arvot uutta merkintää luotaessa (POST)
 | olemassa-olevat-ammatilliset-tutkinnon-osat | [[OlemassaOlevaAmmatillinenTutkinnonOsa](#OlemassaOlevaAmmatillinenTutkinnonOsa)] | Olemassa oleva ammatillinen osaaminen | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
-| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
+| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika
+                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuva-paikallinen-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
 | olemassa-oleva-paikallinen-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
@@ -228,7 +231,8 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
 | luotu | Aikaleima | HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
-| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
+| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika
+                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuva-paikallinen-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
@@ -244,6 +248,10 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
 | tutkinto | [Tutkinto](#Tutkinto) | Tutkinnon tiedot ePerusteet palvelussa | Ei |
 | hyvaksyja | [HoksToimija](#HoksToimija) | Luodun HOKS-dokumentn hyväksyjän nimi | Kyllä |
 
+###   
+
+
+
 ### HankitunOsaamisenNaytto  
 
 Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen
@@ -251,6 +259,7 @@ Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
+| yto-osa-alue | Merkkijono, esim. ammatillisenoppiaineet_aa | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
 | nayttoymparisto | [NayttoYmparisto](#NayttoYmparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
@@ -290,7 +299,8 @@ HOKS-dokumentin ylikirjoitus (PATCH)
 | laatija | [HoksToimija](#HoksToimija) | HOKS-dokumentin luoneen henkilön nimi | Ei |
 | puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
-| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
+| ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika
+                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuva-paikallinen-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
 | olemassa-oleva-paikallinen-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
@@ -324,10 +334,6 @@ Olemassaolevan YTOn osa-alueen tiedot
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 | valittu-todentamisen-prosessi | Joukon alkio (valittu-todentaminen-naytto, valittu-todentaminen-arvioijat, valittu-todentaminen-suoraan) | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
 | tarkentavat-tiedot | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
-
-###   
-
-
 
 ### PuuttuvaAmmatillinenOsaaminen  
 
@@ -457,6 +463,7 @@ Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
+| yto-osa-alue | Merkkijono, esim. ammatillisenoppiaineet_aa | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
 | nayttoymparisto | [NayttoYmparisto](#NayttoYmparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
