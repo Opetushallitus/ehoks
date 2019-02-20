@@ -2,7 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [compojure.api.sweet :as c-api]
             [compojure.api.exception :as c-ex]
-            [compojure.core :refer [GET wrap-routes]]
+            [compojure.core :refer [GET]]
             [compojure.route :as compojure-route]
             [ring.util.http-response :as response]
             [ring.middleware.session :as session]
@@ -18,12 +18,6 @@
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.tyopaikan-toimija.handler :as tt-handler]
             [oph.ehoks.oppija.handler :as oppija-handler]))
-
-(def public-routes
-  [{:uri #"^/ehoks-backend/api/v1/external/eperusteet/$"
-    :request-method :get}
-   {:uri #"^/ehoks-backend/api/v1/tyopaikan-toimija/auth$"
-    :request-method :get}])
 
 (def app-routes
   (c-api/api
@@ -55,10 +49,9 @@
           hoks-handler/routes
           healthcheck-handler/routes
           lokalisointi-handler/routes
-          (wrap-routes
-            external-handler/routes middleware/wrap-public public-routes)
+          external-handler/routes
           misc-handler/routes
-          (wrap-routes tt-handler/routes middleware/wrap-public public-routes)))
+          tt-handler/routes))
 
       (c-api/undocumented
         (GET "/buildversion.txt" _

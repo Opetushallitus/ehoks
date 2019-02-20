@@ -1,6 +1,6 @@
 (ns oph.ehoks.hoks.handler
   (:require [compojure.api.sweet :as c-api]
-            [compojure.core :refer [wrap-routes]]
+            [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
@@ -183,43 +183,41 @@ osaamisen"
         (response/no-content)
         (response/not-found "OVATU not found with given OVATU ID")))))
 
-(def hoks-routes
+(def routes
   (c-api/context "/hoks" []
     :tags ["hoks"]
 
-    (c-api/GET "/:id" [id]
-      :summary "Palauttaa HOKSin"
-      :path-params [id :- s/Int]
-      :return (rest/response hoks-schema/HOKS)
-      (rest/rest-ok (db/get-hoks-by-id id)))
+    (route-middleware [wrap-service-ticket]
+      (c-api/GET "/:id" [id]
+        :summary "Palauttaa HOKSin"
+        :path-params [id :- s/Int]
+        :return (rest/response hoks-schema/HOKS)
+        (rest/rest-ok (db/get-hoks-by-id id)))
 
-    (c-api/POST "/" [:as request]
-      :summary "Luo uuden HOKSin"
-      :body [hoks hoks-schema/HOKSLuonti]
-      :return (rest/response schema/POSTResponse)
-      (let [h (db/create-hoks! hoks)]
-        (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id h))})))
+      (c-api/POST "/" [:as request]
+        :summary "Luo uuden HOKSin"
+        :body [hoks hoks-schema/HOKSLuonti]
+        :return (rest/response schema/POSTResponse)
+        (let [h (db/create-hoks! hoks)]
+          (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id h))})))
 
-    (c-api/PUT "/:id" [id]
-      :summary "Päivittää olemassa olevaa HOKSia"
-      :path-params [id :- s/Int]
-      :body [values hoks-schema/HOKSPaivitys]
-      (if (db/update-hoks! id values)
-        (response/no-content)
-        (response/not-found "HOKS not found with given eHOKS ID")))
+      (c-api/PUT "/:id" [id]
+        :summary "Päivittää olemassa olevaa HOKSia"
+        :path-params [id :- s/Int]
+        :body [values hoks-schema/HOKSPaivitys]
+        (if (db/update-hoks! id values)
+          (response/no-content)
+          (response/not-found "HOKS not found with given eHOKS ID")))
 
-    (c-api/PATCH "/:id" []
-      :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
-      :path-params [id :- s/Int]
-      :body [values hoks-schema/HOKSKentanPaivitys]
-      (if (db/update-hoks-values! id values)
-        (response/no-content)
-        (response/not-found "HOKS not found with given eHOKS ID")))
+      (c-api/PATCH "/:id" []
+        :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
+        :path-params [id :- s/Int]
+        :body [values hoks-schema/HOKSKentanPaivitys]
+        (if (db/update-hoks-values! id values)
+          (response/no-content)
+          (response/not-found "HOKS not found with given eHOKS ID")))
 
-    puuttuva-ammatillinen-osaaminen
-    puuttuva-paikallinen-tutkinnon-osa
-    puuttuvat-yhteisen-tutkinnon-osat
-    opiskeluvalmiuksia-tukevat-opinnot))
-
-(def routes
-  (wrap-routes hoks-routes wrap-service-ticket))
+      puuttuva-ammatillinen-osaaminen
+      puuttuva-paikallinen-tutkinnon-osa
+      puuttuvat-yhteisen-tutkinnon-osat
+      opiskeluvalmiuksia-tukevat-opinnot)))
