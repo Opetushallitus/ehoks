@@ -234,6 +234,13 @@ tai päivättää oppijan HOKSia.
 
 ![](doc/backend-auth-seq.png)
 
+Rajapintaa kutsuttaessa pitää tuoda seuraavat headerit:
+
+| header | selite |
+| ------ | ------ |
+| Caller-Id | OPH:n rajapintojen yhteinen tunniste |
+| ticket | Validi CAS service ticket |
+
 ## Ajettava jar
 
 Ajettava jar riippuvuuksineen luodaan:
