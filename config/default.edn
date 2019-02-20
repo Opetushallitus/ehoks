@@ -4,7 +4,7 @@
  :tyopaikan-toimija-frontend-path "tyopaikan-toimija"
  :database-url "jdbc:postgresql://localhost:5432/ehoks?user=ehoks_user&password=ehoks"
  :redis-url nil
- :cas-service-ticket-url "http://localhost:3000/cas-dev/tickets"
+ :cas-service-ticket-url "http://localhost:3000/cas-dev"
  :cas-username ""
  :cas-password ""
  :client-sub-system-code "example-code"
