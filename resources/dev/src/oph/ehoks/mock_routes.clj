@@ -57,6 +57,18 @@
   (POST "/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc" []
     (response/ok "ST-1234-aBcDeFgHiJkLmN123456-cas.1234567890ab"))
 
+  (GET "/cas-dev/p3/serviceValidate" []
+    (response/ok
+      (str "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>"
+           "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
+           "<cas:attributes>"
+           "<cas:longTermAuthenticationRequestTokenUsed>false"
+           "</cas:longTermAuthenticationRequestTokenUsed>"
+           "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
+           "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
+           "</cas:authenticationDate></cas:attributes>"
+           "</cas:authenticationSuccess></cas:serviceResponse>")))
+
   (GET "/oppijanumerorekisteri-service/henkilo" request
     (json-response
       {:results

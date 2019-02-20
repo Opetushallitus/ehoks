@@ -1,5 +1,6 @@
 (ns oph.ehoks.middleware-test
   (:require [clojure.test :refer [deftest testing is]]
+            [compojure.api.core :refer [route-middleware]]
             [compojure.api.sweet :as c-api]
             [ring.util.http-response :refer [ok]]
             [ring.mock.request :as mock]
@@ -37,25 +38,22 @@
 
 (def async-routes
   (c-api/context "/async" []
-    (c-api/GET "/" [] (async/go (ok "")))
+    (route-middleware
+      [middleware/wrap-authorize]
+      (c-api/GET "/" [] (async/go (ok ""))))
     (c-api/GET "/public" [] (async/go (ok "")))))
 
 (def sync-routes
   (c-api/context "/sync" []
-    (c-api/GET "/" [] (ok ""))
+    (route-middleware
+      [middleware/wrap-authorize]
+      (c-api/GET "/" [] (ok "")))
     (c-api/GET "/public" [] (ok ""))
     (c-api/POST "/authenticate" [] (assoc (ok "") :session {:user "User"}))))
-
-(def public-routes
-  [{:uri #"^/async/public$" :request-method :get}
-   {:uri #"^/async/public$" :request-method :post}
-   {:uri #"^/sync/public$" :request-method :get}
-   {:uri #"^/sync/authenticate$" :request-method :post}])
 
 (def test-app
   (-> (c-api/api async-routes sync-routes)
       (middleware/wrap-cache-control-no-cache)
-      (middleware/wrap-public public-routes)
       (session/wrap-session)))
 
 (deftest private-sync
@@ -79,7 +77,7 @@
                      test-app (mock/request :get "/async"))]
       (is (= (:status response) 200)))))
 
-(deftest public-async
+(deftest with-authorization-async
   (testing "Public async route"
     (let [response (handle-async test-app (mock/request :get "/async/public"))]
       (is (= (:status response) 200)))))

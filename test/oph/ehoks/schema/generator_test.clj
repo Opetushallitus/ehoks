@@ -1,5 +1,5 @@
 (ns oph.ehoks.schema.generator-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest testing]]
             [oph.ehoks.schema.generator :as g]
             [schema.core :as s]
             [ring.swagger.json-schema :as rsjs]

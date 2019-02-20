@@ -1,8 +1,6 @@
 (ns oph.ehoks.schema-tools
   (:require [ring.swagger.json-schema :as rsjs]
-            [schema.core :as s]
-            [schema-tools.core :as st]
-            [clojure.set :refer [rename-keys]]))
+            [schema-tools.core :as st]))
 
 (defn describe [description & kvds]
   (assert (or (seq kvds) (zero? (mod (count kvds) 3)))

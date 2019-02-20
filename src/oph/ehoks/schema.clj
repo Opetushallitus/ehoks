@@ -54,4 +54,6 @@
               :service-timeout-ms s/Int
               :koodisto-url s/Str
               :koski-url s/Str
-              :ext-cache-lifetime-minutes s/Int})
+              :ext-cache-lifetime-minutes s/Int
+              :kayttooikeus-service-url s/Str
+              :backend-url s/Str})

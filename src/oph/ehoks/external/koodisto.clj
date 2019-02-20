@@ -1,6 +1,6 @@
 (ns oph.ehoks.external.koodisto
   (:require [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.connection :as c]))
+            [oph.ehoks.external.cache :as cache]))
 
 (defn filter-koodisto-values [values]
   (let [filtered
@@ -22,7 +22,7 @@
 
 (defn get-koodi-versio [uri versio]
   (try
-    (c/with-cache!
+    (cache/with-cache!
       {:method :get
        :service (:koodisto-url config)
        :path (format "rest/codeelement/%s/%d" uri versio)

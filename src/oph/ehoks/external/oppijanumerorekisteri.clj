@@ -1,10 +1,10 @@
 (ns oph.ehoks.external.oppijanumerorekisteri
   (:require [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.connection :as c]
+            [oph.ehoks.external.cas :as cas]
             [clojure.set :refer [rename-keys]]))
 
 (defn find-student-by-nat-id [nat-id]
-  (c/with-service-ticket
+  (cas/with-service-ticket
     {:method :get
      :service (:oppijanumerorekisteri-url config)
      :path "henkilo"
@@ -12,7 +12,7 @@
                :as :json}}))
 
 (defn find-student-by-oid [oid]
-  (c/with-service-ticket
+  (cas/with-service-ticket
     {:method :get
      :service (:oppijanumerorekisteri-url config)
      :path (str "henkilo/" oid)
