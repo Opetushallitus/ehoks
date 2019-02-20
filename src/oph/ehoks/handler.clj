@@ -2,7 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [compojure.api.sweet :as c-api]
             [compojure.api.exception :as c-ex]
-            [compojure.core :refer [GET]]
+            [compojure.core :refer [GET wrap-routes]]
             [compojure.route :as compojure-route]
             [ring.util.http-response :as response]
             [ring.middleware.session :as session]
@@ -10,7 +10,6 @@
             [oph.ehoks.resources :as resources]
             [oph.ehoks.middleware :as middleware]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
-            [oph.ehoks.auth.handler :as auth-handler]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
@@ -19,6 +18,12 @@
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.tyopaikan-toimija.handler :as tt-handler]
             [oph.ehoks.oppija.handler :as oppija-handler]))
+
+(def public-routes
+  [{:uri #"^/ehoks-backend/api/v1/external/eperusteet/$"
+    :request-method :get}
+   {:uri #"^/ehoks-backend/api/v1/tyopaikan-toimija/auth$"
+    :request-method :get}])
 
 (def app-routes
   (c-api/api
@@ -46,14 +51,14 @@
         :tags ["api"]
         (c-api/context "/v1" []
           :tags ["v1"]
-          healthcheck-handler/routes
-          auth-handler/routes
+          oppija-handler/routes
           hoks-handler/routes
+          healthcheck-handler/routes
           lokalisointi-handler/routes
-          external-handler/routes
+          (wrap-routes
+            external-handler/routes middleware/wrap-public public-routes)
           misc-handler/routes
-          tt-handler/routes
-          oppija-handler/routes))
+          (wrap-routes tt-handler/routes middleware/wrap-public public-routes)))
 
       (c-api/undocumented
         (GET "/buildversion.txt" _
@@ -66,34 +71,9 @@
       (compojure-route/not-found
         (response/not-found {:reason "Route not found"})))))
 
-(def public-routes
-  [{:uri #"^/ehoks-backend/buildversion.txt$"
-    :request-method :get}
-   {:uri #"^/ehoks-backend/api/v1/session/opintopolku/$"
-    :request-method :get}
-   {:uri #"^/ehoks-backend/api/v1/session$"
-    :request-method :options}
-   {:uri #"^/ehoks-backend/api/v1/healthcheck$"
-    :request-method :get}
-   {:uri #"^/ehoks-backend/doc/*"
-    :request-method :get}
-   {:uri #"^/ehoks-backend/api/v1/lokalisointi$"
-    :request-method :get}
-   {:uri #"^/ehoks-backend/api/v1/external/eperusteet/$"
-    :request-method :get}
-   {:uri #"^/ehoks-backend/api/v1/misc/environment$"
-    :request-method :get}
-   {:uri #"^/ehoks-backend/api/v1/tyopaikan-toimija/auth$"
-    :request-method :get}
-   {:uri #"^/ehoks-backend/json-viewer/*"
-    :request-method :get}
-   {:uri #"^/ehoks-backend/hoks-doc/index.html$"
-    :request-method :get}])
-
 (defn create-app [session-store]
   (-> app-routes
       (middleware/wrap-cache-control-no-cache)
-      (middleware/wrap-public public-routes)
       (session/wrap-session
         {:store (if (seq (:redis-url config))
                   (redis-store {:pool {}

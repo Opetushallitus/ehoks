@@ -1,5 +1,6 @@
 (ns oph.ehoks.hoks.handler
   (:require [compojure.api.sweet :as c-api]
+            [compojure.core :refer [wrap-routes]]
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
@@ -7,6 +8,7 @@
             [oph.ehoks.db.memory :as db]
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.schema.generator :as g]
+            [oph.ehoks.middleware :refer [wrap-service-ticket]]
             [schema.core :as s])
   (:import (java.time LocalDate)))
 
@@ -181,7 +183,7 @@ osaamisen"
         (response/no-content)
         (response/not-found "OVATU not found with given OVATU ID")))))
 
-(def routes
+(def hoks-routes
   (c-api/context "/hoks" []
     :tags ["hoks"]
 
@@ -218,3 +220,6 @@ osaamisen"
     puuttuva-paikallinen-tutkinnon-osa
     puuttuvat-yhteisen-tutkinnon-osat
     opiskeluvalmiuksia-tukevat-opinnot))
+
+(def routes
+  (wrap-routes hoks-routes wrap-service-ticket))
