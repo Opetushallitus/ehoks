@@ -9,7 +9,7 @@
             [oph.ehoks.external.connection :as c]
             [clj-time.core :as t]))
 
-(def url "/ehoks-backend/api/v1/oppijat")
+(def url "/ehoks-backend/api/v1/oppija/oppijat")
 
 (def hoks
   {:urasuunnitelma {:koodi-arvo "jatkokoulutus"
