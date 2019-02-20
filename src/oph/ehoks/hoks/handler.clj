@@ -6,8 +6,6 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.memory :as db]
-            [oph.ehoks.external.koodisto :as koodisto]
-            [oph.ehoks.schema.generator :as g]
             [oph.ehoks.middleware :refer [wrap-service-ticket]]
             [schema.core :as s])
   (:import (java.time LocalDate)))

@@ -5,7 +5,6 @@
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.common.schema :as common-schema]))
 
 (def routes

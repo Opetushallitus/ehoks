@@ -3,9 +3,7 @@
             [oph.ehoks.handler :refer [app]]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [clj-time.core :as t]
-            [oph.ehoks.db.memory :as db]
-            [oph.ehoks.external.http-client :as client]))
+            [oph.ehoks.db.memory :as db]))
 
 (def url "/ehoks-backend/api/v1/hoks")
 

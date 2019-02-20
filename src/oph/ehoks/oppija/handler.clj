@@ -2,14 +2,12 @@
   (:require [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
-            [schema.core :as s]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.db.memory :as db]
             [oph.ehoks.external.koodisto :as koodisto]
-            [oph.ehoks.schema.generator :as g]
             [oph.ehoks.middleware :refer [wrap-authorize]]))
 
 (def routes
