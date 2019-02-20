@@ -1,5 +1,7 @@
 (ns oph.ehoks.middleware
-  (:require [ring.util.http-response :refer [unauthorized header]]))
+  (:require [ring.util.http-response :refer [unauthorized header]]
+            [oph.ehoks.external.cas :as cas]
+            [oph.ehoks.config :refer [config]]))
 
 (defn- matches-route? [request route]
   (and (re-seq (:uri route) (:uri request))
@@ -12,22 +14,14 @@
 (defn- authenticated? [request]
   (some? (seq (:session request))))
 
-(defn- public-route? [request public-routes]
-  (route-in?
-    (select-keys request [:uri :request-method]) public-routes))
-
-(defn- access-granted? [request public-routes]
-  (or (authenticated? request)
-      (public-route? request public-routes)))
-
-(defn wrap-public [handler public-routes]
+(defn wrap-authorize [handler]
   (fn
     ([request respond raise]
-      (if (access-granted? request public-routes)
+      (if (authenticated? request)
         (handler request respond raise)
         (respond (unauthorized))))
     ([request]
-      (if (access-granted? request public-routes)
+      (if (authenticated? request)
         (handler request)
         (unauthorized)))))
 
@@ -45,3 +39,25 @@
                raise))
     ([request]
       (cache-control-no-cache-response (handler request)))))
+
+(defn validate-service-ticket [request]
+  (cond
+    (nil? (get-in request [:headers "caller-id"]))
+    {:error "Caller-Id header is missing"}
+    (nil? (get-in request [:headers "ticket"]))
+    {:error "Ticket is missing"}
+    (not (-> (:backend-url config)
+             (cas/validate-ticket (get-in request [:headers "ticket"]))
+             :success?))
+    {:error "Invalid service ticket"}))
+
+(defn wrap-service-ticket [handler]
+  (fn
+    ([request respond raise]
+      (if-let [result (validate-service-ticket request)]
+        (respond (unauthorized result))
+        (handler request respond raise)))
+    ([request]
+      (if-let [result (validate-service-ticket request)]
+        (unauthorized result)
+        (handler request)))))

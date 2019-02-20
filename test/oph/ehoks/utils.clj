@@ -27,6 +27,27 @@
     (swap! store assoc-in [(-> @store keys first) :user :oid] oid)
     (app (mock/header request :cookie cookie))))
 
+(defn with-service-ticket [app request]
+  (client/set-get!
+    (fn [url options]
+      (when (.endsWith url "/serviceValidate")
+        {:status 200
+         :body
+         (str "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>"
+              "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
+              "<cas:attributes>"
+              "<cas:longTermAuthenticationRequestTokenUsed>false"
+              "</cas:longTermAuthenticationRequestTokenUsed>"
+              "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
+              "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
+              "</cas:authenticationDate></cas:attributes>"
+              "</cas:authenticationSuccess></cas:serviceResponse>")})))
+  (let [result (app (-> request
+                        (mock/header "Caller-Id" "test")
+                        (mock/header "ticket" "ST-testitiketti")))]
+    (client/reset-functions!)
+    result))
+
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
 

@@ -223,6 +223,24 @@ Sovellus käyttää CAS-tunnistautumista ulkoisten rajapintojen kanssa. Lisää
 CAS-tunnukset ja sovelluksen tunniste (ent. client sub system code) ennen
 rajapintojen käyttämistä.
 
+## CAS
+
+### Rajapinnat
+
+Sovellus autentikoi rajapinnan kutsut CAS-palvelusta. Jokaisessa pyynnössä tulee
+olla ticket mukana. Tämän perusteella haetaan palvelukäyttäjän tiedot ja
+varmistetaan että käyttäjällä on oppijan opiskeluoikeuden kautta oikeus luoda
+tai päivättää oppijan HOKSia.
+
+![](doc/backend-auth-seq.png)
+
+Rajapintaa kutsuttaessa pitää tuoda seuraavat headerit:
+
+| header | selite |
+| ------ | ------ |
+| Caller-Id | OPH:n rajapintojen yhteinen tunniste |
+| ticket | Validi CAS service ticket |
+
 ## Ajettava jar
 
 Ajettava jar riippuvuuksineen luodaan:
@@ -239,12 +257,13 @@ java -jar target/ehoks-standalone.jar
 
 ## Integraatiot
 
-Service | Documentation
---------|--------------
-Opintohallintojärjestelmät |
-AMOSAA |
-ePerusteet | [palvelukortti](https://confluence.csc.fi/display/OPHPALV/ePerusteet)
-KOSKI | [palvelukortti](https://confluence.csc.fi/display/OPHPALV/Koski-palvelukortti)
+- CAS
+- [ePerusteet](https://confluence.csc.fi/display/OPHPALV/ePerusteet)
+- [Käyttöoikeuspalvelu](https://confluence.csc.fi/pages/viewpage.action?pageId=68725146)
+- [Koodisto](https://confluence.csc.fi/display/OPHPALV/Koodistopalvelu)
+- [KOSKI](https://confluence.csc.fi/display/OPHPALV/Koski-palvelukortti)
+- [Lokalistointi](https://confluence.csc.fi/display/OPHPALV/Lokalisointipalvelu)
+- [Oppijanumerorekisteri](https://confluence.csc.fi/display/OPHPALV/Oppijanumerorekisteri)
 
 ## Linkit
 

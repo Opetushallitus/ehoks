@@ -5,11 +5,9 @@
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.db.memory :as db]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.external.connection :as c]
-            [clj-time.core :as t]))
+            [oph.ehoks.session-store :refer [test-session-store]]))
 
-(def url "/ehoks-backend/api/v1/oppijat")
+(def url "/ehoks-backend/api/v1/oppija/oppijat")
 
 (def hoks
   {:urasuunnitelma {:koodi-arvo "jatkokoulutus"
@@ -38,7 +36,7 @@
   (set-hoks-data!)
   (f)
   (client/reset-functions!)
-  (reset! c/cache {}))
+  (reset! oph.ehoks.external.cache/cache {}))
 
 (use-fixtures :each with-cleaning)
 

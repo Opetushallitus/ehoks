@@ -3,9 +3,7 @@
             [oph.ehoks.handler :refer [app]]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [clj-time.core :as t]
-            [oph.ehoks.db.memory :as db]
-            [oph.ehoks.external.http-client :as client]))
+            [oph.ehoks.db.memory :as db]))
 
 (def url "/ehoks-backend/api/v1/hoks")
 
@@ -14,7 +12,7 @@
 ; TODO update tests to use real-like data
 
 (defn get-authenticated [url]
-  (-> (utils/with-authentication
+  (-> (utils/with-service-ticket
         app
         (mock/request :get url))
       :body
@@ -34,7 +32,7 @@
                          :arvioijat [{:nimi "Nimi" :organisaatio
                                       {:nimi "Organisaation nimi"}}]}]}
           ppto-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request :post (format
                                       "%s/1/puuttuva-paikallinen-tutkinnon-osa"
@@ -44,7 +42,7 @@
       (is (= (:status ppto-response) 200))
       (eq body {:data {:uri (format "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
                                     url)} :meta {}})
-      (let [ppto-new (utils/with-authentication
+      (let [ppto-new (utils/with-service-ticket
                        app
                        (mock/request
                          :get (format
@@ -70,14 +68,14 @@
                          :arvioijat [{:nimi "Nimi" :organisaatio
                                       {:nimi "Organisaation nimi"}}]}]}
           ppto-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request :post (format
                                       "%s/1/puuttuva-paikallinen-tutkinnon-osa"
                                       url))
                 (mock/json-body ppto-data)))
           put-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :put
@@ -112,14 +110,14 @@
                        :arvioijat [{:nimi "Nimi" :organisaatio
                                     {:nimi "Organisaation nimi"}}]}]}
           ppto-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request :post (format
                                       "%s/1/puuttuva-paikallinen-tutkinnon-osa"
                                       url))
                 (mock/json-body ppto-data)))
           patch-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :patch
@@ -154,7 +152,7 @@
                        :arvioijat [{:nimi "Nimi" :organisaatio
                                     {:nimi "Organisaation nimi"}}]}]}
           ppto-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request :post (format
                                       "%s/1/puuttuva-paikallinen-tutkinnon-osa"
@@ -163,7 +161,7 @@
           ppto-body (utils/parse-body
                       (:body ppto-response))
           patch-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :patch
@@ -194,7 +192,7 @@
   (testing "POST puuttuva ammatillinen osaaminen and then get the created ppao"
     (db/clear)
     (let [post-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :post
@@ -203,7 +201,7 @@
                     url))
                 (mock/json-body
                   pao-data)))
-          get-response  (utils/with-authentication
+          get-response  (utils/with-service-ticket
                           app
                           (mock/request
                             :get
@@ -225,7 +223,7 @@
   (testing "PUT puuttuva ammatillinen osaaminen"
     (db/clear)
     (let [post-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :post
@@ -235,7 +233,7 @@
                 (mock/json-body
                   pao-data)))
           put-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :put
@@ -244,7 +242,7 @@
                     url pao-path))
                 (mock/json-body
                   (assoc pao-data :id 1 :koulutuksen-jarjestaja-oid "124"))))
-          get-response  (utils/with-authentication
+          get-response  (utils/with-service-ticket
                           app
                           (mock/request
                             :get
@@ -271,7 +269,7 @@
   (testing "PATCH ALL puuttuva ammatillinen osaaminen"
     (db/clear)
     (let [post-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :post
@@ -281,7 +279,7 @@
                 (mock/json-body
                   pao-data)))
           patch-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :patch
@@ -290,7 +288,7 @@
                     url pao-path))
                 (mock/json-body
                   (assoc patch-all-pao-data :id 1))))
-          get-response  (utils/with-authentication
+          get-response  (utils/with-service-ticket
                           app
                           (mock/request
                             :get
@@ -306,7 +304,7 @@
   (testing "PATCH one value puuttuva ammatillinen osaaminen"
     (db/clear)
     (let [post-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :post
@@ -316,7 +314,7 @@
                 (mock/json-body
                   pao-data)))
           response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :patch
@@ -368,7 +366,7 @@
   (testing "POST puuttuvat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :post
@@ -377,7 +375,7 @@
                     url pyto-path))
                 (mock/json-body pyto-data)))
           get-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (mock/request
               :get
@@ -399,7 +397,7 @@
   (testing "PUT puuttuvat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :post
@@ -408,7 +406,7 @@
                     url pyto-path))
                 (mock/json-body pyto-data)))
           response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :put
@@ -423,7 +421,7 @@
   (testing "PATCH one value puuttuvat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :post
@@ -432,7 +430,7 @@
                     url pyto-path))
                 (mock/json-body pyto-data)))
           response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :patch
@@ -448,7 +446,7 @@
   (testing "PATCH all puuttuvat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :post
@@ -457,7 +455,7 @@
                     url pyto-path))
                 (mock/json-body pyto-data)))
           response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :patch
@@ -478,7 +476,7 @@
   (testing "GET opiskeluvalmiuksia tukevat opinnot"
     (db/clear)
     (let [post-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :post
@@ -487,7 +485,7 @@
                     url ovatu-path))
                 (mock/json-body ovatu-data)))
           get-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (mock/request
               :get
@@ -514,7 +512,7 @@
   (testing "PUT opiskeluvalmiuksia tukevat opinnot"
     (db/clear)
     (let [post-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :post
@@ -523,7 +521,7 @@
                     url ovatu-path))
                 (mock/json-body ovatu-data)))
           put-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :put
@@ -542,7 +540,7 @@
   (testing "PATCH one value opiskeluvalmiuksia tukevat opinnot"
     (db/clear)
     (let [post-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :post
@@ -551,7 +549,7 @@
                     url ovatu-path))
                 (mock/json-body ovatu-data)))
           patch-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :patch
@@ -567,7 +565,7 @@
   (testing "PATCH all opiskeluvalmiuksia tukevat opinnot"
     (db/clear)
     (let [post-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :post
@@ -576,7 +574,7 @@
                     url ovatu-path))
                 (mock/json-body ovatu-data)))
           patch-response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request
                   :patch
@@ -600,7 +598,7 @@
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}}
           response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request :post url)
                 (mock/json-body hoks-data)))
@@ -626,12 +624,12 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}}]
-      (utils/with-authentication
+      (utils/with-service-ticket
         app
         (-> (mock/request :post url)
             (mock/json-body hoks-data)))
       (let [response
-            (utils/with-authentication
+            (utils/with-service-ticket
               app
               (-> (mock/request :post url)
                   (mock/json-body hoks-data)))
@@ -658,14 +656,14 @@
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}}
           response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request :post url)
                 (mock/json-body hoks-data)))
           body (utils/parse-body (:body response))]
       (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)
             put-response
-            (utils/with-authentication
+            (utils/with-service-ticket
               app
               (-> (mock/request :put (get-in body [:data :uri]))
                   (mock/json-body
@@ -693,7 +691,7 @@
                      :id 1
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}}
           response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request :put (format "%s/1" url))
                 (mock/json-body hoks-data)))]
@@ -708,14 +706,14 @@
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}}
           response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request :post url)
                 (mock/json-body hoks-data)))
           body (utils/parse-body (:body response))]
       (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)
             patch-response
-            (utils/with-authentication
+            (utils/with-service-ticket
               app
               (-> (mock/request :patch (get-in body [:data :uri]))
                   (mock/json-body
@@ -736,7 +734,7 @@
   (testing "PATCH prevents updating non existing HOKS"
     (db/clear)
     (let [response
-          (utils/with-authentication
+          (utils/with-service-ticket
             app
             (-> (mock/request :patch (format "%s/1" url))
                 (mock/json-body {:id 1

@@ -4,7 +4,7 @@
  :tyopaikan-toimija-frontend-path "tyopaikan-toimija"
  :database-url "jdbc:postgresql://localhost:5432/ehoks?user=ehoks_user&password=ehoks"
  :redis-url nil
- :cas-service-ticket-url "http://localhost:3000/cas-dev/tickets"
+ :cas-service-ticket-url "http://localhost:3000/cas-dev"
  :cas-username ""
  :cas-password ""
  :client-sub-system-code "example-code"
@@ -20,4 +20,6 @@
  :koski-url "http://localhost:3000/koski"
  :koodisto-url "http://localhost:3000/koodisto-service"
  :ext-cache-lifetime-minutes 180
- :lokalisointi-url "https://virkailija.testiopintopolku.fi/lokalisointi/cxf/rest/v1/localisation"}
+ :lokalisointi-url "https://virkailija.testiopintopolku.fi/lokalisointi/cxf/rest/v1/localisation"
+ :kayttooikeus-service-url "https://virkailija.testiopintopolku.fi/kayttooikeus-service"
+ :backend-url "http://localhost:3000/ehoks-backend"}
