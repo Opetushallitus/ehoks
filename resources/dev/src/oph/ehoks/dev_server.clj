@@ -13,7 +13,9 @@
             [ring.middleware.params :refer [wrap-params]]
             [clojure.tools.logging :as log]
             [cheshire.core :as cheshire]
-            [oph.ehoks.db.memory :as db]))
+            [oph.ehoks.db.memory :as db]
+            [clj-time.coerce :as coerce]
+            [clj-time.format :as f]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -35,11 +37,26 @@
   (when-let [data (slurp file)]
     (reset! a (cheshire/parse-string data true))))
 
+(defn parse-date [s]
+  (coerce/to-date (f/parse s)))
+
+(defn set-hoks-dates [h]
+  (-> h
+      (update :luotu parse-date)
+      (update :paivitetty parse-date)
+      (update :hyvaksytty parse-date)))
+
 (defn import-initial-demo-data! []
-  (import-data!
-    (-> "demo-data/hoksit.json" io/resource io/file) db/hoks-store)
-  (import-data!
-    (-> "demo-data/oppijat.json" io/resource io/file) db/oppijat-store))
+  (-> "demo-data/hoksit.json"
+      io/resource io/file
+      (import-data! db/hoks-store))
+  (reset!
+    db/hoks-store
+    (map set-hoks-dates (deref db/hoks-store)))
+  (-> "demo-data/oppijat.json"
+      io/resource
+      io/file
+      (import-data! db/oppijat-store)))
 
 (defroutes dev-routes
   (GET "/dev-routes/*" request
