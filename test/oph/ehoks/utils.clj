@@ -42,9 +42,12 @@
               "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
               "</cas:authenticationDate></cas:attributes>"
               "</cas:authenticationSuccess></cas:serviceResponse>")}
-        (.contains url "/koski/api/opiskeluoikeus/")
+        (.endsWith url "/koski/api/opiskeluoikeus/1.3.444.555.66.77777777777")
         {:status 200
-         :body {:oppilaitos {:oid "1.2.246.562.24.47861388607"}}})))
+         :body {:oppilaitos {:oid "1.2.246.562.24.47861388607"}}}
+        (.endsWith url "/koski/api/opiskeluoikeus/1.3.444.555.66.77777777778")
+        {:status 200
+         :body {:oppilaitos {:oid "1.2.246.562.24.47861388608"}}})))
   (let [result (app (-> request
                         (mock/header "Caller-Id" "test")
                         (mock/header "ticket" "ST-testitiketti")))]
