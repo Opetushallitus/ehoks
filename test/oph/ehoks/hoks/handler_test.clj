@@ -616,6 +616,30 @@
             :paivitetty (:paivitetty hoks)
             :versio 1))))))
 
+(deftest prevent-getting-unauthorized-hoks
+  (testing "Prevent GET unauthorized HOKS"
+    (db/clear)
+    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777778"
+                     :oppija-oid "1.2.333.444.55.66666666666"
+                     :laatija {:nimi "Teppo Tekijä"}
+                     :paivittaja {:nimi "Pekka Päivittäjä"}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}]
+      (utils/with-service-ticket
+        app
+        (-> (mock/request :post url)
+            (mock/json-body hoks-data)))
+      (let [response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request :post url)
+                  (mock/json-body hoks-data)))
+            body (utils/parse-body (:body response))]
+        (is (= (-> (:status
+                    (utils/with-service-ticket
+                      app
+                      (mock/request :get (get-in body [:data :uri])))))
+               401))))))
+
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"
     (db/clear)
