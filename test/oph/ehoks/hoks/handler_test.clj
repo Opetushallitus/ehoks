@@ -634,10 +634,10 @@
               (-> (mock/request :post url)
                   (mock/json-body hoks-data)))
             body (utils/parse-body (:body response))]
-        (is (= (-> (:status
-                     (utils/with-service-ticket
-                       app
-                       (mock/request :get (get-in body [:data :uri])))))
+        (is (= (:status
+                (utils/with-service-ticket
+                  app
+                  (mock/request :get (get-in body [:data :uri]))))
                401))))))
 
 (deftest get-last-version-of-hoks
