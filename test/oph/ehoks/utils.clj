@@ -30,7 +30,7 @@
 (defn with-service-ticket [app request]
   (client/set-get!
     (fn [url options]
-      (when (.endsWith url "/serviceValidate")
+      (cond (.endsWith url "/serviceValidate")
         {:status 200
          :body
          (str "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>"
@@ -41,7 +41,10 @@
               "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
               "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
               "</cas:authenticationDate></cas:attributes>"
-              "</cas:authenticationSuccess></cas:serviceResponse>")})))
+              "</cas:authenticationSuccess></cas:serviceResponse>")}
+        (.contains url "/koski/api/opiskeluoikeus/")
+        {:status 200
+         :body {:oppilaitos {:oid "1.2.246.562.24.47861388607"}}})))
   (let [result (app (-> request
                         (mock/header "Caller-Id" "test")
                         (mock/header "ticket" "ST-testitiketti")))]
