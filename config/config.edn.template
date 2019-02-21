@@ -11,7 +11,7 @@
  :eperusteet-url "{{ehoks_eperusteet_url}}"
  :eperusteet-peruste-url "{{ehoks_eperusteet_peruste_url}}"
  :oppijanumerorekisteri-url "{{ehoks_oppijanumerorekisteri_url}}"
- :kayttooikeus-service-url "{{ehoks_kayttooikeus-service_url}}"
+ :kayttooikeus-service-url "{{ehoks_kayttooikeus_service_url}}"
  :koski-url "{{ehoks_koski_url}}"
  :koodisto-url "{{ehoks_koodisto_url}}"
  :lokalisointi-url "{{ehoks_lokalisointi_url}}"}
