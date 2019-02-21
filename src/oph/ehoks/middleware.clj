@@ -1,6 +1,7 @@
 (ns oph.ehoks.middleware
   (:require [ring.util.http-response :refer [unauthorized header]]
             [oph.ehoks.external.cas :as cas]
+            [oph.ehoks.external.kayttooikeus :as kayttooikeus]
             [oph.ehoks.config :refer [config]]))
 
 (defn- matches-route? [request route]
@@ -40,24 +41,26 @@
     ([request]
       (cache-control-no-cache-response (handler request)))))
 
-(defn validate-service-ticket [request]
+(defn validate-headers [request]
   (cond
     (nil? (get-in request [:headers "caller-id"]))
     {:error "Caller-Id header is missing"}
     (nil? (get-in request [:headers "ticket"]))
-    {:error "Ticket is missing"}
-    (not (-> (:backend-url config)
-             (cas/validate-ticket (get-in request [:headers "ticket"]))
-             :success?))
-    {:error "Invalid service ticket"}))
+    {:error "Ticket is missing"}))
+
+(defn set-service-ticket-user [request]
+  (assoc
+    request
+    :service-ticket-user (kayttooikeus/get-ticket-user
+                           (get-in request [:headers "ticket"]))))
 
 (defn wrap-service-ticket [handler]
   (fn
     ([request respond raise]
-      (if-let [result (validate-service-ticket request)]
+      (if-let [result (validate-headers request)]
         (respond (unauthorized result))
-        (handler request respond raise)))
+        (handler (set-service-ticket-user request) respond raise)))
     ([request]
-      (if-let [result (validate-service-ticket request)]
+      (if-let [result (validate-headers request)]
         (unauthorized result)
-        (handler request)))))
+        (handler (set-service-ticket-user request))))))
