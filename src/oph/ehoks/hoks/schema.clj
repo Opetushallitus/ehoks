@@ -496,26 +496,6 @@
     "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
 
 (s/defschema
-  OlemassaOlevaAmmatillinenTutkinnonOsa
-  (describe
-    (str
-      "Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella "
-      "sisällytetty suoraan osaksi opiskelijan tutkintoa.")
-    :koodi-uri TutkinnonOsaKoodiUri
-    "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
-    (s/optional-key :koulutuksen-jarjestaja-oid) s/Str
-    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
-         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
-         "koulutuksen järjestäjän oid.")
-    :valittu-todentamisen-prosessi
-    (s/enum :valittu-todentaminen-suoraan
-            :valittu-todentaminen-arvioijat
-            :valittu-todentaminen-naytto)
-    "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
-    (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
-    "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
-
-(s/defschema
   OlemassaOlevaYhteinenTutkinnonOsa
   (modify
     YhteinenTutkinnonOsa
