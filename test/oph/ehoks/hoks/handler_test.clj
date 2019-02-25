@@ -640,20 +640,18 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}}]
-      (utils/with-service-ticket
-        app
-        (-> (mock/request :post url)
-            (mock/json-body hoks-data)))
+
       (let [response
             (utils/with-service-ticket
               app
               (-> (mock/request :post url)
-                  (mock/json-body hoks-data)))
+                  (mock/json-body hoks-data))
+              "1.2.246.562.24.47861388607")
             body (utils/parse-body (:body response))]
         (is (= (:status
-                 (utils/with-service-ticket
-                   app
-                   (mock/request :get (get-in body [:data :uri]))))
+                (utils/with-service-ticket
+                  app
+                  (mock/request :get (get-in body [:data :uri]))))
                401))))))
 
 (deftest get-last-version-of-hoks
