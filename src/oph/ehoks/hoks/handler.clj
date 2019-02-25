@@ -201,24 +201,31 @@
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse)
+        (when-not (hoks-access? hoks (:service-ticket-user request))
+          (response/unauthorized!
+            {:error
+             (str "Creating HOKS is not allowed. "
+                  "Check student and 'opiskeluoikeus'.")}))
         (let [h (db/create-hoks! hoks)]
           (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id h))})))
 
-      (c-api/PUT "/:id" [id]
+      (c-api/PUT "/:id" [id :as request]
         :summary "Päivittää olemassa olevaa HOKSia"
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSPaivitys]
-        (if (db/update-hoks! id values)
-          (response/no-content)
-          (response/not-found "HOKS not found with given eHOKS ID")))
+        (let [hoks (db/get-hoks-by-id id)]
+          (check-hoks-access! hoks request))
+        (db/update-hoks! id values)
+        (response/no-content))
 
-      (c-api/PATCH "/:id" [id]
+      (c-api/PATCH "/:id" [id :as request]
         :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSKentanPaivitys]
-        (if (db/update-hoks-values! id values)
-          (response/no-content)
-          (response/not-found "HOKS not found with given eHOKS ID")))
+        (let [hoks (db/get-hoks-by-id id)]
+          (check-hoks-access! hoks request))
+        (db/update-hoks-values! id values)
+        (response/no-content))
 
       puuttuva-ammatillinen-osaaminen
       puuttuva-paikallinen-tutkinnon-osa
