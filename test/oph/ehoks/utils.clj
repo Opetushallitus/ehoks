@@ -43,7 +43,8 @@
         (cond (.endsWith url "/serviceValidate")
               {:status 200
                :body
-               (str "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>"
+               (str "<cas:serviceResponse"
+                    "  xmlns:cas='http://www.yale.edu/tp/cas'>"
                     "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
                     "<cas:attributes>"
                     "<cas:longTermAuthenticationRequestTokenUsed>false"
