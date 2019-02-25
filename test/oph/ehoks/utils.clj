@@ -28,6 +28,15 @@
     (app (mock/header request :cookie cookie))))
 
 (defn with-service-ticket [app request]
+  (client/set-post!
+    (fn [url options]
+      (cond
+        (.endsWith url "/v1/tickets")
+        {:status 201
+         :headers {"location" "http://test.ticket/1234"}}
+        (= url "http://test.ticket/1234")
+        {:status 200
+         :body "ST-1234-testi"})))
   (client/set-get!
     (fn [url options]
       (cond (.endsWith url "/serviceValidate")
@@ -49,7 +58,10 @@
             (.endsWith
               url "/koski/api/opiskeluoikeus/1.3.444.555.66.77777777778")
             {:status 200
-             :body {:oppilaitos {:oid "1.2.246.562.24.47861388608"}}})))
+             :body {:oppilaitos {:oid "1.2.246.562.24.47861388608"}}}
+            (.endsWith url "/kayttooikeus-service/palvelukayttaja")
+            {:status 200
+             :body "[{\"oid\":\"1.2.246.562.24.47861388607\",\"nimi\":\"eHOKS\",\"kayttajatunnus\":\"ehoks\"}]"})))
   (let [result (app (-> request
                         (mock/header "Caller-Id" "test")
                         (mock/header "ticket" "ST-testitiketti")))]
