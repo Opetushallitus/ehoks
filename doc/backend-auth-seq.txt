@@ -1,0 +1,12 @@
+@startuml
+OHJ -> CAS: Luo service ticket
+CAS -> OHJ: Ticket
+OHJ -> eHOKS: Pyyntö, mukana ticket
+eHOKS -> CAS: Validoi ticket
+CAS -> eHOKS: Käyttäjänimi
+eHOKS -> Käyttöoikeuspalvelu: Tiedot käyttäjänimen perusteella
+Käyttöoikeuspalvelu -> eHOKS: Palvelukäyttäjän tiedot (oid)
+eHOKS -> Koski: HOKSin opiskeluoikeuden tietojen haku
+Koski -> eHOKS: HOKSin opiskeluoikeuden tiedot (oppilaitoksen oid)
+eHOKS -> OHJ: Vastaus
+@enduml
