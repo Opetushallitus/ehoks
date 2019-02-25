@@ -29,8 +29,8 @@
                          :nayttoymparisto {:nimi "aaa"}
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
-                         :arvioijat [{:nimi "Nimi" :organisaatio
-                                      {:nimi "Organisaation nimi"}}]}]}
+                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                               {:nimi "Organisaation nimi"}}]}]}
           ppto-response
           (utils/with-service-ticket
             app
@@ -65,8 +65,8 @@
                          :nayttoymparisto {:nimi "aaa"}
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
-                         :arvioijat [{:nimi "Nimi" :organisaatio
-                                      {:nimi "Organisaation nimi"}}]}]}
+                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                               {:nimi "Organisaation nimi"}}]}]}
           ppto-response
           (utils/with-service-ticket
             app
@@ -92,8 +92,8 @@
                      :nayttoymparisto {:nimi "aaa"}
                      :alku "2018-12-12"
                      :loppu "2018-12-20"
-                     :arvioijat [{:nimi "Nimi" :organisaatio
-                                  {:nimi "Organisaation nimi"}}]}]})))]
+                     :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                           {:nimi "Organisaation nimi"}}]}]})))]
       (is (= (:status put-response) 204)))))
 
 (deftest patch-all-ppto
@@ -107,8 +107,8 @@
                        :nayttoymparisto {:nimi "aaa"}
                        :alku "2018-12-12"
                        :loppu "2018-12-20"
-                       :arvioijat [{:nimi "Nimi" :organisaatio
-                                    {:nimi "Organisaation nimi"}}]}]}
+                       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                             {:nimi "Organisaation nimi"}}]}]}
           ppto-response
           (utils/with-service-ticket
             app
@@ -134,8 +134,8 @@
                      :nayttoymparisto {:nimi "aaaf"}
                      :alku "2018-12-14"
                      :loppu "2018-12-22"
-                     :arvioijat [{:nimi "Nimi" :organisaatio
-                                  {:nimi "Organisaation nimi"}}]}]})))]
+                     :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                           {:nimi "Organisaation nimi"}}]}]})))]
       (is (= (:status patch-response) 204)))))
 
 (deftest patch-one-ppto
@@ -149,8 +149,8 @@
                        :nayttoymparisto {:nimi "aaa"}
                        :alku "2018-12-12"
                        :loppu "2018-12-20"
-                       :arvioijat [{:nimi "Nimi" :organisaatio
-                                    {:nimi "Organisaation nimi"}}]}]}
+                       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                             {:nimi "Organisaation nimi"}}]}]}
           ppto-response
           (utils/with-service-ticket
             app
@@ -341,8 +341,8 @@
        :nayttoymparisto {:nimi "aaa"}
        :alku "2018-12-12"
        :loppu "2018-12-20"
-       :arvioijat [{:nimi "Nimi" :organisaatio
-                    {:nimi "Organisaation nimi"}}]}]}]
+       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                             {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1234"})
 
 (def pyto-patch-data
@@ -358,8 +358,8 @@
        :nayttoymparisto {:nimi "aaa2"}
        :alku "2018-12-15"
        :loppu "2018-12-21"
-       :arvioijat [{:nimi "Nimi" :organisaatio
-                    {:nimi "Organisaation nimi"}}]}]}]
+       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                             {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "12347"})
 
 (deftest post-and-get-pyto
