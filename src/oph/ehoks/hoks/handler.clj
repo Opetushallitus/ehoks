@@ -208,7 +208,7 @@
           (response/no-content)
           (response/not-found "HOKS not found with given eHOKS ID")))
 
-      (c-api/PATCH "/:id" []
+      (c-api/PATCH "/:id" [id]
         :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSKentanPaivitys]
