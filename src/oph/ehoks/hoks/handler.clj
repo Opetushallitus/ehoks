@@ -34,7 +34,7 @@
         (db/get-hoks-by-id
           (get-in request [:query-params :id])
           request))
-     (handler request respond raise))
+      (handler request respond raise))
     ([request]
       (check-hoks-access!
         (db/get-hoks-by-id
