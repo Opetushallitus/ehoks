@@ -27,6 +27,17 @@
         {:error
          "No access is allowed. Check student and 'opiskeluoikeus'"}))))
 
+(defn wrap-hoks-access [handler]
+  (fn
+    ([request respond raise]
+      (check-hoks-access! (db/get-hoks-by-id
+                            (get-in request [:query-params :id])))
+     (handler request respond raise))
+    ([request]
+      (check-hoks-access! (db/get-hoks-by-id
+                            (get-in request [:query-params :id])))
+      (handler request))))
+
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
   (c-api/context "/:hoks-id/puuttuva-paikallinen-tutkinnon-osa" [hoks-id]
 
