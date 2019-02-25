@@ -30,12 +30,16 @@
 (defn wrap-hoks-access [handler]
   (fn
     ([request respond raise]
-      (check-hoks-access! (db/get-hoks-by-id
-                            (get-in request [:query-params :id])))
+      (check-hoks-access!
+        (db/get-hoks-by-id
+          (get-in request [:query-params :id])
+          request))
      (handler request respond raise))
     ([request]
-      (check-hoks-access! (db/get-hoks-by-id
-                            (get-in request [:query-params :id])))
+      (check-hoks-access!
+        (db/get-hoks-by-id
+          (get-in request [:query-params :id]))
+        request)
       (handler request))))
 
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
