@@ -61,7 +61,9 @@
              :body {:oppilaitos {:oid "1.2.246.562.24.47861388608"}}}
             (.endsWith url "/kayttooikeus-service/palvelukayttaja")
             {:status 200
-             :body "[{\"oid\":\"1.2.246.562.24.47861388607\",\"nimi\":\"eHOKS\",\"kayttajatunnus\":\"ehoks\"}]"})))
+             :body [{:oid "1.2.246.562.24.47861388607"
+                     :nimi "eHOKS"
+                     :kayttajatunnus "ehoks"}]})))
   (let [result (app (-> request
                         (mock/header "Caller-Id" "test")
                         (mock/header "ticket" "ST-testitiketti")))]
