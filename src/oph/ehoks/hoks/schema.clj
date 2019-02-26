@@ -68,7 +68,7 @@
   (describe
     "Tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :koodi-uri TutkinnonOsaKoodiUri
+    :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"))
 
 (s/defschema
@@ -129,7 +129,7 @@
   MuuOppimisymparisto
   (describe
     "Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu"
-    :koodi-uri s/Str
+    :oppimisymparisto-koodi-uri s/Str
     "Oppimisympäristön tarkenne, eHOKS Koodisto-koodi-URI"
     :selite s/Str "Oppimisympäristön nimi"
     :lisatiedot s/Bool
@@ -144,7 +144,7 @@
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
-    :koodi-uri OsaamisenHankkimistapaKoodiUri
+    :osamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
     "Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)"
     (s/optional-key :jarjestajan-edustaja) Oppilaitoshenkilo
     "Koulutuksen järjestäjän edustaja"
@@ -249,7 +249,7 @@
   (describe
     "Puuttuvan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :koodi-uri OsaAlueenKoodiUri
+    :osa-alueen-koodi-uri OsaAlueenKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
     (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
@@ -263,7 +263,7 @@
   (describe
     "Olemassaolevan YTOn osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :koodi-uri OsaAlueenKoodiUri
+    :osa-alueen-koodi-uri OsaAlueenKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
     (s/optional-key :koulutuksen-jarjestaja-oid) s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
@@ -285,7 +285,7 @@
     "Yhteinen Tutkinnon osa (YTO)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
-    :koodi-uri TutkinnonOsaKoodiUri
+    :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
     (s/optional-key :koulutuksen-jarjestaja-oid) s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
@@ -414,7 +414,7 @@
     (str "Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
-     [:osa-alueet :koulutuksen-jarjestaja-oid :koodi-uri]}))
+     [:osa-alueet :koulutuksen-jarjestaja-oid :tutkinnon-osa-koodi-uri]}))
 
 (s/defschema
   PuuttuvaPaikallinenTutkinnonOsa
