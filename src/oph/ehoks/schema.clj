@@ -56,4 +56,5 @@
               :koski-url s/Str
               :ext-cache-lifetime-minutes s/Int
               :kayttooikeus-service-url s/Str
-              :backend-url s/Str})
+              :backend-url s/Str
+              :save-hoks-json? s/Bool})

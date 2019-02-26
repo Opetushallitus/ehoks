@@ -226,6 +226,8 @@
              (str "Creating HOKS is not allowed. "
                   "Check student and 'opiskeluoikeus'.")}))
         (let [h (db/create-hoks! hoks)]
+          (when (:save-hoks-json? config)
+            (write-hoks-json h))
           (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id h))})))
 
       (c-api/PUT "/:id" [id :as request]
