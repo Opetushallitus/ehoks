@@ -27,26 +27,54 @@
     (swap! store assoc-in [(-> @store keys first) :user :oid] oid)
     (app (mock/header request :cookie cookie))))
 
-(defn with-service-ticket [app request]
-  (client/set-get!
-    (fn [url options]
-      (when (.endsWith url "/serviceValidate")
-        {:status 200
-         :body
-         (str "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>"
-              "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
-              "<cas:attributes>"
-              "<cas:longTermAuthenticationRequestTokenUsed>false"
-              "</cas:longTermAuthenticationRequestTokenUsed>"
-              "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
-              "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
-              "</cas:authenticationDate></cas:attributes>"
-              "</cas:authenticationSuccess></cas:serviceResponse>")})))
-  (let [result (app (-> request
-                        (mock/header "Caller-Id" "test")
-                        (mock/header "ticket" "ST-testitiketti")))]
-    (client/reset-functions!)
-    result))
+(defn with-service-ticket
+  ([app request oppilaitos-oid]
+    (client/set-post!
+      (fn [url options]
+        (cond
+          (.endsWith url "/v1/tickets")
+          {:status 201
+           :headers {"location" "http://test.ticket/1234"}}
+          (= url "http://test.ticket/1234")
+          {:status 200
+           :body "ST-1234-testi"})))
+    (client/set-get!
+      (fn [url options]
+        (cond (.endsWith url "/serviceValidate")
+              {:status 200
+               :body
+               (str "<cas:serviceResponse"
+                    "  xmlns:cas='http://www.yale.edu/tp/cas'>"
+                    "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
+                    "<cas:attributes>"
+                    "<cas:longTermAuthenticationRequestTokenUsed>false"
+                    "</cas:longTermAuthenticationRequestTokenUsed>"
+                    "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
+                    "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
+                    "</cas:authenticationDate></cas:attributes>"
+                    "</cas:authenticationSuccess></cas:serviceResponse>")}
+              (.endsWith
+                url "/koski/api/opiskeluoikeus/1.3.444.555.66.77777777777")
+              {:status 200
+               :body {:oppilaitos {:oid (or oppilaitos-oid
+                                            "1.2.246.562.24.47861388607")}}}
+              (.endsWith
+                url "/koski/api/opiskeluoikeus/1.3.444.555.66.77777777778")
+              {:status 200
+               :body {:oppilaitos {:oid (or oppilaitos-oid
+                                            "1.2.246.562.24.47861388608")}}}
+              (.endsWith url "/kayttooikeus-service/palvelukayttaja")
+              {:status 200
+               :body [{:oid "1.2.246.562.24.47861388607"
+                       :nimi "eHOKS"
+                       :kayttajatunnus "ehoks"}]})))
+    (let [result (app (-> request
+                          (mock/header "Caller-Id" "test")
+                          (mock/header "ticket" "ST-testitiketti")))]
+      (client/reset-functions!)
+      result))
+  ([app request]
+    (with-service-ticket app request nil)))
 
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))

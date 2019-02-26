@@ -7,8 +7,40 @@
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.memory :as db]
             [oph.ehoks.middleware :refer [wrap-service-ticket]]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.kayttooikeus :as kayttooikeus]
             [schema.core :as s])
   (:import (java.time LocalDate)))
+
+(defn hoks-access? [hoks user]
+  (and
+    (some? (:opiskeluoikeus-oid hoks))
+    (some? (:oid user))
+    (= (koski/get-opiskeluoikeus-oppilaitos-oid (:opiskeluoikeus-oid hoks))
+       (:oid user))))
+
+(defn check-hoks-access! [hoks request]
+  (if (nil? hoks)
+    (response/not-found!)
+    (when-not (hoks-access? hoks (:service-ticket-user request))
+      (response/unauthorized!
+        {:error
+         "No access is allowed. Check student and 'opiskeluoikeus'"}))))
+
+(defn wrap-hoks-access [handler]
+  (fn
+    ([request respond raise]
+      (check-hoks-access!
+        (db/get-hoks-by-id
+          (get-in request [:query-params :id]))
+        request)
+      (handler request respond raise))
+    ([request]
+      (check-hoks-access!
+        (db/get-hoks-by-id
+          (get-in request [:query-params :id]))
+        request)
+      (handler request))))
 
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
   (c-api/context "/:hoks-id/puuttuva-paikallinen-tutkinnon-osa" [hoks-id]
@@ -157,34 +189,43 @@
 
     (route-middleware
       [wrap-service-ticket]
-      (c-api/GET "/:id" [id]
+      (c-api/GET "/:id" [id :as request]
         :summary "Palauttaa HOKSin"
         :path-params [id :- s/Int]
         :return (rest/response hoks-schema/HOKS)
-        (rest/rest-ok (db/get-hoks-by-id id)))
+        (let [hoks (db/get-hoks-by-id id)]
+          (check-hoks-access! hoks request)
+          (rest/rest-ok hoks)))
 
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse)
+        (when-not (hoks-access? hoks (:service-ticket-user request))
+          (response/unauthorized!
+            {:error
+             (str "Creating HOKS is not allowed. "
+                  "Check student and 'opiskeluoikeus'.")}))
         (let [h (db/create-hoks! hoks)]
           (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id h))})))
 
-      (c-api/PUT "/:id" [id]
+      (c-api/PUT "/:id" [id :as request]
         :summary "Päivittää olemassa olevaa HOKSia"
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSPaivitys]
-        (if (db/update-hoks! id values)
-          (response/no-content)
-          (response/not-found "HOKS not found with given eHOKS ID")))
+        (let [hoks (db/get-hoks-by-id id)]
+          (check-hoks-access! hoks request))
+        (db/update-hoks! id values)
+        (response/no-content))
 
-      (c-api/PATCH "/:id" []
+      (c-api/PATCH "/:id" [id :as request]
         :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSKentanPaivitys]
-        (if (db/update-hoks-values! id values)
-          (response/no-content)
-          (response/not-found "HOKS not found with given eHOKS ID")))
+        (let [hoks (db/get-hoks-by-id id)]
+          (check-hoks-access! hoks request))
+        (db/update-hoks-values! id values)
+        (response/no-content))
 
       puuttuva-ammatillinen-osaaminen
       puuttuva-paikallinen-tutkinnon-osa
