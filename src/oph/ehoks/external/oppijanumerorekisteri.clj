@@ -1,22 +1,24 @@
 (ns oph.ehoks.external.oppijanumerorekisteri
   (:require [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.cas :as cas]
+            [oph.ehoks.external.cache :as cache]
             [clojure.set :refer [rename-keys]]))
 
 (defn find-student-by-nat-id [nat-id]
-  (cas/with-service-ticket
+  (cache/with-cache!
     {:method :get
      :service (:oppijanumerorekisteri-url config)
      :path "henkilo"
      :options {:query-params {:hetu nat-id}
-               :as :json}}))
+               :as :json}
+     :authenticate? true}))
 
 (defn find-student-by-oid [oid]
-  (cas/with-service-ticket
+  (cache/with-cache!
     {:method :get
      :service (:oppijanumerorekisteri-url config)
      :path (str "henkilo/" oid)
-     :options {:as :json}}))
+     :options {:as :json}
+     :authenticate? true}))
 
 (defn- convert-contact-values [contact-item]
   (map
