@@ -15,9 +15,10 @@
   (:import (java.time LocalDate)))
 
 (defn value-writer [_ value]
-  (if (= (type value) java.util.Date)
-    (str (java.sql.Date. (.getTime value)))
-    value))
+  (cond
+    (= (type value) java.util.Date) (str (java.sql.Date. (.getTime value)))
+    (= (type value) java.time.LocalDate) (str value)
+    :else value))
 
 (defn write-hoks-json! [h]
   (spit
