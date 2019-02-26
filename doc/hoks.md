@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 20.02.2019 14.41
+Generoitu 26.02.2019 09.05
 
 Katso myös [HOKS doc](https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html)
 
@@ -11,7 +11,7 @@ Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| koodi-uri | Merkkijono | Oppimisympäristön tarkenne, eHOKS Koodisto-koodi-URI | Kyllä |
+| oppimisymparisto-koodi-uri | Merkkijono | Oppimisympäristön tarkenne, eHOKS Koodisto-koodi-URI | Kyllä |
 | selite | Merkkijono | Oppimisympäristön nimi | Kyllä |
 | lisatiedot | Totuusarvo | Lisätiedoisssa, onko tunnistettu ohjauksen ja tuen tarvetta | Kyllä |
 
@@ -34,7 +34,7 @@ Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | nimi | Merkkijono | Organisaation nimi | Kyllä |
-| y-tunnus | Merkkijono | Organisaation y-tunnus | Ei |
+| y-tunnus | Merkkijono | Mikäli organisaatiolla on y-tunnus,<br>    organisaation y-tunnus | Ei |
 | kuvaus | Merkkijono | Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, simulaattori | Ei |
 
 ### PuuttuvaYTOLuonti  
@@ -44,8 +44,12 @@ Puuttuvan yhteinen tutkinnon osan tiedot uutta merkintää luotaessa (POST)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
-| koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
+| tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+
+###   
+
+
 
 ### YhteinenTutkinnonOsa  
 
@@ -54,7 +58,7 @@ Yhteinen Tutkinnon osa (YTO)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
-| koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
+| tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ###   
@@ -129,6 +133,15 @@ Henkilö
 | nimi | Merkkijono | Henkilön nimi | Kyllä |
 | rooli | Merkkijono | Henkilön rooli | Ei |
 
+### KoulutuksenjarjestajaArvioija  
+
+Työelämän arvioija
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| nimi | Merkkijono | Arvioijan nimi | Kyllä |
+| organisaatio | [KoulutuksenJarjestajaOrganisaatio](#KoulutuksenJarjestajaOrganisaatio) | Koulutuksenjarjestajan arvioijan organisaatio | Kyllä |
+
 ### PuuttuvaYTOPaivitys  
 
 Puuttuvan yhteinen tutkinnon osa tiedot merkintää ylikirjoittaessa (PUT)
@@ -136,7 +149,7 @@ Puuttuvan yhteinen tutkinnon osa tiedot merkintää ylikirjoittaessa (PUT)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
-| koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
+| tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### VastuullinenOhjaaja  
@@ -156,11 +169,12 @@ Hankitun paikallisen osaamisen osoittaminen: Näyttö tai muu osaamisen
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
-| yto-osa-alue | Merkkijono, esim. ammatillisenoppiaineet_aa | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
+| yto-osa-alue | [Merkkijono, esim. ammatillisenoppiaineet_aa] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
 | nayttoymparisto | [NayttoYmparisto](#NayttoYmparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
-| arvioijat | [[Arvioija](#Arvioija)] | Näytön tai osaamisen osoittamisen arvioijat | Kyllä |
+| koulutuksenjarjestaja-arvioijat | [[KoulutuksenjarjestajaArvioija](#KoulutuksenjarjestajaArvioija)] | Näytön tai osaamisen osoittamisen<br>    arvioijat | Ei |
+| tyoelama-arvioijat | [[TyoelamaArvioija](#TyoelamaArvioija)] | Näytön tai<br>    osaamisen osoittamisen arvioijat | Ei |
 
 ### HOKSLuonti  
 
@@ -214,6 +228,14 @@ Arviointikriteeri
 | osaamistaso | Kokonaisluku | Osaamistaso | Kyllä |
 | kuvaus | Merkkijono | Arviointikriteerin kuvaus | Kyllä |
 
+### KoulutuksenJarjestajaOrganisaatio  
+
+Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| oppilaitos-oid | Merkkijono | Mikäli kyseessä oppilaitos, oppilaitoksen oid-tunniste<br>       Opintopolku-palvelussa. | Ei |
+
 ###   
 
 
@@ -256,11 +278,12 @@ Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
-| yto-osa-alue | Merkkijono, esim. ammatillisenoppiaineet_aa | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
+| yto-osa-alue | [Merkkijono, esim. ammatillisenoppiaineet_aa] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
 | nayttoymparisto | [NayttoYmparisto](#NayttoYmparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
-| arvioijat | [[Arvioija](#Arvioija)] | Näytön tai osaamisen osoittamisen arvioijat | Kyllä |
+| koulutuksenjarjestaja-arvioijat | [[KoulutuksenjarjestajaArvioija](#KoulutuksenjarjestajaArvioija)] | Näytön tai osaamisen osoittamisen<br>    arvioijat | Ei |
+| tyoelama-arvioijat | [[TyoelamaArvioija](#TyoelamaArvioija)] | Näytön tai<br>    osaamisen osoittamisen arvioijat | Ei |
 
 ### OpiskeluvalmiuksiaTukevatOpinnotLuonti  
 
@@ -280,7 +303,16 @@ Organisaatio
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | nimi | Merkkijono | Organisaation nimi | Kyllä |
-| y-tunnus | Merkkijono | Organisaation y-tunnus | Ei |
+| y-tunnus | Merkkijono | Mikäli organisaatiolla on y-tunnus,<br>    organisaation y-tunnus | Ei |
+
+### TodennettuArviointiLisatiedot  
+
+Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| lahetetty-arvioitavaksi | Päivämäärä | Päivämäärä, jona<br>    lähetetty arvioitavaksi, muodossa YYYY-MM-DD | Ei |
+| aiemmin-hankitun-osaamisen-arvioija | [[KoulutuksenjarjestajaArvioija](#KoulutuksenjarjestajaArvioija)] | Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot. | Ei |
 
 ### HOKSKentanPaivitys  
 
@@ -313,7 +345,7 @@ Osaamisen hankkimisen tapa
 | jarjestajan-edustaja | [Oppilaitoshenkilo](#Oppilaitoshenkilo) | Koulutuksen järjestäjän edustaja | Ei |
 | muut-oppimisymparisto | [[MuuOppimisymparisto](#MuuOppimisymparisto)] | Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen liittyvät tiedot | Ei |
 | ajanjakson-tarkenne | Merkkijono | Tarkentava teksti ajanjaksolle, jos useita aikavälillä. | Ei |
-| koodi-uri | Merkkijono, esim. osaamisenhankkimistapa_oppisopimus | Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa) | Kyllä |
+| osamisen-hankkimistapa-koodi-uri | Merkkijono, esim. osaamisenhankkimistapa_oppisopimus | Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa) | Kyllä |
 | tyopaikalla-hankittava-osaaminen | [TyopaikallaHankittavaOsaaminen](#TyopaikallaHankittavaOsaaminen) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai koulutussopimus. | Ei |
 | hankkijan-edustaja | [Oppilaitoshenkilo](#Oppilaitoshenkilo) | Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja | Ei |
 | alku | Päivämäärä | Alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
@@ -325,11 +357,21 @@ Olemassaolevan YTOn osa-alueen tiedot
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
+| osa-alueen-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
-| valittu-todentamisen-prosessi | Joukon alkio (valittu-todentaminen-naytto, valittu-todentaminen-arvioijat, valittu-todentaminen-suoraan) | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
+| valittu-todentamisen-prosessi-koodi-uri | #"^valittuprosessi_\d+$" | Todentamisen prosessin kuvauksen (suoraan/arvioijien kautta/näyttö)<br>    koodi-uri | Kyllä |
 | tarkentavat-tiedot | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
+
+### TyoelamaOrganisaatio  
+
+Työelämän toimijan organisaatio, jossa näyttö tai osaamisen osoittaminen
+     annetaan
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| nimi | Merkkijono | Organisaation nimi | Kyllä |
+| y-tunnus | Merkkijono | Mikäli organisaatiolla on y-tunnus,<br>    organisaation y-tunnus | Ei |
 
 ### PuuttuvaAmmatillinenOsaaminen  
 
@@ -349,7 +391,7 @@ Tutkinnon osa
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
+| tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 
 ### PuuttuvaAmmatillinenOsaaminenKentanPaivitys  
 
@@ -375,15 +417,16 @@ Oppilaitoksen edustaja
 
 ### OlemassaOlevaYhteinenTutkinnonOsa  
 
-Yhteinen Tutkinnon osa (YTO)
+Olemassa oleva yhteinen tutkinnon osa
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| osa-alueet | [[OlemassaOlevanYTOOsaAlue](#OlemassaOlevanYTOOsaAlue)] | OlemassaOlevanYhteisenTutkinnonOsanOsa:n osa-alueet | Kyllä |
-| koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
+| tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
-| valittu-todentamisen-prosessi | Joukon alkio (valittu-todentaminen-naytto, valittu-todentaminen-arvioijat, valittu-todentaminen-suoraan) | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
-| tarkentavat-tiedot | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
+| osa-alueet | [[OlemassaOlevanYTOOsaAlue](#OlemassaOlevanYTOOsaAlue)] | YTO osa-alueet | Kyllä |
+| valittu-todentamisen-prosessi-koodi-uri | #"^valittuprosessi_\d+$" | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
+| tarkentavat-tiedot-naytto | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
+| tarkentavat-tiedot-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
 
 ### OpiskeluvalmiuksiaTukevatOpinnot  
 
@@ -417,7 +460,7 @@ Puuttuvan yhteinen tutkinnon osan (YTO) osa-alueen tiedot
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
+| osa-alueen-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 | hankitun-osaamisen-naytto | [[HankitunYTOOsaamisenNaytto](#HankitunYTOOsaamisenNaytto)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
@@ -449,7 +492,7 @@ Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä päivittäessä 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Ei |
-| koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Ei |
+| tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Ei |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### HankitunYTOOsaamisenNaytto  
@@ -458,13 +501,14 @@ Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
+| yto-osa-alue | [Merkkijono, esim. ammatillisenoppiaineet_aa] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
-| yto-osa-alue | Merkkijono, esim. ammatillisenoppiaineet_aa | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
+| osaamistavoitteet | [Merkkijono] | Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan.Tunnisteen tyyppi voi vielä päivittyä ja tähän saattaa tulla vielä Yksilölliset arvioinnin kriteerit | Ei |
 | nayttoymparisto | [NayttoYmparisto](#NayttoYmparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
+| tyoelama-arvioijat | [[TyoelamaArvioija](#TyoelamaArvioija)] | Näytön tai<br>    osaamisen osoittamisen arvioijat | Ei |
+| koulutuksenjarjestaja-arvioijat | [[KoulutuksenjarjestajaArvioija](#KoulutuksenjarjestajaArvioija)] | Näytön tai osaamisen osoittamisen<br>    arvioijat | Ei |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
-| arvioijat | [[Arvioija](#Arvioija)] | Näytön tai osaamisen osoittamisen arvioijat | Kyllä |
-| osaamistavoitteet | [Merkkijono] | Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan.Tunnisteen tyyppi voi vielä päivittyä ja tähän saattaa tulla vielä Yksilölliset arvioinnin kriteerit | Ei |
 
 ### PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys  
 
@@ -494,6 +538,15 @@ Olemassa oleva paikallinen tutkinnon osa
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 
+### TyoelamaArvioija  
+
+Työelämän arvioija
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| nimi | Merkkijono | Arvioijan nimi | Kyllä |
+| organisaatio | [TyoelamaOrganisaatio](#TyoelamaOrganisaatio) | Työelämän arvioijan organisaatio | Kyllä |
+
 ### PuuttuvaPaikallinenTutkinnonOsaLuonti  
 
 Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää luotaessa (POST)
@@ -511,14 +564,15 @@ Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää luotaessa (POST)
 
 ### OlemassaOlevaAmmatillinenTutkinnonOsa  
 
-Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa.
+Olemassa oleva yhteinen tutkinnon osa
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
+| tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
-| valittu-todentamisen-prosessi | Joukon alkio (valittu-todentaminen-naytto, valittu-todentaminen-arvioijat, valittu-todentaminen-suoraan) | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
-| tarkentavat-tiedot | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
+| valittu-todentamisen-prosessi-koodi-uri | #"^valittuprosessi_\d+$" | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
+| tarkentavat-tiedot-naytto | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
+| tarkentavat-tiedot-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
 
 ### HoksToimija  
 
@@ -535,7 +589,7 @@ Puuttuvan yhteinen tutkinnon osan (YTO) tiedot
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
-| koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
+| tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### PuuttuvaPaikallinenTutkinnonOsa  

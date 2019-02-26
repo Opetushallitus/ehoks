@@ -29,8 +29,8 @@
                          :nayttoymparisto {:nimi "aaa"}
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
-                         :arvioijat [{:nimi "Nimi" :organisaatio
-                                      {:nimi "Organisaation nimi"}}]}]}
+                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                               {:nimi "Organisaation nimi"}}]}]}
           ppto-response
           (utils/with-service-ticket
             app
@@ -65,8 +65,8 @@
                          :nayttoymparisto {:nimi "aaa"}
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
-                         :arvioijat [{:nimi "Nimi" :organisaatio
-                                      {:nimi "Organisaation nimi"}}]}]}
+                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                               {:nimi "Organisaation nimi"}}]}]}
           ppto-response
           (utils/with-service-ticket
             app
@@ -92,8 +92,8 @@
                      :nayttoymparisto {:nimi "aaa"}
                      :alku "2018-12-12"
                      :loppu "2018-12-20"
-                     :arvioijat [{:nimi "Nimi" :organisaatio
-                                  {:nimi "Organisaation nimi"}}]}]})))]
+                     :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                           {:nimi "Organisaation nimi"}}]}]})))]
       (is (= (:status put-response) 204)))))
 
 (deftest patch-all-ppto
@@ -107,8 +107,8 @@
                        :nayttoymparisto {:nimi "aaa"}
                        :alku "2018-12-12"
                        :loppu "2018-12-20"
-                       :arvioijat [{:nimi "Nimi" :organisaatio
-                                    {:nimi "Organisaation nimi"}}]}]}
+                       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                             {:nimi "Organisaation nimi"}}]}]}
           ppto-response
           (utils/with-service-ticket
             app
@@ -134,8 +134,8 @@
                      :nayttoymparisto {:nimi "aaaf"}
                      :alku "2018-12-14"
                      :loppu "2018-12-22"
-                     :arvioijat [{:nimi "Nimi" :organisaatio
-                                  {:nimi "Organisaation nimi"}}]}]})))]
+                     :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                           {:nimi "Organisaation nimi"}}]}]})))]
       (is (= (:status patch-response) 204)))))
 
 (deftest patch-one-ppto
@@ -149,8 +149,8 @@
                        :nayttoymparisto {:nimi "aaa"}
                        :alku "2018-12-12"
                        :loppu "2018-12-20"
-                       :arvioijat [{:nimi "Nimi" :organisaatio
-                                    {:nimi "Organisaation nimi"}}]}]}
+                       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                             {:nimi "Organisaation nimi"}}]}]}
           ppto-response
           (utils/with-service-ticket
             app
@@ -180,12 +180,13 @@
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
 (def pao-data     {:tutkinnon-osa
-                   {:koodi-uri "tutkinnonosat_300268"}
+                   {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"}
                    :osaamisen-hankkimistavat
                    [{:alku "2018-12-12"
                      :loppu "2018-12-20"
                      :ajanjakson-tarkenne "Tarkenne tässä"
-                     :koodi-uri "osaamisenhankkimistapa_koulutussopimus"}]
+                     :osamisen-hankkimistapa-koodi-uri
+                     "osaamisenhankkimistapa_koulutussopimus"}]
                    :koulutuksen-jarjestaja-oid "123"})
 
 (deftest post-and-get-pao
@@ -257,12 +258,13 @@
 
 (def patch-all-pao-data
   {:tutkinnon-osa
-   {:koodi-uri "tutkinnonosat_3002681"}
+   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"}
    :osaamisen-hankkimistavat
    [{:alku "2018-12-11"
      :loppu "2018-12-21"
      :ajanjakson-tarkenne "Tarkenne tässä uusi"
-     :koodi-uri "osaamisenhankkimistapa_koulutussopimus1"}]
+     :osamisen-hankkimistapa-koodi-uri
+     "osaamisenhankkimistapa_koulutussopimus1"}]
    :koulutuksen-jarjestaja-oid "1231"})
 
 (deftest patch-all-pao
@@ -329,37 +331,54 @@
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
 (def pyto-data
-  {:koodi-uri "tutkinnonosat_300268"
-   :osa-alueet
-   [{:koodi-uri "ammatillisenoppiaineet_ku"
+  {:osa-alueet
+   [{:osa-alueen-koodi-uri "ammatillisenoppiaineet_ku"
      :osaamisen-hankkimistavat
      [{:alku "2018-12-15"
        :loppu "2018-12-23"
-       :koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
+       :osamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "abc"}
        :nayttoymparisto {:nimi "aaa"}
        :alku "2018-12-12"
        :loppu "2018-12-20"
-       :arvioijat [{:nimi "Nimi" :organisaatio
-                    {:nimi "Organisaation nimi"}}]}]}]
+       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                             {:nimi "Organisaation nimi"}}]}]}]
+   :tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :koulutuksen-jarjestaja-oid "1234"})
 
 (def pyto-patch-data
-  {:koodi-uri "tutkinnonosat_3002683"
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :osa-alueet
-   [{:koodi-uri "ammatillisenoppiaineet_ku"
+   [{:osa-alueen-koodi-uri "ammatillisenoppiaineet_ku"
      :osaamisen-hankkimistavat
      [{:alku "2018-12-13"
        :loppu "2018-12-22"
-       :koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
+       :osamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "abc2"}
        :nayttoymparisto {:nimi "aaa2"}
        :alku "2018-12-15"
        :loppu "2018-12-21"
-       :arvioijat [{:nimi "Nimi" :organisaatio
-                    {:nimi "Organisaation nimi"}}]}]}]
+       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                             {:nimi "Organisaation nimi"}}]}]}]
+   :koulutuksen-jarjestaja-oid "12347"})
+
+(def pyto-patch-one-data
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :osa-alueet
+   [{:osa-alueen-koodi-uri "ammatillisenoppiaineet_ku"
+     :osaamisen-hankkimistavat
+     [{:alku "2018-12-13"
+       :loppu "2018-12-22"
+       :osamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
+     :hankitun-osaamisen-naytto
+     [{:jarjestaja {:oppilaitos-oid "abc2"}
+       :nayttoymparisto {:nimi "aaa2"}
+       :alku "2018-12-15"
+       :loppu "2018-12-21"
+       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                             {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "12347"})
 
 (deftest post-and-get-pyto
@@ -438,8 +457,7 @@
                     "%s/1/%s/1"
                     url pyto-path))
                 (mock/json-body
-                  {:id 1
-                   :koulutuksen-jarjestaja-oid "123"})))]
+                  {:koulutuksen-jarjestaja-oid "12347"})))]
       (is (= (:status response) 204)))))
 
 (deftest patch-all-pyto
