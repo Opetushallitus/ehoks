@@ -492,7 +492,8 @@
     "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"
     (s/optional-key :lahetetty-arvioitavaksi) LocalDate "Päivämäärä, jona
     lähetetty arvioitavaksi, muodossa YYYY-MM-DD"
-    (s/optional-key :aiemmin-hankitun-osaamisen-arvioija) [Arvioija]
+    (s/optional-key :aiemmin-hankitun-osaamisen-arvioija)
+    [KoulutuksenjarjestajaArvioija]
     "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
 
 (s/defschema
