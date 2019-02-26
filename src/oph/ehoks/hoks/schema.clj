@@ -17,12 +17,37 @@
 (def OsaAlueenKoodiUri
   #"^ammatillisenoppiaineet_.+$")
 
+(def TodentamisenProsessiKoodiUri
+  "Valitun todentamisen prosessin Koodisto-koodi-URI"
+  #"^valittuprosessi_\d+$")
+
 (s/defschema
   Organisaatio
   (describe
     "Organisaatio"
     :nimi s/Str "Organisaation nimi"
-    (s/optional-key :y-tunnus) s/Str "Organisaation y-tunnus"))
+    (s/optional-key :y-tunnus) s/Str "Mikäli organisaatiolla on y-tunnus,
+    organisaation y-tunnus"))
+
+(s/defschema
+  TyoelamaOrganisaatio
+  (modify
+    Organisaatio
+    "Työelämän toimijan organisaatio, jossa näyttö tai osaamisen osoittaminen
+     annetaan"))
+
+(s/defschema
+  KoulutuksenJarjestajaOrganisaatio
+  (modify
+    Organisaatio
+    "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
+    {:removed [:nimi :y-tunnus]
+     :added
+     (describe
+       ""
+       (s/optional-key :oppilaitos-oid) s/Str
+       "Mikäli kyseessä oppilaitos, oppilaitoksen oid-tunniste
+       Opintopolku-palvelussa.")}))
 
 (s/defschema
   NayttoYmparisto
@@ -43,7 +68,7 @@
   (describe
     "Tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :koodi-uri TutkinnonOsaKoodiUri
+    :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"))
 
 (s/defschema
@@ -104,7 +129,7 @@
   MuuOppimisymparisto
   (describe
     "Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu"
-    :koodi-uri s/Str
+    :oppimisymparisto-koodi-uri s/Str
     "Oppimisympäristön tarkenne, eHOKS Koodisto-koodi-URI"
     :selite s/Str "Oppimisympäristön nimi"
     :lisatiedot s/Bool
@@ -119,7 +144,7 @@
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
-    :koodi-uri OsaamisenHankkimistapaKoodiUri
+    :osamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
     "Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)"
     (s/optional-key :jarjestajan-edustaja) Oppilaitoshenkilo
     "Koulutuksen järjestäjän edustaja"
@@ -154,13 +179,36 @@
     :organisaatio Organisaatio "Arvioijan organisaatio"))
 
 (s/defschema
+  TyoelamaArvioija
+  (modify
+    Arvioija
+    "Työelämän arvioija"
+    {:removed [:organisaatio]
+     :added
+     (describe
+       ""
+       :organisaatio TyoelamaOrganisaatio "Työelämän arvioijan organisaatio")}))
+
+(s/defschema
+  KoulutuksenjarjestajaArvioija
+  (modify
+    Arvioija
+    "Työelämän arvioija"
+    {:removed [:organisaatio]
+     :added
+     (describe
+       ""
+       :organisaatio KoulutuksenJarjestajaOrganisaatio
+       "Koulutuksenjarjestajan arvioijan organisaatio")}))
+
+(s/defschema
   HankitunOsaamisenNaytto
   (describe
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
-    (s/optional-key :yto-osa-alue) OsaAlueenKoodiUri
+    (s/optional-key :yto-osa-alue) [OsaAlueenKoodiUri]
     (str "Suoritettavan tutkinnon osan näyttöön sisältyvän"
          "yton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä")
     :nayttoymparisto NayttoYmparisto
@@ -169,7 +217,11 @@
     "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD"
     :loppu LocalDate
     "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD"
-    :arvioijat [Arvioija] "Näytön tai osaamisen osoittamisen arvioijat"))
+    (s/optional-key :koulutuksenjarjestaja-arvioijat)
+    [KoulutuksenjarjestajaArvioija] "Näytön tai osaamisen osoittamisen
+    arvioijat"
+    (s/optional-key :tyoelama-arvioijat) [TyoelamaArvioija] "Näytön tai
+    osaamisen osoittamisen arvioijat"))
 
 (s/defschema
   HankitunPaikallisenOsaamisenNaytto
@@ -197,7 +249,7 @@
   (describe
     "Puuttuvan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :koodi-uri OsaAlueenKoodiUri
+    :osa-alueen-koodi-uri OsaAlueenKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
     (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
@@ -211,7 +263,7 @@
   (describe
     "Olemassaolevan YTOn osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :koodi-uri OsaAlueenKoodiUri
+    :osa-alueen-koodi-uri OsaAlueenKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
     (s/optional-key :koulutuksen-jarjestaja-oid) s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
@@ -219,11 +271,9 @@
          "koulutuksen järjestäjän oid.")
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     "vaatimuksista tai osaamistavoitteista poikkeaminen"
-    :valittu-todentamisen-prosessi
-    (s/enum :valittu-todentaminen-suoraan
-            :valittu-todentaminen-arvioijat
-            :valittu-todentaminen-naytto)
-    "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+    :valittu-todentamisen-prosessi-koodi-uri TodentamisenProsessiKoodiUri
+    "Todentamisen prosessin kuvauksen (suoraan/arvioijien kautta/näyttö)
+    koodi-uri"
     (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
     "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
 
@@ -233,7 +283,7 @@
     "Yhteinen Tutkinnon osa (YTO)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
-    :koodi-uri TutkinnonOsaKoodiUri
+    :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
     (s/optional-key :koulutuksen-jarjestaja-oid) s/Str
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
@@ -362,7 +412,7 @@
     (str "Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
-     [:osa-alueet :koulutuksen-jarjestaja-oid :koodi-uri]}))
+     [:osa-alueet :koulutuksen-jarjestaja-oid :tutkinnon-osa-koodi-uri]}))
 
 (s/defschema
   PuuttuvaPaikallinenTutkinnonOsa
@@ -397,10 +447,8 @@
      :added
      (describe
        ""
-       {:valittu-todentamisen-prosessi
-        (s/enum :valittu-todentaminen-suoraan
-                :valittu-todentaminen-arvioijat
-                :valittu-todentaminen-naytto)
+       {:valittu-todentamisen-prosessi-koodi-uri
+        TodentamisenProsessiKoodiUri
         "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
         (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
         "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."})}))
@@ -435,45 +483,39 @@
       :nimi]}))
 
 (s/defschema
-  OlemassaOlevaAmmatillinenTutkinnonOsa
+  TodennettuArviointiLisatiedot
   (describe
-    (str
-      "Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella "
-      "sisällytetty suoraan osaksi opiskelijan tutkintoa.")
-    :koodi-uri TutkinnonOsaKoodiUri
-    "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
-    (s/optional-key :koulutuksen-jarjestaja-oid) s/Str
-    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
-         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
-         "koulutuksen järjestäjän oid.")
-    :valittu-todentamisen-prosessi
-    (s/enum :valittu-todentaminen-suoraan
-            :valittu-todentaminen-arvioijat
-            :valittu-todentaminen-naytto)
-    "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
-    (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
-    "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
+    "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"
+    (s/optional-key :lahetetty-arvioitavaksi) LocalDate "Päivämäärä, jona
+    lähetetty arvioitavaksi, muodossa YYYY-MM-DD"
+    (s/optional-key :aiemmin-hankitun-osaamisen-arvioija)
+    [KoulutuksenjarjestajaArvioija]
+    "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
 
 (s/defschema
   OlemassaOlevaYhteinenTutkinnonOsa
-  (describe
-    "Yhteinen Tutkinnon osa (YTO)"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :osa-alueet [OlemassaOlevanYTOOsaAlue]
-    "OlemassaOlevanYhteisenTutkinnonOsanOsa:n osa-alueet"
-    :koodi-uri TutkinnonOsaKoodiUri
-    "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
-    (s/optional-key :koulutuksen-jarjestaja-oid) s/Str
-    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
-         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
-         "koulutuksen järjestäjän oid.")
-    :valittu-todentamisen-prosessi
-    (s/enum :valittu-todentaminen-suoraan
-            :valittu-todentaminen-arvioijat
-            :valittu-todentaminen-naytto)
-    "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
-    (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
-    "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
+  (modify
+    YhteinenTutkinnonOsa
+    "Olemassa oleva yhteinen tutkinnon osa"
+    {:removed [:osa-alueet]
+     :added
+     (describe
+       ""
+       :osa-alueet [OlemassaOlevanYTOOsaAlue] "YTO osa-alueet"
+       :valittu-todentamisen-prosessi-koodi-uri TodentamisenProsessiKoodiUri
+       "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+       (s/optional-key :tarkentavat-tiedot-naytto) [HankitunOsaamisenNaytto]
+       "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
+       (s/optional-key :tarkentavat-tiedot-arvioija)
+       TodennettuArviointiLisatiedot "Mikäli arvioijan kautta todennettu,
+       annetaan myös arvioijan lisätiedot")}))
+
+(s/defschema
+  OlemassaOlevaAmmatillinenTutkinnonOsa
+  (modify
+    OlemassaOlevaYhteinenTutkinnonOsa
+    "Olemassa oleva yhteinen tutkinnon osa"
+    {:removed [:osa-alueet]}))
 
 (def HOKSModel
   ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
