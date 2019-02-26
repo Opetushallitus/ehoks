@@ -271,11 +271,9 @@
          "koulutuksen järjestäjän oid.")
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     "vaatimuksista tai osaamistavoitteista poikkeaminen"
-    :valittu-todentamisen-prosessi
-    (s/enum :valittu-todentaminen-suoraan
-            :valittu-todentaminen-arvioijat
-            :valittu-todentaminen-naytto)
-    "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+    :valittu-todentamisen-prosessi-koodi-uri TodentamisenProsessiKoodiUri
+    "Todentamisen prosessin kuvauksen (suoraan/arvioijien kautta/näyttö)
+    koodi-uri"
     (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
     "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
 
@@ -449,10 +447,8 @@
      :added
      (describe
        ""
-       {:valittu-todentamisen-prosessi
-        (s/enum :valittu-todentaminen-suoraan
-                :valittu-todentaminen-arvioijat
-                :valittu-todentaminen-naytto)
+       {:valittu-todentamisen-prosessi-koodi-uri
+        TodentamisenProsessiKoodiUri
         "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
         (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
         "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."})}))
@@ -506,10 +502,7 @@
      (describe
        ""
        :osa-alueet [OlemassaOlevanYTOOsaAlue] "YTO osa-alueet"
-       :valittu-todentamisen-prosessi
-       (s/enum :valittu-todentaminen-suoraan
-               :valittu-todentaminen-arvioijat
-               :valittu-todentaminen-naytto)
+       :valittu-todentamisen-prosessi-koodi-uri TodentamisenProsessiKoodiUri
        "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
        (s/optional-key :tarkentavat-tiedot-naytto) [HankitunOsaamisenNaytto]
        "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
