@@ -1,25 +1,15 @@
 [
   {
-    "urasuunnitelma": {
-      "koodi-arvo": "jatkokoulutus",
-      "koodi-uri": "urasuunnitelma",
-      "versio": 0
-    },
-    "opiskeluoikeus": {
-      "oid": "1.2.444.333.55.76666666666",
-      "tutkinto": {
-        "laajuus": 35,
-        "nimi": "Audiovisuaalisen sisällön tuottamisen perustutkinto"
-      }
-    },
-    "oppijan-oid": "1.2.246.562.24.44651722625",
+    "urasuunnitelma": "urasuunnitelma_jatkokoulutus",
+    "opiskeluoikeus-oid": "1.2.246.562.15.76811932037",
+    "oppija-oid": "1.2.246.562.24.44651722625",
     "luotu": "2019-01-10T14:00:24.219-00:00",
-    "luonut": "Ope Opettaja",
+    "laatija": {"nimi": "Ope Opettaja"},
     "hyvaksytty": "2019-01-10T14:00:24.219-00:00",
-    "hyvaksynyt": "Ope Opettaja",
-    "paivittanyt": "Ope Opettaja",
+    "hyvaksyja": {"nimi": "Ope Opettaja"},
+    "paivittaja": {"nimi": "Ope Opettaja"},
     "paivitetty": "2019-01-10T14:00:24.219-00:00",
     "versio": 1,
-    "eid": 1
+    "id": 1
   }
 ]

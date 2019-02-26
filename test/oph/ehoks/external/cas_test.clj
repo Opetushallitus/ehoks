@@ -1,10 +1,17 @@
 (ns oph.ehoks.external.cas-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [oph.ehoks.external.cas :as c]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.http-client :as client]
             [clj-time.core :as t]
             [clojure.data.xml :as xml]))
+
+(defn with-reset-cas [f]
+  (f)
+  (client/reset-functions!)
+  (reset! c/service-ticket {:url nil :expires nil}))
+
+(use-fixtures :each with-reset-cas)
 
 (def example-responses
   {"https://some.url/"

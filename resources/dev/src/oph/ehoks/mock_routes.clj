@@ -48,13 +48,13 @@
   (GET "/auth-dev/opintopolku-logout/" request
     (response/see-other (get-in request [:query-params "return"])))
 
-  (POST "/cas-dev/tickets" request
+  (POST "/cas-dev/v1/tickets" request
     (response/created
       (format
-        "http://localhost:%d/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc"
+        "http://localhost:%d/cas-dev/v1/tickets/TGT-1234-Example-cas.1234567890abc"
         (:port config))))
 
-  (POST "/cas-dev/tickets/TGT-1234-Example-cas.1234567890abc" []
+  (POST "/cas-dev/v1/tickets/TGT-1234-Example-cas.1234567890abc" []
     (response/ok "ST-1234-aBcDeFgHiJkLmN123456-cas.1234567890ab"))
 
   (GET "/cas-dev/p3/serviceValidate" []
