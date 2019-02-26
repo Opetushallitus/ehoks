@@ -9,8 +9,27 @@
             [oph.ehoks.middleware :refer [wrap-service-ticket]]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
-            [schema.core :as s])
+            [oph.ehoks.config :refer [config]]
+            [schema.core :as s]
+            [clojure.data.json :as json])
   (:import (java.time LocalDate)))
+
+(defn value-writer [_ value]
+  (if (= (type value) java.util.Date)
+    (str (java.sql.Date. (.getTime value)))
+    value))
+
+(defn write-hoks-json! [h]
+  (spit
+    (java.io.File/createTempFile
+      (format "hoks_%d_%d"
+              (:id h)
+              (quot (System/currentTimeMillis) 1000))
+      ".json")
+    (json/write-str
+      h
+      :value-fn value-writer
+      :escape-unicode false)))
 
 (defn hoks-access? [hoks user]
   (and
@@ -207,6 +226,8 @@
              (str "Creating HOKS is not allowed. "
                   "Check student and 'opiskeluoikeus'.")}))
         (let [h (db/create-hoks! hoks)]
+          (when (:save-hoks-json? config)
+            (write-hoks-json! h))
           (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id h))})))
 
       (c-api/PUT "/:id" [id :as request]
