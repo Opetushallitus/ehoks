@@ -551,7 +551,7 @@
                         :any :excluded}
               :types {:any common-schema/Tutkinto}
               :description "Tutkinnon tiedot ePerusteet palvelussa"}
-   :urasuunnitelma
+   :urasuunnitelma-koodi-uri
    {:methods {:any :optional}
     :types {:any s/Str}
     :description "Opiskelijan tavoitteen Koodisto-koodi-URI"}
@@ -653,4 +653,6 @@
   (modify
     HOKS
     "Oppijan HOKS"
-    {:replaced-in {[:urasuunnitelma] common-schema/KoodistoKoodi}}))
+    {:replaced-in {[:urasuunnitelma] common-schema/KoodistoKoodi
+                   [:eid] s/Str}
+     :removed [:id]}))
