@@ -20,12 +20,12 @@
                      x)))
       filtered)))
 
-(defn get-koodi-versio [uri versio]
+(defn with-koodisto-get [path]
   (try
     (cache/with-cache!
       {:method :get
        :service (:koodisto-url config)
-       :path (format "rest/codeelement/%s/%d" uri versio)
+       :path path
        :options {:as :json}})
     (catch clojure.lang.ExceptionInfo e
       ; Koodisto returns Internal Server Error 500 with NotFoundException
