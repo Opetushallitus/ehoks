@@ -9,8 +9,7 @@
              "Koodiston virhetilanteen metatiedot vastauksessa"
              {(s/optional-key :errors) [{:error-type s/Keyword
                                          :keys [s/Keyword]
-                                         :uri s/Str
-                                         :version s/Int}]})
+                                         :path s/Str}]})
 
 (s/defschema User
              "User"

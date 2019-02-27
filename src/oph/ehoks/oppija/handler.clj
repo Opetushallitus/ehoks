@@ -28,8 +28,7 @@
               conj
               {:error-type :not-found
                :keys [:urasuunnitelma]
-               :uri (:uri data)
-               :version (:version data)})))))
+               :path (:path data)})))))
     {:data []
      :meta {:errors []}}
     hokses))
