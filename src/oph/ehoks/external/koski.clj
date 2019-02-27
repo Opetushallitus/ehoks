@@ -19,11 +19,11 @@
 (defn get-opiskeluoikeus-info [oid]
   (try
     (c/with-api-headers
-     {:method :get
-      :service (:koski-url config)
-      :path (format "api/opiskeluoikeus/%s" oid)
-      :options {:basic-auth [(:cas-username config) (:cas-password config)]
-                :as :json}})
+      {:method :get
+       :service (:koski-url config)
+       :path (format "api/opiskeluoikeus/%s" oid)
+       :options {:basic-auth [(:cas-username config) (:cas-password config)]
+                 :as :json}})
     (catch clojure.lang.ExceptionInfo e
       (let [e-data (ex-data e)
             body (json/read-str (:body e-data) :key-fn keyword)]
