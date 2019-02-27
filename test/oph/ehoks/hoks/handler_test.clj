@@ -610,7 +610,7 @@
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
@@ -637,7 +637,7 @@
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777778"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
@@ -653,7 +653,7 @@
 (deftest prevent-getting-unauthorized-hoks
   (testing "Prevent GET unauthorized HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777778"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
@@ -675,7 +675,7 @@
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
@@ -706,7 +706,7 @@
 (deftest put-created-hoks
   (testing "PUT updates created HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
@@ -740,7 +740,7 @@
 (deftest put-non-existing-hoks
   (testing "PUT prevents updating non existing HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :paivittaja {:nimi "Teuvo Testaaja"}
                      :hyvaksytty (java.util.Date.)
@@ -756,7 +756,7 @@
 (deftest patch-created-hoks
   (testing "PATCH updates value of created HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}

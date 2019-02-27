@@ -54,12 +54,12 @@
                     "</cas:authenticationDate></cas:attributes>"
                     "</cas:authenticationSuccess></cas:serviceResponse>")}
               (.endsWith
-                url "/koski/api/opiskeluoikeus/1.3.444.555.66.77777777777")
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
               {:status 200
                :body {:oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.24.47861388607")}}}
               (.endsWith
-                url "/koski/api/opiskeluoikeus/1.3.444.555.66.77777777778")
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000002")
               {:status 200
                :body {:oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.24.47861388608")}}}
