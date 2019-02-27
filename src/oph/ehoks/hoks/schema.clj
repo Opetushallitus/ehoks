@@ -22,7 +22,10 @@
   #"^valittuprosessi_\d+$")
 
 (def Oid
-  #"^1\.2\.246\.562\.[0-3][0-9]\.\d+$")
+  #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
+
+(def OpiskeluoikeusOid
+  #"^1\.2\.246\.562\.15\.\d{11}$")
 
 (s/defschema
   Organisaatio
@@ -535,8 +538,9 @@
                 :description "Oppijan sähköposti, merkkijono."}
    :opiskeluoikeus-oid
    {:methods {:patch :optional}
-    :types {:any s/Str}
-    :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä"}
+    :types {:any OpiskeluoikeusOid}
+    :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
+                  '1.2.246.562.15.00000000001'"}
    :tutkinto {:methods {:get :optional
                         :any :excluded}
               :types {:any common-schema/Tutkinto}
