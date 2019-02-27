@@ -21,6 +21,12 @@
   "Valitun todentamisen prosessin Koodisto-koodi-URI"
   #"^valittuprosessi_\d+$")
 
+(def Oid
+  #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
+
+(def OpiskeluoikeusOid
+  #"^1\.2\.246\.562\.15\.\d{11}$")
+
 (s/defschema
   Organisaatio
   (describe
@@ -45,7 +51,7 @@
      :added
      (describe
        ""
-       (s/optional-key :oppilaitos-oid) s/Str
+       (s/optional-key :oppilaitos-oid) Oid
        "Mikäli kyseessä oppilaitos, oppilaitoksen oid-tunniste
        Opintopolku-palvelussa.")}))
 
@@ -108,7 +114,7 @@
      :added
      (describe
        ""
-       :oppilaitos-oid s/Str
+       :oppilaitos-oid Oid
        "Oppilaitoksen oid-tunniste Opintopolku-palvelussa.")}))
 
 (s/defschema
@@ -165,7 +171,7 @@
   (describe
     "Näytön tai osaamisen osoittamisen järjestäjä"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :oppilaitos-oid) s/Str
+    (s/optional-key :oppilaitos-oid) Oid
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")))
@@ -265,7 +271,7 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alue-koodi-uri OsaAlueKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
-    (s/optional-key :koulutuksen-jarjestaja-oid) s/Str
+    (s/optional-key :koulutuksen-jarjestaja-oid) Oid
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
@@ -285,7 +291,7 @@
     :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
-    (s/optional-key :koulutuksen-jarjestaja-oid) s/Str
+    (s/optional-key :koulutuksen-jarjestaja-oid) Oid
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")))
@@ -363,7 +369,7 @@
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
-    (s/optional-key :koulutuksen-jarjestaja-oid) s/Str
+    (s/optional-key :koulutuksen-jarjestaja-oid) Oid
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")))
@@ -430,7 +436,7 @@
     "vaatimuksista tai osaamistavoitteista poikkeaminen"
     :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
-    (s/optional-key :koulutuksen-jarjestaja-oid) s/Str
+    (s/optional-key :koulutuksen-jarjestaja-oid) Oid
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
@@ -532,8 +538,9 @@
                 :description "Oppijan sähköposti, merkkijono."}
    :opiskeluoikeus-oid
    {:methods {:patch :optional}
-    :types {:any s/Str}
-    :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä"}
+    :types {:any OpiskeluoikeusOid}
+    :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
+                  '1.2.246.562.15.00000000001'"}
    :tutkinto {:methods {:get :optional
                         :any :excluded}
               :types {:any common-schema/Tutkinto}

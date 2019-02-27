@@ -23,9 +23,10 @@
     (db/clear)
     (let [ppto-data   {:nimi "222"
                        :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "124"
+                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                        :hankitun-osaamisen-naytto
-                       [{:jarjestaja {:oppilaitos-oid "abc"}
+                       [{:jarjestaja {:oppilaitos-oid
+                                      "1.2.246.562.10.00000000002"}
                          :nayttoymparisto {:nimi "aaa"}
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
@@ -59,9 +60,10 @@
     (db/clear)
     (let [ppto-data   {:nimi "222"
                        :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "124"
+                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                        :hankitun-osaamisen-naytto
-                       [{:jarjestaja {:oppilaitos-oid "abc"}
+                       [{:jarjestaja {:oppilaitos-oid
+                                      "1.2.246.562.10.00000000002"}
                          :nayttoymparisto {:nimi "aaa"}
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
@@ -86,9 +88,9 @@
                   {:id 1
                    :nimi "2223"
                    :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid "124"
+                   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                    :hankitun-osaamisen-naytto
-                   [{:jarjestaja {:oppilaitos-oid "abc"}
+                   [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
                      :nayttoymparisto {:nimi "aaa"}
                      :alku "2018-12-12"
                      :loppu "2018-12-20"
@@ -101,9 +103,10 @@
     (db/clear)
     (let [ppto-data {:nimi "222"
                      :osaamisen-hankkimistavat []
-                     :koulutuksen-jarjestaja-oid "124"
+                     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                      :hankitun-osaamisen-naytto
-                     [{:jarjestaja {:oppilaitos-oid "abc"}
+                     [{:jarjestaja {:oppilaitos-oid
+                                    "1.2.246.562.10.00000000002"}
                        :nayttoymparisto {:nimi "aaa"}
                        :alku "2018-12-12"
                        :loppu "2018-12-20"
@@ -128,9 +131,9 @@
                   {:id 1
                    :nimi "222"
                    :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid "1243"
+                   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000003"
                    :hankitun-osaamisen-naytto
-                   [{:jarjestaja {:oppilaitos-oid "abcd"}
+                   [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000004"}
                      :nayttoymparisto {:nimi "aaaf"}
                      :alku "2018-12-14"
                      :loppu "2018-12-22"
@@ -143,9 +146,10 @@
     (db/clear)
     (let [ppto-data {:nimi "222"
                      :osaamisen-hankkimistavat []
-                     :koulutuksen-jarjestaja-oid "124"
+                     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                      :hankitun-osaamisen-naytto
-                     [{:jarjestaja {:oppilaitos-oid "abc"}
+                     [{:jarjestaja {:oppilaitos-oid
+                                    "1.2.246.562.10.00000000002"}
                        :nayttoymparisto {:nimi "aaa"}
                        :alku "2018-12-12"
                        :loppu "2018-12-20"
@@ -187,7 +191,7 @@
                      :ajanjakson-tarkenne "Tarkenne tässä"
                      :osamisen-hankkimistapa-koodi-uri
                      "osaamisenhankkimistapa_koulutussopimus"}]
-                   :koulutuksen-jarjestaja-oid "123"})
+                   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"})
 
 (deftest post-and-get-pao
   (testing "POST puuttuva ammatillinen osaaminen and then get the created ppao"
@@ -242,7 +246,10 @@
                     "%s/1/%s/1"
                     url pao-path))
                 (mock/json-body
-                  (assoc pao-data :id 1 :koulutuksen-jarjestaja-oid "124"))))
+                  (assoc
+                    pao-data
+                    :id 1
+                    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"))))
           get-response  (utils/with-service-ticket
                           app
                           (mock/request
@@ -254,7 +261,10 @@
       (eq (utils/parse-body
             (:body get-response))
           {:meta {} :data
-           (assoc pao-data :id 1 :koulutuksen-jarjestaja-oid "124")}))))
+           (assoc
+             pao-data
+             :id 1
+             :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001")}))))
 
 (def patch-all-pao-data
   {:tutkinnon-osa
@@ -265,7 +275,7 @@
      :ajanjakson-tarkenne "Tarkenne tässä uusi"
      :osamisen-hankkimistapa-koodi-uri
      "osaamisenhankkimistapa_koulutussopimus1"}]
-   :koulutuksen-jarjestaja-oid "1231"})
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000006"})
 
 (deftest patch-all-pao
   (testing "PATCH ALL puuttuva ammatillinen osaaminen"
@@ -338,14 +348,14 @@
        :loppu "2018-12-23"
        :osamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
      :hankitun-osaamisen-naytto
-     [{:jarjestaja {:oppilaitos-oid "abc"}
+     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
        :nayttoymparisto {:nimi "aaa"}
        :alku "2018-12-12"
        :loppu "2018-12-20"
        :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
                              {:nimi "Organisaation nimi"}}]}]}]
    :tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
-   :koulutuksen-jarjestaja-oid "1234"})
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"})
 
 (def pyto-patch-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
@@ -356,13 +366,13 @@
        :loppu "2018-12-22"
        :osamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
      :hankitun-osaamisen-naytto
-     [{:jarjestaja {:oppilaitos-oid "abc2"}
+     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000008"}
        :nayttoymparisto {:nimi "aaa2"}
        :alku "2018-12-15"
        :loppu "2018-12-21"
        :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
                              {:nimi "Organisaation nimi"}}]}]}]
-   :koulutuksen-jarjestaja-oid "12347"})
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"})
 
 (def pyto-patch-one-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
@@ -373,13 +383,13 @@
        :loppu "2018-12-22"
        :osamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
      :hankitun-osaamisen-naytto
-     [{:jarjestaja {:oppilaitos-oid "abc2"}
+     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000010"}
        :nayttoymparisto {:nimi "aaa2"}
        :alku "2018-12-15"
        :loppu "2018-12-21"
        :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
                              {:nimi "Organisaation nimi"}}]}]}]
-   :koulutuksen-jarjestaja-oid "12347"})
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000011"})
 
 (deftest post-and-get-pyto
   (testing "POST puuttuvat yhteisen tutkinnon osat"
@@ -457,7 +467,7 @@
                     "%s/1/%s/1"
                     url pyto-path))
                 (mock/json-body
-                  {:koulutuksen-jarjestaja-oid "12347"})))]
+                  {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})))]
       (is (= (:status response) 204)))))
 
 (deftest patch-all-pyto
@@ -610,7 +620,7 @@
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
@@ -637,7 +647,7 @@
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777778"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
@@ -653,7 +663,7 @@
 (deftest prevent-getting-unauthorized-hoks
   (testing "Prevent GET unauthorized HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777778"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
@@ -675,7 +685,7 @@
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
@@ -706,7 +716,7 @@
 (deftest put-created-hoks
   (testing "PUT updates created HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
@@ -740,7 +750,7 @@
 (deftest put-non-existing-hoks
   (testing "PUT prevents updating non existing HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :paivittaja {:nimi "Teuvo Testaaja"}
                      :hyvaksytty (java.util.Date.)
@@ -756,7 +766,7 @@
 (deftest patch-created-hoks
   (testing "PATCH updates value of created HOKS"
     (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.3.444.555.66.77777777777"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
