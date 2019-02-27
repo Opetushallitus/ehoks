@@ -25,7 +25,8 @@
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                        :hankitun-osaamisen-naytto
-                       [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
+                       [{:jarjestaja {:oppilaitos-oid
+                                      "1.2.246.562.10.00000000002"}
                          :nayttoymparisto {:nimi "aaa"}
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
@@ -61,7 +62,8 @@
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                        :hankitun-osaamisen-naytto
-                       [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
+                       [{:jarjestaja {:oppilaitos-oid
+                                      "1.2.246.562.10.00000000002"}
                          :nayttoymparisto {:nimi "aaa"}
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
@@ -103,7 +105,8 @@
                      :osaamisen-hankkimistavat []
                      :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                      :hankitun-osaamisen-naytto
-                     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
+                     [{:jarjestaja {:oppilaitos-oid
+                                    "1.2.246.562.10.00000000002"}
                        :nayttoymparisto {:nimi "aaa"}
                        :alku "2018-12-12"
                        :loppu "2018-12-20"
@@ -145,7 +148,8 @@
                      :osaamisen-hankkimistavat []
                      :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                      :hankitun-osaamisen-naytto
-                     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
+                     [{:jarjestaja {:oppilaitos-oid
+                                    "1.2.246.562.10.00000000002"}
                        :nayttoymparisto {:nimi "aaa"}
                        :alku "2018-12-12"
                        :loppu "2018-12-20"
@@ -242,7 +246,10 @@
                     "%s/1/%s/1"
                     url pao-path))
                 (mock/json-body
-                  (assoc pao-data :id 1 :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"))))
+                  (assoc
+                    pao-data
+                    :id 1
+                    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"))))
           get-response  (utils/with-service-ticket
                           app
                           (mock/request
@@ -254,7 +261,10 @@
       (eq (utils/parse-body
             (:body get-response))
           {:meta {} :data
-           (assoc pao-data :id 1 :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001")}))))
+           (assoc
+             pao-data
+             :id 1
+             :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001")}))))
 
 (def patch-all-pao-data
   {:tutkinnon-osa
