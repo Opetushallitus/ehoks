@@ -53,6 +53,8 @@
     "Merkkijono, esim. osaamisenhankkimistapa_oppisopimus"
     "#\"^ammatillisenoppiaineet_.+$\""
     "Merkkijono, esim. ammatillisenoppiaineet_aa"
+    "#\"^1\\.2\\.246\\.562\\.[0-30]\\.\\d+$\""
+    "OID-tunniste muotoa 1.2.246.562.x.y"
     s))
 
 (defn get-enum-translation [n]
