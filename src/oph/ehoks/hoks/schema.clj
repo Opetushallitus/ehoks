@@ -360,7 +360,7 @@
   PuuttuvaAmmatillinenOsaaminen
   (describe
     "Puuttuvan ammatillisen osaamisen tiedot (GET)"
-    :id s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :tutkinnon-osa TutkinnonOsa "Tutkinnon osa"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     (str "Tekstimuotoinen selite ammattitaitovaatimuksista tai "
@@ -424,7 +424,7 @@
   PuuttuvaPaikallinenTutkinnonOsa
   (describe
     "Puuttuva paikallinen tutkinnon osa"
-    :id s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :amosaa-tunniste) s/Str
     "Tunniste ePerusteet AMOSAA -palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi"
