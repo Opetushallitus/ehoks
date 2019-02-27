@@ -342,7 +342,7 @@
 
 (def pyto-data
   {:osa-alueet
-   [{:osa-alueen-koodi-uri "ammatillisenoppiaineet_ku"
+   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
      :osaamisen-hankkimistavat
      [{:alku "2018-12-15"
        :loppu "2018-12-23"
@@ -360,7 +360,7 @@
 (def pyto-patch-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :osa-alueet
-   [{:osa-alueen-koodi-uri "ammatillisenoppiaineet_ku"
+   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
      :osaamisen-hankkimistavat
      [{:alku "2018-12-13"
        :loppu "2018-12-22"
@@ -377,7 +377,7 @@
 (def pyto-patch-one-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :osa-alueet
-   [{:osa-alueen-koodi-uri "ammatillisenoppiaineet_ku"
+   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
      :osaamisen-hankkimistavat
      [{:alku "2018-12-13"
        :loppu "2018-12-22"

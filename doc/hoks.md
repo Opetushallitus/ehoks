@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 26.02.2019 09.05
+Generoitu 27.02.2019 08.45
 
 Katso myös [HOKS doc](https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html)
 
@@ -169,7 +169,7 @@ Hankitun paikallisen osaamisen osoittaminen: Näyttö tai muu osaamisen
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
-| yto-osa-alue | [Merkkijono, esim. ammatillisenoppiaineet_aa] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
+| yto-osa-alue-koodi-uri | [Merkkijono, esim. ammatillisenoppiaineet_aa] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
 | nayttoymparisto | [NayttoYmparisto](#NayttoYmparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
@@ -278,7 +278,7 @@ Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
-| yto-osa-alue | [Merkkijono, esim. ammatillisenoppiaineet_aa] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
+| yto-osa-alue-koodi-uri | [Merkkijono, esim. ammatillisenoppiaineet_aa] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
 | nayttoymparisto | [NayttoYmparisto](#NayttoYmparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
@@ -357,7 +357,7 @@ Olemassaolevan YTOn osa-alueen tiedot
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| osa-alueen-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
+| osa-alue-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
 | koulutuksen-jarjestaja-oid | Merkkijono | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 | valittu-todentamisen-prosessi-koodi-uri | #"^valittuprosessi_\d+$" | Todentamisen prosessin kuvauksen (suoraan/arvioijien kautta/näyttö)<br>    koodi-uri | Kyllä |
@@ -460,7 +460,7 @@ Puuttuvan yhteinen tutkinnon osan (YTO) osa-alueen tiedot
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| osa-alueen-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
+| osa-alue-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 | hankitun-osaamisen-naytto | [[HankitunYTOOsaamisenNaytto](#HankitunYTOOsaamisenNaytto)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
@@ -501,12 +501,12 @@ Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| yto-osa-alue | [Merkkijono, esim. ammatillisenoppiaineet_aa] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
 | osaamistavoitteet | [Merkkijono] | Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan.Tunnisteen tyyppi voi vielä päivittyä ja tähän saattaa tulla vielä Yksilölliset arvioinnin kriteerit | Ei |
 | nayttoymparisto | [NayttoYmparisto](#NayttoYmparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
 | tyoelama-arvioijat | [[TyoelamaArvioija](#TyoelamaArvioija)] | Näytön tai<br>    osaamisen osoittamisen arvioijat | Ei |
 | koulutuksenjarjestaja-arvioijat | [[KoulutuksenjarjestajaArvioija](#KoulutuksenjarjestajaArvioija)] | Näytön tai osaamisen osoittamisen<br>    arvioijat | Ei |
+| yto-osa-alue-koodi-uri | [Merkkijono, esim. ammatillisenoppiaineet_aa] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä | Ei |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 
