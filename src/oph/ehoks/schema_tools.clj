@@ -30,7 +30,7 @@
       (describe description)
       (as-> schema x
         (apply st/dissoc x removed)
-        (st/optional-keys x optionals)
-        (reduce (fn [c [ks v]] (st/assoc-in c ks v)) x replaced-in))
+        (reduce (fn [c [ks v]] (st/assoc-in c ks v)) x replaced-in)
+        (st/optional-keys x optionals))
       added))
   ([schema description] (modify schema description {})))
