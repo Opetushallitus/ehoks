@@ -34,9 +34,15 @@
         (if (= (:body (ex-data e)) "error.codeelement.not.found")
           (ex-info "Code Element not found"
                    {:type :not-found
-                    :uri uri
-                    :version versio} e)
+                    :path path}
+                   e)
           e)))))
+
+(defn get-koodi [uri]
+  (with-koodisto-get (format "rest/codeelement/latest/%s" uri)))
+
+(defn get-koodi-versio [uri versio]
+  (with-koodisto-get (format "rest/codeelement/%s/%d" uri versio)))
 
 (defn convert-metadata [m]
   {:nimi (:nimi m)
@@ -44,11 +50,12 @@
    :kuvaus (:kuvaus m)
    :kieli (:kieli m)})
 
-(defn enrich [m ks]
-  (if-let [k (get-in m ks)]
-    (let [koodisto-value
-          (filter-koodisto-values
-            (:body (get-koodi-versio (:koodi-uri k) (:versio k))))]
-      (assoc-in m (conj ks :metadata)
-                (map convert-metadata (:metadata koodisto-value))))
+(defn enrich [m koodi-uri ks]
+  (if-let [koodisto-value
+           (filter-koodisto-values
+             (:body (get-koodi koodi-uri)))]
+    (assoc-in m ks {:koodi-uri (:koodiUri koodisto-value)
+                    :koodi-arvo (:koodiArvo koodisto-value)
+                    :metadata (map convert-metadata (:metadata koodisto-value))
+                    :versio (:versio koodisto-value)})
     m))
