@@ -655,4 +655,5 @@
     "Oppijan HOKS"
     {:replaced-in {[:urasuunnitelma] common-schema/KoodistoKoodi
                    [:eid] s/Str}
-     :removed [:id]}))
+     :removed [:id]
+     :optionals [:urasuunnitelma]}))
