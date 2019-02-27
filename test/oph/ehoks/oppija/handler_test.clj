@@ -10,9 +10,8 @@
 (def url "/ehoks-backend/api/v1/oppija/oppijat")
 
 (def hoks
-  {:urasuunnitelma {:koodi-arvo "jatkokoulutus"
-                    :koodi-uri "urasuunnitelma_1"
-                    :versio 1}
+  {:eid "0000"
+   :urasuunnitelma-koodi-uri "urasuunnitelma_1"
    :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :tutkinto {:laajuus 35
               :nimi "Audiovisuaalisen sisällön tuottamisen perustutkinto"}
@@ -23,8 +22,7 @@
    :hyvaksyja {:nimi "Heikki Hyväksyjä"}
    :paivitetty (java.util.Date.)
    :paivittaja {:nimi "Päivi Päivittäjä"}
-   :versio 2
-   :id 1})
+   :versio 2})
 
 (defn set-hoks-data! []
   (reset!
@@ -44,8 +42,11 @@
   (testing "GET koodisto enriched HOKS"
     (client/set-get!
       (fn [p _]
-        (is (.endsWith p "urasuunnitelma_1/1"))
-        {:body {:metadata
+        (is (.endsWith p "urasuunnitelma_1"))
+        {:body {:koodiArvo "jatkokoulutus"
+                :koodiUri "urasuunnitelma_1"
+                :versio 1
+                :metadata
                 [{:kuvaus "Jatko-opinnot ja lisäkoulutus"
                   :kasite ""
                   :lyhytNimi "Jatkokoulutus"
@@ -73,15 +74,17 @@
             body
             [:data 0]
             dissoc :luotu :paivitetty :hyvaksytty)
-          {:data [(update
+          {:data [(assoc
                     (dissoc hoks :luotu :paivitetty :hyvaksytty)
                     :urasuunnitelma
-                    assoc
-                    :metadata
-                    [{:kuvaus "Jatko-opinnot ja lisäkoulutus"
-                      :lyhyt-nimi "Jatkokoulutus"
-                      :kieli "FI"
-                      :nimi "Jatkokoulutus"}])]
+                    {:koodi-arvo "jatkokoulutus"
+                     :koodi-uri "urasuunnitelma_1"
+                     :versio 1
+                     :metadata
+                     [{:kuvaus "Jatko-opinnot ja lisäkoulutus"
+                       :lyhyt-nimi "Jatkokoulutus"
+                       :kieli "FI"
+                       :nimi "Jatkokoulutus"}]})]
            :meta {:errors []}})))))
 
 (deftest enrich-koodisto-not-found
@@ -89,7 +92,7 @@
     (set-hoks-data!)
     (client/set-get!
       (fn [p _]
-        (is (.endsWith p "urasuunnitelma_1/1"))
+        (is (.endsWith p "urasuunnitelma_1"))
         ; Return Koodisto Koodi Not found exception (see Koodisto.clj)
         (throw
           (ex-info
@@ -114,7 +117,7 @@
             [:data 0]
             dissoc :luotu :paivitetty :hyvaksytty)
           {:data [(dissoc hoks :luotu :paivitetty :hyvaksytty)]
-           :meta {:errors [{:error-type "not-found"
-                            :keys ["urasuunnitelma"]
-                            :uri "urasuunnitelma_1"
-                            :version 1}]}})))))
+           :meta {:errors
+                  [{:error-type "not-found"
+                    :keys ["urasuunnitelma"]
+                    :path "rest/codeelement/latest/urasuunnitelma_1"}]}})))))
