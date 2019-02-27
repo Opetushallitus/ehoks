@@ -10,6 +10,30 @@
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.middleware :refer [wrap-authorize]]))
 
+(defn with-koodisto [hokses]
+  (reduce
+    (fn [c n]
+      (try
+        (update
+          c
+          :data
+          conj
+          (koodisto/enrich n (:urasuunnitelma-koodi-uri n) [:urasuunnitelma]))
+        (catch Exception e
+          (let [data (ex-data e)]
+            (when (not= (:type data) :not-found) (throw e))
+            (update-in
+              (update c :data conj n)
+              [:meta :errors]
+              conj
+              {:error-type :not-found
+               :keys [:urasuunnitelma]
+               :uri (:uri data)
+               :version (:version data)})))))
+    {:data []
+     :meta {:errors []}}
+    hokses))
+
 (def routes
   (c-api/context "/oppija" []
     (c-api/context "/oppijat" []
@@ -32,24 +56,5 @@
               (let [hokses (db/get-all-hoks-by-oppija oid)]
                 (if (empty? hokses)
                   (response/not-found "No HOKSes found")
-                  (response/ok
-                    (reduce
-                      (fn [c n]
-                        (try
-                          (update
-                            c :data conj (koodisto/enrich n [:urasuunnitelma]))
-                          (catch Exception e
-                            (let [data (ex-data e)]
-                              (when (not= (:type data) :not-found) (throw e))
-                              (update-in
-                                (update c :data conj n)
-                                [:meta :errors]
-                                conj
-                                {:error-type :not-found
-                                 :keys [:urasuunnitelma]
-                                 :uri (:uri data)
-                                 :version (:version data)})))))
-                      {:data []
-                       :meta {:errors []}}
-                      hokses))))
+                  (response/ok (with-koodisto hokses))))
               (response/unauthorized))))))))
