@@ -10,7 +10,7 @@
 (def url "/ehoks-backend/api/v1/oppija/oppijat")
 
 (def hoks
-  {:puuttuva-paikallinen-tutkinnon-osat
+  {:puuttuvat-paikalliset-tutkinnon-osat
    [{:koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
      :hankitun-osaamisen-naytto []
      :osaamisen-hankkimistavat []
@@ -35,10 +35,10 @@
    :ensikertainen-hyvaksyminen (java.util.Date.)
    :luotu (java.util.Date.)
    :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
-   :puuttuva-yhteisen-tutkinnon-osat []
+   :puuttuvat-yhteiset-tutkinnon-osat []
    :hyvaksytty (java.util.Date.)
    :olemassa-olevat-ammatilliset-tutkinnon-osat []
-   :puuttuva-ammatillinen-tutkinnon-osat
+   :puuttuvat-ammatilliset-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_103590"
      :tutkinnon-osa-koodisto-koodi
      {:koodi-arvo "103590",

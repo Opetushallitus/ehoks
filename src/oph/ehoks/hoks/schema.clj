@@ -586,7 +586,7 @@
    {:methods {:any :optional}
     :types {:any [OlemassaOlevaYhteinenTutkinnonOsa]}
     :description "Olemassa olevat yhteiset tutkinnon osat (YTO)"}
-   :olemassa-oleva-paikallinen-tutkinnon-osat
+   :olemassa-olevat-paikalliset-tutkinnon-osat
    {:methods {:any :optional}
     :types {:any [OlemassaOlevaPaikallinenTutkinnonOsa]}
     :description "Olemassa oleva paikallinen tutkinnon osa"}
@@ -606,16 +606,16 @@
    {:methods {:any :optional}
     :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
     :description "Opiskeluvalmiuksia tukevat opinnot"}
-   :puuttuva-ammatillinen-tutkinnon-osat
+   :puuttuvat-ammatilliset-tutkinnon-osat
    {:methods {:any :optional}
     :types {:any [PuuttuvaAmmatillinenOsaaminen]}
     :description
     "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"}
-   :puuttuva-yhteisen-tutkinnon-osat
+   :puuttuvat-yhteiset-tutkinnon-osat
    {:methods {:any :optional}
     :types {:any [PuuttuvaYTO]}
     :description "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"}
-   :puuttuva-paikallinen-tutkinnon-osat
+   :puuttuvat-paikalliset-tutkinnon-osat
    {:methods {:any :optional}
     :types {:any [PuuttuvaPaikallinenTutkinnonOsa]}
     :description "Puuttuvat paikallisen tutkinnon osat"}})
@@ -671,12 +671,12 @@
     HOKS
     "Oppijan HOKS"
     {:replaced-in {[:urasuunnitelma] common-schema/KoodistoKoodi
-                   [:puuttuva-ammatillinen-tutkinnon-osat]
+                   [:puuttuvat-ammatilliset-tutkinnon-osat]
                    [OppijaPuuttuvaAmmatillinenOsaaminen]
-                   [:olemassa-oleva-ammatilliset-tutkinnon-osat]
+                   [:olemassa-olevat-ammatilliset-tutkinnon-osat]
                    [OppijaOlemassaOlevaAmmatillinenTutkinnonOsa]
                    [:eid] s/Str}
      :removed [:id]
      :optionals [:urasuunnitelma
-                 :puuttuva-ammatillinen-tutkinnon-osat
-                 :olemassa-oleva-ammatilliset-tutkinnon-osat]}))
+                 :puuttuvat-ammatilliset-tutkinnon-osat
+                 :olemassa-olevat-ammatilliset-tutkinnon-osat]}))
