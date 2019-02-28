@@ -21,11 +21,20 @@
   "Valitun todentamisen prosessin Koodisto-koodi-URI"
   #"^valittuprosessi_\d+$")
 
+(def UrasuunnitelmaKoodiUri
+  #"^urasuunnitelma_\d{4}$")
+
 (def Oid
   #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
 
 (def OpiskeluoikeusOid
   #"^1\.2\.246\.562\.15\.\d{11}$")
+
+(defn local-date? [x]
+  (= (type x) LocalDate))
+
+(def LocalDateOrString
+  (s/conditional local-date? LocalDate :else s/Str))
 
 (s/defschema
   Organisaatio
@@ -68,14 +77,6 @@
             "näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, "
             "esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, "
             "simulaattori"))}))
-
-(s/defschema
-  TutkinnonOsa
-  (describe
-    "Tutkinnon osa"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
-    "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"))
 
 (s/defschema
   Henkilo
@@ -219,9 +220,9 @@
          "yton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä")
     :nayttoymparisto NayttoYmparisto
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
-    :alku LocalDate
+    :alku LocalDateOrString
     "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD"
-    :loppu LocalDate
+    :loppu LocalDateOrString
     "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD"
     (s/optional-key :koulutuksenjarjestaja-arvioijat)
     [KoulutuksenjarjestajaArvioija] "Näytön tai osaamisen osoittamisen
@@ -361,7 +362,8 @@
   (describe
     "Puuttuvan ammatillisen osaamisen tiedot (GET)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :tutkinnon-osa TutkinnonOsa "Tutkinnon osa"
+    :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
+    "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     (str "Tekstimuotoinen selite ammattitaitovaatimuksista tai "
          "osaamistavoitteista poikkeamiseen")
@@ -394,7 +396,9 @@
     (str "Puuttuvan ammatillisen osaamisen tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
-     [:tutkinnon-osa :osaamisen-hankkimistavat :koulutuksen-jarjestaja-oid]}))
+     [:tutkinnon-osa-koodi-uri
+      :osaamisen-hankkimistavat
+      :koulutuksen-jarjestaja-oid]}))
 
 (s/defschema
   PuuttuvaYTOLuonti
@@ -545,9 +549,9 @@
                         :any :excluded}
               :types {:any common-schema/Tutkinto}
               :description "Tutkinnon tiedot ePerusteet palvelussa"}
-   :urasuunnitelma
+   :urasuunnitelma-koodi-uri
    {:methods {:any :optional}
-    :types {:any s/Str}
+    :types {:any UrasuunnitelmaKoodiUri}
     :description "Opiskelijan tavoitteen Koodisto-koodi-URI"}
    :versio {:methods {:any :excluded
                       :get :required}
@@ -642,9 +646,37 @@
     {:doc "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
      :name "HOKSLuonti"}))
 
+; Oppija schemas. Will be moved out of here.
+
+(s/defschema
+  OppijaPuuttuvaAmmatillinenOsaaminen
+  {(s/optional-key :id) s/Int
+   :tutkinnon-osa-koodisto-koodi common-schema/KoodistoKoodi
+   :tutkinnon-osa-koodi-uri s/Str
+   (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
+   (s/optional-key :hankitun-osaamisen-naytto) [HankitunOsaamisenNaytto]
+   :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
+   (s/optional-key :koulutuksen-jarjestaja-oid) Oid})
+
+(s/defschema
+  OppijaOlemassaOlevaAmmatillinenTutkinnonOsa
+  (modify
+    OlemassaOlevaAmmatillinenTutkinnonOsa
+    {:replaced-in
+     {[:tutkinnon-osa-koodisto-koodi] common-schema/KoodistoKoodi}}))
+
 (s/defschema
   OppijaHOKS
   (modify
     HOKS
     "Oppijan HOKS"
-    {:replaced-in {[:urasuunnitelma] common-schema/KoodistoKoodi}}))
+    {:replaced-in {[:urasuunnitelma] common-schema/KoodistoKoodi
+                   [:puuttuva-ammatillinen-tutkinnon-osat]
+                   [OppijaPuuttuvaAmmatillinenOsaaminen]
+                   [:olemassa-oleva-ammatilliset-tutkinnon-osat]
+                   [OppijaOlemassaOlevaAmmatillinenTutkinnonOsa]
+                   [:eid] s/Str}
+     :removed [:id]
+     :optionals [:urasuunnitelma
+                 :puuttuva-ammatillinen-tutkinnon-osat
+                 :olemassa-oleva-ammatilliset-tutkinnon-osat]}))

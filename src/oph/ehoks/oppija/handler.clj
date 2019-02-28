@@ -10,6 +10,46 @@
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.middleware :refer [wrap-authorize]]))
 
+(defn enrich-koodi-all [c kk ks]
+  (mapv #(koodisto/enrich % (get % kk) ks) c))
+
+(defn enrich-tutkinnon-osa-koodi-all [c]
+  (enrich-koodi-all c :tutkinnon-osa-koodi-uri [:tutkinnon-osa-koodisto-koodi]))
+
+(defn enrich-koodit [hoks]
+  (-> hoks
+      (koodisto/enrich (:urasuunnitelma-koodi-uri hoks) [:urasuunnitelma])
+      (update
+        :olemassa-olevat-ammatilliset-tutkinnon-osat
+        enrich-tutkinnon-osa-koodi-all)
+      (update
+        :puuttuva-ammatillinen-tutkinnon-osat enrich-tutkinnon-osa-koodi-all)))
+
+(defn enrich-koodisto-koodit [m hoks]
+  (try
+    (update
+      m
+      :data
+      conj
+      (enrich-koodit hoks))
+    (catch Exception e
+      (let [data (ex-data e)]
+        (when (not= (:type data) :not-found) (throw e))
+        (update-in
+          (update m :data conj hoks)
+          [:meta :errors]
+          conj
+          {:error-type :not-found
+           :keys [:urasuunnitelma]
+           :path (:path data)})))))
+
+(defn with-koodisto [hokses]
+  (reduce
+    enrich-koodisto-koodit
+    {:data []
+     :meta {:errors []}}
+    hokses))
+
 (def routes
   (c-api/context "/oppija" []
     (c-api/context "/oppijat" []
@@ -32,24 +72,5 @@
               (let [hokses (db/get-all-hoks-by-oppija oid)]
                 (if (empty? hokses)
                   (response/not-found "No HOKSes found")
-                  (response/ok
-                    (reduce
-                      (fn [c n]
-                        (try
-                          (update
-                            c :data conj (koodisto/enrich n [:urasuunnitelma]))
-                          (catch Exception e
-                            (let [data (ex-data e)]
-                              (when (not= (:type data) :not-found) (throw e))
-                              (update-in
-                                (update c :data conj n)
-                                [:meta :errors]
-                                conj
-                                {:error-type :not-found
-                                 :keys [:urasuunnitelma]
-                                 :uri (:uri data)
-                                 :version (:version data)})))))
-                      {:data []
-                       :meta {:errors []}}
-                      hokses))))
+                  (response/ok (with-koodisto hokses))))
               (response/unauthorized))))))))

@@ -183,15 +183,14 @@
                  :nimi "2223")))))
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
-(def pao-data     {:tutkinnon-osa
-                   {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"}
-                   :osaamisen-hankkimistavat
-                   [{:alku "2018-12-12"
-                     :loppu "2018-12-20"
-                     :ajanjakson-tarkenne "Tarkenne tässä"
-                     :osamisen-hankkimistapa-koodi-uri
-                     "osaamisenhankkimistapa_koulutussopimus"}]
-                   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"})
+(def pao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
+               :osaamisen-hankkimistavat
+               [{:alku "2018-12-12"
+                 :loppu "2018-12-20"
+                 :ajanjakson-tarkenne "Tarkenne tässä"
+                 :osamisen-hankkimistapa-koodi-uri
+                 "osaamisenhankkimistapa_koulutussopimus"}]
+               :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"})
 
 (deftest post-and-get-pao
   (testing "POST puuttuva ammatillinen osaaminen and then get the created ppao"
@@ -267,8 +266,7 @@
              :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001")}))))
 
 (def patch-all-pao-data
-  {:tutkinnon-osa
-   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"}
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"
    :osaamisen-hankkimistavat
    [{:alku "2018-12-11"
      :loppu "2018-12-21"
