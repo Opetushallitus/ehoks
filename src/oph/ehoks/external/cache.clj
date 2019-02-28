@@ -47,8 +47,8 @@
 (defn encode-url [url path params]
   (let [base (format "%s/%s" url path)]
     (if (empty? params)
-     base
-     (format "%s?%s" base (codec/form-encode params)))))
+      base
+      (format "%s?%s" base (codec/form-encode params)))))
 
 (defn with-cache!
   [{service :service path :path options :options :as data}]
