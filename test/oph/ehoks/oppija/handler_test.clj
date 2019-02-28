@@ -71,8 +71,8 @@
         :kieli "FI"}]}
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
      :hankitun-osaamisen-naytto
-     [{:alku "2017-10-25"
-       :loppu "2017-10-26"
+     [{:alku (java.time.LocalDate/now)
+       :loppu (java.time.LocalDate/now)
        :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921329"}
        :nayttoymparisto {:nimi "", :y-tunnus ""}
        :koulutuksenjarjestaja-arvioijat
