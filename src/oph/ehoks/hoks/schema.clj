@@ -21,6 +21,9 @@
   "Valitun todentamisen prosessin Koodisto-koodi-URI"
   #"^valittuprosessi_\d+$")
 
+(def UrasuunnitelmaKoodiUri
+  #"^urasuunnitelma_\d{4}$")
+
 (def Oid
   #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
 
@@ -553,7 +556,7 @@
               :description "Tutkinnon tiedot ePerusteet palvelussa"}
    :urasuunnitelma-koodi-uri
    {:methods {:any :optional}
-    :types {:any s/Str}
+    :types {:any UrasuunnitelmaKoodiUri}
     :description "Opiskelijan tavoitteen Koodisto-koodi-URI"}
    :versio {:methods {:any :excluded
                       :get :required}
