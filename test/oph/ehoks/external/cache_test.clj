@@ -18,6 +18,8 @@
       (t/minutes
         (inc (:ext-cache-lifetime-minutes config))))}})
 
+; TODO Add test for url with and without params
+
 (deftest test-get-cached
   (testing "Cache"
     (reset! c/cache example-responses)
