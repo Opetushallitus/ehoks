@@ -656,6 +656,7 @@
   OppijaOlemassaOlevaAmmatillinenTutkinnonOsa
   (modify
     OlemassaOlevaAmmatillinenTutkinnonOsa
+    "Oppijan olemassa oleava ammatillinen tutkinnon osa"
     {:replaced-in
      {[:tutkinnon-osa-koodisto-koodi] common-schema/KoodistoKoodi}}))
 
