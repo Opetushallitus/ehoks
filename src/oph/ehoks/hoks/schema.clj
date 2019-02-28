@@ -79,14 +79,6 @@
             "simulaattori"))}))
 
 (s/defschema
-  TutkinnonOsa
-  (describe
-    "Tutkinnon osa"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
-    "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"))
-
-(s/defschema
   Henkilo
   (describe
     "Henkilö"
@@ -370,7 +362,8 @@
   (describe
     "Puuttuvan ammatillisen osaamisen tiedot (GET)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :tutkinnon-osa TutkinnonOsa "Tutkinnon osa"
+    :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
+    "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     (str "Tekstimuotoinen selite ammattitaitovaatimuksista tai "
          "osaamistavoitteista poikkeamiseen")
