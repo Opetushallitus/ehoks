@@ -396,7 +396,9 @@
     (str "Puuttuvan ammatillisen osaamisen tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
-     [:tutkinnon-osa :osaamisen-hankkimistavat :koulutuksen-jarjestaja-oid]}))
+     [:tutkinnon-osa-koodi-uri
+      :osaamisen-hankkimistavat
+      :koulutuksen-jarjestaja-oid]}))
 
 (s/defschema
   PuuttuvaYTOLuonti
@@ -660,7 +662,8 @@
   OppijaOlemassaOlevaAmmatillinenTutkinnonOsa
   (modify
     OlemassaOlevaAmmatillinenTutkinnonOsa
-    {:replaced-in {[:tutkinnon-osa-koodisto-koodi] common-schema/KoodistoKoodi}}))
+    {:replaced-in
+     {[:tutkinnon-osa-koodisto-koodi] common-schema/KoodistoKoodi}}))
 
 (s/defschema
   OppijaHOKS
