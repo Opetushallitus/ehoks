@@ -51,8 +51,8 @@
         :kieli "FI"}]}
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
      :hankitun-osaamisen-naytto
-     [{:alku "2017-10-25"
-       :loppu "2017-10-26"
+     [{:alku (java.time.LocalDate/now)
+       :loppu (java.time.LocalDate/now)
        :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921329"}
        :nayttoymparisto {:nimi "" :y-tunnus ""}
        :koulutuksenjarjestaja-arvioijat
@@ -89,14 +89,13 @@
    :hyvaksyja {:nimi "Ei tietoa"}
    :opiskeluvalmiuksia-tukevat-opinnot []})
 
-(defn set-hoks-data! []
+(defn set-hoks-data! [h]
   (reset!
     db/hoks-store
-    [(assoc hoks :versio 1 :paivittaja {:nimi "Tapio Testaaja"})
-     hoks]))
+    [(assoc h :versio 1 :paivittaja {:nimi "Tapio Testaaja"})
+     h]))
 
 (defn with-cleaning [f]
-  (set-hoks-data!)
   (f)
   (client/reset-functions!)
   (reset! oph.ehoks.external.cache/cache {}))
@@ -105,6 +104,7 @@
 
 (deftest get-koodisto-enriched-hoks
   (testing "GET koodisto enriched HOKS"
+    (set-hoks-data! hoks)
     (client/set-get!
       (fn [p _]
         (cond
@@ -153,30 +153,47 @@
           (update-in
             body
             [:data 0]
-            dissoc :luotu :paivitetty :hyvaksytty :ensikertainen-hyvaksyminen)
-          {:data [(assoc
-                    (dissoc
-                      hoks
-                      :luotu
-                      :paivitetty
-                      :hyvaksytty
-                      :ensikertainen-hyvaksyminen)
-                    :paivittaja {:nimi "Tapio Testaaja"}
-                    :versio 1
-                    :urasuunnitelma
-                    {:koodi-arvo "jatkokoulutus"
-                     :koodi-uri "urasuunnitelma_0001"
-                     :versio 1
-                     :metadata
-                     [{:kuvaus "Jatko-opinnot ja lisäkoulutus"
-                       :lyhyt-nimi "Jatkokoulutus"
-                       :kieli "FI"
-                       :nimi "Jatkokoulutus"}]})]
+            dissoc
+            :luotu :paivitetty :hyvaksytty :ensikertainen-hyvaksyminen)
+          {:data
+           [(-> hoks
+                (dissoc
+                  :luotu
+                  :paivitetty
+                  :hyvaksytty
+                  :ensikertainen-hyvaksyminen)
+                (assoc
+                  :paivittaja {:nimi "Tapio Testaaja"}
+                  :versio 1
+                  :urasuunnitelma
+                  {:koodi-arvo "jatkokoulutus"
+                   :koodi-uri "urasuunnitelma_0001"
+                   :versio 1
+                   :metadata
+                   [{:kuvaus "Jatko-opinnot ja lisäkoulutus"
+                     :lyhyt-nimi "Jatkokoulutus"
+                     :kieli "FI"
+                     :nimi "Jatkokoulutus"}]})
+                (update
+                  :puuttuva-ammatillinen-tutkinnon-osat
+                  (fn [oc]
+                    (mapv
+                      (fn [o]
+                        (update
+                          o
+                          :hankitun-osaamisen-naytto
+                          (fn [c]
+                            (mapv
+                              #(update
+                                 (update %  :alku str)
+                                 :loppu str)
+                              c))))
+                      oc))))]
            :meta {:errors []}})))))
 
 (deftest enrich-koodisto-not-found
   (testing "GET not found koodisto enriched HOKS"
-    (set-hoks-data!)
+    (set-hoks-data! (dissoc hoks :puuttuva-ammatillinen-tutkinnon-osat))
     (client/set-get!
       (fn [p _]
         (is (.endsWith p "urasuunnitelma_0001"))
@@ -208,7 +225,8 @@
             :hyvaksytty
             :ensikertainen-hyvaksyminen
             :paivittaja
-            :versio)
+            :versio
+            :puuttuva-ammatillinen-tutkinnon-osat)
           {:data [(dissoc
                     hoks
                     :luotu
@@ -216,7 +234,8 @@
                     :hyvaksytty
                     :ensikertainen-hyvaksyminen
                     :paivittaja
-                    :versio)]
+                    :versio
+                    :puuttuva-ammatillinen-tutkinnon-osat)]
            :meta {:errors
                   [{:error-type "not-found"
                     :keys ["urasuunnitelma"]
