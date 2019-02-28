@@ -89,21 +89,6 @@
    :hyvaksyja {:nimi "Ei tietoa"}
    :opiskeluvalmiuksia-tukevat-opinnot []})
 
-(comment (def hoks
-   {:eid "0000"
-    :urasuunnitelma-koodi-uri "urasuunnitelma_1"
-    :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-    :tutkinto {:laajuus 35
-               :nimi "Audiovisuaalisen sisällön tuottamisen perustutkinto"}
-    :oppija-oid "1.2.333.444.55.76666666666"
-    :luotu (java.util.Date.)
-    :laatija {:nimi "Olli Opettaja"}
-    :hyvaksytty (java.util.Date.)
-    :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-    :paivitetty (java.util.Date.)
-    :paivittaja {:nimi "Päivi Päivittäjä"}
-    :versio 2}))
-
 (defn set-hoks-data! []
   (reset!
     db/hoks-store
