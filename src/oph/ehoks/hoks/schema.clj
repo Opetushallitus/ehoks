@@ -30,12 +30,6 @@
 (def OpiskeluoikeusOid
   #"^1\.2\.246\.562\.15\.\d{11}$")
 
-(defn local-date? [x]
-  (= (type x) LocalDate))
-
-(def LocalDateOrString
-  (s/conditional local-date? LocalDate :else s/Str))
-
 (s/defschema
   Organisaatio
   (describe
@@ -220,9 +214,9 @@
          "yton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä")
     :nayttoymparisto NayttoYmparisto
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
-    :alku LocalDateOrString
+    :alku LocalDate
     "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD"
-    :loppu LocalDateOrString
+    :loppu LocalDate
     "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD"
     (s/optional-key :koulutuksenjarjestaja-arvioijat)
     [KoulutuksenjarjestajaArvioija] "Näytön tai osaamisen osoittamisen
