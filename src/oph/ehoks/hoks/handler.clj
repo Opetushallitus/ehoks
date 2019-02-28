@@ -20,17 +20,22 @@
     (= (type value) java.time.LocalDate) (str value)
     :else value))
 
-(defn write-hoks-json! [h]
+(defn write-hoks-json-file! [h file]
   (spit
-    (java.io.File/createTempFile
-      (format "hoks_%d_%d"
-              (:id h)
-              (quot (System/currentTimeMillis) 1000))
-      ".json")
+    file
     (json/write-str
       h
       :value-fn value-writer
       :escape-unicode false)))
+
+(defn write-hoks-json! [h]
+  (write-hoks-json-file!
+    h
+    (java.io.File/createTempFile
+      (format "hoks_%d_%d"
+              (:id h)
+              (quot (System/currentTimeMillis) 1000))
+      ".json")))
 
 (defn hoks-access? [hoks user]
   (and
