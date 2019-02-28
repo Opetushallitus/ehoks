@@ -16,12 +16,10 @@
     "paivittaja": {
       "nimi": "Ei tietoa"
     },
-    "urasuunnitelma-koodi-uri": "tavoite_0001",
+    "urasuunnitelma-koodi-uri": "urasuunnitelma_0001",
     "puuttuva-ammatillinen-tutkinnon-osat": [
       {
-        "tutkinnon-osa": {
-          "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590"
-        },
+        "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
         "hankitun-osaamisen-naytto": [
           {
@@ -47,9 +45,7 @@
         "osaamisen-hankkimistavat": []
       },
       {
-        "tutkinnon-osa": {
-          "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590"
-        },
+        "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
         "hankitun-osaamisen-naytto": [
           {
@@ -75,9 +71,7 @@
         "osaamisen-hankkimistavat": []
       },
       {
-        "tutkinnon-osa": {
-          "tutkinnon-osa-koodi-uri": "tutkinnonosat_200241"
-        },
+        "tutkinnon-osa-koodi-uri": "tutkinnonosat_200241",
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
         "hankitun-osaamisen-naytto": [],
         "osaamisen-hankkimistavat": []
