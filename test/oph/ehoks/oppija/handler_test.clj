@@ -170,7 +170,12 @@
             [:data 0]
             dissoc :luotu :paivitetty :hyvaksytty :ensikertainen-hyvaksyminen)
           {:data [(assoc
-                    (dissoc hoks :luotu :paivitetty :hyvaksytty :ensikertainen-hyvaksyminen)
+                    (dissoc
+                      hoks
+                      :luotu
+                      :paivitetty
+                      :hyvaksytty
+                      :ensikertainen-hyvaksyminen)
                     :paivittaja {:nimi "Tapio Testaaja"}
                     :versio 1
                     :urasuunnitelma
@@ -212,9 +217,22 @@
           (update-in
             body
             [:data 0]
-            dissoc :luotu :paivitetty :hyvaksytty)
-          {:data [(dissoc hoks :luotu :paivitetty :hyvaksytty)]
+            dissoc
+            :luotu
+            :paivitetty
+            :hyvaksytty
+            :ensikertainen-hyvaksyminen
+            :paivittaja
+            :versio)
+          {:data [(dissoc
+                    hoks
+                    :luotu
+                    :paivitetty
+                    :hyvaksytty
+                    :ensikertainen-hyvaksyminen
+                    :paivittaja
+                    :versio)]
            :meta {:errors
                   [{:error-type "not-found"
                     :keys ["urasuunnitelma"]
-                    :path "rest/codeelement/latest/urasuunnitelma_1"}]}})))))
+                    :path "rest/codeelement/latest/urasuunnitelma_0001"}]}})))))
