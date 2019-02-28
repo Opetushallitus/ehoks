@@ -644,12 +644,36 @@
     {:doc "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
      :name "HOKSLuonti"}))
 
+; Oppija schemas. Will be moved out of here.
+
+(s/defschema
+  OppijaPuuttuvaAmmatillinenOsaaminen
+  {(s/optional-key :id) s/Int
+   :tutkinnon-osa-koodisto-koodi common-schema/KoodistoKoodi
+   :tutkinnon-osa-koodi-uri s/Str
+   (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
+   (s/optional-key :hankitun-osaamisen-naytto) [HankitunOsaamisenNaytto]
+   :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
+   (s/optional-key :koulutuksen-jarjestaja-oid) Oid})
+
+(s/defschema
+  OppijaOlemassaOlevaAmmatillinenTutkinnonOsa
+  (modify
+    OlemassaOlevaAmmatillinenTutkinnonOsa
+    {:replaced-in {[:tutkinnon-osa-koodisto-koodi] common-schema/KoodistoKoodi}}))
+
 (s/defschema
   OppijaHOKS
   (modify
     HOKS
     "Oppijan HOKS"
     {:replaced-in {[:urasuunnitelma] common-schema/KoodistoKoodi
+                   [:puuttuva-ammatillinen-tutkinnon-osat]
+                   [OppijaPuuttuvaAmmatillinenOsaaminen]
+                   [:olemassa-oleva-ammatilliset-tutkinnon-osat]
+                   [OppijaOlemassaOlevaAmmatillinenTutkinnonOsa]
                    [:eid] s/Str}
      :removed [:id]
-     :optionals [:urasuunnitelma]}))
+     :optionals [:urasuunnitelma
+                 :puuttuva-ammatillinen-tutkinnon-osat
+                 :olemassa-oleva-ammatilliset-tutkinnon-osat]}))
