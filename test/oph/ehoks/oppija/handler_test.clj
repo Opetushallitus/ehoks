@@ -10,19 +10,99 @@
 (def url "/ehoks-backend/api/v1/oppija/oppijat")
 
 (def hoks
-  {:eid "0000"
-   :urasuunnitelma-koodi-uri "urasuunnitelma_1"
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-   :tutkinto {:laajuus 35
-              :nimi "Audiovisuaalisen sisällön tuottamisen perustutkinto"}
-   :oppija-oid "1.2.333.444.55.76666666666"
+  {:puuttuva-paikallinen-tutkinnon-osat
+   [{:koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
+     :hankitun-osaamisen-naytto []
+     :osaamisen-hankkimistavat []
+     :tavoitteet-ja-sisallot ""
+     :nimi "Orientaatio alaan"}
+    {:koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
+     :hankitun-osaamisen-naytto []
+     :osaamisen-hankkimistavat []
+     :nimi "Infotilaisuus"}
+    {:koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
+     :hankitun-osaamisen-naytto []
+     :osaamisen-hankkimistavat []
+     :nimi "Opintojen ohjaus"}
+    {:koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
+     :hankitun-osaamisen-naytto []
+     :osaamisen-hankkimistavat []
+     :nimi "Tutkintotilaisuus"}
+    {:koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
+     :hankitun-osaamisen-naytto []
+     :osaamisen-hankkimistavat []
+     :nimi "Työpaikalla oppiminen "}]
+   :ensikertainen-hyvaksyminen (java.util.Date.)
    :luotu (java.util.Date.)
-   :laatija {:nimi "Olli Opettaja"}
+   :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
+   :puuttuva-yhteisen-tutkinnon-osat []
    :hyvaksytty (java.util.Date.)
-   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+   :olemassa-olevat-ammatilliset-tutkinnon-osat []
+   :puuttuva-ammatillinen-tutkinnon-osat
+   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_103590"
+     :tutkinnon-osa-koodisto-koodi
+     {:koodi-arvo "103590",
+      :koodi-uri "tutkinnonosat_103590",
+      :versio 2,
+      :metadata
+      [{:nimi "Lähiesimiehenä toimiminen",
+        :lyhyt-nimi "Lähiesimiehenä toimiminen",
+        :kuvaus "Lähiesimiehenä toimiminen",
+        :kieli "FI"}]}
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
+     :hankitun-osaamisen-naytto
+     [{:alku "2017-10-25"
+       :loppu "2017-10-26"
+       :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921329"}
+       :nayttoymparisto {:nimi "" :y-tunnus ""}
+       :koulutuksenjarjestaja-arvioijat
+       [{:nimi "Olson,Wava"
+         :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921329"}}]}]
+     :osaamisen-hankkimistavat []}
+    {:tutkinnon-osa-koodi-uri "tutkinnonosat_103590"
+     :tutkinnon-osa-koodisto-koodi
+     {:koodi-arvo "103590",
+      :koodi-uri "tutkinnonosat_103590",
+      :versio 2,
+      :metadata
+      [{:nimi "Lähiesimiehenä toimiminen",
+        :lyhyt-nimi "Lähiesimiehenä toimiminen",
+        :kuvaus "Lähiesimiehenä toimiminen",
+        :kieli "FI"}]}
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
+     :hankitun-osaamisen-naytto
+     [{:alku "2017-10-25"
+       :loppu "2017-10-26"
+       :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921329"}
+       :nayttoymparisto {:nimi "", :y-tunnus ""}
+       :koulutuksenjarjestaja-arvioijat
+       [{:nimi "Moen,Pearl"
+         :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921329"}}]}]
+     :osaamisen-hankkimistavat []}]
+   :opiskeluoikeus-oid "1.2.246.562.15.76811932037"
+   :laatija {:nimi "Simonis,Hollie"}
+   :versio 0
    :paivitetty (java.util.Date.)
-   :paivittaja {:nimi "Päivi Päivittäjä"}
-   :versio 2})
+   :eid "0000"
+   :paivittaja {:nimi "Ei tietoa"}
+   :oppija-oid "1.2.246.562.24.29790141661"
+   :hyvaksyja {:nimi "Ei tietoa"}
+   :opiskeluvalmiuksia-tukevat-opinnot []})
+
+(comment (def hoks
+   {:eid "0000"
+    :urasuunnitelma-koodi-uri "urasuunnitelma_1"
+    :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+    :tutkinto {:laajuus 35
+               :nimi "Audiovisuaalisen sisällön tuottamisen perustutkinto"}
+    :oppija-oid "1.2.333.444.55.76666666666"
+    :luotu (java.util.Date.)
+    :laatija {:nimi "Olli Opettaja"}
+    :hyvaksytty (java.util.Date.)
+    :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+    :paivitetty (java.util.Date.)
+    :paivittaja {:nimi "Päivi Päivittäjä"}
+    :versio 2}))
 
 (defn set-hoks-data! []
   (reset!
@@ -42,21 +122,36 @@
   (testing "GET koodisto enriched HOKS"
     (client/set-get!
       (fn [p _]
-        (is (.endsWith p "urasuunnitelma_1"))
-        {:body {:koodiArvo "jatkokoulutus"
-                :koodiUri "urasuunnitelma_1"
-                :versio 1
-                :metadata
-                [{:kuvaus "Jatko-opinnot ja lisäkoulutus"
-                  :kasite ""
-                  :lyhytNimi "Jatkokoulutus"
-                  :eiSisallaMerkitysta ""
-                  :kieli "FI"
-                  :nimi "Jatkokoulutus"
-                  :sisaltaaMerkityksen ""
-                  :huomioitavaKoodi ""
-                  :kayttoohje ""
-                  :sisaltaaKoodiston ""}]}}))
+        (cond
+          (.endsWith p "urasuunnitelma_0001")
+          {:body {:koodiArvo "jatkokoulutus"
+                  :koodiUri "urasuunnitelma_0001"
+                  :versio 1
+                  :metadata
+                  [{:kuvaus "Jatko-opinnot ja lisäkoulutus"
+                    :kasite ""
+                    :lyhytNimi "Jatkokoulutus"
+                    :eiSisallaMerkitysta ""
+                    :kieli "FI"
+                    :nimi "Jatkokoulutus"
+                    :sisaltaaMerkityksen ""
+                    :huomioitavaKoodi ""
+                    :kayttoohje ""
+                    :sisaltaaKoodiston ""}]}}
+          (.endsWith p "tutkinnonosat_103590")
+          {:body {:koodiArvo "103590"
+                  :versio 2
+                  :koodiUri "tutkinnonosat_103590"
+                  :metadata [{:kuvaus "Lähiesimiehenä toimiminen"
+                              :kasite nil
+                              :lyhytNimi "Lähiesimiehenä toimiminen"
+                              :eiSisallaMerkitysta nil
+                              :kieli "FI"
+                              :nimi "Lähiesimiehenä toimiminen"
+                              :sisaltaaMerkityksen nil
+                              :huomioitavaKoodi nil
+                              :kayttoohje nil
+                              :sisaltaaKoodiston nil}]}})))
     (let [store (atom {})
           app (create-app (test-session-store store))
           response
@@ -73,12 +168,14 @@
           (update-in
             body
             [:data 0]
-            dissoc :luotu :paivitetty :hyvaksytty)
+            dissoc :luotu :paivitetty :hyvaksytty :ensikertainen-hyvaksyminen)
           {:data [(assoc
-                    (dissoc hoks :luotu :paivitetty :hyvaksytty)
+                    (dissoc hoks :luotu :paivitetty :hyvaksytty :ensikertainen-hyvaksyminen)
+                    :paivittaja {:nimi "Tapio Testaaja"}
+                    :versio 1
                     :urasuunnitelma
                     {:koodi-arvo "jatkokoulutus"
-                     :koodi-uri "urasuunnitelma_1"
+                     :koodi-uri "urasuunnitelma_0001"
                      :versio 1
                      :metadata
                      [{:kuvaus "Jatko-opinnot ja lisäkoulutus"
@@ -92,7 +189,7 @@
     (set-hoks-data!)
     (client/set-get!
       (fn [p _]
-        (is (.endsWith p "urasuunnitelma_1"))
+        (is (.endsWith p "urasuunnitelma_0001"))
         ; Return Koodisto Koodi Not found exception (see Koodisto.clj)
         (throw
           (ex-info
