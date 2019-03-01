@@ -40,12 +40,26 @@
 (defn parse-date [s]
   (coerce/to-date (f/parse s)))
 
+(defn parse-local-date [s]
+  (coerce/to-local-date (f/parse s)))
+
+(defn set-hon-dates [h]
+  (mapv
+    #(-> %
+         (update :alku parse-local-date)
+         (update :loppu parse-local-date))
+    h))
+
+(defn set-pato-dates [pc]
+  (mapv #(update % :hankitun-osaamisen-naytto set-hon-dates) pc))
+
 (defn set-hoks-dates [h]
   (-> h
       (update :luotu parse-date)
       (update :paivitetty parse-date)
       (update :hyvaksytty parse-date)
-      (update :ensikertainen-hyvaksyminen parse-date)))
+      (update :ensikertainen-hyvaksyminen parse-date)
+      (update :puuttuva-ammatillinen-tutkinnon-osat set-pato-dates)))
 
 (defn import-initial-demo-data! []
   (-> "demo-data/hoksit.json"
