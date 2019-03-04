@@ -34,6 +34,8 @@
         :olemassa-olevat-ammatilliset-tutkinnon-osat
         enrich-tutkinnon-osa-koodi-all)
       (update
+        :olemassa-olevat-yhteiset-tutkinnon-osat enrich-yto-koodi-all)
+      (update
         :puuttuvat-ammatilliset-tutkinnon-osat enrich-tutkinnon-osa-koodi-all)
       (update
         :puuttuvat-yhteiset-tutkinnon-osat enrich-yto-koodi-all)))
