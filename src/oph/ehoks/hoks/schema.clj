@@ -567,7 +567,7 @@
            :types {:any s/Inst}
            :description
            "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
-   :ensikertainen-hyvaksyminen {:methods {:any :optional}
+   :ensikertainen-hyvaksyminen {:methods {:patch :optional}
                                 :types {:any s/Inst}
                                 :description
                                 "HOKS-dokumentin ensimmäinen hyväksymisaika
