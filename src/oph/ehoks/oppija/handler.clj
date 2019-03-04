@@ -23,7 +23,9 @@
         :olemassa-olevat-ammatilliset-tutkinnon-osat
         enrich-tutkinnon-osa-koodi-all)
       (update
-        :puuttuvat-ammatilliset-tutkinnon-osat enrich-tutkinnon-osa-koodi-all)))
+        :puuttuvat-ammatilliset-tutkinnon-osat enrich-tutkinnon-osa-koodi-all)
+      (update
+        :puuttuvat-yhteiset-tutkinnon-osat enrich-tutkinnon-osa-koodi-all)))
 
 (defn enrich-koodisto-koodit [m hoks]
   (try
