@@ -646,7 +646,7 @@
   OppijaPuuttuvaAmmatillinenOsaaminen
   {(s/optional-key :id) s/Int
    :tutkinnon-osa-koodisto-koodi common-schema/KoodistoKoodi
-   :tutkinnon-osa-koodi-uri s/Str
+   :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
    (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
    (s/optional-key :hankitun-osaamisen-naytto) [HankitunOsaamisenNaytto]
    :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
