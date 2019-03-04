@@ -653,12 +653,20 @@
    (s/optional-key :koulutuksen-jarjestaja-oid) Oid})
 
 (s/defschema
+  OppijaYhteisenTutkinnonOsanOsaAlue
+  (modify
+    YhteisenTutkinnonOsanOsaAlue
+    "Oppijan puuttuva yhteisen tutkinnon osan osa-alue"
+    {:replaced-in
+     {[:osa-alue-koodisto-koodi] common-schema/KoodistoKoodi}}))
+
+(s/defschema
   OppijaPuuttuvaYTO
   "Oppijan puuttuvat yhteiset tutkinnon osat"
   {:tutkinnon-osa-koodisto-koodi common-schema/KoodistoKoodi
    :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
    :koulutuksen-jarjestaja-oid Oid
-   :osa-alueet [YhteisenTutkinnonOsanOsaAlue]})
+   :osa-alueet [OppijaYhteisenTutkinnonOsanOsaAlue]})
 
 (s/defschema
   OppijaOlemassaOlevaAmmatillinenTutkinnonOsa
