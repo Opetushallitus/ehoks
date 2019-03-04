@@ -77,9 +77,30 @@
         "osaamisen-hankkimistavat": []
       }
     ],
-    "puuttuva-yhteisen-tutkinnon-osat": [],
+    "puuttuvat-yhteiset-tutkinnon-osat": [
+      {
+            "tutkinnon-osa-koodi-uri": "tutkinnonosat_101053",
+            "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+            "osa-alueet": []
+        },
+        {
+            "tutkinnon-osa-koodi-uri": "tutkinnonosat_101054",
+            "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+            "osa-alueet": []
+        },
+        {
+            "tutkinnon-osa-koodi-uri": "tutkinnonosat_101055",
+            "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+            "osa-alueet": []
+        },
+        {
+            "tutkinnon-osa-koodi-uri": "tutkinnonosat_101056",
+            "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+            "osa-alueet": []
+        }
+    ],
     "opiskeluvalmiuksia-tukevat-opinnot": [],
-    "puuttuva-paikallinen-tutkinnon-osat": [
+    "puuttuvat-paikalliset-tutkinnon-osat": [
       {
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
         "hankitun-osaamisen-naytto": [],
