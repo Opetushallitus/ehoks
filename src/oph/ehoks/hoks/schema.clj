@@ -654,20 +654,11 @@
 
 (s/defschema
   OppijaOlemassaOlevaAmmatillinenTutkinnonOsa
-<<<<<<< HEAD
-  {(s/optional-key :id) s/Int
-   :tutkinnon-osa-koodisto-koodi common-schema/KoodistoKoodi
-   :tutkinnon-osa-koodi-uri s/Str
-   :valittu-todentamisen-prosessi-koodi-uri s/Str
-   (s/optional-key :tarkentavat-tiedot-naytto) [HankitunOsaamisenNaytto]
-   (s/optional-key :tarkentavat-tiedot-arvioija) TodennettuArviointiLisatiedot})
-=======
   (modify
     OlemassaOlevaAmmatillinenTutkinnonOsa
     "Oppijan olemassa oleava ammatillinen tutkinnon osa"
     {:replaced-in
      {[:tutkinnon-osa-koodisto-koodi] common-schema/KoodistoKoodi}}))
->>>>>>> master
 
 (s/defschema
   OppijaHOKS

@@ -175,7 +175,7 @@
                      :kieli "FI"
                      :nimi "Jatkokoulutus"}]})
                 (update
-                  :puuttuva-ammatillinen-tutkinnon-osat
+                  :puuttuvat-ammatilliset-tutkinnon-osat
                   (fn [oc]
                     (mapv
                       (fn [o]
@@ -193,7 +193,7 @@
 
 (deftest enrich-koodisto-not-found
   (testing "GET not found koodisto enriched HOKS"
-    (set-hoks-data! (dissoc hoks :puuttuva-ammatillinen-tutkinnon-osat))
+    (set-hoks-data! (dissoc hoks :puuttuvat-ammatilliset-tutkinnon-osat))
     (client/set-get!
       (fn [p _]
         (is (.endsWith p "urasuunnitelma_0001"))
@@ -226,7 +226,7 @@
             :ensikertainen-hyvaksyminen
             :paivittaja
             :versio
-            :puuttuva-ammatillinen-tutkinnon-osat)
+            :puuttuvat-ammatilliset-tutkinnon-osat)
           {:data [(dissoc
                     hoks
                     :luotu
@@ -235,7 +235,7 @@
                     :ensikertainen-hyvaksyminen
                     :paivittaja
                     :versio
-                    :puuttuva-ammatillinen-tutkinnon-osat)]
+                    :puuttuvat-ammatilliset-tutkinnon-osat)]
            :meta {:errors
                   [{:error-type "not-found"
                     :keys ["urasuunnitelma"]
