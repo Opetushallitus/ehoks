@@ -38,6 +38,7 @@
    :puuttuvat-yhteiset-tutkinnon-osat []
    :hyvaksytty (java.util.Date.)
    :olemassa-olevat-ammatilliset-tutkinnon-osat []
+   :olemassa-olevat-yhteiset-tutkinnon-osat []
    :puuttuvat-ammatilliset-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_103590"
      :tutkinnon-osa-koodisto-koodi
