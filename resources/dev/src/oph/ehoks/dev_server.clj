@@ -15,7 +15,8 @@
             [cheshire.core :as cheshire]
             [oph.ehoks.db.memory :as db]
             [clj-time.coerce :as coerce]
-            [clj-time.format :as f]))
+            [clj-time.format :as f])
+  (:import java.time.LocalDate))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -41,7 +42,7 @@
   (coerce/to-date (f/parse s)))
 
 (defn parse-local-date [s]
-  (coerce/to-local-date (f/parse s)))
+  (LocalDate/parse s))
 
 (defn set-hon-dates [h]
   (mapv
