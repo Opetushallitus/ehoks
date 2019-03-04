@@ -23,7 +23,7 @@
 (defn convert [h]
   (as-> h x
     (rename-keys x {:urasuunnitelma :urasuunnitelma-koodi-uri})
-    (update x :puuttuva-ammatillinen-tutkinnon-osat
+    (update x :puuttuvat-ammatilliset-tutkinnon-osat
             rename-all-in
             :tutkinnon-osa {:koodi-uri :tutkinnon-osa-koodi-uri})
     (update x :puuttuva-yhteisen-tutkinnon-osat

@@ -17,7 +17,7 @@
       "nimi": "Ei tietoa"
     },
     "urasuunnitelma-koodi-uri": "urasuunnitelma_0001",
-    "puuttuva-ammatillinen-tutkinnon-osat": [
+    "puuttuvat-ammatilliset-tutkinnon-osat": [
       {
         "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
