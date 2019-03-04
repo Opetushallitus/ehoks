@@ -81,7 +81,11 @@
       {
             "tutkinnon-osa-koodi-uri": "tutkinnonosat_101053",
             "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-            "osa-alueet": []
+            "osa-alueet": [
+              {
+                "osa-alue-koodi-uri": "ammatillisenoppiaineet_fk"
+              }
+            ]
         },
         {
             "tutkinnon-osa-koodi-uri": "tutkinnonosat_101054",
