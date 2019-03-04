@@ -72,5 +72,5 @@
               (let [hokses (db/get-all-hoks-by-oppija oid)]
                 (if (empty? hokses)
                   (response/not-found "No HOKSes found")
-                  (response/ok (with-koodisto hokses))))
+                  (response/ok (with-koodisto (map #(dissoc % :id) hokses)))))
               (response/unauthorized))))))))
