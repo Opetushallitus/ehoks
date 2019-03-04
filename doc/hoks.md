@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 28.02.2019 15.46
+Generoitu 04.03.2019 08.16
 
 Katso myös [HOKS doc](https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html)
 
@@ -84,20 +84,20 @@ HOKS-dokumentin ylikirjoitus (PUT)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | olemassa-olevat-ammatilliset-tutkinnon-osat | [[OlemassaOlevaAmmatillinenTutkinnonOsa](#OlemassaOlevaAmmatillinenTutkinnonOsa)] | Olemassa oleva ammatillinen osaaminen | Ei |
-| puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
+| olemassa-olevat-paikalliset-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
 | ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
-| puuttuva-paikallinen-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
+| puuttuvat-paikalliset-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | urasuunnitelma-koodi-uri | #"^urasuunnitelma_\d{4}$" | Opiskelijan tavoitteen Koodisto-koodi-URI | Ei |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
-| olemassa-oleva-paikallinen-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
-| puuttuva-ammatillinen-tutkinnon-osat | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
 | opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d{11}$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001' | Kyllä |
+| puuttuvat-ammatilliset-tutkinnon-osat | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
 | opiskeluvalmiuksia-tukevat-opinnot | [[OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot)] | Opiskeluvalmiuksia tukevat opinnot | Ei |
 | paivittaja | [HoksToimija](#HoksToimija) | HOKS-dokumenttia viimeksi päivittäneen henkilön nimi | Kyllä |
 | oppija-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
 | hyvaksyja | [HoksToimija](#HoksToimija) | Luodun HOKS-dokumentn hyväksyjän nimi | Kyllä |
+| puuttuvat-yhteiset-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 
 ### TyopaikallaHankittavaOsaaminen  
 
@@ -213,20 +213,20 @@ HOKS-dokumentin arvot uutta merkintää luotaessa (POST)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | olemassa-olevat-ammatilliset-tutkinnon-osat | [[OlemassaOlevaAmmatillinenTutkinnonOsa](#OlemassaOlevaAmmatillinenTutkinnonOsa)] | Olemassa oleva ammatillinen osaaminen | Ei |
-| puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
+| olemassa-olevat-paikalliset-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
 | ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
-| puuttuva-paikallinen-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
+| puuttuvat-paikalliset-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | urasuunnitelma-koodi-uri | #"^urasuunnitelma_\d{4}$" | Opiskelijan tavoitteen Koodisto-koodi-URI | Ei |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
-| olemassa-oleva-paikallinen-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
-| puuttuva-ammatillinen-tutkinnon-osat | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
 | opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d{11}$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001' | Kyllä |
 | laatija | [HoksToimija](#HoksToimija) | HOKS-dokumentin luoneen henkilön nimi | Kyllä |
+| puuttuvat-ammatilliset-tutkinnon-osat | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
 | opiskeluvalmiuksia-tukevat-opinnot | [[OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot)] | Opiskeluvalmiuksia tukevat opinnot | Ei |
 | paivittaja | [HoksToimija](#HoksToimija) | HOKS-dokumenttia viimeksi päivittäneen henkilön nimi | Kyllä |
 | oppija-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
 | hyvaksyja | [HoksToimija](#HoksToimija) | Luodun HOKS-dokumentn hyväksyjän nimi | Kyllä |
+| puuttuvat-yhteiset-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 
 ### MuuTutkinnonOsa  
 
@@ -281,18 +281,17 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | olemassa-olevat-ammatilliset-tutkinnon-osat | [[OlemassaOlevaAmmatillinenTutkinnonOsa](#OlemassaOlevaAmmatillinenTutkinnonOsa)] | Olemassa oleva ammatillinen osaaminen | Ei |
+| olemassa-olevat-paikalliset-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
 | luotu | Aikaleima | HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
-| puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
 | ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
-| puuttuva-paikallinen-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
+| puuttuvat-paikalliset-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | urasuunnitelma-koodi-uri | #"^urasuunnitelma_\d{4}$" | Opiskelijan tavoitteen Koodisto-koodi-URI | Ei |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
-| olemassa-oleva-paikallinen-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
-| puuttuva-ammatillinen-tutkinnon-osat | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
 | opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d{11}$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001' | Kyllä |
 | laatija | [HoksToimija](#HoksToimija) | HOKS-dokumentin luoneen henkilön nimi | Kyllä |
+| puuttuvat-ammatilliset-tutkinnon-osat | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
 | versio | Kokonaisluku | HOKS-dokumentin versio | Kyllä |
 | paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
 | opiskeluvalmiuksia-tukevat-opinnot | [[OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot)] | Opiskeluvalmiuksia tukevat opinnot | Ei |
@@ -300,6 +299,7 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
 | oppija-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
 | tutkinto | [Tutkinto](#Tutkinto) | Tutkinnon tiedot ePerusteet palvelussa | Ei |
 | hyvaksyja | [HoksToimija](#HoksToimija) | Luodun HOKS-dokumentn hyväksyjän nimi | Kyllä |
+| puuttuvat-yhteiset-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 
 ###   
 
@@ -356,18 +356,18 @@ HOKS-dokumentin ylikirjoitus (PATCH)
 | ---- | ------ | ------ | --------- |
 | paivittaja | [HoksToimija](#HoksToimija) | HOKS-dokumenttia viimeksi päivittäneen henkilön nimi | Ei |
 | olemassa-olevat-ammatilliset-tutkinnon-osat | [[OlemassaOlevaAmmatillinenTutkinnonOsa](#OlemassaOlevaAmmatillinenTutkinnonOsa)] | Olemassa oleva ammatillinen osaaminen | Ei |
+| olemassa-olevat-paikalliset-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
 | hyvaksyja | [HoksToimija](#HoksToimija) | Luodun HOKS-dokumentn hyväksyjän nimi | Ei |
 | opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d{11}$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001' | Ei |
 | laatija | [HoksToimija](#HoksToimija) | HOKS-dokumentin luoneen henkilön nimi | Ei |
-| puuttuva-yhteisen-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
 | ensikertainen-hyvaksyminen | Aikaleima | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
-| puuttuva-paikallinen-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
+| puuttuvat-paikalliset-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
 | urasuunnitelma-koodi-uri | #"^urasuunnitelma_\d{4}$" | Opiskelijan tavoitteen Koodisto-koodi-URI | Ei |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
-| olemassa-oleva-paikallinen-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
-| puuttuva-ammatillinen-tutkinnon-osat | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
+| puuttuvat-ammatilliset-tutkinnon-osat | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
 | opiskeluvalmiuksia-tukevat-opinnot | [[OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot)] | Opiskeluvalmiuksia tukevat opinnot | Ei |
+| puuttuvat-yhteiset-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | oppija-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Ei |
 
 ### OsaamisenHankkimistapa  
