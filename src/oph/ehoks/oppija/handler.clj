@@ -75,15 +75,15 @@
 
       (route-middleware
         [wrap-authorize]
-          (c-api/context "/eperusteet" []
-            :tags ["ePerusteet"]
+        (c-api/context "/eperusteet" []
+          :tags ["ePerusteet"]
 
-              (c-api/GET "/:koodi-uri" [koodi-uri]
-                :path-params [koodi-uri :- s/Str]
-                :summary "Oppijan ePerusteet integraatio.
+          (c-api/GET "/:koodi-uri" [koodi-uri]
+            :path-params [koodi-uri :- s/Str]
+            :summary "Oppijan ePerusteet integraatio.
                           Perusteiden haku Koodisto-Koodi-Urilla."
-                :return (rest/response [s/Any])
-                (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))))
+            :return (rest/response [s/Any])
+            (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))))
 
     (c-api/context "/oppijat" []
       :tags ["oppijat"]
