@@ -60,7 +60,7 @@
       (update :paivitetty parse-date)
       (update :hyvaksytty parse-date)
       (update :ensikertainen-hyvaksyminen parse-date)
-      (update :puuttuva-ammatillinen-tutkinnon-osat set-pato-dates)))
+      (update :puuttuvat-ammatilliset-tutkinnon-osat set-pato-dates)))
 
 (defn import-initial-demo-data! []
   (-> "demo-data/hoksit.json"

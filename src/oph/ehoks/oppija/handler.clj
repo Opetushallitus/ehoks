@@ -18,6 +18,17 @@
 (defn enrich-tutkinnon-osa-koodi-all [c]
   (enrich-koodi-all c :tutkinnon-osa-koodi-uri [:tutkinnon-osa-koodisto-koodi]))
 
+(defn enrich-yto-koodi-all [c]
+  (enrich-tutkinnon-osa-koodi-all
+    (mapv
+      #(update
+         %
+         :osa-alueet
+         enrich-koodi-all
+         :osa-alue-koodi-uri
+         [:osa-alue-koodisto-koodi])
+      c)))
+
 (defn enrich-koodit [hoks]
   (-> hoks
       (koodisto/enrich (:urasuunnitelma-koodi-uri hoks) [:urasuunnitelma])
@@ -25,7 +36,11 @@
         :olemassa-olevat-ammatilliset-tutkinnon-osat
         enrich-tutkinnon-osa-koodi-all)
       (update
-        :puuttuvat-ammatilliset-tutkinnon-osat enrich-tutkinnon-osa-koodi-all)))
+        :olemassa-olevat-yhteiset-tutkinnon-osat enrich-yto-koodi-all)
+      (update
+        :puuttuvat-ammatilliset-tutkinnon-osat enrich-tutkinnon-osa-koodi-all)
+      (update
+        :puuttuvat-yhteiset-tutkinnon-osat enrich-yto-koodi-all)))
 
 (defn enrich-koodisto-koodit [m hoks]
   (try
