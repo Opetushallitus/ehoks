@@ -1,6 +1,7 @@
 (ns oph.ehoks.oppija.handler
   (:require [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
+            [schema.core :as s]
             [ring.util.http-response :as response]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.hoks.schema :as hoks-schema]
@@ -8,6 +9,7 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.db.memory :as db]
             [oph.ehoks.external.koodisto :as koodisto]
+            [oph.ehoks.external.eperusteet :as eperusteet]
             [oph.ehoks.middleware :refer [wrap-authorize]]))
 
 (defn enrich-koodi-all [c kk ks]
@@ -52,6 +54,22 @@
 
 (def routes
   (c-api/context "/oppija" []
+
+    (c-api/context "/external" []
+      :tags ["external"]
+
+      (route-middleware
+        [wrap-authorize]
+          (c-api/context "/eperusteet" []
+            :tags ["ePerusteet"]
+
+              (c-api/GET "/:koodi-uri" [koodi-uri]
+                :path-params [koodi-uri :- s/Str]
+                :summary "Oppijan ePerusteet integraatio.
+                          Perusteiden haku Koodisto-Koodi-Urilla."
+                :return (rest/response [s/Any])
+                (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))))
+
     (c-api/context "/oppijat" []
       :tags ["oppijat"]
 
