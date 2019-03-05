@@ -7,28 +7,39 @@
 
 ; One time use script for generating initial migration of schema
 
-(def models '#{HOKSLuonti
-               OlemassaOlevaAmmatillinenTutkinnonOsa
-               HankitunOsaamisenNaytto
-               NaytonJarjestaja
-               Organisaatio
-               Arvioija
-               TutkinnonOsa
-               OsaamisenHankkimistapa
-               Oppilaitoshenkilo
-               TyopaikallaHankittavaOsaaminen
-               VastuullinenOhjaaja
-               Henkilo
-               MuuOppimisymparisto
-               PuuttuvaYTO
-               YhteisenTutkinnonOsanOsaAlue
-               HankitunYTOOsaamisenNaytto
-               PaikallinenTutkinnonOsa
-               HankitunPaikallisenOsaamisenNaytto
-               OlemassaOlevaYhteinenTutkinnonOsa
-               OlemassaOlevanYTOOsaAlue
-               OpiskeluvalmiuksiaTukevatOpinnot
-               OlemassaOlevaPaikallinenTutkinnonOsa})
+(def models
+  '#{Arvioija
+     Arviointikriteeri
+     HOKS
+     HankitunOsaamisenNaytto
+     HankitunPaikallisenOsaamisenNaytto
+     HankitunYTOOsaamisenNaytto
+     Henkilo
+     HoksToimija
+     KoulutuksenJarjestajaOrganisaatio
+     KoulutuksenjarjestajaArvioija
+     MuuOppimisymparisto
+     MuuTutkinnonOsa
+     NaytonJarjestaja
+     NayttoYmparisto
+     OlemassaOlevaAmmatillinenTutkinnonOsa
+     OlemassaOlevaPaikallinenTutkinnonOsa
+     OlemassaOlevaYhteinenTutkinnonOsa
+     OlemassaOlevanYTOOsaAlue
+     OpiskeluvalmiuksiaTukevatOpinnot
+     Oppilaitoshenkilo
+     Organisaatio
+     OsaamisenHankkimistapa
+     PuuttuvaAmmatillinenOsaaminen
+     PuuttuvaPaikallinenTutkinnonOsa
+     PuuttuvaYTO
+     TodennettuArviointiLisatiedot
+     TyoelamaArvioija
+     TyoelamaOrganisaatio
+     TyopaikallaHankittavaOsaaminen
+     VastuullinenOhjaaja
+     YhteinenTutkinnonOsa
+     YhteisenTutkinnonOsanOsaAlue})
 
 (defn generate-create-table [table-name]
   (format "CREATE TABLE %s" (csk/->snake_case table-name)))
