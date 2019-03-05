@@ -151,14 +151,13 @@
 (defn generate-reference [c]
   (if (get-in c [:reference :to])
     (format
-      "REFERENCES TO %s(id)" (csk/->snake_case (get-in c [:reference :to])))
+      "INTEGER REFERENCES %s(id)" (csk/->snake_case (get-in c [:reference :to])))
     (throw (ex-info "Unknown type without reference" c))))
 
 (defn to-sql-type [c]
-  (let [t (get
-            sql-types
-            (:type c))]
+  (let [t (get sql-types (:type c))]
     (cond
+      (.endsWith (:name c) "_oid") "VARCHAR(26)"
       (some? t) t
       (.startsWith (str (:type c)) "(enum ") "VARCHAR(30)"
       :else (generate-reference c))))
