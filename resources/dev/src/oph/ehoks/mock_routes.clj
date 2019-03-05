@@ -104,9 +104,10 @@
     (json-response-file
       "dev-routes/rest_codeelement_ravintolakokinatjarjestys__4_2.json"))
 
-  (GET "/eperusteet/api/tutkinnonosat" request
+  (GET "/eperusteet-service/api/tutkinnonosat" request
     (if (= (get-in request [:query-params "koodiUri"]) "tutkinnonosat_101056")
-      (json-response [])
+      (json-response-file
+        "dev-routes/eperusteet-service_api_tutkinnonosat_not_found.json")
       (json-response-file
         "dev-routes/eperusteet-service_api_tutkinnonosat.json")))
 
