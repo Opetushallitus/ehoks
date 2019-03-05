@@ -62,8 +62,7 @@
 
 (defn generate-deleted-at []
   {:name "deleted_at"
-   :type 'Inst
-   :default "now()"})
+   :type 'Inst})
 
 (defn generate-version []
   {:name "version"
