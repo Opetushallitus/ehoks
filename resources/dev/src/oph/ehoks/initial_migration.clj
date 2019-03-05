@@ -76,12 +76,21 @@
    (generate-deleted-at)
    (generate-version)])
 
+(def regexes
+  #{"#\"^tutkinnonosat_\\d+$\""
+    "#\"^urasuunnitelma_\\d{4}$\""
+    "#\"^1\\.2\\.246\\.562\\.15\\.\\d{11}$\""
+    "#\"^osaamisenhankkimistapa_.+$\""
+    "#\"^ammatillisenoppiaineet_.+$\""
+    "#\"^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$\""
+    "#\"^valittuprosessi_\\d+$\""})
+
 (defn get-type [v]
   (let [e (s/explain v)]
     (cond
       (map? e) (:name (meta v))
       (vector? e) :reference
-      (= (str e) "#\"^tutkinnonosat_\\d+$\"") :varchar256
+      (contains? regexes (str e)) :varchar256
       :else e)))
 
 (defn get-reference [k v]
