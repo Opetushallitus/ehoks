@@ -35,19 +35,19 @@
    :ensikertainen-hyvaksyminen (java.util.Date.)
    :luotu (java.util.Date.)
    :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
-   :puuttuvat-yhteiset-tutkinnon-osat []
    :hyvaksytty (java.util.Date.)
    :olemassa-olevat-ammatilliset-tutkinnon-osat []
+   :olemassa-olevat-yhteiset-tutkinnon-osat []
    :puuttuvat-ammatilliset-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_103590"
      :tutkinnon-osa-koodisto-koodi
-     {:koodi-arvo "103590",
-      :koodi-uri "tutkinnonosat_103590",
-      :versio 2,
+     {:koodi-arvo "103590"
+      :koodi-uri "tutkinnonosat_103590"
+      :versio 2
       :metadata
-      [{:nimi "Lähiesimiehenä toimiminen",
-        :lyhyt-nimi "Lähiesimiehenä toimiminen",
-        :kuvaus "Lähiesimiehenä toimiminen",
+      [{:nimi "Lähiesimiehenä toimiminen"
+        :lyhyt-nimi "Lähiesimiehenä toimiminen"
+        :kuvaus "Lähiesimiehenä toimiminen"
         :kieli "FI"}]}
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
      :hankitun-osaamisen-naytto
@@ -61,13 +61,13 @@
      :osaamisen-hankkimistavat []}
     {:tutkinnon-osa-koodi-uri "tutkinnonosat_103590"
      :tutkinnon-osa-koodisto-koodi
-     {:koodi-arvo "103590",
-      :koodi-uri "tutkinnonosat_103590",
-      :versio 2,
+     {:koodi-arvo "103590"
+      :koodi-uri "tutkinnonosat_103590"
+      :versio 2
       :metadata
-      [{:nimi "Lähiesimiehenä toimiminen",
-        :lyhyt-nimi "Lähiesimiehenä toimiminen",
-        :kuvaus "Lähiesimiehenä toimiminen",
+      [{:nimi "Lähiesimiehenä toimiminen"
+        :lyhyt-nimi "Lähiesimiehenä toimiminen"
+        :kuvaus "Lähiesimiehenä toimiminen"
         :kieli "FI"}]}
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
      :hankitun-osaamisen-naytto
@@ -79,6 +79,27 @@
        [{:nimi "Moen,Pearl"
          :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921329"}}]}]
      :osaamisen-hankkimistavat []}]
+   :puuttuvat-yhteiset-tutkinnon-osat
+   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_103596"
+     :tutkinnon-osa-koodisto-koodi
+     {:koodi-arvo "103596"
+      :koodi-uri "tutkinnonosat_103596"
+      :versio 3
+      :metadata [{:kuvaus "Esimerkki tutkinnon osa"
+                  :lyhyt-nimi "Esimerkki tutkinnon osa"
+                  :kieli "FI"
+                  :nimi "Esimerkki tutkinnon osa"}]}
+     :osa-alueet
+     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_fk"
+       :osa-alue-koodisto-koodi
+       {:koodi-arvo "fk"
+        :koodi-uri "ammatillisenoppiaineet_fk"
+        :versio 1
+        :metadata [{:nimi "Fysiikka ja kemia"
+                    :lyhyt-nimi "Fysiikka ja kemia"
+                    :kuvaus "Fysiikka ja kemia"
+                    :kieli "FI"}]}}]
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"}]
    :opiskeluoikeus-oid "1.2.246.562.15.76811932037"
    :laatija {:nimi "Simonis,Hollie"}
    :versio 0
@@ -100,11 +121,31 @@
   (client/reset-functions!)
   (reset! oph.ehoks.external.cache/cache {}))
 
+(defn clean-koodistot [h]
+  (-> h
+      (update
+        :puuttuvat-ammatilliset-tutkinnon-osat
+        (fn [t] (mapv #(dissoc % :tutkinnon-osa-koodisto-koodi) t)))
+      (update
+        :puuttuvat-yhteiset-tutkinnon-osat
+        (fn [tc]
+          (mapv
+            (fn [t]
+              (-> t
+                  (dissoc :tutkinnon-osa-koodisto-koodi)
+                  (update
+                    :osa-alueet
+                    (fn [oc]
+                      (mapv
+                        (fn [o] (dissoc o :osa-alue-koodisto-koodi))
+                        oc)))))
+            tc)))))
+
 (use-fixtures :each with-cleaning)
 
 (deftest get-koodisto-enriched-hoks
   (testing "GET koodisto enriched HOKS"
-    (set-hoks-data! hoks)
+    (set-hoks-data! (clean-koodistot hoks))
     (client/set-get!
       (fn [p _]
         (cond
@@ -123,6 +164,20 @@
                     :huomioitavaKoodi ""
                     :kayttoohje ""
                     :sisaltaaKoodiston ""}]}}
+          (.endsWith p "tutkinnonosat_103596")
+          {:body {:koodiArvo "103596"
+                  :versio 3
+                  :koodiUri "tutkinnonosat_103596"
+                  :metadata [{:kuvaus "Esimerkki tutkinnon osa"
+                              :kasite nil
+                              :lyhytNimi "Esimerkki tutkinnon osa"
+                              :eiSisallaMerkitysta nil
+                              :kieli "FI"
+                              :nimi "Esimerkki tutkinnon osa"
+                              :sisaltaaMerkityksen nil
+                              :huomioitavaKoodi nil
+                              :kayttoohje nil
+                              :sisaltaaKoodiston nil}]}}
           (.endsWith p "tutkinnonosat_103590")
           {:body {:koodiArvo "103590"
                   :versio 2
@@ -133,6 +188,20 @@
                               :eiSisallaMerkitysta nil
                               :kieli "FI"
                               :nimi "Lähiesimiehenä toimiminen"
+                              :sisaltaaMerkityksen nil
+                              :huomioitavaKoodi nil
+                              :kayttoohje nil
+                              :sisaltaaKoodiston nil}]}}
+          (.endsWith p "ammatillisenoppiaineet_fk")
+          {:body {:koodiArvo "fk"
+                  :versio 1
+                  :koodiUri "ammatillisenoppiaineet_fk"
+                  :metadata [{:kuvaus "Fysiikka ja kemia"
+                              :kasite nil
+                              :lyhytNimi "Fysiikka ja kemia"
+                              :eiSisallaMerkitysta nil
+                              :kieli "FI"
+                              :nimi "Fysiikka ja kemia"
                               :sisaltaaMerkityksen nil
                               :huomioitavaKoodi nil
                               :kayttoohje nil

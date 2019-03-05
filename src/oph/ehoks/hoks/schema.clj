@@ -646,11 +646,27 @@
   OppijaPuuttuvaAmmatillinenOsaaminen
   {(s/optional-key :id) s/Int
    :tutkinnon-osa-koodisto-koodi common-schema/KoodistoKoodi
-   :tutkinnon-osa-koodi-uri s/Str
+   :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
    (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
    (s/optional-key :hankitun-osaamisen-naytto) [HankitunOsaamisenNaytto]
    :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
    (s/optional-key :koulutuksen-jarjestaja-oid) Oid})
+
+(s/defschema
+  OppijaYhteisenTutkinnonOsanOsaAlue
+  (modify
+    YhteisenTutkinnonOsanOsaAlue
+    "Oppijan puuttuva yhteisen tutkinnon osan osa-alue"
+    {:replaced-in
+     {[:osa-alue-koodisto-koodi] common-schema/KoodistoKoodi}}))
+
+(s/defschema
+  OppijaPuuttuvaYTO
+  "Oppijan puuttuvat yhteiset tutkinnon osat"
+  {:tutkinnon-osa-koodisto-koodi common-schema/KoodistoKoodi
+   :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
+   :koulutuksen-jarjestaja-oid Oid
+   :osa-alueet [OppijaYhteisenTutkinnonOsanOsaAlue]})
 
 (s/defschema
   OppijaOlemassaOlevaAmmatillinenTutkinnonOsa
@@ -668,6 +684,8 @@
     {:replaced-in {[:urasuunnitelma] common-schema/KoodistoKoodi
                    [:puuttuvat-ammatilliset-tutkinnon-osat]
                    [OppijaPuuttuvaAmmatillinenOsaaminen]
+                   [:puuttuvat-yhteiset-tutkinnon-osat]
+                   [OppijaPuuttuvaYTO]
                    [:olemassa-olevat-ammatilliset-tutkinnon-osat]
                    [OppijaOlemassaOlevaAmmatillinenTutkinnonOsa]
                    [:eid] s/Str}
