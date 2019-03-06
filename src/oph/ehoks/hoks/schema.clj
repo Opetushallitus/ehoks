@@ -677,6 +677,14 @@
      {[:tutkinnon-osa-koodisto-koodi] common-schema/KoodistoKoodi}}))
 
 (s/defschema
+  OppijaOlemassaOlevaYhteinenTutkinnonOsa
+  (modify
+    OlemassaOlevaYhteinenTutkinnonOsa
+    "Oppijan olemassa oleava yhteinen tutkinnon osa"
+    {:replaced-in
+     {[:tutkinnon-osa-koodisto-koodi] common-schema/KoodistoKoodi}}))
+
+(s/defschema
   OppijaHOKS
   (modify
     HOKS
@@ -688,6 +696,8 @@
                    [OppijaPuuttuvaYTO]
                    [:olemassa-olevat-ammatilliset-tutkinnon-osat]
                    [OppijaOlemassaOlevaAmmatillinenTutkinnonOsa]
+                   [:olemassa-olevat-yhteiset-tutkinnon-osat]
+                   [OppijaOlemassaOlevaYhteinenTutkinnonOsa]
                    [:eid] s/Str}
      :removed [:id]
      :optionals [:urasuunnitelma
