@@ -71,22 +71,19 @@
   (c-api/context "/oppija" []
 
     (c-api/context "/external" []
-      :tags ["external"]
+      :tags ["oppija-external"]
 
       (route-middleware
         [wrap-authorize]
         (c-api/context "/koodisto" []
-          :tags ["koodisto"]
-
           (c-api/GET "/:koodi-uri" [koodi-uri]
             :path-params [koodi-uri :- s/Str]
             :summary "Oppijan Koodisto-integraatio.
                       Koodiston haku Koodisto-Koodi-Urilla."
             :return (rest/response [common-schema/KoodistoKoodi])
             (rest/rest-ok (koodisto/get-koodi koodi-uri))))
-        (c-api/context "/eperusteet" []
-          :tags ["ePerusteet"]
 
+        (c-api/context "/eperusteet" []
           (c-api/GET "/:koodi-uri" [koodi-uri]
             :path-params [koodi-uri :- s/Str]
             :summary "Oppijan ePerusteet integraatio.
