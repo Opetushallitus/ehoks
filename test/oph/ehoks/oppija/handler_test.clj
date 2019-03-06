@@ -110,6 +110,125 @@
    :hyvaksyja {:nimi "Ei tietoa"}
    :opiskeluvalmiuksia-tukevat-opinnot []})
 
+(def opiskeluoikeus
+  {:tila
+   {:opiskeluoikeusjaksot
+    [{:alku "2018-11-15"
+      :tila
+      {:koodiarvo "lasna"
+       :nimi {:fi "Läsnä"}
+       :koodistoUri "koskiopiskeluoikeudentila"
+       :koodistoVersio 1}}]}
+   :aikaleima "2018-12-21T10:37:24.244002"
+   :oppilaitos
+   {:oid "1.2.246.562.24.47861388607"
+    :oppilaitosnumero
+    {:koodiarvo "10076"
+     :nimi
+     {:fi "Testi-yliopisto"}
+     :lyhytNimi {:fi "Testi-yliopisto"}
+     :koodistoUri "oppilaitosnumero"
+     :koodistoVersio 1}
+    :nimi
+    {:fi "Testi-yliopisto"}
+    :kotipaikka
+    {:koodiarvo "091"
+     :nimi {:fi "Helsinki"}
+     :koodistoUri "kunta"
+     :koodistoVersio 2}}
+   :oid "1.2.246.562.15.76811932037"
+   :alkamispäivä "2018-11-15"
+   :koulutustoimija
+   {:oid "1.2.246.562.10.82388989657"
+    :nimi {:fi "Testi-korkeakoulusäätiö ry"}
+    :yTunnus "2228357-4"
+    :kotipaikka
+    {:koodiarvo "091"
+     :nimi {:fi "Helsinki"}
+     :koodistoUri "kunta"
+     :koodistoVersio 2}}
+   :versionumero 2
+   :suoritukset
+   [{:koulutusmoduuli
+     {:perusteenDiaarinumero "104/011/2014"
+      :tunniste
+      {:koodiarvo "201101"
+       :nimi
+       {:fi "Perusopetus"}
+       :koodistoUri "koulutus"
+       :koodistoVersio 11}
+      :koulutustyyppi
+      {:koodiarvo "16"
+       :nimi {:fi "Perusopetus"}
+       :lyhytNimi {:fi "Perusopetus"}
+       :koodistoUri "koulutustyyppi"}}
+     :toimipiste
+     {:oid "1.2.246.562.10.56753942459"
+      :oppilaitosnumero
+      {:koodiarvo "10076"
+       :nimi
+       {:fi "Testi-yliopisto"}
+       :lyhytNimi {:fi "Testi-yliopisto"}
+       :koodistoUri "oppilaitosnumero"
+       :koodistoVersio 1}
+      :nimi
+      {:fi "Testi-yliopisto"}
+      :kotipaikka
+      {:koodiarvo "091"
+       :nimi {:fi "Helsinki"}
+       :koodistoUri "kunta"
+       :koodistoVersio 2}}
+     :suoritustapa
+     {:koodiarvo "koulutus"
+      :nimi {:fi "Koulutus"},
+      :koodistoUri "perusopetuksensuoritustapa"
+      :koodistoVersio 1}
+     :suorituskieli
+     {:koodiarvo "FI"
+      :nimi {:fi "suomi"},
+      :lyhytNimi {:fi "suomi"}
+      :koodistoUri "kieli"
+      :koodistoVersio 1}
+     :osasuoritukset
+     [{:koulutusmoduuli
+       {:tunniste
+        {:koodiarvo "AI"
+         :nimi
+         {:fi "Äidinkieli ja kirjallisuus"}
+         :lyhytNimi
+         {:fi "Äidinkieli ja kirjallisuus"}
+         :koodistoUri "koskioppiaineetyleissivistava"
+         :koodistoVersio 1}
+        :kieli
+        {:koodiarvo "AI1"
+         :nimi
+         {:fi "Suomen kieli ja kirjallisuus"}
+         :koodistoUri "oppiaineaidinkielijakirjallisuus"
+         :koodistoVersio 1}
+        :pakollinen true}
+       :yksilöllistettyOppimäärä false
+       :painotettuOpetus false
+       :tyyppi
+       {:koodiarvo "perusopetuksenoppiaine"
+        :nimi
+        {:fi "Perusopetuksen oppiaine"}
+        :koodistoUri "suorituksentyyppi"
+        :koodistoVersio 1}}]
+     :tyyppi
+     {:koodiarvo "perusopetuksenoppimaara"
+      :nimi
+      {:fi "Perusopetuksen oppimäärä"
+       :sv "Grundläggande utbildningens lärokurs"
+       :en "Basic education syllabus"}
+      :koodistoUri "suorituksentyyppi"
+      :koodistoVersio 1}}]
+   :tyyppi
+   {:koodiarvo "perusopetus"
+    :nimi {:fi "Perusopetus"}
+    :lyhytNimi {:fi "Perusopetus"}
+    :koodistoUri "opiskeluoikeudentyyppi"
+    :koodistoVersio 1}})
+
 (defn set-hoks-data! [h]
   (reset!
     db/hoks-store
@@ -143,8 +262,8 @@
 
 (use-fixtures :each with-cleaning)
 
-(deftest get-koodisto-enriched-hoks
-  (testing "GET koodisto enriched HOKS"
+(deftest get-enriched-hoks
+  (testing "GET enriched HOKS"
     (set-hoks-data! (clean-koodistot hoks))
     (client/set-get!
       (fn [p _]
@@ -205,7 +324,9 @@
                               :sisaltaaMerkityksen nil
                               :huomioitavaKoodi nil
                               :kayttoohje nil
-                              :sisaltaaKoodiston nil}]}})))
+                              :sisaltaaKoodiston nil}]}}
+          (.endsWith p "1.2.246.562.15.76811932037")
+          {:body opiskeluoikeus})))
     (let [store (atom {})
           app (create-app (test-session-store store))
           response
@@ -296,15 +417,17 @@
             :paivittaja
             :versio
             :puuttuvat-ammatilliset-tutkinnon-osat)
-          {:data [(dissoc
-                    hoks
-                    :luotu
-                    :paivitetty
-                    :hyvaksytty
-                    :ensikertainen-hyvaksyminen
-                    :paivittaja
-                    :versio
-                    :puuttuvat-ammatilliset-tutkinnon-osat)]
+          {:data [(assoc
+                    (dissoc
+                      hoks
+                      :luotu
+                      :paivitetty
+                      :hyvaksytty
+                      :ensikertainen-hyvaksyminen
+                      :paivittaja
+                      :versio
+                      :puuttuvat-ammatilliset-tutkinnon-osat)
+                    :opiskeluoikeus opiskeluoikeus)]
            :meta {:errors
                   [{:error-type "not-found"
                     :keys ["urasuunnitelma"]
