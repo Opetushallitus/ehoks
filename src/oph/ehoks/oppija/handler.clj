@@ -71,17 +71,23 @@
   (c-api/context "/oppija" []
 
     (c-api/context "/external" []
-      :tags ["external"]
+      :tags ["oppija-external"]
 
       (route-middleware
         [wrap-authorize]
-        (c-api/context "/eperusteet" []
-          :tags ["ePerusteet"]
+        (c-api/context "/koodisto" []
+          (c-api/GET "/:koodi-uri" [koodi-uri]
+            :path-params [koodi-uri :- s/Str]
+            :summary "Oppijan Koodisto-integraatio.
+                      Koodiston haku Koodisto-Koodi-Urilla."
+            :return (rest/response s/Any)
+            (rest/rest-ok (koodisto/get-koodi koodi-uri))))
 
+        (c-api/context "/eperusteet" []
           (c-api/GET "/:koodi-uri" [koodi-uri]
             :path-params [koodi-uri :- s/Str]
             :summary "Oppijan ePerusteet integraatio.
-                          Perusteiden haku Koodisto-Koodi-Urilla."
+                      Perusteiden haku Koodisto-Koodi-Urilla."
             :return (rest/response [s/Any])
             (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))))
 
