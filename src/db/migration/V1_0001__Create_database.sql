@@ -201,7 +201,7 @@ CREATE TABLE osaamisen_hankkimistavat(
   jarjestajan_edustaja_rooli TEXT,
   jarjestajan_edustaja_oppilaitos_oid VARCHAR(26),
   ajanjakson_tarkenne TEXT,
-  osamisen_hankkimistapa_koodi_uri VARCHAR(256),
+  osaamisen_hankkimistapa_koodi_uri VARCHAR(256),
   tyopaikalla_hankittava_osaaminen_id INTEGER REFERENCES tyopaikalla_hankittavat_osaamiset(id),
   hankkijan_edustaja_nimi TEXT,
   hankkijan_edustaja_rooli TEXT,
