@@ -80,7 +80,7 @@
             :path-params [koodi-uri :- s/Str]
             :summary "Oppijan Koodisto-integraatio.
                       Koodiston haku Koodisto-Koodi-Urilla."
-            :return (rest/response [common-schema/KoodistoKoodi])
+            :return (rest/response s/Any)
             (rest/rest-ok (koodisto/get-koodi koodi-uri))))
 
         (c-api/context "/eperusteet" []
