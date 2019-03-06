@@ -338,6 +338,7 @@ CREATE TABLE yhteisen_tutkinnon_osan_osa_alueet(
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   version INTEGER DEFAULT 0,
+  yhteinen_tutkinnon_osa_id INTEGER REFERENCES puuttuvat_yhteiset_tutkinnon_osat(id),
   osa_alue_koodi_uri VARCHAR(256),
   vaatimuksista_tai_tavoitteista_poikkeaminen TEXT
 );
