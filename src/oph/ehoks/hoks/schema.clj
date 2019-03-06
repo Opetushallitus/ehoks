@@ -145,7 +145,7 @@
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
-    :osamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
+    :osaamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
     "Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)"
     (s/optional-key :jarjestajan-edustaja) Oppilaitoshenkilo
     "Koulutuksen järjestäjän edustaja"
@@ -677,6 +677,14 @@
      {[:tutkinnon-osa-koodisto-koodi] common-schema/KoodistoKoodi}}))
 
 (s/defschema
+  OppijaOlemassaOlevaYhteinenTutkinnonOsa
+  (modify
+    OlemassaOlevaYhteinenTutkinnonOsa
+    "Oppijan olemassa oleava yhteinen tutkinnon osa"
+    {:replaced-in
+     {[:tutkinnon-osa-koodisto-koodi] common-schema/KoodistoKoodi}}))
+
+(s/defschema
   OppijaHOKS
   (modify
     HOKS
@@ -688,6 +696,8 @@
                    [OppijaPuuttuvaYTO]
                    [:olemassa-olevat-ammatilliset-tutkinnon-osat]
                    [OppijaOlemassaOlevaAmmatillinenTutkinnonOsa]
+                   [:olemassa-olevat-yhteiset-tutkinnon-osat]
+                   [OppijaOlemassaOlevaYhteinenTutkinnonOsa]
                    [:eid] s/Str}
      :removed [:id]
      :optionals [:urasuunnitelma
