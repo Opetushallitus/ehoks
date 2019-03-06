@@ -23,11 +23,11 @@
 (defn with-koodisto-get [path]
   (try
     (:body
-     (cache/with-cache!
-       {:method :get
-        :service (:koodisto-url config)
-        :path path
-        :options {:as :json}}))
+      (cache/with-cache!
+        {:method :get
+         :service (:koodisto-url config)
+         :path path
+         :options {:as :json}}))
     (catch clojure.lang.ExceptionInfo e
       ; Koodisto returns Internal Server Error 500 with NotFoundException
       ; if element is not found.
