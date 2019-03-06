@@ -9,8 +9,17 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.db.memory :as db]
             [oph.ehoks.external.koodisto :as koodisto]
+            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.eperusteet :as eperusteet]
             [oph.ehoks.middleware :refer [wrap-authorize]]))
+
+(defn with-opiskeluoikeus [hokses]
+  (mapv
+    #(assoc
+       %
+       :opiskeluoikeus
+       (koski/get-opiskeluoikeus-info (:opiskeluoikeus-oid %)))
+    hokses))
 
 (defn enrich-koodi-all [c kk ks]
   (mapv #(koodisto/enrich % (get % kk) ks) c))
@@ -105,5 +114,8 @@
               (let [hokses (db/get-all-hoks-by-oppija oid)]
                 (if (empty? hokses)
                   (response/not-found "No HOKSes found")
-                  (response/ok (with-koodisto (map #(dissoc % :id) hokses)))))
+                  (-> (map #(dissoc % :id) hokses)
+                      with-opiskeluoikeus
+                      with-koodisto
+                      response/ok)))
               (response/unauthorized))))))))
