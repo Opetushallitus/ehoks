@@ -55,6 +55,6 @@
             (if (= (get-in request [:session :user :oid]) oid)
               (let [hokses (db/get-all-hoks-by-oppija oid)]
                 (if (empty? hokses)
-                  (response/not-found "No HOKSes found")
+                  (response/not-found {:message "No HOKSes found"})
                   (response/ok (map #(dissoc % :id) hokses))))
               (response/unauthorized))))))))
