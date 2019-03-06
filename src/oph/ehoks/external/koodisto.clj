@@ -22,11 +22,12 @@
 
 (defn with-koodisto-get [path]
   (try
-    (cache/with-cache!
-      {:method :get
-       :service (:koodisto-url config)
-       :path path
-       :options {:as :json}})
+    (:body
+     (cache/with-cache!
+       {:method :get
+        :service (:koodisto-url config)
+        :path path
+        :options {:as :json}}))
     (catch clojure.lang.ExceptionInfo e
       ; Koodisto returns Internal Server Error 500 with NotFoundException
       ; if element is not found.
@@ -52,8 +53,7 @@
 
 (defn enrich [m koodi-uri ks]
   (if-let [koodisto-value
-           (filter-koodisto-values
-             (:body (get-koodi koodi-uri)))]
+           (filter-koodisto-values (get-koodi koodi-uri))]
     (assoc-in m ks {:koodi-uri (:koodiUri koodisto-value)
                     :koodi-arvo (:koodiArvo koodisto-value)
                     :metadata (map convert-metadata (:metadata koodisto-value))
