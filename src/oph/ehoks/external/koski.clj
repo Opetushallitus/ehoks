@@ -18,15 +18,18 @@
 
 (defn get-opiskeluoikeus-info [oid]
   (try
-    (c/with-api-headers
-      {:method :get
-       :service (:koski-url config)
-       :path (format "api/opiskeluoikeus/%s" oid)
-       :options {:basic-auth [(:cas-username config) (:cas-password config)]
-                 :as :json}})
+    (:body
+     (c/with-api-headers
+       {:method :get
+        :service (:koski-url config)
+        :path (format "api/opiskeluoikeus/%s" oid)
+        :options {:basic-auth [(:cas-username config) (:cas-password config)]
+                  :as :json}}))
     (catch clojure.lang.ExceptionInfo e
       (let [e-data (ex-data e)
-            body (json/read-str (:body e-data) :key-fn keyword)]
+            body (if (some? (:body e-data))
+                   (json/read-str (:body e-data) :key-fn keyword)
+                   {})]
         (when-not (and (= (:status e-data) status/not-found)
                        (= (get-in body [0 :key])
                           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
@@ -35,4 +38,4 @@
 (defn get-opiskeluoikeus-oppilaitos-oid [opiskeluoikeus-oid]
   (get-in
     (get-opiskeluoikeus-info opiskeluoikeus-oid)
-    [:body :oppilaitos :oid]))
+    [:oppilaitos :oid]))
