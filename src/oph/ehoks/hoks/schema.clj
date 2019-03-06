@@ -145,7 +145,7 @@
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
-    :osamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
+    :osaamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
     "Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)"
     (s/optional-key :jarjestajan-edustaja) Oppilaitoshenkilo
     "Koulutuksen järjestäjän edustaja"
