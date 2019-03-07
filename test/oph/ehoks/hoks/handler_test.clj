@@ -622,7 +622,8 @@
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}
           response
           (utils/with-service-ticket
             app
@@ -649,7 +650,8 @@
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}]
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}]
       (let [response
             (utils/with-service-ticket
               app
@@ -665,7 +667,8 @@
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}]
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}]
 
       (let [response
             (utils/with-service-ticket
@@ -687,7 +690,8 @@
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}]
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}]
       (utils/with-service-ticket
         app
         (-> (mock/request :post url)
@@ -718,7 +722,8 @@
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}
           response
           (utils/with-service-ticket
             app
@@ -753,7 +758,8 @@
                      :paivittaja {:nimi "Teuvo Testaaja"}
                      :hyvaksytty (java.util.Date.)
                      :id 1
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}
           response
           (utils/with-service-ticket
             app
@@ -768,7 +774,8 @@
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}
           response
           (utils/with-service-ticket
             app
