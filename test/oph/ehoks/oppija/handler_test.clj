@@ -3,7 +3,7 @@
             [oph.ehoks.handler :refer [create-app]]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [oph.ehoks.db.memory :as db]
+            [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.session-store :refer [test-session-store]]))
 
@@ -77,10 +77,9 @@
    :opiskeluvalmiuksia-tukevat-opinnot []})
 
 (defn set-hoks-data! [h]
-  (reset!
-    db/hoks-store
-    [(assoc h :versio 1 :paivittaja {:nimi "Tapio Testaaja"})
-     h]))
+  (db/clear!)
+  (db/insert-hoks!
+    (assoc h :versio 1 :version 1 :paivittaja {:nimi "Tapio Testaaja"})))
 
 (deftest get-hoks
   (testing "GET enriched HOKS"
@@ -98,21 +97,17 @@
       (is (= (:status response) 200))
       (let [body (utils/parse-body (:body response))]
         (eq
-          (update-in
-            body
-            [:data 0]
-            dissoc
-            :luotu :paivitetty :hyvaksytty :ensikertainen-hyvaksyminen)
+          body
           {:data
            [(-> hoks
-                (dissoc
-                  :luotu
-                  :paivitetty
-                  :hyvaksytty
-                  :ensikertainen-hyvaksyminen)
                 (assoc
                   :paivittaja {:nimi "Tapio Testaaja"}
-                  :versio 1)
+                  :versio 1
+                  :luotu (get-in body [:data 0 :luotu])
+                  :paivitetty (get-in body [:data 0 :paivitetty])
+                  :hyvaksytty (get-in body [:data 0 :hyvaksytty])
+                  :ensikertainen-hyvaksyminen
+                  (get-in body [:data 0 :ensikertainen-hyvaksyminen]))
                 (update
                   :puuttuvat-ammatilliset-tutkinnon-osat
                   (fn [oc]
