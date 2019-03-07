@@ -537,7 +537,8 @@
                        :put :excluded}
              :types {:any HoksToimija}
              :description "HOKS-dokumentin luoneen henkilön nimi"}
-   :paivittaja {:methods {:patch :optional}
+   :paivittaja {:methods {:post :optional
+                          :patch :required}
                 :types {:any HoksToimija}
                 :description
                 "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi"}
