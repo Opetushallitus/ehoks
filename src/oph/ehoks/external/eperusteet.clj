@@ -1,6 +1,7 @@
 (ns oph.ehoks.external.eperusteet
   (:require [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.connection :as c]))
+            [oph.ehoks.external.connection :as c]
+            [oph.ehoks.external.cache :as cache]))
 
 (defn map-perusteet [values]
   (map
@@ -35,7 +36,7 @@
 
 (defn find-tutkinnon-osat [^String koodi-uri]
   (get-in
-    (c/with-api-headers
+    (cache/with-cache!
       {:method :get
        :service (:eperusteet-url config)
        :path "tutkinnonosat"

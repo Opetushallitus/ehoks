@@ -145,7 +145,7 @@
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
-    :osamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
+    :osaamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
     "Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)"
     (s/optional-key :jarjestajan-edustaja) Oppilaitoshenkilo
     "Koulutuksen järjestäjän edustaja"
@@ -639,39 +639,3 @@
     (g/generate HOKSModel :post)
     {:doc "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
      :name "HOKSLuonti"}))
-
-; Oppija schemas. Will be moved out of here.
-
-(s/defschema
-  OppijaPuuttuvaAmmatillinenOsaaminen
-  {(s/optional-key :id) s/Int
-   :tutkinnon-osa-koodisto-koodi common-schema/KoodistoKoodi
-   :tutkinnon-osa-koodi-uri s/Str
-   (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
-   (s/optional-key :hankitun-osaamisen-naytto) [HankitunOsaamisenNaytto]
-   :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
-   (s/optional-key :koulutuksen-jarjestaja-oid) Oid})
-
-(s/defschema
-  OppijaOlemassaOlevaAmmatillinenTutkinnonOsa
-  (modify
-    OlemassaOlevaAmmatillinenTutkinnonOsa
-    "Oppijan olemassa oleava ammatillinen tutkinnon osa"
-    {:replaced-in
-     {[:tutkinnon-osa-koodisto-koodi] common-schema/KoodistoKoodi}}))
-
-(s/defschema
-  OppijaHOKS
-  (modify
-    HOKS
-    "Oppijan HOKS"
-    {:replaced-in {[:urasuunnitelma] common-schema/KoodistoKoodi
-                   [:puuttuvat-ammatilliset-tutkinnon-osat]
-                   [OppijaPuuttuvaAmmatillinenOsaaminen]
-                   [:olemassa-olevat-ammatilliset-tutkinnon-osat]
-                   [OppijaOlemassaOlevaAmmatillinenTutkinnonOsa]
-                   [:eid] s/Str}
-     :removed [:id]
-     :optionals [:urasuunnitelma
-                 :puuttuvat-ammatilliset-tutkinnon-osat
-                 :olemassa-olevat-ammatilliset-tutkinnon-osat]}))

@@ -188,7 +188,7 @@
                [{:alku "2018-12-12"
                  :loppu "2018-12-20"
                  :ajanjakson-tarkenne "Tarkenne tässä"
-                 :osamisen-hankkimistapa-koodi-uri
+                 :osaamisen-hankkimistapa-koodi-uri
                  "osaamisenhankkimistapa_koulutussopimus"}]
                :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"})
 
@@ -271,7 +271,7 @@
    [{:alku "2018-12-11"
      :loppu "2018-12-21"
      :ajanjakson-tarkenne "Tarkenne tässä uusi"
-     :osamisen-hankkimistapa-koodi-uri
+     :osaamisen-hankkimistapa-koodi-uri
      "osaamisenhankkimistapa_koulutussopimus1"}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000006"})
 
@@ -344,7 +344,7 @@
      :osaamisen-hankkimistavat
      [{:alku "2018-12-15"
        :loppu "2018-12-23"
-       :osamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
+       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
        :nayttoymparisto {:nimi "aaa"}
@@ -362,7 +362,7 @@
      :osaamisen-hankkimistavat
      [{:alku "2018-12-13"
        :loppu "2018-12-22"
-       :osamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
+       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000008"}
        :nayttoymparisto {:nimi "aaa2"}
@@ -379,7 +379,7 @@
      :osaamisen-hankkimistavat
      [{:alku "2018-12-13"
        :loppu "2018-12-22"
-       :osamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
+       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000010"}
        :nayttoymparisto {:nimi "aaa2"}

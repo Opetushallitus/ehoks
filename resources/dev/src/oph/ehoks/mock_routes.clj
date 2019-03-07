@@ -19,6 +19,12 @@
           value))
       [:headers "Content-Type"] "application/json"))
 
+(defn- json-response-file [f]
+  (-> (io/resource f)
+      slurp
+      (cheshire/parse-string true)
+      json-response))
+
 (defroutes mock-routes
   (GET "/auth-dev/opintopolku-login/" request
     (let [result
@@ -95,15 +101,20 @@
             :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})}))
 
   (GET "/koodisto-service/rest/codeelement/*/*" []
-    (-> (io/resource
-          "dev-routes/rest_codeelement_ravintolakokinatjarjestys__4_2.json")
-        slurp
-        (cheshire/parse-string true)
-        json-response))
+    (json-response-file
+      "dev-routes/rest_codeelement_ravintolakokinatjarjestys__4_2.json"))
+
+  (GET "/eperusteet-service/api/perusteet" request
+    (json-response-file
+      "dev-routes/eperusteet_api_perusteet.json"))
+
+  (GET "/eperusteet-service/api/tutkinnonosat" request
+    (if (= (get-in request [:query-params "koodiUri"]) "tutkinnonosat_101056")
+      (json-response-file
+        "dev-routes/eperusteet-service_api_tutkinnonosat_not_found.json")
+      (json-response-file
+        "dev-routes/eperusteet-service_api_tutkinnonosat.json")))
 
   (GET "/koski/api/oppija/*" []
-    (-> (io/resource
-          "dev-routes/koski_api_oppija_1.2.246.562.24.44651722625.json")
-        slurp
-        (cheshire/parse-string true)
-        json-response)))
+    (json-response-file
+      "dev-routes/koski_api_oppija_1.2.246.562.24.44651722625.json")))

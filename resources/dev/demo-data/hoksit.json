@@ -4,7 +4,7 @@
     "luotu": "2017-10-25T21:00:00.000Z",
     "hyvaksytty": "2017-10-25T21:00:00.000Z",
     "paivitetty": "2017-10-25T21:00:00.000Z",
-    "opiskeluoikeus-oid":  "1.2.246.562.15.76811932037",
+    "opiskeluoikeus-oid": "1.2.246.562.15.76811932037",
     "oppija-oid": "1.2.246.562.24.44651722625",
     "versio": 0,
     "laatija": {
@@ -17,7 +17,10 @@
       "nimi": "Ei tietoa"
     },
     "urasuunnitelma-koodi-uri": "urasuunnitelma_0001",
-    "puuttuva-ammatillinen-tutkinnon-osat": [
+    "olemassa-olevat-ammatilliset-tutkinnon-osat": [],
+    "olemassa-olevat-paikalliset-tutkinnon-osat": [],
+    "olemassa-olevat-yhteiset-tutkinnon-osat": [],
+    "puuttuvat-ammatilliset-tutkinnon-osat": [
       {
         "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
@@ -77,9 +80,34 @@
         "osaamisen-hankkimistavat": []
       }
     ],
-    "puuttuva-yhteisen-tutkinnon-osat": [],
+    "puuttuvat-yhteiset-tutkinnon-osat": [
+      {
+            "tutkinnon-osa-koodi-uri": "tutkinnonosat_101053",
+            "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+            "osa-alueet": [
+              {
+                "osa-alue-koodi-uri": "ammatillisenoppiaineet_fk"
+              }
+            ]
+        },
+        {
+            "tutkinnon-osa-koodi-uri": "tutkinnonosat_101054",
+            "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+            "osa-alueet": []
+        },
+        {
+            "tutkinnon-osa-koodi-uri": "tutkinnonosat_101055",
+            "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+            "osa-alueet": []
+        },
+        {
+            "tutkinnon-osa-koodi-uri": "tutkinnonosat_101056",
+            "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+            "osa-alueet": []
+        }
+    ],
     "opiskeluvalmiuksia-tukevat-opinnot": [],
-    "puuttuva-paikallinen-tutkinnon-osat": [
+    "puuttuvat-paikalliset-tutkinnon-osat": [
       {
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
         "hankitun-osaamisen-naytto": [],
