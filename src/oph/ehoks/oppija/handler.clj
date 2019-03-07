@@ -49,6 +49,13 @@
             :return (rest/response [common-schema/Oppija])
             (rest/rest-ok []))
 
+          (c-api/GET "/opiskeluoikeudet" [:as request]
+            :summary "Oppijan opiskeluoikeudet"
+            :return (rest/response [s/Any])
+            (if (= (get-in request [:session :user :oid]) oid)
+              (rest/rest-ok (:opiskeluoikeudet (koski/get-student-info oid)))
+              (response/forbidden)))
+
           (c-api/GET "/hoks" [:as request]
             :summary "Oppijan HOKSit kokonaisuudessaan"
             :return (rest/response [oppija-schema/OppijaHOKS])
