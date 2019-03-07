@@ -59,7 +59,7 @@
        Opintopolku-palvelussa.")}))
 
 (s/defschema
-  NayttoYmparisto
+  Nayttoymparisto
   (modify
     Organisaatio
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
@@ -191,7 +191,7 @@
        :organisaatio TyoelamaOrganisaatio "Työelämän arvioijan organisaatio")}))
 
 (s/defschema
-  KoulutuksenjarjestajaArvioija
+  KoulutuksenJarjestajaArvioija
   (modify
     Arvioija
     "Työelämän arvioija"
@@ -200,7 +200,7 @@
      (describe
        ""
        :organisaatio KoulutuksenJarjestajaOrganisaatio
-       "Koulutuksenjarjestajan arvioijan organisaatio")}))
+       "KoulutuksenJarjestajan arvioijan organisaatio")}))
 
 (s/defschema
   HankitunOsaamisenNaytto
@@ -212,14 +212,14 @@
     (s/optional-key :yto-osa-alue-koodi-uri) [OsaAlueKoodiUri]
     (str "Suoritettavan tutkinnon osan näyttöön sisältyvän"
          "yton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä")
-    :nayttoymparisto NayttoYmparisto
+    :nayttoymparisto Nayttoymparisto
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
     :alku LocalDate
     "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD"
     :loppu LocalDate
     "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD"
-    (s/optional-key :koulutuksenjarjestaja-arvioijat)
-    [KoulutuksenjarjestajaArvioija] "Näytön tai osaamisen osoittamisen
+    (s/optional-key :koulutuksen-jarjestaja-arvioijat)
+    [KoulutuksenJarjestajaArvioija] "Näytön tai osaamisen osoittamisen
     arvioijat"
     (s/optional-key :tyoelama-arvioijat) [TyoelamaArvioija] "Näytön tai
     osaamisen osoittamisen arvioijat"))
@@ -492,8 +492,8 @@
     "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"
     (s/optional-key :lahetetty-arvioitavaksi) LocalDate "Päivämäärä, jona
     lähetetty arvioitavaksi, muodossa YYYY-MM-DD"
-    (s/optional-key :aiemmin-hankitun-osaamisen-arvioija)
-    [KoulutuksenjarjestajaArvioija]
+    (s/optional-key :aiemmin-hankitun-osaamisen-arvioijat)
+    [KoulutuksenJarjestajaArvioija]
     "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
 
 (s/defschema

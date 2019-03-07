@@ -46,7 +46,7 @@
        :loppu (java.time.LocalDate/now)
        :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921329"}
        :nayttoymparisto {:nimi "" :y-tunnus ""}
-       :koulutuksenjarjestaja-arvioijat
+       :koulutuksen-jarjestaja-arvioijat
        [{:nimi "Olson,Wava"
          :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921329"}}]}]
      :osaamisen-hankkimistavat []}
@@ -57,7 +57,7 @@
        :loppu (java.time.LocalDate/now)
        :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921329"}
        :nayttoymparisto {:nimi "", :y-tunnus ""}
-       :koulutuksenjarjestaja-arvioijat
+       :koulutuksen-jarjestaja-arvioijat
        [{:nimi "Moen,Pearl"
          :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921329"}}]}]
      :osaamisen-hankkimistavat []}]
