@@ -53,3 +53,12 @@
       (replace-from [:hyvaksyja :nimi] :hyvaksyja-nimi)
       (replace-from [:paivittaja :nimi] :paivittaja-nimi)
       to-underscore-keys))
+
+(defn olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql [m]
+  (to-dash-keys m))
+
+(defn olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql [m]
+  (-> m
+      (dissoc :tarkentavat-tiedot-naytto :tarkentavat-tiedot-arvioija)
+      remove-nils
+      to-underscore-keys))
