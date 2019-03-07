@@ -552,7 +552,7 @@
                                 :types {:any LocalDate}
                                 :description
                                 "HOKS-dokumentin ensimmäinen hyväksymisaika
-                                muodossa YYYY-MM-DDTHH"}
+                                muodossa YYYY-MM-DD"}
    :olemassa-olevat-ammatilliset-tutkinnon-osat
    {:methods {:any :optional}
     :types {:any [OlemassaOlevaAmmatillinenTutkinnonOsa]}
