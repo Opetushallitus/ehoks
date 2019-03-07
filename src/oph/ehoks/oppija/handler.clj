@@ -7,8 +7,7 @@
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.oppija.schema :as oppija-schema]
-            [oph.ehoks.db.postgresql :as db]
-            [oph.ehoks.db.hoks :as hsql]
+            [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.eperusteet :as eperusteet]
@@ -54,7 +53,7 @@
             :summary "Oppijan HOKSit kokonaisuudessaan"
             :return (rest/response [oppija-schema/OppijaHOKS])
             (if (= (get-in request [:session :user :oid]) oid)
-              (let [hokses (db/select-hoks-by-oppija-oid oid)]
+              (let [hokses (h/get-hokses-by-oppija oid)]
                 (if (empty? hokses)
                   (response/not-found {:message "No HOKSes found"})
                   (rest/rest-ok
