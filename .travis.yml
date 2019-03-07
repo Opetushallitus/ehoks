@@ -28,7 +28,7 @@ script:
   - mv target/ehoks-standalone.jar $DOCKER_BUILD_DIR/artifact/ehoks.jar
   - mkdir -p $DOCKER_BUILD_DIR/config/config
   - cp -v config/default.edn config/config.edn.template config/log4j2.properties $DOCKER_BUILD_DIR/config/config/
-  - export BASE_IMAGE="base-legacy:0.1"
+  - export BASE_IMAGE="baseimage-fatjar:master"
   - ./ci-tools/common/pull-image.sh
   - ./ci-tools/build/build-fatjar.sh ehoks
 
