@@ -14,9 +14,9 @@ CREATE TABLE hoksit(
   laatija_nimi TEXT,
   versio INTEGER,
   paivitetty TIMESTAMP WITH TIME ZONE,
-  paivittaja TEXT,
+  paivittaja_nimi TEXT,
   oppija_oid VARCHAR(26),
-  hyvaksyja TEXT
+  hyvaksyja_nimi TEXT
 );
 
 CREATE TABLE koulutuksen_jarjestaja_arvioijat(
