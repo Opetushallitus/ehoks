@@ -50,12 +50,3 @@
    :lyhyt-nimi (:lyhytNimi m)
    :kuvaus (:kuvaus m)
    :kieli (:kieli m)})
-
-(defn enrich [m koodi-uri ks]
-  (if-let [koodisto-value
-           (filter-koodisto-values (get-koodi koodi-uri))]
-    (assoc-in m ks {:koodi-uri (:koodiUri koodisto-value)
-                    :koodi-arvo (:koodiArvo koodisto-value)
-                    :metadata (map convert-metadata (:metadata koodisto-value))
-                    :versio (:versio koodisto-value)})
-    m))

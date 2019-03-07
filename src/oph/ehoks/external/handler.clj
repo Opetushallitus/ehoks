@@ -16,6 +16,17 @@
   (c-api/context "/external" []
     :tags ["external"]
 
+    (c-api/GET "/eperusteet/" [:as request]
+      :summary "Hakee perusteiden tietoja ePerusteet-palvelusta"
+      :query-params [nimi :- String]
+      :return (rest/response [schema/Peruste])
+      (utils/with-timeout
+        (:service-timeout-ms config)
+        (-> (eperusteet/search-perusteet-info nimi)
+            eperusteet/map-perusteet
+            rest/rest-ok)
+        (response/internal-server-error {:error "Service timeout exceeded"})))
+
     (route-middleware
       [wrap-authorize]
       (c-api/GET "/koodistokoodi/:uri/:versio" []
@@ -27,17 +38,6 @@
           (-> (koodisto/get-koodi-versio uri versio)
               :body
               koodisto/filter-koodisto-values
-              rest/rest-ok)
-          (response/internal-server-error {:error "Service timeout exceeded"})))
-
-      (c-api/GET "/eperusteet/" [:as request]
-        :summary "Hakee perusteiden tietoja ePerusteet-palvelusta"
-        :query-params [nimi :- String]
-        :return (rest/response [schema/Peruste])
-        (utils/with-timeout
-          (:service-timeout-ms config)
-          (-> (eperusteet/search-perusteet-info nimi)
-              eperusteet/map-perusteet
               rest/rest-ok)
           (response/internal-server-error {:error "Service timeout exceeded"})))
 
