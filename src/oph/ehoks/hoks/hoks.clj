@@ -1,5 +1,5 @@
 (ns oph.ehoks.hoks.hoks
-  (:require [oph.ehoks.db :as db]))
+  (:require [oph.ehoks.db.postgresql :as db]))
 
 (defn get-olemassa-olevat-ammatilliset-tutkinnon-osat [h]
   (assoc
