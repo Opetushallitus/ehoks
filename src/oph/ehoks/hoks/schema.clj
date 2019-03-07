@@ -344,14 +344,6 @@
      [:nimi :kuvaus :kesto :alku :loppu]}))
 
 (s/defschema
-  Arviointikriteeri
-  (describe
-    "Arviointikriteeri"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :osaamistaso s/Int "Osaamistaso"
-    :kuvaus s/Str "Arviointikriteerin kuvaus"))
-
-(s/defschema
   PuuttuvaAmmatillinenOsaaminen
   (describe
     "Puuttuvan ammatillisen osaamisen tiedot (GET)"
