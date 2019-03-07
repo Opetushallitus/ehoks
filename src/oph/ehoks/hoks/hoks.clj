@@ -10,4 +10,5 @@
 (defn get-hokses-by-oppija [oid]
   (map
     #(-> %
-         (get-olemassa-olevat-ammatilliset-tutkinnon-osat))))
+         set-olemassa-olevat-ammatilliset-tutkinnon-osat)
+    (db/select-hoks-by-oppija-oid oid)))
