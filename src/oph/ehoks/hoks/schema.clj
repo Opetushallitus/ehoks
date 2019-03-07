@@ -299,17 +299,6 @@
     {:removed [:vaatimuksista-tai-tavoitteista-poikkeaminen]}))
 
 (s/defschema
-  MuuTutkinnonOsa
-  (describe
-    "Muu tutkinnon osa (ei ePerusteet-palvelussa)"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :nimi s/Str "Tutkinnon osan nimi"
-    :kuvaus s/Str "Tutkinnon osan kuvaus"
-    :laajuus s/Int "Tutkinnon osan laajuus osaamispisteissä"
-    :kesto s/Int "Tutkinnon osan kesto päivinä"
-    :suorituspvm LocalDate "Tutkinnon suorituspäivä muodossa YYYY-MM-DD"))
-
-(s/defschema
   OpiskeluvalmiuksiaTukevatOpinnot
   (describe
     "Opiskeluvalmiuksia tukevat opinnot"
