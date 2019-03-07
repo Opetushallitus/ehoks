@@ -205,19 +205,25 @@
 (s/defschema
   HankitunOsaamisenNaytto
   (describe
-    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen
+    osoittaminen"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
     (s/optional-key :yto-osa-alue-koodi-uri) [OsaAlueKoodiUri]
     (str "Suoritettavan tutkinnon osan näyttöön sisältyvän"
-         "yton osa-alueen Koodisto-koodi-URI eperusteet-järjestelmässä")
+         "yton osa-alueen Koodisto-koodi-URI
+         eperusteet-järjestelmässä")
     :nayttoymparisto Nayttoymparisto
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
+    (s/optional-key :keskeiset-tyotehtavat-naytto) [s/Str] "Keskeiset
+    työtehtävät"
     :alku LocalDate
-    "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa YYYY-MM-DD"
+    "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa
+    YYYY-MM-DD"
     :loppu LocalDate
-    "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa YYYY-MM-DD"
+    "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa
+    YYYY-MM-DD"
     (s/optional-key :koulutuksen-jarjestaja-arvioijat)
     [KoulutuksenJarjestajaArvioija] "Näytön tai osaamisen osoittamisen
     arvioijat"
