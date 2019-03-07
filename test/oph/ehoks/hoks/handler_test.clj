@@ -623,7 +623,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
             app
@@ -651,7 +651,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"}]
       (let [response
             (utils/with-service-ticket
               app
@@ -668,7 +668,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"}]
 
       (let [response
             (utils/with-service-ticket
@@ -691,7 +691,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"}]
       (utils/with-service-ticket
         app
         (-> (mock/request :post url)
@@ -723,7 +723,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
             app
@@ -759,7 +759,7 @@
                      :hyvaksytty (java.util.Date.)
                      :id 1
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
             app
@@ -775,7 +775,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
             app

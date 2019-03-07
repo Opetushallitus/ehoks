@@ -549,10 +549,10 @@
            :description
            "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
    :ensikertainen-hyvaksyminen {:methods {:patch :optional}
-                                :types {:any s/Inst}
+                                :types {:any LocalDate}
                                 :description
                                 "HOKS-dokumentin ensimmäinen hyväksymisaika
-                                muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
+                                muodossa YYYY-MM-DDTHH"}
    :olemassa-olevat-ammatilliset-tutkinnon-osat
    {:methods {:any :optional}
     :types {:any [OlemassaOlevaAmmatillinenTutkinnonOsa]}

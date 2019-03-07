@@ -32,7 +32,7 @@
      :hankitun-osaamisen-naytto []
      :osaamisen-hankkimistavat []
      :nimi "Työpaikalla oppiminen "}]
-   :ensikertainen-hyvaksyminen (java.util.Date.)
+   :ensikertainen-hyvaksyminen (java.time.LocalDate/now)
    :luotu (java.util.Date.)
    :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
    :hyvaksytty (java.util.Date.)
