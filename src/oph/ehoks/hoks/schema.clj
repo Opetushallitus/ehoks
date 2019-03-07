@@ -535,6 +535,10 @@
    {:methods {:any :optional}
     :types {:any UrasuunnitelmaKoodiUri}
     :description "Opiskelijan tavoitteen Koodisto-koodi-URI"}
+    :urasuunnitelma-koodi-versio
+    {:methods {:any :optional}
+     :types {:any s/Int}
+     :description "Opiskelijan tavoitteen Koodisto-koodin versio"}
    :versio {:methods {:any :excluded
                       :get :required}
             :types {:any s/Int}
