@@ -64,7 +64,8 @@
    :puuttuvat-yhteiset-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_103596"
      :osa-alueet
-     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_fk"}]
+     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_fk"
+       :osa-alue-koodi-uri-versio 1}]
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"}]
    :opiskeluoikeus-oid "1.2.246.562.15.76811932037"
    :laatija {:nimi "Simonis,Hollie"}

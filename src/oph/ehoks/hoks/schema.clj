@@ -218,12 +218,12 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
-    (s/optional-key :yto-osa-alue-koodi-uri) [OsaAlueKoodiUri]
+    (s/optional-key :osa-alue-koodi-uri) [OsaAlueKoodiUri]
     (str "Suoritettavan tutkinnon osan näyttöön sisältyvän"
          "yton osa-alueen Koodisto-koodi-URI
          eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxx"
          "esim. ammatillisenoppiaineet_etk")
-   (s/optional-key :yto-osa-alue-koodi-uri)  s/Int
+   (s/optional-key :osa-alue-koodi-uri-versio)  s/Int
    "Koodisto-koodin versio, koodistolle yton osa-alue"
     :nayttoymparisto Nayttoymparisto
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
@@ -269,6 +269,8 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alue-koodi-uri OsaAlueKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
+    :osa-alue-koodi-uri-versio s/Int
+    "Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet)"
     (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
