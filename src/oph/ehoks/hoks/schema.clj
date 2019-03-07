@@ -131,7 +131,11 @@
   (describe
     "Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu"
     :oppimisymparisto-koodi-uri s/Str
-    "Oppimisympäristön tarkenne, eHOKS Koodisto-koodi-URI"
+    "Oppimisympäristön tarkenne, eHOKS Koodisto-koodi-URI, koodisto
+    oppimisympäristöt eli muotoa oppimisymparistot_xxxx, esim.
+    oppimisymparistot_0001"
+    :oppimisymparisto-koodi-versio s/Int
+    "Koodisto-koodin versio, koodistolle oppimisympäristöt"
     :selite s/Str "Oppimisympäristön nimi"
     :lisatiedot s/Bool
     "Lisätiedoisssa, onko tunnistettu ohjauksen ja tuen tarvetta"))
