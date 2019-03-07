@@ -48,7 +48,6 @@
           (:service-timeout-ms config)
           (-> (get-in request [:session :user :oid])
               (koski/get-student-info)
-              :body
               koski/filter-oppija
               rest/rest-ok)
           (response/internal-server-error
