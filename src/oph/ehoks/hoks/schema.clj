@@ -19,7 +19,7 @@
 
 (def TodentamisenProsessiKoodiUri
   "Valitun todentamisen prosessin Koodisto-koodi-URI"
-  #"^valittuprosessi_\d+$")
+  #"^osaamisentodentamisenprosessi_\d+$")
 
 (def UrasuunnitelmaKoodiUri
   #"^urasuunnitelma_\d{4}$")
@@ -274,7 +274,8 @@
     "vaatimuksista tai osaamistavoitteista poikkeaminen"
     :valittu-todentamisen-prosessi-koodi-uri TodentamisenProsessiKoodiUri
     "Todentamisen prosessin kuvauksen (suoraan/arvioijien kautta/näyttö)
-    koodi-uri"
+    koodi-uri. Koodisto Osaamisen todentamisen prosessi, eli muotoa
+    osaamisentodentamisenprosessi_xxxx"
     (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
     "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
 
