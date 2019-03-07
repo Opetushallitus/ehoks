@@ -92,7 +92,8 @@
   :source-paths ["src"]
   :resource-paths ["resources/prod"
                    "resources/prod/src"
-                   "resources/public"]
+                   "resources/public"
+                   "resources/db"]
   :cloverage {;:fail-threshold 90
               :html? false}
   :aliases {"checkall" ["do"
