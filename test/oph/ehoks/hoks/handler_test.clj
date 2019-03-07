@@ -189,7 +189,8 @@
                  :loppu "2018-12-20"
                  :ajanjakson-tarkenne "Tarkenne tässä"
                  :osaamisen-hankkimistapa-koodi-uri
-                 "osaamisenhankkimistapa_koulutussopimus"}]
+                 "osaamisenhankkimistapa_koulutussopimus"
+                 :osaamisen-hankkimistapa-koodi-versio 1}]
                :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"})
 
 (deftest post-and-get-pao
@@ -272,7 +273,8 @@
      :loppu "2018-12-21"
      :ajanjakson-tarkenne "Tarkenne tässä uusi"
      :osaamisen-hankkimistapa-koodi-uri
-     "osaamisenhankkimistapa_koulutussopimus1"}]
+     "osaamisenhankkimistapa_koulutussopimus1"
+     :osaamisen-hankkimistapa-koodi-versio 1}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000006"})
 
 (deftest patch-all-pao
@@ -344,7 +346,8 @@
      :osaamisen-hankkimistavat
      [{:alku "2018-12-15"
        :loppu "2018-12-23"
-       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
+       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1}]
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
        :nayttoymparisto {:nimi "aaa"}
@@ -362,7 +365,8 @@
      :osaamisen-hankkimistavat
      [{:alku "2018-12-13"
        :loppu "2018-12-22"
-       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
+       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1}]
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000008"}
        :nayttoymparisto {:nimi "aaa2"}
@@ -379,7 +383,8 @@
      :osaamisen-hankkimistavat
      [{:alku "2018-12-13"
        :loppu "2018-12-22"
-       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
+       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1}]
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000010"}
        :nayttoymparisto {:nimi "aaa2"}

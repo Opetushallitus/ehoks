@@ -150,7 +150,11 @@
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
     :osaamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
-    "Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)"
+    "Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)
+    eli muotoa osaamisenhankkimistapa_xxx eli esim.
+    osaamisenhankkimistapa_koulutussopimus"
+    :osaamisen-hankkimistapa-koodi-versio s/Int
+    "Koodisto-koodin versio, koodistolle osaamisenhankkimistapa"
     (s/optional-key :jarjestajan-edustaja) Oppilaitoshenkilo
     "Koulutuksen järjestäjän edustaja"
     (s/optional-key :hankkijan-edustaja) Oppilaitoshenkilo
@@ -217,7 +221,10 @@
     (s/optional-key :yto-osa-alue-koodi-uri) [OsaAlueKoodiUri]
     (str "Suoritettavan tutkinnon osan näyttöön sisältyvän"
          "yton osa-alueen Koodisto-koodi-URI
-         eperusteet-järjestelmässä")
+         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxx"
+         "esim. ammatillisenoppiaineet_etk")
+   (s/optional-key :yto-osa-alue-koodi-uri)  s/Int
+   "Koodisto-koodin versio, koodistolle yton osa-alue"
     :nayttoymparisto Nayttoymparisto
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
     (s/optional-key :keskeiset-tyotehtavat-naytto) [s/Str] "Keskeiset
@@ -539,10 +546,10 @@
    {:methods {:any :optional}
     :types {:any UrasuunnitelmaKoodiUri}
     :description "Opiskelijan tavoitteen Koodisto-koodi-URI"}
-    :urasuunnitelma-koodi-versio
-    {:methods {:any :optional}
-     :types {:any s/Int}
-     :description "Opiskelijan tavoitteen Koodisto-koodin versio"}
+   :urasuunnitelma-koodi-versio
+   {:methods {:any :optional}
+    :types {:any s/Int}
+    :description "Opiskelijan tavoitteen Koodisto-koodin versio"}
    :versio {:methods {:any :excluded
                       :get :required}
             :types {:any s/Int}
