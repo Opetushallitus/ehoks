@@ -23,3 +23,15 @@
     {:connection-uri (:database-url config)}
     :hoksit
     (h/hoks-to-sql hoks)))
+
+(defn select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
+  (jdbc/query
+    {:connection-uri (:database-url config)}
+    [queries/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id id]
+    {:row-fn h/olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql}))
+
+(defn insert-olemassa-oleva-ammatillinen-tutkinnon-osa! [m]
+  (jdbc/insert!
+    {:connection-uri (:database-url config)}
+    :hoksit
+    (h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql m)))
