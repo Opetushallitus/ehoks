@@ -64,4 +64,4 @@
                 (if (empty? hokses)
                   (response/not-found {:message "No HOKSes found"})
                   (rest/rest-ok (map #(dissoc % :id) hokses))))
-              (response/unauthorized))))))))
+              (response/forbidden))))))))
