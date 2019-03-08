@@ -458,21 +458,34 @@
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"))
 
 (s/defschema
+  TodennettuArviointiLisatiedot
+  (describe
+    "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"
+    (s/optional-key :lahetetty-arvioitavaksi) LocalDate "Päivämäärä, jona
+    lähetetty arvioitavaksi, muodossa YYYY-MM-DD"
+    (s/optional-key :aiemmin-hankitun-osaamisen-arvioijat)
+    [KoulutuksenJarjestajaArvioija]
+    "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
+
+(s/defschema
   OlemassaOlevaPaikallinenTutkinnonOsa
   (modify
     PuuttuvaPaikallinenTutkinnonOsa
-    "Olemassa oleva paikallinen tutkinnon osa"
-    {:removed [:osaamisen-hankkimistavat
-               :hankitun-osaamisen-naytto]
+    "Olemassa oleva yhteinen tutkinnon osa"
+    {:removed [:osaamisen-hankkimistavat :hankitun-osaamisen-naytto]
      :added
      (describe
        ""
-       {:valittu-todentamisen-prosessi-koodi-uri
-        TodentamisenProsessiKoodiUri
-        "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
-        :valittu-todentamisen-prosessi-koodi-versio s/Int
-        (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
-        "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."})}))
+       :valittu-todentamisen-prosessi-koodi-uri TodentamisenProsessiKoodiUri
+       "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+       :valittu-todentamisen-prosessi-koodi-versio s/Int
+       "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio
+       (Osaamisen todentamisen prosessi)"
+       (s/optional-key :tarkentavat-tiedot-naytto) [HankitunOsaamisenNaytto]
+       "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
+       (s/optional-key :tarkentavat-tiedot-arvioija)
+       TodennettuArviointiLisatiedot "Mikäli arvioijan kautta todennettu,
+       annetaan myös arvioijan lisätiedot")}))
 
 (s/defschema
   PuuttuvaPaikallinenTutkinnonOsaLuonti
@@ -502,16 +515,6 @@
       :kuvaus
       :laajuus
       :nimi]}))
-
-(s/defschema
-  TodennettuArviointiLisatiedot
-  (describe
-    "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"
-    (s/optional-key :lahetetty-arvioitavaksi) LocalDate "Päivämäärä, jona
-    lähetetty arvioitavaksi, muodossa YYYY-MM-DD"
-    (s/optional-key :aiemmin-hankitun-osaamisen-arvioijat)
-    [KoulutuksenJarjestajaArvioija]
-    "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
 
 (s/defschema
   OlemassaOlevaYhteinenTutkinnonOsa
@@ -566,7 +569,9 @@
    :urasuunnitelma-koodi-uri
    {:methods {:any :optional}
     :types {:any UrasuunnitelmaKoodiUri}
-    :description "Opiskelijan tavoitteen Koodisto-koodi-URI"}
+    :description "Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto
+    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.
+    urasuunnitelma_0001"}
    :urasuunnitelma-koodi-versio
    {:methods {:any :optional}
     :types {:any s/Int}
