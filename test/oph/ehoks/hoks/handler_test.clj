@@ -184,6 +184,7 @@
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
 (def pao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
+               :tutkinnon-osa-koodi-versio 1
                :osaamisen-hankkimistavat
                [{:alku "2018-12-12"
                  :loppu "2018-12-20"
@@ -268,6 +269,7 @@
 
 (def patch-all-pao-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"
+   :tutkinnon-osa-koodi-versio 1
    :osaamisen-hankkimistavat
    [{:alku "2018-12-11"
      :loppu "2018-12-21"
@@ -343,7 +345,7 @@
 (def pyto-data
   {:osa-alueet
    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
-     :osa-alue-koodi-uri-versio 1
+     :osa-alue-koodi-versio 1
      :osaamisen-hankkimistavat
      [{:alku "2018-12-15"
        :loppu "2018-12-23"
@@ -357,13 +359,15 @@
        :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
                              {:nimi "Organisaation nimi"}}]}]}]
    :tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :tutkinnon-osa-koodi-versio 1
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"})
 
 (def pyto-patch-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :tutkinnon-osa-koodi-versio 1
    :osa-alueet
    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
-     :osa-alue-koodi-uri-versio 1
+     :osa-alue-koodi-versio 1
      :osaamisen-hankkimistavat
      [{:alku "2018-12-13"
        :loppu "2018-12-22"
@@ -380,9 +384,10 @@
 
 (def pyto-patch-one-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :tutkinnon-osa-koodi-versio 1
    :osa-alueet
    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
-     :osa-alue-koodi-uri-versio 1
+     :osa-alue-koodi-versio 1
      :osaamisen-hankkimistavat
      [{:alku "2018-12-13"
        :loppu "2018-12-22"

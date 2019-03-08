@@ -223,8 +223,8 @@
          "yton osa-alueen Koodisto-koodi-URI
          eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxx"
          "esim. ammatillisenoppiaineet_etk")
-   (s/optional-key :osa-alue-koodi-uri-versio)  s/Int
-   "Koodisto-koodin versio, koodistolle yton osa-alue"
+    (s/optional-key :osa-alue-koodi-versio)  s/Int
+    "Koodisto-koodin versio, koodistolle yton osa-alue"
     :nayttoymparisto Nayttoymparisto
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
     (s/optional-key :keskeiset-tyotehtavat-naytto) [s/Str] "Keskeiset
@@ -269,7 +269,7 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alue-koodi-uri OsaAlueKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
-    :osa-alue-koodi-uri-versio s/Int
+    :osa-alue-koodi-versio s/Int
     "Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet)"
     (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
@@ -285,6 +285,8 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alue-koodi-uri OsaAlueKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
+    :osa-alue-koodi-versio s/Int
+    "Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet)"
     (s/optional-key :koulutuksen-jarjestaja-oid) Oid
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -295,6 +297,9 @@
     "Todentamisen prosessin kuvauksen (suoraan/arvioijien kautta/näyttö)
     koodi-uri. Koodisto Osaamisen todentamisen prosessi, eli muotoa
     osaamisentodentamisenprosessi_xxxx"
+    :valittu-todentamisen-prosessi-koodi-versio s/Int
+    "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio
+    (Osaamisen todentamisen prosessi)"
     (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
     "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
 
@@ -305,7 +310,12 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
-    "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa (tutkinnonosat)"
+    "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa
+    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.
+    tutkinnonosat_100002"
+    :tutkinnon-osa-koodi-versio s/Int
+    "Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa
+     (tutkinnonosat)"
     (s/optional-key :koulutuksen-jarjestaja-oid) Oid
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -359,6 +369,9 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)"
+    :tutkinnon-osa-koodi-versio s/Int
+    "Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa
+     (tutkinnonosat)"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     (str "Tekstimuotoinen selite ammattitaitovaatimuksista tai "
          "osaamistavoitteista poikkeamiseen")
@@ -392,6 +405,7 @@
          "päivittäessä (PATCH)")
     {:optionals
      [:tutkinnon-osa-koodi-uri
+      :tutkinnon-osa-koodi-versio
       :osaamisen-hankkimistavat
       :koulutuksen-jarjestaja-oid]}))
 
@@ -417,7 +431,8 @@
     (str "Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
-     [:osa-alueet :koulutuksen-jarjestaja-oid :tutkinnon-osa-koodi-uri]}))
+     [:osa-alueet :koulutuksen-jarjestaja-oid :tutkinnon-osa-koodi-uri
+      :tutkinnon-osa-koodi-versio]}))
 
 (s/defschema
   PuuttuvaPaikallinenTutkinnonOsa
@@ -455,6 +470,7 @@
        {:valittu-todentamisen-prosessi-koodi-uri
         TodentamisenProsessiKoodiUri
         "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+        :valittu-todentamisen-prosessi-koodi-versio s/Int
         (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
         "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."})}))
 
@@ -509,6 +525,9 @@
        :osa-alueet [OlemassaOlevanYTOOsaAlue] "YTO osa-alueet"
        :valittu-todentamisen-prosessi-koodi-uri TodentamisenProsessiKoodiUri
        "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
+       :valittu-todentamisen-prosessi-koodi-versio s/Int
+       "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio
+       (Osaamisen todentamisen prosessi)"
        (s/optional-key :tarkentavat-tiedot-naytto) [HankitunOsaamisenNaytto]
        "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
        (s/optional-key :tarkentavat-tiedot-arvioija)
