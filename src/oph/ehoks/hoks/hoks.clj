@@ -25,3 +25,6 @@
          set-olemassa-olevat-ammatilliset-tutkinnon-osat
          set-puuttuvat-paikalliset-tutkinnon-osat)
     (db/select-hoks-by-oppija-oid oid)))
+
+(defn save-hoks! [h]
+  (db/insert-hoks! h))

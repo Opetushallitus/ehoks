@@ -5,7 +5,8 @@
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.session-store :refer [test-session-store]]))
+            [oph.ehoks.session-store :refer [test-session-store]]
+            [oph.ehoks.hoks.hoks :as h]))
 
 (def url "/ehoks-backend/api/v1/oppija/oppijat")
 
@@ -78,7 +79,7 @@
 
 (defn set-hoks-data! [h]
   (db/clear!)
-  (db/insert-hoks!
+  (h/save-hoks!
     (assoc h :versio 1 :version 1 :paivittaja {:nimi "Tapio Testaaja"})))
 
 (deftest get-hoks
