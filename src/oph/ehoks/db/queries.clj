@@ -9,3 +9,5 @@
   "olemassa-olevat-ammatilliset-tutkinnon-osat/select_by_hoks_id.sql")
 (defq select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id
   "puuttuvat-paikalliset-tutkinnon-osat/select_by_hoks_id.sql")
+(defq select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id
+  "olemassa-olevat-paikalliset-tutkinnon-osat/select_by_hoks_id.sql")
