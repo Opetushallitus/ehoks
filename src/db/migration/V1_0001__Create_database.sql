@@ -7,7 +7,7 @@ CREATE TABLE hoksit(
   luotu TIMESTAMP WITH TIME ZONE,
   eid VARCHAR(26),
   sahkoposti TEXT,
-  ensikertainen_hyvaksyminen TIMESTAMP WITH TIME ZONE,
+  ensikertainen_hyvaksyminen DATE,
   hyvaksytty TIMESTAMP WITH TIME ZONE,
   urasuunnitelma_koodi_uri VARCHAR(256),
   urasuunnitelma_koodi_versio INTEGER,
@@ -36,7 +36,7 @@ CREATE TABLE todennettu_arviointi_lisatiedot(
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   version INTEGER DEFAULT 0,
-  lahetetty_arvioitavaksi TIMESTAMP WITH TIME ZONE
+  lahetetty_arvioitavaksi DATE
 );
 
 CREATE TABLE todennettu_arviointi_arvioijat(
@@ -79,8 +79,8 @@ CREATE TABLE hankitun_osaamisen_naytot(
   yto_osa_alue_koodi_uri VARCHAR(26),
   yto_osa_alue_koodi_versio INTEGER,
   nayttoymparisto_id INTEGER REFERENCES nayttoymparistot(id),
-  alku TIMESTAMP WITH TIME ZONE,
-  loppu TIMESTAMP WITH TIME ZONE
+  alku DATE,
+  loppu DATE
 );
 
 CREATE TABLE hankitun_osaamisen_nayton_tyoelama_arvioija (
@@ -222,8 +222,8 @@ CREATE TABLE osaamisen_hankkimistavat(
   hankkijan_edustaja_nimi TEXT,
   hankkijan_edustaja_rooli TEXT,
   hankkijan_edustaja_oppilaitos_oid VARCHAR(26),
-  alku TIMESTAMP WITH TIME ZONE,
-  loppu TIMESTAMP WITH TIME ZONE
+  alku DATE,
+  loppu DATE
 );
 
 CREATE TABLE muut_oppimisymparistot(
@@ -259,7 +259,7 @@ CREATE TABLE olemassa_olevat_yhteiset_tutkinnon_osat(
   koulutuksenjarjestaja_oid VARCHAR(26),
   valittu_todentamisen_prosessi_koodi_uri VARCHAR(256),
   valittu_todentamisen_prosessi_koodi_versio INTEGER,
-  lahetetty_arvioitavaksi TIMESTAMP WITH TIME ZONE
+  lahetetty_arvioitavaksi DATE
 );
 
 CREATE TABLE olemassa_olevan_yhteisen_tutkinnon_osan_hankitun_osaamisen_naytto(
@@ -339,8 +339,8 @@ CREATE TABLE opiskeluvalmiuksia_tukevat_opinnot(
   hoks_id INTEGER REFERENCES hoksit(id),
   nimi TEXT,
   kuvaus TEXT,
-  alku TIMESTAMP WITH TIME ZONE,
-  loppu TIMESTAMP WITH TIME ZONE
+  alku DATE,
+  loppu DATE
 );
 
 CREATE TABLE puuttuvat_yhteiset_tutkinnon_osat(
@@ -388,8 +388,8 @@ CREATE TABLE hankitun_yto_osaamisen_naytot(
   nayttoymparisto_kuvaus TEXT,
   yto_osa_alue_koodi_uri VARCHAR(26),
   yto_osa_alue_koodi_versio INTEGER,
-  alku TIMESTAMP WITH TIME ZONE,
-  loppu TIMESTAMP WITH TIME ZONE
+  alku DATE,
+  loppu DATE
 );
 
 CREATE TABLE hankitun_yto_osaamisen_nayton_osaamistavoitteet(
