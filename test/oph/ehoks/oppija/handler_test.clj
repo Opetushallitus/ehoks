@@ -33,39 +33,44 @@
      :hankitun-osaamisen-naytto []
      :osaamisen-hankkimistavat []
      :nimi "Työpaikalla oppiminen "}]
-   :ensikertainen-hyvaksyminen (java.util.Date.)
+   :ensikertainen-hyvaksyminen (java.time.LocalDate/now)
    :luotu (java.util.Date.)
    :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
+   :urasuunnitelma-koodi-versio 1
    :hyvaksytty (java.util.Date.)
    :olemassa-olevat-ammatilliset-tutkinnon-osat []
    :olemassa-olevat-yhteiset-tutkinnon-osat []
    :puuttuvat-ammatilliset-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_103590"
+     :tutkinnon-osa-koodi-versio 1
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
      :hankitun-osaamisen-naytto
      [{:alku (java.time.LocalDate/now)
        :loppu (java.time.LocalDate/now)
        :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921329"}
        :nayttoymparisto {:nimi "" :y-tunnus ""}
-       :koulutuksenjarjestaja-arvioijat
+       :koulutuksen-jarjestaja-arvioijat
        [{:nimi "Olson,Wava"
          :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921329"}}]}]
      :osaamisen-hankkimistavat []}
     {:tutkinnon-osa-koodi-uri "tutkinnonosat_103590"
+     :tutkinnon-osa-koodi-versio 1
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
      :hankitun-osaamisen-naytto
      [{:alku (java.time.LocalDate/now)
        :loppu (java.time.LocalDate/now)
        :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921329"}
        :nayttoymparisto {:nimi "", :y-tunnus ""}
-       :koulutuksenjarjestaja-arvioijat
+       :koulutuksen-jarjestaja-arvioijat
        [{:nimi "Moen,Pearl"
          :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921329"}}]}]
      :osaamisen-hankkimistavat []}]
    :puuttuvat-yhteiset-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_103596"
+     :tutkinnon-osa-koodi-versio 1
      :osa-alueet
-     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_fk"}]
+     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_fk"
+       :osa-alue-koodi-versio 1}]
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"}]
    :opiskeluoikeus-oid "1.2.246.562.15.76811932037"
    :laatija {:nimi "Simonis,Hollie"}

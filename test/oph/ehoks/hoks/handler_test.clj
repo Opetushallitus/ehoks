@@ -184,12 +184,14 @@
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
 (def pao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
+               :tutkinnon-osa-koodi-versio 1
                :osaamisen-hankkimistavat
                [{:alku "2018-12-12"
                  :loppu "2018-12-20"
                  :ajanjakson-tarkenne "Tarkenne tässä"
                  :osaamisen-hankkimistapa-koodi-uri
-                 "osaamisenhankkimistapa_koulutussopimus"}]
+                 "osaamisenhankkimistapa_koulutussopimus"
+                 :osaamisen-hankkimistapa-koodi-versio 1}]
                :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"})
 
 (deftest post-and-get-pao
@@ -267,12 +269,14 @@
 
 (def patch-all-pao-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"
+   :tutkinnon-osa-koodi-versio 1
    :osaamisen-hankkimistavat
    [{:alku "2018-12-11"
      :loppu "2018-12-21"
      :ajanjakson-tarkenne "Tarkenne tässä uusi"
      :osaamisen-hankkimistapa-koodi-uri
-     "osaamisenhankkimistapa_koulutussopimus1"}]
+     "osaamisenhankkimistapa_koulutussopimus1"
+     :osaamisen-hankkimistapa-koodi-versio 1}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000006"})
 
 (deftest patch-all-pao
@@ -341,10 +345,12 @@
 (def pyto-data
   {:osa-alueet
    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
+     :osa-alue-koodi-versio 1
      :osaamisen-hankkimistavat
      [{:alku "2018-12-15"
        :loppu "2018-12-23"
-       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
+       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1}]
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
        :nayttoymparisto {:nimi "aaa"}
@@ -353,16 +359,20 @@
        :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
                              {:nimi "Organisaation nimi"}}]}]}]
    :tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :tutkinnon-osa-koodi-versio 1
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"})
 
 (def pyto-patch-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :tutkinnon-osa-koodi-versio 1
    :osa-alueet
    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
+     :osa-alue-koodi-versio 1
      :osaamisen-hankkimistavat
      [{:alku "2018-12-13"
        :loppu "2018-12-22"
-       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
+       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1}]
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000008"}
        :nayttoymparisto {:nimi "aaa2"}
@@ -374,12 +384,15 @@
 
 (def pyto-patch-one-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :tutkinnon-osa-koodi-versio 1
    :osa-alueet
    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
+     :osa-alue-koodi-versio 1
      :osaamisen-hankkimistavat
      [{:alku "2018-12-13"
        :loppu "2018-12-22"
-       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"}]
+       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1}]
      :hankitun-osaamisen-naytto
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000010"}
        :nayttoymparisto {:nimi "aaa2"}
@@ -623,7 +636,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
             app
@@ -651,7 +664,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"}]
       (let [response
             (utils/with-service-ticket
               app
@@ -668,7 +681,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"}]
 
       (let [response
             (utils/with-service-ticket
@@ -691,7 +704,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"}]
       (utils/with-service-ticket
         app
         (-> (mock/request :post url)
@@ -723,7 +736,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
             app
@@ -759,7 +772,7 @@
                      :hyvaksytty (java.util.Date.)
                      :id 1
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
             app
@@ -775,7 +788,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15T00:00:00Z"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
             app
