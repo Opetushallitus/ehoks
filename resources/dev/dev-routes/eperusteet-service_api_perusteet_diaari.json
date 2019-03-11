@@ -1,0 +1,23 @@
+{
+  "id": 3397335,
+  "globalVersion": {
+    "aikaleima": 1551793369105
+  },
+  "nimi": {
+    "_tunniste": "7cf67401-93d4-447e-a3dd-1e84b43977f0",
+    "fi": "Tieto- ja tietoliikennetekniikan perustutkinto",
+    "sv": "Grundexamen i datateknik och datakommunikationsteknik",
+    "en": "Vocational Qualification in Information and Telecommunications Technology",
+    "_id": "6147969"
+  },
+  "diaarinumero": "OPH-2652-2017",
+  "voimassaoloLoppuu": null,
+  "voimassaoloAlkaa": 1533070800000,
+  "tila": "valmis",
+  "suoritustavat": [
+    {
+      "suoritustapakoodi": "reformi",
+      "laajuusYksikko": "OSAAMISPISTE"
+    }
+  ]
+}
