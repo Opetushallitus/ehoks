@@ -1,6 +1,6 @@
 [
   {
-    "ensikertainen-hyvaksyminen": "2017-10-25T21:00:00.000Z",
+    "ensikertainen-hyvaksyminen": "2017-10-25",
     "luotu": "2017-10-25T21:00:00.000Z",
     "hyvaksytty": "2017-10-25T21:00:00.000Z",
     "paivitetty": "2017-10-25T21:00:00.000Z",
@@ -23,6 +23,7 @@
     "puuttuvat-ammatilliset-tutkinnon-osat": [
       {
         "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
+        "tutkinnon-osa-koodi-versio": 1,
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
         "hankitun-osaamisen-naytto": [
           {
@@ -35,7 +36,7 @@
               "nimi": "",
               "y-tunnus": ""
             },
-            "koulutuksenjarjestaja-arvioijat": [
+            "koulutuksen-jarjestaja-arvioijat": [
               {
                 "nimi": "Olson,Wava",
                 "organisaatio": {
@@ -49,6 +50,7 @@
       },
       {
         "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
+        "tutkinnon-osa-koodi-versio": 1,
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
         "hankitun-osaamisen-naytto": [
           {
@@ -61,7 +63,7 @@
               "nimi": "",
               "y-tunnus": ""
             },
-            "koulutuksenjarjestaja-arvioijat": [
+            "koulutuksen-jarjestaja-arvioijat": [
               {
                 "nimi": "Moen,Pearl",
                 "organisaatio": {
@@ -75,6 +77,7 @@
       },
       {
         "tutkinnon-osa-koodi-uri": "tutkinnonosat_200241",
+        "tutkinnon-osa-koodi-versio": 1,
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
         "hankitun-osaamisen-naytto": [],
         "osaamisen-hankkimistavat": []
@@ -83,6 +86,7 @@
     "puuttuvat-yhteiset-tutkinnon-osat": [
       {
             "tutkinnon-osa-koodi-uri": "tutkinnonosat_101053",
+            "tutkinnon-osa-koodi-versio": 1,
             "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
             "osa-alueet": [
               {
@@ -92,6 +96,7 @@
         },
         {
             "tutkinnon-osa-koodi-uri": "tutkinnonosat_101054",
+            "tutkinnon-osa-koodi-versio": 1,
             "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
             "osa-alueet": []
         },
@@ -102,6 +107,7 @@
         },
         {
             "tutkinnon-osa-koodi-uri": "tutkinnonosat_101056",
+            "tutkinnon-osa-koodi-versio": 1,
             "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
             "osa-alueet": []
         }
