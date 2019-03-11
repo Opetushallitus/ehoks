@@ -1,0 +1,81 @@
+[
+  {
+    "id": 1563984,
+    "nimi": {
+      "fi": "Elintarviketuotannossa toimiminen",
+      "sv": "Arbete inom livsmedelsproduktion",
+      "_id": "396084"
+    },
+    "tyyppi": "normaali",
+    "peruste": {
+      "id": 1563502,
+      "globalVersion": {
+        "aikaleima": 1513686529160
+      },
+      "nimi": {
+        "fi": "Elintarvikealan perustutkinto",
+        "sv": "Grundexamen inom livsmedelsbranschen",
+        "_id": "1824483"
+      },
+      "diaarinumero": "40/011/2014",
+      "voimassaoloLoppuu": 1532984400000,
+      "voimassaoloAlkaa": 1469998800000,
+      "tila": "valmis",
+      "suoritustavat": [
+        {
+          "suoritustapakoodi": "ops",
+          "laajuusYksikko": "OSAAMISPISTE"
+        },
+        {
+          "suoritustapakoodi": "naytto",
+          "laajuusYksikko": "OSAAMISPISTE"
+        }
+      ]
+    },
+    "suoritustapa": {
+      "suoritustapakoodi": "naytto",
+      "laajuusYksikko": "OSAAMISPISTE"
+    },
+    "_tutkinnonOsa": "52824"
+  },
+  {
+    "id": 1564018,
+    "laajuus": 30,
+    "nimi": {
+      "fi": "Elintarviketuotannossa toimiminen",
+      "sv": "Arbete inom livsmedelsproduktion",
+      "_id": "396084"
+    },
+    "tyyppi": "normaali",
+    "peruste": {
+      "id": 1563502,
+      "globalVersion": {
+        "aikaleima": 1513686529160
+      },
+      "nimi": {
+        "fi": "Elintarvikealan perustutkinto",
+        "sv": "Grundexamen inom livsmedelsbranschen",
+        "_id": "1824483"
+      },
+      "diaarinumero": "40/011/2014",
+      "voimassaoloLoppuu": 1532984400000,
+      "voimassaoloAlkaa": 1469998800000,
+      "tila": "valmis",
+      "suoritustavat": [
+        {
+          "suoritustapakoodi": "naytto",
+          "laajuusYksikko": "OSAAMISPISTE"
+        },
+        {
+          "suoritustapakoodi": "ops",
+          "laajuusYksikko": "OSAAMISPISTE"
+        }
+      ]
+    },
+    "suoritustapa": {
+      "suoritustapakoodi": "ops",
+      "laajuusYksikko": "OSAAMISPISTE"
+    },
+    "_tutkinnonOsa": "52824"
+  }
+]
