@@ -7,3 +7,5 @@
 (defq select-hoks-by-oppija-oid "hoksit/select_by_oppija_oid.sql")
 (defq select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id
   "olemassa-olevat-ammatilliset-tutkinnon-osat/select_by_hoks_id.sql")
+(defq select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id
+  "puuttuvat-paikalliset-tutkinnon-osat/select_by_hoks_id.sql")
