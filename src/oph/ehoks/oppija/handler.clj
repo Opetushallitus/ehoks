@@ -24,25 +24,34 @@
         (c-api/context "/koodisto" []
           (c-api/GET "/:koodi-uri" [koodi-uri]
             :path-params [koodi-uri :- s/Str]
-            :summary "Oppijan Koodisto-integraatio.
-                      Koodiston haku Koodisto-Koodi-Urilla."
+            :summary "Koodiston haku Koodisto-Koodi-Urilla."
             :return (rest/response s/Any)
             (rest/rest-ok (koodisto/get-koodi koodi-uri))))
 
         (c-api/context "/eperusteet" []
-          (c-api/GET "/:koodi-uri" [koodi-uri]
-            :path-params [koodi-uri :- s/Str]
-            :summary "Oppijan ePerusteet integraatio.
-                      Tutkinnon osan perusteiden haku Koodisto-Koodi-Urilla."
-            :return (rest/response [s/Any])
-            (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri)))
-
           (c-api/GET "/tutkinnonosat/:id/viitteet" [id]
             :path-params [id :- Long]
-            :summary "Oppijan ePerusteet integraatio.
-                      Tutkinnon osan viitteet."
+            :summary "Tutkinnon osan viitteet."
             :return (rest/response [s/Any])
-            (rest/rest-ok (eperusteet/get-tutkinnon-osa-viitteet id))))))
+            (rest/rest-ok (eperusteet/get-tutkinnon-osa-viitteet id)))
+
+          (c-api/GET "/tutkinnot" []
+            :query-params [diaarinumero :- String]
+            :summary "Tutkinnon haku diaarinumeron perusteella."
+            :return (rest/response s/Any)
+            (rest/rest-ok (eperusteet/find-tutkinto diaarinumero)))
+
+          (c-api/GET "/tutkinnot/:id/suoritustavat/reformi/rakenne" [id]
+            :path-params [id :- Long]
+            :summary "Tutkinnon rakenne."
+            :return (rest/response s/Any)
+            (rest/rest-ok (eperusteet/get-suoritustavat id)))
+
+          (c-api/GET "/:koodi-uri" [koodi-uri]
+            :path-params [koodi-uri :- s/Str]
+            :summary "Tutkinnon osan perusteiden haku Koodisto-Koodi-Urilla."
+            :return (rest/response [s/Any])
+            (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))))
 
     (c-api/context "/oppijat" []
       :tags ["oppijat"]
