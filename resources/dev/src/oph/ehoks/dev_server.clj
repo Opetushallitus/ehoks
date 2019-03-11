@@ -58,8 +58,8 @@
   (-> h
       (update :luotu parse-date)
       (update :paivitetty parse-date)
-      (update :hyvaksytty parse-local-date)
-      (update :ensikertainen-hyvaksyminen parse-date)
+      (update :hyvaksytty parse-date)
+      (update :ensikertainen-hyvaksyminen parse-local-date)
       (update :puuttuvat-ammatilliset-tutkinnon-osat set-pato-dates)))
 
 (defn import-initial-demo-data! []
