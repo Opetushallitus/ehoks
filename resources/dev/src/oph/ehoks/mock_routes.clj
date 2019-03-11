@@ -108,6 +108,10 @@
     (json-response-file
       "dev-routes/eperusteet_api_perusteet.json"))
 
+  (GET "/eperusteet-service/api/tutkinnonosat/52824/viitteet" []
+    (json-response-file
+      "dev-routes/eperusteet-service_api_tutkinnonosat_52824_viitteet.json"))
+
   (GET "/eperusteet-service/api/tutkinnonosat" request
     (if (= (get-in request [:query-params "koodiUri"]) "tutkinnonosat_101056")
       (json-response-file
