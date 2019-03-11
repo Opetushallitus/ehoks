@@ -35,3 +35,15 @@
     {:connection-uri (:database-url config)}
     :hoksit
     (h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql m)))
+
+(defn select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id [id]
+  (jdbc/query
+    {:connection-uri (:database-url config)}
+    [queries/select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id id]
+    {:row-fn h/puuttuva-paikallinen-tutkinnon-osa-from-sql}))
+
+(defn select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id [id]
+  (jdbc/query
+    {:connection-uri (:database-url config)}
+    [queries/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id id]
+    {:row-fn h/olemassa-oleva-paikallinen-tutkinnon-osa-from-sql}))

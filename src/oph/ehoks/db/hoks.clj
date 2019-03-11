@@ -62,3 +62,20 @@
       (dissoc :tarkentavat-tiedot-naytto :tarkentavat-tiedot-arvioija)
       remove-nils
       to-underscore-keys))
+
+(defn puuttuva-paikallinen-tutkinnon-osa-from-sql [m]
+  (to-dash-keys m))
+
+(defn puuttuva-paikallinen-tutkinnon-osa-to-sql [m]
+  (-> m
+      (dissoc :hankitun-osaamisen-naytto :osaamisen-hankkimistavat)
+      remove-nils
+      to-underscore-keys))
+
+(defn olemassa-oleva-paikallinen-tutkinnon-osa-from-sql [m]
+  (to-dash-keys m))
+
+(defn olemassa-oleva-paikallinen-tutkinnon-osa-to-sql [m]
+  (-> m
+      remove-nils
+      to-underscore-keys))
