@@ -5,7 +5,7 @@
             [schema.core :as s]
             [clojure.tools.logging :as log]))
 
-(def ^:private default-file "config/default.edn")
+(def ^:private default-file "oph-configuration/default.edn")
 
 (defn- load-config [file]
   (with-open [reader (io/reader file)]
