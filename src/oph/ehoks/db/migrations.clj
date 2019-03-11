@@ -8,8 +8,8 @@
       (.dataSource (:database-url config) nil nil)
       (.load)))
 
-(defn migrate []
+(defn migrate! []
   (.migrate flyway))
 
-(defn clean []
+(defn clean! []
   (.clean flyway))
