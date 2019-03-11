@@ -43,3 +43,12 @@
        :options {:as :json
                  :query-params {:koodiUri koodi-uri}}})
     [:body :data]))
+
+(defn get-tutkinnon-osa-viitteet [^Long id]
+  (get
+    (cache/with-cache!
+      {:method :get
+       :service (:eperusteet-url config)
+       :path (format "tutkinnonosat/%d/viitteet" id)
+       :options {:as :json}})
+    :body))

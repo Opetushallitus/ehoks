@@ -33,9 +33,16 @@
           (c-api/GET "/:koodi-uri" [koodi-uri]
             :path-params [koodi-uri :- s/Str]
             :summary "Oppijan ePerusteet integraatio.
-                      Perusteiden haku Koodisto-Koodi-Urilla."
+                      Tutkinnon osan perusteiden haku Koodisto-Koodi-Urilla."
             :return (rest/response [s/Any])
-            (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))))
+            (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri)))
+
+          (c-api/GET "/tutkinnonosat/:id/viitteet" [id]
+            :path-params [id :- Long]
+            :summary "Oppijan ePerusteet integraatio.
+                      Tutkinnon osan viitteet."
+            :return (rest/response [s/Any])
+            (rest/rest-ok (eperusteet/get-tutkinnon-osa-viitteet id))))))
 
     (c-api/context "/oppijat" []
       :tags ["oppijat"]
