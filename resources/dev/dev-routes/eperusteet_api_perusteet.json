@@ -1,0 +1,812 @@
+{
+  "data": [
+    {
+      "id": 616,
+      "globalVersion": {
+        "aikaleima": 1489411522466
+      },
+      "nimi": {
+        "_tunniste": "03092051-37d9-4a70-8f47-bdd50b2f7c52",
+        "fi": "Hotelli-, ravintola- ja catering-alan perustutkinto",
+        "sv": "Grundexamen inom hotell-, restaurang- och cateringbranschen, i kraft till 31.12.2015",
+        "_id": "2392263"
+      },
+      "koulutustyyppi": "koulutustyyppi_1",
+      "koulutukset": [
+        {
+          "nimi": {
+            "fi": "Hotelli-, ravintola- ja catering-alan perustutkinto",
+            "sv": "Grundexamen inom hotell-, restaurang- och cateringbranschen",
+            "en": "Hotel, Rest. and Catering, VQ"
+          },
+          "koulutuskoodiArvo": "381112",
+          "koulutuskoodiUri": "koulutus_381112",
+          "koulutusalakoodi": "koulutusalaoph2002_8",
+          "opintoalakoodi": "opintoalaoph2002_802"
+        }
+      ],
+      "kielet": [
+        "fi",
+        "sv"
+      ],
+      "kuvaus": {
+        "fi": "<p>Hotelli-, ravintola- ja catering-alalla tuotetaan majoitus-, ravitsemis-, kokous- ja juhlapalveluja sekä maissa että merellä. Työtehtävät ovat ruoanvalmistus-, tarjoilu-, asiakaspalvelu- ja hotellin vastaanoton tehtäviä. Alalla toimiminen vaatii joustavuutta, innostusta, hyviä käden taitoja sekä halua tulla toimeen erilaisten asiakkaiden kanssa. Hyvät etenemismahdollisuudet ja kansainvälisyys ovat alalle luontaista.</p>",
+        "sv": "<p>Hotell-, restaurang- och cateringbranschen producerar inkvarterings-, restaurang-, konferens- och festservice såväl på land som till sjöss. Arbetet består av matproduktion, servering, kundservice och hotellservice. Arbetet kräver flexibilitet, motivation, goda praktiska färdigheter och vilja att komma överens med olika sorts kunder. Branschen är internationell och det finns goda möjligheter att avancera.</p>",
+        "_id": "1528141"
+      },
+      "maarayskirje": {
+        "id": 1391572,
+        "url": {
+          "fi": "http://www.oph.fi/download/176225_hotraca_maarays.pdf"
+        }
+      },
+      "muutosmaaraykset": [],
+      "diaarinumero": "44/011/2014",
+      "voimassaoloAlkaa": 1438376400000,
+      "siirtymaPaattyy": 1451512800000,
+      "voimassaoloLoppuu": 1451512800000,
+      "paatospvm": 1414447200000,
+      "luotu": 1416407529020,
+      "muokattu": 1489411522466,
+      "tila": "valmis",
+      "tyyppi": "normaali",
+      "koulutusvienti": false,
+      "korvattavatDiaarinumerot": [
+        "3/011/2010"
+      ],
+      "osaamisalat": [
+        {
+          "nimi": {
+            "sv": "Kompetensområdet för kundservice",
+            "fi": "Asiakaspalvelun osaamisala"
+          },
+          "arvo": "1636",
+          "uri": "osaamisala_1636",
+          "koodisto": "osaamisala",
+          "versio": null
+        },
+        {
+          "nimi": {
+            "sv": "Kompetensområdet för hotellservice",
+            "fi": "Hotellipalvelun osaamisala"
+          },
+          "arvo": "1572",
+          "uri": "osaamisala_1572",
+          "koodisto": "osaamisala",
+          "versio": null
+        },
+        {
+          "nimi": {
+            "sv": "Kompetensområdet för matservice",
+            "fi": "Ruokapalvelun osaamisala"
+          },
+          "arvo": "1637",
+          "uri": "osaamisala_1637",
+          "koodisto": "osaamisala",
+          "versio": null
+        }
+      ],
+      "tyotehtavatJoissaVoiToimia": null,
+      "suorittaneenOsaaminen": null,
+      "suoritustavat": [
+        {
+          "suoritustapakoodi": "ops",
+          "laajuusYksikko": "OSAAMISPISTE"
+        },
+        {
+          "suoritustapakoodi": "naytto",
+          "laajuusYksikko": "OSAAMISPISTE"
+        }
+      ],
+      "kvliite": null,
+      "perusteprojekti": {
+        "id": 646,
+        "nimi": "Hotelli-, ravintola- ja catering-alan perustutkinto, perusteprojekti",
+        "_peruste": "616",
+        "diaarinumero": "3/011/2010",
+        "paatosPvm": null,
+        "toimikausiAlku": null,
+        "toimikausiLoppu": null,
+        "tehtavaluokka": null,
+        "tehtava": null,
+        "yhteistyotaho": null,
+        "tila": "julkaistu",
+        "ryhmaOid": "1.2.246.562.28.49096661214",
+        "esikatseltavissa": false
+      }
+    },
+    {
+      "id": 1352660,
+      "globalVersion": {
+        "aikaleima": 1513756823739
+      },
+      "nimi": {
+        "fi": "Hotelli-, ravintola- ja catering-alan perustutkinto",
+        "sv": "Grundexamen inom hotell-, restaurang- och cateringbranschen, i kraft fr.o.m. 1.1.2016",
+        "_id": "1839667"
+      },
+      "koulutustyyppi": "koulutustyyppi_1",
+      "koulutukset": [
+        {
+          "nimi": {
+            "fi": "Hotelli-, ravintola- ja catering-alan perustutkinto",
+            "sv": "Grundexamen inom hotell-, restaurang- och cateringbranschen",
+            "en": "Hotel, Rest. and Catering, VQ"
+          },
+          "koulutuskoodiArvo": "381112",
+          "koulutuskoodiUri": "koulutus_381112",
+          "koulutusalakoodi": "koulutusalaoph2002_8",
+          "opintoalakoodi": "opintoalaoph2002_802"
+        }
+      ],
+      "kielet": [
+        "fi",
+        "sv"
+      ],
+      "kuvaus": {
+        "fi": "<p>Hotelli-, ravintola- ja catering-alalla tuotetaan majoitus-, ravitsemis-, kokous- ja juhlapalveluja sekä maissa että merellä. Työtehtävät ovat ruoanvalmistus-, tarjoilu-, asiakaspalvelu- ja hotellin vastaanoton tehtäviä. Alalla toimiminen vaatii joustavuutta, innostusta, hyviä käden taitoja sekä halua tulla toimeen erilaisten asiakkaiden kanssa. Hyvät etenemismahdollisuudet ja kansainvälisyys ovat alalle luontaista.</p>",
+        "sv": "<p>Hotell-, restaurang- och cateringbranschen producerar inkvarterings-, restaurang-, konferens- och festservice såväl på land som till sjöss. Arbetet består av matproduktion, servering, kundservice och hotellservice. Arbetet kräver flexibilitet, motivation, goda praktiska färdigheter och vilja att komma överens med olika sorts kunder. Branschen är internationell och det finns goda möjligheter att avancera.</p>",
+        "_id": "1414206"
+      },
+      "maarayskirje": {
+        "id": 1391573,
+        "url": {
+          "fi": "http://www.oph.fi/download/176225_hotraca_maarays.pdf"
+        }
+      },
+      "muutosmaaraykset": [
+        {
+          "id": 2068940,
+          "nimi": null,
+          "url": {
+            "fi": "http://www.oph.fi/download/173482_maarays_650112015_osaamisalan_nimen_muutos_ruokapalvelu.pdf",
+            "_id": "2068921"
+          }
+        },
+        {
+          "id": 2334103,
+          "nimi": null,
+          "url": {
+            "_tunniste": "a022652a-d5bd-4af8-a5f2-f2f6ed3d5185",
+            "fi": "http://www.oph.fi/download/177323_Maarays_11_011_2016_YTO_16_6_2016.pdf",
+            "_id": "2335467"
+          }
+        }
+      ],
+      "diaarinumero": "44/011/2014",
+      "voimassaoloAlkaa": 1451599200000,
+      "siirtymaPaattyy": 1640901600000,
+      "voimassaoloLoppuu": 1532984400000,
+      "paatospvm": 1414447200000,
+      "luotu": 1447747681367,
+      "muokattu": 1513756823739,
+      "tila": "valmis",
+      "tyyppi": "normaali",
+      "koulutusvienti": false,
+      "korvattavatDiaarinumerot": [],
+      "osaamisalat": [
+        {
+          "nimi": {
+            "sv": "Kompetensområdet för kundservice",
+            "fi": "Asiakaspalvelun osaamisala"
+          },
+          "arvo": "1636",
+          "uri": "osaamisala_1636",
+          "koodisto": "osaamisala",
+          "versio": null
+        },
+        {
+          "nimi": {
+            "sv": "Kompetensområdet för hotellservice",
+            "fi": "Hotellipalvelun osaamisala"
+          },
+          "arvo": "1572",
+          "uri": "osaamisala_1572",
+          "koodisto": "osaamisala",
+          "versio": null
+        },
+        {
+          "nimi": {
+            "sv": "Kompetensområdet för matservice",
+            "fi": "Ruokapalvelun osaamisala"
+          },
+          "arvo": "1637",
+          "uri": "osaamisala_1637",
+          "koodisto": "osaamisala",
+          "versio": null
+        }
+      ],
+      "tyotehtavatJoissaVoiToimia": null,
+      "suorittaneenOsaaminen": null,
+      "suoritustavat": [
+        {
+          "suoritustapakoodi": "ops",
+          "laajuusYksikko": "OSAAMISPISTE"
+        },
+        {
+          "suoritustapakoodi": "naytto",
+          "laajuusYksikko": "OSAAMISPISTE"
+        }
+      ],
+      "kvliite": {
+        "id": 4275443,
+        "suorittaneenOsaaminen": null,
+        "tyotehtavatJoissaVoiToimia": null,
+        "tutkintotodistuksenAntaja": null,
+        "_arvosanaAsteikko": null,
+        "jatkoopintoKelpoisuus": null,
+        "kansainvalisetSopimukset": null,
+        "saadosPerusta": null,
+        "pohjakoulutusvaatimukset": null,
+        "lisatietoja": null,
+        "tutkintotodistuksenSaaminen": null,
+        "tutkinnostaPaattavaViranomainen": null
+      },
+      "perusteprojekti": {
+        "id": 1352730,
+        "nimi": "Hotelli-, ravintola- ja catering-alan perustutkinto",
+        "_peruste": "1352660",
+        "diaarinumero": "00/000/2015",
+        "paatosPvm": null,
+        "toimikausiAlku": null,
+        "toimikausiLoppu": null,
+        "tehtavaluokka": null,
+        "tehtava": null,
+        "yhteistyotaho": null,
+        "tila": "julkaistu",
+        "ryhmaOid": "1.2.246.562.28.49096661214",
+        "esikatseltavissa": false
+      }
+    },
+    {
+      "id": 4221360,
+      "globalVersion": {
+        "aikaleima": 1531222604784
+      },
+      "nimi": {
+        "_tunniste": "7cf67401-93d4-447e-a3dd-1e84b43977f0",
+        "fi": "Ravintola- ja catering-alan perustutkinnon perusteet",
+        "sv": "Grundexamen inom restaurang- och cateringbranschen",
+        "en": "Vocational Qualification in Restaurant and Catering Services",
+        "_id": "4905684"
+      },
+      "koulutustyyppi": "koulutustyyppi_1",
+      "koulutukset": [
+        {
+          "nimi": {
+            "fi": "Ravintola- ja catering-alan perustutkinto",
+            "sv": "Grundexamen inom restaurang- och cateringbranschen",
+            "en": "Vocational Qualification in Restaurant and Catering Services"
+          },
+          "koulutuskoodiArvo": "381142",
+          "koulutuskoodiUri": "koulutus_381142",
+          "koulutusalakoodi": "koulutusalaoph2002_8",
+          "opintoalakoodi": "opintoalaoph2002_802"
+        }
+      ],
+      "kielet": [
+        "fi",
+        "sv"
+      ],
+      "kuvaus": {
+        "_tunniste": "35e7073c-96e4-47fc-8b03-07df8fb66c5d",
+        "fi": "<p>Perustutkinnon suorittanut osaa</p>\n\n<ul>\n\t<li>toimia ravitsemisalan ruoanvalmistuksen tai asiakaspalvelun suunnittelu-, toteuttamis- ja myyntitehtävissä</li>\n\t<li>palvella suomalaisia ja ulkomaisia asiakkaita asiakaslähtöisesti</li>\n\t<li>hyödyntää ammattisanastoa vierailla kielillä ja kulttuurien tuntemusta</li>\n\t<li>toimia myynti- ja asiakaspalveluhenkisesti, laatutietoisesti, kannattavasti ja tuloksellisesti, vastuullisesti ja hygieniavaatimusten sekä kestävän toimintatavan mukaisesti.</li>\n</ul>\n\n<p>Perustutkinnossa voi erikoistua tarjoilu- tai ruoanvalmistustehtäviin.</p>\n\n<p>Tutkinnon suorittanut <strong>tarjoilija</strong> osaa</p>\n\n<ul>\n\t<li>toimia asiakaspalvelijan tehtävissä erilaisin liikeideoin tai toiminta-ajatuksin toimivissa ravintoloissa tai julkisen sektorin toimipaikoissa</li>\n\t<li>kunnostaa asiakastiloja ja laittaa esille myytäviä tuotteita</li>\n\t<li>esitellä, myydä ja tarjoilla ruokia ja juomia.</li>\n</ul>\n\n<p>Tutkinnon suorittanut <strong>kokki</strong> osaa</p>\n\n<ul>\n\t<li>toimia ruoanvalmistuksen tehtävissä erilaisin liikeideoin tai toiminta-ajatuksin toimivissa ravintoloissa tai julkisen sektorin toimipaikoissa</li>\n\t<li>valmistaa maukasta, ravitsevaa ja terveellistä ruokaa huomioiden erityisruokavaliot</li>\n\t<li>laittaa ruoan esille annoksittain tai suurelle joukolle.</li>\n</ul>\n\n<p> </p>\n\n<p>Asiakaspalvelun osaamisalan suorittanut <strong>tarjoilija</strong> työskentelee ravintoloissa, henkilöstöravintoloissa, pubeissa, yökerhoissa, liikenneasemilla, kahviloissa, pikaruoka-, juhlapalvelu- tai matkailuyrityksissä sekä suurtalouden toimipaikoissa.</p>\n\n<p>Ruokapalvelun osaamisalan suorittanut <strong>kokki</strong> työskentelee ravintoloissa, catering-alalla, henkilöstöravintoloissa, kahviloissa, juhla- ja pitopalveluissa, lasti- ja matkustajalaivoissa sekä suurkeittiöissä.</p>",
+        "sv": "<p>Den som avlagt grundexamen kan</p>\n\n<ul>\n\t<li>arbeta i planerings-, genomförande- och försäljningsuppgifter för matlagning eller kundservice inom restaurangbranschen</li>\n\t<li>betjäna finländska och utländska kunder på ett kundorienterat sätt</li>\n\t<li>använda terminologi på främmande språk och kulturkännedom</li>\n\t<li>arbeta försäljnings-, och kundbetjäningsinriktat, kvalitetsmedvetet, lönsamt och resultatinriktat, ansvarsfullt och enligt kraven på hygien och hållbart verksamhetssätt.</li>\n</ul>\n\n<p>i grundexamen kan man specialisera sig på serverings- eller matlagningsuppgifter.</p>\n\n<p>En <strong>servitör </strong>som avlagt examen kan</p>\n\n<ul>\n\t<li>arbeta i uppgifter inom kundservice på restauranger med olika affärskoncept eller verksamhetsidéer eller verksamhetsställen inom den offentliga sektorn</li>\n\t<li>ställa i ordning kundutrymmen och lägga fram produkter till försäljning</li>\n\t<li>presentera, sälja och servera mat och dryck.</li>\n</ul>\n\n<p>En <strong>kock</strong> som avlagt examen kan</p>\n\n<ul>\n\t<li>utföra arbetsuppgifter inom matlagning på restauranger med olika affärskoncept eller verksamhetsidéer eller verksamhetsställen inom den offentliga sektorn</li>\n\t<li>tillreder välsmakande, näringsrik och hälsosam mat med beaktande av specialkoster</li>\n\t<li>lägga fram maten som enskilda portioner eller till stora grupper.</li>\n</ul>\n\n<p>En <strong>servitör</strong> som avlagt kompetensområdet för kundservice arbetar på restauranger, personalrestauranger, pubar, nattklubbar, trafikstationer, caféer , snabbmats-, festservice-, eller reseföretag samt storkök.</p>\n\n<p>En <strong>kock</strong> som avlagt kompetensområdet för matservice arbetar på restauranger, cateringbranschen, personalrestauranger, caféer, fest- och cateringservice, last- och passagerarfartyg samt storkök.</p>\n\n<p> </p>",
+        "_id": "5087252"
+      },
+      "maarayskirje": {
+        "id": 4221790,
+        "url": {
+          "fi": "http://www.oph.fi/download/188705_OPH-2707-2017_Ravintola-_ja_catering-alan_pt.pdf",
+          "sv": ""
+        }
+      },
+      "muutosmaaraykset": [],
+      "diaarinumero": "OPH-2707-2017",
+      "voimassaoloAlkaa": 1533070800000,
+      "siirtymaPaattyy": null,
+      "voimassaoloLoppuu": null,
+      "paatospvm": 1513720800000,
+      "luotu": 1513242930069,
+      "muokattu": 1531222604868,
+      "tila": "valmis",
+      "tyyppi": "normaali",
+      "koulutusvienti": false,
+      "korvattavatDiaarinumerot": [],
+      "osaamisalat": [
+        {
+          "nimi": {
+            "fi": "Ruokapalvelun osaamisala",
+            "sv": "Kompetensområdet för matservice"
+          },
+          "arvo": "1798",
+          "uri": "osaamisala_1798",
+          "koodisto": "osaamisala",
+          "versio": null
+        },
+        {
+          "nimi": {
+            "fi": "Asiakaspalvelun osaamisala",
+            "sv": "Kompetensområdet för kundservice"
+          },
+          "arvo": "1797",
+          "uri": "osaamisala_1797",
+          "koodisto": "osaamisala",
+          "versio": null
+        }
+      ],
+      "tyotehtavatJoissaVoiToimia": {
+        "fi": "<p>Asiakaspalvelun osaamisalan suorittanut <strong>tarjoilija</strong> työskentelee ravintoloissa, henkilöstöravintoloissa, pubeissa, yökerhoissa, liikenneasemilla, kahviloissa, pikaruoka-, juhlapalvelu- tai matkailuyrityksissä sekä suurtalouden toimipaikoissa.</p>\n\n<p>Ruokapalvelun osaamisalan suorittanut <strong>kokki</strong> työskentelee ravintoloissa, catering-alalla, henkilöstöravintoloissa, kahviloissa, juhla- ja pitopalveluissa, lasti- ja matkustajalaivoissa sekä suurkeittiöissä.</p>",
+        "en": "<p>A server, who has completed the competence area of customer service works at restaurants, staff canteens, pubs, night clubs, transport stations, cafés, fast food, catering, or tourism service companies or various institutions.</p>\n\n<p>A cook who has completed the competence area of food services works at restaurants or in the catering sector, staff canteens, cafés, catering companies, freight and passenger ships as well as institutional kitchens.</p>",
+        "_id": "4905686"
+      },
+      "suorittaneenOsaaminen": {
+        "fi": "<p>Perustutkinnon suorittanut osaa</p>\n\n<ul>\n\t<li>toimia ravitsemisalan ruoanvalmistuksen tai asiakaspalvelun suunnittelu-, toteuttamis- ja myyntitehtävissä</li>\n\t<li>palvella suomalaisia ja ulkomaisia asiakkaita asiakaslähtöisesti</li>\n\t<li>hyödyntää ammattisanastoa vierailla kielillä ja kulttuurien tuntemusta</li>\n\t<li>toimia myynti- ja asiakaspalveluhenkisesti, laatutietoisesti, kannattavasti ja tuloksellisesti, vastuullisesti ja hygieniavaatimusten sekä kestävän toimintatavan mukaisesti.</li>\n</ul>\n\n<p>Perustutkinnossa voi erikoistua tarjoilu- tai ruoanvalmistustehtäviin.</p>\n\n<p>Tutkinnon suorittanut <strong>tarjoilija</strong> osaa</p>\n\n<ul>\n\t<li>toimia asiakaspalvelijan tehtävissä erilaisin liikeideoin tai toiminta-ajatuksin toimivissa ravintoloissa tai julkisen sektorin toimipaikoissa</li>\n\t<li>kunnostaa asiakastiloja ja laittaa esille myytäviä tuotteita</li>\n\t<li>esitellä, myydä ja tarjoilla ruokia ja juomia.</li>\n</ul>\n\n<p>Tutkinnon suorittanut <strong>kokki</strong> osaa</p>\n\n<ul>\n\t<li>toimia ruoanvalmistuksen tehtävissä erilaisin liikeideoin tai toiminta-ajatuksin toimivissa ravintoloissa tai julkisen sektorin toimipaikoissa</li>\n\t<li>valmistaa maukasta, ravitsevaa ja terveellistä ruokaa huomioiden erityisruokavaliot</li>\n\t<li>laittaa ruoan esille annoksittain tai suurelle joukolle.</li>\n</ul>",
+        "en": "<p>Qualification holders are able to</p>\n\n<ul>\n\t<li>plan and carry out food preparation or customer service tasks and work in sales in the catering sector</li>\n\t<li>serve Finnish and foreign customers in a customer-oriented manner</li>\n\t<li>use professional vocabulary in foreign languages, and draw on their cultural knowledge</li>\n\t<li>work in a sales-minded, customer service oriented and quality conscious manner and profitably, productively, and responsibly as well as operate in compliance with hygiene requirements, and sustainable operating practices.</li>\n</ul>\n\n<p>The students may specialise in serving or cooking tasks in this upper secondary qualification.</p>\n\n<p>A <strong>server </strong>who has completed the qualification knows how to</p>\n\n<ul>\n\t<li>work in customer service tasks at restaurants with different business ideas or missions or in public sector units</li>\n\t<li>tidy customer facilities and display products to be sold</li>\n\t<li>present, sell, and serve food and beverages.</li>\n</ul>\n\n<p>A <strong>cook </strong>who has completed the qualification knows how to</p>\n\n<ul>\n\t<li>work in food preparation tasks at restaurants with different business ideas or missions or in public sector units</li>\n\t<li>prepare tasty, nutritious, and wholesome food, taking special diets into account</li>\n\t<li>set out food as individual plated dishes or dishes for a large group of customers.</li>\n</ul>",
+        "_id": "5649807"
+      },
+      "suoritustavat": [
+        {
+          "suoritustapakoodi": "reformi",
+          "laajuusYksikko": "OSAAMISPISTE"
+        }
+      ],
+      "kvliite": {
+        "id": 4198672,
+        "suorittaneenOsaaminen": {
+          "_tunniste": "f0abc98a-aaf8-4ca8-9de5-daf97de3c5cc",
+          "fi": "<p>Perustutkinnon suorittanut osaa</p>\n\n<ul>\n\t<li>toimia ravitsemisalan ruoanvalmistuksen tai asiakaspalvelun suunnittelu-, toteuttamis- ja myyntitehtävissä</li>\n\t<li>palvella suomalaisia ja ulkomaisia asiakkaita asiakaslähtöisesti</li>\n\t<li>hyödyntää ammattisanastoa vierailla kielillä ja kulttuurien tuntemusta</li>\n\t<li>toimia myynti- ja asiakaspalveluhenkisesti, laatutietoisesti, kannattavasti ja tuloksellisesti, vastuullisesti ja hygieniavaatimusten sekä kestävän toimintatavan mukaisesti.</li>\n</ul>\n\n<p>Perustutkinnossa voi erikoistua tarjoilu- tai ruoanvalmistustehtäviin.</p>\n\n<p>Tutkinnon suorittanut <strong>tarjoilija</strong> osaa</p>\n\n<ul>\n\t<li>toimia asiakaspalvelijan tehtävissä erilaisin liikeideoin tai toiminta-ajatuksin toimivissa ravintoloissa tai julkisen sektorin toimipaikoissa</li>\n\t<li>kunnostaa asiakastiloja ja laittaa esille myytäviä tuotteita</li>\n\t<li>esitellä, myydä ja tarjoilla ruokia ja juomia.</li>\n</ul>\n\n<p>Tutkinnon suorittanut <strong>kokki</strong> osaa</p>\n\n<ul>\n\t<li>toimia ruoanvalmistuksen tehtävissä erilaisin liikeideoin tai toiminta-ajatuksin toimivissa ravintoloissa tai julkisen sektorin toimipaikoissa</li>\n\t<li>valmistaa maukasta, ravitsevaa ja terveellistä ruokaa huomioiden erityisruokavaliot</li>\n\t<li>laittaa ruoan esille annoksittain tai suurelle joukolle.</li>\n</ul>",
+          "en": "<p>Qualification holders are able to</p>\n\n<ul>\n\t<li>plan and carry out food preparation or customer service tasks and work in sales in the catering sector</li>\n\t<li>serve Finnish and foreign customers in a customer-oriented manner</li>\n\t<li>use professional vocabulary in foreign languages, and draw on their cultural knowledge</li>\n\t<li>work in a sales-minded, customer service oriented and quality conscious manner and profitably, productively, and responsibly as well as operate in compliance with hygiene requirements, and sustainable operating practices.</li>\n</ul>\n\n<p>The students may specialise in serving or cooking tasks in this upper secondary qualification.</p>\n\n<p>A <strong>server </strong>who has completed the qualification knows how to</p>\n\n<ul>\n\t<li>work in customer service tasks at restaurants with different business ideas or missions or in public sector units</li>\n\t<li>tidy customer facilities and display products to be sold</li>\n\t<li>present, sell, and serve food and beverages.</li>\n</ul>\n\n<p>A <strong>cook </strong>who has completed the qualification knows how to</p>\n\n<ul>\n\t<li>work in food preparation tasks at restaurants with different business ideas or missions or in public sector units</li>\n\t<li>prepare tasty, nutritious, and wholesome food, taking special diets into account</li>\n\t<li>set out food as individual plated dishes or dishes for a large group of customers.</li>\n</ul>",
+          "_id": "5649807"
+        },
+        "tyotehtavatJoissaVoiToimia": {
+          "_tunniste": "3509a633-826d-449d-9aae-1ca179672fcb",
+          "fi": "<p>Asiakaspalvelun osaamisalan suorittanut <strong>tarjoilija</strong> työskentelee ravintoloissa, henkilöstöravintoloissa, pubeissa, yökerhoissa, liikenneasemilla, kahviloissa, pikaruoka-, juhlapalvelu- tai matkailuyrityksissä sekä suurtalouden toimipaikoissa.</p>\n\n<p>Ruokapalvelun osaamisalan suorittanut <strong>kokki</strong> työskentelee ravintoloissa, catering-alalla, henkilöstöravintoloissa, kahviloissa, juhla- ja pitopalveluissa, lasti- ja matkustajalaivoissa sekä suurkeittiöissä.</p>",
+          "en": "<p>A server, who has completed the competence area of customer service works at restaurants, staff canteens, pubs, night clubs, transport stations, cafés, fast food, catering, or tourism service companies or various institutions.</p>\n\n<p>A cook who has completed the competence area of food services works at restaurants or in the catering sector, staff canteens, cafés, catering companies, freight and passenger ships as well as institutional kitchens.</p>",
+          "_id": "4905686"
+        },
+        "tutkintotodistuksenAntaja": {
+          "_tunniste": "7c54b8ec-ccb2-4b9d-a6ea-aabe189f5f25",
+          "se": "Koulutuksen järjestäjä, jolla on opetus- ja kulttuuriministeriön myöntämä tutkintojen ja koulutuksen järjestämislupa.",
+          "fi": "<p>Koulutuksen järjestäjä, jolla on opetus- ja kulttuuriministeriön myöntämä tutkintojen ja koulutuksen järjestämislupa.</p>",
+          "sv": "<p>Utbildningsanordnare som av undervisnings- och kulturministeriet beviljats anordnartillstånd för examina och utbildning.</p>",
+          "ru": "Koulutuksen järjestäjä, jolla on opetus- ja kulttuuriministeriön myöntämä tutkintojen ja koulutuksen järjestämislupa.",
+          "en": "<p>An education provider with an authorisation to provide education and award qualifications granted by the Ministry of Education and Culture.</p>",
+          "_id": "3275484"
+        },
+        "_arvosanaAsteikko": "3",
+        "jatkoopintoKelpoisuus": {
+          "_tunniste": "6b0e5edd-516e-4827-842d-14a767584bab",
+          "fi": "<p>Tutkinto tuottaa kelpoisuuden korkeakouluopintoihin.</p>",
+          "sv": "<p>Examen ger behörighet för högskolestudier.</p>",
+          "en": "<p>The qualification confers eligibility for higher education studies.</p>",
+          "_id": "3275480"
+        },
+        "kansainvalisetSopimukset": null,
+        "saadosPerusta": {
+          "_tunniste": "09db8920-7b56-4ad8-917d-141de613476c",
+          "fi": "<p>Laki ammatillisesta koulutuksesta 531/2017 ja sitä täydentävät asetukset</p>",
+          "sv": "<p>Lag om yrkesutbildning 531/2017 och förordningar som kompletterar den</p>",
+          "en": "<p>Vocational Education and Training Act 531/2017 and the decrees that complement it.</p>",
+          "_id": "3275482"
+        },
+        "pohjakoulutusvaatimukset": {
+          "_tunniste": "c54c49e0-7e59-42ef-b044-4da2a810d719",
+          "fi": "<p>Tutkinnon suorittamiselle ei ole asetettu muodollisia koulutusvaatimuksia.</p>",
+          "sv": "<p>Det finns inga formella krav på grundutbildning för att avlägga av examen.</p>",
+          "en": "<p>No formal qualifications are required to take the competence test.</p>",
+          "_id": "3275481"
+        },
+        "lisatietoja": {
+          "_tunniste": "74c4f194-233c-4bc7-a40a-d75388fd5226",
+          "fi": "<p>Opetushallitus</p>\n\n<p>PL 380, 00531 Helsinki</p>\n\n<p>www.oph.fi</p>",
+          "sv": "<p>Utbildningsstyrelsen</p>\n\n<p>PB 380, 00531 Helsingfors</p>\n\n<p>www.oph.fi</p>",
+          "_id": "3273239"
+        },
+        "tutkintotodistuksenSaaminen": {
+          "_tunniste": "f502ddbd-5cff-4554-b7e5-532fc3b08483",
+          "fi": "<p>Tutkinnon osien edellyttämä ammattitaito osoitetaan tekemällä käytännön työtehtäviä aidoissa tilanteissa ja työprosesseissa (näyttö). Opiskelijan osaamista arvioivat monipuolisesti opettaja ja työelämän edustaja vertaamalla sitä tutkinnon perusteissa määrättyyn osaamiseen. Koulutuksen järjestäjä antaa opiskelijalle tutkintotodistuksen, kun tutkinto on suoritettu hyväksytysti Opetushallituksen määräämien tutkinnon perusteiden mukaisesti.</p>",
+          "sv": "<p>Den yrkesskicklighet som krävs i examensdelarna visas genom att utföra praktiska arbetsuppgifter i genuina arbetssituationer och arbetsprocesser (yrkesprov). Den studerandes kunnande bedöms mångsidigt av en lärare och en representant för arbetslivet genom att jämföra det med det kunnande som är fastställt i examensgrunderna. Utbildningsanordnaren ger den studerande ett examensbetyg då examen är avlagd och godkänd enligt de examensgrunder som Utbildningsstyrelsen fastställt.</p>",
+          "en": "<p>The vocational skills required for completing the modules are demonstrated by performing practical tasks in authentic situations and work processes (demonstration of knowledge and skills). The student's knowledge and skills are assessed diversely by a teacher and a working life representative and compared to the competence defined in the qualification requirements. The education provider awards the student a qualification certificate once the qualification has been completed acceptably in accordance to the qualification requirements laid down by the Finnish National Agency for Education.</p>",
+          "_id": "3275485"
+        },
+        "tutkinnostaPaattavaViranomainen": {
+          "_tunniste": "5d0f18cb-d854-4dd2-8a19-391628fa8f4a",
+          "se": "Opetus- ja kulttuuriministeriö, Opetushallitus, opetus- ja kulttuuriministeriön alainen keskusvirasto",
+          "fi": "<p>Opetus- ja kulttuuriministeriö</p>\n\n<p>Opetushallitus, opetus- ja kulttuuriministeriön alainen keskusvirasto</p>",
+          "sv": "<p>Undervisnings- och kulturministeriet</p>\n\n<p>Utbildningsstyrelsen, centralt ämbetsverk som är underställt undervisnings- och kulturministeriet</p>",
+          "ru": "Opetus- ja kulttuuriministeriö, Opetushallitus, opetus- ja kulttuuriministeriön alainen keskusvirasto",
+          "en": "<p>Ministry of Education and Culture</p>\n\n<p>Finnish National Agency for Education, the national agency subordinate to the Ministry of Education and Culture</p>",
+          "_id": "3275483"
+        }
+      },
+      "perusteprojekti": {
+        "id": 4221380,
+        "nimi": "Ravintola- ja catering-alan perustutkinto 2018",
+        "_peruste": "4221360",
+        "diaarinumero": "OPH-2707-2017",
+        "paatosPvm": null,
+        "toimikausiAlku": null,
+        "toimikausiLoppu": null,
+        "tehtavaluokka": null,
+        "tehtava": null,
+        "yhteistyotaho": null,
+        "tila": "julkaistu",
+        "ryhmaOid": "1.2.246.562.28.49096661214",
+        "esikatseltavissa": false
+      }
+    },
+    {
+      "id": 1336402,
+      "globalVersion": {
+        "aikaleima": 1478850143048
+      },
+      "nimi": {
+        "fi": "Ravintolakokin ammattitutkinto",
+        "sv": "Yrkesexamen för restaurangkock",
+        "_id": "1445443"
+      },
+      "koulutustyyppi": "koulutustyyppi_11",
+      "koulutukset": [
+        {
+          "nimi": {
+            "fi": "Ravintolakokin ammattitutkinto",
+            "sv": "Yrkesexamen för restaurangkock",
+            "en": "Restaurant Cookery, FQ"
+          },
+          "koulutuskoodiArvo": "384109",
+          "koulutuskoodiUri": "koulutus_384109",
+          "koulutusalakoodi": "koulutusalaoph2002_8",
+          "opintoalakoodi": "opintoalaoph2002_802"
+        }
+      ],
+      "kielet": [
+        "fi",
+        "sv"
+      ],
+      "kuvaus": {
+        "fi": "<p>Ravintolakokki työskentelee ammattitaitoisesti, itsenäisesti ja vastuullisesti ravintolan tai yrityksen toiminta-ajatuksen ja liikeidean mukaisesti. Hän huomioi työskentelyssään toimipaikan taloudelliset ja laadulliset tavoitteet. Hän esikäsittelee raaka-aineita oikein jalostusasteen mukaan. Hän valmistaa lounas- ja päivällistuotteita sekä à la carte -annoksia ja tilausruokia, jotka hän laittaa esille tarkoituksenmukaisella tavalla.</p>\n\n<p>Ravintolakokin ammattitutkinto on tarkoitettu henkilölle, joka työskentelee ruokaravintolan toiminta-ajatuksella toimivissa ravitsemisalan yrityksissä tai organisaatioissa kokin työtehtävissä itsenäisesti ja työyhteisön jäsenenä. Tutkinnon suorittanut henkilö voi myös toimia itsenäisenä ravintola-alan yrittäjänä. Tutkinnon suorittaneen henkilön työpaikoiksi soveltuvia organisaatioita ovat erityyppiset ruokaravintolat, tilaus- ja juhlapalveluyritykset, matkustajalaivojen ruokaravintolat sekä matkailualan ohjelmapalveluyritykset.</p>",
+        "sv": "<p>Restaurangkockar arbetar yrkeskunnigt, självständigt och ansvarsfullt enligt restaurangens eller företagets verksamhets- och affärsidé. De beaktar arbetsenhetens ekonomiska mål och kvalitetsmål i sitt arbete. De förbehandlar råvarorna så att dessa får den rätta förädlingsgraden. De tillagar lunch- och middagsmat samt à la carte-portioner och beställningsmat, som de lägger upp på ett ändamålsenligt sätt.</p>\n\n<p>Yrkesexamen för restaurangkock är avsedd för personer som självständigt och som medlemmar av arbetsgemenskapen arbetar som kockar i företag eller organisationer inom kosthållsbranschen som drivs enligt verksamhetsidén för en matrestaurang. De som avlagt denna examen kan också vara verksamma som självständig företagare inom restaurangbranschen. De organisationer som är lämpliga som arbetsplatser för dessa personer är olika typer av matrestauranger, beställnings- och festcateringföretag, matrestauranger i passagerarfartyg samt företag som tillhandahåller programtjänster inom turismbranschen.</p>",
+        "_id": "2136404"
+      },
+      "maarayskirje": {
+        "id": 1445092,
+        "url": {}
+      },
+      "muutosmaaraykset": [],
+      "diaarinumero": "13/011/2015",
+      "voimassaoloAlkaa": 1430427600000,
+      "siirtymaPaattyy": null,
+      "voimassaoloLoppuu": null,
+      "paatospvm": 1426111200000,
+      "luotu": 1445313132609,
+      "muokattu": 1478850143049,
+      "tila": "valmis",
+      "tyyppi": "normaali",
+      "koulutusvienti": false,
+      "korvattavatDiaarinumerot": [
+        "25/011/2011"
+      ],
+      "osaamisalat": [],
+      "tyotehtavatJoissaVoiToimia": null,
+      "suorittaneenOsaaminen": null,
+      "suoritustavat": [
+        {
+          "suoritustapakoodi": "naytto",
+          "laajuusYksikko": null
+        }
+      ],
+      "kvliite": null,
+      "korvattavatPerusteet": [
+        {
+          "id": 1912220,
+          "globalVersion": {
+            "aikaleima": 1487856177195
+          },
+          "nimi": {
+            "fi": "Ravintolakokin ammattitutkinto 2011",
+            "sv": "Yrkesexamen för restaurangkock",
+            "_id": "1930965"
+          },
+          "diaarinumero": "25/011/2011",
+          "voimassaoloLoppuu": 1430341200000,
+          "voimassaoloAlkaa": 1325368800000,
+          "tila": "valmis",
+          "suoritustavat": [
+            {
+              "suoritustapakoodi": "naytto",
+              "laajuusYksikko": "OSAAMISPISTE"
+            }
+          ]
+        }
+      ],
+      "perusteprojekti": {
+        "id": 1336422,
+        "nimi": "Ravintolakokin ammattitutkinto, perusteprojekti",
+        "_peruste": "1336402",
+        "diaarinumero": "42/041/2014",
+        "paatosPvm": 1418853600000,
+        "toimikausiAlku": 1419199200000,
+        "toimikausiLoppu": 1425506400000,
+        "tehtavaluokka": null,
+        "tehtava": null,
+        "yhteistyotaho": "Nina Routamaa-Päiviö",
+        "tila": "julkaistu",
+        "ryhmaOid": "1.2.246.562.28.94219991712",
+        "esikatseltavissa": false
+      }
+    },
+    {
+      "id": 1912220,
+      "globalVersion": {
+        "aikaleima": 1487856177195
+      },
+      "nimi": {
+        "fi": "Ravintolakokin ammattitutkinto 2011",
+        "sv": "Yrkesexamen för restaurangkock",
+        "_id": "1930965"
+      },
+      "koulutustyyppi": "koulutustyyppi_11",
+      "koulutukset": [
+        {
+          "nimi": {
+            "fi": "Ravintolakokin ammattitutkinto",
+            "sv": "Yrkesexamen för restaurangkock",
+            "en": "Restaurant Cookery, FQ"
+          },
+          "koulutuskoodiArvo": "384109",
+          "koulutuskoodiUri": "koulutus_384109",
+          "koulutusalakoodi": "koulutusalaoph2002_8",
+          "opintoalakoodi": "opintoalaoph2002_802"
+        }
+      ],
+      "kielet": [
+        "fi"
+      ],
+      "kuvaus": {
+        "fi": "<p>Ravintolakokin ammattitutkinnon suorittaneella henkilöllä on laaja-alaiset tiedot ja taidot työskennellä joustavasti ravintolakokin tehtävissä sekä edellytykset ylläpitää ja kehittää ammattitaitoaan. Ravintolakokki on ravintolaruokien valmistuksen asiantuntija, joka valmistaa ravintolaruokia itsenäisesti, kannattavasti ja laadukkaasti. Hän osaa toimia tehokkaasti ja asiakaslähtöisesti vaativissa ja vaihtelevissa asiakaspalvelutilanteissa. Ravintolakokin tarkempi työn kuvaus on liitteenä. Tutkinnon suorittaneet voivat sijoittua erityyppisiin ravintoloihin ja matkailualalle ohjelmapalveluyrityksiin.</p>",
+        "_id": "1931926"
+      },
+      "maarayskirje": {
+        "id": 1918816,
+        "url": {}
+      },
+      "muutosmaaraykset": [],
+      "diaarinumero": "25/011/2011",
+      "voimassaoloAlkaa": 1325368800000,
+      "siirtymaPaattyy": 1493499600000,
+      "voimassaoloLoppuu": 1430341200000,
+      "paatospvm": 1322085600000,
+      "luotu": 1473312468973,
+      "muokattu": 1487856177195,
+      "tila": "valmis",
+      "tyyppi": "normaali",
+      "koulutusvienti": false,
+      "korvattavatDiaarinumerot": [],
+      "osaamisalat": [],
+      "tyotehtavatJoissaVoiToimia": null,
+      "suorittaneenOsaaminen": null,
+      "suoritustavat": [
+        {
+          "suoritustapakoodi": "naytto",
+          "laajuusYksikko": "OSAAMISPISTE"
+        }
+      ],
+      "kvliite": null,
+      "korvaavatPerusteet": [
+        {
+          "id": 1336402,
+          "globalVersion": {
+            "aikaleima": 1478850143048
+          },
+          "nimi": {
+            "fi": "Ravintolakokin ammattitutkinto",
+            "sv": "Yrkesexamen för restaurangkock",
+            "_id": "1445443"
+          },
+          "diaarinumero": "13/011/2015",
+          "voimassaoloLoppuu": null,
+          "voimassaoloAlkaa": 1430427600000,
+          "tila": "valmis",
+          "suoritustavat": [
+            {
+              "suoritustapakoodi": "naytto",
+              "laajuusYksikko": null
+            }
+          ]
+        }
+      ],
+      "perusteprojekti": {
+        "id": 1912230,
+        "nimi": "Ravintolakokin ammattitutkinto 2011",
+        "_peruste": "1912220",
+        "diaarinumero": "xx/xxx/2011",
+        "paatosPvm": 1473282000000,
+        "toimikausiAlku": 1472677200000,
+        "toimikausiLoppu": 1475182800000,
+        "tehtavaluokka": null,
+        "tehtava": null,
+        "yhteistyotaho": "Nevala",
+        "tila": "julkaistu",
+        "ryhmaOid": "1.2.246.562.28.94219991712",
+        "esikatseltavissa": false
+      }
+    },
+    {
+      "id": 4551090,
+      "globalVersion": {
+        "aikaleima": 1530698575300
+      },
+      "nimi": {
+        "_tunniste": "db5f0a47-b85d-4e68-9452-66a2bc4f613f",
+        "fi": "Ravintolan asiakaspalvelun ammattitutkinto",
+        "sv": "Yrkesexamen i kundservice på restaurang",
+        "_id": "5725209"
+      },
+      "koulutustyyppi": "koulutustyyppi_11",
+      "koulutukset": [
+        {
+          "nimi": {
+            "fi": "Ravintolan asiakaspalvelun ammattitutkinto",
+            "sv": "Yrkesexamen i kundservice på restaurang"
+          },
+          "koulutuskoodiArvo": "384147",
+          "koulutuskoodiUri": "koulutus_384147",
+          "koulutusalakoodi": null,
+          "opintoalakoodi": null
+        }
+      ],
+      "kielet": [
+        "fi"
+      ],
+      "kuvaus": {
+        "_tunniste": "84dbf469-8949-4109-b320-a808b93a02a9",
+        "fi": "<p>Ravintolan asiakaspalvelun ammattitutkinnon laajuus on 120 osaamispistettä.</p>\n\n<p>Tutkinnossa on kaksi osaamisalaa:</p>\n\n<ul>\n\t<li>baarin asiakaspalvelun osaamisala, <strong>baarimestari</strong></li>\n\t<li>ravintolan asiakaspalvelun osaamisala, <strong>tarjoilija.</strong></li>\n</ul>\n\n<p>Tutkinto muodostuu tutkinnon pakollisesta tutkinnon osasta, Ravintolan tarjoilutyössä toimiminen (40 osaamispistettä), ja osaamisalan pakollisesta tutkinnon osasta, Baarityössä toimiminen (45 osaamispistettä) tai Ruokaravintolassa toimiminen (45 osaamispistettä), sekä seuraavista valinnaisista tutkinnon osista (35 osaamispistettä): Cocktailbaarissa toimiminen, Juhlapalvelussa toimiminen, Henkilöstöravintolassa toimiminen, Kahvilan asiantuntijana toimiminen, Olutravintolassa toimiminen, Ravintolan tuotteen kehittäminen, Tilaustarjoilussa toimiminen, Viinibaarissa toimiminen ja Ammatillinen tutkinnon osa ammatillisesta perustutkinnosta, toisesta ammattitutkinnosta tai erikoisammattitutkinnosta.</p>\n\n<p> </p>\n\n<p>Ravintolan asiakaspalvelun ammattitutkinnon suorittanut osaa</p>\n\n<ul>\n\t<li>esitellä, suositella ja myydä baarin ja ravintolan ruoka- ja juomatuotteita</li>\n\t<li>palvella asiakkaita kielitaitoisesti</li>\n\t<li>palvella asiakkaita myynti-ja asiakaspalveluhenkisesti, laatutietoisesti, kannattavasti, tuloksellisesti, ystävällisesti ja vastuullisesti</li>\n\t<li>toimia yrityksen liikeidean ja palvelukulttuurin mukaisesti itsenäisesti ja työryhmässä</li>\n\t<li>noudattaa alan lainsäädäntöä sekä työyhteisön ohjeita, määräyksiä ja toimintatapoja</li>\n\t<li>arvioida ja kehittää omaa työtään.</li>\n</ul>\n\n<p> </p>\n\n<p>Ammattitutkinnossa voi erikoistua <strong>baarin</strong> tai <strong>ravintolan asiakaspalvelutehtäviin.</strong></p>\n\n<p>Baarin asiakaspalvelun osaamisalan suorittanut <strong>baarimestari </strong>osaa</p>\n\n<ul>\n\t<li>esitellä, suositella ja myydä baarin alkoholittomia ja alkoholipitoisia juomatuotteita sekä kotimaisia ja kansainvälisiä juomasekoituksia</li>\n\t<li>käyttää baarin koneita, laitteita ja perustyövälineitä</li>\n\t<li>käsitellä maksuvälineitä, tehdä myyntitilitykset ja toimia kannattavasti sekä tietää hinnoittelun periaatteet</li>\n\t<li>tehdä inventointiin, varastokirjanpitoon ja varaston kiertoon liittyvät tehtävät.</li>\n</ul>\n\n<p>Ravintolan asiakaspalvelun osaamisalan suorittanut <strong>tarjoilija</strong> osaa</p>\n\n<ul>\n\t<li>esitellä, suositella, myydä ja tarjoilla ravintolan ruoka- ja juomatuotteita</li>\n\t<li>palvella asiakkaita oma-aloitteisesti, ystävällisesti ja vastuuntuntoisesti sekä toimia yrityksen liikeidean ja palvelukulttuurin mukaisesti</li>\n\t<li>kertoa asiakkaille myytävien ruoka-annosten raaka-aineet ja valmistustavat</li>\n\t<li>palvella erikoisruokavalioita tarvitsevia asiakkaita</li>\n\t<li>käsitellä maksuvälineitä, tehdä myyntitilitykset ja toimia kannattavasti</li>\n\t<li>käyttää tarkoituksenmukaisia työmenetelmiä, koneita ja laitteita.</li>\n</ul>\n\n<p> </p>\n\n<p>Baarin asiakaspalvelun osaamisalan suorittanut <strong>baarimestari</strong> työskentelee erityyppisten hotellien ja ravintoloiden baarin asiakaspalvelutehtävissä.</p>\n\n<p>Ravintolan asiakaspalvelun osaamisalan suorittanut <strong>tarjoilija</strong> työskentelee erilaisin liikeideoin toimivien ravitsemisliikkeiden asiakaspalvelutehtävissä.</p>",
+        "_id": "5106134"
+      },
+      "maarayskirje": {
+        "id": 4651062,
+        "url": {
+          "fi": "https://www.oph.fi/download/191795_OPH-1392-2018_Ravintolan_asiakaspalvelun_at.pdf"
+        }
+      },
+      "muutosmaaraykset": [],
+      "diaarinumero": "OPH-1392-2018",
+      "voimassaoloAlkaa": 1546293600000,
+      "siirtymaPaattyy": null,
+      "voimassaoloLoppuu": null,
+      "paatospvm": 1530046800000,
+      "luotu": 1520496636014,
+      "muokattu": 1530698575300,
+      "tila": "valmis",
+      "tyyppi": "normaali",
+      "koulutusvienti": false,
+      "korvattavatDiaarinumerot": [],
+      "osaamisalat": [
+        {
+          "nimi": {
+            "fi": "Ravintolan asiakaspalvelun osaamisala",
+            "sv": "Ravintolan asiakaspalvelun osaamisala"
+          },
+          "arvo": "2363",
+          "uri": "osaamisala_2363",
+          "koodisto": "osaamisala",
+          "versio": null
+        },
+        {
+          "nimi": {
+            "fi": "Baarin asiakaspalvelun osaamisala",
+            "sv": "Baarin asiakaspalvelun oa"
+          },
+          "arvo": "2362",
+          "uri": "osaamisala_2362",
+          "koodisto": "osaamisala",
+          "versio": null
+        }
+      ],
+      "tyotehtavatJoissaVoiToimia": {
+        "fi": "<p>Baarin asiakaspalvelun osaamisalan suorittanut <strong>baarimestari</strong> työskentelee erityyppisten hotellien ja ravintoloiden baarin asiakaspalvelutehtävissä.</p>\n\n<p>Ravintolan asiakaspalvelun osaamisalan suorittanut <strong>tarjoilija</strong> työskentelee erilaisin liikeideoin toimivien ravitsemisliikkeiden asiakaspalvelutehtävissä.</p>",
+        "_id": "4940601"
+      },
+      "suorittaneenOsaaminen": {
+        "fi": "<p>Ravintolan asiakaspalvelun ammattitutkinnon suorittanut osaa</p>\n\n<ul>\n\t<li>esitellä, suositella ja myydä baarin ja ravintolan ruoka- ja juomatuotteita</li>\n\t<li>palvella asiakkaita kielitaitoisesti</li>\n\t<li>palvella asiakkaita myynti- ja asiakaspalveluhenkisesti, laatutietoisesti, kannattavasti, tuloksellisesti, ystävällisesti ja vastuullisesti</li>\n\t<li>toimia yrityksen liikeidean ja palvelukulttuurin mukaisesti itsenäisesti ja työryhmässä</li>\n\t<li>noudattaa alan lainsäädäntöä sekä työyhteisön ohjeita, määräyksiä ja toimintatapoja</li>\n\t<li>arvioida ja kehittää työtään.</li>\n</ul>\n\n<p> </p>\n\n<p>Ammattitutkinnossa voi erikoistua <strong>baarin</strong> tai <strong>ravintolan asiakaspalvelutehtäviin.</strong></p>\n\n<p>Baarin asiakaspalvelun osaamisalan suorittanut <strong>baarimestari </strong>osaa</p>\n\n<ul>\n\t<li>esitellä, suositella ja myydä baarin alkoholittomia ja alkoholipitoisia juomatuotteita sekä kotimaisia ja kansainvälisiä juomasekoituksia</li>\n\t<li>käyttää baarin koneita, laitteita ja perustyövälineitä</li>\n\t<li>käsitellä maksuvälineitä, tehdä myyntitilitykset ja toimia kannattavasti sekä tietää hinnoittelun periaatteet</li>\n\t<li>tehdä inventointiin, varastokirjanpitoon ja varaston kiertoon liittyvät tehtävät.</li>\n</ul>\n\n<p>Ravintolan asiakaspalvelun osaamisalan suorittanut <strong>tarjoilija</strong> osaa</p>\n\n<ul>\n\t<li>esitellä, suositella, myydä ja tarjoilla ravintolan ruoka- ja juomatuotteita</li>\n\t<li>palvella asiakkaita oma-aloitteisesti, ystävällisesti ja vastuuntuntoisesti sekä toimia yrityksen liikeidean ja palvelukulttuurin mukaisesti</li>\n\t<li>kertoa asiakkaille myytävien ruoka-annosten raaka-aineet ja valmistustavat</li>\n\t<li>palvella erikoisruokavalioita tarvitsevia asiakkaita</li>\n\t<li>käsitellä maksuvälineitä, tehdä myyntitilitykset ja toimia kannattavasti</li>\n\t<li>käyttää tarkoituksenmukaisia työmenetelmiä, koneita ja laitteita.</li>\n</ul>",
+        "_id": "5106135"
+      },
+      "suoritustavat": [
+        {
+          "suoritustapakoodi": "reformi",
+          "laajuusYksikko": "OSAAMISPISTE"
+        }
+      ],
+      "kvliite": {
+        "id": 4551110,
+        "suorittaneenOsaaminen": {
+          "_tunniste": "5521cc46-0da4-4479-8026-831f699fe454",
+          "fi": "<p>Ravintolan asiakaspalvelun ammattitutkinnon suorittanut osaa</p>\n\n<ul>\n\t<li>esitellä, suositella ja myydä baarin ja ravintolan ruoka- ja juomatuotteita</li>\n\t<li>palvella asiakkaita kielitaitoisesti</li>\n\t<li>palvella asiakkaita myynti- ja asiakaspalveluhenkisesti, laatutietoisesti, kannattavasti, tuloksellisesti, ystävällisesti ja vastuullisesti</li>\n\t<li>toimia yrityksen liikeidean ja palvelukulttuurin mukaisesti itsenäisesti ja työryhmässä</li>\n\t<li>noudattaa alan lainsäädäntöä sekä työyhteisön ohjeita, määräyksiä ja toimintatapoja</li>\n\t<li>arvioida ja kehittää työtään.</li>\n</ul>\n\n<p> </p>\n\n<p>Ammattitutkinnossa voi erikoistua <strong>baarin</strong> tai <strong>ravintolan asiakaspalvelutehtäviin.</strong></p>\n\n<p>Baarin asiakaspalvelun osaamisalan suorittanut <strong>baarimestari </strong>osaa</p>\n\n<ul>\n\t<li>esitellä, suositella ja myydä baarin alkoholittomia ja alkoholipitoisia juomatuotteita sekä kotimaisia ja kansainvälisiä juomasekoituksia</li>\n\t<li>käyttää baarin koneita, laitteita ja perustyövälineitä</li>\n\t<li>käsitellä maksuvälineitä, tehdä myyntitilitykset ja toimia kannattavasti sekä tietää hinnoittelun periaatteet</li>\n\t<li>tehdä inventointiin, varastokirjanpitoon ja varaston kiertoon liittyvät tehtävät.</li>\n</ul>\n\n<p>Ravintolan asiakaspalvelun osaamisalan suorittanut <strong>tarjoilija</strong> osaa</p>\n\n<ul>\n\t<li>esitellä, suositella, myydä ja tarjoilla ravintolan ruoka- ja juomatuotteita</li>\n\t<li>palvella asiakkaita oma-aloitteisesti, ystävällisesti ja vastuuntuntoisesti sekä toimia yrityksen liikeidean ja palvelukulttuurin mukaisesti</li>\n\t<li>kertoa asiakkaille myytävien ruoka-annosten raaka-aineet ja valmistustavat</li>\n\t<li>palvella erikoisruokavalioita tarvitsevia asiakkaita</li>\n\t<li>käsitellä maksuvälineitä, tehdä myyntitilitykset ja toimia kannattavasti</li>\n\t<li>käyttää tarkoituksenmukaisia työmenetelmiä, koneita ja laitteita.</li>\n</ul>",
+          "_id": "5106135"
+        },
+        "tyotehtavatJoissaVoiToimia": {
+          "_tunniste": "7d94dbda-c9ca-4962-9b12-64aa1dde0141",
+          "fi": "<p>Baarin asiakaspalvelun osaamisalan suorittanut <strong>baarimestari</strong> työskentelee erityyppisten hotellien ja ravintoloiden baarin asiakaspalvelutehtävissä.</p>\n\n<p>Ravintolan asiakaspalvelun osaamisalan suorittanut <strong>tarjoilija</strong> työskentelee erilaisin liikeideoin toimivien ravitsemisliikkeiden asiakaspalvelutehtävissä.</p>",
+          "_id": "4940601"
+        },
+        "tutkintotodistuksenAntaja": {
+          "_tunniste": "0b2cf2ad-25a5-4a0b-a545-21a174678bb3",
+          "fi": "<p>Koulutuksen järjestäjä, jolla on opetus- ja kulttuuriministeriön myöntämä tutkintojen ja koulutuksen järjestämislupa.</p>",
+          "sv": "<p>Utbildningsanordnare som av undervisnings- och kulturministeriet beviljats anordnartillstånd för examina och utbildning.</p>",
+          "en": "<p>An education provider with an authorisation to provide education and award qualifications granted by the Ministry of Education and Culture.</p>",
+          "_id": "3287722"
+        },
+        "_arvosanaAsteikko": "1",
+        "jatkoopintoKelpoisuus": {
+          "_tunniste": "58e707ec-1017-43ed-9590-2c7204cba493",
+          "fi": "<p>Tutkinto tuottaa kelpoisuuden korkeakouluopintoihin.</p>",
+          "sv": "<p>Examen ger behörighet för högskolestudier.</p>",
+          "en": "<p>The qualification confers eligibility for higher education studies.</p>",
+          "_id": "3287688"
+        },
+        "kansainvalisetSopimukset": {
+          "_tunniste": "09a837bd-147e-4441-b977-4c4d255576be",
+          "fi": "<p>-</p>",
+          "sv": "<p>-</p>",
+          "en": "<p>-</p>",
+          "_id": "5722939"
+        },
+        "saadosPerusta": {
+          "_tunniste": "fe5ccb52-bde6-48b7-89a9-6788befb6125",
+          "fi": "<p>Laki ammatillisesta koulutuksesta 531/2017 ja sitä täydentävät asetukset</p>",
+          "sv": "<p>Lag om yrkesutbildning 531/2017 och förordningar som kompletterar den</p>",
+          "en": "<p>Vocational Education and Training Act 531/2017 and the decrees that complement it.</p>",
+          "_id": "3287720"
+        },
+        "pohjakoulutusvaatimukset": {
+          "_tunniste": "05b5cbf5-9a30-4755-93b3-3b6952959dc3",
+          "fi": "<p>Tutkinnon suorittamiselle ei ole asetettu muodollisia koulutusvaatimuksia.</p>",
+          "sv": "<p>Det finns inga formella krav på grundutbildning för att avlägga av examen.</p>",
+          "en": "<p>No formal qualifications are required to take the competence test.</p>",
+          "_id": "3287689"
+        },
+        "lisatietoja": {
+          "_tunniste": "4481424d-4e3d-464d-8ffb-cfb948e59d7c",
+          "fi": "<p>Opetushallitus</p>\n\n<p>PL 380, 00531 Helsinki</p>\n\n<p>www.oph.fi</p>",
+          "sv": "<p>Utbildningsstyrelsen</p>\n\n<p>PB 380, 00531 Helsingfors</p>\n\n<p>www.oph.fi</p>",
+          "en": "<p>Finnish National Agency for Education</p>\n\n<p>P.O. Box 380, FI-00531 Helsinki, Finland</p>\n\n<p>www.oph.fi</p>",
+          "_id": "3287758"
+        },
+        "tutkintotodistuksenSaaminen": {
+          "_tunniste": "abb80793-a381-4201-a69c-502deeaffba7",
+          "fi": "<p>Tutkinnon osien edellyttämä ammattitaito osoitetaan tekemällä käytännön työtehtäviä aidoissa tilanteissa ja työprosesseissa (näyttö). Opiskelijan osaamista arvioivat monipuolisesti opettaja ja työelämän edustaja vertaamalla sitä tutkinnon perusteissa määrättyyn osaamiseen. Koulutuksen järjestäjä antaa opiskelijalle tutkintotodistuksen, kun tutkinto on suoritettu hyväksytysti Opetushallituksen määräämien tutkinnon perusteiden mukaisesti.</p>",
+          "sv": "<p>Den yrkesskicklighet som krävs i examensdelarna visas genom att utföra praktiska arbetsuppgifter i genuina arbetssituationer och arbetsprocesser (yrkesprov). Den studerandes kunnande bedöms mångsidigt av en lärare och en representant för arbetslivet genom att jämföra det med det kunnande som är fastställt i examensgrunderna. Utbildningsanordnaren ger den studerande ett examensbetyg då examen är avlagd och godkänd enligt de examensgrunder som Utbildningsstyrelsen fastställt.</p>",
+          "en": "<p>The vocational skills required for completing the modules are demonstrated by performing practical tasks in authentic situations and work processes (demonstration of knowledge and skills). The student's knowledge and skills are assessed diversely by a teacher and a working life representative and compared to the competence defined in the qualification requirements. The education provider awards the student a qualification certificate once the qualification has been completed acceptably in accordance to the qualification requirements laid down by the Finnish National Agency for Education.</p>",
+          "_id": "3287723"
+        },
+        "tutkinnostaPaattavaViranomainen": {
+          "_tunniste": "d3dc8020-c885-45bc-b5f3-6c9451860e37",
+          "fi": "<p>Opetus- ja kulttuuriministeriö</p>\n\n<p>Opetushallitus, opetus- ja kulttuuriministeriön alainen keskusvirasto</p>",
+          "sv": "<p>Undervisnings- och kulturministeriet</p>\n\n<p>Utbildningsstyrelsen, centralt ämbetsverk som är underställt undervisnings- och kulturministeriet</p>",
+          "en": "<p>Ministry of Education and Culture</p>\n\n<p>Finnish National Agency for Education, the national agency subordinate to the Ministry of Education and Culture</p>",
+          "_id": "3287721"
+        }
+      },
+      "perusteprojekti": {
+        "id": 4551100,
+        "nimi": "Ravintolan asiakaspalvelun ammattitutkinto 2019",
+        "_peruste": "4551090",
+        "diaarinumero": "OPH-xxx-2017",
+        "paatosPvm": null,
+        "toimikausiAlku": null,
+        "toimikausiLoppu": null,
+        "tehtavaluokka": null,
+        "tehtava": null,
+        "yhteistyotaho": null,
+        "tila": "julkaistu",
+        "ryhmaOid": "1.2.246.562.28.45613080048",
+        "esikatseltavissa": false
+      }
+    }
+  ],
+  "sivuja": 1,
+  "kokonaismäärä": 6,
+  "sivukoko": 25,
+  "sivu": 0
+}

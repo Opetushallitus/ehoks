@@ -112,6 +112,14 @@
     (json-response-file
       "dev-routes/eperusteet-service_api_tutkinnonosat_52824_viitteet.json"))
 
+  (GET "/eperusteet-service/api/perusteet/diaari" []
+    (json-response-file
+      "dev-routes/eperusteet-service_api_perusteet_diaari.json"))
+
+  (GET "/eperusteet-service/api/perusteet/3397335/suoritustavat/reformi/rakenne" []
+    (json-response-file
+      "dev-routes/eperusteet-service_api_perusteet_3397335_suoritustavat_reformi_rakenne.json"))
+
   (GET "/eperusteet-service/api/tutkinnonosat" request
     (if (= (get-in request [:query-params "koodiUri"]) "tutkinnonosat_101056")
       (json-response-file
