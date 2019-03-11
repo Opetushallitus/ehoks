@@ -17,6 +17,7 @@
       "nimi": "Ei tietoa"
     },
     "urasuunnitelma-koodi-uri": "urasuunnitelma_0001",
+    "urasuunnitelma-koodi-versio": 1,
     "olemassa-olevat-ammatilliset-tutkinnon-osat": [],
     "olemassa-olevat-paikalliset-tutkinnon-osat": [],
     "olemassa-olevat-yhteiset-tutkinnon-osat": [],
@@ -90,7 +91,8 @@
             "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
             "osa-alueet": [
               {
-                "osa-alue-koodi-uri": "ammatillisenoppiaineet_fk"
+                "osa-alue-koodi-uri": "ammatillisenoppiaineet_fk",
+                "osa-alue-koodi-versio": 1
               }
             ]
         },
@@ -102,6 +104,7 @@
         },
         {
             "tutkinnon-osa-koodi-uri": "tutkinnonosat_101055",
+            "tutkinnon-osa-koodi-versio": 1,
             "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
             "osa-alueet": []
         },
