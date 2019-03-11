@@ -52,3 +52,22 @@
        :path (format "tutkinnonosat/%d/viitteet" id)
        :options {:as :json}})
     :body))
+
+(defn find-tutkinto [^String diaarinumero]
+  (get
+    (cache/with-cache!
+      {:method :get
+       :service (:eperusteet-url config)
+       :path "perusteet/diaari"
+       :options {:as :json
+                 :query-params {:diaarinumero diaarinumero}}})
+    :body))
+
+(defn get-suoritustavat [^Long id]
+  (get
+    (cache/with-cache!
+      {:method :get
+       :service (:eperusteet-url config)
+       :path (format "perusteet/%d/suoritustavat/reformi/rakenne" id)
+       :options {:as :json}})
+    :body))
