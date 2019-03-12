@@ -6,7 +6,8 @@
             [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.hoks.hoks :as h]))
+            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.db.migrations :as m]))
 
 (def url "/ehoks-backend/api/v1/oppija/oppijat")
 
@@ -82,8 +83,15 @@
    :hyvaksyja {:nimi "Ei tietoa"}
    :opiskeluvalmiuksia-tukevat-opinnot []})
 
+(defn with-database [f]
+  (f)
+  ;(m/clean!)
+  ;(m/migrate!)
+  )
+
+(use-fixtures :each with-database)
+
 (defn set-hoks-data! [h]
-  (db/clear!)
   (h/save-hoks!
     (assoc h :versio 1 :version 1 :paivittaja {:nimi "Tapio Testaaja"})))
 
