@@ -48,7 +48,7 @@
               :puuttuvat-yhteiset-tutkinnon-osat
               :opiskeluvalmiuksia-tukevat-opinnot
               :puuttuvat-paikalliset-tutkinnon-osat)
-      (update :eid #(if (nil? %) (java.util.UUID/randomUUID) %)) ; generate and check
+      (update :eid #(if (nil? %) (str (java.util.UUID/randomUUID)) %)) ; generate and check, move to insert and lock
       (replace-from [:laatija :nimi] :laatija-nimi)
       (replace-from [:hyvaksyja :nimi] :hyvaksyja-nimi)
       (replace-from [:paivittaja :nimi] :paivittaja-nimi)
