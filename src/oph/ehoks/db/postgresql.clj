@@ -9,6 +9,11 @@
   java.util.Date
   (sql-value [value] (c/to-sql-date value)))
 
+(extend-protocol jdbc/IResultSetReadColumn
+  java.sql.Date
+  (result-set-read-column [o _ _]
+    (.toLocalDate o)))
+
 (defn clear! []
   (jdbc/delete! {:connection-uri (:database-url config)} :hoksit []))
 
