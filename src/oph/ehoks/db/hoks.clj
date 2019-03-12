@@ -75,6 +75,17 @@
       remove-nils
       to-underscore-keys))
 
+(defn hankitun-osaamisen-naytto-from-sql [m]
+  (-> m
+      (dissoc :created_at :updated_at :deleted_at :version)
+      to-dash-keys))
+
+(defn hankitun-osaamisen-naytto-to-sql [m]
+  (to-underscore-keys m))
+
+(defn nayttoymparisto-to-sql [m]
+  (to-underscore-keys m))
+
 (defn olemassa-oleva-paikallinen-tutkinnon-osa-from-sql [m]
   (to-dash-keys m))
 
