@@ -25,12 +25,23 @@
     :olemassa-olevat-paikalliset-tutkinnon-osat
     (db/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id (:id h))))
 
+(defn set-olemassa-olevat-yhteiset-tutkinnon-osat [h]
+  (assoc
+    h
+    :olemassa-olevat-yhteiset-tutkinnon-osat
+    (db/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id (:id h))))
+
 (defn get-hokses-by-oppija [oid]
   (map
     #(-> %
          set-olemassa-olevat-ammatilliset-tutkinnon-osat
-         set-puuttuvat-paikalliset-tutkinnon-osat)
+         set-puuttuvat-paikalliset-tutkinnon-osat
+         set-olemassa-olevat-yhteiset-tutkinnon-osat)
     (db/select-hoks-by-oppija-oid oid)))
 
 (defn save-hoks! [h]
-  (db/insert-hoks! h))
+  (let [saved-hoks (first (db/insert-hoks! h))]
+    (db/insert-puuttuvat-paikalliset-tutkinnon-osat!
+      (map
+        #(assoc % :hoks-id (:id saved-hoks))
+        (:puuttuvat-paikalliset-tutkinnon-osat h)))))
