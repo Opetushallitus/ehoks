@@ -20,7 +20,7 @@ CREATE TABLE hoksit(
   hyvaksyja_nimi TEXT
 );
 
-CREATE TABLE koulutuksenjarjestaja_arvioijat(
+CREATE TABLE koulutuksen_jarjestaja_arvioijat(
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
@@ -43,8 +43,8 @@ CREATE TABLE todennettu_arviointi_arvioijat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   todennettu_arviointi_lisatiedot_id INTEGER REFERENCES todennettu_arviointi_lisatiedot(id),
-  koulutuksenjarjestaja_arvioija_id INTEGER REFERENCES koulutuksenjarjestaja_arvioijat(id),
-  PRIMARY KEY(todennettu_arviointi_lisatiedot_id, koulutuksenjarjestaja_arvioija_id)
+  koulutuksen_jarjestaja_arvioija_id INTEGER REFERENCES koulutuksen_jarjestaja_arvioijat(id),
+  PRIMARY KEY(todennettu_arviointi_lisatiedot_id, koulutuksen_jarjestaja_arvioija_id)
 );
 
 CREATE TABLE nayttoymparistot(
@@ -76,8 +76,8 @@ CREATE TABLE hankitun_osaamisen_naytot(
   deleted_at TIMESTAMP WITH TIME ZONE,
   version INTEGER DEFAULT 0,
   jarjestaja_oppilaitos_oid VARCHAR(26),
-  yto_osa_alue_koodi_uri VARCHAR(26),
-  yto_osa_alue_koodi_versio INTEGER,
+  osa_alue_koodi_uri VARCHAR(26),
+  osa_alue_koodi_versio INTEGER,
   nayttoymparisto_id INTEGER REFERENCES nayttoymparistot(id),
   alku DATE,
   loppu DATE
@@ -91,12 +91,12 @@ CREATE TABLE hankitun_osaamisen_nayton_tyoelama_arvioija (
   PRIMARY KEY(hankitun_osaamisen_naytto_id, tyoelama_arvioija_id)
 );
 
-CREATE TABLE hankitun_osaamisen_nayton_koulutuksenjarjestaja_arvioija (
+CREATE TABLE hankitun_osaamisen_nayton_koulutuksen_jarjestaja_arvioija (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   hankitun_osaamisen_naytto_id INTEGER REFERENCES hankitun_osaamisen_naytot(id),
-  koulutuksenjarjestaja_arviojat_id INTEGER REFERENCES koulutuksenjarjestaja_arvioijat(id),
-  PRIMARY KEY(hankitun_osaamisen_naytto_id, koulutuksenjarjestaja_arviojat_id)
+  koulutuksen_jarjestaja_arviojat_id INTEGER REFERENCES koulutuksen_jarjestaja_arvioijat(id),
+  PRIMARY KEY(hankitun_osaamisen_naytto_id, koulutuksen_jarjestaja_arviojat_id)
 );
 
 CREATE TABLE hankitun_osaamisen_tyotehtavat(
@@ -118,7 +118,7 @@ CREATE TABLE olemassa_olevat_ammatilliset_tutkinnon_osat(
   hoks_id INTEGER REFERENCES hoksit(id),
   tutkinnon_osa_koodi_uri VARCHAR(256),
   tutkinnon_osa_koodi_versio INTEGER,
-  koulutuksenjarjestaja_oid VARCHAR(26),
+  koulutuksen_jarjestaja_oid VARCHAR(26),
   valittu_todentamisen_prosessi_koodi_uri VARCHAR(256),
   valittu_todentamisen_prosessi_koodi_versio INTEGER,
   tarkentavat_tiedot_arvioija INTEGER REFERENCES todennettu_arviointi_lisatiedot(id)
@@ -143,7 +143,7 @@ CREATE TABLE olemassa_olevat_paikalliset_tutkinnon_osat(
   nimi TEXT,
   tavoitteet_ja_sisallot TEXT,
   amosaa_tunniste TEXT,
-  koulutuksenjarjestaja_oid VARCHAR(26),
+  koulutuksen_jarjestaja_oid VARCHAR(26),
   vaatimuksista_tai_tavoitteista_poikkeaminen TEXT
 );
 
@@ -158,7 +158,7 @@ CREATE TABLE puuttuvat_paikalliset_tutkinnon_osat(
   nimi TEXT,
   tavoitteet_ja_sisallot TEXT,
   amosaa_tunniste TEXT,
-  koulutuksenjarjestaja_oid VARCHAR(26),
+  koulutuksen_jarjestaja_oid VARCHAR(26),
   vaatimuksista_tai_tavoitteista_poikkeaminen TEXT
 );
 
@@ -256,7 +256,7 @@ CREATE TABLE olemassa_olevat_yhteiset_tutkinnon_osat(
   hoks_id INTEGER REFERENCES hoksit(id),
   tutkinnon_osa_koodi_uri VARCHAR(256),
   tutkinnon_osa_koodi_versio INTEGER,
-  koulutuksenjarjestaja_oid VARCHAR(26),
+  koulutuksen_jarjestaja_oid VARCHAR(26),
   valittu_todentamisen_prosessi_koodi_uri VARCHAR(256),
   valittu_todentamisen_prosessi_koodi_versio INTEGER,
   lahetetty_arvioitavaksi DATE
@@ -274,8 +274,8 @@ CREATE TABLE olemassa_olevan_yhteisen_tutkinnon_osan_arvioijat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   olemassa_oleva_yhteinen_tutkinnon_osa_id INTEGER REFERENCES olemassa_olevat_yhteiset_tutkinnon_osat(id),
-  koulutuksenjarjestaja_arvioija_id INTEGER REFERENCES koulutuksenjarjestaja_arvioijat(id),
-  PRIMARY KEY(olemassa_oleva_yhteinen_tutkinnon_osa_id, koulutuksenjarjestaja_arvioija_id)
+  koulutuksen_jarjestaja_arvioija_id INTEGER REFERENCES koulutuksen_jarjestaja_arvioijat(id),
+  PRIMARY KEY(olemassa_oleva_yhteinen_tutkinnon_osa_id, koulutuksen_jarjestaja_arvioija_id)
 );
 
 CREATE TABLE olemassa_olevat_yto_osa_alueet(
@@ -287,7 +287,7 @@ CREATE TABLE olemassa_olevat_yto_osa_alueet(
   olemassa_oleava_yhteinen_tutkinnon_osa_id INTEGER REFERENCES olemassa_olevat_yhteiset_tutkinnon_osat(id),
   osa_alue_koodi_uri VARCHAR(256),
   osa_alue_koodi_versio INTEGER,
-  koulutuksenjarjestaja_oid VARCHAR(26),
+  koulutuksen_jarjestaja_oid VARCHAR(26),
   vaatimuksista_tai_tavoitteista_poikkeaminen TEXT,
   valittu_todentamisen_prosessi_koodi_uri VARCHAR(256),
   valittu_todentamisen_prosessi_koodi_versio INTEGER
@@ -311,7 +311,7 @@ CREATE TABLE puuttuvat_ammatilliset_tutkinnon_osat(
   tutkinnon_osa_koodi_uri VARCHAR(256),
   tutkinnon_osa_koodi_versio INTEGER,
   vaatimuksista_tai_tavoitteista_poikkeaminen TEXT,
-  koulutuksenjarjestaja_oid VARCHAR(26)
+  koulutuksen_jarjestaja_oid VARCHAR(26)
 );
 
 CREATE TABLE puuttuvan_ammatillisen_tutkinnon_osan_hankitun_osaamisen_naytto(
@@ -352,7 +352,7 @@ CREATE TABLE puuttuvat_yhteiset_tutkinnon_osat(
   hoks_id INTEGER REFERENCES hoksit(id),
   tutkinnon_osa_koodi_uri VARCHAR(256),
   tutkinnon_osa_koodi_versio INTEGER,
-  koulutuksenjarjestaja_oid VARCHAR(26)
+  koulutuksen_jarjestaja_oid VARCHAR(26)
 );
 
 CREATE TABLE yhteisen_tutkinnon_osan_osa_alueet(
@@ -386,8 +386,8 @@ CREATE TABLE hankitun_yto_osaamisen_naytot(
   nayttoymparisto_nimi TEXT,
   nayttoymparisto_y_tunnus TEXT,
   nayttoymparisto_kuvaus TEXT,
-  yto_osa_alue_koodi_uri VARCHAR(26),
-  yto_osa_alue_koodi_versio INTEGER,
+  osa_alue_koodi_uri VARCHAR(26),
+  osa_alue_koodi_versio INTEGER,
   alku DATE,
   loppu DATE
 );
@@ -410,10 +410,10 @@ CREATE TABLE hankitun_yto_osaamisen_nayton_tyoelama_arvioija (
   PRIMARY KEY(hankitun_yto_osaamisen_naytto_id, tyoelama_arvioija_id)
 );
 
-CREATE TABLE hankitun_yto_osaamisen_nayton_koulutuksenjarjestaja_arvioija (
+CREATE TABLE hankitun_yto_osaamisen_nayton_koulutuksen_jarjestaja_arvioija (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   hankitun_yto_osaamisen_naytto_id INTEGER REFERENCES tyoelama_arvioijat(id),
-  koulutuksenjarjestaja_arvioja_id INTEGER REFERENCES koulutuksenjarjestaja_arvioijat(id),
-  PRIMARY KEY(hankitun_yto_osaamisen_naytto_id, koulutuksenjarjestaja_arvioja_id)
+  koulutuksen_jarjestaja_arvioja_id INTEGER REFERENCES koulutuksen_jarjestaja_arvioijat(id),
+  PRIMARY KEY(hankitun_yto_osaamisen_naytto_id, koulutuksen_jarjestaja_arvioja_id)
 );
