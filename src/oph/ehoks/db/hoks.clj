@@ -64,7 +64,10 @@
       to-underscore-keys))
 
 (defn puuttuva-paikallinen-tutkinnon-osa-from-sql [m]
-  (to-dash-keys m))
+  (-> m
+      (dissoc :created_at :updated_at :deleted_at :version :hoks_id)
+      remove-nils
+      to-dash-keys))
 
 (defn puuttuva-paikallinen-tutkinnon-osa-to-sql [m]
   (-> m
