@@ -93,3 +93,11 @@
   (-> m
       remove-nils
       to-underscore-keys))
+
+(defn olemassa-oleva-yhteinen-tutkinnon-osa-from-sql [m]
+  (-> m
+      (replace-in
+        :lahetetty_arvioitavaksi
+        [:todennettu_arviointi_lisatiedot :lahetetty_arvioitavaksi])
+      remove-nils
+      to-underscore-keys))
