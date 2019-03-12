@@ -8,10 +8,16 @@
     (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id (:id h))))
 
 (defn set-puuttuvat-paikalliset-tutkinnon-osat [h]
-  (assoc
-    h
-    :puuttuvat-paikalliset-tutkinnon-osat
-    (db/select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id (:id h))))
+  (let [c (db/select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id (:id h))]
+    (assoc
+      h
+      :puuttuvat-paikalliset-tutkinnon-osat
+      (mapv
+        #(assoc
+           %
+           :hankitun-osaamisen-naytto
+           (db/select-hankitun-osaamisen-naytot-by-ppto-id (:id %)))
+        c))))
 
 (defn set-olemassa-olevat-paikalliset-tutkinnon-osat [h]
   (assoc
