@@ -85,13 +85,43 @@
 (defn hankitun-osaamisen-naytto-from-sql [m]
   (-> m
       (dissoc :created_at :updated_at :deleted_at :version)
+      (replace-in :jarjestaja_oppilaitos_oid [:jarjestaja :oppilaitos-oid])
       to-dash-keys))
 
 (defn hankitun-osaamisen-naytto-to-sql [m]
   (to-underscore-keys m))
 
+(defn koulutuksen-jarjestaja-arvioija-from-sql [m]
+  (-> m
+      (dissoc :created_at :updated_at :deleted_at :version :id)
+      (replace-in :oppilaitos_oid [:organisaatio :oppilaitos-oid])
+      to-dash-keys))
+
+(defn koulutuksen-jarjestaja-arvioija-to-sql [m]
+  (-> m
+      (replace-from [:organisaatio :oppilaitos-oid] :oppilaitos-oid)
+      to-underscore-keys))
+
+(defn tyoelama-arvioija-from-sql [m]
+  (-> m
+      (dissoc :created_at :updated_at :deleted_at :version :id)
+      (replace-in :organisaatio_nimi [:organisaatio :nimi])
+      (replace-in :organisaatio_y_tunnus [:organisaatio :y-tunnus])
+      to-dash-keys))
+
+(defn tyoelama-arvioija-to-sql [m]
+  (-> m
+      (replace-from [:organisaatio :nimi] :organisaatio-nimi)
+      (replace-from [:organisaatio :y-tunnus] :organisaatio-y-tunnus)
+      to-underscore-keys))
+
 (defn nayttoymparisto-to-sql [m]
   (to-underscore-keys m))
+
+(defn nayttoymparisto-from-sql [m]
+  (-> m
+      (dissoc :created_at :updated_at :deleted_at :version :id)
+      to-dash-keys))
 
 (defn olemassa-oleva-paikallinen-tutkinnon-osa-from-sql [m]
   (to-dash-keys m))
