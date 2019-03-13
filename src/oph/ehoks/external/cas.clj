@@ -9,6 +9,14 @@
   (atom {:url nil
          :expires nil}))
 
+(defn get-cas-url [service]
+  (format
+    "%s/%s"
+    service
+    (if (.contains service "ehoks-backend")
+      "cas-security-check"
+      "j_spring_cas_security_check")))
+
 (defn refresh-service-ticket! []
   (let [response (c/with-api-headers
                    {:method :post
@@ -33,7 +41,7 @@
             :service url
             :options
             {:form-params
-             {:service (str service "/j_spring_cas_security_check")}}})))
+             {:service (get-cas-url service)}}})))
 
 (defn add-cas-ticket [data service]
   (when (or (nil? (:url @service-ticket))
@@ -81,7 +89,7 @@
                     :path "serviceValidate"
                     :options
                     {:query-params
-                     {:service (str service "/j_spring_cas_security_check")
+                     {:service (get-cas-url service)
                       :ticket ticket}}})]
     (let [xml-data (xml/parse-str (:body response))]
       (convert-response-data xml-data))))
