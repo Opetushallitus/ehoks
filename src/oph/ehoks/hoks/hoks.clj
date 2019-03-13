@@ -7,16 +7,28 @@
     :olemassa-olevat-ammatilliset-tutkinnon-osat
     (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id (:id h))))
 
+(defn set-hankitun-osaamisen-naytto [o]
+  (let [naytot (db/select-hankitun-osaamisen-naytot-by-ppto-id (:id o))]
+    (assoc
+      o
+      :hankitun-osaamisen-naytto
+      (mapv
+        #(-> %
+             (assoc
+               :koulutuksen-jarjestaja-arvioijat
+               (db/select-koulutuksen-jarjestaja-arvioijat-by-hon-id (:id o))
+               :nayttoymparisto
+               (db/select-nayttoymparisto-by-id (:nayttoymparisto-id %)))
+             (dissoc :nayttoymparisto-id))
+        naytot))))
+
 (defn set-puuttuvat-paikalliset-tutkinnon-osat [h]
   (let [c (db/select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id (:id h))]
     (assoc
       h
       :puuttuvat-paikalliset-tutkinnon-osat
       (mapv
-        #(assoc
-           %
-           :hankitun-osaamisen-naytto
-           (db/select-hankitun-osaamisen-naytot-by-ppto-id (:id %)))
+        set-hankitun-osaamisen-naytto
         c))))
 
 (defn set-olemassa-olevat-paikalliset-tutkinnon-osat [h]
