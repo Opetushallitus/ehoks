@@ -80,11 +80,62 @@
            h-col))
     h-col))
 
+(defn insert-hankitun-osaamisen-nayton-koulutuksen-jarjestaja-arvioijat [hon c]
+  (let [kja-col (jdbc/insert-multi!
+                {:connection-uri (:database-url config)}
+                :koulutuksen_jarjestaja_arvioijat
+                (map h/koulutuksen-jarjestaja-arvioija-to-sql c))]
+    (jdbc/insert-multi!
+      {:connection-uri (:database-url config)}
+      :hankitun_osaamisen_nayton_koulutuksen_jarjestaja_arvioija
+      (map #(hash-map
+              :hankitun_osaamisen_naytto_id (:id hon)
+              :koulutuksen_jarjestaja_arvioija_id (:id %))
+           kja-col))
+    kja-col))
+
+(defn select-koulutuksen-jarjestaja-arvioijat-by-hon-id
+  "Hankitun osaamisen näytön koulutuksen järjestäjän arvioijat"
+  [id]
+  (jdbc/query
+    {:connection-uri (:database-url config)}
+    [queries/select-koulutuksen-jarjestaja-arvioijat-by-hon-id id]
+    {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
+
+(defn insert-hankitun-osaamisen-nayton-tyoelama-arvioijat [hon c]
+  (let [kja-col (jdbc/insert-multi!
+                {:connection-uri (:database-url config)}
+                :tyoelama_arvioijat
+                (map h/tyoelama-arvioija-to-sql c))]
+    (jdbc/insert-multi!
+      {:connection-uri (:database-url config)}
+      :hankitun_osaamisen_nayton_tyoelama_arvioija
+      (map #(hash-map
+              :hankitun_osaamisen_naytto_id (:id hon)
+              :tyoelama_arvioija_id (:id %))
+           kja-col))
+    kja-col))
+
+(defn select-tyoelama-arvioijat-by-hon-id
+  "Hankitun osaamisen näytön työelemän arvioijat"
+  [id]
+  (jdbc/query
+    {:connection-uri (:database-url config)}
+    [queries/select-tyoelama-arvioijat-by-hon-id id]
+    {:row-fn h/tyoelama-arvioija-from-sql}))
+
 (defn insert-nayttoymparisto! [m]
   (jdbc/insert!
     {:connection-uri (:database-url config)}
     :nayttoymparistot
     (h/nayttoymparisto-to-sql m)))
+
+(defn select-nayttoymparisto-by-id [id]
+  (first
+    (jdbc/query
+      {:connection-uri (:database-url config)}
+      [queries/select-nayttoymparisto-by-id id]
+      {:row-fn h/nayttoymparisto-from-sql})))
 
 (defn select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id [id]
   (jdbc/query
