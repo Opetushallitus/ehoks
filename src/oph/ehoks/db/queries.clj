@@ -16,3 +16,8 @@
   "olemassa-olevat-yhteiset-tutkinnon-osat/select_by_hoks_id.sql")
 (defq select-hankitun-osaamisen-naytot-by-ppto-id
   "puuttuvat-paikalliset-tutkinnon-osat/select_hankitun_osaamisen_naytot.sql")
+(defq select-koulutuksen-jarjestaja-arvioijat-by-hon-id
+  "hankitun-osaamisen-naytot/select_koulutuksen_jarjestaja_arvioijat.sql")
+(defq select-tyoelama-arvioijat-by-hon-id
+  "hankitun-osaamisen-naytot/select_tyoelama_arvioijat.sql")
+(defq select-nayttoymparisto-by-id "nayttoymparistot/select_by_id.sql")
