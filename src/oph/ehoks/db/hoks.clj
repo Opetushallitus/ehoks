@@ -26,9 +26,16 @@
 
 (defn- replace-from [h sks tk]
   (if (get-in h sks)
-    (dissoc
-      (assoc h tk (get-in h sks))
-      (first sks))
+    (if (= (count (get-in h (drop-last sks))) 1)
+      (apply
+        dissoc
+        (assoc h tk (get-in h sks))
+        (drop-last sks))
+      (update-in
+        h
+        (drop-last sks)
+        dissoc
+        (last sks)))
     h))
 
 (defn hoks-from-sql [h]
