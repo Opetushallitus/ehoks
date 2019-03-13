@@ -95,8 +95,8 @@ CREATE TABLE hankitun_osaamisen_nayton_koulutuksen_jarjestaja_arvioija (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   hankitun_osaamisen_naytto_id INTEGER REFERENCES hankitun_osaamisen_naytot(id),
-  koulutuksen_jarjestaja_arviojat_id INTEGER REFERENCES koulutuksen_jarjestaja_arvioijat(id),
-  PRIMARY KEY(hankitun_osaamisen_naytto_id, koulutuksen_jarjestaja_arviojat_id)
+  koulutuksen_jarjestaja_arvioija_id INTEGER REFERENCES koulutuksen_jarjestaja_arvioijat(id),
+  PRIMARY KEY(hankitun_osaamisen_naytto_id, koulutuksen_jarjestaja_arvioija_id)
 );
 
 CREATE TABLE hankitun_osaamisen_tyotehtavat(
@@ -414,6 +414,6 @@ CREATE TABLE hankitun_yto_osaamisen_nayton_koulutuksen_jarjestaja_arvioija (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   hankitun_yto_osaamisen_naytto_id INTEGER REFERENCES tyoelama_arvioijat(id),
-  koulutuksen_jarjestaja_arvioja_id INTEGER REFERENCES koulutuksen_jarjestaja_arvioijat(id),
-  PRIMARY KEY(hankitun_yto_osaamisen_naytto_id, koulutuksen_jarjestaja_arvioja_id)
+  koulutuksen_jarjestaja_arvioija_id INTEGER REFERENCES koulutuksen_jarjestaja_arvioijat(id),
+  PRIMARY KEY(hankitun_yto_osaamisen_naytto_id, koulutuksen_jarjestaja_arvioija_id)
 );
