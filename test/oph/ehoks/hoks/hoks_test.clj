@@ -33,15 +33,17 @@
                      :osa-alue-koodi-versio 2
                      :nayttoymparisto-id (:id nayttoymparisto)
                      :alku (java.time.LocalDate/of 2019 3 11)
-                     :loppu (java.time.LocalDate/of 2019 3 13)}
-                    ])]
+                     :loppu (java.time.LocalDate/of 2019 3 13)}])]
+      (db/insert-hankitun-osaamisen-nayton-koulutuksen-jarjestaja-arvioijat
+        (first naytot)
+        [{:nimi "Terttu Testaaja"
+          :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921332"}}])
 
-      (comment          {:jarjestaja-oppilaitos-oid "1.2.246.562.10.54453921331"
-                         :osa-alue-koodi-uri "ammatillisenoppiaineet_ai"
-                         :osa-alue-koodi-versio 3
-                         :nayttoymparisto-id (:id nayttoymparisto)
-                         :alku (java.time.LocalDate/of 2019 3 19)
-                         :loppu (java.time.LocalDate/of 2019 3 19)})
+      (db/insert-hankitun-osaamisen-nayton-tyoelama-arvioijat
+        (first naytot)
+        [{:nimi "Teppo Työmies"
+          :organisaatio {:nimi "Kallen Paja Ky"
+                         :y-tunnus "12345679-2"}}])
       (eq
         (dissoc
           (h/set-puuttuvat-paikalliset-tutkinnon-osat
@@ -54,10 +56,15 @@
            :id (:id (first ppto-col))
            ;:osaamisen-hankkimistavat []
            :hankitun-osaamisen-naytto
-           [{:jarjestaja-oppilaitos-oid "1.2.246.562.10.54453921330"
+           [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921330"}
+             :nayttoymparisto {:nimi "Testiympäristö"
+                               :y-tunnus "12345678-1"
+                               :kuvaus "Test"}
+             :koulutuksen-jarjestaja-arvioijat
+             [{:nimi "Terttu Testaaja"
+               :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921332"}}]
              :id (:id (first naytot))
              :osa-alue-koodi-uri "ammatillisenoppiaineet_fk"
              :osa-alue-koodi-versio 2
-             :nayttoymparisto-id (:id nayttoymparisto)
              :alku (java.time.LocalDate/of 2019 3 11)
              :loppu (java.time.LocalDate/of 2019 3 13)}]}]}))))
