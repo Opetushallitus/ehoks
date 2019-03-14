@@ -10,6 +10,15 @@
       {}
       (keys m))))
 
+(defn remove-db-columns [m & others]
+  (apply
+    dissoc m
+    :created_at
+    :updated_at
+    :deleted_at
+    :version
+    others))
+
 (defn to-underscore-keys [m]
   (convert-keys #(keyword (.replace (name %) \- \_)) m))
 
