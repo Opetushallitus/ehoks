@@ -8,9 +8,8 @@
 
 (defn with-database [f]
   (f)
-  ;(m/clean!)
-  ;(m/migrate!)
-  )
+  (m/clean!)
+  (m/migrate!))
 
 (use-fixtures :each with-database)
 
