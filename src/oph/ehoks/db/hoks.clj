@@ -41,7 +41,7 @@
         (assoc h tk (get-in h sks))
         (drop-last sks))
       (update-in
-        h
+        (assoc h tk (get-in h sks))
         (drop-last sks)
         dissoc
         (last sks)))
