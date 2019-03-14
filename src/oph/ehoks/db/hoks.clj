@@ -52,49 +52,62 @@
 (defn- remove-nils [m]
   (apply dissoc m (filter #(nil? (get m %)) (keys m))))
 
-(defn hoks-from-sql [h]
-  (-> h
-      (replace-with-in :laatija_nimi [:laatija :nimi])
-      (replace-with-in :hyvaksyja_nimi [:hyvaksyja :nimi])
-      (replace-with-in :paivittaja_nimi [:paivittaja :nimi])
+(defn convert-sql
+  [m {removals :removals replaces :replaces
+      :or {removals [] replaces {}}, :as operations}]
+  (as-> m x
+    (reduce
+      (fn [c [kss kst]]
+        (replace-with-in c kss kst))
+      x
+      replaces)
+    (apply dissoc x removals)))
+
+(defn from-sql [m operations]
+  (-> (convert-sql m operations)
       remove-nils
+      remove-db-columns
       to-dash-keys))
 
+(defn to-sql [m operations]
+  (to-underscore-keys (convert-sql m operations)))
+
+(defn hoks-from-sql [h]
+  (from-sql
+    h
+    {:replaces {:laatija_nimi [:laatija :nimi]
+                :hyvaksyja_nimi [:hyvaksyja :nimi]
+                :paivittaja_nimi [:paivittaja :nimi]}}))
+
 (defn hoks-to-sql [h]
-  (-> h
-      (dissoc :olemassa-olevat-ammatilliset-tutkinnon-osat
-              :olemassa-olevat-paikalliset-tutkinnon-osat
-              :olemassa-olevat-yhteiset-tutkinnon-osat
-              :puuttuvat-ammatilliset-tutkinnon-osat
-              :puuttuvat-yhteiset-tutkinnon-osat
-              :opiskeluvalmiuksia-tukevat-opinnot
-              :puuttuvat-paikalliset-tutkinnon-osat)
-      (update :eid #(if (nil? %) (str (java.util.UUID/randomUUID)) %)) ; generate and check, move to insert and lock
-      (replace-with-in [:laatija :nimi] :laatija-nimi)
-      (replace-with-in [:hyvaksyja :nimi] :hyvaksyja-nimi)
-      (replace-with-in [:paivittaja :nimi] :paivittaja-nimi)
-      to-underscore-keys))
+  (update
+    (to-sql
+     h
+     {:removals [:olemassa-olevat-ammatilliset-tutkinnon-osat
+                 :olemassa-olevat-paikalliset-tutkinnon-osat
+                 :olemassa-olevat-yhteiset-tutkinnon-osat
+                 :puuttuvat-ammatilliset-tutkinnon-osat
+                 :puuttuvat-yhteiset-tutkinnon-osat
+                 :opiskeluvalmiuksia-tukevat-opinnot
+                 :puuttuvat-paikalliset-tutkinnon-osat]
+      :replaces {[:laatija :nimi] :laatija-nimi
+                 [:hyvaksyja :nimi] :hyvaksyja-nimi
+                 [:paivittaja :nimi] :paivittaja-nimi}})
+    :eid #(if (nil? %) (str (java.util.UUID/randomUUID)) %))) ; generate and check, move to insert and lock
 
 (defn olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql [m]
   (to-dash-keys m))
 
 (defn olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql [m]
-  (-> m
-      (dissoc :tarkentavat-tiedot-naytto :tarkentavat-tiedot-arvioija)
-      remove-nils
-      to-underscore-keys))
+  (to-sql
+    m
+    {:removals [:tarkentavat-tiedot-naytto :tarkentavat-tiedot-arvioija]}))
 
 (defn puuttuva-paikallinen-tutkinnon-osa-from-sql [m]
-  (-> m
-      (dissoc :created_at :updated_at :deleted_at :version :hoks_id)
-      remove-nils
-      to-dash-keys))
+  (from-sql m {:removals [:hoks_id]}))
 
 (defn puuttuva-paikallinen-tutkinnon-osa-to-sql [m]
-  (-> m
-      (dissoc :hankitun-osaamisen-naytto :osaamisen-hankkimistavat)
-      remove-nils
-      to-underscore-keys))
+  (to-sql m {:removals [:hankitun-osaamisen-naytto :osaamisen-hankkimistavat]}))
 
 (defn tyopaikalla-hankittava-osaaminen-from-sql [m]
   (-> m
