@@ -21,3 +21,15 @@
 (defq select-tyoelama-arvioijat-by-hon-id
   "hankitun-osaamisen-naytot/select_tyoelama_arvioijat.sql")
 (defq select-nayttoymparisto-by-id "nayttoymparistot/select_by_id.sql")
+(defq select-tyotehtavat-by-hankitun-osaamisen-naytto-id
+  "hankitun-osaamisen-naytot/select_tyotehtavat.sql")
+(defq select-osaamisen-hankkmistavat-by-ppto-id
+  "puuttuvat-paikalliset-tutkinnon-osat/select_osaamisen_hankkimistavat.sql")
+(defq select-tyopaikalla-hankittava-osaaminen-by-id
+  "tyopaikalla-hankittavat-osaamiset/select_by_id.sql")
+(defq select-henkilot-by-tho-id
+  "tyopaikalla-hankittavat-osaamiset/select_henkilot.sql")
+(defq select-tyotehtavat-by-tho-id
+  "tyopaikalla-hankittavat-osaamiset/select_tyotehtavat.sql")
+(defq select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
+  "muut-oppimisymparistot/select_by_osaamisen_hankkimistapa_id.sql")
