@@ -17,18 +17,56 @@
              (assoc
                :koulutuksen-jarjestaja-arvioijat
                (db/select-koulutuksen-jarjestaja-arvioijat-by-hon-id (:id o))
+               :tyoelama-arvioijat
+               (db/select-tyoelama-arvioijat-by-hon-id (:id o))
                :nayttoymparisto
-               (db/select-nayttoymparisto-by-id (:nayttoymparisto-id %)))
+               (db/select-nayttoymparisto-by-id (:nayttoymparisto-id %))
+               :keskeiset-tyotehtavat-naytto
+               (db/select-tyotehtavat-by-hankitun-osaamisen-naytto-id (:id o)))
              (dissoc :nayttoymparisto-id))
         naytot))))
+
+(defn set-tyopaikalla-hankittava-osaaminen [t]
+  (let [o (db/select-tyopaikalla-hankittava-osaaminen-by-id
+             (:tyopaikalla-hankittava-osaaminen-id t))]
+    (dissoc
+      (assoc t
+             :tyopaikalla-hankittava-osaaminen
+             (-> o
+                 (dissoc :id)
+                 (assoc :muut-osallistujat
+                        (db/select-henkilot-by-tho-id (:id o)))
+                 (assoc :keskeiset-tyotehtavat
+                        (db/select-tyotehtavat-by-tho-id (:id o)))))
+     :tyopaikalla-hankittava-osaaminen-id)))
+
+(defn set-muut-oppimisymparistot [t]
+  (assoc
+    t
+    :muut-oppimisymparisto
+    (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
+      (:id t))))
+
+(defn set-osaamisen-hankkimistavat [o]
+  (let [hankkimistavat (db/select-osaamisen-hankkimistavat-by-ppto-id (:id o))]
+    (assoc
+      o
+      :osaamisen-hankkimistavat
+      (->> hankkimistavat
+        (map set-tyopaikalla-hankittava-osaaminen)
+        (map set-muut-oppimisymparistot)
+        (map #(dissoc % :id))))))
 
 (defn set-puuttuvat-paikalliset-tutkinnon-osat [h]
   (let [c (db/select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id (:id h))]
     (assoc
       h
       :puuttuvat-paikalliset-tutkinnon-osat
+
       (mapv
-        set-hankitun-osaamisen-naytto
+        #(-> %
+           set-hankitun-osaamisen-naytto
+           set-osaamisen-hankkimistavat)
         c))))
 
 (defn set-olemassa-olevat-paikalliset-tutkinnon-osat [h]
