@@ -11,7 +11,14 @@
   (m/clean!)
   (m/migrate!))
 
+(defn create-db [f]
+  (m/migrate!)
+  (f)
+  (m/clean!))
+
 (use-fixtures :each with-database)
+
+(use-fixtures :once create-db)
 
 (deftest set-puuttuvat-paikalliset-tutkinnon-osat-test
   (testing "Set HOKS puuttuvat paikalliset tutkinnon osat"
