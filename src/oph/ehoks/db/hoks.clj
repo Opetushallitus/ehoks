@@ -91,6 +91,68 @@
       remove-nils
       to-underscore-keys))
 
+(defn tyopaikalla-hankittava-osaaminen-from-sql [m]
+  (-> m
+      remove-db-columns
+      (replace-in :vastuullinen_ohjaaja_nimi [:vastuullinen-ohjaaja :nimi])
+      (replace-in :vastuullinen_ohjaaja_sahkoposti
+                  [:vastuullinen-ohjaaja :sahkoposti])
+      to-dash-keys))
+
+(defn tyopaikalla-hankittava-osaaminen-to-sql [m]
+  (-> m
+      (replace-from [:vastuullinen-ohjaaja :nimi] :vastuullinen-ohjaaja-nimi)
+      (replace-from [:vastuullinen-ohjaaja :sahkoposti]
+                    :vastuullinen-ohjaaja-sahkoposti)
+      (dissoc :muut-osallistujat :keskeiset-tyotehtavat)
+      to-underscore-keys))
+
+(defn henkilo-from-sql [m]
+  (-> m
+      (remove-db-columns :id :tyopaikalla_hankittava_osaaminen_id)
+      (replace-in :organisaatio_nimi [:organisaatio :nimi])
+      (replace-in :organisaatio_y_tunnus [:organisaatio :y-tunnus])
+      to-dash-keys))
+
+(defn henkilo-to-sql [m]
+  (-> m
+      (replace-from [:organisaatio :nimi] :organisaatio_nimi)
+      (replace-from [:organisaatio :y-tunnus] :organisaatio_y_tunnus)
+      to-underscore-keys))
+
+(defn osaamisen-hankkimistapa-from-sql [m]
+  (-> m
+      (remove-db-columns)
+      (replace-in :jarjestajan_edustaja_nimi [:jarjestajan-edustaja :nimi])
+      (replace-in :jarjestajan_edustaja_rooli [:jarjestajan-edustaja :rooli])
+      (replace-in :jarjestajan_edustaja_oppilaitos_oid
+                  [:jarjestajan-edustaja :oppilaitos-oid])
+      (replace-in :hankkijan_edustaja_nimi[:hankkijan-edustaja :nimi])
+      (replace-in :hankkijan_edustaja_rooli [:hankkijan-edustaja :rooli])
+      (replace-in :hankkijan_edustaja_oppilaitos_oid
+                  [:hankkijan-edustaja :oppilaitos-oid])
+      to-dash-keys))
+
+(defn osaamisen-hankkimistavat-to-sql [m]
+  (-> m
+      (dissoc :muut-oppimisymparisto)
+      (replace-from [:jarjestajan-edustaja :nimi] :jarjestajan-edustaja-nimi)
+      (replace-from [:jarjestajan-edustaja :rooli] :jarjestajan-edustaja-rooli)
+      (replace-from [:jarjestajan-edustaja :oppilaitos-oid]
+                    :jarjestajan-edustaja-oppilaitos-oid)
+      (replace-from [:hankkijan-edustaja :nimi] :hankkijan-edustaja-nimi)
+      (replace-from [:hankkijan-edustaja :rooli] :hankkijan-edustaja-rooli)
+      (replace-from [:hankkijan-edustaja :oppilaitos-oid]
+                    :hankkijan-edustaja-oppilaitos-oid)
+      to-underscore-keys))
+
+(defn muu-oppimisymparisto-from-sql [m]
+  (-> m
+      (remove-db-columns :id :osaamisen_hankkimistapa_id)
+      to-dash-keys))
+
+(def muu-oppimisymparisto-to-sql to-underscore-keys)
+
 (defn hankitun-osaamisen-naytto-from-sql [m]
   (-> m
       (dissoc :created_at :updated_at :deleted_at :version)
@@ -131,6 +193,9 @@
   (-> m
       (dissoc :created_at :updated_at :deleted_at :version :id)
       to-dash-keys))
+
+(defn tyotehtava-from-sql [m]
+  (get m :tyotehtava))
 
 (defn olemassa-oleva-paikallinen-tutkinnon-osa-from-sql [m]
   (to-dash-keys m))
