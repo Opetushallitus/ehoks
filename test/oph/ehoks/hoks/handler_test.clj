@@ -50,25 +50,24 @@
           ppto-response
           (utils/with-service-ticket
             app
-            (-> (mock/request :post (format
-                                      "%s/1/puuttuva-paikallinen-tutkinnon-osa"
-                                      url))
+            (-> (mock/request
+                  :post (format "%s/1/puuttuva-paikallinen-tutkinnon-osa" url))
                 (mock/json-body ppto-data)))
           body (utils/parse-body (:body ppto-response))]
       (is (= (:status ppto-response) 200))
-      (eq body {:data {:uri (format "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
-                                    url)} :meta {}})
-      (let [ppto-new (utils/with-service-ticket
-                       app
-                       (mock/request
-                         :get (format
-                                "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
-                                url)))]
+      (eq
+        body
+        {:data {:uri (format "%s/1/puuttuva-paikallinen-tutkinnon-osa/1" url)}
+         :meta {}})
+      (let [ppto-new
+            (utils/with-service-ticket
+              app
+              (mock/request
+                :get (format "%s/1/puuttuva-paikallinen-tutkinnon-osa/1" url)))]
+        (clojure.pprint/pprint (utils/parse-body (:body ppto-new)))
         (eq
           (:data (utils/parse-body (:body ppto-new)))
-          (assoc
-            ppto-data
-            :id 1))))))
+          (assoc ppto-data :id 1))))))
 
 (deftest put-ppto
   (testing "PUT puuttuva paikallinen tutkinnon osa"
@@ -782,7 +781,11 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :hyvaksytty "2018-12-15T18:00:00Z"
+                     :paivitetty "2018-12-15T18:00:00Z"
+                     :luotu "2018-12-13T18:00:00Z"
+                     :versio 1}
           response
           (utils/with-service-ticket
             app
@@ -796,7 +799,8 @@
               (-> (mock/request :patch (get-in body [:data :uri]))
                   (mock/json-body
                     {:id (:id hoks)
-                     :paivittaja {:nimi "Kalle Käyttäjä"}})))]
+                     :paivittaja {:nimi "Kalle Käyttäjä"}
+                     :versio 2})))]
         (is (= (:status patch-response) 204))
         (let [updated-hoks
               (-> (get-in body [:data :uri]) get-authenticated :data)]
@@ -804,7 +808,6 @@
             updated-hoks
             (assoc
               hoks
-              :paivitetty (:paivitetty updated-hoks)
               :versio 2
               :paivittaja {:nimi "Kalle Käyttäjä"})))))))
 
