@@ -6,8 +6,10 @@
             [oph.ehoks.db.queries :as queries]))
 
 (extend-protocol jdbc/ISQLValue
+  java.time.LocalDate
+  (sql-value [value] (java.sql.Date/valueOf value))
   java.util.Date
-  (sql-value [value] (c/to-sql-date value)))
+  (sql-value [value] (c/to-sql-time value)))
 
 (extend-protocol jdbc/IResultSetReadColumn
   java.sql.Date
