@@ -651,7 +651,11 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :hyvaksytty "2018-12-15T18:00:00Z"
+                     :paivitetty "2018-12-15T18:00:00Z"
+                     :luotu "2018-12-13T18:00:00Z"
+                     :versio 1}
           response
           (utils/with-service-ticket
             app
@@ -665,11 +669,7 @@
           hoks
           (assoc
             hoks-data
-            :id 1
-            :luotu (:luotu hoks)
-            :hyvaksytty (:hyvaksytty hoks)
-            :paivitetty (:paivitetty hoks)
-            :versio 1))))))
+            :id 1))))))
 
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
@@ -679,7 +679,11 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :hyvaksytty "2018-12-15T18:00:00Z"
+                     :paivitetty "2018-12-15T18:00:00Z"
+                     :luotu "2018-12-13T18:00:00Z"
+                     :versio 1}]
       (let [response
             (utils/with-service-ticket
               app
@@ -696,7 +700,11 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :hyvaksytty "2018-12-15T18:00:00Z"
+                     :paivitetty "2018-12-15T18:00:00Z"
+                     :luotu "2018-12-13T18:00:00Z"
+                     :versio 1}]
 
       (let [response
             (utils/with-service-ticket
@@ -751,7 +759,11 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :hyvaksytty "2018-12-15T18:00:00Z"
+                     :paivitetty "2018-12-15T18:00:00Z"
+                     :luotu "2018-12-13T18:00:00Z"
+                     :versio 1}
           response
           (utils/with-service-ticket
             app
@@ -765,8 +777,8 @@
               (-> (mock/request :put (get-in body [:data :uri]))
                   (mock/json-body
                     (-> hoks
-                        (assoc :paivittaja {:nimi "Teuvo Testaaja"})
-                        (dissoc :laatija :luotu :versio :paivitetty)))))]
+                        (assoc :paivittaja {:nimi "Teuvo Testaaja"}
+                               :versio 2)))))]
         (is (= (:status put-response) 204))
         (let [updated-hoks
               (-> (get-in body [:data :uri]) get-authenticated :data)]
@@ -774,7 +786,6 @@
             updated-hoks
             (assoc
               hoks
-              :paivitetty (:paivitetty updated-hoks)
               :versio 2
               :paivittaja {:nimi "Teuvo Testaaja"})))))))
 
