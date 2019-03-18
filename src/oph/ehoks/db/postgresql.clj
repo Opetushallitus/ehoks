@@ -27,6 +27,10 @@
 
 (defn insert-one! [t v] (first (insert! t v)))
 
+(defn update! [t v w]
+  (jdbc/update! {:connection-uri (:database-url config)}
+                t v w))
+
 (defn insert-multi! [t v]
   (jdbc/insert-multi! {:connection-uri (:database-url config)} t v))
 
