@@ -719,38 +719,6 @@
                    (mock/request :get (get-in body [:data :uri]))))
                401))))))
 
-(deftest get-last-version-of-hoks
-  (testing "GET latest (second) version of HOKS"
-
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.333.444.55.66666666666"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}]
-      (utils/with-service-ticket
-        app
-        (-> (mock/request :post url)
-            (mock/json-body hoks-data)))
-      (let [response
-            (utils/with-service-ticket
-              app
-              (-> (mock/request :post url)
-                  (mock/json-body hoks-data)))
-            body (utils/parse-body (:body response))]
-        (is (= (:status response) 200))
-        (eq body {:data {:uri (format "%s/1" url)} :meta {}})
-        (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
-          (eq
-            hoks
-            (assoc
-              hoks-data
-              :id 1
-              :luotu (:luotu hoks)
-              :hyvaksytty (:hyvaksytty hoks)
-              :paivitetty (:paivitetty hoks)
-              :versio 2)))))))
-
 (deftest put-created-hoks
   (testing "PUT updates created HOKS"
 
