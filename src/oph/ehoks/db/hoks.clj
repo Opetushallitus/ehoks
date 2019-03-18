@@ -114,123 +114,97 @@
   (to-sql m {:removals [:hankitun-osaamisen-naytto :osaamisen-hankkimistavat]}))
 
 (defn tyopaikalla-hankittava-osaaminen-from-sql [m]
-  (-> m
-      remove-db-columns
-      (replace-with-in :vastuullinen_ohjaaja_nimi [:vastuullinen-ohjaaja :nimi])
-      (replace-with-in :vastuullinen_ohjaaja_sahkoposti
-                  [:vastuullinen-ohjaaja :sahkoposti])
-      to-dash-keys))
+  (from-sql
+    m
+    {:replaces
+     {:vastuullinen_ohjaaja_nimi [:vastuullinen-ohjaaja :nimi]
+      :vastuullinen_ohjaaja_sahkoposti [:vastuullinen-ohjaaja :sahkoposti]}}))
 
 (defn tyopaikalla-hankittava-osaaminen-to-sql [m]
-  (-> m
-      (replace-with-in [:vastuullinen-ohjaaja :nimi] :vastuullinen-ohjaaja-nimi)
-      (replace-with-in [:vastuullinen-ohjaaja :sahkoposti]
-                    :vastuullinen-ohjaaja-sahkoposti)
-      (dissoc :muut-osallistujat :keskeiset-tyotehtavat)
-      to-underscore-keys))
+  (to-sql
+    m
+    {:removals [:muut-osallistujat :keskeiset-tyotehtavat]
+     :replaces
+     {[:vastuullinen-ohjaaja :nimi] :vastuullinen-ohjaaja-nimi
+      [:vastuullinen-ohjaaja :sahkoposti] :vastuullinen-ohjaaja-sahkoposti}}))
 
 (defn henkilo-from-sql [m]
-  (-> m
-      (remove-db-columns :id :tyopaikalla_hankittava_osaaminen_id)
-      (replace-with-in :organisaatio_nimi [:organisaatio :nimi])
-      (replace-with-in :organisaatio_y_tunnus [:organisaatio :y-tunnus])
-      to-dash-keys))
+  (from-sql
+    m
+    {:removals [:id :tyopaikalla_hankittava_osaaminen_id]
+     :replaces
+     {:organisaatio_nimi [:organisaatio :nimi]
+      :organisaatio_y_tunnus [:organisaatio :y-tunnus]}}))
 
 (defn henkilo-to-sql [m]
-  (-> m
-      (replace-with-in [:organisaatio :nimi] :organisaatio_nimi)
-      (replace-with-in [:organisaatio :y-tunnus] :organisaatio_y_tunnus)
-      to-underscore-keys))
+  (to-sql m {:replaces {[:organisaatio :nimi] :organisaatio_nimi
+                        [:organisaatio :y-tunnus] :organisaatio_y_tunnus}}))
 
 (defn osaamisen-hankkimistapa-from-sql [m]
-  (-> m
-      (remove-db-columns)
-      (replace-with-in :jarjestajan_edustaja_nimi [:jarjestajan-edustaja :nimi])
-      (replace-with-in :jarjestajan_edustaja_rooli [:jarjestajan-edustaja :rooli])
-      (replace-with-in :jarjestajan_edustaja_oppilaitos_oid
-                  [:jarjestajan-edustaja :oppilaitos-oid])
-      (replace-with-in :hankkijan_edustaja_nimi[:hankkijan-edustaja :nimi])
-      (replace-with-in :hankkijan_edustaja_rooli [:hankkijan-edustaja :rooli])
-      (replace-with-in :hankkijan_edustaja_oppilaitos_oid
-                  [:hankkijan-edustaja :oppilaitos-oid])
-      to-dash-keys))
+  (from-sql
+    m
+    {:replaces
+     {:jarjestajan_edustaja_nimi [:jarjestajan-edustaja :nimi]
+      :jarjestajan_edustaja_rooli [:jarjestajan-edustaja :rooli]
+      :jarjestajan_edustaja_oppilaitos_oid
+      [:jarjestajan-edustaja :oppilaitos-oid]
+      :hankkijan_edustaja_nimi [:hankkijan-edustaja :nimi]
+      :hankkijan_edustaja_rooli [:hankkijan-edustaja :rooli]
+      :hankkijan_edustaja_oppilaitos_oid
+      [:hankkijan-edustaja :oppilaitos-oid]}}))
 
 (defn osaamisen-hankkimistavat-to-sql [m]
-  (-> m
-      (dissoc :muut-oppimisymparisto)
-      (replace-with-in [:jarjestajan-edustaja :nimi] :jarjestajan-edustaja-nimi)
-      (replace-with-in [:jarjestajan-edustaja :rooli] :jarjestajan-edustaja-rooli)
-      (replace-with-in [:jarjestajan-edustaja :oppilaitos-oid]
-                    :jarjestajan-edustaja-oppilaitos-oid)
-      (replace-with-in [:hankkijan-edustaja :nimi] :hankkijan-edustaja-nimi)
-      (replace-with-in [:hankkijan-edustaja :rooli] :hankkijan-edustaja-rooli)
-      (replace-with-in [:hankkijan-edustaja :oppilaitos-oid]
-                    :hankkijan-edustaja-oppilaitos-oid)
-      to-underscore-keys))
+  (to-sql
+    m
+    {:removals [:muut-oppimisymparisto]
+     :replaces
+     {[:jarjestajan-edustaja :nimi] :jarjestajan-edustaja-nimi
+      [:jarjestajan-edustaja :rooli] :jarjestajan-edustaja-rooli
+      [:jarjestajan-edustaja :oppilaitos-oid]
+      :jarjestajan-edustaja-oppilaitos-oid
+      [:hankkijan-edustaja :nimi] :hankkijan-edustaja-nimi
+      [:hankkijan-edustaja :rooli] :hankkijan-edustaja-rooli
+      [:hankkijan-edustaja :oppilaitos-oid]
+      :hankkijan-edustaja-oppilaitos-oid}}))
 
 (defn muu-oppimisymparisto-from-sql [m]
-  (-> m
-      (remove-db-columns :id :osaamisen_hankkimistapa_id)
-      to-dash-keys))
+  (from-sql m {:removals [:id :osaamisen_hankkimistapa_id]}))
 
-(def muu-oppimisymparisto-to-sql to-underscore-keys)
+(def muu-oppimisymparisto-to-sql to-sql)
 
 (defn hankitun-osaamisen-naytto-from-sql [m]
-  (-> m
-      (dissoc :created_at :updated_at :deleted_at :version)
-      (replace-with-in :jarjestaja_oppilaitos_oid [:jarjestaja :oppilaitos-oid])
-      to-dash-keys))
+  (from-sql
+    m
+    {:replaces {:jarjestaja_oppilaitos_oid [:jarjestaja :oppilaitos-oid]}}))
 
-(defn hankitun-osaamisen-naytto-to-sql [m]
-  (to-underscore-keys m))
+(def hankitun-osaamisen-naytto-to-sql to-sql)
 
 (defn koulutuksen-jarjestaja-arvioija-from-sql [m]
-  (-> m
-      (dissoc :created_at :updated_at :deleted_at :version :id)
-      (replace-with-in :oppilaitos_oid [:organisaatio :oppilaitos-oid])
-      to-dash-keys))
+  (from-sql m {:replaces {:oppilaitos_oid [:organisaatio :oppilaitos-oid]}}))
 
 (defn koulutuksen-jarjestaja-arvioija-to-sql [m]
-  (-> m
-      (replace-with-in [:organisaatio :oppilaitos-oid] :oppilaitos-oid)
-      to-underscore-keys))
+  (to-sql m {:replaces {[:organisaatio :oppilaitos-oid] :oppilaitos-oid}}))
 
 (defn tyoelama-arvioija-from-sql [m]
-  (-> m
-      (dissoc :created_at :updated_at :deleted_at :version :id)
-      (replace-with-in :organisaatio_nimi [:organisaatio :nimi])
-      (replace-with-in :organisaatio_y_tunnus [:organisaatio :y-tunnus])
-      to-dash-keys))
+  (from-sql m {:replaces {:organisaatio_nimi [:organisaatio :nimi]
+                          :organisaatio_y_tunnus [:organisaatio :y-tunnus]}}))
 
 (defn tyoelama-arvioija-to-sql [m]
-  (-> m
-      (replace-with-in [:organisaatio :nimi] :organisaatio-nimi)
-      (replace-with-in [:organisaatio :y-tunnus] :organisaatio-y-tunnus)
-      to-underscore-keys))
+  (to-sql m {:replaces {[:organisaatio :nimi] :organisaatio-nimi
+                        [:organisaatio :y-tunnus] :organisaatio-y-tunnus}}))
 
-(defn nayttoymparisto-to-sql [m]
-  (to-underscore-keys m))
+(def nayttoymparisto-to-sql to-sql)
 
-(defn nayttoymparisto-from-sql [m]
-  (-> m
-      (dissoc :created_at :updated_at :deleted_at :version :id)
-      to-dash-keys))
+(def nayttoymparisto-from-sql from-sql)
 
 (defn tyotehtava-from-sql [m]
   (get m :tyotehtava))
 
-(defn olemassa-oleva-paikallinen-tutkinnon-osa-from-sql [m]
-  (to-dash-keys m))
+(def olemassa-oleva-paikallinen-tutkinnon-osa-from-sql from-sql)
 
-(defn olemassa-oleva-paikallinen-tutkinnon-osa-to-sql [m]
-  (-> m
-      remove-nils
-      to-underscore-keys))
+(def olemassa-oleva-paikallinen-tutkinnon-osa-to-sql to-sql)
 
 (defn olemassa-oleva-yhteinen-tutkinnon-osa-from-sql [m]
-  (-> m
-      (replace-with-in
-        :lahetetty_arvioitavaksi
-        [:todennettu_arviointi_lisatiedot :lahetetty_arvioitavaksi])
-      remove-nils
-      to-underscore-keys))
+  (from-sql m {:replaces
+               {:lahetetty_arvioitavaksi
+                [:todennettu_arviointi_lisatiedot :lahetetty_arvioitavaksi]}}))
