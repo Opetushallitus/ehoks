@@ -3,7 +3,6 @@ CREATE TABLE hoksit(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   luotu TIMESTAMP WITH TIME ZONE,
   eid VARCHAR(36),
   sahkoposti TEXT,
@@ -25,7 +24,6 @@ CREATE TABLE koulutuksen_jarjestaja_arvioijat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   nimi TEXT,
   oppilaitos_oid VARCHAR(26)
 );
@@ -35,7 +33,6 @@ CREATE TABLE todennettu_arviointi_lisatiedot(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   lahetetty_arvioitavaksi DATE
 );
 
@@ -52,7 +49,6 @@ CREATE TABLE nayttoymparistot(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   nimi TEXT,
   y_tunnus TEXT,
   kuvaus TEXT
@@ -63,7 +59,6 @@ CREATE TABLE tyoelama_arvioijat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   nimi TEXT,
   organisaatio_nimi TEXT,
   organisaatio_y_tunnus TEXT
@@ -74,7 +69,6 @@ CREATE TABLE hankitun_osaamisen_naytot(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   jarjestaja_oppilaitos_oid VARCHAR(26),
   osa_alue_koodi_uri VARCHAR(26),
   osa_alue_koodi_versio INTEGER,
@@ -104,7 +98,6 @@ CREATE TABLE hankitun_osaamisen_tyotehtavat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   hankitun_osaamisen_naytto_id INTEGER REFERENCES hankitun_osaamisen_naytot(id),
   tyotehtava TEXT
 );
@@ -114,7 +107,6 @@ CREATE TABLE olemassa_olevat_ammatilliset_tutkinnon_osat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   hoks_id INTEGER REFERENCES hoksit(id),
   tutkinnon_osa_koodi_uri VARCHAR(256),
   tutkinnon_osa_koodi_versio INTEGER,
@@ -137,7 +129,6 @@ CREATE TABLE olemassa_olevat_paikalliset_tutkinnon_osat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   hoks_id INTEGER REFERENCES hoksit(id),
   laajuus INTEGER,
   nimi TEXT,
@@ -152,7 +143,6 @@ CREATE TABLE puuttuvat_paikalliset_tutkinnon_osat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   hoks_id INTEGER REFERENCES hoksit(id),
   laajuus INTEGER,
   nimi TEXT,
@@ -175,7 +165,6 @@ CREATE TABLE tyopaikalla_hankittavat_osaamiset(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   vastuullinen_ohjaaja_nimi TEXT,
   vastuullinen_ohjaaja_sahkoposti TEXT,
   tyopaikan_nimi TEXT,
@@ -188,7 +177,6 @@ CREATE TABLE tyopaikalla_hankittavat_osaamisen_henkilot(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   tyopaikalla_hankittava_osaaminen_id INTEGER REFERENCES tyopaikalla_hankittavat_osaamiset(id),
   organisaatio_nimi TEXT,
   organisaatio_y_tunnus TEXT,
@@ -201,7 +189,6 @@ CREATE TABLE tyopaikalla_hankittavat_osaamisen_tyotehtavat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   tyopaikalla_hankittava_osaaminen_id INTEGER REFERENCES tyopaikalla_hankittavat_osaamiset(id),
   tyotehtava TEXT
 );
@@ -211,7 +198,6 @@ CREATE TABLE osaamisen_hankkimistavat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   jarjestajan_edustaja_nimi TEXT,
   jarjestajan_edustaja_rooli TEXT,
   jarjestajan_edustaja_oppilaitos_oid VARCHAR(26),
@@ -231,7 +217,6 @@ CREATE TABLE muut_oppimisymparistot(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   oppimisymparisto_koodi_uri TEXT,
   oppimisymparisto_koodi_versio INTEGER,
   selite TEXT,
@@ -252,7 +237,6 @@ CREATE TABLE olemassa_olevat_yhteiset_tutkinnon_osat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   hoks_id INTEGER REFERENCES hoksit(id),
   tutkinnon_osa_koodi_uri VARCHAR(256),
   tutkinnon_osa_koodi_versio INTEGER,
@@ -283,7 +267,6 @@ CREATE TABLE olemassa_olevat_yto_osa_alueet(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   olemassa_oleava_yhteinen_tutkinnon_osa_id INTEGER REFERENCES olemassa_olevat_yhteiset_tutkinnon_osat(id),
   osa_alue_koodi_uri VARCHAR(256),
   osa_alue_koodi_versio INTEGER,
@@ -306,7 +289,6 @@ CREATE TABLE puuttuvat_ammatilliset_tutkinnon_osat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   hoks_id INTEGER REFERENCES hoksit(id),
   tutkinnon_osa_koodi_uri VARCHAR(256),
   tutkinnon_osa_koodi_versio INTEGER,
@@ -335,7 +317,6 @@ CREATE TABLE opiskeluvalmiuksia_tukevat_opinnot(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   hoks_id INTEGER REFERENCES hoksit(id),
   nimi TEXT,
   kuvaus TEXT,
@@ -348,7 +329,6 @@ CREATE TABLE puuttuvat_yhteiset_tutkinnon_osat(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   hoks_id INTEGER REFERENCES hoksit(id),
   tutkinnon_osa_koodi_uri VARCHAR(256),
   tutkinnon_osa_koodi_versio INTEGER,
@@ -360,7 +340,6 @@ CREATE TABLE yhteisen_tutkinnon_osan_osa_alueet(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   yhteinen_tutkinnon_osa_id INTEGER REFERENCES puuttuvat_yhteiset_tutkinnon_osat(id),
   osa_alue_koodi_uri VARCHAR(256),
   osa_alue_koodi_versio INTEGER,
@@ -380,7 +359,6 @@ CREATE TABLE hankitun_yto_osaamisen_naytot(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   yhteisen_tutkinnon_osan_osa_alue_id INTEGER REFERENCES yhteisen_tutkinnon_osan_osa_alueet(id),
   jarjestaja_oppilaitos_oid VARCHAR(26),
   nayttoymparisto_nimi TEXT,
@@ -397,7 +375,6 @@ CREATE TABLE hankitun_yto_osaamisen_nayton_osaamistavoitteet(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  version INTEGER DEFAULT 0,
   hankitun_yto_osaamisen_naytto_id INTEGER REFERENCES hankitun_yto_osaamisen_naytot(id),
   osaamistavoite TEXT
 );

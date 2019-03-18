@@ -16,7 +16,6 @@
     :created_at
     :updated_at
     :deleted_at
-    :version
     others))
 
 (defn to-underscore-keys [m]
