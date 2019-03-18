@@ -63,14 +63,18 @@
       replaces)
     (apply dissoc x removals)))
 
-(defn from-sql [m operations]
-  (-> (convert-sql m operations)
-      remove-nils
-      remove-db-columns
-      to-dash-keys))
+(defn from-sql
+  ([m operations]
+    (-> (convert-sql m operations)
+        remove-nils
+        remove-db-columns
+        to-dash-keys))
+  ([m] (from-sql m {})))
 
-(defn to-sql [m operations]
-  (to-underscore-keys (convert-sql m operations)))
+(defn to-sql
+  ([m operations]
+    (to-underscore-keys (convert-sql m operations)))
+  ([m] (to-sql m {})))
 
 (defn hoks-from-sql [h]
   (from-sql
