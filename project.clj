@@ -107,7 +107,8 @@
             "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:test {:resource-paths ["resources/test"
-                                     "resources/test/src"]
+                                     "resources/test/src"
+                                     "resources/test/config"]
                     :dependencies [[cheshire "5.8.1"]
                                    [ring/ring-mock "0.3.2"]
                                    [ring/ring-devel "1.7.1"
