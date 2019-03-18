@@ -40,18 +40,18 @@
                      :nayttoymparisto-id (:id nayttoymparisto)
                      :alku (java.time.LocalDate/of 2019 3 11)
                      :loppu (java.time.LocalDate/of 2019 3 13)}])]
-      (db/insert-hankitun-osaamisen-nayton-koulutuksen-jarjestaja-arvioijat
+      (db/insert-hankitun-osaamisen-nayton-koulutuksen-jarjestaja-arvioijat!
         (first naytot)
         [{:nimi "Terttu Testaaja"
           :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921332"}}])
 
-      (db/insert-hankitun-osaamisen-nayton-tyoelama-arvioijat
+      (db/insert-hankitun-osaamisen-nayton-tyoelama-arvioijat!
         (first naytot)
         [{:nimi "Teppo Työmies"
           :organisaatio {:nimi "Kallen Paja Ky"
                          :y-tunnus "12345679-2"}}])
 
-      (db/insert-hankitun-osaamisen-nayton-tyotehtavat
+      (db/insert-hankitun-osaamisen-nayton-tyotehtavat!
         (first naytot)
         ["Renkaanvaihto"
          "Tuulilasin vaihto"])

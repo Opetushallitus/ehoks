@@ -177,7 +177,7 @@
            h-col))
     h-col))
 
-(defn insert-hankitun-osaamisen-nayton-koulutuksen-jarjestaja-arvioijat [hon c]
+(defn insert-hankitun-osaamisen-nayton-koulutuksen-jarjestaja-arvioijat! [hon c]
   (let [kja-col (insert-multi!
                 :koulutuksen_jarjestaja_arvioijat
                 (map h/koulutuksen-jarjestaja-arvioija-to-sql c))]
@@ -196,7 +196,7 @@
     [queries/select-koulutuksen-jarjestaja-arvioijat-by-hon-id id]
     {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
 
-(defn insert-hankitun-osaamisen-nayton-tyoelama-arvioijat [hon c]
+(defn insert-hankitun-osaamisen-nayton-tyoelama-arvioijat! [hon c]
   (let [kja-col (insert-multi!
                 :tyoelama_arvioijat
                 (map h/tyoelama-arvioija-to-sql c))]
@@ -215,7 +215,7 @@
     [queries/select-tyoelama-arvioijat-by-hon-id id]
     {:row-fn h/tyoelama-arvioija-from-sql}))
 
-(defn insert-hankitun-osaamisen-nayton-tyotehtavat [hon c]
+(defn insert-hankitun-osaamisen-nayton-tyotehtavat! [hon c]
   (insert-multi!
     :hankitun_osaamisen_tyotehtavat
     (map #(hash-map :hankitun_osaamisen_naytto_id (:id hon) :tyotehtava %) c)))
