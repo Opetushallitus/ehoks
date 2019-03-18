@@ -179,14 +179,16 @@
 (def hankitun-osaamisen-naytto-to-sql to-sql)
 
 (defn koulutuksen-jarjestaja-arvioija-from-sql [m]
-  (from-sql m {:replaces {:oppilaitos_oid [:organisaatio :oppilaitos-oid]}}))
+  (from-sql m {:replaces {:oppilaitos_oid [:organisaatio :oppilaitos-oid]}
+               :removals [:id]}))
 
 (defn koulutuksen-jarjestaja-arvioija-to-sql [m]
   (to-sql m {:replaces {[:organisaatio :oppilaitos-oid] :oppilaitos-oid}}))
 
 (defn tyoelama-arvioija-from-sql [m]
   (from-sql m {:replaces {:organisaatio_nimi [:organisaatio :nimi]
-                          :organisaatio_y_tunnus [:organisaatio :y-tunnus]}}))
+                          :organisaatio_y_tunnus [:organisaatio :y-tunnus]}
+               :removals [:id]}))
 
 (defn tyoelama-arvioija-to-sql [m]
   (to-sql m {:replaces {[:organisaatio :nimi] :organisaatio-nimi
@@ -194,7 +196,8 @@
 
 (def nayttoymparisto-to-sql to-sql)
 
-(def nayttoymparisto-from-sql from-sql)
+(defn nayttoymparisto-from-sql [m]
+  (from-sql m {:removals [:id]}))
 
 (defn tyotehtava-from-sql [m]
   (get m :tyotehtava))
