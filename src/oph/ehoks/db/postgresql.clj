@@ -65,10 +65,29 @@
     [queries/select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/puuttuva-paikallinen-tutkinnon-osa-from-sql}))
 
+(defn select-puuttuva-paikallinen-tutkinnon-osa-by-id [id]
+  (query
+    [queries/select-puuttuva-paikallinen-tutkinnon-osa-by-id id]
+    {:row-fn h/puuttuva-paikallinen-tutkinnon-osa-from-sql}))
+
 (defn insert-puuttuvat-paikalliset-tutkinnon-osat! [c]
   (insert-multi!
     :puuttuvat_paikalliset_tutkinnon_osat
     (map h/puuttuva-paikallinen-tutkinnon-osa-to-sql c)))
+
+(defn insert-puuttuva-paikallinen-tutkinnon-osa! [m]
+  (insert-one!
+    :puuttuvat_paikalliset_tutkinnon_osat
+    (h/puuttuva-paikallinen-tutkinnon-osa-to-sql m)))
+
+(defn update-puuttuva-paikallinen-tutkinnon-osa-by-id! [id m]
+  (update!
+    :puuttuvat_paikalliset_tutkinnon_osat
+    (h/puuttuva-paikallinen-tutkinnon-osa-to-sql m)
+    ["id = ? AND deleted_at IS NULL" id]))
+
+(def replace-puuttuva-paikallinen-tutkinnon-osa-by-id!
+  update-puuttuva-paikallinen-tutkinnon-osa-by-id!)
 
 (defn select-hankitun-osaamisen-naytot-by-ppto-id
   "Puuttuvan paikallisen tutkinnon osan hankitun osaamisen näytöt"
