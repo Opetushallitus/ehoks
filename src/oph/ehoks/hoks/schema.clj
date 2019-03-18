@@ -576,12 +576,10 @@
    {:methods {:any :optional}
     :types {:any s/Int}
     :description "Opiskelijan tavoitteen Koodisto-koodin versio"}
-   :versio {:methods {:any :excluded
-                      :get :required}
+   :versio {:methods {:any :optional}
             :types {:any s/Int}
             :description "HOKS-dokumentin versio"}
-   :laatija {:methods {:patch :optional
-                       :put :excluded}
+   :laatija {:methods {:any :optional}
              :types {:any HoksToimija}
              :description "HOKS-dokumentin luoneen henkilön nimi"}
    :paivittaja {:methods {:post :optional
@@ -592,8 +590,7 @@
    :hyvaksyja {:methods {:patch :optional}
                :types {:any HoksToimija}
                :description "Luodun HOKS-dokumentn hyväksyjän nimi"}
-   :luotu {:methods {:any :excluded
-                     :get :required}
+   :luotu {:methods {:any :optional}
            :types {:any s/Inst}
            :description
            "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
@@ -615,14 +612,11 @@
     :types {:any [OlemassaOlevaPaikallinenTutkinnonOsa]}
     :description "Olemassa oleva paikallinen tutkinnon osa"}
    :hyvaksytty
-   {:methods {:patch :excluded
-              :post :excluded
-              :get :required}
+   {:methods {:any :optional}
     :types {:any s/Inst}
     :description
     "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
-   :paivitetty {:methods {:any :excluded
-                          :get :required}
+   :paivitetty {:methods {:any :optional}
                 :types {:any s/Inst}
                 :description (str "HOKS-dokumentin viimeisin päivitysaika "
                                   "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
