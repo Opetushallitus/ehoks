@@ -74,14 +74,15 @@
       :path-params [id :- s/Int]
       :return (rest/response
                 hoks-schema/PuuttuvaPaikallinenTutkinnonOsa)
-      (rest/rest-ok (db/get-ppto-by-id id)))
+      (rest/rest-ok (mdb/get-ppto-by-id id)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo (tai korvaa vanhan) puuttuvan paikallisen tutkinnon osan"
       :body
       [ppto hoks-schema/PuuttuvaPaikallinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse)
-      (let [ppto-response (db/create-ppto! ppto)]
+      (let [ppto-response
+            (mdb/create-ppto! ppto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ppto-response))})))
 
@@ -89,7 +90,7 @@
       :summary "Päivittää HOKSin puuttuvan paikallisentutkinnon osan"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaPaikallinenTutkinnonOsaPaivitys]
-      (if (db/update-ppto! id values)
+      (if (mdb/update-ppto! id values)
         (response/no-content)
         (response/not-found "PPTO not found with given PPTO ID")))
 
@@ -98,7 +99,7 @@
       "Päivittää HOKSin puuttuvan paikallisen tutkinnon osan arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys]
-      (if (db/update-ppto-values! id values)
+      (if (mdb/update-ppto-values! id values)
         (response/no-content)
         (response/not-found "PPTO not found with given PPTO ID")))))
 
@@ -109,14 +110,14 @@
       :summary "Palauttaa HOKSin puuttuvan ammatillisen osaamisen"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/PuuttuvaAmmatillinenOsaaminen)
-      (rest/rest-ok (db/get-ppao-by-id id)))
+      (rest/rest-ok (mdb/get-ppao-by-id id)))
 
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) puuttuvan ammatillisen osaamisen HOKSiin"
       :body [ppao hoks-schema/PuuttuvaAmmatillinenOsaaminenLuonti]
       :return (rest/response schema/POSTResponse)
-      (let [ppao-response (db/create-ppao! ppao)]
+      (let [ppao-response (mdb/create-ppao! ppao)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ppao-response))})))
 
@@ -124,7 +125,7 @@
       :summary "Päivittää HOKSin puuttuvan ammatillisen osaamisen"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaAmmatillinenOsaaminenPaivitys]
-      (if (db/update-ppao! id values)
+      (if (mdb/update-ppao! id values)
         (response/no-content)
         (response/not-found "PPAO not found with given PPAO ID")))
 
@@ -133,7 +134,7 @@
       "Päivittää HOKSin puuttuvan ammatillisen osaamisen arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaAmmatillinenOsaaminenKentanPaivitys]
-      (if (db/update-ppao-values! id values)
+      (if (mdb/update-ppao-values! id values)
         (response/no-content)
         (response/not-found  "PPAO not found with given PPAO ID")))))
 
@@ -144,14 +145,14 @@
       :summary "Palauttaa HOKSin puuttuvat yhteisen tutkinnon osat"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/PuuttuvaYTO)
-      (rest/rest-ok (db/get-pyto-by-id id)))
+      (rest/rest-ok (mdb/get-pyto-by-id id)))
 
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) puuttuvan yhteisen tutkinnon osat HOKSiin"
       :body [pyto hoks-schema/PuuttuvaYTOLuonti]
       :return (rest/response schema/POSTResponse)
-      (let [pyto-response (db/create-pyto! pyto)]
+      (let [pyto-response (mdb/create-pyto! pyto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id pyto-response))})))
 
@@ -159,7 +160,7 @@
       :summary "Päivittää HOKSin puuttuvan yhteisen tutkinnon osat"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaYTOPaivitys]
-      (if (db/update-pyto! id values)
+      (if (mdb/update-pyto! id values)
         (response/no-content)
         (response/not-found "PYTO not found with given PYTO ID")))
 
@@ -168,7 +169,7 @@
       "Päivittää HOKSin puuttuvan yhteisen tutkinnon osat arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaYTOKentanPaivitys]
-      (if (db/update-pyto-values! id values)
+      (if (mdb/update-pyto-values! id values)
         (response/no-content)
         (response/not-found "PPTO not found with given PPTO ID")))))
 
@@ -179,14 +180,14 @@
       :summary "Palauttaa HOKSin opiskeluvalmiuksia tukevat opinnot"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot)
-      (rest/rest-ok (db/get-ovatu-by-id id)))
+      (rest/rest-ok (mdb/get-ovatu-by-id id)))
 
     (c-api/POST "/"  [:as request]
       :summary
       "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin"
       :body [ovatu hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
       :return (rest/response schema/POSTResponse)
-      (let [ovatu-response (db/create-ovatu! ovatu)]
+      (let [ovatu-response (mdb/create-ovatu! ovatu)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ovatu-response))})))
 
@@ -194,7 +195,7 @@
       :summary "Päivittää HOKSin opiskeluvalmiuksia tukevat opinnot"
       :path-params [id :- s/Int]
       :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
-      (if (db/update-ovatu! id values)
+      (if (mdb/update-ovatu! id values)
         (response/no-content)
         (response/not-found "OVATU not found with given OVATU ID")))
 
@@ -203,7 +204,7 @@
       "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
-      (if (db/update-ovatu-values! id values)
+      (if (mdb/update-ovatu-values! id values)
         (response/no-content)
         (response/not-found "OVATU not found with given OVATU ID")))))
 
