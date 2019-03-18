@@ -45,7 +45,12 @@
     {:row-fn h/hoks-from-sql}))
 
 (defn insert-hoks! [hoks]
-  (insert! :hoksit (h/hoks-to-sql hoks)))
+  (insert-one! :hoksit (h/hoks-to-sql hoks)))
+
+(defn update-hoks-by-id! [id hoks]
+  (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
+
+(def replace-hoks-by-id! update-hoks-by-id!)
 
 (defn select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
   (query
