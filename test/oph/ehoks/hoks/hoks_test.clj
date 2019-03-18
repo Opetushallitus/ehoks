@@ -22,7 +22,7 @@
 
 (deftest set-puuttuvat-paikalliset-tutkinnon-osat-test
   (testing "Set HOKS puuttuvat paikalliset tutkinnon osat"
-    (let [hoks (first (db/insert-hoks! {}))
+    (let [hoks (db/insert-hoks! {})
           ppto-col (db/insert-puuttuvat-paikalliset-tutkinnon-osat!
                      [{:koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
                        :tavoitteet-ja-sisallot "Testitavoite"
