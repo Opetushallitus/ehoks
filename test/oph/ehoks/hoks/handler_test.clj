@@ -3,13 +3,29 @@
             [oph.ehoks.handler :refer [app]]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [oph.ehoks.db.memory :as db]))
+            [oph.ehoks.db.postgresql :as db]
+            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.db.migrations :as m]))
 
 (def url "/ehoks-backend/api/v1/hoks")
 
 ; TODO Change to use OHJ auth
 ; TODO Test also role access
 ; TODO update tests to use real-like data
+
+(defn with-database [f]
+  (f)
+  (m/clean!)
+  (m/migrate!))
+
+(defn create-db [f]
+  (m/migrate!)
+  (f)
+  (m/clean!))
+
+(use-fixtures :each with-database)
+
+(use-fixtures :once create-db)
 
 (defn get-authenticated [url]
   (-> (utils/with-service-ticket
@@ -20,7 +36,6 @@
 
 (deftest post-and-get-ppto
   (testing "GET newly created puuttuva paikallinen tutkinnon osa"
-    (db/clear)
     (let [ppto-data   {:nimi "222"
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
@@ -57,7 +72,7 @@
 
 (deftest put-ppto
   (testing "PUT puuttuva paikallinen tutkinnon osa"
-    (db/clear)
+
     (let [ppto-data   {:nimi "222"
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
@@ -100,7 +115,7 @@
 
 (deftest patch-all-ppto
   (testing "PATCH all puuttuva paikallinen tutkinnon osa"
-    (db/clear)
+
     (let [ppto-data {:nimi "222"
                      :osaamisen-hankkimistavat []
                      :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
@@ -143,7 +158,7 @@
 
 (deftest patch-one-ppto
   (testing "PATCH one value puuttuva paikallinen tutkinnon osa"
-    (db/clear)
+
     (let [ppto-data {:nimi "222"
                      :osaamisen-hankkimistavat []
                      :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
@@ -196,7 +211,7 @@
 
 (deftest post-and-get-pao
   (testing "POST puuttuva ammatillinen osaaminen and then get the created ppao"
-    (db/clear)
+
     (let [post-response
           (utils/with-service-ticket
             app
@@ -227,7 +242,7 @@
 
 (deftest put-pao
   (testing "PUT puuttuva ammatillinen osaaminen"
-    (db/clear)
+
     (let [post-response
           (utils/with-service-ticket
             app
@@ -281,7 +296,7 @@
 
 (deftest patch-all-pao
   (testing "PATCH ALL puuttuva ammatillinen osaaminen"
-    (db/clear)
+
     (let [post-response
           (utils/with-service-ticket
             app
@@ -316,7 +331,7 @@
 
 (deftest patch-one-pao
   (testing "PATCH one value puuttuva ammatillinen osaaminen"
-    (db/clear)
+
     (let [post-response
           (utils/with-service-ticket
             app
@@ -404,7 +419,7 @@
 
 (deftest post-and-get-pyto
   (testing "POST puuttuvat yhteisen tutkinnon osat"
-    (db/clear)
+
     (let [post-response
           (utils/with-service-ticket
             app
@@ -435,7 +450,7 @@
 
 (deftest put-pyto
   (testing "PUT puuttuvat yhteisen tutkinnon osat"
-    (db/clear)
+
     (let [post-response
           (utils/with-service-ticket
             app
@@ -459,7 +474,7 @@
 
 (deftest patch-one-pyto
   (testing "PATCH one value puuttuvat yhteisen tutkinnon osat"
-    (db/clear)
+
     (let [post-response
           (utils/with-service-ticket
             app
@@ -483,7 +498,7 @@
 
 (deftest patch-all-pyto
   (testing "PATCH all puuttuvat yhteisen tutkinnon osat"
-    (db/clear)
+
     (let [post-response
           (utils/with-service-ticket
             app
@@ -513,7 +528,7 @@
 
 (deftest post-and-get-ovatu
   (testing "GET opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
+
     (let [post-response
           (utils/with-service-ticket
             app
@@ -549,7 +564,7 @@
 
 (deftest put-ovatu
   (testing "PUT opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
+
     (let [post-response
           (utils/with-service-ticket
             app
@@ -577,7 +592,7 @@
 
 (deftest patch-one-ovatu
   (testing "PATCH one value opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
+
     (let [post-response
           (utils/with-service-ticket
             app
@@ -602,7 +617,7 @@
 
 (deftest patch-all-ovatu
   (testing "PATCH all opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
+
     (let [post-response
           (utils/with-service-ticket
             app
@@ -630,7 +645,7 @@
 
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
-    (db/clear)
+
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
@@ -658,7 +673,7 @@
 
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
-    (db/clear)
+
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
@@ -675,7 +690,7 @@
 
 (deftest prevent-getting-unauthorized-hoks
   (testing "Prevent GET unauthorized HOKS"
-    (db/clear)
+
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
@@ -698,7 +713,7 @@
 
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"
-    (db/clear)
+
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
@@ -730,7 +745,7 @@
 
 (deftest put-created-hoks
   (testing "PUT updates created HOKS"
-    (db/clear)
+
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
@@ -765,7 +780,7 @@
 
 (deftest put-non-existing-hoks
   (testing "PUT prevents updating non existing HOKS"
-    (db/clear)
+
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :paivittaja {:nimi "Teuvo Testaaja"}
@@ -782,7 +797,7 @@
 
 (deftest patch-created-hoks
   (testing "PATCH updates value of created HOKS"
-    (db/clear)
+
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
@@ -816,7 +831,7 @@
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
-    (db/clear)
+
     (let [response
           (utils/with-service-ticket
             app
