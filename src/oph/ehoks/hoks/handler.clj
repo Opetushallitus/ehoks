@@ -5,7 +5,8 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as rest]
-            [oph.ehoks.db.memory :as db]
+            [oph.ehoks.db.postgresql :as db]
+            [oph.ehoks.db.memory :as mdb]
             [oph.ehoks.middleware :refer [wrap-service-ticket]]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
@@ -56,14 +57,12 @@
   (fn
     ([request respond raise]
       (check-hoks-access!
-        (db/get-hoks-by-id
-          (get-in request [:query-params :id]))
+        (first (db/select-hoks-by-id (get-in request [:query-params :id])))
         request)
       (handler request respond raise))
     ([request]
       (check-hoks-access!
-        (db/get-hoks-by-id
-          (get-in request [:query-params :id]))
+        (first (db/select-hoks-by-id (get-in request [:query-params :id])))
         request)
       (handler request))))
 
@@ -218,9 +217,9 @@
         :summary "Palauttaa HOKSin"
         :path-params [id :- s/Int]
         :return (rest/response hoks-schema/HOKS)
-        (let [hoks (db/get-hoks-by-id id)]
+        (let [hoks (first (db/select-hoks-by-id id))]
           (check-hoks-access! hoks request)
-          (rest/rest-ok hoks)))
+          (rest/rest-ok (dissoc hoks :eid))))
 
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
@@ -231,7 +230,7 @@
             {:error
              (str "Creating HOKS is not allowed. "
                   "Check student and 'opiskeluoikeus'.")}))
-        (let [h (db/create-hoks! hoks)]
+        (let [h (db/insert-hoks! hoks)]
           (when (:save-hoks-json? config)
             (write-hoks-json! h))
           (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id h))})))
@@ -240,18 +239,18 @@
         :summary "Päivittää olemassa olevaa HOKSia"
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSPaivitys]
-        (let [hoks (db/get-hoks-by-id id)]
+        (let [hoks (first (db/select-hoks-by-id id))]
           (check-hoks-access! hoks request))
-        (db/update-hoks! id values)
+        (db/replace-hoks-by-id! id values)
         (response/no-content))
 
       (c-api/PATCH "/:id" [id :as request]
         :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSKentanPaivitys]
-        (let [hoks (db/get-hoks-by-id id)]
+        (let [hoks (first (db/select-hoks-by-id id))]
           (check-hoks-access! hoks request))
-        (db/update-hoks-values! id values)
+        (db/update-hoks-by-id! id values)
         (response/no-content))
 
       puuttuva-ammatillinen-osaaminen
