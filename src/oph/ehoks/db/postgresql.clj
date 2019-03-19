@@ -170,7 +170,7 @@
   [ppto oh]
   (insert-one!
     :osaamisen_hankkimistavat
-    (h/osaamisen-hankkimistavat-to-sql oh)))
+    (h/osaamisen-hankkimistapa-to-sql oh)))
 
 (defn insert-puuttuvan-paikallisen-tutkinnon-osan-osaamisen-hankkimistapa!
   [ppto oh]
@@ -178,34 +178,6 @@
     :puuttuvan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
     {:puuttuva_paikallinen_tutkinnon_osa_id (:id ppto)
      :osaamisen_hankkimistapa_id (:id oh)}))
-
-(defn insert-ppto-osaamisen-hankkimistavat!
-  "Puuttuvan paikallisen tutkinnon osan osaamisen hankkimistavat"
-  [ppto c]
-  (let [oht-col
-        (mapv
-          (fn [o]
-            (let [tho (insert-tyopaikalla-hankittava-osaaminen!
-                        (:tyopaikalla-hankittava-osaaminen o))
-                  o-db (insert-one!
-                         :osaamisen_hankkimistavat
-                         (-> o
-                             (assoc :tyopaikalla-hankittava-osaaminen-id
-                                    (:id tho))
-                             (dissoc :tyopaikalla-hankittava-osaaminen)
-                             h/osaamisen-hankkimistavat-to-sql))]
-              (insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
-                o-db (:muut-oppimisymparisto o))
-              o-db))
-          c)]
-    (insert-multi!
-      :puuttuvan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-      (map
-        #(hash-map
-           :puuttuva_paikallinen_tutkinnon_osa_id (:id ppto)
-           :osaamisen_hankkimistapa_id (:id %))
-        oht-col))
-    oht-col))
 
 (defn select-osaamisen-hankkimistavat-by-ppto-id
   "Puuttuvan paikallisen tutkinnon osan osaamisen hankkimistavat"

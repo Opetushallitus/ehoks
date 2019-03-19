@@ -152,7 +152,7 @@
       :hankkijan_edustaja_oppilaitos_oid
       [:hankkijan-edustaja :oppilaitos-oid]}}))
 
-(defn osaamisen-hankkimistavat-to-sql [m]
+(defn osaamisen-hankkimistapa-to-sql [m]
   (to-sql
     m
     {:removals [:muut-oppimisymparisto
