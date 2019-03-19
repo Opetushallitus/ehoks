@@ -165,6 +165,20 @@
     [queries/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id id]
     {:row-fn h/muu-oppimisymparisto-from-sql}))
 
+(defn insert-ppto-osaamisen-hankkimistapa!
+  "Puuttuvan paikallisen tutkinnon osan osaamisen hankkimistavat"
+  [ppto h]
+  (insert-one!
+    :osaamisen_hankkimistavat
+    (h/osaamisen-hankkimistavat-to-sql h)))
+
+(defn insert-puuttuvan-paikallisen-tutkinnon-osan-osaamisen-hankkimistapa
+  [ppto oh]
+  (insert-one!
+    :puuttuvan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
+    {:puuttuva_paikallinen_tutkinnon_osa_id (:id ppto)
+     :osaamisen_hankkimistapa_id (:id oh)}))
+
 (defn insert-ppto-osaamisen-hankkimistavat!
   "Puuttuvan paikallisen tutkinnon osan osaamisen hankkimistavat"
   [ppto c]
