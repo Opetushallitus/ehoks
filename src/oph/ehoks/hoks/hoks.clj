@@ -89,6 +89,42 @@
          set-olemassa-olevat-yhteiset-tutkinnon-osat)
     (db/select-hoks-by-oppija-oid oid)))
 
+(defn save-ppto-osaamisen-hankkimistavat! [ppto c]
+  (db/insert-ppto-osaamisen-hankkimistavat! ppto c))
+
+(defn save-ppto-hankitun-osaamisen-naytto! [ppto n]
+  (let [nayttoymparisto
+        (db/insert-nayttoymparisto! (:nayttoymparisto n))]
+    (let [naytto
+          (db/insert-ppto-hankitun-osaamisen-naytto!
+            ppto
+            (assoc n :nayttoymparisto-id (:id nayttoymparisto)))]
+      (db/insert-hankitun-osaamisen-nayton-koulutuksen-jarjestaja-arvioijat!
+        naytto (:koulutuksen-jarjestaja-arvioijat n))
+      (db/insert-hankitun-osaamisen-nayton-tyoelama-arvioijat!
+        naytto (:tyoelama-arvioijat n))
+      (db/insert-hankitun-osaamisen-nayton-tyotehtavat!
+        naytto (:keskeiset-tyotehtavat-naytto n)))))
+
+(defn save-ppto-hankitun-osaamisen-naytot! [ppto c]
+  (mapv
+    #(save-ppto-hankitun-osaamisen-naytto! ppto %)
+    c))
+
+(defn save-puuttuva-paikallinen-tutkinnon-osa! [h ppto]
+  (let [ppto-db (db/insert-puuttuva-paikallinen-tutkinnon-osa! ppto)]
+    (assoc
+      ppto-db
+      :osaamisen-hankkimistavat
+      (save-ppto-osaamisen-hankkimistavat!
+        ppto-db (:osaamisen-hankkimistavat ppto))
+      :hankitun-osaamisen-naytto
+      (save-ppto-hankitun-osaamisen-naytot!
+        ppto-db (:hankitun-osaamisen-naytto ppto)))))
+
+(defn save-puuttuvat-paikalliset-tutkinnon-osat! [h c]
+  (mapv #(save-puuttuva-paikallinen-tutkinnon-osa! h %) c))
+
 (defn save-hoks! [h]
   (let [saved-hoks (first (db/insert-hoks! h))]
     (db/insert-puuttuvat-paikalliset-tutkinnon-osat!
