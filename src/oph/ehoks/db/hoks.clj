@@ -176,7 +176,14 @@
     m
     {:replaces {:jarjestaja_oppilaitos_oid [:jarjestaja :oppilaitos-oid]}}))
 
-(def hankitun-osaamisen-naytto-to-sql to-sql)
+(defn hankitun-osaamisen-naytto-to-sql [m]
+  (to-sql
+    m
+    {:removals [:nayttoymparisto
+                :keskeiset-tyotehtavat-naytto
+                :koulutuksen-jarjestaja-arvioijat
+                :tyoelama-arvioijat]
+     :replaces {[:jarjestaja :oppilaitos-oid] :jarjestaja-oppilaitos-oid}}))
 
 (defn koulutuksen-jarjestaja-arvioija-from-sql [m]
   (from-sql m {:replaces {:oppilaitos_oid [:organisaatio :oppilaitos-oid]}
