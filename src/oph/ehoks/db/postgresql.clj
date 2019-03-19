@@ -58,7 +58,14 @@
     {:row-fn h/olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql}))
 
 (defn insert-olemassa-oleva-ammatillinen-tutkinnon-osa! [m]
-  (insert! :hoksit (h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql m)))
+  (insert!
+    :olemassa_olevat_ammatilliset_tutkinnon_osat
+    (h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql m)))
+
+(defn insert-olemassa-olevat-ammatilliset-tutkinnon-osat! [c]
+  (insert-multi!
+    :olemassa_olevat_ammatilliset_tutkinnon_osat
+    (map h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql c)))
 
 (defn select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id [id]
   (query
@@ -193,6 +200,18 @@
     [queries/select-osaamisen-hankkmistavat-by-ppto-id id]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
+(defn insert-ppto-hankitun-osaamisen-naytto!
+  "Puuttuvan paikallisen tutkinnon osan hankitun osaamisen näyttö"
+  [ppto m]
+  (let [h (insert-one!
+            :hankitun_osaamisen_naytot
+            (h/hankitun-osaamisen-naytto-to-sql m))]
+    (insert-one!
+      :puuttuvan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto
+      {:puuttuva_paikallinen_tutkinnon_osa_id (:id ppto)
+       :hankitun_osaamisen_naytto_id (:id h)})
+    h))
+
 (defn insert-ppto-hankitun-osaamisen-naytot!
   "Puuttuvan paikallisen tutkinnon osan hankitun osaamisen näytöt"
   [ppto c]
@@ -256,9 +275,14 @@
     {:row-fn h/tyotehtava-from-sql}))
 
 (defn insert-nayttoymparisto! [m]
-  (insert!
+  (insert-one!
     :nayttoymparistot
     (h/nayttoymparisto-to-sql m)))
+
+(defn insert-nayttoymparistot! [c]
+  (insert-multi!
+    :nayttoymparistot
+    (map h/nayttoymparisto-to-sql c)))
 
 (defn select-nayttoymparisto-by-id [id]
   (first
