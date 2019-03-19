@@ -155,7 +155,8 @@
 (defn osaamisen-hankkimistavat-to-sql [m]
   (to-sql
     m
-    {:removals [:muut-oppimisymparisto]
+    {:removals [:muut-oppimisymparisto
+                :tyopaikalla-hankittava-osaaminen]
      :replaces
      {[:jarjestajan-edustaja :nimi] :jarjestajan-edustaja-nimi
       [:jarjestajan-edustaja :rooli] :jarjestajan-edustaja-rooli

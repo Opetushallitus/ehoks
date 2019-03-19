@@ -167,12 +167,12 @@
 
 (defn insert-ppto-osaamisen-hankkimistapa!
   "Puuttuvan paikallisen tutkinnon osan osaamisen hankkimistavat"
-  [ppto h]
+  [ppto oh]
   (insert-one!
     :osaamisen_hankkimistavat
-    (h/osaamisen-hankkimistavat-to-sql h)))
+    (h/osaamisen-hankkimistavat-to-sql oh)))
 
-(defn insert-puuttuvan-paikallisen-tutkinnon-osan-osaamisen-hankkimistapa
+(defn insert-puuttuvan-paikallisen-tutkinnon-osan-osaamisen-hankkimistapa!
   [ppto oh]
   (insert-one!
     :puuttuvan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat

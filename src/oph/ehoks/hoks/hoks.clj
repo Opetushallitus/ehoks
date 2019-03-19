@@ -89,8 +89,21 @@
          set-olemassa-olevat-yhteiset-tutkinnon-osat)
     (db/select-hoks-by-oppija-oid oid)))
 
+(defn save-ppto-osaamisen-hankkimistapa! [ppto oh]
+  (let [tho (db/insert-tyopaikalla-hankittava-osaaminen!
+              (:tyopaikalla-hankittava-osaaminen oh))
+        o-db (db/insert-ppto-osaamisen-hankkimistapa!
+               ppto
+               (assoc oh :tyopaikalla-hankittava-osaaminen-id
+                      (:id tho)))]
+    (db/insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
+      o-db (:muut-oppimisymparisto oh))
+    (db/insert-puuttuvan-paikallisen-tutkinnon-osan-osaamisen-hankkimistapa!
+      ppto o-db)
+    o-db))
+
 (defn save-ppto-osaamisen-hankkimistavat! [ppto c]
-  (db/insert-ppto-osaamisen-hankkimistavat! ppto c))
+  (mapv #(save-ppto-osaamisen-hankkimistapa! ppto %) c))
 
 (defn save-ppto-hankitun-osaamisen-naytto! [ppto n]
   (let [nayttoymparisto
