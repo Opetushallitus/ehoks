@@ -27,7 +27,6 @@ install:
   - lein deps
 
 before_script:
-  - source ./scripts/travis-scripts/run_postgres.sh
   - ./scripts/travis-scripts/run_postgres.sh
 
 script:
