@@ -37,23 +37,20 @@
              :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
           :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
           :tarkentavat-tiedot-naytto []}])
-      (eq (dissoc
-            (h/set-olemassa-olevat-ammatilliset-tutkinnon-osat
-              (first (db/select-hoks-by-id (:id hoks))))
-            :eid :id)
-          {:olemassa-olevat-ammatilliset-tutkinnon-osat
-           [{:valittu-todentamisen-prosessi-koodi-versio 1
-             :tutkinnon-osa-koodi-versio 2
-             :valittu-todentamisen-prosessi-koodi-uri
-             "osaamisentodentamisenprosessi_3"
-             :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
-             :tarkentavat-tiedot-arvioija
-             {:lahetetty-arvioitavaksi (java.time.LocalDate/of 2019 3 18)
-              :aiemmin-hankitun-osaamisen-arvioijat
-              [{:nimi "Erkki Esimerkki"
-                :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
-             :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
-             :tarkentavat-tiedot-naytto []}]}))))
+      (eq (h/get-olemassa-olevat-ammatilliset-tutkinnon-osat
+            (:id hoks))
+          [{:valittu-todentamisen-prosessi-koodi-versio 1
+            :tutkinnon-osa-koodi-versio 2
+            :valittu-todentamisen-prosessi-koodi-uri
+            "osaamisentodentamisenprosessi_3"
+            :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
+            :tarkentavat-tiedot-arvioija
+            {:lahetetty-arvioitavaksi (java.time.LocalDate/of 2019 3 18)
+             :aiemmin-hankitun-osaamisen-arvioijat
+             [{:nimi "Erkki Esimerkki"
+               :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
+            :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
+            :tarkentavat-tiedot-naytto []}]))))
 
 (deftest set-puuttuvat-paikalliset-tutkinnon-osat-test
   (testing "Set HOKS puuttuvat paikalliset tutkinnon osat"
