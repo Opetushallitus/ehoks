@@ -52,13 +52,39 @@
 
 (def replace-hoks-by-id! update-hoks-by-id!)
 
+(defn select-todennettu-arviointi-lisatiedot-by-id [id]
+  (query
+    [queries/select-todennettu-arviointi-lisatiedot-by-id id]
+    {:row-fn h/todennettu-arviointi-lisatiedot-from-sql}))
+
+(defn insert-todennettu-arviointi-lisatiedot! [m]
+  (insert-one!
+    :todennettu_arviointi_lisatiedot
+    (h/todennettu-arviointi-lisatiedot-to-sql m)))
+
+(defn select-arvioijat-by-todennettu-arviointi-id [id]
+  (query
+    [queries/select-arvioijat-by-todennettu-arviointi-id id]
+    {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
+
+(defn insert-todennettu-arviointi-arvioija! [tta m]
+  (insert-one!
+    :todennettu_arviointi_arvioijat
+    {:todennettu_arviointi_lisatiedot_id (:id tta)
+     :koulutuksen_jarjestaja_arvioija_id (:id m)}))
+
+(defn insert-koulutuksen-jarjestaja-arvioijat! [c]
+  (insert-multi!
+    :koulutuksen_jarjestaja_arvioijat
+    (map h/koulutuksen-jarjestaja-arvioija-to-sql c)))
+
 (defn select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
   (query
     [queries/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql}))
 
 (defn insert-olemassa-oleva-ammatillinen-tutkinnon-osa! [m]
-  (insert!
+  (insert-one!
     :olemassa_olevat_ammatilliset_tutkinnon_osat
     (h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql m)))
 
