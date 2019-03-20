@@ -8,10 +8,11 @@ jdk:
   - oraclejdk8
 
 services:
+- docker
 - postgresql
 
 addons:
-  postgresql: "9.6.6"
+  postgresql: "9.5"
 
 env:
   global:
