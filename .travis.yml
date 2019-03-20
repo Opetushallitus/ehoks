@@ -7,6 +7,12 @@ language: clojure
 jdk:
   - oraclejdk8
 
+services:
+- postgresql
+
+addons:
+  postgresql: "10.6"
+
 env:
   global:
     # AWS_ACCESS_KEY_ID
@@ -18,6 +24,10 @@ install:
   - git clone https://github.com/Opetushallitus/ci-tools.git
   - source ci-tools/common/setup-tools.sh
   - lein deps
+
+before_script:
+- psql -c "create database ehoks_test;" -U postgres
+- psql -d ehoks_test -f scripts/init_travis_postgres.sql
 
 script:
   - mkdir -p resources/uberjar
