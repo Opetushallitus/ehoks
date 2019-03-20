@@ -99,12 +99,13 @@
     :eid #(if (nil? %) (str (java.util.UUID/randomUUID)) %))) ; generate and check, move to insert and lock
 
 (defn olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql [m]
-  (to-dash-keys m))
+  (from-sql m {:removals [:id :hoks_id]}))
 
 (defn olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql [m]
   (to-sql
     m
-    {:removals [:tarkentavat-tiedot-naytto :tarkentavat-tiedot-arvioija]}))
+    {:removals [:tarkentavat-tiedot-naytto
+                :tarkentavat-tiedot-arvioija]}))
 
 (defn puuttuva-paikallinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]}))
@@ -218,3 +219,9 @@
   (from-sql m {:replaces
                {:lahetetty_arvioitavaksi
                 [:todennettu_arviointi_lisatiedot :lahetetty_arvioitavaksi]}}))
+
+(defn todennettu-arviointi-lisatiedot-to-sql [m]
+  (to-sql m {:removals [:aiemmin-hankitun-osaamisen-arvioijat]}))
+
+(defn todennettu-arviointi-lisatiedot-from-sql [m]
+  (from-sql m))
