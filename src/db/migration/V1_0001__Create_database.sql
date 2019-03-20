@@ -113,7 +113,7 @@ CREATE TABLE olemassa_olevat_ammatilliset_tutkinnon_osat(
   koulutuksen_jarjestaja_oid VARCHAR(26),
   valittu_todentamisen_prosessi_koodi_uri VARCHAR(256),
   valittu_todentamisen_prosessi_koodi_versio INTEGER,
-  tarkentavat_tiedot_arvioija INTEGER REFERENCES todennettu_arviointi_lisatiedot(id)
+  tarkentavat_tiedot_arvioija_id INTEGER REFERENCES todennettu_arviointi_lisatiedot(id)
 );
 
 CREATE TABLE olemassa_olevan_ammatillisen_tutkinnon_osan_hankitun_osaamisen_naytto(
