@@ -27,12 +27,12 @@ install:
   - lein deps
 
 before_script:
-- psql -c "create database ehoks_test;" -U postgres
-- psql -d ehoks_test -f scripts/init_travis_postgres.sql
+- ./scripts/travis-scripts/run_postgres.sh
 
 script:
   - mkdir -p resources/uberjar
   - ARTIFACT_NAME=ehoks BUILD_ID="ci-$TRAVIS_BUILD_NUMBER" ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
+  - export CONFIG="oph-configuration/test.edn"
   - lein checkall
   - lein test
   - lein uberjar
