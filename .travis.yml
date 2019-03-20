@@ -11,7 +11,7 @@ services:
 - postgresql
 
 addons:
-  postgresql: "10.6"
+  postgresql: "9.6.6"
 
 env:
   global:
