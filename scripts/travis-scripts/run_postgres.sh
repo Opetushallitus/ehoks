@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-
-psql -c "create database ehoks_test;" -U postgres
-psql -d ehoks_test -f scripts/travis-scripts/init_travis_postgres.sql
+cd scripts/postgres-docker
+docker build -t ehoks-postgres .
+docker run --rm --name ehoks-postgres -p 5432:5432 ehoks-postgres
