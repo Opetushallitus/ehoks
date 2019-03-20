@@ -22,21 +22,21 @@
 
 (deftest set-olemassa-olevat-ammatilliset-tutkinnon-osat-test
   (testing "Set HOKS olemassa olevat tutkinnon osat"
-    (let [hoks (db/insert-hoks! {})
-          ooato-col
-          (db/insert-olemassa-olevat-ammatilliset-tutkinnon-osat!
-            [{:valittu-todentamisen-prosessi-koodi-versio 1
-              :tutkinnon-osa-koodi-versio 2
-              :valittu-todentamisen-prosessi-koodi-uri
-              "osaamisentodentamisenprosessi_3"
-              :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
-              :tarkentavat-tiedot-arvioija
-              {:lahetetty-arvioitavaksi "2019-03-18"
-               :aiemmin-hankitun-osaamisen-arvioijat
-               [{:nimi "Erkki Esimerkki"
-                 :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
-              :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
-              :tarkentavat-tiedot-naytto []}])]
+    (let [hoks (db/insert-hoks! {})]
+      (h/save-olemassa-olevat-ammatilliset-tutkinnon-osat
+        hoks
+        [{:valittu-todentamisen-prosessi-koodi-versio 1
+          :tutkinnon-osa-koodi-versio 2
+          :valittu-todentamisen-prosessi-koodi-uri
+          "osaamisentodentamisenprosessi_3"
+          :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
+          :tarkentavat-tiedot-arvioija
+          {:lahetetty-arvioitavaksi (java.time.LocalDate/of 2019 3 18)
+           :aiemmin-hankitun-osaamisen-arvioijat
+           [{:nimi "Erkki Esimerkki"
+             :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
+          :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
+          :tarkentavat-tiedot-naytto []}])
       (eq (dissoc
             (h/set-olemassa-olevat-ammatilliset-tutkinnon-osat
               (first (db/select-hoks-by-id (:id hoks))))
@@ -48,7 +48,7 @@
              "osaamisentodentamisenprosessi_3"
              :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
              :tarkentavat-tiedot-arvioija
-             {:lahetetty-arvioitavaksi "2019-03-18"
+             {:lahetetty-arvioitavaksi (java.time.LocalDate/of 2019 3 18)
               :aiemmin-hankitun-osaamisen-arvioijat
               [{:nimi "Erkki Esimerkki"
                 :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
@@ -63,7 +63,6 @@
                      [{:koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
                        :tavoitteet-ja-sisallot "Testitavoite"
                        :nimi "Orientaatio alaan"
-                       :hoks-id (:id hoks)
                        :osaamisen-hankkimistavat
                        [{:jarjestajan-edustaja
                          {:nimi "Erkki Edustaja"
