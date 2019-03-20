@@ -35,3 +35,7 @@
   "tyopaikalla-hankittavat-osaamiset/select_tyotehtavat.sql")
 (defq select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
   "muut-oppimisymparistot/select_by_osaamisen_hankkimistapa_id.sql")
+(defq select-todennettu-arviointi-lisatiedot-by-id
+  "todennettu-arviointi-lisatiedot/select_by_id.sql")
+(defq select-arvioijat-by-todennettu-arviointi-id
+  "todennettu-arviointi-lisatiedot/select_arvioijat.sql")
