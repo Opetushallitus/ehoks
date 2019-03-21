@@ -99,7 +99,7 @@
     :eid #(if (nil? %) (str (java.util.UUID/randomUUID)) %))) ; generate and check, move to insert and lock
 
 (defn olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql [m]
-  (from-sql m {:removals [:id :hoks_id]}))
+  (from-sql m {:removals [:hoks_id]}))
 
 (defn olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql [m]
   (to-sql
