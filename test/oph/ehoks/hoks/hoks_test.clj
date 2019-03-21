@@ -20,7 +20,7 @@
 
 (use-fixtures :once create-db)
 
-(deftest set-olemassa-olevat-ammatilliset-tutkinnon-osat-test
+(deftest get-olemassa-olevat-ammatilliset-tutkinnon-osat-test
   (testing "Set HOKS olemassa olevat tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
       (h/save-olemassa-olevat-ammatilliset-tutkinnon-osat
@@ -52,7 +52,7 @@
             :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
             :tarkentavat-tiedot-naytto []}]))))
 
-(deftest set-puuttuvat-paikalliset-tutkinnon-osat-test
+(deftest get-puuttuvat-paikalliset-tutkinnon-osat-test
   (testing "Set HOKS puuttuvat paikalliset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})
           ppto-col (h/save-puuttuvat-paikalliset-tutkinnon-osat!
@@ -109,61 +109,57 @@
                          :alku (java.time.LocalDate/of 2019 3 11)
                          :loppu (java.time.LocalDate/of 2019 3 13)}]}])]
       (eq
-        (dissoc
-          (h/set-puuttuvat-paikalliset-tutkinnon-osat
-            (first (db/select-hoks-by-id (:id hoks))))
-          :updated-at :created-at :eid :version :id)
-        {:puuttuvat-paikalliset-tutkinnon-osat
-         [{:koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
-           :tavoitteet-ja-sisallot "Testitavoite"
-           :nimi "Orientaatio alaan"
-           :id 1
-           :osaamisen-hankkimistavat
-           [{:jarjestajan-edustaja
-             {:nimi "Erkki Edustaja"
-              :rooli "Valvoja"
-              :oppilaitos-oid "1.2.246.562.10.54453921340"}
-             :osaamisen-hankkimistapa-koodi-uri
-             "osaamisenhankkimistapa_oppisopimus"
-             :osaamisen-hankkimistapa-koodi-versio 1
-             :muut-oppimisymparisto
-             [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
-               :oppimisymparisto-koodi-versio 1
-               :selite "Testioppilaitos"
-               :lisatiedot false}]
-             :ajanjakson-tarkenne "Ei tarkennettavaa"
-             :tyopaikalla-hankittava-osaaminen
-             {:vastuullinen-ohjaaja {:nimi "Olli Ohjaaja"
-                                     :sahkoposti "olli.ohjaaja@esimerkki.com"}
-              :tyopaikan-nimi "Ohjaus Oy"
-              :tyopaikan-y-tunnus "12345689-4"
-              :muut-osallistujat [{:organisaatio {:nimi "Esimerkki Oy"
-                                                  :y-tunnus "12345688-5"}
-                                   :nimi "Kiira Kirjaaja"
-                                   :rooli "Avustaja"}]
-              :keskeiset-tyotehtavat ["Hälytysten valvonta"
-                                      "Vuoronvaihdon tarkistukset"]
-              :lisatiedot false}
-             :hankkijan-edustaja {:nimi "Harri Hankkija"
-                                  :rooli "Opettaja"
-                                  :oppilaitos-oid "1.2.246.562.10.54453921350"}
-             :alku (java.time.LocalDate/of 2019 2 10)
-             :loppu (java.time.LocalDate/of 2019 2 15)}]
-           :hankitun-osaamisen-naytto
-           [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921330"}
-             :nayttoymparisto {:nimi "Testiympäristö"
-                               :y-tunnus "12345678-1"
-                               :kuvaus "Test"}
-             :keskeiset-tyotehtavat-naytto ["Renkaanvaihto"
-                                            "Tuulilasin vaihto"]
-             :koulutuksen-jarjestaja-arvioijat
-             [{:nimi "Terttu Testaaja"
-               :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921332"}}]
-             :tyoelama-arvioijat [{:nimi "Teppo Työmies"
-                                   :organisaatio {:nimi "Kallen Paja Ky"
-                                                  :y-tunnus "12345679-2"}}]
-             :id 1
-             :osa-alue-koodi-uri "ammatillisenoppiaineet_fk"
-             :osa-alue-koodi-versio 2
-             :alku (java.time.LocalDate/of 2019 3 11)
-             :loppu (java.time.LocalDate/of 2019 3 13)}]}]}))))
+        (h/get-puuttuvat-paikalliset-tutkinnon-osat (:id hoks))
+        [{:koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
+          :tavoitteet-ja-sisallot "Testitavoite"
+          :nimi "Orientaatio alaan"
+          :id 1
+          :osaamisen-hankkimistavat
+          [{:jarjestajan-edustaja
+            {:nimi "Erkki Edustaja"
+             :rooli "Valvoja"
+             :oppilaitos-oid "1.2.246.562.10.54453921340"}
+            :osaamisen-hankkimistapa-koodi-uri
+            "osaamisenhankkimistapa_oppisopimus"
+            :osaamisen-hankkimistapa-koodi-versio 1
+            :muut-oppimisymparisto
+            [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
+              :oppimisymparisto-koodi-versio 1
+              :selite "Testioppilaitos"
+              :lisatiedot false}]
+            :ajanjakson-tarkenne "Ei tarkennettavaa"
+            :tyopaikalla-hankittava-osaaminen
+            {:vastuullinen-ohjaaja {:nimi "Olli Ohjaaja"
+                                    :sahkoposti "olli.ohjaaja@esimerkki.com"}
+             :tyopaikan-nimi "Ohjaus Oy"
+             :tyopaikan-y-tunnus "12345689-4"
+             :muut-osallistujat [{:organisaatio {:nimi "Esimerkki Oy"
+                                                 :y-tunnus "12345688-5"}
+                                  :nimi "Kiira Kirjaaja"
+                                  :rooli "Avustaja"}]
+             :keskeiset-tyotehtavat ["Hälytysten valvonta"
+                                     "Vuoronvaihdon tarkistukset"]
+             :lisatiedot false}
+            :hankkijan-edustaja {:nimi "Harri Hankkija"
+                                 :rooli "Opettaja"
+                                 :oppilaitos-oid "1.2.246.562.10.54453921350"}
+            :alku (java.time.LocalDate/of 2019 2 10)
+            :loppu (java.time.LocalDate/of 2019 2 15)}]
+          :hankitun-osaamisen-naytto
+          [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921330"}
+            :nayttoymparisto {:nimi "Testiympäristö"
+                              :y-tunnus "12345678-1"
+                              :kuvaus "Test"}
+            :keskeiset-tyotehtavat-naytto ["Renkaanvaihto"
+                                           "Tuulilasin vaihto"]
+            :koulutuksen-jarjestaja-arvioijat
+            [{:nimi "Terttu Testaaja"
+              :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921332"}}]
+            :tyoelama-arvioijat [{:nimi "Teppo Työmies"
+                                  :organisaatio {:nimi "Kallen Paja Ky"
+                                                 :y-tunnus "12345679-2"}}]
+            :id 1
+            :osa-alue-koodi-uri "ammatillisenoppiaineet_fk"
+            :osa-alue-koodi-versio 2
+            :alku (java.time.LocalDate/of 2019 3 11)
+            :loppu (java.time.LocalDate/of 2019 3 13)}]}]))))
