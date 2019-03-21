@@ -1,17 +1,35 @@
 (ns oph.ehoks.hoks.hoks
   (:require [oph.ehoks.db.postgresql :as db]))
 
-(defn get-ooato-tarkentavat-tiedot-naytto [ooato]
-  [])
+(defn set-hankitun-osaamisen-naytto-values [naytto]
+  (dissoc
+    (assoc
+      naytto
+      :koulutuksen-jarjestaja-arvioijat
+      (db/select-koulutuksen-jarjestaja-arvioijat-by-hon-id (:id naytto))
+      :tyoelama-arvioijat
+      (db/select-tyoelama-arvioijat-by-hon-id (:id naytto))
+      :nayttoymparisto
+      (db/select-nayttoymparisto-by-id (:nayttoymparisto-id naytto))
+      :keskeiset-tyotehtavat-naytto
+      (db/select-tyotehtavat-by-hankitun-osaamisen-naytto-id (:id naytto)))
+    :nayttoymparisto-id))
+
+(defn get-ooato-tarkentavat-tiedot-naytto [id]
+  (mapv
+    #(dissoc
+       (set-hankitun-osaamisen-naytto-values %)
+       :id)
+    (db/select-tarkentavat-tiedot-naytto-by-ooato-id id)))
 
 (defn get-tarkentavat-tiedot-arvioija [id]
   (let [tta (first (db/select-todennettu-arviointi-lisatiedot-by-id id))]
     (dissoc
-    (assoc
-      tta
-      :aiemmin-hankitun-osaamisen-arvioijat
-      (db/select-arvioijat-by-todennettu-arviointi-id id))
-    :id)))
+      (assoc
+        tta
+        :aiemmin-hankitun-osaamisen-arvioijat
+        (db/select-arvioijat-by-todennettu-arviointi-id id))
+      :id)))
 
 (defn get-olemassa-olevat-ammatilliset-tutkinnon-osat [hoks-id]
   (mapv
@@ -25,19 +43,6 @@
        :tarkentavat-tiedot-arvioija-id :id)
     (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id
       hoks-id)))
-
-(defn set-hankitun-osaamisen-naytto-values [naytto]
-  (-> naytto
-      (assoc
-        :koulutuksen-jarjestaja-arvioijat
-        (db/select-koulutuksen-jarjestaja-arvioijat-by-hon-id (:id naytto))
-        :tyoelama-arvioijat
-        (db/select-tyoelama-arvioijat-by-hon-id (:id naytto))
-        :nayttoymparisto
-        (db/select-nayttoymparisto-by-id (:nayttoymparisto-id naytto))
-        :keskeiset-tyotehtavat-naytto
-        (db/select-tyotehtavat-by-hankitun-osaamisen-naytto-id (:id naytto)))
-      (dissoc :nayttoymparisto-id)))
 
 (defn get-hankitun-osaamisen-naytto [id]
   (let [naytot (db/select-hankitun-osaamisen-naytot-by-ppto-id id)]
@@ -152,8 +157,12 @@
 (defn save-puuttuvat-paikalliset-tutkinnon-osat! [h c]
   (mapv #(save-puuttuva-paikallinen-tutkinnon-osa! h %) c))
 
-(defn save-ooato-tarkentavat-tiedot-naytto! [ttn]
-  [])
+(defn save-tarkentavat-tiedot-naytto! [ooato c]
+  (mapv
+    #(let [n (save-hankitun-osaamisen-naytto! %)]
+       (db/insert-ooato-hankitun-osaamisen-naytto! ooato n)
+       n)
+    c))
 
 (defn save-tta-aiemmin-hankitun-osaamisen-arvioijat! [tta c]
   (mapv
@@ -167,16 +176,17 @@
     tta))
 
 (defn save-olemassa-oleva-ammatillinen-tutkinnon-osa! [h ooato]
-  (assoc
-    (db/insert-olemassa-oleva-ammatillinen-tutkinnon-osa!
-      (assoc ooato
-             :hoks-id (:id h)
-             :tarkentavat-tiedot-arvioija-id
-             (:id (save-ooato-tarkentavat-tiedot-arvioija!
-                    (:tarkentavat-tiedot-arvioija ooato)))))
-    :tarkentavat-tiedot-naytto
-    (save-ooato-tarkentavat-tiedot-naytto!
-      (:tarkentavat-tiedot-naytto ooato))))
+  (let [ooato-db (db/insert-olemassa-oleva-ammatillinen-tutkinnon-osa!
+                   (assoc ooato
+                          :hoks-id (:id h)
+                          :tarkentavat-tiedot-arvioija-id
+                          (:id (save-ooato-tarkentavat-tiedot-arvioija!
+                                 (:tarkentavat-tiedot-arvioija ooato)))))]
+    (assoc
+      ooato-db
+      :tarkentavat-tiedot-naytto
+      (save-tarkentavat-tiedot-naytto!
+        ooato-db (:tarkentavat-tiedot-naytto ooato)))))
 
 (defn save-olemassa-olevat-ammatilliset-tutkinnon-osat [h c]
   (mapv #(save-olemassa-oleva-ammatillinen-tutkinnon-osa! h %) c))
