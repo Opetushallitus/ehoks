@@ -22,24 +22,27 @@
          (get-tarkentavat-tiedot-arvioija (:tarkentavat-tiedot-arvioija-id %))
          :tarkentavat-tiedot-naytto
          (get-ooato-tarkentavat-tiedot-naytto (:id %)))
-       :tarkentavat-tiedot-arvioija-id)
+       :tarkentavat-tiedot-arvioija-id :id)
     (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id
       hoks-id)))
+
+(defn set-hankitun-osaamisen-naytto-values [naytto]
+  (-> naytto
+      (assoc
+        :koulutuksen-jarjestaja-arvioijat
+        (db/select-koulutuksen-jarjestaja-arvioijat-by-hon-id (:id naytto))
+        :tyoelama-arvioijat
+        (db/select-tyoelama-arvioijat-by-hon-id (:id naytto))
+        :nayttoymparisto
+        (db/select-nayttoymparisto-by-id (:nayttoymparisto-id naytto))
+        :keskeiset-tyotehtavat-naytto
+        (db/select-tyotehtavat-by-hankitun-osaamisen-naytto-id (:id naytto)))
+      (dissoc :nayttoymparisto-id)))
 
 (defn get-hankitun-osaamisen-naytto [id]
   (let [naytot (db/select-hankitun-osaamisen-naytot-by-ppto-id id)]
     (mapv
-      #(-> %
-           (assoc
-             :koulutuksen-jarjestaja-arvioijat
-             (db/select-koulutuksen-jarjestaja-arvioijat-by-hon-id id)
-             :tyoelama-arvioijat
-             (db/select-tyoelama-arvioijat-by-hon-id id)
-             :nayttoymparisto
-             (db/select-nayttoymparisto-by-id (:nayttoymparisto-id %))
-             :keskeiset-tyotehtavat-naytto
-             (db/select-tyotehtavat-by-hankitun-osaamisen-naytto-id id))
-           (dissoc :nayttoymparisto-id))
+      set-hankitun-osaamisen-naytto-values
       naytot)))
 
 (defn get-tyopaikalla-hankittava-osaaminen [id]
