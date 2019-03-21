@@ -91,7 +91,7 @@
   (db/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id))
 
 (defn get-hokses-by-oppija [oid]
-  (map
+  (mapv
     #(assoc
        %
        :olemassa-olevat-ammatilliset-tutkinnon-osat
@@ -194,6 +194,6 @@
 (defn save-hoks! [h]
   (let [saved-hoks (first (db/insert-hoks! h))]
     (db/insert-puuttuvat-paikalliset-tutkinnon-osat!
-      (map
+      (mapv
         #(assoc % :hoks-id (:id saved-hoks))
         (:puuttuvat-paikalliset-tutkinnon-osat h)))))
