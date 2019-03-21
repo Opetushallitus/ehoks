@@ -212,17 +212,18 @@
     [queries/select-osaamisen-hankkmistavat-by-ppto-id id]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
+(defn insert-hankitun-osaamisen-naytto! [m]
+  (insert-one!
+    :hankitun_osaamisen_naytot
+    (h/hankitun-osaamisen-naytto-to-sql m)))
+
 (defn insert-ppto-hankitun-osaamisen-naytto!
   "Puuttuvan paikallisen tutkinnon osan hankitun osaamisen näyttö"
-  [ppto m]
-  (let [h (insert-one!
-            :hankitun_osaamisen_naytot
-            (h/hankitun-osaamisen-naytto-to-sql m))]
-    (insert-one!
-      :puuttuvan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto
-      {:puuttuva_paikallinen_tutkinnon_osa_id (:id ppto)
-       :hankitun_osaamisen_naytto_id (:id h)})
-    h))
+  [ppto h]
+  (insert-one!
+    :puuttuvan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto
+    {:puuttuva_paikallinen_tutkinnon_osa_id (:id ppto)
+     :hankitun_osaamisen_naytto_id (:id h)}))
 
 (defn insert-ppto-hankitun-osaamisen-naytot!
   "Puuttuvan paikallisen tutkinnon osan hankitun osaamisen näytöt"

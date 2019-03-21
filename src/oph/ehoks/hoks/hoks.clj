@@ -112,19 +112,22 @@
 (defn save-ppto-osaamisen-hankkimistavat! [ppto c]
   (mapv #(save-ppto-osaamisen-hankkimistapa! ppto %) c))
 
+(defn save-hankitun-osaamisen-naytto! [n]
+  (let [nayttoymparisto (db/insert-nayttoymparisto! (:nayttoymparisto n))
+        naytto (db/insert-hankitun-osaamisen-naytto!
+                 (assoc n :nayttoymparisto-id (:id nayttoymparisto)))]
+    (db/insert-hankitun-osaamisen-nayton-koulutuksen-jarjestaja-arvioijat!
+      naytto (:koulutuksen-jarjestaja-arvioijat n))
+    (db/insert-hankitun-osaamisen-nayton-tyoelama-arvioijat!
+      naytto (:tyoelama-arvioijat n))
+    (db/insert-hankitun-osaamisen-nayton-tyotehtavat!
+      naytto (:keskeiset-tyotehtavat-naytto n))
+    naytto))
+
 (defn save-ppto-hankitun-osaamisen-naytto! [ppto n]
-  (let [nayttoymparisto
-        (db/insert-nayttoymparisto! (:nayttoymparisto n))]
-    (let [naytto
-          (db/insert-ppto-hankitun-osaamisen-naytto!
-            ppto
-            (assoc n :nayttoymparisto-id (:id nayttoymparisto)))]
-      (db/insert-hankitun-osaamisen-nayton-koulutuksen-jarjestaja-arvioijat!
-        naytto (:koulutuksen-jarjestaja-arvioijat n))
-      (db/insert-hankitun-osaamisen-nayton-tyoelama-arvioijat!
-        naytto (:tyoelama-arvioijat n))
-      (db/insert-hankitun-osaamisen-nayton-tyotehtavat!
-        naytto (:keskeiset-tyotehtavat-naytto n)))))
+  (let [naytto (save-hankitun-osaamisen-naytto! n)]
+    (db/insert-ppto-hankitun-osaamisen-naytto! ppto naytto)
+    naytto))
 
 (defn save-ppto-hankitun-osaamisen-naytot! [ppto c]
   (mapv
