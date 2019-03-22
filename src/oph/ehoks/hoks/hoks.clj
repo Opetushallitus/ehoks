@@ -64,13 +64,13 @@
     (mapv
       #(dissoc
          (assoc
-          %
-          :tyopaikalla-hankittava-osaaminen
-          (get-tyopaikalla-hankittava-osaaminen
-            (:tyopaikalla-hankittava-osaaminen-id %))
-          :muut-oppimisymparisto
-          (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
-            (:id %)))
+           %
+           :tyopaikalla-hankittava-osaaminen
+           (get-tyopaikalla-hankittava-osaaminen
+             (:tyopaikalla-hankittava-osaaminen-id %))
+           :muut-oppimisymparisto
+           (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
+             (:id %)))
          :id :tyopaikalla-hankittava-osaaminen-id)
       hankkimistavat)))
 

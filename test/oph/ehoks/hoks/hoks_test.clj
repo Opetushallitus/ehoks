@@ -5,7 +5,6 @@
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.db.migrations :as m]))
 
-
 (defn with-database [f]
   (f)
   (m/clean!)

@@ -18,7 +18,7 @@
 
 (defn query
   ([queries opts]
-   (jdbc/query {:connection-uri (:database-url config)} queries opts))
+    (jdbc/query {:connection-uri (:database-url config)} queries opts))
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
 
@@ -254,8 +254,8 @@
 
 (defn insert-hankitun-osaamisen-nayton-koulutuksen-jarjestaja-arvioijat! [hon c]
   (let [kja-col (insert-multi!
-                :koulutuksen_jarjestaja_arvioijat
-                (map h/koulutuksen-jarjestaja-arvioija-to-sql c))]
+                  :koulutuksen_jarjestaja_arvioijat
+                  (map h/koulutuksen-jarjestaja-arvioija-to-sql c))]
     (insert-multi!
       :hankitun_osaamisen_nayton_koulutuksen_jarjestaja_arvioija
       (map #(hash-map
