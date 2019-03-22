@@ -3,11 +3,9 @@
             [oph.ehoks.handler :refer [create-app]]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [oph.ehoks.db.postgresql :as db]
+            [oph.ehoks.db.memory :as db]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.db.migrations :as m]))
+            [oph.ehoks.session-store :refer [test-session-store]]))
 
 (def url "/ehoks-backend/api/v1/oppija/oppijat")
 
@@ -83,24 +81,11 @@
    :hyvaksyja {:nimi "Ei tietoa"}
    :opiskeluvalmiuksia-tukevat-opinnot []})
 
-(defn with-database [f]
-  (f)
-  (m/clean!)
-  (m/migrate!))
-
-(defn create-db [f]
-  (m/migrate!)
-  (f)
-  (m/clean!))
-
-(use-fixtures :each with-database)
-
-(use-fixtures :once create-db)
-
-
 (defn set-hoks-data! [h]
-  (h/save-hoks!
-    (assoc h :versio 1 :paivittaja {:nimi "Tapio Testaaja"})))
+  (reset!
+    db/hoks-store
+    [(assoc h :versio 1 :paivittaja {:nimi "Tapio Testaaja"})
+     h]))
 
 (deftest get-hoks
   (testing "GET enriched HOKS"
@@ -118,17 +103,21 @@
       (is (= (:status response) 200))
       (let [body (utils/parse-body (:body response))]
         (eq
-          body
+          (update-in
+            body
+            [:data 0]
+            dissoc
+            :luotu :paivitetty :hyvaksytty :ensikertainen-hyvaksyminen)
           {:data
            [(-> hoks
+                (dissoc
+                  :luotu
+                  :paivitetty
+                  :hyvaksytty
+                  :ensikertainen-hyvaksyminen)
                 (assoc
                   :paivittaja {:nimi "Tapio Testaaja"}
-                  :versio 1
-                  :luotu (get-in body [:data 0 :luotu])
-                  :paivitetty (get-in body [:data 0 :paivitetty])
-                  :hyvaksytty (get-in body [:data 0 :hyvaksytty])
-                  :ensikertainen-hyvaksyminen
-                  (get-in body [:data 0 :ensikertainen-hyvaksyminen]))
+                  :versio 1)
                 (update
                   :puuttuvat-ammatilliset-tutkinnon-osat
                   (fn [oc]

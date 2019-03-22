@@ -7,7 +7,7 @@
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.oppija.schema :as oppija-schema]
-            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.db.memory :as db]
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.eperusteet :as eperusteet]
@@ -65,16 +65,19 @@
             :return (rest/response [common-schema/Oppija])
             (rest/rest-ok []))
 
+          (c-api/GET "/opiskeluoikeudet" [:as request]
+            :summary "Oppijan opiskeluoikeudet"
+            :return (rest/response [s/Any])
+            (if (= (get-in request [:session :user :oid]) oid)
+              (rest/rest-ok (:opiskeluoikeudet (koski/get-student-info oid)))
+              (response/forbidden)))
+
           (c-api/GET "/hoks" [:as request]
             :summary "Oppijan HOKSit kokonaisuudessaan"
             :return (rest/response [oppija-schema/OppijaHOKS])
             (if (= (get-in request [:session :user :oid]) oid)
-              (let [hokses (h/get-hokses-by-oppija oid)]
+              (let [hokses (db/get-all-hoks-by-oppija oid)]
                 (if (empty? hokses)
                   (response/not-found {:message "No HOKSes found"})
-                  (rest/rest-ok
-                    (map
-                      #(dissoc
-                         % :id :updated-at :created-at :deleted-at :version)
-                      hokses))))
+                  (rest/rest-ok (map #(dissoc % :id) hokses))))
               (response/forbidden))))))))

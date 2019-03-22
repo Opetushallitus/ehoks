@@ -5,8 +5,7 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as rest]
-            [oph.ehoks.db.postgresql :as db]
-            [oph.ehoks.db.memory :as mdb]
+            [oph.ehoks.db.memory :as db]
             [oph.ehoks.middleware :refer [wrap-service-ticket]]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
@@ -57,12 +56,14 @@
   (fn
     ([request respond raise]
       (check-hoks-access!
-        (first (db/select-hoks-by-id (get-in request [:query-params :id])))
+        (db/get-hoks-by-id
+          (get-in request [:query-params :id]))
         request)
       (handler request respond raise))
     ([request]
       (check-hoks-access!
-        (first (db/select-hoks-by-id (get-in request [:query-params :id])))
+        (db/get-hoks-by-id
+          (get-in request [:query-params :id]))
         request)
       (handler request))))
 
@@ -74,15 +75,14 @@
       :path-params [id :- s/Int]
       :return (rest/response
                 hoks-schema/PuuttuvaPaikallinenTutkinnonOsa)
-      (rest/rest-ok (mdb/get-ppto-by-id id)))
+      (rest/rest-ok (db/get-ppto-by-id id)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo (tai korvaa vanhan) puuttuvan paikallisen tutkinnon osan"
       :body
       [ppto hoks-schema/PuuttuvaPaikallinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse)
-      (let [ppto-response
-            (mdb/create-ppto! ppto)]
+      (let [ppto-response (db/create-ppto! ppto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ppto-response))})))
 
@@ -90,7 +90,7 @@
       :summary "Päivittää HOKSin puuttuvan paikallisentutkinnon osan"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaPaikallinenTutkinnonOsaPaivitys]
-      (if (mdb/update-ppto! id values)
+      (if (db/update-ppto! id values)
         (response/no-content)
         (response/not-found "PPTO not found with given PPTO ID")))
 
@@ -99,7 +99,7 @@
       "Päivittää HOKSin puuttuvan paikallisen tutkinnon osan arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys]
-      (if (mdb/update-ppto-values! id values)
+      (if (db/update-ppto-values! id values)
         (response/no-content)
         (response/not-found "PPTO not found with given PPTO ID")))))
 
@@ -110,14 +110,14 @@
       :summary "Palauttaa HOKSin puuttuvan ammatillisen osaamisen"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/PuuttuvaAmmatillinenOsaaminen)
-      (rest/rest-ok (mdb/get-ppao-by-id id)))
+      (rest/rest-ok (db/get-ppao-by-id id)))
 
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) puuttuvan ammatillisen osaamisen HOKSiin"
       :body [ppao hoks-schema/PuuttuvaAmmatillinenOsaaminenLuonti]
       :return (rest/response schema/POSTResponse)
-      (let [ppao-response (mdb/create-ppao! ppao)]
+      (let [ppao-response (db/create-ppao! ppao)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ppao-response))})))
 
@@ -125,7 +125,7 @@
       :summary "Päivittää HOKSin puuttuvan ammatillisen osaamisen"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaAmmatillinenOsaaminenPaivitys]
-      (if (mdb/update-ppao! id values)
+      (if (db/update-ppao! id values)
         (response/no-content)
         (response/not-found "PPAO not found with given PPAO ID")))
 
@@ -134,7 +134,7 @@
       "Päivittää HOKSin puuttuvan ammatillisen osaamisen arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaAmmatillinenOsaaminenKentanPaivitys]
-      (if (mdb/update-ppao-values! id values)
+      (if (db/update-ppao-values! id values)
         (response/no-content)
         (response/not-found  "PPAO not found with given PPAO ID")))))
 
@@ -145,14 +145,14 @@
       :summary "Palauttaa HOKSin puuttuvat yhteisen tutkinnon osat"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/PuuttuvaYTO)
-      (rest/rest-ok (mdb/get-pyto-by-id id)))
+      (rest/rest-ok (db/get-pyto-by-id id)))
 
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) puuttuvan yhteisen tutkinnon osat HOKSiin"
       :body [pyto hoks-schema/PuuttuvaYTOLuonti]
       :return (rest/response schema/POSTResponse)
-      (let [pyto-response (mdb/create-pyto! pyto)]
+      (let [pyto-response (db/create-pyto! pyto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id pyto-response))})))
 
@@ -160,7 +160,7 @@
       :summary "Päivittää HOKSin puuttuvan yhteisen tutkinnon osat"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaYTOPaivitys]
-      (if (mdb/update-pyto! id values)
+      (if (db/update-pyto! id values)
         (response/no-content)
         (response/not-found "PYTO not found with given PYTO ID")))
 
@@ -169,7 +169,7 @@
       "Päivittää HOKSin puuttuvan yhteisen tutkinnon osat arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaYTOKentanPaivitys]
-      (if (mdb/update-pyto-values! id values)
+      (if (db/update-pyto-values! id values)
         (response/no-content)
         (response/not-found "PPTO not found with given PPTO ID")))))
 
@@ -180,14 +180,14 @@
       :summary "Palauttaa HOKSin opiskeluvalmiuksia tukevat opinnot"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot)
-      (rest/rest-ok (mdb/get-ovatu-by-id id)))
+      (rest/rest-ok (db/get-ovatu-by-id id)))
 
     (c-api/POST "/"  [:as request]
       :summary
       "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin"
       :body [ovatu hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
       :return (rest/response schema/POSTResponse)
-      (let [ovatu-response (mdb/create-ovatu! ovatu)]
+      (let [ovatu-response (db/create-ovatu! ovatu)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ovatu-response))})))
 
@@ -195,7 +195,7 @@
       :summary "Päivittää HOKSin opiskeluvalmiuksia tukevat opinnot"
       :path-params [id :- s/Int]
       :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
-      (if (mdb/update-ovatu! id values)
+      (if (db/update-ovatu! id values)
         (response/no-content)
         (response/not-found "OVATU not found with given OVATU ID")))
 
@@ -204,7 +204,7 @@
       "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
-      (if (mdb/update-ovatu-values! id values)
+      (if (db/update-ovatu-values! id values)
         (response/no-content)
         (response/not-found "OVATU not found with given OVATU ID")))))
 
@@ -218,9 +218,9 @@
         :summary "Palauttaa HOKSin"
         :path-params [id :- s/Int]
         :return (rest/response hoks-schema/HOKS)
-        (let [hoks (first (db/select-hoks-by-id id))]
+        (let [hoks (db/get-hoks-by-id id)]
           (check-hoks-access! hoks request)
-          (rest/rest-ok (dissoc hoks :eid))))
+          (rest/rest-ok hoks)))
 
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
@@ -231,7 +231,7 @@
             {:error
              (str "Creating HOKS is not allowed. "
                   "Check student and 'opiskeluoikeus'.")}))
-        (let [h (db/insert-hoks! hoks)]
+        (let [h (db/create-hoks! hoks)]
           (when (:save-hoks-json? config)
             (write-hoks-json! h))
           (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id h))})))
@@ -240,18 +240,18 @@
         :summary "Päivittää olemassa olevaa HOKSia"
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSPaivitys]
-        (let [hoks (first (db/select-hoks-by-id id))]
+        (let [hoks (db/get-hoks-by-id id)]
           (check-hoks-access! hoks request))
-        (db/replace-hoks-by-id! id values)
+        (db/update-hoks! id values)
         (response/no-content))
 
       (c-api/PATCH "/:id" [id :as request]
         :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSKentanPaivitys]
-        (let [hoks (first (db/select-hoks-by-id id))]
+        (let [hoks (db/get-hoks-by-id id)]
           (check-hoks-access! hoks request))
-        (db/update-hoks-by-id! id values)
+        (db/update-hoks-values! id values)
         (response/no-content))
 
       puuttuva-ammatillinen-osaaminen
