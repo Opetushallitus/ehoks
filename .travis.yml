@@ -13,6 +13,7 @@ env:
     - secure: "FwSaGhCh8d+3tthLFgei2YGDKoSCJlfzEKFUXydkBR0i0SfX17w/IIrAyQHKIVfgy6X58kTKWXZLm4Kz4bJTzZxahWPvrCEnctMD3GIyOQH5qVkw1fNzTEoiK0J/TjY/JwWf50zwEtg6wzjyaslUrMDcNgx3OM+l9wYm5f8oQcV58fbbpYGWGuQcOgw5wkS9Z294j8RQBJYD90W99kYi/uvUmTPoRej36iv/xW8rfqgSME6Mv6iB58up5rP2gEEWB5ShOcMSffUFAtAoF3kWx+/6ij+ipfCqZQeV+o+D5wBBoHUmMhFr9M/m4CxIr0ealKCo7NjO2eryAIhxKob50qiVlgX30o8zD9HSS30eS9hT7Hrx5ImIwNpZ7AKzUr4EfbjXLT+Hkgw6GwVyhbCjAO90gmkpbfJ2A13FMpRHP+4wLHD4+qOAxZNs19+JxNQOV4ctNltfSV5DsYnlUECbeiCWW+SqE1wvYCklcPy9jo2d7kuP4nAW/Z93GUKKQpUXYcZABJPuZhpfzcZMoaUFxIiFBanebzYFYQVqCs0rrwtfP29/gkBFrU/fOt6E5L3ROsqQE9UIOSE6GHxsvW8S0DyGeTJv3De1ggqOQ0w/GLiPv4gIXzqLrkNipLi03PJki4qAA8J4loCt4yj6g4m9WjMVlHnmcfQKtQLTRiKTstI="
     # AWS_SECRET_ACCESS_KEY
     - secure: "cIHOMi6plFBSS6LHenYuaYeTMNFpnuxxB0Ho4cxmXbmtIlrndn8VETkofsfB850P5eJb3xJH3qjtuTd0/6D2llyvr5whdD81iVeYpM/xQGrIP4siAtJNh6eKuIhaf9DB+m5IiIxxCk/WH1S/ALR0gblR4DbppJA6gXFaMPjLcXT/LlwKUiZjOHwfz5iaHyNDIrD/cQVN4igTWMwO0xKcB3dqa0UNT01Rwv6GsN2wWMqSpRGwh+RoMD0+w0vebjoTTabYZRK9B15OrzuIDcDPsGJ5v2g37LICUHhg2uQ5MhVfF4RA9s5wVj2Wl728bVo9s2HexKn2TISBMAe7mFZfvhjqd5hGUdM4yxqgLMUt9O+/4BXGBwfAgT0WXffGajPIsIjBs0WHo9rr/8mCFu7LXWg7NHayhNWSfF/FyWKiAB6z8PFfymsMR2ON+MHMTMjWbK+DaSsQ1p7v7UZuXuegl3uoOVaZ05BFcwG+6AjT5pGvBhFk5Fh5bZzFaKolnyvZd2Pfro9olbuOweCMJC6mbJ3LJnRWaxfJ8IstzZGyaBHxJwfXpDOZ+gwEBaWfdMZUEgLWf3z+Fo53hz/8G93FG+b8X7lfSs4WnU0QULCUKNZWm2tVAfgVXS5ELefpcAmnIyob++QY9Wfn+SAfJ3wCTkmdTlv0Kq9Lmp7vK5jbcQA="
+  - CONFIG="oph-configuration/test-travis.edn"
 
 install:
   - git clone https://github.com/Opetushallitus/ci-tools.git
@@ -26,7 +27,7 @@ script:
   - mkdir -p resources/uberjar
   - ARTIFACT_NAME=ehoks BUILD_ID="ci-$TRAVIS_BUILD_NUMBER" ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
   - lein checkall
-  - lein with-profile +travis test
+  - lein with-profile test
   - lein uberjar
   - mv target/ehoks-standalone.jar $DOCKER_BUILD_DIR/artifact/ehoks.jar
   - cp -vr oph-configuration $DOCKER_BUILD_DIR/config/

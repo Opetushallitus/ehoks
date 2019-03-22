@@ -128,6 +128,5 @@
                                     "resources/test/src"
                                     "resources/dev/src"
                                     "resources/prod/src"]}
-             :travis {:env {:config "oph-configuration/test-travis.edn"}}
              :uberjar {:resource-paths ["resources/uberjar"
                                         "resources/public"]}})
