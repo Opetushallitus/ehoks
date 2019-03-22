@@ -47,8 +47,9 @@
                               :y-tunnus "12345699-2"
                               :kuvaus "Testiyrityksen testiosasostalla"}
             :tyoelama-arvioijat [{:nimi "Teppo Työmies"
-                                  :organisaatio {:nimi "Testiyrityksen Sisar Oy"
-                                                 :y-tunnus "12345689-3"}}]
+                                  :organisaatio
+                                  {:nimi "Testiyrityksen Sisar Oy"
+                                   :y-tunnus "12345689-3"}}]
             :keskeiset-tyotehtavat-naytto ["Tutkimustyö"
                                            "Raportointi"]
             :alku (java.time.LocalDate/of 2019 2 9)
@@ -77,8 +78,9 @@
                                 :y-tunnus "12345699-2"
                                 :kuvaus "Testiyrityksen testiosasostalla"}
               :tyoelama-arvioijat [{:nimi "Teppo Työmies"
-                                    :organisaatio {:nimi "Testiyrityksen Sisar Oy"
-                                                   :y-tunnus "12345689-3"}}]
+                                    :organisaatio
+                                    {:nimi "Testiyrityksen Sisar Oy"
+                                     :y-tunnus "12345689-3"}}]
               :keskeiset-tyotehtavat-naytto ["Tutkimustyö"
                                              "Raportointi"]
               :alku (java.time.LocalDate/of 2019 2 9)
@@ -135,7 +137,8 @@
                                                "Tuulilasin vaihto"]
                 :koulutuksen-jarjestaja-arvioijat
                 [{:nimi "Terttu Testaaja"
-                  :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921332"}}]
+                  :organisaatio
+                  {:oppilaitos-oid "1.2.246.562.10.54453921332"}}]
                 :tyoelama-arvioijat [{:nimi "Teppo Työmies"
                                       :organisaatio {:nimi "Kallen Paja Ky"
                                                      :y-tunnus "12345679-2"}}]

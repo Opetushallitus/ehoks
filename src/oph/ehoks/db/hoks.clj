@@ -96,7 +96,8 @@
       :replaces {[:laatija :nimi] :laatija-nimi
                  [:hyvaksyja :nimi] :hyvaksyja-nimi
                  [:paivittaja :nimi] :paivittaja-nimi}})
-    :eid #(if (nil? %) (str (java.util.UUID/randomUUID)) %))) ; generate and check, move to insert and lock
+    :eid #(if (nil? %) (str (java.util.UUID/randomUUID)) %)))
+    ; generate eid and check, move to insert and lock
 
 (defn olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]}))
