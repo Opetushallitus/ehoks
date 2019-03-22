@@ -85,7 +85,8 @@
             [jonase/eastwood "0.3.1"]
             [lein-auto "0.1.3"]
             [lein-ancient "0.6.15"]
-            [lein-cloverage "1.0.13"]]
+            [lein-cloverage "1.0.13"]
+            [lein-eftest "0.5.7"]]
   :main oph.ehoks.main
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
