@@ -107,7 +107,7 @@
 (defn save-ppto-osaamisen-hankkimistapa! [ppto oh]
   (let [tho (db/insert-tyopaikalla-hankittava-osaaminen!
               (:tyopaikalla-hankittava-osaaminen oh))
-        o-db (db/insert-ppto-osaamisen-hankkimistapa!
+        o-db (db/insert-osaamisen-hankkimistapa!
                ppto
                (assoc oh :tyopaikalla-hankittava-osaaminen-id
                       (:id tho)))]
@@ -120,13 +120,21 @@
 (defn save-ppto-osaamisen-hankkimistavat! [ppto c]
   (mapv #(save-ppto-osaamisen-hankkimistapa! ppto %) c))
 
+(defn save-hankitun-osaamisen-nayton-tyoelama-arvioijat! [naytto arvioijat]
+  (mapv
+    #(let [arvioija (db/insert-tyoelama-arvioija! %)]
+       (db/insert-hankitun-osaamisen-nayton-tyoelama-arvioija!
+         naytto arvioija)
+       arvioija)
+    arvioijat))
+
 (defn save-hankitun-osaamisen-naytto! [n]
   (let [nayttoymparisto (db/insert-nayttoymparisto! (:nayttoymparisto n))
         naytto (db/insert-hankitun-osaamisen-naytto!
                  (assoc n :nayttoymparisto-id (:id nayttoymparisto)))]
     (db/insert-hankitun-osaamisen-nayton-koulutuksen-jarjestaja-arvioijat!
       naytto (:koulutuksen-jarjestaja-arvioijat n))
-    (db/insert-hankitun-osaamisen-nayton-tyoelama-arvioijat!
+    (save-hankitun-osaamisen-nayton-tyoelama-arvioijat!
       naytto (:tyoelama-arvioijat n))
     (db/insert-hankitun-osaamisen-nayton-tyotehtavat!
       naytto (:keskeiset-tyotehtavat-naytto n))

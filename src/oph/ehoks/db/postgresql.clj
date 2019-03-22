@@ -205,8 +205,7 @@
     [queries/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id id]
     {:row-fn h/muu-oppimisymparisto-from-sql}))
 
-(defn insert-ppto-osaamisen-hankkimistapa!
-  "Puuttuvan paikallisen tutkinnon osan osaamisen hankkimistavat"
+(defn insert-osaamisen-hankkimistapa!
   [ppto oh]
   (insert-one!
     :osaamisen_hankkimistavat
@@ -272,17 +271,16 @@
     [queries/select-koulutuksen-jarjestaja-arvioijat-by-hon-id id]
     {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
 
-(defn insert-hankitun-osaamisen-nayton-tyoelama-arvioijat! [hon c]
-  (let [kja-col (insert-multi!
-                :tyoelama_arvioijat
-                (map h/tyoelama-arvioija-to-sql c))]
-    (insert-multi!
-      :hankitun_osaamisen_nayton_tyoelama_arvioija
-      (map #(hash-map
-              :hankitun_osaamisen_naytto_id (:id hon)
-              :tyoelama_arvioija_id (:id %))
-           kja-col))
-    kja-col))
+(defn insert-tyoelama-arvioija! [arvioija]
+  (insert-one!
+    :tyoelama_arvioijat
+    (h/tyoelama-arvioija-to-sql arvioija)))
+
+(defn insert-hankitun-osaamisen-nayton-tyoelama-arvioija! [hon arvioija]
+  (insert-one!
+    :hankitun_osaamisen_nayton_tyoelama_arvioija
+    {:hankitun_osaamisen_naytto_id (:id hon)
+     :tyoelama_arvioija_id (:id arvioija)}))
 
 (defn select-tyoelama-arvioijat-by-hon-id
   "Hankitun osaamisen näytön työelemän arvioijat"
