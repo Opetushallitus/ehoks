@@ -9,7 +9,8 @@
 (defq select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id
   "olemassa-olevat-ammatilliset-tutkinnon-osat/select_by_hoks_id.sql")
 (defq select-hankitun-osaamisen-naytot-by-ooato-id
-  "olemassa-olevat-ammatilliset-tutkinnon-osat/select_hankitun_osaamisen_naytot.sql")
+  (str "olemassa-olevat-ammatilliset-tutkinnon-osat/"
+       "select_hankitun_osaamisen_naytot.sql"))
 (defq select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id
   "puuttuvat-paikalliset-tutkinnon-osat/select_by_hoks_id.sql")
 (defq select-puuttuva-paikallinen-tutkinnon-osa-by-id
