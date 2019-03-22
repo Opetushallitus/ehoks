@@ -84,11 +84,19 @@
    :opiskeluvalmiuksia-tukevat-opinnot []})
 
 (defn with-database [f]
+  (f)
+  (m/clean!)
+  (m/migrate!))
+
+(defn create-db [f]
   (m/migrate!)
   (f)
   (m/clean!))
 
 (use-fixtures :each with-database)
+
+(use-fixtures :once create-db)
+
 
 (defn set-hoks-data! [h]
   (h/save-hoks!
