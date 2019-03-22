@@ -27,7 +27,7 @@ script:
   - ARTIFACT_NAME=ehoks BUILD_ID="ci-$TRAVIS_BUILD_NUMBER" ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
   - export CONFIG="oph-configuration/test.edn"
   - lein checkall
-  - lein test
+  - lein with-profile +travis test
   - lein uberjar
   - mv target/ehoks-standalone.jar $DOCKER_BUILD_DIR/artifact/ehoks.jar
   - cp -vr oph-configuration $DOCKER_BUILD_DIR/config/
