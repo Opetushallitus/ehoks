@@ -1,14 +1,15 @@
 (ns oph.ehoks.db.migrations
-  (:require [oph.ehoks.db.postgresql :as p])
+  (:require [oph.ehoks.db.postgresql :as p]
+            [oph.ehoks.config :refer [config]])
   (:import org.flywaydb.core.Flyway))
 
 (def flyway
   (-> (Flyway/configure)
-      (.dataSource (:connection-uri p/pg-uri) nil nil)
+      (.dataSource (:database-url config) nil nil)
       (.load)))
 
-(defn migrate []
+(defn migrate! []
   (.migrate flyway))
 
-(defn clean []
+(defn clean! []
   (.clean flyway))

@@ -7,28 +7,39 @@
 
 ; One time use script for generating initial migration of schema
 
-(def models '#{HOKSLuonti
-               OlemassaOlevaAmmatillinenTutkinnonOsa
-               HankitunOsaamisenNaytto
-               NaytonJarjestaja
-               Organisaatio
-               Arvioija
-               TutkinnonOsa
-               OsaamisenHankkimistapa
-               Oppilaitoshenkilo
-               TyopaikallaHankittavaOsaaminen
-               VastuullinenOhjaaja
-               Henkilo
-               MuuOppimisymparisto
-               PuuttuvaYTO
-               YhteisenTutkinnonOsanOsaAlue
-               HankitunYTOOsaamisenNaytto
-               PaikallinenTutkinnonOsa
-               HankitunPaikallisenOsaamisenNaytto
-               OlemassaOlevaYhteinenTutkinnonOsa
-               OlemassaOlevanYTOOsaAlue
-               OpiskeluvalmiuksiaTukevatOpinnot
-               OlemassaOlevaPaikallinenTutkinnonOsa})
+(def models
+  '#{Arvioija
+     Arviointikriteeri
+     HOKS
+     HankitunOsaamisenNaytto
+     HankitunPaikallisenOsaamisenNaytto
+     HankitunYTOOsaamisenNaytto
+     Henkilo
+     HoksToimija
+     KoulutuksenJarjestajaOrganisaatio
+     KoulutuksenjarjestajaArvioija
+     MuuOppimisymparisto
+     MuuTutkinnonOsa
+     NaytonJarjestaja
+     NayttoYmparisto
+     OlemassaOlevaAmmatillinenTutkinnonOsa
+     OlemassaOlevaPaikallinenTutkinnonOsa
+     OlemassaOlevaYhteinenTutkinnonOsa
+     OlemassaOlevanYTOOsaAlue
+     OpiskeluvalmiuksiaTukevatOpinnot
+     Oppilaitoshenkilo
+     Organisaatio
+     OsaamisenHankkimistapa
+     PuuttuvaAmmatillinenOsaaminen
+     PuuttuvaPaikallinenTutkinnonOsa
+     PuuttuvaYTO
+     TodennettuArviointiLisatiedot
+     TyoelamaArvioija
+     TyoelamaOrganisaatio
+     TyopaikallaHankittavaOsaaminen
+     VastuullinenOhjaaja
+     YhteinenTutkinnonOsa
+     YhteisenTutkinnonOsanOsaAlue})
 
 (defn generate-create-table [table-name]
   (format "CREATE TABLE %s" (csk/->snake_case table-name)))
@@ -51,8 +62,7 @@
 
 (defn generate-deleted-at []
   {:name "deleted_at"
-   :type 'Inst
-   :default "now()"})
+   :type 'Inst})
 
 (defn generate-version []
   {:name "version"
@@ -66,12 +76,21 @@
    (generate-deleted-at)
    (generate-version)])
 
+(def regexes
+  #{"#\"^tutkinnonosat_\\d+$\""
+    "#\"^urasuunnitelma_\\d{4}$\""
+    "#\"^1\\.2\\.246\\.562\\.15\\.\\d{11}$\""
+    "#\"^osaamisenhankkimistapa_.+$\""
+    "#\"^ammatillisenoppiaineet_.+$\""
+    "#\"^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$\""
+    "#\"^valittuprosessi_\\d+$\""})
+
 (defn get-type [v]
   (let [e (s/explain v)]
     (cond
       (map? e) (:name (meta v))
       (vector? e) :reference
-      (= (str e) "#\"^tutkinnonosat_\\d+$\"") :varchar256
+      (contains? regexes (str e)) :varchar256
       :else e)))
 
 (defn get-reference [k v]
@@ -132,14 +151,13 @@
 (defn generate-reference [c]
   (if (get-in c [:reference :to])
     (format
-      "REFERENCES TO %s(id)" (csk/->snake_case (get-in c [:reference :to])))
+      "INTEGER REFERENCES %s(id)" (csk/->snake_case (get-in c [:reference :to])))
     (throw (ex-info "Unknown type without reference" c))))
 
 (defn to-sql-type [c]
-  (let [t (get
-            sql-types
-            (:type c))]
+  (let [t (get sql-types (:type c))]
     (cond
+      (.endsWith (:name c) "_oid") "VARCHAR(26)"
       (some? t) t
       (.startsWith (str (:type c)) "(enum ") "VARCHAR(30)"
       :else (generate-reference c))))

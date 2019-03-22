@@ -3,7 +3,8 @@
             [clojure.edn :as edn]
             [oph.ehoks.schema :as schema]
             [schema.core :as s]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [environ.core :refer [env]]))
 
 (def ^:private default-file "oph-configuration/default.edn")
 
@@ -22,4 +23,5 @@
 
 (def config (load-combined-config
               (or (System/getenv "CONFIG")
-                  (System/getProperty "config"))))
+                  (System/getProperty "config")
+                  (:config env))))
