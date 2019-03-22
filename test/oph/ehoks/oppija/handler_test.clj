@@ -100,7 +100,7 @@
 
 (defn set-hoks-data! [h]
   (h/save-hoks!
-    (assoc h :versio 1 :version 1 :paivittaja {:nimi "Tapio Testaaja"})))
+    (assoc h :versio 1 :paivittaja {:nimi "Tapio Testaaja"})))
 
 (deftest get-hoks
   (testing "GET enriched HOKS"
