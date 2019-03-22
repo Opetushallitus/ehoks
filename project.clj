@@ -18,7 +18,8 @@
                  [org.apache.logging.log4j/log4j-core "2.11.1"]
                  [org.apache.logging.log4j/log4j-slf4j-impl "2.11.1"]
                  [org.clojure/data.xml "0.0.8"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [environ "1.1.0"]]
   :managed-dependencies [[org.clojure/clojure "1.10.0"]
 
                          ;; http server
@@ -74,6 +75,7 @@
                          [commons-io "2.6"]
                          [hiccup "1.0.5"]
                          [org.clojure/tools.namespace "0.2.11"]
+                         [environ "1.1.0"]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.3.2"]
@@ -86,7 +88,8 @@
             [lein-auto "0.1.3"]
             [lein-ancient "0.6.15"]
             [lein-cloverage "1.0.13"]
-            [lein-eftest "0.5.7"]]
+            [lein-eftest "0.5.7"]
+            [lein-environ "1.1.0"]]
   :main oph.ehoks.main
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
@@ -113,7 +116,8 @@
                     :dependencies [[cheshire "5.8.1"]
                                    [ring/ring-mock "0.3.2"]
                                    [ring/ring-devel "1.7.1"
-                                    :exclusions [ring/ring-core]]]}
+                                    :exclusions [ring/ring-core]]]
+                    :env {:config "oph-configuration/test.edn"}}
              :dev {:main oph.ehoks.dev-server
                    :dependencies [[cheshire "5.8.1"]
                                   [ring/ring-mock "0.3.2"]
