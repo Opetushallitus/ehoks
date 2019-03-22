@@ -84,10 +84,9 @@
    :opiskeluvalmiuksia-tukevat-opinnot []})
 
 (defn with-database [f]
+  (m/migrate!)
   (f)
-  ;(m/clean!)
-  ;(m/migrate!)
-  )
+  (m/clean!))
 
 (use-fixtures :each with-database)
 
