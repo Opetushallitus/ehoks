@@ -8,7 +8,7 @@
                  [com.taoensso/carmine "2.19.1"]
                  [metosin/compojure-api "2.0.0-alpha28"]
                  [org.flywaydb/flyway-core "5.2.4"]
-                 [org.clojure/java.jdbc "0.7.8"]
+                 [org.clojure/java.jdbc "0.7.9"]
                  [org.postgresql/postgresql "42.2.5"]
                  [ring/ring-jetty-adapter "1.7.1"]
                  [clj-time "0.15.1"]
@@ -18,7 +18,8 @@
                  [org.apache.logging.log4j/log4j-core "2.11.1"]
                  [org.apache.logging.log4j/log4j-slf4j-impl "2.11.1"]
                  [org.clojure/data.xml "0.0.8"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [environ "1.1.0"]]
   :managed-dependencies [[org.clojure/clojure "1.10.0"]
 
                          ;; http server
@@ -60,7 +61,7 @@
 
                          ;; postresql
                          [com.layerware/hugsql "0.4.9"]
-                         [org.clojure/java.jdbc "0.7.8"]
+                         [org.clojure/java.jdbc "0.7.9"]
                          [org.flywaydb/flyway-core "5.2.4"]
                          [org.postgresql/postgresql "42.2.5"]
 
@@ -74,6 +75,7 @@
                          [commons-io "2.6"]
                          [hiccup "1.0.5"]
                          [org.clojure/tools.namespace "0.2.11"]
+                         [environ "1.1.0"]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.3.2"]
@@ -85,14 +87,17 @@
             [jonase/eastwood "0.3.1"]
             [lein-auto "0.1.3"]
             [lein-ancient "0.6.15"]
-            [lein-cloverage "1.0.13"]]
+            [lein-cloverage "1.0.13"]
+            [lein-eftest "0.5.7"]
+            [lein-environ "1.1.0"]]
   :main oph.ehoks.main
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
   :source-paths ["src"]
   :resource-paths ["resources/prod"
                    "resources/prod/src"
-                   "resources/public"]
+                   "resources/public"
+                   "resources/db"]
   :cloverage {;:fail-threshold 90
               :html? false}
   :aliases {"checkall" ["do"
@@ -106,11 +111,13 @@
             "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:test {:resource-paths ["resources/test"
-                                     "resources/test/src"]
+                                     "resources/test/src"
+                                     "resources/test/config"]
                     :dependencies [[cheshire "5.8.1"]
                                    [ring/ring-mock "0.3.2"]
                                    [ring/ring-devel "1.7.1"
-                                    :exclusions [ring/ring-core]]]}
+                                    :exclusions [ring/ring-core]]]
+                    :env {:config "oph-configuration/test.edn"}}
              :dev {:main oph.ehoks.dev-server
                    :dependencies [[cheshire "5.8.1"]
                                   [ring/ring-mock "0.3.2"]
