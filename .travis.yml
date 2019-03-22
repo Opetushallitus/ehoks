@@ -25,7 +25,6 @@ before_script:
 script:
   - mkdir -p resources/uberjar
   - ARTIFACT_NAME=ehoks BUILD_ID="ci-$TRAVIS_BUILD_NUMBER" ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
-  - export CONFIG="oph-configuration/test.edn"
   - lein checkall
   - lein with-profile +travis test
   - lein uberjar
