@@ -267,7 +267,7 @@ CREATE TABLE olemassa_olevat_yto_osa_alueet(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  olemassa_oleava_yhteinen_tutkinnon_osa_id INTEGER REFERENCES olemassa_olevat_yhteiset_tutkinnon_osat(id),
+  olemassa_oleva_yhteinen_tutkinnon_osa_id INTEGER REFERENCES olemassa_olevat_yhteiset_tutkinnon_osat(id),
   osa_alue_koodi_uri VARCHAR(256),
   osa_alue_koodi_versio INTEGER,
   koulutuksen_jarjestaja_oid VARCHAR(26),
