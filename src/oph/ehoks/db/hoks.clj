@@ -217,6 +217,12 @@
 
 (def olemassa-oleva-paikallinen-tutkinnon-osa-to-sql to-sql)
 
+(defn olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
+  (from-sql m {:removals [:olemassa_oleva_yhteinen_tutkinnon_osa_id]}))
+
+(defn olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue-to-sql [m]
+  (to-sql m {:removals [:tarkentavat-tiedot]}))
+
 (defn olemassa-oleva-yhteinen-tutkinnon-osa-to-sql [m]
   (to-sql m {:removals [:osa-alueet
                         :tarkentavat-tiedot-naytto

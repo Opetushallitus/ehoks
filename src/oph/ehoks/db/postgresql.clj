@@ -355,6 +355,27 @@
     [queries/select-hankitun-osaamisen-naytot-by-ooyto-id id]
     {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
 
+(defn select-tarkentavat-tiedot-naytto-by-ooyto-osa-alue-id [id]
+  (query
+    [queries/select-hankitun-osaamisen-naytot-by-ooyto-osa-alue-id id]
+    {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
+
+(defn insert-ooyto-osa-alue-hankitun-osaamisen-naytto! [osa-alue-id naytto-id]
+  (insert-one!
+    :olemassa_olevan_yto_osa_alueen_hankitun_osaamisen_naytto
+    {:olemassa_oleva_yto_osa_alue_id osa-alue-id
+     :hankitun_osaamisen_naytto_id naytto-id}))
+
+(defn select-osa-alueet-by-ooyto-id [id]
+  (query
+    [queries/select-osa-alueet-by-ooyto-id id]
+    {:row-fn h/olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue-from-sql}))
+
+(defn insert-olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue! [m]
+  (insert-one!
+    :olemassa_olevat_yto_osa_alueet
+    (h/olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue-to-sql m)))
+
 (defn insert-olemassa-oleva-yhteinen-tutkinnon-osa! [m]
   (insert-one!
     :olemassa_olevat_yhteiset_tutkinnon_osat

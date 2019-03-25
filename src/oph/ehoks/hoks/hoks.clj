@@ -87,6 +87,21 @@
 (defn get-olemassa-olevat-paikalliset-tutkinnon-osat [hoks-id]
   (db/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id))
 
+(defn get-ooyto-osa-alue-tarkentavat-tiedot [id]
+  (mapv
+    #(dissoc (set-hankitun-osaamisen-naytto-values %) :id)
+    (db/select-tarkentavat-tiedot-naytto-by-ooyto-osa-alue-id id)))
+
+(defn get-ooyto-osa-alueet [id]
+  (mapv
+    #(dissoc
+       (assoc
+         %
+         :tarkentavat-tiedot
+         (get-ooyto-osa-alue-tarkentavat-tiedot (:id %)))
+       :id)
+    (db/select-osa-alueet-by-ooyto-id id)))
+
 (defn get-ooyto-tarkentavat-tiedot-naytto [id]
   (mapv
     #(dissoc
@@ -99,7 +114,9 @@
     #(-> %
          (assoc
            :tarkentavat-tiedot-naytto
-           (get-ooyto-tarkentavat-tiedot-naytto (:id %)))
+           (get-ooyto-tarkentavat-tiedot-naytto (:id %))
+           :osa-alueet
+           (get-ooyto-osa-alueet (:id %)))
          (assoc-in
            [:tarkentavat-tiedot-arvioija :aiemmin-hankitun-osaamisen-arvioijat]
            (db/select-arvioija-by-ooyto-id (:id %)))
@@ -198,6 +215,18 @@
        (db/insert-ooyto-arvioija! yto-id (:id a)))
     arvioijat))
 
+(defn save-ooyto-osa-alueet! [yto-id osa-alueet]
+  (mapv
+    #(let [o (db/insert-olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue!
+               (assoc % :olemassa-oleva-yhteinen-tutkinnon-osa-id yto-id))]
+       (mapv
+         (fn [naytto]
+           (let [n (save-hankitun-osaamisen-naytto! naytto)]
+            (db/insert-ooyto-osa-alue-hankitun-osaamisen-naytto!
+              (:id o) (:id n))))
+         (:tarkentavat-tiedot %)))
+    osa-alueet))
+
 (defn save-olemassa-oleva-yhteinen-tutkinnon-osa! [o]
   (let [yto (db/insert-olemassa-oleva-yhteinen-tutkinnon-osa! o)]
     (save-ooyto-tarkentavat-tiedot-naytto! yto (:tarkentavat-tiedot-naytto o))
@@ -205,6 +234,7 @@
       (:id yto)
       (get-in
         o [:tarkentavat-tiedot-arvioija :aiemmin-hankitun-osaamisen-arvioijat]))
+    (save-ooyto-osa-alueet! (:id yto) (:osa-alueet o))
     yto))
 
 (defn save-olemassa-olevat-yhteiset-tutkinnon-osat! [h c]

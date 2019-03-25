@@ -47,6 +47,11 @@
 (defq select-hankitun-osaamisen-naytot-by-ooyto-id
       (str "olemassa-olevat-yhteiset-tutkinnon-osat/"
            "select_hankitun_osaamisen_naytot.sql"))
+(defq select-hankitun-osaamisen-naytot-by-ooyto-osa-alue-id
+      (str "olemassa-olevat-yhteiset-tutkinnon-osat/"
+           "select_osa_alue_hankitun_osaamisen_naytot.sql"))
 (defq select-arvioijat-by-ooyto-id
       (str "olemassa-olevat-yhteiset-tutkinnon-osat/"
            "select_koulutuksen_jarjestaja_arvioijat.sql"))
+(defq select-osa-alueet-by-ooyto-id
+      "olemassa-olevat-yhteiset-tutkinnon-osat/select_osa_alueet.sql")
