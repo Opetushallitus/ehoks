@@ -100,6 +100,71 @@
         (h/get-olemassa-olevat-paikalliset-tutkinnon-osat (:id hoks))
         oopto-data))))
 
+(deftest get-olemassa-olevat-yhteiset-tutkinnon-osat-test
+  (testing "Get HOKS olemassa olevat yhteiset tutkinnon osat"
+    (let [hoks (db/insert-hoks! {})
+          ooyto-data [{:valittu-todentamisen-prosessi-koodi-uri
+                       "osaamisentodentamisenprosessi_0001"
+                       :valittu-todentamisen-prosessi-koodi-versio 3
+                       :tutkinnon-osa-koodi-versio 2
+                       :tutkinnon-osa-koodi-uri "tutkinnonosat_10203"
+                       :tarkentavat-tiedot-arvioija
+                       {:lahetetty-arvioitavaksi
+                        (java.time.LocalDate/of 2016 2 29)
+                        :aiemmin-hankitun-osaamisen-arvioijat
+                        [:nimi "Arttu Arvioija"
+                         :organisaatio {:oppilaitos-oid
+                                        "1.2.246.562.10.54453931311"}]}
+                       :osa-alueet
+                       [:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
+                        :osa-alue-koodi-versio 4
+                        :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453923578"
+                        :vaatimuksista-tai-tavoitteista-poikkeaminen
+                        "Testaus ei kuulu vaatimuksiin."
+                        :valittu-todentamisen-prosessi-koodi-uri
+                        "osaamisentodentamisenprosessi_0003"
+                        :valittu-todentamisen-prosessi-koodi-versio 4
+                        :tarkentavat-tiedot
+                        [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
+                          :koulutuksen-jarjestaja-arvioijat
+                          [:nimi "Teppo Testaaja"
+                           :organisaatio {:oppilaitos-oid
+                                          "1.2.246.562.10.544539267901"}]
+                          :jarjestaja {:oppilaitos-oid
+                                       "1.2.246.562.10.558909267901"}
+                          :tyoelama-arvioijat
+                          [{:nimi "Tellervo Työntekijä"
+                            :organisaatio {:nimi "Ab Yhtiö Oy"
+                                           :y-tunnus "1234128-1"}}]
+                          :keskeiset-tyotehtavat-naytto ["Testaus" "Kirjoitus"]
+                          :alku (java.time.LocalDate/of 2019 1 4)
+                          :loppu (java.time.LocalDate/of 2019 3 1)}]]
+                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590901"
+                       :tarkentavat-tiedot-naytto
+                       [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ma"
+                         :koulutuksen-jarjestaja-arvioijat
+                         [{:nimi "Erkki Esimerkkitestaaja"
+                           :organisaatio {:oppilaitos-oid
+                                          "1.2.246.562.10.13490579090"}}]
+                         :jarjestaja {:oppilaitos-oid
+                                      "1.2.246.562.10.93270579090"}
+                         :osa-alue-koodi-versio 6
+                         :nayttoymparisto {:nimi "Testi Oy"
+                                           :y-tunnus "1289235-2"
+                                           :kuvaus "Testiyhtiö"}
+                         :tyoelama-arvioijat
+                         [{:nimi "Tapio Testihenkilö"
+                           :organisaatio {:nimi "Testi Oy"
+                                          :y-tunnus "1289235-2"}}]
+                         :keskeiset-tyotehtavat-naytto ["Testauksen suunnittelu"
+                                                        "Jokin toinen testi"]
+                         :alku (java.time.LocalDate/of 2019 3 1)
+                         :loppu (java.time.LocalDate/of 2019 3 1)}]}]]
+      (h/save-olemassa-olevat-yhteiset-tutkinnon-osat! hoks ooyto-data)
+      (eq
+        (h/get-olemassa-olevat-yhteiset-tutkinnon-osat (:id hoks))
+        ooyto-data))))
+
 (deftest get-puuttuvat-paikalliset-tutkinnon-osat-test
   (testing "Set HOKS puuttuvat paikalliset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})
