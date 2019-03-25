@@ -320,6 +320,11 @@
     [queries/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/olemassa-oleva-paikallinen-tutkinnon-osa-from-sql}))
 
+(defn insert-olemassa-olevat-paikalliset-tutkinnon-osat! [c]
+  (insert-multi!
+    :olemassa_olevat_paikalliset_tutkinnon_osat
+    (map h/olemassa-oleva-paikallinen-tutkinnon-osa-to-sql c)))
+
 (defn select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id [id]
   (query
     [queries/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id id]

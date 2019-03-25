@@ -212,7 +212,8 @@
 (defn tyotehtava-from-sql [m]
   (get m :tyotehtava))
 
-(def olemassa-oleva-paikallinen-tutkinnon-osa-from-sql from-sql)
+(defn olemassa-oleva-paikallinen-tutkinnon-osa-from-sql [m]
+  (from-sql m {:removals [:id :hoks_id]}))
 
 (def olemassa-oleva-paikallinen-tutkinnon-osa-to-sql to-sql)
 
