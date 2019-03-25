@@ -96,12 +96,14 @@
 
 (defn get-olemassa-olevat-yhteiset-tutkinnon-osat [hoks-id]
   (mapv
-    #(dissoc
-       (assoc
-         %
-         :tarkentavat-tiedot-naytto
-         (get-ooyto-tarkentavat-tiedot-naytto (:id %)))
-       :id)
+    #(-> %
+         (assoc
+           :tarkentavat-tiedot-naytto
+           (get-ooyto-tarkentavat-tiedot-naytto (:id %)))
+         (assoc-in
+           [:tarkentavat-tiedot-arvioija :aiemmin-hankitun-osaamisen-arvioijat]
+           (db/select-arvioija-by-ooyto-id (:id %)))
+         (dissoc :id))
     (db/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-hokses-by-oppija [oid]
@@ -190,9 +192,19 @@
        n)
     c))
 
+(defn save-ooyto-arvioijat! [yto-id arvioijat]
+  (mapv
+    #(let [a (db/insert-koulutuksen-jarjestaja-arvioija! %)]
+       (db/insert-ooyto-arvioija! yto-id (:id a)))
+    arvioijat))
+
 (defn save-olemassa-oleva-yhteinen-tutkinnon-osa! [o]
   (let [yto (db/insert-olemassa-oleva-yhteinen-tutkinnon-osa! o)]
     (save-ooyto-tarkentavat-tiedot-naytto! yto (:tarkentavat-tiedot-naytto o))
+    (save-ooyto-arvioijat!
+      (:id yto)
+      (get-in
+        o [:tarkentavat-tiedot-arvioija :aiemmin-hankitun-osaamisen-arvioijat]))
     yto))
 
 (defn save-olemassa-olevat-yhteiset-tutkinnon-osat! [h c]

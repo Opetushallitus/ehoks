@@ -78,6 +78,11 @@
     :koulutuksen_jarjestaja_arvioijat
     (map h/koulutuksen-jarjestaja-arvioija-to-sql c)))
 
+(defn insert-koulutuksen-jarjestaja-arvioija! [m]
+  (insert-one!
+    :koulutuksen_jarjestaja_arvioijat
+    (h/koulutuksen-jarjestaja-arvioija-to-sql m)))
+
 (defn select-tarkentavat-tiedot-naytto-by-ooato-id
   "Olemassa olevan ammatillisen tutkinnon osan näytön tarkentavat tiedot
    (hankitun osaamisen näytöt)"
@@ -330,6 +335,17 @@
   (insert-multi!
     :olemassa_olevat_paikalliset_tutkinnon_osat
     (map h/olemassa-oleva-paikallinen-tutkinnon-osa-to-sql c)))
+
+(defn insert-ooyto-arvioija! [yto-id a-id]
+  (insert-one!
+    :olemassa_olevan_yhteisen_tutkinnon_osan_arvioijat
+    {:olemassa_oleva_yhteinen_tutkinnon_osa_id yto-id
+     :koulutuksen_jarjestaja_arvioija_id a-id}))
+
+(defn select-arvioija-by-ooyto-id [id]
+  (query
+    [queries/select-arvioijat-by-ooyto-id id]
+    {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
 
 (defn select-tarkentavat-tiedot-naytto-by-ooyto-id
   "Olemassa olevan yhteisen tutkinnon osan näytön tarkentavat tiedot
