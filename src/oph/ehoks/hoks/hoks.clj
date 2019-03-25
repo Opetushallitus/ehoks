@@ -165,6 +165,10 @@
 (defn save-puuttuvat-paikalliset-tutkinnon-osat! [h c]
   (mapv #(save-puuttuva-paikallinen-tutkinnon-osa! h %) c))
 
+(defn save-olemassa-olevat-paikalliset-tutkinnon-osat! [h c]
+  (db/insert-olemassa-olevat-paikalliset-tutkinnon-osat!
+    (mapv #(assoc % :hoks-id (:id h)) c)))
+
 (defn save-tarkentavat-tiedot-naytto! [ooato c]
   (mapv
     #(let [n (save-hankitun-osaamisen-naytto! %)]

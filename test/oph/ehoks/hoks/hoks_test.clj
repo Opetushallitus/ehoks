@@ -85,6 +85,21 @@
               :alku (java.time.LocalDate/of 2019 2 9)
               :loppu (java.time.LocalDate/of 2019 1 10)}]}]))))
 
+(deftest get-olemassa-olevat-paikalliset-tutkinnon-osat-test
+  (testing "Get HOKS olemassa olevat paikalliset tutkinnon osat"
+    (let [hoks (db/insert-hoks! {})
+          oopto-data [{:laajuus 30
+                       :nimi "Testiopintojakso"
+                       :tavoitteet-ja-sisallot "Tavoitteena on testioppiminen."
+                       :amosaa-tunniste "12345"
+                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453945322"
+                       :vaatimuksista-tai-tavoitteista-poikkeaminen
+                       "Ei poikkeamaa."}]]
+      (h/save-olemassa-olevat-paikalliset-tutkinnon-osat! hoks oopto-data)
+      (eq
+        (h/get-olemassa-olevat-paikalliset-tutkinnon-osat (:id hoks))
+        oopto-data))))
+
 (deftest get-puuttuvat-paikalliset-tutkinnon-osat-test
   (testing "Set HOKS puuttuvat paikalliset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})
