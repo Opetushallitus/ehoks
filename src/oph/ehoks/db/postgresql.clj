@@ -92,6 +92,12 @@
     {:olemassa_oleva_ammatillinen_tutkinnon_osa_id (:id ooato)
      :hankitun_osaamisen_naytto_id (:id n)}))
 
+(defn insert-ooyto-hankitun-osaamisen-naytto! [ooyto n]
+  (insert-one!
+    :olemassa_olevan_yhteisen_tutkinnon_osan_hankitun_osaamisen_naytto
+    {:olemassa_oleva_yhteinen_tutkinnon_osa_id (:id ooyto)
+     :hankitun_osaamisen_naytto_id (:id n)}))
+
 (defn select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
   (query
     [queries/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id id]
@@ -324,6 +330,19 @@
   (insert-multi!
     :olemassa_olevat_paikalliset_tutkinnon_osat
     (map h/olemassa-oleva-paikallinen-tutkinnon-osa-to-sql c)))
+
+(defn select-tarkentavat-tiedot-naytto-by-ooyto-id
+  "Olemassa olevan yhteisen tutkinnon osan näytön tarkentavat tiedot
+   (hankitun osaamisen näytöt)"
+  [id]
+  (query
+    [queries/select-hankitun-osaamisen-naytot-by-ooyto-id id]
+    {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
+
+(defn insert-olemassa-oleva-yhteinen-tutkinnon-osa! [m]
+  (insert-one!
+    :olemassa_olevat_yhteiset_tutkinnon_osat
+    (h/olemassa-oleva-yhteinen-tutkinnon-osa-to-sql m)))
 
 (defn select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id [id]
   (query
