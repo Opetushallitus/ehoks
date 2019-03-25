@@ -222,8 +222,8 @@
        (mapv
          (fn [naytto]
            (let [n (save-hankitun-osaamisen-naytto! naytto)]
-            (db/insert-ooyto-osa-alue-hankitun-osaamisen-naytto!
-              (:id o) (:id n))))
+             (db/insert-ooyto-osa-alue-hankitun-osaamisen-naytto!
+               (:id o) (:id n))))
          (:tarkentavat-tiedot %)))
     osa-alueet))
 
