@@ -217,10 +217,18 @@
 
 (def olemassa-oleva-paikallinen-tutkinnon-osa-to-sql to-sql)
 
+(defn olemassa-oleva-yhteinen-tutkinnon-osa-to-sql [m]
+  (to-sql m {:removals [:osa-alueet
+                        :tarkentavat-tiedot-naytto
+                        :tarkentavat-tiedot-arvioija]
+             :replaces {[:tarkentavat-tiedot-arvioija :lahetetty-arvioitavaksi]
+                        :lahetetty-arvioitavaksi}}))
+
 (defn olemassa-oleva-yhteinen-tutkinnon-osa-from-sql [m]
-  (from-sql m {:replaces
+  (from-sql m {:removals [:hoks_id]
+               :replaces
                {:lahetetty_arvioitavaksi
-                [:todennettu_arviointi_lisatiedot :lahetetty_arvioitavaksi]}}))
+                [:tarkentavat_tiedot_arvioija :lahetetty-arvioitavaksi]}}))
 
 (defn todennettu-arviointi-lisatiedot-to-sql [m]
   (to-sql m {:removals [:aiemmin-hankitun-osaamisen-arvioijat]}))
