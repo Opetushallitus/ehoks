@@ -78,6 +78,11 @@
     :koulutuksen_jarjestaja_arvioijat
     (map h/koulutuksen-jarjestaja-arvioija-to-sql c)))
 
+(defn insert-koulutuksen-jarjestaja-arvioija! [m]
+  (insert-one!
+    :koulutuksen_jarjestaja_arvioijat
+    (h/koulutuksen-jarjestaja-arvioija-to-sql m)))
+
 (defn select-tarkentavat-tiedot-naytto-by-ooato-id
   "Olemassa olevan ammatillisen tutkinnon osan näytön tarkentavat tiedot
    (hankitun osaamisen näytöt)"
@@ -90,6 +95,12 @@
   (insert-one!
     :olemassa_olevan_ammatillisen_tutkinnon_osan_hankitun_osaamisen_naytto
     {:olemassa_oleva_ammatillinen_tutkinnon_osa_id (:id ooato)
+     :hankitun_osaamisen_naytto_id (:id n)}))
+
+(defn insert-ooyto-hankitun-osaamisen-naytto! [ooyto n]
+  (insert-one!
+    :olemassa_olevan_yhteisen_tutkinnon_osan_hankitun_osaamisen_naytto
+    {:olemassa_oleva_yhteinen_tutkinnon_osa_id (:id ooyto)
      :hankitun_osaamisen_naytto_id (:id n)}))
 
 (defn select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
@@ -324,6 +335,51 @@
   (insert-multi!
     :olemassa_olevat_paikalliset_tutkinnon_osat
     (map h/olemassa-oleva-paikallinen-tutkinnon-osa-to-sql c)))
+
+(defn insert-ooyto-arvioija! [yto-id a-id]
+  (insert-one!
+    :olemassa_olevan_yhteisen_tutkinnon_osan_arvioijat
+    {:olemassa_oleva_yhteinen_tutkinnon_osa_id yto-id
+     :koulutuksen_jarjestaja_arvioija_id a-id}))
+
+(defn select-arvioija-by-ooyto-id [id]
+  (query
+    [queries/select-arvioijat-by-ooyto-id id]
+    {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
+
+(defn select-tarkentavat-tiedot-naytto-by-ooyto-id
+  "Olemassa olevan yhteisen tutkinnon osan näytön tarkentavat tiedot
+   (hankitun osaamisen näytöt)"
+  [id]
+  (query
+    [queries/select-hankitun-osaamisen-naytot-by-ooyto-id id]
+    {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
+
+(defn select-tarkentavat-tiedot-naytto-by-ooyto-osa-alue-id [id]
+  (query
+    [queries/select-hankitun-osaamisen-naytot-by-ooyto-osa-alue-id id]
+    {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
+
+(defn insert-ooyto-osa-alue-hankitun-osaamisen-naytto! [osa-alue-id naytto-id]
+  (insert-one!
+    :olemassa_olevan_yto_osa_alueen_hankitun_osaamisen_naytto
+    {:olemassa_oleva_yto_osa_alue_id osa-alue-id
+     :hankitun_osaamisen_naytto_id naytto-id}))
+
+(defn select-osa-alueet-by-ooyto-id [id]
+  (query
+    [queries/select-osa-alueet-by-ooyto-id id]
+    {:row-fn h/olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue-from-sql}))
+
+(defn insert-olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue! [m]
+  (insert-one!
+    :olemassa_olevat_yto_osa_alueet
+    (h/olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue-to-sql m)))
+
+(defn insert-olemassa-oleva-yhteinen-tutkinnon-osa! [m]
+  (insert-one!
+    :olemassa_olevat_yhteiset_tutkinnon_osat
+    (h/olemassa-oleva-yhteinen-tutkinnon-osa-to-sql m)))
 
 (defn select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id [id]
   (query
