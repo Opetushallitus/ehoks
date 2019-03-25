@@ -112,9 +112,9 @@
                        {:lahetetty-arvioitavaksi
                         (java.time.LocalDate/of 2016 2 29)
                         :aiemmin-hankitun-osaamisen-arvioijat
-                        [:nimi "Arttu Arvioija"
-                         :organisaatio {:oppilaitos-oid
-                                        "1.2.246.562.10.54453931311"}]}
+                        [{:nimi "Arttu Arvioija"
+                          :organisaatio {:oppilaitos-oid
+                                         "1.2.246.562.10.54453931311"}}]}
                        :osa-alueet
                        [:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
                         :osa-alue-koodi-versio 4
