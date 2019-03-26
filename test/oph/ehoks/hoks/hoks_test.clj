@@ -165,6 +165,18 @@
         (h/get-puuttuvat-ammatilliset-tutkinnon-osat (:id hoks))
         pao-data))))
 
+(deftest get-opiskeluvalmiuksia-tukevat-opinnot-test
+  (testing "Get HOKS opiskeluvalmiuksia tukevat opinnot"
+    (let [hoks (db/insert-hoks! {})
+          oto-data [{:nimi "Testiopintojakso"
+                     :kuvaus "Testi"
+                     :alku (java.time.LocalDate/of 2018 06 01)
+                     :loppu (java.time.LocalDate/of 2018 07 31)}]]
+      (h/save-opiskeluvalmiuksia-tukevat-opinnot! hoks oto-data)
+      (eq
+        (h/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks))
+        oto-data))))
+
 (deftest get-olemassa-olevat-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS olemassa olevat yhteiset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})
