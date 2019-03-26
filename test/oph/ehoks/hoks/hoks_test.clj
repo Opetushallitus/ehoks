@@ -108,7 +108,8 @@
                      :vaatimuksista-tai-tavoitteista-poikkeaminen
                      "Ei poikkeamia."
                      :hankitun-osaamisen-naytto
-                     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+                     [{:jarjestaja
+                       {:oppilaitos-oid "1.2.246.562.10.54453924330"}
                        :nayttoymparisto {:nimi "Testiympäristö 2"
                                          :y-tunnus "12345671-2"
                                          :kuvaus "Testi test"}
@@ -117,9 +118,10 @@
                        [{:nimi "Timo Testaaja"
                          :organisaatio
                          {:oppilaitos-oid "1.2.246.562.10.54452521332"}}]
-                       :tyoelama-arvioijat [{:nimi "Taneli Työmies"
-                                             :organisaatio {:nimi "Tanelin Paja Ky"
-                                                            :y-tunnus "12345622-2"}}]
+                       :tyoelama-arvioijat
+                       [{:nimi "Taneli Työmies"
+                         :organisaatio {:nimi "Tanelin Paja Ky"
+                                        :y-tunnus "12345622-2"}}]
                        :osa-alue-koodi-uri "ammatillisenoppiaineet_kl"
                        :osa-alue-koodi-versio 3
                        :alku (java.time.LocalDate/of 2019 3 10)
