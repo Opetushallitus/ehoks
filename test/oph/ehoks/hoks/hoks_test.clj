@@ -100,6 +100,69 @@
         (h/get-olemassa-olevat-paikalliset-tutkinnon-osat (:id hoks))
         oopto-data))))
 
+(deftest get-puuttuva-ammatillinen-osaaminen-test
+  (testing "Get HOKS puuttuva ammatillinen osaaminen"
+    (let [hoks (db/insert-hoks! {})
+          pao-data [{:tutkinnon-osa-koodi-uri "tutkinnonosat_102499"
+                     :tutkinnon-osa-koodi-versio 4
+                     :vaatimuksista-tai-tavoitteista-poikkeaminen
+                     "Ei poikkeamia."
+                     :hankitun-osaamisen-naytto
+                     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+                       :nayttoymparisto {:nimi "Testiympäristö 2"
+                                         :y-tunnus "12345671-2"
+                                         :kuvaus "Testi test"}
+                       :keskeiset-tyotehtavat-naytto ["Testaus"]
+                       :koulutuksen-jarjestaja-arvioijat
+                       [{:nimi "Timo Testaaja"
+                         :organisaatio
+                         {:oppilaitos-oid "1.2.246.562.10.54452521332"}}]
+                       :tyoelama-arvioijat [{:nimi "Taneli Työmies"
+                                             :organisaatio {:nimi "Tanelin Paja Ky"
+                                                            :y-tunnus "12345622-2"}}]
+                       :osa-alue-koodi-uri "ammatillisenoppiaineet_kl"
+                       :osa-alue-koodi-versio 3
+                       :alku (java.time.LocalDate/of 2019 3 10)
+                       :loppu (java.time.LocalDate/of 2019 3 19)}]
+                     :osaamisen-hankkimistavat
+                     [{:jarjestajan-edustaja
+                       {:nimi "Ville Valvoja"
+                        :rooli "Valvojan apulainen"
+                        :oppilaitos-oid "1.2.246.562.10.54451211340"}
+                       :osaamisen-hankkimistapa-koodi-uri
+                       "osaamisenhankkimistapa_oppisopimus"
+                       :osaamisen-hankkimistapa-koodi-versio 2
+                       :tyopaikalla-hankittava-osaaminen
+                       {:vastuullinen-ohjaaja
+                        {:nimi "Aimo Ohjaaja"
+                         :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
+                        :tyopaikan-nimi "Ohjausyhtiö Oy"
+                        :tyopaikan-y-tunnus "12345212-4"
+                        :muut-osallistujat [{:organisaatio
+                                             {:nimi "Kolmas Esimerkki Oy"
+                                              :y-tunnus "12345233-5"}
+                                             :nimi "Kalle Kirjuri"
+                                             :rooli "Kirjuri"}]
+                        :keskeiset-tyotehtavat ["Testitehtävä"]
+                        :lisatiedot false}
+                       :muut-oppimisymparisto
+                       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
+                         :oppimisymparisto-koodi-versio 1
+                         :selite "Testioppilaitos 2"
+                         :lisatiedot false}]
+                       :ajanjakson-tarkenne "Ei tarkennettavia asioita"
+                       :hankkijan-edustaja
+                       {:nimi "Heikki Hankkija"
+                        :rooli "Opettaja"
+                        :oppilaitos-oid "1.2.246.562.10.54452422420"}
+                       :alku (java.time.LocalDate/of 2019 1 11)
+                       :loppu (java.time.LocalDate/of 2019 3 14)}]
+                     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"}]]
+      (h/save-puuttuvat-ammatilliset-tutkinnon-osat! hoks pao-data)
+      (eq
+        (h/get-puuttuvat-ammatilliset-tutkinnon-osat (:id hoks))
+        pao-data))))
+
 (deftest get-olemassa-olevat-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS olemassa olevat yhteiset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})
