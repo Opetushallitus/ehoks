@@ -56,3 +56,11 @@
       "select_koulutuksen_jarjestaja_arvioijat.sql")
 (defq select-osa-alueet-by-ooyto-id
       "olemassa-olevat-yhteiset-tutkinnon-osat/select_osa_alueet.sql")
+(defq select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id
+      "puuttuvat-ammatilliset-tutkinnon-osat/select_by_hoks_id.sql")
+(defq select-hankitun-osaamisen-naytot-by-pato-id
+      "puuttuvat-ammatilliset-tutkinnon-osat/"
+      "select_hankitun_osaamisen_naytot.sql")
+(defq select-osaamisen-hankkmistavat-by-pato-id
+      "puuttuvat-ammatilliset-tutkinnon-osat/"
+      "select_osaamisen_hankkimistavat.sql")

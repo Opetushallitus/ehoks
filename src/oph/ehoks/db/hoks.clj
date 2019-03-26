@@ -241,3 +241,10 @@
 
 (defn todennettu-arviointi-lisatiedot-from-sql [m]
   (from-sql m))
+
+(defn puuttuva-ammatillinen-tutkinnon-osa-to-sql [m]
+  (to-sql m {:removals [:hankitun-osaamisen-naytto
+                        :osaamisen-hankkimistavat]}))
+
+(defn puuttuva-ammatillinen-tutkinnon-osa-from-sql [m]
+  (from-sql m {:removals [:hoks_id]}))
