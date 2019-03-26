@@ -59,19 +59,22 @@
         (assoc :keskeiset-tyotehtavat
                (db/select-tyotehtavat-by-tho-id (:id o))))))
 
+(defn set-osaamisen-hankkimistapa-values [m]
+  (dissoc
+    (assoc
+      m
+      :tyopaikalla-hankittava-osaaminen
+      (get-tyopaikalla-hankittava-osaaminen
+        (:tyopaikalla-hankittava-osaaminen-id m))
+      :muut-oppimisymparisto
+      (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
+        (:id m)))
+    :id :tyopaikalla-hankittava-osaaminen-id))
+
 (defn get-osaamisen-hankkimistavat [id]
   (let [hankkimistavat (db/select-osaamisen-hankkimistavat-by-ppto-id id)]
     (mapv
-      #(dissoc
-         (assoc
-           %
-           :tyopaikalla-hankittava-osaaminen
-           (get-tyopaikalla-hankittava-osaaminen
-             (:tyopaikalla-hankittava-osaaminen-id %))
-           :muut-oppimisymparisto
-           (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
-             (:id %)))
-         :id :tyopaikalla-hankittava-osaaminen-id)
+      set-osaamisen-hankkimistapa-values
       hankkimistavat)))
 
 (defn get-puuttuvat-paikalliset-tutkinnon-osat [hoks-id]
@@ -123,6 +126,30 @@
          (dissoc :id))
     (db/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
 
+(defn get-pato-osaamisen-hankkimistavat [id]
+  (mapv
+    set-osaamisen-hankkimistapa-values
+    (db/select-osaamisen-hankkimistavat-by-pato-id id)))
+
+(defn get-pato-hankitun-osaamisen-naytto [id]
+  (mapv
+    #(dissoc
+       (set-hankitun-osaamisen-naytto-values %)
+       :id)
+    (db/select-hankitun-osaamisen-naytot-by-pato-id id)))
+
+(defn get-puuttuvat-ammatilliset-tutkinnon-osat [hoks-id]
+  (mapv
+    #(dissoc
+       (assoc
+         %
+         :hankitun-osaamisen-naytto
+         (get-pato-hankitun-osaamisen-naytto (:id %))
+         :osaamisen-hankkimistavat
+         (get-pato-osaamisen-hankkimistavat (:id %)))
+       :id)
+    (db/select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id hoks-id)))
+
 (defn get-hokses-by-oppija [oid]
   (mapv
     #(assoc
@@ -137,15 +164,18 @@
        (get-olemassa-olevat-paikalliset-tutkinnon-osat (:id %)))
     (db/select-hoks-by-oppija-oid oid)))
 
-(defn save-ppto-osaamisen-hankkimistapa! [ppto oh]
+(defn save-osaamisen-hankkimistapa! [oh]
   (let [tho (db/insert-tyopaikalla-hankittava-osaaminen!
               (:tyopaikalla-hankittava-osaaminen oh))
         o-db (db/insert-osaamisen-hankkimistapa!
-               ppto
                (assoc oh :tyopaikalla-hankittava-osaaminen-id
                       (:id tho)))]
     (db/insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
       o-db (:muut-oppimisymparisto oh))
+    o-db))
+
+(defn save-ppto-osaamisen-hankkimistapa! [ppto oh]
+  (let [o-db (save-osaamisen-hankkimistapa! oh)]
     (db/insert-puuttuvan-paikallisen-tutkinnon-osan-osaamisen-hankkimistapa!
       ppto o-db)
     o-db))
@@ -275,6 +305,34 @@
 
 (defn save-olemassa-olevat-ammatilliset-tutkinnon-osat [h c]
   (mapv #(save-olemassa-oleva-ammatillinen-tutkinnon-osa! h %) c))
+
+(defn save-pato-osaamisen-hankkimistapa! [pato oh]
+  (let [o-db (save-osaamisen-hankkimistapa! oh)]
+    (db/insert-puuttuvan-ammatillisen-tutkinnon-osan-osaamisen-hankkimistapa!
+      (:id pato) (:id o-db))
+    o-db))
+
+(defn save-pato-hankitun-osaamisen-naytto! [pato n]
+  (let [naytto (save-hankitun-osaamisen-naytto! n)]
+    (db/insert-pato-hankitun-osaamisen-naytto! (:id pato) (:id naytto))
+    naytto))
+
+(defn save-puuttuva-ammatillinen-tutkinnon-osa! [h pato]
+  (let [pato-db (db/insert-puuttuva-ammatillinen-tutkinnon-osa!
+                  (assoc pato :hoks-id (:id h)))]
+    (assoc
+      pato-db
+      :hankitun-osaamisen-naytto
+      (mapv
+        #(save-pato-hankitun-osaamisen-naytto! pato-db %)
+        (:hankitun-osaamisen-naytto pato))
+      :osaamisen-hankkimistavat
+      (mapv
+        #(save-pato-osaamisen-hankkimistapa! pato-db %)
+        (:osaamisen-hankkimistavat pato)))))
+
+(defn save-puuttuvat-ammatilliset-tutkinnon-osat! [h c]
+  (mapv #(save-puuttuva-ammatillinen-tutkinnon-osa! h %) c))
 
 (defn save-hoks! [h]
   (let [saved-hoks (first (db/insert-hoks! h))]

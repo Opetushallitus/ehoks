@@ -216,8 +216,7 @@
     [queries/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id id]
     {:row-fn h/muu-oppimisymparisto-from-sql}))
 
-(defn insert-osaamisen-hankkimistapa!
-  [ppto oh]
+(defn insert-osaamisen-hankkimistapa! [oh]
   (insert-one!
     :osaamisen_hankkimistavat
     (h/osaamisen-hankkimistapa-to-sql oh)))
@@ -385,3 +384,38 @@
   (query
     [queries/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/olemassa-oleva-yhteinen-tutkinnon-osa-from-sql}))
+
+(defn insert-puuttuva-ammatillinen-tutkinnon-osa! [m]
+  (insert-one!
+    :puuttuvat_ammatilliset_tutkinnon_osat
+    (h/puuttuva-ammatillinen-tutkinnon-osa-to-sql m)))
+
+(defn select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
+  (query
+    [queries/select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id id]
+    {:row-fn h/puuttuva-ammatillinen-tutkinnon-osa-from-sql}))
+
+(defn insert-pato-hankitun-osaamisen-naytto! [pato-id naytto-id]
+  (insert-one!
+    :puuttuvan_ammatillisen_tutkinnon_osan_hankitun_osaamisen_naytto
+    {:puuttuva_ammatillinen_tutkinnon_osa_id pato-id
+     :hankitun_osaamisen_naytto_id naytto-id}))
+
+(defn select-hankitun-osaamisen-naytot-by-pato-id [id]
+  (query
+    [queries/select-hankitun-osaamisen-naytot-by-pato-id id]
+    {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
+
+(defn insert-puuttuvan-ammatillisen-tutkinnon-osan-osaamisen-hankkimistapa!
+  [pato-id oh-id]
+  (insert-one!
+    :puuttuvan_ammatillisen_tutkinnon_osan_osaamisen_hankkimistavat
+    {:puuttuva_ammatillinen_tutkinnon_osa_id pato-id
+     :osaamisen_hankkimistapa_id oh-id}))
+
+(defn select-osaamisen-hankkimistavat-by-pato-id
+  "Puuttuvan ammatillisen tutkinnon osan osaamisen hankkimistavat"
+  [id]
+  (query
+    [queries/select-osaamisen-hankkmistavat-by-pato-id id]
+    {:row-fn h/osaamisen-hankkimistapa-from-sql}))
