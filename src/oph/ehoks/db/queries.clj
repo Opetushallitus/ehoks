@@ -1,9 +1,28 @@
 (ns oph.ehoks.db.queries
-  (:require [clojure.java.io :as io]))
+  (:require [clojure.java.io :as io]
+            [clojure.string :as cstr]))
+
+(defn parse-table-name [s]
+  (-> s
+      (cstr/replace #"select-" "")
+      (cstr/replace #"-by-hoks-id" "")
+      (cstr/replace #"-" "_")))
+
+(defn select-by-hoks-id? [query-name]
+  (let [s (str query-name)]
+    (and
+      (.startsWith s "select-")
+      (.endsWith s "-by-hoks-id"))))
 
 (defmacro defq [query-name & filename]
-  `(def ~query-name (slurp
-                      (io/file (io/resource (apply str (quote ~filename)))))))
+  `(def ~query-name
+     (if (select-by-hoks-id? (quote ~query-name))
+       (cstr/replace
+         (slurp (io/file (io/resource "select_by_hoks_id.sql")))
+         #"\{\{table_name\}\}"
+         (parse-table-name (str (quote ~query-name))))
+       (slurp
+         (io/file (io/resource (apply str (quote ~filename))))))))
 
 (defq select-hoks-by-oppija-oid "hoksit/select_by_oppija_oid.sql")
 (defq select-hoks-by-id "hoksit/select_by_id.sql")
@@ -56,13 +75,11 @@
       "select_koulutuksen_jarjestaja_arvioijat.sql")
 (defq select-osa-alueet-by-ooyto-id
       "olemassa-olevat-yhteiset-tutkinnon-osat/select_osa_alueet.sql")
-(defq select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id
-      "puuttuvat-ammatilliset-tutkinnon-osat/select_by_hoks_id.sql")
+(defq select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id)
 (defq select-hankitun-osaamisen-naytot-by-pato-id
       "puuttuvat-ammatilliset-tutkinnon-osat/"
       "select_hankitun_osaamisen_naytot.sql")
 (defq select-osaamisen-hankkmistavat-by-pato-id
       "puuttuvat-ammatilliset-tutkinnon-osat/"
       "select_osaamisen_hankkimistavat.sql")
-(defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id
-      "opiskeluvalmiuksia-tukevat-opinnot/select_by_hoks_id.sql")
+(defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id)
