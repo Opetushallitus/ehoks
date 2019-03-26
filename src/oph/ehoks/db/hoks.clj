@@ -248,3 +248,8 @@
 
 (defn puuttuva-ammatillinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]}))
+
+(def opiskeluvalmiuksia-tukevat-opinnot-to-sql to-sql)
+
+(defn opiskeluvalmiuksia-tukevat-opinnot-from-sql [m]
+  (from-sql m {:removals [:id :hoks_id]}))

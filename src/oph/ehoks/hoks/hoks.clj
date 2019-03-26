@@ -150,6 +150,9 @@
        :id)
     (db/select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
+(defn get-opiskeluvalmiuksia-tukevat-opinnot [hoks-id]
+  (db/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id))
+
 (defn get-hokses-by-oppija [oid]
   (mapv
     #(assoc
@@ -333,6 +336,10 @@
 
 (defn save-puuttuvat-ammatilliset-tutkinnon-osat! [h c]
   (mapv #(save-puuttuva-ammatillinen-tutkinnon-osa! h %) c))
+
+(defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
+  (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
+    (mapv #(assoc % :hoks-id (:id h)) c)))
 
 (defn save-hoks! [h]
   (let [saved-hoks (first (db/insert-hoks! h))]

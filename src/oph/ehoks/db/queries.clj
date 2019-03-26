@@ -64,3 +64,5 @@
 (defq select-osaamisen-hankkmistavat-by-pato-id
       "puuttuvat-ammatilliset-tutkinnon-osat/"
       "select_osaamisen_hankkimistavat.sql")
+(defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id
+      "opiskeluvalmiuksia-tukevat-opinnot/select_by_hoks_id.sql")
