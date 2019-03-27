@@ -8,10 +8,19 @@
 (def select-by-id-template
   (slurp (io/file (io/resource "select_by_id.sql"))))
 
+(defn remove-by [s]
+  (cstr/replace
+    s
+    (cond (.endsWith s "-by-hoks-id")
+          #"-by-hoks-id"
+          (.endsWith s "-by-id")
+          #"-by-id")
+    ""))
+
 (defn parse-table-name [s]
   (-> s
       (cstr/replace #"select-" "")
-      (cstr/replace #"-by-hoks-id" "")
+      remove-by
       (cstr/replace #"-" "_")))
 
 (defn select-by-id? [query-name]
