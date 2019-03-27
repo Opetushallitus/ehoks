@@ -2,27 +2,48 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as cstr]))
 
+(def select-by-hoks-id-template
+  (slurp (io/file (io/resource "select_by_hoks_id.sql"))))
+
+(def select-by-id-template
+  (slurp (io/file (io/resource "select_by_id.sql"))))
+
 (defn parse-table-name [s]
   (-> s
       (cstr/replace #"select-" "")
       (cstr/replace #"-by-hoks-id" "")
       (cstr/replace #"-" "_")))
 
+(defn select-by-id? [query-name]
+  (and
+    (.startsWith query-name "select-")
+    (.endsWith query-name "-by-id")))
+
 (defn select-by-hoks-id? [query-name]
-  (let [s (str query-name)]
-    (and
-      (.startsWith s "select-")
-      (.endsWith s "-by-hoks-id"))))
+  (and
+    (.startsWith query-name "select-")
+    (.endsWith query-name "-by-hoks-id")))
+
+(defn read-query [f]
+  (slurp (io/file (io/resource (cstr/join f)))))
+
+(defn generate-query [n]
+  (cond
+    (select-by-hoks-id? n)
+    (cstr/replace
+      select-by-hoks-id-template
+      #"\{\{table_name\}\}"
+      (parse-table-name n))
+    (select-by-id? n)
+    (cstr/replace
+      select-by-id-template
+      #"\{\{table_name\}\}"
+      (parse-table-name n))))
 
 (defmacro defq [query-name & filename]
-  `(def ~query-name
-     (if (select-by-hoks-id? (quote ~query-name))
-       (cstr/replace
-         (slurp (io/file (io/resource "select_by_hoks_id.sql")))
-         #"\{\{table_name\}\}"
-         (parse-table-name (str (quote ~query-name))))
-       (slurp
-         (io/file (io/resource (apply str (quote ~filename))))))))
+  `(def ~query-name (if (seq (quote ~filename))
+                      (read-query (quote ~filename))
+                      (generate-query (str (quote ~query-name))))))
 
 (defq select-hoks-by-oppija-oid "hoksit/select_by_oppija_oid.sql")
 (defq select-hoks-by-id "hoksit/select_by_id.sql")
