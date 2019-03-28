@@ -23,7 +23,7 @@
     (db/select-tarkentavat-tiedot-naytto-by-ooato-id id)))
 
 (defn get-tarkentavat-tiedot-arvioija [id]
-  (let [tta (first (db/select-todennettu-arviointi-lisatiedot-by-id id))]
+  (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id id)]
     (dissoc
       (assoc
         tta
