@@ -32,7 +32,7 @@
                       (generate-select-by (parse-sql (str (quote ~query-name))))
                       (read-sql-file (cstr/join (quote ~filename))))))
 
-(defq select-hoks-by-oppija-oid "hoksit/select_by_oppija_oid.sql")
+(defq select-hoksit-by-oppija-oid)
 (defq select-hoksit-by-id)
 (defq select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id)
 (def select-hankitun-osaamisen-naytot-by-ooato-id

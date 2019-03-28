@@ -36,7 +36,7 @@
 
 (defn select-hoks-by-oppija-oid [oid]
   (query
-    [queries/select-hoks-by-oppija-oid oid]
+    [queries/select-hoksit-by-oppija-oid oid]
     :row-fn h/hoks-from-sql))
 
 (defn select-hoks-by-id [id]
