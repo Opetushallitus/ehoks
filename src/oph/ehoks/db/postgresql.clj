@@ -40,9 +40,10 @@
     :row-fn h/hoks-from-sql))
 
 (defn select-hoks-by-id [id]
-  (query
-    [queries/select-hoks-by-id id]
-    {:row-fn h/hoks-from-sql}))
+  (first
+    (query
+      [queries/select-hoksit-by-id id]
+      {:row-fn h/hoks-from-sql})))
 
 (defn insert-hoks! [hoks]
   (insert-one! :hoksit (h/hoks-to-sql hoks)))
@@ -53,9 +54,10 @@
 (def replace-hoks-by-id! update-hoks-by-id!)
 
 (defn select-todennettu-arviointi-lisatiedot-by-id [id]
-  (query
-    [queries/select-todennettu-arviointi-lisatiedot-by-id id]
-    {:row-fn h/todennettu-arviointi-lisatiedot-from-sql}))
+  (first
+    (query
+      [queries/select-todennettu-arviointi-lisatiedot-by-id id]
+      {:row-fn h/todennettu-arviointi-lisatiedot-from-sql})))
 
 (defn insert-todennettu-arviointi-lisatiedot! [m]
   (insert-one!
@@ -124,9 +126,10 @@
     {:row-fn h/puuttuva-paikallinen-tutkinnon-osa-from-sql}))
 
 (defn select-puuttuva-paikallinen-tutkinnon-osa-by-id [id]
-  (query
-    [queries/select-puuttuva-paikallinen-tutkinnon-osa-by-id id]
-    {:row-fn h/puuttuva-paikallinen-tutkinnon-osa-from-sql}))
+  (first
+    (query
+      [queries/select-puuttuvat-paikalliset-tutkinnon-osat-by-id id]
+      {:row-fn h/puuttuva-paikallinen-tutkinnon-osa-from-sql})))
 
 (defn insert-puuttuvat-paikalliset-tutkinnon-osat! [c]
   (insert-multi!
@@ -200,7 +203,7 @@
 (defn select-tyopaikalla-hankittava-osaaminen-by-id [id]
   (first
     (query
-      [queries/select-tyopaikalla-hankittava-osaaminen-by-id id]
+      [queries/select-tyopaikalla-hankittavat-osaamiset-by-id id]
       {:row-fn h/tyopaikalla-hankittava-osaaminen-from-sql})))
 
 (defn insert-osaamisen-hankkimistavan-muut-oppimisymparistot! [oh c]
@@ -322,7 +325,7 @@
 (defn select-nayttoymparisto-by-id [id]
   (first
     (query
-      [queries/select-nayttoymparisto-by-id id]
+      [queries/select-nayttoymparistot-by-id id]
       {:row-fn h/nayttoymparisto-from-sql})))
 
 (defn select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id [id]
