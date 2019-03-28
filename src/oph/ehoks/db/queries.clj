@@ -6,18 +6,25 @@
 
 (def select-by-template (read-sql-file "select_by.sql"))
 
-(defn generate-select-by [n]
-  (let [[table column] (rest
-                         (clojure.string/split
-                           (cstr/replace n #"-" "_")
-                           #"(_by_)|(select_)"))]
-    (-> select-by-template
-        (cstr/replace #"\{\{table_name\}\}" table)
-        (cstr/replace #"\{\{column_name\}\}" column))))
+(defn populate-sql [m sql]
+  (reduce
+    (fn [c [k v]]
+      (cstr/replace c (str k) v))
+    sql
+    m))
+
+(defn generate-select-by [m]
+  (populate-sql m select-by-template))
+
+(defn parse-sql [n]
+  (let [[table column] (rest (clojure.string/split
+                               (cstr/replace n #"-" "_")
+                               #"(_by_)|(select_)"))]
+    {:table table :column column}))
 
 (defmacro defq [query-name & filename]
   `(def ~query-name (if (nil? (first (quote ~filename)))
-                      (generate-select-by (str (quote ~query-name)))
+                      (generate-select-by (parse-sql (str (quote ~query-name))))
                       (read-sql-file (cstr/join (quote ~filename))))))
 
 (defq select-hoks-by-oppija-oid "hoksit/select_by_oppija_oid.sql")
@@ -38,16 +45,21 @@
 (defq select-tyoelama-arvioijat-by-hon-id
       "hankitun-osaamisen-naytot/select_tyoelama_arvioijat.sql")
 (defq select-nayttoymparistot-by-id)
-(defq select-tyotehtavat-by-hankitun-osaamisen-naytto-id
-      "hankitun-osaamisen-naytot/select_tyotehtavat.sql")
+(def select-tyotehtavat-by-hankitun-osaamisen-naytto-id
+  (generate-select-by {:table "hankitun_osaamisen_tyotehtavat"
+                       :column "hankitun_osaamisen_naytto_id"}))
 (defq select-osaamisen-hankkmistavat-by-ppto-id
       "puuttuvat-paikalliset-tutkinnon-osat/"
       "select_osaamisen_hankkimistavat.sql")
 (defq select-tyopaikalla-hankittavat-osaamiset-by-id)
-(defq select-henkilot-by-tho-id
-      "tyopaikalla-hankittavat-osaamiset/select_henkilot.sql")
-(defq select-tyotehtavat-by-tho-id
-      "tyopaikalla-hankittavat-osaamiset/select_tyotehtavat.sql")
+(def select-henkilot-by-tho-id
+  (generate-select-by
+    {:table "tyopaikalla_hankittavat_osaamisen_henkilot"
+     :column "tyopaikalla_hankittava_osaaminen_id"}))
+(def select-tyotehtavat-by-tho-id
+    (generate-select-by
+      {:table "tyopaikalla_hankittavat_osaamisen_tyotehtavat"
+       :column "tyopaikalla_hankittava_osaaminen_id"}))
 (defq select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
       "muut-oppimisymparistot/select_by_osaamisen_hankkimistapa_id.sql")
 (defq select-todennettu-arviointi-lisatiedot-by-id)

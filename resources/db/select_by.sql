@@ -1,2 +1,2 @@
-SELECT * FROM {{table_name}}
-  WHERE {{column_name}} = ? AND deleted_at IS NULL
+SELECT * FROM :table
+  WHERE :column = ? AND deleted_at IS NULL
