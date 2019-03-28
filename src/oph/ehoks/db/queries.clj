@@ -17,7 +17,7 @@
           #"-by-id")
     ""))
 
-(defn parse-table-name [s]
+(defn parse-sql-name [s]
   (-> s
       (cstr/replace #"select-" "")
       remove-by
@@ -42,12 +42,12 @@
     (cstr/replace
       select-by-hoks-id-template
       #"\{\{table_name\}\}"
-      (parse-table-name n))
+      (parse-sql-name n))
     (select-by-id? n)
     (cstr/replace
       select-by-id-template
       #"\{\{table_name\}\}"
-      (parse-table-name n))))
+      (parse-sql-name n))))
 
 (defmacro defq [query-name & filename]
   `(def ~query-name (if (nil? (first (quote ~filename)))
