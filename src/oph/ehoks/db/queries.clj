@@ -50,9 +50,9 @@
       (parse-table-name n))))
 
 (defmacro defq [query-name & filename]
-  `(def ~query-name (if (seq (quote ~filename))
-                      (read-query (quote ~filename))
-                      (generate-query (str (quote ~query-name))))))
+  `(def ~query-name (if (nil? (first (quote ~filename)))
+                      (generate-query (str (quote ~query-name)))
+                      (read-query (quote ~filename)))))
 
 (defq select-hoks-by-oppija-oid "hoksit/select_by_oppija_oid.sql")
 (defq select-hoks-by-id "hoksit/select_by_id.sql")
