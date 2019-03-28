@@ -6,6 +6,8 @@
 
 (def select-by-template (read-sql-file "select_by.sql"))
 
+(def select-join-template (read-sql-file "select_join.sql"))
+
 (defn populate-sql [m sql]
   (reduce
     (fn [c [k v]]
@@ -15,6 +17,9 @@
 
 (defn generate-select-by [m]
   (populate-sql m select-by-template))
+
+(defn generate-select-join [m]
+  (populate-sql m select-join-template))
 
 (defn parse-sql [n]
   (let [[table column] (rest (clojure.string/split
