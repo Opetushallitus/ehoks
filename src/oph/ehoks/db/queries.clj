@@ -2,57 +2,23 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as cstr]))
 
-(def select-by-hoks-id-template
-  (slurp (io/file (io/resource "select_by_hoks_id.sql"))))
+(defn read-sql-file [f] (slurp (io/file (io/resource f))))
 
-(def select-by-id-template
-  (slurp (io/file (io/resource "select_by_id.sql"))))
+(def select-by-template (read-sql-file "select_by.sql"))
 
-(defn remove-by [s]
-  (cstr/replace
-    s
-    (cond (.endsWith s "-by-hoks-id")
-          #"-by-hoks-id"
-          (.endsWith s "-by-id")
-          #"-by-id")
-    ""))
-
-(defn parse-sql-name [s]
-  (-> s
-      (cstr/replace #"select-" "")
-      remove-by
-      (cstr/replace #"-" "_")))
-
-(defn select-by-id? [query-name]
-  (and
-    (.startsWith query-name "select-")
-    (.endsWith query-name "-by-id")))
-
-(defn select-by-hoks-id? [query-name]
-  (and
-    (.startsWith query-name "select-")
-    (.endsWith query-name "-by-hoks-id")))
-
-(defn read-query [f]
-  (slurp (io/file (io/resource (cstr/join f)))))
-
-(defn generate-query [n]
-  (cond
-    (select-by-hoks-id? n)
-    (cstr/replace
-      select-by-hoks-id-template
-      #"\{\{table_name\}\}"
-      (parse-sql-name n))
-    (select-by-id? n)
-    (cstr/replace
-      select-by-id-template
-      #"\{\{table_name\}\}"
-      (parse-sql-name n))))
+(defn generate-select-by [n]
+  (let [[table column] (rest
+                         (clojure.string/split
+                           (cstr/replace n #"-" "_")
+                           #"(_by_)|(select_)"))]
+    (-> select-by-template
+        (cstr/replace #"\{\{table_name\}\}" table)
+        (cstr/replace #"\{\{column_name\}\}" column))))
 
 (defmacro defq [query-name & filename]
   `(def ~query-name (if (nil? (first (quote ~filename)))
-                      (generate-query (str (quote ~query-name)))
-                      (read-query (quote ~filename)))))
+                      (generate-select-by (str (quote ~query-name)))
+                      (read-sql-file (cstr/join (quote ~filename))))))
 
 (defq select-hoks-by-oppija-oid "hoksit/select_by_oppija_oid.sql")
 (defq select-hoksit-by-id)
