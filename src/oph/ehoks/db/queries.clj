@@ -35,27 +35,50 @@
 (defq select-hoks-by-oppija-oid "hoksit/select_by_oppija_oid.sql")
 (defq select-hoksit-by-id)
 (defq select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id)
-(defq select-hankitun-osaamisen-naytot-by-ooato-id
-      "olemassa-olevat-ammatilliset-tutkinnon-osat/"
-      "select_hankitun_osaamisen_naytot.sql")
+(def select-hankitun-osaamisen-naytot-by-ooato-id
+  (generate-select-join
+    {:table "hankitun_osaamisen_naytot"
+     :join (str "olemassa_olevan_ammatillisen_tutkinnon_osan_"
+                "hankitun_osaamisen_naytto")
+     :secondary-column "hankitun_osaamisen_naytto_id"
+     :primary-column "id"
+     :column "olemassa_oleva_ammatillinen_tutkinnon_osa_id"}))
 (defq select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id)
 (defq select-puuttuvat-paikalliset-tutkinnon-osat-by-id)
 (defq select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id)
 (defq select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id)
-(defq select-hankitun-osaamisen-naytot-by-ppto-id
-      "puuttuvat-paikalliset-tutkinnon-osat/"
-      "select_hankitun_osaamisen_naytot.sql")
-(defq select-koulutuksen-jarjestaja-arvioijat-by-hon-id
-      "hankitun-osaamisen-naytot/select_koulutuksen_jarjestaja_arvioijat.sql")
-(defq select-tyoelama-arvioijat-by-hon-id
-      "hankitun-osaamisen-naytot/select_tyoelama_arvioijat.sql")
+(def select-hankitun-osaamisen-naytot-by-ppto-id
+  (generate-select-join
+    {:table "hankitun_osaamisen_naytot"
+     :join "puuttuvan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto"
+     :secondary-column "hankitun_osaamisen_naytto_id"
+     :primary-column "id"
+     :column "puuttuva_paikallinen_tutkinnon_osa_id"}))
+(def select-koulutuksen-jarjestaja-arvioijat-by-hon-id
+  (generate-select-join
+    {:table "koulutuksen_jarjestaja_arvioijat"
+     :join "hankitun_osaamisen_nayton_koulutuksen_jarjestaja_arvioija"
+     :secondary-column "koulutuksen_jarjestaja_arvioija_id"
+     :primary-column "id"
+     :column "hankitun_osaamisen_naytto_id"}))
+(def select-tyoelama-arvioijat-by-hon-id
+  (generate-select-join
+    {:table "tyoelama_arvioijat"
+     :join "hankitun_osaamisen_nayton_tyoelama_arvioija"
+     :secondary-column "tyoelama_arvioija_id"
+     :primary-column "id"
+     :column "hankitun_osaamisen_naytto_id"}))
 (defq select-nayttoymparistot-by-id)
 (def select-tyotehtavat-by-hankitun-osaamisen-naytto-id
   (generate-select-by {:table "hankitun_osaamisen_tyotehtavat"
                        :column "hankitun_osaamisen_naytto_id"}))
-(defq select-osaamisen-hankkmistavat-by-ppto-id
-      "puuttuvat-paikalliset-tutkinnon-osat/"
-      "select_osaamisen_hankkimistavat.sql")
+(def select-osaamisen-hankkmistavat-by-ppto-id
+  (generate-select-join
+    {:table "osaamisen_hankkimistavat"
+     :join "puuttuvan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat"
+     :secondary-column "osaamisen_hankkimistapa_id"
+     :primary-column "id"
+     :column "puuttuva_paikallinen_tutkinnon_osa_id"}))
 (defq select-tyopaikalla-hankittavat-osaamiset-by-id)
 (def select-henkilot-by-tho-id
   (generate-select-by
@@ -65,27 +88,53 @@
     (generate-select-by
       {:table "tyopaikalla_hankittavat_osaamisen_tyotehtavat"
        :column "tyopaikalla_hankittava_osaaminen_id"}))
-(defq select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
-      "muut-oppimisymparistot/select_by_osaamisen_hankkimistapa_id.sql")
+(defq select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id)
 (defq select-todennettu-arviointi-lisatiedot-by-id)
-(defq select-arvioijat-by-todennettu-arviointi-id
-      "todennettu-arviointi-lisatiedot/select_arvioijat.sql")
-(defq select-hankitun-osaamisen-naytot-by-ooyto-id
-      "olemassa-olevat-yhteiset-tutkinnon-osat/"
-      "select_hankitun_osaamisen_naytot.sql")
-(defq select-hankitun-osaamisen-naytot-by-ooyto-osa-alue-id
-      "olemassa-olevat-yhteiset-tutkinnon-osat/"
-      "select_osa_alue_hankitun_osaamisen_naytot.sql")
-(defq select-arvioijat-by-ooyto-id
-      "olemassa-olevat-yhteiset-tutkinnon-osat/"
-      "select_koulutuksen_jarjestaja_arvioijat.sql")
-(defq select-osa-alueet-by-ooyto-id
-      "olemassa-olevat-yhteiset-tutkinnon-osat/select_osa_alueet.sql")
+(def select-arvioijat-by-todennettu-arviointi-id
+  (generate-select-join
+    {:table "koulutuksen_jarjestaja_arvioijat"
+     :join "todennettu_arviointi_arvioijat"
+     :secondary-column "koulutuksen_jarjestaja_arvioija_id"
+     :primary-column "id"
+     :column "todennettu_arviointi_lisatiedot_id"}))
+(def select-hankitun-osaamisen-naytot-by-ooyto-id
+  (generate-select-join
+    {:table "hankitun_osaamisen_naytot"
+     :join "olemassa_olevan_yhteisen_tutkinnon_osan_hankitun_osaamisen_naytto"
+     :secondary-column "hankitun_osaamisen_naytto_id"
+     :primary-column "id"
+     :column "olemassa_oleva_yhteinen_tutkinnon_osa_id"}))
+(def select-hankitun-osaamisen-naytot-by-ooyto-osa-alue-id
+  (generate-select-join
+    {:table "hankitun_osaamisen_naytot"
+     :join "olemassa_olevan_yto_osa_alueen_hankitun_osaamisen_naytto"
+     :secondary-column "hankitun_osaamisen_naytto_id"
+     :primary-column "id"
+     :column "olemassa_oleva_yto_osa_alue_id"}))
+(def select-arvioijat-by-ooyto-id
+  (generate-select-join
+    {:table "koulutuksen_jarjestaja_arvioijat"
+     :join "olemassa_olevan_yhteisen_tutkinnon_osan_arvioijat"
+     :secondary-column "koulutuksen_jarjestaja_arvioija_id"
+     :primary-column "id"
+     :column "olemassa_oleva_yhteinen_tutkinnon_osa_id"}))
+(def select-osa-alueet-by-ooyto-id
+  (generate-select-by
+    {:table "olemassa_olevat_yto_osa_alueet"
+     :column "olemassa_oleva_yhteinen_tutkinnon_osa_id"}))
 (defq select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id)
-(defq select-hankitun-osaamisen-naytot-by-pato-id
-      "puuttuvat-ammatilliset-tutkinnon-osat/"
-      "select_hankitun_osaamisen_naytot.sql")
-(defq select-osaamisen-hankkmistavat-by-pato-id
-      "puuttuvat-ammatilliset-tutkinnon-osat/"
-      "select_osaamisen_hankkimistavat.sql")
+(def select-hankitun-osaamisen-naytot-by-pato-id
+  (generate-select-join
+    {:table "hankitun_osaamisen_naytot"
+     :join "puuttuvan_ammatillisen_tutkinnon_osan_hankitun_osaamisen_naytto"
+     :secondary-column "hankitun_osaamisen_naytto_id"
+     :primary-column "id"
+     :column "puuttuva_ammatillinen_tutkinnon_osa_id"}))
+(def select-osaamisen-hankkmistavat-by-pato-id
+  (generate-select-join
+    {:table "osaamisen_hankkimistavat"
+     :join "puuttuvan_ammatillisen_tutkinnon_osan_osaamisen_hankkimistavat"
+     :secondary-column "osaamisen_hankkimistapa_id"
+     :primary-column "id"
+     :column "puuttuva_ammatillinen_tutkinnon_osa_id"}))
 (defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id)
