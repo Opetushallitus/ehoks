@@ -362,3 +362,72 @@
             :osa-alue-koodi-versio 2
             :alku (java.time.LocalDate/of 2019 3 11)
             :loppu (java.time.LocalDate/of 2019 3 13)}]}]))))
+
+(deftest get-puuttuvat-yhteiset-tutkinnon-osat-test
+  (testing "Get HOKS puuttuvat yhteiset tutkinnon osat"
+    (let [hoks (db/insert-hoks! {})
+          pyto-data
+          [{:tutkinnon-osa-koodi-uri "tutkinnonosat_121123"
+            :tutkinnon-osa-koodi-versio 3
+            :koulutuksen-jarjestaja-oid "1.2.246.562.10.54452345789"
+            :osa-alueet
+            [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ke"
+              :osa-alue-koodi-versio 4
+              :osaamisen-hankkimistavat
+              [{:jarjestajan-edustaja
+                {:nimi "Valmari Valvoja"
+                 :rooli "Apulainen"
+                 :oppilaitos-oid "1.2.246.562.10.54452355620"}
+                :osaamisen-hankkimistapa-koodi-uri
+                "osaamisenhankkimistapa_oppisopimus"
+                :osaamisen-hankkimistapa-koodi-versio 2
+                :tyopaikalla-hankittava-osaaminen
+                {:vastuullinen-ohjaaja
+                 {:nimi "Olli Ohjaaja"
+                  :sahkoposti "olli.ohjaaja@esimerkki3.com"}
+                 :tyopaikan-nimi "Ohjausyhtiö Oy"
+                 :tyopaikan-y-tunnus "12345212-4"
+                 :muut-osallistujat [{:organisaatio
+                                      {:nimi "Uusi Esimerkki Oy"
+                                       :y-tunnus "12322233-5"}
+                                      :nimi "Keijo Kirjuri"
+                                      :rooli "Assistentti"}]
+                 :keskeiset-tyotehtavat ["Testitehtävä 2"]
+                 :lisatiedot false}
+                :muut-oppimisymparisto
+                [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
+                  :oppimisymparisto-koodi-versio 1
+                  :selite "Testioppilaitos 2"
+                  :lisatiedot false}]
+                :ajanjakson-tarkenne "Ei tarkennettavia asioita"
+                :hankkijan-edustaja
+                {:nimi "Heikki Hankkija"
+                 :rooli "Opettaja"
+                 :oppilaitos-oid "1.2.246.562.10.52224422420"}
+                :alku (java.time.LocalDate/of 2019 1 13)
+                :loppu (java.time.LocalDate/of 2019 2 19)}]
+              :vaatimuksista-tai-tavoitteista-poikkeaminen
+              "Testaus ei kuulu vaatimuksiin tällä kertaa."
+              :hankitun-osaamisen-naytto
+              [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54423523330"}
+                :nayttoymparisto {:nimi "Testiympäristö"
+                                  :y-tunnus "12345258-1"
+                                  :kuvaus "Test"}
+                :keskeiset-tyotehtavat-naytto ["Testitehtävä 1"
+                                               "Testitehtävä 2"]
+                :koulutuksen-jarjestaja-arvioijat
+                [{:nimi "Toivo Testaaja"
+                  :organisaatio
+                  {:oppilaitos-oid "1.2.246.562.10.54452535232"}}]
+                :tyoelama-arvioijat [{:nimi "Taneli Työmies"
+                                      :organisaatio {:nimi "Tanelin Paja Ky"
+                                                     :y-tunnus "12323459-2"}}]
+                :osa-alue-koodi-uri "ammatillisenoppiaineet_cu"
+                :osa-alue-koodi-versio 2
+                :alku (java.time.LocalDate/of 2019 3 1)
+                :loppu (java.time.LocalDate/of 2019 3 18)}]}]
+            }]]
+      (h/save-puuttuvat-yhteiset-tutkinnon-osat! hoks pyto-data)
+      (eq
+        (h/get-puuttuvat-yhteiset-tutkinnon-osat (:id hoks))
+        pyto-data))))
