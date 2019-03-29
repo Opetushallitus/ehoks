@@ -138,3 +138,22 @@
      :primary-column "id"
      :column "puuttuva_ammatillinen_tutkinnon_osa_id"}))
 (defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id)
+(defq select-puuttuvat-yhteiset-tutkinnon-osat-by-hoks-id)
+(def select-osaamisen-hankkimistavat-by-pyto-osa-alue-id
+  (generate-select-join
+    {:table "osaamisen_hankkimistavat"
+     :join "yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat"
+     :secondary-column "osaamisen_hankkimistapa_id"
+     :primary-column "id"
+     :column "yhteisen_tutkinnon_osan_osa_alue_id"}))
+(def select-yto-osa-alueet-by-yto-id
+  (generate-select-by
+    {:table "yhteisen_tutkinnon_osan_osa_alueet"
+     :column "yhteinen_tutkinnon_osa_id"}))
+(def select-hankitun-osaamisen-naytot-by-yto-osa-alue-id
+  (generate-select-join
+    {:table "hankitun_osaamisen_naytot"
+     :join "yhteisen_tutkinnon_osan_osa_alueen_hankitun_osaamisen_naytot"
+     :secondary-column "hankitun_osaamisen_naytto_id"
+     :primary-column "id"
+     :column "yhteisen_tutkinnon_osan_osa_alue_id"}))

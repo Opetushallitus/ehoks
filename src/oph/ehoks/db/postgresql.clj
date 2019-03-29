@@ -432,3 +432,55 @@
   (query
     [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id id]
     {:row-fn h/opiskeluvalmiuksia-tukevat-opinnot-from-sql}))
+
+(defn insert-puuttuva-yhteinen-tutkinnon-osa! [m]
+  (insert-one!
+    :puuttuvat_yhteiset_tutkinnon_osat
+    (h/puuttuva-yhteinen-tutkinnon-osa-to-sql m)))
+
+(defn select-puuttuvat-yhteiset-tutkinnon-osat-by-hoks-id [id]
+  (query
+    [queries/select-puuttuvat-yhteiset-tutkinnon-osat-by-hoks-id id]
+    {:row-fn h/puuttuva-yhteinen-tutkinnon-osa-from-sql}))
+
+(defn select-osaamisen-hankkimistavat-by-pyto-osa-alue-id [id]
+  (query
+    [queries/select-osaamisen-hankkimistavat-by-pyto-osa-alue-id id]
+    {:row-fn h/osaamisen-hankkimistapa-from-sql}))
+
+(defn insert-pyto-osa-alueen-osaamisen-hankkimistapa! [pyto-osa-alue-id oh-id]
+  (insert-one!
+    :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
+    {:yhteisen_tutkinnon_osan_osa_alue_id pyto-osa-alue-id
+     :osaamisen_hankkimistapa_id oh-id}))
+
+(defn insert-yhteisen-tutkinnon-osan-osa-alue! [osa-alue]
+  (insert-one!
+    :yhteisen_tutkinnon_osan_osa_alueet
+    (h/yhteisen-tutkinnon-osan-osa-alue-to-sql osa-alue)))
+
+(defn select-yto-osa-alueet-by-yto-id [id]
+  (query
+    [queries/select-yto-osa-alueet-by-yto-id id]
+    {:row-fn h/yhteisen-tutkinnon-osan-osa-alue-from-sql}))
+
+(defn insert-yto-osa-alueen-hankitun-osaamisen-naytto! [yto-id naytto-id]
+  (insert-one!
+    :yhteisen_tutkinnon_osan_osa_alueen_hankitun_osaamisen_naytot
+    {:yhteisen_tutkinnon_osan_osa_alue_id yto-id
+     :hankitun_osaamisen_naytto_id naytto-id}))
+
+(defn insert-hankitun-yto-osaamisen-nayton-osaamistavoitteet! [yto-id hon-id c]
+  (insert-multi!
+    :hankitun_yto_osaamisen_nayton_osaamistavoitteet
+    (mapv
+      #(hash-map
+         :yhteisen_tutkinnon_osan_osa_alue_id yto-id
+         :hankitun_osaamisen_naytto_id hon-id
+         :osaamistavoite %)
+      c)))
+
+(defn select-hankitun-osaamisen-naytot-by-yto-osa-alue-id [id]
+  (query
+    [queries/select-hankitun-osaamisen-naytot-by-yto-osa-alue-id id]
+    {:row-fn h/hankitun-osaamisen-naytto-from-sql}))

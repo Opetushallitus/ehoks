@@ -253,3 +253,16 @@
 
 (defn opiskeluvalmiuksia-tukevat-opinnot-from-sql [m]
   (from-sql m {:removals [:id :hoks_id]}))
+
+(defn puuttuva-yhteinen-tutkinnon-osa-from-sql [m]
+  (from-sql m {:removals [:hoks_id :osa-alueet]}))
+
+(defn puuttuva-yhteinen-tutkinnon-osa-to-sql [m]
+  (to-sql m {:removals [:osa-alueet]}))
+
+(defn yhteisen-tutkinnon-osan-osa-alue-to-sql [m]
+  (to-sql m {:removals [:osaamisen-hankkimistavat
+                        :hankitun-osaamisen-naytto]}))
+
+(defn yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
+  (from-sql m))
