@@ -185,7 +185,8 @@
     {:removals [:nayttoymparisto
                 :keskeiset-tyotehtavat-naytto
                 :koulutuksen-jarjestaja-arvioijat
-                :tyoelama-arvioijat]
+                :tyoelama-arvioijat
+                :osaamistavoitteet]
      :replaces {[:jarjestaja :oppilaitos-oid] :jarjestaja-oppilaitos-oid}}))
 
 (defn koulutuksen-jarjestaja-arvioija-from-sql [m]
@@ -266,3 +267,5 @@
 
 (defn yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
   (from-sql m))
+
+(defn osaamistavoite-from-sql [m] (get m :osaamistavoite))

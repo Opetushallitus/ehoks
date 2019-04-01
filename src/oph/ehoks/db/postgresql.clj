@@ -475,10 +475,15 @@
     :hankitun_yto_osaamisen_nayton_osaamistavoitteet
     (mapv
       #(hash-map
-         :yhteisen_tutkinnon_osan_osa_alue_id yto-id
          :hankitun_osaamisen_naytto_id hon-id
          :osaamistavoite %)
       c)))
+
+(defn select-hankitun-yto-osaamisen-nayton-osaamistavoitteet
+  [naytto-id]
+  (query
+    [queries/select-hankitun-yto-osaamisen-nayton-osaamistavoitteet naytto-id]
+    {:row-fn h/osaamistavoite-from-sql}))
 
 (defn select-hankitun-osaamisen-naytot-by-yto-osa-alue-id [id]
   (query

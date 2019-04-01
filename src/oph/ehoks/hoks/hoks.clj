@@ -161,7 +161,10 @@
 (defn get-yto-osa-alueen-hankitun-osaamisen-naytot [id]
   (mapv
     #(dissoc
-       (set-hankitun-osaamisen-naytto-values %)
+       (assoc
+         (set-hankitun-osaamisen-naytto-values %)
+         :osaamistavoitteet
+         (db/select-hankitun-yto-osaamisen-nayton-osaamistavoitteet (:id %)))
        :id)
     (db/select-hankitun-osaamisen-naytot-by-yto-osa-alue-id id)))
 

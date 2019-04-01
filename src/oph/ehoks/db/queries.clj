@@ -157,3 +157,7 @@
      :secondary-column "hankitun_osaamisen_naytto_id"
      :primary-column "id"
      :column "yhteisen_tutkinnon_osan_osa_alue_id"}))
+(def select-hankitun-yto-osaamisen-nayton-osaamistavoitteet
+  (generate-select-by
+    {:table "hankitun_yto_osaamisen_nayton_osaamistavoitteet"
+     :column "hankitun_osaamisen_naytto_id"}))
