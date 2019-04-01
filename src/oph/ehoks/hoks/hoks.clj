@@ -393,14 +393,18 @@
   (mapv
     #(let [o (db/insert-yhteisen-tutkinnon-osan-osa-alue!
                (assoc % :yhteinen-tutkinnon-osa-id pyto-id))]
-       (mapv
-         (fn [oht]
-           (save-pyto-osa-alue-osaamisen-hankkimistapa! o oht))
-         (:osaamisen-hankkimistavat %))
-       (mapv
-         (fn [hon]
-           (save-yto-osa-alueen-hankitun-osaamisen-naytto! o hon))
-         (:hankitun-osaamisen-naytto %)))
+       (assoc
+         o
+         :osaamisen-hankkimistavat
+         (mapv
+           (fn [oht]
+             (save-pyto-osa-alue-osaamisen-hankkimistapa! o oht))
+           (:osaamisen-hankkimistavat %))
+         :hankitun-osaamisen-naytto
+         (mapv
+           (fn [hon]
+             (save-yto-osa-alueen-hankitun-osaamisen-naytto! o hon))
+           (:hankitun-osaamisen-naytto %))))
     osa-alueet))
 
 (defn save-puuttuva-yhteinen-tutkinnon-osa! [h pyto]
