@@ -410,6 +410,8 @@
               "Testaus ei kuulu vaatimuksiin tällä kertaa."
               :hankitun-osaamisen-naytto
               [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54423523330"}
+                :osaamistavoitteet ["Tavoite 1"
+                                    "Tavoite 2"]
                 :nayttoymparisto {:nimi "Testiympäristö"
                                   :y-tunnus "12345258-1"
                                   :kuvaus "Test"}
