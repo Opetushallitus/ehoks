@@ -85,9 +85,9 @@
     {:table "tyopaikalla_hankittavat_osaamisen_henkilot"
      :column "tyopaikalla_hankittava_osaaminen_id"}))
 (def select-tyotehtavat-by-tho-id
-    (generate-select-by
-      {:table "tyopaikalla_hankittavat_osaamisen_tyotehtavat"
-       :column "tyopaikalla_hankittava_osaaminen_id"}))
+  (generate-select-by
+    {:table "tyopaikalla_hankittavat_osaamisen_tyotehtavat"
+     :column "tyopaikalla_hankittava_osaaminen_id"}))
 (defq select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id)
 (defq select-todennettu-arviointi-lisatiedot-by-id)
 (def select-arvioijat-by-todennettu-arviointi-id

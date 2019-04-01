@@ -427,8 +427,7 @@
                 :osa-alue-koodi-uri "ammatillisenoppiaineet_cu"
                 :osa-alue-koodi-versio 2
                 :alku (java.time.LocalDate/of 2019 3 1)
-                :loppu (java.time.LocalDate/of 2019 3 18)}]}]
-            }]]
+                :loppu (java.time.LocalDate/of 2019 3 18)}]}]}]]
       (h/save-puuttuvat-yhteiset-tutkinnon-osat! hoks pyto-data)
       (eq
         (h/get-puuttuvat-yhteiset-tutkinnon-osat (:id hoks))
