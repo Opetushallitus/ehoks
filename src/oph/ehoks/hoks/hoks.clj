@@ -47,7 +47,7 @@
 (defn get-hankitun-osaamisen-naytto [id]
   (let [naytot (db/select-hankitun-osaamisen-naytot-by-ppto-id id)]
     (mapv
-      set-hankitun-osaamisen-naytto-values
+      #(dissoc (set-hankitun-osaamisen-naytto-values %) :id)
       naytot)))
 
 (defn get-tyopaikalla-hankittava-osaaminen [id]
@@ -79,12 +79,14 @@
 
 (defn get-puuttuvat-paikalliset-tutkinnon-osat [hoks-id]
   (mapv
-    #(assoc
-       %
-       :hankitun-osaamisen-naytto
-       (get-hankitun-osaamisen-naytto (:id %))
-       :osaamisen-hankkimistavat
-       (get-osaamisen-hankkimistavat (:id %)))
+    #(dissoc
+       (assoc
+         %
+         :hankitun-osaamisen-naytto
+         (get-hankitun-osaamisen-naytto (:id %))
+         :osaamisen-hankkimistavat
+         (get-osaamisen-hankkimistavat (:id %)))
+       :id)
     (db/select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-olemassa-olevat-paikalliset-tutkinnon-osat [hoks-id]
