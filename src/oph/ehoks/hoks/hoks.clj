@@ -351,7 +351,7 @@
       (save-ooato-tarkentavat-tiedot-naytto!
         ooato-db (:tarkentavat-tiedot-naytto ooato)))))
 
-(defn save-olemassa-olevat-ammatilliset-tutkinnon-osat [h c]
+(defn save-olemassa-olevat-ammatilliset-tutkinnon-osat! [h c]
   (mapv #(save-olemassa-oleva-ammatillinen-tutkinnon-osa! h %) c))
 
 (defn save-pato-osaamisen-hankkimistapa! [pato oh]
