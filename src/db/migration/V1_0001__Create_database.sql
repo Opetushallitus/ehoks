@@ -354,20 +354,12 @@ CREATE TABLE yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat(
   PRIMARY KEY(yhteisen_tutkinnon_osan_osa_alue_id, osaamisen_hankkimistapa_id)
 );
 
-CREATE TABLE hankitun_yto_osaamisen_naytot(
-  id SERIAL PRIMARY KEY,
+CREATE TABLE yhteisen_tutkinnon_osan_osa_alueen_hankitun_osaamisen_naytot(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   yhteisen_tutkinnon_osan_osa_alue_id INTEGER REFERENCES yhteisen_tutkinnon_osan_osa_alueet(id),
-  jarjestaja_oppilaitos_oid VARCHAR(26),
-  nayttoymparisto_nimi TEXT,
-  nayttoymparisto_y_tunnus TEXT,
-  nayttoymparisto_kuvaus TEXT,
-  osa_alue_koodi_uri VARCHAR(26),
-  osa_alue_koodi_versio INTEGER,
-  alku DATE,
-  loppu DATE
+  hankitun_osaamisen_naytto_id INTEGER REFERENCES hankitun_osaamisen_naytot(id),
+  PRIMARY KEY(yhteisen_tutkinnon_osan_osa_alue_id, hankitun_osaamisen_naytto_id)
 );
 
 CREATE TABLE hankitun_yto_osaamisen_nayton_osaamistavoitteet(
@@ -375,22 +367,6 @@ CREATE TABLE hankitun_yto_osaamisen_nayton_osaamistavoitteet(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
-  hankitun_yto_osaamisen_naytto_id INTEGER REFERENCES hankitun_yto_osaamisen_naytot(id),
+  hankitun_osaamisen_naytto_id INTEGER REFERENCES hankitun_osaamisen_naytot(id),
   osaamistavoite TEXT
-);
-
-CREATE TABLE hankitun_yto_osaamisen_nayton_tyoelama_arvioija (
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  deleted_at TIMESTAMP WITH TIME ZONE,
-  hankitun_yto_osaamisen_naytto_id INTEGER REFERENCES hankitun_yto_osaamisen_naytot(id),
-  tyoelama_arvioija_id INTEGER REFERENCES tyoelama_arvioijat(id),
-  PRIMARY KEY(hankitun_yto_osaamisen_naytto_id, tyoelama_arvioija_id)
-);
-
-CREATE TABLE hankitun_yto_osaamisen_nayton_koulutuksen_jarjestaja_arvioija (
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  deleted_at TIMESTAMP WITH TIME ZONE,
-  hankitun_yto_osaamisen_naytto_id INTEGER REFERENCES tyoelama_arvioijat(id),
-  koulutuksen_jarjestaja_arvioija_id INTEGER REFERENCES koulutuksen_jarjestaja_arvioijat(id),
-  PRIMARY KEY(hankitun_yto_osaamisen_naytto_id, koulutuksen_jarjestaja_arvioija_id)
 );

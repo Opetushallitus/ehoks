@@ -172,8 +172,6 @@
 (defn muu-oppimisymparisto-from-sql [m]
   (from-sql m {:removals [:id :osaamisen_hankkimistapa_id]}))
 
-(def muu-oppimisymparisto-to-sql to-sql)
-
 (defn hankitun-osaamisen-naytto-from-sql [m]
   (from-sql
     m
@@ -185,7 +183,8 @@
     {:removals [:nayttoymparisto
                 :keskeiset-tyotehtavat-naytto
                 :koulutuksen-jarjestaja-arvioijat
-                :tyoelama-arvioijat]
+                :tyoelama-arvioijat
+                :osaamistavoitteet]
      :replaces {[:jarjestaja :oppilaitos-oid] :jarjestaja-oppilaitos-oid}}))
 
 (defn koulutuksen-jarjestaja-arvioija-from-sql [m]
@@ -204,8 +203,6 @@
   (to-sql m {:replaces {[:organisaatio :nimi] :organisaatio-nimi
                         [:organisaatio :y-tunnus] :organisaatio-y-tunnus}}))
 
-(def nayttoymparisto-to-sql to-sql)
-
 (defn nayttoymparisto-from-sql [m]
   (from-sql m {:removals [:id]}))
 
@@ -214,8 +211,6 @@
 
 (defn olemassa-oleva-paikallinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:id :hoks_id]}))
-
-(def olemassa-oleva-paikallinen-tutkinnon-osa-to-sql to-sql)
 
 (defn olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
   (from-sql m {:removals [:olemassa_oleva_yhteinen_tutkinnon_osa_id]}))
@@ -249,7 +244,20 @@
 (defn puuttuva-ammatillinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]}))
 
-(def opiskeluvalmiuksia-tukevat-opinnot-to-sql to-sql)
-
 (defn opiskeluvalmiuksia-tukevat-opinnot-from-sql [m]
   (from-sql m {:removals [:id :hoks_id]}))
+
+(defn puuttuva-yhteinen-tutkinnon-osa-from-sql [m]
+  (from-sql m {:removals [:hoks_id :osa-alueet]}))
+
+(defn puuttuva-yhteinen-tutkinnon-osa-to-sql [m]
+  (to-sql m {:removals [:osa-alueet]}))
+
+(defn yhteisen-tutkinnon-osan-osa-alue-to-sql [m]
+  (to-sql m {:removals [:osaamisen-hankkimistavat
+                        :hankitun-osaamisen-naytto]}))
+
+(defn yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
+  (from-sql m))
+
+(defn osaamistavoite-from-sql [m] (get m :osaamistavoite))

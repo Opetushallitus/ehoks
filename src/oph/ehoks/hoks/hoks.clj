@@ -23,7 +23,7 @@
     (db/select-tarkentavat-tiedot-naytto-by-ooato-id id)))
 
 (defn get-tarkentavat-tiedot-arvioija [id]
-  (let [tta (first (db/select-todennettu-arviointi-lisatiedot-by-id id))]
+  (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id id)]
     (dissoc
       (assoc
         tta
@@ -152,6 +152,40 @@
 
 (defn get-opiskeluvalmiuksia-tukevat-opinnot [hoks-id]
   (db/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id))
+
+(defn get-yto-osa-alue-osaamisen-hankkimistavat [id]
+  (mapv
+    set-osaamisen-hankkimistapa-values
+    (db/select-osaamisen-hankkimistavat-by-pyto-osa-alue-id id)))
+
+(defn get-yto-osa-alueen-hankitun-osaamisen-naytot [id]
+  (mapv
+    #(dissoc
+       (assoc
+         (set-hankitun-osaamisen-naytto-values %)
+         :osaamistavoitteet
+         (db/select-hankitun-yto-osaamisen-nayton-osaamistavoitteet (:id %)))
+       :id)
+    (db/select-hankitun-osaamisen-naytot-by-yto-osa-alue-id id)))
+
+(defn get-yto-osa-alueet [id]
+  (mapv
+    #(dissoc
+       (assoc
+         %
+         :osaamisen-hankkimistavat
+         (get-yto-osa-alue-osaamisen-hankkimistavat (:id %))
+         :hankitun-osaamisen-naytto
+         (get-yto-osa-alueen-hankitun-osaamisen-naytot (:id %)))
+       :id :yhteinen-tutkinnon-osa-id)
+    (db/select-yto-osa-alueet-by-yto-id id)))
+
+(defn get-puuttuvat-yhteiset-tutkinnon-osat [hoks-id]
+  (mapv
+    #(dissoc
+       (assoc % :osa-alueet (get-yto-osa-alueet (:id %)))
+       :id)
+    (db/select-puuttuvat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-hokses-by-oppija [oid]
   (mapv
@@ -340,6 +374,49 @@
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
     (mapv #(assoc % :hoks-id (:id h)) c)))
+
+(defn save-yto-osa-alueen-hankitun-osaamisen-naytto! [yto n]
+  (let [naytto (save-hankitun-osaamisen-naytto! n)
+        yto-naytto (db/insert-yto-osa-alueen-hankitun-osaamisen-naytto!
+                     (:id yto) (:id naytto))]
+    (db/insert-hankitun-yto-osaamisen-nayton-osaamistavoitteet!
+      (:id yto) (:id naytto) (:osaamistavoitteet n))
+    yto-naytto))
+
+(defn save-pyto-osa-alue-osaamisen-hankkimistapa! [pyto-osa-alue oh]
+  (let [o-db (save-osaamisen-hankkimistapa! oh)]
+    (db/insert-pyto-osa-alueen-osaamisen-hankkimistapa!
+      (:id pyto-osa-alue) (:id o-db))
+    o-db))
+
+(defn save-pyto-osa-alueet! [pyto-id osa-alueet]
+  (mapv
+    #(let [o (db/insert-yhteisen-tutkinnon-osan-osa-alue!
+               (assoc % :yhteinen-tutkinnon-osa-id pyto-id))]
+       (assoc
+         o
+         :osaamisen-hankkimistavat
+         (mapv
+           (fn [oht]
+             (save-pyto-osa-alue-osaamisen-hankkimistapa! o oht))
+           (:osaamisen-hankkimistavat %))
+         :hankitun-osaamisen-naytto
+         (mapv
+           (fn [hon]
+             (save-yto-osa-alueen-hankitun-osaamisen-naytto! o hon))
+           (:hankitun-osaamisen-naytto %))))
+    osa-alueet))
+
+(defn save-puuttuva-yhteinen-tutkinnon-osa! [h pyto]
+  (let [p-db (db/insert-puuttuva-yhteinen-tutkinnon-osa!
+               (assoc pyto :hoks-id (:id h)))]
+    (assoc p-db
+           :osa-alueet (save-pyto-osa-alueet! (:id p-db) (:osa-alueet pyto)))))
+
+(defn save-puuttuvat-yhteiset-tutkinnon-osat! [h c]
+  (mapv
+    #(save-puuttuva-yhteinen-tutkinnon-osa! h %)
+    c))
 
 (defn save-hoks! [h]
   (let [saved-hoks (first (db/insert-hoks! h))]
