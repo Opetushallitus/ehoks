@@ -189,19 +189,28 @@
        :id)
     (db/select-puuttuvat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
 
+(defn get-hoks-values [h]
+  (let [id (:id h)]
+    (assoc
+      h
+      :olemassa-olevat-ammatilliset-tutkinnon-osat
+      (get-olemassa-olevat-ammatilliset-tutkinnon-osat id)
+      :puuttuvat-paikalliset-tutkinnon-osat
+      (get-puuttuvat-paikalliset-tutkinnon-osat id)
+      :olemassa-olevat-yhteiset-tutkinnon-osat
+      (get-olemassa-olevat-yhteiset-tutkinnon-osat id)
+      :olemassa-olevat-paikalliset-tutkinnon-osat
+      (get-olemassa-olevat-paikalliset-tutkinnon-osat id))))
+
 (defn get-hokses-by-oppija [oid]
   (mapv
-    #(assoc
-       %
-       :olemassa-olevat-ammatilliset-tutkinnon-osat
-       (get-olemassa-olevat-ammatilliset-tutkinnon-osat (:id %))
-       :puuttuvat-paikalliset-tutkinnon-osat
-       (get-puuttuvat-paikalliset-tutkinnon-osat (:id %))
-       :olemassa-olevat-yhteiset-tutkinnon-osat
-       (get-olemassa-olevat-yhteiset-tutkinnon-osat (:id %))
-       :olemassa-olevat-paikalliset-tutkinnon-osat
-       (get-olemassa-olevat-paikalliset-tutkinnon-osat (:id %)))
+    get-hoks-values
     (db/select-hoks-by-oppija-oid oid)))
+
+(defn get-hoks-by-id [id]
+  (mapv
+    get-hoks-values
+    (db/select-hoks-by-id id)))
 
 (defn save-osaamisen-hankkimistapa! [oh]
   (let [tho (db/insert-tyopaikalla-hankittava-osaaminen!
