@@ -210,7 +210,7 @@
   (insert-multi!
     :muut_oppimisymparistot
     (map
-      #(h/muu-oppimisymparisto-to-sql
+      #(h/to-sql
          (assoc % :osaamisen-hankkimistapa-id (:id oh)))
       c)))
 
@@ -315,12 +315,12 @@
 (defn insert-nayttoymparisto! [m]
   (insert-one!
     :nayttoymparistot
-    (h/nayttoymparisto-to-sql m)))
+    (h/to-sql m)))
 
 (defn insert-nayttoymparistot! [c]
   (insert-multi!
     :nayttoymparistot
-    (map h/nayttoymparisto-to-sql c)))
+    (map h/to-sql c)))
 
 (defn select-nayttoymparisto-by-id [id]
   (first
@@ -336,7 +336,7 @@
 (defn insert-olemassa-olevat-paikalliset-tutkinnon-osat! [c]
   (insert-multi!
     :olemassa_olevat_paikalliset_tutkinnon_osat
-    (map h/olemassa-oleva-paikallinen-tutkinnon-osa-to-sql c)))
+    (map h/to-sql c)))
 
 (defn insert-ooyto-arvioija! [yto-id a-id]
   (insert-one!
@@ -426,7 +426,7 @@
 (defn insert-opiskeluvalmiuksia-tukevat-opinnot! [c]
   (insert-multi!
     :opiskeluvalmiuksia_tukevat_opinnot
-    (mapv h/opiskeluvalmiuksia-tukevat-opinnot-to-sql c)))
+    (mapv h/to-sql c)))
 
 (defn select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id [id]
   (query
