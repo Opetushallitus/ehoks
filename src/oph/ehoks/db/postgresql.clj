@@ -49,11 +49,16 @@
   (first
     (query
       [queries/select-hoksit-by-eid eid]
-      {})))
+      {:row-fn h/hoks-from-sql})))
+
+(defn select-hoksit-eid-by-eid [eid]
+  (query
+    [queries/select-hoksit-eid-by-eid eid]
+    {}))
 
 (defn generate-unique-eid []
   (loop [eid nil]
-    (if (or (nil? eid) (seq (select-hoks-by-eid eid)))
+    (if (or (nil? eid) (seq (select-hoksit-eid-by-eid eid)))
       (recur (str (java.util.UUID/randomUUID)))
       eid)))
 
