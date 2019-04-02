@@ -365,3 +365,20 @@
       (eq
         (h/get-puuttuvat-yhteiset-tutkinnon-osat (:id hoks))
         pyto-data))))
+
+(deftest get-hoks-test
+  (testing "Save and get full HOKS"
+    (let [hoks-data {:olemassa-olevat-ammatilliset-tutkinnon-osat ooato-data
+                     :olemassa-olevat-paikalliset-tutkinnon-osat oopto-data
+                     :puuttuvat-paikalliset-tutkinnon-osat ppto-data
+                     :olemassa-olevat-yhteiset-tutkinnon-osat ooyto-data
+                     :puuttuvat-ammatilliset-tutkinnon-osat pao-data
+                     :opiskeluvalmiuksia-tukevat-opinnot oto-data
+                     :puuttuvat-yhteiset-tutkinnon-osat pyto-data}
+          hoks (h/save-hoks! hoks-data)]
+      (eq
+        (h/get-hoks-by-id (:id hoks))
+        (assoc
+          hoks-data
+          :id 1
+          :eid (:eid hoks))))))
