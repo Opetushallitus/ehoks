@@ -45,8 +45,21 @@
       [queries/select-hoksit-by-id id]
       {:row-fn h/hoks-from-sql})))
 
+(defn select-hoks-by-eid [eid]
+  (first
+    (query
+      [queries/select-hoksit-by-eid eid]
+      {})))
+
+(defn generate-unique-eid []
+  (loop [eid nil]
+    (if (or (nil? eid) (seq (select-hoks-by-eid eid)))
+      (recur (str (java.util.UUID/randomUUID)))
+      eid)))
+
 (defn insert-hoks! [hoks]
-  (insert-one! :hoksit (h/hoks-to-sql hoks)))
+  (let [eid (generate-unique-eid)]
+    (insert-one! :hoksit (h/hoks-to-sql (assoc hoks :eid eid)))))
 
 (defn update-hoks-by-id! [id hoks]
   (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
