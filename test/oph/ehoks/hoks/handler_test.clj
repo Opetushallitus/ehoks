@@ -1,15 +1,31 @@
 (ns oph.ehoks.hoks.handler-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [oph.ehoks.handler :refer [app]]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [oph.ehoks.db.memory :as db]))
+            [oph.ehoks.db.memory :as db]
+            [oph.ehoks.db.migrations :as m]))
 
 (def url "/ehoks-backend/api/v1/hoks")
 
 ; TODO Change to use OHJ auth
 ; TODO Test also role access
 ; TODO update tests to use real-like data
+
+(defn with-database [f]
+  (f)
+  (m/clean!)
+  (m/migrate!))
+
+(defn create-db [f]
+  (m/migrate!)
+  (f)
+  (m/clean!))
+
+(use-fixtures :each with-database)
+
+(use-fixtures :once create-db)
+
 
 (defn get-authenticated [url]
   (-> (utils/with-service-ticket
