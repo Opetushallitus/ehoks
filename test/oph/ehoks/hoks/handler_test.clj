@@ -644,6 +644,17 @@
                    :loppu "2018-12-21"})))]
       (is (= (:status patch-response) 204)))))
 
+(defn add-empty-hoks-values [hoks]
+  (assoc
+    hoks
+    :olemassa-olevat-ammatilliset-tutkinnon-osat []
+    :puuttuvat-paikalliset-tutkinnon-osat []
+    :puuttuvat-ammatilliset-tutkinnon-osat []
+    :olemassa-olevat-yhteiset-tutkinnon-osat []
+    :puuttuvat-yhteiset-tutkinnon-osat []
+    :olemassa-olevat-paikalliset-tutkinnon-osat []
+    :opiskeluvalmiuksia-tukevat-opinnot []))
+
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
@@ -663,7 +674,9 @@
       (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
         (eq
           hoks
-          (assoc hoks-data :id 1))))))
+          (assoc (add-empty-hoks-values hoks-data)
+                 :id 1
+                 :eid (:eid hoks)))))))
 
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
@@ -723,17 +736,9 @@
           (is (= (count (:eid hoks)) 36))
           (eq
             hoks
-            (assoc
-              hoks-data
-              :eid (:eid hoks)
-              :id 1
-              :olemassa-olevat-ammatilliset-tutkinnon-osat []
-              :puuttuvat-paikalliset-tutkinnon-osat []
-              :puuttuvat-ammatilliset-tutkinnon-osat []
-              :olemassa-olevat-yhteiset-tutkinnon-osat []
-              :puuttuvat-yhteiset-tutkinnon-osat []
-              :olemassa-olevat-paikalliset-tutkinnon-osat []
-              :opiskeluvalmiuksia-tukevat-opinnot [])))))))
+            (assoc (add-empty-hoks-values hoks-data)
+                   :id 1
+                   :eid (:eid hoks))))))))
 
 (deftest patch-created-hoks
   (testing "PATCH updates value of created HOKS"
@@ -764,14 +769,7 @@
             updated-hoks
             (assoc
               hoks
-              :paivittaja {:nimi "Kalle Käyttäjä"}
-              :olemassa-olevat-ammatilliset-tutkinnon-osat []
-              :puuttuvat-paikalliset-tutkinnon-osat []
-              :puuttuvat-ammatilliset-tutkinnon-osat []
-              :olemassa-olevat-yhteiset-tutkinnon-osat []
-              :puuttuvat-yhteiset-tutkinnon-osat []
-              :olemassa-olevat-paikalliset-tutkinnon-osat []
-              :opiskeluvalmiuksia-tukevat-opinnot [])))))))
+              :paivittaja {:nimi "Kalle Käyttäjä"})))))))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
