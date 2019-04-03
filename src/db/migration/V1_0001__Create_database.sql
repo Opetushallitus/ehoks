@@ -4,7 +4,7 @@ CREATE TABLE hoksit(
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   luotu TIMESTAMP WITH TIME ZONE,
-  eid VARCHAR(36),
+  eid VARCHAR(36) UNIQUE,
   sahkoposti TEXT,
   ensikertainen_hyvaksyminen DATE,
   hyvaksytty TIMESTAMP WITH TIME ZONE,

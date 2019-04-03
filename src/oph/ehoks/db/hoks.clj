@@ -83,21 +83,18 @@
                 :paivittaja_nimi [:paivittaja :nimi]}}))
 
 (defn hoks-to-sql [h]
-  (update
-    (to-sql
-      h
-      {:removals [:olemassa-olevat-ammatilliset-tutkinnon-osat
-                  :olemassa-olevat-paikalliset-tutkinnon-osat
-                  :olemassa-olevat-yhteiset-tutkinnon-osat
-                  :puuttuvat-ammatilliset-tutkinnon-osat
-                  :puuttuvat-yhteiset-tutkinnon-osat
-                  :opiskeluvalmiuksia-tukevat-opinnot
-                  :puuttuvat-paikalliset-tutkinnon-osat]
-       :replaces {[:laatija :nimi] :laatija-nimi
-                  [:hyvaksyja :nimi] :hyvaksyja-nimi
-                  [:paivittaja :nimi] :paivittaja-nimi}})
-    :eid #(if (nil? %) (str (java.util.UUID/randomUUID)) %)))
-    ; generate eid and check, move to insert and lock
+  (to-sql
+    h
+    {:removals [:olemassa-olevat-ammatilliset-tutkinnon-osat
+                :olemassa-olevat-paikalliset-tutkinnon-osat
+                :olemassa-olevat-yhteiset-tutkinnon-osat
+                :puuttuvat-ammatilliset-tutkinnon-osat
+                :puuttuvat-yhteiset-tutkinnon-osat
+                :opiskeluvalmiuksia-tukevat-opinnot
+                :puuttuvat-paikalliset-tutkinnon-osat]
+     :replaces {[:laatija :nimi] :laatija-nimi
+                [:hyvaksyja :nimi] :hyvaksyja-nimi
+                [:paivittaja :nimi] :paivittaja-nimi}}))
 
 (defn olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]}))
