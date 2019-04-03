@@ -238,15 +238,6 @@
             (write-hoks-json! hoks))
           (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))})))
 
-      (c-api/PUT "/:id" [id :as request]
-        :summary "Päivittää olemassa olevaa HOKSia"
-        :path-params [id :- s/Int]
-        :body [values hoks-schema/HOKSPaivitys]
-        (let [hoks (db/get-hoks-by-id id)]
-          (check-hoks-access! hoks request))
-        (db/update-hoks! id values)
-        (response/no-content))
-
       (c-api/PATCH "/:id" [id :as request]
         :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
         :path-params [id :- s/Int]
