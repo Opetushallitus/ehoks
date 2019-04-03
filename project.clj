@@ -108,7 +108,8 @@
             "gendoc" ["do"
                       ["run" "-m" "oph.ehoks.hoks-doc/write-doc!" "doc/hoks.md"]
                       ["run" "-m" "oph.ehoks.hoks-doc-html/write-doc!" "resources/public/hoks-doc/index.html"]]
-            "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate"]}
+            "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate!"]
+            "dbclear" ["run" "-m" "oph.ehoks.db.migrations/clean!"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:test {:resource-paths ["resources/test"
                                      "resources/test/src"
