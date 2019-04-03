@@ -663,13 +663,7 @@
       (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
         (eq
           hoks
-          (assoc
-            hoks-data
-            :id 1
-            :luotu (:luotu hoks)
-            :hyvaksytty (:hyvaksytty hoks)
-            :paivitetty (:paivitetty hoks)
-            :versio 1))))))
+          (assoc hoks-data :id 1))))))
 
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
