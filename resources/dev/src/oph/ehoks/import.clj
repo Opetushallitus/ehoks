@@ -28,6 +28,6 @@
 
 (defn import-file! [path]
   (let [data (read-file path)]
-    (if (coll? data)
-      (map h/save-hoks! data)
-      (h/save-hoks! data))))
+    (if (map? data)
+      (h/save-hoks! data)
+      (map h/save-hoks! data))))
