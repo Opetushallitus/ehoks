@@ -6,6 +6,8 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.memory :as db]
+            [oph.ehoks.db.postgresql :as pdb]
+            [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.middleware :refer [wrap-service-ticket]]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
@@ -218,9 +220,9 @@
         :summary "Palauttaa HOKSin"
         :path-params [id :- s/Int]
         :return (rest/response hoks-schema/HOKS)
-        (let [hoks (db/get-hoks-by-id id)]
+        (let [hoks (pdb/select-hoks-by-id id)]
           (check-hoks-access! hoks request)
-          (rest/rest-ok hoks)))
+          (rest/rest-ok (h/get-hoks-values hoks))))
 
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
@@ -231,27 +233,18 @@
             {:error
              (str "Creating HOKS is not allowed. "
                   "Check student and 'opiskeluoikeus'.")}))
-        (let [h (db/create-hoks! hoks)]
+        (let [hoks-db (h/save-hoks! hoks)]
           (when (:save-hoks-json? config)
-            (write-hoks-json! h))
-          (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id h))})))
-
-      (c-api/PUT "/:id" [id :as request]
-        :summary "Päivittää olemassa olevaa HOKSia"
-        :path-params [id :- s/Int]
-        :body [values hoks-schema/HOKSPaivitys]
-        (let [hoks (db/get-hoks-by-id id)]
-          (check-hoks-access! hoks request))
-        (db/update-hoks! id values)
-        (response/no-content))
+            (write-hoks-json! hoks))
+          (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))})))
 
       (c-api/PATCH "/:id" [id :as request]
         :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSKentanPaivitys]
-        (let [hoks (db/get-hoks-by-id id)]
+        (let [hoks (pdb/select-hoks-by-id id)]
           (check-hoks-access! hoks request))
-        (db/update-hoks-values! id values)
+        (pdb/update-hoks-by-id! id values)
         (response/no-content))
 
       puuttuva-ammatillinen-osaaminen

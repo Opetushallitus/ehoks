@@ -1,15 +1,30 @@
 (ns oph.ehoks.hoks.handler-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [oph.ehoks.handler :refer [app]]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [oph.ehoks.db.memory :as db]))
+            [oph.ehoks.db.memory :as db]
+            [oph.ehoks.db.migrations :as m]))
 
 (def url "/ehoks-backend/api/v1/hoks")
 
 ; TODO Change to use OHJ auth
 ; TODO Test also role access
 ; TODO update tests to use real-like data
+
+(defn with-database [f]
+  (f)
+  (m/clean!)
+  (m/migrate!))
+
+(defn create-db [f]
+  (m/migrate!)
+  (f)
+  (m/clean!))
+
+(use-fixtures :each with-database)
+
+(use-fixtures :once create-db)
 
 (defn get-authenticated [url]
   (-> (utils/with-service-ticket
@@ -628,9 +643,19 @@
                    :loppu "2018-12-21"})))]
       (is (= (:status patch-response) 204)))))
 
+(defn add-empty-hoks-values [hoks]
+  (assoc
+    hoks
+    :olemassa-olevat-ammatilliset-tutkinnon-osat []
+    :puuttuvat-paikalliset-tutkinnon-osat []
+    :puuttuvat-ammatilliset-tutkinnon-osat []
+    :olemassa-olevat-yhteiset-tutkinnon-osat []
+    :puuttuvat-yhteiset-tutkinnon-osat []
+    :olemassa-olevat-paikalliset-tutkinnon-osat []
+    :opiskeluvalmiuksia-tukevat-opinnot []))
+
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
-    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
@@ -648,17 +673,12 @@
       (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
         (eq
           hoks
-          (assoc
-            hoks-data
-            :id 1
-            :luotu (:luotu hoks)
-            :hyvaksytty (:hyvaksytty hoks)
-            :paivitetty (:paivitetty hoks)
-            :versio 1))))))
+          (assoc (add-empty-hoks-values hoks-data)
+                 :id 1
+                 :eid (:eid hoks)))))))
 
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
-    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
@@ -675,7 +695,6 @@
 
 (deftest prevent-getting-unauthorized-hoks
   (testing "Prevent GET unauthorized HOKS"
-    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
@@ -698,17 +717,12 @@
 
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"
-    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                      :ensikertainen-hyvaksyminen "2018-12-15"}]
-      (utils/with-service-ticket
-        app
-        (-> (mock/request :post url)
-            (mock/json-body hoks-data)))
       (let [response
             (utils/with-service-ticket
               app
@@ -718,71 +732,15 @@
         (is (= (:status response) 200))
         (eq body {:data {:uri (format "%s/1" url)} :meta {}})
         (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
+          (is (= (count (:eid hoks)) 36))
           (eq
             hoks
-            (assoc
-              hoks-data
-              :id 1
-              :luotu (:luotu hoks)
-              :hyvaksytty (:hyvaksytty hoks)
-              :paivitetty (:paivitetty hoks)
-              :versio 2)))))))
-
-(deftest put-created-hoks
-  (testing "PUT updates created HOKS"
-    (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.333.444.55.66666666666"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}
-          response
-          (utils/with-service-ticket
-            app
-            (-> (mock/request :post url)
-                (mock/json-body hoks-data)))
-          body (utils/parse-body (:body response))]
-      (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)
-            put-response
-            (utils/with-service-ticket
-              app
-              (-> (mock/request :put (get-in body [:data :uri]))
-                  (mock/json-body
-                    (-> hoks
-                        (assoc :paivittaja {:nimi "Teuvo Testaaja"})
-                        (dissoc :laatija :luotu :versio :paivitetty)))))]
-        (is (= (:status put-response) 204))
-        (let [updated-hoks
-              (-> (get-in body [:data :uri]) get-authenticated :data)]
-          (eq
-            updated-hoks
-            (assoc
-              hoks
-              :paivitetty (:paivitetty updated-hoks)
-              :versio 2
-              :paivittaja {:nimi "Teuvo Testaaja"})))))))
-
-(deftest put-non-existing-hoks
-  (testing "PUT prevents updating non existing HOKS"
-    (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.333.444.55.66666666666"
-                     :paivittaja {:nimi "Teuvo Testaaja"}
-                     :hyvaksytty (java.util.Date.)
-                     :id 1
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}
-          response
-          (utils/with-service-ticket
-            app
-            (-> (mock/request :put (format "%s/1" url))
-                (mock/json-body hoks-data)))]
-      (is (= (:status response) 404)))))
+            (assoc (add-empty-hoks-values hoks-data)
+                   :id 1
+                   :eid (:eid hoks))))))))
 
 (deftest patch-created-hoks
   (testing "PATCH updates value of created HOKS"
-    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
@@ -810,13 +768,10 @@
             updated-hoks
             (assoc
               hoks
-              :paivitetty (:paivitetty updated-hoks)
-              :versio 2
               :paivittaja {:nimi "Kalle Käyttäjä"})))))))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
-    (db/clear)
     (let [response
           (utils/with-service-ticket
             app

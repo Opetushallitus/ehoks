@@ -551,6 +551,10 @@
   {:id {:methods {:post :excluded}
         :types {:any s/Int}
         :description "Tunniste eHOKS-järjestelmässä"}
+   :eid {:methods {:any :excluded
+                   :get :required}
+         :types {:any s/Str}
+         :description "HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä"}
    :oppija-oid {:methods {:patch :optional}
                 :types {:any s/Str}
                 :description "Oppijan tunniste Opintopolku-ympäristössä"}
