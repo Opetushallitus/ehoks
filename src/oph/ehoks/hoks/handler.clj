@@ -242,9 +242,9 @@
         :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSKentanPaivitys]
-        (let [hoks (db/get-hoks-by-id id)]
+        (let [hoks (pdb/select-hoks-by-id id)]
           (check-hoks-access! hoks request))
-        (db/update-hoks-values! id values)
+        (pdb/update-hoks-by-id! id values)
         (response/no-content))
 
       puuttuva-ammatillinen-osaaminen
