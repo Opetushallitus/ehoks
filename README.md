@@ -201,12 +201,11 @@ tarjoilee `hello_world.json`-tiedoston. Turvallisuussyistä ainoastaan tiedostot
 kansiossa `dev-routes` luetaan ja endpointit toimivat ainoastaan
 kehityspalvelimen kanssa.
 
-## Dummy-datan luonti
+## Dummy-datan tuonti tietokantaan
 
-Sovellus käyttää kehityksessä yksinkertaista muistitietokantaa, jolle voidaan
-ladata alkuarvot tiedostoista. Lisää tiedostot kansioon
-`resources/dev/demo-data/`. Data ladataan ainoastaan kehitysympäristön
-käynnistyksessä.
+Demodatan (HOKSit) voi tuoda komennolla `lein import path/to/demo.json`. Tämä
+voi olla joko yksittäinen HOKS tai taulukko HOKSeja. ID:t tulee poistaa, koska
+ne luodaan tietokantakohtaisesti.
 
 ## Konfigurointi
 
