@@ -714,17 +714,19 @@
 
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"
-    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}]
-      (utils/with-service-ticket
-        app
-        (-> (mock/request :post url)
-            (mock/json-body hoks-data)))
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :olemassa-olevat-ammatilliset-tutkinnon-osat []
+                     :puuttuvat-paikalliset-tutkinnon-osat []
+                     :puuttuvat-ammatilliset-tutkinnon-osat []
+                     :olemassa-olevat-yhteiset-tutkinnon-osat []
+                     :puuttuvat-yhteiset-tutkinnon-osat []
+                     :olemassa-olevat-paikalliset-tutkinnon-osat []
+                     :opiskeluvalmiuksia-tukevat-opinnot []}]
       (let [response
             (utils/with-service-ticket
               app
@@ -734,15 +736,13 @@
         (is (= (:status response) 200))
         (eq body {:data {:uri (format "%s/1" url)} :meta {}})
         (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
+          (is (= (count (:eid hoks)) 36))
           (eq
             hoks
             (assoc
               hoks-data
-              :id 1
-              :luotu (:luotu hoks)
-              :hyvaksytty (:hyvaksytty hoks)
-              :paivitetty (:paivitetty hoks)
-              :versio 2)))))))
+              :eid (:eid hoks)
+              :id 1)))))))
 
 (deftest put-created-hoks
   (testing "PUT updates created HOKS"
