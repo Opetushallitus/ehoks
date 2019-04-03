@@ -370,7 +370,8 @@
   (testing "Save and get full HOKS"
     (let [hoks-data {:paivittaja {:nimi "Pekka Päivittäjä"}
                      :olemassa-olevat-ammatilliset-tutkinnon-osat ooato-data
-                     :ensikertainen-hyvaksyminen "2019-01-20"
+                     :ensikertainen-hyvaksyminen
+                     (java.time.LocalDate/of 2019 1 20)
                      :olemassa-olevat-paikalliset-tutkinnon-osat oopto-data
                      :sahkoposti "erkki.esimerkki@esimerkki.com"
                      :puuttuvat-paikalliset-tutkinnon-osat ppto-data
