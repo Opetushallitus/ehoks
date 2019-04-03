@@ -26,7 +26,6 @@
 
 (use-fixtures :once create-db)
 
-
 (defn get-authenticated [url]
   (-> (utils/with-service-ticket
         app
