@@ -719,14 +719,7 @@
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"
-                     :olemassa-olevat-ammatilliset-tutkinnon-osat []
-                     :puuttuvat-paikalliset-tutkinnon-osat []
-                     :puuttuvat-ammatilliset-tutkinnon-osat []
-                     :olemassa-olevat-yhteiset-tutkinnon-osat []
-                     :puuttuvat-yhteiset-tutkinnon-osat []
-                     :olemassa-olevat-paikalliset-tutkinnon-osat []
-                     :opiskeluvalmiuksia-tukevat-opinnot []}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"}]
       (let [response
             (utils/with-service-ticket
               app
@@ -742,63 +735,17 @@
             (assoc
               hoks-data
               :eid (:eid hoks)
-              :id 1)))))))
-
-(deftest put-created-hoks
-  (testing "PUT updates created HOKS"
-    (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.333.444.55.66666666666"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}
-          response
-          (utils/with-service-ticket
-            app
-            (-> (mock/request :post url)
-                (mock/json-body hoks-data)))
-          body (utils/parse-body (:body response))]
-      (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)
-            put-response
-            (utils/with-service-ticket
-              app
-              (-> (mock/request :put (get-in body [:data :uri]))
-                  (mock/json-body
-                    (-> hoks
-                        (assoc :paivittaja {:nimi "Teuvo Testaaja"})
-                        (dissoc :laatija :luotu :versio :paivitetty)))))]
-        (is (= (:status put-response) 204))
-        (let [updated-hoks
-              (-> (get-in body [:data :uri]) get-authenticated :data)]
-          (eq
-            updated-hoks
-            (assoc
-              hoks
-              :paivitetty (:paivitetty updated-hoks)
-              :versio 2
-              :paivittaja {:nimi "Teuvo Testaaja"})))))))
-
-(deftest put-non-existing-hoks
-  (testing "PUT prevents updating non existing HOKS"
-    (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.333.444.55.66666666666"
-                     :paivittaja {:nimi "Teuvo Testaaja"}
-                     :hyvaksytty (java.util.Date.)
-                     :id 1
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}
-          response
-          (utils/with-service-ticket
-            app
-            (-> (mock/request :put (format "%s/1" url))
-                (mock/json-body hoks-data)))]
-      (is (= (:status response) 404)))))
+              :id 1
+              :olemassa-olevat-ammatilliset-tutkinnon-osat []
+              :puuttuvat-paikalliset-tutkinnon-osat []
+              :puuttuvat-ammatilliset-tutkinnon-osat []
+              :olemassa-olevat-yhteiset-tutkinnon-osat []
+              :puuttuvat-yhteiset-tutkinnon-osat []
+              :olemassa-olevat-paikalliset-tutkinnon-osat []
+              :opiskeluvalmiuksia-tukevat-opinnot [])))))))
 
 (deftest patch-created-hoks
   (testing "PATCH updates value of created HOKS"
-    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.333.444.55.66666666666"
                      :laatija {:nimi "Teppo Tekijä"}
@@ -826,13 +773,17 @@
             updated-hoks
             (assoc
               hoks
-              :paivitetty (:paivitetty updated-hoks)
-              :versio 2
-              :paivittaja {:nimi "Kalle Käyttäjä"})))))))
+              :paivittaja {:nimi "Kalle Käyttäjä"}
+              :olemassa-olevat-ammatilliset-tutkinnon-osat []
+              :puuttuvat-paikalliset-tutkinnon-osat []
+              :puuttuvat-ammatilliset-tutkinnon-osat []
+              :olemassa-olevat-yhteiset-tutkinnon-osat []
+              :puuttuvat-yhteiset-tutkinnon-osat []
+              :olemassa-olevat-paikalliset-tutkinnon-osat []
+              :opiskeluvalmiuksia-tukevat-opinnot [])))))))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
-    (db/clear)
     (let [response
           (utils/with-service-ticket
             app
