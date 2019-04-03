@@ -31,3 +31,7 @@
     (if (map? data)
       (h/save-hoks! data)
       (map h/save-hoks! data))))
+
+(defn lein-import-file! [path]
+  (printf "Importing file %s\n" path)
+  (clojure.pprint/pprint (import-file! path)))
