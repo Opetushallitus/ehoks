@@ -69,8 +69,6 @@
 (defn update-hoks-by-id! [id hoks]
   (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
 
-(def replace-hoks-by-id! update-hoks-by-id!)
-
 (defn select-todennettu-arviointi-lisatiedot-by-id [id]
   (first
     (query
