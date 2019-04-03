@@ -12,11 +12,7 @@
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.params :refer [wrap-params]]
             [clojure.tools.logging :as log]
-            [cheshire.core :as cheshire]
-            [oph.ehoks.db.memory :as db]
-            [clj-time.coerce :as coerce]
-            [clj-time.format :as f])
-  (:import java.time.LocalDate))
+            [cheshire.core :as cheshire]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -33,46 +29,6 @@
   (some
     #(when (= (.getName %) filename) %)
     (file-seq (io/file (io/resource "dev-routes")))))
-
-(defn import-data! [file a]
-  (when-let [data (slurp file)]
-    (reset! a (cheshire/parse-string data true))))
-
-(defn parse-date [s]
-  (coerce/to-date (f/parse s)))
-
-(defn parse-local-date [s]
-  (LocalDate/parse s))
-
-(defn set-hon-dates [h]
-  (mapv
-    #(-> %
-         (update :alku parse-local-date)
-         (update :loppu parse-local-date))
-    h))
-
-(defn set-pato-dates [pc]
-  (mapv #(update % :hankitun-osaamisen-naytto set-hon-dates) pc))
-
-(defn set-hoks-dates [h]
-  (-> h
-      (update :luotu parse-date)
-      (update :paivitetty parse-date)
-      (update :hyvaksytty parse-date)
-      (update :ensikertainen-hyvaksyminen parse-local-date)
-      (update :puuttuvat-ammatilliset-tutkinnon-osat set-pato-dates)))
-
-(defn import-initial-demo-data! []
-  (-> "demo-data/hoksit.json"
-      io/resource io/file
-      (import-data! db/hoks-store))
-  (reset!
-    db/hoks-store
-    (map set-hoks-dates (deref db/hoks-store)))
-  (-> "demo-data/oppijat.json"
-      io/resource
-      io/file
-      (import-data! db/oppijat-store)))
 
 (defroutes dev-routes
   (GET "/dev-routes/*" request
@@ -119,9 +75,6 @@
    (when (some? config-file)
      (System/setProperty "config" config-file)
      (require 'oph.ehoks.config :reload))
-   (log/info "Loading demodata...")
-   (import-initial-demo-data!)
-   (log/info "...done.")
    (log/info "Starting development server...")
    (log/info "Not safe for production or public environments.")
    (jetty/run-jetty dev-app
