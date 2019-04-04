@@ -337,6 +337,25 @@
         :alku (java.time.LocalDate/of 2019 3 1)
         :loppu (java.time.LocalDate/of 2019 3 18)}]}]}])
 
+(def hoks-data
+  {:paivittaja {:nimi "Pekka Päivittäjä"}
+   :olemassa-olevat-ammatilliset-tutkinnon-osat ooato-data
+   :ensikertainen-hyvaksyminen
+   (java.time.LocalDate/of 2019 1 20)
+   :olemassa-olevat-paikalliset-tutkinnon-osat oopto-data
+   :sahkoposti "erkki.esimerkki@esimerkki.com"
+   :puuttuvat-paikalliset-tutkinnon-osat ppto-data
+   :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
+   :olemassa-olevat-yhteiset-tutkinnon-osat ooyto-data
+   :opiskeluoikeus-oid "1.2.246.562.15.00000012345"
+   :laatija {:nimi "Lasse Laatija"}
+   :puuttuvat-ammatilliset-tutkinnon-osat pao-data
+   :urasuunnitelma-koodi-versio 2
+   :opiskeluvalmiuksia-tukevat-opinnot oto-data
+   :oppija-oid "1.2.246.562.24.29790141661"
+   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+   :puuttuvat-yhteiset-tutkinnon-osat pyto-data})
+
 (deftest get-olemassa-olevat-ammatilliset-tutkinnon-osat-test
   (testing "Set HOKS olemassa olevat tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
@@ -398,24 +417,7 @@
 
 (deftest get-hoks-test
   (testing "Save and get full HOKS"
-    (let [hoks-data {:paivittaja {:nimi "Pekka Päivittäjä"}
-                     :olemassa-olevat-ammatilliset-tutkinnon-osat ooato-data
-                     :ensikertainen-hyvaksyminen
-                     (java.time.LocalDate/of 2019 1 20)
-                     :olemassa-olevat-paikalliset-tutkinnon-osat oopto-data
-                     :sahkoposti "erkki.esimerkki@esimerkki.com"
-                     :puuttuvat-paikalliset-tutkinnon-osat ppto-data
-                     :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
-                     :olemassa-olevat-yhteiset-tutkinnon-osat ooyto-data
-                     :opiskeluoikeus-oid "1.2.246.562.15.00000012345"
-                     :laatija {:nimi "Lasse Laatija"}
-                     :puuttuvat-ammatilliset-tutkinnon-osat pao-data
-                     :urasuunnitelma-koodi-versio 2
-                     :opiskeluvalmiuksia-tukevat-opinnot oto-data
-                     :oppija-oid "1.2.246.562.24.29790141661"
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :puuttuvat-yhteiset-tutkinnon-osat pyto-data}
-          hoks (h/save-hoks! hoks-data)]
+    (let [hoks (h/save-hoks! hoks-data)]
       (eq
         (h/get-hoks-by-id (:id hoks))
         (assoc
