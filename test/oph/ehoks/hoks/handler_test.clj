@@ -708,8 +708,7 @@
             (utils/with-service-ticket
               app
               (-> (mock/request :post url)
-                  (mock/json-body hoks-data)))
-            body (utils/parse-body (:body response))]
+                  (mock/json-body hoks-data)))]
         (is (= (:status response) 401))))))
 
 (deftest prevent-getting-unauthorized-hoks
