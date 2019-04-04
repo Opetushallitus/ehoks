@@ -130,12 +130,31 @@ CREATE TABLE olemassa_olevat_paikalliset_tutkinnon_osat(
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   hoks_id INTEGER REFERENCES hoksit(id),
+  valittu_todentamisen_prosessi_koodi_versio INTEGER,
   laajuus INTEGER,
   nimi TEXT,
   tavoitteet_ja_sisallot TEXT,
+  valittu_todentamisen_prosessi_koodi_uri VARCHAR(256),
   amosaa_tunniste TEXT,
   koulutuksen_jarjestaja_oid VARCHAR(26),
-  vaatimuksista_tai_tavoitteista_poikkeaminen TEXT
+  vaatimuksista_tai_tavoitteista_poikkeaminen TEXT,
+  lahetetty_arvioitavaksi DATE
+);
+
+CREATE TABLE olemassa_olevan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto(
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  deleted_at TIMESTAMP WITH TIME ZONE,
+  olemassa_oleva_paikallinen_tutkinnon_osa_id INTEGER REFERENCES olemassa_olevat_paikalliset_tutkinnon_osat(id),
+  hankitun_osaamisen_naytto_id INTEGER REFERENCES hankitun_osaamisen_naytot(id),
+  PRIMARY KEY(olemassa_oleva_paikallinen_tutkinnon_osa_id, hankitun_osaamisen_naytto_id)
+);
+
+CREATE TABLE olemassa_olevan_paikallisen_tutkinnon_osan_arvioijat(
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  deleted_at TIMESTAMP WITH TIME ZONE,
+  olemassa_oleva_paikallinen_tutkinnon_osa_id INTEGER REFERENCES olemassa_olevat_paikalliset_tutkinnon_osat(id),
+  koulutuksen_jarjestaja_arvioija_id INTEGER REFERENCES koulutuksen_jarjestaja_arvioijat(id),
+  PRIMARY KEY(olemassa_oleva_paikallinen_tutkinnon_osa_id, koulutuksen_jarjestaja_arvioija_id)
 );
 
 CREATE TABLE puuttuvat_paikalliset_tutkinnon_osat(
