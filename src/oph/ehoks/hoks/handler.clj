@@ -233,6 +233,10 @@
             {:error
              (str "Creating HOKS is not allowed. "
                   "Check student and 'opiskeluoikeus'.")}))
+        (when (seq (pdb/select-hoksit-by-opiskeluoikeus-oid
+                     (:opiskeluoikeus-oid hoks)))
+          (response/bad-request!
+            {:error "HOKS with the same opiskeluoikeus-oid already exists"}))
         (let [hoks-db (h/save-hoks! hoks)]
           (when (:save-hoks-json? config)
             (write-hoks-json! hoks))
