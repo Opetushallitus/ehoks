@@ -89,8 +89,25 @@
        :id)
     (db/select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
+(defn get-oopto-tarkentavat-tiedot-naytto [id]
+  (mapv
+    #(dissoc
+       (set-hankitun-osaamisen-naytto-values %)
+       :id)
+    (db/select-hankitun-osaamisen-naytto-by-oopto-id id)))
+
 (defn get-olemassa-olevat-paikalliset-tutkinnon-osat [hoks-id]
-  (db/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id))
+  (mapv
+    #(dissoc
+       (assoc-in
+         (assoc
+           %
+           :tarkentavat-tiedot-naytto
+           (get-oopto-tarkentavat-tiedot-naytto (:id %)))
+         [:tarkentavat-tiedot-arvioija :aiemmin-hankitun-osaamisen-arvioijat]
+         (db/select-arvioijat-by-oopto-id (:id %)))
+       :id)
+    (db/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-ooyto-osa-alue-tarkentavat-tiedot [id]
   (mapv
@@ -280,9 +297,40 @@
 (defn save-puuttuvat-paikalliset-tutkinnon-osat! [h c]
   (mapv #(save-puuttuva-paikallinen-tutkinnon-osa! h %) c))
 
+(defn save-oopto-tarkentavat-tiedot-naytto! [oopto-id c]
+  (mapv
+    #(let [n (save-hankitun-osaamisen-naytto! %)]
+       (db/insert-oopto-hankitun-osaamisen-naytto! oopto-id (:id n))
+       n)
+    c))
+
+(defn save-oopto-arvioijat! [oopto-id arvioijat]
+  (mapv
+    #(let [a (db/insert-koulutuksen-jarjestaja-arvioija! %)]
+       (db/insert-oopto-arvioija! oopto-id (:id a)))
+    arvioijat))
+
+(defn save-olemassa-oleva-paikallinen-tutkinnon-osa! [oopto]
+  (let [oopto-db (db/insert-olemassa-oleva-paikallinen-tutkinnon-osa! oopto)]
+    (assoc
+      oopto-db
+      :tarkentavat-tiedot-arvioija
+      {:aiemmin-hankitun-osaamisen-arvioijat
+       (save-oopto-arvioijat!
+         (:id oopto-db)
+         (get-in
+           oopto
+           [:tarkentavat-tiedot-arvioija
+            :aiemmin-hankitun-osaamisen-arvioijat]))}
+      :tarkentavat-tiedot-naytto
+      (save-oopto-tarkentavat-tiedot-naytto!
+        (:id oopto-db) (:tarkentavat-tiedot-naytto oopto)))))
+
 (defn save-olemassa-olevat-paikalliset-tutkinnon-osat! [h c]
-  (db/insert-olemassa-olevat-paikalliset-tutkinnon-osat!
-    (mapv #(assoc % :hoks-id (:id h)) c)))
+  (mapv
+    #(save-olemassa-oleva-paikallinen-tutkinnon-osa!
+       (assoc % :hoks-id (:id h)))
+    c))
 
 (defn save-ooyto-tarkentavat-tiedot-naytto! [ooyto c]
   (mapv

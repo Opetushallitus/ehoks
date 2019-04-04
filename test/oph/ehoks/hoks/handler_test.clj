@@ -657,7 +657,7 @@
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.246.562.24.12312312312"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
@@ -677,10 +677,29 @@
                  :id 1
                  :eid (:eid hoks)))))))
 
+(deftest prevent-creating-hoks-with-existing-opiskeluoikeus
+  (testing "Prevent POST HOKS with existing opiskeluoikeus"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :laatija {:nimi "Teppo Tekijä"}
+                     :paivittaja {:nimi "Pekka Päivittäjä"}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"}]
+      (utils/with-service-ticket
+        app
+        (-> (mock/request :post url)
+            (mock/json-body hoks-data)))
+      (let [response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request :post url)
+                  (mock/json-body hoks-data)))]
+        (is (= (:status response) 400))))))
+
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
-                     :oppija-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.246.562.24.12312312312"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
@@ -689,14 +708,13 @@
             (utils/with-service-ticket
               app
               (-> (mock/request :post url)
-                  (mock/json-body hoks-data)))
-            body (utils/parse-body (:body response))]
+                  (mock/json-body hoks-data)))]
         (is (= (:status response) 401))))))
 
 (deftest prevent-getting-unauthorized-hoks
   (testing "Prevent GET unauthorized HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
-                     :oppija-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.246.562.24.12312312312"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
@@ -718,7 +736,7 @@
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.246.562.24.12312312312"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
@@ -742,7 +760,7 @@
 (deftest patch-created-hoks
   (testing "PATCH updates value of created HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.333.444.55.66666666666"
+                     :oppija-oid "1.2.246.562.24.12312312312"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}

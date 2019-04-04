@@ -56,6 +56,11 @@
     [queries/select-hoksit-eid-by-eid eid]
     {}))
 
+(defn select-hoksit-by-opiskeluoikeus-oid [oid]
+  (query
+    [queries/select-hoksit-by-opiskeluoikeus-oid oid]
+    {:row-fn h/hoks-from-sql}))
+
 (defn generate-unique-eid []
   (loop [eid nil]
     (if (or (nil? eid) (seq (select-hoksit-eid-by-eid eid)))
@@ -349,10 +354,32 @@
     [queries/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/olemassa-oleva-paikallinen-tutkinnon-osa-from-sql}))
 
-(defn insert-olemassa-olevat-paikalliset-tutkinnon-osat! [c]
-  (insert-multi!
+(defn insert-olemassa-oleva-paikallinen-tutkinnon-osa! [m]
+  (insert-one!
     :olemassa_olevat_paikalliset_tutkinnon_osat
-    (map h/to-sql c)))
+    (h/olemassa-oleva-paikallinen-tutkinnon-osa-to-sql m)))
+
+(defn select-hankitun-osaamisen-naytto-by-oopto-id [id]
+  (query
+    [queries/select-tarkentavat-tiedot-naytto-by-oopto-id id]
+    {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
+
+(defn insert-oopto-arvioija! [oopto-id arvioija-id]
+  (insert-one!
+    :olemassa_olevan_paikallisen_tutkinnon_osan_arvioijat
+    {:olemassa_oleva_paikallinen_tutkinnon_osa_id oopto-id
+     :koulutuksen_jarjestaja_arvioija_id arvioija-id}))
+
+(defn select-arvioijat-by-oopto-id [id]
+  (query
+    [queries/select-arvioijat-by-oopto-id id]
+    {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
+
+(defn insert-oopto-hankitun-osaamisen-naytto! [oopto-id naytto-id]
+  (insert-one!
+    :olemassa_olevan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto
+    {:olemassa_oleva_paikallinen_tutkinnon_osa_id oopto-id
+     :hankitun_osaamisen_naytto_id naytto-id}))
 
 (defn insert-ooyto-arvioija! [yto-id a-id]
   (insert-one!

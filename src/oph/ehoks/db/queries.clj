@@ -34,6 +34,7 @@
 
 (defq select-hoksit-by-oppija-oid)
 (defq select-hoksit-by-id)
+(defq select-hoksit-by-opiskeluoikeus-oid)
 (defq select-hoksit-by-eid)
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")
 (defq select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id)
@@ -48,6 +49,21 @@
 (defq select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id)
 (defq select-puuttuvat-paikalliset-tutkinnon-osat-by-id)
 (defq select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id)
+(def select-tarkentavat-tiedot-naytto-by-oopto-id
+  (generate-select-join
+    {:table "hankitun_osaamisen_naytot"
+     :join
+     "olemassa_olevan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto"
+     :secondary-column "hankitun_osaamisen_naytto_id"
+     :primary-column "id"
+     :column "olemassa_oleva_paikallinen_tutkinnon_osa_id"}))
+(def select-arvioijat-by-oopto-id
+  (generate-select-join
+    {:table "koulutuksen_jarjestaja_arvioijat"
+     :join "olemassa_olevan_paikallisen_tutkinnon_osan_arvioijat"
+     :secondary-column "koulutuksen_jarjestaja_arvioija_id"
+     :primary-column "id"
+     :column "olemassa_oleva_paikallinen_tutkinnon_osa_id"}))
 (defq select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id)
 (def select-hankitun-osaamisen-naytot-by-ppto-id
   (generate-select-join

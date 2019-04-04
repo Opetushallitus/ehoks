@@ -207,7 +207,16 @@
   (get m :tyotehtava))
 
 (defn olemassa-oleva-paikallinen-tutkinnon-osa-from-sql [m]
-  (from-sql m {:removals [:id :hoks_id]}))
+  (from-sql m {:removals [:hoks_id]
+               :replaces
+               {:lahetetty_arvioitavaksi
+                [:tarkentavat_tiedot_arvioija :lahetetty-arvioitavaksi]}}))
+
+(defn olemassa-oleva-paikallinen-tutkinnon-osa-to-sql [m]
+  (to-sql m {:removals [:tarkentavat-tiedot-naytto
+                        :tarkentavat-tiedot-arvioija]
+             :replaces {[:tarkentavat-tiedot-arvioija :lahetetty-arvioitavaksi]
+                        :lahetetty-arvioitavaksi}}))
 
 (defn olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
   (from-sql m {:removals [:olemassa_oleva_yhteinen_tutkinnon_osa_id]}))

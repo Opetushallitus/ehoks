@@ -9,5 +9,4 @@
   (modify
     hoks-schema/HOKS
     "Oppijan HOKS"
-    {:replaced-in {[:eid] s/Str}
-     :removed [:id]}))
+    {:removed [:id]}))
