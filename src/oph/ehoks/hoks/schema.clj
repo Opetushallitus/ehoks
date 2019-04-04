@@ -218,7 +218,7 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
-    (s/optional-key :osa-alue-koodi-uri) [OsaAlueKoodiUri]
+    (s/optional-key :osa-alue-koodi-uri) OsaAlueKoodiUri
     (str "Suoritettavan tutkinnon osan näyttöön sisältyvän"
          "yton osa-alueen Koodisto-koodi-URI
          eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxx"
