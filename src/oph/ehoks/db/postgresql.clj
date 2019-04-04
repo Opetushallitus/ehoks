@@ -56,6 +56,11 @@
     [queries/select-hoksit-eid-by-eid eid]
     {}))
 
+(defn select-hoksit-by-opiskeluoikeus-oid [oid]
+  (query
+    [queries/select-hoksit-by-opiskeluoikeus-oid oid]
+    {:row-fn h/hoks-from-sql}))
+
 (defn generate-unique-eid []
   (loop [eid nil]
     (if (or (nil? eid) (seq (select-hoksit-eid-by-eid eid)))

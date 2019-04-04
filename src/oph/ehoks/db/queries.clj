@@ -34,6 +34,7 @@
 
 (defq select-hoksit-by-oppija-oid)
 (defq select-hoksit-by-id)
+(defq select-hoksit-by-opiskeluoikeus-oid)
 (defq select-hoksit-by-eid)
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")
 (defq select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id)
