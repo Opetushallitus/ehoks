@@ -120,6 +120,22 @@ Ja ohjelman sammuttaminen:
 user> (.stop server)
 ```
 
+### Tietokanta
+
+Tietokannan migraatiot voi ajaa komennolla
+
+``` shell
+lein dbmigrate
+```
+
+Tietokannan voi tyhjätä komennolla
+
+``` shell
+lein dbclean
+```
+
+Tämän jälkeen migraatiot pitää ajaa uudelleen.
+
 ### Testit
 
 Ulkoiset API-kutsut voidaan mockata. Kehitysresursseissa on konfiguroitava
