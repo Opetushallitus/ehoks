@@ -677,6 +677,25 @@
                  :id 1
                  :eid (:eid hoks)))))))
 
+(deftest prevent-creating-hoks-with-existing-opiskeluoikeus
+  (testing "Prevent POST HOKS with existing opiskeluoikeus"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
+                     :oppija-oid "1.2.333.444.55.66666666666"
+                     :laatija {:nimi "Teppo Tekijä"}
+                     :paivittaja {:nimi "Pekka Päivittäjä"}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"}]
+      (utils/with-service-ticket
+        app
+        (-> (mock/request :post url)
+            (mock/json-body hoks-data)))
+      (let [response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request :post url)
+                  (mock/json-body hoks-data)))]
+        (is (= (:status response) 400))))))
+
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
