@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 08.03.2019 08.47
+Generoitu 03.04.2019 14.40
 
 Katso myös [HOKS doc](https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html)
 
@@ -27,7 +27,7 @@ Puuttuvan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tekstimuotoinen selite ammattitaitovaatimuksista tai osaamistavoitteista poikkeamiseen | Ei |
 | hankitun-osaamisen-naytto | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### PuuttuvaYTOLuonti  
 
@@ -38,7 +38,7 @@ Puuttuvan yhteinen tutkinnon osan tiedot uutta merkintää luotaessa (POST)
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
 | tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa<br>    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.<br>    tutkinnonosat_100002 | Kyllä |
 | tutkinnon-osa-koodi-versio | Kokonaisluku | Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa<br>     (tutkinnonosat) | Kyllä |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ###   
 
@@ -53,7 +53,7 @@ Yhteinen Tutkinnon osa (YTO)
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
 | tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa<br>    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.<br>    tutkinnonosat_100002 | Kyllä |
 | tutkinnon-osa-koodi-versio | Kokonaisluku | Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa<br>     (tutkinnonosat) | Kyllä |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ###   
 
@@ -80,14 +80,18 @@ HOKS-dokumentin ylikirjoitus (PUT)
 | olemassa-olevat-ammatilliset-tutkinnon-osat | [[OlemassaOlevaAmmatillinenTutkinnonOsa](#OlemassaOlevaAmmatillinenTutkinnonOsa)] | Olemassa oleva ammatillinen osaaminen | Ei |
 | ensikertainen-hyvaksyminen | Päivämäärä | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DD | Kyllä |
 | olemassa-olevat-paikalliset-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
+| laatija | [HoksToimija](#HoksToimija) | HOKS-dokumentin luoneen henkilön nimi | Ei |
+| versio | Kokonaisluku | HOKS-dokumentin versio | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
-| hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
+| luotu | Aikaleima | HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuvat-paikalliset-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
-| urasuunnitelma-koodi-uri | #"^urasuunnitelma_\d{4}$" | Opiskelijan tavoitteen Koodisto-koodi-URI | Ei |
+| urasuunnitelma-koodi-uri | #"^urasuunnitelma_\d{4}$" | Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto<br>    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.<br>    urasuunnitelma_0001 | Ei |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
+| hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d{11}$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001' | Kyllä |
 | puuttuvat-ammatilliset-tutkinnon-osat | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
 | urasuunnitelma-koodi-versio | Kokonaisluku | Opiskelijan tavoitteen Koodisto-koodin versio | Ei |
+| paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | opiskeluvalmiuksia-tukevat-opinnot | [[OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot)] | Opiskeluvalmiuksia tukevat opinnot | Ei |
 | paivittaja | [HoksToimija](#HoksToimija) | HOKS-dokumenttia viimeksi päivittäneen henkilön nimi | Kyllä |
 | oppija-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
@@ -141,7 +145,7 @@ Puuttuvan yhteinen tutkinnon osa tiedot merkintää ylikirjoittaessa (PUT)
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
 | tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa<br>    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.<br>    tutkinnonosat_100002 | Kyllä |
 | tutkinnon-osa-koodi-versio | Kokonaisluku | Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa<br>     (tutkinnonosat) | Kyllä |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### VastuullinenOhjaaja  
 
@@ -179,14 +183,18 @@ HOKS-dokumentin arvot uutta merkintää luotaessa (POST)
 | olemassa-olevat-ammatilliset-tutkinnon-osat | [[OlemassaOlevaAmmatillinenTutkinnonOsa](#OlemassaOlevaAmmatillinenTutkinnonOsa)] | Olemassa oleva ammatillinen osaaminen | Ei |
 | ensikertainen-hyvaksyminen | Päivämäärä | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DD | Kyllä |
 | olemassa-olevat-paikalliset-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
+| laatija | [HoksToimija](#HoksToimija) | HOKS-dokumentin luoneen henkilön nimi | Ei |
+| versio | Kokonaisluku | HOKS-dokumentin versio | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
+| luotu | Aikaleima | HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuvat-paikalliset-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
-| urasuunnitelma-koodi-uri | #"^urasuunnitelma_\d{4}$" | Opiskelijan tavoitteen Koodisto-koodi-URI | Ei |
+| urasuunnitelma-koodi-uri | #"^urasuunnitelma_\d{4}$" | Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto<br>    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.<br>    urasuunnitelma_0001 | Ei |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
+| hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d{11}$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001' | Kyllä |
-| laatija | [HoksToimija](#HoksToimija) | HOKS-dokumentin luoneen henkilön nimi | Kyllä |
 | puuttuvat-ammatilliset-tutkinnon-osat | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
 | urasuunnitelma-koodi-versio | Kokonaisluku | Opiskelijan tavoitteen Koodisto-koodin versio | Ei |
+| paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | opiskeluvalmiuksia-tukevat-opinnot | [[OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot)] | Opiskeluvalmiuksia tukevat opinnot | Ei |
 | oppija-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
 | hyvaksyja | [HoksToimija](#HoksToimija) | Luodun HOKS-dokumentn hyväksyjän nimi | Kyllä |
@@ -211,7 +219,7 @@ Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| oppilaitos-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Mikäli kyseessä oppilaitos, oppilaitoksen oid-tunniste<br>       Opintopolku-palvelussa. | Ei |
+| oppilaitos-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Mikäli kyseessä oppilaitos, oppilaitoksen oid-tunniste<br>       Opintopolku-palvelussa. | Ei |
 
 ###   
 
@@ -226,19 +234,20 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
 | olemassa-olevat-ammatilliset-tutkinnon-osat | [[OlemassaOlevaAmmatillinenTutkinnonOsa](#OlemassaOlevaAmmatillinenTutkinnonOsa)] | Olemassa oleva ammatillinen osaaminen | Ei |
 | ensikertainen-hyvaksyminen | Päivämäärä | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DD | Kyllä |
 | olemassa-olevat-paikalliset-tutkinnon-osat | [[OlemassaOlevaPaikallinenTutkinnonOsa](#OlemassaOlevaPaikallinenTutkinnonOsa)] | Olemassa oleva paikallinen tutkinnon osa | Ei |
-| luotu | Aikaleima | HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
+| laatija | [HoksToimija](#HoksToimija) | HOKS-dokumentin luoneen henkilön nimi | Ei |
+| versio | Kokonaisluku | HOKS-dokumentin versio | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
-| hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
+| luotu | Aikaleima | HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuvat-paikalliset-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
-| urasuunnitelma-koodi-uri | #"^urasuunnitelma_\d{4}$" | Opiskelijan tavoitteen Koodisto-koodi-URI | Ei |
+| urasuunnitelma-koodi-uri | #"^urasuunnitelma_\d{4}$" | Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto<br>    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.<br>    urasuunnitelma_0001 | Ei |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
+| hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d{11}$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001' | Kyllä |
-| laatija | [HoksToimija](#HoksToimija) | HOKS-dokumentin luoneen henkilön nimi | Kyllä |
 | puuttuvat-ammatilliset-tutkinnon-osat | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
-| versio | Kokonaisluku | HOKS-dokumentin versio | Kyllä |
 | urasuunnitelma-koodi-versio | Kokonaisluku | Opiskelijan tavoitteen Koodisto-koodin versio | Ei |
-| paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Kyllä |
+| paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | opiskeluvalmiuksia-tukevat-opinnot | [[OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot)] | Opiskeluvalmiuksia tukevat opinnot | Ei |
+| eid | Merkkijono | HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä | Kyllä |
 | paivittaja | [HoksToimija](#HoksToimija) | HOKS-dokumenttia viimeksi päivittäneen henkilön nimi | Kyllä |
 | oppija-oid | Merkkijono | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
 | tutkinto | [Tutkinto](#Tutkinto) | Tutkinnon tiedot ePerusteet palvelussa | Ei |
@@ -306,13 +315,17 @@ HOKS-dokumentin ylikirjoitus (PATCH)
 | hyvaksyja | [HoksToimija](#HoksToimija) | Luodun HOKS-dokumentn hyväksyjän nimi | Ei |
 | opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d{11}$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001' | Ei |
 | laatija | [HoksToimija](#HoksToimija) | HOKS-dokumentin luoneen henkilön nimi | Ei |
+| versio | Kokonaisluku | HOKS-dokumentin versio | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
 | ensikertainen-hyvaksyminen | Päivämäärä | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DD | Ei |
+| luotu | Aikaleima | HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuvat-paikalliset-tutkinnon-osat | [[PuuttuvaPaikallinenTutkinnonOsa](#PuuttuvaPaikallinenTutkinnonOsa)] | Puuttuvat paikallisen tutkinnon osat | Ei |
-| urasuunnitelma-koodi-uri | #"^urasuunnitelma_\d{4}$" | Opiskelijan tavoitteen Koodisto-koodi-URI | Ei |
+| urasuunnitelma-koodi-uri | #"^urasuunnitelma_\d{4}$" | Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto<br>    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.<br>    urasuunnitelma_0001 | Ei |
 | olemassa-olevat-yhteiset-tutkinnon-osat | [[OlemassaOlevaYhteinenTutkinnonOsa](#OlemassaOlevaYhteinenTutkinnonOsa)] | Olemassa olevat yhteiset tutkinnon osat (YTO) | Ei |
+| hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | puuttuvat-ammatilliset-tutkinnon-osat | [[PuuttuvaAmmatillinenOsaaminen](#PuuttuvaAmmatillinenOsaaminen)] | Puuttuvan ammatillisen osaamisen hankkimisen tiedot | Ei |
 | urasuunnitelma-koodi-versio | Kokonaisluku | Opiskelijan tavoitteen Koodisto-koodin versio | Ei |
+| paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | opiskeluvalmiuksia-tukevat-opinnot | [[OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot)] | Opiskeluvalmiuksia tukevat opinnot | Ei |
 | paivittaja | [HoksToimija](#HoksToimija) | HOKS-dokumenttia viimeksi päivittäneen henkilön nimi | Kyllä |
 | puuttuvat-yhteiset-tutkinnon-osat | [[PuuttuvaYTO](#PuuttuvaYTO)] | Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
@@ -342,7 +355,7 @@ Olemassaolevan YTOn osa-alueen tiedot
 | ---- | ------ | ------ | --------- |
 | osa-alue-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
 | osa-alue-koodi-versio | Kokonaisluku | Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet) | Kyllä |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 | valittu-todentamisen-prosessi-koodi-uri | #"^osaamisentodentamisenprosessi_\d+$" | Todentamisen prosessin kuvauksen (suoraan/arvioijien kautta/näyttö)<br>    koodi-uri. Koodisto Osaamisen todentamisen prosessi, eli muotoa<br>    osaamisentodentamisenprosessi_xxxx | Kyllä |
 | valittu-todentamisen-prosessi-koodi-versio | Kokonaisluku | Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio<br>    (Osaamisen todentamisen prosessi) | Kyllä |
@@ -379,7 +392,7 @@ Puuttuvan ammatillisen osaamisen tiedot (GET)
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tekstimuotoinen selite ammattitaitovaatimuksista tai osaamistavoitteista poikkeamiseen | Ei |
 | hankitun-osaamisen-naytto | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### PuuttuvaAmmatillinenOsaaminenKentanPaivitys  
 
@@ -392,7 +405,7 @@ Puuttuvan ammatillisen osaamisen tiedot kenttää tai kenttiä päivittäessä (
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tekstimuotoinen selite ammattitaitovaatimuksista tai osaamistavoitteista poikkeamiseen | Ei |
 | hankitun-osaamisen-naytto | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### Oppilaitoshenkilo  
 
@@ -402,7 +415,7 @@ Oppilaitoksen edustaja
 | ---- | ------ | ------ | --------- |
 | nimi | Merkkijono | Henkilön nimi | Kyllä |
 | rooli | Merkkijono | Henkilön rooli | Ei |
-| oppilaitos-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Oppilaitoksen oid-tunniste Opintopolku-palvelussa. | Kyllä |
+| oppilaitos-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Oppilaitoksen oid-tunniste Opintopolku-palvelussa. | Kyllä |
 
 ### OlemassaOlevaYhteinenTutkinnonOsa  
 
@@ -416,7 +429,7 @@ Olemassa oleva yhteinen tutkinnon osa
 | tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa<br>    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.<br>    tutkinnonosat_100002 | Kyllä |
 | tarkentavat-tiedot-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
 | osa-alueet | [[OlemassaOlevanYTOOsaAlue](#OlemassaOlevanYTOOsaAlue)] | YTO osa-alueet | Kyllä |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | tarkentavat-tiedot-naytto | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
 
 ### OpiskeluvalmiuksiaTukevatOpinnot  
@@ -442,7 +455,7 @@ Puuttuvan paikallisen tutkinnon osan tiedot merkintää ylikirjoittaessa (PUT)
 | amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
 | hankitun-osaamisen-naytto | [[HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 
 ### YhteisenTutkinnonOsanOsaAlue  
@@ -468,7 +481,7 @@ Puuttuvan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa (PUT)
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tekstimuotoinen selite ammattitaitovaatimuksista tai osaamistavoitteista poikkeamiseen | Ei |
 | hankitun-osaamisen-naytto | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### NaytonJarjestaja  
 
@@ -476,7 +489,7 @@ Näytön tai osaamisen osoittamisen järjestäjä
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| oppilaitos-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| oppilaitos-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### PuuttuvaYTOKentanPaivitys  
 
@@ -487,7 +500,7 @@ Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä päivittäessä 
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Ei |
 | tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa<br>    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.<br>    tutkinnonosat_100002 | Ei |
 | tutkinnon-osa-koodi-versio | Kokonaisluku | Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa<br>     (tutkinnonosat) | Ei |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### HankitunYTOOsaamisenNaytto  
 
@@ -519,21 +532,25 @@ Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä päivittäess
 | tavoitteet-ja-sisallot | Merkkijono | Paikallisen tutkinnon osan ammattitaitovaatimukset taiosaamistavoitteet | Ei |
 | amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 
 ### OlemassaOlevaPaikallinenTutkinnonOsa  
 
-Olemassa oleva paikallinen tutkinnon osa
+Olemassa oleva yhteinen tutkinnon osa
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
+| valittu-todentamisen-prosessi-koodi-versio | Kokonaisluku | Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio<br>       (Osaamisen todentamisen prosessi) | Kyllä |
 | laajuus | Kokonaisluku | Tutkinnon osan laajuus | Ei |
 | nimi | Merkkijono | Tutkinnon osan nimi | Ei |
 | tavoitteet-ja-sisallot | Merkkijono | Paikallisen tutkinnon osan ammattitaitovaatimukset taiosaamistavoitteet | Ei |
+| valittu-todentamisen-prosessi-koodi-uri | #"^osaamisentodentamisenprosessi_\d+$" | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
 | amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| tarkentavat-tiedot-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
+| tarkentavat-tiedot-naytto | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
 
 ###   
 
@@ -569,7 +586,7 @@ Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää luotaessa (POST)
 | amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
 | hankitun-osaamisen-naytto | [[HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 
 ### OlemassaOlevaAmmatillinenTutkinnonOsa  
@@ -583,7 +600,7 @@ Olemassa oleva yhteinen tutkinnon osa
 | valittu-todentamisen-prosessi-koodi-uri | #"^osaamisentodentamisenprosessi_\d+$" | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Kyllä |
 | tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa<br>    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.<br>    tutkinnonosat_100002 | Kyllä |
 | tarkentavat-tiedot-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | tarkentavat-tiedot-naytto | [[HankitunOsaamisenNaytto](#HankitunOsaamisenNaytto)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
 
 ### HoksToimija  
@@ -603,7 +620,7 @@ Puuttuvan yhteinen tutkinnon osan (YTO) tiedot
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
 | tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa<br>    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.<br>    tutkinnonosat_100002 | Kyllä |
 | tutkinnon-osa-koodi-versio | Kokonaisluku | Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa<br>     (tutkinnonosat) | Kyllä |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
 ### PuuttuvaPaikallinenTutkinnonOsa  
 
@@ -617,6 +634,6 @@ Puuttuva paikallinen tutkinnon osa
 | amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
 | hankitun-osaamisen-naytto | [[HankitunPaikallisenOsaamisenNaytto](#HankitunPaikallisenOsaamisenNaytto)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Kyllä |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Kyllä |
-| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 
