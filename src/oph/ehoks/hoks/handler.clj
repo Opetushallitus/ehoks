@@ -43,9 +43,9 @@
 (defn hoks-access? [hoks user]
   (and
     (some? (:opiskeluoikeus-oid hoks))
-    (some? (:oid user))
+    (some? (:oidHenkilo user))
     (= (koski/get-opiskeluoikeus-oppilaitos-oid (:opiskeluoikeus-oid hoks))
-       (:oid user))))
+       (:oidHenkilo user))))
 
 (defn check-hoks-access! [hoks request]
   (if (nil? hoks)
