@@ -8,12 +8,13 @@
             [oph.ehoks.db.memory :as db]
             [oph.ehoks.db.postgresql :as pdb]
             [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.middleware :refer [wrap-service-ticket]]
+            [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
             [oph.ehoks.config :refer [config]]
             [schema.core :as s]
-            [clojure.data.json :as json])
+            [clojure.data.json :as json]
+            [oph.ehoks.user])
   (:import (java.time LocalDate)))
 
 (defn value-writer [_ value]
@@ -215,10 +216,11 @@
     :tags ["hoks"]
 
     (route-middleware
-      [wrap-service-ticket]
+      [wrap-user-details]
       (c-api/GET "/:id" [id :as request]
         :summary "Palauttaa HOKSin"
         :path-params [id :- s/Int]
+        :privileges #{:read}
         :return (rest/response hoks-schema/HOKS)
         (let [hoks (pdb/select-hoks-by-id id)]
           (check-hoks-access! hoks request)
@@ -227,6 +229,7 @@
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
+        :privileges #{:write}
         :return (rest/response schema/POSTResponse)
         (when-not (hoks-access? hoks (:service-ticket-user request))
           (response/unauthorized!
@@ -244,6 +247,7 @@
 
       (c-api/PATCH "/:id" [id :as request]
         :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
+        :privileges #{:update}
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSKentanPaivitys]
         (let [hoks (pdb/select-hoks-by-id id)]
