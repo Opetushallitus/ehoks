@@ -57,7 +57,7 @@
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
               {:status 200
                :body {:oppilaitos {:oid (or oppilaitos-oid
-                                            "1.2.246.562.24.47861388607")}}}
+                                            "1.2.246.562.24.11474338834")}}}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000002")
               {:status 200
@@ -65,11 +65,11 @@
                                             "1.2.246.562.24.47861388608")}}}
               (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
               {:status 200
-               :body [{:oidHenkilo "1.2.246.562.24.47861388607"
-                       :username "ehoks"
+               :body [{:oidHenkilo "1.2.246.562.24.11474338834"
+                       :username "ehoks-test"
                        :organisaatiot
-                       [{:organisaatioOid "1.2.246.562.10.00000000001"
-                         :kayttooikeudet [{:palvelu "EHOKS-PALVELU"
+                       [{:organisaatioOid "1.2.246.562.10.12944436166"
+                         :kayttooikeudet [{:palvelu "EHOKS"
                                            :oikeus "CRUD"}]}]}]})))
     (let [result (app (-> request
                           (mock/header "Caller-Id" "test")
