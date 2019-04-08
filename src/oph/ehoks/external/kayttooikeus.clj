@@ -12,10 +12,15 @@
      :options {:as :json}}))
 
 (defn get-user-details [^String username]
-  (when (some? username)
-    (some
-      #(when (= (:kayttajatunnus %) username) %)
-      (:body (get-palvelukayttajat)))))
+  (first
+    (:body
+     (cache/with-cache!
+       {:method :get
+        :authenticate? true
+        :service (:kayttooikeus-service-url config)
+        :path "kayttooikeus/kayttaja"
+        :options {:as :json
+                  :query-params {"username" username}}}))))
 
 (defn get-ticket-user [ticket]
   (let [validation-data (cas/validate-ticket (:backend-url config) ticket)]
