@@ -1,0 +1,18 @@
+[
+  {
+    "oidHenkilo": "1.2.246.562.24.47861388607",
+    "username": "ehoks",
+    "kayttajaTyyppi": "PALVELU",
+    "organisaatiot": [
+      {
+        "organisaatioOid": "1.2.246.562.10.00000000001",
+        "kayttooikeudet": [
+          {
+            "palvelu": "EHOKS-PALVELU",
+            "oikeus": "CRUD"
+          }
+        ]
+      }
+    ]
+  }
+]
