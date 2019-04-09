@@ -55,7 +55,7 @@
     (assoc
       request
       :service-ticket-user
-      (merge ticket-user (user/get-privileges ticket-user)))))
+      (merge ticket-user (user/get-auth-info ticket-user)))))
 
 (defn wrap-user-details [handler]
   (fn
