@@ -33,6 +33,14 @@
       :body
       utils/parse-body))
 
+(deftest authorized-test
+  (testing "Authorized"
+    (is false)))
+
+(deftest hoks-access-test
+  (testing "HOKS access"
+    (is false)))
+
 (deftest post-and-get-ppto
   (testing "GET newly created puuttuva paikallinen tutkinnon osa"
     (db/clear)

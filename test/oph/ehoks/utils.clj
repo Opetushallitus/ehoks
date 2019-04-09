@@ -57,7 +57,7 @@
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
               {:status 200
                :body {:oppilaitos {:oid (or oppilaitos-oid
-                                            "1.2.246.562.24.11474338834")}}}
+                                            "1.2.246.562.10.12944436166")}}}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000002")
               {:status 200
