@@ -60,7 +60,7 @@
 
 (deftest get-organisation-privileges
   (testing "Get organisation privileges"
-    (is (user/get-organisation-privileges
+    (eq (user/get-organisation-privileges
           {:organisation-privileges
            '({:oid "1.2.246.562.10.00000000002"
               :privileges #{:read :write :update :delete}
