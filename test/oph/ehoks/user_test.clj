@@ -16,9 +16,9 @@
          '({:oid "1.2.246.562.10.00000000002"
             :privileges #{:read :write :update :delete}
             :roles #{}}
-           {:oid "1.2.246.562.10.00000000001"
-            :privileges #{}
-            :roles #{:oph-super-user}})})
+            {:oid "1.2.246.562.10.00000000001"
+             :privileges #{}
+             :roles #{:oph-super-user}})})
 
     (eq (user/get-auth-info
           {:organisaatiot [{:organisaatioOid "1.2.246.562.10.00000000002"
@@ -45,12 +45,12 @@
            '({:oid "1.2.246.562.10.00000000003"
               :privileges #{}
               :roles #{}}
-             {:oid "1.2.246.562.10.00000000001"
-              :privileges #{}
-              :roles #{:oph-super-user}}
-             {:oid "1.2.246.562.10.00000000002"
-              :privileges #{}
-              :roles #{}})}))
+              {:oid "1.2.246.562.10.00000000001"
+               :privileges #{}
+               :roles #{:oph-super-user}}
+              {:oid "1.2.246.562.10.00000000002"
+               :privileges #{}
+               :roles #{}})}))
     (is (not
           (user/oph-super-user?
             {:organisation-privileges
@@ -65,9 +65,9 @@
            '({:oid "1.2.246.562.10.00000000002"
               :privileges #{:read :write :update :delete}
               :roles #{}}
-             {:oid "1.2.246.562.10.00000000001"
-              :privileges #{}
-              :roles #{:oph-super-user}})}
+              {:oid "1.2.246.562.10.00000000001"
+               :privileges #{}
+               :roles #{:oph-super-user}})}
           "1.2.246.562.10.00000000002")
         #{:read :write :update :delete})
 
@@ -77,7 +77,7 @@
              '({:oid "1.2.246.562.10.00000000002"
                 :privileges #{:read :write :update :delete}
                 :roles #{}}
-               {:oid "1.2.246.562.10.00000000003"
-                :privileges #{}
-                :roles #{:oph-super-user}})}
+                {:oid "1.2.246.562.10.00000000003"
+                 :privileges #{}
+                 :roles #{:oph-super-user}})}
             "1.2.246.562.10.00000000001")))))

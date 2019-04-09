@@ -62,11 +62,11 @@
     (response/not-found!)
     (let [ticket-user (:service-ticket-user request)]
       (when-not
-          (or (user/oph-super-user? ticket-user)
-              (hoks-access?
-                hoks
-                ticket-user
-                (get method-privileges (:request-method request))))
+       (or (user/oph-super-user? ticket-user)
+           (hoks-access?
+             hoks
+             ticket-user
+             (get method-privileges (:request-method request))))
         (response/unauthorized!
           {:error (str "No access is allowed. Check Opintopolku privileges and "
                        "'opiskeluoikeus'")})))))
