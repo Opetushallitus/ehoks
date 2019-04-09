@@ -14,8 +14,13 @@
             [oph.ehoks.config :refer [config]]
             [schema.core :as s]
             [clojure.data.json :as json]
-            [oph.ehoks.user])
+            [oph.ehoks.user :as user])
   (:import (java.time LocalDate)))
+
+(def method-privileges {:get :read
+                        :post :write
+                        :patch :update
+                        :delete :delete})
 
 (defn value-writer [_ value]
   (cond
@@ -40,35 +45,31 @@
               (quot (System/currentTimeMillis) 1000))
       ".json")))
 
-(defn hoks-access? [hoks user]
+(defn authorized? [hoks ticket-user method]
+  (let [oppilaitos-oid (koski/get-opiskeluoikeus-oppilaitos-oid
+                         (:opiskeluoikeus-oid hoks))
+        organisation-privileges
+        (user/get-organisation-privileges ticket-user oppilaitos-oid)]
+    (some? (get organisation-privileges method))))
+
+(defn hoks-access? [hoks ticket-user method]
   (and
     (some? (:opiskeluoikeus-oid hoks))
-    (some? (:oidHenkilo user))
-    (= (koski/get-opiskeluoikeus-oppilaitos-oid (:opiskeluoikeus-oid hoks))
-       (:oidHenkilo user))))
+    (authorized? hoks ticket-user method)))
 
 (defn check-hoks-access! [hoks request]
   (if (nil? hoks)
     (response/not-found!)
-    (when-not (hoks-access? hoks (:service-ticket-user request))
-      (response/unauthorized!
-        {:error
-         "No access is allowed. Check student and 'opiskeluoikeus'"}))))
-
-(defn wrap-hoks-access [handler]
-  (fn
-    ([request respond raise]
-      (check-hoks-access!
-        (db/get-hoks-by-id
-          (get-in request [:query-params :id]))
-        request)
-      (handler request respond raise))
-    ([request]
-      (check-hoks-access!
-        (db/get-hoks-by-id
-          (get-in request [:query-params :id]))
-        request)
-      (handler request))))
+    (let [ticket-user (:service-ticket-user request)]
+      (when-not
+          (or (user/oph-super-user? ticket-user)
+              (hoks-access?
+                hoks
+                ticket-user
+                (get method-privileges (:request-method request))))
+        (response/unauthorized!
+          {:error (str "No access is allowed. Check Opintopolku privileges and "
+                       "'opiskeluoikeus'")})))))
 
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
   (c-api/context "/:hoks-id/puuttuva-paikallinen-tutkinnon-osa" [hoks-id]
@@ -220,7 +221,6 @@
       (c-api/GET "/:id" [id :as request]
         :summary "Palauttaa HOKSin"
         :path-params [id :- s/Int]
-        :privileges #{:read}
         :return (rest/response hoks-schema/HOKS)
         (let [hoks (pdb/select-hoks-by-id id)]
           (check-hoks-access! hoks request)
@@ -229,13 +229,8 @@
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
-        :privileges #{:write}
         :return (rest/response schema/POSTResponse)
-        (when-not (hoks-access? hoks (:service-ticket-user request))
-          (response/unauthorized!
-            {:error
-             (str "Creating HOKS is not allowed. "
-                  "Check student and 'opiskeluoikeus'.")}))
+        (check-hoks-access! hoks request)
         (when (seq (pdb/select-hoksit-by-opiskeluoikeus-oid
                      (:opiskeluoikeus-oid hoks)))
           (response/bad-request!
@@ -247,7 +242,6 @@
 
       (c-api/PATCH "/:id" [id :as request]
         :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
-        :privileges #{:update}
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSKentanPaivitys]
         (let [hoks (pdb/select-hoks-by-id id)]
