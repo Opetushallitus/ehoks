@@ -2,7 +2,8 @@
   (:require [ring.util.http-response :refer [unauthorized header]]
             [oph.ehoks.external.cas :as cas]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
-            [oph.ehoks.config :refer [config]]))
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.user :as user]))
 
 (defn- matches-route? [request route]
   (and (re-seq (:uri route) (:uri request))
@@ -48,19 +49,21 @@
     (nil? (get-in request [:headers "ticket"]))
     {:error "Ticket is missing"}))
 
-(defn set-service-ticket-user [request]
-  (assoc
-    request
-    :service-ticket-user (kayttooikeus/get-ticket-user
-                           (get-in request [:headers "ticket"]))))
+(defn set-user-details [request]
+  (let [ticket-user (kayttooikeus/get-ticket-user
+                      (get-in request [:headers "ticket"]))]
+    (assoc
+      request
+      :service-ticket-user
+      (merge ticket-user (user/get-auth-info ticket-user)))))
 
-(defn wrap-service-ticket [handler]
+(defn wrap-user-details [handler]
   (fn
     ([request respond raise]
       (if-let [result (validate-headers request)]
         (respond (unauthorized result))
-        (handler (set-service-ticket-user request) respond raise)))
+        (handler (set-user-details request) respond raise)))
     ([request]
       (if-let [result (validate-headers request)]
         (unauthorized result)
-        (handler (set-service-ticket-user request))))))
+        (handler (set-user-details request))))))

@@ -1,0 +1,38 @@
+[
+  {
+    "oidHenkilo": "1.2.246.562.24.11474338834",
+    "username": "ehoks-test",
+    "kayttajaTyyppi": "VIRKAILIJA",
+    "organisaatiot": [
+      {
+        "organisaatioOid": "1.2.246.562.10.12944436166",
+        "kayttooikeudet": [
+          {
+            "palvelu": "KAYTTOOIKEUS",
+            "oikeus": "CRUD"
+          },
+          {
+            "palvelu": "KOODISTO",
+            "oikeus": "READ"
+          },
+          {
+            "palvelu": "OMATTIEDOT",
+            "oikeus": "READ_UPDATE"
+          },
+          {
+            "palvelu": "EHOKS",
+            "oikeus": "CRUD"
+          },
+          {
+            "palvelu": "VIRKAILIJANTYOPOYTA",
+            "oikeus": "2ASTE"
+          },
+          {
+            "palvelu": "EHOKS",
+            "oikeus": "TIEDONSIIRTO"
+          }
+        ]
+      }
+    ]
+  }
+]
