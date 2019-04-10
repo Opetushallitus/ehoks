@@ -424,3 +424,13 @@
           hoks-data
           :id 1
           :eid (:eid hoks))))))
+
+(deftest empty-values-test
+  (testing "DB handling of empty values"
+    (let [hoks (db/insert-hoks! {})
+          ooato (db/insert-olemassa-oleva-ammatillinen-tutkinnon-osa!
+                  {:hoks-id (:id hoks)})
+          data {}
+          tta (h/save-ooato-tarkentavat-tiedot-arvioija! data)]
+      (eq (h/get-tarkentavat-tiedot-arvioija (:id tta))
+          (assoc data :aiemmin-hankitun-osaamisen-arvioijat [])))))

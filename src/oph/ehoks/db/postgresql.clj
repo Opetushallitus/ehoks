@@ -16,6 +16,12 @@
   (result-set-read-column [o _ _]
     (.toLocalDate o)))
 
+(defn insert-empty! [t]
+  (jdbc/execute!
+    {:connection-uri (:database-url config)}
+    (format
+      "INSERT INTO %s DEFAULT VALUES" (name t))))
+
 (defn query
   ([queries opts]
     (jdbc/query {:connection-uri (:database-url config)} queries opts))
@@ -23,7 +29,9 @@
     (query queries (apply hash-map arg opts))))
 
 (defn insert! [t v]
-  (jdbc/insert! {:connection-uri (:database-url config)} t v))
+  (if (seq v)
+    (jdbc/insert! {:connection-uri (:database-url config)} t v)
+    (insert-empty! t)))
 
 (defn insert-one! [t v] (first (insert! t v)))
 
