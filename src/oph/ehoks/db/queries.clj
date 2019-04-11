@@ -2,7 +2,7 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as cstr]))
 
-(defn read-sql-file [f] (slurp (io/file (io/resource f))))
+(defn read-sql-file [f] (slurp (io/resource f)))
 
 (def select-by-template (read-sql-file "select_by.sql"))
 
