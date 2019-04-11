@@ -40,6 +40,10 @@ deploy:
   script: ./ci-tools/build/upload-image.sh ehoks
   on:
     all_branches: true
+  provider: script
+  script: lein dbmigrate
+  on:
+    all_branches: true
 
 cache:
   directories:
