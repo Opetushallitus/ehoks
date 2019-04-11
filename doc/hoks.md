@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 03.04.2019 14.40
+Generoitu 11.04.2019 09.36
 
 Katso myös [HOKS doc](https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html)
 
@@ -163,7 +163,7 @@ Hankitun paikallisen osaamisen osoittaminen: Näyttö tai muu osaamisen
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| osa-alue-koodi-uri | [Merkkijono, esim. ammatillisenoppiaineet_aa] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI<br>         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk | Ei |
+| osa-alue-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI<br>         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk | Ei |
 | koulutuksen-jarjestaja-arvioijat | [[KoulutuksenJarjestajaArvioija](#KoulutuksenJarjestajaArvioija)] | Näytön tai osaamisen osoittamisen<br>    arvioijat | Ei |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
 | osa-alue-koodi-versio | Kokonaisluku | Koodisto-koodin versio, koodistolle yton osa-alue | Ei |
@@ -265,7 +265,7 @@ Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| osa-alue-koodi-uri | [Merkkijono, esim. ammatillisenoppiaineet_aa] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI<br>         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk | Ei |
+| osa-alue-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI<br>         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk | Ei |
 | koulutuksen-jarjestaja-arvioijat | [[KoulutuksenJarjestajaArvioija](#KoulutuksenJarjestajaArvioija)] | Näytön tai osaamisen osoittamisen<br>    arvioijat | Ei |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
 | osa-alue-koodi-versio | Kokonaisluku | Koodisto-koodin versio, koodistolle yton osa-alue | Ei |
@@ -509,7 +509,7 @@ Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| osa-alue-koodi-uri | [Merkkijono, esim. ammatillisenoppiaineet_aa] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI<br>         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk | Ei |
+| osa-alue-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI<br>         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk | Ei |
 | koulutuksen-jarjestaja-arvioijat | [[KoulutuksenJarjestajaArvioija](#KoulutuksenJarjestajaArvioija)] | Näytön tai osaamisen osoittamisen<br>    arvioijat | Ei |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
 | osaamistavoitteet | [Merkkijono] | Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan.Tunnisteen tyyppi voi vielä päivittyä ja tähän saattaa tulla vielä Yksilölliset arvioinnin kriteerit | Ei |
