@@ -50,6 +50,7 @@
   (let [ticket (get-service-ticket (:url @service-ticket) service)]
     (-> data
         (assoc-in [:headers "accept"] "*/*")
+        (assoc-in [:headers "ticket"] ticket)
         (assoc-in [:query-params :ticket] ticket))))
 
 (defn with-service-ticket [data]

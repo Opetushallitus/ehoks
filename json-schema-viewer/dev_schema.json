@@ -19,16 +19,174 @@
   ],
   "basePath": "/",
   "paths": {
-    "/ehoks-backend/api/v1/healthcheck": {
+    "/ehoks-backend/api/v1/oppija/external/koodisto/{koodi-uri}": {
       "get": {
-        "tags": ["healthcheck"],
+        "tags": ["oppija-external"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "koodi-uri",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "summary": "Koodiston haku Koodisto-Koodi-Urilla.",
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/HealthcheckStatus" },
+            "schema": { "$ref": "#/definitions/Response36430" },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ehoks-backend/api/v1/oppija/external/eperusteet/tutkinnonosat/{id}/viitteet": {
+      "get": {
+        "tags": ["oppija-external"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "summary": "Tutkinnon osan viitteet.",
+        "responses": {
+          "200": {
+            "schema": { "$ref": "#/definitions/Response36431" },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ehoks-backend/api/v1/oppija/external/eperusteet/tutkinnot": {
+      "get": {
+        "tags": ["oppija-external"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "diaarinumero",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "summary": "Tutkinnon haku diaarinumeron perusteella.",
+        "responses": {
+          "200": {
+            "schema": { "$ref": "#/definitions/Response36432" },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ehoks-backend/api/v1/oppija/external/eperusteet/tutkinnot/{id}/suoritustavat/reformi/rakenne": {
+      "get": {
+        "tags": ["oppija-external"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "summary": "Tutkinnon rakenne.",
+        "responses": {
+          "200": {
+            "schema": { "$ref": "#/definitions/Response36433" },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ehoks-backend/api/v1/oppija/external/eperusteet/{koodi-uri}": {
+      "get": {
+        "tags": ["oppija-external"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "koodi-uri",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "summary": "Tutkinnon osan perusteiden haku Koodisto-Koodi-Urilla.",
+        "responses": {
+          "200": {
+            "schema": { "$ref": "#/definitions/Response36434" },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/ehoks-backend/api/v1/oppija/oppijat/{oid}": {
+      "get": {
+        "tags": ["oppijat"],
+        "summary": "Oppijan perustiedot",
+        "responses": {
+          "200": {
+            "schema": { "$ref": "#/definitions/Response36435" },
             "description": ""
           }
         },
-        "summary": "Service healthcheck status"
+        "parameters": [
+          {
+            "in": "path",
+            "name": "oid",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "/ehoks-backend/api/v1/oppija/oppijat/{oid}/opiskeluoikeudet": {
+      "get": {
+        "tags": ["oppijat"],
+        "summary": "Oppijan opiskeluoikeudet",
+        "responses": {
+          "200": {
+            "schema": { "$ref": "#/definitions/Response36436" },
+            "description": ""
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "oid",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "/ehoks-backend/api/v1/oppija/oppijat/{oid}/hoks": {
+      "get": {
+        "tags": ["oppijat"],
+        "summary": "Oppijan HOKSit kokonaisuudessaan",
+        "responses": {
+          "200": {
+            "schema": { "$ref": "#/definitions/Response36437" },
+            "description": ""
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "oid",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ]
       }
     },
     "/ehoks-backend/api/v1/session/user-info": {
@@ -37,7 +195,7 @@
         "summary": "Palauttaa istunnon käyttäjän tiedot",
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34449" },
+            "schema": { "$ref": "#/definitions/Response36438" },
             "description": ""
           }
         }
@@ -49,7 +207,7 @@
         "summary": "Päivittää istunnon käyttäjän tiedot Oppijanumerorekisteristä",
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34450" },
+            "schema": { "$ref": "#/definitions/Response36439" },
             "description": ""
           }
         }
@@ -61,18 +219,18 @@
         "summary": "Käyttäjän istunto",
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34451" },
+            "schema": { "$ref": "#/definitions/Response36440" },
             "description": ""
           }
         }
       },
-      "options": {
-        "tags": ["auth"],
-        "responses": { "default": { "description": "" } }
-      },
       "delete": {
         "tags": ["auth"],
         "summary": "Uloskirjautuminen.",
+        "responses": { "default": { "description": "" } }
+      },
+      "options": {
+        "tags": ["auth"],
         "responses": { "default": { "description": "" } }
       }
     },
@@ -84,14 +242,14 @@
         "responses": { "default": { "description": "" } }
       }
     },
-    "/ehoks-backend/api/v1/hoks/{eid}": {
+    "/ehoks-backend/api/v1/hoks/{id}": {
       "get": {
         "tags": ["hoks"],
         "summary": "Palauttaa HOKSin",
         "parameters": [
           {
             "in": "path",
-            "name": "eid",
+            "name": "id",
             "description": "",
             "required": true,
             "type": "integer",
@@ -100,32 +258,10 @@
         ],
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34452" },
+            "schema": { "$ref": "#/definitions/Response36441" },
             "description": ""
           }
         }
-      },
-      "put": {
-        "tags": ["hoks"],
-        "summary": "Päivittää olemassa olevaa HOKSia",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "eid",
-            "description": "",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "in": "body",
-            "name": "HOKSPaivitys",
-            "description": "HOKS-dokumentin ylikirjoitus (PUT)",
-            "required": true,
-            "schema": { "$ref": "#/definitions/HOKSPaivitys" }
-          }
-        ],
-        "responses": { "default": { "description": "" } }
       },
       "patch": {
         "tags": ["hoks"],
@@ -133,7 +269,7 @@
         "parameters": [
           {
             "in": "path",
-            "name": "eid",
+            "name": "id",
             "description": "",
             "required": true,
             "type": "integer",
@@ -142,7 +278,7 @@
           {
             "in": "body",
             "name": "HOKSKentanPaivitys",
-            "description": "HOKS-dokumentin arvon tai arvojen päivitys (PATCH)",
+            "description": "",
             "required": true,
             "schema": { "$ref": "#/definitions/HOKSKentanPaivitys" }
           }
@@ -158,50 +294,66 @@
           {
             "in": "body",
             "name": "HOKSLuonti",
-            "description": "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)",
+            "description": "",
             "required": true,
             "schema": { "$ref": "#/definitions/HOKSLuonti" }
           }
         ],
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34453" },
+            "schema": { "$ref": "#/definitions/Response36442" },
             "description": ""
           }
         }
       }
     },
-    "/ehoks-backend/api/v1/hoks/{hoks-eid}/puuttuva-ammatillinen-osaaminen/{eid}": {
+    "/ehoks-backend/api/v1/hoks/{hoks-id}/puuttuva-ammatillinen-osaaminen/{id}": {
       "get": {
         "tags": ["hoks"],
-        "summary": "Palauttaa HOKSin puuttuvan ammatillisen\nosaamisen",
-        "responses": {
-          "200": {
-            "schema": { "$ref": "#/definitions/Response34454" },
-            "description": ""
-          }
-        },
+        "summary": "Palauttaa HOKSin puuttuvan ammatillisen osaamisen",
         "parameters": [
           {
             "in": "path",
-            "name": "hoks-eid",
+            "name": "hoks-id",
             "description": "",
             "required": true,
             "type": "string"
           },
           {
             "in": "path",
-            "name": "eid",
+            "name": "id",
             "description": "",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "format": "int64"
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "schema": { "$ref": "#/definitions/Response36443" },
+            "description": ""
+          }
+        }
       },
       "put": {
         "tags": ["hoks"],
-        "summary": "Päivittää HOKSin puuttuvan ammatillisen\n    osaamisen",
+        "summary": "Päivittää HOKSin puuttuvan ammatillisen osaamisen",
         "parameters": [
+          {
+            "in": "path",
+            "name": "hoks-id",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
           {
             "in": "body",
             "name": "PuuttuvaAmmatillinenOsaaminenPaivitys",
@@ -210,28 +362,29 @@
             "schema": {
               "$ref": "#/definitions/PuuttuvaAmmatillinenOsaaminenPaivitys"
             }
-          },
-          {
-            "in": "path",
-            "name": "hoks-eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "eid",
-            "description": "",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": { "default": { "description": "" } }
       },
       "patch": {
         "tags": ["hoks"],
-        "summary": "Päivittää HOKSin puuttuvan ammatillisen\n      osaamisen arvoa tai arvoja",
+        "summary": "Päivittää HOKSin puuttuvan ammatillisen osaamisen arvoa tai arvoja",
         "parameters": [
+          {
+            "in": "path",
+            "name": "hoks-id",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
           {
             "in": "body",
             "name": "PuuttuvaAmmatillinenOsaaminenKentanPaivitys",
@@ -240,29 +393,15 @@
             "schema": {
               "$ref": "#/definitions/PuuttuvaAmmatillinenOsaaminenKentanPaivitys"
             }
-          },
-          {
-            "in": "path",
-            "name": "hoks-eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "eid",
-            "description": "",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": { "default": { "description": "" } }
       }
     },
-    "/ehoks-backend/api/v1/hoks/{hoks-eid}/puuttuva-ammatillinen-osaaminen": {
+    "/ehoks-backend/api/v1/hoks/{hoks-id}/puuttuva-ammatillinen-osaaminen": {
       "post": {
         "tags": ["hoks"],
-        "summary": "Luo (tai korvaa vanhan) puuttuvan ammatillisen\n  osaamisen HOKSiin",
+        "summary": "Luo (tai korvaa vanhan) puuttuvan ammatillisen osaamisen HOKSiin",
         "parameters": [
           {
             "in": "body",
@@ -275,7 +414,7 @@
           },
           {
             "in": "path",
-            "name": "hoks-eid",
+            "name": "hoks-id",
             "description": "",
             "required": true,
             "type": "string"
@@ -283,115 +422,120 @@
         ],
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34455" },
+            "schema": { "$ref": "#/definitions/Response36444" },
             "description": ""
           }
         }
       }
     },
-    "/ehoks-backend/api/v1/hoks/{hoks-eid}/puuttuva-paikallinen-tutkinnon-osa/{eid}": {
+    "/ehoks-backend/api/v1/hoks/{hoks-id}/puuttuva-paikallinen-tutkinnon-osa/{id}": {
       "get": {
         "tags": ["hoks"],
         "summary": "Palauttaa HOKSin puuttuvan paikallisen tutkinnon osan",
-        "responses": {
-          "200": {
-            "schema": { "$ref": "#/definitions/Response34456" },
-            "description": ""
-          }
-        },
         "parameters": [
           {
             "in": "path",
-            "name": "hoks-eid",
+            "name": "hoks-id",
             "description": "",
             "required": true,
             "type": "string"
           },
           {
             "in": "path",
-            "name": "eid",
+            "name": "id",
             "description": "",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "format": "int64"
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "schema": { "$ref": "#/definitions/Response36445" },
+            "description": ""
+          }
+        }
       },
       "put": {
         "tags": ["hoks"],
-        "summary": "Päivittää HOKSin puuttuvan paikallisen\ntutkinnon osan",
+        "summary": "Päivittää HOKSin puuttuvan paikallisentutkinnon osan",
         "parameters": [
           {
+            "in": "path",
+            "name": "hoks-id",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
             "in": "body",
-            "name": "PaikallinenTutkinnonOsaPaivitys",
+            "name": "PuuttuvaPaikallinenTutkinnonOsaPaivitys",
             "description": "Puuttuvan paikallisen tutkinnon osan tiedot merkintää ylikirjoittaessa (PUT)",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/PaikallinenTutkinnonOsaPaivitys"
+              "$ref": "#/definitions/PuuttuvaPaikallinenTutkinnonOsaPaivitys"
             }
-          },
-          {
-            "in": "path",
-            "name": "hoks-eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "eid",
-            "description": "",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": { "default": { "description": "" } }
       },
       "patch": {
         "tags": ["hoks"],
-        "summary": "Päivittää HOKSin puuttuvan paikallisen tutkinnon\n  osan arvoa tai arvoja",
+        "summary": "Päivittää HOKSin puuttuvan paikallisen tutkinnon osan arvoa tai arvoja",
         "parameters": [
           {
+            "in": "path",
+            "name": "hoks-id",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
             "in": "body",
-            "name": "PaikallinenTutkinnonOsaKentanPaivitys",
+            "name": "PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys",
             "description": "Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä päivittäessä (PATCH)",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/PaikallinenTutkinnonOsaKentanPaivitys"
+              "$ref": "#/definitions/PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys"
             }
-          },
-          {
-            "in": "path",
-            "name": "hoks-eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "eid",
-            "description": "",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": { "default": { "description": "" } }
       }
     },
-    "/ehoks-backend/api/v1/hoks/{hoks-eid}/puuttuva-paikallinen-tutkinnon-osa": {
+    "/ehoks-backend/api/v1/hoks/{hoks-id}/puuttuva-paikallinen-tutkinnon-osa": {
       "post": {
         "tags": ["hoks"],
-        "summary": "Luo (tai korvaa vanhan) puuttuvan paikallisen\n tutkinnon osan",
+        "summary": "Luo (tai korvaa vanhan) puuttuvan paikallisen tutkinnon osan",
         "parameters": [
           {
             "in": "body",
-            "name": "PaikallinenTutkinnonOsaLuonti",
+            "name": "PuuttuvaPaikallinenTutkinnonOsaLuonti",
             "description": "Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää luotaessa (POST)",
             "required": true,
-            "schema": { "$ref": "#/definitions/PaikallinenTutkinnonOsaLuonti" }
+            "schema": {
+              "$ref": "#/definitions/PuuttuvaPaikallinenTutkinnonOsaLuonti"
+            }
           },
           {
             "in": "path",
-            "name": "hoks-eid",
+            "name": "hoks-id",
             "description": "",
             "required": true,
             "type": "string"
@@ -399,100 +543,103 @@
         ],
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34457" },
+            "schema": { "$ref": "#/definitions/Response36446" },
             "description": ""
           }
         }
       }
     },
-    "/ehoks-backend/api/v1/hoks/{hoks-eid}/puuttuvat-yhteisen-tutkinnon-osat/{eid}": {
+    "/ehoks-backend/api/v1/hoks/{hoks-id}/puuttuvat-yhteisen-tutkinnon-osat/{id}": {
       "get": {
         "tags": ["hoks"],
-        "summary": "Palauttaa HOKSin puuttuvat paikallisen tutkinnon osat\t",
-        "responses": {
-          "200": {
-            "schema": { "$ref": "#/definitions/Response34458" },
-            "description": ""
-          }
-        },
+        "summary": "Palauttaa HOKSin puuttuvat yhteisen tutkinnon osat",
         "parameters": [
           {
             "in": "path",
-            "name": "hoks-eid",
+            "name": "hoks-id",
             "description": "",
             "required": true,
             "type": "string"
           },
           {
             "in": "path",
-            "name": "eid",
+            "name": "id",
             "description": "",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "format": "int64"
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "schema": { "$ref": "#/definitions/Response36447" },
+            "description": ""
+          }
+        }
       },
       "put": {
         "tags": ["hoks"],
-        "summary": "Päivittää HOKSin puuttuvan ammatillisen\n  osaamisen",
+        "summary": "Päivittää HOKSin puuttuvan yhteisen tutkinnon osat",
         "parameters": [
+          {
+            "in": "path",
+            "name": "hoks-id",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
           {
             "in": "body",
             "name": "PuuttuvaYTOPaivitys",
             "description": "Puuttuvan yhteinen tutkinnon osa tiedot merkintää ylikirjoittaessa (PUT)",
             "required": true,
             "schema": { "$ref": "#/definitions/PuuttuvaYTOPaivitys" }
-          },
-          {
-            "in": "path",
-            "name": "hoks-eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "eid",
-            "description": "",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": { "default": { "description": "" } }
       },
       "patch": {
         "tags": ["hoks"],
-        "summary": "Päivittää HOKSin puuttuvan ammatillisen\n    osaamisen arvoa tai arvoja",
+        "summary": "Päivittää HOKSin puuttuvan yhteisen tutkinnon osat arvoa tai arvoja",
         "parameters": [
+          {
+            "in": "path",
+            "name": "hoks-id",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
           {
             "in": "body",
             "name": "PuuttuvaYTOKentanPaivitys",
             "description": "Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä päivittäessä (PATCH)",
             "required": true,
             "schema": { "$ref": "#/definitions/PuuttuvaYTOKentanPaivitys" }
-          },
-          {
-            "in": "path",
-            "name": "hoks-eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "eid",
-            "description": "",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": { "default": { "description": "" } }
       }
     },
-    "/ehoks-backend/api/v1/hoks/{hoks-eid}/puuttuvat-yhteisen-tutkinnon-osat": {
+    "/ehoks-backend/api/v1/hoks/{hoks-id}/puuttuvat-yhteisen-tutkinnon-osat": {
       "post": {
         "tags": ["hoks"],
-        "summary": "Luo (tai korvaa vanhan) puuttuvan paikallisen tutkinnon osat HOKSiin",
+        "summary": "Luo (tai korvaa vanhan) puuttuvan yhteisen tutkinnon osat HOKSiin",
         "parameters": [
           {
             "in": "body",
@@ -503,7 +650,7 @@
           },
           {
             "in": "path",
-            "name": "hoks-eid",
+            "name": "hoks-id",
             "description": "",
             "required": true,
             "type": "string"
@@ -511,43 +658,59 @@
         ],
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34459" },
+            "schema": { "$ref": "#/definitions/Response36448" },
             "description": ""
           }
         }
       }
     },
-    "/ehoks-backend/api/v1/hoks/{hoks-eid}/opiskeluvalmiuksia-tukevat-opinnot/{eid}": {
+    "/ehoks-backend/api/v1/hoks/{hoks-id}/opiskeluvalmiuksia-tukevat-opinnot/{id}": {
       "get": {
         "tags": ["hoks"],
-        "summary": "Palauttaa HOKSin opiskeluvalmiuksia tukevat opinnot\t",
-        "responses": {
-          "200": {
-            "schema": { "$ref": "#/definitions/Response34460" },
-            "description": ""
-          }
-        },
+        "summary": "Palauttaa HOKSin opiskeluvalmiuksia tukevat opinnot",
         "parameters": [
           {
             "in": "path",
-            "name": "hoks-eid",
+            "name": "hoks-id",
             "description": "",
             "required": true,
             "type": "string"
           },
           {
             "in": "path",
-            "name": "eid",
+            "name": "id",
             "description": "",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "format": "int64"
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "schema": { "$ref": "#/definitions/Response36449" },
+            "description": ""
+          }
+        }
       },
       "put": {
         "tags": ["hoks"],
         "summary": "Päivittää HOKSin opiskeluvalmiuksia tukevat opinnot",
         "parameters": [
+          {
+            "in": "path",
+            "name": "hoks-id",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
           {
             "in": "body",
             "name": "OpiskeluvalmiuksiaTukevatOpinnotPaivitys",
@@ -556,20 +719,6 @@
             "schema": {
               "$ref": "#/definitions/OpiskeluvalmiuksiaTukevatOpinnotPaivitys"
             }
-          },
-          {
-            "in": "path",
-            "name": "hoks-eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "eid",
-            "description": "",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": { "default": { "description": "" } }
@@ -579,6 +728,21 @@
         "summary": "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja",
         "parameters": [
           {
+            "in": "path",
+            "name": "hoks-id",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
             "in": "body",
             "name": "OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys",
             "description": "Opiskeluvalmiuksia tukevien opintojen tiedot kenttää tai kenttiä päivittäessä (PATCH)",
@@ -586,26 +750,12 @@
             "schema": {
               "$ref": "#/definitions/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys"
             }
-          },
-          {
-            "in": "path",
-            "name": "hoks-eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "eid",
-            "description": "",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": { "default": { "description": "" } }
       }
     },
-    "/ehoks-backend/api/v1/hoks/{hoks-eid}/opiskeluvalmiuksia-tukevat-opinnot": {
+    "/ehoks-backend/api/v1/hoks/{hoks-id}/opiskeluvalmiuksia-tukevat-opinnot": {
       "post": {
         "tags": ["hoks"],
         "summary": "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin",
@@ -621,7 +771,7 @@
           },
           {
             "in": "path",
-            "name": "hoks-eid",
+            "name": "hoks-id",
             "description": "",
             "required": true,
             "type": "string"
@@ -629,124 +779,22 @@
         ],
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34461" },
+            "schema": { "$ref": "#/definitions/Response36450" },
             "description": ""
           }
         }
       }
     },
-    "/ehoks-backend/api/v1/hoks/{hoks-eid}/olemassa-oleva-osaaminen/{eid}": {
+    "/ehoks-backend/api/v1/healthcheck": {
       "get": {
-        "tags": ["hoks"],
-        "summary": "Palauttaa HOKSin olemassa olevan osaamisen tunnustamisen\n       perusteella sisällytetyn osaamisen\t",
+        "tags": ["healthcheck"],
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34462" },
+            "schema": { "$ref": "#/definitions/HealthcheckStatus" },
             "description": ""
           }
         },
-        "parameters": [
-          {
-            "in": "path",
-            "name": "hoks-eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          }
-        ]
-      },
-      "put": {
-        "tags": ["hoks"],
-        "summary": "Päivittää HOKSin olemassa olevan osaamisen tunnustamisen\n      perusteella sisällytetyn osaamisen",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "OlemassaOlevaOsaaminenPaivitys",
-            "description": "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen osaamisten tiedot merkintää ylikirjoittaessa (PUT)",
-            "required": true,
-            "schema": { "$ref": "#/definitions/OlemassaOlevaOsaaminenPaivitys" }
-          },
-          {
-            "in": "path",
-            "name": "hoks-eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": { "default": { "description": "" } }
-      },
-      "patch": {
-        "tags": ["hoks"],
-        "summary": "Päivittää HOKSin olemassa olevan osaamisen tunnustamisen perusteella\n      sisällytetyn osaamisen arvoa tai arvoja",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "OlemassaOlevaOsaaminenKentanPaivitys",
-            "description": "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen osaamisten tiedot kenttää tai kenttiä päivittäessä (PATCH)",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/OlemassaOlevaOsaaminenKentanPaivitys"
-            }
-          },
-          {
-            "in": "path",
-            "name": "hoks-eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": { "default": { "description": "" } }
-      }
-    },
-    "/ehoks-backend/api/v1/hoks/{hoks-eid}/olemassa-oleva-osaaminen": {
-      "post": {
-        "tags": ["hoks"],
-        "summary": "Luo (tai korvaa vanhan) olemassa olevan osaamisen tunnustamisen\n      perusteella sisällytetyn osaamisen HOKSiin",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "OlemassaOlevaOsaaminenLuonti",
-            "description": "Olemassa olevan osaamisen tunnustamisen perusteella sisällytetty osaaminen uutta merkintää luotaessa (POST)",
-            "required": true,
-            "schema": { "$ref": "#/definitions/OlemassaOlevaOsaaminenLuonti" }
-          },
-          {
-            "in": "path",
-            "name": "hoks-eid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": { "$ref": "#/definitions/Response34463" },
-            "description": ""
-          }
-        }
+        "summary": "Service healthcheck status"
       }
     },
     "/ehoks-backend/api/v1/lokalisointi": {
@@ -755,7 +803,7 @@
         "summary": "Hakee lokalisoinnin tulokset lokalisointipalvelusta",
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34464" },
+            "schema": { "$ref": "#/definitions/Response36451" },
             "description": ""
           }
         },
@@ -768,6 +816,27 @@
             "type": "string"
           }
         ]
+      }
+    },
+    "/ehoks-backend/api/v1/external/eperusteet/": {
+      "get": {
+        "tags": ["external"],
+        "summary": "Hakee perusteiden tietoja ePerusteet-palvelusta",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "nimi",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": { "$ref": "#/definitions/Response36452" },
+            "description": ""
+          }
+        }
       }
     },
     "/ehoks-backend/api/v1/external/koodistokoodi/{uri}/{versio}": {
@@ -793,28 +862,7 @@
         ],
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34465" },
-            "description": ""
-          }
-        }
-      }
-    },
-    "/ehoks-backend/api/v1/external/eperusteet/": {
-      "get": {
-        "tags": ["external"],
-        "summary": "Hakee perusteiden tietoja ePerusteet-palvelusta",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "nimi",
-            "description": "",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": { "$ref": "#/definitions/Response34466" },
+            "schema": { "$ref": "#/definitions/Response36453" },
             "description": ""
           }
         }
@@ -826,7 +874,7 @@
         "summary": "Hakee oppijan tietoja Koski-palvelusta",
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34467" },
+            "schema": { "$ref": "#/definitions/Response36454" },
             "description": ""
           }
         }
@@ -838,7 +886,7 @@
         "summary": "Palauttaa ympäristön tiedot ja asetukset",
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34468" },
+            "schema": { "$ref": "#/definitions/Response36455" },
             "description": ""
           }
         }
@@ -857,7 +905,7 @@
         "summary": "Palauttaa työpaikalla olevat oppijat",
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34469" },
+            "schema": { "$ref": "#/definitions/Response36456" },
             "description": ""
           }
         },
@@ -878,7 +926,7 @@
         "summary": "Palauttaa työpaikalla olevan oppijan tiedot",
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34470" },
+            "schema": { "$ref": "#/definitions/Response36457" },
             "description": ""
           }
         },
@@ -906,7 +954,7 @@
         "summary": "Palauttaa työpaikalla olevan oppijan tutkinnon perustiedot",
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34471" },
+            "schema": { "$ref": "#/definitions/Response36458" },
             "description": ""
           }
         },
@@ -928,107 +976,30 @@
         ]
       }
     },
-    "/ehoks-backend/api/v1/oppijat/{oid}": {
-      "get": {
-        "tags": ["oppijat"],
-        "summary": "Oppijan perustiedot",
-        "responses": {
-          "200": {
-            "schema": { "$ref": "#/definitions/Response34472" },
-            "description": ""
-          }
-        },
+    "/ehoks-backend/api/v1/validointi": {
+      "post": {
+        "tags": ["validointi"],
+        "summary": "Validointi uuden HOKSin luontiin",
         "parameters": [
           {
-            "in": "path",
-            "name": "oid",
+            "in": "body",
+            "name": "HOKSLuonti",
             "description": "",
             "required": true,
-            "type": "string"
+            "schema": { "$ref": "#/definitions/HOKSLuonti" }
           }
-        ]
-      }
-    },
-    "/ehoks-backend/api/v1/oppijat/{oid}/hoks": {
-      "get": {
-        "tags": ["oppijat"],
-        "summary": "Oppijan HOKS kokonaisuudessaan",
+        ],
         "responses": {
           "200": {
-            "schema": { "$ref": "#/definitions/Response34473" },
+            "schema": { "$ref": "#/definitions/Response36459" },
             "description": ""
           }
-        },
-        "parameters": [
-          {
-            "in": "path",
-            "name": "oid",
-            "description": "",
-            "required": true,
-            "type": "string"
-          }
-        ]
+        }
       }
     }
   },
   "tags": [{ "name": "api", "description": "" }],
   "definitions": {
-    "Aikavali": {
-      "description": "Näytön tai osaamisen osoittamisen ajankohta",
-      "type": "object",
-      "properties": {
-        "alku": {
-          "description": "Alkupäivämäärä muodossa YYYY-MM-DD",
-          "type": "string",
-          "format": "date"
-        },
-        "loppu": {
-          "description": "Loppupäivämäärä muodossa YYYY-MM-DD",
-          "type": "string",
-          "format": "date"
-        }
-      },
-      "additionalProperties": false,
-      "required": ["alku", "loppu"]
-    },
-    "Arvioija": {
-      "description": "Arvioija",
-      "type": "object",
-      "properties": {
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        },
-        "nimi": { "description": "Arvioijan nimi", "type": "string" },
-        "rooli": { "$ref": "#/definitions/KoodistoKoodi" },
-        "organisaatio": { "$ref": "#/definitions/Organisaatio" }
-      },
-      "additionalProperties": false,
-      "required": ["nimi", "rooli", "organisaatio"]
-    },
-    "Arviointikriteeri": {
-      "description": "Arviointikriteeri",
-      "type": "object",
-      "properties": {
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        },
-        "osaamistaso": {
-          "description": "Osaamistaso",
-          "type": "integer",
-          "format": "int64"
-        },
-        "kuvaus": {
-          "description": "Arviointikriteerin kuvaus",
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": ["osaamistaso", "kuvaus"]
-    },
     "Environment": {
       "type": "object",
       "properties": {
@@ -1080,17 +1051,27 @@
       ]
     },
     "HOKS": {
-      "description": "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)",
       "type": "object",
       "properties": {
-        "opiskeluoikeus": { "$ref": "#/definitions/Opiskeluoikeus" },
-        "puuttuva-paikallinen-tutkinnon-osa": {
-          "description": "Puuttuvat paikallisen tutkinnon osat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PaikallinenTutkinnonOsa" }
+        "urasuunnitelma-koodi-versio": {
+          "description": "Opiskelijan tavoitteen Koodisto-koodin versio",
+          "type": "integer",
+          "format": "int64"
         },
-        "oppijan-oid": {
-          "description": "Oppijan tunniste Opintopolku-ympäristössä",
+        "ensikertainen-hyvaksyminen": {
+          "description": "HOKS-dokumentin ensimmäinen hyväksymisaika\n                                muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        },
+        "olemassa-olevat-ammatilliset-tutkinnon-osat": {
+          "description": "Olemassa oleva ammatillinen osaaminen",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OlemassaOlevaAmmatillinenTutkinnonOsa"
+          }
+        },
+        "sahkoposti": {
+          "description": "Oppijan sähköposti, merkkijono.",
           "type": "string"
         },
         "luotu": {
@@ -1098,29 +1079,157 @@
           "type": "string",
           "format": "date-time"
         },
-        "puuttuva-yhteisen-tutkinnon-osat": {
-          "description": "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot",
+        "puuttuvat-paikalliset-tutkinnon-osat": {
+          "description": "Puuttuvat paikallisen tutkinnon osat",
           "type": "array",
-          "items": { "$ref": "#/definitions/PuuttuvaYTO" }
+          "items": { "$ref": "#/definitions/PuuttuvaPaikallinenTutkinnonOsa" }
         },
-        "puuttuva-ammatillinen-osaaminen": {
+        "urasuunnitelma-koodi-uri": {
+          "description": "Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto\n    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.\n    urasuunnitelma_0001",
+          "type": "string",
+          "pattern": "^urasuunnitelma_\\d{4}$"
+        },
+        "puuttuvat-ammatilliset-tutkinnon-osat": {
           "description": "Puuttuvan ammatillisen osaamisen hankkimisen tiedot",
           "type": "array",
           "items": { "$ref": "#/definitions/PuuttuvaAmmatillinenOsaaminen" }
-        },
-        "luonut": {
-          "description": "HOKS-dokumentin luoneen henkilön nimi",
-          "type": "string"
         },
         "hyvaksytty": {
           "description": "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ",
           "type": "string",
           "format": "date-time"
         },
-        "paivittanyt": {
-          "description": "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi",
+        "olemassa-olevat-yhteiset-tutkinnon-osat": {
+          "description": "Olemassa olevat yhteiset tutkinnon osat (YTO)",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OlemassaOlevaYhteinenTutkinnonOsa" }
+        },
+        "opiskeluoikeus-oid": {
+          "description": "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa\n                  '1.2.246.562.15.00000000001'",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.15\\.\\d{11}$"
+        },
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
+        },
+        "laatija": { "$ref": "#/definitions/HoksToimija" },
+        "versio": {
+          "description": "HOKS-dokumentin versio",
+          "type": "integer",
+          "format": "int64"
+        },
+        "tutkinto": { "$ref": "#/definitions/Tutkinto" },
+        "paivitetty": {
+          "description": "HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ",
+          "type": "string",
+          "format": "date-time"
+        },
+        "eid": {
+          "description": "HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä",
           "type": "string"
         },
+        "paivittaja": { "$ref": "#/definitions/HoksToimija" },
+        "oppija-oid": {
+          "description": "Oppijan tunniste Opintopolku-ympäristössä",
+          "type": "string"
+        },
+        "hyvaksyja": { "$ref": "#/definitions/HoksToimija" },
+        "puuttuvat-yhteiset-tutkinnon-osat": {
+          "description": "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot",
+          "type": "array",
+          "items": { "$ref": "#/definitions/PuuttuvaYTO" }
+        },
+        "olemassa-olevat-paikalliset-tutkinnon-osat": {
+          "description": "Olemassa oleva paikallinen tutkinnon osa",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OlemassaOlevaPaikallinenTutkinnonOsa"
+          }
+        },
+        "opiskeluvalmiuksia-tukevat-opinnot": {
+          "description": "Opiskeluvalmiuksia tukevat opinnot",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OpiskeluvalmiuksiaTukevatOpinnot" }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ensikertainen-hyvaksyminen",
+        "opiskeluoikeus-oid",
+        "id",
+        "eid",
+        "paivittaja",
+        "oppija-oid",
+        "hyvaksyja"
+      ]
+    },
+    "HOKSKentanPaivitys": {
+      "type": "object",
+      "properties": {
+        "urasuunnitelma-koodi-versio": {
+          "description": "Opiskelijan tavoitteen Koodisto-koodin versio",
+          "type": "integer",
+          "format": "int64"
+        },
+        "ensikertainen-hyvaksyminen": {
+          "description": "HOKS-dokumentin ensimmäinen hyväksymisaika\n                                muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        },
+        "olemassa-olevat-ammatilliset-tutkinnon-osat": {
+          "description": "Olemassa oleva ammatillinen osaaminen",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OlemassaOlevaAmmatillinenTutkinnonOsa"
+          }
+        },
+        "sahkoposti": {
+          "description": "Oppijan sähköposti, merkkijono.",
+          "type": "string"
+        },
+        "luotu": {
+          "description": "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ",
+          "type": "string",
+          "format": "date-time"
+        },
+        "puuttuvat-paikalliset-tutkinnon-osat": {
+          "description": "Puuttuvat paikallisen tutkinnon osat",
+          "type": "array",
+          "items": { "$ref": "#/definitions/PuuttuvaPaikallinenTutkinnonOsa" }
+        },
+        "urasuunnitelma-koodi-uri": {
+          "description": "Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto\n    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.\n    urasuunnitelma_0001",
+          "type": "string",
+          "pattern": "^urasuunnitelma_\\d{4}$"
+        },
+        "puuttuvat-ammatilliset-tutkinnon-osat": {
+          "description": "Puuttuvan ammatillisen osaamisen hankkimisen tiedot",
+          "type": "array",
+          "items": { "$ref": "#/definitions/PuuttuvaAmmatillinenOsaaminen" }
+        },
+        "hyvaksytty": {
+          "description": "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ",
+          "type": "string",
+          "format": "date-time"
+        },
+        "olemassa-olevat-yhteiset-tutkinnon-osat": {
+          "description": "Olemassa olevat yhteiset tutkinnon osat (YTO)",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OlemassaOlevaYhteinenTutkinnonOsa" }
+        },
+        "opiskeluoikeus-oid": {
+          "description": "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa\n                  '1.2.246.562.15.00000000001'",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.15\\.\\d{11}$"
+        },
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
+        },
+        "laatija": { "$ref": "#/definitions/HoksToimija" },
         "versio": {
           "description": "HOKS-dokumentin versio",
           "type": "integer",
@@ -1131,162 +1240,73 @@
           "type": "string",
           "format": "date-time"
         },
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        },
-        "hyvaksynyt": {
-          "description": "Luodun HOKS-dokumentn hyväksyjän nimi",
-          "type": "string"
-        },
-        "olemassa-oleva-osaaminen": {
-          "$ref": "#/definitions/OlemassaOlevaOsaaminen"
-        },
-        "opiskeluvalmiuksia-tukevat-opinnot": {
-          "$ref": "#/definitions/OpiskeluvalmiuksiaTukevatOpinnot"
-        },
-        "urasuunnitelma": { "$ref": "#/definitions/KoodistoKoodi" }
-      },
-      "additionalProperties": false,
-      "required": [
-        "opiskeluoikeus",
-        "oppijan-oid",
-        "luotu",
-        "luonut",
-        "hyvaksytty",
-        "paivittanyt",
-        "versio",
-        "paivitetty",
-        "eid",
-        "hyvaksynyt"
-      ]
-    },
-    "HOKSKentanPaivitys": {
-      "description": "HOKS-dokumentin arvon tai arvojen päivitys (PATCH)",
-      "type": "object",
-      "properties": {
-        "opiskeluoikeus": { "$ref": "#/definitions/Opiskeluoikeus" },
-        "puuttuva-paikallinen-tutkinnon-osa": {
-          "description": "Puuttuvat paikallisen tutkinnon osat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PaikallinenTutkinnonOsa" }
-        },
-        "oppijan-oid": {
+        "paivittaja": { "$ref": "#/definitions/HoksToimija" },
+        "oppija-oid": {
           "description": "Oppijan tunniste Opintopolku-ympäristössä",
           "type": "string"
         },
-        "puuttuva-yhteisen-tutkinnon-osat": {
+        "hyvaksyja": { "$ref": "#/definitions/HoksToimija" },
+        "puuttuvat-yhteiset-tutkinnon-osat": {
           "description": "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot",
           "type": "array",
           "items": { "$ref": "#/definitions/PuuttuvaYTO" }
         },
-        "puuttuva-ammatillinen-osaaminen": {
-          "description": "Puuttuvan ammatillisen osaamisen hankkimisen tiedot",
+        "olemassa-olevat-paikalliset-tutkinnon-osat": {
+          "description": "Olemassa oleva paikallinen tutkinnon osa",
           "type": "array",
-          "items": { "$ref": "#/definitions/PuuttuvaAmmatillinenOsaaminen" }
-        },
-        "luonut": {
-          "description": "HOKS-dokumentin luoneen henkilön nimi",
-          "type": "string"
-        },
-        "paivittanyt": {
-          "description": "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi",
-          "type": "string"
-        },
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        },
-        "hyvaksynyt": {
-          "description": "Luodun HOKS-dokumentn hyväksyjän nimi",
-          "type": "string"
-        },
-        "olemassa-oleva-osaaminen": {
-          "$ref": "#/definitions/OlemassaOlevaOsaaminen"
+          "items": {
+            "$ref": "#/definitions/OlemassaOlevaPaikallinenTutkinnonOsa"
+          }
         },
         "opiskeluvalmiuksia-tukevat-opinnot": {
-          "$ref": "#/definitions/OpiskeluvalmiuksiaTukevatOpinnot"
-        },
-        "urasuunnitelma": { "$ref": "#/definitions/KoodistoKoodiLuonti" }
+          "description": "Opiskeluvalmiuksia tukevat opinnot",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OpiskeluvalmiuksiaTukevatOpinnot" }
+        }
       },
       "additionalProperties": false,
-      "required": ["eid"]
+      "required": ["id", "paivittaja"]
     },
     "HOKSLuonti": {
-      "description": "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)",
       "type": "object",
       "properties": {
-        "opiskeluoikeus": { "$ref": "#/definitions/Opiskeluoikeus" },
-        "puuttuva-paikallinen-tutkinnon-osa": {
+        "urasuunnitelma-koodi-versio": {
+          "description": "Opiskelijan tavoitteen Koodisto-koodin versio",
+          "type": "integer",
+          "format": "int64"
+        },
+        "ensikertainen-hyvaksyminen": {
+          "description": "HOKS-dokumentin ensimmäinen hyväksymisaika\n                                muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        },
+        "olemassa-olevat-ammatilliset-tutkinnon-osat": {
+          "description": "Olemassa oleva ammatillinen osaaminen",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OlemassaOlevaAmmatillinenTutkinnonOsa"
+          }
+        },
+        "sahkoposti": {
+          "description": "Oppijan sähköposti, merkkijono.",
+          "type": "string"
+        },
+        "luotu": {
+          "description": "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ",
+          "type": "string",
+          "format": "date-time"
+        },
+        "puuttuvat-paikalliset-tutkinnon-osat": {
           "description": "Puuttuvat paikallisen tutkinnon osat",
           "type": "array",
-          "items": { "$ref": "#/definitions/PaikallinenTutkinnonOsa" }
+          "items": { "$ref": "#/definitions/PuuttuvaPaikallinenTutkinnonOsa" }
         },
-        "oppijan-oid": {
-          "description": "Oppijan tunniste Opintopolku-ympäristössä",
-          "type": "string"
+        "urasuunnitelma-koodi-uri": {
+          "description": "Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto\n    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.\n    urasuunnitelma_0001",
+          "type": "string",
+          "pattern": "^urasuunnitelma_\\d{4}$"
         },
-        "puuttuva-yhteisen-tutkinnon-osat": {
-          "description": "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PuuttuvaYTO" }
-        },
-        "puuttuva-ammatillinen-osaaminen": {
-          "description": "Puuttuvan ammatillisen osaamisen hankkimisen tiedot",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PuuttuvaAmmatillinenOsaaminen" }
-        },
-        "luonut": {
-          "description": "HOKS-dokumentin luoneen henkilön nimi",
-          "type": "string"
-        },
-        "paivittanyt": {
-          "description": "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi",
-          "type": "string"
-        },
-        "hyvaksynyt": {
-          "description": "Luodun HOKS-dokumentn hyväksyjän nimi",
-          "type": "string"
-        },
-        "olemassa-oleva-osaaminen": {
-          "$ref": "#/definitions/OlemassaOlevaOsaaminen"
-        },
-        "opiskeluvalmiuksia-tukevat-opinnot": {
-          "$ref": "#/definitions/OpiskeluvalmiuksiaTukevatOpinnot"
-        },
-        "urasuunnitelma": { "$ref": "#/definitions/KoodistoKoodiLuonti" }
-      },
-      "additionalProperties": false,
-      "required": [
-        "opiskeluoikeus",
-        "oppijan-oid",
-        "luonut",
-        "paivittanyt",
-        "hyvaksynyt"
-      ]
-    },
-    "HOKSPaivitys": {
-      "description": "HOKS-dokumentin ylikirjoitus (PUT)",
-      "type": "object",
-      "properties": {
-        "opiskeluoikeus": { "$ref": "#/definitions/Opiskeluoikeus" },
-        "puuttuva-paikallinen-tutkinnon-osa": {
-          "description": "Puuttuvat paikallisen tutkinnon osat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PaikallinenTutkinnonOsa" }
-        },
-        "oppijan-oid": {
-          "description": "Oppijan tunniste Opintopolku-ympäristössä",
-          "type": "string"
-        },
-        "puuttuva-yhteisen-tutkinnon-osat": {
-          "description": "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PuuttuvaYTO" }
-        },
-        "puuttuva-ammatillinen-osaaminen": {
+        "puuttuvat-ammatilliset-tutkinnon-osat": {
           "description": "Puuttuvan ammatillisen osaamisen hankkimisen tiedot",
           "type": "array",
           "items": { "$ref": "#/definitions/PuuttuvaAmmatillinenOsaaminen" }
@@ -1296,184 +1316,220 @@
           "type": "string",
           "format": "date-time"
         },
-        "paivittanyt": {
-          "description": "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi",
-          "type": "string"
+        "olemassa-olevat-yhteiset-tutkinnon-osat": {
+          "description": "Olemassa olevat yhteiset tutkinnon osat (YTO)",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OlemassaOlevaYhteinenTutkinnonOsa" }
         },
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
+        "opiskeluoikeus-oid": {
+          "description": "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa\n                  '1.2.246.562.15.00000000001'",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.15\\.\\d{11}$"
+        },
+        "laatija": { "$ref": "#/definitions/HoksToimija" },
+        "versio": {
+          "description": "HOKS-dokumentin versio",
           "type": "integer",
           "format": "int64"
         },
-        "hyvaksynyt": {
-          "description": "Luodun HOKS-dokumentn hyväksyjän nimi",
+        "paivitetty": {
+          "description": "HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ",
+          "type": "string",
+          "format": "date-time"
+        },
+        "paivittaja": { "$ref": "#/definitions/HoksToimija" },
+        "oppija-oid": {
+          "description": "Oppijan tunniste Opintopolku-ympäristössä",
           "type": "string"
         },
-        "olemassa-oleva-osaaminen": {
-          "$ref": "#/definitions/OlemassaOlevaOsaaminen"
+        "hyvaksyja": { "$ref": "#/definitions/HoksToimija" },
+        "puuttuvat-yhteiset-tutkinnon-osat": {
+          "description": "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot",
+          "type": "array",
+          "items": { "$ref": "#/definitions/PuuttuvaYTO" }
+        },
+        "olemassa-olevat-paikalliset-tutkinnon-osat": {
+          "description": "Olemassa oleva paikallinen tutkinnon osa",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OlemassaOlevaPaikallinenTutkinnonOsa"
+          }
         },
         "opiskeluvalmiuksia-tukevat-opinnot": {
-          "$ref": "#/definitions/OpiskeluvalmiuksiaTukevatOpinnot"
-        },
-        "urasuunnitelma": { "$ref": "#/definitions/KoodistoKoodiLuonti" }
+          "description": "Opiskeluvalmiuksia tukevat opinnot",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OpiskeluvalmiuksiaTukevatOpinnot" }
+        }
       },
       "additionalProperties": false,
       "required": [
-        "opiskeluoikeus",
-        "oppijan-oid",
-        "hyvaksytty",
-        "paivittanyt",
-        "eid",
-        "hyvaksynyt"
+        "ensikertainen-hyvaksyminen",
+        "opiskeluoikeus-oid",
+        "oppija-oid",
+        "hyvaksyja"
       ]
     },
     "HankitunOsaamisenNaytto": {
-      "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen",
+      "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen\n    osoittaminen",
       "type": "object",
       "properties": {
-        "arvioijat": {
-          "description": "Näytön tai osaamisen osoittamisen arvioijat",
+        "tyoelama-arvioijat": {
+          "description": "Näytön tai\n    osaamisen osoittamisen arvioijat",
           "type": "array",
-          "items": { "$ref": "#/definitions/Arvioija" }
+          "items": { "$ref": "#/definitions/TyoelamaArvioija" }
         },
-        "kuvaus": {
-          "description": "Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, simulaattori",
-          "type": "string"
-        },
-        "ammattitaitovaatimukset": {
-          "description": "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan. Lista ePerusteet tunnisteita. Tunnisteen tyyppi voi vielä päivittyä.",
+        "koulutuksen-jarjestaja-arvioijat": {
+          "description": "Näytön tai osaamisen osoittamisen\n    arvioijat",
           "type": "array",
-          "items": { "type": "integer", "format": "int64" }
+          "items": { "$ref": "#/definitions/KoulutuksenJarjestajaArvioija" }
         },
-        "nayttoymparisto": { "$ref": "#/definitions/Organisaatio" },
-        "sisalto": {
-          "description": "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät",
-          "type": "string"
+        "nayttoymparisto": { "$ref": "#/definitions/Nayttoymparisto" },
+        "osa-alue-koodi-uri": {
+          "description": "Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI\n         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk",
+          "type": "string",
+          "pattern": "^ammatillisenoppiaineet_.+$"
         },
-        "yksilolliset-arviointikriteerit": {
-          "description": "Yksilölliset arvioinnin kriteerit",
-          "type": "array",
-          "items": { "$ref": "#/definitions/Arviointikriteeri" }
-        },
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
-        "jarjestaja": { "$ref": "#/definitions/NaytonJarjestaja" },
-        "ajankohta": { "$ref": "#/definitions/Aikavali" }
-      },
-      "additionalProperties": false,
-      "required": [
-        "arvioijat",
-        "kuvaus",
-        "ammattitaitovaatimukset",
-        "nayttoymparisto",
-        "sisalto",
-        "jarjestaja",
-        "ajankohta"
-      ]
-    },
-    "HankitunPaikallisenOsaamisenNaytto": {
-      "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen",
-      "type": "object",
-      "properties": {
-        "arvioijat": {
-          "description": "Näytön tai osaamisen osoittamisen arvioijat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/Arvioija" }
+        "osa-alue-koodi-versio": {
+          "description": "Koodisto-koodin versio, koodistolle yton osa-alue",
+          "type": "integer",
+          "format": "int64"
         },
-        "kuvaus": {
-          "description": "Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, simulaattori",
-          "type": "string"
+        "alku": {
+          "description": "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa\n    YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
         },
-        "ammattitaitovaatimukset": {
-          "description": "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan.",
+        "keskeiset-tyotehtavat-naytto": {
+          "description": "Keskeiset\n    työtehtävät",
           "type": "array",
           "items": { "type": "string" }
         },
-        "nayttoymparisto": { "$ref": "#/definitions/Organisaatio" },
-        "sisalto": {
-          "description": "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät",
-          "type": "string"
-        },
-        "yksilolliset-arviointikriteerit": {
-          "description": "Yksilölliset arvioinnin kriteerit",
-          "type": "array",
-          "items": { "$ref": "#/definitions/Arviointikriteeri" }
-        },
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        },
         "jarjestaja": { "$ref": "#/definitions/NaytonJarjestaja" },
-        "ajankohta": { "$ref": "#/definitions/Aikavali" }
+        "loppu": {
+          "description": "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa\n    YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        }
       },
       "additionalProperties": false,
-      "required": [
-        "arvioijat",
-        "kuvaus",
-        "ammattitaitovaatimukset",
-        "nayttoymparisto",
-        "sisalto",
-        "jarjestaja",
-        "ajankohta"
-      ]
+      "required": ["nayttoymparisto", "alku", "loppu"]
     },
-    "HankitunYTOOsaamisenNaytto": {
-      "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen",
+    "HankitunPaikallisenOsaamisenNaytto": {
+      "description": "Hankitun paikallisen osaamisen osoittaminen: Näyttö tai muu osaamisen\n     osoittaminen",
       "type": "object",
       "properties": {
-        "arvioijat": {
-          "description": "Näytön tai osaamisen osoittamisen arvioijat",
+        "tyoelama-arvioijat": {
+          "description": "Näytön tai\n    osaamisen osoittamisen arvioijat",
           "type": "array",
-          "items": { "$ref": "#/definitions/Arvioija" }
+          "items": { "$ref": "#/definitions/TyoelamaArvioija" }
         },
-        "kuvaus": {
-          "description": "Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, simulaattori",
-          "type": "string"
-        },
-        "osaamistavoitteet": {
-          "description": "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan. Lista ePerusteet tunnisteita. Tunnisteen tyyppi voi vielä päivittyä.",
+        "koulutuksen-jarjestaja-arvioijat": {
+          "description": "Näytön tai osaamisen osoittamisen\n    arvioijat",
           "type": "array",
-          "items": { "type": "integer", "format": "int64" }
+          "items": { "$ref": "#/definitions/KoulutuksenJarjestajaArvioija" }
         },
-        "nayttoymparisto": { "$ref": "#/definitions/Organisaatio" },
-        "sisalto": {
-          "description": "Näytön tai osaamisen osoittamisen sisältö tai työtehtävät",
-          "type": "string"
+        "nayttoymparisto": { "$ref": "#/definitions/Nayttoymparisto" },
+        "osa-alue-koodi-uri": {
+          "description": "Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI\n         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk",
+          "type": "string",
+          "pattern": "^ammatillisenoppiaineet_.+$"
         },
-        "yksilolliset-arviointikriteerit": {
-          "description": "Yksilölliset arvioinnin kriteerit",
-          "type": "array",
-          "items": { "$ref": "#/definitions/Arviointikriteeri" }
-        },
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
+        "osa-alue-koodi-versio": {
+          "description": "Koodisto-koodin versio, koodistolle yton osa-alue",
+          "type": "integer",
+          "format": "int64"
+        },
+        "alku": {
+          "description": "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa\n    YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        },
+        "keskeiset-tyotehtavat-naytto": {
+          "description": "Keskeiset\n    työtehtävät",
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "jarjestaja": { "$ref": "#/definitions/NaytonJarjestaja" },
-        "ajankohta": { "$ref": "#/definitions/Aikavali" }
+        "loppu": {
+          "description": "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa\n    YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        }
       },
       "additionalProperties": false,
-      "required": [
-        "arvioijat",
-        "kuvaus",
-        "osaamistavoitteet",
-        "nayttoymparisto",
-        "sisalto",
-        "jarjestaja",
-        "ajankohta"
-      ]
+      "required": ["nayttoymparisto", "alku", "loppu"]
+    },
+    "HankitunYTOOsaamisenNaytto": {
+      "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen\n    osoittaminen",
+      "type": "object",
+      "properties": {
+        "tyoelama-arvioijat": {
+          "description": "Näytön tai\n    osaamisen osoittamisen arvioijat",
+          "type": "array",
+          "items": { "$ref": "#/definitions/TyoelamaArvioija" }
+        },
+        "osaamistavoitteet": {
+          "description": "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan.Tunnisteen tyyppi voi vielä päivittyä ja tähän saattaa tulla vielä Yksilölliset arvioinnin kriteerit",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "koulutuksen-jarjestaja-arvioijat": {
+          "description": "Näytön tai osaamisen osoittamisen\n    arvioijat",
+          "type": "array",
+          "items": { "$ref": "#/definitions/KoulutuksenJarjestajaArvioija" }
+        },
+        "nayttoymparisto": { "$ref": "#/definitions/Nayttoymparisto" },
+        "osa-alue-koodi-uri": {
+          "description": "Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueen Koodisto-koodi-URI\n         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk",
+          "type": "string",
+          "pattern": "^ammatillisenoppiaineet_.+$"
+        },
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
+        },
+        "osa-alue-koodi-versio": {
+          "description": "Koodisto-koodin versio, koodistolle yton osa-alue",
+          "type": "integer",
+          "format": "int64"
+        },
+        "alku": {
+          "description": "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa\n    YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        },
+        "keskeiset-tyotehtavat-naytto": {
+          "description": "Keskeiset\n    työtehtävät",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "jarjestaja": { "$ref": "#/definitions/NaytonJarjestaja" },
+        "loppu": {
+          "description": "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa\n    YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["nayttoymparisto", "alku", "loppu"]
     },
     "HealthcheckStatus": { "type": "object", "additionalProperties": false },
     "Henkilo": {
-      "description": "Vastuullinen työpaikkaohjaaja",
+      "description": "Henkilö",
       "type": "object",
       "properties": {
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
@@ -1483,31 +1539,44 @@
         "rooli": { "description": "Henkilön rooli", "type": "string" }
       },
       "additionalProperties": false,
-      "required": ["organisaatio", "nimi", "rooli"]
+      "required": ["organisaatio", "nimi"]
     },
-    "KoodiMetadata": {
-      "description": "Koodisto-koodin metadata, joka haetaan Koodisto-palvelusta",
+    "HoksToimija": {
+      "description": "Luodun HOKS-dokumentn hyväksyjän nimi",
       "type": "object",
       "properties": {
-        "nimi": {
-          "description": "Koodisto-koodin nimi",
-          "type": "string",
-          "x-nullable": true
-        },
-        "lyhyt-nimi": {
-          "description": "Koodisto-koodin lyhyt nimi",
-          "type": "string",
-          "x-nullable": true
-        },
-        "kuvaus": {
-          "description": "Koodisto-koodin kuvaus",
-          "type": "string",
-          "x-nullable": true
-        },
-        "kieli": { "description": "Koodisto-koodin kieli", "type": "string" }
+        "nimi": { "description": "Henkilön nimi", "type": "string" }
       },
       "additionalProperties": false,
-      "required": ["kieli"]
+      "required": ["nimi"]
+    },
+    "KoodiMetadata": {
+      "type": "object",
+      "properties": {
+        "kuvaus": { "type": "string" },
+        "kasite": { "type": "string", "x-nullable": true },
+        "lyhytNimi": { "type": "string" },
+        "eiSisallaMerkitysta": { "type": "string", "x-nullable": true },
+        "kieli": { "type": "string", "enum": ["EN", "FI", "SV"] },
+        "nimi": { "type": "string" },
+        "sisaltaaMerkityksen": { "type": "string", "x-nullable": true },
+        "huomioitavaKoodi": { "type": "string", "x-nullable": true },
+        "kayttoohje": { "type": "string", "x-nullable": true },
+        "sisaltaaKoodiston": { "type": "string", "x-nullable": true }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kuvaus",
+        "kasite",
+        "lyhytNimi",
+        "eiSisallaMerkitysta",
+        "kieli",
+        "nimi",
+        "sisaltaaMerkityksen",
+        "huomioitavaKoodi",
+        "kayttoohje",
+        "sisaltaaKoodiston"
+      ]
     },
     "KoodistoItem": {
       "type": "object",
@@ -1523,45 +1592,16 @@
       "required": ["koodistoUri", "organisaatioOid", "koodistoVersios"]
     },
     "KoodistoKoodi": {
-      "description": "Arvioijan roolin Koodisto-koodi",
       "type": "object",
       "properties": {
-        "koodi-arvo": {
-          "description": "Koodisto-koodin arvo",
-          "type": "string"
-        },
-        "koodi-uri": { "description": "Koodiston URI", "type": "string" },
-        "versio": {
-          "description": "Koodisto-koodin versio",
-          "type": "integer",
-          "format": "int64"
-        },
-        "metadata": {
-          "description": "Koodisto-koodin metadata, joka haetaan Koodisto-palvelusta",
-          "type": "array",
-          "items": { "$ref": "#/definitions/KoodiMetadata" }
-        }
+        "koodiarvo": { "type": "string" },
+        "nimi": { "$ref": "#/definitions/TranslatedValue" },
+        "lyhytNimi": { "$ref": "#/definitions/TranslatedValue" },
+        "koodistoUri": { "type": "string" },
+        "koodistoVersio": { "type": "integer", "format": "int64" }
       },
       "additionalProperties": false,
-      "required": ["koodi-arvo", "koodi-uri", "versio"]
-    },
-    "KoodistoKoodiLuonti": {
-      "description": "Koodisto-koodin lisäys tai päivitys",
-      "type": "object",
-      "properties": {
-        "koodi-arvo": {
-          "description": "Koodisto-koodin arvo",
-          "type": "string"
-        },
-        "koodi-uri": { "description": "Koodiston URI", "type": "string" },
-        "versio": {
-          "description": "Koodisto-koodin versio",
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "additionalProperties": false,
-      "required": ["koodi-arvo", "koodi-uri", "versio"]
+      "required": ["koodiarvo", "nimi"]
     },
     "KoskiArviointi": {
       "type": "object",
@@ -1573,13 +1613,13 @@
         "arvioitsijat": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Response34467DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArvioitsijat"
+            "$ref": "#/definitions/Response36454DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArvioitsijat"
           }
         },
         "arviointikohteet": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Response34467DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArviointikohteet"
+            "$ref": "#/definitions/Response36454DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArviointikohteet"
           }
         },
         "arvioinnistaPäättäneet": {
@@ -1665,7 +1705,7 @@
         "kuvaus": { "$ref": "#/definitions/TranslatedValue" },
         "suorituspaikka": { "$ref": "#/definitions/KoskiTunnisteKuvaus" },
         "suoritusaika": {
-          "$ref": "#/definitions/Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöSuoritusaika"
+          "$ref": "#/definitions/Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöSuoritusaika"
         },
         "työssäoppimisenYhteydessä": { "type": "boolean" },
         "arviointi": { "$ref": "#/definitions/KoskiArviointi" }
@@ -1696,7 +1736,7 @@
           "items": { "$ref": "#/definitions/KoskiSuoritus" }
         },
         "lähdejärjestelmänId": {
-          "$ref": "#/definitions/Response34467DataOpiskeluoikeudetLähdejärjestelmänId"
+          "$ref": "#/definitions/Response36454DataOpiskeluoikeudetLähdejärjestelmänId"
         },
         "tyyppi": { "$ref": "#/definitions/KoodistoKoodi" }
       },
@@ -1830,13 +1870,13 @@
           "items": { "$ref": "#/definitions/KoodistoKoodi" }
         },
         "vahvistus": {
-          "$ref": "#/definitions/Response34467DataOpiskeluoikeudetSuorituksetVahvistus"
+          "$ref": "#/definitions/Response36454DataOpiskeluoikeudetSuorituksetVahvistus"
         },
         "suorituskieli": { "$ref": "#/definitions/KoodistoKoodi" },
         "osaamisala": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Response34467DataOpiskeluoikeudetSuorituksetOsaamisala"
+            "$ref": "#/definitions/Response36454DataOpiskeluoikeudetSuorituksetOsaamisala"
           }
         },
         "kielikylpykieli": { "$ref": "#/definitions/KoodistoKoodi" },
@@ -1859,7 +1899,7 @@
         "järjestämismuodot": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Response34467DataOpiskeluoikeudetSuorituksetJärjestämismuodot"
+            "$ref": "#/definitions/Response36454DataOpiskeluoikeudetSuorituksetJärjestämismuodot"
           }
         },
         "työssäoppimisjaksot": {
@@ -1890,7 +1930,7 @@
       "type": "object",
       "properties": {
         "osaaminen": {
-          "$ref": "#/definitions/Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetTunnustettuOsaaminen"
+          "$ref": "#/definitions/Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetTunnustettuOsaaminen"
         },
         "selite": { "$ref": "#/definitions/TranslatedValue" },
         "rahoituksenPiirissä": { "type": "boolean" }
@@ -1920,40 +1960,90 @@
         "laajuus"
       ]
     },
-    "MuuOppimisymparisto": {
-      "description": "Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen liittyvät tiedot",
+    "KoulutuksenJarjestajaArvioija": {
+      "description": "Työelämän arvioija",
       "type": "object",
       "properties": {
-        "tarkenne": { "$ref": "#/definitions/KoodistoKoodi" },
-        "selite": { "description": "Oppimisympäristön nimi", "type": "string" },
-        "ohjaus-ja-tuki": {
-          "description": "Onko opiskelijalla tunnistettu ohjauksen ja tuen tarvetta",
-          "type": "boolean"
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
         },
-        "erityinen-tuki": {
-          "description": "Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä erityisen tuen päätös",
-          "type": "boolean"
-        },
-        "erityisen-tuen-aika": { "$ref": "#/definitions/Aikavali" }
+        "nimi": { "description": "Arvioijan nimi", "type": "string" },
+        "organisaatio": {
+          "$ref": "#/definitions/KoulutuksenJarjestajaOrganisaatio"
+        }
       },
       "additionalProperties": false,
-      "required": ["tarkenne", "selite", "ohjaus-ja-tuki", "erityinen-tuki"]
+      "required": ["nimi", "organisaatio"]
+    },
+    "KoulutuksenJarjestajaOrganisaatio": {
+      "description": "KoulutuksenJarjestajan arvioijan organisaatio",
+      "type": "object",
+      "properties": {
+        "oppilaitos-oid": {
+          "description": "Mikäli kyseessä oppilaitos, oppilaitoksen oid-tunniste\n       Opintopolku-palvelussa.",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "MuuOppimisymparisto": {
+      "description": "Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu",
+      "type": "object",
+      "properties": {
+        "oppimisymparisto-koodi-uri": {
+          "description": "Oppimisympäristön tarkenne, eHOKS Koodisto-koodi-URI, koodisto\n    oppimisympäristöt eli muotoa oppimisymparistot_xxxx, esim.\n    oppimisymparistot_0001",
+          "type": "string"
+        },
+        "oppimisymparisto-koodi-versio": {
+          "description": "Koodisto-koodin versio, koodistolle oppimisympäristöt",
+          "type": "integer",
+          "format": "int64"
+        },
+        "selite": { "description": "Oppimisympäristön nimi", "type": "string" },
+        "lisatiedot": {
+          "description": "Lisätiedoisssa, onko tunnistettu ohjauksen ja tuen tarvetta",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "oppimisymparisto-koodi-uri",
+        "oppimisymparisto-koodi-versio",
+        "selite",
+        "lisatiedot"
+      ]
     },
     "NaytonJarjestaja": {
       "description": "Näytön tai osaamisen osoittamisen järjestäjä",
       "type": "object",
       "properties": {
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
-        "nimi": {
-          "description": "Näytön tai osaamisen osoittamisen järjestäjän nimi",
+        "oppilaitos-oid": {
+          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Nayttoymparisto": {
+      "description": "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan",
+      "type": "object",
+      "properties": {
+        "nimi": { "description": "Organisaation nimi", "type": "string" },
+        "y-tunnus": {
+          "description": "Mikäli organisaatiolla on y-tunnus,\n    organisaation y-tunnus",
           "type": "string"
         },
-        "oid": {
-          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
+        "kuvaus": {
+          "description": "Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, simulaattori",
           "type": "string"
         }
       },
@@ -1969,23 +2059,208 @@
       },
       "additionalProperties": false
     },
-    "OlemassaOlevaAmmatillinenOsaaminen": {
-      "description": "Ammatillinen osaaminen, joka osaamisen tunnustamisen perusteella\n    sisällytetty suoraan osaksi opiskelijan tutkintoa",
+    "OlemassaOlevaAmmatillinenTutkinnonOsa": {
+      "description": "Olemassa oleva yhteinen tutkinnon osa",
       "type": "object",
       "properties": {
-        "tutkinnon-id": {
-          "description": "Tutkinnon osan id,\n  johon tunnistettava olemassaoleva osaaminen liittyy",
+        "valittu-todentamisen-prosessi-koodi-versio": {
+          "description": "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio\n       (Osaamisen todentamisen prosessi)",
           "type": "integer",
           "format": "int64"
         },
-        "valittu-todentamisen-prosessi": {
+        "tutkinnon-osa-koodi-versio": {
+          "description": "Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa\n     (tutkinnonosat)",
+          "type": "integer",
+          "format": "int64"
+        },
+        "valittu-todentamisen-prosessi-koodi-uri": {
           "description": "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)",
           "type": "string",
-          "enum": [
-            "valittu-todentaminen-naytto",
-            "valittu-todentaminen-arvioijat",
-            "valittu-todentaminen-suoraan"
-          ]
+          "pattern": "^osaamisentodentamisenprosessi_\\d+$"
+        },
+        "tutkinnon-osa-koodi-uri": {
+          "description": "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa\n    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.\n    tutkinnonosat_100002",
+          "type": "string",
+          "pattern": "^tutkinnonosat_\\d+$"
+        },
+        "tarkentavat-tiedot-arvioija": {
+          "$ref": "#/definitions/TodennettuArviointiLisatiedot"
+        },
+        "koulutuksen-jarjestaja-oid": {
+          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
+        },
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
+        },
+        "tarkentavat-tiedot-naytto": {
+          "description": "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/HankitunOsaamisenNaytto" }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "valittu-todentamisen-prosessi-koodi-versio",
+        "tutkinnon-osa-koodi-versio",
+        "valittu-todentamisen-prosessi-koodi-uri",
+        "tutkinnon-osa-koodi-uri"
+      ]
+    },
+    "OlemassaOlevaPaikallinenTutkinnonOsa": {
+      "description": "Olemassa oleva yhteinen tutkinnon osa",
+      "type": "object",
+      "properties": {
+        "valittu-todentamisen-prosessi-koodi-versio": {
+          "description": "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio\n       (Osaamisen todentamisen prosessi)",
+          "type": "integer",
+          "format": "int64"
+        },
+        "tavoitteet-ja-sisallot": {
+          "description": "Paikallisen tutkinnon osan ammattitaitovaatimukset taiosaamistavoitteet",
+          "type": "string"
+        },
+        "tarkentavat-tiedot-arvioija": {
+          "$ref": "#/definitions/TodennettuArviointiLisatiedot"
+        },
+        "valittu-todentamisen-prosessi-koodi-uri": {
+          "description": "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)",
+          "type": "string",
+          "pattern": "^osaamisentodentamisenprosessi_\\d+$"
+        },
+        "tarkentavat-tiedot-naytto": {
+          "description": "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/HankitunOsaamisenNaytto" }
+        },
+        "vaatimuksista-tai-tavoitteista-poikkeaminen": {
+          "description": "vaatimuksista tai osaamistavoitteista poikkeaminen",
+          "type": "string"
+        },
+        "nimi": { "description": "Tutkinnon osan nimi", "type": "string" },
+        "laajuus": {
+          "description": "Tutkinnon osan laajuus",
+          "type": "integer",
+          "format": "int64"
+        },
+        "koulutuksen-jarjestaja-oid": {
+          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
+        },
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
+        },
+        "amosaa-tunniste": {
+          "description": "Tunniste ePerusteet AMOSAA -palvelussa",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "valittu-todentamisen-prosessi-koodi-versio",
+        "valittu-todentamisen-prosessi-koodi-uri"
+      ]
+    },
+    "OlemassaOlevaYhteinenTutkinnonOsa": {
+      "description": "Olemassa oleva yhteinen tutkinnon osa",
+      "type": "object",
+      "properties": {
+        "valittu-todentamisen-prosessi-koodi-versio": {
+          "description": "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio\n       (Osaamisen todentamisen prosessi)",
+          "type": "integer",
+          "format": "int64"
+        },
+        "tutkinnon-osa-koodi-versio": {
+          "description": "Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa\n     (tutkinnonosat)",
+          "type": "integer",
+          "format": "int64"
+        },
+        "tarkentavat-tiedot-arvioija": {
+          "$ref": "#/definitions/TodennettuArviointiLisatiedot"
+        },
+        "valittu-todentamisen-prosessi-koodi-uri": {
+          "description": "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)",
+          "type": "string",
+          "pattern": "^osaamisentodentamisenprosessi_\\d+$"
+        },
+        "tutkinnon-osa-koodi-uri": {
+          "description": "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa\n    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.\n    tutkinnonosat_100002",
+          "type": "string",
+          "pattern": "^tutkinnonosat_\\d+$"
+        },
+        "tarkentavat-tiedot-naytto": {
+          "description": "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/HankitunOsaamisenNaytto" }
+        },
+        "osa-alueet": {
+          "description": "YTO osa-alueet",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OlemassaOlevanYTOOsaAlue" }
+        },
+        "koulutuksen-jarjestaja-oid": {
+          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
+        },
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "valittu-todentamisen-prosessi-koodi-versio",
+        "tutkinnon-osa-koodi-versio",
+        "valittu-todentamisen-prosessi-koodi-uri",
+        "tutkinnon-osa-koodi-uri",
+        "osa-alueet"
+      ]
+    },
+    "OlemassaOlevanYTOOsaAlue": {
+      "description": "Olemassaolevan YTOn osa-alueen tiedot",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
+        },
+        "osa-alue-koodi-uri": {
+          "description": "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)",
+          "type": "string",
+          "pattern": "^ammatillisenoppiaineet_.+$"
+        },
+        "osa-alue-koodi-versio": {
+          "description": "Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet)",
+          "type": "integer",
+          "format": "int64"
+        },
+        "koulutuksen-jarjestaja-oid": {
+          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
+        },
+        "vaatimuksista-tai-tavoitteista-poikkeaminen": {
+          "description": "vaatimuksista tai osaamistavoitteista poikkeaminen",
+          "type": "string"
+        },
+        "valittu-todentamisen-prosessi-koodi-uri": {
+          "description": "Todentamisen prosessin kuvauksen (suoraan/arvioijien kautta/näyttö)\n    koodi-uri. Koodisto Osaamisen todentamisen prosessi, eli muotoa\n    osaamisentodentamisenprosessi_xxxx",
+          "type": "string",
+          "pattern": "^osaamisentodentamisenprosessi_\\d+$"
+        },
+        "valittu-todentamisen-prosessi-koodi-versio": {
+          "description": "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio\n    (Osaamisen todentamisen prosessi)",
+          "type": "integer",
+          "format": "int64"
         },
         "tarkentavat-tiedot": {
           "description": "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot.",
@@ -1994,173 +2269,59 @@
         }
       },
       "additionalProperties": false,
-      "required": ["valittu-todentamisen-prosessi"]
-    },
-    "OlemassaOlevaOsaaminen": {
-      "description": "Osaamisen tunnustamisen perusteella sisällytetty suoraan osaksi opiskelijan tutkintoa",
-      "type": "object",
-      "properties": {
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        },
-        "olemassaoleva-ammatillinen-osaaminen": {
-          "description": "Olemassa oleva ammatillinen osaaminen",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/OlemassaOlevaAmmatillinenOsaaminen"
-          }
-        },
-        "olemassaolevat-yto-osa-alueet": {
-          "description": "Olemassaolevat yton osa-alueet",
-          "type": "array",
-          "items": { "$ref": "#/definitions/YhteinenTutkinnonOsa" }
-        },
-        "olemassaoleva-paikallinen-tutkinnon-osa": {
-          "description": "Olemassaoleva paikallinen tutkinnon osa",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PaikallinenTutkinnonOsa" }
-        }
-      },
-      "additionalProperties": false,
-      "required": ["eid"]
-    },
-    "OlemassaOlevaOsaaminenKentanPaivitys": {
-      "description": "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen osaamisten tiedot kenttää tai kenttiä päivittäessä (PATCH)",
-      "type": "object",
-      "properties": {
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        },
-        "olemassaoleva-ammatillinen-osaaminen": {
-          "description": "Olemassa oleva ammatillinen osaaminen",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/OlemassaOlevaAmmatillinenOsaaminen"
-          }
-        },
-        "olemassaolevat-yto-osa-alueet": {
-          "description": "Olemassaolevat yton osa-alueet",
-          "type": "array",
-          "items": { "$ref": "#/definitions/YhteinenTutkinnonOsa" }
-        },
-        "olemassaoleva-paikallinen-tutkinnon-osa": {
-          "description": "Olemassaoleva paikallinen tutkinnon osa",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PaikallinenTutkinnonOsa" }
-        }
-      },
-      "additionalProperties": false,
-      "required": ["eid"]
-    },
-    "OlemassaOlevaOsaaminenLuonti": {
-      "description": "Olemassa olevan osaamisen tunnustamisen perusteella sisällytetty osaaminen uutta merkintää luotaessa (POST)",
-      "type": "object",
-      "properties": {
-        "olemassaoleva-ammatillinen-osaaminen": {
-          "description": "Olemassa oleva ammatillinen osaaminen",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/OlemassaOlevaAmmatillinenOsaaminen"
-          }
-        },
-        "olemassaolevat-yto-osa-alueet": {
-          "description": "Olemassaolevat yton osa-alueet",
-          "type": "array",
-          "items": { "$ref": "#/definitions/YhteinenTutkinnonOsa" }
-        },
-        "olemassaoleva-paikallinen-tutkinnon-osa": {
-          "description": "Olemassaoleva paikallinen tutkinnon osa",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PaikallinenTutkinnonOsa" }
-        }
-      },
-      "additionalProperties": false
-    },
-    "OlemassaOlevaOsaaminenPaivitys": {
-      "description": "Olemassa olevan osaamisen tunnustamisen perusteella sisällytettyjen osaamisten tiedot merkintää ylikirjoittaessa (PUT)",
-      "type": "object",
-      "properties": {
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        },
-        "olemassaoleva-ammatillinen-osaaminen": {
-          "description": "Olemassa oleva ammatillinen osaaminen",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/OlemassaOlevaAmmatillinenOsaaminen"
-          }
-        },
-        "olemassaolevat-yto-osa-alueet": {
-          "description": "Olemassaolevat yton osa-alueet",
-          "type": "array",
-          "items": { "$ref": "#/definitions/YhteinenTutkinnonOsa" }
-        },
-        "olemassaoleva-paikallinen-tutkinnon-osa": {
-          "description": "Olemassaoleva paikallinen tutkinnon osa",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PaikallinenTutkinnonOsa" }
-        }
-      },
-      "additionalProperties": false,
-      "required": ["eid"]
-    },
-    "Opiskeluoikeus": {
-      "description": "Opiskeluoikeuden tiedot Koski-järjestelmässä",
-      "type": "object",
-      "properties": {
-        "oid": {
-          "description": "Opinto-oikeuden tunniste Opintopolku-ympäristössä",
-          "type": "string"
-        },
-        "tutkinto": { "$ref": "#/definitions/Tutkinto" }
-      },
-      "additionalProperties": false,
-      "required": ["oid", "tutkinto"]
+      "required": [
+        "osa-alue-koodi-uri",
+        "osa-alue-koodi-versio",
+        "valittu-todentamisen-prosessi-koodi-uri",
+        "valittu-todentamisen-prosessi-koodi-versio"
+      ]
     },
     "OpiskeluvalmiuksiaTukevatOpinnot": {
       "description": "Opiskeluvalmiuksia tukevat opinnot",
       "type": "object",
       "properties": {
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
         "nimi": { "description": "Opintojen nimi", "type": "string" },
         "kuvaus": { "description": "Opintojen kuvaus", "type": "string" },
-        "kesto": {
-          "description": "Opintojen kesto päivinä",
-          "type": "integer",
-          "format": "int64"
+        "alku": {
+          "description": "Opintojen alkupäivämäärä muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
         },
-        "ajankohta": { "$ref": "#/definitions/Aikavali" }
+        "loppu": {
+          "description": "Opintojen loppupäivämäärä muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        }
       },
       "additionalProperties": false,
-      "required": ["nimi", "kuvaus", "kesto", "ajankohta"]
+      "required": ["nimi", "kuvaus", "alku", "loppu"]
     },
     "OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys": {
       "description": "Opiskeluvalmiuksia tukevien opintojen tiedot kenttää tai kenttiä päivittäessä (PATCH)",
       "type": "object",
       "properties": {
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
         "nimi": { "description": "Opintojen nimi", "type": "string" },
         "kuvaus": { "description": "Opintojen kuvaus", "type": "string" },
-        "kesto": {
-          "description": "Opintojen kesto päivinä",
-          "type": "integer",
-          "format": "int64"
+        "alku": {
+          "description": "Opintojen alkupäivämäärä muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
         },
-        "ajankohta": { "$ref": "#/definitions/Aikavali" }
+        "loppu": {
+          "description": "Opintojen loppupäivämäärä muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        }
       },
       "additionalProperties": false
     },
@@ -2170,36 +2331,44 @@
       "properties": {
         "nimi": { "description": "Opintojen nimi", "type": "string" },
         "kuvaus": { "description": "Opintojen kuvaus", "type": "string" },
-        "kesto": {
-          "description": "Opintojen kesto päivinä",
-          "type": "integer",
-          "format": "int64"
+        "alku": {
+          "description": "Opintojen alkupäivämäärä muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
         },
-        "ajankohta": { "$ref": "#/definitions/Aikavali" }
+        "loppu": {
+          "description": "Opintojen loppupäivämäärä muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        }
       },
       "additionalProperties": false,
-      "required": ["nimi", "kuvaus", "kesto", "ajankohta"]
+      "required": ["nimi", "kuvaus", "alku", "loppu"]
     },
     "OpiskeluvalmiuksiaTukevatOpinnotPaivitys": {
       "description": "Opiskeluvalmiuksia tukevien opintojen tiedot merkintää ylikirjoittaessa\n     (PUT)",
       "type": "object",
       "properties": {
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
         "nimi": { "description": "Opintojen nimi", "type": "string" },
         "kuvaus": { "description": "Opintojen kuvaus", "type": "string" },
-        "kesto": {
-          "description": "Opintojen kesto päivinä",
-          "type": "integer",
-          "format": "int64"
+        "alku": {
+          "description": "Opintojen alkupäivämäärä muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
         },
-        "ajankohta": { "$ref": "#/definitions/Aikavali" }
+        "loppu": {
+          "description": "Opintojen loppupäivämäärä muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        }
       },
       "additionalProperties": false,
-      "required": ["nimi", "kuvaus", "kesto", "ajankohta"]
+      "required": ["nimi", "kuvaus", "alku", "loppu"]
     },
     "Oppija": {
       "type": "object",
@@ -2212,18 +2381,143 @@
       "additionalProperties": false,
       "required": ["eid", "oid", "etunimi", "sukunimi"]
     },
-    "Organisaatio": {
-      "description": "Arvioijan organisaatio",
+    "OppijaHOKS": {
+      "description": "Oppijan HOKS",
       "type": "object",
       "properties": {
+        "urasuunnitelma-koodi-versio": {
+          "description": "Opiskelijan tavoitteen Koodisto-koodin versio",
+          "type": "integer",
+          "format": "int64"
+        },
+        "ensikertainen-hyvaksyminen": {
+          "description": "HOKS-dokumentin ensimmäinen hyväksymisaika\n                                muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        },
+        "olemassa-olevat-ammatilliset-tutkinnon-osat": {
+          "description": "Olemassa oleva ammatillinen osaaminen",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OlemassaOlevaAmmatillinenTutkinnonOsa"
+          }
+        },
+        "sahkoposti": {
+          "description": "Oppijan sähköposti, merkkijono.",
+          "type": "string"
+        },
+        "luotu": {
+          "description": "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ",
+          "type": "string",
+          "format": "date-time"
+        },
+        "puuttuvat-paikalliset-tutkinnon-osat": {
+          "description": "Puuttuvat paikallisen tutkinnon osat",
+          "type": "array",
+          "items": { "$ref": "#/definitions/PuuttuvaPaikallinenTutkinnonOsa" }
+        },
+        "urasuunnitelma-koodi-uri": {
+          "description": "Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto\n    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.\n    urasuunnitelma_0001",
+          "type": "string",
+          "pattern": "^urasuunnitelma_\\d{4}$"
+        },
+        "puuttuvat-ammatilliset-tutkinnon-osat": {
+          "description": "Puuttuvan ammatillisen osaamisen hankkimisen tiedot",
+          "type": "array",
+          "items": { "$ref": "#/definitions/PuuttuvaAmmatillinenOsaaminen" }
+        },
+        "hyvaksytty": {
+          "description": "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ",
+          "type": "string",
+          "format": "date-time"
+        },
+        "olemassa-olevat-yhteiset-tutkinnon-osat": {
+          "description": "Olemassa olevat yhteiset tutkinnon osat (YTO)",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OlemassaOlevaYhteinenTutkinnonOsa" }
+        },
+        "opiskeluoikeus-oid": {
+          "description": "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa\n                  '1.2.246.562.15.00000000001'",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.15\\.\\d{11}$"
+        },
+        "laatija": { "$ref": "#/definitions/HoksToimija" },
+        "versio": {
+          "description": "HOKS-dokumentin versio",
+          "type": "integer",
+          "format": "int64"
+        },
+        "tutkinto": { "$ref": "#/definitions/Tutkinto" },
+        "paivitetty": {
+          "description": "HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ",
+          "type": "string",
+          "format": "date-time"
+        },
         "eid": {
+          "description": "HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä",
+          "type": "string"
+        },
+        "paivittaja": { "$ref": "#/definitions/HoksToimija" },
+        "oppija-oid": {
+          "description": "Oppijan tunniste Opintopolku-ympäristössä",
+          "type": "string"
+        },
+        "hyvaksyja": { "$ref": "#/definitions/HoksToimija" },
+        "puuttuvat-yhteiset-tutkinnon-osat": {
+          "description": "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot",
+          "type": "array",
+          "items": { "$ref": "#/definitions/PuuttuvaYTO" }
+        },
+        "olemassa-olevat-paikalliset-tutkinnon-osat": {
+          "description": "Olemassa oleva paikallinen tutkinnon osa",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OlemassaOlevaPaikallinenTutkinnonOsa"
+          }
+        },
+        "opiskeluvalmiuksia-tukevat-opinnot": {
+          "description": "Opiskeluvalmiuksia tukevat opinnot",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OpiskeluvalmiuksiaTukevatOpinnot" }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "ensikertainen-hyvaksyminen",
+        "opiskeluoikeus-oid",
+        "eid",
+        "paivittaja",
+        "oppija-oid",
+        "hyvaksyja"
+      ]
+    },
+    "Oppilaitoshenkilo": {
+      "description": "Koulutuksen järjestäjän edustaja",
+      "type": "object",
+      "properties": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
+        "nimi": { "description": "Henkilön nimi", "type": "string" },
+        "rooli": { "description": "Henkilön rooli", "type": "string" },
+        "oppilaitos-oid": {
+          "description": "Oppilaitoksen oid-tunniste Opintopolku-palvelussa.",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["nimi", "oppilaitos-oid"]
+    },
+    "Organisaatio": {
+      "description": "Henkilön organisaatio",
+      "type": "object",
+      "properties": {
         "nimi": { "description": "Organisaation nimi", "type": "string" },
         "y-tunnus": {
-          "description": "Organisaation y-tunnus",
+          "description": "Mikäli organisaatiolla on y-tunnus,\n    organisaation y-tunnus",
           "type": "string"
         }
       },
@@ -2234,209 +2528,59 @@
       "description": "Osaamisen hankkimisen tapa",
       "type": "object",
       "properties": {
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
+        "osaamisen-hankkimistapa-koodi-uri": {
+          "description": "Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)\n    eli muotoa osaamisenhankkimistapa_xxx eli esim.\n    osaamisenhankkimistapa_koulutussopimus",
+          "type": "string",
+          "pattern": "^osaamisenhankkimistapa_.+$"
+        },
+        "hankkijan-edustaja": { "$ref": "#/definitions/Oppilaitoshenkilo" },
+        "osaamisen-hankkimistapa-koodi-versio": {
+          "description": "Koodisto-koodin versio, koodistolle osaamisenhankkimistapa",
           "type": "integer",
           "format": "int64"
-        },
-        "ajankohta": { "$ref": "#/definitions/Aikavali" },
-        "osaamisen-hankkimistavan-tunniste": {
-          "$ref": "#/definitions/KoodistoKoodi"
         },
         "tyopaikalla-hankittava-osaaminen": {
           "$ref": "#/definitions/TyopaikallaHankittavaOsaaminen"
         },
-        "muut-oppimisymparisto": { "$ref": "#/definitions/MuuOppimisymparisto" }
+        "jarjestajan-edustaja": { "$ref": "#/definitions/Oppilaitoshenkilo" },
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
+        },
+        "ajanjakson-tarkenne": {
+          "description": "Tarkentava teksti ajanjaksolle, jos useita aikavälillä.",
+          "type": "string"
+        },
+        "alku": {
+          "description": "Alkupäivämäärä muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        },
+        "muut-oppimisymparisto": {
+          "description": "Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen liittyvät tiedot",
+          "type": "array",
+          "items": { "$ref": "#/definitions/MuuOppimisymparisto" }
+        },
+        "loppu": {
+          "description": "Loppupäivämäärä muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        }
       },
       "additionalProperties": false,
-      "required": ["ajankohta", "osaamisen-hankkimistavan-tunniste"]
+      "required": [
+        "osaamisen-hankkimistapa-koodi-uri",
+        "osaamisen-hankkimistapa-koodi-versio",
+        "alku",
+        "loppu"
+      ]
     },
     "POSTResponse": {
       "type": "object",
       "properties": { "uri": { "type": "string" } },
       "additionalProperties": false,
       "required": ["uri"]
-    },
-    "PaikallinenTutkinnonOsa": {
-      "description": "Puuttuva paikallinen tutkinnon osa",
-      "type": "object",
-      "properties": {
-        "kuvaus": { "description": "Tutkinnon osan kuvaus", "type": "string" },
-        "hankitun-osaamisen-naytto": {
-          "$ref": "#/definitions/HankitunPaikallisenOsaamisenNaytto"
-        },
-        "tarvittava-opetus": {
-          "description": "Tarvittava opetus",
-          "type": "string"
-        },
-        "osaamisen-hankkimistavat": {
-          "description": "Osaamisen hankkimistavat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/OsaamisenHankkimistapa" }
-        },
-        "nimi": { "description": "Tutkinnon osan nimi", "type": "string" },
-        "laajuus": {
-          "description": "Tutkinnon osan laajuus",
-          "type": "integer",
-          "format": "int64"
-        },
-        "koulutuksen-jarjestaja-oid": {
-          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
-          "type": "string"
-        },
-        "amosaa-tunniste": {
-          "description": "Tunniste ePerusteet AMOSAA -palvelussa",
-          "type": "string"
-        },
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "kuvaus",
-        "hankitun-osaamisen-naytto",
-        "tarvittava-opetus",
-        "osaamisen-hankkimistavat",
-        "nimi",
-        "laajuus",
-        "koulutuksen-jarjestaja-oid",
-        "eid"
-      ]
-    },
-    "PaikallinenTutkinnonOsaKentanPaivitys": {
-      "description": "Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä päivittäessä (PATCH)",
-      "type": "object",
-      "properties": {
-        "kuvaus": { "description": "Tutkinnon osan kuvaus", "type": "string" },
-        "hankitun-osaamisen-naytto": {
-          "$ref": "#/definitions/HankitunPaikallisenOsaamisenNaytto"
-        },
-        "tarvittava-opetus": {
-          "description": "Tarvittava opetus",
-          "type": "string"
-        },
-        "osaamisen-hankkimistavat": {
-          "description": "Osaamisen hankkimistavat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/OsaamisenHankkimistapa" }
-        },
-        "nimi": { "description": "Tutkinnon osan nimi", "type": "string" },
-        "laajuus": {
-          "description": "Tutkinnon osan laajuus",
-          "type": "integer",
-          "format": "int64"
-        },
-        "koulutuksen-jarjestaja-oid": {
-          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
-          "type": "string"
-        },
-        "amosaa-tunniste": {
-          "description": "Tunniste ePerusteet AMOSAA -palvelussa",
-          "type": "string"
-        },
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "additionalProperties": false,
-      "required": ["eid"]
-    },
-    "PaikallinenTutkinnonOsaLuonti": {
-      "description": "Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää luotaessa (POST)",
-      "type": "object",
-      "properties": {
-        "kuvaus": { "description": "Tutkinnon osan kuvaus", "type": "string" },
-        "amosaa-tunniste": {
-          "description": "Tunniste ePerusteet AMOSAA -palvelussa",
-          "type": "string"
-        },
-        "hankitun-osaamisen-naytto": {
-          "$ref": "#/definitions/HankitunPaikallisenOsaamisenNaytto"
-        },
-        "tarvittava-opetus": {
-          "description": "Tarvittava opetus",
-          "type": "string"
-        },
-        "osaamisen-hankkimistavat": {
-          "description": "Osaamisen hankkimistavat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/OsaamisenHankkimistapa" }
-        },
-        "nimi": { "description": "Tutkinnon osan nimi", "type": "string" },
-        "laajuus": {
-          "description": "Tutkinnon osan laajuus",
-          "type": "integer",
-          "format": "int64"
-        },
-        "koulutuksen-jarjestaja-oid": {
-          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "kuvaus",
-        "hankitun-osaamisen-naytto",
-        "tarvittava-opetus",
-        "osaamisen-hankkimistavat",
-        "nimi",
-        "laajuus",
-        "koulutuksen-jarjestaja-oid"
-      ]
-    },
-    "PaikallinenTutkinnonOsaPaivitys": {
-      "description": "Puuttuvan paikallisen tutkinnon osan tiedot merkintää ylikirjoittaessa (PUT)",
-      "type": "object",
-      "properties": {
-        "kuvaus": { "description": "Tutkinnon osan kuvaus", "type": "string" },
-        "hankitun-osaamisen-naytto": {
-          "$ref": "#/definitions/HankitunPaikallisenOsaamisenNaytto"
-        },
-        "tarvittava-opetus": {
-          "description": "Tarvittava opetus",
-          "type": "string"
-        },
-        "osaamisen-hankkimistavat": {
-          "description": "Osaamisen hankkimistavat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/OsaamisenHankkimistapa" }
-        },
-        "nimi": { "description": "Tutkinnon osan nimi", "type": "string" },
-        "laajuus": {
-          "description": "Tutkinnon osan laajuus",
-          "type": "integer",
-          "format": "int64"
-        },
-        "koulutuksen-jarjestaja-oid": {
-          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
-          "type": "string"
-        },
-        "amosaa-tunniste": {
-          "description": "Tunniste ePerusteet AMOSAA -palvelussa",
-          "type": "string"
-        },
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "kuvaus",
-        "hankitun-osaamisen-naytto",
-        "tarvittava-opetus",
-        "osaamisen-hankkimistavat",
-        "nimi",
-        "laajuus",
-        "koulutuksen-jarjestaja-oid",
-        "eid"
-      ]
     },
     "Peruste": {
       "type": "object",
@@ -2445,12 +2589,12 @@
         "nimi": { "$ref": "#/definitions/Nimi" },
         "osaamisalat": {
           "type": "array",
-          "items": { "$ref": "#/definitions/Response34466DataOsaamisalat" }
+          "items": { "$ref": "#/definitions/Response36452DataOsaamisalat" }
         },
         "tutkintonimikkeet": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Response34466DataTutkintonimikkeet"
+            "$ref": "#/definitions/Response36452DataTutkintonimikkeet"
           }
         }
       },
@@ -2461,18 +2605,29 @@
       "description": "Puuttuvan ammatillisen osaamisen tiedot (GET)",
       "type": "object",
       "properties": {
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
-        "tutkinnon-osa": { "$ref": "#/definitions/TutkinnonOsa" },
+        "tutkinnon-osa-koodi-uri": {
+          "description": "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)",
+          "type": "string",
+          "pattern": "^tutkinnonosat_\\d+$"
+        },
+        "tutkinnon-osa-koodi-versio": {
+          "description": "Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa\n     (tutkinnonosat)",
+          "type": "integer",
+          "format": "int64"
+        },
         "vaatimuksista-tai-tavoitteista-poikkeaminen": {
-          "description": "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen",
+          "description": "Tekstimuotoinen selite ammattitaitovaatimuksista tai osaamistavoitteista poikkeamiseen",
           "type": "string"
         },
         "hankitun-osaamisen-naytto": {
-          "$ref": "#/definitions/HankitunOsaamisenNaytto"
+          "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen",
+          "type": "array",
+          "items": { "$ref": "#/definitions/HankitunOsaamisenNaytto" }
         },
         "osaamisen-hankkimistavat": {
           "description": "Osaamisen hankkimistavat",
@@ -2481,37 +2636,44 @@
         },
         "koulutuksen-jarjestaja-oid": {
           "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
-          "type": "string"
-        },
-        "tarvittava-opetus": {
-          "description": "Tarvittava opetus",
-          "type": "string"
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
         }
       },
       "additionalProperties": false,
       "required": [
-        "eid",
-        "tutkinnon-osa",
-        "osaamisen-hankkimistavat",
-        "koulutuksen-jarjestaja-oid"
+        "tutkinnon-osa-koodi-uri",
+        "tutkinnon-osa-koodi-versio",
+        "osaamisen-hankkimistavat"
       ]
     },
     "PuuttuvaAmmatillinenOsaaminenKentanPaivitys": {
       "description": "Puuttuvan ammatillisen osaamisen tiedot kenttää tai kenttiä päivittäessä (PATCH)",
       "type": "object",
       "properties": {
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
-        "tutkinnon-osa": { "$ref": "#/definitions/TutkinnonOsa" },
+        "tutkinnon-osa-koodi-uri": {
+          "description": "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)",
+          "type": "string",
+          "pattern": "^tutkinnonosat_\\d+$"
+        },
+        "tutkinnon-osa-koodi-versio": {
+          "description": "Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa\n     (tutkinnonosat)",
+          "type": "integer",
+          "format": "int64"
+        },
         "vaatimuksista-tai-tavoitteista-poikkeaminen": {
-          "description": "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen",
+          "description": "Tekstimuotoinen selite ammattitaitovaatimuksista tai osaamistavoitteista poikkeamiseen",
           "type": "string"
         },
         "hankitun-osaamisen-naytto": {
-          "$ref": "#/definitions/HankitunOsaamisenNaytto"
+          "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen",
+          "type": "array",
+          "items": { "$ref": "#/definitions/HankitunOsaamisenNaytto" }
         },
         "osaamisen-hankkimistavat": {
           "description": "Osaamisen hankkimistavat",
@@ -2520,27 +2682,34 @@
         },
         "koulutuksen-jarjestaja-oid": {
           "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
-          "type": "string"
-        },
-        "tarvittava-opetus": {
-          "description": "Tarvittava opetus",
-          "type": "string"
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
         }
       },
-      "additionalProperties": false,
-      "required": ["eid"]
+      "additionalProperties": false
     },
     "PuuttuvaAmmatillinenOsaaminenLuonti": {
       "description": "Puuttuvan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)",
       "type": "object",
       "properties": {
-        "tutkinnon-osa": { "$ref": "#/definitions/TutkinnonOsa" },
+        "tutkinnon-osa-koodi-uri": {
+          "description": "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)",
+          "type": "string",
+          "pattern": "^tutkinnonosat_\\d+$"
+        },
+        "tutkinnon-osa-koodi-versio": {
+          "description": "Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa\n     (tutkinnonosat)",
+          "type": "integer",
+          "format": "int64"
+        },
         "vaatimuksista-tai-tavoitteista-poikkeaminen": {
-          "description": "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen",
+          "description": "Tekstimuotoinen selite ammattitaitovaatimuksista tai osaamistavoitteista poikkeamiseen",
           "type": "string"
         },
         "hankitun-osaamisen-naytto": {
-          "$ref": "#/definitions/HankitunOsaamisenNaytto"
+          "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen",
+          "type": "array",
+          "items": { "$ref": "#/definitions/HankitunOsaamisenNaytto" }
         },
         "osaamisen-hankkimistavat": {
           "description": "Osaamisen hankkimistavat",
@@ -2549,36 +2718,44 @@
         },
         "koulutuksen-jarjestaja-oid": {
           "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
-          "type": "string"
-        },
-        "tarvittava-opetus": {
-          "description": "Tarvittava opetus",
-          "type": "string"
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
         }
       },
       "additionalProperties": false,
       "required": [
-        "tutkinnon-osa",
-        "osaamisen-hankkimistavat",
-        "koulutuksen-jarjestaja-oid"
+        "tutkinnon-osa-koodi-uri",
+        "tutkinnon-osa-koodi-versio",
+        "osaamisen-hankkimistavat"
       ]
     },
     "PuuttuvaAmmatillinenOsaaminenPaivitys": {
       "description": "Puuttuvan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa (PUT)",
       "type": "object",
       "properties": {
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
-        "tutkinnon-osa": { "$ref": "#/definitions/TutkinnonOsa" },
+        "tutkinnon-osa-koodi-uri": {
+          "description": "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)",
+          "type": "string",
+          "pattern": "^tutkinnonosat_\\d+$"
+        },
+        "tutkinnon-osa-koodi-versio": {
+          "description": "Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa\n     (tutkinnonosat)",
+          "type": "integer",
+          "format": "int64"
+        },
         "vaatimuksista-tai-tavoitteista-poikkeaminen": {
-          "description": "Ammattitaitovaatimuksista tai osaamistavoitteista poikkeaminen",
+          "description": "Tekstimuotoinen selite ammattitaitovaatimuksista tai osaamistavoitteista poikkeamiseen",
           "type": "string"
         },
         "hankitun-osaamisen-naytto": {
-          "$ref": "#/definitions/HankitunOsaamisenNaytto"
+          "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen",
+          "type": "array",
+          "items": { "$ref": "#/definitions/HankitunOsaamisenNaytto" }
         },
         "osaamisen-hankkimistavat": {
           "description": "Osaamisen hankkimistavat",
@@ -2587,74 +2764,268 @@
         },
         "koulutuksen-jarjestaja-oid": {
           "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
-          "type": "string"
-        },
-        "tarvittava-opetus": {
-          "description": "Tarvittava opetus",
-          "type": "string"
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
         }
       },
       "additionalProperties": false,
       "required": [
-        "eid",
-        "tutkinnon-osa",
-        "osaamisen-hankkimistavat",
-        "koulutuksen-jarjestaja-oid"
+        "tutkinnon-osa-koodi-uri",
+        "tutkinnon-osa-koodi-versio",
+        "osaamisen-hankkimistavat"
       ]
     },
-    "PuuttuvaYTO": {
-      "description": "Puuttuvan yhteinen tutkinnon osan tiedot",
+    "PuuttuvaPaikallinenTutkinnonOsa": {
+      "description": "Puuttuva paikallinen tutkinnon osa",
       "type": "object",
       "properties": {
-        "eid": {
+        "tavoitteet-ja-sisallot": {
+          "description": "Paikallisen tutkinnon osan ammattitaitovaatimukset taiosaamistavoitteet",
+          "type": "string"
+        },
+        "hankitun-osaamisen-naytto": {
+          "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/HankitunPaikallisenOsaamisenNaytto"
+          }
+        },
+        "osaamisen-hankkimistavat": {
+          "description": "Osaamisen hankkimistavat",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OsaamisenHankkimistapa" }
+        },
+        "vaatimuksista-tai-tavoitteista-poikkeaminen": {
+          "description": "vaatimuksista tai osaamistavoitteista poikkeaminen",
+          "type": "string"
+        },
+        "nimi": { "description": "Tutkinnon osan nimi", "type": "string" },
+        "laajuus": {
+          "description": "Tutkinnon osan laajuus",
+          "type": "integer",
+          "format": "int64"
+        },
+        "koulutuksen-jarjestaja-oid": {
+          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
+        },
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
-        "eperusteet-id": {
-          "description": "Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua",
-          "type": "integer",
-          "format": "int64"
-        },
-        "tutkinnon-osat": {
-          "description": "Puuttuvat YTO osat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PuuttuvaYTOOsa" }
-        },
-        "koulutuksen-jarjestaja-oid": {
-          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
+        "amosaa-tunniste": {
+          "description": "Tunniste ePerusteet AMOSAA -palvelussa",
           "type": "string"
         }
       },
       "additionalProperties": false,
+      "required": ["hankitun-osaamisen-naytto", "osaamisen-hankkimistavat"]
+    },
+    "PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys": {
+      "description": "Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä päivittäessä (PATCH)",
+      "type": "object",
+      "properties": {
+        "tavoitteet-ja-sisallot": {
+          "description": "Paikallisen tutkinnon osan ammattitaitovaatimukset taiosaamistavoitteet",
+          "type": "string"
+        },
+        "hankitun-osaamisen-naytto": {
+          "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/HankitunPaikallisenOsaamisenNaytto"
+          }
+        },
+        "osaamisen-hankkimistavat": {
+          "description": "Osaamisen hankkimistavat",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OsaamisenHankkimistapa" }
+        },
+        "vaatimuksista-tai-tavoitteista-poikkeaminen": {
+          "description": "vaatimuksista tai osaamistavoitteista poikkeaminen",
+          "type": "string"
+        },
+        "nimi": { "description": "Tutkinnon osan nimi", "type": "string" },
+        "laajuus": {
+          "description": "Tutkinnon osan laajuus",
+          "type": "integer",
+          "format": "int64"
+        },
+        "koulutuksen-jarjestaja-oid": {
+          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
+        },
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
+        },
+        "amosaa-tunniste": {
+          "description": "Tunniste ePerusteet AMOSAA -palvelussa",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PuuttuvaPaikallinenTutkinnonOsaLuonti": {
+      "description": "Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää luotaessa (POST)",
+      "type": "object",
+      "properties": {
+        "laajuus": {
+          "description": "Tutkinnon osan laajuus",
+          "type": "integer",
+          "format": "int64"
+        },
+        "nimi": { "description": "Tutkinnon osan nimi", "type": "string" },
+        "tavoitteet-ja-sisallot": {
+          "description": "Paikallisen tutkinnon osan ammattitaitovaatimukset taiosaamistavoitteet",
+          "type": "string"
+        },
+        "amosaa-tunniste": {
+          "description": "Tunniste ePerusteet AMOSAA -palvelussa",
+          "type": "string"
+        },
+        "hankitun-osaamisen-naytto": {
+          "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/HankitunPaikallisenOsaamisenNaytto"
+          }
+        },
+        "osaamisen-hankkimistavat": {
+          "description": "Osaamisen hankkimistavat",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OsaamisenHankkimistapa" }
+        },
+        "koulutuksen-jarjestaja-oid": {
+          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
+        },
+        "vaatimuksista-tai-tavoitteista-poikkeaminen": {
+          "description": "vaatimuksista tai osaamistavoitteista poikkeaminen",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["hankitun-osaamisen-naytto", "osaamisen-hankkimistavat"]
+    },
+    "PuuttuvaPaikallinenTutkinnonOsaPaivitys": {
+      "description": "Puuttuvan paikallisen tutkinnon osan tiedot merkintää ylikirjoittaessa (PUT)",
+      "type": "object",
+      "properties": {
+        "tavoitteet-ja-sisallot": {
+          "description": "Paikallisen tutkinnon osan ammattitaitovaatimukset taiosaamistavoitteet",
+          "type": "string"
+        },
+        "hankitun-osaamisen-naytto": {
+          "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/HankitunPaikallisenOsaamisenNaytto"
+          }
+        },
+        "osaamisen-hankkimistavat": {
+          "description": "Osaamisen hankkimistavat",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OsaamisenHankkimistapa" }
+        },
+        "vaatimuksista-tai-tavoitteista-poikkeaminen": {
+          "description": "vaatimuksista tai osaamistavoitteista poikkeaminen",
+          "type": "string"
+        },
+        "nimi": { "description": "Tutkinnon osan nimi", "type": "string" },
+        "laajuus": {
+          "description": "Tutkinnon osan laajuus",
+          "type": "integer",
+          "format": "int64"
+        },
+        "koulutuksen-jarjestaja-oid": {
+          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
+        },
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
+        },
+        "amosaa-tunniste": {
+          "description": "Tunniste ePerusteet AMOSAA -palvelussa",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["hankitun-osaamisen-naytto", "osaamisen-hankkimistavat"]
+    },
+    "PuuttuvaYTO": {
+      "description": "Puuttuvan yhteinen tutkinnon osan (YTO) tiedot",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
+        },
+        "osa-alueet": {
+          "description": "YTO osa-alueet",
+          "type": "array",
+          "items": { "$ref": "#/definitions/YhteisenTutkinnonOsanOsaAlue" }
+        },
+        "tutkinnon-osa-koodi-uri": {
+          "description": "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa\n    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.\n    tutkinnonosat_100002",
+          "type": "string",
+          "pattern": "^tutkinnonosat_\\d+$"
+        },
+        "tutkinnon-osa-koodi-versio": {
+          "description": "Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa\n     (tutkinnonosat)",
+          "type": "integer",
+          "format": "int64"
+        },
+        "koulutuksen-jarjestaja-oid": {
+          "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
+        }
+      },
+      "additionalProperties": false,
       "required": [
-        "eperusteet-id",
-        "tutkinnon-osat",
-        "koulutuksen-jarjestaja-oid"
+        "osa-alueet",
+        "tutkinnon-osa-koodi-uri",
+        "tutkinnon-osa-koodi-versio"
       ]
     },
     "PuuttuvaYTOKentanPaivitys": {
       "description": "Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä päivittäessä (PATCH)",
       "type": "object",
       "properties": {
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
-        "eperusteet-id": {
-          "description": "Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua",
+        "osa-alueet": {
+          "description": "YTO osa-alueet",
+          "type": "array",
+          "items": { "$ref": "#/definitions/YhteisenTutkinnonOsanOsaAlue" }
+        },
+        "tutkinnon-osa-koodi-uri": {
+          "description": "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa\n    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.\n    tutkinnonosat_100002",
+          "type": "string",
+          "pattern": "^tutkinnonosat_\\d+$"
+        },
+        "tutkinnon-osa-koodi-versio": {
+          "description": "Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa\n     (tutkinnonosat)",
           "type": "integer",
           "format": "int64"
         },
-        "tutkinnon-osat": {
-          "description": "Puuttuvat YTO osat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PuuttuvaYTOOsa" }
-        },
         "koulutuksen-jarjestaja-oid": {
           "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
-          "type": "string"
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
         }
       },
       "additionalProperties": false
@@ -2663,112 +3034,158 @@
       "description": "Puuttuvan yhteinen tutkinnon osan tiedot uutta merkintää luotaessa (POST)",
       "type": "object",
       "properties": {
-        "eperusteet-id": {
-          "description": "Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua",
+        "osa-alueet": {
+          "description": "YTO osa-alueet",
+          "type": "array",
+          "items": { "$ref": "#/definitions/YhteisenTutkinnonOsanOsaAlue" }
+        },
+        "tutkinnon-osa-koodi-uri": {
+          "description": "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa\n    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.\n    tutkinnonosat_100002",
+          "type": "string",
+          "pattern": "^tutkinnonosat_\\d+$"
+        },
+        "tutkinnon-osa-koodi-versio": {
+          "description": "Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa\n     (tutkinnonosat)",
           "type": "integer",
           "format": "int64"
         },
-        "tutkinnon-osat": {
-          "description": "Puuttuvat YTO osat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PuuttuvaYTOOsa" }
-        },
         "koulutuksen-jarjestaja-oid": {
           "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
-          "type": "string"
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
         }
       },
       "additionalProperties": false,
       "required": [
-        "eperusteet-id",
-        "tutkinnon-osat",
-        "koulutuksen-jarjestaja-oid"
-      ]
-    },
-    "PuuttuvaYTOOsa": {
-      "description": "Puuttuvan yhteinen tutkinnon osan (YTO) osan tiedot",
-      "type": "object",
-      "properties": {
-        "hankitun-osaamisen-naytto": {
-          "$ref": "#/definitions/HankitunYTOOsaamisenNaytto"
-        },
-        "tarvittava-opetus": {
-          "description": "Tarvittava opetus",
-          "type": "string"
-        },
-        "osaamisen-hankkimistavat": {
-          "description": "Osaamisen hankkimistavat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/OsaamisenHankkimistapa" }
-        },
-        "eperusteet-id": {
-          "description": "Tunniste ePerusteet-palvelussa",
-          "type": "string"
-        },
-        "vaatimuksista-tai-tavoitteista-poikkeaminen": {
-          "description": "vaatimuksista tai osaamistavoitteista poikkeaminen",
-          "type": "string"
-        },
-        "nimi": {
-          "description": "Tutkinnon osan nimi ePerusteet-palvelussa",
-          "type": "string"
-        },
-        "laajuus": {
-          "description": "Tutkinnon laajuus ePerusteet palvelussa",
-          "type": "integer",
-          "format": "int64"
-        },
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        },
-        "tunniste": { "$ref": "#/definitions/KoodistoKoodi" }
-      },
-      "additionalProperties": false,
-      "required": [
-        "hankitun-osaamisen-naytto",
-        "tarvittava-opetus",
-        "osaamisen-hankkimistavat",
-        "eperusteet-id",
-        "tunniste"
+        "osa-alueet",
+        "tutkinnon-osa-koodi-uri",
+        "tutkinnon-osa-koodi-versio"
       ]
     },
     "PuuttuvaYTOPaivitys": {
       "description": "Puuttuvan yhteinen tutkinnon osa tiedot merkintää ylikirjoittaessa (PUT)",
       "type": "object",
       "properties": {
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
-        "eperusteet-id": {
-          "description": "Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua",
+        "osa-alueet": {
+          "description": "YTO osa-alueet",
+          "type": "array",
+          "items": { "$ref": "#/definitions/YhteisenTutkinnonOsanOsaAlue" }
+        },
+        "tutkinnon-osa-koodi-uri": {
+          "description": "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa\n    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.\n    tutkinnonosat_100002",
+          "type": "string",
+          "pattern": "^tutkinnonosat_\\d+$"
+        },
+        "tutkinnon-osa-koodi-versio": {
+          "description": "Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa\n     (tutkinnonosat)",
           "type": "integer",
           "format": "int64"
         },
-        "tutkinnon-osat": {
-          "description": "Puuttuvat YTO osat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/PuuttuvaYTOOsa" }
-        },
         "koulutuksen-jarjestaja-oid": {
           "description": "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid.",
-          "type": "string"
+          "type": "string",
+          "pattern": "^1\\.2\\.246\\.562\\.[0-3]\\d\\.\\d{11}$"
         }
       },
       "additionalProperties": false,
       "required": [
-        "eperusteet-id",
-        "tutkinnon-osat",
-        "koulutuksen-jarjestaja-oid"
+        "osa-alueet",
+        "tutkinnon-osa-koodi-uri",
+        "tutkinnon-osa-koodi-versio"
       ]
     },
-    "Response34449": {
+    "Response36430": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34449Meta" },
+        "meta": { "$ref": "#/definitions/Response36430Meta" },
+        "data": {}
+      },
+      "additionalProperties": false,
+      "required": ["meta", "data"]
+    },
+    "Response36430Meta": { "type": "object", "additionalProperties": false },
+    "Response36431": {
+      "type": "object",
+      "properties": {
+        "meta": { "$ref": "#/definitions/Response36431Meta" },
+        "data": { "type": "array", "items": {} }
+      },
+      "additionalProperties": false,
+      "required": ["meta", "data"]
+    },
+    "Response36431Meta": { "type": "object", "additionalProperties": false },
+    "Response36432": {
+      "type": "object",
+      "properties": {
+        "meta": { "$ref": "#/definitions/Response36432Meta" },
+        "data": {}
+      },
+      "additionalProperties": false,
+      "required": ["meta", "data"]
+    },
+    "Response36432Meta": { "type": "object", "additionalProperties": false },
+    "Response36433": {
+      "type": "object",
+      "properties": {
+        "meta": { "$ref": "#/definitions/Response36433Meta" },
+        "data": {}
+      },
+      "additionalProperties": false,
+      "required": ["meta", "data"]
+    },
+    "Response36433Meta": { "type": "object", "additionalProperties": false },
+    "Response36434": {
+      "type": "object",
+      "properties": {
+        "meta": { "$ref": "#/definitions/Response36434Meta" },
+        "data": { "type": "array", "items": {} }
+      },
+      "additionalProperties": false,
+      "required": ["meta", "data"]
+    },
+    "Response36434Meta": { "type": "object", "additionalProperties": false },
+    "Response36435": {
+      "type": "object",
+      "properties": {
+        "meta": { "$ref": "#/definitions/Response36435Meta" },
+        "data": { "type": "array", "items": { "$ref": "#/definitions/Oppija" } }
+      },
+      "additionalProperties": false,
+      "required": ["meta", "data"]
+    },
+    "Response36435Meta": { "type": "object", "additionalProperties": false },
+    "Response36436": {
+      "type": "object",
+      "properties": {
+        "meta": { "$ref": "#/definitions/Response36436Meta" },
+        "data": { "type": "array", "items": {} }
+      },
+      "additionalProperties": false,
+      "required": ["meta", "data"]
+    },
+    "Response36436Meta": { "type": "object", "additionalProperties": false },
+    "Response36437": {
+      "type": "object",
+      "properties": {
+        "meta": { "$ref": "#/definitions/Response36437Meta" },
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/OppijaHOKS" }
+        }
+      },
+      "additionalProperties": false,
+      "required": ["meta", "data"]
+    },
+    "Response36437Meta": { "type": "object", "additionalProperties": false },
+    "Response36438": {
+      "type": "object",
+      "properties": {
+        "meta": { "$ref": "#/definitions/Response36438Meta" },
         "data": {
           "type": "array",
           "items": { "$ref": "#/definitions/UserInfo" }
@@ -2777,21 +3194,21 @@
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34449DataContactValuesGroup": {
+    "Response36438DataContactValuesGroup": {
       "type": "object",
       "properties": {
         "id": { "type": "integer", "format": "int64" },
         "contact": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Response34449DataContactValuesGroupContact"
+            "$ref": "#/definitions/Response36438DataContactValuesGroupContact"
           }
         }
       },
       "additionalProperties": false,
       "required": ["id", "contact"]
     },
-    "Response34449DataContactValuesGroupContact": {
+    "Response36438DataContactValuesGroupContact": {
       "type": "object",
       "properties": {
         "value": { "type": "string" },
@@ -2800,165 +3217,145 @@
       "additionalProperties": false,
       "required": ["value", "type"]
     },
-    "Response34449Meta": { "type": "object", "additionalProperties": false },
-    "Response34450": {
+    "Response36438Meta": { "type": "object", "additionalProperties": false },
+    "Response36439": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34450Meta" },
+        "meta": { "$ref": "#/definitions/Response36439Meta" },
         "data": { "type": "array", "items": { "$ref": "#/definitions/User" } }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34450Meta": { "type": "object", "additionalProperties": false },
-    "Response34451": {
+    "Response36439Meta": { "type": "object", "additionalProperties": false },
+    "Response36440": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34451Meta" },
+        "meta": { "$ref": "#/definitions/Response36440Meta" },
         "data": { "type": "array", "items": { "$ref": "#/definitions/User" } }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34451Meta": {
+    "Response36440Meta": {
       "type": "object",
       "properties": { "opintopolku-login-url": { "type": "string" } },
       "additionalProperties": false,
       "required": ["opintopolku-login-url"]
     },
-    "Response34452": {
+    "Response36441": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34452Meta" },
+        "meta": { "$ref": "#/definitions/Response36441Meta" },
         "data": { "$ref": "#/definitions/HOKS" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34452Meta": { "type": "object", "additionalProperties": false },
-    "Response34453": {
+    "Response36441Meta": { "type": "object", "additionalProperties": false },
+    "Response36442": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34453Meta" },
+        "meta": { "$ref": "#/definitions/Response36442Meta" },
         "data": { "$ref": "#/definitions/POSTResponse" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34453Meta": { "type": "object", "additionalProperties": false },
-    "Response34454": {
+    "Response36442Meta": { "type": "object", "additionalProperties": false },
+    "Response36443": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34454Meta" },
+        "meta": { "$ref": "#/definitions/Response36443Meta" },
         "data": { "$ref": "#/definitions/PuuttuvaAmmatillinenOsaaminen" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34454Meta": { "type": "object", "additionalProperties": false },
-    "Response34455": {
+    "Response36443Meta": { "type": "object", "additionalProperties": false },
+    "Response36444": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34455Meta" },
+        "meta": { "$ref": "#/definitions/Response36444Meta" },
         "data": { "$ref": "#/definitions/POSTResponse" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34455Meta": { "type": "object", "additionalProperties": false },
-    "Response34456": {
+    "Response36444Meta": { "type": "object", "additionalProperties": false },
+    "Response36445": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34456Meta" },
-        "data": { "$ref": "#/definitions/PaikallinenTutkinnonOsa" }
+        "meta": { "$ref": "#/definitions/Response36445Meta" },
+        "data": { "$ref": "#/definitions/PuuttuvaPaikallinenTutkinnonOsa" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34456Meta": { "type": "object", "additionalProperties": false },
-    "Response34457": {
+    "Response36445Meta": { "type": "object", "additionalProperties": false },
+    "Response36446": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34457Meta" },
+        "meta": { "$ref": "#/definitions/Response36446Meta" },
         "data": { "$ref": "#/definitions/POSTResponse" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34457Meta": { "type": "object", "additionalProperties": false },
-    "Response34458": {
+    "Response36446Meta": { "type": "object", "additionalProperties": false },
+    "Response36447": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34458Meta" },
+        "meta": { "$ref": "#/definitions/Response36447Meta" },
         "data": { "$ref": "#/definitions/PuuttuvaYTO" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34458Meta": { "type": "object", "additionalProperties": false },
-    "Response34459": {
+    "Response36447Meta": { "type": "object", "additionalProperties": false },
+    "Response36448": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34459Meta" },
+        "meta": { "$ref": "#/definitions/Response36448Meta" },
         "data": { "$ref": "#/definitions/POSTResponse" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34459Meta": { "type": "object", "additionalProperties": false },
-    "Response34460": {
+    "Response36448Meta": { "type": "object", "additionalProperties": false },
+    "Response36449": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34460Meta" },
+        "meta": { "$ref": "#/definitions/Response36449Meta" },
         "data": { "$ref": "#/definitions/OpiskeluvalmiuksiaTukevatOpinnot" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34460Meta": { "type": "object", "additionalProperties": false },
-    "Response34461": {
+    "Response36449Meta": { "type": "object", "additionalProperties": false },
+    "Response36450": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34461Meta" },
+        "meta": { "$ref": "#/definitions/Response36450Meta" },
         "data": { "$ref": "#/definitions/POSTResponse" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34461Meta": { "type": "object", "additionalProperties": false },
-    "Response34462": {
+    "Response36450Meta": { "type": "object", "additionalProperties": false },
+    "Response36451": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34462Meta" },
-        "data": { "$ref": "#/definitions/OlemassaOlevaOsaaminen" }
-      },
-      "additionalProperties": false,
-      "required": ["meta", "data"]
-    },
-    "Response34462Meta": { "type": "object", "additionalProperties": false },
-    "Response34463": {
-      "type": "object",
-      "properties": {
-        "meta": { "$ref": "#/definitions/Response34463Meta" },
-        "data": { "$ref": "#/definitions/POSTResponse" }
-      },
-      "additionalProperties": false,
-      "required": ["meta", "data"]
-    },
-    "Response34463Meta": { "type": "object", "additionalProperties": false },
-    "Response34464": {
-      "type": "object",
-      "properties": {
-        "meta": { "$ref": "#/definitions/Response34464Meta" },
+        "meta": { "$ref": "#/definitions/Response36451Meta" },
         "data": {
           "type": "array",
-          "items": { "$ref": "#/definitions/Response34464Data" }
+          "items": { "$ref": "#/definitions/Response36451Data" }
         }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34464Data": {
+    "Response36451Data": {
       "type": "object",
       "properties": {
         "category": { "type": "string" },
@@ -2990,21 +3387,11 @@
         "modifiedBy"
       ]
     },
-    "Response34464Meta": { "type": "object", "additionalProperties": false },
-    "Response34465": {
+    "Response36451Meta": { "type": "object", "additionalProperties": false },
+    "Response36452": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34465Meta" },
-        "data": { "$ref": "#/definitions/ExtendedKoodistoKoodi" }
-      },
-      "additionalProperties": false,
-      "required": ["meta", "data"]
-    },
-    "Response34465Meta": { "type": "object", "additionalProperties": false },
-    "Response34466": {
-      "type": "object",
-      "properties": {
-        "meta": { "$ref": "#/definitions/Response34466Meta" },
+        "meta": { "$ref": "#/definitions/Response36452Meta" },
         "data": {
           "type": "array",
           "items": { "$ref": "#/definitions/Peruste" }
@@ -3013,29 +3400,39 @@
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34466DataOsaamisalat": {
+    "Response36452DataOsaamisalat": {
       "type": "object",
       "properties": { "nimi": { "$ref": "#/definitions/Nimi" } },
       "additionalProperties": false,
       "required": ["nimi"]
     },
-    "Response34466DataTutkintonimikkeet": {
+    "Response36452DataTutkintonimikkeet": {
       "type": "object",
       "properties": { "nimi": { "$ref": "#/definitions/Nimi" } },
       "additionalProperties": false,
       "required": ["nimi"]
     },
-    "Response34466Meta": { "type": "object", "additionalProperties": false },
-    "Response34467": {
+    "Response36452Meta": { "type": "object", "additionalProperties": false },
+    "Response36453": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34467Meta" },
+        "meta": { "$ref": "#/definitions/Response36453Meta" },
+        "data": { "$ref": "#/definitions/ExtendedKoodistoKoodi" }
+      },
+      "additionalProperties": false,
+      "required": ["meta", "data"]
+    },
+    "Response36453Meta": { "type": "object", "additionalProperties": false },
+    "Response36454": {
+      "type": "object",
+      "properties": {
+        "meta": { "$ref": "#/definitions/Response36454Meta" },
         "data": { "$ref": "#/definitions/KoskiOppija" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34467DataOpiskeluoikeudetLähdejärjestelmänId": {
+    "Response36454DataOpiskeluoikeudetLähdejärjestelmänId": {
       "type": "object",
       "properties": {
         "id": { "type": "string" },
@@ -3044,24 +3441,24 @@
       "additionalProperties": false,
       "required": ["id", "lähdejärjestelmä"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetJärjestämismuodot": {
+    "Response36454DataOpiskeluoikeudetSuorituksetJärjestämismuodot": {
       "type": "object",
       "properties": {
         "alku": { "type": "string" },
         "järjestämismuoto": {
-          "$ref": "#/definitions/Response34467DataOpiskeluoikeudetSuorituksetJärjestämismuodotJärjestämismuoto"
+          "$ref": "#/definitions/Response36454DataOpiskeluoikeudetSuorituksetJärjestämismuodotJärjestämismuoto"
         }
       },
       "additionalProperties": false,
       "required": ["alku", "järjestämismuoto"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetJärjestämismuodotJärjestämismuoto": {
+    "Response36454DataOpiskeluoikeudetSuorituksetJärjestämismuodotJärjestämismuoto": {
       "type": "object",
       "properties": { "tunniste": { "$ref": "#/definitions/KoodistoKoodi" } },
       "additionalProperties": false,
       "required": ["tunniste"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArviointikohteet": {
+    "Response36454DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArviointikohteet": {
       "type": "object",
       "properties": {
         "tunniste": { "$ref": "#/definitions/KoodistoKoodi" },
@@ -3070,7 +3467,7 @@
       "additionalProperties": false,
       "required": ["tunniste", "arvosana"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArvioitsijat": {
+    "Response36454DataOpiskeluoikeudetSuorituksetKäyttäytymisenArvioArvioitsijat": {
       "type": "object",
       "properties": {
         "nimi": { "type": "string" },
@@ -3079,13 +3476,13 @@
       "additionalProperties": false,
       "required": ["nimi"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsaamisala": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsaamisala": {
       "type": "object",
       "properties": { "osaamisala": { "$ref": "#/definitions/KoodistoKoodi" } },
       "additionalProperties": false,
       "required": ["osaamisala"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetArviointiArviointikohteet": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetArviointiArviointikohteet": {
       "type": "object",
       "properties": {
         "tunniste": { "$ref": "#/definitions/KoodistoKoodi" },
@@ -3094,7 +3491,7 @@
       "additionalProperties": false,
       "required": ["tunniste", "arvosana"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetArviointiArvioitsijat": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetArviointiArvioitsijat": {
       "type": "object",
       "properties": {
         "nimi": { "type": "string" },
@@ -3103,7 +3500,7 @@
       "additionalProperties": false,
       "required": ["nimi"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöArviointiArviointikohteet": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöArviointiArviointikohteet": {
       "type": "object",
       "properties": {
         "tunniste": { "$ref": "#/definitions/KoodistoKoodi" },
@@ -3112,7 +3509,7 @@
       "additionalProperties": false,
       "required": ["tunniste", "arvosana"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöArviointiArvioitsijat": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöArviointiArvioitsijat": {
       "type": "object",
       "properties": {
         "nimi": { "type": "string" },
@@ -3121,7 +3518,7 @@
       "additionalProperties": false,
       "required": ["nimi"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöSuoritusaika": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetNäyttöSuoritusaika": {
       "type": "object",
       "properties": {
         "alku": { "type": "string" },
@@ -3130,7 +3527,7 @@
       "additionalProperties": false,
       "required": ["alku", "loppu"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetArviointiArviointikohteet": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetArviointiArviointikohteet": {
       "type": "object",
       "properties": {
         "tunniste": { "$ref": "#/definitions/KoodistoKoodi" },
@@ -3139,7 +3536,7 @@
       "additionalProperties": false,
       "required": ["tunniste", "arvosana"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetArviointiArvioitsijat": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetArviointiArvioitsijat": {
       "type": "object",
       "properties": {
         "nimi": { "type": "string" },
@@ -3148,7 +3545,7 @@
       "additionalProperties": false,
       "required": ["nimi"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetNäyttöArviointiArviointikohteet": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetNäyttöArviointiArviointikohteet": {
       "type": "object",
       "properties": {
         "tunniste": { "$ref": "#/definitions/KoodistoKoodi" },
@@ -3157,7 +3554,7 @@
       "additionalProperties": false,
       "required": ["tunniste", "arvosana"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetNäyttöArviointiArvioitsijat": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetNäyttöArviointiArvioitsijat": {
       "type": "object",
       "properties": {
         "nimi": { "type": "string" },
@@ -3166,7 +3563,7 @@
       "additionalProperties": false,
       "required": ["nimi"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetNäyttöSuoritusaika": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetNäyttöSuoritusaika": {
       "type": "object",
       "properties": {
         "alku": { "type": "string" },
@@ -3175,7 +3572,7 @@
       "additionalProperties": false,
       "required": ["alku", "loppu"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetTunnustettuOsaaminen": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetOsasuorituksetTunnustettuOsaaminen": {
       "type": "object",
       "properties": {
         "koulutusmoduuli": { "$ref": "#/definitions/KoskiKoulutusmoduuli" },
@@ -3184,7 +3581,7 @@
       "additionalProperties": false,
       "required": ["koulutusmoduuli", "tyyppi"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetOsasuorituksetTunnustettuOsaaminen": {
+    "Response36454DataOpiskeluoikeudetSuorituksetOsasuorituksetTunnustettuOsaaminen": {
       "type": "object",
       "properties": {
         "koulutusmoduuli": { "$ref": "#/definitions/KoskiKoulutusmoduuli" },
@@ -3193,7 +3590,7 @@
       "additionalProperties": false,
       "required": ["koulutusmoduuli", "tyyppi"]
     },
-    "Response34467DataOpiskeluoikeudetSuorituksetVahvistus": {
+    "Response36454DataOpiskeluoikeudetSuorituksetVahvistus": {
       "type": "object",
       "properties": {
         "päivä": { "type": "string" },
@@ -3212,41 +3609,41 @@
         "myöntäjäHenkilöt"
       ]
     },
-    "Response34467Meta": { "type": "object", "additionalProperties": false },
-    "Response34468": {
+    "Response36454Meta": { "type": "object", "additionalProperties": false },
+    "Response36455": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34468Meta" },
+        "meta": { "$ref": "#/definitions/Response36455Meta" },
         "data": { "$ref": "#/definitions/Environment" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34468Meta": { "type": "object", "additionalProperties": false },
-    "Response34469": {
+    "Response36455Meta": { "type": "object", "additionalProperties": false },
+    "Response36456": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34469Meta" },
+        "meta": { "$ref": "#/definitions/Response36456Meta" },
         "data": { "type": "array", "items": { "$ref": "#/definitions/Oppija" } }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34469Meta": { "type": "object", "additionalProperties": false },
-    "Response34470": {
+    "Response36456Meta": { "type": "object", "additionalProperties": false },
+    "Response36457": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34470Meta" },
+        "meta": { "$ref": "#/definitions/Response36457Meta" },
         "data": { "type": "array", "items": { "$ref": "#/definitions/Oppija" } }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34470Meta": { "type": "object", "additionalProperties": false },
-    "Response34471": {
+    "Response36457Meta": { "type": "object", "additionalProperties": false },
+    "Response36458": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34471Meta" },
+        "meta": { "$ref": "#/definitions/Response36458Meta" },
         "data": {
           "type": "array",
           "items": { "$ref": "#/definitions/Tutkinto" }
@@ -3255,27 +3652,35 @@
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34471Meta": { "type": "object", "additionalProperties": false },
-    "Response34472": {
+    "Response36458Meta": { "type": "object", "additionalProperties": false },
+    "Response36459": {
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34472Meta" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/Oppija" } }
+        "meta": { "$ref": "#/definitions/Response36459Meta" },
+        "data": { "$ref": "#/definitions/Response36459Data" }
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
     },
-    "Response34472Meta": { "type": "object", "additionalProperties": false },
-    "Response34473": {
+    "Response36459Data": { "type": "object", "additionalProperties": false },
+    "Response36459Meta": { "type": "object", "additionalProperties": false },
+    "TodennettuArviointiLisatiedot": {
+      "description": "Mikäli arvioijan kautta todennettu,\n       annetaan myös arvioijan lisätiedot",
       "type": "object",
       "properties": {
-        "meta": { "$ref": "#/definitions/Response34473Meta" },
-        "data": { "type": "array", "items": { "$ref": "#/definitions/HOKS" } }
+        "lahetetty-arvioitavaksi": {
+          "description": "Päivämäärä, jona\n    lähetetty arvioitavaksi, muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        },
+        "aiemmin-hankitun-osaamisen-arvioijat": {
+          "description": "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/KoulutuksenJarjestajaArvioija" }
+        }
       },
-      "additionalProperties": false,
-      "required": ["meta", "data"]
+      "additionalProperties": false
     },
-    "Response34473Meta": { "type": "object", "additionalProperties": false },
     "TranslatedValue": {
       "type": "object",
       "properties": {
@@ -3285,91 +3690,80 @@
       },
       "additionalProperties": false
     },
-    "TutkinnonOsa": {
-      "description": "Tutkinnon osa",
-      "type": "object",
-      "properties": {
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
-        },
-        "tunniste": { "$ref": "#/definitions/KoodistoKoodi" },
-        "laajuus": {
-          "description": "Tutkinnon laajuus ePerusteet palvelussa",
-          "type": "integer",
-          "format": "int64"
-        },
-        "eperusteet-id": {
-          "description": "Tunniste ePerusteet-palvelussa",
-          "type": "string"
-        },
-        "nimi": {
-          "description": "Tutkinnon osan nimi ePerusteet-palvelussa",
-          "type": "string"
-        },
-        "kuvaus": {
-          "description": "Tutkinnon osan kuvaus ePerusteet-palvelussa",
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": ["tunniste", "eperusteet-id"]
-    },
     "Tutkinto": {
-      "description": "Opinto-oikeuden tutkinto",
+      "description": "Tutkinnon tiedot ePerusteet palvelussa",
       "type": "object",
       "properties": {
-        "laajuus": {
-          "description": "Tutkinnon laajuus",
-          "type": "integer",
-          "format": "int64"
-        },
-        "nimi": { "description": "Tutkinnon nimi", "type": "string" }
+        "laajuus": { "type": "integer", "format": "int64" },
+        "nimi": { "type": "string" }
       },
       "additionalProperties": false,
       "required": ["laajuus", "nimi"]
     },
-    "TyopaikallaHankittavaOsaaminen": {
-      "description": "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot",
+    "TyoelamaArvioija": {
+      "description": "Työelämän arvioija",
       "type": "object",
       "properties": {
-        "vastuullinen-ohjaaja": { "$ref": "#/definitions/Henkilo" },
-        "keskeiset-tyotehtavat": {
-          "description": "Keskeiset työtehtävät",
-          "type": "array",
-          "items": { "type": "string" }
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
         },
-        "hankkijan-edustaja": { "$ref": "#/definitions/Henkilo" },
-        "erityinen-tuki": {
-          "description": "Onko opiskelijalla tunnistettu tuen tarvetta tai onko hänellä erityisen tuen päätös",
-          "type": "boolean"
+        "nimi": { "description": "Arvioijan nimi", "type": "string" },
+        "organisaatio": { "$ref": "#/definitions/TyoelamaOrganisaatio" }
+      },
+      "additionalProperties": false,
+      "required": ["nimi", "organisaatio"]
+    },
+    "TyoelamaOrganisaatio": {
+      "description": "Työelämän arvioijan organisaatio",
+      "type": "object",
+      "properties": {
+        "nimi": { "description": "Organisaation nimi", "type": "string" },
+        "y-tunnus": {
+          "description": "Mikäli organisaatiolla on y-tunnus,\n    organisaation y-tunnus",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["nimi"]
+    },
+    "TyopaikallaHankittavaOsaaminen": {
+      "description": "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai koulutussopimus.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Tunniste eHOKS-järjestelmässä",
+          "type": "integer",
+          "format": "int64"
         },
-        "jarjestajan-edustaja": { "$ref": "#/definitions/Henkilo" },
-        "erityisen-tuen-aika": { "$ref": "#/definitions/Aikavali" },
+        "vastuullinen-ohjaaja": { "$ref": "#/definitions/VastuullinenOhjaaja" },
+        "tyopaikan-nimi": { "description": "Työpaikan nimi", "type": "string" },
+        "tyopaikan-y-tunnus": {
+          "description": "Työpaikan y-tunnus",
+          "type": "string"
+        },
         "muut-osallistujat": {
           "description": "Muut ohjaukseen osallistuvat henkilöt",
           "type": "array",
           "items": { "$ref": "#/definitions/Henkilo" }
         },
-        "eid": {
-          "description": "Tunniste eHOKS-järjestelmässä",
-          "type": "integer",
-          "format": "int64"
+        "keskeiset-tyotehtavat": {
+          "description": "Keskeiset työtehtävät",
+          "type": "array",
+          "items": { "type": "string" }
         },
-        "ohjaus-ja-tuki": {
-          "description": "Onko opiskelijalla tunnistettu ohjauksen ja tuen tarvetta",
+        "lisatiedot": {
+          "description": "Lisätietoja, esim. opiskelijalla tunnistettu ohjauksen ja tuen tarvetta",
           "type": "boolean"
         }
       },
       "additionalProperties": false,
       "required": [
         "vastuullinen-ohjaaja",
+        "tyopaikan-nimi",
         "keskeiset-tyotehtavat",
-        "hankkijan-edustaja",
-        "erityinen-tuki",
-        "jarjestajan-edustaja",
-        "ohjaus-ja-tuki"
+        "lisatiedot"
       ]
     },
     "User": {
@@ -3393,80 +3787,67 @@
         "contact-values-group": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Response34449DataContactValuesGroup"
+            "$ref": "#/definitions/Response36438DataContactValuesGroup"
           }
         }
       },
       "additionalProperties": false,
       "required": ["first-name", "common-name", "surname"]
     },
-    "YhteinenTutkinnonOsa": {
-      "description": "Yhteinen Tutkinnon osa (YTO)",
+    "VastuullinenOhjaaja": {
+      "description": "Vastuullinen työpaikkaohjaaja",
       "type": "object",
       "properties": {
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
-        "tutkinnon-osat": {
-          "description": "Yhteisen tutkinnon osan osat",
-          "type": "array",
-          "items": { "$ref": "#/definitions/YhteisenTutkinnonOsanOsa" }
-        },
-        "tunniste": { "$ref": "#/definitions/KoodistoKoodi" },
-        "laajuus": {
-          "description": "Tutkinnon laajuus ePerusteet palvelussa",
-          "type": "integer",
-          "format": "int64"
-        },
-        "eperusteet-id": {
-          "description": "Tunniste ePerusteet-palvelussa",
+        "nimi": { "description": "Henkilön nimi", "type": "string" },
+        "sahkoposti": {
+          "description": "Vastuullisen ohjaajan sähköpostiosoite",
           "type": "string"
-        },
-        "nimi": {
-          "description": "Tutkinnon osan nimi ePerusteet-palvelussa",
-          "type": "string"
-        },
-        "kuvaus": {
-          "description": "Tutkinnon osan kuvaus ePerusteet-palvelussa",
-          "type": "string"
-        },
-        "pakollinen": {
-          "description": "Onko tutkinnon osa pakollinen vai ei",
-          "type": "boolean"
         }
       },
       "additionalProperties": false,
-      "required": ["tutkinnon-osat", "tunniste", "eperusteet-id", "pakollinen"]
+      "required": ["nimi"]
     },
-    "YhteisenTutkinnonOsanOsa": {
-      "description": "Yhteisen tutkinnon osan (YTO) osa",
+    "YhteisenTutkinnonOsanOsaAlue": {
+      "description": "Puuttuvan yhteinen tutkinnon osan (YTO) osa-alueen tiedot",
       "type": "object",
       "properties": {
-        "eid": {
+        "id": {
           "description": "Tunniste eHOKS-järjestelmässä",
           "type": "integer",
           "format": "int64"
         },
-        "eperusteet-tunniste": {
-          "description": "Osan tunniste ePerusteet-palvelussa. Tunnisteen tyyppi voi vielä muuttua",
+        "osa-alue-koodi-uri": {
+          "description": "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)",
+          "type": "string",
+          "pattern": "^ammatillisenoppiaineet_.+$"
+        },
+        "osa-alue-koodi-versio": {
+          "description": "Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet)",
           "type": "integer",
           "format": "int64"
         },
-        "laajuus": {
-          "description": "Tutkinnon laajuus ePerusteet palvelussa",
-          "type": "integer",
-          "format": "int64"
+        "osaamisen-hankkimistavat": {
+          "description": "Osaamisen hankkimistavat",
+          "type": "array",
+          "items": { "$ref": "#/definitions/OsaamisenHankkimistapa" }
         },
-        "nimi": {
-          "description": "Tutkinnon osan nimi ePerusteet-palvelussa",
+        "vaatimuksista-tai-tavoitteista-poikkeaminen": {
+          "description": "vaatimuksista tai osaamistavoitteista poikkeaminen",
           "type": "string"
         },
-        "tunniste": { "$ref": "#/definitions/KoodistoKoodi" }
+        "hankitun-osaamisen-naytto": {
+          "description": "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen",
+          "type": "array",
+          "items": { "$ref": "#/definitions/HankitunYTOOsaamisenNaytto" }
+        }
       },
       "additionalProperties": false,
-      "required": ["eperusteet-tunniste", "tunniste"]
+      "required": ["osa-alue-koodi-uri", "osa-alue-koodi-versio"]
     }
   }
 }

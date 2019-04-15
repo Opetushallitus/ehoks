@@ -32,8 +32,8 @@
        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
     :tarkentavat-tiedot-naytto
-    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_fy"
-      :osa-alue-koodi-versio 1
+    [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_fy"
+                    :koodi-versio 1}]
       :koulutuksen-jarjestaja-arvioijat
       [{:nimi "Aapo Arvioija"
         :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
@@ -69,14 +69,15 @@
     :vaatimuksista-tai-tavoitteista-poikkeaminen
     "Ei poikkeamaa."
     :tarkentavat-tiedot-naytto
-    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_li"
+    [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_li"
+                    :koodi-versio 6}]
       :koulutuksen-jarjestaja-arvioijat
       [{:nimi "Teuvo Testaaja"
         :organisaatio {:oppilaitos-oid
                        "1.2.246.562.10.12346234690"}}]
       :jarjestaja {:oppilaitos-oid
                    "1.2.246.562.10.93270534262"}
-      :osa-alue-koodi-versio 6
+
       :nayttoymparisto {:nimi "Testi Oyj"
                         :y-tunnus "1289211-2"
                         :kuvaus "Testiyhtiö"}
@@ -109,8 +110,8 @@
       [{:nimi "Taneli Työmies"
         :organisaatio {:nimi "Tanelin Paja Ky"
                        :y-tunnus "12345622-2"}}]
-      :osa-alue-koodi-uri "ammatillisenoppiaineet_kl"
-      :osa-alue-koodi-versio 3
+      :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
+                    :koodi-versio 3}]
       :alku (java.time.LocalDate/of 2019 3 10)
       :loppu (java.time.LocalDate/of 2019 3 19)}]
     :osaamisen-hankkimistavat
@@ -178,14 +179,15 @@
       "osaamisentodentamisenprosessi_0003"
       :valittu-todentamisen-prosessi-koodi-versio 4
       :tarkentavat-tiedot
-      [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
+      [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
+                      :koodi-versio 3}]
         :koulutuksen-jarjestaja-arvioijat
         [{:nimi "Teppo Testaaja"
           :organisaatio {:oppilaitos-oid
                          "1.2.246.562.10.54539267901"}}]
         :jarjestaja {:oppilaitos-oid
                      "1.2.246.562.10.55890967901"}
-        :osa-alue-koodi-versio 3
+
         :nayttoymparisto {:nimi "Ab Yhtiö Oy"
                           :y-tunnus "1234128-1"
                           :kuvaus "Testi"}
@@ -198,14 +200,14 @@
         :loppu (java.time.LocalDate/of 2019 3 1)}]}]
     :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590901"
     :tarkentavat-tiedot-naytto
-    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ma"
+    [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ma"
+                    :koodi-versio 6}]
       :koulutuksen-jarjestaja-arvioijat
       [{:nimi "Erkki Esimerkkitestaaja"
         :organisaatio {:oppilaitos-oid
                        "1.2.246.562.10.13490579090"}}]
       :jarjestaja {:oppilaitos-oid
                    "1.2.246.562.10.93270579090"}
-      :osa-alue-koodi-versio 6
       :nayttoymparisto {:nimi "Testi Oy"
                         :y-tunnus "1289235-2"
                         :kuvaus "Testiyhtiö"}
@@ -269,8 +271,8 @@
       :tyoelama-arvioijat [{:nimi "Teppo Työmies"
                             :organisaatio {:nimi "Kallen Paja Ky"
                                            :y-tunnus "12345679-2"}}]
-      :osa-alue-koodi-uri "ammatillisenoppiaineet_fk"
-      :osa-alue-koodi-versio 2
+      :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_fk"
+                    :koodi-versio 2}]
       :alku (java.time.LocalDate/of 2019 3 11)
       :loppu (java.time.LocalDate/of 2019 3 13)}]}])
 
@@ -332,8 +334,8 @@
         :tyoelama-arvioijat [{:nimi "Taneli Työmies"
                               :organisaatio {:nimi "Tanelin Paja Ky"
                                              :y-tunnus "12323459-2"}}]
-        :osa-alue-koodi-uri "ammatillisenoppiaineet_cu"
-        :osa-alue-koodi-versio 2
+        :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_cu"
+                      :koodi-versio 2}]
         :alku (java.time.LocalDate/of 2019 3 1)
         :loppu (java.time.LocalDate/of 2019 3 18)}]}]}])
 

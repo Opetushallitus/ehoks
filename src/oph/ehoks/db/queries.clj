@@ -2,7 +2,7 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as cstr]))
 
-(defn read-sql-file [f] (slurp (io/file (io/resource f))))
+(defn read-sql-file [f] (slurp (io/resource f)))
 
 (def select-by-template (read-sql-file "select_by.sql"))
 
@@ -46,6 +46,13 @@
      :secondary-column "hankitun_osaamisen_naytto_id"
      :primary-column "id"
      :column "olemassa_oleva_ammatillinen_tutkinnon_osa_id"}))
+(def select-osa-alueet-by-hankitun-osaamisen-naytto
+  (generate-select-join
+    {:table "koodisto_koodit"
+     :join "hankitun_osaamisen_nayton_osa_alueet"
+     :secondary-column "koodisto_koodi_id"
+     :primary-column "id"
+     :column "hankitun_osaamisen_naytto_id"}))
 (defq select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id)
 (defq select-puuttuvat-paikalliset-tutkinnon-osat-by-id)
 (defq select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id)

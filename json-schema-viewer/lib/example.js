@@ -17,20 +17,17 @@
         jsonSchema.title = "eHOKS";
 
         // defines which schema models we show at root level
-        jsonSchema.properties = {
-          HOKS: {
-            $ref: "#/definitions/HOKS"
-          },
-          HOKSKentanPaivitys: {
-            $ref: "#/definitions/HOKSKentanPaivitys"
-          },
-          HOKSLuonti: {
-            $ref: "#/definitions/HOKSLuonti"
-          },
-          HOKSPaivitys: {
-            $ref: "#/definitions/HOKSPaivitys"
+        jsonSchema.properties = [
+          "HOKS",
+          "HOKSKentanPaivitys",
+          "HOKSLuonti",
+          "HOKSPaivitys"
+        ].reduce(function(result, key) {
+          if (jsonSchema.definitions[key]) {
+            result[key] = { $ref: "#/definitions/" + key };
           }
-        };
+          return result;
+        }, {});
 
         // add definition's identifier as title if not previously defined
         jsonSchema.definitions = Object.keys(jsonSchema.definitions).reduce(

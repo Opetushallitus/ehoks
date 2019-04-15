@@ -179,6 +179,18 @@ Kontin ajaminen:
 docker run --rm --name ehoks-postgres -p 5432:5432 --volume ~/path/to/ehoks-postgres-data:/data ehoks-postgres
 ```
 
+### Testi-JSONin lähetys
+
+Sovelluksessa on mukana pieni skripti, jolla voi lähettää JSON-tiedoston
+palvelimelle. Tätä voi hyödyntää esimerkiksi testiympäristöön datan
+lähettämisessä. Skriptille tulee määritellä config-tiedosto, jossa on
+ympäristökohtainen CAS-palvelimen osoite, CAS-tunnukset ja palvelun tunniste.
+
+Skriptiä kutsutaan:
+
+```shell
+lein send-json "path/to/file.json" :service "http://localhost:3000/ehoks-backend" :path "api/v1/hoks" :config "path/to/config.edn"
+```
 
 ### Schemat
 

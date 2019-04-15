@@ -49,7 +49,7 @@
                             (assoc :debug (:debug config false))
                             (assoc :cookie-policy :standard))))
     (catch Exception e
-      (throw (ex-info "HTTP request error"
+      (throw (ex-info (format "HTTP request error: %s" (.getMessage e))
                       (merge
                         (ex-data e)
                         {:log-data {:method method
