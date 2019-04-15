@@ -134,6 +134,22 @@
     {:olemassa_oleva_yhteinen_tutkinnon_osa_id (:id ooyto)
      :hankitun_osaamisen_naytto_id (:id n)}))
 
+(defn insert-koodisto-koodi! [m]
+  (insert-one!
+    :koodisto_koodit
+    (h/to-sql m)))
+
+(defn insert-hankitun-osaamisen-nayton-osa-alue! [naytto-id koodi-id]
+  (insert-one!
+    :hankitun_osaamisen_nayton_osa_alueet
+    {:hankitun_osaamisen_naytto_id naytto-id
+     :koodisto_koodi_id koodi-id}))
+
+(defn select-osa-alueet-by-hankitun-osaamisen-naytto [naytto-id]
+  (query
+    [queries/select-osa-alueet-by-hankitun-osaamisen-naytto naytto-id]
+    {:row-fn h/koodi-uri-from-sql}))
+
 (defn select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
   (query
     [queries/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id id]

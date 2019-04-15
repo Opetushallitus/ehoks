@@ -31,6 +31,13 @@
   #"^1\.2\.246\.562\.15\.\d{11}$")
 
 (s/defschema
+  KoodistoKoodi
+  (describe
+    "Koodisto Koodi"
+    :koodi-uri s/Str "Koodisto-koodi URI"
+    :koodi-versio s/Int "Koodisto-koodin versio"))
+
+(s/defschema
   Organisaatio
   (describe
     "Organisaatio"
@@ -218,13 +225,11 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
-    (s/optional-key :osa-alue-koodi-uri) OsaAlueKoodiUri
+    (s/optional-key :osa-alueet) [KoodistoKoodi]
     (str "Suoritettavan tutkinnon osan näyttöön sisältyvän"
-         "yton osa-alueen Koodisto-koodi-URI
+         "yton osa-alueiden Koodisto-koodi-URIt
          eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxx"
          "esim. ammatillisenoppiaineet_etk")
-    (s/optional-key :osa-alue-koodi-versio)  s/Int
-    "Koodisto-koodin versio, koodistolle yton osa-alue"
     :nayttoymparisto Nayttoymparisto
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
     (s/optional-key :keskeiset-tyotehtavat-naytto) [s/Str] "Keskeiset
