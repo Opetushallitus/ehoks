@@ -12,7 +12,9 @@
       :nayttoymparisto
       (db/select-nayttoymparisto-by-id (:nayttoymparisto-id naytto))
       :keskeiset-tyotehtavat-naytto
-      (db/select-tyotehtavat-by-hankitun-osaamisen-naytto-id (:id naytto)))
+      (db/select-tyotehtavat-by-hankitun-osaamisen-naytto-id (:id naytto))
+      :osa-alueet
+      (db/select-osa-alueet-by-hankitun-osaamisen-naytto (:id naytto)))
     :nayttoymparisto-id))
 
 (defn get-ooato-tarkentavat-tiedot-naytto [id]
@@ -260,6 +262,13 @@
        arvioija)
     arvioijat))
 
+(defn save-hankitun-osaamisen-nayton-osa-alueet! [n c]
+  (mapv
+    #(let [k (db/insert-koodisto-koodi! %)]
+       (db/insert-hankitun-osaamisen-nayton-osa-alue! (:id n) (:id k))
+       k)
+    c))
+
 (defn save-hankitun-osaamisen-naytto! [n]
   (let [nayttoymparisto (db/insert-nayttoymparisto! (:nayttoymparisto n))
         naytto (db/insert-hankitun-osaamisen-naytto!
@@ -270,6 +279,8 @@
       naytto (:tyoelama-arvioijat n))
     (db/insert-hankitun-osaamisen-nayton-tyotehtavat!
       naytto (:keskeiset-tyotehtavat-naytto n))
+    (save-hankitun-osaamisen-nayton-osa-alueet!
+      naytto (:osa-alueet n))
     naytto))
 
 (defn save-ppto-hankitun-osaamisen-naytto! [ppto n]
