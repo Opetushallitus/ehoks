@@ -30,7 +30,8 @@
     h))
 
 (defn- replace-from [h sks tk]
-  (if (get-in h sks)
+  (cond
+    (get-in h sks)
     (if (= (count (get-in h (drop-last sks))) 1)
       (apply
         dissoc
@@ -41,7 +42,9 @@
         (drop-last sks)
         dissoc
         (last sks)))
-    h))
+    (empty? (get-in h (drop-last sks)))
+    (apply dissoc h (drop-last sks))
+    :else h))
 
 (defn replace-with-in [m kss kst]
   (if (coll? kss)
