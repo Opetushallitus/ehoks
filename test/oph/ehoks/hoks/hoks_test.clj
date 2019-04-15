@@ -70,7 +70,7 @@
     "Ei poikkeamaa."
     :tarkentavat-tiedot-naytto
     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_li"
-                   :koodi-versio 6}]
+                    :koodi-versio 6}]
       :koulutuksen-jarjestaja-arvioijat
       [{:nimi "Teuvo Testaaja"
         :organisaatio {:oppilaitos-oid
