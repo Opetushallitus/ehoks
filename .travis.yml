@@ -37,11 +37,9 @@ script:
 
 deploy:
   provider: script
-  script: ./ci-tools/build/upload-image.sh ehoks
-  on:
-    all_branches: true
-  provider: script
-  script: lein dbmigrate
+  script: >-
+    ./ci-tools/build/upload-image.sh ehoks &&
+    lein dbmigrate
   on:
     all_branches: true
 
