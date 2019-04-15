@@ -184,8 +184,12 @@
                 :keskeiset-tyotehtavat-naytto
                 :koulutuksen-jarjestaja-arvioijat
                 :tyoelama-arvioijat
-                :osaamistavoitteet]
+                :osaamistavoitteet
+                :osa-alueet]
      :replaces {[:jarjestaja :oppilaitos-oid] :jarjestaja-oppilaitos-oid}}))
+
+(defn koodi-uri-from-sql [m]
+  (from-sql m {:removals [:id]}))
 
 (defn koulutuksen-jarjestaja-arvioija-from-sql [m]
   (from-sql m {:replaces {:oppilaitos_oid [:organisaatio :oppilaitos-oid]}

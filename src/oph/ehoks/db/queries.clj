@@ -46,6 +46,13 @@
      :secondary-column "hankitun_osaamisen_naytto_id"
      :primary-column "id"
      :column "olemassa_oleva_ammatillinen_tutkinnon_osa_id"}))
+(def select-osa-alueet-by-hankitun-osaamisen-naytto
+  (generate-select-join
+    {:table "koodisto_koodit"
+     :join "hankitun_osaamisen_nayton_osa_alueet"
+     :secondary-column "koodisto_koodi_id"
+     :primary-column "id"
+     :column "hankitun_osaamisen_naytto_id"}))
 (defq select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id)
 (defq select-puuttuvat-paikalliset-tutkinnon-osat-by-id)
 (defq select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id)
