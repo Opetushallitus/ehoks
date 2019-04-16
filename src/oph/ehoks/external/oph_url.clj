@@ -4,7 +4,7 @@
             [clojure.string :as cstr]))
 
 (def base-urls
-  {"host.virkailija" (:virkailija-url config)})
+  {"opintopolku-host" (:opintopolku-host config)})
 
 (def re-comment #"^\s*#.*")
 
