@@ -43,7 +43,8 @@
   (with-koodisto-get (u/get-url "koodisto-service.get-latest-by-uri" uri)))
 
 (defn get-koodi-versio [uri versio]
-  (with-koodisto-get (u/get-url "koodisto-service.get-versio-by-uri" uri versio)))
+  (with-koodisto-get
+    (u/get-url "koodisto-service.get-versio-by-uri" uri versio)))
 
 (defn convert-metadata [m]
   {:nimi (:nimi m)
