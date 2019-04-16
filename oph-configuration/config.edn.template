@@ -2,6 +2,7 @@
  :backend-url "{{ehoks_backend_url}}"
  :database-url "{{ehoks_db_url}}"
  :frontend-url "{{ehoks_frontend_url}}"
+ :eperusteet-peruste-url "{{ehoks_eperusteet_peruste_url}}"
  :cas-username "{{ehoks_cas_username}}"
  :cas-password "{{ehoks_cas_password}}"
  :client-sub-system-code "{{ehoks_client_sub_system_code}}"
