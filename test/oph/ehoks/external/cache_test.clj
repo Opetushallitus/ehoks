@@ -68,9 +68,8 @@
 
 (deftest test-encode-url
   (testing "Encoding URL"
-    (is (= (c/encode-url "http://example.com" ""
-                         {})
-           "http://example.com/"))
-    (is (= (c/encode-url "http://example.com" ""
+    (is (= (c/encode-url "http://example.com" {})
+           "http://example.com"))
+    (is (= (c/encode-url "http://example.com"
                          {:param1 "Param1" :param2 "Param2"})
-           "http://example.com/?param1=Param1&param2=Param2"))))
+           "http://example.com?param1=Param1&param2=Param2"))))
