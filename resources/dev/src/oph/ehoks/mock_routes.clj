@@ -54,16 +54,16 @@
   (GET "/auth-dev/opintopolku-logout/" request
     (response/see-other (get-in request [:query-params "return"])))
 
-  (POST "/cas-dev/v1/tickets" request
+  (POST "/cas/v1/tickets" request
     (response/created
       (format
-        "http://localhost:%d/cas-dev/v1/tickets/TGT-1234-Example-cas.1234567890abc"
+        "http://localhost:%d/cas/v1/tickets/TGT-1234-Example-cas.1234567890abc"
         (:port config))))
 
-  (POST "/cas-dev/v1/tickets/TGT-1234-Example-cas.1234567890abc" []
+  (POST "/cas/v1/tickets/TGT-1234-Example-cas.1234567890abc" []
     (response/ok "ST-1234-aBcDeFgHiJkLmN123456-cas.1234567890ab"))
 
-  (GET "/cas-dev/p3/serviceValidate" []
+  (GET "/cas/p3/serviceValidate" []
     (response/ok
       (str "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>"
            "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
@@ -129,4 +129,12 @@
 
   (GET "/koski/api/oppija/*" []
     (json-response-file
-      "dev-routes/koski_api_oppija_1.2.246.562.24.44651722625.json")))
+      "dev-routes/koski_api_oppija_1.2.246.562.24.44651722625.json"))
+
+  (GET "/koski/api/opiskeluoikeus/1.2.246.562.15.76811932037" []
+    (json-response-file
+      "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.76811932037.json"))
+
+  (GET "/kayttooikeus-service/kayttooikeus/kayttaja" []
+    (json-response-file
+      "dev-routes/kayttooikeus-service_kayttooikeus_kayttaja.json")))
