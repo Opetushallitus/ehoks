@@ -2,7 +2,8 @@
   (:require [oph.ehoks.external.connection :as c]
             [oph.ehoks.config :refer [config]]
             [clojure.data.xml :as xml]
-            [clj-time.core :as t]))
+            [clj-time.core :as t]
+            [oph.ehoks.external.oph-url :as u]))
 
 (defonce service-ticket
   ^:private
@@ -20,8 +21,8 @@
 (defn refresh-service-ticket! []
   (let [response (c/with-api-headers
                    {:method :post
-                    :service
-                    (str (:cas-service-ticket-url config) "/v1/tickets")
+                    :service (u/get-url "cas.service-ticket")
+                    :url (u/get-url "cas.service-ticket")
                     :options {:form-params {:username (:cas-username config)
                                             :password (:cas-password config)}}})
         url (get-in response [:headers "location"])]
@@ -39,6 +40,7 @@
   (:body (c/with-api-headers
            {:method :post
             :service url
+            :url url
             :options
             {:form-params
              {:service (get-cas-url service)}}})))
@@ -86,8 +88,8 @@
 (defn validate-ticket [service ticket]
   (let [response (c/with-api-headers
                    {:method :get
-                    :service (str (:cas-service-ticket-url config) "/p3")
-                    :path "serviceValidate"
+                    :service (u/get-url "cas.validate-service")
+                    :url (u/get-url "cas.validate-service")
                     :options
                     {:query-params
                      {:service (get-cas-url service)

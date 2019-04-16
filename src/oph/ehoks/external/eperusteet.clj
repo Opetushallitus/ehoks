@@ -1,7 +1,7 @@
 (ns oph.ehoks.external.eperusteet
-  (:require [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.connection :as c]
-            [oph.ehoks.external.cache :as cache]))
+  (:require [oph.ehoks.external.connection :as c]
+            [oph.ehoks.external.cache :as cache]
+            [oph.ehoks.external.oph-url :as u]))
 
 (defn map-perusteet [values]
   (map
@@ -17,8 +17,8 @@
   (get-in
     (c/with-api-headers
       {:method :get
-       :service (:eperusteet-url config)
-       :path "perusteet"
+       :service (u/get-url "eperusteet-service-url")
+       :url (u/get-url "eperusteet-service.find-perusteet")
        :options {:as :json
                  :query-params {:nimi nimi
                                 :tutkintonimikkeet true
@@ -30,16 +30,16 @@
   (:body
     (c/with-api-headers
       {:method :get
-       :service (:eperusteet-url config)
-       :path (format "perusteet/%d" id)
+       :service (u/get-url "eperusteet-service-url")
+       :url (u/get-url "eperusteet-service.get-perusteet" id)
        :options {:as :json}})))
 
 (defn find-tutkinnon-osat [^String koodi-uri]
   (get-in
     (cache/with-cache!
       {:method :get
-       :service (:eperusteet-url config)
-       :path "tutkinnonosat"
+       :service (u/get-url "eperusteet-service-url")
+       :url (u/get-url "eperusteet-service.find-tutkinnonosat")
        :options {:as :json
                  :query-params {:koodiUri koodi-uri}}})
     [:body :data]))
@@ -48,8 +48,8 @@
   (get
     (cache/with-cache!
       {:method :get
-       :service (:eperusteet-url config)
-       :path (format "tutkinnonosat/%d/viitteet" id)
+       :service (u/get-url "eperusteet-service-url")
+       :url (u/get-url "eperusteet-service.get-tutkinnonosa-viitteet" id)
        :options {:as :json}})
     :body))
 
@@ -57,8 +57,8 @@
   (get
     (cache/with-cache!
       {:method :get
-       :service (:eperusteet-url config)
-       :path "perusteet/diaari"
+       :service (u/get-url "eperusteet-service-url")
+       :url (u/get-url "eperusteet-service.find-perusteet-by-diaari")
        :options {:as :json
                  :query-params {:diaarinumero diaarinumero}}})
     :body))
@@ -67,7 +67,7 @@
   (get
     (cache/with-cache!
       {:method :get
-       :service (:eperusteet-url config)
-       :path (format "perusteet/%d/suoritustavat/reformi/rakenne" id)
+       :service (u/get-url "eperusteet-service-url")
+       :url (u/get-url "eperusteet-service.get-rakenne" id)
        :options {:as :json}})
     :body))

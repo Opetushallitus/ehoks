@@ -44,18 +44,17 @@
                 :ehoks-cached true
                 :cached :HIT)))
 
-(defn encode-url [url path params]
-  (let [base (format "%s/%s" url path)]
-    (if (empty? params)
-      base
-      (format "%s?%s" base (codec/form-encode params)))))
+(defn encode-url [url params]
+  (if (empty? params)
+    url
+    (format "%s?%s" url (codec/form-encode params))))
 
 (defn with-cache!
-  [{service :service path :path options :options :as data}]
-  (or (get-cached (encode-url service path (:query-params options)))
+  [{service :service url :url options :options :as data}]
+  (or (get-cached (encode-url url (:query-params options)))
       (let [response (if (:authenticate? data)
                        (cas/with-service-ticket data)
                        (c/with-api-headers data))]
         (add-cached-response!
-          (encode-url service path (:query-params options)) response)
+          (encode-url url (:query-params options)) response)
         (assoc response :cached :MISS))))

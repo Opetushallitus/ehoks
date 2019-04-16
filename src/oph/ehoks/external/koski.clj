@@ -2,7 +2,8 @@
   (:require [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.connection :as c]
             [ring.util.http-status :as status]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [oph.ehoks.external.oph-url :as u]))
 
 (defn filter-oppija [values]
   (update values :henkilö select-keys
@@ -12,8 +13,8 @@
   (:body
     (c/with-api-headers
       {:method :get
-       :service (:koski-url config)
-       :path (format "api/oppija/%s" oid)
+       :service (u/get-url "koski-url")
+       :url (u/get-url "koski.get-oppija" oid)
        :options {:basic-auth [(:cas-username config) (:cas-password config)]
                  :as :json}})))
 
@@ -22,8 +23,8 @@
     (:body
       (c/with-api-headers
         {:method :get
-         :service (:koski-url config)
-         :path (format "api/opiskeluoikeus/%s" oid)
+         :service (u/get-url "koski-url")
+         :url (u/get-url "koski.get-opiskeluoikeus" oid)
          :options {:basic-auth [(:cas-username config) (:cas-password config)]
                    :as :json}}))
     (catch clojure.lang.ExceptionInfo e
