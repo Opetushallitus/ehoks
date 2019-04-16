@@ -11,12 +11,12 @@
 
 (t/deftest replace-vars-test
   (t/testing "Replacing vars"
-    (t/is (= (u/replace-vars "${var1}/path" {"var1" "replaced"}))
-          "replaced/path")
-    (t/is (= (u/replace-vars "some/path" {"var1" "replaced"}))
-          "some/path")
-    (t/is (= (u/replace-vars "/path" {}))
-          "/path")))
+    (t/is (= (u/replace-vars "${var1}/path" {"var1" "replaced"})
+             "replaced/path"))
+    (t/is (= (u/replace-vars "some/path" {"var1" "replaced"})
+             "some/path"))
+    (t/is (= (u/replace-vars "/path" {})
+             "/path"))))
 
 (t/deftest parse-line-test
   (t/testing "Parsing line"
