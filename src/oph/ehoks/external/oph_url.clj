@@ -46,7 +46,7 @@
 (def oph-service-urls (load-urls))
 
 (defn replace-arg [url i v]
-  (cstr/replace url (format "$%d" i) v))
+  (cstr/replace url (format "$%d" i) (str v)))
 
 (defn replace-args [url args]
   (loop [u url a args]
