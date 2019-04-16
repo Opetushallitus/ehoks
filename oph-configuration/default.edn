@@ -23,4 +23,5 @@
  :lokalisointi-url "https://virkailija.testiopintopolku.fi/lokalisointi/cxf/rest/v1/localisation"
  :kayttooikeus-service-url "http://localhost:3000/dev-routes/kayttooikeus-service"
  :backend-url "http://localhost:3000/ehoks-backend"
- :save-hoks-json? false}
+ :save-hoks-json? false
+ :virkailija-url "http://localhost:3000"}

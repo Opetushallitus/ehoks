@@ -56,4 +56,5 @@
               :ext-cache-lifetime-minutes s/Int
               :kayttooikeus-service-url s/Str
               :backend-url s/Str
-              :save-hoks-json? s/Bool})
+              :save-hoks-json? s/Bool
+              :virkailija-url s/Str})
