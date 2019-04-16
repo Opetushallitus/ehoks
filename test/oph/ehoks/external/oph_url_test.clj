@@ -41,6 +41,8 @@
 
 (t/deftest replace-args-test
   (t/testing "Replacing args"
+    (t/is (= (u/replace-args "test/$1" [1])
+             "test/1"))
     (t/is (= (u/replace-args
                "host/path/$1/$2/$3/$4/$5/$6/$7/$8/$9/$10/$11"
                ["param1" "param2" "param3" "param4" "param5" "param6"
