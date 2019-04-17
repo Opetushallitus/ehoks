@@ -34,12 +34,13 @@
     base
     lines))
 
-(defn read-lines [path]
-  (with-open [r (io/reader (io/resource path))]
+(defn read-lines [file]
+  (with-open [r (io/reader file)]
     (doall (line-seq r))))
 
 (defn load-urls []
-  (-> "services-oph.properties"
+  (-> (or (io/file (System/getProperty "services_file"))
+          (io/resource "services-oph.properties"))
       read-lines
       (parse-urls base-urls)))
 
