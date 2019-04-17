@@ -74,7 +74,8 @@
   ([config-file]
    (when (some? config-file)
      (System/setProperty "config" config-file)
-     (require 'oph.ehoks.config :reload))
+     (require 'oph.ehoks.config :reload)
+     (require 'oph.ehoks.external.oph-url :reload))
    (log/info "Starting development server...")
    (log/info "Not safe for production or public environments.")
    (jetty/run-jetty dev-app
