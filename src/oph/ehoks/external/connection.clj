@@ -37,12 +37,10 @@
     client/get))
 
 (defn with-api-headers
-  [{method :method service :service options :options path :path}]
+  [{method :method service :service options :options url :url}]
   (try
     (let [client-method-fn (get-client-fn method)]
-      (client-method-fn (if (some? path)
-                          (format "%s/%s" service path)
-                          service)
+      (client-method-fn url
                         (-> options
                             (assoc-in [:headers "Caller-Id"]
                                       (:client-sub-system-code config))
@@ -53,8 +51,7 @@
                       (merge
                         (ex-data e)
                         {:log-data {:method method
-                                    :service service
-                                    :path (sanitaze-path path)
+                                    :url (sanitaze-path url)
                                     :query-params (sanitaze-params
                                                     (:query-params options))}})
                       e)))))

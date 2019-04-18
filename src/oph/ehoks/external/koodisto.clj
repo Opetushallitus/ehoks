@@ -1,6 +1,6 @@
 (ns oph.ehoks.external.koodisto
-  (:require [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.cache :as cache]))
+  (:require [oph.ehoks.external.cache :as cache]
+            [oph.ehoks.external.oph-url :as u]))
 
 (defn filter-koodisto-values [values]
   (let [filtered
@@ -20,13 +20,13 @@
                      x)))
       filtered)))
 
-(defn with-koodisto-get [path]
+(defn with-koodisto-get [url]
   (try
     (:body
       (cache/with-cache!
         {:method :get
-         :service (:koodisto-url config)
-         :path path
+         :service (u/get-url "koodisto-service-url")
+         :url url
          :options {:as :json}}))
     (catch clojure.lang.ExceptionInfo e
       ; Koodisto returns Internal Server Error 500 with NotFoundException
@@ -35,15 +35,16 @@
         (if (= (:body (ex-data e)) "error.codeelement.not.found")
           (ex-info "Code Element not found"
                    {:type :not-found
-                    :path path}
+                    :url url}
                    e)
           e)))))
 
 (defn get-koodi [uri]
-  (with-koodisto-get (format "rest/codeelement/latest/%s" uri)))
+  (with-koodisto-get (u/get-url "koodisto-service.get-latest-by-uri" uri)))
 
 (defn get-koodi-versio [uri versio]
-  (with-koodisto-get (format "rest/codeelement/%s/%d" uri versio)))
+  (with-koodisto-get
+    (u/get-url "koodisto-service.get-versio-by-uri" uri versio)))
 
 (defn convert-metadata [m]
   {:nimi (:nimi m)

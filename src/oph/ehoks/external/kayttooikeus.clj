@@ -1,15 +1,8 @@
 (ns oph.ehoks.external.kayttooikeus
-  (:require [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.external.cas :as cas]))
-
-(defn get-palvelukayttajat []
-  (cache/with-cache!
-    {:method :get
-     :authenticate? true
-     :service (:kayttooikeus-service-url config)
-     :path "palvelukayttaja"
-     :options {:as :json}}))
+  (:require [oph.ehoks.external.cache :as cache]
+            [oph.ehoks.external.cas :as cas]
+            [oph.ehoks.external.oph-url :as u]
+            [oph.ehoks.config :refer [config]]))
 
 (defn get-user-details [^String username]
   (first
@@ -17,8 +10,8 @@
       (cache/with-cache!
         {:method :get
          :authenticate? true
-         :service (:kayttooikeus-service-url config)
-         :path "kayttooikeus/kayttaja"
+         :service (u/get-url "kayttooikeus-service-url")
+         :url (u/get-url "kayttooikeus-service.kayttaja")
          :options {:as :json
                    :query-params {"username" username}}}))))
 

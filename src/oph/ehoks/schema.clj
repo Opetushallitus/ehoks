@@ -34,6 +34,7 @@
               :port s/Int
               :frontend-url s/Str
               :frontend-url-path s/Str
+              :eperusteet-peruste-url s/Str
               :tyopaikan-toimija-frontend-path s/Str
               :database-url s/Str
               :redis-url (s/maybe s/Str)
@@ -41,19 +42,12 @@
               :opintopolku-logout-url s/Str
               :opintopolku-return-url s/Str
               :opintopolku-tt-auth-url s/Str
-              :eperusteet-url (s/maybe s/Str)
-              :eperusteet-peruste-url (s/maybe s/Str)
-              :lokalisointi-url (s/maybe s/Str)
-              :oppijanumerorekisteri-url s/Str
-              :cas-service-ticket-url s/Str
               :cas-username s/Str
               :cas-password s/Str
               :client-sub-system-code s/Str
               :session-max-age s/Int
               :service-timeout-ms s/Int
-              :koodisto-url s/Str
-              :koski-url s/Str
               :ext-cache-lifetime-minutes s/Int
-              :kayttooikeus-service-url s/Str
               :backend-url s/Str
-              :save-hoks-json? s/Bool})
+              :save-hoks-json? s/Bool
+              :opintopolku-host s/Str})
