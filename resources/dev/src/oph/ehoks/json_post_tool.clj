@@ -6,7 +6,7 @@
     (cas/with-service-ticket
      {:method :post
       :service service
-      :path path
+      :url (format "%s/%s" service path)
       :options {:as :json
                 :body json-body
                 :content-type :json
