@@ -41,8 +41,7 @@
 (def select-hankitun-osaamisen-naytot-by-ooato-id
   (generate-select-join
     {:table "hankitun_osaamisen_naytot"
-     :join (str "olemassa_olevan_ammatillisen_tutkinnon_osan_"
-                "hankitun_osaamisen_naytto")
+     :join "olemassa_olevan_ammatillisen_tutkinnon_osan_naytto"
      :secondary-column "hankitun_osaamisen_naytto_id"
      :primary-column "id"
      :column "olemassa_oleva_ammatillinen_tutkinnon_osa_id"}))
@@ -59,8 +58,7 @@
 (def select-tarkentavat-tiedot-naytto-by-oopto-id
   (generate-select-join
     {:table "hankitun_osaamisen_naytot"
-     :join
-     "olemassa_olevan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto"
+     :join "olemassa_olevan_paikallisen_tutkinnon_osan_naytto"
      :secondary-column "hankitun_osaamisen_naytto_id"
      :primary-column "id"
      :column "olemassa_oleva_paikallinen_tutkinnon_osa_id"}))
@@ -75,7 +73,7 @@
 (def select-hankitun-osaamisen-naytot-by-ppto-id
   (generate-select-join
     {:table "hankitun_osaamisen_naytot"
-     :join "puuttuvan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto"
+     :join "puuttuvan_paikallisen_tutkinnon_osan_naytto"
      :secondary-column "hankitun_osaamisen_naytto_id"
      :primary-column "id"
      :column "puuttuva_paikallinen_tutkinnon_osa_id"}))
@@ -125,14 +123,14 @@
 (def select-hankitun-osaamisen-naytot-by-ooyto-id
   (generate-select-join
     {:table "hankitun_osaamisen_naytot"
-     :join "olemassa_olevan_yhteisen_tutkinnon_osan_hankitun_osaamisen_naytto"
+     :join "olemassa_olevan_yhteisen_tutkinnon_osan_naytto"
      :secondary-column "hankitun_osaamisen_naytto_id"
      :primary-column "id"
      :column "olemassa_oleva_yhteinen_tutkinnon_osa_id"}))
 (def select-hankitun-osaamisen-naytot-by-ooyto-osa-alue-id
   (generate-select-join
     {:table "hankitun_osaamisen_naytot"
-     :join "olemassa_olevan_yto_osa_alueen_hankitun_osaamisen_naytto"
+     :join "olemassa_olevan_yto_osa_alueen_naytto"
      :secondary-column "hankitun_osaamisen_naytto_id"
      :primary-column "id"
      :column "olemassa_oleva_yto_osa_alue_id"}))
@@ -151,7 +149,7 @@
 (def select-hankitun-osaamisen-naytot-by-pato-id
   (generate-select-join
     {:table "hankitun_osaamisen_naytot"
-     :join "puuttuvan_ammatillisen_tutkinnon_osan_hankitun_osaamisen_naytto"
+     :join "puuttuvan_ammatillisen_tutkinnon_osan_naytto"
      :secondary-column "hankitun_osaamisen_naytto_id"
      :primary-column "id"
      :column "puuttuva_ammatillinen_tutkinnon_osa_id"}))
@@ -178,7 +176,7 @@
 (def select-hankitun-osaamisen-naytot-by-yto-osa-alue-id
   (generate-select-join
     {:table "hankitun_osaamisen_naytot"
-     :join "yhteisen_tutkinnon_osan_osa_alueen_hankitun_osaamisen_naytot"
+     :join "yhteisen_tutkinnon_osan_osa_alueen_naytot"
      :secondary-column "hankitun_osaamisen_naytto_id"
      :primary-column "id"
      :column "yhteisen_tutkinnon_osan_osa_alue_id"}))

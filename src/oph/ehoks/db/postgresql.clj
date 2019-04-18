@@ -124,13 +124,13 @@
 
 (defn insert-ooato-hankitun-osaamisen-naytto! [ooato n]
   (insert-one!
-    :olemassa_olevan_ammatillisen_tutkinnon_osan_hankitun_osaamisen_naytto
+    :olemassa_olevan_ammatillisen_tutkinnon_osan_naytto
     {:olemassa_oleva_ammatillinen_tutkinnon_osa_id (:id ooato)
      :hankitun_osaamisen_naytto_id (:id n)}))
 
 (defn insert-ooyto-hankitun-osaamisen-naytto! [ooyto n]
   (insert-one!
-    :olemassa_olevan_yhteisen_tutkinnon_osan_hankitun_osaamisen_naytto
+    :olemassa_olevan_yhteisen_tutkinnon_osan_naytto
     {:olemassa_oleva_yhteinen_tutkinnon_osa_id (:id ooyto)
      :hankitun_osaamisen_naytto_id (:id n)}))
 
@@ -292,7 +292,7 @@
   "Puuttuvan paikallisen tutkinnon osan hankitun osaamisen näyttö"
   [ppto h]
   (insert-one!
-    :puuttuvan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto
+    :puuttuvan_paikallisen_tutkinnon_osan_naytto
     {:puuttuva_paikallinen_tutkinnon_osa_id (:id ppto)
      :hankitun_osaamisen_naytto_id (:id h)}))
 
@@ -303,7 +303,7 @@
                 :hankitun_osaamisen_naytot
                 (map h/hankitun-osaamisen-naytto-to-sql c))]
     (insert-multi!
-      :puuttuvan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto
+      :puuttuvan_paikallisen_tutkinnon_osan_naytto
       (map #(hash-map
               :puuttuva_paikallinen_tutkinnon_osa_id (:id ppto)
               :hankitun_osaamisen_naytto_id (:id %))
@@ -401,7 +401,7 @@
 
 (defn insert-oopto-hankitun-osaamisen-naytto! [oopto-id naytto-id]
   (insert-one!
-    :olemassa_olevan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto
+    :olemassa_olevan_paikallisen_tutkinnon_osan_naytto
     {:olemassa_oleva_paikallinen_tutkinnon_osa_id oopto-id
      :hankitun_osaamisen_naytto_id naytto-id}))
 
@@ -431,7 +431,7 @@
 
 (defn insert-ooyto-osa-alue-hankitun-osaamisen-naytto! [osa-alue-id naytto-id]
   (insert-one!
-    :olemassa_olevan_yto_osa_alueen_hankitun_osaamisen_naytto
+    :olemassa_olevan_yto_osa_alueen_naytto
     {:olemassa_oleva_yto_osa_alue_id osa-alue-id
      :hankitun_osaamisen_naytto_id naytto-id}))
 
@@ -467,7 +467,7 @@
 
 (defn insert-pato-hankitun-osaamisen-naytto! [pato-id naytto-id]
   (insert-one!
-    :puuttuvan_ammatillisen_tutkinnon_osan_hankitun_osaamisen_naytto
+    :puuttuvan_ammatillisen_tutkinnon_osan_naytto
     {:puuttuva_ammatillinen_tutkinnon_osa_id pato-id
      :hankitun_osaamisen_naytto_id naytto-id}))
 
@@ -533,7 +533,7 @@
 
 (defn insert-yto-osa-alueen-hankitun-osaamisen-naytto! [yto-id naytto-id]
   (insert-one!
-    :yhteisen_tutkinnon_osan_osa_alueen_hankitun_osaamisen_naytot
+    :yhteisen_tutkinnon_osan_osa_alueen_naytot
     {:yhteisen_tutkinnon_osan_osa_alue_id yto-id
      :hankitun_osaamisen_naytto_id naytto-id}))
 
