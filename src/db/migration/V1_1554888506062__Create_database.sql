@@ -116,7 +116,7 @@ CREATE TABLE olemassa_olevat_ammatilliset_tutkinnon_osat(
   tarkentavat_tiedot_arvioija_id INTEGER REFERENCES todennettu_arviointi_lisatiedot(id)
 );
 
-CREATE TABLE olemassa_olevan_ammatillisen_tutkinnon_osan_hankitun_osaamisen_naytto(
+CREATE TABLE olemassa_olevan_ammatillisen_tutkinnon_osan_naytto(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   olemassa_oleva_ammatillinen_tutkinnon_osa_id INTEGER REFERENCES olemassa_olevat_ammatilliset_tutkinnon_osat(id),
@@ -141,7 +141,7 @@ CREATE TABLE olemassa_olevat_paikalliset_tutkinnon_osat(
   lahetetty_arvioitavaksi DATE
 );
 
-CREATE TABLE olemassa_olevan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto(
+CREATE TABLE olemassa_olevan_paikallisen_tutkinnon_osan_naytto(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   olemassa_oleva_paikallinen_tutkinnon_osa_id INTEGER REFERENCES olemassa_olevat_paikalliset_tutkinnon_osat(id),
@@ -171,7 +171,7 @@ CREATE TABLE puuttuvat_paikalliset_tutkinnon_osat(
   vaatimuksista_tai_tavoitteista_poikkeaminen TEXT
 );
 
-CREATE TABLE puuttuvan_paikallisen_tutkinnon_osan_hankitun_osaamisen_naytto(
+CREATE TABLE puuttuvan_paikallisen_tutkinnon_osan_naytto(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   puuttuva_paikallinen_tutkinnon_osa_id INTEGER REFERENCES puuttuvat_paikalliset_tutkinnon_osat(id),
@@ -265,7 +265,7 @@ CREATE TABLE olemassa_olevat_yhteiset_tutkinnon_osat(
   lahetetty_arvioitavaksi DATE
 );
 
-CREATE TABLE olemassa_olevan_yhteisen_tutkinnon_osan_hankitun_osaamisen_naytto(
+CREATE TABLE olemassa_olevan_yhteisen_tutkinnon_osan_naytto(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   olemassa_oleva_yhteinen_tutkinnon_osa_id INTEGER REFERENCES olemassa_olevat_yhteiset_tutkinnon_osat(id),
@@ -295,7 +295,7 @@ CREATE TABLE olemassa_olevat_yto_osa_alueet(
   valittu_todentamisen_prosessi_koodi_versio INTEGER
 );
 
-CREATE TABLE olemassa_olevan_yto_osa_alueen_hankitun_osaamisen_naytto(
+CREATE TABLE olemassa_olevan_yto_osa_alueen_naytto(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   olemassa_oleva_yto_osa_alue_id INTEGER REFERENCES olemassa_olevat_yto_osa_alueet(id),
@@ -315,7 +315,7 @@ CREATE TABLE puuttuvat_ammatilliset_tutkinnon_osat(
   koulutuksen_jarjestaja_oid VARCHAR(26)
 );
 
-CREATE TABLE puuttuvan_ammatillisen_tutkinnon_osan_hankitun_osaamisen_naytto(
+CREATE TABLE puuttuvan_ammatillisen_tutkinnon_osan_naytto(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   puuttuva_ammatillinen_tutkinnon_osa_id INTEGER REFERENCES puuttuvat_ammatilliset_tutkinnon_osat(id),
@@ -373,7 +373,7 @@ CREATE TABLE yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat(
   PRIMARY KEY(yhteisen_tutkinnon_osan_osa_alue_id, osaamisen_hankkimistapa_id)
 );
 
-CREATE TABLE yhteisen_tutkinnon_osan_osa_alueen_hankitun_osaamisen_naytot(
+CREATE TABLE yhteisen_tutkinnon_osan_osa_alueen_naytot(
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   deleted_at TIMESTAMP WITH TIME ZONE,
   yhteisen_tutkinnon_osan_osa_alue_id INTEGER REFERENCES yhteisen_tutkinnon_osan_osa_alueet(id),
