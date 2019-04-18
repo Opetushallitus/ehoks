@@ -1,5 +1,6 @@
 (ns oph.ehoks.json-post-tool
-  (:require [oph.ehoks.external.cas :as cas]))
+  (:require [oph.ehoks.external.cas :as cas]
+            [oph.ehoks.config :refer [config]]))
 
 (defn send-json [service path json-body]
   (try
@@ -23,7 +24,12 @@
       (do
         (when (get options ":config")
           (System/setProperty "config" (get options ":config"))
-          (require 'oph.ehoks.config :reload))
+          (require 'oph.ehoks.config :reload)
+          (when (.endsWith (:opintopolku-host config) "opintopolku.fi")
+            (println "Using prod urls")
+            (System/setProperty
+              "services_file" "resources/prod/services-oph.properties"))
+          (require 'oph.ehoks.external.oph-url :reload))
         (send-json
           (get options ":service")
           (get options ":path")
