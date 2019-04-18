@@ -122,6 +122,10 @@ user> (.stop server)
 
 ### Tietokanta
 
+Uberjarrissa migraatiot ajetaan käynnistyksen yhteydessä jos ohjelmalle
+ei ole annettu `--no-migrations`-vipua. Kehittäessä migraatiot tulee ajaa
+manuaalisesti.
+
 Tietokannan migraatiot voi ajaa komennolla
 
 ``` shell
