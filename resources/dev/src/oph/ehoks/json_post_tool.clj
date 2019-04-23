@@ -31,8 +31,9 @@
           (get options ":service")
           (get options ":path")
           (slurp json-file)))
-      (println
-        (str "Usage: lein send-json path/to/file.json "
-             ":service https://service.com "
-             ":path api/v1/hoks "
-             ":config path/to/config.edn")))))
+      (do (println
+            (str "Usage: lein send-json path/to/file.json "
+                 ":service https://service.com "
+                 ":path api/v1/hoks "))
+          (println
+            "Config file can be given in environment variable 'CONFIG'.")))))
