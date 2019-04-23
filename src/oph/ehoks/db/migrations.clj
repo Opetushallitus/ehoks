@@ -4,9 +4,10 @@
   (:import org.flywaydb.core.Flyway))
 
 (def flyway
-  (-> (Flyway/configure)
-      (.dataSource (:database-url config) nil nil)
-      (.load)))
+  (when-not *compile-files*
+    (-> (Flyway/configure)
+        (.dataSource (:database-url config) nil nil)
+        (.load))))
 
 (defn migrate! []
   (.migrate flyway))
