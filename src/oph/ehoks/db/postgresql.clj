@@ -39,6 +39,9 @@
   (jdbc/update! {:connection-uri (:database-url config)}
                 t v w))
 
+(defn shallow-delete! [t w]
+  (update! t {:deleted_at (java.util.Date.)} w))
+
 (defn insert-multi! [t v]
   (jdbc/insert-multi! {:connection-uri (:database-url config)} t v))
 
@@ -198,6 +201,20 @@
   (query
     [queries/select-hankitun-osaamisen-naytot-by-ppto-id id]
     {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
+
+(defn delete-osaamisen-hankkimistavat-by-ppto-id!
+  "Puuttuvan paikallisen tutkinnon osan osaamisen hankkimistavat"
+  [id]
+  (shallow-delete!
+    :puuttuvan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
+    ["puuttuva_paikallinen_tutkinnon_osa_id = ?" id]))
+
+(defn delete-hankitun-osaamisen-naytot-by-ppto-id!
+  "Puuttuvan paikallisen tutkinnon osan hankitun osaamisen näytöt"
+  [id]
+  (shallow-delete!
+    :puuttuvan_paikallisen_tutkinnon_osan_naytto
+    ["puuttuva_paikallinen_tutkinnon_osa_id = ?" id]))
 
 (defn insert-tho-henkilot!
   "Työpaikalla hankittavan osaamisen muut osallistujat"
