@@ -73,39 +73,36 @@
 
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
   (c-api/context "/:hoks-id/puuttuva-paikallinen-tutkinnon-osa" [hoks-id]
+    :path-params [hoks-id :- s/Int]
 
     (c-api/GET "/:id" [:as id]
       :summary "Palauttaa HOKSin puuttuvan paikallisen tutkinnon osan"
       :path-params [id :- s/Int]
       :return (rest/response
                 hoks-schema/PuuttuvaPaikallinenTutkinnonOsa)
-      (rest/rest-ok (db/get-ppto-by-id id)))
+      (rest/rest-ok (h/get-puuttuva-paikallinen-tutkinnon-osa id)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo (tai korvaa vanhan) puuttuvan paikallisen tutkinnon osan"
-      :body
-      [ppto hoks-schema/PuuttuvaPaikallinenTutkinnonOsaLuonti]
+      :body [ppto hoks-schema/PuuttuvaPaikallinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse)
-      (let [ppto-response (db/create-ppto! ppto)]
-        (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id ppto-response))})))
-
-    (c-api/PUT "/:id" []
-      :summary "Päivittää HOKSin puuttuvan paikallisentutkinnon osan"
-      :path-params [id :- s/Int]
-      :body [values hoks-schema/PuuttuvaPaikallinenTutkinnonOsaPaivitys]
-      (if (db/update-ppto! id values)
-        (response/no-content)
-        (response/not-found "PPTO not found with given PPTO ID")))
+      (let [hoks (pdb/select-hoks-by-id hoks-id)]
+        (if (some? hoks)
+          (let [ppto-db (h/save-puuttuva-paikallinen-tutkinnon-osa! hoks ppto)]
+            (rest/rest-ok
+              {:uri (format "%s/%d" (:uri request) (:id ppto-db))}))
+          (response/not-found {:error "Hoks not found"}))))
 
     (c-api/PATCH "/:id" []
       :summary
       "Päivittää HOKSin puuttuvan paikallisen tutkinnon osan arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys]
-      (if (db/update-ppto-values! id values)
-        (response/no-content)
-        (response/not-found "PPTO not found with given PPTO ID")))))
+      (let [ppto-db (pdb/select-puuttuva-paikallinen-tutkinnon-osa-by-id id)]
+        (if (some? ppto-db)
+          (do (h/update-puuttuva-paikallinen-tutkinnon-osa! ppto-db values)
+              (response/no-content))
+          (response/not-found {:error "PPTO not found with given PPTO ID"}))))))
 
 (def ^:private puuttuva-ammatillinen-osaaminen
   (c-api/context "/:hoks-id/puuttuva-ammatillinen-osaaminen" [hoks-id]
