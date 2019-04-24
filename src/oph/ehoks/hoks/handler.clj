@@ -246,7 +246,8 @@
         (pdb/update-hoks-by-id! id values)
         (response/no-content))
 
-      puuttuva-ammatillinen-osaaminen
       puuttuva-paikallinen-tutkinnon-osa
-      puuttuvat-yhteisen-tutkinnon-osat
-      opiskeluvalmiuksia-tukevat-opinnot)))
+      (c-api/undocumented
+        puuttuva-ammatillinen-osaaminen
+        puuttuvat-yhteisen-tutkinnon-osat
+        opiskeluvalmiuksia-tukevat-opinnot))))
