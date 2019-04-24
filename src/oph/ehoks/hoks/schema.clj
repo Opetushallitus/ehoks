@@ -17,6 +17,9 @@
 (def OsaAlueKoodiUri
   #"^ammatillisenoppiaineet_.+$")
 
+(def OppimisymparistoKoodiUri
+  #"^oppimisymparistot_\d{4}$")
+
 (def TodentamisenProsessiKoodiUri
   "Valitun todentamisen prosessin Koodisto-koodi-URI"
   #"^osaamisentodentamisenprosessi_\d+$")
@@ -137,7 +140,7 @@
   MuuOppimisymparisto
   (describe
     "Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu"
-    :oppimisymparisto-koodi-uri s/Str
+    :oppimisymparisto-koodi-uri OppimisymparistoKoodiUri
     "Oppimisympäristön tarkenne, eHOKS Koodisto-koodi-URI, koodisto
     oppimisympäristöt eli muotoa oppimisymparistot_xxxx, esim.
     oppimisymparistot_0001"
