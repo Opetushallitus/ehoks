@@ -561,7 +561,7 @@
          :types {:any s/Str}
          :description "HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä"}
    :oppija-oid {:methods {:patch :optional}
-                :types {:any s/Str}
+                :types {:any Oid}
                 :description "Oppijan tunniste Opintopolku-ympäristössä"}
    :sahkoposti {:methods {:any :optional}
                 :types {:any s/Str}
