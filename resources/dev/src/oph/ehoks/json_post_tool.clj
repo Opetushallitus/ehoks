@@ -22,20 +22,18 @@
   (let [options (apply hash-map params)]
     (if (and json-file (get options ":service") (get options ":path"))
       (do
-        (when (get options ":config")
-          (System/setProperty "config" (get options ":config"))
-          (require 'oph.ehoks.config :reload)
-          (when (.endsWith (:opintopolku-host config) "opintopolku.fi")
-            (println "Using prod urls")
-            (System/setProperty
-              "services_file" "resources/prod/services-oph.properties"))
-          (require 'oph.ehoks.external.oph-url :reload))
+        (when (.endsWith (:opintopolku-host config) "opintopolku.fi")
+          (println "Using prod urls")
+          (System/setProperty
+            "services_file" "resources/prod/services-oph.properties"))
+        (require 'oph.ehoks.external.oph-url :reload)
         (send-json
           (get options ":service")
           (get options ":path")
           (slurp json-file)))
-      (println
-        (str "Usage: lein send-json path/to/file.json "
-             ":service https://service.com "
-             ":path api/v1/hoks "
-             ":config path/to/config.edn")))))
+      (do (println
+            (str "Usage: lein send-json path/to/file.json "
+                 ":service https://service.com "
+                 ":path api/v1/hoks "))
+          (println
+            "Config file can be given in environment variable 'CONFIG'.")))))
