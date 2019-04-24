@@ -79,6 +79,14 @@
       set-osaamisen-hankkimistapa-values
       hankkimistavat)))
 
+(defn get-puuttuva-paikallinen-tutkinnon-osa [id]
+  (assoc
+    (db/select-puuttuva-paikallinen-tutkinnon-osa-by-id id)
+    :hankitun-osaamisen-naytto
+    (get-hankitun-osaamisen-naytto id)
+    :osaamisen-hankkimistavat
+    (get-osaamisen-hankkimistavat id)))
+
 (defn get-puuttuvat-paikalliset-tutkinnon-osat [hoks-id]
   (mapv
     #(dissoc
