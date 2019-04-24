@@ -192,9 +192,6 @@
     (h/puuttuva-paikallinen-tutkinnon-osa-to-sql m)
     ["id = ? AND deleted_at IS NULL" id]))
 
-(def replace-puuttuva-paikallinen-tutkinnon-osa-by-id!
-  update-puuttuva-paikallinen-tutkinnon-osa-by-id!)
-
 (defn select-hankitun-osaamisen-naytot-by-ppto-id
   "Puuttuvan paikallisen tutkinnon osan hankitun osaamisen näytöt"
   [id]
