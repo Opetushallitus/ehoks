@@ -79,6 +79,14 @@
       set-osaamisen-hankkimistapa-values
       hankkimistavat)))
 
+(defn get-puuttuva-paikallinen-tutkinnon-osa [id]
+  (assoc
+    (db/select-puuttuva-paikallinen-tutkinnon-osa-by-id id)
+    :hankitun-osaamisen-naytto
+    (get-hankitun-osaamisen-naytto id)
+    :osaamisen-hankkimistavat
+    (get-osaamisen-hankkimistavat id)))
+
 (defn get-puuttuvat-paikalliset-tutkinnon-osat [hoks-id]
   (mapv
     #(dissoc
@@ -254,6 +262,10 @@
 (defn save-ppto-osaamisen-hankkimistavat! [ppto c]
   (mapv #(save-ppto-osaamisen-hankkimistapa! ppto %) c))
 
+(defn replace-ppto-osaamisen-hankkimistavat! [ppto c]
+  (db/delete-osaamisen-hankkimistavat-by-ppto-id! (:id ppto))
+  (save-ppto-osaamisen-hankkimistavat! ppto c))
+
 (defn save-hankitun-osaamisen-nayton-tyoelama-arvioijat! [naytto arvioijat]
   (mapv
     #(let [arvioija (db/insert-tyoelama-arvioija! %)]
@@ -292,6 +304,22 @@
   (mapv
     #(save-ppto-hankitun-osaamisen-naytto! ppto %)
     c))
+
+(defn replace-ppto-hankitun-osaamisen-naytot! [ppto c]
+  (db/delete-hankitun-osaamisen-naytot-by-ppto-id! (:id ppto))
+  (save-ppto-hankitun-osaamisen-naytot! ppto c))
+
+(defn update-puuttuva-paikallinen-tutkinnon-osa! [ppto-db values]
+  (db/update-puuttuva-paikallinen-tutkinnon-osa-by-id! (:id ppto-db) values)
+  (cond-> ppto-db
+    (:osaamisen-hankkimistavat values)
+    (assoc :osaamisen-hankkimistavat
+           (replace-ppto-osaamisen-hankkimistavat!
+             ppto-db (:osaamisen-hankkimistavat values)))
+    (:hankitun-osaamisen-naytto values)
+    (assoc :hankitun-osaamisen-naytto
+           (replace-ppto-hankitun-osaamisen-naytot!
+             ppto-db (:hankitun-osaamisen-naytto values)))))
 
 (defn save-puuttuva-paikallinen-tutkinnon-osa! [h ppto]
   (let [ppto-db (db/insert-puuttuva-paikallinen-tutkinnon-osa!

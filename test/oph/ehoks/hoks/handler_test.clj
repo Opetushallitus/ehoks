@@ -11,6 +11,7 @@
 ; TODO Change to use OHJ auth
 ; TODO Test also role access
 ; TODO update tests to use real-like data
+; TODO add test for removing at update (for example ppto)
 
 (defn with-database [f]
   (f)
@@ -33,115 +34,108 @@
       :body
       utils/parse-body))
 
+(defn create-hoks []
+  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                   :oppija-oid "1.2.246.562.24.12312312312"
+                   :laatija {:nimi "Teppo Tekijä"}
+                   :paivittaja {:nimi "Pekka Päivittäjä"}
+                   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                   :ensikertainen-hyvaksyminen "2018-12-15"}]
+    (-> app
+        (utils/with-service-ticket
+          (-> (mock/request :post url)
+              (mock/json-body hoks-data)))
+        :body
+        utils/parse-body
+        (get-in [:data :uri])
+        get-authenticated
+        :data)))
+
+(defmacro with-hoks [hoks & body]
+  `(let [~hoks (create-hoks)]
+     (do ~@body)))
+
+(defn get-hoks-url [hoks path]
+  (format "%s/%d/%s" url (:id hoks) path))
+
+(defn get-new-hoks-url [path]
+  (with-hoks hoks (get-hoks-url hoks path)))
+
 (deftest post-and-get-ppto
   (testing "GET newly created puuttuva paikallinen tutkinnon osa"
-    (db/clear)
-    (let [ppto-data   {:nimi "222"
+    (with-hoks
+      hoks
+      (let [ppto-data {:nimi "222"
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                        :hankitun-osaamisen-naytto
                        [{:jarjestaja {:oppilaitos-oid
                                       "1.2.246.562.10.00000000002"}
+                         :koulutuksen-jarjestaja-arvioijat []
+                         :osa-alueet []
+                         :keskeiset-tyotehtavat-naytto []
                          :nayttoymparisto {:nimi "aaa"}
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
                          :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
                                                {:nimi "Organisaation nimi"}}]}]}
-          ppto-response
-          (utils/with-service-ticket
-            app
-            (-> (mock/request :post (format
-                                      "%s/1/puuttuva-paikallinen-tutkinnon-osa"
-                                      url))
-                (mock/json-body ppto-data)))
-          body (utils/parse-body (:body ppto-response))]
-      (is (= (:status ppto-response) 200))
-      (eq body {:data {:uri (format "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
-                                    url)} :meta {}})
-      (let [ppto-new (utils/with-service-ticket
-                       app
-                       (mock/request
-                         :get (format
-                                "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
-                                url)))]
-        (eq
-          (:data (utils/parse-body (:body ppto-new)))
-          (assoc
-            ppto-data
-            :id 1))))))
-
-(deftest put-ppto
-  (testing "PUT puuttuva paikallinen tutkinnon osa"
-    (db/clear)
-    (let [ppto-data   {:nimi "222"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :hankitun-osaamisen-naytto
-                       [{:jarjestaja {:oppilaitos-oid
-                                      "1.2.246.562.10.00000000002"}
-                         :nayttoymparisto {:nimi "aaa"}
-                         :alku "2018-12-12"
-                         :loppu "2018-12-20"
-                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                               {:nimi "Organisaation nimi"}}]}]}
-          ppto-response
-          (utils/with-service-ticket
-            app
-            (-> (mock/request :post (format
-                                      "%s/1/puuttuva-paikallinen-tutkinnon-osa"
-                                      url))
-                (mock/json-body ppto-data)))
-          put-response
-          (utils/with-service-ticket
-            app
-            (-> (mock/request
-                  :put
-                  (format
-                    "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
-                    url))
-                (mock/json-body
-                  {:id 1
-                   :nimi "2223"
-                   :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                   :hankitun-osaamisen-naytto
-                   [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
-                     :nayttoymparisto {:nimi "aaa"}
-                     :alku "2018-12-12"
-                     :loppu "2018-12-20"
-                     :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                           {:nimi "Organisaation nimi"}}]}]})))]
-      (is (= (:status put-response) 204)))))
+            ppto-response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :post
+                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
+                  (mock/json-body ppto-data)))
+            body (utils/parse-body (:body ppto-response))]
+        (is (= (:status ppto-response) 200))
+        (eq body {:data
+                  {:uri
+                   (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1")}
+                  :meta {}})
+        (let [ppto-new
+              (utils/with-service-ticket
+                app
+                (mock/request
+                  :get
+                  (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1")))]
+          (eq
+            (:data (utils/parse-body (:body ppto-new)))
+            (assoc
+              ppto-data
+              :id 1)))))))
 
 (deftest patch-all-ppto
   (testing "PATCH all puuttuva paikallinen tutkinnon osa"
-    (db/clear)
-    (let [ppto-data {:nimi "222"
-                     :osaamisen-hankkimistavat []
-                     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                     :hankitun-osaamisen-naytto
-                     [{:jarjestaja {:oppilaitos-oid
-                                    "1.2.246.562.10.00000000002"}
-                       :nayttoymparisto {:nimi "aaa"}
-                       :alku "2018-12-12"
-                       :loppu "2018-12-20"
-                       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                             {:nimi "Organisaation nimi"}}]}]}
-          ppto-response
-          (utils/with-service-ticket
-            app
-            (-> (mock/request :post (format
-                                      "%s/1/puuttuva-paikallinen-tutkinnon-osa"
-                                      url))
-                (mock/json-body ppto-data)))
-          patch-response
-          (utils/with-service-ticket
-            app
-            (-> (mock/request
+    (with-hoks
+      hoks
+      (let [ppto-data {:nimi "222"
+                       :osaamisen-hankkimistavat []
+                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
+                       :hankitun-osaamisen-naytto
+                       [{:jarjestaja {:oppilaitos-oid
+                                      "1.2.246.562.10.00000000002"}
+                         :koulutuksen-jarjestaja-arvioijat []
+                         :osa-alueet []
+                         :keskeiset-tyotehtavat-naytto []
+                         :nayttoymparisto {:nimi "aaa"}
+                         :alku "2018-12-12"
+                         :loppu "2018-12-20"
+                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                               {:nimi "Organisaation nimi"}}]}]}
+            ppto-response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :post
+                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
+                  (mock/json-body ppto-data)))
+            patch-response
+            (utils/with-service-ticket
+              app
+              (->
+                (mock/request
                   :patch
-                  (format
-                    "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
-                    url))
+                  (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1"))
                 (mock/json-body
                   {:id 1
                    :nimi "222"
@@ -149,53 +143,58 @@
                    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000003"
                    :hankitun-osaamisen-naytto
                    [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000004"}
+                     :koulutuksen-jarjestaja-arvioijat []
+                     :osa-alueet []
+                     :keskeiset-tyotehtavat-naytto []
                      :nayttoymparisto {:nimi "aaaf"}
                      :alku "2018-12-14"
                      :loppu "2018-12-22"
                      :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
                                            {:nimi "Organisaation nimi"}}]}]})))]
-      (is (= (:status patch-response) 204)))))
+        (is (= (:status patch-response) 204))))))
 
 (deftest patch-one-ppto
   (testing "PATCH one value puuttuva paikallinen tutkinnon osa"
-    (db/clear)
-    (let [ppto-data {:nimi "222"
-                     :osaamisen-hankkimistavat []
-                     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                     :hankitun-osaamisen-naytto
-                     [{:jarjestaja {:oppilaitos-oid
-                                    "1.2.246.562.10.00000000002"}
-                       :nayttoymparisto {:nimi "aaa"}
-                       :alku "2018-12-12"
-                       :loppu "2018-12-20"
-                       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                             {:nimi "Organisaation nimi"}}]}]}
-          ppto-response
-          (utils/with-service-ticket
-            app
-            (-> (mock/request :post (format
-                                      "%s/1/puuttuva-paikallinen-tutkinnon-osa"
-                                      url))
-                (mock/json-body ppto-data)))
-          ppto-body (utils/parse-body
-                      (:body ppto-response))
-          patch-response
-          (utils/with-service-ticket
-            app
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/puuttuva-paikallinen-tutkinnon-osa/1"
-                    url))
-                (mock/json-body
-                  {:id 1 :nimi "2223"})))
-          get-response (-> (get-in ppto-body [:data :uri])
-                           get-authenticated :data)]
-      (is (= (:status patch-response) 204))
-      (eq get-response
-          (assoc ppto-data
-                 :id 1
-                 :nimi "2223")))))
+    (with-hoks
+      hoks
+      (let [ppto-data {:nimi "222"
+                       :osaamisen-hankkimistavat []
+                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
+                       :hankitun-osaamisen-naytto
+                       [{:jarjestaja {:oppilaitos-oid
+                                      "1.2.246.562.10.00000000002"}
+                         :nayttoymparisto {:nimi "aaa"}
+                         :koulutuksen-jarjestaja-arvioijat []
+                         :osa-alueet []
+                         :keskeiset-tyotehtavat-naytto []
+                         :alku "2018-12-12"
+                         :loppu "2018-12-20"
+                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                               {:nimi "Organisaation nimi"}}]}]}
+            ppto-response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :post
+                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
+                  (mock/json-body ppto-data)))
+            ppto-body (utils/parse-body
+                        (:body ppto-response))
+            patch-response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :patch
+                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1"))
+                  (mock/json-body
+                    {:id 1 :nimi "2223"})))
+            get-response (-> (get-in ppto-body [:data :uri])
+                             get-authenticated :data)]
+        (is (= (:status patch-response) 204))
+        (eq get-response
+            (assoc ppto-data
+                   :id 1
+                   :nimi "2223"))))))
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
 (def pao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
