@@ -307,7 +307,7 @@
 
 (defn replace-ppto-hankitun-osaamisen-naytot! [ppto c]
   (db/delete-hankitun-osaamisen-naytot-by-ppto-id! (:id ppto))
-  (save-ppto-osaamisen-hankkimistavat! ppto c))
+  (save-ppto-hankitun-osaamisen-naytot! ppto c))
 
 (defn update-puuttuva-paikallinen-tutkinnon-osa! [ppto-db values]
   (db/update-puuttuva-paikallinen-tutkinnon-osa-by-id! (:id ppto-db) values)
