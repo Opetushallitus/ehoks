@@ -71,6 +71,12 @@
           {:error (str "No access is allowed. Check Opintopolku privileges and "
                        "'opiskeluoikeus'")})))))
 
+(defmacro with-hoks [hoks id & body]
+  `(let [~hoks (pdb/select-hoks-by-id ~id)]
+     (if (some? ~hoks)
+       (do ~@body)
+       (response/not-found {:error "Hoks not found"}))))
+
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
   (c-api/context "/:hoks-id/puuttuva-paikallinen-tutkinnon-osa" [hoks-id]
     :path-params [hoks-id :- s/Int]
@@ -83,15 +89,14 @@
       (rest/rest-ok (h/get-puuttuva-paikallinen-tutkinnon-osa id)))
 
     (c-api/POST "/" [:as request]
-      :summary "Luo (tai korvaa vanhan) puuttuvan paikallisen tutkinnon osan"
+      :summary "Luo puuttuvan paikallisen tutkinnon osan"
       :body [ppto hoks-schema/PuuttuvaPaikallinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse)
-      (let [hoks (pdb/select-hoks-by-id hoks-id)]
-        (if (some? hoks)
-          (let [ppto-db (h/save-puuttuva-paikallinen-tutkinnon-osa! hoks ppto)]
-            (rest/rest-ok
-              {:uri (format "%s/%d" (:uri request) (:id ppto-db))}))
-          (response/not-found {:error "Hoks not found"}))))
+      (with-hoks
+        hoks hoks-id
+        (let [ppto-db (h/save-puuttuva-paikallinen-tutkinnon-osa! hoks ppto)]
+          (rest/rest-ok
+            {:uri (format "%s/%d" (:uri request) (:id ppto-db))}))))
 
     (c-api/PATCH "/:id" []
       :summary
