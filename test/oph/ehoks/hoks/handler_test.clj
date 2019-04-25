@@ -11,6 +11,7 @@
 ; TODO Change to use OHJ auth
 ; TODO Test also role access
 ; TODO update tests to use real-like data
+; TODO add test for removing at update (for example ppto)
 
 (defn with-database [f]
   (f)
