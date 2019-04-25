@@ -62,7 +62,8 @@
 
 (deftest post-and-get-ppto
   (testing "GET newly created puuttuva paikallinen tutkinnon osa"
-    (with-hoks hoks
+    (with-hoks
+      hoks
       (let [ppto-data {:nimi "222"
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
@@ -104,7 +105,8 @@
 
 (deftest patch-all-ppto
   (testing "PATCH all puuttuva paikallinen tutkinnon osa"
-    (with-hoks hoks
+    (with-hoks
+      hoks
       (let [ppto-data {:nimi "222"
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
@@ -152,7 +154,8 @@
 
 (deftest patch-one-ppto
   (testing "PATCH one value puuttuva paikallinen tutkinnon osa"
-    (with-hoks hoks
+    (with-hoks
+      hoks
       (let [ppto-data {:nimi "222"
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
