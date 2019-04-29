@@ -19,7 +19,8 @@
             [oph.ehoks.tyopaikan-toimija.handler :as tt-handler]
             [oph.ehoks.oppija.handler :as oppija-handler]
             [oph.ehoks.auth.handler :as auth-handler]
-            [oph.ehoks.validation.handler :as validation-handler]))
+            [oph.ehoks.validation.handler :as validation-handler]
+            [oph.ehoks.virkailija.routes :as virkailija-routes]))
 
 (def app-routes
   (c-api/api
@@ -55,7 +56,8 @@
           external-handler/routes
           misc-handler/routes
           tt-handler/routes
-          validation-handler/routes))
+          validation-handler/routes
+          virkailija/routes))
 
       (c-api/undocumented
         (GET "/buildversion.txt" _
