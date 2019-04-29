@@ -5,8 +5,7 @@
             [oph.ehoks.external.cache :as c]))
 
 (defn- virkailija-authenticated? [request]
-  (some? (get-in request [:session :virkailija-user]))
-  true)
+  (some? (get-in request [:session :virkailija-user])))
 
 (defn wrap-virkailija-authorize [handler]
   (fn
