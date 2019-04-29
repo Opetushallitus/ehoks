@@ -58,3 +58,6 @@
         (add-cached-response!
           (encode-url url (:query-params options)) response)
         (assoc response :cached :MISS))))
+
+(defn clear-cache! []
+  (reset! cache {}))
