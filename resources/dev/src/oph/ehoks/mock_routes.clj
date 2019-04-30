@@ -63,17 +63,29 @@
   (POST "/cas/v1/tickets/TGT-1234-Example-cas.1234567890abc" []
     (response/ok "ST-1234-aBcDeFgHiJkLmN123456-cas.1234567890ab"))
 
-  (GET "/cas/p3/serviceValidate" []
-    (response/ok
-      (str "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>"
-           "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
-           "<cas:attributes>"
-           "<cas:longTermAuthenticationRequestTokenUsed>false"
-           "</cas:longTermAuthenticationRequestTokenUsed>"
-           "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
-           "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
-           "</cas:authenticationDate></cas:attributes>"
-           "</cas:authenticationSuccess></cas:serviceResponse>")))
+  (GET "/cas/p3/serviceValidate" request
+    (let [username (if (= (get-in request [:query-params "ticket"])
+                          "ST-6777-aBcDeFgHiJkLmN123456-cas.1234567890ac")
+                     "ehoksvirkailija"
+                     "ehoks")]
+      (response/ok
+        (format
+          (str "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>"
+               "<cas:authenticationSuccess><cas:user>%s</cas:user>"
+               "<cas:attributes>"
+               "<cas:longTermAuthenticationRequestTokenUsed>false"
+               "</cas:longTermAuthenticationRequestTokenUsed>"
+               "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
+               "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
+               "</cas:authenticationDate></cas:attributes>"
+               "</cas:authenticationSuccess></cas:serviceResponse>")
+          username))))
+
+  (GET "/cas/login" request
+    (response/see-other
+      (format
+        "%s?ticket=ST-6777-aBcDeFgHiJkLmN123456-cas.1234567890ac"
+        (get-in request [:query-params "service"]))))
 
   (GET "/oppijanumerorekisteri-service/henkilo" request
     (json-response
@@ -135,6 +147,9 @@
     (json-response-file
       "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.76811932037.json"))
 
-  (GET "/kayttooikeus-service/kayttooikeus/kayttaja" []
-    (json-response-file
-      "dev-routes/kayttooikeus-service_kayttooikeus_kayttaja.json")))
+  (GET "/kayttooikeus-service/kayttooikeus/kayttaja" request
+    (if (= (get-in request [:query-params "username"]) "ehoksvirkailija")
+      (json-response-file
+        "dev-routes/kayttooikeus-service_kayttooikeus_kayttaja_virkailija.json")
+      (json-response-file
+      "dev-routes/kayttooikeus-service_kayttooikeus_kayttaja.json"))))
