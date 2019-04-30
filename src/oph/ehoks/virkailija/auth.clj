@@ -12,8 +12,9 @@
     (c-api/GET "/" []
       :summary "Virkailijan istunnon luonti"
       :query-params [ticket :- s/Str]
-      (if-let [ticket-user (kayttooikeus/get-service-ticket-user
-                             ticket (u/get-url "virkailijan-tyopoyta"))]
+      (if-let [ticket-user
+               (kayttooikeus/get-service-ticket-user
+                 ticket (u/get-url "ehoks.virkailija-login-return"))]
         (assoc-in
           (response/ok)
           [:session :virkailija-user]
