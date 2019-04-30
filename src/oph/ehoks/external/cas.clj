@@ -11,12 +11,13 @@
          :expires nil}))
 
 (defn get-cas-url [service]
-  (format
-    "%s/%s"
+  (cond
+    (.contains service "ehoks-backend")
+    (format "%s/cas-security-check" service)
+    (.contains service "virkailijan-tyopoyta")
     service
-    (if (.contains service "ehoks-backend")
-      "cas-security-check"
-      "j_spring_cas_security_check")))
+    :else
+    (format "%s/j_spring_cas_security_check" service)))
 
 (defn refresh-service-ticket! []
   (let [response (c/with-api-headers
