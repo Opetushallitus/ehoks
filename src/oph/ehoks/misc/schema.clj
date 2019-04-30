@@ -5,4 +5,5 @@
              "Ympäristön tiedot ja asetukset"
              {:opintopolku-login-url s/Str
               :eperusteet-peruste-url s/Str
-              :opintopolku-logout-url s/Str})
+              :opintopolku-logout-url s/Str
+              :virkailija-login-url s/Str})
