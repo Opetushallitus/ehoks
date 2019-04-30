@@ -75,6 +75,10 @@
    (when (some? config-file)
      (System/setProperty "config" config-file)
      (require 'oph.ehoks.config :reload)
+     (when (.endsWith (:opintopolku-host config) "opintopolku.fi")
+       (println "Using prod urls")
+       (System/setProperty
+         "services_file" "resources/prod/services-oph.properties"))
      (require 'oph.ehoks.external.oph-url :reload))
    (log/info "Starting development server...")
    (log/info "Not safe for production or public environments.")
