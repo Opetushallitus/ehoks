@@ -45,6 +45,11 @@
 (defn insert-multi! [t v]
   (jdbc/insert-multi! {:connection-uri (:database-url config)} t v))
 
+(defn select-hoksit []
+  (query
+    [queries/select-hoksit]
+    :row-fn h/hoks-from-sql))
+
 (defn select-hoks-by-oppija-oid [oid]
   (query
     [queries/select-hoksit-by-oppija-oid oid]
