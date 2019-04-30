@@ -2,7 +2,9 @@
   (:require [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
-            [oph.ehoks.external.cache :as c]))
+            [oph.ehoks.external.cache :as c]
+            [oph.ehoks.virkailija.auth :as auth]
+            [oph.ehoks.user :as user]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -30,12 +32,14 @@
         (response/forbidden)))))
 
 (def routes
-  (route-middleware
-    [wrap-virkailija-authorize]
-    (c-api/context "/virkailija" []
-      (route-middleware
-        [wrap-oph-super-user]
-        (c-api/DELETE "/cache" []
-          :summary "Välimuistin tyhjennys"
-          (c/clear-cache!)
-          (response/ok))))))
+  (c-api/context "/virkailija" []
+    :tags ["virkailija"]
+    auth/routes
+
+    (route-middleware
+      [wrap-virkailija-authorize wrap-oph-super-user]
+
+      (c-api/DELETE "/cache" []
+        :summary "Välimuistin tyhjennys"
+        (c/clear-cache!)
+        (response/ok)))))
