@@ -13,4 +13,5 @@
       (let [data (-> response :body parse-body :data)]
         (is (some? (:opintopolku-login-url data)))
         (is (some? (:opintopolku-logout-url data)))
-        (is (some? (:eperusteet-peruste-url data)))))))
+        (is (some? (:eperusteet-peruste-url data)))
+        (is (some? (:virkailija-login-url data)))))))

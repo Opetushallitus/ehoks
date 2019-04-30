@@ -15,7 +15,10 @@
          :options {:as :json
                    :query-params {"username" username}}}))))
 
-(defn get-ticket-user [ticket]
-  (let [validation-data (cas/validate-ticket (:backend-url config) ticket)]
+(defn get-service-ticket-user [ticket service]
+  (let [validation-data (cas/validate-ticket service ticket)]
     (when (:success? validation-data)
       (get-user-details (:user validation-data)))))
+
+(defn get-ticket-user [ticket]
+  (get-service-ticket-user ticket (:backend-url config)))
