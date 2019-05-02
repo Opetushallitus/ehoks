@@ -81,8 +81,12 @@
           (rest ks))))))
 
 (defn convert-response-data [data]
-  (let [m (xml->map data)]
-    {:success? (some? (find-value m [:serviceResponse :authenticationSuccess]))
+  (let [m (xml->map data)
+        success (some?
+                  (find-value m [:serviceResponse :authenticationSuccess]))]
+    {:success? success
+     :error (when-not success
+              (first (find-value m [:serviceResponse :authenticationFailure])))
      :user (first
              (find-value m [:serviceResponse :authenticationSuccess :user]))}))
 
