@@ -122,10 +122,6 @@ user> (.stop server)
 
 ### Tietokanta
 
-Uberjarrissa migraatiot ajetaan käynnistyksen yhteydessä jos ohjelmalle
-ei ole annettu `--no-migrations`-vipua. Kehittäessä migraatiot tulee ajaa
-manuaalisesti.
-
 Tietokannan migraatiot voi ajaa komennolla
 
 ``` shell
@@ -139,6 +135,8 @@ lein dbclean
 ```
 
 Tämän jälkeen migraatiot pitää ajaa uudelleen.
+
+Migraatiot voi ajaa myös JAR:lla. Katso [Ajettava jar](#ajettava-jar)
 
 ### Testit
 
@@ -286,6 +284,9 @@ Ja ajetaan:
 ``` shell
 java -jar target/ehoks-standalone.jar
 ```
+
+JAR:lle voi antaa myös komentoina `--help` tai `--run-migrations`. Jälkimmäinen
+ajaa tietokantamigraatiot.
 
 ## Integraatiot
 
