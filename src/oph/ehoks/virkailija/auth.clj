@@ -4,22 +4,31 @@
             [schema.core :as s]
             [ring.util.http-response :as response]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
+            [oph.ehoks.external.cas :as cas]
             [oph.ehoks.user :as user]
-            [oph.ehoks.external.oph-url :as u]))
+            [oph.ehoks.external.oph-url :as u]
+            [clojure.tools.logging :as log]))
+
+(defn get-ticket-user [ticket])
 
 (def routes
   (c-api/context "/session" []
     (c-api/GET "/" []
       :summary "Virkailijan istunnon luonti"
       :query-params [ticket :- s/Str]
-      (if-let [ticket-user
-               (kayttooikeus/get-service-ticket-user
-                 ticket (u/get-url "ehoks.virkailija-login-return"))]
-        (assoc-in
-          (response/ok)
-          [:session :virkailija-user]
-          (merge ticket-user (user/get-auth-info ticket-user)))
-        (response/unauthorized {:error "Invalid ticket"})))
+      (let [validation-data (cas/validate-ticket
+                              (u/get-url "ehoks.virkailija-login-return")
+                              ticket)]
+        (if (:success? validation-data)
+          (let [ticket-user (kayttooikeus/get-user-details
+                              (:user validation-data))]
+            (assoc-in
+              (response/ok)
+              [:session :virkailija-user]
+              (merge ticket-user (user/get-auth-info ticket-user))))
+          (do (log/info {:message "Invalid ticket"
+                         :error (:error validation-data)})
+              (response/unauthorized {:error "Invalid ticket"})))))
 
     (c-api/DELETE "/" []
       :summary "Virkailijan istunnon päättäminen"
