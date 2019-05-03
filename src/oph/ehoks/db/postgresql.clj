@@ -578,7 +578,8 @@
 
 (defn delete-hoks-and-pptos! [hoks_id]
   (let [ppto_ids (mapv :id
-                       (select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id hoks_id))]
+                       (select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id
+                         hoks_id))]
     (shallow-delete!
       :hoksit
       ["id = ? AND deleted_at IS NULL" hoks_id])
