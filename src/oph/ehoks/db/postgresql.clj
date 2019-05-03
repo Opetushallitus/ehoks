@@ -575,3 +575,14 @@
   (query
     [queries/select-hankitun-osaamisen-naytot-by-yto-osa-alue-id id]
     {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
+
+
+(defn delete-hoks-and-pptos! [hoks_id]
+  (let [ppto_ids (mapv #(:id %)
+  (select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id hoks_id))]
+  (shallow-delete!
+    :hoksit
+    ["id = ? AND deleted_at IS NULL" hoks_id])
+  (map #(shallow-delete!
+    :puuttuvat_paikalliset_tutkinnon_osat
+    ["id = ? AND deleted_at IS NULL" %]) ppto_ids)))

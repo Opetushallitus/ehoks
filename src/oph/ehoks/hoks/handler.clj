@@ -251,6 +251,14 @@
         (pdb/update-hoks-by-id! id values)
         (response/no-content))
 
+      (c-api/DELETE "/:id" [id :as request]
+        :summary "Vain testaukseen: poistaa hoksin sekäliitetyt ppto:t"
+        :path-params [id :- s/Int]
+        :return (rest/response hoks-schema/HOKS)
+        (let [hoks (pdb/select-hoks-by-id id)]
+          (check-hoks-access! hoks request)
+          (rest/rest-ok (h/delete-hoks-by-id! id))))
+
       puuttuva-paikallinen-tutkinnon-osa
       (c-api/undocumented
         puuttuva-ammatillinen-osaaminen

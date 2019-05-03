@@ -4,7 +4,8 @@
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.db.memory :as db]
-            [oph.ehoks.db.migrations :as m]))
+            [oph.ehoks.db.migrations :as m]
+            [oph.ehoks.hoks.hoks :as h]))
 
 (def url "/ehoks-backend/api/v1/hoks")
 
@@ -103,6 +104,38 @@
             (assoc
               ppto-data
               :id 1)))))))
+
+(deftest create-and-delete-hoks-with-ppto
+  (testing "delete hoks and newly created puuttuva paikallinen tutkinnon osa"
+    (with-hoks
+      hoks
+      (let [hoks-id (:id hoks)
+            ppto-data {:nimi "222"
+                       :osaamisen-hankkimistavat []
+                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
+                       :hankitun-osaamisen-naytto
+                       [{:jarjestaja {:oppilaitos-oid
+                                      "1.2.246.562.10.00000000002"}
+                         :koulutuksen-jarjestaja-arvioijat []
+                         :osa-alueet []
+                         :keskeiset-tyotehtavat-naytto []
+                         :nayttoymparisto {:nimi "aaa"}
+                         :alku "2018-12-12"
+                         :loppu "2018-12-20"
+                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                               {:nimi "Organisaation nimi"}}]}]}
+
+            ppto-response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :post
+                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
+                  (mock/json-body ppto-data)))
+            body (utils/parse-body (:body ppto-response))
+            delete-response (h/delete-hoks-by-id! (:id hoks))]
+        (is (= (:status ppto-response) 200))
+        (is (= (:id (h/get-hoks-by-id hoks-id)) nil))))))
 
 (deftest patch-all-ppto
   (testing "PATCH all puuttuva paikallinen tutkinnon osa"
