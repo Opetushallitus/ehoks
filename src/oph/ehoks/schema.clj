@@ -3,7 +3,8 @@
 
 (s/defschema POSTResponse
              "RESTful POST response"
-             {:uri s/Str})
+             {:uri s/Str
+              :id s/Int})
 
 (s/defschema KoodistoErrorMeta
              "Koodiston virhetilanteen metatiedot vastauksessa"
