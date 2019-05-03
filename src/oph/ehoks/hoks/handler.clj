@@ -96,7 +96,8 @@
         hoks hoks-id
         (let [ppto-db (h/save-puuttuva-paikallinen-tutkinnon-osa! hoks ppto)]
           (rest/rest-ok
-            {:uri (format "%s/%d" (:uri request) (:id ppto-db)) :id (:id ppto-db)}))))
+            {:uri (format "%s/%d" (:uri request) (:id ppto-db))
+             :id (:id ppto-db)}))))
 
     (c-api/PATCH "/:id" []
       :summary
@@ -125,7 +126,8 @@
       :return (rest/response schema/POSTResponse)
       (let [ppao-response (db/create-ppao! ppao)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id ppao-response)) :id (:id ppao-response)})))
+          {:uri (format "%s/%d" (:uri request) (:id ppao-response))
+           :id (:id ppao-response)})))
 
     (c-api/PUT "/:id" []
       :summary "Päivittää HOKSin puuttuvan ammatillisen osaamisen"
@@ -160,7 +162,8 @@
       :return (rest/response schema/POSTResponse)
       (let [pyto-response (db/create-pyto! pyto)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id pyto-response)) :id (:id pyto-response)})))
+          {:uri (format "%s/%d" (:uri request) (:id pyto-response))
+           :id (:id pyto-response)})))
 
     (c-api/PUT "/:id" []
       :summary "Päivittää HOKSin puuttuvan yhteisen tutkinnon osat"
@@ -195,7 +198,8 @@
       :return (rest/response schema/POSTResponse)
       (let [ovatu-response (db/create-ovatu! ovatu)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id ovatu-response)) :id (:id ovatu-response)})))
+          {:uri (format "%s/%d" (:uri request) (:id ovatu-response))
+           :id (:id ovatu-response)})))
 
     (c-api/PUT "/:id" []
       :summary "Päivittää HOKSin opiskeluvalmiuksia tukevat opinnot"
@@ -240,7 +244,8 @@
         (let [hoks-db (h/save-hoks! hoks)]
           (when (:save-hoks-json? config)
             (write-hoks-json! hoks))
-          (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db)) :id (:id hoks-db)})))
+          (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))
+                         :id (:id hoks-db)})))
 
       (c-api/PATCH "/:id" [id :as request]
         :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
