@@ -49,7 +49,7 @@
         (c-api/context "/v1" []
           :tags ["v1"]
           oppija-handler/routes
-          auth-handler/routes
+          (c-api/undocumented auth-handler/routes)
           hoks-handler/routes
           healthcheck-handler/routes
           lokalisointi-handler/routes
