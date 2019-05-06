@@ -14,7 +14,7 @@
     (some #(when (matches-route? request %) %) routes)))
 
 (defn- authenticated? [request]
-  (some? (seq (:session request))))
+  (some? (get-in request [:session :user])))
 
 (defn wrap-authorize [handler]
   (fn

@@ -1,4 +1,4 @@
-(ns oph.ehoks.auth.opintopolku
+(ns oph.ehoks.oppija.opintopolku
   (:require [clojure.walk :refer [keywordize-keys]]
             [clojure.set :refer [rename-keys]]
             [clojure.string :refer [lower-case]])
