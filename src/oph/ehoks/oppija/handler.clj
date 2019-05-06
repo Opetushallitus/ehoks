@@ -11,10 +11,13 @@
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.eperusteet :as eperusteet]
-            [oph.ehoks.middleware :refer [wrap-authorize]]))
+            [oph.ehoks.middleware :refer [wrap-authorize]]
+            [oph.ehoks.oppija.auth-handler :as auth-handler]))
 
 (def routes
   (c-api/context "/oppija" []
+
+    auth-handler/routes
 
     (c-api/context "/external" []
       :tags ["oppija-external"]

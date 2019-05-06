@@ -18,7 +18,7 @@
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.tyopaikan-toimija.handler :as tt-handler]
             [oph.ehoks.oppija.handler :as oppija-handler]
-            [oph.ehoks.auth.handler :as auth-handler]
+            [oph.ehoks.oppija.auth-handler :as auth-handler]
             [oph.ehoks.validation.handler :as validation-handler]
             [oph.ehoks.virkailija.handler :as virkailija-handler]))
 
