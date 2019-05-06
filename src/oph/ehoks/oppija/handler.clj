@@ -16,6 +16,7 @@
 
 (def routes
   (c-api/context "/oppija" []
+    :tags ["oppija"]
 
     auth-handler/routes
 

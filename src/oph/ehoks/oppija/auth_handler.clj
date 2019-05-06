@@ -13,7 +13,6 @@
 
 (def routes
   (c-api/context "/session" []
-    :tags ["auth"]
 
     (route-middleware
       [wrap-authorize]
