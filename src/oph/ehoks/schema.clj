@@ -1,11 +1,11 @@
 (ns oph.ehoks.schema
-  (:require [schema.core :as s]))
+  (:require [schema.core :as s]
+            [oph.ehoks.schema-tools :refer [describe modify]]))
 
 (s/defschema POSTResponse
              "RESTful POST response"
-             {:uri s/Str
-              :id s/Int})
-
+               {:uri s/Str})
+               
 (s/defschema KoodistoErrorMeta
              "Koodiston virhetilanteen metatiedot vastauksessa"
              {(s/optional-key :errors) [{:error-type s/Keyword
