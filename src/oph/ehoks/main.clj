@@ -2,15 +2,18 @@
   (:gen-class)
   (:require [oph.ehoks.db.migrations :as m]
             [clojure.string :refer [lower-case]]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [oph.ehoks.handler :as hoks-api-handler]
+            [oph.ehoks.virkailija.handler :as virkailija-handler]
+            [oph.ehoks.common.api :as common-api]
+            [oph.ehoks.redis :refer [redis-store]]
+            [oph.ehoks.config :refer [config]]))
 
 (defn has-arg? [args s]
   (some? (some #(when (= (lower-case %) s) %) args)))
 
 (defn -main [& args]
   (require 'ring.adapter.jetty)
-  (require 'oph.ehoks.config)
-  (require 'oph.ehoks.handler)
   (cond
     (has-arg? args "--help")
     (do (println "eHOKS")
@@ -24,8 +27,11 @@
         0)
     :else
     (let [run-jetty (resolve 'ring.adapter.jetty/run-jetty)
-          config (var-get (resolve 'oph.ehoks.config/config))
-          app (resolve 'oph.ehoks.handler/app)]
-      (run-jetty app {:port  (:port config)
-                      :join? true
-                      :async? true}))))
+          hoks-app (common-api/create-app
+                     hoks-api-handler/app-routes
+                     (when (seq (:redis-url config))
+                       (redis-store {:pool {}
+                                     :spec {:uri (:redis-url config)}})))]
+      (run-jetty hoks-app {:port (:port config)
+                           :join? true
+                           :async? true}))))
