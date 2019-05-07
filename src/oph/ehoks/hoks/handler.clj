@@ -1,5 +1,6 @@
 (ns oph.ehoks.hoks.handler
   (:require [compojure.api.sweet :as c-api]
+            [clojure.tools.logging :as log]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
@@ -91,12 +92,13 @@
     (c-api/POST "/" [:as request]
       :summary "Luo puuttuvan paikallisen tutkinnon osan"
       :body [ppto hoks-schema/PuuttuvaPaikallinenTutkinnonOsaLuonti]
-      :return (rest/response schema/POSTResponse)
+      :return (rest/response schema/POSTResponse :id s/Int)
       (with-hoks
         hoks hoks-id
         (let [ppto-db (h/save-puuttuva-paikallinen-tutkinnon-osa! hoks ppto)]
           (rest/rest-ok
-            {:uri (format "%s/%d" (:uri request) (:id ppto-db))}))))
+            {:uri (format "%s/%d" (:uri request) (:id ppto-db))}
+            :id (:id ppto-db)))))
 
     (c-api/PATCH "/:id" []
       :summary
@@ -122,10 +124,11 @@
       :summary
       "Luo (tai korvaa vanhan) puuttuvan ammatillisen osaamisen HOKSiin"
       :body [ppao hoks-schema/PuuttuvaAmmatillinenOsaaminenLuonti]
-      :return (rest/response schema/POSTResponse)
+      :return (rest/response schema/POSTResponse :id s/Int)
       (let [ppao-response (db/create-ppao! ppao)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id ppao-response))})))
+          {:uri (format "%s/%d" (:uri request) (:id ppao-response))}
+          :id (:id ppao-response))))
 
     (c-api/PUT "/:id" []
       :summary "Päivittää HOKSin puuttuvan ammatillisen osaamisen"
@@ -157,10 +160,11 @@
       :summary
       "Luo (tai korvaa vanhan) puuttuvan yhteisen tutkinnon osat HOKSiin"
       :body [pyto hoks-schema/PuuttuvaYTOLuonti]
-      :return (rest/response schema/POSTResponse)
+      :return (rest/response schema/POSTResponse :id s/Int)
       (let [pyto-response (db/create-pyto! pyto)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id pyto-response))})))
+          {:uri (format "%s/%d" (:uri request) (:id pyto-response))}
+          :id (:id pyto-response))))
 
     (c-api/PUT "/:id" []
       :summary "Päivittää HOKSin puuttuvan yhteisen tutkinnon osat"
@@ -192,10 +196,11 @@
       :summary
       "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin"
       :body [ovatu hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
-      :return (rest/response schema/POSTResponse)
+      :return (rest/response schema/POSTResponse :id s/Int)
       (let [ovatu-response (db/create-ovatu! ovatu)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id ovatu-response))})))
+          {:uri (format "%s/%d" (:uri request) (:id ovatu-response))}
+          :id (:id ovatu-response))))
 
     (c-api/PUT "/:id" []
       :summary "Päivittää HOKSin opiskeluvalmiuksia tukevat opinnot"
@@ -231,7 +236,7 @@
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
-        :return (rest/response schema/POSTResponse)
+        :return (rest/response schema/POSTResponse :id s/Int)
         (check-hoks-access! hoks request)
         (when (seq (pdb/select-hoksit-by-opiskeluoikeus-oid
                      (:opiskeluoikeus-oid hoks)))
@@ -240,7 +245,8 @@
         (let [hoks-db (h/save-hoks! hoks)]
           (when (:save-hoks-json? config)
             (write-hoks-json! hoks))
-          (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))})))
+          (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
+                        :id (:id hoks-db))))
 
       (c-api/PATCH "/:id" [id :as request]
         :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"

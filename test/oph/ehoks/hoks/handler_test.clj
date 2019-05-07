@@ -63,6 +63,7 @@
 
 (deftest post-and-get-ppto
   (testing "GET newly created puuttuva paikallinen tutkinnon osa"
+    (db/clear)
     (with-hoks
       hoks
       (let [ppto-data {:nimi "222"
@@ -91,7 +92,7 @@
         (eq body {:data
                   {:uri
                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1")}
-                  :meta {}})
+                  :meta {:id 1}})
         (let [ppto-new
               (utils/with-service-ticket
                 app
@@ -231,9 +232,9 @@
       (is (= (:status post-response) 200))
       (eq (utils/parse-body
             (:body post-response))
-          {:meta {} :data {:uri   (format
-                                    "%s/1/puuttuva-ammatillinen-osaaminen/1"
-                                    url)}})
+          {:meta {:id 1}
+           :data {:uri
+                  (format "%s/1/puuttuva-ammatillinen-osaaminen/1" url)}})
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
             (:body get-response))
@@ -441,7 +442,7 @@
             (:body post-response))
           {:data {:uri   (format
                            "%s/1/%s/1"
-                           url pyto-path)} :meta {}})
+                           url pyto-path)} :meta {:id 1}})
       (is (= (:status get-response) 200))
       (eq (:id (:data (utils/parse-body
                         (:body get-response))))
@@ -550,7 +551,7 @@
             (:body post-response))
           {:data {:uri (format
                          "%s/1/%s/1"
-                         url ovatu-path)} :meta {}})
+                         url ovatu-path)} :meta {:id 1}})
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
             (:body get-response))
@@ -668,7 +669,7 @@
                 (mock/json-body hoks-data)))
           body (utils/parse-body (:body response))]
       (is (= (:status response) 200))
-      (eq body {:data {:uri (format "%s/1" url)} :meta {}})
+      (eq body {:data {:uri (format "%s/1" url)} :meta {:id 1}})
       (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
         (eq
           hoks
@@ -747,7 +748,7 @@
                   (mock/json-body hoks-data)))
             body (utils/parse-body (:body response))]
         (is (= (:status response) 200))
-        (eq body {:data {:uri (format "%s/1" url)} :meta {}})
+        (eq body {:data {:uri (format "%s/1" url)} :meta {:id 1}})
         (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
           (is (= (count (:eid hoks)) 36))
           (eq
