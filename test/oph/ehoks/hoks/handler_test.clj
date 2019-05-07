@@ -232,9 +232,8 @@
       (is (= (:status post-response) 200))
       (eq (utils/parse-body
             (:body post-response))
-          {:meta {:id 1} :data {:uri   (format
-                                         "%s/1/puuttuva-ammatillinen-osaaminen/1"
-                                         url)}})
+          {:meta {:id 1} :data {:uri
+                                (format "%s/1/puuttuva-ammatillinen-osaaminen/1" url)}})
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
             (:body get-response))
