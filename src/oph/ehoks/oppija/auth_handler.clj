@@ -1,4 +1,4 @@
-(ns oph.ehoks.auth.handler
+(ns oph.ehoks.oppija.auth-handler
   (:require [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
@@ -6,14 +6,13 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.auth.opintopolku :as opintopolku]
+            [oph.ehoks.oppija.opintopolku :as opintopolku]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [clojure.tools.logging :as log]))
 
 (def routes
   (c-api/context "/session" []
-    :tags ["auth"]
 
     (route-middleware
       [wrap-authorize]

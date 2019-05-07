@@ -1,4 +1,4 @@
-(ns oph.ehoks.auth.handler-test
+(ns oph.ehoks.oppija.auth-handler-test
   (:require [clojure.test :refer [deftest testing is]]
             [oph.ehoks.handler :refer [app]]
             [ring.mock.request :as mock]
@@ -6,7 +6,7 @@
 
 (defn authenticate []
   (app (-> (mock/request
-             :get "/ehoks-backend/api/v1/session/opintopolku/")
+             :get "/ehoks-backend/api/v1/oppija/session/opintopolku/")
            (mock/header "FirstName" "Teuvo Testi")
            (mock/header "cn" "Teuvo")
            (mock/header "givenname" "Teuvo")
@@ -17,7 +17,7 @@
   (testing "GET current session without authentication"
     (let [response (app (mock/request
                           :get
-                          "/ehoks-backend/api/v1/session/"))]
+                          "/ehoks-backend/api/v1/oppija/session/"))]
       (is (= (:status response) 401))
       (is (empty? (:body response))))))
 
@@ -28,16 +28,17 @@
 
 (deftest prevent-malformed-authentication
   (testing "Prevents malformed authentication"
-    (let [response (app (-> (mock/request
-                              :get "/ehoks-backend/api/v1/session/opintopolku/"
-                              {"FirstName" "Teuvo Testi"
-                               "cn" "Teuvo"
-                               "hetu" "190384-9245"
-                               "sn" "Testaaja"})
-                            (mock/header "FirstName" "Teuvo Testi")
-                            (mock/header "cn" "Teuvo")
-                            (mock/header "givenname" "Teuvo")
-                            (mock/header "sn" "Testaaja")))]
+    (let [response
+          (app (-> (mock/request
+                     :get "/ehoks-backend/api/v1/oppija/session/opintopolku/"
+                     {"FirstName" "Teuvo Testi"
+                      "cn" "Teuvo"
+                      "hetu" "190384-9245"
+                      "sn" "Testaaja"})
+                   (mock/header "FirstName" "Teuvo Testi")
+                   (mock/header "cn" "Teuvo")
+                   (mock/header "givenname" "Teuvo")
+                   (mock/header "sn" "Testaaja")))]
       (is (= (:status response) 400)))))
 
 (deftest session-authenticated
@@ -46,7 +47,7 @@
           session-cookie (first (get-in auth-response [:headers "Set-Cookie"]))
           response (app (-> (mock/request
                               :get
-                              "/ehoks-backend/api/v1/session/")
+                              "/ehoks-backend/api/v1/oppija/session/")
                             (mock/header :cookie session-cookie)))
           body (parse-body (:body response))]
       (is (= (:status response) 200))
@@ -61,17 +62,17 @@
           authenticated-response
           (app (-> (mock/request
                      :get
-                     "/ehoks-backend/api/v1/session/")
+                     "/ehoks-backend/api/v1/oppija/session/")
                    (mock/header :cookie session-cookie)))
           authenticated-body (parse-body (:body authenticated-response))
           delete-response
           (app (-> (mock/request
                      :delete
-                     "/ehoks-backend/api/v1/session/")
+                     "/ehoks-backend/api/v1/oppija/session/")
                    (mock/header :cookie session-cookie)))
           response (app (-> (mock/request
                               :get
-                              "/ehoks-backend/api/v1/session/")
+                              "/ehoks-backend/api/v1/oppija/session/")
                             (mock/header :cookie session-cookie)))]
       (is (= (:status authenticated-response) 200))
       (is (= (:data authenticated-body)
