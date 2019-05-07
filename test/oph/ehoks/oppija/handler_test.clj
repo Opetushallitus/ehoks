@@ -1,6 +1,7 @@
 (ns oph.ehoks.oppija.handler-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [oph.ehoks.handler :refer [create-app]]
+            [oph.ehoks.handler :as handler]
+            [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.external.http-client :as client]
@@ -45,7 +46,8 @@
     (h/save-hoks! hoks-data)
     (let [oppija-oid (:oppija-oid hoks-data)
           store (atom {})
-          app (create-app (test-session-store store))
+          app (common-api/create-app
+                handler/app-routes (test-session-store store))
           response
           (utils/with-authenticated-oid
             store

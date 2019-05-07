@@ -1,10 +1,11 @@
 (ns oph.ehoks.oppija.auth-handler-test
   (:require [clojure.test :refer [deftest testing is]]
-            [oph.ehoks.handler :refer [app]]
+            [oph.ehoks.handler :as handler]
+            [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :refer [parse-body]]))
 
-(defn authenticate []
+(defn authenticate [app]
   (app (-> (mock/request
              :get "/ehoks-backend/api/v1/oppija/session/opintopolku/")
            (mock/header "FirstName" "Teuvo Testi")
@@ -15,7 +16,8 @@
 
 (deftest session-without-authentication
   (testing "GET current session without authentication"
-    (let [response (app (mock/request
+    (let [app (common-api/create-app handler/app-routes nil)
+          response (app (mock/request
                           :get
                           "/ehoks-backend/api/v1/oppija/session/"))]
       (is (= (:status response) 401))
@@ -23,12 +25,14 @@
 
 (deftest session-authenticate
   (testing "POST authenticate"
-    (let [response (authenticate)]
+    (let [response (authenticate
+                     (common-api/create-app handler/app-routes nil))]
       (is (= (:status response) 303)))))
 
 (deftest prevent-malformed-authentication
   (testing "Prevents malformed authentication"
-    (let [response
+    (let [app (common-api/create-app handler/app-routes nil)
+          response
           (app (-> (mock/request
                      :get "/ehoks-backend/api/v1/oppija/session/opintopolku/"
                      {"FirstName" "Teuvo Testi"
@@ -43,7 +47,8 @@
 
 (deftest session-authenticated
   (testing "GET current authenticated session"
-    (let [auth-response (authenticate)
+    (let [app (common-api/create-app handler/app-routes nil)
+          auth-response (authenticate app)
           session-cookie (first (get-in auth-response [:headers "Set-Cookie"]))
           response (app (-> (mock/request
                               :get
@@ -57,7 +62,8 @@
 
 (deftest session-delete-authenticated
   (testing "DELETE authenticated session"
-    (let [auth-response (authenticate)
+    (let [app (common-api/create-app handler/app-routes nil)
+          auth-response (authenticate app)
           session-cookie (first (get-in auth-response [:headers "Set-Cookie"]))
           authenticated-response
           (app (-> (mock/request

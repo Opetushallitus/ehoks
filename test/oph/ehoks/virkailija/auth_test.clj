@@ -4,7 +4,11 @@
             [ring.mock.request :as mock]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.handler :refer [create-app]]))
+            [oph.ehoks.virkailija.handler :as handler]
+            [oph.ehoks.common.api :as common-api]))
+
+(defn create-app [session-store]
+  (common-api/create-app handler/app-routes session-store))
 
 (defn ticket-response [url options]
   (if (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
