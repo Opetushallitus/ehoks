@@ -1,13 +1,13 @@
 (ns oph.ehoks.hoks.handler-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [oph.ehoks.handler :as handler]
+            [oph.ehoks.virkailija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.db.memory :as db]
             [oph.ehoks.db.migrations :as m]))
 
-(def url "/ehoks-backend/api/v1/hoks")
+(def url "/ehoks-virkailija-backend/api/v1/hoks")
 
 ; TODO Change to use OHJ auth
 ; TODO Test also role access
