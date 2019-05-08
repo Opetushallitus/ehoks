@@ -62,3 +62,21 @@
           (:data body)
           [(dates-to-str
              (assoc hoks-data :eid (get-in body [:data 0 :eid])))])))))
+
+(deftest buildversion
+  (testing "GET /buildversion.txt"
+    (let [app (common-api/create-app handler/app-routes)
+          response (app (mock/request
+                          :get "/ehoks-oppija-backend/buildversion.txt"))
+          body (slurp (:body response))]
+      (is (= (:status response) 200))
+      (is (re-find #"^artifactId=" body)))))
+
+(deftest not-found
+  (testing "GET route which does not exist"
+    (let [app (common-api/create-app handler/app-routes)
+          response (with-authentication
+                     app
+                     (mock/request
+                       :get "/ehoks-oppija-backend/api/v1/non-existing-resource/"))]
+      (is (= (:status response) 404)))))
