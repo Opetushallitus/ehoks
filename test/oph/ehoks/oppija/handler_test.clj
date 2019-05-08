@@ -11,7 +11,7 @@
             [oph.ehoks.hoks.hoks-test :refer [hoks-data]]
             [clojure.walk :as w]))
 
-(def url "/ehoks-backend/api/v1/oppija/oppijat")
+(def url "/ehoks-oppija-backend/api/v1/oppija/oppijat")
 
 (defn with-database [f]
   (f)
