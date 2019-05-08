@@ -62,7 +62,7 @@
             (mock/request
               :get
               (str
-                "/ehoks-backend/api/v1/virkailija/session"
+                "/ehoks-virkailija-backend/api/v1/virkailija/session"
                 "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
       (t/is (= (:status response) 200)))))
 
@@ -77,6 +77,6 @@
             (mock/request
               :get
               (str
-                "/ehoks-backend/api/v1/virkailija/session"
+                "/ehoks-virkailija-backend/api/v1/virkailija/session"
                 "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
       (t/is (= (:status response) 401)))))
