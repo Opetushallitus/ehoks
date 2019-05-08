@@ -80,3 +80,13 @@
                      (mock/request
                        :get "/ehoks-oppija-backend/api/v1/non-existing-resource/"))]
       (is (= (:status response) 404)))))
+
+(deftest healthcheck
+  (testing "GET healthcheck"
+    (let [app (common-api/create-app handler/app-routes)
+          response (app
+                     (mock/request
+                       :get "/ehoks-oppija-backend/api/v1/healthcheck"))
+          body (parse-body (:body response))]
+      (is (= (:status response) 200))
+      (is (= body {})))))

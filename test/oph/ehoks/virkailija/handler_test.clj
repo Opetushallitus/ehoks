@@ -16,8 +16,17 @@
 (t/deftest not-found
   (t/testing "GET route which does not exist"
     (let [app (common-api/create-app handler/app-routes)
-          response (with-authentication
-                     app
+          response (app
                      (mock/request
-                       :get "/ehoks-backend/api/v1/non-existing-resource/"))]
+                       :get "/ehoks-virkailija-backend/api/v1/non-existing-resource/"))]
       (t/is (= (:status response) 404)))))
+
+(deftest healthcheck
+  (testing "GET healthcheck"
+    (let [app (common-api/create-app handler/app-routes)
+          response (app
+                     (mock/request
+                       :get "/ehoks-virkailija-backend/api/v1/healthcheck"))
+          body (parse-body (:body response))]
+      (is (= (:status response) 200))
+      (is (= body {})))))
