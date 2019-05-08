@@ -32,6 +32,7 @@
              {(s/optional-key :version) s/Str
               (s/optional-key :debug) s/Bool
               :port s/Int
+              (s/optional-key :virkailija-backend-port) s/Int
               :frontend-url s/Str
               :frontend-url-path s/Str
               :eperusteet-peruste-url s/Str
