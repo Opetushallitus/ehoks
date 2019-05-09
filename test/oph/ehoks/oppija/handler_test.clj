@@ -14,18 +14,17 @@
 (def url "/ehoks-oppija-backend/api/v1/oppija/oppijat")
 
 (defn with-database [f]
-  (f)
-  (m/clean!)
-  (m/migrate!))
-
-(defn create-db [f]
   (m/migrate!)
   (f)
   (m/clean!))
 
+(defn clean-db [f]
+  (m/clean!)
+  (f))
+
 (use-fixtures :each with-database)
 
-(use-fixtures :once create-db)
+(use-fixtures :once clean-db)
 
 (def dates #{:alku :loppu :lahetetty-arvioitavaksi :ensikertainen-hyvaksyminen})
 

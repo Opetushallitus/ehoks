@@ -15,18 +15,17 @@
 ; TODO add test for removing at update (for example ppto)
 
 (defn with-database [f]
-  (f)
-  (m/clean!)
-  (m/migrate!))
-
-(defn create-db [f]
   (m/migrate!)
   (f)
   (m/clean!))
 
+(defn clean-db [f]
+  (m/clean!)
+  (f))
+
 (use-fixtures :each with-database)
 
-(use-fixtures :once create-db)
+(use-fixtures :once clean-db)
 
 (defn create-app [session-store]
   (common-api/create-app handler/app-routes session-store))
