@@ -3,7 +3,7 @@
             [oph.ehoks.handler :as handler]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
-            [oph.ehoks.utils :as utils :refer [eq with-authentication]]
+            [oph.ehoks.utils :as utils :refer [eq with-authentication parse-body]]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.hoks.hoks :as h]
