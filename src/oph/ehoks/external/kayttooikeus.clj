@@ -1,8 +1,7 @@
 (ns oph.ehoks.external.kayttooikeus
   (:require [oph.ehoks.external.cache :as cache]
             [oph.ehoks.external.cas :as cas]
-            [oph.ehoks.external.oph-url :as u]
-            [oph.ehoks.config :refer [config]]))
+            [oph.ehoks.external.oph-url :as u]))
 
 (defn get-user-details [^String username]
   (first
@@ -21,4 +20,4 @@
       (get-user-details (:user validation-data)))))
 
 (defn get-ticket-user [ticket]
-  (get-service-ticket-user ticket (:backend-url config)))
+  (get-service-ticket-user ticket (u/get-url "ehoks-virkailija-backend-url")))
