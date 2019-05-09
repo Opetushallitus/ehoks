@@ -7,7 +7,8 @@
             [oph.ehoks.external.http-client :as client]))
 
 (defn get-auth-cookie [app]
-  (-> (mock/request :get "/ehoks-backend/api/v1/oppija/session/opintopolku/")
+  (-> (mock/request
+        :get "/ehoks-oppija-backend/api/v1/oppija/session/opintopolku/")
       (mock/header "FirstName" "Teuvo Testi")
       (mock/header "cn" "Teuvo")
       (mock/header "givenname" "Teuvo")
