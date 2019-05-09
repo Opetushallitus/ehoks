@@ -37,28 +37,12 @@ digraph{
   "hoks-api-ns" -> "hoks-api"
 
 
-  "hoks-api" -> "ohj-järjestelmät"
-  "ohj-järjestelmät" -> "hoks-api"
+  "hoks-api" -> "ohj-ympäristöt"
+  "ohj-ympäristöt" -> "hoks-api"
   "oppija-api" -> "ehoks-ui"
   "ehoks-ui" -> "oppija-api"
   "virkailija-api" -> "ehoks-virkailija-ui"
   "ehoks-virkailija-ui" -> "virkailija-api"
   "tyopaikan-toimija-api" -> "ehoks-tyopaikan-toimija-ui"
   "ehoks-tyopaikan-toimija-ui" -> "tyopaikan-toimija-api"
-/*
-  "user" -> "app"
-  "app" -> "provider-backend"
-  "provider-backend" -> "public-api"[label="x-auth-token=API_KEY"]
-  "public-api" -> "state-service" [label=" get thing\nlocation"]
-  "public-api" -> "resource-service" [label=" get user,"]
-  "resource-service" -> "RDS" [dir="both", label="read/write\nnon-transient\nresources"]
-  "koodipohja" -> "admin-gui"[label="manage users"]
-  "koodipohja" -> "provider-developer"[label="issue api key"]
-  "admin-gui" -> "admin-api"
-  "admin-api" -> "resource-service"[label="add users"]
-  "IOT Gateway" -> "Kinesis"
-  "Kinesis" -> "DynamoDB" [label="upsert \nthing state"]
-  "state-service" -> "DynamoDB" [label="read \nthing state"]
-  "thing" -> "IOT Gateway" [ label="thing\ntelematics\nstream" ]
-*/
 }
