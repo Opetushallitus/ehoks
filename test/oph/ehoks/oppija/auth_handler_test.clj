@@ -5,9 +5,10 @@
             [ring.mock.request :as mock]
             [oph.ehoks.utils :refer [parse-body]]))
 
+(def base-url "/ehoks-oppija-backend/api/v1/oppija/session/")
+
 (defn authenticate [app]
-  (app (-> (mock/request
-             :get "/ehoks-backend/api/v1/oppija/session/opintopolku/")
+  (app (-> (mock/request :get (str base-url "opintopolku/"))
            (mock/header "FirstName" "Teuvo Testi")
            (mock/header "cn" "Teuvo")
            (mock/header "givenname" "Teuvo")
@@ -19,7 +20,7 @@
     (let [app (common-api/create-app handler/app-routes nil)
           response (app (mock/request
                           :get
-                          "/ehoks-backend/api/v1/oppija/session/"))]
+                          base-url))]
       (is (= (:status response) 401))
       (is (empty? (:body response))))))
 
@@ -34,7 +35,7 @@
     (let [app (common-api/create-app handler/app-routes nil)
           response
           (app (-> (mock/request
-                     :get "/ehoks-backend/api/v1/oppija/session/opintopolku/"
+                     :get (str base-url "opintopolku/")
                      {"FirstName" "Teuvo Testi"
                       "cn" "Teuvo"
                       "hetu" "190384-9245"
@@ -52,7 +53,7 @@
           session-cookie (first (get-in auth-response [:headers "Set-Cookie"]))
           response (app (-> (mock/request
                               :get
-                              "/ehoks-backend/api/v1/oppija/session/")
+                              base-url)
                             (mock/header :cookie session-cookie)))
           body (parse-body (:body response))]
       (is (= (:status response) 200))
@@ -68,17 +69,17 @@
           authenticated-response
           (app (-> (mock/request
                      :get
-                     "/ehoks-backend/api/v1/oppija/session/")
+                     base-url)
                    (mock/header :cookie session-cookie)))
           authenticated-body (parse-body (:body authenticated-response))
           delete-response
           (app (-> (mock/request
                      :delete
-                     "/ehoks-backend/api/v1/oppija/session/")
+                     base-url)
                    (mock/header :cookie session-cookie)))
           response (app (-> (mock/request
                               :get
-                              "/ehoks-backend/api/v1/oppija/session/")
+                              base-url)
                             (mock/header :cookie session-cookie)))]
       (is (= (:status authenticated-response) 200))
       (is (= (:data authenticated-body)
