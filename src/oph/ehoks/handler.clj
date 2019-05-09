@@ -12,7 +12,6 @@
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.tyopaikan-toimija.handler :as tt-handler]
             [oph.ehoks.oppija.handler :as oppija-handler]
             [oph.ehoks.oppija.auth-handler :as auth-handler]
@@ -37,7 +36,7 @@
           :tags ["v1"]
           oppija-handler/routes
           (c-api/undocumented auth-handler/routes)
-          hoks-handler/routes
+
           healthcheck-handler/routes
           lokalisointi-handler/routes
           external-handler/routes

@@ -14,7 +14,8 @@
             [oph.ehoks.restful :as restful]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
-            [oph.ehoks.misc.handler :as misc-handler]))
+            [oph.ehoks.misc.handler :as misc-handler]
+            [oph.ehoks.hoks.handler :as hoks-handler]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -58,6 +59,8 @@
         :tags ["api"]
         (c-api/context "/v1" []
           :tags ["v1"]
+
+          hoks-handler/routes
 
           (c-api/context "/virkailija" []
             :tags ["virkailija"]
