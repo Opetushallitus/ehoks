@@ -6,6 +6,7 @@
             [oph.ehoks.db.migrations :as m]))
 
 (defn with-database [f]
+  (m/clean!)
   (m/migrate!)
   (f)
   (m/clean!))

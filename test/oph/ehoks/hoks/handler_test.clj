@@ -15,6 +15,7 @@
 ; TODO add test for removing at update (for example ppto)
 
 (defn with-database [f]
+  (m/clean!)
   (m/migrate!)
   (f)
   (m/clean!))

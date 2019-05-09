@@ -14,6 +14,7 @@
 (def url "/ehoks-oppija-backend/api/v1/oppija/oppijat")
 
 (defn with-database [f]
+  (m/clean!)
   (m/migrate!)
   (f)
   (m/clean!))
