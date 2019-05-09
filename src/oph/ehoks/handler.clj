@@ -20,15 +20,15 @@
 (def app-routes
   (c-api/api
     {:swagger
-     {:ui "/ehoks-backend/doc"
-      :spec "/ehoks-backend/doc/swagger.json"
+     {:ui "/ehoks-oppija-backend/doc"
+      :spec "/ehoks-oppija-backend/doc/swagger.json"
       :data {:info {:title "eHOKS backend"
                     :description "Backend for eHOKS"}
              :tags [{:name "api", :description ""}]}}
      :exceptions
      {:handlers common-api/handlers}}
 
-    (c-api/context "/ehoks-backend" []
+    (c-api/context "/ehoks-oppija-backend" []
       :tags ["ehoks"]
       (c-api/context "/api" []
         :tags ["api"]
