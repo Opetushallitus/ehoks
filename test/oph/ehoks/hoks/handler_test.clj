@@ -21,6 +21,7 @@
 
 (defn clean-db [f]
   (m/clean!)
+  (m/migrate!)
   (f))
 
 (use-fixtures :each with-database)
