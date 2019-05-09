@@ -10,7 +10,7 @@
     (let [app (common-api/create-app handler/app-routes nil)
           response (app
                      (mock/request
-                       :get "/ehoks-backend/api/v1/misc/environment"))]
+                       :get "/ehoks-oppija-backend/api/v1/misc/environment"))]
       (is (= (:status response) 200))
       (let [data (-> response :body parse-body :data)]
         (is (some? (:opintopolku-login-url data)))
