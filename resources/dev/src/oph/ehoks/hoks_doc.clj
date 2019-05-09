@@ -7,8 +7,6 @@
             [clj-time.format :as f]
             [clojure.string :as cstr]))
 
-(def doc-url "https://testiopintopolku.fi/ehoks-backend/hoks-doc/index.html")
-
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
 (def filtered-schemas '#{OppijaHOKS})
