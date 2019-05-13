@@ -79,3 +79,10 @@
     (c-api/undocumented
       (compojure-route/not-found
         (response/not-found {:reason "Route not found"})))))
+
+(def app
+  (common-api/create-app
+    app-routes
+    (when (seq (:redis-url config))
+      (redis-store {:pool {}
+                    :spec {:uri (:redis-url config)}}))))
