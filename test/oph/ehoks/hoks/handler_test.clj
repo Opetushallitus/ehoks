@@ -800,7 +800,8 @@
 
 (deftest get-hoks-by-opiskeluoikeus-oid
   (testing "GET HOKS by opiskeluoikeus-oid")
-  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+  (let [opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+        hoks-data {:opiskeluoikeus-oid opiskeluoikeus-oid
                    :oppija-oid "1.2.246.562.24.12312312312"
                    :laatija {:nimi "Teppo Tekijä"}
                    :paivittaja {:nimi "Pekka Päivittäjä"}
@@ -815,11 +816,11 @@
             app
             (mock/request :get
                           (format "%s/opiskeluoikeus/%s"
-                                  url (:opiskeluoikeus-oid hoks-data))))
+                                  url opiskeluoikeus-oid)))
           body (utils/parse-body (:body response))]
 
       (is (= (:status response) 200))
       (is (= (-> body
                  :data
                  :opiskeluoikeus-oid)
-             (:opiskeluoikeus-oid hoks-data))))))
+             opiskeluoikeus-oid)))))
