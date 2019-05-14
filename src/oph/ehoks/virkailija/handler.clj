@@ -42,6 +42,47 @@
         (handler request)
         (response/forbidden)))))
 
+(def routes
+  (c-api/context "/ehoks-virkailija-backend" []
+    :tags ["ehoks"]
+    (c-api/context "/api" []
+      :tags ["api"]
+      (c-api/context "/v1" []
+        :tags ["v1"]
+
+        hoks-handler/routes
+
+        (c-api/context "/virkailija" []
+          :tags ["virkailija"]
+          auth/routes
+
+          (route-middleware
+              [wrap-virkailija-authorize wrap-oph-super-user]
+
+            (c-api/context "/hoksit" []
+
+              (c-api/GET "/" []
+                :summary "Kaikki hoksit (perustiedot)"
+                (restful/rest-ok (db/select-hoksit)))
+
+              (c-api/GET "/:hoks-id" []
+                :path-params [hoks-id :- s/Int]
+                :summary "Hoksin tiedot"
+                (restful/rest-ok (h/get-hoks-by-id hoks-id))))
+
+            (c-api/DELETE "/cache" []
+              :summary "Välimuistin tyhjennys"
+              (c/clear-cache!)
+              (response/ok))))
+
+        healthcheck-handler/routes
+        misc-handler/routes))
+
+    (c-api/undocumented
+      (c-api/GET "/buildversion.txt" _
+        (response/content-type
+          (response/resource-response "buildversion.txt") "text/plain")))))
+
 (def app-routes
   (c-api/api
     {:swagger
@@ -53,46 +94,7 @@
      :exceptions
      {:handlers common-api/handlers}}
 
-    (c-api/context "/ehoks-virkailija-backend" []
-      :tags ["ehoks"]
-      (c-api/context "/api" []
-        :tags ["api"]
-        (c-api/context "/v1" []
-          :tags ["v1"]
-
-          hoks-handler/routes
-
-          (c-api/context "/virkailija" []
-            :tags ["virkailija"]
-            auth/routes
-
-            (route-middleware
-              [wrap-virkailija-authorize wrap-oph-super-user]
-
-              (c-api/context "/hoksit" []
-
-                (c-api/GET "/" []
-                  :summary "Kaikki hoksit (perustiedot)"
-                  (restful/rest-ok (db/select-hoksit)))
-
-                (c-api/GET "/:hoks-id" []
-                  :path-params [hoks-id :- s/Int]
-                  :summary "Hoksin tiedot"
-                  (restful/rest-ok (h/get-hoks-by-id hoks-id))))
-
-              (c-api/DELETE "/cache" []
-                :summary "Välimuistin tyhjennys"
-                (c/clear-cache!)
-                (response/ok))))
-
-          healthcheck-handler/routes
-          lokalisointi-handler/routes
-          misc-handler/routes))
-
-      (c-api/undocumented
-        (c-api/GET "/buildversion.txt" _
-          (response/content-type
-            (response/resource-response "buildversion.txt") "text/plain"))))
+    routes
 
     (c-api/undocumented
       (compojure-route/not-found
