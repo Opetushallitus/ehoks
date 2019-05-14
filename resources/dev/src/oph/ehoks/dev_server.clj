@@ -1,6 +1,5 @@
 (ns oph.ehoks.dev-server
-  (:require [oph.ehoks.handler :as hoks-api-handler]
-            [oph.ehoks.virkailija.handler :as virkailija-handler]
+  (:require [oph.ehoks.ehoks-app :as ehoks-app]
             [oph.ehoks.common.api :as common-api]
             [compojure.core :refer [GET defroutes routes]]
             [ring.util.http-response :refer [ok not-found]]
@@ -33,7 +32,7 @@
     #(when (= (.getName %) filename) %)
     (file-seq (io/file (io/resource "dev-routes")))))
 
-(defroutes dev-hoks-api-routes
+(defroutes dev-routes
   (GET "/dev-routes/*" request
     (let [filename (uri-to-filename (:uri request))
           file (find-dev-route-file filename)]
@@ -46,20 +45,6 @@
           (ok (slurp file))
           (not-found "{}"))
         [:headers "Content-Type"] "application/json"))))
-
-(def hoks-api-app
-  (common-api/create-app
-    hoks-api-handler/app-routes
-    (when (seq (:redis-url config))
-      (redis-store {:pool {}
-                    :spec {:uri (:redis-url config)}}))))
-
-(def virkailija-app
-  (common-api/create-app
-    virkailija-handler/app-routes
-    (when (seq (:redis-url config))
-      (redis-store {:pool {}
-                    :spec {:uri (:redis-url config)}}))))
 
 (defn set-cors [response]
   (-> response
@@ -80,19 +65,12 @@
       (let [response (handler request)]
         (set-cors response)))))
 
-(def dev-virkailija-app
-  (wrap-dev-cors
-    (routes
-;      (wrap-params (wrap-cookies (wrap-reload #'mock/mock-routes)))
-
-      (wrap-reload #'virkailija-app))))
-
-(def dev-hoks-api-app
+(def dev-app
   (wrap-dev-cors
     (routes
       (wrap-params (wrap-cookies (wrap-reload #'mock/mock-routes)))
-      (wrap-reload #'dev-hoks-api-routes)
-      (wrap-reload #'hoks-api-app))))
+      (wrap-reload #'dev-routes)
+      (wrap-reload #'ehoks-app/app))))
 
 (defn start-server
   ([config-file]
@@ -106,15 +84,12 @@
      (require 'oph.ehoks.external.oph-url :reload))
    (log/info "Starting development server...")
    (log/info "Not safe for production or public environments.")
-   {:virkailija (jetty/run-jetty dev-virkailija-app
-                                 {:port (:virkailija-backend-port config)
-                                  :join? false
-                                  :async? true})
-    :hoks-api (jetty/run-jetty dev-hoks-api-app
-                               {:port (:port config)
-                                :join? false
-                                :async? true})})
+   (jetty/run-jetty dev-app
+                    {:port (:port config)
+                     :join? false
+                     :async? true}))
   ([] (start-server nil)))
+
 
 (defn -main []
   (start-server))
