@@ -811,7 +811,8 @@
                    :laatija {:nimi "Teppo Tekijä"}
                    :paivittaja {:nimi "Pekka Päivittäjä"}
                    :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                   :ensikertainen-hyvaksyminen "2018-12-15"}]
+                   :ensikertainen-hyvaksyminen "2018-12-15"}
+        app (create-app nil)]
     (utils/with-service-ticket
       app
       (-> (mock/request :post url)
