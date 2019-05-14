@@ -257,6 +257,14 @@
         (pdb/update-hoks-by-id! id values)
         (response/no-content))
 
+      (c-api/GET "/opiskeluoikeus/:oid" [oid :as request]
+        :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
+        :path-params [oid :- s/Str]
+        :return (rest/response hoks-schema/HOKS)
+        (let [hoks (first (pdb/select-hoksit-by-opiskeluoikeus-oid oid))]
+          (check-hoks-access! hoks request)
+          (rest/rest-ok hoks)))
+
       puuttuva-paikallinen-tutkinnon-osa
       (c-api/undocumented
         puuttuva-ammatillinen-osaaminen
