@@ -5,7 +5,6 @@
             [compojure.core :refer [GET]]
             [compojure.route :as compojure-route]
             [clojure.string :as cstr]
-            [oph.ehoks.common.api :as common-api]
             [ring.util.http-response :as response]
             [ring.util.request :as ring-request]
             [oph.ehoks.resources :as resources]
@@ -13,14 +12,13 @@
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.config :refer [config]]
             [oph.ehoks.tyopaikan-toimija.handler :as tt-handler]
             [oph.ehoks.oppija.handler :as oppija-handler]
             [oph.ehoks.oppija.auth-handler :as auth-handler]
             [oph.ehoks.validation.handler :as validation-handler]
             [oph.ehoks.external.oph-url :as u]
             [oph.ehoks.virkailija.handler :as virkailija-handler]
-            [oph.ehoks.redis :refer [redis-store]]))
+            [oph.ehoks.common.api :as common-api]))
 
 (defn move-to [request service]
   (response/moved-permanently
@@ -79,10 +77,3 @@
     (c-api/undocumented
       (compojure-route/not-found
         (response/not-found {:reason "Route not found"})))))
-
-(def app
-  (common-api/create-app
-    app-routes
-    (when (seq (:redis-url config))
-      (redis-store {:pool {}
-                    :spec {:uri (:redis-url config)}}))))
