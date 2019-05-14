@@ -6,7 +6,6 @@
             [compojure.route :as compojure-route]
             [clojure.string :as cstr]
             [ring.util.http-response :as response]
-            [ring.util.request :as ring-request]
             [oph.ehoks.resources :as resources]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
@@ -21,9 +20,15 @@
             [oph.ehoks.common.api :as common-api]))
 
 (defn move-to [request service]
-  (response/moved-permanently
-    (cstr/replace
-      (ring-request/request-url request) "ehoks-backend" service)))
+  (let [full-path (str (-> request :scheme name)
+                       "://"
+                       (if (= service "ehoks-virkailija-backend")
+                         (u/get-url "ehoks-virkailija-backend-url")
+                         (get-in request [:headers "host"]))
+                       (cstr/replace (:uri request) "ehoks-backend" service)
+                       (when-let [query (:query-string request)]
+                         (str "?" query)))]
+    (response/moved-permanently full-path)))
 
 (def app-routes
   (c-api/api
