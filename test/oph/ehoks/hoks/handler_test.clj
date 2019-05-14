@@ -797,3 +797,30 @@
                 (mock/json-body {:id 1
                                  :paivittaja {:nimi "Kalle Käyttäjä"}})))]
       (is (= (:status response) 404)))))
+
+(deftest get-hoks-by-opiskeluoikeus-oid
+  (testing "GET HOKS by opiskeluoikeus-oid")
+  (let [opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+        hoks-data {:opiskeluoikeus-oid opiskeluoikeus-oid
+                   :oppija-oid "1.2.246.562.24.12312312312"
+                   :laatija {:nimi "Teppo Tekijä"}
+                   :paivittaja {:nimi "Pekka Päivittäjä"}
+                   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                   :ensikertainen-hyvaksyminen "2018-12-15"}]
+    (utils/with-service-ticket
+      app
+      (-> (mock/request :post url)
+          (mock/json-body hoks-data)))
+    (let [response
+          (utils/with-service-ticket
+            app
+            (mock/request :get
+                          (format "%s/opiskeluoikeus/%s"
+                                  url opiskeluoikeus-oid)))
+          body (utils/parse-body (:body response))]
+
+      (is (= (:status response) 200))
+      (is (= (-> body
+                 :data
+                 :opiskeluoikeus-oid)
+             opiskeluoikeus-oid)))))
