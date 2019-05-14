@@ -57,7 +57,7 @@
           auth/routes
 
           (route-middleware
-              [wrap-virkailija-authorize wrap-oph-super-user]
+            [wrap-virkailija-authorize wrap-oph-super-user]
 
             (c-api/context "/hoksit" []
 
