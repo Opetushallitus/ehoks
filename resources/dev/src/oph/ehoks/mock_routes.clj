@@ -1,6 +1,5 @@
 (ns oph.ehoks.mock-routes
-  (:require [oph.ehoks.handler :refer [app]]
-            [compojure.core :refer [GET POST defroutes routes]]
+  (:require [compojure.core :refer [GET POST defroutes routes]]
             [ring.util.http-response :as response]
             [ring.middleware.reload :refer [wrap-reload]]
             [oph.ehoks.config :refer [config]]

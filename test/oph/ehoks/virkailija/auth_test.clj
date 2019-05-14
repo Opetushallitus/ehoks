@@ -4,7 +4,11 @@
             [ring.mock.request :as mock]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.handler :refer [create-app]]))
+            [oph.ehoks.virkailija.handler :as handler]
+            [oph.ehoks.common.api :as common-api]))
+
+(defn create-app [session-store]
+  (common-api/create-app handler/app-routes session-store))
 
 (defn ticket-response [url options]
   (if (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
@@ -58,7 +62,7 @@
             (mock/request
               :get
               (str
-                "/ehoks-backend/api/v1/virkailija/session"
+                "/ehoks-virkailija-backend/api/v1/virkailija/session"
                 "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
       (t/is (= (:status response) 200)))))
 
@@ -73,6 +77,6 @@
             (mock/request
               :get
               (str
-                "/ehoks-backend/api/v1/virkailija/session"
+                "/ehoks-virkailija-backend/api/v1/virkailija/session"
                 "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
       (t/is (= (:status response) 401)))))

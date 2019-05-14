@@ -1,12 +1,14 @@
 (ns oph.ehoks.oppija.auth-handler-test
   (:require [clojure.test :refer [deftest testing is]]
-            [oph.ehoks.handler :refer [app]]
+            [oph.ehoks.handler :as handler]
+            [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :refer [parse-body]]))
 
-(defn authenticate []
-  (app (-> (mock/request
-             :get "/ehoks-backend/api/v1/oppija/session/opintopolku/")
+(def base-url "/ehoks-oppija-backend/api/v1/oppija/session/")
+
+(defn authenticate [app]
+  (app (-> (mock/request :get (str base-url "opintopolku/"))
            (mock/header "FirstName" "Teuvo Testi")
            (mock/header "cn" "Teuvo")
            (mock/header "givenname" "Teuvo")
@@ -15,22 +17,25 @@
 
 (deftest session-without-authentication
   (testing "GET current session without authentication"
-    (let [response (app (mock/request
+    (let [app (common-api/create-app handler/app-routes nil)
+          response (app (mock/request
                           :get
-                          "/ehoks-backend/api/v1/oppija/session/"))]
+                          base-url))]
       (is (= (:status response) 401))
       (is (empty? (:body response))))))
 
 (deftest session-authenticate
   (testing "POST authenticate"
-    (let [response (authenticate)]
+    (let [response (authenticate
+                     (common-api/create-app handler/app-routes nil))]
       (is (= (:status response) 303)))))
 
 (deftest prevent-malformed-authentication
   (testing "Prevents malformed authentication"
-    (let [response
+    (let [app (common-api/create-app handler/app-routes nil)
+          response
           (app (-> (mock/request
-                     :get "/ehoks-backend/api/v1/oppija/session/opintopolku/"
+                     :get (str base-url "opintopolku/")
                      {"FirstName" "Teuvo Testi"
                       "cn" "Teuvo"
                       "hetu" "190384-9245"
@@ -43,11 +48,12 @@
 
 (deftest session-authenticated
   (testing "GET current authenticated session"
-    (let [auth-response (authenticate)
+    (let [app (common-api/create-app handler/app-routes nil)
+          auth-response (authenticate app)
           session-cookie (first (get-in auth-response [:headers "Set-Cookie"]))
           response (app (-> (mock/request
                               :get
-                              "/ehoks-backend/api/v1/oppija/session/")
+                              base-url)
                             (mock/header :cookie session-cookie)))
           body (parse-body (:body response))]
       (is (= (:status response) 200))
@@ -57,22 +63,23 @@
 
 (deftest session-delete-authenticated
   (testing "DELETE authenticated session"
-    (let [auth-response (authenticate)
+    (let [app (common-api/create-app handler/app-routes nil)
+          auth-response (authenticate app)
           session-cookie (first (get-in auth-response [:headers "Set-Cookie"]))
           authenticated-response
           (app (-> (mock/request
                      :get
-                     "/ehoks-backend/api/v1/oppija/session/")
+                     base-url)
                    (mock/header :cookie session-cookie)))
           authenticated-body (parse-body (:body authenticated-response))
           delete-response
           (app (-> (mock/request
                      :delete
-                     "/ehoks-backend/api/v1/oppija/session/")
+                     base-url)
                    (mock/header :cookie session-cookie)))
           response (app (-> (mock/request
                               :get
-                              "/ehoks-backend/api/v1/oppija/session/")
+                              base-url)
                             (mock/header :cookie session-cookie)))]
       (is (= (:status authenticated-response) 200))
       (is (= (:data authenticated-body)

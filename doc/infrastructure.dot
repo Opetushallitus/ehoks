@@ -1,0 +1,48 @@
+digraph{
+  graph [fontname = "monospace", fontsize="10", color="grey", fontcolor="grey"];
+  node [fontname = "monospace", shape="box", style="filled"];
+  edge [fontname = "monospace", color="blue", fontcolor="blue",fontsize="10"];
+
+  subgraph clusterKoodipohja {
+    label="eHOKS Backend Koodipohja"
+    "virkailija-ns"
+    "oppija-ns"
+    "tyopaikan-toimija-ns"
+    "hoks-api-ns"
+  }
+
+  subgraph clusterVirkailijaApi {
+    label="/ehoks-virkailija-backend/"
+    "virkailija-api"
+    "virkailija-ns"
+    "hoks-api"
+  }
+
+  subgraph clusterJulkinenApi {
+    label="/ehoks-oppija-backend/"
+    "oppija-api"
+    "tyopaikan-toimija-api"
+  }
+
+  subgraph clusterEhoksUI {
+   label="eHOKS käyttöliittymät"
+   "ehoks-ui"
+   "ehoks-virkailija-ui"
+   "ehoks-tyopaikan-toimija-ui"
+  }
+
+  "virkailija-ns" -> "virkailija-api"
+  "oppija-ns" -> "oppija-api"
+  "tyopaikan-toimija-ns" -> "tyopaikan-toimija-api"
+  "hoks-api-ns" -> "hoks-api"
+
+
+  "hoks-api" -> "ohj-ympäristöt"
+  "ohj-ympäristöt" -> "hoks-api"
+  "oppija-api" -> "ehoks-ui"
+  "ehoks-ui" -> "oppija-api"
+  "virkailija-api" -> "ehoks-virkailija-ui"
+  "ehoks-virkailija-ui" -> "virkailija-api"
+  "tyopaikan-toimija-api" -> "ehoks-tyopaikan-toimija-ui"
+  "ehoks-tyopaikan-toimija-ui" -> "tyopaikan-toimija-api"
+}

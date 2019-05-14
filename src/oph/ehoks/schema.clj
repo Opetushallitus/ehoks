@@ -49,6 +49,5 @@
               :session-max-age s/Int
               :service-timeout-ms s/Int
               :ext-cache-lifetime-minutes s/Int
-              :backend-url s/Str
               :save-hoks-json? s/Bool
               :opintopolku-host s/Str})

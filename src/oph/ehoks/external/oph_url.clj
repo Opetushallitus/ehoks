@@ -44,8 +44,9 @@
       (parse-urls base-urls)))
 
 (def oph-service-urls
-  (load-urls (or (io/file (System/getProperty "services_file"))
-                 (io/resource "services-oph.properties"))))
+  (when-not *compile-files*
+    (load-urls (or (io/file (System/getProperty "services_file"))
+                   (io/resource "services-oph.properties")))))
 
 (defn replace-arg [url i v]
   (cstr/replace url (format "$%d" i) (str v)))

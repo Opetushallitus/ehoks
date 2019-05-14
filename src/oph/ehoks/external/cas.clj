@@ -14,7 +14,7 @@
   (cond
     (.contains service (u/get-url "ehoks.virkailija-login-return"))
     service
-    (.contains service "ehoks-backend")
+    (.contains service "ehoks-virkailija-backend")
     (format "%s/cas-security-check" service)
     :else
     (format "%s/j_spring_cas_security_check" service)))
