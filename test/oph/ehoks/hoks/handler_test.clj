@@ -262,27 +262,27 @@
       hoks
       (let [app (create-app nil)
             post-response
-           (utils/with-service-ticket
-             app
-             (-> (mock/request
-                   :post
-                   (get-hoks-url hoks pao-path))
-                 (mock/json-body pao-data)))
-           get-response (utils/with-service-ticket
-                          app
-                          (mock/request
-                            :get
-                            (get-hoks-url hoks (str pao-path "/1"))))]
-       (is (= (:status post-response) 200))
-       (eq (utils/parse-body
-             (:body post-response))
-           {:meta {:id 1}
-            :data {:uri
-                   (format "%s/1/puuttuva-ammatillinen-osaaminen/1" url)}})
-       (is (= (:status get-response) 200))
-       (eq (utils/parse-body
-             (:body get-response))
-           {:meta {} :data (assoc pao-data :id 1)})))))
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :post
+                    (get-hoks-url hoks pao-path))
+                  (mock/json-body pao-data)))
+            get-response (utils/with-service-ticket
+                           app
+                           (mock/request
+                             :get
+                             (get-hoks-url hoks (str pao-path "/1"))))]
+        (is (= (:status post-response) 200))
+        (eq (utils/parse-body
+              (:body post-response))
+            {:meta {:id 1}
+             :data {:uri
+                    (format "%s/1/puuttuva-ammatillinen-osaaminen/1" url)}})
+        (is (= (:status get-response) 200))
+        (eq (utils/parse-body
+              (:body get-response))
+            {:meta {} :data (assoc pao-data :id 1)})))))
 
 (deftest put-pao
   (testing "PUT puuttuva ammatillinen osaaminen"

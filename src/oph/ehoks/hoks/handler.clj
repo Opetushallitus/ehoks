@@ -132,7 +132,7 @@
         (let [pao-db (h/save-puuttuva-ammatillinen-tutkinnon-osa! hoks pao)]
           (rest/rest-ok
             {:uri (format "%s/%d" (:uri request) (:id pao-db))}
-             :id (:id pao-db)))))
+            :id (:id pao-db)))))
 
     (c-api/PUT "/:id" []
       :summary "Päivittää HOKSin puuttuvan ammatillisen osaamisen"
