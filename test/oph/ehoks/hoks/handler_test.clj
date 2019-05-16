@@ -798,7 +798,7 @@
 
 (deftest create-and-delete-hoks-with-ppto-and-pao
   (testing "delete hoks and newly created puuttuva paikallinen tutkinnon osa"
-  (db/clear)
+    (db/clear)
     (with-hoks
       hoks
       (let [hoks-id (:id hoks)
@@ -828,26 +828,25 @@
         (is (empty? (h/get-puuttuvat-ammatilliset-tutkinnon-osat hoks-id)))))))
 
 (deftest create-and-delete-hoks-with-opto-and-oao
-(testing "delete hoks and newly created olemassa-oleva tutkinnon osa and
+  (testing "delete hoks and newly created olemassa-oleva tutkinnon osa and
 olemassaoleva paikallinen tutkinnonosa"
-(db/clear)
+    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                      :ensikertainen-hyvaksyminen "2018-12-15"
-                     :olemassa-olevat-ammatilliset-tutkinnon-osat [
-                     {:tutkinnon-osa-koodi-uri "tutkinnonosat_0001"
-                     :tutkinnon-osa-koodi-versio 1
-                     :valittu-todentamisen-prosessi-koodi-uri
-                     "osaamisentodentamisenprosessi_0001"
-                     :valittu-todentamisen-prosessi-koodi-versio 1}
-                     ]
-                    :olemassa-olevat-paikalliset-tutkinnon-osat [{
-                    :valittu-todentamisen-prosessi-koodi-versio 1
-                    :valittu-todentamisen-prosessi-koodi-uri
-                    "osaamisentodentamisenprosessi_0001"}]}
+                     :olemassa-olevat-ammatilliset-tutkinnon-osat
+                     [{:tutkinnon-osa-koodi-uri "tutkinnonosat_0001"
+                       :tutkinnon-osa-koodi-versio 1
+                       :valittu-todentamisen-prosessi-koodi-uri
+                       "osaamisentodentamisenprosessi_0001"
+                       :valittu-todentamisen-prosessi-koodi-versio 1}]
+                     :olemassa-olevat-paikalliset-tutkinnon-osat
+                     [{:valittu-todentamisen-prosessi-koodi-versio 1
+                       :valittu-todentamisen-prosessi-koodi-uri
+                       "osaamisentodentamisenprosessi_0001"}]}
           response
           (utils/with-service-ticket
             app
@@ -857,9 +856,9 @@ olemassaoleva paikallinen tutkinnonosa"
           hoks (-> (get-in body [:data :uri]) get-authenticated :data)
           hoks-id (:id hoks)
           oao-response (h/get-olemassa-olevat-ammatilliset-tutkinnon-osat
-            hoks-id)
+                         hoks-id)
           opto-response (h/get-olemassa-olevat-paikalliset-tutkinnon-osat
-            hoks-id)
+                          hoks-id)
           delete-response (h/delete-hoks-by-id! (:id hoks))]
       (is (= (:status response) 200))
       (eq (empty? oao-response) false)
@@ -867,31 +866,30 @@ olemassaoleva paikallinen tutkinnonosa"
       (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
       (is (empty? (h/get-olemassa-olevat-ammatilliset-tutkinnon-osat hoks-id)))
       (is (empty? (h/get-olemassa-olevat-paikalliset-tutkinnon-osat
-        hoks-id))))))
+                    hoks-id))))))
 
 (deftest create-and-delete-hoks-with-ooyto
-(testing "delete hoks and newly created olemassa-oleva yto"
-(db/clear)
+  (testing "delete hoks and newly created olemassa-oleva yto"
+    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :laatija {:nimi "Teppo Tekijä"}
                      :paivittaja {:nimi "Pekka Päivittäjä"}
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                      :ensikertainen-hyvaksyminen "2018-12-15"
-                   :olemassa-olevat-yhteiset-tutkinnon-osat [{
-                     :valittu-todentamisen-prosessi-koodi-uri
-                     "osaamisentodentamisenprosessi_0001"
-                     :valittu-todentamisen-prosessi-koodi-versio 1
-                     :tutkinnon-osa-koodi-uri "tutkinnonosat_0001"
-                     :tutkinnon-osa-koodi-versio 1
-                     :osa-alueet [
-                     {:osa-alue-koodi-uri "ammatillisenoppiaineet_0001"
-                     :osa-alue-koodi-versio 1
-                     :valittu-todentamisen-prosessi-koodi-uri
-                     "osaamisentodentamisenprosessi_0001"
-                     :valittu-todentamisen-prosessi-koodi-versio 1}
-                     ]
-                     }]}
+                     :olemassa-olevat-yhteiset-tutkinnon-osat
+                     [{:valittu-todentamisen-prosessi-koodi-uri
+                       "osaamisentodentamisenprosessi_0001"
+                       :valittu-todentamisen-prosessi-koodi-versio 1
+                       :tutkinnon-osa-koodi-uri "tutkinnonosat_0001"
+                       :tutkinnon-osa-koodi-versio 1
+                       :osa-alueet
+                       [{:osa-alue-koodi-uri "ammatillisenoppiaineet_0001"
+                         :osa-alue-koodi-versio 1
+                         :valittu-todentamisen-prosessi-koodi-uri
+                         "osaamisentodentamisenprosessi_0001"
+                         :valittu-todentamisen-prosessi-koodi-versio 1}]}]}
+
           response
           (utils/with-service-ticket
             app
@@ -901,30 +899,30 @@ olemassaoleva paikallinen tutkinnonosa"
           hoks (-> (get-in body [:data :uri]) get-authenticated :data)
           hoks-id (:id hoks)
           ooyto-response (h/get-olemassa-olevat-yhteiset-tutkinnon-osat
-            hoks-id)
+                           hoks-id)
           delete-response (h/delete-hoks-by-id! (:id hoks))]
       (is (= (:status response) 200))
       (eq (empty? ooyto-response) false)
       (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
       (is (empty? (h/get-olemassa-olevat-yhteiset-tutkinnon-osat
-        hoks-id))))))
+                    hoks-id))))))
 
 (deftest create-and-delete-hoks-with-ovatu
   (testing "delete hoks and newly created opikseluvalmiuksia tukevat opinnot"
-  (db/clear)
+    (db/clear)
     (with-hoks
       hoks
       (let [hoks-id (:id hoks)
             ovatu-response (utils/with-service-ticket
-                            app
-                            (-> (mock/request
-                                  :post
-                                  (format
-                                    "%s/1/%s"
-                                    url ovatu-path))
-                                (mock/json-body ovatu-data)))
+                             app
+                             (-> (mock/request
+                                   :post
+                                   (format
+                                     "%s/1/%s"
+                                     url ovatu-path))
+                                 (mock/json-body ovatu-data)))
             delete-response (h/delete-hoks-by-id! (:id hoks))]
-            (is (= (:status ovatu-response) 200))
-            (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
-            (is (empty? (h/get-opiskeluvalmiuksia-tukevat-opinnot
-              hoks-id)))))))
+        (is (= (:status ovatu-response) 200))
+        (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
+        (is (empty? (h/get-opiskeluvalmiuksia-tukevat-opinnot
+                      hoks-id)))))))
