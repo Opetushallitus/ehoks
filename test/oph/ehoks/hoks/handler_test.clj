@@ -40,22 +40,24 @@
       :body
       utils/parse-body))
 
-(defn create-hoks []
-  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                   :oppija-oid "1.2.246.562.24.12312312312"
-                   :laatija {:nimi "Teppo Tekijä"}
-                   :paivittaja {:nimi "Pekka Päivittäjä"}
-                   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                   :ensikertainen-hyvaksyminen "2018-12-15"}]
+(def hoks-data
+  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :laatija {:nimi "Teppo Tekijä"}
+   :paivittaja {:nimi "Pekka Päivittäjä"}
+   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+   :ensikertainen-hyvaksyminen "2018-12-15"})
+
+(defn create-hoks [data]
     (-> (create-app nil)
         (utils/with-service-ticket
           (-> (mock/request :post url)
-              (mock/json-body hoks-data)))
+              (mock/json-body data)))
         :body
         utils/parse-body
         (get-in [:data :uri])
         get-authenticated
-        :data)))
+        :data))
 
 (defmacro with-hoks [hoks & body]
   `(let [~hoks (create-hoks hoks-data)]
@@ -791,7 +793,6 @@
                                  :paivittaja {:nimi "Kalle Käyttäjä"}})))]
       (is (= (:status response) 404)))))
 
-<<<<<<< HEAD
 (deftest create-and-delete-hoks-with-ppto-and-pao
   (testing "delete hoks and newly created puuttuva paikallinen tutkinnon osa"
     (db/clear)
@@ -800,7 +801,7 @@
       (let [hoks-id (:id hoks)
             ppto-response
             (utils/with-service-ticket
-              app
+              (create-app nil)
               (-> (mock/request
                     :post
                     (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
@@ -808,7 +809,7 @@
             body (utils/parse-body (:body ppto-response))
             pao-response
             (utils/with-service-ticket
-              app
+            (create-app nil)
               (-> (mock/request
                     :post
                     (format
@@ -845,7 +846,7 @@ olemassaoleva paikallinen tutkinnonosa"
                        "osaamisentodentamisenprosessi_0001"}]}
           response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request :post url)
                 (mock/json-body hoks-data)))
           body (utils/parse-body (:body response))
@@ -888,7 +889,7 @@ olemassaoleva paikallinen tutkinnonosa"
 
           response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request :post url)
                 (mock/json-body hoks-data)))
           body (utils/parse-body (:body response))
@@ -910,7 +911,7 @@ olemassaoleva paikallinen tutkinnonosa"
       hoks
       (let [hoks-id (:id hoks)
             ovatu-response (utils/with-service-ticket
-                             app
+                             (create-app nil)
                              (-> (mock/request
                                    :post
                                    (format
