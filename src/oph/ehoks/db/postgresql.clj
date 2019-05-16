@@ -25,6 +25,8 @@
 (defn query
   ([queries opts]
     (jdbc/query {:connection-uri (:database-url config)} queries opts))
+  ([queries]
+    (query queries {}))
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
 
@@ -478,6 +480,13 @@
   (insert-one!
     :puuttuvat_ammatilliset_tutkinnon_osat
     (h/puuttuva-ammatillinen-tutkinnon-osa-to-sql m)))
+
+(defn select-puuttuva-ammatillinen-tutkinnon-osa-by-id [id]
+  (->
+    (query
+      [queries/select-puuttuvat-ammatilliset-tutkinnon-osat-by-id id])
+    first
+    h/puuttuva-ammatillinen-tutkinnon-osa-from-sql))
 
 (defn select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
   (query
