@@ -925,6 +925,6 @@ olemassaoleva paikallinen tutkinnonosa"
                                 (mock/json-body ovatu-data)))
             delete-response (h/delete-hoks-by-id! (:id hoks))]
             (is (= (:status ovatu-response) 200))
-            (is (= (:id (h/get-hoks-by-id hoks-id))) nil)
+            (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
             (is (empty? (h/get-opiskeluvalmiuksia-tukevat-opinnot
               hoks-id)))))))
