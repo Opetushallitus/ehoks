@@ -49,15 +49,15 @@
    :ensikertainen-hyvaksyminen "2018-12-15"})
 
 (defn create-hoks [data]
-    (-> (create-app nil)
-        (utils/with-service-ticket
-          (-> (mock/request :post url)
-              (mock/json-body data)))
-        :body
-        utils/parse-body
-        (get-in [:data :uri])
-        get-authenticated
-        :data))
+  (-> (create-app nil)
+      (utils/with-service-ticket
+        (-> (mock/request :post url)
+            (mock/json-body data)))
+      :body
+      utils/parse-body
+      (get-in [:data :uri])
+      get-authenticated
+      :data))
 
 (defmacro with-hoks [hoks & body]
   `(let [~hoks (create-hoks hoks-data)]
@@ -809,7 +809,7 @@
             body (utils/parse-body (:body ppto-response))
             pao-response
             (utils/with-service-ticket
-            (create-app nil)
+              (create-app nil)
               (-> (mock/request
                     :post
                     (format
