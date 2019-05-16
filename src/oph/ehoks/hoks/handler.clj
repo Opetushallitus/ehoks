@@ -257,13 +257,22 @@
         (pdb/update-hoks-by-id! id values)
         (response/no-content))
 
-      (c-api/DELETE "/:id" [id :as request]
-        :summary "Vain testaukseen: poistaa hoksin sekäliitetyt ppto:t"
-        :path-params [id :- s/Int]
+      (c-api/GET "/opiskeluoikeus/:oid" [oid :as request]
+        :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
+        :path-params [oid :- s/Str]
         :return (rest/response hoks-schema/HOKS)
-        (let [hoks (pdb/select-hoks-by-id id)]
+        (let [hoks (first (pdb/select-hoksit-by-opiskeluoikeus-oid oid))]
           (check-hoks-access! hoks request)
-          (rest/rest-ok (h/delete-hoks-by-id! id))))
+          (rest/rest-ok hoks)))
+
+
+    (c-api/DELETE "/:id" [id :as request]
+      :summary "Vain testaukseen: poistaa hoksin sekä liitetyt ppto:t"
+      :path-params [id :- s/Int]
+      :return (rest/response hoks-schema/HOKS)
+      (let [hoks (pdb/select-hoks-by-id id)]
+        (check-hoks-access! hoks request)
+        (rest/rest-ok (h/delete-hoks-by-id! id))))
 
       puuttuva-paikallinen-tutkinnon-osa
       (c-api/undocumented

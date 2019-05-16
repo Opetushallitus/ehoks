@@ -1,6 +1,9 @@
 (ns oph.ehoks.virkailija.handler
   (:require [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
+            [compojure.route :as compojure-route]
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.common.api :as common-api]
             [schema.core :as s]
             [ring.util.http-response :as response]
             [oph.ehoks.external.cache :as c]
@@ -8,7 +11,11 @@
             [oph.ehoks.user :as user]
             [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.restful :as restful]))
+            [oph.ehoks.restful :as restful]
+            [oph.ehoks.healthcheck.handler :as healthcheck-handler]
+            [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
+            [oph.ehoks.misc.handler :as misc-handler]
+            [oph.ehoks.hoks.handler :as hoks-handler]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -36,25 +43,59 @@
         (response/forbidden)))))
 
 (def routes
-  (c-api/context "/virkailija" []
-    :tags ["virkailija"]
-    auth/routes
+  (c-api/context "/ehoks-virkailija-backend" []
+    :tags ["ehoks"]
+    (c-api/context "/api" []
+      :tags ["api"]
+      (c-api/context "/v1" []
+        :tags ["v1"]
 
-    (route-middleware
-      [wrap-virkailija-authorize wrap-oph-super-user]
+        hoks-handler/routes
 
-      (c-api/context "/hoksit" []
+        (c-api/context "/virkailija" []
+          :tags ["virkailija"]
+          auth/routes
 
-        (c-api/GET "/" []
-          :summary "Kaikki hoksit (perustiedot)"
-          (restful/rest-ok (db/select-hoksit)))
+          (route-middleware
+            [wrap-virkailija-authorize wrap-oph-super-user]
 
-        (c-api/GET "/:hoks-id" []
-          :path-params [hoks-id :- s/Int]
-          :summary "Hoksin tiedot"
-          (restful/rest-ok (h/get-hoks-by-id hoks-id))))
+            (c-api/context "/hoksit" []
 
-      (c-api/DELETE "/cache" []
-        :summary "Välimuistin tyhjennys"
-        (c/clear-cache!)
-        (response/ok)))))
+              (c-api/GET "/" []
+                :summary "Kaikki hoksit (perustiedot)"
+                (restful/rest-ok (db/select-hoksit)))
+
+              (c-api/GET "/:hoks-id" []
+                :path-params [hoks-id :- s/Int]
+                :summary "Hoksin tiedot"
+                (restful/rest-ok (h/get-hoks-by-id hoks-id))))
+
+            (c-api/DELETE "/cache" []
+              :summary "Välimuistin tyhjennys"
+              (c/clear-cache!)
+              (response/ok))))
+
+        healthcheck-handler/routes
+        misc-handler/routes))
+
+    (c-api/undocumented
+      (c-api/GET "/buildversion.txt" _
+        (response/content-type
+          (response/resource-response "buildversion.txt") "text/plain")))))
+
+(def app-routes
+  (c-api/api
+    {:swagger
+     {:ui "/ehoks-virkailija-backend/doc"
+      :spec "/ehoks-virkailija-backend/doc/swagger.json"
+      :data {:info {:title "eHOKS virkailija backend"
+                    :description "eHOKS virkailijan näkymän backend"}
+             :tags [{:name "api", :description ""}]}}
+     :exceptions
+     {:handlers common-api/handlers}}
+
+    routes
+
+    (c-api/undocumented
+      (compojure-route/not-found
+        (response/not-found {:reason "Route not found"})))))

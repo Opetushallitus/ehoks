@@ -1,5 +1,16 @@
 # eHOKS
 
+## Arkkitehtuurista
+
+eHOKS-backend on jaettu kahteen osaan: virkailija ja oppija. Virkailijan puoli
+käsittää virkailijan käyttöliittymän rajapinnat sekä datan tuontiin tarkoitetut
+rajapinnat.
+
+![](doc/infrastructure.png)
+
+Tällä hetkellä sovellus jakaa koodipohjan eri osien välillä ja ainoastaan
+rajapintojen polut on jaettu palveluittain.
+
 ## Teknologiat
 
 ### Frontend

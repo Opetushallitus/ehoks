@@ -6,18 +6,19 @@
             [oph.ehoks.db.migrations :as m]))
 
 (defn with-database [f]
-  (f)
   (m/clean!)
-  (m/migrate!))
-
-(defn create-db [f]
   (m/migrate!)
   (f)
   (m/clean!))
 
+(defn clean-db [f]
+  (m/clean!)
+  (m/migrate!)
+  (f))
+
 (use-fixtures :each with-database)
 
-(use-fixtures :once create-db)
+(use-fixtures :once clean-db)
 
 (def ooato-data
   [{:valittu-todentamisen-prosessi-koodi-versio 1

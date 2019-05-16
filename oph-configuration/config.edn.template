@@ -1,5 +1,4 @@
 {:port {{ehoks_backend_port}}
- :backend-url "{{ehoks_backend_url}}"
  :database-url "{{ehoks_db_url}}"
  :frontend-url "{{ehoks_frontend_url}}"
  :eperusteet-peruste-url "{{ehoks_eperusteet_peruste_url}}"

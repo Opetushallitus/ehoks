@@ -1,5 +1,6 @@
 (ns oph.ehoks.dev-server
-  (:require [oph.ehoks.handler :refer [app]]
+  (:require [oph.ehoks.ehoks-app :as ehoks-app]
+            [oph.ehoks.common.api :as common-api]
             [compojure.core :refer [GET defroutes routes]]
             [ring.util.http-response :refer [ok not-found]]
             [ring.adapter.jetty :as jetty]
@@ -12,7 +13,8 @@
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.params :refer [wrap-params]]
             [clojure.tools.logging :as log]
-            [cheshire.core :as cheshire]))
+            [cheshire.core :as cheshire]
+            [oph.ehoks.redis :refer [redis-store]]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -68,7 +70,7 @@
     (routes
       (wrap-params (wrap-cookies (wrap-reload #'mock/mock-routes)))
       (wrap-reload #'dev-routes)
-      (wrap-reload #'app))))
+      (wrap-reload #'ehoks-app/app))))
 
 (defn start-server
   ([config-file]
@@ -87,6 +89,7 @@
                      :join? false
                      :async? true}))
   ([] (start-server nil)))
+
 
 (defn -main []
   (start-server))

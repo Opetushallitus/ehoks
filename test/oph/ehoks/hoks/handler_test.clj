@@ -1,13 +1,14 @@
 (ns oph.ehoks.hoks.handler-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [oph.ehoks.handler :refer [app]]
+            [oph.ehoks.virkailija.handler :as handler]
+            [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.db.memory :as db]
             [oph.ehoks.db.migrations :as m]
             [oph.ehoks.hoks.hoks :as h]))
 
-(def url "/ehoks-backend/api/v1/hoks")
+(def url "/ehoks-virkailija-backend/api/v1/hoks")
 
 ; TODO Change to use OHJ auth
 ; TODO Test also role access
@@ -15,52 +16,46 @@
 ; TODO add test for removing at update (for example ppto)
 
 (defn with-database [f]
-  (f)
   (m/clean!)
-  (m/migrate!))
-
-(defn create-db [f]
   (m/migrate!)
   (f)
   (m/clean!))
 
+(defn clean-db [f]
+  (m/clean!)
+  (m/migrate!)
+  (f))
+
 (use-fixtures :each with-database)
 
-(use-fixtures :once create-db)
+(use-fixtures :once clean-db)
+
+(defn create-app [session-store]
+  (common-api/create-app handler/app-routes session-store))
 
 (defn get-authenticated [url]
   (-> (utils/with-service-ticket
-        app
+        (create-app nil)
         (mock/request :get url))
       :body
       utils/parse-body))
 
-(def hoks-data
-  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-   :oppija-oid "1.2.246.562.24.12312312312"
-   :laatija {:nimi "Teppo Tekijä"}
-   :paivittaja {:nimi "Pekka Päivittäjä"}
-   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-   :ensikertainen-hyvaksyminen "2018-12-15"})
-
-(def hoks-data2
-  {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
-   :oppija-oid "1.2.246.562.24.12312312313"
-   :laatija {:nimi "Teppo Tekijä"}
-   :paivittaja {:nimi "Pekka Päivittäjä"}
-   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-   :ensikertainen-hyvaksyminen "2018-12-15"})
-
-(defn create-hoks [hoksdata]
-  (-> app
-      (utils/with-service-ticket
-        (-> (mock/request :post url)
-            (mock/json-body hoks-data)))
-      :body
-      utils/parse-body
-      (get-in [:data :uri])
-      get-authenticated
-      :data))
+(defn create-hoks []
+  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                   :oppija-oid "1.2.246.562.24.12312312312"
+                   :laatija {:nimi "Teppo Tekijä"}
+                   :paivittaja {:nimi "Pekka Päivittäjä"}
+                   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                   :ensikertainen-hyvaksyminen "2018-12-15"}]
+    (-> (create-app nil)
+        (utils/with-service-ticket
+          (-> (mock/request :post url)
+              (mock/json-body hoks-data)))
+        :body
+        utils/parse-body
+        (get-in [:data :uri])
+        get-authenticated
+        :data)))
 
 (defmacro with-hoks [hoks & body]
   `(let [~hoks (create-hoks hoks-data)]
@@ -94,7 +89,7 @@
       hoks
       (let [ppto-response
             (utils/with-service-ticket
-              app
+              (create-app nil)
               (-> (mock/request
                     :post
                     (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
@@ -107,7 +102,7 @@
                   :meta {:id 1}})
         (let [ppto-new
               (utils/with-service-ticket
-                app
+                (create-app nil)
                 (mock/request
                   :get
                   (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1")))]
@@ -137,14 +132,14 @@
                                                {:nimi "Organisaation nimi"}}]}]}
             ppto-response
             (utils/with-service-ticket
-              app
+              (create-app nil)
               (-> (mock/request
                     :post
                     (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
                   (mock/json-body ppto-data)))
             patch-response
             (utils/with-service-ticket
-              app
+              (create-app nil)
               (->
                 (mock/request
                   :patch
@@ -172,7 +167,7 @@
       hoks
       (let [ppto-response
             (utils/with-service-ticket
-              app
+              (create-app nil)
               (-> (mock/request
                     :post
                     (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
@@ -181,7 +176,7 @@
                         (:body ppto-response))
             patch-response
             (utils/with-service-ticket
-              app
+              (create-app nil)
               (-> (mock/request
                     :patch
                     (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1"))
@@ -212,7 +207,7 @@
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :post
                   (format
@@ -221,7 +216,7 @@
                 (mock/json-body
                   pao-data)))
           get-response  (utils/with-service-ticket
-                          app
+                          (create-app nil)
                           (mock/request
                             :get
                             (format
@@ -243,7 +238,7 @@
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :post
                   (format
@@ -253,7 +248,7 @@
                   pao-data)))
           put-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :put
                   (format
@@ -265,7 +260,7 @@
                     :id 1
                     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"))))
           get-response  (utils/with-service-ticket
-                          app
+                          (create-app nil)
                           (mock/request
                             :get
                             (format
@@ -297,7 +292,7 @@
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :post
                   (format
@@ -307,7 +302,7 @@
                   pao-data)))
           patch-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :patch
                   (format
@@ -316,7 +311,7 @@
                 (mock/json-body
                   (assoc patch-all-pao-data :id 1))))
           get-response  (utils/with-service-ticket
-                          app
+                          (create-app nil)
                           (mock/request
                             :get
                             (format
@@ -332,7 +327,7 @@
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :post
                   (format
@@ -342,7 +337,7 @@
                   pao-data)))
           response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :patch
                   (format
@@ -420,7 +415,7 @@
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :post
                   (format
@@ -429,7 +424,7 @@
                 (mock/json-body pyto-data)))
           get-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (mock/request
               :get
               (format
@@ -451,7 +446,7 @@
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :post
                   (format
@@ -460,7 +455,7 @@
                 (mock/json-body pyto-data)))
           response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :put
                   (format
@@ -475,7 +470,7 @@
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :post
                   (format
@@ -484,7 +479,7 @@
                 (mock/json-body pyto-data)))
           response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :patch
                   (format
@@ -499,7 +494,7 @@
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :post
                   (format
@@ -508,7 +503,7 @@
                 (mock/json-body pyto-data)))
           response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :patch
                   (format
@@ -529,7 +524,7 @@
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :post
                   (format
@@ -538,7 +533,7 @@
                 (mock/json-body ovatu-data)))
           get-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (mock/request
               :get
               (format
@@ -565,7 +560,7 @@
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :post
                   (format
@@ -574,7 +569,7 @@
                 (mock/json-body ovatu-data)))
           put-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :put
                   (format
@@ -593,7 +588,7 @@
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :post
                   (format
@@ -602,7 +597,7 @@
                 (mock/json-body ovatu-data)))
           patch-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :patch
                   (format
@@ -618,7 +613,7 @@
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :post
                   (format
@@ -627,7 +622,7 @@
                 (mock/json-body ovatu-data)))
           patch-response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request
                   :patch
                   (format
@@ -662,7 +657,7 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request :post url)
                 (mock/json-body hoks-data)))
           body (utils/parse-body (:body response))]
@@ -684,12 +679,12 @@
                      :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                      :ensikertainen-hyvaksyminen "2018-12-15"}]
       (utils/with-service-ticket
-        app
+        (create-app nil)
         (-> (mock/request :post url)
             (mock/json-body hoks-data)))
       (let [response
             (utils/with-service-ticket
-              app
+              (create-app nil)
               (-> (mock/request :post url)
                   (mock/json-body hoks-data)))]
         (is (= (:status response) 400))))))
@@ -704,7 +699,7 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"}]
       (let [response
             (utils/with-service-ticket
-              app
+              (create-app nil)
               (-> (mock/request :post url)
                   (mock/json-body hoks-data)))]
         (is (= (:status response) 401))))))
@@ -720,14 +715,14 @@
 
       (let [response
             (utils/with-service-ticket
-              app
+              (create-app nil)
               (-> (mock/request :post url)
                   (mock/json-body hoks-data))
               "1.2.246.562.10.12944436166")
             body (utils/parse-body (:body response))]
         (is (= (:status
                  (utils/with-service-ticket
-                   app
+                   (create-app nil)
                    (mock/request :get (get-in body [:data :uri]))))
                401))))))
 
@@ -741,7 +736,7 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"}]
       (let [response
             (utils/with-service-ticket
-              app
+              (create-app nil)
               (-> (mock/request :post url)
                   (mock/json-body hoks-data)))
             body (utils/parse-body (:body response))]
@@ -765,14 +760,14 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request :post url)
                 (mock/json-body hoks-data)))
           body (utils/parse-body (:body response))]
       (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)
             patch-response
             (utils/with-service-ticket
-              app
+              (create-app nil)
               (-> (mock/request :patch (get-in body [:data :uri]))
                   (mock/json-body
                     {:id (:id hoks)
@@ -790,12 +785,13 @@
   (testing "PATCH prevents updating non existing HOKS"
     (let [response
           (utils/with-service-ticket
-            app
+            (create-app nil)
             (-> (mock/request :patch (format "%s/1" url))
                 (mock/json-body {:id 1
                                  :paivittaja {:nimi "Kalle Käyttäjä"}})))]
       (is (= (:status response) 404)))))
 
+<<<<<<< HEAD
 (deftest create-and-delete-hoks-with-ppto-and-pao
   (testing "delete hoks and newly created puuttuva paikallinen tutkinnon osa"
     (db/clear)
@@ -926,3 +922,31 @@ olemassaoleva paikallinen tutkinnonosa"
         (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
         (is (empty? (h/get-opiskeluvalmiuksia-tukevat-opinnot
                       hoks-id)))))))
+
+(deftest get-hoks-by-opiskeluoikeus-oid
+  (testing "GET HOKS by opiskeluoikeus-oid")
+  (let [opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+        hoks-data {:opiskeluoikeus-oid opiskeluoikeus-oid
+                   :oppija-oid "1.2.246.562.24.12312312312"
+                   :laatija {:nimi "Teppo Tekijä"}
+                   :paivittaja {:nimi "Pekka Päivittäjä"}
+                   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                   :ensikertainen-hyvaksyminen "2018-12-15"}
+        app (create-app nil)]
+    (utils/with-service-ticket
+      app
+      (-> (mock/request :post url)
+          (mock/json-body hoks-data)))
+    (let [response
+          (utils/with-service-ticket
+            app
+            (mock/request :get
+                          (format "%s/opiskeluoikeus/%s"
+                                  url opiskeluoikeus-oid)))
+          body (utils/parse-body (:body response))]
+
+      (is (= (:status response) 200))
+      (is (= (-> body
+                 :data
+                 :opiskeluoikeus-oid)
+             opiskeluoikeus-oid)))))
