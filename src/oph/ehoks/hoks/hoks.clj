@@ -167,6 +167,15 @@
        :id)
     (db/select-hankitun-osaamisen-naytot-by-pato-id id)))
 
+(defn get-puuttuva-ammatillinen-tutkinnon-osa [id]
+  (when-let [pato-db (db/select-puuttuva-ammatillinen-tutkinnon-osa-by-id id)]
+    (assoc
+      pato-db
+      :hankitun-osaamisen-naytto
+      (get-pato-hankitun-osaamisen-naytto id)
+      :osaamisen-hankkimistavat
+      (get-pato-osaamisen-hankkimistavat id))))
+
 (defn get-puuttuvat-ammatilliset-tutkinnon-osat [hoks-id]
   (mapv
     #(dissoc
