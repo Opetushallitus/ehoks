@@ -134,14 +134,6 @@
             {:uri (format "%s/%d" (:uri request) (:id pao-db))}
             :id (:id pao-db)))))
 
-    (c-api/PUT "/:id" []
-      :summary "Päivittää HOKSin puuttuvan ammatillisen osaamisen"
-      :path-params [id :- s/Int]
-      :body [values hoks-schema/PuuttuvaAmmatillinenOsaaminenPaivitys]
-      (if (db/update-ppao! id values)
-        (response/no-content)
-        (response/not-found "PPAO not found with given PPAO ID")))
-
     (c-api/PATCH "/:id" []
       :summary
       "Päivittää HOKSin puuttuvan ammatillisen osaamisen arvoa tai arvoja"
