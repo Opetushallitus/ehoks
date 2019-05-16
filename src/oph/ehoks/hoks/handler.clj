@@ -265,14 +265,13 @@
           (check-hoks-access! hoks request)
           (rest/rest-ok hoks)))
 
-
-    (c-api/DELETE "/:id" [id :as request]
-      :summary "Vain testaukseen: poistaa hoksin sekä liitetyt ppto:t"
-      :path-params [id :- s/Int]
-      :return (rest/response hoks-schema/HOKS)
-      (let [hoks (pdb/select-hoks-by-id id)]
-        (check-hoks-access! hoks request)
-        (rest/rest-ok (h/delete-hoks-by-id! id))))
+      (c-api/DELETE "/:id" [id :as request]
+        :summary "Vain testaukseen: poistaa hoksin sekä liitetyt ppto:t"
+        :path-params [id :- s/Int]
+        :return (rest/response hoks-schema/HOKS)
+        (let [hoks (pdb/select-hoks-by-id id)]
+          (check-hoks-access! hoks request)
+          (rest/rest-ok (h/delete-hoks-by-id! id))))
 
       puuttuva-paikallinen-tutkinnon-osa
       (c-api/undocumented
