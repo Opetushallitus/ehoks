@@ -112,23 +112,27 @@
           (response/not-found {:error "PPTO not found with given PPTO ID"}))))))
 
 (def ^:private puuttuva-ammatillinen-osaaminen
-  (c-api/context "/:hoks-id/puuttuva-ammatillinen-osaaminen" [hoks-id]
+  (c-api/context "/:hoks-id/puuttuva-ammatillinen-osaaminen" []
+    :path-params [hoks-id :- s/Int]
 
-    (c-api/GET "/:id" [:as id]
+    (c-api/GET "/:id" [:as request]
       :summary "Palauttaa HOKSin puuttuvan ammatillisen osaamisen"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/PuuttuvaAmmatillinenOsaaminen)
-      (rest/rest-ok (db/get-ppao-by-id id)))
+      (let [hoks (pdb/select-hoks-by-id hoks-id)]
+        (check-hoks-access! hoks request)
+        (rest/rest-ok (h/get-puuttuva-ammatillinen-tutkinnon-osa id))))
 
     (c-api/POST "/" [:as request]
-      :summary
-      "Luo (tai korvaa vanhan) puuttuvan ammatillisen osaamisen HOKSiin"
-      :body [ppao hoks-schema/PuuttuvaAmmatillinenOsaaminenLuonti]
+      :summary "Luo puuttuvan ammatillisen osaamisen HOKSiin"
+      :body [pao hoks-schema/PuuttuvaAmmatillinenOsaaminenLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ppao-response (db/create-ppao! ppao)]
-        (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id ppao-response))}
-          :id (:id ppao-response))))
+      (let [hoks (pdb/select-hoks-by-id hoks-id)]
+        (check-hoks-access! hoks request)
+        (let [pao-db (h/save-puuttuva-ammatillinen-tutkinnon-osa! hoks pao)]
+          (rest/rest-ok
+            {:uri (format "%s/%d" (:uri request) (:id pao-db))}
+             :id (:id pao-db)))))
 
     (c-api/PUT "/:id" []
       :summary "Päivittää HOKSin puuttuvan ammatillisen osaamisen"
