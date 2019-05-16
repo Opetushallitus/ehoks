@@ -284,48 +284,6 @@
               (:body get-response))
             {:meta {} :data (assoc pao-data :id 1)})))))
 
-(deftest put-pao
-  (testing "PUT puuttuva ammatillinen osaaminen"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/puuttuva-ammatillinen-osaaminen"
-                    url))
-                (mock/json-body
-                  pao-data)))
-          put-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :put
-                  (format
-                    "%s/1/%s/1"
-                    url pao-path))
-                (mock/json-body
-                  (assoc
-                    pao-data
-                    :id 1
-                    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"))))
-          get-response  (utils/with-service-ticket
-                          (create-app nil)
-                          (mock/request
-                            :get
-                            (format
-                              "%s/1/%s/1"
-                              url pao-path)))]
-      (is (= (:status put-response) 204))
-      (eq (utils/parse-body
-            (:body get-response))
-          {:meta {} :data
-           (assoc
-             pao-data
-             :id 1
-             :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001")}))))
-
 (def patch-all-pao-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"
    :tutkinnon-osa-koodi-versio 1
