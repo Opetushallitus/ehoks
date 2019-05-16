@@ -3,7 +3,8 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db.hoks :as h]
             [clj-time.coerce :as c]
-            [oph.ehoks.db.queries :as queries]))
+            [oph.ehoks.db.queries :as queries]
+            [clojure.tools.logging :as log]))
 
 (extend-protocol jdbc/ISQLValue
   java.time.LocalDate
@@ -41,6 +42,9 @@
 
 (defn shallow-delete! [t w]
   (update! t {:deleted_at (java.util.Date.)} w))
+
+(defn brutal-delete! [t w]
+  (jdbc/delete! {:connection-uri (:database-url config)} t w))
 
 (defn insert-multi! [t v]
   (jdbc/insert-multi! {:connection-uri (:database-url config)} t v))
@@ -576,13 +580,109 @@
     [queries/select-hankitun-osaamisen-naytot-by-yto-osa-alue-id id]
     {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
 
-(defn delete-hoks-and-pptos! [hoks_id]
+(defn delete-hoks-or-part! [t id_name id_value]
+  (let [query (str id_name " = " id_value)]
+    (jdbc/delete! {:connection-uri (:database-url config)} t (vector query))))
+
+(defn delete-group! [delete-map ids]
+  (doseq [[k v] delete-map]
+    (let [delete-response (map #(delete-hoks-or-part! k v %) ids)
+          parsed-response
+          (mapv #(first (nth delete-response %)) (range (count ids)))]
+      (log/info "Deleted :" (reduce + parsed-response) " resources"))))
+
+(defn delete-puuttuvat-paikalliset-tutkinnon-osat! [ppto_ids]
+  (let [delete-map
+        {:puuttuvan_paikallisen_tutkinnon_osan_naytto
+         "puuttuva_paikallinen_tutkinnon_osa_id"
+         :puuttuvan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
+         "puuttuva_paikallinen_tutkinnon_osa_id"
+         :puuttuvat_paikalliset_tutkinnon_osat "id"}]
+    (delete-group! delete-map ppto_ids)))
+
+(defn delete-puuttuvat-ammatilliset-tutkinnon-osat! [pato_ids]
+  (let [delete-map
+        {:puuttuvan_ammatillisen_tutkinnon_osan_naytto
+         "puuttuva_ammatillinen_tutkinnon_osa_id"
+         :puuttuvan_ammatillisen_tutkinnon_osan_osaamisen_hankkimistavat
+         "puuttuva_ammatillinen_tutkinnon_osa_id"
+         :puuttuvat_ammatilliset_tutkinnon_osat "id"}]
+    (delete-group! delete-map pato_ids)))
+
+(defn delete-puuttuvat-yhteiset-tutkinnon-osat! [pyto_ids]
+  (let [delete-map
+        {:yhteisen_tutkinnon_osan_osa_alueet
+         "yhteisen_tutkinnon_osan_osa_alue_id"
+         :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
+         "yhteisen_tutkinnon_osan_osa_alue_id"
+         :yhteisen_tutkinnon_osan_osa_alueen_naytot
+         "yhteisen_tutkinnon_osan_osa_alue_id"
+         :puuttuvat_ammatilliset_tutkinnon_osat "id"}]
+    (delete-group! delete-map pyto_ids)))
+
+(defn delete-olemassa-olevat-ammatilliset-tutkinnon-osat! [ooato_ids]
+  (let [delete-map
+        {:olemassa_olevan_ammatillisen_tutkinnon_osan_naytto
+         "olemassa_oleva_ammatillinen_tutkinnon_osa_id"
+         :olemassa_olevat_ammatilliset_tutkinnon_osat "id"}]
+    (delete-group! delete-map ooato_ids)))
+
+(defn delete-olemassa-olevat-paikalliset-tutkinnon-osat! [oopto_ids]
+  (let [delete-map
+        {:olemassa_olevan_paikallisen_tutkinnon_osan_naytto
+         "olemassa_oleva_paikallinen_tutkinnon_osa_id"
+         :olemassa_olevan_paikallisen_tutkinnon_osan_arvioijat
+         "olemassa_oleva_paikallinen_tutkinnon_osa_id"
+         :olemassa_olevat_paikalliset_tutkinnon_osat "id"}]
+    (delete-group! delete-map oopto_ids)))
+
+(defn delete-olemassa-olevat-yhteiset-tutkinnon-osat! [ooyto_ids]
+  (let [delete-map
+        {:olemassa_olevan_yhteisen_tutkinnon_osan_naytto
+         "olemassa_oleva_yhteinen_tutkinnon_osa_id"
+         :olemassa_olevan_yhteisen_tutkinnon_osan_arvioijat
+         "olemassa_oleva_yhteinen_tutkinnon_osa_id"
+         :olemassa_olevan_yto_osa_alueen_naytto
+         "olemassa_oleva_yto_osa_alue_id"
+         :olemassa_olevat_yto_osa_alueet
+         "olemassa_oleva_yhteinen_tutkinnon_osa_id"
+         :olemassa_olevat_yhteiset_tutkinnon_osat "id"}]
+    (delete-group! delete-map ooyto_ids)))
+
+(defn delete-opiskeluvalmiuksia-tukevat-opinnot! [ovatu_ids]
+  (let [delete-map
+        {:opiskeluvalmiuksia_tukevat_opinnot "id"}]
+    (delete-group! delete-map ovatu_ids)))
+
+(defn delete-hoks! [hoks_id]
   (let [ppto_ids (mapv :id
                        (select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id
-                         hoks_id))]
-    (shallow-delete!
-      :hoksit
-      ["id = ? AND deleted_at IS NULL" hoks_id])
-    (map #(shallow-delete!
-            :puuttuvat_paikalliset_tutkinnon_osat
-            ["id = ? AND deleted_at IS NULL" %]) ppto_ids)))
+                         hoks_id))
+        pato_ids (mapv :id
+                       (select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id
+                         hoks_id))
+        pyto_ids (mapv :id
+                       (select-puuttuvat-yhteiset-tutkinnon-osat-by-hoks-id
+                         hoks_id))
+        ooato_ids
+        (mapv :id
+              (select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id
+                hoks_id))
+        oopto_ids
+        (mapv :id
+              (select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id
+                hoks_id))
+        ooyto_ids
+        (mapv :id (select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id
+                    hoks_id))
+        ovatu_ids (mapv :id
+                        (select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id
+                          hoks_id))]
+    (delete-puuttuvat-paikalliset-tutkinnon-osat! ppto_ids)
+    (delete-puuttuvat-ammatilliset-tutkinnon-osat! pato_ids)
+    (delete-puuttuvat-yhteiset-tutkinnon-osat! pyto_ids)
+    (delete-olemassa-olevat-ammatilliset-tutkinnon-osat! ooato_ids)
+    (delete-olemassa-olevat-paikalliset-tutkinnon-osat! oopto_ids)
+    (delete-olemassa-olevat-yhteiset-tutkinnon-osat! ooyto_ids)
+    (delete-opiskeluvalmiuksia-tukevat-opinnot! ovatu_ids)
+    (delete-hoks-or-part! :hoksit "id" hoks_id)))

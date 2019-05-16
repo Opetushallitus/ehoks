@@ -35,25 +35,35 @@
       :body
       utils/parse-body))
 
-(defn create-hoks []
-  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                   :oppija-oid "1.2.246.562.24.12312312312"
-                   :laatija {:nimi "Teppo Tekijä"}
-                   :paivittaja {:nimi "Pekka Päivittäjä"}
-                   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                   :ensikertainen-hyvaksyminen "2018-12-15"}]
-    (-> app
-        (utils/with-service-ticket
-          (-> (mock/request :post url)
-              (mock/json-body hoks-data)))
-        :body
-        utils/parse-body
-        (get-in [:data :uri])
-        get-authenticated
-        :data)))
+(def hoks-data
+  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :laatija {:nimi "Teppo Tekijä"}
+   :paivittaja {:nimi "Pekka Päivittäjä"}
+   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+   :ensikertainen-hyvaksyminen "2018-12-15"})
+
+(def hoks-data2
+  {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
+   :oppija-oid "1.2.246.562.24.12312312313"
+   :laatija {:nimi "Teppo Tekijä"}
+   :paivittaja {:nimi "Pekka Päivittäjä"}
+   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+   :ensikertainen-hyvaksyminen "2018-12-15"})
+
+(defn create-hoks [hoksdata]
+  (-> app
+      (utils/with-service-ticket
+        (-> (mock/request :post url)
+            (mock/json-body hoks-data)))
+      :body
+      utils/parse-body
+      (get-in [:data :uri])
+      get-authenticated
+      :data))
 
 (defmacro with-hoks [hoks & body]
-  `(let [~hoks (create-hoks)]
+  `(let [~hoks (create-hoks hoks-data)]
      (do ~@body)))
 
 (defn get-hoks-url [hoks path]
@@ -62,26 +72,27 @@
 (defn get-new-hoks-url [path]
   (with-hoks hoks (get-hoks-url hoks path)))
 
+(def ppto-data {:nimi "222"
+                :osaamisen-hankkimistavat []
+                :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
+                :hankitun-osaamisen-naytto
+                [{:jarjestaja {:oppilaitos-oid
+                               "1.2.246.562.10.00000000002"}
+                  :nayttoymparisto {:nimi "aaa"}
+                  :koulutuksen-jarjestaja-arvioijat []
+                  :osa-alueet []
+                  :keskeiset-tyotehtavat-naytto []
+                  :alku "2018-12-12"
+                  :loppu "2018-12-20"
+                  :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                        {:nimi "Organisaation nimi"}}]}]})
+
 (deftest post-and-get-ppto
   (testing "GET newly created puuttuva paikallinen tutkinnon osa"
     (db/clear)
     (with-hoks
       hoks
-      (let [ppto-data {:nimi "222"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :hankitun-osaamisen-naytto
-                       [{:jarjestaja {:oppilaitos-oid
-                                      "1.2.246.562.10.00000000002"}
-                         :koulutuksen-jarjestaja-arvioijat []
-                         :osa-alueet []
-                         :keskeiset-tyotehtavat-naytto []
-                         :nayttoymparisto {:nimi "aaa"}
-                         :alku "2018-12-12"
-                         :loppu "2018-12-20"
-                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                               {:nimi "Organisaation nimi"}}]}]}
-            ppto-response
+      (let [ppto-response
             (utils/with-service-ticket
               app
               (-> (mock/request
@@ -105,38 +116,6 @@
             (assoc
               ppto-data
               :id 1)))))))
-
-(deftest create-and-delete-hoks-with-ppto
-  (testing "delete hoks and newly created puuttuva paikallinen tutkinnon osa"
-    (with-hoks
-      hoks
-      (let [hoks-id (:id hoks)
-            ppto-data {:nimi "222"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :hankitun-osaamisen-naytto
-                       [{:jarjestaja {:oppilaitos-oid
-                                      "1.2.246.562.10.00000000002"}
-                         :koulutuksen-jarjestaja-arvioijat []
-                         :osa-alueet []
-                         :keskeiset-tyotehtavat-naytto []
-                         :nayttoymparisto {:nimi "aaa"}
-                         :alku "2018-12-12"
-                         :loppu "2018-12-20"
-                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                               {:nimi "Organisaation nimi"}}]}]}
-
-            ppto-response
-            (utils/with-service-ticket
-              app
-              (-> (mock/request
-                    :post
-                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
-                  (mock/json-body ppto-data)))
-            body (utils/parse-body (:body ppto-response))
-            delete-response (h/delete-hoks-by-id! (:id hoks))]
-        (is (= (:status ppto-response) 200))
-        (is (= (:id (h/get-hoks-by-id hoks-id)) nil))))))
 
 (deftest patch-all-ppto
   (testing "PATCH all puuttuva paikallinen tutkinnon osa"
@@ -191,21 +170,7 @@
   (testing "PATCH one value puuttuva paikallinen tutkinnon osa"
     (with-hoks
       hoks
-      (let [ppto-data {:nimi "222"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :hankitun-osaamisen-naytto
-                       [{:jarjestaja {:oppilaitos-oid
-                                      "1.2.246.562.10.00000000002"}
-                         :nayttoymparisto {:nimi "aaa"}
-                         :koulutuksen-jarjestaja-arvioijat []
-                         :osa-alueet []
-                         :keskeiset-tyotehtavat-naytto []
-                         :alku "2018-12-12"
-                         :loppu "2018-12-20"
-                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                               {:nimi "Organisaation nimi"}}]}]}
-            ppto-response
+      (let [ppto-response
             (utils/with-service-ticket
               app
               (-> (mock/request
@@ -830,3 +795,136 @@
                 (mock/json-body {:id 1
                                  :paivittaja {:nimi "Kalle Käyttäjä"}})))]
       (is (= (:status response) 404)))))
+
+(deftest create-and-delete-hoks-with-ppto-and-pao
+  (testing "delete hoks and newly created puuttuva paikallinen tutkinnon osa"
+  (db/clear)
+    (with-hoks
+      hoks
+      (let [hoks-id (:id hoks)
+            ppto-response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :post
+                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
+                  (mock/json-body ppto-data)))
+            body (utils/parse-body (:body ppto-response))
+            pao-response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :post
+                    (format
+                      "%s/1/puuttuva-ammatillinen-osaaminen"
+                      url))
+                  (mock/json-body
+                    pao-data)))
+            delete-response (h/delete-hoks-by-id! (:id hoks))]
+        (is (= (:status ppto-response) 200))
+        (is (= (:status pao-response) 200))
+        (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
+        (is (empty? (h/get-puuttuvat-paikalliset-tutkinnon-osat hoks-id)))
+        (is (empty? (h/get-puuttuvat-ammatilliset-tutkinnon-osat hoks-id)))))))
+
+(deftest create-and-delete-hoks-with-opto-and-oao
+(testing "delete hoks and newly created olemassa-oleva tutkinnon osa and
+olemassaoleva paikallinen tutkinnonosa"
+(db/clear)
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :laatija {:nimi "Teppo Tekijä"}
+                     :paivittaja {:nimi "Pekka Päivittäjä"}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :olemassa-olevat-ammatilliset-tutkinnon-osat [
+                     {:tutkinnon-osa-koodi-uri "tutkinnonosat_0001"
+                     :tutkinnon-osa-koodi-versio 1
+                     :valittu-todentamisen-prosessi-koodi-uri
+                     "osaamisentodentamisenprosessi_0001"
+                     :valittu-todentamisen-prosessi-koodi-versio 1}
+                     ]
+                    :olemassa-olevat-paikalliset-tutkinnon-osat [{
+                    :valittu-todentamisen-prosessi-koodi-versio 1
+                    :valittu-todentamisen-prosessi-koodi-uri
+                    "osaamisentodentamisenprosessi_0001"}]}
+          response
+          (utils/with-service-ticket
+            app
+            (-> (mock/request :post url)
+                (mock/json-body hoks-data)))
+          body (utils/parse-body (:body response))
+          hoks (-> (get-in body [:data :uri]) get-authenticated :data)
+          hoks-id (:id hoks)
+          oao-response (h/get-olemassa-olevat-ammatilliset-tutkinnon-osat
+            hoks-id)
+          opto-response (h/get-olemassa-olevat-paikalliset-tutkinnon-osat
+            hoks-id)
+          delete-response (h/delete-hoks-by-id! (:id hoks))]
+      (is (= (:status response) 200))
+      (eq (empty? oao-response) false)
+      (eq (empty? opto-response) false)
+      (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
+      (is (empty? (h/get-olemassa-olevat-ammatilliset-tutkinnon-osat hoks-id)))
+      (is (empty? (h/get-olemassa-olevat-paikalliset-tutkinnon-osat
+        hoks-id))))))
+
+(deftest create-and-delete-hoks-with-ooyto
+(testing "delete hoks and newly created olemassa-oleva yto"
+(db/clear)
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :laatija {:nimi "Teppo Tekijä"}
+                     :paivittaja {:nimi "Pekka Päivittäjä"}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                   :olemassa-olevat-yhteiset-tutkinnon-osat [{
+                     :valittu-todentamisen-prosessi-koodi-uri
+                     "osaamisentodentamisenprosessi_0001"
+                     :valittu-todentamisen-prosessi-koodi-versio 1
+                     :tutkinnon-osa-koodi-uri "tutkinnonosat_0001"
+                     :tutkinnon-osa-koodi-versio 1
+                     :osa-alueet [
+                     {:osa-alue-koodi-uri "ammatillisenoppiaineet_0001"
+                     :osa-alue-koodi-versio 1
+                     :valittu-todentamisen-prosessi-koodi-uri
+                     "osaamisentodentamisenprosessi_0001"
+                     :valittu-todentamisen-prosessi-koodi-versio 1}
+                     ]
+                     }]}
+          response
+          (utils/with-service-ticket
+            app
+            (-> (mock/request :post url)
+                (mock/json-body hoks-data)))
+          body (utils/parse-body (:body response))
+          hoks (-> (get-in body [:data :uri]) get-authenticated :data)
+          hoks-id (:id hoks)
+          ooyto-response (h/get-olemassa-olevat-yhteiset-tutkinnon-osat
+            hoks-id)
+          delete-response (h/delete-hoks-by-id! (:id hoks))]
+      (is (= (:status response) 200))
+      (eq (empty? ooyto-response) false)
+      (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
+      (is (empty? (h/get-olemassa-olevat-yhteiset-tutkinnon-osat
+        hoks-id))))))
+
+(deftest create-and-delete-hoks-with-ovatu
+  (testing "delete hoks and newly created opikseluvalmiuksia tukevat opinnot"
+  (db/clear)
+    (with-hoks
+      hoks
+      (let [hoks-id (:id hoks)
+            ovatu-response (utils/with-service-ticket
+                            app
+                            (-> (mock/request
+                                  :post
+                                  (format
+                                    "%s/1/%s"
+                                    url ovatu-path))
+                                (mock/json-body ovatu-data)))
+            delete-response (h/delete-hoks-by-id! (:id hoks))]
+            (is (= (:status ovatu-response) 200))
+            (is (= (:id (h/get-hoks-by-id hoks-id))) nil)
+            (is (empty? (h/get-opiskeluvalmiuksia-tukevat-opinnot
+              hoks-id)))))))
