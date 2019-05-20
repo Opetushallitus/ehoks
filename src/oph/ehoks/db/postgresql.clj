@@ -504,6 +504,26 @@
     [queries/select-hankitun-osaamisen-naytot-by-pato-id id]
     {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
 
+(defn delete-osaamisen-hankkimistavat-by-pato-id!
+  "Puuttuvan ammatillisen tutkinnon osan osaamisen hankkimistavat"
+  [id]
+  (shallow-delete!
+    :puuttuvan_ammatillisen_tutkinnon_osan_osaamisen_hankkimistavat
+    ["puuttuva_ammatillinen_tutkinnon_osa_id = ?" id]))
+
+(defn delete-hankitun-osaamisen-naytot-by-pato-id!
+  "Puuttuvan ammatillisen tutkinnon osan hankitun osaamisen näytöt"
+  [id]
+  (shallow-delete!
+    :puuttuvan_ammatillisen_tutkinnon_osan_naytto
+    ["puuttuva_ammatillinen_tutkinnon_osa_id = ?" id]))
+
+(defn update-puuttuva-ammatillinen-tutkinnon-osa-by-id! [id m]
+  (update!
+   :puuttuvat_ammatilliset_tutkinnon_osat
+   (h/puuttuva-ammatillinen-tutkinnon-osa-to-sql m)
+   ["id = ? AND deleted_at IS NULL" id]))
+
 (defn insert-puuttuvan-ammatillisen-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]
   (insert-one!
