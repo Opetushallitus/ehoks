@@ -319,7 +319,6 @@
 
 (deftest patch-all-pao
   (testing "PATCH ALL puuttuva ammatillinen osaaminen"
-    (db/clear)
     (with-hoks
       hoks
       (let [app (create-app nil)
