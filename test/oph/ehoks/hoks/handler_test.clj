@@ -203,162 +203,175 @@
                    :nimi "2223"))))))
 
 (def pao-path "puuttuva-ammatillinen-osaaminen")
-(def pao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
-               :tutkinnon-osa-koodi-versio 1
-               :osaamisen-hankkimistavat
-               [{:alku "2018-12-12"
-                 :loppu "2018-12-20"
-                 :ajanjakson-tarkenne "Tarkenne tässä"
-                 :osaamisen-hankkimistapa-koodi-uri
-                 "osaamisenhankkimistapa_koulutussopimus"
-                 :osaamisen-hankkimistapa-koodi-versio 1}]
-               :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"})
+(def pao-data
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_102499"
+   :tutkinnon-osa-koodi-versio 4
+   :vaatimuksista-tai-tavoitteista-poikkeaminen
+   "Ei poikkeamia."
+   :hankitun-osaamisen-naytto
+   [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+     :nayttoymparisto {:nimi "Testiympäristö 2"
+                       :y-tunnus "12345671-2"
+                       :kuvaus "Testi test"}
+     :keskeiset-tyotehtavat-naytto ["Testaus"]
+     :koulutuksen-jarjestaja-arvioijat
+     [{:nimi "Timo Testaaja"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54452521332"}}]
+     :tyoelama-arvioijat
+     [{:nimi "Taneli Työmies"
+       :organisaatio {:nimi "Tanelin Paja Ky"
+                      :y-tunnus "12345622-2"}}]
+     :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
+                   :koodi-versio 3}]
+     :alku "2019-03-10"
+     :loppu "2019-03-19"}]
+   :osaamisen-hankkimistavat
+   [{:jarjestajan-edustaja {:nimi "Ville Valvoja"
+                            :rooli "Valvojan apulainen"
+                            :oppilaitos-oid "1.2.246.562.10.54451211340"}
+     :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
+     :osaamisen-hankkimistapa-koodi-versio 2
+     :tyopaikalla-hankittava-osaaminen
+     {:vastuullinen-ohjaaja {:nimi "Aimo Ohjaaja"
+                             :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
+      :tyopaikan-nimi "Ohjausyhtiö Oy"
+      :tyopaikan-y-tunnus "12345212-4"
+      :muut-osallistujat [{:organisaatio {:nimi "Kolmas Esimerkki Oy"
+                                          :y-tunnus "12345233-5"}
+                           :nimi "Kalle Kirjuri"
+                           :rooli "Kirjuri"}]
+      :keskeiset-tyotehtavat ["Testitehtävä"]
+      :lisatiedot false}
+     :muut-oppimisymparisto
+     [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
+       :oppimisymparisto-koodi-versio 1
+       :selite "Testioppilaitos 2"
+       :lisatiedot false}]
+     :ajanjakson-tarkenne "Ei tarkennettavia asioita"
+     :hankkijan-edustaja
+     {:nimi "Heikki Hankkija"
+      :rooli "Opettaja"
+      :oppilaitos-oid "1.2.246.562.10.54452422420"}
+     :alku "2019-01-11"
+     :loppu "2019-03-14"}]
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"})
 
 (deftest post-and-get-pao
   (testing "POST puuttuva ammatillinen osaaminen and then get the created ppao"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/puuttuva-ammatillinen-osaaminen"
-                    url))
-                (mock/json-body
-                  pao-data)))
-          get-response  (utils/with-service-ticket
-                          (create-app nil)
-                          (mock/request
-                            :get
-                            (format
-                              "%s/1/%s/1"
-                              url pao-path)))]
-      (is (= (:status post-response) 200))
-      (eq (utils/parse-body
-            (:body post-response))
-          {:meta {:id 1}
-           :data {:uri
-                  (format "%s/1/puuttuva-ammatillinen-osaaminen/1" url)}})
-      (is (= (:status get-response) 200))
-      (eq (utils/parse-body
-            (:body get-response))
-          {:meta {} :data (assoc pao-data :id 1)}))))
-
-(deftest put-pao
-  (testing "PUT puuttuva ammatillinen osaaminen"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/puuttuva-ammatillinen-osaaminen"
-                    url))
-                (mock/json-body
-                  pao-data)))
-          put-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :put
-                  (format
-                    "%s/1/%s/1"
-                    url pao-path))
-                (mock/json-body
-                  (assoc
-                    pao-data
-                    :id 1
-                    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"))))
-          get-response  (utils/with-service-ticket
-                          (create-app nil)
-                          (mock/request
-                            :get
-                            (format
-                              "%s/1/%s/1"
-                              url pao-path)))]
-      (is (= (:status put-response) 204))
-      (eq (utils/parse-body
-            (:body get-response))
-          {:meta {} :data
-           (assoc
-             pao-data
-             :id 1
-             :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001")}))))
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :post
+                    (get-hoks-url hoks pao-path))
+                  (mock/json-body pao-data)))
+            get-response (utils/with-service-ticket
+                           app
+                           (mock/request
+                             :get
+                             (get-hoks-url hoks (str pao-path "/1"))))]
+        (is (= (:status post-response) 200))
+        (eq (utils/parse-body
+              (:body post-response))
+            {:meta {:id 1}
+             :data {:uri
+                    (format "%s/1/puuttuva-ammatillinen-osaaminen/1" url)}})
+        (is (= (:status get-response) 200))
+        (eq (utils/parse-body
+              (:body get-response))
+            {:meta {} :data (assoc pao-data :id 1)})))))
 
 (def patch-all-pao-data
-  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"
-   :tutkinnon-osa-koodi-versio 1
-   :osaamisen-hankkimistavat
-   [{:alku "2018-12-11"
-     :loppu "2018-12-21"
-     :ajanjakson-tarkenne "Tarkenne tässä uusi"
-     :osaamisen-hankkimistapa-koodi-uri
-     "osaamisenhankkimistapa_koulutussopimus1"
-     :osaamisen-hankkimistapa-koodi-versio 1}]
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000006"})
+  (merge
+    pao-data
+    {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"
+     :tutkinnon-osa-koodi-versio 1
+     :hankitun-osaamisen-naytto []
+     :osaamisen-hankkimistavat
+     [{:jarjestajan-edustaja
+       {:nimi "Veikko Valvoja"
+        :rooli "Valvoja"
+        :oppilaitos-oid "1.2.246.562.10.54451211340"}
+       :osaamisen-hankkimistapa-koodi-uri
+       "osaamisenhankkimistapa_oppisopimus"
+       :osaamisen-hankkimistapa-koodi-versio 2
+       :tyopaikalla-hankittava-osaaminen
+       {:vastuullinen-ohjaaja
+        {:nimi "Oiva Ohjaaja"
+         :sahkoposti "oiva.ohjaaja@esimerkki2.com"}
+        :tyopaikan-nimi "Ohjaus Oyk"
+        :tyopaikan-y-tunnus "12345222-4"
+        :muut-osallistujat []
+        :keskeiset-tyotehtavat ["Testitehtävä2"]
+        :lisatiedot false}
+       :muut-oppimisymparisto []
+       :ajanjakson-tarkenne "Ei ole"
+       :hankkijan-edustaja
+       {:nimi "Harri Hankkija"
+        :rooli "Opettajan sijainen"
+        :oppilaitos-oid "1.2.246.562.10.55552422420"}
+       :alku "2019-01-12"
+       :loppu "2019-02-11"}]
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000116"}))
 
 (deftest patch-all-pao
   (testing "PATCH ALL puuttuva ammatillinen osaaminen"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/puuttuva-ammatillinen-osaaminen"
-                    url))
-                (mock/json-body
-                  pao-data)))
-          patch-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url pao-path))
-                (mock/json-body
-                  (assoc patch-all-pao-data :id 1))))
-          get-response  (utils/with-service-ticket
-                          (create-app nil)
-                          (mock/request
-                            :get
-                            (format
-                              "%s/1/%s/1"
-                              url pao-path)))]
-      (is (= (:status patch-response) 204))
-      (eq (utils/parse-body
-            (:body get-response))
-          {:meta {} :data  (assoc patch-all-pao-data :id 1)}))))
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :post
+                    (get-hoks-url hoks pao-path))
+                  (mock/json-body pao-data)))
+            patch-response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :patch
+                    (get-hoks-url hoks (str pao-path "/1")))
+                  (mock/json-body (assoc patch-all-pao-data :id 1))))
+            get-response  (utils/with-service-ticket
+                            (create-app nil)
+                            (mock/request
+                              :get
+                              (get-hoks-url hoks (str pao-path "/1"))))]
+        (is (= (:status patch-response) 204))
+        (eq (utils/parse-body (:body get-response))
+            {:meta {} :data  (assoc patch-all-pao-data :id 1)})))))
 
 (deftest patch-one-pao
   (testing "PATCH one value puuttuva ammatillinen osaaminen"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/puuttuva-ammatillinen-osaaminen"
-                    url))
-                (mock/json-body
-                  pao-data)))
-          response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url pao-path))
-                (mock/json-body
-                  {:id 1
-                   :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
-      (is (= (:status response) 204)))))
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :post
+                    (format
+                      "%s/1/puuttuva-ammatillinen-osaaminen"
+                      url))
+                  (mock/json-body
+                    pao-data)))
+            response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :patch
+                    (format
+                      "%s/1/%s/1"
+                      url pao-path))
+                  (mock/json-body
+                    {:id 1
+                     :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
+        (is (= (:status response) 204))))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 

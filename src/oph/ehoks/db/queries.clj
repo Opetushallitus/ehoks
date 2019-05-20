@@ -147,6 +147,7 @@
     {:table "olemassa_olevat_yto_osa_alueet"
      :column "olemassa_oleva_yhteinen_tutkinnon_osa_id"}))
 (defq select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id)
+(defq select-puuttuvat-ammatilliset-tutkinnon-osat-by-id)
 (def select-hankitun-osaamisen-naytot-by-pato-id
   (generate-select-join
     {:table "hankitun_osaamisen_naytot"
