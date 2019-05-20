@@ -145,9 +145,9 @@
           (do (h/update-puuttuva-ammatillinen-tutkinnon-osa! pao-db values)
               (response/no-content))
           (response/not-found
-           {:error
-            (str "Puuttuva ammatillinen tutkinnon osa "
-                 "not found with given PPAO ID")}))))))
+            {:error
+             (str "Puuttuva ammatillinen tutkinnon osa "
+                  "not found with given PPAO ID")}))))))
 
 (def ^:private puuttuvat-yhteisen-tutkinnon-osat
   (c-api/context "/:hoks-id/puuttuvat-yhteisen-tutkinnon-osat" [hoks-id]

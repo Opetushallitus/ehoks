@@ -286,36 +286,36 @@
 
 (def patch-all-pao-data
   (merge
-   pao-data
-   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"
-    :tutkinnon-osa-koodi-versio 1
-    :hankitun-osaamisen-naytto []
-    :osaamisen-hankkimistavat
-    [{:jarjestajan-edustaja
-      {:nimi "Veikko Valvoja"
-       :rooli "Valvoja"
-       :oppilaitos-oid "1.2.246.562.10.54451211340"}
-      :osaamisen-hankkimistapa-koodi-uri
-      "osaamisenhankkimistapa_oppisopimus"
-      :osaamisen-hankkimistapa-koodi-versio 2
-      :tyopaikalla-hankittava-osaaminen
-      {:vastuullinen-ohjaaja
-       {:nimi "Oiva Ohjaaja"
-        :sahkoposti "oiva.ohjaaja@esimerkki2.com"}
-       :tyopaikan-nimi "Ohjaus Oyk"
-       :tyopaikan-y-tunnus "12345222-4"
-       :muut-osallistujat []
-       :keskeiset-tyotehtavat ["Testitehtävä2"]
-       :lisatiedot false}
-      :muut-oppimisymparisto []
-      :ajanjakson-tarkenne "Ei ole"
-      :hankkijan-edustaja
-      {:nimi "Harri Hankkija"
-       :rooli "Opettajan sijainen"
-       :oppilaitos-oid "1.2.246.562.10.55552422420"}
-      :alku "2019-01-12"
-      :loppu "2019-02-11"}]
-    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000116"}))
+    pao-data
+    {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"
+     :tutkinnon-osa-koodi-versio 1
+     :hankitun-osaamisen-naytto []
+     :osaamisen-hankkimistavat
+     [{:jarjestajan-edustaja
+       {:nimi "Veikko Valvoja"
+        :rooli "Valvoja"
+        :oppilaitos-oid "1.2.246.562.10.54451211340"}
+       :osaamisen-hankkimistapa-koodi-uri
+       "osaamisenhankkimistapa_oppisopimus"
+       :osaamisen-hankkimistapa-koodi-versio 2
+       :tyopaikalla-hankittava-osaaminen
+       {:vastuullinen-ohjaaja
+        {:nimi "Oiva Ohjaaja"
+         :sahkoposti "oiva.ohjaaja@esimerkki2.com"}
+        :tyopaikan-nimi "Ohjaus Oyk"
+        :tyopaikan-y-tunnus "12345222-4"
+        :muut-osallistujat []
+        :keskeiset-tyotehtavat ["Testitehtävä2"]
+        :lisatiedot false}
+       :muut-oppimisymparisto []
+       :ajanjakson-tarkenne "Ei ole"
+       :hankkijan-edustaja
+       {:nimi "Harri Hankkija"
+        :rooli "Opettajan sijainen"
+        :oppilaitos-oid "1.2.246.562.10.55552422420"}
+       :alku "2019-01-12"
+       :loppu "2019-02-11"}]
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000116"}))
 
 (deftest patch-all-pao
   (testing "PATCH ALL puuttuva ammatillinen osaaminen"
@@ -327,21 +327,21 @@
             (utils/with-service-ticket
               app
               (-> (mock/request
-                   :post
-                   (get-hoks-url hoks pao-path))
+                    :post
+                    (get-hoks-url hoks pao-path))
                   (mock/json-body pao-data)))
             patch-response
             (utils/with-service-ticket
               app
               (-> (mock/request
-                   :patch
-                   (get-hoks-url hoks (str pao-path "/1")))
+                    :patch
+                    (get-hoks-url hoks (str pao-path "/1")))
                   (mock/json-body (assoc patch-all-pao-data :id 1))))
             get-response  (utils/with-service-ticket
                             (create-app nil)
                             (mock/request
-                             :get
-                             (get-hoks-url hoks (str pao-path "/1"))))]
+                              :get
+                              (get-hoks-url hoks (str pao-path "/1"))))]
         (is (= (:status patch-response) 204))
         (eq (utils/parse-body (:body get-response))
             {:meta {} :data  (assoc patch-all-pao-data :id 1)})))))

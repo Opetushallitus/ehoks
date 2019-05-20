@@ -520,9 +520,9 @@
 
 (defn update-puuttuva-ammatillinen-tutkinnon-osa-by-id! [id m]
   (update!
-   :puuttuvat_ammatilliset_tutkinnon_osat
-   (h/puuttuva-ammatillinen-tutkinnon-osa-to-sql m)
-   ["id = ? AND deleted_at IS NULL" id]))
+    :puuttuvat_ammatilliset_tutkinnon_osat
+    (h/puuttuva-ammatillinen-tutkinnon-osa-to-sql m)
+    ["id = ? AND deleted_at IS NULL" id]))
 
 (defn insert-puuttuvan-ammatillisen-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]

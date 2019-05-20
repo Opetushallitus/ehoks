@@ -472,8 +472,8 @@
 
 (defn save-pato-hankitun-osaamisen-naytot! [pato-db c]
   (mapv
-   #(save-pato-hankitun-osaamisen-naytto! pato-db %)
-   c))
+    #(save-pato-hankitun-osaamisen-naytto! pato-db %)
+    c))
 
 (defn save-puuttuva-ammatillinen-tutkinnon-osa! [h pato]
   (let [pato-db (db/insert-puuttuva-ammatillinen-tutkinnon-osa!
@@ -506,11 +506,11 @@
     (:osaamisen-hankkimistavat values)
     (assoc :osaamisen-hankkimistavat
            (replace-pato-osaamisen-hankkimistavat!
-            pato-db (:osaamisen-hankkimistavat values)))
+             pato-db (:osaamisen-hankkimistavat values)))
     (:hankitun-osaamisen-naytto values)
     (assoc :hankitun-osaamisen-naytto
            (replace-pato-hankitun-osaamisen-naytot!
-            pato-db (:hankitun-osaamisen-naytto values)))))
+             pato-db (:hankitun-osaamisen-naytto values)))))
 
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
