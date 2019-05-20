@@ -115,7 +115,7 @@
       (handler (add-hoks request)))))
 
 (def ^:private puuttuva-paikallinen-tutkinnon-osa
-  (c-api/context "/:hoks-id/puuttuva-paikallinen-tutkinnon-osa" [hoks-id]
+  (c-api/context "/puuttuva-paikallinen-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
 
     (c-api/GET "/:id" [:as request]
@@ -147,7 +147,7 @@
             {:error "Puuttuva paikallinen tutkinnon osa not found"}))))))
 
 (def ^:private puuttuva-ammatillinen-osaaminen
-  (c-api/context "/:hoks-id/puuttuva-ammatillinen-osaaminen" []
+  (c-api/context "/puuttuva-ammatillinen-osaaminen" []
     :path-params [hoks-id :- s/Int]
 
     (c-api/GET "/:id" [:as request]
