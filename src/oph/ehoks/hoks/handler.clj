@@ -271,6 +271,14 @@
           (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
                         :id (:id hoks-db))))
 
+      (c-api/GET "/opiskeluoikeus/:oid" [oid :as request]
+        :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
+        :path-params [oid :- s/Str]
+        :return (rest/response hoks-schema/HOKS)
+        (let [hoks (first (pdb/select-hoksit-by-opiskeluoikeus-oid oid))]
+          (check-hoks-access! hoks request)
+          (rest/rest-ok hoks)))
+
       (c-api/context "/:hoks-id" []
         :path-params [hoks-id :- s/Int]
 
@@ -293,12 +301,4 @@
 
       (c-api/undocumented
         puuttuvat-yhteisen-tutkinnon-osat
-        opiskeluvalmiuksia-tukevat-opinnot)
-
-      (c-api/GET "/opiskeluoikeus/:oid" [oid :as request]
-        :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
-        :path-params [oid :- s/Str]
-        :return (rest/response hoks-schema/HOKS)
-        (let [hoks (first (pdb/select-hoksit-by-opiskeluoikeus-oid oid))]
-          (check-hoks-access! hoks request)
-          (rest/rest-ok hoks))))))
+        opiskeluvalmiuksia-tukevat-opinnot))))
