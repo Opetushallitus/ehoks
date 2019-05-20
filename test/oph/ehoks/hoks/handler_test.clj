@@ -349,29 +349,29 @@
   (testing "PATCH one value puuttuva ammatillinen osaaminen"
     (with-hoks
       hoks
-     (let [app (create-app nil)
-           post-response
-           (utils/with-service-ticket
-             app
-             (-> (mock/request
-                  :post
-                  (format
-                   "%s/1/puuttuva-ammatillinen-osaaminen"
-                   url))
-                 (mock/json-body
-                  pao-data)))
-           response
-           (utils/with-service-ticket
-             app
-             (-> (mock/request
-                  :patch
-                  (format
-                   "%s/1/%s/1"
-                   url pao-path))
-                 (mock/json-body
-                  {:id 1
-                   :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
-       (is (= (:status response) 204))))))
+      (let [app (create-app nil)
+            post-response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :post
+                    (format
+                      "%s/1/puuttuva-ammatillinen-osaaminen"
+                      url))
+                  (mock/json-body
+                    pao-data)))
+            response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request
+                    :patch
+                    (format
+                      "%s/1/%s/1"
+                      url pao-path))
+                  (mock/json-body
+                    {:id 1
+                     :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
+        (is (= (:status response) 204))))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
