@@ -134,14 +134,20 @@
             {:uri (format "%s/%d" (:uri request) (:id pao-db))}
             :id (:id pao-db)))))
 
-    (c-api/PATCH "/:id" []
+    (c-api/PATCH "/:id" [:as request]
       :summary
       "Päivittää HOKSin puuttuvan ammatillisen osaamisen arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaAmmatillinenOsaaminenKentanPaivitys]
-      (if (db/update-ppao-values! id values)
-        (response/no-content)
-        (response/not-found  "PPAO not found with given PPAO ID")))))
+      (let [hoks (pdb/select-hoks-by-id hoks-id)]
+        (check-hoks-access! hoks request)
+        (if-let [pao-db (h/get-puuttuva-ammatillinen-tutkinnon-osa id)]
+          (do (h/update-puuttuva-ammatillinen-tutkinnon-osa! pao-db values)
+              (response/no-content))
+          (response/not-found
+           {:error
+            (str "Puuttuva ammatillinen tutkinnon osa "
+                 "not found with given PPAO ID")}))))))
 
 (def ^:private puuttuvat-yhteisen-tutkinnon-osat
   (c-api/context "/:hoks-id/puuttuvat-yhteisen-tutkinnon-osat" [hoks-id]
