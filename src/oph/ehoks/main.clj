@@ -30,6 +30,8 @@
                      (when (seq (:redis-url config))
                        (redis-store {:pool {}
                                      :spec {:uri (:redis-url config)}})))]
+      (log/info "Running migrations")
+      (m/migrate!)
       (jetty/run-jetty hoks-app {:port (:port config)
-                           :join? true
-                           :async? true}))))
+                                 :join? true
+                                 :async? true}))))
