@@ -3,7 +3,8 @@
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [clojure.test :as t]
-            [oph.ehoks.utils :refer [parse-body]]))
+            [oph.ehoks.utils :refer [parse-body]]
+            [oph.ehoks.session-store :refer [test-session-store]]))
 
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
@@ -46,3 +47,17 @@
         (t/is (some? (:opintopolku-logout-url data)))
         (t/is (some? (:eperusteet-peruste-url data)))
         (t/is (some? (:virkailija-login-url data)))))))
+
+(t/deftest test-list-oppijat
+  (t/testing "GET oppijat"
+    (let [session "12345678-1234-1234-1234-1234567890ab"
+          cookie (str "ring-session=" session)
+          store (atom {session {:virkailija-user {:name "Test"}}})
+          app (common-api/create-app
+                handler/app-routes (test-session-store store))
+          response (app (mock/header
+                          (mock/request :get (str base-url "/virkailija/oppijat"))
+                          :cookie cookie))]
+      (t/is (= (:status response)
+
+               200)))))
