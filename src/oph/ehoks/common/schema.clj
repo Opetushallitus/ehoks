@@ -41,7 +41,9 @@
   {:eid s/Int
    :oid s/Str
    :etunimi s/Str
-   :sukunimi s/Str})
+   :sukunimi s/Str
+   (s/optional-key :tutkinto) s/Str
+   (s/optional-key :osaamisala) s/Str})
 
 (s/defschema
   Tutkinto
