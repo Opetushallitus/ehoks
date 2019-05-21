@@ -38,10 +38,8 @@
 (s/defschema
   Oppija
   "Oppijan perustiedot"
-  {:eid s/Int
-   :oid s/Str
-   :etunimi s/Str
-   :sukunimi s/Str
+  {:oid s/Str
+   :nimi s/Str
    (s/optional-key :tutkinto) s/Str
    (s/optional-key :osaamisala) s/Str})
 
