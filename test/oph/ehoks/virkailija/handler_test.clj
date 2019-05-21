@@ -56,8 +56,7 @@
           app (common-api/create-app
                 handler/app-routes (test-session-store store))
           response (app (mock/header
-                          (mock/request :get (str base-url "/virkailija/oppijat"))
+                          (mock/request
+                            :get (str base-url "/virkailija/oppijat"))
                           :cookie cookie))]
-      (t/is (= (:status response)
-
-               200)))))
+      (t/is (= (:status response) 200)))))

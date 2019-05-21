@@ -61,8 +61,8 @@
             (c-api/context "/oppijat" []
               (c-api/GET "/" []
                 :return (restful/response [common-schema/Oppija])
-                :summary
-                "Listaa virkailijan oppilaitoksen oppijat, joilla on HOKS luotuna"
+                :summary "Listaa virkailijan oppilaitoksen oppijat,
+                          joilla on HOKS luotuna"
                 (restful/rest-ok []))
 
               (c-api/GET "/:oid" []
