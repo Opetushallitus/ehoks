@@ -79,6 +79,8 @@
        (System/setProperty
          "services_file" "resources/prod/services-oph.properties"))
      (require 'oph.ehoks.external.oph-url :reload))
+   (log/info "Running migrations")
+   (m/migrate!)
    (log/info "Starting development server...")
    (log/info "Not safe for production or public environments.")
    (jetty/run-jetty dev-app
