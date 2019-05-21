@@ -25,11 +25,12 @@
         (m/migrate!)
         0)
     :else
-    (let [hoks-app (common-api/create-app
-                     hoks-api-handler/app-routes
-                     (when (seq (:redis-url config))
-                       (redis-store {:pool {}
-                                     :spec {:uri (:redis-url config)}})))]
+    (let [hoks-app
+          (common-api/create-app
+            hoks-api-handler/app-routes
+            (when (seq (:redis-url config))
+              (redis-store {:pool {}
+                            :spec {:uri (:redis-url config)}})))]
       (log/info "Running migrations")
       (m/migrate!)
       (jetty/run-jetty hoks-app {:port (:port config)
