@@ -67,7 +67,7 @@
   (with-hoks hoks (get-hoks-url hoks path)))
 
 (deftest post-and-get-ppto
-  (testing "GET newly created puuttuva paikallinen tutkinnon osa"
+  (testing "GET newly created hankittava paikallinen tutkinnon osa"
     (db/clear)
     (with-hoks
       hoks
@@ -90,20 +90,20 @@
               (create-app nil)
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
+                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
                   (mock/json-body ppto-data)))
             body (utils/parse-body (:body ppto-response))]
         (is (= (:status ppto-response) 200))
         (eq body {:data
                   {:uri
-                   (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1")}
+                   (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1")}
                   :meta {:id 1}})
         (let [ppto-new
               (utils/with-service-ticket
                 (create-app nil)
                 (mock/request
                   :get
-                  (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1")))]
+                  (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1")))]
           (eq
             (:data (utils/parse-body (:body ppto-new)))
             (assoc
@@ -111,7 +111,7 @@
               :id 1)))))))
 
 (deftest patch-all-ppto
-  (testing "PATCH all puuttuva paikallinen tutkinnon osa"
+  (testing "PATCH all hankittava paikallinen tutkinnon osa"
     (with-hoks
       hoks
       (let [ppto-data {:nimi "222"
@@ -133,7 +133,7 @@
               (create-app nil)
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
+                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
                   (mock/json-body ppto-data)))
             patch-response
             (utils/with-service-ticket
@@ -141,7 +141,7 @@
               (->
                 (mock/request
                   :patch
-                  (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1"))
+                  (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1"))
                 (mock/json-body
                   {:id 1
                    :nimi "222"
@@ -160,7 +160,7 @@
         (is (= (:status patch-response) 204))))))
 
 (deftest patch-one-ppto
-  (testing "PATCH one value puuttuva paikallinen tutkinnon osa"
+  (testing "PATCH one value hankittava paikallinen tutkinnon osa"
     (with-hoks
       hoks
       (let [ppto-data {:nimi "222"
@@ -182,7 +182,7 @@
               (create-app nil)
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
+                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
                   (mock/json-body ppto-data)))
             ppto-body (utils/parse-body
                         (:body ppto-response))
@@ -191,7 +191,7 @@
               (create-app nil)
               (-> (mock/request
                     :patch
-                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1"))
+                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1"))
                   (mock/json-body
                     {:id 1 :nimi "2223"})))
             get-response (-> (get-in ppto-body [:data :uri])
@@ -202,7 +202,7 @@
                    :id 1
                    :nimi "2223"))))))
 
-(def pao-path "puuttuva-ammatillinen-osaaminen")
+(def pao-path "hankittava-ammat-osaaminen")
 (def pao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
                :tutkinnon-osa-koodi-versio 1
                :osaamisen-hankkimistavat
@@ -215,7 +215,7 @@
                :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"})
 
 (deftest post-and-get-pao
-  (testing "POST puuttuva ammatillinen osaaminen and then get the created ppao"
+  (testing "POST hankittava ammat osaaminen and then get the created ppao"
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
@@ -223,7 +223,7 @@
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/puuttuva-ammatillinen-osaaminen"
+                    "%s/1/hankittava-ammat-osaaminen"
                     url))
                 (mock/json-body
                   pao-data)))
@@ -239,14 +239,14 @@
             (:body post-response))
           {:meta {:id 1}
            :data {:uri
-                  (format "%s/1/puuttuva-ammatillinen-osaaminen/1" url)}})
+                  (format "%s/1/hankittava-ammat-osaaminen/1" url)}})
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
             (:body get-response))
           {:meta {} :data (assoc pao-data :id 1)}))))
 
 (deftest put-pao
-  (testing "PUT puuttuva ammatillinen osaaminen"
+  (testing "PUT hankittava ammat osaaminen"
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
@@ -254,7 +254,7 @@
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/puuttuva-ammatillinen-osaaminen"
+                    "%s/1/hankittava-ammat-osaaminen"
                     url))
                 (mock/json-body
                   pao-data)))
@@ -300,7 +300,7 @@
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000006"})
 
 (deftest patch-all-pao
-  (testing "PATCH ALL puuttuva ammatillinen osaaminen"
+  (testing "PATCH ALL hankittava ammat osaaminen"
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
@@ -308,7 +308,7 @@
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/puuttuva-ammatillinen-osaaminen"
+                    "%s/1/hankittava-ammat-osaaminen"
                     url))
                 (mock/json-body
                   pao-data)))
@@ -335,7 +335,7 @@
           {:meta {} :data  (assoc patch-all-pao-data :id 1)}))))
 
 (deftest patch-one-pao
-  (testing "PATCH one value puuttuva ammatillinen osaaminen"
+  (testing "PATCH one value hankittava ammat osaaminen"
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
@@ -343,7 +343,7 @@
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/puuttuva-ammatillinen-osaaminen"
+                    "%s/1/hankittava-ammat-osaaminen"
                     url))
                 (mock/json-body
                   pao-data)))
@@ -423,7 +423,7 @@
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000011"})
 
 (deftest post-and-get-pyto
-  (testing "POST puuttuvat yhteisen tutkinnon osat"
+  (testing "POST hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
@@ -454,7 +454,7 @@
           1))))
 
 (deftest put-pyto
-  (testing "PUT puuttuvat yhteisen tutkinnon osat"
+  (testing "PUT hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
@@ -478,7 +478,7 @@
       (is (= (:status response) 204)))))
 
 (deftest patch-one-pyto
-  (testing "PATCH one value puuttuvat yhteisen tutkinnon osat"
+  (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
@@ -502,7 +502,7 @@
       (is (= (:status response) 204)))))
 
 (deftest patch-all-pyto
-  (testing "PATCH all puuttuvat yhteisen tutkinnon osat"
+  (testing "PATCH all hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
@@ -651,9 +651,9 @@
 (defn add-empty-hoks-values [hoks]
   (assoc
     hoks
-    :olemassa-olevat-ammatilliset-tutkinnon-osat []
+    :olemassa-olevat-ammat-tutkinnon-osat []
     :hankittavat-paikalliset-tutkinnon-osat []
-    :hankittavat-ammatilliset-tutkinnon-osat []
+    :hankittavat-ammat-tutkinnon-osat []
     :olemassa-olevat-yhteiset-tutkinnon-osat []
     :hankittavat-yhteiset-tutkinnon-osat []
     :olemassa-olevat-paikalliset-tutkinnon-osat []

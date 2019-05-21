@@ -88,10 +88,10 @@
 (defn hoks-to-sql [h]
   (to-sql
     h
-    {:removals [:olemassa-olevat-ammatilliset-tutkinnon-osat
+    {:removals [:olemassa-olevat-ammat-tutkinnon-osat
                 :olemassa-olevat-paikalliset-tutkinnon-osat
                 :olemassa-olevat-yhteiset-tutkinnon-osat
-                :hankittavat-ammatilliset-tutkinnon-osat
+                :hankittavat-ammat-tutkinnon-osat
                 :hankittavat-yhteiset-tutkinnon-osat
                 :opiskeluvalmiuksia-tukevat-opinnot
                 :hankittavat-paikalliset-tutkinnon-osat]
@@ -99,19 +99,19 @@
                 [:hyvaksyja :nimi] :hyvaksyja-nimi
                 [:paivittaja :nimi] :paivittaja-nimi}}))
 
-(defn olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql [m]
+(defn olemassa-oleva-ammat-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]}))
 
-(defn olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql [m]
+(defn olemassa-oleva-ammat-tutkinnon-osa-to-sql [m]
   (to-sql
     m
     {:removals [:tarkentavat-tiedot-naytto
                 :tarkentavat-tiedot-arvioija]}))
 
-(defn puuttuva-paikallinen-tutkinnon-osa-from-sql [m]
+(defn hankittava-paikallinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]}))
 
-(defn puuttuva-paikallinen-tutkinnon-osa-to-sql [m]
+(defn hankittava-paikallinen-tutkinnon-osa-to-sql [m]
   (to-sql m {:removals [:hankitun-osaamisen-naytto :osaamisen-hankkimistavat]}))
 
 (defn tyopaikalla-hankittava-osaaminen-from-sql [m]
@@ -250,20 +250,20 @@
 (defn todennettu-arviointi-lisatiedot-from-sql [m]
   (from-sql m))
 
-(defn puuttuva-ammatillinen-tutkinnon-osa-to-sql [m]
+(defn hankittava-ammat-tutkinnon-osa-to-sql [m]
   (to-sql m {:removals [:hankitun-osaamisen-naytto
                         :osaamisen-hankkimistavat]}))
 
-(defn puuttuva-ammatillinen-tutkinnon-osa-from-sql [m]
+(defn hankittava-ammat-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]}))
 
 (defn opiskeluvalmiuksia-tukevat-opinnot-from-sql [m]
   (from-sql m {:removals [:id :hoks_id]}))
 
-(defn puuttuva-yhteinen-tutkinnon-osa-from-sql [m]
+(defn hankittava-yhteinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id :osa-alueet]}))
 
-(defn puuttuva-yhteinen-tutkinnon-osa-to-sql [m]
+(defn hankittava-yhteinen-tutkinnon-osa-to-sql [m]
   (to-sql m {:removals [:osa-alueet]}))
 
 (defn yhteisen-tutkinnon-osan-osa-alue-to-sql [m]

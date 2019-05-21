@@ -1,4 +1,4 @@
-(ns oph.ehoks.db.postgresql
+ammat(ns oph.ehoks.db.postgresql
   (:require [clojure.java.jdbc :as jdbc]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db.hoks :as h]
@@ -123,7 +123,7 @@
     (h/koulutuksen-jarjestaja-arvioija-to-sql m)))
 
 (defn select-tarkentavat-tiedot-naytto-by-ooato-id
-  "Olemassa olevan ammatillisen tutkinnon osan näytön tarkentavat tiedot
+  "Olemassa olevan ammat tutkinnon osan näytön tarkentavat tiedot
    (hankitun osaamisen näytöt)"
   [id]
   (query
@@ -132,8 +132,8 @@
 
 (defn insert-ooato-hankitun-osaamisen-naytto! [ooato n]
   (insert-one!
-    :olemassa_olevan_ammatillisen_tutkinnon_osan_naytto
-    {:olemassa_oleva_ammatillinen_tutkinnon_osa_id (:id ooato)
+    :olemassa_olevan_ammat_tutkinnon_osan_naytto
+    {:olemassa_oleva_ammat_tutkinnon_osa_id (:id ooato)
      :hankitun_osaamisen_naytto_id (:id n)}))
 
 (defn insert-ooyto-hankitun-osaamisen-naytto! [ooyto n]
@@ -158,68 +158,68 @@
     [queries/select-osa-alueet-by-hankitun-osaamisen-naytto naytto-id]
     {:row-fn h/koodi-uri-from-sql}))
 
-(defn select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
+(defn select-olemassa-olevat-ammat-tutkinnon-osat-by-hoks-id [id]
   (query
-    [queries/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id id]
-    {:row-fn h/olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql}))
+    [queries/select-olemassa-olevat-ammat-tutkinnon-osat-by-hoks-id id]
+    {:row-fn h/olemassa-oleva-ammat-tutkinnon-osa-from-sql}))
 
-(defn insert-olemassa-oleva-ammatillinen-tutkinnon-osa! [m]
+(defn insert-olemassa-oleva-ammat-tutkinnon-osa! [m]
   (insert-one!
-    :olemassa_olevat_ammatilliset_tutkinnon_osat
-    (h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql m)))
+    :olemassa_olevat_ammat_tutkinnon_osat
+    (h/olemassa-oleva-ammat-tutkinnon-osa-to-sql m)))
 
-(defn insert-olemassa-olevat-ammatilliset-tutkinnon-osat! [c]
+(defn insert-olemassa-olevat-ammat-tutkinnon-osat! [c]
   (insert-multi!
-    :olemassa_olevat_ammatilliset_tutkinnon_osat
-    (map h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql c)))
+    :olemassa_olevat_ammat_tutkinnon_osat
+    (map h/olemassa-oleva-ammat-tutkinnon-osa-to-sql c)))
 
 (defn select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id [id]
   (query
     [queries/select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id id]
-    {:row-fn h/puuttuva-paikallinen-tutkinnon-osa-from-sql}))
+    {:row-fn h/hankittava-paikallinen-tutkinnon-osa-from-sql}))
 
-(defn select-puuttuva-paikallinen-tutkinnon-osa-by-id [id]
+(defn select-hankittava-paikallinen-tutkinnon-osa-by-id [id]
   (first
     (query
       [queries/select-hankittavat-paikalliset-tutkinnon-osat-by-id id]
-      {:row-fn h/puuttuva-paikallinen-tutkinnon-osa-from-sql})))
+      {:row-fn h/hankittava-paikallinen-tutkinnon-osa-from-sql})))
 
 (defn insert-hankittavat-paikalliset-tutkinnon-osat! [c]
   (insert-multi!
-    :puuttuvat_paikalliset_tutkinnon_osat
-    (map h/puuttuva-paikallinen-tutkinnon-osa-to-sql c)))
+    :hankittavat_paikalliset_tutkinnon_osat
+    (map h/hankittava-paikallinen-tutkinnon-osa-to-sql c)))
 
-(defn insert-puuttuva-paikallinen-tutkinnon-osa! [m]
+(defn insert-hankittava-paikallinen-tutkinnon-osa! [m]
   (insert-one!
-    :puuttuvat_paikalliset_tutkinnon_osat
-    (h/puuttuva-paikallinen-tutkinnon-osa-to-sql m)))
+    :hankittavat_paikalliset_tutkinnon_osat
+    (h/hankittava-paikallinen-tutkinnon-osa-to-sql m)))
 
-(defn update-puuttuva-paikallinen-tutkinnon-osa-by-id! [id m]
+(defn update-hankittava-paikallinen-tutkinnon-osa-by-id! [id m]
   (update!
-    :puuttuvat_paikalliset_tutkinnon_osat
-    (h/puuttuva-paikallinen-tutkinnon-osa-to-sql m)
+    :hankittavat_paikalliset_tutkinnon_osat
+    (h/hankittava-paikallinen-tutkinnon-osa-to-sql m)
     ["id = ? AND deleted_at IS NULL" id]))
 
 (defn select-hankitun-osaamisen-naytot-by-ppto-id
-  "Puuttuvan paikallisen tutkinnon osan hankitun osaamisen näytöt"
+  "hankittavan paikallisen tutkinnon osan hankitun osaamisen näytöt"
   [id]
   (query
     [queries/select-hankitun-osaamisen-naytot-by-ppto-id id]
     {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
 
 (defn delete-osaamisen-hankkimistavat-by-ppto-id!
-  "Puuttuvan paikallisen tutkinnon osan osaamisen hankkimistavat"
+  "hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat"
   [id]
   (shallow-delete!
-    :puuttuvan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-    ["puuttuva_paikallinen_tutkinnon_osa_id = ?" id]))
+    :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
+    ["hankittava_paikallinen_tutkinnon_osa_id = ?" id]))
 
 (defn delete-hankitun-osaamisen-naytot-by-ppto-id!
-  "Puuttuvan paikallisen tutkinnon osan hankitun osaamisen näytöt"
+  "hankittavan paikallisen tutkinnon osan hankitun osaamisen näytöt"
   [id]
   (shallow-delete!
-    :puuttuvan_paikallisen_tutkinnon_osan_naytto
-    ["puuttuva_paikallinen_tutkinnon_osa_id = ?" id]))
+    :hankittavan_paikallisen_tutkinnon_osan_naytto
+    ["hankittava_paikallinen_tutkinnon_osa_id = ?" id]))
 
 (defn insert-tho-henkilot!
   "Työpaikalla hankittavan osaamisen muut osallistujat"
@@ -288,15 +288,15 @@
     :osaamisen_hankkimistavat
     (h/osaamisen-hankkimistapa-to-sql oh)))
 
-(defn insert-puuttuvan-paikallisen-tutkinnon-osan-osaamisen-hankkimistapa!
+(defn insert-hankittavan-paikallisen-tutkinnon-osan-osaamisen-hankkimistapa!
   [ppto oh]
   (insert-one!
-    :puuttuvan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-    {:puuttuva_paikallinen_tutkinnon_osa_id (:id ppto)
+    :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
+    {:hankittava_paikallinen_tutkinnon_osa_id (:id ppto)
      :osaamisen_hankkimistapa_id (:id oh)}))
 
 (defn select-osaamisen-hankkimistavat-by-ppto-id
-  "Puuttuvan paikallisen tutkinnon osan osaamisen hankkimistavat"
+  "hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat"
   [id]
   (query
     [queries/select-osaamisen-hankkmistavat-by-ppto-id id]
@@ -308,23 +308,23 @@
     (h/hankitun-osaamisen-naytto-to-sql m)))
 
 (defn insert-ppto-hankitun-osaamisen-naytto!
-  "Puuttuvan paikallisen tutkinnon osan hankitun osaamisen näyttö"
+  "hankittavan paikallisen tutkinnon osan hankitun osaamisen näyttö"
   [ppto h]
   (insert-one!
-    :puuttuvan_paikallisen_tutkinnon_osan_naytto
-    {:puuttuva_paikallinen_tutkinnon_osa_id (:id ppto)
+    :hankittavan_paikallisen_tutkinnon_osan_naytto
+    {:hankittava_paikallinen_tutkinnon_osa_id (:id ppto)
      :hankitun_osaamisen_naytto_id (:id h)}))
 
 (defn insert-ppto-hankitun-osaamisen-naytot!
-  "Puuttuvan paikallisen tutkinnon osan hankitun osaamisen näytöt"
+  "hankittavan paikallisen tutkinnon osan hankitun osaamisen näytöt"
   [ppto c]
   (let [h-col (insert-multi!
                 :hankitun_osaamisen_naytot
                 (map h/hankitun-osaamisen-naytto-to-sql c))]
     (insert-multi!
-      :puuttuvan_paikallisen_tutkinnon_osan_naytto
+      :hankittavan_paikallisen_tutkinnon_osan_naytto
       (map #(hash-map
-              :puuttuva_paikallinen_tutkinnon_osa_id (:id ppto)
+              :hankittava_paikallinen_tutkinnon_osa_id (:id ppto)
               :hankitun_osaamisen_naytto_id (:id %))
            h-col))
     h-col))
@@ -474,20 +474,20 @@
     [queries/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/olemassa-oleva-yhteinen-tutkinnon-osa-from-sql}))
 
-(defn insert-puuttuva-ammatillinen-tutkinnon-osa! [m]
+(defn insert-hankittava-ammat-tutkinnon-osa! [m]
   (insert-one!
-    :puuttuvat_ammatilliset_tutkinnon_osat
-    (h/puuttuva-ammatillinen-tutkinnon-osa-to-sql m)))
+    :hankittavat_ammat_tutkinnon_osat
+    (h/hankittava-ammat-tutkinnon-osa-to-sql m)))
 
-(defn select-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
+(defn select-hankittavat-ammat-tutkinnon-osat-by-hoks-id [id]
   (query
-    [queries/select-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id id]
-    {:row-fn h/puuttuva-ammatillinen-tutkinnon-osa-from-sql}))
+    [queries/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id id]
+    {:row-fn h/hankittava-ammat-tutkinnon-osa-from-sql}))
 
 (defn insert-pato-hankitun-osaamisen-naytto! [pato-id naytto-id]
   (insert-one!
-    :puuttuvan_ammatillisen_tutkinnon_osan_naytto
-    {:puuttuva_ammatillinen_tutkinnon_osa_id pato-id
+    :hankittavan_ammat_tutkinnon_osan_naytto
+    {:hankittava_ammat_tutkinnon_osa_id pato-id
      :hankitun_osaamisen_naytto_id naytto-id}))
 
 (defn select-hankitun-osaamisen-naytot-by-pato-id [id]
@@ -495,15 +495,15 @@
     [queries/select-hankitun-osaamisen-naytot-by-pato-id id]
     {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
 
-(defn insert-puuttuvan-ammatillisen-tutkinnon-osan-osaamisen-hankkimistapa!
+(defn insert-hankittavan-ammat-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]
   (insert-one!
-    :puuttuvan_ammatillisen_tutkinnon_osan_osaamisen_hankkimistavat
-    {:puuttuva_ammatillinen_tutkinnon_osa_id pato-id
+    :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
+    {:hankittava_ammat_tutkinnon_osa_id pato-id
      :osaamisen_hankkimistapa_id oh-id}))
 
 (defn select-osaamisen-hankkimistavat-by-pato-id
-  "Puuttuvan ammatillisen tutkinnon osan osaamisen hankkimistavat"
+  "hankittavan ammat tutkinnon osan osaamisen hankkimistavat"
   [id]
   (query
     [queries/select-osaamisen-hankkmistavat-by-pato-id id]
@@ -519,15 +519,15 @@
     [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id id]
     {:row-fn h/opiskeluvalmiuksia-tukevat-opinnot-from-sql}))
 
-(defn insert-puuttuva-yhteinen-tutkinnon-osa! [m]
+(defn insert-hankittava-yhteinen-tutkinnon-osa! [m]
   (insert-one!
-    :puuttuvat_yhteiset_tutkinnon_osat
-    (h/puuttuva-yhteinen-tutkinnon-osa-to-sql m)))
+    :hankittavat_yhteiset_tutkinnon_osat
+    (h/hankittava-yhteinen-tutkinnon-osa-to-sql m)))
 
 (defn select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id [id]
   (query
     [queries/select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id id]
-    {:row-fn h/puuttuva-yhteinen-tutkinnon-osa-from-sql}))
+    {:row-fn h/hankittava-yhteinen-tutkinnon-osa-from-sql}))
 
 (defn select-osaamisen-hankkimistavat-by-pyto-osa-alue-id [id]
   (query
