@@ -4,7 +4,6 @@
             [clojure.string :refer [lower-case]]
             [clojure.tools.logging :as log]
             [oph.ehoks.handler :as hoks-api-handler]
-            [oph.ehoks.virkailija.handler :as virkailija-handler]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.redis :refer [redis-store]]
             [oph.ehoks.config :refer [config]]))
