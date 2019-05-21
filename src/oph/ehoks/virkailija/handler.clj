@@ -11,6 +11,7 @@
             [oph.ehoks.user :as user]
             [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.misc.handler :as misc-handler]
@@ -65,10 +66,16 @@
                           joilla on HOKS luotuna"
                 (restful/rest-ok []))
 
-              (c-api/GET "/:oid" []
-                :return (restful/response common-schema/Oppija)
-                :summary "Oppijan tiedot"
-                (restful/rest-ok {}))))
+              (c-api/context "/:oid" []
+                (c-api/GET "/hoksit" []
+                  :return (restful/response [hoks-schema/HOKS])
+                  :summary "Oppijan hoksit (perustiedot)"
+                  (restful/rest-ok []))
+
+                (c-api/GET "/" []
+                  :return (restful/response common-schema/Oppija)
+                  :summary "Oppijan tiedot"
+                  (restful/rest-ok {})))))
 
           (route-middleware
             [wrap-virkailija-authorize wrap-oph-super-user]
