@@ -1,20 +1,17 @@
 (ns oph.ehoks.dev-server
   (:require [oph.ehoks.ehoks-app :as ehoks-app]
-            [oph.ehoks.common.api :as common-api]
             [compojure.core :refer [GET defroutes routes]]
             [ring.util.http-response :refer [ok not-found]]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.reload :refer [wrap-reload]]
             [oph.ehoks.config :refer [config]]
-            [hiccup.core :refer [html]]
             [clojure.java.io :as io]
             [clojure.string :as c-str]
             [oph.ehoks.mock-routes :as mock]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.params :refer [wrap-params]]
             [clojure.tools.logging :as log]
-            [cheshire.core :as cheshire]
-            [oph.ehoks.redis :refer [redis-store]]))
+            [oph.ehoks.db.migrations :as m]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -33,7 +30,7 @@
     (file-seq (io/file (io/resource "dev-routes")))))
 
 (defroutes dev-routes
-  (GET "/dev-routes/*" request
+  (GET "/dev-routes/*" [:as request]
     (let [filename (uri-to-filename (:uri request))
           file (find-dev-route-file filename)]
       (log/debug
@@ -82,6 +79,8 @@
        (System/setProperty
          "services_file" "resources/prod/services-oph.properties"))
      (require 'oph.ehoks.external.oph-url :reload))
+   (log/info "Running migrations")
+   (m/migrate!)
    (log/info "Starting development server...")
    (log/info "Not safe for production or public environments.")
    (jetty/run-jetty dev-app

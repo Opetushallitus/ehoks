@@ -99,13 +99,13 @@ lein cljfmt check
 
 ### Ohjelman ajaminen
 
-Kehitysmoodissa:
+Tuotantomoodissa:
 
 ``` shell
 lein run
 ```
 
-Tuotantomoodissa:
+Kehitysmoodissa:
 
 ``` shell
 lein with-profile -dev run
