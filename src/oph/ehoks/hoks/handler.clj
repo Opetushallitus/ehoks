@@ -78,24 +78,24 @@
        (do ~@body)
        (response/not-found {:error "Hoks not found"}))))
 
-(def ^:private puuttuva-paikallinen-tutkinnon-osa
-  (c-api/context "/:hoks-id/puuttuva-paikallinen-tutkinnon-osa" [hoks-id]
+(def ^:private hankittava-paikallinen-tutkinnon-osa
+  (c-api/context "/:hoks-id/hankittava-paikallinen-tutkinnon-osa" [hoks-id]
     :path-params [hoks-id :- s/Int]
 
     (c-api/GET "/:id" [:as id]
       :summary "Palauttaa HOKSin puuttuvan paikallisen tutkinnon osan"
       :path-params [id :- s/Int]
       :return (rest/response
-                hoks-schema/PuuttuvaPaikallinenTutkinnonOsa)
-      (rest/rest-ok (h/get-puuttuva-paikallinen-tutkinnon-osa id)))
+                hoks-schema/HankittavaPaikallinenTutkinnonOsa)
+      (rest/rest-ok (h/get-hankittava-paikallinen-tutkinnon-osa id)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo puuttuvan paikallisen tutkinnon osan"
-      :body [ppto hoks-schema/PuuttuvaPaikallinenTutkinnonOsaLuonti]
+      :body [ppto hoks-schema/HankittavaPaikallinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (with-hoks
         hoks hoks-id
-        (let [ppto-db (h/save-puuttuva-paikallinen-tutkinnon-osa! hoks ppto)]
+        (let [ppto-db (h/save-hankittava-paikallinen-tutkinnon-osa! hoks ppto)]
           (rest/rest-ok
             {:uri (format "%s/%d" (:uri request) (:id ppto-db))}
             :id (:id ppto-db)))))
@@ -105,25 +105,25 @@
       "Päivittää HOKSin puuttuvan paikallisen tutkinnon osan arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys]
-      (let [ppto-db (pdb/select-puuttuva-paikallinen-tutkinnon-osa-by-id id)]
+      (let [ppto-db (pdb/select-hankittava-paikallinen-tutkinnon-osa-by-id id)]
         (if (some? ppto-db)
-          (do (h/update-puuttuva-paikallinen-tutkinnon-osa! ppto-db values)
+          (do (h/update-hankittava-paikallinen-tutkinnon-osa! ppto-db values)
               (response/no-content))
           (response/not-found {:error "PPTO not found with given PPTO ID"}))))))
 
-(def ^:private puuttuva-ammatillinen-osaaminen
-  (c-api/context "/:hoks-id/puuttuva-ammatillinen-osaaminen" [hoks-id]
+(def ^:private hankittava-ammatillinen-osaaminen
+  (c-api/context "/:hoks-id/hankittava-ammatillinen-osaaminen" [hoks-id]
 
     (c-api/GET "/:id" [:as id]
       :summary "Palauttaa HOKSin puuttuvan ammatillisen osaamisen"
       :path-params [id :- s/Int]
-      :return (rest/response hoks-schema/PuuttuvaAmmatillinenOsaaminen)
+      :return (rest/response hoks-schema/HankittavaAmmatillinenOsaaminen)
       (rest/rest-ok (db/get-ppao-by-id id)))
 
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) puuttuvan ammatillisen osaamisen HOKSiin"
-      :body [ppao hoks-schema/PuuttuvaAmmatillinenOsaaminenLuonti]
+      :body [ppao hoks-schema/HankittavaAmmatillinenOsaaminenLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ppao-response (db/create-ppao! ppao)]
         (rest/rest-ok
@@ -131,9 +131,9 @@
           :id (:id ppao-response))))
 
     (c-api/PUT "/:id" []
-      :summary "Päivittää HOKSin puuttuvan ammatillisen osaamisen"
+      :summary "Päivittää HOKSin Hankittavan ammatillisen osaamisen"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/PuuttuvaAmmatillinenOsaaminenPaivitys]
+      :body [values hoks-schema/HankittavaAmmatillinenOsaaminenPaivitys]
       (if (db/update-ppao! id values)
         (response/no-content)
         (response/not-found "PPAO not found with given PPAO ID")))
@@ -142,24 +142,24 @@
       :summary
       "Päivittää HOKSin puuttuvan ammatillisen osaamisen arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/PuuttuvaAmmatillinenOsaaminenKentanPaivitys]
+      :body [values hoks-schema/HankittavaAmmatillinenOsaaminenKentanPaivitys]
       (if (db/update-ppao-values! id values)
         (response/no-content)
         (response/not-found  "PPAO not found with given PPAO ID")))))
 
-(def ^:private puuttuvat-yhteisen-tutkinnon-osat
-  (c-api/context "/:hoks-id/puuttuvat-yhteisen-tutkinnon-osat" [hoks-id]
+(def ^:private hankittavat-yhteisen-tutkinnon-osat
+  (c-api/context "/:hoks-id/hankittavat-yhteisen-tutkinnon-osat" [hoks-id]
 
     (c-api/GET "/:id" [id]
       :summary "Palauttaa HOKSin puuttuvat yhteisen tutkinnon osat"
       :path-params [id :- s/Int]
-      :return (rest/response hoks-schema/PuuttuvaYTO)
+      :return (rest/response hoks-schema/HankittavaYTO)
       (rest/rest-ok (db/get-pyto-by-id id)))
 
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) puuttuvan yhteisen tutkinnon osat HOKSiin"
-      :body [pyto hoks-schema/PuuttuvaYTOLuonti]
+      :body [pyto hoks-schema/HankittavaYTOLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [pyto-response (db/create-pyto! pyto)]
         (rest/rest-ok
@@ -169,7 +169,7 @@
     (c-api/PUT "/:id" []
       :summary "Päivittää HOKSin puuttuvan yhteisen tutkinnon osat"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/PuuttuvaYTOPaivitys]
+      :body [values hoks-schema/HankittavaYTOPaivitys]
       (if (db/update-pyto! id values)
         (response/no-content)
         (response/not-found "PYTO not found with given PYTO ID")))
@@ -178,7 +178,7 @@
       :summary
       "Päivittää HOKSin puuttuvan yhteisen tutkinnon osat arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/PuuttuvaYTOKentanPaivitys]
+      :body [values hoks-schema/HankittavaYTOKentanPaivitys]
       (if (db/update-pyto-values! id values)
         (response/no-content)
         (response/not-found "PPTO not found with given PPTO ID")))))
@@ -265,8 +265,8 @@
           (check-hoks-access! hoks request)
           (rest/rest-ok hoks)))
 
-      puuttuva-paikallinen-tutkinnon-osa
+      hankittava-paikallinen-tutkinnon-osa
       (c-api/undocumented
-        puuttuva-ammatillinen-osaaminen
-        puuttuvat-yhteisen-tutkinnon-osat
+        hankittava-ammatillinen-osaaminen
+        hankittavat-yhteisen-tutkinnon-osat
         opiskeluvalmiuksia-tukevat-opinnot))))

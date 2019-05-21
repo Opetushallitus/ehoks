@@ -173,18 +173,18 @@
     :olemassa_olevat_ammatilliset_tutkinnon_osat
     (map h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql c)))
 
-(defn select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id [id]
+(defn select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id [id]
   (query
-    [queries/select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id id]
+    [queries/select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/puuttuva-paikallinen-tutkinnon-osa-from-sql}))
 
 (defn select-puuttuva-paikallinen-tutkinnon-osa-by-id [id]
   (first
     (query
-      [queries/select-puuttuvat-paikalliset-tutkinnon-osat-by-id id]
+      [queries/select-hankittavat-paikalliset-tutkinnon-osat-by-id id]
       {:row-fn h/puuttuva-paikallinen-tutkinnon-osa-from-sql})))
 
-(defn insert-puuttuvat-paikalliset-tutkinnon-osat! [c]
+(defn insert-hankittavat-paikalliset-tutkinnon-osat! [c]
   (insert-multi!
     :puuttuvat_paikalliset_tutkinnon_osat
     (map h/puuttuva-paikallinen-tutkinnon-osa-to-sql c)))
@@ -479,9 +479,9 @@
     :puuttuvat_ammatilliset_tutkinnon_osat
     (h/puuttuva-ammatillinen-tutkinnon-osa-to-sql m)))
 
-(defn select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
+(defn select-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
   (query
-    [queries/select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id id]
+    [queries/select-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/puuttuva-ammatillinen-tutkinnon-osa-from-sql}))
 
 (defn insert-pato-hankitun-osaamisen-naytto! [pato-id naytto-id]
@@ -524,9 +524,9 @@
     :puuttuvat_yhteiset_tutkinnon_osat
     (h/puuttuva-yhteinen-tutkinnon-osa-to-sql m)))
 
-(defn select-puuttuvat-yhteiset-tutkinnon-osat-by-hoks-id [id]
+(defn select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id [id]
   (query
-    [queries/select-puuttuvat-yhteiset-tutkinnon-osat-by-hoks-id id]
+    [queries/select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/puuttuva-yhteinen-tutkinnon-osa-from-sql}))
 
 (defn select-osaamisen-hankkimistavat-by-pyto-osa-alue-id [id]

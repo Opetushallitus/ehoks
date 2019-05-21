@@ -53,8 +53,8 @@
      :secondary-column "koodisto_koodi_id"
      :primary-column "id"
      :column "hankitun_osaamisen_naytto_id"}))
-(defq select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id)
-(defq select-puuttuvat-paikalliset-tutkinnon-osat-by-id)
+(defq select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id)
+(defq select-hankittavat-paikalliset-tutkinnon-osat-by-id)
 (defq select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id)
 (def select-tarkentavat-tiedot-naytto-by-oopto-id
   (generate-select-join
@@ -146,7 +146,7 @@
   (generate-select-by
     {:table "olemassa_olevat_yto_osa_alueet"
      :column "olemassa_oleva_yhteinen_tutkinnon_osa_id"}))
-(defq select-puuttuvat-ammatilliset-tutkinnon-osat-by-hoks-id)
+(defq select-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id)
 (def select-hankitun-osaamisen-naytot-by-pato-id
   (generate-select-join
     {:table "hankitun_osaamisen_naytot"
@@ -162,7 +162,7 @@
      :primary-column "id"
      :column "puuttuva_ammatillinen_tutkinnon_osa_id"}))
 (defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id)
-(defq select-puuttuvat-yhteiset-tutkinnon-osat-by-hoks-id)
+(defq select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id)
 (def select-osaamisen-hankkimistavat-by-pyto-osa-alue-id
   (generate-select-join
     {:table "osaamisen_hankkimistavat"

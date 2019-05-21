@@ -360,7 +360,7 @@
                    :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
       (is (= (:status response) 204)))))
 
-(def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
+(def pyto-path "hankittavat-yhteisen-tutkinnon-osat")
 
 (def pyto-data
   {:osa-alueet
@@ -652,10 +652,10 @@
   (assoc
     hoks
     :olemassa-olevat-ammatilliset-tutkinnon-osat []
-    :puuttuvat-paikalliset-tutkinnon-osat []
-    :puuttuvat-ammatilliset-tutkinnon-osat []
+    :hankittavat-paikalliset-tutkinnon-osat []
+    :hankittavat-ammatilliset-tutkinnon-osat []
     :olemassa-olevat-yhteiset-tutkinnon-osat []
-    :puuttuvat-yhteiset-tutkinnon-osat []
+    :hankittavat-yhteiset-tutkinnon-osat []
     :olemassa-olevat-paikalliset-tutkinnon-osat []
     :opiskeluvalmiuksia-tukevat-opinnot []))
 

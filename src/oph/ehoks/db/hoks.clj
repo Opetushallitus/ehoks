@@ -91,10 +91,10 @@
     {:removals [:olemassa-olevat-ammatilliset-tutkinnon-osat
                 :olemassa-olevat-paikalliset-tutkinnon-osat
                 :olemassa-olevat-yhteiset-tutkinnon-osat
-                :puuttuvat-ammatilliset-tutkinnon-osat
-                :puuttuvat-yhteiset-tutkinnon-osat
+                :hankittavat-ammatilliset-tutkinnon-osat
+                :hankittavat-yhteiset-tutkinnon-osat
                 :opiskeluvalmiuksia-tukevat-opinnot
-                :puuttuvat-paikalliset-tutkinnon-osat]
+                :hankittavat-paikalliset-tutkinnon-osat]
      :replaces {[:laatija :nimi] :laatija-nimi
                 [:hyvaksyja :nimi] :hyvaksyja-nimi
                 [:paivittaja :nimi] :paivittaja-nimi}}))
