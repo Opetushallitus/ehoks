@@ -30,7 +30,7 @@
     (file-seq (io/file (io/resource "dev-routes")))))
 
 (defroutes dev-routes
-  (GET "/dev-routes/*" request
+  (GET "/dev-routes/*" [:as request]
     (let [filename (uri-to-filename (:uri request))
           file (find-dev-route-file filename)]
       (log/debug
