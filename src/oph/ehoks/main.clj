@@ -21,7 +21,7 @@
         (println "--run-migrations    Run migrations")
         (println "--help              Print this help"))
     (has-arg? args "--run-migrations")
-    (do (log/info "Running migrations")
+    (do (println "Running migrations")
         (m/migrate!)
         0)
     :else
