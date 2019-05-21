@@ -373,6 +373,39 @@
                      :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
         (is (= (:status response) 204))))))
 
+(defn- create-mock-post-request [url body app hoks]
+  (utils/with-service-ticket
+    app
+    (-> (mock/request
+          :post
+          (get-hoks-url hoks url))
+        (mock/json-body body))))
+
+(defn- create-mock-get-request [url app hoks]
+  (utils/with-service-ticket
+    app
+    (mock/request
+      :get
+      (get-hoks-url hoks url))))
+
+(deftest post-and-get-olemassa-olevat-ammatilliset-tutkinnon-osat
+  (testing "POST olemassa olevat ammatilliset tutkinnon osat and then get the created ooato"
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request "/olemassa-olevat-ammatilliset-tutkinnon-osat" pao-data app hoks)
+            get-response (create-mock-get-request "/olemassa-olevat-ammatilliset-tutkinnon-osat" app hoks)]
+        (is (= (:status post-response) 200))
+        (eq (utils/parse-body
+              (:body post-response))
+            {:meta {:id 1}
+             :data {:uri
+                    (format "%s/1/olemassa-olevat-ammatilliset-tutkinnon-osat/1" url)}})
+        (is (= (:status get-response) 200))
+        (eq (utils/parse-body
+              (:body get-response))
+            {:meta {} :data (assoc pao-data :id 1)})))))
+
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
 (def pyto-data
