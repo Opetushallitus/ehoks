@@ -1,6 +1,7 @@
 (ns oph.ehoks.main
   (:gen-class)
-  (:require [oph.ehoks.db.migrations :as m]
+  (:require [ring.adapter.jetty :as jetty]
+            [oph.ehoks.db.migrations :as m]
             [clojure.string :refer [lower-case]]
             [clojure.tools.logging :as log]
             [oph.ehoks.handler :as hoks-api-handler]
@@ -12,7 +13,6 @@
   (some? (some #(when (= (lower-case %) s) %) args)))
 
 (defn -main [& args]
-  (require 'ring.adapter.jetty)
   (cond
     (has-arg? args "--help")
     (do (println "eHOKS")
@@ -25,12 +25,11 @@
         (m/migrate!)
         0)
     :else
-    (let [run-jetty (resolve 'ring.adapter.jetty/run-jetty)
-          hoks-app (common-api/create-app
+    (let [hoks-app (common-api/create-app
                      hoks-api-handler/app-routes
                      (when (seq (:redis-url config))
                        (redis-store {:pool {}
                                      :spec {:uri (:redis-url config)}})))]
-      (run-jetty hoks-app {:port (:port config)
+      (jetty/run-jetty hoks-app {:port (:port config)
                            :join? true
                            :async? true}))))
