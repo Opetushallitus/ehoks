@@ -56,6 +56,21 @@
           auth/routes
 
           (route-middleware
+            [wrap-virkailija-authorize]
+
+            (c-api/context "/oppijat" []
+              (c-api/GET "/" []
+                :return (restful/response [common-schema/Oppija])
+                :summary
+                "Listaa virkailijan oppilaitoksen oppijat, joilla on HOKS luotuna"
+                (restful/rest-ok []))
+
+              (c-api/GET "/:oid" []
+                :return (restful/response common-schema/Oppija)
+                :summary "Oppijan tiedot"
+                (restful/rest-ok {}))))
+
+          (route-middleware
             [wrap-virkailija-authorize wrap-oph-super-user]
 
             (c-api/context "/hoksit" []
@@ -78,7 +93,7 @@
         misc-handler/routes))
 
     (c-api/undocumented
-      (c-api/GET "/buildversion.txt" _
+      (c-api/GET "/buildversion.txt" []
         (response/content-type
           (response/resource-response "buildversion.txt") "text/plain")))))
 
