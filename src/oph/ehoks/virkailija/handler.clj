@@ -91,7 +91,7 @@
                   (restful/rest-ok
                     (subvec
                       oppijat
-                      (min start-index (max 0 (dec (count oppijat))))
+                      (min (max 0 start-index) (count oppijat))
                       (min end-index (count oppijat)))
                     :total-count (count oppijat))))
 
