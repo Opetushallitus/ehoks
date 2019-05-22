@@ -64,24 +64,36 @@
 
             (c-api/context "/oppijat" []
               (c-api/GET "/" []
-                :return (restful/response [common-schema/Oppija])
+                :return (restful/response
+                          [common-schema/Oppija]
+                          :total-count s/Int)
                 :query-params [{order-by :- s/Str "nimi"}
                                {desc :- s/Bool false}
                                {nimi :- s/Str nil}
                                {tutkinto :- s/Str nil}
-                               {osaamisala :- s/Str nil}]
+                               {osaamisala :- s/Str nil}
+                               {item-count :- s/Int 10}
+                               {page :- s/Int 0}]
                 :summary "Listaa virkailijan oppilaitoksen oppijat,
                           joilla on HOKS luotuna"
-                (restful/rest-ok
-                  (map
-                    #(dissoc % :oppilaitos-oid)
-                    (oppijaindex/search
-                      (cond-> {}
-                        (some? nimi) (assoc :nimi nimi)
-                        (some? tutkinto) (assoc :tutkinto tutkinto)
-                        (some? osaamisala) (assoc :osaamisala osaamisala))
-                      (keyword order-by)
-                      (if desc #(compare %2 %1) compare)))))
+                (let [oppijat
+                      (mapv
+                        #(dissoc % :oppilaitos-oid)
+                        (oppijaindex/search
+                          (cond-> {}
+                            (some? nimi) (assoc :nimi nimi)
+                            (some? tutkinto) (assoc :tutkinto tutkinto)
+                            (some? osaamisala) (assoc :osaamisala osaamisala))
+                          (keyword order-by)
+                          (if desc #(compare %2 %1) compare)))
+                      start-index (* page item-count)
+                      end-index (+ start-index item-count)]
+                  (restful/rest-ok
+                    (subvec
+                      oppijat
+                      (min start-index (dec (count oppijat)))
+                      (min end-index (dec (count oppijat))))
+                    :total-count (count oppijat))))
 
               (c-api/context "/:oid" []
                 :path-params [oid :- s/Str]
