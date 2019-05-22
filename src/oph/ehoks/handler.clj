@@ -70,7 +70,7 @@
           validation-handler/routes))
 
       (c-api/undocumented
-        (GET "/buildversion.txt" _
+        (GET "/buildversion.txt" []
           (response/content-type
             (response/resource-response "buildversion.txt") "text/plain"))
         (resources/create-routes "/hoks-doc" "hoks-doc")
