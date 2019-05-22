@@ -15,7 +15,8 @@
             [oph.ehoks.restful :as restful]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.hoks.handler :as hoks-handler]))
+            [oph.ehoks.hoks.handler :as hoks-handler]
+            [oph.ehoks.oppijaindex :as oppijaindex]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -62,9 +63,23 @@
             (c-api/context "/oppijat" []
               (c-api/GET "/" []
                 :return (restful/response [common-schema/Oppija])
+                :query-params [{order-by :- s/Str "nimi"}
+                               {desc :- s/Bool false}
+                               {nimi :- s/Str nil}
+                               {tutkinto :- s/Str nil}
+                               {osaamisala :- s/Str nil}]
                 :summary "Listaa virkailijan oppilaitoksen oppijat,
                           joilla on HOKS luotuna"
-                (restful/rest-ok []))
+                (restful/rest-ok
+                  (map
+                    #(dissoc % :oppilaitos-oid)
+                    (oppijaindex/search
+                      (cond-> {}
+                        (some? nimi) (assoc :nimi nimi)
+                        (some? tutkinto) (assoc :tutkinto tutkinto)
+                        (some? osaamisala) (assoc :osaamisala osaamisala))
+                      (keyword order-by)
+                      (if desc #(compare %2 %1) compare)))))
 
               (c-api/context "/:oid" []
                 (c-api/GET "/hoksit" []
