@@ -71,6 +71,25 @@
       (wrap-reload #'dev-routes)
       (wrap-reload #'ehoks-app/app))))
 
+(defn rand-str [max-len]
+  (c-str/capitalize
+    (apply
+      str
+      (take
+        (inc (rand-int (dec max-len)))
+        (repeatedly #(char (+ (rand 26) 65)))))))
+
+(defn populate-oppijaindex []
+  (doseq [h (p/select-hoksit)]
+    (swap!
+      oppijaindex/oppijat
+      conj
+      {:nimi (str (rand-str 7) " " (rand-str 10))
+       :oppilaitos-oid (format "1.2.246.562.10.12%09d" (rand-int 999999999))
+       :oid (:oppija-oid h)
+       :tutkinto (rand-str 20)
+       :osaamisala (rand-str 20)})))
+
 (defn start-server
   ([config-file]
     (when (some? config-file)
@@ -85,6 +104,7 @@
     (m/migrate!)
     (log/info "Starting development server...")
     (log/info "Not safe for production or public environments.")
+    (populate-oppijaindex)
     (jetty/run-jetty dev-app
                      {:port (:port config)
                       :join? false
