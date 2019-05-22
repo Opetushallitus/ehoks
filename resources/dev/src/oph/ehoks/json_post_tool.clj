@@ -5,13 +5,13 @@
 (defn send-json [service path json-body]
   (try
     (cas/with-service-ticket
-     {:method :post
-      :service service
-      :url (format "%s/%s" service path)
-      :options {:as :json
-                :body json-body
-                :content-type :json
-                :accept :json}})
+      {:method :post
+       :service service
+       :url (format "%s/%s" service path)
+       :options {:as :json
+                 :body json-body
+                 :content-type :json
+                 :accept :json}})
     (catch Exception e
 
       (let [data (ex-data e)]

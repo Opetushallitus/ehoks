@@ -1,22 +1,17 @@
 (ns oph.ehoks.mock-routes
   (:require [compojure.core :refer [GET POST defroutes routes]]
             [ring.util.http-response :as response]
-            [ring.middleware.reload :refer [wrap-reload]]
             [oph.ehoks.config :refer [config]]
-            [hiccup.core :refer [html]]
             [clojure.java.io :as io]
-            [clojure.string :as c-str]
             [cheshire.core :as cheshire]
-            [clj-http.client :as client]
-            [ring.middleware.cookies :as cookies]
-            [cheshire.core :as cheshire]))
+            [clj-http.client :as client]))
 
 (defn- json-response [value]
   (assoc-in
-      (response/ok
-        (cheshire/generate-string
-          value))
-      [:headers "Content-Type"] "application/json"))
+    (response/ok
+      (cheshire/generate-string
+        value))
+    [:headers "Content-Type"] "application/json"))
 
 (defn- json-response-file [f]
   (-> (io/resource f)
