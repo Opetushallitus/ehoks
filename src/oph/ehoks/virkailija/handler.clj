@@ -9,6 +9,7 @@
             [oph.ehoks.external.cache :as c]
             [oph.ehoks.virkailija.auth :as auth]
             [oph.ehoks.user :as user]
+            [oph.ehoks.schema :as schema]
             [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.schema :as hoks-schema]
@@ -16,7 +17,8 @@
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.hoks.handler :as hoks-handler]
-            [oph.ehoks.oppijaindex :as oppijaindex]))
+            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -82,15 +84,25 @@
                       (if desc #(compare %2 %1) compare)))))
 
               (c-api/context "/:oid" []
+                :path-params [oid :- s/Str]
                 (c-api/GET "/hoksit" []
                   :return (restful/response [hoks-schema/HOKS])
                   :summary "Oppijan hoksit (perustiedot)"
-                  (restful/rest-ok []))
+                  (if-let [hoks (db/select-hoks-by-oppija-oid oid)]
+                    (restful/rest-ok hoks)
+                    (response/not-found {:message "HOKS not found"})))
 
                 (c-api/GET "/" []
-                  :return (restful/response common-schema/Oppija)
+                  :return (restful/response schema/UserInfo)
                   :summary "Oppijan tiedot"
-                  (restful/rest-ok {})))))
+                  (let [oppija-response (onr/find-student-by-oid oid)]
+                    (if (= (:status oppija-response) 200)
+                      (restful/rest-ok
+                        (-> oppija-response
+                            :body
+                            onr/convert-student-info))
+                      (response/internal-server-error
+                        {:error "Error connecting to Oppijanumerorekisteri"})))))))
 
           (route-middleware
             [wrap-virkailija-authorize wrap-oph-super-user]
