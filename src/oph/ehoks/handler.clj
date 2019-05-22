@@ -1,7 +1,5 @@
 (ns oph.ehoks.handler
-  (:require [clojure.tools.logging :as log]
-            [compojure.api.sweet :as c-api]
-            [compojure.api.exception :as c-ex]
+  (:require [compojure.api.sweet :as c-api]
             [compojure.core :refer [GET]]
             [compojure.route :as compojure-route]
             [clojure.string :as cstr]
@@ -11,7 +9,6 @@
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.tyopaikan-toimija.handler :as tt-handler]
             [oph.ehoks.oppija.handler :as oppija-handler]
             [oph.ehoks.oppija.auth-handler :as auth-handler]
             [oph.ehoks.validation.handler :as validation-handler]
