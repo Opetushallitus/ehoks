@@ -177,6 +177,18 @@
         (response/not-found
           {:error "Puuttuva ammatillinen tutkinnon osa not found"})))))
 
+(def ^:private olemassa-olevat-ammatilliset-tutkinnon-osat
+  (c-api/context "/olemassa-olevat-ammatilliset-tutkinnon-osat" []
+
+    (c-api/POST "/" [:as request]
+      :summary "Luo olemassa olevan ammattillisen tutkinnon osan HOKSiin"
+      :body [ooato hoks-schema/OlemassaOlevanAmmatillisenTutkinnonOsanLuonti]
+      :return (rest/response schema/POSTResponse :id s/Int)
+      (let [ooato-from-db (h/save-olemassa-oleva-ammatillinen-tutkinnon-osa! (:hoks request) ooato)]
+        (rest/rest-ok
+          {:uri (format "%s/%d" (:uri request) (:id ooato-from-db))}
+          :id (:id ooato-from-db))))))
+
 (def ^:private puuttuvat-yhteisen-tutkinnon-osat
   (c-api/context "/:hoks-id/puuttuvat-yhteisen-tutkinnon-osat" [hoks-id]
 
@@ -297,6 +309,7 @@
             (response/no-content))
 
           puuttuva-paikallinen-tutkinnon-osa
+          olemassa-olevat-ammatilliset-tutkinnon-osat
           puuttuva-ammatillinen-osaaminen))
 
       (c-api/undocumented
