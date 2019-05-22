@@ -10,6 +10,7 @@
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
 (def filtered-schemas '#{OppijaHOKS})
+(def doc-url "https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md")
 
 (def schemas (let [m (ns-publics 'oph.ehoks.hoks.schema)]
                (select-keys
