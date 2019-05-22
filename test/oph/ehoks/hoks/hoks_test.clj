@@ -342,14 +342,14 @@
 
 (def hoks-data
   {:paivittaja {:nimi "Pekka Päivittäjä"}
-   :olemassa-olevat-ammat-tutkinnon-osat ooato-data
+   :aiemmin-hankitut-ammat-tutkinnon-osat ooato-data
    :ensikertainen-hyvaksyminen
    (java.time.LocalDate/of 2019 1 20)
-   :olemassa-olevat-paikalliset-tutkinnon-osat oopto-data
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat oopto-data
    :sahkoposti "erkki.esimerkki@esimerkki.com"
    :hankittavat-paikalliset-tutkinnon-osat ppto-data
    :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
-   :olemassa-olevat-yhteiset-tutkinnon-osat ooyto-data
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat ooyto-data
    :opiskeluoikeus-oid "1.2.246.562.15.00000012345"
    :laatija {:nimi "Lasse Laatija"}
    :hankittavat-ammat-tutkinnon-osat pao-data
@@ -359,22 +359,22 @@
    :hyvaksyja {:nimi "Heikki Hyväksyjä"}
    :hankittavat-yhteiset-tutkinnon-osat pyto-data})
 
-(deftest get-olemassa-olevat-ammat-tutkinnon-osat-test
-  (testing "Set HOKS olemassa olevat tutkinnon osat"
+(deftest get-aiemmin-hankitut-ammat-tutkinnon-osat-test
+  (testing "Set HOKS aiemmin hankitut tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-olemassa-olevat-ammat-tutkinnon-osat!
+      (h/save-aiemmin-hankitut-ammat-tutkinnon-osat!
         hoks
         ooato-data)
-      (eq (h/get-olemassa-olevat-ammat-tutkinnon-osat
+      (eq (h/get-aiemmin-hankitut-ammat-tutkinnon-osat
             (:id hoks))
           ooato-data))))
 
-(deftest get-olemassa-olevat-paikalliset-tutkinnon-osat-test
-  (testing "Get HOKS olemassa olevat paikalliset tutkinnon osat"
+(deftest get-aiemmin-hankitut-paikalliset-tutkinnon-osat-test
+  (testing "Get HOKS aiemmin hankitut paikalliset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-olemassa-olevat-paikalliset-tutkinnon-osat! hoks oopto-data)
+      (h/save-aiemmin-hankitut-paikalliset-tutkinnon-osat! hoks oopto-data)
       (eq
-        (h/get-olemassa-olevat-paikalliset-tutkinnon-osat (:id hoks))
+        (h/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks))
         oopto-data))))
 
 (deftest get-hankittava-ammatillinen-osaaminen-test
@@ -393,12 +393,12 @@
         (h/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks))
         oto-data))))
 
-(deftest get-olemassa-olevat-yhteiset-tutkinnon-osat-test
-  (testing "Get HOKS olemassa olevat yhteiset tutkinnon osat"
+(deftest get-aiemmin-hankitut-yhteiset-tutkinnon-osat-test
+  (testing "Get HOKS aiemmin hankitut yhteiset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-olemassa-olevat-yhteiset-tutkinnon-osat! hoks ooyto-data)
+      (h/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! hoks ooyto-data)
       (eq
-        (h/get-olemassa-olevat-yhteiset-tutkinnon-osat (:id hoks))
+        (h/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks))
         ooyto-data))))
 
 (deftest get-hankittavat-paikalliset-tutkinnon-osat-test
@@ -431,7 +431,7 @@
 (deftest empty-values-test
   (testing "DB handling of empty values"
     (let [hoks (db/insert-hoks! {})
-          ooato (db/insert-olemassa-oleva-ammat-tutkinnon-osa!
+          ooato (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
                   {:hoks-id (:id hoks)})
           data {}
           tta (h/save-ooato-tarkentavat-tiedot-arvioija! data)]

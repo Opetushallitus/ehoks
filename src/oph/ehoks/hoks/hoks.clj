@@ -33,7 +33,7 @@
         (db/select-arvioijat-by-todennettu-arviointi-id id))
       :id)))
 
-(defn get-olemassa-olevat-ammat-tutkinnon-osat [hoks-id]
+(defn get-aiemmin-hankitut-ammat-tutkinnon-osat [hoks-id]
   (mapv
     #(dissoc
        (assoc
@@ -43,7 +43,7 @@
          :tarkentavat-tiedot-naytto
          (get-ooato-tarkentavat-tiedot-naytto (:id %)))
        :tarkentavat-tiedot-arvioija-id :id)
-    (db/select-olemassa-olevat-ammat-tutkinnon-osat-by-hoks-id
+    (db/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id
       hoks-id)))
 
 (defn get-hankitun-osaamisen-naytto [id]
@@ -106,7 +106,7 @@
        :id)
     (db/select-hankitun-osaamisen-naytto-by-oopto-id id)))
 
-(defn get-olemassa-olevat-paikalliset-tutkinnon-osat [hoks-id]
+(defn get-aiemmin-hankitut-paikalliset-tutkinnon-osat [hoks-id]
   (mapv
     #(dissoc
        (assoc-in
@@ -117,7 +117,7 @@
          [:tarkentavat-tiedot-arvioija :aiemmin-hankitun-osaamisen-arvioijat]
          (db/select-arvioijat-by-oopto-id (:id %)))
        :id)
-    (db/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
+    (db/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-ooyto-osa-alue-tarkentavat-tiedot [id]
   (mapv
@@ -141,7 +141,7 @@
        :id)
     (db/select-tarkentavat-tiedot-naytto-by-ooyto-id id)))
 
-(defn get-olemassa-olevat-yhteiset-tutkinnon-osat [hoks-id]
+(defn get-aiemmin-hankitut-yhteiset-tutkinnon-osat [hoks-id]
   (mapv
     #(-> %
          (assoc
@@ -153,7 +153,7 @@
            [:tarkentavat-tiedot-arvioija :aiemmin-hankitun-osaamisen-arvioijat]
            (db/select-arvioija-by-ooyto-id (:id %)))
          (dissoc :id))
-    (db/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
+    (db/select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-pato-osaamisen-hankkimistavat [id]
   (mapv
@@ -220,14 +220,14 @@
   (let [id (:id h)]
     (assoc
       h
-      :olemassa-olevat-ammat-tutkinnon-osat
-      (get-olemassa-olevat-ammat-tutkinnon-osat id)
-      :olemassa-olevat-paikalliset-tutkinnon-osat
-      (get-olemassa-olevat-paikalliset-tutkinnon-osat id)
+      :aiemmin-hankitut-ammat-tutkinnon-osat
+      (get-aiemmin-hankitut-ammat-tutkinnon-osat id)
+      :aiemmin-hankitut-paikalliset-tutkinnon-osat
+      (get-aiemmin-hankitut-paikalliset-tutkinnon-osat id)
       :hankittavat-paikalliset-tutkinnon-osat
       (get-hankittavat-paikalliset-tutkinnon-osat id)
-      :olemassa-olevat-yhteiset-tutkinnon-osat
-      (get-olemassa-olevat-yhteiset-tutkinnon-osat id)
+      :aiemmin-hankitut-yhteiset-tutkinnon-osat
+      (get-aiemmin-hankitut-yhteiset-tutkinnon-osat id)
       :hankittavat-ammat-tutkinnon-osat
       (get-hankittavat-ammat-tutkinnon-osat id)
       :opiskeluvalmiuksia-tukevat-opinnot
@@ -349,8 +349,8 @@
        (db/insert-oopto-arvioija! oopto-id (:id a)))
     arvioijat))
 
-(defn save-olemassa-oleva-paikallinen-tutkinnon-osa! [oopto]
-  (let [oopto-db (db/insert-olemassa-oleva-paikallinen-tutkinnon-osa! oopto)]
+(defn save-aiemmin-hankittu-paikallinen-tutkinnon-osa! [oopto]
+  (let [oopto-db (db/insert-aiemmin-hankittu-paikallinen-tutkinnon-osa! oopto)]
     (assoc
       oopto-db
       :tarkentavat-tiedot-arvioija
@@ -365,9 +365,9 @@
       (save-oopto-tarkentavat-tiedot-naytto!
         (:id oopto-db) (:tarkentavat-tiedot-naytto oopto)))))
 
-(defn save-olemassa-olevat-paikalliset-tutkinnon-osat! [h c]
+(defn save-aiemmin-hankitut-paikalliset-tutkinnon-osat! [h c]
   (mapv
-    #(save-olemassa-oleva-paikallinen-tutkinnon-osa!
+    #(save-aiemmin-hankittu-paikallinen-tutkinnon-osa!
        (assoc % :hoks-id (:id h)))
     c))
 
@@ -386,8 +386,8 @@
 
 (defn save-ooyto-osa-alueet! [yto-id osa-alueet]
   (mapv
-    #(let [o (db/insert-olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue!
-               (assoc % :olemassa-oleva-yhteinen-tutkinnon-osa-id yto-id))]
+    #(let [o (db/insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue!
+               (assoc % :aiemmin-hankittu-yhteinen-tutkinnon-osa-id yto-id))]
        (mapv
          (fn [naytto]
            (let [n (save-hankitun-osaamisen-naytto! naytto)]
@@ -396,8 +396,8 @@
          (:tarkentavat-tiedot %)))
     osa-alueet))
 
-(defn save-olemassa-oleva-yhteinen-tutkinnon-osa! [o]
-  (let [yto (db/insert-olemassa-oleva-yhteinen-tutkinnon-osa! o)]
+(defn save-aiemmin-hankittu-yhteinen-tutkinnon-osa! [o]
+  (let [yto (db/insert-aiemmin-hankittu-yhteinen-tutkinnon-osa! o)]
     (save-ooyto-tarkentavat-tiedot-naytto! yto (:tarkentavat-tiedot-naytto o))
     (save-ooyto-arvioijat!
       (:id yto)
@@ -406,9 +406,9 @@
     (save-ooyto-osa-alueet! (:id yto) (:osa-alueet o))
     yto))
 
-(defn save-olemassa-olevat-yhteiset-tutkinnon-osat! [h c]
+(defn save-aiemmin-hankitut-yhteiset-tutkinnon-osat! [h c]
   (mapv
-    #(save-olemassa-oleva-yhteinen-tutkinnon-osa! (assoc % :hoks-id (:id h)))
+    #(save-aiemmin-hankittu-yhteinen-tutkinnon-osa! (assoc % :hoks-id (:id h)))
     c))
 
 (defn save-ooato-tarkentavat-tiedot-naytto! [ooato c]
@@ -429,8 +429,8 @@
       tta (:aiemmin-hankitun-osaamisen-arvioijat m))
     tta))
 
-(defn save-olemassa-oleva-ammat-tutkinnon-osa! [h ooato]
-  (let [ooato-db (db/insert-olemassa-oleva-ammat-tutkinnon-osa!
+(defn save-aiemmin-hankittu-ammat-tutkinnon-osa! [h ooato]
+  (let [ooato-db (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
                    (assoc ooato
                           :hoks-id (:id h)
                           :tarkentavat-tiedot-arvioija-id
@@ -442,8 +442,8 @@
       (save-ooato-tarkentavat-tiedot-naytto!
         ooato-db (:tarkentavat-tiedot-naytto ooato)))))
 
-(defn save-olemassa-olevat-ammat-tutkinnon-osat! [h c]
-  (mapv #(save-olemassa-oleva-ammat-tutkinnon-osa! h %) c))
+(defn save-aiemmin-hankitut-ammat-tutkinnon-osat! [h c]
+  (mapv #(save-aiemmin-hankittu-ammat-tutkinnon-osa! h %) c))
 
 (defn save-pato-osaamisen-hankkimistapa! [pato oh]
   (let [o-db (save-osaamisen-hankkimistapa! oh)]
@@ -524,18 +524,18 @@
   (let [saved-hoks (db/insert-hoks! h)]
     (assoc
       saved-hoks
-      :olemassa-olevat-ammat-tutkinnon-osat
-      (save-olemassa-olevat-ammat-tutkinnon-osat!
-        saved-hoks (:olemassa-olevat-ammat-tutkinnon-osat h))
-      :olemassa-olevat-paikalliset-tutkinnon-osat
-      (save-olemassa-olevat-paikalliset-tutkinnon-osat!
-        saved-hoks (:olemassa-olevat-paikalliset-tutkinnon-osat h))
+      :aiemmin-hankitut-ammat-tutkinnon-osat
+      (save-aiemmin-hankitut-ammat-tutkinnon-osat!
+        saved-hoks (:aiemmin-hankitut-ammat-tutkinnon-osat h))
+      :aiemmin-hankitut-paikalliset-tutkinnon-osat
+      (save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
+        saved-hoks (:aiemmin-hankitut-paikalliset-tutkinnon-osat h))
       :hankittavat-paikalliset-tutkinnon-osat
       (save-hankittavat-paikalliset-tutkinnon-osat!
         saved-hoks (:hankittavat-paikalliset-tutkinnon-osat h))
-      :olemassa-olevat-yhteiset-tutkinnon-osat
-      (save-olemassa-olevat-yhteiset-tutkinnon-osat!
-        saved-hoks (:olemassa-olevat-yhteiset-tutkinnon-osat h))
+      :aiemmin-hankitut-yhteiset-tutkinnon-osat
+      (save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
+        saved-hoks (:aiemmin-hankitut-yhteiset-tutkinnon-osat h))
       :hankittavat-ammat-tutkinnon-osat
       (save-hankittavat-ammat-tutkinnon-osat!
         saved-hoks (:hankittavat-ammat-tutkinnon-osat h))

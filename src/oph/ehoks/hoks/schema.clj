@@ -287,9 +287,9 @@
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"))
 
 (s/defschema
-  OlemassaOlevanYTOOsaAlue
+  AiemminHankitunYTOOsaAlue
   (describe
-    "Olemassaolevan YTOn osa-alueen tiedot"
+    "AiemminHankitun YTOn osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alue-koodi-uri OsaAlueKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
@@ -477,10 +477,10 @@
     "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
 
 (s/defschema
-  OlemassaOlevaPaikallinenTutkinnonOsa
+  AiemminHankittuPaikallinenTutkinnonOsa
   (modify
     HankittavaPaikallinenTutkinnonOsa
-    "Olemassa oleva yhteinen tutkinnon osa"
+    "Aiemmin hankittu yhteinen tutkinnon osa"
     {:removed [:osaamisen-hankkimistavat :hankitun-osaamisen-naytto]
      :added
      (describe
@@ -526,15 +526,15 @@
       :nimi]}))
 
 (s/defschema
-  OlemassaOlevaYhteinenTutkinnonOsa
+  AiemminHankittuYhteinenTutkinnonOsa
   (modify
     YhteinenTutkinnonOsa
-    "Olemassa oleva yhteinen tutkinnon osa"
+    "Aiemmin hankittu yhteinen tutkinnon osa"
     {:removed [:osa-alueet]
      :added
      (describe
        ""
-       :osa-alueet [OlemassaOlevanYTOOsaAlue] "YTO osa-alueet"
+       :osa-alueet [AiemminHankitunYTOOsaAlue] "YTO osa-alueet"
        :valittu-todentamisen-prosessi-koodi-uri TodentamisenProsessiKoodiUri
        "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
        :valittu-todentamisen-prosessi-koodi-versio s/Int
@@ -547,10 +547,10 @@
        annetaan myös arvioijan lisätiedot")}))
 
 (s/defschema
-  OlemassaOlevaAmmatillinenTutkinnonOsa
+  AiemminHankittuAmmatillinenTutkinnonOsa
   (modify
-    OlemassaOlevaYhteinenTutkinnonOsa
-    "Olemassa oleva yhteinen tutkinnon osa"
+    AiemminHankittuYhteinenTutkinnonOsa
+    "Aiemmin hankittu yhteinen tutkinnon osa"
     {:removed [:osa-alueet]}))
 
 (def HOKSModel
@@ -612,18 +612,18 @@
                                 :description
                                 "HOKS-dokumentin ensimmäinen hyväksymisaika
                                 muodossa YYYY-MM-DD"}
-   :olemassa-olevat-ammat-tutkinnon-osat
+   :aiemmin-hankitut-ammat-tutkinnon-osat
    {:methods {:any :optional}
-    :types {:any [OlemassaOlevaAmmatillinenTutkinnonOsa]}
-    :description "Olemassa oleva ammatillinen osaaminen"}
-   :olemassa-olevat-yhteiset-tutkinnon-osat
+    :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]}
+    :description "Aiemmin hankittu ammatillinen osaaminen"}
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat
    {:methods {:any :optional}
-    :types {:any [OlemassaOlevaYhteinenTutkinnonOsa]}
-    :description "Olemassa olevat yhteiset tutkinnon osat (YTO)"}
-   :olemassa-olevat-paikalliset-tutkinnon-osat
+    :types {:any [AiemminHankittuYhteinenTutkinnonOsa]}
+    :description "Aiemmin hankitut yhteiset tutkinnon osat (YTO)"}
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat
    {:methods {:any :optional}
-    :types {:any [OlemassaOlevaPaikallinenTutkinnonOsa]}
-    :description "Olemassa oleva paikallinen tutkinnon osa"}
+    :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]}
+    :description "Aiemmin hankittu paikallinen tutkinnon osa"}
    :hyvaksytty
    {:methods {:any :optional}
     :types {:any s/Inst}

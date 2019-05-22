@@ -249,7 +249,7 @@
                         :id (:id hoks-db))))
 
       (c-api/PATCH "/:id" [id :as request]
-        :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
+        :summary "Päivittää aiemmin hankitun HOKSin arvoa tai arvoja"
         :path-params [id :- s/Int]
         :body [values hoks-schema/HOKSKentanPaivitys]
         (let [hoks (pdb/select-hoks-by-id id)]

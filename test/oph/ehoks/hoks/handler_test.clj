@@ -653,12 +653,12 @@
 (defn add-empty-hoks-values [hoks]
   (assoc
     hoks
-    :olemassa-olevat-ammat-tutkinnon-osat []
+    :aiemmin-hankitut-ammat-tutkinnon-osat []
     :hankittavat-paikalliset-tutkinnon-osat []
     :hankittavat-ammat-tutkinnon-osat []
-    :olemassa-olevat-yhteiset-tutkinnon-osat []
+    :aiemmin-hankitut-yhteiset-tutkinnon-osat []
     :hankittavat-yhteiset-tutkinnon-osat []
-    :olemassa-olevat-paikalliset-tutkinnon-osat []
+    :aiemmin-hankitut-paikalliset-tutkinnon-osat []
     :opiskeluvalmiuksia-tukevat-opinnot []))
 
 (deftest get-created-hoks
