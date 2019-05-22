@@ -1,7 +1,7 @@
 (ns oph.ehoks.oppijaindex
   (:require [clojure.string :as cs]))
 
-(def oppijat (atom []))
+(defonce oppijat (atom []))
 
 (defn- lower-values [m]
   (reduce
