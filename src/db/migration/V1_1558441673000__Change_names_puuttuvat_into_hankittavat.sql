@@ -34,13 +34,3 @@ hankittavat_paikalliset_tutkinnon_osat;
 
 ALTER TABLE puuttuvat_yhteiset_tutkinnon_osat RENAME TO
 hankittavat_yhteiset_tutkinnon_osat;
-
-ALTER TABLE olemassa_olevan_ammatillisen_tutkinnon_osan_naytto RENAME TO
-olemassa_olevan_ammat_tutkinnon_osan_naytto;
-
-ALTER TABLE olemassa_olevan_ammat_tutkinnon_osan_naytto RENAME COLUMN
-olemassa_oleva_ammatillinen_tutkinnon_osa_id TO
-olemassa_oleva_ammat_tutkinnon_osa_id;
-
-ALTER TABLE olemassa_olevat_ammatilliset_tutkinnon_osat RENAME TO
-olemassa_olevat_ammat_tutkinnon_osat;
