@@ -91,8 +91,8 @@
                   (restful/rest-ok
                     (subvec
                       oppijat
-                      (min start-index (dec (count oppijat)))
-                      (min end-index (dec (count oppijat))))
+                      (min start-index (max 0 (dec (count oppijat))))
+                      (min end-index (count oppijat)))
                     :total-count (count oppijat))))
 
               (c-api/context "/:oid" []
