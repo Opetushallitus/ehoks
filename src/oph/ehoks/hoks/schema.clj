@@ -549,8 +549,15 @@
   OlemassaOlevaAmmatillinenTutkinnonOsa
   (modify
     OlemassaOlevaYhteinenTutkinnonOsa
-    "Olemassa oleva yhteinen tutkinnon osa"
+    "Olemassa oleva ammatillisen tutkinnon osa"
     {:removed [:osa-alueet]}))
+
+(s/defschema
+  OlemassaOlevanAmmatillisenTutkinnonOsanLuonti
+  (modify
+    OlemassaOlevaAmmatillinenTutkinnonOsa
+    "Olemassa olevan ammatillisen tutkinnon osan tiedot uutta merkintää luotaessa (POST)"
+    {:removed [:id]}))
 
 (def HOKSModel
   ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
