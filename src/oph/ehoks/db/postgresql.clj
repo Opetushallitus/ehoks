@@ -228,7 +228,7 @@
     :tyopaikalla_jarjestettavan_koulutuksen_henkilot
     (map
       #(assoc (h/henkilo-to-sql %) :tyopaikalla_jarjestettava_koulutus_id
-      (:id o))
+              (:id o))
       c)))
 
 (defn select-henkilot-by-tho-id
