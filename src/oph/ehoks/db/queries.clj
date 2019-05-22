@@ -103,15 +103,15 @@
      :secondary-column "osaamisen_hankkimistapa_id"
      :primary-column "id"
      :column "hankittava_paikallinen_tutkinnon_osa_id"}))
-(defq select-tyopaikalla-hankittavat-osaamiset-by-id)
+(defq select-tyopaikalla-jarjestettavat-koulutukset-by-id)
 (def select-henkilot-by-tho-id
   (generate-select-by
-    {:table "tyopaikalla_hankittavat_osaamisen_henkilot"
-     :column "tyopaikalla_hankittava_osaaminen_id"}))
+    {:table "tyopaikalla_jarjestettavan_koulutuksen_henkilot"
+     :column "tyopaikalla_jarjestettava_koulutus_id"}))
 (def select-tyotehtavat-by-tho-id
   (generate-select-by
-    {:table "tyopaikalla_hankittavat_osaamisen_tyotehtavat"
-     :column "tyopaikalla_hankittava_osaaminen_id"}))
+    {:table "tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat"
+     :column "tyopaikalla_jarjestettava_koulutus_id"}))
 (defq select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id)
 (defq select-todennettu-arviointi-lisatiedot-by-id)
 (def select-arvioijat-by-todennettu-arviointi-id

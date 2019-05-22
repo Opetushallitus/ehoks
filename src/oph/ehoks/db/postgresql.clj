@@ -225,9 +225,10 @@
   "Työpaikalla hankittavan osaamisen muut osallistujat"
   [o c]
   (insert-multi!
-    :tyopaikalla_hankittavat_osaamisen_henkilot
+    :tyopaikalla_jarjestettavan_koulutuksen_henkilot
     (map
-      #(assoc (h/henkilo-to-sql %) :tyopaikalla_hankittava_osaaminen_id (:id o))
+      #(assoc (h/henkilo-to-sql %) :tyopaikalla_jarjestettava_koulutus_id
+      (:id o))
       c)))
 
 (defn select-henkilot-by-tho-id
@@ -241,10 +242,10 @@
   "Työpaikalla hankittavan osaamisen keskeiset työtehtävät"
   [tho c]
   (insert-multi!
-    :tyopaikalla_hankittavat_osaamisen_tyotehtavat
+    :tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat
     (map
       #(hash-map
-         :tyopaikalla_hankittava_osaaminen_id (:id tho)
+         :tyopaikalla_jarjestettava_koulutus_id (:id tho)
          :tyotehtava %)
       c)))
 
@@ -255,20 +256,20 @@
     [queries/select-tyotehtavat-by-tho-id id]
     {:row-fn h/tyotehtava-from-sql}))
 
-(defn insert-tyopaikalla-hankittava-osaaminen! [o]
+(defn insert-tyopaikalla-jarjestettava-koulutus! [o]
   (when (some? o)
     (let [o-db (insert-one!
-                 :tyopaikalla_hankittavat_osaamiset
-                 (h/tyopaikalla-hankittava-osaaminen-to-sql o))]
+                 :tyopaikalla_jarjestettavat_koulutukset
+                 (h/tyopaikalla-jarjestettava-koulutus-to-sql o))]
       (insert-tho-henkilot! o-db (:muut-osallistujat o))
       (insert-tho-tyotehtavat! o-db (:keskeiset-tyotehtavat o))
       o-db)))
 
-(defn select-tyopaikalla-hankittava-osaaminen-by-id [id]
+(defn select-tyopaikalla-jarjestettava-koulutus-by-id [id]
   (first
     (query
-      [queries/select-tyopaikalla-hankittavat-osaamiset-by-id id]
-      {:row-fn h/tyopaikalla-hankittava-osaaminen-from-sql})))
+      [queries/select-tyopaikalla-jarjestettavat-koulutukset-by-id id]
+      {:row-fn h/tyopaikalla-jarjestettava-koulutus-from-sql})))
 
 (defn insert-osaamisen-hankkimistavan-muut-oppimisymparistot! [oh c]
   (insert-multi!

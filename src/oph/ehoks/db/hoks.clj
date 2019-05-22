@@ -114,14 +114,14 @@
 (defn hankittava-paikallinen-tutkinnon-osa-to-sql [m]
   (to-sql m {:removals [:hankitun-osaamisen-naytto :osaamisen-hankkimistavat]}))
 
-(defn tyopaikalla-hankittava-osaaminen-from-sql [m]
+(defn tyopaikalla-jarjestettava-koulutus-from-sql [m]
   (from-sql
     m
     {:replaces
      {:vastuullinen_ohjaaja_nimi [:vastuullinen-ohjaaja :nimi]
       :vastuullinen_ohjaaja_sahkoposti [:vastuullinen-ohjaaja :sahkoposti]}}))
 
-(defn tyopaikalla-hankittava-osaaminen-to-sql [m]
+(defn tyopaikalla-jarjestettava-koulutus-to-sql [m]
   (to-sql
     m
     {:removals [:muut-osallistujat :keskeiset-tyotehtavat]
@@ -132,7 +132,7 @@
 (defn henkilo-from-sql [m]
   (from-sql
     m
-    {:removals [:id :tyopaikalla_hankittava_osaaminen_id]
+    {:removals [:id :tyopaikalla_jarjestettava_koulutus_id]
      :replaces
      {:organisaatio_nimi [:organisaatio :nimi]
       :organisaatio_y_tunnus [:organisaatio :y-tunnus]}}))
@@ -158,7 +158,7 @@
   (to-sql
     m
     {:removals [:muut-oppimisymparisto
-                :tyopaikalla-hankittava-osaaminen]
+                :tyopaikalla-jarjestettava-koulutus]
      :replaces
      {[:jarjestajan-edustaja :nimi] :jarjestajan-edustaja-nimi
       [:jarjestajan-edustaja :rooli] :jarjestajan-edustaja-rooli

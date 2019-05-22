@@ -123,7 +123,7 @@
        "Oppilaitoksen oid-tunniste Opintopolku-palvelussa.")}))
 
 (s/defschema
-  TyopaikallaHankittavaOsaaminen
+  TyopaikallaJarjestettavaKoulutus
   (describe
     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -169,8 +169,8 @@
     "Koulutuksen järjestäjän edustaja"
     (s/optional-key :hankkijan-edustaja) Oppilaitoshenkilo
     "Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja"
-    (s/optional-key :tyopaikalla-hankittava-osaaminen)
-    TyopaikallaHankittavaOsaaminen
+    (s/optional-key :tyopaikalla-jarjestettava-koulutus)
+    TyopaikallaJarjestettavaKoulutus
     (str "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. "
          "Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai "
          "koulutussopimus.")

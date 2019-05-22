@@ -52,8 +52,8 @@
       #(dissoc (set-hankitun-osaamisen-naytto-values %) :id)
       naytot)))
 
-(defn get-tyopaikalla-hankittava-osaaminen [id]
-  (let [o (db/select-tyopaikalla-hankittava-osaaminen-by-id id)]
+(defn get-tyopaikalla-jarjestettava-koulutus [id]
+  (let [o (db/select-tyopaikalla-jarjestettava-koulutus-by-id id)]
     (-> o
         (dissoc :id)
         (assoc :muut-osallistujat
@@ -65,13 +65,13 @@
   (dissoc
     (assoc
       m
-      :tyopaikalla-hankittava-osaaminen
-      (get-tyopaikalla-hankittava-osaaminen
-        (:tyopaikalla-hankittava-osaaminen-id m))
+      :tyopaikalla-jarjestettava-koulutus
+      (get-tyopaikalla-jarjestettava-koulutus
+        (:tyopaikalla-jarjestettava-koulutus-id m))
       :muut-oppimisymparisto
       (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
         (:id m)))
-    :id :tyopaikalla-hankittava-osaaminen-id))
+    :id :tyopaikalla-jarjestettava-koulutus-id))
 
 (defn get-osaamisen-hankkimistavat [id]
   (let [hankkimistavat (db/select-osaamisen-hankkimistavat-by-ppto-id id)]
@@ -244,10 +244,10 @@
   (get-hoks-values (db/select-hoks-by-id id)))
 
 (defn save-osaamisen-hankkimistapa! [oh]
-  (let [tho (db/insert-tyopaikalla-hankittava-osaaminen!
-              (:tyopaikalla-hankittava-osaaminen oh))
+  (let [tho (db/insert-tyopaikalla-jarjestettava-koulutus!
+              (:tyopaikalla-jarjestettava-koulutus oh))
         o-db (db/insert-osaamisen-hankkimistapa!
-               (assoc oh :tyopaikalla-hankittava-osaaminen-id
+               (assoc oh :tyopaikalla-jarjestettava-koulutus-id
                       (:id tho)))]
     (db/insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
       o-db (:muut-oppimisymparisto oh))
