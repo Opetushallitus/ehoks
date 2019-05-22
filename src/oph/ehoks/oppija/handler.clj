@@ -5,7 +5,6 @@
             [ring.util.http-response :as response]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.common.schema :as common-schema]
-            [oph.ehoks.schema :as schema]
             [oph.ehoks.oppija.schema :as oppija-schema]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.external.koodisto :as koodisto]
