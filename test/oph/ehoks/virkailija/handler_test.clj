@@ -48,7 +48,7 @@
         (t/is (some? (:eperusteet-peruste-url data)))
         (t/is (some? (:virkailija-login-url data)))))))
 
-(t/deftest test-list-oppijat
+(t/deftest test-list-oppijat-with-empty-index
   (t/testing "GET oppijat"
     (let [session "12345678-1234-1234-1234-1234567890ab"
           cookie (str "ring-session=" session)
