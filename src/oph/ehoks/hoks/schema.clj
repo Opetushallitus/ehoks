@@ -273,7 +273,7 @@
 (s/defschema
   YhteisenTutkinnonOsanOsaAlue
   (describe
-    "Puuttuvan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
+    "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alue-koodi-uri OsaAlueKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
@@ -333,7 +333,7 @@
   HankittavaYTO
   (modify
     YhteinenTutkinnonOsa
-    "Puuttuvan yhteinen tutkinnon osan (YTO) tiedot"
+    "Hankittavan yhteinen tutkinnon osan (YTO) tiedot"
     {:removed [:vaatimuksista-tai-tavoitteista-poikkeaminen]}))
 
 (s/defschema
@@ -373,7 +373,7 @@
 (s/defschema
   HankittavaAmmatillinenOsaaminen
   (describe
-    "Puuttuvan ammatillisen osaamisen tiedot (GET)"
+    "Hankittavan ammatillisen osaamisen tiedot (GET)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)"
@@ -396,20 +396,21 @@
   HankittavaAmmatillinenOsaaminenLuonti
   (modify
     HankittavaAmmatillinenOsaaminen
-    "Puuttuvan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)"
+    "Hankittavan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)"
     {:removed [:id]}))
 
 (s/defschema
   HankittavaAmmatillinenOsaaminenPaivitys
   (modify
     HankittavaAmmatillinenOsaaminen
-    "Puuttuvan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa (PUT)"))
+    "Hankittavan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa
+    (PUT)"))
 
 (s/defschema
   HankittavaAmmatillinenOsaaminenKentanPaivitys
   (modify
     HankittavaAmmatillinenOsaaminen
-    (str "Puuttuvan ammatillisen osaamisen tiedot kenttää tai kenttiä "
+    (str "Hankittavan ammatillisen osaamisen tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
      [:tutkinnon-osa-koodi-uri
@@ -421,7 +422,7 @@
   HankittavaYTOLuonti
   (modify
     HankittavaYTO
-    (str "Puuttuvan yhteinen tutkinnon osan tiedot uutta merkintää "
+    (str "Hankittavan yhteinen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
     {:removed [:id]}))
 
@@ -429,14 +430,14 @@
   HankittavaYTOPaivitys
   (modify
     HankittavaYTO
-    (str "Puuttuvan yhteinen tutkinnon osa tiedot merkintää "
+    (str "Hankittavan yhteinen tutkinnon osa tiedot merkintää "
          "ylikirjoittaessa (PUT)")))
 
 (s/defschema
   HankittavaYTOKentanPaivitys
   (modify
     HankittavaYTO
-    (str "Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
+    (str "Hankittavan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
      [:osa-alueet :koulutuksen-jarjestaja-oid :tutkinnon-osa-koodi-uri
@@ -445,7 +446,7 @@
 (s/defschema
   HankittavaPaikallinenTutkinnonOsa
   (describe
-    "Puuttuva paikallinen tutkinnon osa"
+    "Hankittava paikallinen tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :amosaa-tunniste) s/Str
     "Tunniste ePerusteet AMOSAA -palvelussa"
@@ -499,7 +500,7 @@
   HankittavaPaikallinenTutkinnonOsaLuonti
   (modify
     HankittavaPaikallinenTutkinnonOsa
-    (str "Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää "
+    (str "Hankittavan paikallisen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
     {:removed [:id]}))
 
@@ -507,14 +508,14 @@
   HankittavaPaikallinenTutkinnonOsaPaivitys
   (modify
     HankittavaPaikallinenTutkinnonOsa
-    (str "Puuttuvan paikallisen tutkinnon osan tiedot merkintää "
+    (str "Hankittavan paikallisen tutkinnon osan tiedot merkintää "
          "ylikirjoittaessa (PUT)")))
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaKentanPaivitys
   (modify
     HankittavaPaikallinenTutkinnonOsa
-    (str "Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
+    (str "Hankittavan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
      [:osaamisen-hankkimistavat
@@ -611,7 +612,7 @@
                                 :description
                                 "HOKS-dokumentin ensimmäinen hyväksymisaika
                                 muodossa YYYY-MM-DD"}
-   :olemassa-olevat-ammatilliset-tutkinnon-osat
+   :olemassa-olevat-ammat-tutkinnon-osat
    {:methods {:any :optional}
     :types {:any [OlemassaOlevaAmmatillinenTutkinnonOsa]}
     :description "Olemassa oleva ammatillinen osaaminen"}
@@ -636,19 +637,19 @@
    {:methods {:any :optional}
     :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
     :description "Opiskeluvalmiuksia tukevat opinnot"}
-   :hankittavat-ammatilliset-tutkinnon-osat
+   :hankittavat-ammat-tutkinnon-osat
    {:methods {:any :optional}
     :types {:any [HankittavaAmmatillinenOsaaminen]}
     :description
-    "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"}
+    "Hankittavan ammatillisen osaamisen hankkimisen tiedot"}
    :hankittavat-yhteiset-tutkinnon-osat
    {:methods {:any :optional}
     :types {:any [HankittavaYTO]}
-    :description "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"}
+    :description "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot"}
    :hankittavat-paikalliset-tutkinnon-osat
    {:methods {:any :optional}
     :types {:any [HankittavaPaikallinenTutkinnonOsa]}
-    :description "Puuttuvat paikallisen tutkinnon osat"}})
+    :description "Hankittavat paikallisen tutkinnon osat"}})
 
 ; Following four schemas are only for generated markdown doc
 

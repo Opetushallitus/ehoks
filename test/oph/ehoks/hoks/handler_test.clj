@@ -103,7 +103,8 @@
                 (create-app nil)
                 (mock/request
                   :get
-                  (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1")))]
+                  (get-hoks-url hoks
+                                "hankittava-paikallinen-tutkinnon-osa/1")))]
           (eq
             (:data (utils/parse-body (:body ppto-new)))
             (assoc
@@ -191,7 +192,8 @@
               (create-app nil)
               (-> (mock/request
                     :patch
-                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1"))
+                    (get-hoks-url hoks
+                                  "hankittava-paikallinen-tutkinnon-osa/1"))
                   (mock/json-body
                     {:id 1 :nimi "2223"})))
             get-response (-> (get-in ppto-body [:data :uri])
@@ -202,7 +204,7 @@
                    :id 1
                    :nimi "2223"))))))
 
-(def pao-path "hankittava-ammat-osaaminen")
+(def pao-path "hankittava-ammatillinen-osaaminen")
 (def pao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
                :tutkinnon-osa-koodi-versio 1
                :osaamisen-hankkimistavat
@@ -223,7 +225,7 @@
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/hankittava-ammat-osaaminen"
+                    "%s/1/hankittava-ammatillinen-osaaminen"
                     url))
                 (mock/json-body
                   pao-data)))
@@ -239,7 +241,7 @@
             (:body post-response))
           {:meta {:id 1}
            :data {:uri
-                  (format "%s/1/hankittava-ammat-osaaminen/1" url)}})
+                  (format "%s/1/hankittava-ammatillinen-osaaminen/1" url)}})
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
             (:body get-response))
@@ -254,7 +256,7 @@
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/hankittava-ammat-osaaminen"
+                    "%s/1/hankittava-ammatillinen-osaaminen"
                     url))
                 (mock/json-body
                   pao-data)))
@@ -308,7 +310,7 @@
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/hankittava-ammat-osaaminen"
+                    "%s/1/hankittava-ammatillinen-osaaminen"
                     url))
                 (mock/json-body
                   pao-data)))
@@ -343,7 +345,7 @@
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/hankittava-ammat-osaaminen"
+                    "%s/1/hankittava-ammatillinen-osaaminen"
                     url))
                 (mock/json-body
                   pao-data)))

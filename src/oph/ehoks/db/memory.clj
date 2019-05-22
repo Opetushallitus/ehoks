@@ -82,14 +82,14 @@
     (inc (apply max (map :id @ppto-store)))))
 
 (defn get-ppto-by-id
-  "Hakee puuttuvan paikallisen tutkinnon osan tietueen kannasta sen id-arvolla"
+  "Hakee hankittavan paikallisen tutkinnon osan tietueen kannasta id-arvolla"
   [id]
   (when (some? id)
     (let [p (filter #(= (:id %) id) @ppto-store)]
       (first p))))
 
 (defn update-ppto!
-  "Päivittää HOKSin puuttuvan paikallisen
+  "Päivittää HOKSin hankittavan paikallisen
 tutkinnon osaa"
   [id values]
   (let [old-ppto (get-ppto-by-id id)
@@ -98,7 +98,7 @@ tutkinnon osaa"
     updated-ppto))
 
 (defn update-ppto-values!
-  "Päivittää HOKSin puuttuvan paikallisen
+  "Päivittää HOKSin hankittavan paikallisen
 tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
   [id values]
   (when-let [ppto (get-ppto-by-id id)]
@@ -120,14 +120,14 @@ tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
     (inc (apply max (map :id @ppao-store)))))
 
 (defn get-ppao-by-id
-  "Hakee puuttuvan paikallisen tutkinnon osan tietueen kannasta sen id-arvolla"
+  "Hakee hankittavan paikallisen tutkinnon osan tietueen kannasta id-arvolla"
   [id]
   (when (some? id)
     (let [p (filter #(= (:id %) id) @ppao-store)]
       (first p))))
 
 (defn update-ppao!
-  "Päivittää HOKSin puuttuvan paikallisen
+  "Päivittää HOKSin hankittavan paikallisen
 tutkinnon osaa"
   [id values]
   (let [updated-ppao values]
@@ -135,7 +135,7 @@ tutkinnon osaa"
     updated-ppao))
 
 (defn update-ppao-values!
-  "Päivittää HOKSin puuttuvan paikallisen
+  "Päivittää HOKSin hankittavan paikallisen
 tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
   [id values]
   (when-let [ppao (get-ppao-by-id id)]
@@ -158,14 +158,14 @@ tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
     (inc (apply max (map :id @pyto-store)))))
 
 (defn get-pyto-by-id
-  "Hakee puuttuvan paikallisen tutkinnon osan tietueen kannasta sen id-arvolla"
+  "Hakee hankittavan paikallisen tutkinnon osan tietueen kannasta id-arvolla"
   [id]
   (when (some? id)
     (let [p (filter #(= (:id %) id) @pyto-store)]
       (first p))))
 
 (defn update-pyto!
-  "Päivittää HOKSin puuttuvan paikallisen
+  "Päivittää HOKSin hankittavan paikallisen
 tutkinnon osaa"
   [id values]
   (let [updated-pyto values]
@@ -173,7 +173,7 @@ tutkinnon osaa"
     updated-pyto))
 
 (defn update-pyto-values!
-  "Päivittää HOKSin puuttuvan paikallisen
+  "Päivittää HOKSin hankittavan paikallisen
 tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
   [id values]
   (when-let [pyto (get-pyto-by-id id)]
@@ -198,14 +198,14 @@ tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
     (inc (apply max (map :id @ovatu-store)))))
 
 (defn get-ovatu-by-id
-  "Hakee puuttuvan paikallisen tutkinnon osan tietueen kannasta sen id-arvolla"
+  "Hakee hankittavan paikallisen tutkinnon osan tietueen kannasta id-arvolla"
   [id]
   (when (some? id)
     (let [p (filter #(= (:id %) id) @ovatu-store)]
       (first p))))
 
 (defn update-ovatu!
-  "Päivittää HOKSin puuttuvan paikallisen
+  "Päivittää HOKSin hankittavan paikallisen
 tutkinnon osaa"
   [id values]
   (let [updated-ovatu values]
@@ -213,7 +213,7 @@ tutkinnon osaa"
     updated-ovatu))
 
 (defn update-ovatu-values!
-  "Päivittää HOKSin puuttuvan paikallisen
+  "Päivittää HOKSin hankittavan paikallisen
 tutkinnon osan joko kaikkien arvojen tai vain yhden tai useamman osalta"
   [id values]
   (when-let [ovatu (get-ovatu-by-id id)]
