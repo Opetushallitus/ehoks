@@ -102,7 +102,8 @@
                             :body
                             onr/convert-student-info))
                       (response/internal-server-error
-                        {:error "Error connecting to Oppijanumerorekisteri"})))))))
+                        {:error
+                         "Error connecting to Oppijanumerorekisteri"})))))))
 
           (route-middleware
             [wrap-virkailija-authorize wrap-oph-super-user]
