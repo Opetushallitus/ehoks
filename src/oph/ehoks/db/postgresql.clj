@@ -92,6 +92,20 @@
 (defn update-hoks-by-id! [id hoks]
   (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
 
+(defn select-hoks-oppijat-without-index []
+  (query
+    [queries/select-hoks-oppijat-without-index]))
+
+(defn select-hoks-opiskeluoikeudet-without-index []
+  (query
+    [queries/select-hoks-opiskeluoikeudet-without-index]))
+
+(defn insert-oppija [oppija]
+  (insert-one! :oppijat (h/to-sql oppija)))
+
+(defn insert-opiskeluoikeus [opiskeluoikeus]
+  (insert-one! :oppija_opiskeluoikeus (h/to-sql opiskeluoikeus)))
+
 (defn select-todennettu-arviointi-lisatiedot-by-id [id]
   (first
     (query

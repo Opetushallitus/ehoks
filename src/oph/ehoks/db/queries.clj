@@ -38,6 +38,10 @@
 (defq select-hoksit-by-opiskeluoikeus-oid)
 (defq select-hoksit-by-eid)
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")
+(defq select-hoks-oppijat-without-index
+      "hoksit/select_oppija_oids_without_info.sql")
+(defq select-hoks-opiskeluoikeudet-without-index
+      "hoksit/select_opiskeluoikeus_oids_without_info.sql")
 (defq select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id)
 (def select-hankitun-osaamisen-naytot-by-ooato-id
   (generate-select-join
