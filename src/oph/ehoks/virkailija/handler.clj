@@ -18,7 +18,9 @@
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.external.oppijanumerorekisteri :as onr]))
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
+            [oph.ehoks.external.koodisto :as koodisto]
+            [oph.ehoks.external.eperusteet :as eperusteet]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -115,7 +117,44 @@
                             onr/convert-student-info))
                       (response/internal-server-error
                         {:error
-                         "Error connecting to Oppijanumerorekisteri"})))))))
+                         "Error connecting to Oppijanumerorekisteri"}))))))
+
+            (c-api/context "/external" []
+              :tags ["virkailija-external"]
+
+              (c-api/context "/koodisto" []
+                (c-api/GET "/:koodi-uri" []
+                  :path-params [koodi-uri :- s/Str]
+                  :summary "Koodiston haku Koodisto-Koodi-Urilla."
+                  :return (restful/response s/Any)
+                  (restful/rest-ok (koodisto/get-koodi koodi-uri))))
+
+              (c-api/context "/eperusteet" []
+                (c-api/GET "/tutkinnonosat/:id/viitteet" []
+                  :path-params [id :- Long]
+                  :summary "Tutkinnon osan viitteet."
+                  :return (restful/response [s/Any])
+                  (restful/rest-ok (eperusteet/get-tutkinnon-osa-viitteet id)))
+
+                (c-api/GET "/tutkinnot" []
+                  :query-params [diaarinumero :- String]
+                  :summary "Tutkinnon haku diaarinumeron perusteella."
+                  :return (restful/response s/Any)
+                  (restful/rest-ok (eperusteet/find-tutkinto diaarinumero)))
+
+                (c-api/GET "/tutkinnot/:id/suoritustavat/reformi/rakenne" []
+                  :path-params [id :- Long]
+                  :summary "Tutkinnon rakenne."
+                  :return (restful/response s/Any)
+                  (restful/rest-ok (eperusteet/get-suoritustavat id)))
+
+                (c-api/GET "/:koodi-uri" []
+                  :path-params [koodi-uri :- s/Str]
+                  :summary "Tutkinnon osan perusteiden haku
+                            Koodisto-Koodi-Urilla."
+                  :return (restful/response [s/Any])
+                  (restful/rest-ok
+                    (eperusteet/find-tutkinnon-osat koodi-uri))))))
 
           (route-middleware
             [wrap-virkailija-authorize wrap-oph-super-user]
