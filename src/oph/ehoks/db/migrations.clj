@@ -1,6 +1,5 @@
 (ns oph.ehoks.db.migrations
-  (:require [oph.ehoks.db.postgresql :as p]
-            [oph.ehoks.config :refer [config]])
+  (:require [oph.ehoks.config :refer [config]])
   (:import org.flywaydb.core.Flyway))
 
 (def flyway
