@@ -47,6 +47,22 @@
         (handler request)
         (response/forbidden)))))
 
+(defn wrap-virkailija-oppija-access [handler]
+  ; TODO EH-352
+  (fn
+    ([request respond raise]
+      (handler request respond raise))
+    ([request]
+      (handler request))))
+
+(defn wrap-virkailija-opiskeluoikeus-access [handler]
+  ; TODO EH-352
+  (fn
+    ([request respond raise]
+      (handler request respond raise))
+    ([request]
+      (handler request))))
+
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
@@ -82,7 +98,7 @@
                       (mapv
                         #(dissoc % :oppilaitos-oid)
                         (oppijaindex/search
-                          (cond-> {}
+                          (cond-> {} ; TODO Add oppilaitos oid here
                             (some? nimi) (assoc :nimi nimi)
                             (some? tutkinto) (assoc :tutkinto tutkinto)
                             (some? osaamisala) (assoc :osaamisala osaamisala))
