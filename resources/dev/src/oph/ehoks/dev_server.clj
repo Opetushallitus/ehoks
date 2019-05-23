@@ -88,7 +88,7 @@
       {:nimi (format "%s %s"
                      (mock-gen/generate-last-name)
                      (mock-gen/generate-first-name))
-       :oppilaitos-oid (format "1.2.246.562.10.12%09d" (rand-int 999999999))
+       :oppilaitos-oid (mock-gen/generate-oppilaitos-oid)
        :oid (:oppija-oid h)
        :tutkinto (rand-str 20)
        :osaamisala (rand-str 20)})))
