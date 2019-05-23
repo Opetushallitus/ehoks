@@ -1,5 +1,9 @@
 (ns oph.ehoks.oppijaindex
-  (:require [clojure.string :as cs]))
+  (:require [clojure.string :as cs]
+            [oph.ehoks.db.postgresql :as db]
+            [oph.ehoks.external.koski :as k]
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
+            [clojure.tools.logging :as log]))
 
 (defonce oppijat (atom []))
 
@@ -37,3 +41,49 @@
     (search search-params :nimi compare))
   ([]
     @oppijat))
+
+(defn get-oppijat-without-index []
+  (db/select-hoks-oppijat-without-index))
+
+(defn get-opiskeluoikeudet-without-index []
+  (db/select-hoks-opiskeluoikeudet-without-index))
+
+(defn update-opiskeluoikeus! [oid oppija-oid]
+  (try
+    (let [opiskeluoikeus (k/get-opiskeluoikeus-info oid)]
+      (db/insert-opiskeluoikeus
+        {:oid oid
+         :oppija_oid oppija-oid
+         :oppilaitos-oid (get-in opiskeluoikeus [:oppilaitos :oid])
+         :tutkinto nil
+         :osaamisala nil
+         :alku nil
+         :loppu nil}))
+    (catch Exception e
+      (if (= (:status (ex-data e)) 404)
+        (log/warnf "Opiskeluoikeus %s not found in Oppijanumerorekisteri" oid)
+        (throw e)))))
+
+(defn update-oppija! [oid]
+  (try
+    (let [oppija (onr/find-student-by-oid oid)]
+      (db/insert-oppija
+        {:oid oid
+         :etunimi (:etunimet oppija)
+         :sukunimi (:sukunimi oppija)}))
+    (catch Exception e
+      (if (= (:status (ex-data e)) 404)
+        (log/warnf "Oppija %s not found in Oppijanumerorekisteri" oid)
+        (throw e)))))
+
+(defn update-oppijat-without-index! []
+  (log/info "Start indexing oppijat")
+  (doseq [{oid :oppija_oid} (get-oppijat-without-index)]
+    (update-oppija! oid))
+  (log/info "Indexing oppijat finished"))
+
+(defn update-opiskeluoikeudet-without-index! []
+  (log/info "Start indexing opiskeluoikeudet")
+  (doseq [{oid :opiskeluoikeus_oid oppija-oid :oppija_oid} (get-opiskeluoikeudet-without-index)]
+    (update-opiskeluoikeus! oid oppija-oid))
+  (log/info "Indexing opiskeluoikeudet finished"))
