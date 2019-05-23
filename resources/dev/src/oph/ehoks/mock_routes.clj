@@ -108,6 +108,9 @@
             [{:yhteystietoArvo "kayttaja@domain.local"
               :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})}))
 
+    (GET "/oppijanumerorekisteri-service/henkilo/1.2.246.562.24.00000000000" []
+      (response/not-found))
+
     (GET "/oppijanumerorekisteri-service/henkilo/:oid" request
       (let [first-name (mock-gen/generate-first-name)]
         (json-response
