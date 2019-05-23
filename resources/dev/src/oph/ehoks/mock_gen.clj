@@ -30,3 +30,9 @@
     (str
       (get last-name-parts (rand-int (count last-name-parts)))
       (get last-name-parts (rand-int (count last-name-parts))))))
+
+(defn generate-oppilaitos-oid []
+  (format "1.2.246.562.10.12%09d" (rand-int 999999999)))
+
+(defn generate-henkilo-oid []
+  (format "1.2.246.562.24.44%09d" (rand-int 999999999)))
