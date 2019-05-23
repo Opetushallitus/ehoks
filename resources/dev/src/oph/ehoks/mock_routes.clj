@@ -4,7 +4,8 @@
             [oph.ehoks.config :refer [config]]
             [clojure.java.io :as io]
             [cheshire.core :as cheshire]
-            [clj-http.client :as client]))
+            [clj-http.client :as client]
+            [oph.ehoks.mock-gen :as mock-gen]))
 
 (defn- json-response [value]
   (assoc-in
@@ -91,7 +92,7 @@
            :kutsumanimi "Aarto"
            :sukunimi "Väisänen-perftest"}]}))
 
-    (GET "/oppijanumerorekisteri-service/henkilo/*" []
+    (GET "/oppijanumerorekisteri-service/henkilo/1.2.246.562.24.44651722625" []
       (json-response
         {:oidHenkilo "1.2.246.562.24.44651722625"
          :hetu "250103-5360"
@@ -106,6 +107,23 @@
             :yhteystieto
             [{:yhteystietoArvo "kayttaja@domain.local"
               :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})}))
+
+    (GET "/oppijanumerorekisteri-service/henkilo/:oid" request
+      (let [first-name (mock-gen/generate-first-name)]
+        (json-response
+          {:oidHenkilo "1.2.246.562.24.44651722625"
+           :hetu "250103-5360"
+           :etunimet (format "%s %s" first-name (mock-gen/generate-first-name))
+           :kutsumanimi first-name
+           :sukunimi (mock-gen/generate-last-name)
+           :yhteystiedotRyhma
+           '({:id 0
+              :readOnly true
+              :ryhmaAlkuperaTieto "testiservice"
+              :ryhmaKuvaus "testiryhmä"
+              :yhteystieto
+              [{:yhteystietoArvo "kayttaja@domain.local"
+                :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})})))
 
     (GET "/koodisto-service/rest/codeelement/*/*" []
       (json-response-file

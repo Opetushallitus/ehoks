@@ -5,6 +5,7 @@
             [oph.ehoks.mock-routes :as mock]
             [oph.ehoks.db.postgresql :as p]
             [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.mock-gen :as mock-gen]
             [compojure.core :refer [GET defroutes routes]]
             [ring.util.http-response :refer [ok not-found]]
             [ring.adapter.jetty :as jetty]
@@ -84,7 +85,9 @@
     (swap!
       oppijaindex/oppijat
       conj
-      {:nimi (str (rand-str 7) " " (rand-str 10))
+      {:nimi (format "%s %s"
+                     (mock-gen/generate-last-name)
+                     (mock-gen/generate-first-name))
        :oppilaitos-oid (format "1.2.246.562.10.12%09d" (rand-int 999999999))
        :oid (:oppija-oid h)
        :tutkinto (rand-str 20)
