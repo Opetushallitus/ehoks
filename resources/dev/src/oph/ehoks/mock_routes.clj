@@ -111,7 +111,7 @@
     (GET "/oppijanumerorekisteri-service/henkilo/:oid" request
       (let [first-name (mock-gen/generate-first-name)]
         (json-response
-          {:oidHenkilo "1.2.246.562.24.44651722625"
+          {:oidHenkilo (get-in request [:params :oid])
            :hetu "250103-5360"
            :etunimet (format "%s %s" first-name (mock-gen/generate-first-name))
            :kutsumanimi first-name
@@ -159,6 +159,54 @@
     (GET "/koski/api/opiskeluoikeus/1.2.246.562.15.76811932037" []
       (json-response-file
         "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.76811932037.json"))
+
+    (GET "/koski/api/opiskeluoikeus/:oid" request
+      (json-response
+        {:oid (get-in request [:params :oid])
+         :oppilaitos
+         {:oid (mock-gen/generate-oppilaitos-oid)
+          :oppilaitosnumero
+          {:koodiarvo "10076"
+           :nimi
+           {:fi "Testi-yliopisto"
+            :sv "Test-universitetet"
+            :en "Test University"}
+           :lyhytNimi
+           {:fi "Testi-yliopisto"
+            :sv "Test-universitetet"}
+           :koodistoUri "oppilaitosnumero"
+           :koodistoVersio 1}
+          :nimi
+          {:fi "Testi-yliopisto"
+           :sv "Testi-universitetet"
+           :en "Testi University"}
+          :kotipaikka
+          {:koodiarvo "091"
+           :nimi {:fi "Helsinki", :sv "Helsingfors"}
+           :koodistoUri "kunta"
+           :koodistoVersio 2}}
+         :koulutustoimija {}
+         :tila
+         {:opiskeluoikeusjaksot
+          [{:alku "2018-11-15"
+            :tila
+            {:koodiarvo "lasna"
+             :nimi
+             {:fi "Läsnä"
+              :sv "Närvarande"
+              :en "present"}
+             :koodistoUri "koskiopiskeluoikeudentila"
+             :koodistoVersio 1}}]}
+         :suoritukset []
+         :tyyppi
+         {:koodiarvo "perusopetus"
+          :nimi
+          {:fi "Perusopetus"
+           :sv "Grundläggande utbildning"}
+          :lyhytNimi {:fi "Perusopetus"}
+          :koodistoUri "opiskeluoikeudentyyppi"
+          :koodistoVersio 1}
+         :alkamispäivä "2018-11-15"}))
 
     (GET "/kayttooikeus-service/kayttooikeus/kayttaja" request
       (if (= (get-in request [:query-params "username"]) "ehoksvirkailija")
