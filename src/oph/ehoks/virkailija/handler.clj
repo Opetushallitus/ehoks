@@ -20,7 +20,8 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.koodisto :as koodisto]
-            [oph.ehoks.external.eperusteet :as eperusteet]))
+            [oph.ehoks.external.eperusteet :as eperusteet]
+            [oph.ehoks.external.koski :as koski]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -115,25 +116,35 @@
 
               (c-api/context "/:oid" []
                 :path-params [oid :- s/Str]
-                (c-api/GET "/hoksit" []
-                  :return (restful/response [hoks-schema/HOKS])
-                  :summary "Oppijan hoksit (perustiedot)"
-                  (if-let [hoks (db/select-hoks-by-oppija-oid oid)]
-                    (restful/rest-ok hoks)
-                    (response/not-found {:message "HOKS not found"})))
 
-                (c-api/GET "/" []
-                  :return (restful/response schema/UserInfo)
-                  :summary "Oppijan tiedot"
-                  (let [oppija-response (onr/find-student-by-oid oid)]
-                    (if (= (:status oppija-response) 200)
-                      (restful/rest-ok
-                        (-> oppija-response
-                            :body
-                            onr/convert-student-info))
-                      (response/internal-server-error
-                        {:error
-                         "Error connecting to Oppijanumerorekisteri"}))))))
+                (route-middleware
+                  [wrap-virkailija-oppija-access]
+
+                  (c-api/GET "/hoksit" []
+                    :return (restful/response [hoks-schema/HOKS])
+                    :summary "Oppijan hoksit (perustiedot)"
+                    (if-let [hoks (db/select-hoks-by-oppija-oid oid)]
+                      (restful/rest-ok hoks)
+                      (response/not-found {:message "HOKS not found"})))
+
+                  (c-api/GET "/opiskeluoikeudet" [:as request]
+                    :summary "Oppijan opiskeluoikeudet"
+                    :return (restful/response [s/Any])
+                    (restful/rest-ok
+                      (:opiskeluoikeudet (koski/get-student-info oid))))
+
+                  (c-api/GET "/" []
+                    :return (restful/response schema/UserInfo)
+                    :summary "Oppijan tiedot"
+                    (let [oppija-response (onr/find-student-by-oid oid)]
+                      (if (= (:status oppija-response) 200)
+                        (restful/rest-ok
+                          (-> oppija-response
+                              :body
+                              onr/convert-student-info))
+                        (response/internal-server-error
+                          {:error
+                           "Error connecting to Oppijanumerorekisteri"})))))))
 
             (c-api/context "/external" []
               :tags ["virkailija-external"]
