@@ -3,44 +3,39 @@
             [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [oph.ehoks.db.queries :as queries]
+            [oph.ehoks.db.hoks :refer [from-sql]])
+  (:import java.time.LocalDate))
 
 (defonce oppijat (atom []))
 
-(defn- lower-values [m]
-  (reduce
-    (fn [c [k v]]
-      (assoc c k (cs/lower-case v)))
-    {}
-    m))
+(defn- get-like [v]
+  (format "%%%s%%" (or v "")))
 
-(defn- matches-all? [o params]
-  (nil?
-    (some
-      (fn [[k v]]
-        (when-not (cs/includes? (cs/lower-case (get o k)) v) k))
-      params)))
+(def oppija-columns
+  {:nimi "nimi" :tutkinto "tutkinto" :osaamisala "osaamisala"})
 
-; TODO support for either includes or strict match
+(defn- set-query [q params]
+  (-> queries/select-oppilaitos-oppijat
+      (cs/replace
+       ":column" (get oppija-columns (:order-by-column params) "nimi"))
+      (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))))
 
-(defn search
-  ([search-params sort-key-fn comp-fn]
-    (let [lowered-params (lower-values search-params)]
-      (sort-by
-        sort-key-fn
-        comp-fn
-        (if (empty? search-params)
-          @oppijat
-          (filter
-            (fn [o]
-              (matches-all? o lowered-params))
-            @oppijat)))))
-  ([search-params sort-key-fn]
-    (search search-params sort-key-fn compare))
-  ([search-params]
-    (search search-params :nimi compare))
-  ([]
-    @oppijat))
+(defn- create-oppija-query [params]
+  [(set-query queries/select-oppilaitos-oppijat params)
+   (:oppilaitos-oid params)
+   (:koulutustoimija-oid params)
+   (get-like (:nimi params))
+   (get-like (:tutkinto params))
+   (get-like (:osaamisala params))
+   (:item-count params)
+   (:offset params)])
+
+(defn search [params]
+  (db/query (create-oppija-query params) {:row-fn from-sql}))
+
+(defn get-count [params] 10)
 
 (defn get-oppijat-without-index []
   (db/select-hoks-oppijat-without-index))
@@ -54,11 +49,10 @@
       (db/insert-opiskeluoikeus
         {:oid oid
          :oppija_oid oppija-oid
-         :oppilaitos-oid (get-in opiskeluoikeus [:oppilaitos :oid])
-         :tutkinto nil
-         :osaamisala nil
-         :alku nil
-         :loppu nil}))
+         :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
+         :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
+         :tutkinto ""
+         :osaamisala ""}))
     (catch Exception e
       (if (= (:status (ex-data e)) 404)
         (log/warnf "Opiskeluoikeus %s not found in Oppijanumerorekisteri" oid)
@@ -66,11 +60,10 @@
 
 (defn update-oppija! [oid]
   (try
-    (let [oppija (onr/find-student-by-oid oid)]
+    (let [oppija (:body (onr/find-student-by-oid oid))]
       (db/insert-oppija
         {:oid oid
-         :etunimi (:etunimet oppija)
-         :sukunimi (:sukunimi oppija)}))
+         :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
     (catch Exception e
       (if (= (:status (ex-data e)) 404)
         (log/warnf "Oppija %s not found in Oppijanumerorekisteri" oid)
