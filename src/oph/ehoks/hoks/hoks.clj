@@ -49,7 +49,7 @@
 
 (defn get-olemassa-olevat-ammatilliset-tutkinnon-osat [hoks-id]
   (mapv
-    #(set-ooato-values %)
+    set-ooato-values
     (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id
       hoks-id)))
 
