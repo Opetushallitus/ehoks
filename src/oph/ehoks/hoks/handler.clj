@@ -190,7 +190,8 @@
       :summary "Luo olemassa olevan ammattillisen tutkinnon osan HOKSiin"
       :body [ooato hoks-schema/OlemassaOlevanAmmatillisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ooato-from-db (h/save-olemassa-oleva-ammatillinen-tutkinnon-osa! (:hoks request) ooato)]
+      (let [ooato-from-db (h/save-olemassa-oleva-ammatillinen-tutkinnon-osa!
+                            (:hoks request) ooato)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ooato-from-db))}
           :id (:id ooato-from-db))))))

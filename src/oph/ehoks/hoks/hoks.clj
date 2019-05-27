@@ -44,7 +44,8 @@
     :tarkentavat-tiedot-arvioija-id :id))
 
 (defn get-olemassa-oleva-ammatillinen-tutkinnon-osa [id]
-  (when-let [ooato-from-db (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-id id)]
+  (when-let [ooato-from-db
+             (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-id id)]
     (set-ooato-values ooato-from-db)))
 
 (defn get-olemassa-olevat-ammatilliset-tutkinnon-osat [hoks-id]

@@ -556,7 +556,8 @@
   OlemassaOlevanAmmatillisenTutkinnonOsanLuonti
   (modify
     OlemassaOlevaAmmatillinenTutkinnonOsa
-    "Olemassa olevan ammatillisen tutkinnon osan tiedot uutta merkintää luotaessa (POST)"
+    (str "Olemassa olevan ammatillisen tutkinnon osan tiedot uutta"
+         "merkintää luotaessa (POST)")
     {:removed [:id]}))
 
 (def HOKSModel

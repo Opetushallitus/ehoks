@@ -404,8 +404,7 @@
      :keskeiset-tyotehtavat-naytto ["Tutkimustyö"
                                     "Raportointi"]
      :alku "2019-02-09"
-     :loppu "2019-01-12"}]
-   })
+     :loppu "2019-01-12"}]})
 
 (defn- create-mock-post-request [url body app hoks]
   (utils/with-service-ticket
@@ -423,18 +422,21 @@
       (get-hoks-url hoks (str url "/1")))))
 
 (deftest post-and-get-olemassa-olevat-ammatilliset-tutkinnon-osat
-  (testing "POST olemassa olevat ammatilliset tutkinnon osat and then get the created ooato"
+  (testing "POST ooato and then get the created ooato"
     (with-hoks
       hoks
       (let [app (create-app nil)
-            post-response (create-mock-post-request ooato-path ooato-data app hoks)
+            post-response (create-mock-post-request
+                            ooato-path ooato-data app hoks)
             get-response (create-mock-get-request ooato-path app hoks)]
         (is (= (:status post-response) 200))
         (eq (utils/parse-body
               (:body post-response))
             {:meta {:id 1}
              :data {:uri
-                    (format "%s/1/olemassa-olevat-ammatilliset-tutkinnon-osat/1" url)}})
+                    (format
+                      "%s/1/olemassa-olevat-ammatilliset-tutkinnon-osat/1"
+                      url)}})
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))

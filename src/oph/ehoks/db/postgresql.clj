@@ -162,7 +162,8 @@
 
 (defn select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-id [id]
   (->
-    (query [queries/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-id id])
+    (query [queries/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-id
+            id])
     first
     h/olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql))
 
