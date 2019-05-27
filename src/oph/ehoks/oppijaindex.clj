@@ -19,23 +19,29 @@
 (defn- set-query [q params]
   (-> queries/select-oppilaitos-oppijat
       (cs/replace
-       ":column" (get oppija-columns (:order-by-column params) "nimi"))
+        ":column" (get oppija-columns (:order-by-column params) "nimi"))
       (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))))
 
-(defn- create-oppija-query [params]
-  [(set-query queries/select-oppilaitos-oppijat params)
-   (:oppilaitos-oid params)
-   (:koulutustoimija-oid params)
-   (get-like (:nimi params))
-   (get-like (:tutkinto params))
-   (get-like (:osaamisala params))
-   (:item-count params)
-   (:offset params)])
-
 (defn search [params]
-  (db/query (create-oppija-query params) {:row-fn from-sql}))
+  (db/query
+    [(set-query queries/select-oppilaitos-oppijat params)
+     (:oppilaitos-oid params)
+     (:koulutustoimija-oid params)
+     (get-like (:nimi params))
+     (get-like (:tutkinto params))
+     (get-like (:osaamisala params))
+     (:item-count params)
+     (:offset params)]
+    {:row-fn from-sql}))
 
-(defn get-count [params] 10)
+(defn get-count [params]
+  (db/query
+    [queries/select-oppilaitos-oppijat-search-count
+     (:oppilaitos-oid params)
+     (:koulutustoimija-oid params)
+     (get-like (:nimi params))
+     (get-like (:tutkinto params))
+     (get-like (:osaamisala params))]))
 
 (defn get-oppijat-without-index []
   (db/select-hoks-oppijat-without-index))
