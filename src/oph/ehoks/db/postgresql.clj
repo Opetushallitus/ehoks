@@ -104,7 +104,7 @@
   (insert-one! :oppijat (h/to-sql oppija)))
 
 (defn insert-opiskeluoikeus [opiskeluoikeus]
-  (insert-one! :oppija_opiskeluoikeus (h/to-sql opiskeluoikeus)))
+  (insert-one! :opiskeluoikeudet (h/to-sql opiskeluoikeus)))
 
 (defn select-todennettu-arviointi-lisatiedot-by-id [id]
   (first
