@@ -373,6 +373,75 @@
                      :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
         (is (= (:status response) 204))))))
 
+(def ooato-path "olemassa-olevat-ammatilliset-tutkinnon-osat")
+(def ooato-data
+  {:valittu-todentamisen-prosessi-koodi-versio 3
+   :tutkinnon-osa-koodi-versio 100022
+   :valittu-todentamisen-prosessi-koodi-uri "osaamisentodentamisenprosessi_3"
+   :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
+
+   :tarkentavat-tiedot-arvioija
+   {:lahetetty-arvioitavaksi "2019-03-18"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Erkki Esimerkki"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
+
+   :tarkentavat-tiedot-naytto
+   [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_fy"
+                   :koodi-versio 1}]
+     :koulutuksen-jarjestaja-arvioijat
+     [{:nimi "Aapo Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
+     :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
+     :nayttoymparisto {:nimi "Toinen Esimerkki Oyj"
+                       :y-tunnus "12345699-2"
+                       :kuvaus "Testiyrityksen testiosasostalla"}
+     :tyoelama-arvioijat [{:nimi "Teppo Työmies"
+                           :organisaatio
+                           {:nimi "Testiyrityksen Sisar Oy"
+                            :y-tunnus "12345689-3"}}]
+     :keskeiset-tyotehtavat-naytto ["Tutkimustyö"
+                                    "Raportointi"]
+     :alku "2019-02-09"
+     :loppu "2019-01-12"}]})
+
+(defn- create-mock-post-request [url body app hoks]
+  (utils/with-service-ticket
+    app
+    (-> (mock/request
+          :post
+          (get-hoks-url hoks url))
+        (mock/json-body body))))
+
+(defn- create-mock-get-request [url app hoks]
+  (utils/with-service-ticket
+    app
+    (mock/request
+      :get
+      (get-hoks-url hoks (str url "/1")))))
+
+(deftest post-and-get-olemassa-olevat-ammatilliset-tutkinnon-osat
+  (testing "POST ooato and then get the created ooato"
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            ooato-path ooato-data app hoks)
+            get-response (create-mock-get-request ooato-path app hoks)]
+        (is (= (:status post-response) 200))
+        (eq (utils/parse-body
+              (:body post-response))
+            {:meta {:id 1}
+             :data {:uri
+                    (format
+                      "%s/1/olemassa-olevat-ammatilliset-tutkinnon-osat/1"
+                      url)}})
+        (is (= (:status get-response) 200))
+        (eq (utils/parse-body
+              (:body get-response))
+            {:meta {} :data ooato-data})))))
+
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
 (def pyto-data
