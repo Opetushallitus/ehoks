@@ -9,6 +9,3 @@ FROM oppijat AS o
     o.nimi ILIKE ? AND
     oo.tutkinto ILIKE ? AND
     oo.osaamisala ILIKE ?
-  ORDER BY :column :desc
-  LIMIT ?
-  OFFSET ?

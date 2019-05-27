@@ -44,6 +44,8 @@
       "hoksit/select_opiskeluoikeus_oids_without_info.sql")
 (defq select-oppilaitos-oppijat
       "oppijat/select_oppilaitos_oppijat.sql")
+(defq select-oppilaitos-oppijat-search-count
+      "oppijat/select_oppilaitos_oppijat_search_count.sql")
 (defq select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id)
 (def select-hankitun-osaamisen-naytot-by-ooato-id
   (generate-select-join
