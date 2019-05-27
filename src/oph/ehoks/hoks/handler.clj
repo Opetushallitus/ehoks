@@ -180,6 +180,12 @@
 (def ^:private olemassa-olevat-ammatilliset-tutkinnon-osat
   (c-api/context "/olemassa-olevat-ammatilliset-tutkinnon-osat" []
 
+    (c-api/GET "/:id" []
+      :summary "Palauttaa HOKSin olemassa olevan ammatillisen tutkinnon osan"
+      :path-params [id :- s/Int]
+      :return (rest/response hoks-schema/OlemassaOlevaAmmatillinenTutkinnonOsa)
+      (rest/rest-ok (h/get-olemassa-oleva-ammatillinen-tutkinnon-osa id)))
+
     (c-api/POST "/" [:as request]
       :summary "Luo olemassa olevan ammattillisen tutkinnon osan HOKSiin"
       :body [ooato hoks-schema/OlemassaOlevanAmmatillisenTutkinnonOsanLuonti]
