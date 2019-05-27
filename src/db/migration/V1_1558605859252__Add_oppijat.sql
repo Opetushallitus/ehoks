@@ -1,7 +1,6 @@
 CREATE TABLE oppijat (
   oid VARCHAR(26) PRIMARY KEY,
-  etunimi TEXT,
-  sukunimi TEXT
+  nimi TEXT NOT NULL DEFAULT ''
 );
 
 CREATE TABLE opiskeluoikeudet (
@@ -9,9 +8,7 @@ CREATE TABLE opiskeluoikeudet (
   oppija_oid VARCHAR(26) REFERENCES oppijat(oid),  
   oppilaitos_oid VARCHAR(26),
   koulutustoimija_oid VARCHAR(26),
-  tutkinto TEXT,
-  osaamisala TEXT,
-  alku DATE,
-  loppu DATE,
+  tutkinto TEXT NOT NULL DEFAULT '',
+  osaamisala TEXT NOT NULL DEFAULT '',
   PRIMARY KEY(oid, oppija_oid)
 );
