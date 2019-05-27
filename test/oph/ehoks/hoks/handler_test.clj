@@ -379,12 +379,14 @@
    :tutkinnon-osa-koodi-versio 100022
    :valittu-todentamisen-prosessi-koodi-uri "osaamisentodentamisenprosessi_3"
    :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
+
    :tarkentavat-tiedot-arvioija
-   {:lahetetty-arvioitavaksi (java.time.LocalDate/of 2019 3 18)
+   {:lahetetty-arvioitavaksi "2019-03-18"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Erkki Esimerkki"
       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
+
    :tarkentavat-tiedot-naytto
    [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_fy"
                    :koodi-versio 1}]
@@ -401,8 +403,9 @@
                             :y-tunnus "12345689-3"}}]
      :keskeiset-tyotehtavat-naytto ["Tutkimustyö"
                                     "Raportointi"]
-     :alku (java.time.LocalDate/of 2019 2 9)
-     :loppu (java.time.LocalDate/of 2019 1 12)}]})
+     :alku "2019-02-09"
+     :loppu "2019-01-12"}]
+   })
 
 (defn- create-mock-post-request [url body app hoks]
   (utils/with-service-ticket
@@ -417,7 +420,7 @@
     app
     (mock/request
       :get
-      (get-hoks-url hoks url))))
+      (get-hoks-url hoks (str url "/1")))))
 
 (deftest post-and-get-olemassa-olevat-ammatilliset-tutkinnon-osat
   (testing "POST olemassa olevat ammatilliset tutkinnon osat and then get the created ooato"
@@ -435,7 +438,7 @@
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
-            {:meta {} :data (assoc ooato-data :id 1)})))))
+            {:meta {} :data ooato-data})))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
