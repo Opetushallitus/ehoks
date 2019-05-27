@@ -106,11 +106,11 @@
                         (some? osaamisala) (assoc :osaamisala osaamisala))
                       oppijat
                       (mapv
-                       #(dissoc % :oppilaitos-oid)
-                       (oppijaindex/search search-params))]
+                        #(dissoc % :oppilaitos-oid)
+                        (oppijaindex/search search-params))]
                   (restful/rest-ok
-                   oppijat
-                   :total-count (oppijaindex/get-count search-params))))
+                    oppijat
+                    :total-count (oppijaindex/get-count search-params))))
 
               (c-api/context "/:oid" []
                 :path-params [oid :- s/Str]
