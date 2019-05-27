@@ -160,6 +160,12 @@
     [queries/select-osa-alueet-by-hankitun-osaamisen-naytto naytto-id]
     {:row-fn h/koodi-uri-from-sql}))
 
+(defn select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-id [id]
+  (->
+    (query [queries/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-id id])
+    first
+    h/olemassa-oleva-ammatillinen-tutkinnon-osa-from-sql))
+
 (defn select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id [id]
   (query
     [queries/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id id]
