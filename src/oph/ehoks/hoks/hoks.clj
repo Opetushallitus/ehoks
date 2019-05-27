@@ -33,16 +33,24 @@
         (db/select-arvioijat-by-todennettu-arviointi-id id))
       :id)))
 
+(defn set-ooato-values [ooato]
+  (dissoc
+    (assoc
+      ooato
+      :tarkentavat-tiedot-arvioija
+      (get-tarkentavat-tiedot-arvioija (:tarkentavat-tiedot-arvioija-id ooato))
+      :tarkentavat-tiedot-naytto
+      (get-ooato-tarkentavat-tiedot-naytto (:id ooato)))
+    :tarkentavat-tiedot-arvioija-id :id))
+
+(defn get-olemassa-oleva-ammatillinen-tutkinnon-osa [id]
+  (when-let [ooato-from-db
+             (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-id id)]
+    (set-ooato-values ooato-from-db)))
+
 (defn get-olemassa-olevat-ammatilliset-tutkinnon-osat [hoks-id]
   (mapv
-    #(dissoc
-       (assoc
-         %
-         :tarkentavat-tiedot-arvioija
-         (get-tarkentavat-tiedot-arvioija (:tarkentavat-tiedot-arvioija-id %))
-         :tarkentavat-tiedot-naytto
-         (get-ooato-tarkentavat-tiedot-naytto (:id %)))
-       :tarkentavat-tiedot-arvioija-id :id)
+    set-ooato-values
     (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id
       hoks-id)))
 
