@@ -84,9 +84,9 @@
             (c-api/context "/oppijat" []
               (c-api/GET "/" []
                 :return (restful/response
-                          [common-schema/Oppija]
+                          [common-schema/OppijaSearchResult]
                           :total-count s/Int)
-                :query-params [{order-by :- s/Str "nimi"}
+                :query-params [{order-by-column :- s/Keyword :nimi}
                                {desc :- s/Bool false}
                                {nimi :- s/Str nil}
                                {tutkinto :- s/Str nil}
@@ -95,24 +95,22 @@
                                {page :- s/Int 0}]
                 :summary "Listaa virkailijan oppilaitoksen oppijat,
                           joilla on HOKS luotuna"
-                (let [oppijat
-                      (mapv
-                        #(dissoc % :oppilaitos-oid)
-                        (oppijaindex/search
-                          (cond-> {} ; TODO Add oppilaitos oid here
-                            (some? nimi) (assoc :nimi nimi)
-                            (some? tutkinto) (assoc :tutkinto tutkinto)
-                            (some? osaamisala) (assoc :osaamisala osaamisala))
-                          (keyword order-by)
-                          (if desc #(compare %2 %1) compare)))
-                      start-index (* page item-count)
-                      end-index (+ start-index item-count)]
-                  (restful/rest-ok
-                    (subvec
+                (let [search-params
+                      (cond-> {:desc desc
+                               :item-count item-count
+                               :order-by-column order-by-column
+                               :offset (* page item-count)
+                               :oppilaitos-oid "1.2.246.562.10.12424158689"} ; TODO Add oppilaitos oid here
+                        (some? nimi) (assoc :nimi nimi)
+                        (some? tutkinto) (assoc :tutkinto tutkinto)
+                        (some? osaamisala) (assoc :osaamisala osaamisala))
                       oppijat
-                      (min (max 0 start-index) (count oppijat))
-                      (min end-index (count oppijat)))
-                    :total-count (count oppijat))))
+                      (mapv
+                       #(dissoc % :oppilaitos-oid)
+                       (oppijaindex/search search-params))]
+                  (restful/rest-ok
+                   oppijat
+                   :total-count (oppijaindex/get-count search-params))))
 
               (c-api/context "/:oid" []
                 :path-params [oid :- s/Str]
