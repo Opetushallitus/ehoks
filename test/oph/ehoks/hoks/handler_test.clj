@@ -406,20 +406,30 @@
      :alku "2019-02-09"
      :loppu "2019-01-12"}]})
 
-(defn- create-mock-post-request [url body app hoks]
+(defn- create-mock-post-request [path body app hoks]
   (utils/with-service-ticket
     app
     (-> (mock/request
           :post
-          (get-hoks-url hoks url))
+          (get-hoks-url hoks path))
         (mock/json-body body))))
 
-(defn- create-mock-get-request [url app hoks]
+(defn- create-mock-get-request [path app hoks]
   (utils/with-service-ticket
     app
     (mock/request
       :get
-      (get-hoks-url hoks (str url "/1")))))
+      (get-hoks-url hoks (str path "/1")))))
+
+(defn- create-mock-patch-request [path app patched-data]
+  (utils/with-service-ticket
+    app
+    (-> (mock/request
+          :patch
+          (format
+            "%s/1/%s/1"
+            url path))
+        (mock/json-body patched-data))))
 
 (deftest post-and-get-olemassa-olevat-ammatilliset-tutkinnon-osat
   (testing "POST ooato and then get the created ooato"
@@ -441,6 +451,39 @@
         (eq (utils/parse-body
               (:body get-response))
             {:meta {} :data ooato-data})))))
+
+(def ^:private multiple-ooato-values-patched
+  {:tutkinnon-osa-koodi-versio 3000
+
+   :tarkentavat-tiedot-arvioija
+   {:lahetetty-arvioitavaksi "2020-01-01"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Toinen Tyyppi"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
+
+   :tarkentavat-tiedot-naytto
+   [{:koulutuksen-jarjestaja-arvioijat
+     [{:nimi "Muutettu Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
+     :nayttoymparisto {:nimi "Testi Oy"
+                       :y-tunnus "12345699-2"
+                       :kuvaus "Testiyrityksen testiosasostalla"}
+     :alku "2018-01-01"
+     :loppu "2021-01-01"}]})
+
+(deftest patch-multiple-olemassa-olevat-ammatilliset-tutkinnon-osat
+  (testing "Patching multiple values of ooato"
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request ooato-path ooato-data app hoks)
+            patch-response (create-mock-patch-request ooato-path app multiple-ooato-values-patched)
+            get-response-body (utils/parse-body (:body (create-mock-get-request ooato-path app hoks)))]
+        (is (= (:status post-response) 200))
+        (is (= (:status patch-response) 204))
+        (is (= (:tutkinnon-osa-koodi-versio get-response-body) 3000))
+        ;;TODO more asserts
+        ))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
