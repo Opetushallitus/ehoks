@@ -8,8 +8,6 @@
             [oph.ehoks.db.hoks :refer [from-sql]])
   (:import java.time.LocalDate))
 
-(defonce oppijat (atom []))
-
 (defn- get-like [v]
   (format "%%%s%%" (or v "")))
 
