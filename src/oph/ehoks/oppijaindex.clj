@@ -83,6 +83,7 @@
 
 (defn update-opiskeluoikeudet-without-index! []
   (log/info "Start indexing opiskeluoikeudet")
-  (doseq [{oid :opiskeluoikeus_oid oppija-oid :oppija_oid} (get-opiskeluoikeudet-without-index)]
+  (doseq [{oid :opiskeluoikeus_oid oppija-oid :oppija_oid}
+          (get-opiskeluoikeudet-without-index)]
     (update-opiskeluoikeus! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))
