@@ -82,7 +82,7 @@
             [wrap-virkailija-authorize]
 
             (c-api/context "/oppijat" []
-              (c-api/GET "/" []
+              (c-api/GET "/" request
                 :return (restful/response
                           [common-schema/OppijaSearchResult]
                           :total-count s/Int)
@@ -92,25 +92,39 @@
                                {tutkinto :- s/Str nil}
                                {osaamisala :- s/Str nil}
                                {item-count :- s/Int 10}
-                               {page :- s/Int 0}]
-                :summary "Listaa virkailijan oppilaitoksen oppijat,
-                          joilla on HOKS luotuna"
-                (let [search-params
-                      (cond-> {:desc desc
-                               :item-count item-count
-                               :order-by-column order-by-column
-                               :offset (* page item-count)
-                               :oppilaitos-oid "1.2.246.562.10.12424158689"} ; TODO Add oppilaitos oid here
-                        (some? nimi) (assoc :nimi nimi)
-                        (some? tutkinto) (assoc :tutkinto tutkinto)
-                        (some? osaamisala) (assoc :osaamisala osaamisala))
+                               {page :- s/Int 0}
+                               oppilaitos-oid :- s/Str]
+                :summary "Listaa virkailijan oppilaitoksen oppijat, joilla on
+                         HOKS luotuna. Käyttäjällä pitää olla READ käyttöoikeus
+                         annettuun organisaatioon eHOKS-palvelussa."
+
+                (if-not (contains?
+                          (user/get-organisation-privileges
+                            (get-in
+                              request
+                              [:session :virkailija-user])
+                            oppilaitos-oid)
+                          :read)
+                  (response/forbidden
+                    {:error
+                     (str "User has insufficient privileges "
+                          "for given organisation")})
+                  (let [search-params
+                        (cond-> {:desc desc
+                                 :item-count item-count
+                                 :order-by-column order-by-column
+                                 :offset (* page item-count)
+                                 :oppilaitos-oid oppilaitos-oid}
+                          (some? nimi) (assoc :nimi nimi)
+                          (some? tutkinto) (assoc :tutkinto tutkinto)
+                          (some? osaamisala) (assoc :osaamisala osaamisala))
+                        oppijat
+                        (mapv
+                          #(dissoc % :oppilaitos-oid)
+                          (oppijaindex/search search-params))]
+                    (restful/rest-ok
                       oppijat
-                      (mapv
-                        #(dissoc % :oppilaitos-oid)
-                        (oppijaindex/search search-params))]
-                  (restful/rest-ok
-                    oppijat
-                    :total-count (oppijaindex/get-count search-params))))
+                      :total-count (oppijaindex/get-count search-params)))))
 
               (c-api/context "/:oid" []
                 :path-params [oid :- s/Str]
