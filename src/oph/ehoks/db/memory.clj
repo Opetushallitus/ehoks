@@ -58,8 +58,7 @@
             values
             :paivitetty (java.util.Date.)
             :versio (inc (:versio hoks))
-            :luotu (:luotu hoks)
-            :laatija (:laatija hoks))]
+            :luotu (:luotu hoks))]
       (swap! hoks-store conj updated-hoks)
       updated-hoks)))
 
@@ -71,8 +70,7 @@
               (assoc
                 :paivitetty (java.util.Date.)
                 :versio (inc (:versio hoks))
-                :luotu (:luotu hoks)
-                :laatija (:laatija hoks)))]
+                :luotu (:luotu hoks)))]
       (swap! hoks-store conj updated-hoks)
       updated-hoks)))
 

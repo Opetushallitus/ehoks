@@ -78,13 +78,6 @@
     (to-underscore-keys (convert-sql m operations)))
   ([m] (to-sql m {})))
 
-(defn hoks-from-sql [h]
-  (from-sql
-    h
-    {:replaces {:laatija_nimi [:laatija :nimi]
-                :hyvaksyja_nimi [:hyvaksyja :nimi]
-                :paivittaja_nimi [:paivittaja :nimi]}}))
-
 (defn hoks-to-sql [h]
   (to-sql
     h
@@ -94,10 +87,7 @@
                 :hankittavat-ammat-tutkinnon-osat
                 :hankittavat-yhteiset-tutkinnon-osat
                 :opiskeluvalmiuksia-tukevat-opinnot
-                :hankittavat-paikalliset-tutkinnon-osat]
-     :replaces {[:laatija :nimi] :laatija-nimi
-                [:hyvaksyja :nimi] :hyvaksyja-nimi
-                [:paivittaja :nimi] :paivittaja-nimi}}))
+                :hankittavat-paikalliset-tutkinnon-osat]}))
 
 (defn aiemmin-hankittu-ammat-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]}))

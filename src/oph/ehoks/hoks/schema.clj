@@ -592,17 +592,6 @@
    :versio {:methods {:any :optional}
             :types {:any s/Int}
             :description "HOKS-dokumentin versio"}
-   :laatija {:methods {:any :optional}
-             :types {:any HoksToimija}
-             :description "HOKS-dokumentin luoneen henkilön nimi"}
-   :paivittaja {:methods {:post :optional
-                          :patch :required}
-                :types {:any HoksToimija}
-                :description
-                "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi"}
-   :hyvaksyja {:methods {:patch :optional}
-               :types {:any HoksToimija}
-               :description "Luodun HOKS-dokumentn hyväksyjän nimi"}
    :luotu {:methods {:any :optional}
            :types {:any s/Inst}
            :description

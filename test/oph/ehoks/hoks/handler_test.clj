@@ -42,9 +42,6 @@
 (defn create-hoks []
   (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                    :oppija-oid "1.2.246.562.24.12312312312"
-                   :laatija {:nimi "Teppo Tekijä"}
-                   :paivittaja {:nimi "Pekka Päivittäjä"}
-                   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                    :ensikertainen-hyvaksyminen "2018-12-15"}]
     (-> (create-app nil)
         (utils/with-service-ticket
@@ -665,9 +662,6 @@
   (testing "GET newly created HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
@@ -688,9 +682,6 @@
   (testing "Prevent POST HOKS with existing opiskeluoikeus"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                      :ensikertainen-hyvaksyminen "2018-12-15"}]
       (utils/with-service-ticket
         (create-app nil)
@@ -707,9 +698,6 @@
   (testing "Prevent POST unauthorized HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                      :ensikertainen-hyvaksyminen "2018-12-15"}]
       (let [response
             (utils/with-service-ticket
@@ -722,9 +710,6 @@
   (testing "Prevent GET unauthorized HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                      :ensikertainen-hyvaksyminen "2018-12-15"}]
 
       (let [response
@@ -744,9 +729,6 @@
   (testing "GET latest (second) version of HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                      :ensikertainen-hyvaksyminen "2018-12-15"}]
       (let [response
             (utils/with-service-ticket
@@ -768,9 +750,6 @@
   (testing "PATCH updates value of created HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
@@ -784,8 +763,9 @@
               (create-app nil)
               (-> (mock/request :patch (get-in body [:data :uri]))
                   (mock/json-body
-                    {:id (:id hoks)
-                     :paivittaja {:nimi "Kalle Käyttäjä"}})))]
+                    {:id 1
+                     :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
+                     :urasuunnitelma-koodi-versio 1})))]
         (is (= (:status patch-response) 204))
         (let [updated-hoks
               (-> (get-in body [:data :uri]) get-authenticated :data)]
@@ -793,7 +773,9 @@
             updated-hoks
             (assoc
               hoks
-              :paivittaja {:nimi "Kalle Käyttäjä"})))))))
+              :id 1
+              :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
+              :urasuunnitelma-koodi-versio 1)))))))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
@@ -801,8 +783,7 @@
           (utils/with-service-ticket
             (create-app nil)
             (-> (mock/request :patch (format "%s/1" url))
-                (mock/json-body {:id 1
-                                 :paivittaja {:nimi "Kalle Käyttäjä"}})))]
+                (mock/json-body {:id 1})))]
       (is (= (:status response) 404)))))
 
 (deftest get-hoks-by-opiskeluoikeus-oid
@@ -810,9 +791,6 @@
   (let [opiskeluoikeus-oid "1.2.246.562.15.00000000001"
         hoks-data {:opiskeluoikeus-oid opiskeluoikeus-oid
                    :oppija-oid "1.2.246.562.24.12312312312"
-                   :laatija {:nimi "Teppo Tekijä"}
-                   :paivittaja {:nimi "Pekka Päivittäjä"}
-                   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                    :ensikertainen-hyvaksyminen "2018-12-15"}
         app (create-app nil)]
     (utils/with-service-ticket

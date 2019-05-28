@@ -341,8 +341,7 @@
         :loppu (java.time.LocalDate/of 2019 3 18)}]}]}])
 
 (def hoks-data
-  {:paivittaja {:nimi "Pekka Päivittäjä"}
-   :aiemmin-hankitut-ammat-tutkinnon-osat ooato-data
+  {:aiemmin-hankitut-ammat-tutkinnon-osat ooato-data
    :ensikertainen-hyvaksyminen
    (java.time.LocalDate/of 2019 1 20)
    :aiemmin-hankitut-paikalliset-tutkinnon-osat oopto-data
@@ -351,12 +350,10 @@
    :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
    :aiemmin-hankitut-yhteiset-tutkinnon-osat ooyto-data
    :opiskeluoikeus-oid "1.2.246.562.15.00000012345"
-   :laatija {:nimi "Lasse Laatija"}
    :hankittavat-ammat-tutkinnon-osat pao-data
    :urasuunnitelma-koodi-versio 2
    :opiskeluvalmiuksia-tukevat-opinnot oto-data
    :oppija-oid "1.2.246.562.24.29790141661"
-   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
    :hankittavat-yhteiset-tutkinnon-osat pyto-data})
 
 (deftest get-aiemmin-hankitut-ammat-tutkinnon-osat-test

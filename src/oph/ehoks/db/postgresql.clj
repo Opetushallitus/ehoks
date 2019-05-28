@@ -48,24 +48,24 @@
 (defn select-hoksit []
   (query
     [queries/select-hoksit]
-    :row-fn h/hoks-from-sql))
+    :row-fn h/from-sql))
 
 (defn select-hoks-by-oppija-oid [oid]
   (query
     [queries/select-hoksit-by-oppija-oid oid]
-    :row-fn h/hoks-from-sql))
+    :row-fn h/from-sql))
 
 (defn select-hoks-by-id [id]
   (first
     (query
       [queries/select-hoksit-by-id id]
-      {:row-fn h/hoks-from-sql})))
+      {:row-fn h/from-sql})))
 
 (defn select-hoks-by-eid [eid]
   (first
     (query
       [queries/select-hoksit-by-eid eid]
-      {:row-fn h/hoks-from-sql})))
+      {:row-fn h/from-sql})))
 
 (defn select-hoksit-eid-by-eid [eid]
   (query
@@ -75,7 +75,7 @@
 (defn select-hoksit-by-opiskeluoikeus-oid [oid]
   (query
     [queries/select-hoksit-by-opiskeluoikeus-oid oid]
-    {:row-fn h/hoks-from-sql}))
+    {:row-fn h/from-sql}))
 
 (defn generate-unique-eid []
   (loop [eid nil]
