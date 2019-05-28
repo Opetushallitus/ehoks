@@ -35,13 +35,15 @@
     {:row-fn from-sql}))
 
 (defn get-count [params]
-  (db/query
-    [queries/select-oppilaitos-oppijat-search-count
-     (:oppilaitos-oid params)
-     (:koulutustoimija-oid params)
-     (get-like (:nimi params))
-     (get-like (:tutkinto params))
-     (get-like (:osaamisala params))]))
+  (:count
+    (first
+      (db/query
+        [queries/select-oppilaitos-oppijat-search-count
+         (:oppilaitos-oid params)
+         (:koulutustoimija-oid params)
+         (get-like (:nimi params))
+         (get-like (:tutkinto params))
+         (get-like (:osaamisala params))]))))
 
 (defn get-oppijat-without-index []
   (db/select-hoks-oppijat-without-index))
