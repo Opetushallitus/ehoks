@@ -81,17 +81,11 @@
         (repeatedly #(char (+ (rand 26) 65)))))))
 
 (defn populate-oppijaindex []
-  (doseq [h (p/select-hoksit)]
-    (swap!
-      oppijaindex/oppijat
-      conj
-      {:nimi (format "%s %s"
-                     (mock-gen/generate-last-name)
-                     (mock-gen/generate-first-name))
-       :oppilaitos-oid (mock-gen/generate-oppilaitos-oid)
-       :oid (:oppija-oid h)
-       :tutkinto (rand-str 20)
-       :osaamisala (rand-str 20)})))
+  (future
+    (log/info "Updating oppijaindex")
+    (oppijaindex/update-oppijat-without-index!)
+    (oppijaindex/update-opiskeluoikeudet-without-index!)
+    (log/info "Updating oppijaindex finished")))
 
 (defn start-server
   ([config-file]
