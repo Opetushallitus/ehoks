@@ -531,6 +531,15 @@
     (h/puuttuva-ammatillinen-tutkinnon-osa-to-sql m)
     ["id = ? AND deleted_at IS NULL" id]))
 
+(defn update-olemassa-oleva-ammatillinen-tutkinnon-osat-by-id! [id new-values]
+  (update!
+    :olemassa_olevat_ammatilliset_tutkinnon_osat
+    (h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql new-values)
+    ["id = ? AND deleted_at IS NULL" id]))
+
+(defn delete-tarkentavat-tiedot-arvioija-by-ooato-id! [id]
+  ())
+
 (defn insert-puuttuvan-ammatillisen-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]
   (insert-one!
