@@ -520,6 +520,9 @@
            (replace-pato-hankitun-osaamisen-naytot!
              pato-db (:hankitun-osaamisen-naytto values)))))
 
+(defn update-olemassa-oleva-ammatillinen-tutkinnon-osa! [ooato-from-db new-values]
+  ())
+
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
     (mapv #(assoc % :hoks-id (:id h)) c)))

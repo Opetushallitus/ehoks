@@ -556,9 +556,20 @@
   OlemassaOlevanAmmatillisenTutkinnonOsanLuonti
   (modify
     OlemassaOlevaAmmatillinenTutkinnonOsa
-    (str "Olemassa olevan ammatillisen tutkinnon osan tiedot uutta"
+    (str "Olemassa olevan ammatillisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST)")
     {:removed [:id]}))
+
+(s/defschema
+  OlemassaOlevanAmmatillisenTutkinnonOsanPaivitys
+  (modify
+    OlemassaOlevaAmmatillinenTutkinnonOsa
+    (str "Olemassa olevan ammatillisen tutkinnon osan tiedot "
+         " kenttää tai kenttiä päivittäessä (PATCH)")
+    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+                 :valittu-todentamisen-prosessi-koodi-uri
+                 :tutkinnon-osa-koodi-versio
+                 :tutkinnon-osa-koodi-uri]}))
 
 (def HOKSModel
   ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
