@@ -100,6 +100,11 @@
   (query
     [queries/select-hoks-opiskeluoikeudet-without-index]))
 
+(defn select-opiskeluoikeudet-by-oppija-oid [oppija-oid]
+  (query
+    [queries/select-opiskeluoikeudet-by-oppija-oid oppija-oid]
+    {:row-fn h/from-sql}))
+
 (defn insert-oppija [oppija]
   (insert-one! :oppijat (h/to-sql oppija)))
 

@@ -46,6 +46,8 @@
       "oppijat/select_oppilaitos_oppijat.sql")
 (defq select-oppilaitos-oppijat-search-count
       "oppijat/select_oppilaitos_oppijat_search_count.sql")
+(defq select-opiskeluoikeudet-by-oppija-oid
+      "oppijat/select_opiskeluoikeudet_by_oppija_oid.sql")
 (defq select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-id)
 (defq select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id)
 (def select-hankitun-osaamisen-naytot-by-ooato-id
