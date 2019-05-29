@@ -49,16 +49,17 @@
         (response/forbidden)))))
 
 (defn virkailija-has-access? [ticket-user oppija-oid]
-  (some?
-    (some
-      (fn [opiskeluoikeus]
-        (when
-         (contains?
-           (user/get-organisation-privileges
-             ticket-user (:oppilaitos-oid opiskeluoikeus))
-           :read)
-          opiskeluoikeus))
-      (oppijaindex/get-oppija-opiskeluoikeudet oppija-oid))))
+  (or (user/oph-super-user? ticket-user)
+      (some?
+        (some
+          (fn [opiskeluoikeus]
+            (when
+             (contains?
+               (user/get-organisation-privileges
+                 ticket-user (:oppilaitos-oid opiskeluoikeus))
+               :read)
+              opiskeluoikeus))
+          (oppijaindex/get-oppija-opiskeluoikeudet oppija-oid)))))
 
 (defn wrap-virkailija-oppija-access [handler]
   ; TODO EH-352
