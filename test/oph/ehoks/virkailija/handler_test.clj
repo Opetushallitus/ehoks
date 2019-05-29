@@ -134,8 +134,10 @@
         (t/is (= (:status response) 200))
         (let [body (utils/parse-body (:body response))]
           (t/is (= (count (:data body)) 2))
-          (t/is (= (get-in body [:data 0 :oid]) "1.2.246.562.24.44000000001"))
-          (t/is (= (get-in body [:data 1 :oid]) "1.2.246.562.24.44000000003")))))))
+          (t/is (= (get-in body [:data 0 :oid])
+                   "1.2.246.562.24.44000000001"))
+          (t/is (= (get-in body [:data 1 :oid])
+                   "1.2.246.562.24.44000000003")))))))
 
 (t/deftest test-virkailija-with-no-read
   (t/testing "Prevent GET virkailija oppijat without read privilege"
