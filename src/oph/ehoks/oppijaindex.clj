@@ -49,6 +49,9 @@
 (defn get-opiskeluoikeudet-without-index []
   (db/select-hoks-opiskeluoikeudet-without-index))
 
+(defn get-oppija-opiskeluoikeudet [oppija-oid]
+  (db/select-opiskeluoikeudet-by-oppija-oid oppija-oid))
+
 (defn update-opiskeluoikeus! [oid oppija-oid]
   (try
     (let [opiskeluoikeus (k/get-opiskeluoikeus-info oid)]
