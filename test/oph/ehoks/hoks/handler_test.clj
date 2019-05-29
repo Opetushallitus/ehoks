@@ -385,7 +385,9 @@
    {:lahetetty-arvioitavaksi "2019-03-18"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Erkki Esimerkki"
-      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}
+     {:nimi "Joku Tyyppi"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921000"}}]}
 
    :tarkentavat-tiedot-naytto
    [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_fy"
@@ -450,7 +452,7 @@
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
-            {:meta {} :data ooato-data})))))
+            {:meta {} :data (assoc ooato-data :id 1)})))))
 
 (def ^:private multiple-ooato-values-patched
   {:tutkinnon-osa-koodi-versio 3000
@@ -458,8 +460,10 @@
    :tarkentavat-tiedot-arvioija
    {:lahetetty-arvioitavaksi "2020-01-01"
     :aiemmin-hankitun-osaamisen-arvioijat
-    [{:nimi "Toinen Tyyppi"
-      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
+    [{:nimi "Nimi Muutettu"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}
+     {:nimi "Joku Tyyppi"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921000"}}]}
 
    :tarkentavat-tiedot-naytto
    [{:koulutuksen-jarjestaja-arvioijat
