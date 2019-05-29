@@ -5,29 +5,16 @@
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils
              :refer [eq with-authentication parse-body]]
-            [oph.ehoks.external.http-client :as client]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.db.migrations :as m]
             [oph.ehoks.hoks.hoks-test :refer [hoks-data]]
             [clojure.walk :as w]))
 
 (def url "/ehoks-oppija-backend/api/v1/oppija/oppijat")
 
-(defn with-database [f]
-  (m/clean!)
-  (m/migrate!)
-  (f)
-  (m/clean!))
+(use-fixtures :each utils/with-database)
 
-(defn clean-db [f]
-  (m/clean!)
-  (m/migrate!)
-  (f))
-
-(use-fixtures :each with-database)
-
-(use-fixtures :once clean-db)
+(use-fixtures :once utils/clean-db)
 
 (def dates #{:alku :loppu :lahetetty-arvioitavaksi :ensikertainen-hyvaksyminen})
 

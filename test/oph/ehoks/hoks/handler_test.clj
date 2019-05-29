@@ -4,8 +4,7 @@
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [oph.ehoks.db.memory :as db]
-            [oph.ehoks.db.migrations :as m]))
+            [oph.ehoks.db.memory :as db]))
 
 (def url "/ehoks-virkailija-backend/api/v1/hoks")
 
@@ -14,20 +13,9 @@
 ; TODO update tests to use real-like data
 ; TODO add test for removing at update (for example ppto)
 
-(defn with-database [f]
-  (m/clean!)
-  (m/migrate!)
-  (f)
-  (m/clean!))
+(use-fixtures :each utils/with-database)
 
-(defn clean-db [f]
-  (m/clean!)
-  (m/migrate!)
-  (f))
-
-(use-fixtures :each with-database)
-
-(use-fixtures :once clean-db)
+(use-fixtures :once utils/clean-db)
 
 (defn create-app [session-store]
   (common-api/create-app handler/app-routes session-store))
