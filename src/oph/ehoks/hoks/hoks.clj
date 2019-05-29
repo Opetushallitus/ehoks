@@ -41,7 +41,7 @@
       (get-tarkentavat-tiedot-arvioija (:tarkentavat-tiedot-arvioija-id ooato))
       :tarkentavat-tiedot-naytto
       (get-ooato-tarkentavat-tiedot-naytto (:id ooato)))
-    :tarkentavat-tiedot-arvioija-id :id))
+    :tarkentavat-tiedot-arvioija-id))
 
 (defn get-olemassa-oleva-ammatillinen-tutkinnon-osa [id]
   (when-let [ooato-from-db
@@ -50,7 +50,7 @@
 
 (defn get-olemassa-olevat-ammatilliset-tutkinnon-osat [hoks-id]
   (mapv
-    set-ooato-values
+    #(dissoc (set-ooato-values %) :id)
     (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id
       hoks-id)))
 
@@ -520,8 +520,25 @@
            (replace-pato-hankitun-osaamisen-naytot!
              pato-db (:hankitun-osaamisen-naytto values)))))
 
+;(defn- replace-ooato-tarkentavat-tiedot-arvioija! [ooato-from-db new-values]
+;  (assoc old-values :tarkentavat-tiedot-arvioija (replace-ooato-tarkentavat-tiedot-arvioija! ooato-from-db (:tarkentavat-tiedot-arvioija new-values))))
+
+(defn replace-ooato-tarkentavat-tiedot-arvioija! [ooato new-tta-values]
+  (db/delete-tarkentavat-tiedot-arvioija-by-ooato-id! (:id ooato)))
+
 (defn update-olemassa-oleva-ammatillinen-tutkinnon-osa! [ooato-from-db new-values]
-  ())
+  (db/update-olemassa-oleva-ammatillinen-tutkinnon-osat-by-id! (:id ooato-from-db) new-values)
+  ;(cond-> ooato-from-db
+  ;        (:tarkentavat-tiedot-arvioija new-values)
+  ;        (assoc :tarkentavat-tiedot-arvioija
+  ;               (replace-ooato-tarkentavat-tiedot-arvioija!
+  ;                 ooato-from-db (:tarkentavat-tiedot-arvioija new-values)))
+          ;(:tarkentavat-tiedot-naytto new-values)
+          ;(assoc :tarkentavat-tiedot-naytto
+          ;       (replace-ooato-tarkentavat-tiedote-nayto!
+          ;         ooato-from-db (:tarkentavat-tiedot-naytto new-values)))
+          ;)
+  )
 
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
