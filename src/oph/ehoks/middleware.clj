@@ -1,17 +1,7 @@
 (ns oph.ehoks.middleware
   (:require [ring.util.http-response :refer [unauthorized header]]
-            [oph.ehoks.external.cas :as cas]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
-            [oph.ehoks.config :refer [config]]
             [oph.ehoks.user :as user]))
-
-(defn- matches-route? [request route]
-  (and (re-seq (:uri route) (:uri request))
-       (= (:request-method request) (:request-method route))))
-
-(defn- route-in? [request routes]
-  (some?
-    (some #(when (matches-route? request %) %) routes)))
 
 (defn- authenticated? [request]
   (some? (get-in request [:session :user])))

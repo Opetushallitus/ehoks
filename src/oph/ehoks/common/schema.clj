@@ -36,12 +36,19 @@
              {})
 
 (s/defschema
+  OppijaSearchResult
+  "Oppijan haun tulos"
+  {:oid s/Str
+   :nimi s/Str
+   :opiskeluoikeus-oid s/Str
+   (s/optional-key :tutkinto) s/Str
+   (s/optional-key :osaamisala) s/Str})
+
+(s/defschema
   Oppija
   "Oppijan perustiedot"
-  {:eid s/Int
-   :oid s/Str
-   :etunimi s/Str
-   :sukunimi s/Str})
+  {:oid s/Str
+   :nimi s/Str})
 
 (s/defschema
   Tutkinto

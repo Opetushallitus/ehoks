@@ -1,0 +1,8 @@
+@startuml
+Virkailija -> eHOKS: Kirjautuminen
+eHOKS -> CAS: Käyttäjän tunnistaminen tiketin perusteella
+CAS -> eHOKS: Käyttäjänimi
+eHOKS -> Käyttöoikeuspalvelu: Käyttäjän tiedot käyttäjänimen perusteella
+Käyttöoikeuspalvelu -> eHOKS: Käyttäjätiedot ja käyttöoikeudet organisaatioittain
+eHOKS -> Virkailija: Istunto
+@enduml

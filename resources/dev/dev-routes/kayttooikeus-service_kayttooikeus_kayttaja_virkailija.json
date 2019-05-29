@@ -32,7 +32,25 @@
             "oikeus": "TIEDONSIIRTO"
           }
         ]
+      },
+      {
+        "organisaatioOid": "1.2.246.562.10.12424158689",
+        "kayttooikeudet": [
+          {
+            "palvelu": "EHOKS",
+            "oikeus": "READ"
+          },
+          {
+            "palvelu": "OMATTIEDOT",
+            "oikeus": "READ_UPDATE"
+          },
+          {
+            "palvelu": "VIRKAILIJANTYOPOYTA",
+            "oikeus": "2ASTE"
+          }
+        ]
       }
+
     ]
   }
 ]
