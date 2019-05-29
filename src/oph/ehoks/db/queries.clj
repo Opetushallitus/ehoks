@@ -39,28 +39,28 @@
 (defq select-hoksit-by-eid)
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")
 (defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id)
-(def select-hankitun-osaamisen-naytot-by-ooato-id
+(def select-osaamisen-osoittamiset-by-ooato-id
   (generate-select-join
-    {:table "hankitun_osaamisen_naytot"
+    {:table "osaamisen_osoittamiset"
      :join "aiemmin_hankitun_ammat_tutkinnon_osan_naytto"
-     :secondary-column "hankitun_osaamisen_naytto_id"
+     :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "aiemmin_hankittu_ammat_tutkinnon_osa_id"}))
-(def select-osa-alueet-by-hankitun-osaamisen-naytto
+(def select-osa-alueet-by-osaamisen-osoittaminen
   (generate-select-join
     {:table "koodisto_koodit"
-     :join "hankitun_osaamisen_nayton_osa_alueet"
+     :join "osaamisen_osoittamisen_osa_alueet"
      :secondary-column "koodisto_koodi_id"
      :primary-column "id"
-     :column "hankitun_osaamisen_naytto_id"}))
+     :column "osaamisen_osoittaminen_id"}))
 (defq select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id)
 (defq select-hankittavat-paikalliset-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id)
 (def select-tarkentavat-tiedot-naytto-by-oopto-id
   (generate-select-join
-    {:table "hankitun_osaamisen_naytot"
+    {:table "osaamisen_osoittamiset"
      :join "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
-     :secondary-column "hankitun_osaamisen_naytto_id"
+     :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
 (def select-arvioijat-by-oopto-id
@@ -71,31 +71,31 @@
      :primary-column "id"
      :column "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
 (defq select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id)
-(def select-hankitun-osaamisen-naytot-by-ppto-id
+(def select-osaamisen-osoittamiset-by-ppto-id
   (generate-select-join
-    {:table "hankitun_osaamisen_naytot"
+    {:table "osaamisen_osoittamiset"
      :join "hankittavan_paikallisen_tutkinnon_osan_naytto"
-     :secondary-column "hankitun_osaamisen_naytto_id"
+     :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "hankittava_paikallinen_tutkinnon_osa_id"}))
 (def select-koulutuksen-jarjestaja-arvioijat-by-hon-id
   (generate-select-join
     {:table "koulutuksen_jarjestaja_arvioijat"
-     :join "hankitun_osaamisen_nayton_koulutuksen_jarjestaja_arvioija"
+     :join "osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija"
      :secondary-column "koulutuksen_jarjestaja_arvioija_id"
      :primary-column "id"
-     :column "hankitun_osaamisen_naytto_id"}))
+     :column "osaamisen_osoittaminen_id"}))
 (def select-tyoelama-arvioijat-by-hon-id
   (generate-select-join
     {:table "tyoelama_arvioijat"
-     :join "hankitun_osaamisen_nayton_tyoelama_arvioija"
+     :join "osaamisen_osoittamisen_tyoelama_arvioija"
      :secondary-column "tyoelama_arvioija_id"
      :primary-column "id"
-     :column "hankitun_osaamisen_naytto_id"}))
+     :column "osaamisen_osoittaminen_id"}))
 (defq select-nayttoymparistot-by-id)
-(def select-tyotehtavat-by-hankitun-osaamisen-naytto-id
-  (generate-select-by {:table "hankitun_osaamisen_tyotehtavat"
-                       :column "hankitun_osaamisen_naytto_id"}))
+(def select-tyotehtavat-by-osaamisen-osoittaminen-id
+  (generate-select-by {:table "osaamisen_osoittamisen_tyotehtavat"
+                       :column "osaamisen_osoittaminen_id"}))
 (def select-osaamisen-hankkmistavat-by-ppto-id
   (generate-select-join
     {:table "osaamisen_hankkimistavat"
@@ -121,18 +121,18 @@
      :secondary-column "koulutuksen_jarjestaja_arvioija_id"
      :primary-column "id"
      :column "todennettu_arviointi_lisatiedot_id"}))
-(def select-hankitun-osaamisen-naytot-by-ooyto-id
+(def select-osaamisen-osoittamiset-by-ooyto-id
   (generate-select-join
-    {:table "hankitun_osaamisen_naytot"
+    {:table "osaamisen_osoittamiset"
      :join "aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto"
-     :secondary-column "hankitun_osaamisen_naytto_id"
+     :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
-(def select-hankitun-osaamisen-naytot-by-ooyto-osa-alue-id
+(def select-osaamisen-osoittamiset-by-ooyto-osa-alue-id
   (generate-select-join
-    {:table "hankitun_osaamisen_naytot"
+    {:table "osaamisen_osoittamiset"
      :join "aiemmin_hankitun_yto_osa_alueen_naytto"
-     :secondary-column "hankitun_osaamisen_naytto_id"
+     :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "aiemmin_hankittu_yto_osa_alue_id"}))
 (def select-arvioijat-by-ooyto-id
@@ -147,11 +147,11 @@
     {:table "aiemmin_hankitut_yto_osa_alueet"
      :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
 (defq select-hankittavat-ammat-tutkinnon-osat-by-hoks-id)
-(def select-hankitun-osaamisen-naytot-by-pato-id
+(def select-osaamisen-osoittamiset-by-pato-id
   (generate-select-join
-    {:table "hankitun_osaamisen_naytot"
+    {:table "osaamisen_osoittamiset"
      :join "hankittavan_ammat_tutkinnon_osan_naytto"
-     :secondary-column "hankitun_osaamisen_naytto_id"
+     :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "hankittava_ammat_tutkinnon_osa_id"}))
 (def select-osaamisen-hankkmistavat-by-pato-id
@@ -174,14 +174,14 @@
   (generate-select-by
     {:table "yhteisen_tutkinnon_osan_osa_alueet"
      :column "yhteinen_tutkinnon_osa_id"}))
-(def select-hankitun-osaamisen-naytot-by-yto-osa-alue-id
+(def select-osaamisen-osoittamiset-by-yto-osa-alue-id
   (generate-select-join
-    {:table "hankitun_osaamisen_naytot"
+    {:table "osaamisen_osoittamiset"
      :join "yhteisen_tutkinnon_osan_osa_alueen_naytot"
-     :secondary-column "hankitun_osaamisen_naytto_id"
+     :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "yhteisen_tutkinnon_osan_osa_alue_id"}))
 (def select-hankitun-yto-osaamisen-nayton-osaamistavoitteet
   (generate-select-by
-    {:table "hankitun_yto_osaamisen_nayton_osaamistavoitteet"
-     :column "hankitun_osaamisen_naytto_id"}))
+    {:table "yto_osaamisen_osoittamisen_osaamistavoitteet"
+     :column "osaamisen_osoittaminen_id"}))

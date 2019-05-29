@@ -102,7 +102,7 @@
   (from-sql m {:removals [:hoks_id]}))
 
 (defn hankittava-paikallinen-tutkinnon-osa-to-sql [m]
-  (to-sql m {:removals [:hankitun-osaamisen-naytto :osaamisen-hankkimistavat]}))
+  (to-sql m {:removals [:osaamisen-osoittaminen :osaamisen-hankkimistavat]}))
 
 (defn tyopaikalla-jarjestettava-koulutus-from-sql [m]
   (from-sql
@@ -162,12 +162,12 @@
 (defn muu-oppimisymparisto-from-sql [m]
   (from-sql m {:removals [:id :osaamisen_hankkimistapa_id]}))
 
-(defn hankitun-osaamisen-naytto-from-sql [m]
+(defn osaamisen-osoittaminen-from-sql [m]
   (from-sql
     m
     {:replaces {:jarjestaja_oppilaitos_oid [:jarjestaja :oppilaitos-oid]}}))
 
-(defn hankitun-osaamisen-naytto-to-sql [m]
+(defn osaamisen-osoittaminen-to-sql [m]
   (to-sql
     m
     {:removals [:nayttoymparisto
@@ -241,7 +241,7 @@
   (from-sql m))
 
 (defn hankittava-ammat-tutkinnon-osa-to-sql [m]
-  (to-sql m {:removals [:hankitun-osaamisen-naytto
+  (to-sql m {:removals [:osaamisen-osoittaminen
                         :osaamisen-hankkimistavat]}))
 
 (defn hankittava-ammat-tutkinnon-osa-from-sql [m]
@@ -258,7 +258,7 @@
 
 (defn yhteisen-tutkinnon-osan-osa-alue-to-sql [m]
   (to-sql m {:removals [:osaamisen-hankkimistavat
-                        :hankitun-osaamisen-naytto]}))
+                        :osaamisen-osoittaminen]}))
 
 (defn yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
   (from-sql m))

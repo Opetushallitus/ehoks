@@ -42,7 +42,8 @@
 (defn create-hoks []
   (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                    :oppija-oid "1.2.246.562.24.12312312312"
-                   :ensikertainen-hyvaksyminen "2018-12-15"}]
+                   :ensikertainen-hyvaksyminen "2018-12-15"
+                   :osaamisen-hankkimisen-tarve false}]
     (-> (create-app nil)
         (utils/with-service-ticket
           (-> (mock/request :post url)
@@ -71,7 +72,7 @@
       (let [ppto-data {:nimi "222"
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :hankitun-osaamisen-naytto
+                       :osaamisen-osoittaminen
                        [{:jarjestaja {:oppilaitos-oid
                                       "1.2.246.562.10.00000000002"}
                          :koulutuksen-jarjestaja-arvioijat []
@@ -81,7 +82,9 @@
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
                          :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                               {:nimi "Organisaation nimi"}}]}]}
+                                               {:nimi "Organisaation nimi"}}]
+                         :vaatimuksista-tai-tavoitteista-poikkeaminen
+                         "Poikkeama onpi tämä."}]}
             ppto-response
             (utils/with-service-ticket
               (create-app nil)
@@ -115,7 +118,7 @@
       (let [ppto-data {:nimi "222"
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :hankitun-osaamisen-naytto
+                       :osaamisen-osoittaminen
                        [{:jarjestaja {:oppilaitos-oid
                                       "1.2.246.562.10.00000000002"}
                          :koulutuksen-jarjestaja-arvioijat []
@@ -145,7 +148,7 @@
                    :nimi "222"
                    :osaamisen-hankkimistavat []
                    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000003"
-                   :hankitun-osaamisen-naytto
+                   :osaamisen-osoittaminen
                    [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000004"}
                      :koulutuksen-jarjestaja-arvioijat []
                      :osa-alueet []
@@ -164,7 +167,7 @@
       (let [ppto-data {:nimi "222"
                        :osaamisen-hankkimistavat []
                        :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :hankitun-osaamisen-naytto
+                       :osaamisen-osoittaminen
                        [{:jarjestaja {:oppilaitos-oid
                                       "1.2.246.562.10.00000000002"}
                          :nayttoymparisto {:nimi "aaa"}
@@ -201,7 +204,7 @@
                    :id 1
                    :nimi "2223"))))))
 
-(def pao-path "hankittava-ammatillinen-osaaminen")
+(def pao-path "hankittava-ammat-tutkinnon-osa")
 (def pao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
                :tutkinnon-osa-koodi-versio 1
                :osaamisen-hankkimistavat
@@ -222,7 +225,7 @@
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/hankittava-ammatillinen-osaaminen"
+                    "%s/1/hankittava-ammat-tutkinnon-osa"
                     url))
                 (mock/json-body
                   pao-data)))
@@ -238,7 +241,7 @@
             (:body post-response))
           {:meta {:id 1}
            :data {:uri
-                  (format "%s/1/hankittava-ammatillinen-osaaminen/1" url)}})
+                  (format "%s/1/hankittava-ammat-tutkinnon-osa/1" url)}})
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
             (:body get-response))
@@ -253,7 +256,7 @@
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/hankittava-ammatillinen-osaaminen"
+                    "%s/1/hankittava-ammat-tutkinnon-osa"
                     url))
                 (mock/json-body
                   pao-data)))
@@ -307,7 +310,7 @@
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/hankittava-ammatillinen-osaaminen"
+                    "%s/1/hankittava-ammat-tutkinnon-osa"
                     url))
                 (mock/json-body
                   pao-data)))
@@ -342,7 +345,7 @@
             (-> (mock/request
                   :post
                   (format
-                    "%s/1/hankittava-ammatillinen-osaaminen"
+                    "%s/1/hankittava-ammat-tutkinnon-osa"
                     url))
                 (mock/json-body
                   pao-data)))
@@ -370,7 +373,7 @@
        :loppu "2018-12-23"
        :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
        :osaamisen-hankkimistapa-koodi-versio 1}]
-     :hankitun-osaamisen-naytto
+     :osaamisen-osoittaminen
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
        :nayttoymparisto {:nimi "aaa"}
        :alku "2018-12-12"
@@ -392,7 +395,7 @@
        :loppu "2018-12-22"
        :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
        :osaamisen-hankkimistapa-koodi-versio 1}]
-     :hankitun-osaamisen-naytto
+     :osaamisen-osoittaminen
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000008"}
        :nayttoymparisto {:nimi "aaa2"}
        :alku "2018-12-15"
@@ -412,7 +415,7 @@
        :loppu "2018-12-22"
        :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
        :osaamisen-hankkimistapa-koodi-versio 1}]
-     :hankitun-osaamisen-naytto
+     :osaamisen-osoittaminen
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000010"}
        :nayttoymparisto {:nimi "aaa2"}
        :alku "2018-12-15"
@@ -662,7 +665,8 @@
   (testing "GET newly created HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}
           response
           (utils/with-service-ticket
             (create-app nil)
@@ -682,7 +686,8 @@
   (testing "Prevent POST HOKS with existing opiskeluoikeus"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}]
       (utils/with-service-ticket
         (create-app nil)
         (-> (mock/request :post url)
@@ -698,7 +703,8 @@
   (testing "Prevent POST unauthorized HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}]
       (let [response
             (utils/with-service-ticket
               (create-app nil)
@@ -710,7 +716,8 @@
   (testing "Prevent GET unauthorized HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}]
 
       (let [response
             (utils/with-service-ticket
@@ -729,7 +736,8 @@
   (testing "GET latest (second) version of HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}]
       (let [response
             (utils/with-service-ticket
               (create-app nil)
@@ -750,7 +758,8 @@
   (testing "PATCH updates value of created HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}
           response
           (utils/with-service-ticket
             (create-app nil)
@@ -791,7 +800,8 @@
   (let [opiskeluoikeus-oid "1.2.246.562.15.00000000001"
         hoks-data {:opiskeluoikeus-oid opiskeluoikeus-oid
                    :oppija-oid "1.2.246.562.24.12312312312"
-                   :ensikertainen-hyvaksyminen "2018-12-15"}
+                   :ensikertainen-hyvaksyminen "2018-12-15"
+                   :osaamisen-hankkimisen-tarve false}
         app (create-app nil)]
     (utils/with-service-ticket
       app

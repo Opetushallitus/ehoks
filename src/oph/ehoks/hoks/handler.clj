@@ -112,18 +112,18 @@
           (response/not-found {:error "PPTO not found with given PPTO ID"}))))))
 
 (def ^:private hankittava-ammatillinen-osaaminen
-  (c-api/context "/:hoks-id/hankittava-ammatillinen-osaaminen" [hoks-id]
+  (c-api/context "/:hoks-id/hankittava-ammat-tutkinnon-osa" [hoks-id]
 
     (c-api/GET "/:id" [:as id]
       :summary "Palauttaa HOKSin hankittavan ammatillisen osaamisen"
       :path-params [id :- s/Int]
-      :return (rest/response hoks-schema/HankittavaAmmatillinenOsaaminen)
+      :return (rest/response hoks-schema/HankittavaAmmatillinenTutkinnonOsa)
       (rest/rest-ok (db/get-ppao-by-id id)))
 
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) hankittavan ammatillisen osaamisen HOKSiin"
-      :body [ppao hoks-schema/HankittavaAmmatillinenOsaaminenLuonti]
+      :body [ppao hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ppao-response (db/create-ppao! ppao)]
         (rest/rest-ok
@@ -133,7 +133,7 @@
     (c-api/PUT "/:id" []
       :summary "Päivittää HOKSin Hankittavan ammatillisen osaamisen"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/HankittavaAmmatillinenOsaaminenPaivitys]
+      :body [values hoks-schema/HankittavaAmmatillinenTutkinnonOsaPaivitys]
       (if (db/update-ppao! id values)
         (response/no-content)
         (response/not-found "PPAO not found with given PPAO ID")))
@@ -142,7 +142,7 @@
       :summary
       "Päivittää HOKSin hankittavan ammatillisen osaamisen arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/HankittavaAmmatillinenOsaaminenKentanPaivitys]
+      :body [values hoks-schema/HankittavaAmmatillinenTutkinnonOsaKentanPaivitys]
       (if (db/update-ppao-values! id values)
         (response/no-content)
         (response/not-found  "PPAO not found with given PPAO ID")))))

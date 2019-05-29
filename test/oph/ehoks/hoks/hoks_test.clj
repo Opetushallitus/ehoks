@@ -96,7 +96,7 @@
     :tutkinnon-osa-koodi-versio 4
     :vaatimuksista-tai-tavoitteista-poikkeaminen
     "Ei poikkeamia."
-    :hankitun-osaamisen-naytto
+    :osaamisen-osoittaminen
     [{:jarjestaja
       {:oppilaitos-oid "1.2.246.562.10.54453924330"}
       :nayttoymparisto {:nimi "Testiympäristö 2"
@@ -139,8 +139,7 @@
       :muut-oppimisymparisto
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
         :oppimisymparisto-koodi-versio 1
-        :selite "Testioppilaitos 2"
-        :lisatiedot false}]
+        :selite "Testioppilaitos 2"}]
       :ajanjakson-tarkenne "Ei tarkennettavia asioita"
       :hankkijan-edustaja
       {:nimi "Heikki Hankkija"
@@ -249,8 +248,7 @@
       :muut-oppimisymparisto
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
         :oppimisymparisto-koodi-versio 1
-        :selite "Testioppilaitos"
-        :lisatiedot false}]
+        :selite "Testioppilaitos"}]
       :ajanjakson-tarkenne "Ei tarkennettavaa"
       :hankkijan-edustaja
       {:nimi "Harri Hankkija"
@@ -258,7 +256,7 @@
        :oppilaitos-oid "1.2.246.562.10.54453921350"}
       :alku (java.time.LocalDate/of 2019 2 10)
       :loppu (java.time.LocalDate/of 2019 2 15)}]
-    :hankitun-osaamisen-naytto
+    :osaamisen-osoittaminen
     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921330"}
       :nayttoymparisto {:nimi "Testiympäristö"
                         :y-tunnus "12345678-1"
@@ -308,8 +306,7 @@
         :muut-oppimisymparisto
         [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
           :oppimisymparisto-koodi-versio 1
-          :selite "Testioppilaitos 2"
-          :lisatiedot false}]
+          :selite "Testioppilaitos 2"}]
         :ajanjakson-tarkenne "Ei tarkennettavia asioita"
         :hankkijan-edustaja
         {:nimi "Heikki Hankkija"
@@ -319,7 +316,7 @@
         :loppu (java.time.LocalDate/of 2019 2 19)}]
       :vaatimuksista-tai-tavoitteista-poikkeaminen
       "Testaus ei kuulu vaatimuksiin tällä kertaa."
-      :hankitun-osaamisen-naytto
+      :osaamisen-osoittaminen
       [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54423523330"}
         :osaamistavoitteet ["Tavoite 1"
                             "Tavoite 2"]
@@ -354,7 +351,8 @@
    :urasuunnitelma-koodi-versio 2
    :opiskeluvalmiuksia-tukevat-opinnot oto-data
    :oppija-oid "1.2.246.562.24.29790141661"
-   :hankittavat-yhteiset-tutkinnon-osat pyto-data})
+   :hankittavat-yhteiset-tutkinnon-osat pyto-data
+   :osaamisen-hankkimisen-tarve false})
 
 (deftest get-aiemmin-hankitut-ammat-tutkinnon-osat-test
   (testing "Set HOKS aiemmin hankitut tutkinnon osat"
