@@ -62,7 +62,6 @@
           (oppijaindex/get-oppija-opiskeluoikeudet oppija-oid)))))
 
 (defn wrap-virkailija-oppija-access [handler]
-  ; TODO EH-352
   (fn
     ([request respond raise]
       (if (virkailija-has-access?
@@ -80,14 +79,6 @@
         (response/forbidden
           {:error (str "User privileges does not match oppija opiskeluoikeus "
                        "organisation")})))))
-
-(defn wrap-virkailija-opiskeluoikeus-access [handler]
-  ; TODO EH-352
-  (fn
-    ([request respond raise]
-      (handler request respond raise))
-    ([request]
-      (handler request))))
 
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
