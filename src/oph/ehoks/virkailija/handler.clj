@@ -48,13 +48,37 @@
         (handler request)
         (response/forbidden)))))
 
+(defn virkailija-has-access? [ticket-user oppija-oid]
+  (some?
+    (some
+      (fn [opiskeluoikeus]
+        (when
+         (contains?
+           (user/get-organisation-privileges
+             ticket-user (:oppilaitos-oid opiskeluoikeus))
+           :read)
+          opiskeluoikeus))
+      (oppijaindex/get-oppija-opiskeluoikeudet oppija-oid))))
+
 (defn wrap-virkailija-oppija-access [handler]
   ; TODO EH-352
   (fn
     ([request respond raise]
-      (handler request respond raise))
+      (if (virkailija-has-access?
+            (get-in request [:session :virkailija-user])
+            (get-in request [:params :oid]))
+        (handler request respond raise)
+        (response/forbidden
+          {:error (str "User privileges does not match oppija opiskeluoikeus "
+                       "organisation")})))
     ([request]
-      (handler request))))
+      (if (virkailija-has-access?
+            (get-in request [:session :virkailija-user])
+            (get-in request [:params :oid]))
+        (handler request)
+        (response/forbidden
+          {:error (str "User privileges does not match oppija opiskeluoikeus "
+                       "organisation")})))))
 
 (defn wrap-virkailija-opiskeluoikeus-access [handler]
   ; TODO EH-352
