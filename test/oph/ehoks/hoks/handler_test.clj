@@ -478,10 +478,12 @@
       (let [app (create-app nil)
             post-response (create-mock-post-request ooato-path ooato-data app hoks)
             patch-response (create-mock-patch-request ooato-path app multiple-ooato-values-patched)
-            get-response-body (utils/parse-body (:body (create-mock-get-request ooato-path app hoks)))]
+            get-response (create-mock-get-request ooato-path app hoks)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status post-response) 200))
         (is (= (:status patch-response) 204))
-        (is (= (:tutkinnon-osa-koodi-versio get-response-body) 3000))
+        (is (= (:status get-response) 200))
+        (is (= (:tutkinnon-osa-koodi-versio get-response-data) 3000))
         ;;TODO more asserts
         ))))
 
