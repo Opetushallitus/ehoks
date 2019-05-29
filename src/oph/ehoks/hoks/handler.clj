@@ -194,7 +194,21 @@
                             (:hoks request) ooato)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ooato-from-db))}
-          :id (:id ooato-from-db))))))
+          :id (:id ooato-from-db))))
+
+    (c-api/PATCH "/:id" []
+      :summary (str "Päivittää HOKSin olemassa olevan ammatillisen tutkinnon"
+                    "osan arvoa tai arvoja")
+      :path-params [id :- s/Int]
+      :body [values hoks-schema/OlemassaOlevanAmmatillisenTutkinnonOsanPaivitys]
+      (if-let
+        [ooato-from-db (h/get-olemassa-oleva-ammatillinen-tutkinnon-osa id)]
+        (do
+          (h/update-olemassa-oleva-ammatillinen-tutkinnon-osa!
+            ooato-from-db values)
+          (response/no-content))
+        (response/not-found
+          {:error "Olemassa oleva ammatillinen tutkinnon osa not found"})))))
 
 (def ^:private puuttuvat-yhteisen-tutkinnon-osat
   (c-api/context "/:hoks-id/puuttuvat-yhteisen-tutkinnon-osat" [hoks-id]
