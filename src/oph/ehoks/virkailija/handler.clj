@@ -118,10 +118,10 @@
                           (some? nimi) (assoc :nimi nimi)
                           (some? tutkinto) (assoc :tutkinto tutkinto)
                           (some? osaamisala) (assoc :osaamisala osaamisala))
-                        oppijat
-                        (mapv
-                          #(dissoc % :oppilaitos-oid)
-                          (oppijaindex/search search-params))]
+                        oppijat (mapv
+                                  #(dissoc
+                                     % :oppilaitos-oid :koulutustoimija-oid)
+                                  (oppijaindex/search search-params))]
                     (restful/rest-ok
                       oppijat
                       :total-count (oppijaindex/get-count search-params)))))
