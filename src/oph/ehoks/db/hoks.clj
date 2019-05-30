@@ -173,7 +173,7 @@
     {:removals [:nayttoymparisto
                 :sisallon-kuvaus
                 :koulutuksen-jarjestaja-arvioijat
-                :tyoelama-arvioijat
+                :tyoelama-osaamisen-arvioijat
                 :osaamistavoitteet
                 :osa-alueet
                 :yksilolliset-kriteerit]

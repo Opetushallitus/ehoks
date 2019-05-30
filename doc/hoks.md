@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 30.05.2019 11.22
+Generoitu 30.05.2019 12.10
 
 Katso myös [HOKS doc](https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md)
 
@@ -67,9 +67,9 @@ Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
 | nayttoymparisto | [Nayttoymparisto](#Nayttoymparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
 | sisallon-kuvaus | [Merkkijono] | Tiivis kuvaus (esim. lista) työtilanteista ja työprosesseista, joiden<br>    avulla ammattitaitovaatimusten tai osaamistavoitteiden mukainen osaaminen<br>    osoitetaan. Vastaavat tiedot muusta osaamisen osoittamisesta siten, että<br>    tieto kuvaa sovittuja tehtäviä ja toimia, joiden avulla osaaminen<br>    osoitetaan. | Kyllä |
-| tyoelama-arvioijat | [[TyoelamaArvioija](#TyoelamaArvioija)] | Näytön tai<br>    osaamisen osoittamisen arvioijat | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tutkinnon osan tai osa-alueen perusteisiin sisältyvät<br>    ammattitaitovaatimukset tai osaamistavoitteet, joista opiskelijan kohdalla<br>    poiketaan. | Ei |
 | osa-alueet | [[KoodistoKoodi](#KoodistoKoodi)] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueiden Koodisto-koodi-URIt<br>         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk | Ei |
+| tyoelama-osaamisen-arvioijat | [[TyoelamaOsaamisenArvioija](#TyoelamaOsaamisenArvioija)] | Näytön tai osaamisen osoittamisen arvioijat | Ei |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa<br>    YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa<br>    YYYY-MM-DD | Kyllä |
 | yksilolliset-kriteerit | [Merkkijono] | Ammattitaitovaatimus tai osaamistavoite, johon yksilölliset<br>    arviointikriteerit kohdistuvat ja yksilölliset arviointikriteerit kyseiseen<br>    ammattitaitovaatimukseen tai osaamistavoitteeseen. | Ei |
@@ -467,6 +467,15 @@ Hankittavan yhteinen tutkinnon osan (YTO) tiedot
 | tutkinnon-osa-koodi-versio | Kokonaisluku | Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa<br>     (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | OID-tunniste muotoa 1.2.246.562.x.y | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
+### TyoelamaOsaamisenArvioija  
+
+Työelämän arvioija
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| nimi | Merkkijono | Arvioijan nimi | Kyllä |
+| organisaatio | [TyoelamaOrganisaatio](#TyoelamaOrganisaatio) | Työelämän arvioijan organisaatio | Kyllä |
+
 ### HankittavaAmmatillinenTutkinnonOsa  
 
 Hankittavan ammatillisen osaamisen tiedot (GET)
@@ -589,15 +598,6 @@ Hankittavan yhteinen tutkinnon osa tiedot merkintää ylikirjoittaessa (PUT)
 | tutkinnon-osa-koodi-versio | Kokonaisluku | Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa<br>     (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | OID-tunniste muotoa 1.2.246.562.x.y | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
-### TyoelamaArvioija  
-
-Työelämän arvioija
-
-| Nimi | Tyyppi | Selite | Vaaditaan |
-| ---- | ------ | ------ | --------- |
-| nimi | Merkkijono | Arvioijan nimi | Kyllä |
-| organisaatio | [TyoelamaOrganisaatio](#TyoelamaOrganisaatio) | Työelämän arvioijan organisaatio | Kyllä |
-
 ### HankittavaAmmatillinenTutkinnonOsaKentanPaivitys  
 
 Hankittavan ammatillisen osaamisen tiedot kenttää tai kenttiä päivittäessä (PATCH)
@@ -632,9 +632,9 @@ Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
 | osaamistavoitteet | [Merkkijono] | Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan.Tunnisteen tyyppi voi vielä päivittyä ja tähän saattaa tulla vielä Yksilölliset arvioinnin kriteerit | Ei |
 | nayttoymparisto | [Nayttoymparisto](#Nayttoymparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
 | sisallon-kuvaus | [Merkkijono] | Tiivis kuvaus (esim. lista) työtilanteista ja työprosesseista, joiden<br>    avulla ammattitaitovaatimusten tai osaamistavoitteiden mukainen osaaminen<br>    osoitetaan. Vastaavat tiedot muusta osaamisen osoittamisesta siten, että<br>    tieto kuvaa sovittuja tehtäviä ja toimia, joiden avulla osaaminen<br>    osoitetaan. | Kyllä |
-| tyoelama-arvioijat | [[TyoelamaArvioija](#TyoelamaArvioija)] | Näytön tai<br>    osaamisen osoittamisen arvioijat | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tutkinnon osan tai osa-alueen perusteisiin sisältyvät<br>    ammattitaitovaatimukset tai osaamistavoitteet, joista opiskelijan kohdalla<br>    poiketaan. | Ei |
 | osa-alueet | [[KoodistoKoodi](#KoodistoKoodi)] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueiden Koodisto-koodi-URIt<br>         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk | Ei |
+| tyoelama-osaamisen-arvioijat | [[TyoelamaOsaamisenArvioija](#TyoelamaOsaamisenArvioija)] | Näytön tai osaamisen osoittamisen arvioijat | Ei |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa<br>    YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa<br>    YYYY-MM-DD | Kyllä |
 | yksilolliset-kriteerit | [Merkkijono] | Ammattitaitovaatimus tai osaamistavoite, johon yksilölliset<br>    arviointikriteerit kohdistuvat ja yksilölliset arviointikriteerit kyseiseen<br>    ammattitaitovaatimukseen tai osaamistavoitteeseen. | Ei |

@@ -7,8 +7,8 @@
       naytto
       :koulutuksen-jarjestaja-arvioijat
       (db/select-koulutuksen-jarjestaja-arvioijat-by-hon-id (:id naytto))
-      :tyoelama-arvioijat
-      (db/select-tyoelama-arvioijat-by-hon-id (:id naytto))
+      :tyoelama-osaamisen-arvioijat
+      (db/select-tyoelama-osaamisen-arvioijat-by-hon-id (:id naytto))
       :nayttoymparisto
       (db/select-nayttoymparisto-by-id (:nayttoymparisto-id naytto))
       :sisallon-kuvaus
@@ -270,7 +270,8 @@
   (db/delete-osaamisen-hankkimistavat-by-ppto-id! (:id ppto))
   (save-ppto-osaamisen-hankkimistavat! ppto c))
 
-(defn save-osaamisen-osoittamisen-tyoelama-arvioijat! [naytto arvioijat]
+(defn save-osaamisen-osoittamisen-tyoelama-osaamisen-arvioijat!
+  [naytto arvioijat]
   (mapv
     #(let [arvioija (db/insert-tyoelama-arvioija! %)]
        (db/insert-osaamisen-osoittamisen-tyoelama-arvioija!
@@ -291,8 +292,8 @@
                  (assoc n :nayttoymparisto-id (:id nayttoymparisto)))]
     (db/insert-osaamisen-osoittamisen-koulutuksen-jarjestaja-arvioijat!
       naytto (:koulutuksen-jarjestaja-arvioijat n))
-    (save-osaamisen-osoittamisen-tyoelama-arvioijat!
-      naytto (:tyoelama-arvioijat n))
+    (save-osaamisen-osoittamisen-tyoelama-osaamisen-arvioijat!
+      naytto (:tyoelama-osaamisen-arvioijat n))
     (db/insert-osaamisen-osoittamisen-sisallot!
       naytto (:sisallon-kuvaus n))
     (db/insert-osaamisen-osoittamisen-yksilolliset-kriteerit!

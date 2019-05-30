@@ -351,7 +351,7 @@
 
 (defn insert-tyoelama-arvioija! [arvioija]
   (insert-one!
-    :tyoelama_arvioijat
+    :tyoelama_osaamisen_arvioijat
     (h/tyoelama-arvioija-to-sql arvioija)))
 
 (defn insert-osaamisen-osoittamisen-tyoelama-arvioija! [hon arvioija]
@@ -360,11 +360,11 @@
     {:osaamisen_osoittaminen_id (:id hon)
      :tyoelama_arvioija_id (:id arvioija)}))
 
-(defn select-tyoelama-arvioijat-by-hon-id
+(defn select-tyoelama-osaamisen-arvioijat-by-hon-id
   "Hankitun osaamisen näytön työelemän arvioijat"
   [id]
   (query
-    [queries/select-tyoelama-arvioijat-by-hon-id id]
+    [queries/select-tyoelama-osaamisen-arvioijat-by-hon-id id]
     {:row-fn h/tyoelama-arvioija-from-sql}))
 
 (defn insert-osaamisen-osoittamisen-sisallot! [hon c]

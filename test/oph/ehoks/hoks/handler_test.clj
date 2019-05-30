@@ -65,23 +65,23 @@
   (with-hoks hoks (get-hoks-url hoks path)))
 
 (def ppto-data {:nimi "222"
-                 :osaamisen-hankkimistavat []
-                 :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                 :olennainen-seikka true
-                 :osaamisen-osoittaminen
-                 [{:jarjestaja {:oppilaitos-oid
-                                "1.2.246.562.10.00000000002"}
-                   :koulutuksen-jarjestaja-arvioijat []
-                   :osa-alueet []
-                   :sisallon-kuvaus ["ensimmäinen sisältö" "toinenkin"]
-                   :nayttoymparisto {:nimi "aaa"}
-                   :alku "2018-12-12"
-                   :loppu "2018-12-20"
-                   :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                         {:nimi "Organisaation nimi"}}]
-                   :vaatimuksista-tai-tavoitteista-poikkeaminen
-                   "Poikkeama onpi tämä."
-                   :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]}]})
+                :osaamisen-hankkimistavat []
+                :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
+                :olennainen-seikka true
+                :osaamisen-osoittaminen
+                [{:jarjestaja {:oppilaitos-oid
+                               "1.2.246.562.10.00000000002"}
+                  :koulutuksen-jarjestaja-arvioijat []
+                  :osa-alueet []
+                  :sisallon-kuvaus ["ensimmäinen sisältö" "toinenkin"]
+                  :nayttoymparisto {:nimi "aaa"}
+                  :alku "2018-12-12"
+                  :loppu "2018-12-20"
+                  :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                                  {:nimi "Organisaation nimi"}}]
+                  :vaatimuksista-tai-tavoitteista-poikkeaminen
+                  "Poikkeama onpi tämä."
+                  :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]}]})
 
 (deftest post-and-get-ppto
   (testing "GET newly created hankittava paikallinen tutkinnon osa"
@@ -133,7 +133,7 @@
                   :patch
                   (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1"))
                 (mock/json-body
-          (assoc ppto-data :nimi "333" :olennainen-seikka false))))]
+                  (assoc ppto-data :nimi "333" :olennainen-seikka false))))]
         (is (= (:status patch-response) 204))))))
 
 (deftest patch-one-ppto
@@ -341,8 +341,8 @@
        :alku "2018-12-12"
        :loppu "2018-12-20"
        :sisallon-kuvaus ["Kuvaus"]
-       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                             {:nimi "Organisaation nimi"}}]}]}]
+       :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                       {:nimi "Organisaation nimi"}}]}]}]
    :tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :tutkinnon-osa-koodi-versio 1
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"})
@@ -364,8 +364,8 @@
        :alku "2018-12-15"
        :loppu "2018-12-21"
        :sisallon-kuvaus ["Kuvaus"]
-       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                             {:nimi "Organisaation nimi"}}]}]}]
+       :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                       {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"})
 
 (def pyto-patch-one-data
@@ -385,8 +385,8 @@
        :alku "2018-12-15"
        :loppu "2018-12-21"
        :sisallon-kuvaus ["Kuvaus"]
-       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                             {:nimi "Organisaation nimi"}}]}]}]
+       :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                       {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000011"})
 
 (deftest post-and-get-pyto

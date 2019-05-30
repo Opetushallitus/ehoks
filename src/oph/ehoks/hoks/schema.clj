@@ -196,7 +196,7 @@
     :organisaatio Organisaatio "Arvioijan organisaatio"))
 
 (s/defschema
-  TyoelamaArvioija
+  TyoelamaOsaamisenArvioija
   (modify
     Arvioija
     "Työelämän arvioija"
@@ -248,8 +248,8 @@
     (s/optional-key :koulutuksen-jarjestaja-arvioijat)
     [KoulutuksenJarjestajaArvioija] "Näytön tai osaamisen osoittamisen
     arvioijat"
-    (s/optional-key :tyoelama-arvioijat) [TyoelamaArvioija] "Näytön tai
-    osaamisen osoittamisen arvioijat"
+    (s/optional-key :tyoelama-osaamisen-arvioijat) [TyoelamaOsaamisenArvioija]
+    "Näytön tai osaamisen osoittamisen arvioijat"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     (str "Tutkinnon osan tai osa-alueen perusteisiin sisältyvät
     ammattitaitovaatimukset tai osaamistavoitteet, joista opiskelijan kohdalla

@@ -85,9 +85,9 @@
      :secondary-column "koulutuksen_jarjestaja_arvioija_id"
      :primary-column "id"
      :column "osaamisen_osoittaminen_id"}))
-(def select-tyoelama-arvioijat-by-hon-id
+(def select-tyoelama-osaamisen-arvioijat-by-hon-id
   (generate-select-join
-    {:table "tyoelama_arvioijat"
+    {:table "tyoelama_osaamisen_arvioijat"
      :join "osaamisen_osoittamisen_tyoelama_arvioija"
      :secondary-column "tyoelama_arvioija_id"
      :primary-column "id"
@@ -96,7 +96,7 @@
 (def select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id
   (generate-select-by {:table "osaamisen_osoittamisen_sisallot"
                        :column "osaamisen_osoittaminen_id"}))
-(def select-osaamisen-osoittamisen-kriteerit-by-osaamisen-osoittaminen-id
+(def select-osaamisen-osoittamisen-kriteeri-by-osaamisen-osoittaminen-id
   (generate-select-by {:table "osaamisen_osoittamisen_yksilolliset_kriteerit"
                        :column "osaamisen_osoittaminen_id"}))
 (def select-osaamisen-hankkmistavat-by-ppto-id

@@ -42,10 +42,10 @@
       :nayttoymparisto {:nimi "Toinen Esimerkki Oyj"
                         :y-tunnus "12345699-2"
                         :kuvaus "Testiyrityksen testiosasostalla"}
-      :tyoelama-arvioijat [{:nimi "Teppo Työmies"
-                            :organisaatio
-                            {:nimi "Testiyrityksen Sisar Oy"
-                             :y-tunnus "12345689-3"}}]
+      :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työmies"
+                                      :organisaatio
+                                      {:nimi "Testiyrityksen Sisar Oy"
+                                       :y-tunnus "12345689-3"}}]
       :sisallon-kuvaus ["Tutkimustyö"
                         "Raportointi"]
       :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
@@ -83,7 +83,7 @@
       :nayttoymparisto {:nimi "Testi Oyj"
                         :y-tunnus "1289211-2"
                         :kuvaus "Testiyhtiö"}
-      :tyoelama-arvioijat
+      :tyoelama-osaamisen-arvioijat
       [{:nimi "Terttu Testihenkilö"
         :organisaatio {:nimi "Testi Oyj"
                        :y-tunnus "1289211-2"}}]
@@ -110,7 +110,7 @@
       [{:nimi "Timo Testaaja"
         :organisaatio
         {:oppilaitos-oid "1.2.246.562.10.54452521332"}}]
-      :tyoelama-arvioijat
+      :tyoelama-osaamisen-arvioijat
       [{:nimi "Taneli Työmies"
         :organisaatio {:nimi "Tanelin Paja Ky"
                        :y-tunnus "12345622-2"}}]
@@ -194,7 +194,7 @@
         :nayttoymparisto {:nimi "Ab Yhtiö Oy"
                           :y-tunnus "1234128-1"
                           :kuvaus "Testi"}
-        :tyoelama-arvioijat
+        :tyoelama-osaamisen-arvioijat
         [{:nimi "Tellervo Työntekijä"
           :organisaatio {:nimi "Ab Yhtiö Oy"
                          :y-tunnus "1234128-1"}}]
@@ -215,7 +215,7 @@
       :nayttoymparisto {:nimi "Testi Oy"
                         :y-tunnus "1289235-2"
                         :kuvaus "Testiyhtiö"}
-      :tyoelama-arvioijat
+      :tyoelama-osaamisen-arvioijat
       [{:nimi "Tapio Testihenkilö"
         :organisaatio {:nimi "Testi Oy"
                        :y-tunnus "1289235-2"}}]
@@ -273,9 +273,9 @@
       [{:nimi "Terttu Testaaja"
         :organisaatio
         {:oppilaitos-oid "1.2.246.562.10.54453921332"}}]
-      :tyoelama-arvioijat [{:nimi "Teppo Työmies"
-                            :organisaatio {:nimi "Kallen Paja Ky"
-                                           :y-tunnus "12345679-2"}}]
+      :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työmies"
+                                      :organisaatio {:nimi "Kallen Paja Ky"
+                                                     :y-tunnus "12345679-2"}}]
       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_fk"
                     :koodi-versio 2}]
       :alku (java.time.LocalDate/of 2019 3 11)
@@ -336,9 +336,9 @@
         [{:nimi "Toivo Testaaja"
           :organisaatio
           {:oppilaitos-oid "1.2.246.562.10.54452535232"}}]
-        :tyoelama-arvioijat [{:nimi "Taneli Työmies"
-                              :organisaatio {:nimi "Tanelin Paja Ky"
-                                             :y-tunnus "12323459-2"}}]
+        :tyoelama-osaamisen-arvioijat [{:nimi "Taneli Työmies"
+                                        :organisaatio {:nimi "Tanelin Paja Ky"
+                                                       :y-tunnus "12323459-2"}}]
         :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_cu"
                       :koodi-versio 2}]
         :alku (java.time.LocalDate/of 2019 3 1)

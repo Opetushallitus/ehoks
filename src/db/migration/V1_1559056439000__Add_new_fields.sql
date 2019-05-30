@@ -34,3 +34,6 @@ CREATE TABLE osaamisen_osoittamisen_yksilolliset_kriteerit(
   osaamisen_osoittaminen_id INTEGER REFERENCES osaamisen_osoittamiset(id),
   yksilollinen_kriteeri TEXT
 );
+
+ALTER TABLE tyoelama_arvioijat RENAME TO
+tyoelama_osaamisen_arvioijat;
