@@ -132,11 +132,6 @@
         :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
        :tyopaikan-nimi "Ohjausyhtiö Oy"
        :tyopaikan-y-tunnus "12345212-4"
-       :muut-osallistujat [{:organisaatio
-                            {:nimi "Kolmas Esimerkki Oy"
-                             :y-tunnus "12345233-5"}
-                            :nimi "Kalle Kirjuri"
-                            :rooli "Kirjuri"}]
        :keskeiset-tyotehtavat ["Testitehtävä"]}
       :muut-oppimisymparisto
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
@@ -243,10 +238,6 @@
         :sahkoposti "olli.ohjaaja@esimerkki.com"}
        :tyopaikan-nimi "Ohjaus Oy"
        :tyopaikan-y-tunnus "12345689-4"
-       :muut-osallistujat [{:organisaatio {:nimi "Esimerkki Oy"
-                                           :y-tunnus "12345688-5"}
-                            :nimi "Kiira Kirjaaja"
-                            :rooli "Avustaja"}]
        :keskeiset-tyotehtavat ["Hälytysten valvonta"
                                "Vuoronvaihdon tarkistukset"]}
       :muut-oppimisymparisto
@@ -302,11 +293,6 @@
           :sahkoposti "olli.ohjaaja@esimerkki3.com"}
          :tyopaikan-nimi "Ohjausyhtiö Oy"
          :tyopaikan-y-tunnus "12345212-4"
-         :muut-osallistujat [{:organisaatio
-                              {:nimi "Uusi Esimerkki Oy"
-                               :y-tunnus "12322233-5"}
-                              :nimi "Keijo Kirjuri"
-                              :rooli "Assistentti"}]
          :keskeiset-tyotehtavat ["Testitehtävä 2"]}
         :muut-oppimisymparisto
         [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
