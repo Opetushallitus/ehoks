@@ -37,3 +37,24 @@ CREATE TABLE osaamisen_osoittamisen_yksilolliset_kriteerit(
 
 ALTER TABLE tyoelama_arvioijat RENAME TO
 tyoelama_osaamisen_arvioijat;
+
+ALTER TABLE koulutuksen_jarjestaja_arvioijat RENAME TO
+koulutuksen_jarjestaja_osaamisen_arvioijat;
+
+ALTER TABLE osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija
+RENAME COLUMN koulutuksen_jarjestaja_arvioija_id TO
+koulutuksen_jarjestaja_osaamisen_arvioija_id;
+
+ALTER TABLE aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
+RENAME COLUMN koulutuksen_jarjestaja_arvioija_id TO
+koulutuksen_jarjestaja_osaamisen_arvioija_id;
+
+ALTER TABLE aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat
+RENAME COLUMN koulutuksen_jarjestaja_arvioija_id TO
+koulutuksen_jarjestaja_osaamisen_arvioija_id;
+
+ALTER TABLE todennettu_arviointi_arvioijat
+RENAME COLUMN koulutuksen_jarjestaja_arvioija_id TO
+koulutuksen_jarjestaja_osaamisen_arvioija_id;
+
+ALTER TABLE muut_oppimisymparistot DROP COLUMN selite;

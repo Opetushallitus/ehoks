@@ -71,7 +71,7 @@
                 :osaamisen-osoittaminen
                 [{:jarjestaja {:oppilaitos-oid
                                "1.2.246.562.10.00000000002"}
-                  :koulutuksen-jarjestaja-arvioijat []
+                  :koulutuksen-jarjestaja-osaamisen-arvioijat []
                   :osa-alueet []
                   :sisallon-kuvaus ["ensimmäinen sisältö" "toinenkin"]
                   :nayttoymparisto {:nimi "aaa"}

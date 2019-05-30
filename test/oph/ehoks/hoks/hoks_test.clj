@@ -35,7 +35,7 @@
     :tarkentavat-tiedot-naytto
     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_fy"
                     :koodi-versio 1}]
-      :koulutuksen-jarjestaja-arvioijat
+      :koulutuksen-jarjestaja-osaamisen-arvioijat
       [{:nimi "Aapo Arvioija"
         :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
       :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
@@ -73,7 +73,7 @@
     :tarkentavat-tiedot-naytto
     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_li"
                     :koodi-versio 6}]
-      :koulutuksen-jarjestaja-arvioijat
+      :koulutuksen-jarjestaja-osaamisen-arvioijat
       [{:nimi "Teuvo Testaaja"
         :organisaatio {:oppilaitos-oid
                        "1.2.246.562.10.12346234690"}}]
@@ -106,7 +106,7 @@
                         :kuvaus "Testi test"}
       :sisallon-kuvaus ["Testaus"]
       :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
-      :koulutuksen-jarjestaja-arvioijat
+      :koulutuksen-jarjestaja-osaamisen-arvioijat
       [{:nimi "Timo Testaaja"
         :organisaatio
         {:oppilaitos-oid "1.2.246.562.10.54452521332"}}]
@@ -141,8 +141,7 @@
        :lisatiedot false}
       :muut-oppimisymparisto
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
-        :oppimisymparisto-koodi-versio 1
-        :selite "Testioppilaitos 2"}]
+        :oppimisymparisto-koodi-versio 1}]
       :ajanjakson-tarkenne "Ei tarkennettavia asioita"
       :hankkijan-edustaja
       {:nimi "Heikki Hankkija"
@@ -184,7 +183,7 @@
       :tarkentavat-tiedot
       [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
                       :koodi-versio 3}]
-        :koulutuksen-jarjestaja-arvioijat
+        :koulutuksen-jarjestaja-osaamisen-arvioijat
         [{:nimi "Teppo Testaaja"
           :organisaatio {:oppilaitos-oid
                          "1.2.246.562.10.54539267901"}}]
@@ -206,7 +205,7 @@
     :tarkentavat-tiedot-naytto
     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ma"
                     :koodi-versio 6}]
-      :koulutuksen-jarjestaja-arvioijat
+      :koulutuksen-jarjestaja-osaamisen-arvioijat
       [{:nimi "Erkki Esimerkkitestaaja"
         :organisaatio {:oppilaitos-oid
                        "1.2.246.562.10.13490579090"}}]
@@ -252,8 +251,7 @@
        :lisatiedot false}
       :muut-oppimisymparisto
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
-        :oppimisymparisto-koodi-versio 1
-        :selite "Testioppilaitos"}]
+        :oppimisymparisto-koodi-versio 1}]
       :ajanjakson-tarkenne "Ei tarkennettavaa"
       :hankkijan-edustaja
       {:nimi "Harri Hankkija"
@@ -269,7 +267,7 @@
       :sisallon-kuvaus ["Renkaanvaihto"
                         "Tuulilasin vaihto"]
       :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
-      :koulutuksen-jarjestaja-arvioijat
+      :koulutuksen-jarjestaja-osaamisen-arvioijat
       [{:nimi "Terttu Testaaja"
         :organisaatio
         {:oppilaitos-oid "1.2.246.562.10.54453921332"}}]
@@ -311,8 +309,7 @@
          :lisatiedot false}
         :muut-oppimisymparisto
         [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
-          :oppimisymparisto-koodi-versio 1
-          :selite "Testioppilaitos 2"}]
+          :oppimisymparisto-koodi-versio 1}]
         :ajanjakson-tarkenne "Ei tarkennettavia asioita"
         :hankkijan-edustaja
         {:nimi "Heikki Hankkija"
@@ -332,7 +329,7 @@
         :sisallon-kuvaus ["Testitehtävä 1"
                           "Testitehtävä 2"]
         :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
-        :koulutuksen-jarjestaja-arvioijat
+        :koulutuksen-jarjestaja-osaamisen-arvioijat
         [{:nimi "Toivo Testaaja"
           :organisaatio
           {:oppilaitos-oid "1.2.246.562.10.54452535232"}}]

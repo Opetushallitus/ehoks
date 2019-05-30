@@ -65,9 +65,9 @@
      :column "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
 (def select-arvioijat-by-oopto-id
   (generate-select-join
-    {:table "koulutuksen_jarjestaja_arvioijat"
+    {:table "koulutuksen_jarjestaja_osaamisen_arvioijat"
      :join "aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat"
-     :secondary-column "koulutuksen_jarjestaja_arvioija_id"
+     :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
      :primary-column "id"
      :column "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
 (defq select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id)
@@ -78,11 +78,11 @@
      :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "hankittava_paikallinen_tutkinnon_osa_id"}))
-(def select-koulutuksen-jarjestaja-arvioijat-by-hon-id
+(def select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id
   (generate-select-join
-    {:table "koulutuksen_jarjestaja_arvioijat"
+    {:table "koulutuksen_jarjestaja_osaamisen_arvioijat"
      :join "osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija"
-     :secondary-column "koulutuksen_jarjestaja_arvioija_id"
+     :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
      :primary-column "id"
      :column "osaamisen_osoittaminen_id"}))
 (def select-tyoelama-osaamisen-arvioijat-by-hon-id
@@ -119,9 +119,9 @@
 (defq select-todennettu-arviointi-lisatiedot-by-id)
 (def select-arvioijat-by-todennettu-arviointi-id
   (generate-select-join
-    {:table "koulutuksen_jarjestaja_arvioijat"
+    {:table "koulutuksen_jarjestaja_osaamisen_arvioijat"
      :join "todennettu_arviointi_arvioijat"
-     :secondary-column "koulutuksen_jarjestaja_arvioija_id"
+     :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
      :primary-column "id"
      :column "todennettu_arviointi_lisatiedot_id"}))
 (def select-osaamisen-osoittamiset-by-ooyto-id
@@ -140,9 +140,9 @@
      :column "aiemmin_hankittu_yto_osa_alue_id"}))
 (def select-arvioijat-by-ooyto-id
   (generate-select-join
-    {:table "koulutuksen_jarjestaja_arvioijat"
+    {:table "koulutuksen_jarjestaja_osaamisen_arvioijat"
      :join "aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat"
-     :secondary-column "koulutuksen_jarjestaja_arvioija_id"
+     :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
      :primary-column "id"
      :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
 (def select-osa-alueet-by-ooyto-id

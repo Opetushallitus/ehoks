@@ -145,8 +145,7 @@
     oppimisympäristöt eli muotoa oppimisymparistot_xxxx, esim.
     oppimisymparistot_0001"
     :oppimisymparisto-koodi-versio s/Int
-    "Koodisto-koodin versio, koodistolle oppimisympäristöt"
-    :selite s/Str "Oppimisympäristön nimi"))
+    "Koodisto-koodin versio, koodistolle oppimisympäristöt"))
 
 (s/defschema
   OsaamisenHankkimistapa
@@ -245,7 +244,7 @@
     :loppu LocalDate
     "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa
     YYYY-MM-DD"
-    (s/optional-key :koulutuksen-jarjestaja-arvioijat)
+    (s/optional-key :koulutuksen-jarjestaja-osaamisen-arvioijat)
     [KoulutuksenJarjestajaArvioija] "Näytön tai osaamisen osoittamisen
     arvioijat"
     (s/optional-key :tyoelama-osaamisen-arvioijat) [TyoelamaOsaamisenArvioija]

@@ -104,23 +104,23 @@
 (defn select-arvioijat-by-todennettu-arviointi-id [id]
   (query
     [queries/select-arvioijat-by-todennettu-arviointi-id id]
-    {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
+    {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
 
 (defn insert-todennettu-arviointi-arvioija! [tta m]
   (insert-one!
     :todennettu_arviointi_arvioijat
     {:todennettu_arviointi_lisatiedot_id (:id tta)
-     :koulutuksen_jarjestaja_arvioija_id (:id m)}))
+     :koulutuksen_jarjestaja_osaamisen_arvioija_id (:id m)}))
 
-(defn insert-koulutuksen-jarjestaja-arvioijat! [c]
+(defn insert-koulutuksen-jarjestaja-osaamisen-arvioijat! [c]
   (insert-multi!
-    :koulutuksen_jarjestaja_arvioijat
-    (map h/koulutuksen-jarjestaja-arvioija-to-sql c)))
+    :koulutuksen_jarjestaja_osaamisen_arvioijat
+    (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c)))
 
-(defn insert-koulutuksen-jarjestaja-arvioija! [m]
+(defn insert-koulutuksen-jarjestaja-osaamisen-arvioija! [m]
   (insert-one!
-    :koulutuksen_jarjestaja_arvioijat
-    (h/koulutuksen-jarjestaja-arvioija-to-sql m)))
+    :koulutuksen_jarjestaja_osaamisen_arvioijat
+    (h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql m)))
 
 (defn select-tarkentavat-tiedot-naytto-by-ooato-id
   "Aiemmin hankitun ammat tutkinnon osan näytön tarkentavat tiedot
@@ -330,24 +330,25 @@
            h-col))
     h-col))
 
-(defn insert-osaamisen-osoittamisen-koulutuksen-jarjestaja-arvioijat! [hon c]
+(defn insert-osaamisen-osoittamisen-koulutuksen-jarjestaja-osaamisen-arvioija!
+  [hon c]
   (let [kja-col (insert-multi!
-                  :koulutuksen_jarjestaja_arvioijat
-                  (map h/koulutuksen-jarjestaja-arvioija-to-sql c))]
+                  :koulutuksen_jarjestaja_osaamisen_arvioijat
+                  (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c))]
     (insert-multi!
       :osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija
       (map #(hash-map
               :osaamisen_osoittaminen_id (:id hon)
-              :koulutuksen_jarjestaja_arvioija_id (:id %))
+              :koulutuksen_jarjestaja_osaamisen_arvioija_id (:id %))
            kja-col))
     kja-col))
 
-(defn select-koulutuksen-jarjestaja-arvioijat-by-hon-id
+(defn select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id
   "Hankitun osaamisen näytön koulutuksen järjestäjän arvioijat"
   [id]
   (query
-    [queries/select-koulutuksen-jarjestaja-arvioijat-by-hon-id id]
-    {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
+    [queries/select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id id]
+    {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
 
 (defn insert-tyoelama-arvioija! [arvioija]
   (insert-one!
@@ -426,12 +427,12 @@
   (insert-one!
     :aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
     {:aiemmin_hankittu_paikallinen_tutkinnon_osa_id oopto-id
-     :koulutuksen_jarjestaja_arvioija_id arvioija-id}))
+     :koulutuksen_jarjestaja_osaamisen_arvioija_id arvioija-id}))
 
 (defn select-arvioijat-by-oopto-id [id]
   (query
     [queries/select-arvioijat-by-oopto-id id]
-    {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
+    {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
 
 (defn insert-oopto-osaamisen-osoittaminen! [oopto-id naytto-id]
   (insert-one!
@@ -443,12 +444,12 @@
   (insert-one!
     :aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat
     {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id yto-id
-     :koulutuksen_jarjestaja_arvioija_id a-id}))
+     :koulutuksen_jarjestaja_osaamisen_arvioija_id a-id}))
 
 (defn select-arvioija-by-ooyto-id [id]
   (query
     [queries/select-arvioijat-by-ooyto-id id]
-    {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
+    {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
 
 (defn select-tarkentavat-tiedot-naytto-by-ooyto-id
   "Aiemmin hankitun yhteisen tutkinnon osan näytön tarkentavat tiedot

@@ -5,8 +5,9 @@
   (dissoc
     (assoc
       naytto
-      :koulutuksen-jarjestaja-arvioijat
-      (db/select-koulutuksen-jarjestaja-arvioijat-by-hon-id (:id naytto))
+      :koulutuksen-jarjestaja-osaamisen-arvioijat
+      (db/select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id
+        (:id naytto))
       :tyoelama-osaamisen-arvioijat
       (db/select-tyoelama-osaamisen-arvioijat-by-hon-id (:id naytto))
       :nayttoymparisto
@@ -290,8 +291,8 @@
   (let [nayttoymparisto (db/insert-nayttoymparisto! (:nayttoymparisto n))
         naytto (db/insert-osaamisen-osoittaminen!
                  (assoc n :nayttoymparisto-id (:id nayttoymparisto)))]
-    (db/insert-osaamisen-osoittamisen-koulutuksen-jarjestaja-arvioijat!
-      naytto (:koulutuksen-jarjestaja-arvioijat n))
+    (db/insert-osaamisen-osoittamisen-koulutuksen-jarjestaja-osaamisen-arvioija!
+      naytto (:koulutuksen-jarjestaja-osaamisen-arvioijat n))
     (save-osaamisen-osoittamisen-tyoelama-osaamisen-arvioijat!
       naytto (:tyoelama-osaamisen-arvioijat n))
     (db/insert-osaamisen-osoittamisen-sisallot!
@@ -352,7 +353,7 @@
 
 (defn save-oopto-arvioijat! [oopto-id arvioijat]
   (mapv
-    #(let [a (db/insert-koulutuksen-jarjestaja-arvioija! %)]
+    #(let [a (db/insert-koulutuksen-jarjestaja-osaamisen-arvioija! %)]
        (db/insert-oopto-arvioija! oopto-id (:id a)))
     arvioijat))
 
@@ -387,7 +388,7 @@
 
 (defn save-ooyto-arvioijat! [yto-id arvioijat]
   (mapv
-    #(let [a (db/insert-koulutuksen-jarjestaja-arvioija! %)]
+    #(let [a (db/insert-koulutuksen-jarjestaja-osaamisen-arvioija! %)]
        (db/insert-ooyto-arvioija! yto-id (:id a)))
     arvioijat))
 
@@ -428,7 +429,7 @@
 (defn save-tta-aiemmin-hankitun-osaamisen-arvioijat! [tta c]
   (mapv
     #(db/insert-todennettu-arviointi-arvioija! tta %)
-    (db/insert-koulutuksen-jarjestaja-arvioijat! c)))
+    (db/insert-koulutuksen-jarjestaja-osaamisen-arvioijat! c)))
 
 (defn save-ooato-tarkentavat-tiedot-arvioija! [m]
   (let [tta (db/insert-todennettu-arviointi-lisatiedot! m)]

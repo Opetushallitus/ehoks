@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 30.05.2019 12.10
+Generoitu 30.05.2019 13.48
 
 Katso myös [HOKS doc](https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md)
 
@@ -13,7 +13,6 @@ Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu
 | ---- | ------ | ------ | --------- |
 | oppimisymparisto-koodi-uri | Koodistokoodin uri, merkkijono, esim. oppimisymparistot_0001 | Oppimisympäristön tarkenne, eHOKS Koodisto-koodi-URI, koodisto<br>    oppimisympäristöt eli muotoa oppimisymparistot_xxxx, esim.<br>    oppimisymparistot_0001 | Kyllä |
 | oppimisymparisto-koodi-versio | Kokonaisluku | Koodisto-koodin versio, koodistolle oppimisympäristöt | Kyllä |
-| selite | Merkkijono | Oppimisympäristön nimi | Kyllä |
 
 ###   
 
@@ -63,9 +62,9 @@ Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| koulutuksen-jarjestaja-arvioijat | [[KoulutuksenJarjestajaArvioija](#KoulutuksenJarjestajaArvioija)] | Näytön tai osaamisen osoittamisen<br>    arvioijat | Ei |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
 | nayttoymparisto | [Nayttoymparisto](#Nayttoymparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
+| koulutuksen-jarjestaja-osaamisen-arvioijat | [[KoulutuksenJarjestajaArvioija](#KoulutuksenJarjestajaArvioija)] | Näytön tai osaamisen osoittamisen<br>    arvioijat | Ei |
 | sisallon-kuvaus | [Merkkijono] | Tiivis kuvaus (esim. lista) työtilanteista ja työprosesseista, joiden<br>    avulla ammattitaitovaatimusten tai osaamistavoitteiden mukainen osaaminen<br>    osoitetaan. Vastaavat tiedot muusta osaamisen osoittamisesta siten, että<br>    tieto kuvaa sovittuja tehtäviä ja toimia, joiden avulla osaaminen<br>    osoitetaan. | Kyllä |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tutkinnon osan tai osa-alueen perusteisiin sisältyvät<br>    ammattitaitovaatimukset tai osaamistavoitteet, joista opiskelijan kohdalla<br>    poiketaan. | Ei |
 | osa-alueet | [[KoodistoKoodi](#KoodistoKoodi)] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueiden Koodisto-koodi-URIt<br>         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk | Ei |
@@ -627,10 +626,10 @@ Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| koulutuksen-jarjestaja-arvioijat | [[KoulutuksenJarjestajaArvioija](#KoulutuksenJarjestajaArvioija)] | Näytön tai osaamisen osoittamisen<br>    arvioijat | Ei |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
 | osaamistavoitteet | [Merkkijono] | Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan.Tunnisteen tyyppi voi vielä päivittyä ja tähän saattaa tulla vielä Yksilölliset arvioinnin kriteerit | Ei |
 | nayttoymparisto | [Nayttoymparisto](#Nayttoymparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
+| koulutuksen-jarjestaja-osaamisen-arvioijat | [[KoulutuksenJarjestajaArvioija](#KoulutuksenJarjestajaArvioija)] | Näytön tai osaamisen osoittamisen<br>    arvioijat | Ei |
 | sisallon-kuvaus | [Merkkijono] | Tiivis kuvaus (esim. lista) työtilanteista ja työprosesseista, joiden<br>    avulla ammattitaitovaatimusten tai osaamistavoitteiden mukainen osaaminen<br>    osoitetaan. Vastaavat tiedot muusta osaamisen osoittamisesta siten, että<br>    tieto kuvaa sovittuja tehtäviä ja toimia, joiden avulla osaaminen<br>    osoitetaan. | Kyllä |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tutkinnon osan tai osa-alueen perusteisiin sisältyvät<br>    ammattitaitovaatimukset tai osaamistavoitteet, joista opiskelijan kohdalla<br>    poiketaan. | Ei |
 | osa-alueet | [[KoodistoKoodi](#KoodistoKoodi)] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueiden Koodisto-koodi-URIt<br>         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk | Ei |

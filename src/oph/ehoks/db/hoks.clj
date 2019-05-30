@@ -172,7 +172,7 @@
     m
     {:removals [:nayttoymparisto
                 :sisallon-kuvaus
-                :koulutuksen-jarjestaja-arvioijat
+                :koulutuksen-jarjestaja-osaamisen-arvioijat
                 :tyoelama-osaamisen-arvioijat
                 :osaamistavoitteet
                 :osa-alueet
@@ -182,11 +182,11 @@
 (defn koodi-uri-from-sql [m]
   (from-sql m {:removals [:id]}))
 
-(defn koulutuksen-jarjestaja-arvioija-from-sql [m]
+(defn koulutuksen-jarjestaja-osaamisen-arvioija-from-sql [m]
   (from-sql m {:replaces {:oppilaitos_oid [:organisaatio :oppilaitos-oid]}
                :removals [:id]}))
 
-(defn koulutuksen-jarjestaja-arvioija-to-sql [m]
+(defn koulutuksen-jarjestaja-osaamisen-arvioija-to-sql [m]
   (to-sql m {:replaces {[:organisaatio :oppilaitos-oid] :oppilaitos-oid}}))
 
 (defn tyoelama-arvioija-from-sql [m]
