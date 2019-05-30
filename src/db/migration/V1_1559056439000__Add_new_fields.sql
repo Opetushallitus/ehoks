@@ -66,3 +66,5 @@ ALTER TABLE muut_oppimisymparistot ADD COLUMN
 loppu DATE;
 
 ALTER TABLE tyopaikalla_jarjestettavat_koulutukset DROP COLUMN lisatiedot;
+
+DROP TABLE tyopaikalla_jarjestettavan_koulutuksen_henkilot;

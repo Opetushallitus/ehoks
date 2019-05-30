@@ -61,8 +61,6 @@
   (let [o (db/select-tyopaikalla-jarjestettava-koulutus-by-id id)]
     (-> o
         (dissoc :id)
-        (assoc :muut-osallistujat
-               (db/select-henkilot-by-tho-id (:id o)))
         (assoc :keskeiset-tyotehtavat
                (db/select-tyotehtavat-by-tho-id (:id o))))))
 

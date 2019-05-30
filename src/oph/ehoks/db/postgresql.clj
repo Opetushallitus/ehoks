@@ -221,23 +221,6 @@
     :hankittavan_paikallisen_tutkinnon_osan_naytto
     ["hankittava_paikallinen_tutkinnon_osa_id = ?" id]))
 
-(defn insert-tho-henkilot!
-  "Työpaikalla hankittavan osaamisen muut osallistujat"
-  [o c]
-  (insert-multi!
-    :tyopaikalla_jarjestettavan_koulutuksen_henkilot
-    (map
-      #(assoc (h/henkilo-to-sql %) :tyopaikalla_jarjestettava_koulutus_id
-              (:id o))
-      c)))
-
-(defn select-henkilot-by-tho-id
-  "Työpaikalla hankittavan osaamisen muut osallistujat"
-  [id]
-  (query
-    [queries/select-henkilot-by-tho-id id]
-    {:row-fn h/henkilo-from-sql}))
-
 (defn insert-tho-tyotehtavat!
   "Työpaikalla hankittavan osaamisen keskeiset työtehtävät"
   [tho c]
@@ -261,7 +244,6 @@
     (let [o-db (insert-one!
                  :tyopaikalla_jarjestettavat_koulutukset
                  (h/tyopaikalla-jarjestettava-koulutus-to-sql o))]
-      (insert-tho-henkilot! o-db (:muut-osallistujat o))
       (insert-tho-tyotehtavat! o-db (:keskeiset-tyotehtavat o))
       o-db)))
 

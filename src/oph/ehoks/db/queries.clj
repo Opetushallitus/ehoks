@@ -107,10 +107,6 @@
      :primary-column "id"
      :column "hankittava_paikallinen_tutkinnon_osa_id"}))
 (defq select-tyopaikalla-jarjestettavat-koulutukset-by-id)
-(def select-henkilot-by-tho-id
-  (generate-select-by
-    {:table "tyopaikalla_jarjestettavan_koulutuksen_henkilot"
-     :column "tyopaikalla_jarjestettava_koulutus_id"}))
 (def select-tyotehtavat-by-tho-id
   (generate-select-by
     {:table "tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat"

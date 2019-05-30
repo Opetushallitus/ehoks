@@ -130,8 +130,6 @@
     :vastuullinen-ohjaaja VastuullinenOhjaaja "Vastuullinen työpaikkaohjaaja"
     :tyopaikan-nimi s/Str "Työpaikan nimi"
     (s/optional-key :tyopaikan-y-tunnus) s/Str "Työpaikan y-tunnus"
-    (s/optional-key :muut-osallistujat) [Henkilo]
-    "Muut ohjaukseen osallistuvat henkilöt"
     :keskeiset-tyotehtavat [s/Str] "Keskeiset työtehtävät"))
 
 (s/defschema

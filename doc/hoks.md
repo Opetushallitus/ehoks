@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 30.05.2019 14.16
+Generoitu 30.05.2019 14.37
 
 Katso myös [HOKS doc](https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md)
 
@@ -557,7 +557,6 @@ Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot
 | vastuullinen-ohjaaja | [VastuullinenOhjaaja](#VastuullinenOhjaaja) | Vastuullinen työpaikkaohjaaja | Kyllä |
 | tyopaikan-nimi | Merkkijono | Työpaikan nimi | Kyllä |
 | tyopaikan-y-tunnus | Merkkijono | Työpaikan y-tunnus | Ei |
-| muut-osallistujat | [[Henkilo](#Henkilo)] | Muut ohjaukseen osallistuvat henkilöt | Ei |
 | keskeiset-tyotehtavat | [Merkkijono] | Keskeiset työtehtävät | Kyllä |
 
 ###   
