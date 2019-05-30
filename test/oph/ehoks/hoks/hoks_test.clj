@@ -137,8 +137,7 @@
                              :y-tunnus "12345233-5"}
                             :nimi "Kalle Kirjuri"
                             :rooli "Kirjuri"}]
-       :keskeiset-tyotehtavat ["Testitehtävä"]
-       :lisatiedot false}
+       :keskeiset-tyotehtavat ["Testitehtävä"]}
       :muut-oppimisymparisto
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
         :oppimisymparisto-koodi-versio 1
@@ -249,8 +248,7 @@
                             :nimi "Kiira Kirjaaja"
                             :rooli "Avustaja"}]
        :keskeiset-tyotehtavat ["Hälytysten valvonta"
-                               "Vuoronvaihdon tarkistukset"]
-       :lisatiedot false}
+                               "Vuoronvaihdon tarkistukset"]}
       :muut-oppimisymparisto
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
         :oppimisymparisto-koodi-versio 1
@@ -309,8 +307,7 @@
                                :y-tunnus "12322233-5"}
                               :nimi "Keijo Kirjuri"
                               :rooli "Assistentti"}]
-         :keskeiset-tyotehtavat ["Testitehtävä 2"]
-         :lisatiedot false}
+         :keskeiset-tyotehtavat ["Testitehtävä 2"]}
         :muut-oppimisymparisto
         [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
           :oppimisymparisto-koodi-versio 1

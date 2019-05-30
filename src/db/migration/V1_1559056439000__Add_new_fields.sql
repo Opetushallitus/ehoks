@@ -64,3 +64,5 @@ alku DATE;
 
 ALTER TABLE muut_oppimisymparistot ADD COLUMN
 loppu DATE;
+
+ALTER TABLE tyopaikalla_jarjestettavat_koulutukset DROP COLUMN lisatiedot;

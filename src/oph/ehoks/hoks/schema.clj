@@ -132,9 +132,7 @@
     (s/optional-key :tyopaikan-y-tunnus) s/Str "Työpaikan y-tunnus"
     (s/optional-key :muut-osallistujat) [Henkilo]
     "Muut ohjaukseen osallistuvat henkilöt"
-    :keskeiset-tyotehtavat [s/Str] "Keskeiset työtehtävät"
-    :lisatiedot s/Bool
-    "Lisätietoja, esim. opiskelijalla tunnistettu ohjauksen ja tuen tarvetta"))
+    :keskeiset-tyotehtavat [s/Str] "Keskeiset työtehtävät"))
 
 (s/defschema
   MuuOppimisymparisto
