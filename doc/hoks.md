@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 30.05.2019 14.37
+Generoitu 30.05.2019 15.00
 
 Katso myös [HOKS doc](https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md)
 
@@ -155,15 +155,6 @@ Hankittavan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa
 ###   
 
 
-
-### VastuullinenOhjaaja  
-
-Vastuullinen ohjaaja
-
-| Nimi | Tyyppi | Selite | Vaaditaan |
-| ---- | ------ | ------ | --------- |
-| nimi | Merkkijono | Henkilön nimi | Kyllä |
-| sahkoposti | Merkkijono | Vastuullisen ohjaajan sähköpostiosoite | Ei |
 
 ### HankittavaPaikallinenTutkinnonOsaKentanPaivitys  
 
@@ -491,6 +482,15 @@ Hankittavan ammatillisen osaamisen tiedot (GET)
 | koulutuksen-jarjestaja-oid | OID-tunniste muotoa 1.2.246.562.x.y | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | olennainen-seikka | Totuusarvo | Tieto sellaisen seikan olemassaolosta, jonka koulutuksen<br>   järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen<br>   liittyvän osaamisen hankkimisessa tai osoittamisessa. | Ei |
 
+### VastuullinenTyopaikkaOhjaaja  
+
+Vastuullinen ohjaaja
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| nimi | Merkkijono | Henkilön nimi | Kyllä |
+| sahkoposti | Merkkijono | Vastuullisen ohjaajan sähköpostiosoite | Ei |
+
 ### Oppilaitoshenkilo  
 
 Oppilaitoksen edustaja
@@ -554,7 +554,7 @@ Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| vastuullinen-ohjaaja | [VastuullinenOhjaaja](#VastuullinenOhjaaja) | Vastuullinen työpaikkaohjaaja | Kyllä |
+| vastuullinen-tyopaikka-ohjaaja | [VastuullinenTyopaikkaOhjaaja](#VastuullinenTyopaikkaOhjaaja) | Vastuullinen<br>    työpaikkaohjaaja | Kyllä |
 | tyopaikan-nimi | Merkkijono | Työpaikan nimi | Kyllä |
 | tyopaikan-y-tunnus | Merkkijono | Työpaikan y-tunnus | Ei |
 | keskeiset-tyotehtavat | [Merkkijono] | Keskeiset työtehtävät | Kyllä |

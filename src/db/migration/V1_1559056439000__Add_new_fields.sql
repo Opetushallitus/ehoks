@@ -68,3 +68,9 @@ loppu DATE;
 ALTER TABLE tyopaikalla_jarjestettavat_koulutukset DROP COLUMN lisatiedot;
 
 DROP TABLE tyopaikalla_jarjestettavan_koulutuksen_henkilot;
+
+ALTER TABLE tyopaikalla_jarjestettavat_koulutukset RENAME COLUMN
+vastuullinen_ohjaaja_nimi TO vastuullinen_tyopaikka_ohjaaja_nimi;
+
+ALTER TABLE tyopaikalla_jarjestettavat_koulutukset RENAME COLUMN
+vastuullinen_ohjaaja_sahkoposti TO vastuullinen_tyopaikka_ohjaaja_sahkoposti;

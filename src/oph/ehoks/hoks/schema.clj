@@ -99,7 +99,7 @@
     {:removed [:organisaatio :rooli :id]}))
 
 (s/defschema
-  VastuullinenOhjaaja
+  VastuullinenTyopaikkaOhjaaja
   (modify
     Henkilo
     "Vastuullinen ohjaaja"
@@ -127,7 +127,8 @@
   (describe
     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :vastuullinen-ohjaaja VastuullinenOhjaaja "Vastuullinen työpaikkaohjaaja"
+    :vastuullinen-tyopaikka-ohjaaja VastuullinenTyopaikkaOhjaaja "Vastuullinen
+    työpaikkaohjaaja"
     :tyopaikan-nimi s/Str "Työpaikan nimi"
     (s/optional-key :tyopaikan-y-tunnus) s/Str "Työpaikan y-tunnus"
     :keskeiset-tyotehtavat [s/Str] "Keskeiset työtehtävät"))

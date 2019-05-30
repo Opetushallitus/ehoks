@@ -108,16 +108,20 @@
   (from-sql
     m
     {:replaces
-     {:vastuullinen_ohjaaja_nimi [:vastuullinen-ohjaaja :nimi]
-      :vastuullinen_ohjaaja_sahkoposti [:vastuullinen-ohjaaja :sahkoposti]}}))
+     {:vastuullinen_tyopaikka_ohjaaja_nimi
+      [:vastuullinen-tyopaikka-ohjaaja :nimi]
+      :vastuullinen_tyopaikka_ohjaaja_sahkoposti
+      [:vastuullinen-tyopaikka-ohjaaja :sahkoposti]}}))
 
 (defn tyopaikalla-jarjestettava-koulutus-to-sql [m]
   (to-sql
     m
     {:removals [:keskeiset-tyotehtavat]
      :replaces
-     {[:vastuullinen-ohjaaja :nimi] :vastuullinen-ohjaaja-nimi
-      [:vastuullinen-ohjaaja :sahkoposti] :vastuullinen-ohjaaja-sahkoposti}}))
+     {[:vastuullinen-tyopaikka-ohjaaja :nimi]
+      :vastuullinen-tyopaikka-ohjaaja-nimi
+      [:vastuullinen-tyopaikka-ohjaaja :sahkoposti]
+      :vastuullinen-tyopaikka-ohjaaja-sahkoposti}}))
 
 (defn henkilo-from-sql [m]
   (from-sql

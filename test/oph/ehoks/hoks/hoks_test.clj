@@ -127,7 +127,7 @@
       "osaamisenhankkimistapa_oppisopimus"
       :osaamisen-hankkimistapa-koodi-versio 2
       :tyopaikalla-jarjestettava-koulutus
-      {:vastuullinen-ohjaaja
+      {:vastuullinen-tyopaikka-ohjaaja
        {:nimi "Aimo Ohjaaja"
         :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
        :tyopaikan-nimi "Ohjausyhtiö Oy"
@@ -233,7 +233,7 @@
       "osaamisenhankkimistapa_oppisopimus"
       :osaamisen-hankkimistapa-koodi-versio 1
       :tyopaikalla-jarjestettava-koulutus
-      {:vastuullinen-ohjaaja
+      {:vastuullinen-tyopaikka-ohjaaja
        {:nimi "Olli Ohjaaja"
         :sahkoposti "olli.ohjaaja@esimerkki.com"}
        :tyopaikan-nimi "Ohjaus Oy"
@@ -288,7 +288,7 @@
         "osaamisenhankkimistapa_oppisopimus"
         :osaamisen-hankkimistapa-koodi-versio 2
         :tyopaikalla-jarjestettava-koulutus
-        {:vastuullinen-ohjaaja
+        {:vastuullinen-tyopaikka-ohjaaja
          {:nimi "Olli Ohjaaja"
           :sahkoposti "olli.ohjaaja@esimerkki3.com"}
          :tyopaikan-nimi "Ohjausyhtiö Oy"
