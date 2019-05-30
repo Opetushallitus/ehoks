@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 30.05.2019 13.48
+Generoitu 30.05.2019 14.08
 
 Katso myös [HOKS doc](https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md)
 
@@ -13,6 +13,8 @@ Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu
 | ---- | ------ | ------ | --------- |
 | oppimisymparisto-koodi-uri | Koodistokoodin uri, merkkijono, esim. oppimisymparistot_0001 | Oppimisympäristön tarkenne, eHOKS Koodisto-koodi-URI, koodisto<br>    oppimisympäristöt eli muotoa oppimisymparistot_xxxx, esim.<br>    oppimisymparistot_0001 | Kyllä |
 | oppimisymparisto-koodi-versio | Kokonaisluku | Koodisto-koodin versio, koodistolle oppimisympäristöt | Kyllä |
+| alku | Päivämäärä | Muussa oppimisympäristössä tapahtuvan osaamisen hankkimisen<br>    aloituspäivämäärä. | Kyllä |
+| loppu | Päivämäärä | Muussa oppimisympäristössä tapahtuvan osaamisen hankkimisen<br>    päättymispäivämäärä. | Kyllä |
 
 ###   
 

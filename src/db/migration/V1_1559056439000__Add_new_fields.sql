@@ -58,3 +58,9 @@ RENAME COLUMN koulutuksen_jarjestaja_arvioija_id TO
 koulutuksen_jarjestaja_osaamisen_arvioija_id;
 
 ALTER TABLE muut_oppimisymparistot DROP COLUMN selite;
+
+ALTER TABLE muut_oppimisymparistot ADD COLUMN
+alku DATE;
+
+ALTER TABLE muut_oppimisymparistot ADD COLUMN
+loppu DATE;

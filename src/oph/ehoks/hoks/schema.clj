@@ -145,7 +145,13 @@
     oppimisympäristöt eli muotoa oppimisymparistot_xxxx, esim.
     oppimisymparistot_0001"
     :oppimisymparisto-koodi-versio s/Int
-    "Koodisto-koodin versio, koodistolle oppimisympäristöt"))
+    "Koodisto-koodin versio, koodistolle oppimisympäristöt"
+    :alku LocalDate
+    "Muussa oppimisympäristössä tapahtuvan osaamisen hankkimisen
+    aloituspäivämäärä."
+    :loppu LocalDate
+    "Muussa oppimisympäristössä tapahtuvan osaamisen hankkimisen
+    päättymispäivämäärä."))
 
 (s/defschema
   OsaamisenHankkimistapa

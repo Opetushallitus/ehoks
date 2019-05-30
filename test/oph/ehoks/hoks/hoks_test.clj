@@ -141,7 +141,9 @@
        :lisatiedot false}
       :muut-oppimisymparisto
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
-        :oppimisymparisto-koodi-versio 1}]
+        :oppimisymparisto-koodi-versio 1
+        :alku (java.time.LocalDate/of 2019 1 13)
+        :loppu (java.time.LocalDate/of 2019 2 19)}]
       :ajanjakson-tarkenne "Ei tarkennettavia asioita"
       :hankkijan-edustaja
       {:nimi "Heikki Hankkija"
@@ -251,7 +253,9 @@
        :lisatiedot false}
       :muut-oppimisymparisto
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
-        :oppimisymparisto-koodi-versio 1}]
+        :oppimisymparisto-koodi-versio 1
+        :alku (java.time.LocalDate/of 2019 1 13)
+        :loppu (java.time.LocalDate/of 2019 2 19)}]
       :ajanjakson-tarkenne "Ei tarkennettavaa"
       :hankkijan-edustaja
       {:nimi "Harri Hankkija"
@@ -309,7 +313,9 @@
          :lisatiedot false}
         :muut-oppimisymparisto
         [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
-          :oppimisymparisto-koodi-versio 1}]
+          :oppimisymparisto-koodi-versio 1
+          :alku (java.time.LocalDate/of 2019 1 13)
+          :loppu (java.time.LocalDate/of 2019 2 19)}]
         :ajanjakson-tarkenne "Ei tarkennettavia asioita"
         :hankkijan-edustaja
         {:nimi "Heikki Hankkija"
