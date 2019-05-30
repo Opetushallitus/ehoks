@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 29.05.2019 09.05
+Generoitu 30.05.2019 08.51
 
 Katso myös [HOKS doc](https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md)
 
@@ -66,10 +66,10 @@ Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
 | koulutuksen-jarjestaja-arvioijat | [[KoulutuksenJarjestajaArvioija](#KoulutuksenJarjestajaArvioija)] | Näytön tai osaamisen osoittamisen<br>    arvioijat | Ei |
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
 | nayttoymparisto | [Nayttoymparisto](#Nayttoymparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
+| sisallon-kuvaus | [Merkkijono] | Tiivis kuvaus (esim. lista) työtilanteista ja työprosesseista, joiden<br>    avulla ammattitaitovaatimusten tai osaamistavoitteiden mukainen osaaminen<br>    osoitetaan. Vastaavat tiedot muusta osaamisen osoittamisesta siten, että<br>    tieto kuvaa sovittuja tehtäviä ja toimia, joiden avulla osaaminen<br>    osoitetaan. | Kyllä |
 | tyoelama-arvioijat | [[TyoelamaArvioija](#TyoelamaArvioija)] | Näytön tai<br>    osaamisen osoittamisen arvioijat | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tutkinnon osan tai osa-alueen perusteisiin sisältyvät<br>    ammattitaitovaatimukset tai osaamistavoitteet, joista opiskelijan kohdalla<br>    poiketaan. | Ei |
 | osa-alueet | [[KoodistoKoodi](#KoodistoKoodi)] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueiden Koodisto-koodi-URIt<br>         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk | Ei |
-| keskeiset-tyotehtavat-naytto | [Merkkijono] | Keskeiset<br>    työtehtävät | Ei |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa<br>    YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa<br>    YYYY-MM-DD | Kyllä |
 
@@ -630,10 +630,10 @@ Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
 | jarjestaja | [NaytonJarjestaja](#NaytonJarjestaja) | Näytön tai osaamisen osoittamisen järjestäjä | Ei |
 | osaamistavoitteet | [Merkkijono] | Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan.Tunnisteen tyyppi voi vielä päivittyä ja tähän saattaa tulla vielä Yksilölliset arvioinnin kriteerit | Ei |
 | nayttoymparisto | [Nayttoymparisto](#Nayttoymparisto) | Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan | Kyllä |
+| sisallon-kuvaus | [Merkkijono] | Tiivis kuvaus (esim. lista) työtilanteista ja työprosesseista, joiden<br>    avulla ammattitaitovaatimusten tai osaamistavoitteiden mukainen osaaminen<br>    osoitetaan. Vastaavat tiedot muusta osaamisen osoittamisesta siten, että<br>    tieto kuvaa sovittuja tehtäviä ja toimia, joiden avulla osaaminen<br>    osoitetaan. | Kyllä |
 | tyoelama-arvioijat | [[TyoelamaArvioija](#TyoelamaArvioija)] | Näytön tai<br>    osaamisen osoittamisen arvioijat | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tutkinnon osan tai osa-alueen perusteisiin sisältyvät<br>    ammattitaitovaatimukset tai osaamistavoitteet, joista opiskelijan kohdalla<br>    poiketaan. | Ei |
 | osa-alueet | [[KoodistoKoodi](#KoodistoKoodi)] | Suoritettavan tutkinnon osan näyttöön sisältyvänyton osa-alueiden Koodisto-koodi-URIt<br>         eperusteet-järjestelmässä muotoa ammatillisenoppiaineet_xxxesim. ammatillisenoppiaineet_etk | Ei |
-| keskeiset-tyotehtavat-naytto | [Merkkijono] | Keskeiset<br>    työtehtävät | Ei |
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa<br>    YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa<br>    YYYY-MM-DD | Kyllä |
 

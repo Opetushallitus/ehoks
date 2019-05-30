@@ -46,8 +46,8 @@
                             :organisaatio
                             {:nimi "Testiyrityksen Sisar Oy"
                              :y-tunnus "12345689-3"}}]
-      :keskeiset-tyotehtavat-naytto ["Tutkimustyö"
-                                     "Raportointi"]
+      :sisallon-kuvaus ["Tutkimustyö"
+                        "Raportointi"]
       :alku (java.time.LocalDate/of 2019 2 9)
       :loppu (java.time.LocalDate/of 2019 1 10)}]}])
 
@@ -86,8 +86,8 @@
       [{:nimi "Terttu Testihenkilö"
         :organisaatio {:nimi "Testi Oyj"
                        :y-tunnus "1289211-2"}}]
-      :keskeiset-tyotehtavat-naytto ["Testauksen suunnittelu"
-                                     "Jokin toinen testi"]
+      :sisallon-kuvaus ["Testauksen suunnittelu"
+                        "Jokin toinen testi"]
       :alku (java.time.LocalDate/of 2019 2 1)
       :loppu (java.time.LocalDate/of 2019 2 1)}]}])
 
@@ -102,7 +102,7 @@
       :nayttoymparisto {:nimi "Testiympäristö 2"
                         :y-tunnus "12345671-2"
                         :kuvaus "Testi test"}
-      :keskeiset-tyotehtavat-naytto ["Testaus"]
+      :sisallon-kuvaus ["Testaus"]
       :koulutuksen-jarjestaja-arvioijat
       [{:nimi "Timo Testaaja"
         :organisaatio
@@ -195,7 +195,7 @@
         [{:nimi "Tellervo Työntekijä"
           :organisaatio {:nimi "Ab Yhtiö Oy"
                          :y-tunnus "1234128-1"}}]
-        :keskeiset-tyotehtavat-naytto ["Testaus" "Kirjoitus"]
+        :sisallon-kuvaus ["Testaus" "Kirjoitus"]
         :alku (java.time.LocalDate/of 2019 1 4)
         :loppu (java.time.LocalDate/of 2019 3 1)}]}]
     :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590901"
@@ -215,8 +215,8 @@
       [{:nimi "Tapio Testihenkilö"
         :organisaatio {:nimi "Testi Oy"
                        :y-tunnus "1289235-2"}}]
-      :keskeiset-tyotehtavat-naytto ["Testauksen suunnittelu"
-                                     "Jokin toinen testi"]
+      :sisallon-kuvaus ["Testauksen suunnittelu"
+                        "Jokin toinen testi"]
       :alku (java.time.LocalDate/of 2019 3 1)
       :loppu (java.time.LocalDate/of 2019 3 1)}]}])
 
@@ -261,8 +261,8 @@
       :nayttoymparisto {:nimi "Testiympäristö"
                         :y-tunnus "12345678-1"
                         :kuvaus "Test"}
-      :keskeiset-tyotehtavat-naytto ["Renkaanvaihto"
-                                     "Tuulilasin vaihto"]
+      :sisallon-kuvaus ["Renkaanvaihto"
+                        "Tuulilasin vaihto"]
       :koulutuksen-jarjestaja-arvioijat
       [{:nimi "Terttu Testaaja"
         :organisaatio
@@ -323,8 +323,8 @@
         :nayttoymparisto {:nimi "Testiympäristö"
                           :y-tunnus "12345258-1"
                           :kuvaus "Test"}
-        :keskeiset-tyotehtavat-naytto ["Testitehtävä 1"
-                                       "Testitehtävä 2"]
+        :sisallon-kuvaus ["Testitehtävä 1"
+                          "Testitehtävä 2"]
         :koulutuksen-jarjestaja-arvioijat
         [{:nimi "Toivo Testaaja"
           :organisaatio

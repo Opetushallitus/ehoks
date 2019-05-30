@@ -4,3 +4,9 @@ ALTER TABLE muut_oppimisymparistot DROP COLUMN lisatiedot;
 
 ALTER TABLE osaamisen_osoittamiset ADD COLUMN
 vaatimuksista_tai_tavoitteista_poikkeaminen TEXT;
+
+ALTER TABLE osaamisen_osoittamisen_tyotehtavat RENAME TO
+osaamisen_osoittamisen_sisallot;
+
+ALTER TABLE osaamisen_osoittamisen_sisallot RENAME COLUMN
+tyotehtava TO sisallon_kuvaus;

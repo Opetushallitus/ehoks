@@ -171,7 +171,7 @@
   (to-sql
     m
     {:removals [:nayttoymparisto
-                :keskeiset-tyotehtavat-naytto
+                :sisallon-kuvaus
                 :koulutuksen-jarjestaja-arvioijat
                 :tyoelama-arvioijat
                 :osaamistavoitteet
@@ -202,6 +202,9 @@
 
 (defn tyotehtava-from-sql [m]
   (get m :tyotehtava))
+
+(defn sisallon-kuvaus-from-sql [m]
+  (get m :sisallon_kuvaus))
 
 (defn aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]

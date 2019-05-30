@@ -367,15 +367,16 @@
     [queries/select-tyoelama-arvioijat-by-hon-id id]
     {:row-fn h/tyoelama-arvioija-from-sql}))
 
-(defn insert-osaamisen-osoittamisen-tyotehtavat! [hon c]
+(defn insert-osaamisen-osoittamisen-sisallot! [hon c]
   (insert-multi!
-    :osaamisen_osoittamisen_tyotehtavat
-    (map #(hash-map :osaamisen_osoittaminen_id (:id hon) :tyotehtava %) c)))
+    :osaamisen_osoittamisen_sisallot
+    (map #(hash-map :osaamisen_osoittaminen_id (:id hon) :sisallon_kuvaus %)
+         c)))
 
-(defn select-tyotehtavat-by-osaamisen-osoittaminen-id [id]
+(defn select-osaamisen-osoittaminen-by-osaamisen-osoittaminen-id [id]
   (query
-    [queries/select-tyotehtavat-by-osaamisen-osoittaminen-id id]
-    {:row-fn h/tyotehtava-from-sql}))
+    [queries/select-osaamisen-osoittaminen-by-osaamisen-osoittaminen-id id]
+    {:row-fn h/sisallon-kuvaus-from-sql}))
 
 (defn insert-nayttoymparisto! [m]
   (insert-one!

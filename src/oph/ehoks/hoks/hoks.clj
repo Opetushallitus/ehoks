@@ -11,8 +11,9 @@
       (db/select-tyoelama-arvioijat-by-hon-id (:id naytto))
       :nayttoymparisto
       (db/select-nayttoymparisto-by-id (:nayttoymparisto-id naytto))
-      :keskeiset-tyotehtavat-naytto
-      (db/select-tyotehtavat-by-osaamisen-osoittaminen-id (:id naytto))
+      :sisallon-kuvaus
+      (db/select-osaamisen-osoittaminen-by-osaamisen-osoittaminen-id
+        (:id naytto))
       :osa-alueet
       (db/select-osa-alueet-by-osaamisen-osoittaminen (:id naytto)))
     :nayttoymparisto-id))
@@ -289,8 +290,8 @@
       naytto (:koulutuksen-jarjestaja-arvioijat n))
     (save-osaamisen-osoittamisen-tyoelama-arvioijat!
       naytto (:tyoelama-arvioijat n))
-    (db/insert-osaamisen-osoittamisen-tyotehtavat!
-      naytto (:keskeiset-tyotehtavat-naytto n))
+    (db/insert-osaamisen-osoittamisen-sisallot!
+      naytto (:sisallon-kuvaus n))
     (save-osaamisen-osoittamisen-osa-alueet!
       naytto (:osa-alueet n))
     naytto))

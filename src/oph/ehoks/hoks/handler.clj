@@ -142,7 +142,8 @@
       :summary
       "Päivittää HOKSin hankittavan ammatillisen osaamisen arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/HankittavaAmmatillinenTutkinnonOsaKentanPaivitys]
+      :body
+      [values hoks-schema/HankittavaAmmatillinenTutkinnonOsaKentanPaivitys]
       (if (db/update-ppao-values! id values)
         (response/no-content)
         (response/not-found  "PPAO not found with given PPAO ID")))))

@@ -77,7 +77,7 @@
                                       "1.2.246.562.10.00000000002"}
                          :koulutuksen-jarjestaja-arvioijat []
                          :osa-alueet []
-                         :keskeiset-tyotehtavat-naytto []
+                         :sisallon-kuvaus []
                          :nayttoymparisto {:nimi "aaa"}
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
@@ -123,7 +123,7 @@
                                       "1.2.246.562.10.00000000002"}
                          :koulutuksen-jarjestaja-arvioijat []
                          :osa-alueet []
-                         :keskeiset-tyotehtavat-naytto []
+                         :sisallon-kuvaus []
                          :nayttoymparisto {:nimi "aaa"}
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
@@ -152,7 +152,7 @@
                    [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000004"}
                      :koulutuksen-jarjestaja-arvioijat []
                      :osa-alueet []
-                     :keskeiset-tyotehtavat-naytto []
+                     :sisallon-kuvaus []
                      :nayttoymparisto {:nimi "aaaf"}
                      :alku "2018-12-14"
                      :loppu "2018-12-22"
@@ -173,7 +173,7 @@
                          :nayttoymparisto {:nimi "aaa"}
                          :koulutuksen-jarjestaja-arvioijat []
                          :osa-alueet []
-                         :keskeiset-tyotehtavat-naytto []
+                         :sisallon-kuvaus []
                          :alku "2018-12-12"
                          :loppu "2018-12-20"
                          :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
@@ -378,6 +378,7 @@
        :nayttoymparisto {:nimi "aaa"}
        :alku "2018-12-12"
        :loppu "2018-12-20"
+       :sisallon-kuvaus ["Kuvaus"]
        :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
                              {:nimi "Organisaation nimi"}}]}]}]
    :tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
@@ -400,6 +401,7 @@
        :nayttoymparisto {:nimi "aaa2"}
        :alku "2018-12-15"
        :loppu "2018-12-21"
+       :sisallon-kuvaus ["Kuvaus"]
        :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
                              {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"})
@@ -420,6 +422,7 @@
        :nayttoymparisto {:nimi "aaa2"}
        :alku "2018-12-15"
        :loppu "2018-12-21"
+       :sisallon-kuvaus ["Kuvaus"]
        :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
                              {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000011"})

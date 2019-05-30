@@ -233,8 +233,12 @@
          "esim. ammatillisenoppiaineet_etk")
     :nayttoymparisto Nayttoymparisto
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
-    (s/optional-key :keskeiset-tyotehtavat-naytto) [s/Str] "Keskeiset
-    työtehtävät"
+    :sisallon-kuvaus [s/Str]
+    (str "Tiivis kuvaus (esim. lista) työtilanteista ja työprosesseista, joiden
+    avulla ammattitaitovaatimusten tai osaamistavoitteiden mukainen osaaminen
+    osoitetaan. Vastaavat tiedot muusta osaamisen osoittamisesta siten, että
+    tieto kuvaa sovittuja tehtäviä ja toimia, joiden avulla osaaminen
+    osoitetaan.")
     :alku LocalDate
     "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa
     YYYY-MM-DD"
@@ -397,8 +401,8 @@
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
-   (s/optional-key :olennainen-seikka) s/Bool
-   (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
+    (s/optional-key :olennainen-seikka) s/Bool
+    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
    järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
    liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
 
@@ -661,9 +665,9 @@
     :types {:any [HankittavaPaikallinenTutkinnonOsa]}
     :description "Hankittavat paikallisen tutkinnon osat"}
    :osaamisen-hankkimisen-tarve {:methods {:patch :optional}
-                               :types {:any s/Bool}
-                               :description
-                               "Tutkintokoulutuksen ja muun tarvittavan
+                                 :types {:any s/Bool}
+                                 :description
+                                 "Tutkintokoulutuksen ja muun tarvittavan
                                ammattitaidon hankkimisen tarve; osaamisen
                                tunnistamis- ja tunnustamisprosessin
                                lopputulos."}})
