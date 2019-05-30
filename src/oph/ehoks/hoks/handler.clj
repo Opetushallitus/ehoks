@@ -11,12 +11,11 @@
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.external.kayttooikeus :as kayttooikeus]
+            [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.config :refer [config]]
             [schema.core :as s]
             [clojure.data.json :as json]
-            [oph.ehoks.user :as user])
-  (:import (java.time LocalDate)))
+            [oph.ehoks.user :as user]))
 
 (def method-privileges {:get :read
                         :post :write
@@ -268,6 +267,9 @@
         (let [hoks-db (h/save-hoks! hoks)]
           (when (:save-hoks-json? config)
             (write-hoks-json! hoks))
+          (sqs/send-message (sqs/build-hoks-hyvaksytty-msg
+                              (:id hoks-db)
+                              hoks))
           (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
                         :id (:id hoks-db))))
 
