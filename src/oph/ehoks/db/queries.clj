@@ -93,8 +93,11 @@
      :primary-column "id"
      :column "osaamisen_osoittaminen_id"}))
 (defq select-nayttoymparistot-by-id)
-(def select-osaamisen-osoittaminen-by-osaamisen-osoittaminen-id
+(def select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id
   (generate-select-by {:table "osaamisen_osoittamisen_sisallot"
+                       :column "osaamisen_osoittaminen_id"}))
+(def select-osaamisen-osoittamisen-kriteerit-by-osaamisen-osoittaminen-id
+  (generate-select-by {:table "osaamisen_osoittamisen_yksilolliset_kriteerit"
                        :column "osaamisen_osoittaminen_id"}))
 (def select-osaamisen-hankkmistavat-by-ppto-id
   (generate-select-join

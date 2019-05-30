@@ -175,7 +175,8 @@
                 :koulutuksen-jarjestaja-arvioijat
                 :tyoelama-arvioijat
                 :osaamistavoitteet
-                :osa-alueet]
+                :osa-alueet
+                :yksilolliset-kriteerit]
      :replaces {[:jarjestaja :oppilaitos-oid] :jarjestaja-oppilaitos-oid}}))
 
 (defn koodi-uri-from-sql [m]
@@ -205,6 +206,9 @@
 
 (defn sisallon-kuvaus-from-sql [m]
   (get m :sisallon_kuvaus))
+
+(defn yksilolliset-kriteerit-from-sql [m]
+  (get m :yksilollinen_kriteeri))
 
 (defn aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]

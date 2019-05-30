@@ -12,10 +12,13 @@
       :nayttoymparisto
       (db/select-nayttoymparisto-by-id (:nayttoymparisto-id naytto))
       :sisallon-kuvaus
-      (db/select-osaamisen-osoittaminen-by-osaamisen-osoittaminen-id
+      (db/select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id
         (:id naytto))
       :osa-alueet
-      (db/select-osa-alueet-by-osaamisen-osoittaminen (:id naytto)))
+      (db/select-osa-alueet-by-osaamisen-osoittaminen (:id naytto))
+      :yksilolliset-kriteerit
+      (db/select-osaamisen-osoittamisen-kriteerit-by-osaamisen-osoittaminen-id
+        (:id naytto)))
     :nayttoymparisto-id))
 
 (defn get-ooato-tarkentavat-tiedot-naytto [id]
@@ -292,6 +295,8 @@
       naytto (:tyoelama-arvioijat n))
     (db/insert-osaamisen-osoittamisen-sisallot!
       naytto (:sisallon-kuvaus n))
+    (db/insert-osaamisen-osoittamisen-yksilolliset-kriteerit!
+      naytto (:yksilolliset-kriteerit n))
     (save-osaamisen-osoittamisen-osa-alueet!
       naytto (:osa-alueet n))
     naytto))

@@ -64,28 +64,31 @@
 (defn get-new-hoks-url [path]
   (with-hoks hoks (get-hoks-url hoks path)))
 
+(def ppto-data {:nimi "222"
+                 :osaamisen-hankkimistavat []
+                 :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
+                 :olennainen-seikka true
+                 :osaamisen-osoittaminen
+                 [{:jarjestaja {:oppilaitos-oid
+                                "1.2.246.562.10.00000000002"}
+                   :koulutuksen-jarjestaja-arvioijat []
+                   :osa-alueet []
+                   :sisallon-kuvaus ["ensimmäinen sisältö" "toinenkin"]
+                   :nayttoymparisto {:nimi "aaa"}
+                   :alku "2018-12-12"
+                   :loppu "2018-12-20"
+                   :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
+                                         {:nimi "Organisaation nimi"}}]
+                   :vaatimuksista-tai-tavoitteista-poikkeaminen
+                   "Poikkeama onpi tämä."
+                   :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]}]})
+
 (deftest post-and-get-ppto
   (testing "GET newly created hankittava paikallinen tutkinnon osa"
     (db/clear)
     (with-hoks
       hoks
-      (let [ppto-data {:nimi "222"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :osaamisen-osoittaminen
-                       [{:jarjestaja {:oppilaitos-oid
-                                      "1.2.246.562.10.00000000002"}
-                         :koulutuksen-jarjestaja-arvioijat []
-                         :osa-alueet []
-                         :sisallon-kuvaus []
-                         :nayttoymparisto {:nimi "aaa"}
-                         :alku "2018-12-12"
-                         :loppu "2018-12-20"
-                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                               {:nimi "Organisaation nimi"}}]
-                         :vaatimuksista-tai-tavoitteista-poikkeaminen
-                         "Poikkeama onpi tämä."}]}
-            ppto-response
+      (let [ppto-response
             (utils/with-service-ticket
               (create-app nil)
               (-> (mock/request
@@ -115,21 +118,7 @@
   (testing "PATCH all hankittava paikallinen tutkinnon osa"
     (with-hoks
       hoks
-      (let [ppto-data {:nimi "222"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :osaamisen-osoittaminen
-                       [{:jarjestaja {:oppilaitos-oid
-                                      "1.2.246.562.10.00000000002"}
-                         :koulutuksen-jarjestaja-arvioijat []
-                         :osa-alueet []
-                         :sisallon-kuvaus []
-                         :nayttoymparisto {:nimi "aaa"}
-                         :alku "2018-12-12"
-                         :loppu "2018-12-20"
-                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                               {:nimi "Organisaation nimi"}}]}]}
-            ppto-response
+      (let [ppto-response
             (utils/with-service-ticket
               (create-app nil)
               (-> (mock/request
@@ -144,41 +133,14 @@
                   :patch
                   (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1"))
                 (mock/json-body
-                  {:id 1
-                   :nimi "222"
-                   :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000003"
-                   :osaamisen-osoittaminen
-                   [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000004"}
-                     :koulutuksen-jarjestaja-arvioijat []
-                     :osa-alueet []
-                     :sisallon-kuvaus []
-                     :nayttoymparisto {:nimi "aaaf"}
-                     :alku "2018-12-14"
-                     :loppu "2018-12-22"
-                     :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                           {:nimi "Organisaation nimi"}}]}]})))]
+          (assoc ppto-data :nimi "333" :olennainen-seikka false))))]
         (is (= (:status patch-response) 204))))))
 
 (deftest patch-one-ppto
   (testing "PATCH one value hankittava paikallinen tutkinnon osa"
     (with-hoks
       hoks
-      (let [ppto-data {:nimi "222"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :osaamisen-osoittaminen
-                       [{:jarjestaja {:oppilaitos-oid
-                                      "1.2.246.562.10.00000000002"}
-                         :nayttoymparisto {:nimi "aaa"}
-                         :koulutuksen-jarjestaja-arvioijat []
-                         :osa-alueet []
-                         :sisallon-kuvaus []
-                         :alku "2018-12-12"
-                         :loppu "2018-12-20"
-                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                               {:nimi "Organisaation nimi"}}]}]}
-            ppto-response
+      (let [ppto-response
             (utils/with-service-ticket
               (create-app nil)
               (-> (mock/request

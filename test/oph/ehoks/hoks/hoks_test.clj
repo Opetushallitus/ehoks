@@ -48,6 +48,7 @@
                              :y-tunnus "12345689-3"}}]
       :sisallon-kuvaus ["Tutkimustyö"
                         "Raportointi"]
+      :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
       :alku (java.time.LocalDate/of 2019 2 9)
       :loppu (java.time.LocalDate/of 2019 1 10)}]}])
 
@@ -88,6 +89,7 @@
                        :y-tunnus "1289211-2"}}]
       :sisallon-kuvaus ["Testauksen suunnittelu"
                         "Jokin toinen testi"]
+      :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
       :alku (java.time.LocalDate/of 2019 2 1)
       :loppu (java.time.LocalDate/of 2019 2 1)}]}])
 
@@ -103,6 +105,7 @@
                         :y-tunnus "12345671-2"
                         :kuvaus "Testi test"}
       :sisallon-kuvaus ["Testaus"]
+      :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
       :koulutuksen-jarjestaja-arvioijat
       [{:nimi "Timo Testaaja"
         :organisaatio
@@ -196,6 +199,7 @@
           :organisaatio {:nimi "Ab Yhtiö Oy"
                          :y-tunnus "1234128-1"}}]
         :sisallon-kuvaus ["Testaus" "Kirjoitus"]
+        :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
         :alku (java.time.LocalDate/of 2019 1 4)
         :loppu (java.time.LocalDate/of 2019 3 1)}]}]
     :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590901"
@@ -217,6 +221,7 @@
                        :y-tunnus "1289235-2"}}]
       :sisallon-kuvaus ["Testauksen suunnittelu"
                         "Jokin toinen testi"]
+      :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
       :alku (java.time.LocalDate/of 2019 3 1)
       :loppu (java.time.LocalDate/of 2019 3 1)}]}])
 
@@ -263,6 +268,7 @@
                         :kuvaus "Test"}
       :sisallon-kuvaus ["Renkaanvaihto"
                         "Tuulilasin vaihto"]
+      :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
       :koulutuksen-jarjestaja-arvioijat
       [{:nimi "Terttu Testaaja"
         :organisaatio
@@ -325,6 +331,7 @@
                           :kuvaus "Test"}
         :sisallon-kuvaus ["Testitehtävä 1"
                           "Testitehtävä 2"]
+        :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
         :koulutuksen-jarjestaja-arvioijat
         [{:nimi "Toivo Testaaja"
           :organisaatio

@@ -253,7 +253,11 @@
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     (str "Tutkinnon osan tai osa-alueen perusteisiin sisältyvät
     ammattitaitovaatimukset tai osaamistavoitteet, joista opiskelijan kohdalla
-    poiketaan.")))
+    poiketaan.")
+    (s/optional-key :yksilolliset-kriteerit) [s/Str]
+    (str "Ammattitaitovaatimus tai osaamistavoite, johon yksilölliset
+    arviointikriteerit kohdistuvat ja yksilölliset arviointikriteerit kyseiseen
+    ammattitaitovaatimukseen tai osaamistavoitteeseen.")))
 
 (s/defschema
   YTOOsaamisenOsoittaminen

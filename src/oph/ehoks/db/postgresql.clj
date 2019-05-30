@@ -373,10 +373,23 @@
     (map #(hash-map :osaamisen_osoittaminen_id (:id hon) :sisallon_kuvaus %)
          c)))
 
-(defn select-osaamisen-osoittaminen-by-osaamisen-osoittaminen-id [id]
+(defn select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id [id]
   (query
-    [queries/select-osaamisen-osoittaminen-by-osaamisen-osoittaminen-id id]
+    [queries/select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id
+     id]
     {:row-fn h/sisallon-kuvaus-from-sql}))
+
+(defn insert-osaamisen-osoittamisen-yksilolliset-kriteerit! [hon c]
+  (insert-multi!
+    :osaamisen_osoittamisen_yksilolliset_kriteerit
+    (map #(hash-map :osaamisen_osoittaminen_id (:id hon)
+                    :yksilollinen_kriteeri %) c)))
+
+(defn select-osaamisen-osoittamisen-kriteerit-by-osaamisen-osoittaminen-id [id]
+  (query
+    [queries/select-osaamisen-osoittamisen-kriteeri-by-osaamisen-osoittaminen-id
+     id]
+    {:row-fn h/yksilolliset-kriteerit-from-sql}))
 
 (defn insert-nayttoymparisto! [m]
   (insert-one!
