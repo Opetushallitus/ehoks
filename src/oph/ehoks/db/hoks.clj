@@ -114,7 +114,7 @@
 (defn tyopaikalla-jarjestettava-koulutus-to-sql [m]
   (to-sql
     m
-    {:removals [:muut-osallistujat :keskeiset-tyotehtavat]
+    {:removals [:keskeiset-tyotehtavat]
      :replaces
      {[:vastuullinen-ohjaaja :nimi] :vastuullinen-ohjaaja-nimi
       [:vastuullinen-ohjaaja :sahkoposti] :vastuullinen-ohjaaja-sahkoposti}}))
