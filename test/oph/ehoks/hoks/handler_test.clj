@@ -461,7 +461,7 @@
    {:lahetetty-arvioitavaksi "2020-01-01"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Nimi Muutettu"
-      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453555555"}}
      {:nimi "Joku Tyyppi"
       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921000"}}]}
 
