@@ -475,6 +475,20 @@
      :alku "2018-01-01"
      :loppu "2021-01-01"}]})
 
+(defn- assert-ooato-data-is-patched-correctly [updated-data old-data]
+  (is (= (:tutkinnon-osa-koodi-versio updated-data) 3000))
+  (is (= (:valittu-todentamisen-prosessi-koodi-versio updated-data)
+         (:valittu-todentamisen-prosessi-koodi-versio old-data)))
+  (is (= (:tarkentavat-tiedot-arvioija updated-data)
+         (:tarkentavat-tiedot-arvioija multiple-ooato-values-patched)))
+  (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
+        ttn-patch-values
+        (assoc (first (:tarkentavat-tiedot-naytto
+                        multiple-ooato-values-patched))
+          :keskeiset-tyotehtavat-naytto [] :osa-alueet []
+          :tyoelama-arvioijat [])]
+    (is (= ttn-after-update ttn-patch-values))))
+
 (deftest patch-multiple-olemassa-olevat-ammatilliset-tutkinnon-osat
   (testing "Patching multiple values of ooato"
     (with-hoks
@@ -487,9 +501,7 @@
         (is (= (:status post-response) 200))
         (is (= (:status patch-response) 204))
         (is (= (:status get-response) 200))
-        (is (= (:tutkinnon-osa-koodi-versio get-response-data) 3000))
-        ;;TODO more asserts
-        ))))
+        (assert-ooato-data-is-patched-correctly get-response-data ooato-data)))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
