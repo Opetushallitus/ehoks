@@ -10,7 +10,7 @@
   (let [x (get-value m)]
     (if (map? x)
       (select-keys x [:path :childs])
-    x)))
+      x)))
 
 (defn filter-paths [t]
   (walk/prewalk leave-path t))

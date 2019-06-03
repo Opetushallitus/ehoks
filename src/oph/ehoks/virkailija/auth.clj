@@ -1,6 +1,5 @@
 (ns oph.ehoks.virkailija.auth
   (:require [compojure.api.sweet :as c-api]
-            [compojure.api.core :refer [route-middleware]]
             [schema.core :as s]
             [ring.util.http-response :as response]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
@@ -8,8 +7,6 @@
             [oph.ehoks.user :as user]
             [oph.ehoks.external.oph-url :as u]
             [clojure.tools.logging :as log]))
-
-(defn get-ticket-user [ticket])
 
 (def routes
   (c-api/context "/session" []

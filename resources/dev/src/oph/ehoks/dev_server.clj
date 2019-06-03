@@ -1,17 +1,20 @@
 (ns oph.ehoks.dev-server
   (:require [oph.ehoks.ehoks-app :as ehoks-app]
+            [oph.ehoks.db.migrations :as m]
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.mock-routes :as mock]
+            [oph.ehoks.db.postgresql :as p]
+            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.mock-gen :as mock-gen]
             [compojure.core :refer [GET defroutes routes]]
             [ring.util.http-response :refer [ok not-found]]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.reload :refer [wrap-reload]]
-            [oph.ehoks.config :refer [config]]
-            [clojure.java.io :as io]
-            [clojure.string :as c-str]
-            [oph.ehoks.mock-routes :as mock]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.params :refer [wrap-params]]
-            [clojure.tools.logging :as log]
-            [oph.ehoks.db.migrations :as m]))
+            [clojure.string :as c-str]
+            [clojure.java.io :as io]
+            [clojure.tools.logging :as log]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -54,10 +57,10 @@
 (defn wrap-dev-cors [handler]
   (fn
     ([request respond raise]
-       (handler
-         request
-         (fn [response] (respond (set-cors response)))
-         raise))
+      (handler
+        request
+        (fn [response] (respond (set-cors response)))
+        raise))
     ([request]
       (let [response (handler request)]
         (set-cors response)))))
@@ -69,26 +72,41 @@
       (wrap-reload #'dev-routes)
       (wrap-reload #'ehoks-app/app))))
 
+(defn rand-str [max-len]
+  (c-str/capitalize
+    (apply
+      str
+      (take
+        (inc (rand-int (dec max-len)))
+        (repeatedly #(char (+ (rand 26) 65)))))))
+
+(defn populate-oppijaindex []
+  (future
+    (log/info "Updating oppijaindex")
+    (oppijaindex/update-oppijat-without-index!)
+    (oppijaindex/update-opiskeluoikeudet-without-index!)
+    (log/info "Updating oppijaindex finished")))
+
 (defn start-server
   ([config-file]
-   (when (some? config-file)
-     (System/setProperty "config" config-file)
-     (require 'oph.ehoks.config :reload)
-     (when (.endsWith (:opintopolku-host config) "opintopolku.fi")
-       (println "Using prod urls")
-       (System/setProperty
-         "services_file" "resources/prod/services-oph.properties"))
-     (require 'oph.ehoks.external.oph-url :reload))
-   (log/info "Running migrations")
-   (m/migrate!)
-   (log/info "Starting development server...")
-   (log/info "Not safe for production or public environments.")
-   (jetty/run-jetty dev-app
-                    {:port (:port config)
-                     :join? false
-                     :async? true}))
+    (when (some? config-file)
+      (System/setProperty "config" config-file)
+      (require 'oph.ehoks.config :reload)
+      (when (.endsWith (:opintopolku-host config) "opintopolku.fi")
+        (println "Using prod urls")
+        (System/setProperty
+          "services_file" "resources/prod/services-oph.properties"))
+      (require 'oph.ehoks.external.oph-url :reload))
+    (log/info "Running migrations")
+    (m/migrate!)
+    (log/info "Starting development server...")
+    (log/info "Not safe for production or public environments.")
+    (populate-oppijaindex)
+    (jetty/run-jetty dev-app
+                     {:port (:port config)
+                      :join? false
+                      :async? true}))
   ([] (start-server nil)))
-
 
 (defn -main []
   (start-server))
