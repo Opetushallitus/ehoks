@@ -485,8 +485,8 @@
         ttn-patch-values
         (assoc (first (:tarkentavat-tiedot-naytto
                         multiple-ooato-values-patched))
-          :keskeiset-tyotehtavat-naytto [] :osa-alueet []
-          :tyoelama-arvioijat [])]
+               :keskeiset-tyotehtavat-naytto []
+               :osa-alueet [] :tyoelama-arvioijat [])]
     (is (= ttn-after-update ttn-patch-values))))
 
 (deftest patch-multiple-olemassa-olevat-ammatilliset-tutkinnon-osat
@@ -494,14 +494,17 @@
     (with-hoks
       hoks
       (let [app (create-app nil)
-            post-response (create-mock-post-request ooato-path ooato-data app hoks)
-            patch-response (create-mock-patch-request ooato-path app multiple-ooato-values-patched)
+            post-response (create-mock-post-request
+                            ooato-path ooato-data app hoks)
+            patch-response (create-mock-patch-request
+                             ooato-path app multiple-ooato-values-patched)
             get-response (create-mock-get-request ooato-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status post-response) 200))
         (is (= (:status patch-response) 204))
         (is (= (:status get-response) 200))
-        (assert-ooato-data-is-patched-correctly get-response-data ooato-data)))))
+        (assert-ooato-data-is-patched-correctly
+          get-response-data ooato-data)))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
