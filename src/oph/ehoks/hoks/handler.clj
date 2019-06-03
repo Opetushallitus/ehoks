@@ -11,7 +11,6 @@
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.external.kayttooikeus :as kayttooikeus]
             [oph.ehoks.config :refer [config]]
             [schema.core :as s]
             [clojure.data.json :as json]
