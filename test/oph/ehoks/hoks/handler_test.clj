@@ -373,7 +373,9 @@
    {:lahetetty-arvioitavaksi "2019-03-18"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Erkki Esimerkki"
-      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}
+     {:nimi "Joku Tyyppi"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921000"}}]}
 
    :tarkentavat-tiedot-naytto
    [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_fy"
@@ -394,20 +396,30 @@
      :alku "2019-02-09"
      :loppu "2019-01-12"}]})
 
-(defn- create-mock-post-request [url body app hoks]
+(defn- create-mock-post-request [path body app hoks]
   (utils/with-service-ticket
     app
     (-> (mock/request
           :post
-          (get-hoks-url hoks url))
+          (get-hoks-url hoks path))
         (mock/json-body body))))
 
-(defn- create-mock-get-request [url app hoks]
+(defn- create-mock-get-request [path app hoks]
   (utils/with-service-ticket
     app
     (mock/request
       :get
-      (get-hoks-url hoks (str url "/1")))))
+      (get-hoks-url hoks (str path "/1")))))
+
+(defn- create-mock-patch-request [path app patched-data]
+  (utils/with-service-ticket
+    app
+    (-> (mock/request
+          :patch
+          (format
+            "%s/1/%s/1"
+            url path))
+        (mock/json-body patched-data))))
 
 (deftest post-and-get-olemassa-olevat-ammatilliset-tutkinnon-osat
   (testing "POST ooato and then get the created ooato"
@@ -428,7 +440,59 @@
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
-            {:meta {} :data ooato-data})))))
+            {:meta {} :data (assoc ooato-data :id 1)})))))
+
+(def ^:private multiple-ooato-values-patched
+  {:tutkinnon-osa-koodi-versio 3000
+
+   :tarkentavat-tiedot-arvioija
+   {:lahetetty-arvioitavaksi "2020-01-01"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Nimi Muutettu"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453555555"}}
+     {:nimi "Joku Tyyppi"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921000"}}]}
+
+   :tarkentavat-tiedot-naytto
+   [{:koulutuksen-jarjestaja-arvioijat
+     [{:nimi "Muutettu Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
+     :nayttoymparisto {:nimi "Testi Oy"
+                       :y-tunnus "12345699-2"
+                       :kuvaus "Testiyrityksen testiosasostalla"}
+     :alku "2018-01-01"
+     :loppu "2021-01-01"}]})
+
+(defn- assert-ooato-data-is-patched-correctly [updated-data old-data]
+  (is (= (:tutkinnon-osa-koodi-versio updated-data) 3000))
+  (is (= (:valittu-todentamisen-prosessi-koodi-versio updated-data)
+         (:valittu-todentamisen-prosessi-koodi-versio old-data)))
+  (is (= (:tarkentavat-tiedot-arvioija updated-data)
+         (:tarkentavat-tiedot-arvioija multiple-ooato-values-patched)))
+  (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
+        ttn-patch-values
+        (assoc (first (:tarkentavat-tiedot-naytto
+                        multiple-ooato-values-patched))
+               :keskeiset-tyotehtavat-naytto []
+               :osa-alueet [] :tyoelama-arvioijat [])]
+    (is (= ttn-after-update ttn-patch-values))))
+
+(deftest patch-multiple-olemassa-olevat-ammatilliset-tutkinnon-osat
+  (testing "Patching multiple values of ooato"
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            ooato-path ooato-data app hoks)
+            patch-response (create-mock-patch-request
+                             ooato-path app multiple-ooato-values-patched)
+            get-response (create-mock-get-request ooato-path app hoks)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
+        (is (= (:status post-response) 200))
+        (is (= (:status patch-response) 204))
+        (is (= (:status get-response) 200))
+        (assert-ooato-data-is-patched-correctly
+          get-response-data ooato-data)))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
