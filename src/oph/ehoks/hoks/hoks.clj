@@ -428,17 +428,17 @@
     #(save-olemassa-oleva-yhteinen-tutkinnon-osa! (assoc % :hoks-id (:id h)))
     c))
 
-(defn save-ooato-tarkentavat-tiedot-naytto! [ooato c]
+(defn save-ooato-tarkentavat-tiedot-naytto! [ooato-id new-values]
   (mapv
     #(let [n (save-hankitun-osaamisen-naytto! %)]
-       (db/insert-ooato-hankitun-osaamisen-naytto! ooato n)
+       (db/insert-olemassa-olevan-ammatillisen-tutkinnon-osan-naytto! ooato-id n)
        n)
-    c))
+    new-values))
 
-(defn save-tta-aiemmin-hankitun-osaamisen-arvioijat! [tta c]
+(defn save-tta-aiemmin-hankitun-osaamisen-arvioijat! [tta-id new-arvioijat]
   (mapv
-    #(db/insert-todennettu-arviointi-arvioija! tta %)
-    (db/insert-koulutuksen-jarjestaja-arvioijat! c)))
+    #(db/insert-todennettu-arviointi-arvioijat! tta-id (:id %))
+    (db/insert-koulutuksen-jarjestaja-arvioijat! new-arvioijat)))
 
 (defn save-ooato-tarkentavat-tiedot-arvioija! [m]
   (let [tta (db/insert-todennettu-arviointi-lisatiedot! m)]

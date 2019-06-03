@@ -108,11 +108,11 @@
     [queries/select-arvioijat-by-todennettu-arviointi-id id]
     {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
 
-(defn insert-todennettu-arviointi-arvioija! [tta m]
+(defn insert-todennettu-arviointi-arvioijat! [tta-id arvioija-id]
   (insert-one!
     :todennettu_arviointi_arvioijat
-    {:todennettu_arviointi_lisatiedot_id (:id tta)
-     :koulutuksen_jarjestaja_arvioija_id (:id m)}))
+    {:todennettu_arviointi_lisatiedot_id tta-id
+     :koulutuksen_jarjestaja_arvioija_id arvioija-id}))
 
 (defn insert-koulutuksen-jarjestaja-arvioijat! [c]
   (insert-multi!
@@ -132,10 +132,10 @@
     [queries/select-hankitun-osaamisen-naytot-by-ooato-id id]
     {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
 
-(defn insert-ooato-hankitun-osaamisen-naytto! [ooato n]
+(defn insert-olemassa-olevan-ammatillisen-tutkinnon-osan-naytto! [ooato-id n]
   (insert-one!
     :olemassa_olevan_ammatillisen_tutkinnon_osan_naytto
-    {:olemassa_oleva_ammatillinen_tutkinnon_osa_id (:id ooato)
+    {:olemassa_oleva_ammatillinen_tutkinnon_osa_id ooato-id
      :hankitun_osaamisen_naytto_id (:id n)}))
 
 (defn insert-ooyto-hankitun-osaamisen-naytto! [ooyto n]
