@@ -127,11 +127,11 @@
     [queries/select-arvioijat-by-todennettu-arviointi-id id]
     {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
 
-(defn insert-todennettu-arviointi-arvioija! [tta m]
+(defn insert-todennettu-arviointi-arvioijat! [tta-id arvioija-id]
   (insert-one!
     :todennettu_arviointi_arvioijat
-    {:todennettu_arviointi_lisatiedot_id (:id tta)
-     :koulutuksen_jarjestaja_arvioija_id (:id m)}))
+    {:todennettu_arviointi_lisatiedot_id tta-id
+     :koulutuksen_jarjestaja_arvioija_id arvioija-id}))
 
 (defn insert-koulutuksen-jarjestaja-arvioijat! [c]
   (insert-multi!
@@ -151,10 +151,10 @@
     [queries/select-hankitun-osaamisen-naytot-by-ooato-id id]
     {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
 
-(defn insert-ooato-hankitun-osaamisen-naytto! [ooato n]
+(defn insert-olemassa-olevan-ammatillisen-tutkinnon-osan-naytto! [ooato-id n]
   (insert-one!
     :olemassa_olevan_ammatillisen_tutkinnon_osan_naytto
-    {:olemassa_oleva_ammatillinen_tutkinnon_osa_id (:id ooato)
+    {:olemassa_oleva_ammatillinen_tutkinnon_osa_id ooato-id
      :hankitun_osaamisen_naytto_id (:id n)}))
 
 (defn insert-ooyto-hankitun-osaamisen-naytto! [ooyto n]
@@ -549,6 +549,28 @@
     :puuttuvat_ammatilliset_tutkinnon_osat
     (h/puuttuva-ammatillinen-tutkinnon-osa-to-sql m)
     ["id = ? AND deleted_at IS NULL" id]))
+
+(defn update-olemassa-oleva-ammatillinen-tutkinnon-osat-by-id! [id new-values]
+  (update!
+    :olemassa_olevat_ammatilliset_tutkinnon_osat
+    (h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql new-values)
+    ["id = ? AND deleted_at IS NULL" id]))
+
+(defn update-todennettu-arviointi-lisatiedot-by-id! [id new-values]
+  (update!
+    :todennettu_arviointi_lisatiedot
+    (h/todennettu-arviointi-lisatiedot-to-sql new-values)
+    ["id = ? AND deleted_at IS NULL" id]))
+
+(defn delete-todennettu-arviointi-arvioijat-by-tta-id! [id]
+  (shallow-delete!
+    :todennettu_arviointi_arvioijat
+    ["todennettu_arviointi_lisatiedot_id = ?" id]))
+
+(defn delete-olemassa-olevan-ammatillisen-tutkinnon-osan-naytto-by-id! [id]
+  (shallow-delete!
+    :olemassa_olevan_ammatillisen_tutkinnon_osan_naytto
+    ["olemassa_oleva_ammatillinen_tutkinnon_osa_id = ?" id]))
 
 (defn insert-puuttuvan-ammatillisen-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]
