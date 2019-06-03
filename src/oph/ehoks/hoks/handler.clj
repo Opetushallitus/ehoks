@@ -201,8 +201,9 @@
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
       :body [values hoks-schema/OlemassaOlevanAmmatillisenTutkinnonOsanPaivitys]
-      (if-let
-        [ooato-from-db (h/get-olemassa-oleva-ammatillinen-tutkinnon-osa id)]
+      (if-let [ooato-from-db
+               (pdb/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-id
+                 id)]
         (do
           (h/update-olemassa-oleva-ammatillinen-tutkinnon-osa!
             ooato-from-db values)
