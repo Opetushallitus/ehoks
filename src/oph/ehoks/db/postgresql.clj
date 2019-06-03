@@ -537,8 +537,21 @@
     (h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" id]))
 
-(defn delete-tarkentavat-tiedot-arvioija-by-ooato-id! [id]
-  ())
+(defn update-todennettu-arviointi-lisatiedot-by-id! [id new-values]
+  (update!
+    :todennettu_arviointi_lisatiedot
+    (h/todennettu-arviointi-lisatiedot-to-sql new-values)
+    ["id = ? AND deleted_at IS NULL" id]))
+
+(defn delete-todennettu-arviointi-arvioijat-by-tta-id! [id]
+  (shallow-delete!
+    :todennettu_arviointi_arvioijat
+    ["todennettu_arviointi_lisatiedot_id = ?" id]))
+
+(defn delete-olemassa-olevan-ammatillisen-tutkinnon-osan-naytto-by-id! [id]
+  (shallow-delete!
+    :olemassa_olevan_ammatillisen_tutkinnon_osan_naytto
+    ["olemassa_oleva_ammatillinen_tutkinnon_osa_id = ?" id]))
 
 (defn insert-puuttuvan-ammatillisen-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]
