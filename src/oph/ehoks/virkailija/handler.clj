@@ -80,6 +80,14 @@
           {:error (str "User privileges does not match oppija opiskeluoikeus "
                        "organisation")})))))
 
+(defn- check-hoks-access! [hoks request]
+  (when-not (virkailija-has-access?
+              (get-in request [:session :virkailija-user])
+              (:oppija-oid hoks))
+    (response/forbidden!
+      {:error (str "User privileges does not match oppija opiskeluoikeus "
+                   "organisation")})))
+
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
@@ -209,26 +217,45 @@
                             Koodisto-Koodi-Urilla."
                   :return (restful/response [s/Any])
                   (restful/rest-ok
-                    (eperusteet/find-tutkinnon-osat koodi-uri))))))
-
-          (route-middleware
-            [wrap-virkailija-authorize wrap-oph-super-user]
+                    (eperusteet/find-tutkinnon-osat koodi-uri)))))
 
             (c-api/context "/hoksit" []
 
-              (c-api/GET "/" []
-                :summary "Kaikki hoksit (perustiedot)"
-                (restful/rest-ok (db/select-hoksit)))
+              (c-api/POST "/" [:as request]
+                :summary "Luo uuden HOKSin. Vaatii manuaalisyöttäjän oikeudet"
+                :body [hoks hoks-schema/HOKSLuonti]
+                :return (restful/response schema/POSTResponse :id s/Int)
+                (check-hoks-access! hoks request)
+                (when (seq (pdb/select-hoksit-by-opiskeluoikeus-oid
+                             (:opiskeluoikeus-oid hoks)))
+                  (response/bad-request!
+                    {:error (str "HOKS with the same opiskeluoikeus-oid "
+                                 "already exists")}))
+                (let [hoks-db (h/save-hoks! hoks)]
+                  (restful/rest-ok
+                    {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
+                    :id (:id hoks-db))))
 
               (c-api/GET "/:hoks-id" []
                 :path-params [hoks-id :- s/Int]
-                :summary "Hoksin tiedot"
-                (restful/rest-ok (h/get-hoks-by-id hoks-id))))
+                :summary "Hoksin tiedot. Vaatii manuaalisyöttäjän oikeudet"
+                (restful/rest-ok (h/get-hoks-by-id hoks-id)))
 
-            (c-api/DELETE "/cache" []
-              :summary "Välimuistin tyhjennys"
-              (c/clear-cache!)
-              (response/ok))))
+              (route-middleware
+                [wrap-oph-super-user]
+
+                (c-api/GET "/" []
+                  :summary "Kaikki hoksit (perustiedot).
+                         Tarvitsee OPH-pääkäyttäjän oikeudet"
+                  (restful/rest-ok (db/select-hoksit)))))
+
+            (route-middleware
+              [wrap-oph-super-user]
+
+              (c-api/DELETE "/cache" []
+                :summary "Välimuistin tyhjennys"
+                (c/clear-cache!)
+                (response/ok)))))
 
         healthcheck-handler/routes
         misc-handler/routes))
