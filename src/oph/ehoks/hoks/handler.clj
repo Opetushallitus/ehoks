@@ -67,6 +67,8 @@
              hoks
              ticket-user
              (get method-privileges (:request-method request))))
+        (log/warnf "User %s has no access to hoks %d"
+                   (:username ticket-user) (:id hoks))
         (response/unauthorized!
           {:error (str "No access is allowed. Check Opintopolku privileges and "
                        "'opiskeluoikeus'")})))))
@@ -87,19 +89,31 @@
           (respond response/not-found {:error "HOKS not found"})
           (if (user-has-access? request hoks)
             (handler request respond raise)
-            (respond
-              response/unauthorized
-              {:error (str "No access is allowed. Check Opintopolku privileges "
-                           " and 'opiskeluoikeus'")})))))
+            (do
+              (log/warnf
+                "User %s has no access to hoks %d with opiskeluoikeus %s"
+                (get-in request [:service-ticket-user :username])
+                (:id hoks)
+                (:opiskeluoikeus-oid hoks))
+              (respond
+                (response/unauthorized
+                  {:error (str "No access is allowed. Check Opintopolku "
+                               "privileges and 'opiskeluoikeus'")})))))))
     ([request]
       (let [hoks (:hoks request)]
         (if (nil? hoks)
           (response/not-found {:error "HOKS not found"})
           (if (user-has-access? request hoks)
             (handler request)
-            (response/unauthorized
-              {:error (str "No access is allowed. Check Opintopolku privileges "
-                           " and 'opiskeluoikeus'")})))))))
+            (do
+              (log/warnf
+                "User %s has no access to hoks %d with opiskeluoikeus %s"
+                (get-in request [:service-ticket-user :username])
+                (:id hoks)
+                (:opiskeluoikeus-oid hoks))
+              (response/unauthorized
+                {:error (str "No access is allowed. Check Opintopolku "
+                             "privileges and 'opiskeluoikeus'")}))))))))
 
 (defn add-hoks [request]
   (let [hoks-id (Integer/parseInt (get-in request [:route-params :hoks-id]))
