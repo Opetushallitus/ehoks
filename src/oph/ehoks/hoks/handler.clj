@@ -67,8 +67,10 @@
              hoks
              ticket-user
              (get method-privileges (:request-method request))))
-        (log/warnf "User %s has no access to hoks %d"
-                   (:username ticket-user) (:id hoks))
+        (log/warnf "User %s has no access to hoks %d with opiskeluoikeus %s"
+                   (:username ticket-user)
+                   (:id hoks)
+                   (:opiskeluoikeus-oid hoks))
         (response/unauthorized!
           {:error (str "No access is allowed. Check Opintopolku privileges and "
                        "'opiskeluoikeus'")})))))
