@@ -366,8 +366,8 @@
        (db/insert-oopto-arvioija! oopto-id (:id a)))
     arvioijat))
 
-(defn save-olemassa-oleva-paikallinen-tutkinnon-osa! [oopto]
-  (let [oopto-db (db/insert-olemassa-oleva-paikallinen-tutkinnon-osa! oopto)]
+(defn save-olemassa-oleva-paikallinen-tutkinnon-osa! [hoks-id oopto]
+  (let [oopto-db (db/insert-olemassa-oleva-paikallinen-tutkinnon-osa! (assoc oopto :hoks-id hoks-id))]
     (assoc
       oopto-db
       :tarkentavat-tiedot-arvioija
@@ -382,10 +382,9 @@
       (save-oopto-tarkentavat-tiedot-naytto!
         (:id oopto-db) (:tarkentavat-tiedot-naytto oopto)))))
 
-(defn save-olemassa-olevat-paikalliset-tutkinnon-osat! [h c]
+(defn save-olemassa-olevat-paikalliset-tutkinnon-osat! [hoks c]
   (mapv
-    #(save-olemassa-oleva-paikallinen-tutkinnon-osa!
-       (assoc % :hoks-id (:id h)))
+    #(save-olemassa-oleva-paikallinen-tutkinnon-osa! (:id hoks) %)
     c))
 
 (defn save-ooyto-tarkentavat-tiedot-naytto! [ooyto c]
