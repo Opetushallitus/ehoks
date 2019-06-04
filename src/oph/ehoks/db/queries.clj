@@ -38,6 +38,17 @@
 (defq select-hoksit-by-opiskeluoikeus-oid)
 (defq select-hoksit-by-eid)
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")
+(defq select-hoks-oppijat-without-index
+      "hoksit/select_oppija_oids_without_info.sql")
+(defq select-hoks-opiskeluoikeudet-without-index
+      "hoksit/select_opiskeluoikeus_oids_without_info.sql")
+(defq select-oppilaitos-oppijat
+      "oppijat/select_oppilaitos_oppijat.sql")
+(defq select-oppilaitos-oppijat-search-count
+      "oppijat/select_oppilaitos_oppijat_search_count.sql")
+(defq select-opiskeluoikeudet-by-oppija-oid
+      "oppijat/select_opiskeluoikeudet_by_oppija_oid.sql")
+(defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id)
 (def select-osaamisen-osoittamiset-by-ooato-id
   (generate-select-join
@@ -146,6 +157,7 @@
     {:table "aiemmin_hankitut_yto_osa_alueet"
      :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
 (defq select-hankittavat-ammat-tutkinnon-osat-by-hoks-id)
+(defq select-hankittavat-ammat-tutkinnon-osat-by-id)
 (def select-osaamisen-osoittamiset-by-pato-id
   (generate-select-join
     {:table "osaamisen_osoittamiset"

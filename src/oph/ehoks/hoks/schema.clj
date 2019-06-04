@@ -574,15 +574,23 @@
   AiemminHankittuAmmatillinenTutkinnonOsa
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
-    "Aiemmin hankittu yhteinen tutkinnon osa"
+    "Aiemmin hankittu ammatillisen tutkinnon osa"
     {:removed [:osa-alueet]
      :added
      (describe
        ""
        (s/optional-key :olennainen-seikka) s/Bool
        (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
-       järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
-       liittyvän osaamisen hankkimisessa tai osoittamisessa."))}))
+      järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
+      liittyvän osaamisen hankkimisessa tai osoittamisessa."))}))
+
+(s/defschema
+  AiemminHankittuAmmatillinenTutkinnonOsanLuonti
+  (modify
+    AiemminHankittuAmmatillinenTutkinnonOsa
+    (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot uutta"
+         "merkintää luotaessa (POST)")
+    {:removed [:id]}))
 
 (def HOKSModel
   ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"

@@ -25,6 +25,8 @@
 (defn query
   ([queries opts]
     (jdbc/query {:connection-uri (:database-url config)} queries opts))
+  ([queries]
+    (query queries {}))
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
 
@@ -89,6 +91,25 @@
 
 (defn update-hoks-by-id! [id hoks]
   (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
+
+(defn select-hoks-oppijat-without-index []
+  (query
+    [queries/select-hoks-oppijat-without-index]))
+
+(defn select-hoks-opiskeluoikeudet-without-index []
+  (query
+    [queries/select-hoks-opiskeluoikeudet-without-index]))
+
+(defn select-opiskeluoikeudet-by-oppija-oid [oppija-oid]
+  (query
+    [queries/select-opiskeluoikeudet-by-oppija-oid oppija-oid]
+    {:row-fn h/from-sql}))
+
+(defn insert-oppija [oppija]
+  (insert-one! :oppijat (h/to-sql oppija)))
+
+(defn insert-opiskeluoikeus [opiskeluoikeus]
+  (insert-one! :opiskeluoikeudet (h/to-sql opiskeluoikeus)))
 
 (defn select-todennettu-arviointi-lisatiedot-by-id [id]
   (first
@@ -157,6 +178,13 @@
   (query
     [queries/select-osa-alueet-by-osaamisen-osoittaminen naytto-id]
     {:row-fn h/koodi-uri-from-sql}))
+
+(defn select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id [id]
+  (->
+    (query [queries/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id
+            id])
+    first
+    h/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql))
 
 (defn select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id [id]
   (query
@@ -477,6 +505,13 @@
     :hankittavat_ammat_tutkinnon_osat
     (h/hankittava-ammat-tutkinnon-osa-to-sql m)))
 
+(defn select-hankittava-ammat-tutkinnon-osa-by-id [id]
+  (->
+    (query
+      [queries/select-hankittavat-ammat-tutkinnon-osat-by-id id])
+    first
+    h/hankittava-ammat-tutkinnon-osa-from-sql))
+
 (defn select-hankittavat-ammat-tutkinnon-osat-by-hoks-id [id]
   (query
     [queries/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id id]
@@ -492,6 +527,26 @@
   (query
     [queries/select-osaamisen-osoittamiset-by-pato-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
+
+(defn delete-osaamisen-hankkimistavat-by-pato-id!
+  "Hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat"
+  [id]
+  (shallow-delete!
+    :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
+    ["hankittava_ammat_tutkinnon_osa_id = ?" id]))
+
+(defn delete-osaamisen-osoittamiset-by-pato-id!
+  "Hankittavan ammatillisen tutkinnon osan hankitun osaamisen näytöt"
+  [id]
+  (shallow-delete!
+    :hankittavan_ammat_tutkinnon_osan_naytto
+    ["hankittava_ammat_tutkinnon_osa_id = ?" id]))
+
+(defn update-hankittava-ammat-tutkinnon-osa-by-id! [id m]
+  (update!
+    :hankittavat_ammat_tutkinnon_osat
+    (h/hankittava-ammat-tutkinnon-osa-to-sql m)
+    ["id = ? AND deleted_at IS NULL" id]))
 
 (defn insert-hankittavan-ammat-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]

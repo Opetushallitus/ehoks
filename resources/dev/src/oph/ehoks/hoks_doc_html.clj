@@ -62,7 +62,7 @@
         a (g/get-access v method)]
     (when (not= a :excluded)
       [:span
-       (gen-type-element t)", " (gen-access-str a)])))
+       (gen-type-element t) ", " (gen-access-str a)])))
 
 (defn generate-restful-header [m-meta]
   [:div
@@ -99,13 +99,13 @@
     vector
     :div
     (mapv
-     (fn [s]
-       (let [m (deref s)
-             m-meta (meta m)]
-         [:div {:class "model" :id (:name m-meta)}
-          (generate-restful-header m-meta)
-          (generate-restful-table m)]))
-     (vals s-col))))
+      (fn [s]
+        (let [m (deref s)
+              m-meta (meta m)]
+          [:div {:class "model" :id (:name m-meta)}
+           (generate-restful-header m-meta)
+           (generate-restful-table m)]))
+      (vals s-col))))
 
 (defn basic? [v]
   (-> v
@@ -133,23 +133,23 @@
      ".model {border-top: 1px solid gray;}"]
     [:link {:rel "stylesheet" :href "https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"}]]
    [:div.container
-   [:div
-    [:h1 "HOKS doc"]
-    [:p "Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin"
-     "esittämiseen."]
-    [:p
-     "Tämä dokumentaatio keskittyy toistaiseksi ainoastaan HOKS-tietomallin"
-     "esittämiseen."]
-    [:p
-     "Katso myös "
-     [:a
-      {:href "https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md"}
-      "HOKS API doc"]
-     " dokumentaatio."]
-    [:p "Generoitu "
-     (f/unparse local-formatter (l/to-local-date-time (l/local-now)))]]
-   [:div
-    content]]])
+    [:div
+     [:h1 "HOKS doc"]
+     [:p "Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin"
+      "esittämiseen."]
+     [:p
+      "Tämä dokumentaatio keskittyy toistaiseksi ainoastaan HOKS-tietomallin"
+      "esittämiseen."]
+     [:p
+      "Katso myös "
+      [:a
+       {:href "https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md"}
+       "HOKS API doc"]
+      " dokumentaatio."]
+     [:p "Generoitu "
+      (f/unparse local-formatter (l/to-local-date-time (l/local-now)))]]
+    [:div
+     content]]])
 
 (defn gen-doc []
   (gen-hiccup (get-restful)))

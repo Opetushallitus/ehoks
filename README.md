@@ -99,13 +99,13 @@ lein cljfmt check
 
 ### Ohjelman ajaminen
 
-Kehitysmoodissa:
+Tuotantomoodissa:
 
 ``` shell
 lein run
 ```
 
-Tuotantomoodissa:
+Kehitysmoodissa:
 
 ``` shell
 lein with-profile -dev run
@@ -166,12 +166,13 @@ Kontin luonti:
 ``` shell
 cd scripts/redis-docker
 docker build -t ehoks-redis .
+docker volume create redisdata
 ```
 
 Kontin ajaminen:
 
 ``` shell
-docker run --rm --name ehoks-redis -p 6379:6379 --volume ~/path/to/ehoks-redis-data:/data ehoks-redis
+docker run --rm --name ehoks-redis -p 6379:6379 --volume redisdata:/data ehoks-redis
 ```
 
 Rediksen voi jättää myös pois, jolloin istuntoa pidetään muistissa. Tämä
@@ -184,12 +185,13 @@ Kontin luonti:
 ``` shell
 cd scripts/postgres-docker
 docker build -t ehoks-postgres .
+docker volume create pgdata
 ```
 
 Kontin ajaminen:
 
 ``` shell
-docker run --rm --name ehoks-postgres -p 5432:5432 --volume ~/path/to/ehoks-postgres-data:/data ehoks-postgres
+docker run --rm --name ehoks-postgres -p 5432:5432 --volume pgdata:/data ehoks-postgres
 ```
 
 ### Testi-JSONin lähetys

@@ -38,16 +38,24 @@
         (db/select-arvioijat-by-todennettu-arviointi-id id))
       :id)))
 
+(defn set-ooato-values [ooato]
+  (dissoc
+    (assoc
+      ooato
+      :tarkentavat-tiedot-arvioija
+      (get-tarkentavat-tiedot-arvioija (:tarkentavat-tiedot-arvioija-id ooato))
+      :tarkentavat-tiedot-naytto
+      (get-ooato-tarkentavat-tiedot-naytto (:id ooato)))
+    :tarkentavat-tiedot-arvioija-id :id))
+
+(defn get-aiemmin-hankittu-ammat-tutkinnon-osa [id]
+  (when-let [ooato-from-db
+             (db/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id id)]
+    (set-ooato-values ooato-from-db)))
+
 (defn get-aiemmin-hankitut-ammat-tutkinnon-osat [hoks-id]
   (mapv
-    #(dissoc
-       (assoc
-         %
-         :tarkentavat-tiedot-arvioija
-         (get-tarkentavat-tiedot-arvioija (:tarkentavat-tiedot-arvioija-id %))
-         :tarkentavat-tiedot-naytto
-         (get-ooato-tarkentavat-tiedot-naytto (:id %)))
-       :tarkentavat-tiedot-arvioija-id :id)
+    set-ooato-values
     (db/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id
       hoks-id)))
 
@@ -65,16 +73,24 @@
                (db/select-tyotehtavat-by-tho-id (:id o))))))
 
 (defn set-osaamisen-hankkimistapa-values [m]
-  (dissoc
-    (assoc
-      m
-      :tyopaikalla-jarjestettava-koulutus
-      (get-tyopaikalla-jarjestettava-koulutus
-        (:tyopaikalla-jarjestettava-koulutus-id m))
-      :muut-oppimisymparisto
-      (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
-        (:id m)))
-    :id :tyopaikalla-jarjestettava-koulutus-id))
+  (if  (some? (:tyopaikalla-jarjestettava-koulutus-id m))
+    (dissoc
+      (assoc
+        m
+        :tyopaikalla-jarjestettava-koulutus
+        (get-tyopaikalla-jarjestettava-koulutus
+          (:tyopaikalla-jarjestettava-koulutus-id m))
+        :muut-oppimisymparisto
+        (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
+          (:id m)))
+      :id :tyopaikalla-jarjestettava-koulutus-id)
+    (dissoc
+      (assoc
+        m
+        :muut-oppimisymparisto
+        (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
+          (:id m)))
+      :id)))
 
 (defn get-osaamisen-hankkimistavat [id]
   (let [hankkimistavat (db/select-osaamisen-hankkimistavat-by-ppto-id id)]
@@ -169,6 +185,15 @@
        (set-osaamisen-osoittaminen-values %)
        :id)
     (db/select-osaamisen-osoittamiset-by-pato-id id)))
+
+(defn get-hankittava-ammat-tutkinnon-osa [id]
+  (when-let [pato-db (db/select-hankittava-ammat-tutkinnon-osa-by-id id)]
+    (assoc
+      pato-db
+      :osaamisen-osoittaminen
+      (get-pato-osaamisen-osoittaminen id)
+      :osaamisen-hankkimistavat
+      (get-pato-osaamisen-hankkimistavat id))))
 
 (defn get-hankittavat-ammat-tutkinnon-osat [hoks-id]
   (mapv
@@ -457,10 +482,20 @@
       (:id pato) (:id o-db))
     o-db))
 
+(defn save-pato-osaamisen-hankkimistavat! [pato-db c]
+  (mapv
+    #(save-pato-osaamisen-hankkimistapa! pato-db %)
+    c))
+
 (defn save-pato-osaamisen-osoittaminen! [pato n]
   (let [naytto (save-osaamisen-osoittaminen! n)]
     (db/insert-pato-osaamisen-osoittaminen! (:id pato) (:id naytto))
     naytto))
+
+(defn save-pato-osaamisen-osoittamiset! [pato-db c]
+  (mapv
+    #(save-pato-osaamisen-osoittaminen! pato-db %)
+    c))
 
 (defn save-hankittava-ammat-tutkinnon-osa! [h pato]
   (let [pato-db (db/insert-hankittava-ammat-tutkinnon-osa!
@@ -478,6 +513,26 @@
 
 (defn save-hankittavat-ammat-tutkinnon-osat! [h c]
   (mapv #(save-hankittava-ammat-tutkinnon-osa! h %) c))
+
+(defn replace-pato-osaamisen-hankkimistavat! [pato c]
+  (db/delete-osaamisen-hankkimistavat-by-pato-id! (:id pato))
+  (save-pato-osaamisen-hankkimistavat! pato c))
+
+(defn replace-pato-osaamisen-osoittamiset! [pato c]
+  (db/delete-osaamisen-osoittamiset-by-pato-id! (:id pato))
+  (save-pato-osaamisen-osoittamiset! pato c))
+
+(defn update-hankittava-ammat-tutkinnon-osa! [pato-db values]
+  (db/update-hankittava-ammat-tutkinnon-osa-by-id! (:id pato-db) values)
+  (cond-> pato-db
+    (:osaamisen-hankkimistavat values)
+    (assoc :osaamisen-hankkimistavat
+           (replace-pato-osaamisen-hankkimistavat!
+             pato-db (:osaamisen-hankkimistavat values)))
+    (:osaamisen-osoittaminen values)
+    (assoc :osaamisen-osoittaminen
+           (replace-pato-osaamisen-osoittamiset!
+             pato-db (:osaamisen-osoittaminen values)))))
 
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!

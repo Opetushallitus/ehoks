@@ -4,7 +4,8 @@
             [clojure.test :refer [is]]
             [clojure.data :as d]
             [clojure.pprint :as p]
-            [oph.ehoks.external.http-client :as client]))
+            [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.db.migrations :as m]))
 
 (defn get-auth-cookie [app]
   (-> (mock/request
@@ -93,3 +94,20 @@
         (println "Missing:")
         (p/pprint (second diff)))))
   (is (= value expect)))
+
+(defn with-database [f]
+  (m/clean!)
+  (m/migrate!)
+  (f)
+  (m/clean!))
+
+(defn clean-db [f]
+  (m/clean!)
+  (m/migrate!)
+  (f))
+
+(defmacro with-db [& body]
+  `(do (m/clean!)
+       (m/migrate!)
+       (do ~@body)
+       (m/clean!)))
