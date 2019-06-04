@@ -496,6 +496,14 @@
        annetaan myös arvioijan lisätiedot")}))
 
 (s/defschema
+  OlemassaOlevanPaikallisenTutkinnonOsanLuonti
+  (modify
+    OlemassaOlevaPaikallinenTutkinnonOsa
+    (str "Olemassa olevan paikallisen tutkinnon osan tiedot uutta"
+         "merkintää luotaessa (POST")
+    {:removed [:id]}))
+
+(s/defschema
   PuuttuvaPaikallinenTutkinnonOsaLuonti
   (modify
     PuuttuvaPaikallinenTutkinnonOsa
