@@ -448,10 +448,10 @@
       (:id tta-db) (:aiemmin-hankitun-osaamisen-arvioijat new-tta))
     tta-db))
 
-(defn save-olemassa-oleva-ammatillinen-tutkinnon-osa! [h ooato]
+(defn save-olemassa-oleva-ammatillinen-tutkinnon-osa! [hoks-id ooato]
   (let [ooato-db (db/insert-olemassa-oleva-ammatillinen-tutkinnon-osa!
                    (assoc ooato
-                          :hoks-id (:id h)
+                          :hoks-id hoks-id
                           :tarkentavat-tiedot-arvioija-id
                           (:id (save-ooato-tarkentavat-tiedot-arvioija!
                                  (:tarkentavat-tiedot-arvioija ooato)))))]
@@ -462,7 +462,7 @@
         (:id ooato-db) (:tarkentavat-tiedot-naytto ooato)))))
 
 (defn save-olemassa-olevat-ammatilliset-tutkinnon-osat! [h c]
-  (mapv #(save-olemassa-oleva-ammatillinen-tutkinnon-osa! h %) c))
+  (mapv #(save-olemassa-oleva-ammatillinen-tutkinnon-osa! (:id h) %) c))
 
 (defn save-pato-osaamisen-hankkimistapa! [pato oh]
   (let [o-db (save-osaamisen-hankkimistapa! oh)]
