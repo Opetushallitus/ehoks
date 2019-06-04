@@ -105,39 +105,81 @@
      :oppija_oid (:oid oppija)
      :oppilaitos_oid (:oppilaitos-oid oppija)
      :koulutustoimija_oid (:koulutustoimija-oid oppija)
-     :tutkinto ""
-     :osaamisala ""}))
+     :tutkinto (:tutkinto oppija "")
+     :osaamisala (:osaamisala oppija "")}))
+
+(defn- get-search [params]
+  (let [response
+        (with-test-virkailija
+          (mock/request
+            :get
+            (str base-url "/virkailija/oppijat")
+            (assoc params :oppilaitos-oid "1.2.246.562.10.12000000000")))]
+    (t/is (= (:status response) 200))
+    (utils/parse-body (:body response))))
 
 (t/deftest test-list-virkailija-oppijat
   (t/testing "GET virkailija oppijat"
     (utils/with-db
       (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Testi 1"
+                   :nimi "Teuvo Testaaja"
                    :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
                    :oppilaitos-oid "1.2.246.562.10.12000000000"
+                   :tutkinto "Testitutkinto 1"
+                   :osaamisala "Testiosaamisala numero 1"
                    :koulutustoimija-oid ""})
       (add-oppija {:oid "1.2.246.562.24.44000000002"
-                   :nimi "Testi 2"
+                   :nimi "Tellervo Testi"
                    :opiskeluoikeus-oid "1.2.246.562.15.76000000002"
                    :oppilaitos-oid "1.2.246.562.10.12000000001"
+                   :tutkinto "Testitutkinto 2"
+                   :osaamisala "Testiosaamisala numero 2"
                    :koulutustoimija-oid ""})
       (add-oppija {:oid "1.2.246.562.24.44000000003"
-                   :nimi "Testi 3"
+                   :nimi "Olli Oppija"
                    :opiskeluoikeus-oid "1.2.246.562.15.76000000003"
                    :oppilaitos-oid "1.2.246.562.10.12000000000"
+                   :tutkinto "Testitutkinto 3"
+                   :osaamisala "Osaamisala Kolme"
                    :koulutustoimija-oid ""})
-      (let [response (with-test-virkailija
-                       (mock/request
-                         :get
-                         (str base-url "/virkailija/oppijat")
-                         {:oppilaitos-oid "1.2.246.562.10.12000000000"}))]
-        (t/is (= (:status response) 200))
-        (let [body (utils/parse-body (:body response))]
-          (t/is (= (count (:data body)) 2))
-          (t/is (= (get-in body [:data 0 :oid])
-                   "1.2.246.562.24.44000000001"))
-          (t/is (= (get-in body [:data 1 :oid])
-                   "1.2.246.562.24.44000000003")))))))
+      (add-oppija {:oid "1.2.246.562.24.44000000004"
+                   :nimi "Oiva Oppivainen"
+                   :opiskeluoikeus-oid "1.2.246.562.15.76000000004"
+                   :oppilaitos-oid "1.2.246.562.10.12000000000"
+                   :tutkinto "Tutkinto 4"
+                   :koulutustoimija-oid ""})
+      (let [body (get-search {})]
+        (t/is (= (count (:data body)) 3))
+        (t/is (= (get-in body [:data 0 :oid])
+                 "1.2.246.562.24.44000000004"))
+        (t/is (= (get-in body [:data 1 :oid])
+                 "1.2.246.562.24.44000000003"))
+        (t/is (= (get-in body [:data 2 :oid])
+                 "1.2.246.562.24.44000000001")))
+      (let [body (get-search {:nimi "teu"})]
+        (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:data 0 :oid])
+                 "1.2.246.562.24.44000000001")))
+      (let [body (get-search {:nimi "oppi"
+                              :order-by-column :nimi
+                              :desc true})]
+        (t/is (= (count (:data body)) 2))
+        (t/is (= (get-in body [:data 0 :oid])
+                 "1.2.246.562.24.44000000003"))
+        (t/is (= (get-in body [:data 1 :oid])
+                 "1.2.246.562.24.44000000004")))
+      (let [body (get-search {:nimi "oppi"
+                              :order-by-column :nimi})]
+        (t/is (= (count (:data body)) 2))
+        (t/is (= (get-in body [:data 0 :oid])
+                 "1.2.246.562.24.44000000004"))
+        (t/is (= (get-in body [:data 1 :oid])
+                 "1.2.246.562.24.44000000003")))
+      (let [body (get-search {:tutkinto "testitutkinto"
+                              :osaamisala "kolme"})]
+        (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:data 0 :oid])
+                 "1.2.246.562.24.44000000003"))))))
 
 (t/deftest test-virkailija-with-no-read
   (t/testing "Prevent GET virkailija oppijat without read privilege"

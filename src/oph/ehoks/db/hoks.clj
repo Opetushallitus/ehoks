@@ -83,7 +83,8 @@
     h
     {:replaces {:laatija_nimi [:laatija :nimi]
                 :hyvaksyja_nimi [:hyvaksyja :nimi]
-                :paivittaja_nimi [:paivittaja :nimi]}}))
+                :paivittaja_nimi [:paivittaja :nimi]}
+     :removals [:manuaalisyotto]}))
 
 (defn hoks-to-sql [h]
   (to-sql
