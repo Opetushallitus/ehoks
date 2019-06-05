@@ -107,12 +107,28 @@
        :id)
     (db/select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
-(defn get-oopto-tarkentavat-tiedot-naytto [id]
+(defn- get-oopto-tarkentavat-tiedot-naytto [oopto-id]
   (mapv
     #(dissoc
        (set-hankitun-osaamisen-naytto-values %)
        :id)
-    (db/select-hankitun-osaamisen-naytto-by-oopto-id id)))
+    (db/select-tarkentavat-tiedot-naytto-by-oopto-id oopto-id)))
+
+(defn- set-oopto-values [oopto]
+  (clojure.pprint/pprint oopto)
+  (dissoc
+    (assoc
+      oopto
+      :tarkentavat-tiedot-arvioija
+      (get-tarkentavat-tiedot-arvioija (:tarkentavat-tiedot-arvioija-id oopto))
+      :tarkentavat-tiedot-naytto
+      (get-oopto-tarkentavat-tiedot-naytto (:id oopto)))
+    :tarkentavat-tiedot-arvioija-id))
+
+(defn get-olemassa-olevat-paikallinen-tutkinnon-osa [id]
+  (when-let [oopto-from-db
+             (db/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-id id)]
+    (set-oopto-values oopto-from-db)))
 
 (defn get-olemassa-olevat-paikalliset-tutkinnon-osat [hoks-id]
   (mapv
@@ -372,17 +388,14 @@
     tta-db))
 
 (defn save-olemassa-oleva-paikallinen-tutkinnon-osa! [hoks-id oopto]
-  (let [oopto-db (db/insert-olemassa-oleva-paikallinen-tutkinnon-osa! (assoc oopto :hoks-id hoks-id))]
+  (let [tta (:tarkentavat-tiedot-arvioija oopto)
+        oopto-db (db/insert-olemassa-oleva-paikallinen-tutkinnon-osa!
+                   (assoc oopto
+                     :hoks-id hoks-id
+                     :tarkentavat-tiedot-arvioija-id
+                     (:id (save-tarkentavat-tiedot-arvioija! tta))))]
     (assoc
       oopto-db
-      :tarkentavat-tiedot-arvioija
-      {:aiemmin-hankitun-osaamisen-arvioijat
-       (save-oopto-arvioijat!
-         (:id oopto-db)
-         (get-in
-           oopto
-           [:tarkentavat-tiedot-arvioija
-            :aiemmin-hankitun-osaamisen-arvioijat]))}
       :tarkentavat-tiedot-naytto
       (save-oopto-tarkentavat-tiedot-naytto!
         (:id oopto-db) (:tarkentavat-tiedot-naytto oopto)))))
