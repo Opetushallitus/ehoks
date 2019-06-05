@@ -49,7 +49,7 @@
         (handler request)
         (response/forbidden)))))
 
-(defn virkailija-has-access? [ticket-user oppija-oid]
+(defn virkailija-has-privilege? [ticket-user oppija-oid privilege]
   (or (user/oph-super-user? ticket-user)
       (some?
         (some
@@ -58,9 +58,12 @@
              (contains?
                (user/get-organisation-privileges
                  ticket-user (:oppilaitos-oid opiskeluoikeus))
-               :read)
+               privilege)
               opiskeluoikeus))
           (oppijaindex/get-oppija-opiskeluoikeudet oppija-oid)))))
+
+(defn virkailija-has-access? [virkailija-user oppija-oid]
+  (virkailija-has-privilege? virkailija-user oppija-oid :read))
 
 (defn wrap-virkailija-oppija-access [handler]
   (fn
