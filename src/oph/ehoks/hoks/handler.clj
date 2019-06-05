@@ -62,11 +62,10 @@
     (response/not-found!)
     (let [ticket-user (:service-ticket-user request)]
       (when-not
-       (or (user/oph-super-user? ticket-user)
-           (hoks-access?
-             hoks
-             ticket-user
-             (get method-privileges (:request-method request))))
+       (hoks-access?
+         hoks
+         ticket-user
+         (get method-privileges (:request-method request)))
         (log/warnf "User %s has no access to hoks %d with opiskeluoikeus %s"
                    (:username ticket-user)
                    (:id hoks)
@@ -77,11 +76,10 @@
 
 (defn user-has-access? [request hoks]
   (let [ticket-user (:service-ticket-user request)]
-    (or (user/oph-super-user? ticket-user)
-        (hoks-access?
-          hoks
-          ticket-user
-          (get method-privileges (:request-method request))))))
+    (hoks-access?
+      hoks
+      ticket-user
+      (get method-privileges (:request-method request)))))
 
 (defn wrap-hoks-access [handler]
   (fn
