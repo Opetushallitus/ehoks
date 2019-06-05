@@ -20,6 +20,8 @@
   (swap! cache dissoc url)
   nil)
 
+(defn clear-cache! [] (reset! cache {}))
+
 (defn clean-cache! []
   (let [non-expired
         (reduce
