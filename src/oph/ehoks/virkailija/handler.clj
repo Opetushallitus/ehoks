@@ -24,8 +24,22 @@
             [oph.ehoks.external.koski :as koski]))
 
 (defn- virkailija-authenticated? [request]
-  (= (get-in request [:session :virkailija-user :kayttajaTyyppi])
-     "VIRKAILIJA"))
+  (some? (get-in request [:session :virkailija-user])))
+
+(defn wrap-require-virkailija-user [handler]
+  (fn
+    ([request respond raise]
+      (if (= (get-in request [:session :virkailija-user :kayttajaTyyppi])
+             "VIRKAILIJA")
+        (handler request respond raise)
+        (respond (response/forbidden
+                   {:error "User type 'VIRKAILIJA' is required"}))))
+    ([request]
+      (if (= (get-in request [:session :virkailija-user :kayttajaTyyppi])
+             "VIRKAILIJA")
+        (handler request)
+        (response/forbidden
+          {:error "User type 'VIRKAILIJA' is required"})))))
 
 (defn wrap-virkailija-authorize [handler]
   (fn
@@ -99,7 +113,7 @@
           auth/routes
 
           (route-middleware
-            [wrap-virkailija-authorize]
+            [wrap-virkailija-authorize wrap-require-virkailija-user]
 
             (c-api/context "/oppijat" []
               (c-api/GET "/" request
