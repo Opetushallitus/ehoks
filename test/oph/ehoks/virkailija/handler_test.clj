@@ -272,7 +272,8 @@
                        :laatija {:nimi "Teppo Tekijä"}
                        :paivittaja {:nimi "Pekka Päivittäjä"}
                        :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                       :ensikertainen-hyvaksyminen (java.util.Date. 2018 12 15)})
+                       :ensikertainen-hyvaksyminen
+                       (java.util.Date. 2018 12 15)})
             response
             (with-test-virkailija
               (mock/request
