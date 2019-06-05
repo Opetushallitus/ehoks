@@ -115,7 +115,6 @@
     (db/select-tarkentavat-tiedot-naytto-by-oopto-id oopto-id)))
 
 (defn- set-oopto-values [oopto]
-  (clojure.pprint/pprint oopto)
   (dissoc
     (assoc
       oopto
