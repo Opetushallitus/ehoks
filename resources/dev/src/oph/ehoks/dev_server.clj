@@ -100,7 +100,7 @@
     (log/info "Running migrations")
     (m/migrate!)
     (log/infof "Starting %s development server..."
-               (or (System/setProperty "NAME" app-name) "oppija"))
+               (or (System/getProperty "NAME" app-name) "oppija"))
     (log/info "Not safe for production or public environments.")
     (populate-oppijaindex)
     (jetty/run-jetty dev-app
