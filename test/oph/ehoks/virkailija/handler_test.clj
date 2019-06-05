@@ -273,7 +273,7 @@
                        :paivittaja {:nimi "Pekka Päivittäjä"}
                        :hyvaksyja {:nimi "Heikki Hyväksyjä"}
                        :ensikertainen-hyvaksyminen
-                       (java.util.Date. 2018 12 15)})
+                       (java.time.LocalDate/of 2018 12 15)})
             response
             (with-test-virkailija
               (mock/request
