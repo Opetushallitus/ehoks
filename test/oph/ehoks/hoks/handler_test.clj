@@ -54,9 +54,6 @@
 (defn get-hoks-url [hoks path]
   (format "%s/%d/%s" url (:id hoks) path))
 
-(defn get-new-hoks-url [path]
-  (with-hoks hoks (get-hoks-url hoks path)))
-
 (deftest post-and-get-ppto
   (testing "GET newly created puuttuva paikallinen tutkinnon osa"
     (db/clear)
