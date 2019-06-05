@@ -227,13 +227,6 @@
       (t/is
         (handler/virkailija-has-access?
           {:organisation-privileges
-           [{:oid "1.2.246.562.10.12000000111"
-             :privileges #{}
-             :roles #{:oph-super-user}}]}
-          "1.2.246.562.24.44000000001"))
-      (t/is
-        (handler/virkailija-has-access?
-          {:organisation-privileges
            [{:oid "1.2.246.562.10.12000000000"
              :privileges #{:read}}]}
           "1.2.246.562.24.44000000001")))))
