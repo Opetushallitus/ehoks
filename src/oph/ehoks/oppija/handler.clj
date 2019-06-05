@@ -11,7 +11,8 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.eperusteet :as eperusteet]
             [oph.ehoks.middleware :refer [wrap-authorize]]
-            [oph.ehoks.oppija.auth-handler :as auth-handler]))
+            [oph.ehoks.oppija.auth-handler :as auth-handler]
+            [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]))
 
 (def routes
   (c-api/context "/oppija" []
@@ -21,6 +22,8 @@
 
     (c-api/context "/external" []
       :tags ["oppija-external"]
+
+      lokalisointi-handler/routes
 
       (route-middleware
         [wrap-authorize]
