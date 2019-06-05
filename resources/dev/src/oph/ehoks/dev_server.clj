@@ -86,7 +86,9 @@
     (log/info "Updating oppijaindex finished")))
 
 (defn start-server
-  ([config-file]
+  ([app-name config-file]
+    (when (some? (System/setProperty "NAME" app-name))
+      (require 'oph.ehoks.ehoks-app :reload))
     (when (some? config-file)
       (System/setProperty "config" config-file)
       (require 'oph.ehoks.config :reload)
