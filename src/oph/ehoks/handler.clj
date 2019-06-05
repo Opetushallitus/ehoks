@@ -64,7 +64,7 @@
           (c-api/undocumented auth-handler/routes)
 
           healthcheck-handler/routes
-          lokalisointi-handler/routes
+          (c-api/undocumented lokalisointi-handler/routes)
           external-handler/routes
           misc-handler/routes
           validation-handler/routes))
