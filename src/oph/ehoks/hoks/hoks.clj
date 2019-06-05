@@ -381,9 +381,9 @@
   (let [tta (:tarkentavat-tiedot-arvioija oopto)
         oopto-db (db/insert-olemassa-oleva-paikallinen-tutkinnon-osa!
                    (assoc oopto
-                     :hoks-id hoks-id
-                     :tarkentavat-tiedot-arvioija-id
-                     (:id (save-tarkentavat-tiedot-arvioija! tta))))]
+                          :hoks-id hoks-id
+                          :tarkentavat-tiedot-arvioija-id
+                          (:id (save-tarkentavat-tiedot-arvioija! tta))))]
     (assoc
       oopto-db
       :tarkentavat-tiedot-naytto
