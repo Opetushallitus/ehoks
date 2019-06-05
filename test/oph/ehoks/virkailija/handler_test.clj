@@ -62,6 +62,7 @@
   ([request] (with-test-virkailija
                request
                {:name "Test"
+                :kayttajaTyyppi "VIRKAILIJA"
                 :organisation-privileges
                 [{:oid "1.2.246.562.10.12000000000"
                   :privileges #{:read}}]})))
@@ -195,6 +196,7 @@
                          (str base-url "/virkailija/oppijat")
                          {:oppilaitos-oid "1.2.246.562.10.12000000000"})
                        {:name "Test"
+                        :kayttajaTyyppi "VIRKAILIJA"
                         :organisation-privileges
                         [{:oid "1.2.246.562.10.12000000000"
                           :privileges #{}}]})]
