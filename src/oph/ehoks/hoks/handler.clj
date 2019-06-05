@@ -217,7 +217,7 @@
       :body [ooato hoks-schema/OlemassaOlevanAmmatillisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ooato-from-db (h/save-olemassa-oleva-ammatillinen-tutkinnon-osa!
-                            (:hoks request) ooato)]
+                            (:id (:hoks request)) ooato)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ooato-from-db))}
           :id (:id ooato-from-db))))
@@ -236,6 +236,25 @@
           (response/no-content))
         (response/not-found
           {:error "Olemassa oleva ammatillinen tutkinnon osa not found"})))))
+
+(def ^:private olemassa-olevat-paikalliset-tutkinnon-osat
+  (c-api/context "/olemassa-olevat-paikalliset-tutkinnon-osat" []
+
+    (c-api/GET "/:id" []
+      :summary "Palauttaa HOKSin olemassa olevan paikallisen tutkinnon osan"
+      :path-params [id :- s/Int]
+      :return (rest/response hoks-schema/OlemassaOlevaPaikallinenTutkinnonOsa)
+      (rest/rest-ok (h/get-olemassa-olevat-paikallinen-tutkinnon-osa id)))
+
+    (c-api/POST "/" [:as request]
+      :summary "Luo olemassa olevan paikallisen tutkinnon osan HOKSiin"
+      :body [oopto hoks-schema/OlemassaOlevanPaikallisenTutkinnonOsanLuonti]
+      :return (rest/response schema/POSTResponse :id s/Int)
+      (let [oopto-from-db (h/save-olemassa-oleva-paikallinen-tutkinnon-osa!
+                            (get-in request [:hoks :id]) oopto)]
+        (rest/rest-ok
+          {:uri (format "%s/%d" (:uri request) (:id oopto-from-db))}
+          :id (:id oopto-from-db))))))
 
 (def ^:private puuttuvat-yhteisen-tutkinnon-osat
   (c-api/context "/:hoks-id/puuttuvat-yhteisen-tutkinnon-osat" [hoks-id]
@@ -358,6 +377,7 @@
 
           puuttuva-paikallinen-tutkinnon-osa
           olemassa-olevat-ammatilliset-tutkinnon-osat
+          olemassa-olevat-paikalliset-tutkinnon-osat
           puuttuva-ammatillinen-osaaminen))
 
       (c-api/undocumented
