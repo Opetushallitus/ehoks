@@ -545,7 +545,10 @@
                             oopto-path oopto-data app hoks)
             get-response (create-mock-get-request oopto-path app hoks)]
         (assert-post-response oopto-path post-response)
-        (is (= (:status get-response) 200))))))
+        (is (= (:status get-response) 200))
+        (eq (utils/parse-body
+              (:body get-response))
+            {:meta {} :data (assoc oopto-data :id 1)})))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
