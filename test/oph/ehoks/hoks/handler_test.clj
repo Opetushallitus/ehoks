@@ -4,7 +4,9 @@
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [oph.ehoks.db.memory :as db]))
+            [oph.ehoks.db.memory :as db]
+            [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.external.cache :as cache]))
 
 (def url "/ehoks-virkailija-backend/api/v1/hoks")
 
@@ -18,6 +20,7 @@
 (use-fixtures :once utils/clean-db)
 
 (defn create-app [session-store]
+  (cache/clear-cache!)
   (common-api/create-app handler/app-routes session-store))
 
 (defn get-authenticated [url]
@@ -889,7 +892,10 @@
               (create-app nil)
               (-> (mock/request :post url)
                   (mock/json-body hoks-data)))]
-        (is (= (:status response) 400))))))
+        (is (= (:status response) 400))
+        (is (= (utils/parse-body (:body response))
+               {:error
+                "HOKS with the same opiskeluoikeus-oid already exists"}))))))
 
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
@@ -1020,3 +1026,58 @@
                  :data
                  :opiskeluoikeus-oid)
              opiskeluoikeus-oid)))))
+
+(deftest non-service-user-test
+  (testing "Deny access from non-service user"
+    (client/set-post!
+      (fn [url options]
+        (cond
+          (.endsWith url "/v1/tickets")
+          {:status 201
+           :headers {"location" "http://test.ticket/1234"}}
+          (= url "http://test.ticket/1234")
+          {:status 200
+           :body "ST-1234-testi"})))
+    (client/set-get!
+      (fn [url options]
+        (cond (.endsWith
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
+              {:status 200
+               :body {:oppilaitos {:oid "1.2.246.562.10.12944436166"}}}
+              (.endsWith url "/serviceValidate")
+              {:status 200
+               :body
+               (str "<cas:serviceResponse"
+                    "  xmlns:cas='http://www.yale.edu/tp/cas'>"
+                    "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
+                    "<cas:attributes>"
+                    "<cas:longTermAuthenticationRequestTokenUsed>false"
+                    "</cas:longTermAuthenticationRequestTokenUsed>"
+                    "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
+                    "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
+                    "</cas:authenticationDate></cas:attributes>"
+                    "</cas:authenticationSuccess></cas:serviceResponse>")}
+              (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
+              {:status 200
+               :body [{:oidHenkilo "1.2.246.562.24.11474338834"
+                       :username "ehoks"
+                       :kayttajaTyyppi "VIRKAILIJA"
+                       :organisaatiot
+                       [{:organisaatioOid "1.2.246.562.10.12944436166"
+                         :kayttooikeudet [{:palvelu "EHOKS"
+                                           :oikeus "CRUD"}]}]}]})))
+    (let [app (create-app nil)
+          hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :laatija {:nimi "Teppo Tekijä"}
+                     :paivittaja {:nimi "Pekka Päivittäjä"}
+                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
+          response (app (-> (mock/request :post url)
+                            (mock/json-body hoks-data)
+                            (mock/header "Caller-Id" "test")
+                            (mock/header "ticket" "ST-testitiketti")))]
+      (is (= (:status response) 403))
+      (is (= (utils/parse-body (:body response))
+             {:error "User type 'PALVELU' is required"}))
+      (client/reset-functions!))))
