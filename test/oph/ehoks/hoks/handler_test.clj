@@ -550,6 +550,22 @@
               (:body get-response))
             {:meta {} :data (assoc oopto-data :id 1)})))))
 
+(def ^:private multiple-oopto-values-patched
+  {})
+
+(deftest patch-olemassa-oleva-paikalliset-tutkinnon-osat
+  (testing "Patching multple values of oopto"
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            oopto-path oopto-data app hoks)
+            patch-response (create-mock-patch-request oopto-path app multiple-oopto-values-patched)
+            get-response (create-mock-get-request oopto-path app hoks)]
+        (is (= (:status post-response) 200))
+        (is (= (:status patch-response) 204))
+        (is (= (:status get-response) 200))))))
+
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
 (def pyto-data
