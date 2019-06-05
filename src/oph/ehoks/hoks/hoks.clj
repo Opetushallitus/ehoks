@@ -24,16 +24,16 @@
        :id)
     (db/select-tarkentavat-tiedot-naytto-by-ooato-id id)))
 
-(defn get-tarkentavat-tiedot-arvioija [id]
-  (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id id)]
+(defn get-tarkentavat-tiedot-arvioija [tta-id]
+  (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id tta-id)]
     (dissoc
       (assoc
         tta
         :aiemmin-hankitun-osaamisen-arvioijat
-        (db/select-arvioijat-by-todennettu-arviointi-id id))
+        (db/select-arvioijat-by-todennettu-arviointi-id tta-id))
       :id)))
 
-(defn set-ooato-values [ooato]
+(defn- set-ooato-values [ooato]
   (dissoc
     (assoc
       ooato
