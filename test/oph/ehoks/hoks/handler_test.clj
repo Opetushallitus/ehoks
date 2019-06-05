@@ -424,6 +424,15 @@
             url path))
         (mock/json-body patched-data))))
 
+(defn- assert-post-response [post-path post-response]
+  (is (= (:status post-response) 200))
+  (eq (utils/parse-body (:body post-response))
+      {:meta {:id 1}
+       :data {:uri
+              (format
+                "%1s/1/%2s/1"
+                url post-path)}}))
+
 (deftest post-and-get-olemassa-olevat-ammatilliset-tutkinnon-osat
   (testing "POST ooato and then get the created ooato"
     (with-hoks
@@ -432,14 +441,7 @@
             post-response (create-mock-post-request
                             ooato-path ooato-data app hoks)
             get-response (create-mock-get-request ooato-path app hoks)]
-        (is (= (:status post-response) 200))
-        (eq (utils/parse-body
-              (:body post-response))
-            {:meta {:id 1}
-             :data {:uri
-                    (format
-                      "%s/1/olemassa-olevat-ammatilliset-tutkinnon-osat/1"
-                      url)}})
+        (assert-post-response ooato-path post-response)
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
@@ -496,6 +498,60 @@
         (is (= (:status get-response) 200))
         (assert-ooato-data-is-patched-correctly
           get-response-data ooato-data)))))
+
+(def oopto-path "olemassa-olevat-paikalliset-tutkinnon-osat")
+(def oopto-data
+  {:valittu-todentamisen-prosessi-koodi-versio 2
+   :laajuus 30
+   :nimi "Testiopintojakso"
+   :tavoitteet-ja-sisallot "Tavoitteena on testioppiminen."
+   :valittu-todentamisen-prosessi-koodi-uri
+   "osaamisentodentamisenprosessi_0001"
+   :amosaa-tunniste "12345"
+   :tarkentavat-tiedot-arvioija
+   {:lahetetty-arvioitavaksi "2019-01-20"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Aarne Arvioija"
+      :organisaatio {:oppilaitos-oid
+                     "1.2.246.562.10.54453923411"}}]}
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453945322"
+   :vaatimuksista-tai-tavoitteista-poikkeaminen
+   "Ei poikkeamaa."
+   :tarkentavat-tiedot-naytto
+   [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_li"
+                   :koodi-versio 6}]
+     :koulutuksen-jarjestaja-arvioijat
+     [{:nimi "Teuvo Testaaja"
+       :organisaatio {:oppilaitos-oid
+                      "1.2.246.562.10.12346234690"}}]
+     :jarjestaja {:oppilaitos-oid
+                  "1.2.246.562.10.93270534262"}
+
+     :nayttoymparisto {:nimi "Testi Oyj"
+                       :y-tunnus "1289211-2"
+                       :kuvaus "Testiyhtiö"}
+     :tyoelama-arvioijat
+     [{:nimi "Terttu Testihenkilö"
+       :organisaatio {:nimi "Testi Oyj"
+                      :y-tunnus "1289211-2"}}]
+     :keskeiset-tyotehtavat-naytto ["Testauksen suunnittelu"
+                                    "Jokin toinen testi"]
+     :alku "2019-02-01"
+     :loppu "2019-03-01"}]})
+
+(deftest post-and-get-olemassa-olevat-paikalliset-tutkinnon-osat
+  (testing "POST oopto and then get the created oopto"
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            oopto-path oopto-data app hoks)
+            get-response (create-mock-get-request oopto-path app hoks)]
+        (assert-post-response oopto-path post-response)
+        (is (= (:status get-response) 200))
+        (eq (utils/parse-body
+              (:body get-response))
+            {:meta {} :data (assoc oopto-data :id 1)})))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 

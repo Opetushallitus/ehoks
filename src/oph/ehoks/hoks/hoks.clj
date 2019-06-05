@@ -24,16 +24,16 @@
        :id)
     (db/select-tarkentavat-tiedot-naytto-by-ooato-id id)))
 
-(defn get-tarkentavat-tiedot-arvioija [id]
-  (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id id)]
+(defn get-tarkentavat-tiedot-arvioija [tta-id]
+  (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id tta-id)]
     (dissoc
       (assoc
         tta
         :aiemmin-hankitun-osaamisen-arvioijat
-        (db/select-arvioijat-by-todennettu-arviointi-id id))
+        (db/select-arvioijat-by-todennettu-arviointi-id tta-id))
       :id)))
 
-(defn set-ooato-values [ooato]
+(defn- set-ooato-values [ooato]
   (dissoc
     (assoc
       ooato
@@ -51,8 +51,7 @@
 (defn get-olemassa-olevat-ammatilliset-tutkinnon-osat [hoks-id]
   (mapv
     #(dissoc (set-ooato-values %) :id)
-    (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id
-      hoks-id)))
+    (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-hankitun-osaamisen-naytto [id]
   (let [naytot (db/select-hankitun-osaamisen-naytot-by-ppto-id id)]
@@ -107,24 +106,31 @@
        :id)
     (db/select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
-(defn get-oopto-tarkentavat-tiedot-naytto [id]
+(defn- get-oopto-tarkentavat-tiedot-naytto [oopto-id]
   (mapv
     #(dissoc
        (set-hankitun-osaamisen-naytto-values %)
        :id)
-    (db/select-hankitun-osaamisen-naytto-by-oopto-id id)))
+    (db/select-tarkentavat-tiedot-naytto-by-oopto-id oopto-id)))
+
+(defn- set-oopto-values [oopto]
+  (dissoc
+    (assoc
+      oopto
+      :tarkentavat-tiedot-arvioija
+      (get-tarkentavat-tiedot-arvioija (:tarkentavat-tiedot-arvioija-id oopto))
+      :tarkentavat-tiedot-naytto
+      (get-oopto-tarkentavat-tiedot-naytto (:id oopto)))
+    :tarkentavat-tiedot-arvioija-id))
+
+(defn get-olemassa-olevat-paikallinen-tutkinnon-osa [id]
+  (when-let [oopto-from-db
+             (db/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-id id)]
+    (set-oopto-values oopto-from-db)))
 
 (defn get-olemassa-olevat-paikalliset-tutkinnon-osat [hoks-id]
   (mapv
-    #(dissoc
-       (assoc-in
-         (assoc
-           %
-           :tarkentavat-tiedot-naytto
-           (get-oopto-tarkentavat-tiedot-naytto (:id %)))
-         [:tarkentavat-tiedot-arvioija :aiemmin-hankitun-osaamisen-arvioijat]
-         (db/select-arvioijat-by-oopto-id (:id %)))
-       :id)
+    #(dissoc (set-oopto-values %) :id)
     (db/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-ooyto-osa-alue-tarkentavat-tiedot [id]
@@ -360,32 +366,33 @@
        n)
     c))
 
-(defn save-oopto-arvioijat! [oopto-id arvioijat]
+(defn save-tta-aiemmin-hankitun-osaamisen-arvioijat! [tta-id new-arvioijat]
   (mapv
-    #(let [a (db/insert-koulutuksen-jarjestaja-arvioija! %)]
-       (db/insert-oopto-arvioija! oopto-id (:id a)))
-    arvioijat))
+    #(db/insert-todennettu-arviointi-arvioijat! tta-id (:id %))
+    (db/insert-koulutuksen-jarjestaja-arvioijat! new-arvioijat)))
 
-(defn save-olemassa-oleva-paikallinen-tutkinnon-osa! [oopto]
-  (let [oopto-db (db/insert-olemassa-oleva-paikallinen-tutkinnon-osa! oopto)]
+(defn save-tarkentavat-tiedot-arvioija! [new-tta]
+  (let [tta-db (db/insert-todennettu-arviointi-lisatiedot! new-tta)]
+    (save-tta-aiemmin-hankitun-osaamisen-arvioijat!
+      (:id tta-db) (:aiemmin-hankitun-osaamisen-arvioijat new-tta))
+    tta-db))
+
+(defn save-olemassa-oleva-paikallinen-tutkinnon-osa! [hoks-id oopto]
+  (let [tta (:tarkentavat-tiedot-arvioija oopto)
+        oopto-db (db/insert-olemassa-oleva-paikallinen-tutkinnon-osa!
+                   (assoc oopto
+                          :hoks-id hoks-id
+                          :tarkentavat-tiedot-arvioija-id
+                          (:id (save-tarkentavat-tiedot-arvioija! tta))))]
     (assoc
       oopto-db
-      :tarkentavat-tiedot-arvioija
-      {:aiemmin-hankitun-osaamisen-arvioijat
-       (save-oopto-arvioijat!
-         (:id oopto-db)
-         (get-in
-           oopto
-           [:tarkentavat-tiedot-arvioija
-            :aiemmin-hankitun-osaamisen-arvioijat]))}
       :tarkentavat-tiedot-naytto
       (save-oopto-tarkentavat-tiedot-naytto!
         (:id oopto-db) (:tarkentavat-tiedot-naytto oopto)))))
 
-(defn save-olemassa-olevat-paikalliset-tutkinnon-osat! [h c]
+(defn save-olemassa-olevat-paikalliset-tutkinnon-osat! [hoks c]
   (mapv
-    #(save-olemassa-oleva-paikallinen-tutkinnon-osa!
-       (assoc % :hoks-id (:id h)))
+    #(save-olemassa-oleva-paikallinen-tutkinnon-osa! (:id hoks) %)
     c))
 
 (defn save-ooyto-tarkentavat-tiedot-naytto! [ooyto c]
@@ -436,24 +443,12 @@
        n)
     new-values))
 
-(defn save-tta-aiemmin-hankitun-osaamisen-arvioijat! [tta-id new-arvioijat]
-  (mapv
-    #(db/insert-todennettu-arviointi-arvioijat! tta-id (:id %))
-    (db/insert-koulutuksen-jarjestaja-arvioijat! new-arvioijat)))
-
-(defn save-ooato-tarkentavat-tiedot-arvioija! [new-tta]
-  (let [tta-db
-        (db/insert-todennettu-arviointi-lisatiedot! new-tta)]
-    (save-tta-aiemmin-hankitun-osaamisen-arvioijat!
-      (:id tta-db) (:aiemmin-hankitun-osaamisen-arvioijat new-tta))
-    tta-db))
-
-(defn save-olemassa-oleva-ammatillinen-tutkinnon-osa! [h ooato]
+(defn save-olemassa-oleva-ammatillinen-tutkinnon-osa! [hoks-id ooato]
   (let [ooato-db (db/insert-olemassa-oleva-ammatillinen-tutkinnon-osa!
                    (assoc ooato
-                          :hoks-id (:id h)
+                          :hoks-id hoks-id
                           :tarkentavat-tiedot-arvioija-id
-                          (:id (save-ooato-tarkentavat-tiedot-arvioija!
+                          (:id (save-tarkentavat-tiedot-arvioija!
                                  (:tarkentavat-tiedot-arvioija ooato)))))]
     (assoc
       ooato-db
@@ -462,7 +457,7 @@
         (:id ooato-db) (:tarkentavat-tiedot-naytto ooato)))))
 
 (defn save-olemassa-olevat-ammatilliset-tutkinnon-osat! [h c]
-  (mapv #(save-olemassa-oleva-ammatillinen-tutkinnon-osa! h %) c))
+  (mapv #(save-olemassa-oleva-ammatillinen-tutkinnon-osa! (:id h) %) c))
 
 (defn save-pato-osaamisen-hankkimistapa! [pato oh]
   (let [o-db (save-osaamisen-hankkimistapa! oh)]
