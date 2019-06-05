@@ -237,3 +237,79 @@
            [{:oid "1.2.246.562.10.12000000000"
              :privileges #{:read}}]}
           "1.2.246.562.24.44000000001")))))
+
+(t/deftest test-virkailija-hoks-forbidden
+  (t/testing "Virkailija HOKS forbidden"
+    (utils/with-db
+      (add-oppija {:oid "1.2.246.562.24.44000000001"
+                   :nimi "Teuvo Testaaja"
+                   :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
+                   :oppilaitos-oid "1.2.246.562.10.12000000000"
+                   :tutkinto "Testitutkinto 1"
+                   :osaamisala "Testiosaamisala numero 1"
+                   :koulutustoimija-oid ""})
+      (let [response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :post
+                  (str base-url "/virkailija/hoksit"))
+                {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                 :oppija-oid "1.2.246.562.24.44000000001"
+                 :laatija {:nimi "Teppo Tekijä"}
+                 :paivittaja {:nimi "Pekka Päivittäjä"}
+                 :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                 :ensikertainen-hyvaksyminen "2018-12-15"})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.12000000001"
+                 :privileges #{:write :read :update :delete}}]})]
+        (t/is (= (:status response) 403)))
+      (let [hoks-db (db/insert-hoks!
+                      {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                       :oppija-oid "1.2.246.562.24.44000000001"
+                       :laatija {:nimi "Teppo Tekijä"}
+                       :paivittaja {:nimi "Pekka Päivittäjä"}
+                       :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                       :ensikertainen-hyvaksyminen (java.util.Date. 2018 12 15)})
+            response
+            (with-test-virkailija
+              (mock/request
+                :get
+                (str base-url "/virkailija/hoksit/" (:id hoks-db)))
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.12000000001"
+                 :privileges #{:write :read :update :delete}}]})]
+        (t/is (= (:status response) 403))))))
+
+(t/deftest test-virkailija-create-hoks
+  (t/testing "POST hoks virkailija"
+    (utils/with-db
+      (add-oppija {:oid "1.2.246.562.24.44000000001"
+                   :nimi "Teuvo Testaaja"
+                   :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
+                   :oppilaitos-oid "1.2.246.562.10.12000000001"
+                   :tutkinto "Testitutkinto 1"
+                   :osaamisala "Testiosaamisala numero 1"
+                   :koulutustoimija-oid ""})
+      (let [response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :post
+                  (str base-url "/virkailija/hoksit"))
+                {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                 :oppija-oid "1.2.246.562.24.44000000001"
+                 :laatija {:nimi "Teppo Tekijä"}
+                 :paivittaja {:nimi "Pekka Päivittäjä"}
+                 :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                 :ensikertainen-hyvaksyminen "2018-12-15"})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.12000000001"
+                 :privileges #{:write :read :update :delete}}]})]
+        (t/is (= (:status response) 200))))))
