@@ -77,7 +77,8 @@
 
                 (c-api/GET "/:koodi-uri" [koodi-uri]
                   :path-params [koodi-uri :- s/Str]
-                  :summary "Tutkinnon osan perusteiden haku Koodisto-Koodi-Urilla."
+                  :summary "Tutkinnon osan perusteiden
+                           haku Koodisto-Koodi-Urilla."
                   :return (rest/response [s/Any])
                   (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))))
 
@@ -97,7 +98,8 @@
                   :summary "Oppijan opiskeluoikeudet"
                   :return (rest/response [s/Any])
                   (if (= (get-in request [:session :user :oid]) oid)
-                    (rest/rest-ok (:opiskeluoikeudet (koski/get-student-info oid)))
+                    (rest/rest-ok
+                      (:opiskeluoikeudet (koski/get-student-info oid)))
                     (response/forbidden)))
 
                 (c-api/GET "/hoks" [:as request]
