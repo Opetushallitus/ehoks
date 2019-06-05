@@ -99,6 +99,12 @@ lein cljfmt check
 
 ### Ohjelman ajaminen
 
+Ohjelmalle voi antaa parametrina sovelluksen nimen (oppija tai virkailija).
+Oppijan sovellus on oletuksena valittuna. Lisäksi ohjelma ottaa vastaan
+parametreina käytettävän konfiguraatiotiedoston.
+Ohjelman nimen (`NAME`) ja konfiguraatiotiedoston (`CONFIG`) voi antaa myös
+ympäristömuuttujana.
+
 Tuotantomoodissa:
 
 ``` shell
@@ -108,21 +114,27 @@ lein run
 Kehitysmoodissa:
 
 ``` shell
-lein with-profile -dev run
+lein with-profile +dev run
+```
+
+tai
+
+``` shell
+lein with-profile +dev run virkailija
 ```
 
 Replissä `lein repl`:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
-user> (def server (start-server))
+user> (def server (start-server "oppija" nil))
 ```
 
 Tai omalla konfiguraatiolla:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
-user> (def server (start-server "config/custom.edn"))
+user> (def server (start-server "virkailija" "config/custom.edn"))
 ```
 
 Ja ohjelman sammuttaminen:
