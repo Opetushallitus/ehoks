@@ -66,8 +66,9 @@
      :column "hankitun_osaamisen_naytto_id"}))
 (defq select-puuttuvat-paikalliset-tutkinnon-osat-by-hoks-id)
 (defq select-puuttuvat-paikalliset-tutkinnon-osat-by-id)
+(defq select-olemassa-olevat-paikalliset-tutkinnon-osat-by-id)
 (defq select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id)
-(def select-tarkentavat-tiedot-naytto-by-oopto-id
+(def select-hankitun-osaamisen-naytot-by-oopto-id
   (generate-select-join
     {:table "hankitun_osaamisen_naytot"
      :join "olemassa_olevan_paikallisen_tutkinnon_osan_naytto"
