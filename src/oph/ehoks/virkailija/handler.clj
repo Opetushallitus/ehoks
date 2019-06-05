@@ -24,7 +24,8 @@
             [oph.ehoks.external.koski :as koski]))
 
 (defn- virkailija-authenticated? [request]
-  (some? (get-in request [:session :virkailija-user])))
+  (= (get-in request [:session :virkailija-user :kayttajaTyyppi])
+     "VIRKAILIJA"))
 
 (defn wrap-virkailija-authorize [handler]
   (fn
