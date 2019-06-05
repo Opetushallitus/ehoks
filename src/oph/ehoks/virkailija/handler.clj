@@ -84,14 +84,6 @@
           {:error (str "User privileges does not match oppija opiskeluoikeus "
                        "organisation")})))))
 
-(defn- check-hoks-access! [hoks request]
-  (when-not (virkailija-has-access?
-              (get-in request [:session :virkailija-user])
-              (:oppija-oid hoks))
-    (response/forbidden!
-      {:error (str "User privileges does not match oppija opiskeluoikeus "
-                   "organisation")})))
-
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
@@ -229,21 +221,33 @@
                 :summary "Luo uuden HOKSin. Vaatii manuaalisyöttäjän oikeudet"
                 :body [hoks hoks-schema/HOKSLuonti]
                 :return (restful/response schema/POSTResponse :id s/Int)
-                (check-hoks-access! hoks request)
-                (when (seq (pdb/select-hoksit-by-opiskeluoikeus-oid
-                             (:opiskeluoikeus-oid hoks)))
-                  (response/bad-request!
-                    {:error (str "HOKS with the same opiskeluoikeus-oid "
-                                 "already exists")}))
+                (let [virkailija-user (get-in
+                                        request [:session :virkailija-user])]
+                  (when-not (virkailija-has-privilege?
+                              virkailija-user (:oppija-oid hoks) :write)
+                    (response/forbidden!
+                      {:error (str "User has unsufficient privileges")}))
+                  (when (seq (db/select-hoksit-by-opiskeluoikeus-oid
+                               (:opiskeluoikeus-oid hoks)))
+                    (response/bad-request!
+                      {:error (str "HOKS with the same opiskeluoikeus-oid "
+                                   "already exists")})))
                 (let [hoks-db (h/save-hoks! hoks)]
                   (restful/rest-ok
                     {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
                     :id (:id hoks-db))))
 
-              (c-api/GET "/:hoks-id" []
+              (c-api/GET "/:hoks-id" request
                 :path-params [hoks-id :- s/Int]
                 :summary "Hoksin tiedot. Vaatii manuaalisyöttäjän oikeudet"
-                (restful/rest-ok (h/get-hoks-by-id hoks-id)))
+                (let [hoks (db/select-hoks-by-id hoks-id)
+                      virkailija-user (get-in
+                                        request [:session :virkailija-user])]
+                  (if (virkailija-has-privilege?
+                        virkailija-user (:oppija-oid hoks) :write)
+                    (restful/rest-ok (h/get-hoks-by-id hoks-id))
+                    (response/forbidden
+                      {:error (str "User has unsufficient privileges")}))))
 
               (route-middleware
                 [wrap-oph-super-user]
