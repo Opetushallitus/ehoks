@@ -63,7 +63,7 @@
       (let [response (handler request)]
         (set-cors response)))))
 
-(def dev-app
+(def dev-reload-app
   (wrap-dev-cors
     (routes
       (wrap-params (wrap-cookies (wrap-reload #'mock/mock-routes)))
@@ -85,29 +85,40 @@
     (oppijaindex/update-opiskeluoikeudet-without-index!)
     (log/info "Updating oppijaindex finished")))
 
-(defn start-server
-  ([app-name config-file]
-    (when (some? (System/setProperty "NAME" app-name))
-      (require 'oph.ehoks.ehoks-app :reload))
-    (when (some? config-file)
-      (System/setProperty "config" config-file)
-      (require 'oph.ehoks.config :reload)
-      (when (.endsWith (:opintopolku-host config) "opintopolku.fi")
-        (println "Using prod urls")
-        (System/setProperty
-          "services_file" "resources/prod/services-oph.properties"))
-      (require 'oph.ehoks.external.oph-url :reload))
-    (log/info "Running migrations")
-    (m/migrate!)
-    (log/infof "Starting %s development server..."
-               (or (System/getProperty "NAME" app-name) "oppija"))
-    (log/info "Not safe for production or public environments.")
-    (populate-oppijaindex)
-    (jetty/run-jetty dev-app
-                     {:port (:port config)
-                      :join? false
-                      :async? true}))
-  ([] (start-server "oppija" nil)))
+(defn start-app-server! [app app-name config-file]
+  (when (some? config-file)
+    (System/setProperty "config" config-file)
+    (require 'oph.ehoks.config :reload)
+    (when (.endsWith (:opintopolku-host config) "opintopolku.fi")
+      (println "Using prod urls")
+      (System/setProperty
+        "services_file" "resources/prod/services-oph.properties"))
+    (require 'oph.ehoks.external.oph-url :reload))
+  (log/info "Running migrations")
+  (m/migrate!)
+  (log/infof "Starting %s development server..."
+             (or (System/getProperty "NAME" app-name) "oppija"))
+  (log/info "Not safe for production or public environments.")
+  (populate-oppijaindex)
+  (jetty/run-jetty app
+                   {:port (:port config)
+                    :join? false
+                    :async? true}))
 
-(defn -main []
-  (start-server))
+(defn start-server [app-name config-file]
+  (when (some? (System/setProperty "NAME" app-name))
+    (require 'oph.ehoks.ehoks-app :reload))
+  (start-app-server! dev-reload-app app-name config-file))
+
+(defn start [app-name config-file]
+  (let [app (wrap-dev-cors
+              (routes
+                (wrap-params (wrap-cookies mock/mock-routes))
+                dev-routes
+                (ehoks-app/create-app app-name)))]
+    (start-app-server! app app-name config-file)))
+
+(defn -main
+  ([app-name config-file] (start app-name config-file))
+  ([app-name] (start app-name nil))
+  ([] (start "oppija" nil)))
