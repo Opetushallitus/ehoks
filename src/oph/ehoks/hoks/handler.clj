@@ -117,6 +117,19 @@
                 {:error (str "No access is allowed. Check Opintopolku "
                              "privileges and 'opiskeluoikeus'")}))))))))
 
+(defn wrap-require-service-user [handler]
+  (fn
+    ([request respond raise]
+      (if (= (:kayttajaTyyppi (:service-ticket-user request)) "PALVELU")
+        (handler request respond raise)
+        (respond (response/forbidden
+                   {:error "User type 'PALVELU' is required"}))))
+    ([request]
+      (if (= (:kayttajaTyyppi (:service-ticket-user request)) "PALVELU")
+        (handler request)
+        (response/forbidden
+          {:error "User type 'PALVELU' is required"})))))
+
 (defn add-hoks [request]
   (let [hoks-id (Integer/parseInt (get-in request [:route-params :hoks-id]))
         hoks (pdb/select-hoks-by-id hoks-id)]
@@ -303,7 +316,7 @@
     :tags ["hoks"]
 
     (route-middleware
-      [wrap-user-details]
+      [wrap-user-details wrap-require-service-user]
 
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
