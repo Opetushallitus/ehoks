@@ -99,14 +99,15 @@
       (require 'oph.ehoks.external.oph-url :reload))
     (log/info "Running migrations")
     (m/migrate!)
-    (log/info "Starting development server...")
+    (log/infof "Starting %s development server..."
+               (or (System/setProperty "NAME" app-name) "oppija"))
     (log/info "Not safe for production or public environments.")
     (populate-oppijaindex)
     (jetty/run-jetty dev-app
                      {:port (:port config)
                       :join? false
                       :async? true}))
-  ([] (start-server nil)))
+  ([] (start-server "oppija" nil)))
 
 (defn -main []
   (start-server))
