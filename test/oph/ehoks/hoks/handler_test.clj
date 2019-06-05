@@ -4,7 +4,9 @@
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [oph.ehoks.db.memory :as db]))
+            [oph.ehoks.db.memory :as db]
+            [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.external.cache :as cache]))
 
 (def url "/ehoks-virkailija-backend/api/v1/hoks")
 
@@ -18,6 +20,7 @@
 (use-fixtures :once utils/clean-db)
 
 (defn create-app [session-store]
+  (cache/clear-cache!)
   (common-api/create-app handler/app-routes session-store))
 
 (defn get-authenticated [url]
