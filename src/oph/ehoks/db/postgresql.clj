@@ -143,6 +143,10 @@
     :koulutuksen_jarjestaja_arvioijat
     (h/koulutuksen-jarjestaja-arvioija-to-sql m)))
 
+(defn select-tarkentavat-tiedot-naytto-by-oopto-id [oopto-id]
+  (query [queries/select-hankitun-osaamisen-naytot-by-oopto-id oopto-id]
+         {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
+
 (defn select-tarkentavat-tiedot-naytto-by-ooato-id
   "Olemassa olevan ammatillisen tutkinnon osan näytön tarkentavat tiedot
    (hankitun osaamisen näytöt)"
@@ -420,6 +424,13 @@
       [queries/select-nayttoymparistot-by-id id]
       {:row-fn h/nayttoymparisto-from-sql})))
 
+(defn select-olemassa-olevat-paikalliset-tutkinnon-osat-by-id [id]
+  (->
+    (query [queries/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-id
+            id])
+    first
+    h/olemassa-oleva-paikallinen-tutkinnon-osa-from-sql))
+
 (defn select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id [id]
   (query
     [queries/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id id]
@@ -429,11 +440,6 @@
   (insert-one!
     :olemassa_olevat_paikalliset_tutkinnon_osat
     (h/olemassa-oleva-paikallinen-tutkinnon-osa-to-sql m)))
-
-(defn select-hankitun-osaamisen-naytto-by-oopto-id [id]
-  (query
-    [queries/select-tarkentavat-tiedot-naytto-by-oopto-id id]
-    {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
 
 (defn insert-oopto-arvioija! [oopto-id arvioija-id]
   (insert-one!
