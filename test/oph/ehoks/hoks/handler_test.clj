@@ -421,6 +421,15 @@
             url path))
         (mock/json-body patched-data))))
 
+(defn- assert-post-response [post-path post-response]
+  (is (= (:status post-response) 200))
+  (eq (utils/parse-body (:body post-response))
+      {:meta {:id 1}
+       :data {:uri
+              (format
+                "%1s/1/%2s/1"
+                url post-path)}}))
+
 (deftest post-and-get-olemassa-olevat-ammatilliset-tutkinnon-osat
   (testing "POST ooato and then get the created ooato"
     (with-hoks
@@ -429,14 +438,7 @@
             post-response (create-mock-post-request
                             ooato-path ooato-data app hoks)
             get-response (create-mock-get-request ooato-path app hoks)]
-        (is (= (:status post-response) 200))
-        (eq (utils/parse-body
-              (:body post-response))
-            {:meta {:id 1}
-             :data {:uri
-                    (format
-                      "%s/1/olemassa-olevat-ammatilliset-tutkinnon-osat/1"
-                      url)}})
+        (assert-post-response ooato-path post-response)
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
@@ -542,7 +544,7 @@
             post-response (create-mock-post-request
                             oopto-path oopto-data app hoks)
             get-response (create-mock-get-request oopto-path app hoks)]
-        (is (= (:status post-response) 200))
+        (assert-post-response oopto-path post-response)
         (is (= (:status get-response) 200))))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
