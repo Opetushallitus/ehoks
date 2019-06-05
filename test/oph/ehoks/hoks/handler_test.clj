@@ -836,7 +836,10 @@
               (create-app nil)
               (-> (mock/request :post url)
                   (mock/json-body hoks-data)))]
-        (is (= (:status response) 400))))))
+        (is (= (:status response) 400))
+        (is (= (utils/parse-body (:body response))
+               {:error
+                "HOKS with the same opiskeluoikeus-oid already exists"}))))))
 
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
