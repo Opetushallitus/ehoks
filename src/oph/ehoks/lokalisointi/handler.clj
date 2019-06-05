@@ -7,8 +7,6 @@
 
 (def routes
   (c-api/context "/lokalisointi" []
-    :tags ["lokalisointi"]
-
     (c-api/GET "/" [:as request]
       :summary "Hakee lokalisoinnin tulokset lokalisointipalvelusta"
       :return (restful/response common-schema/Lokalisointi)
