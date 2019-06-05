@@ -51,8 +51,7 @@
 (defn get-olemassa-olevat-ammatilliset-tutkinnon-osat [hoks-id]
   (mapv
     #(dissoc (set-ooato-values %) :id)
-    (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id
-      hoks-id)))
+    (db/select-olemassa-olevat-ammatilliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-hankitun-osaamisen-naytto [id]
   (let [naytot (db/select-hankitun-osaamisen-naytot-by-ppto-id id)]
@@ -131,15 +130,7 @@
 
 (defn get-olemassa-olevat-paikalliset-tutkinnon-osat [hoks-id]
   (mapv
-    #(dissoc
-       (assoc-in
-         (assoc
-           %
-           :tarkentavat-tiedot-naytto
-           (get-oopto-tarkentavat-tiedot-naytto (:id %)))
-         [:tarkentavat-tiedot-arvioija :aiemmin-hankitun-osaamisen-arvioijat]
-         (db/select-arvioijat-by-oopto-id (:id %)))
-       :id)
+    #(dissoc (set-oopto-values %) :id)
     (db/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-ooyto-osa-alue-tarkentavat-tiedot [id]
