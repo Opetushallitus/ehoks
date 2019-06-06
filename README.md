@@ -99,6 +99,12 @@ lein cljfmt check
 
 ### Ohjelman ajaminen
 
+Ohjelmalle voi antaa parametrina sovelluksen nimen (oppija, virkailija tai
+molemmat). Molemmat sovellukset on oletuksena valittuna. Lisäksi ohjelma ottaa
+vastaan parametreina käytettävän konfiguraatiotiedoston.
+Ohjelman nimen (`NAME`) ja konfiguraatiotiedoston (`CONFIG`) voi antaa myös
+ympäristömuuttujana.
+
 Tuotantomoodissa:
 
 ``` shell
@@ -108,21 +114,27 @@ lein run
 Kehitysmoodissa:
 
 ``` shell
-lein with-profile -dev run
+lein with-profile +dev run
+```
+
+tai
+
+``` shell
+lein with-profile +dev run virkailija
 ```
 
 Replissä `lein repl`:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
-user> (def server (start-server))
+user> (def server (start-server "oppija" nil))
 ```
 
 Tai omalla konfiguraatiolla:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
-user> (def server (start-server "config/custom.edn"))
+user> (def server (start-server "virkailija" "config/custom.edn"))
 ```
 
 Ja ohjelman sammuttaminen:
@@ -192,20 +204,6 @@ Kontin ajaminen:
 
 ``` shell
 docker run --rm --name ehoks-postgres -p 5432:5432 --volume pgdata:/data ehoks-postgres
-```
-
-### Testi-JSONin lähetys
-
-Sovelluksessa on mukana pieni skripti, jolla voi lähettää JSON-tiedoston
-palvelimelle. Tätä voi hyödyntää esimerkiksi testiympäristöön datan
-lähettämisessä. Skriptille voi määrittää ympäristömuuttujassa config-tiedoston,
-jossa on ympäristökohtainen CAS-palvelimen osoite, CAS-tunnukset ja palvelun
-tunniste.
-
-Skriptiä kutsutaan:
-
-```shell
-CONFIG="path/to/config.edn" lein send-json "path/to/file.json" :service "http://localhost:3000/ehoks-backend" :path "api/v1/hoks"
 ```
 
 ### Schemat

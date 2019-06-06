@@ -4,8 +4,8 @@
             [oph.ehoks.db.migrations :as m]
             [clojure.string :refer [lower-case]]
             [clojure.tools.logging :as log]
-            [oph.ehoks.handler :as hoks-api-handler]
             [oph.ehoks.common.api :as common-api]
+            [oph.ehoks.ehoks-app :as ehoks-app]
             [oph.ehoks.redis :refer [redis-store]]
             [oph.ehoks.config :refer [config]]))
 
@@ -27,7 +27,8 @@
     :else
     (let [hoks-app
           (common-api/create-app
-            hoks-api-handler/app-routes
+            (ehoks-app/create-app
+              (lower-case (or (System/getProperty "NAME") "both")))
             (when (seq (:redis-url config))
               (redis-store {:pool {}
                             :spec {:uri (:redis-url config)}})))]
