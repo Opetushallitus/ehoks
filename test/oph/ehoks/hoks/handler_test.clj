@@ -551,7 +551,10 @@
             {:meta {} :data (assoc oopto-data :id 1)})))))
 
 (def ^:private multiple-oopto-values-patched
-  {})
+  {:tavoitteet-ja-sisallot "Muutettu tavoite."})
+
+(defn- assert-oopto-data-is-patched-correctly [updated-data old-data]
+  (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite.")))
 
 (deftest patch-olemassa-oleva-paikalliset-tutkinnon-osat
   (testing "Patching multple values of oopto"
@@ -561,10 +564,12 @@
             post-response (create-mock-post-request
                             oopto-path oopto-data app hoks)
             patch-response (create-mock-patch-request oopto-path app multiple-oopto-values-patched)
-            get-response (create-mock-get-request oopto-path app hoks)]
+            get-response (create-mock-get-request oopto-path app hoks)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status post-response) 200))
         (is (= (:status patch-response) 204))
-        (is (= (:status get-response) 200))))))
+        (is (= (:status get-response) 200))
+        (assert-oopto-data-is-patched-correctly get-response-data oopto-data)))))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
