@@ -122,7 +122,7 @@
   (c-api/api
     {:swagger
      {:ui "/ehoks-oppija-backend/doc"
-      :spec "/ehoks-backend/doc/swagger.json"
+      :spec "/ehoks-oppija-backend/doc/swagger.json"
       :data {:info {:title "eHOKS Oppija backend"
                     :description "Oppija backend for eHOKS"}
              :tags [{:name "api", :description ""}]}}
