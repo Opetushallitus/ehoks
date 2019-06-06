@@ -97,7 +97,7 @@
   (log/info "Running migrations")
   (m/migrate!)
   (log/infof "Starting %s development server..."
-             (or (System/getProperty "NAME" app-name) "oppija"))
+             (or (System/getProperty "NAME" app-name) "both"))
   (log/info "Not safe for production or public environments.")
   (populate-oppijaindex)
   (jetty/run-jetty app
@@ -121,4 +121,4 @@
 (defn -main
   ([app-name config-file] (start app-name config-file))
   ([app-name] (start app-name nil))
-  ([] (start "oppija" nil)))
+  ([] (start "both" nil)))
