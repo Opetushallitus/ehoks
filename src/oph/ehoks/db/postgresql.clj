@@ -562,6 +562,12 @@
     (h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" id]))
 
+(defn update-olemassa-oleva-paikallinen-tutkinnon-osat-by-id! [id new-values]
+  (update!
+    :olemassa_olevat_paikalliset_tutkinnon_osat
+    (h/olemassa-oleva-paikallinen-tutkinnon-osa-to-sql new-values)
+    ["id = ?" id]))
+
 (defn update-todennettu-arviointi-lisatiedot-by-id! [id new-values]
   (update!
     :todennettu_arviointi_lisatiedot

@@ -544,7 +544,8 @@
 
 (defn update-olemassa-oleva-paikallinen-tutkinnon-osa!
   [oopto-from-db new-values]
-  ())
+  (db/update-olemassa-oleva-paikallinen-tutkinnon-osat-by-id!
+    (:id oopto-from-db) new-values))
 
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
