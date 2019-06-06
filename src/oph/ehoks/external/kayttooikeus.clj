@@ -1,7 +1,8 @@
 (ns oph.ehoks.external.kayttooikeus
   (:require [oph.ehoks.external.cache :as cache]
             [oph.ehoks.external.cas :as cas]
-            [oph.ehoks.external.oph-url :as u]))
+            [oph.ehoks.external.oph-url :as u]
+            [clojure.tools.logging :as log]))
 
 (defn get-user-details [^String username]
   (first
@@ -16,8 +17,9 @@
 
 (defn get-service-ticket-user [ticket service]
   (let [validation-data (cas/validate-ticket service ticket)]
-    (when (:success? validation-data)
-      (get-user-details (:user validation-data)))))
+    (if (:success? validation-data)
+      (get-user-details (:user validation-data))
+      (log/warnf "Service ticket validation failed: %s" validation-data))))
 
 (defn get-ticket-user [ticket]
   (get-service-ticket-user ticket (u/get-url "ehoks-virkailija-backend-url")))

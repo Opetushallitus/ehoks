@@ -96,8 +96,7 @@
     (require 'oph.ehoks.external.oph-url :reload))
   (log/info "Running migrations")
   (m/migrate!)
-  (log/infof "Starting %s development server..."
-             (or (System/getProperty "NAME" app-name) "both"))
+  (log/infof "Starting %s development server..." (ehoks-app/get-app-name))
   (log/info "Not safe for production or public environments.")
   (populate-oppijaindex)
   (jetty/run-jetty app
@@ -106,7 +105,7 @@
                     :async? true}))
 
 (defn start-server [app-name config-file]
-  (when (some? (System/setProperty "NAME" app-name))
+  (when (some? (System/setProperty "name" app-name))
     (require 'oph.ehoks.ehoks-app :reload))
   (start-app-server! dev-reload-app app-name config-file))
 
