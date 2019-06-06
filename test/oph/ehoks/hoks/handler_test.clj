@@ -552,17 +552,35 @@
 
 (def ^:private multiple-oopto-values-patched
   {:tavoitteet-ja-sisallot "Muutettu tavoite."
+
    :tarkentavat-tiedot-arvioija
-   {:lahetetty-arvioitavaksi "2020-01-01"
+      {:lahetetty-arvioitavaksi "2020-01-01"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Uusi tyyppi"
-      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453955555"}}]}})
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453955555"}}]}
+
+   :tarkentavat-tiedot-naytto
+   [{:koulutuksen-jarjestaja-arvioijat
+     [{:nimi "Muutettu Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911111"}}]
+     :nayttoymparisto {:nimi "Toinen Oy"
+                       :y-tunnus "12345699-2"
+                       :kuvaus "Testiyrityksen testiosasostalla"}
+     :alku "2018-01-01"
+     :loppu "2021-01-01"}]})
 
 (defn- assert-oopto-data-is-patched-correctly [updated-data old-data]
   (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite."))
   (is (= (:nimi updated-data) (:nimi old-data)))
   (eq (:tarkentavat-tiedot-arvioija updated-data)
-      (:tarkentavat-tiedot-arvioija multiple-oopto-values-patched)))
+      (:tarkentavat-tiedot-arvioija multiple-oopto-values-patched))
+  (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
+        ttn-patch-values
+        (assoc (first (:tarkentavat-tiedot-naytto
+                        multiple-oopto-values-patched))
+          :keskeiset-tyotehtavat-naytto []
+          :osa-alueet [] :tyoelama-arvioijat [])]
+    (eq ttn-after-update ttn-patch-values)))
 
 (deftest patch-olemassa-oleva-paikalliset-tutkinnon-osat
   (testing "Patching multple values of oopto"
