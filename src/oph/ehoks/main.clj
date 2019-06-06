@@ -7,7 +7,8 @@
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.ehoks-app :as ehoks-app]
             [oph.ehoks.redis :refer [redis-store]]
-            [oph.ehoks.config :refer [config]]))
+            [oph.ehoks.config :refer [config]]
+            [environ.core :refer [env]]))
 
 (defn has-arg? [args s]
   (some? (some #(when (= (lower-case %) s) %) args)))
@@ -25,13 +26,14 @@
         (m/migrate!)
         0)
     :else
-    (let [hoks-app
+    (let [app-name (ehoks-app/get-app-name)
+          hoks-app
           (common-api/create-app
-            (ehoks-app/create-app
-              (lower-case (or (System/getProperty "NAME") "both")))
+            (ehoks-app/create-app app-name)
             (when (seq (:redis-url config))
               (redis-store {:pool {}
                             :spec {:uri (:redis-url config)}})))]
+      (log/infof "Starting %s" app-name)
       (log/info "Running migrations")
       (m/migrate!)
       (jetty/run-jetty hoks-app {:port (:port config)
