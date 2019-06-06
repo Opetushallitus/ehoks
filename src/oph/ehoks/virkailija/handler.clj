@@ -295,7 +295,8 @@
      {:ui "/ehoks-virkailija-backend/doc"
       :spec "/ehoks-virkailija-backend/doc/swagger.json"
       :data {:info {:title "eHOKS virkailija backend"
-                    :description "eHOKS virkailijan näkymän backend"}
+                    :description "eHOKS virkailijan näkymän ja
+                                  HOKS-rajapinnan backend"}
              :tags [{:name "api", :description ""}]}}
      :exceptions
      {:handlers common-api/handlers}}

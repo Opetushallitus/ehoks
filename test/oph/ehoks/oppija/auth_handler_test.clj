@@ -1,6 +1,6 @@
 (ns oph.ehoks.oppija.auth-handler-test
   (:require [clojure.test :refer [deftest testing is]]
-            [oph.ehoks.handler :as handler]
+            [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :refer [parse-body]]))
