@@ -542,13 +542,19 @@
   (when-let [new-ttn (:tarkentavat-tiedot-naytto new-values)]
     (replace-ooato-tarkentavat-tiedot-naytto! ooato-from-db new-ttn)))
 
+(defn- replace-oopto-tarkentavat-tiedot-naytto! [oopto-id new-values]
+  (db/delete-olemassa-olevan-paikallisen-tutkinnon-osan-naytto-by-id! oopto-id)
+  (save-oopto-tarkentavat-tiedot-naytto! oopto-id new-values))
+
 (defn update-olemassa-oleva-paikallinen-tutkinnon-osa!
   [oopto-from-db new-values]
   (db/update-olemassa-oleva-paikallinen-tutkinnon-osat-by-id!
     (:id oopto-from-db) new-values)
   (when-let [new-tta (:tarkentavat-tiedot-arvioija new-values)]
     (update-tarkentavat-tiedot-arvioija!
-      (:tarkentavat-tiedot-arvioija-id oopto-from-db) new-tta)))
+      (:tarkentavat-tiedot-arvioija-id oopto-from-db) new-tta))
+  (when-let [new-ttn (:tarkentavat-tiedot-naytto new-values)]
+    (replace-oopto-tarkentavat-tiedot-naytto! (:id oopto-from-db) new-ttn)))
 
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
