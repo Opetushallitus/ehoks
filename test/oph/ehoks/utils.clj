@@ -24,8 +24,7 @@
     (app (mock/header request :cookie cookie))))
 
 (defn with-authenticated-oid [store oid app request]
-  (let [cookie (get-auth-cookie app)
-        session (first (vals @store))]
+  (let [cookie (get-auth-cookie app)]
     (swap! store assoc-in [(-> @store keys first) :user :oid] oid)
     (app (mock/header request :cookie cookie))))
 

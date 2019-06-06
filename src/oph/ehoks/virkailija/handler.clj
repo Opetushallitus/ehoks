@@ -21,7 +21,8 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.eperusteet :as eperusteet]
-            [oph.ehoks.external.koski :as koski]))
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -194,6 +195,8 @@
             (c-api/context "/external" []
               :tags ["virkailija-external"]
 
+              lokalisointi-handler/routes
+
               (c-api/context "/koodisto" []
                 (c-api/GET "/:koodi-uri" []
                   :path-params [koodi-uri :- s/Str]
@@ -292,7 +295,8 @@
      {:ui "/ehoks-virkailija-backend/doc"
       :spec "/ehoks-virkailija-backend/doc/swagger.json"
       :data {:info {:title "eHOKS virkailija backend"
-                    :description "eHOKS virkailijan näkymän backend"}
+                    :description "eHOKS virkailijan näkymän ja
+                                  HOKS-rajapinnan backend"}
              :tags [{:name "api", :description ""}]}}
      :exceptions
      {:handlers common-api/handlers}}

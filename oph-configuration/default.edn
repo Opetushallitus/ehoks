@@ -12,7 +12,7 @@
  :service-timeout-ms 60000
  :opintopolku-login-url "http://localhost:3000/auth-dev/opintopolku-login/"
  :opintopolku-logout-url "http://localhost:3000/auth-dev/opintopolku-logout/?return=http://localhost:8080/ehoks"
- :opintopolku-return-url "http://localhost:3000/ehoks-oppija-backend/api/v1/session/opintopolku/"
+ :opintopolku-return-url "http://localhost:3000/ehoks-oppija-backend/api/v1/oppija/session/opintopolku/"
  :opintopolku-tt-auth-url "http://localhost:3000/auth-dev/opintopolku-tt-login/"
  :ext-cache-lifetime-minutes 180
  :save-hoks-json? false

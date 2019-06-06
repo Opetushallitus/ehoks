@@ -163,6 +163,10 @@
       (json-response-file
         "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.76811932037.json"))
 
+    (GET "/lokalisointi/cxf/rest/v1/localisation" []
+      (json-response-file
+        "dev-routes/lokalisointi_cxf_rest_v1_localisation.json"))
+
     (GET "/koski/api/opiskeluoikeus/:oid" request
       (let [opiskeluoikeus-oid (get-in request [:params :oid])
             oppilaitos-oid

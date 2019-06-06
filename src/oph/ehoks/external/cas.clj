@@ -35,7 +35,8 @@
       (throw (ex-info "Failed to refresh CAS Service Ticket"
                       {:response response
                        :log-data {:status (:status response)
-                                  :body (:body response)}})))))
+                                  :body (:body response)
+                                  :location url}})))))
 
 (defn get-service-ticket [url service]
   (:body (c/with-api-headers
