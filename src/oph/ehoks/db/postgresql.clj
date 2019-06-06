@@ -584,6 +584,11 @@
     :olemassa_olevan_ammatillisen_tutkinnon_osan_naytto
     ["olemassa_oleva_ammatillinen_tutkinnon_osa_id = ?" id]))
 
+(defn delete-olemassa-olevan-paikallisen-tutkinnon-osan-naytto-by-id! [id]
+  (shallow-delete!
+    :olemassa_olevan_paikallisen_tutkinnon_osan_naytto
+    ["olemassa_oleva_paikallinen_tutkinnon_osa_id = ?" id]))
+
 (defn insert-puuttuvan-ammatillisen-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]
   (insert-one!
