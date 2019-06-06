@@ -542,6 +542,10 @@
   (when-let [new-ttn (:tarkentavat-tiedot-naytto new-values)]
     (replace-ooato-tarkentavat-tiedot-naytto! ooato-from-db new-ttn)))
 
+(defn update-olemassa-oleva-paikallinen-tutkinnon-osa!
+  [oopto-from-db new-values]
+  ())
+
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
     (mapv #(assoc % :hoks-id (:id h)) c)))

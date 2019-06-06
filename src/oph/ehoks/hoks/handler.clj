@@ -261,9 +261,14 @@
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
       :body [values hoks-schema/OlemassaOlevanPaikallisenTutkinnonOsanPaivitys]
-      (if-let [oopto-from-db (pdb/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-id id)]
-        (response/no-content)
-        (response/not-found {:error "Olemassa oleva paikallinen tutkinnon osa not found"})))))
+      (if-let [oopto-from-db
+               (pdb/select-olemassa-olevat-paikalliset-tutkinnon-osat-by-id id)]
+        (do
+          (h/update-olemassa-oleva-paikallinen-tutkinnon-osa!
+            oopto-from-db values)
+          (response/no-content))
+        (response/not-found
+          {:error "Olemassa oleva paikallinen tutkinnon osa not found"})))))
 
 (def ^:private puuttuvat-yhteisen-tutkinnon-osat
   (c-api/context "/:hoks-id/puuttuvat-yhteisen-tutkinnon-osat" [hoks-id]
