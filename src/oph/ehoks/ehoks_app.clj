@@ -37,4 +37,7 @@
       (redis-store {:pool {}
                     :spec {:uri (:redis-url config)}}))))
 
-(def app (create-app (lower-case (:name env "both"))))
+(defn get-app-name []
+  (lower-case (:name env (or (System/getProperty "name") "both"))))
+
+(def app (create-app (get-app-name)))
