@@ -26,13 +26,13 @@
         (m/migrate!)
         0)
     :else
-    (let [app-name (lower-case (:name env "both"))
+    (let [app-name (ehoks-app/get-app-name)
           hoks-app
           (common-api/create-app
-           (ehoks-app/create-app app-name)
-           (when (seq (:redis-url config))
-             (redis-store {:pool {}
-                           :spec {:uri (:redis-url config)}})))]
+            (ehoks-app/create-app app-name)
+            (when (seq (:redis-url config))
+              (redis-store {:pool {}
+                            :spec {:uri (:redis-url config)}})))]
       (log/infof "Starting %s" app-name)
       (log/info "Running migrations")
       (m/migrate!)
