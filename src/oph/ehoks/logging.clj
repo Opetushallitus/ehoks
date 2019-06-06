@@ -4,7 +4,7 @@
             [clj-time.core :as t]
             ;[oph.ehoks.config :refer [config]]
    ;         [oph.ehoks.ehoks-app :as ehoks-app]
-   )
+)
   (:import org.apache.logging.log4j.LogManager))
 
 (defn- get-audit-logger []
@@ -21,13 +21,13 @@
   "Format message. All {{:key}} are replaced with value of :key in given map"
   [f m]
   (reduce
-   (fn [s [k v]] (cstr/replace s (format "{{:%s}}" (name k)) (str v)))
-   f
-   m))
+    (fn [s [k v]] (cstr/replace s (format "{{:%s}}" (name k)) (str v)))
+    f
+    m))
 
 (defn- log-access-info [msg]
   (.info access-logger msg))
-  
+
 (defn- log-audit-info [msg]
   (.info audit-logger msg))
 
@@ -41,16 +41,16 @@
   (get-in request [:headers k]))
 
 (defn- request-to-str [method request]
-  (format "%s %s%s" 
-          method 
-          (:uri request) 
-          (if (:query-string request) 
+  (format "%s %s%s"
+          method
+          (:uri request)
+          (if (:query-string request)
             (str "?" (:query-string request))
             "")))
 
 (defn get-full-app-name []
   (let [app-name "" ;(ehoks-app/get-app-name)
-        ]
+]
     (if (= app-name "both")
       "ehoks"
       (format "ehoks_%s" app-name))))
@@ -63,9 +63,9 @@
 (defn to-access-map [request response total-time]
   (let [method (-> request :request-method name cstr/upper-case)]
     {:timestamp (str
-                 (t/to-time-zone
-                  (t/now)
-                  (t/time-zone-for-id "Europe/Helsinki")))
+                  (t/to-time-zone
+                    (t/now)
+                    (t/time-zone-for-id "Europe/Helsinki")))
      :responseCode (:status response)
      :request (request-to-str method request)
      :responseTime total-time
@@ -88,17 +88,17 @@
 (defn audit [m]
   (log-audit-info (json/json-str m)))
 
-(defn spy-access [request respond]  
+(defn spy-access [request respond]
   (let [current-ms (System/currentTimeMillis)]
-    (fn [response]      
-      (access (to-access-map 
-               request response (- (System/currentTimeMillis) current-ms)))
+    (fn [response]
+      (access (to-access-map
+                request response (- (System/currentTimeMillis) current-ms)))
       (respond response))))
 
 (defn wrap-access-logger [handler]
   (fn
     ([request respond raise]
-     (handler request (spy-access request respond) raise))
+      (handler request (spy-access request respond) raise))
     ([request]
-     (prn "Sync")
-     (handler request))))
+      (prn "Sync")
+      (handler request))))
