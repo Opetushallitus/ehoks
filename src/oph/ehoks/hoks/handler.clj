@@ -223,7 +223,7 @@
           :id (:id ooato-from-db))))
 
     (c-api/PATCH "/:id" []
-      :summary (str "Päivittää HOKSin olemassa olevan ammatillisen tutkinnon"
+      :summary (str "Päivittää HOKSin olemassa olevan ammatillisen tutkinnon "
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
       :body [values hoks-schema/OlemassaOlevanAmmatillisenTutkinnonOsanPaivitys]
@@ -254,7 +254,14 @@
                             (get-in request [:hoks :id]) oopto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id oopto-from-db))}
-          :id (:id oopto-from-db))))))
+          :id (:id oopto-from-db))))
+
+    (c-api/PATCH "/:id" []
+      :summary (str "Päivittää HOKSin olemassa olevan paikallisen tutkinnon "
+                    "osan arvoa tai arvoja")
+      :path-params [id :- s/Int]
+      :body [values hoks-schema/OlemassaOlevanPaikallisenTutkinnonOsanPaivitys]
+      (response/not-found {:error "Olemassa oleva paikallinen tutkinnon osa not found"}))))
 
 (def ^:private puuttuvat-yhteisen-tutkinnon-osat
   (c-api/context "/:hoks-id/puuttuvat-yhteisen-tutkinnon-osat" [hoks-id]
