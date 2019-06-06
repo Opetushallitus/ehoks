@@ -99,9 +99,9 @@ lein cljfmt check
 
 ### Ohjelman ajaminen
 
-Ohjelmalle voi antaa parametrina sovelluksen nimen (oppija tai virkailija).
-Oppijan sovellus on oletuksena valittuna. Lisäksi ohjelma ottaa vastaan
-parametreina käytettävän konfiguraatiotiedoston.
+Ohjelmalle voi antaa parametrina sovelluksen nimen (oppija, virkailija tai
+molemmat). Molemmat sovellukset on oletuksena valittuna. Lisäksi ohjelma ottaa
+vastaan parametreina käytettävän konfiguraatiotiedoston.
 Ohjelman nimen (`NAME`) ja konfiguraatiotiedoston (`CONFIG`) voi antaa myös
 ympäristömuuttujana.
 
