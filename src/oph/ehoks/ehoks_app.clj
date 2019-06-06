@@ -7,7 +7,8 @@
             [oph.ehoks.oppija.handler :as oppija-handler]
             [oph.ehoks.virkailija.handler :as virkailija-handler]
             [oph.ehoks.config :refer [config]]
-            [clojure.string :refer [lower-case]]))
+            [clojure.string :refer [lower-case]]
+            [environ.core :refer [env]]))
 
 (def both-app
   (c-api/api
@@ -36,4 +37,4 @@
       (redis-store {:pool {}
                     :spec {:uri (:redis-url config)}}))))
 
-(def app (create-app (lower-case (or (System/getProperty "NAME") ""))))
+(def app (create-app (lower-case (:name env "both"))))
