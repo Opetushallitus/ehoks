@@ -554,7 +554,8 @@
   {:tavoitteet-ja-sisallot "Muutettu tavoite."})
 
 (defn- assert-oopto-data-is-patched-correctly [updated-data old-data]
-  (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite.")))
+  (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite."))
+  (is (= (:nimi updated-data) (:nimi old-data))))
 
 (deftest patch-olemassa-oleva-paikalliset-tutkinnon-osat
   (testing "Patching multple values of oopto"
