@@ -88,17 +88,24 @@
 (defn audit [m]
   (log-audit-info (json/json-str m)))
 
-(defn spy-access [request respond]
+(defn- spy-access [request respond]
   (let [current-ms (System/currentTimeMillis)]
     (fn [response]
       (access (to-access-map
                 request response (- (System/currentTimeMillis) current-ms)))
       (respond response))))
 
+(defn- spy-access-sync [handler request]
+  (let [current-ms (System/currentTimeMillis)
+        response (handler request)]
+    (access
+      (to-access-map
+        request response (- (System/currentTimeMillis) current-ms)))
+    response))
+
 (defn wrap-access-logger [handler]
   (fn
     ([request respond raise]
       (handler request (spy-access request respond) raise))
     ([request]
-      (prn "Sync")
-      (handler request))))
+      (spy-access-sync handler request))))
