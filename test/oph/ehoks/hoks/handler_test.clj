@@ -551,11 +551,18 @@
             {:meta {} :data (assoc oopto-data :id 1)})))))
 
 (def ^:private multiple-oopto-values-patched
-  {:tavoitteet-ja-sisallot "Muutettu tavoite."})
+  {:tavoitteet-ja-sisallot "Muutettu tavoite."
+   :tarkentavat-tiedot-arvioija
+   {:lahetetty-arvioitavaksi "2020-01-01"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Uusi tyyppi"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453955555"}}]}})
 
 (defn- assert-oopto-data-is-patched-correctly [updated-data old-data]
   (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite."))
-  (is (= (:nimi updated-data) (:nimi old-data))))
+  (is (= (:nimi updated-data) (:nimi old-data)))
+  (is (= (:tarkentavat-tiedot-arvioija updated-data)
+         (:tarkentavat-tiedot-arvioija multiple-ooato-values-patched))))
 
 (deftest patch-olemassa-oleva-paikalliset-tutkinnon-osat
   (testing "Patching multple values of oopto"
