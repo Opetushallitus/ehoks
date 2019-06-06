@@ -561,8 +561,8 @@
 (defn- assert-oopto-data-is-patched-correctly [updated-data old-data]
   (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite."))
   (is (= (:nimi updated-data) (:nimi old-data)))
-  (is (= (:tarkentavat-tiedot-arvioija updated-data)
-         (:tarkentavat-tiedot-arvioija multiple-ooato-values-patched))))
+  (eq (:tarkentavat-tiedot-arvioija updated-data)
+      (:tarkentavat-tiedot-arvioija multiple-oopto-values-patched)))
 
 (deftest patch-olemassa-oleva-paikalliset-tutkinnon-osat
   (testing "Patching multple values of oopto"
