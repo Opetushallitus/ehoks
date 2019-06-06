@@ -4,6 +4,7 @@
             [compojure.route :as compojure-route]
             [schema.core :as s]
             [ring.util.http-response :as response]
+            [oph.ehoks.logging :refer [wrap-access-logger]]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.external.cache :as c]
@@ -301,8 +302,10 @@
      :exceptions
      {:handlers common-api/handlers}}
 
-    routes
+    (route-middleware
+      [wrap-access-logger]
 
-    (c-api/undocumented
-      (compojure-route/not-found
-        (response/not-found {:reason "Route not found"})))))
+      routes
+      (c-api/undocumented
+        (compojure-route/not-found
+          (response/not-found {:reason "Route not found"}))))))
