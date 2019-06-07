@@ -216,7 +216,7 @@
       (rest/rest-ok (h/get-aiemmin-hankittu-ammat-tutkinnon-osa id)))
 
     (c-api/POST "/" [:as request]
-      :summary "Luo olemassa aiemmin hankitun ammat tutkinnon osan HOKSiin"
+      :summary "Luo aiemmin hankitun ammat tutkinnon osan HOKSiin"
       :body [ooato hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ooato-from-db (h/save-aiemmin-hankittu-ammat-tutkinnon-osa!
@@ -226,7 +226,7 @@
           :id (:id ooato-from-db))))
 
     (c-api/PATCH "/:id" []
-      :summary (str "Päivittää HOKSin olemassa olevan ammatillisen tutkinnon"
+      :summary (str "Päivittää HOKSin aiemmin hankitun ammatillisen tutkinnon "
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
       :body
@@ -258,7 +258,22 @@
                             (get-in request [:hoks :id]) oopto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id oopto-from-db))}
-          :id (:id oopto-from-db))))))
+          :id (:id oopto-from-db))))
+
+    (c-api/PATCH "/:id" []
+      :summary (str "Päivittää HOKSin aiemmin hankitun paikallisen tutkinnon "
+                    "osan arvoa tai arvoja")
+      :path-params [id :- s/Int]
+      :body [values hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanPaivitys]
+      (if-let [oopto-from-db
+               (pdb/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id
+                 id)]
+        (do
+          (h/update-aiemmin-hankittu-paikallinen-tutkinnon-osa!
+            oopto-from-db values)
+          (response/no-content))
+        (response/not-found
+          {:error "Aiemmin hankittu paikallinen tutkinnon osa not found"})))))
 
 (def ^:private hankittava-yhteinen-tutkinnon-osa
   (c-api/context "/:hoks-id/hankittava-yhteinen-tutkinnon-osa" [hoks-id]

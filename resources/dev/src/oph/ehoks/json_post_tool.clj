@@ -13,10 +13,11 @@
                  :content-type :json
                  :accept :json}})
     (catch Exception e
-
+      (when (:debug config) (.printStackTrace e))
       (let [data (ex-data e)]
-        (printf "Error: %s \nStatus: %d\nBody:\n%s\n"
-                (.getMessage e) (:status data) (:body data))))))
+        (printf
+          "Error: %s \nLocation: %s\nStatus: %d\nBody:\n%s\n"
+          (.getMessage e) (:location data) (:status data) (:body data))))))
 
 (defn lein-send-json! [json-file & params]
   (let [options (apply hash-map params)]

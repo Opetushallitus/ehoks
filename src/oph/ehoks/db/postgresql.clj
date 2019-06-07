@@ -565,6 +565,14 @@
     (h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" id]))
 
+(defn update-aiemmin-hankittu-paikallinen-tutkinnon-osa-by-id! [id new-values]
+  (when-let
+   [new-ahpt (h/aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql new-values)]
+    (update!
+      :aiemmin_hankitut_paikalliset_tutkinnon_osat
+      new-ahpt
+      ["id = ? AND deleted_at IS NULL" id])))
+
 (defn update-todennettu-arviointi-lisatiedot-by-id! [id new-values]
   (update!
     :todennettu_arviointi_lisatiedot
@@ -580,6 +588,11 @@
   (shallow-delete!
     :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
     ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ?" id]))
+
+(defn delete-aiemmin-hankitun-paikallisen-tutkinnon-osan-naytto-by-id! [id]
+  (shallow-delete!
+    :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
+    ["aiemmin_hankittu_paikallinen_tutkinnon_osa_id = ?" id]))
 
 (defn insert-hankittavan-ammat-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]

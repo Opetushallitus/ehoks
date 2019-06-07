@@ -529,6 +529,19 @@
     {:removed [:id]}))
 
 (s/defschema
+  AiemminHankitunPaikallisenTutkinnonOsanPaivitys
+  (modify
+    AiemminHankittuPaikallinenTutkinnonOsa
+    (str "Olemassa olevan paikallisen tutkinnon osan tiedot "
+         "kenttää tai kenttiä päivitettäessä (PATCH)")
+    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+                 :valittu-todentamisen-prosessi-koodi-uri
+                 :koulutuksen-jarjestaja-oid
+                 :kuvaus
+                 :laajuus
+                 :nimi]}))
+
+(s/defschema
   HankittavanPaikallisenTutkinnonOsanLuonti
   (modify
     HankittavaPaikallinenTutkinnonOsa
@@ -605,7 +618,7 @@
   (modify
     AiemminHankittuAmmatillinenTutkinnonOsa
     (str "Olemassa olevan ammatillisen tutkinnon osan tiedot "
-         " kenttää tai kenttiä päivittäessä (PATCH)")
+         "kenttää tai kenttiä päivittäessä (PATCH)")
     {:optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri
                  :tutkinnon-osa-koodi-versio

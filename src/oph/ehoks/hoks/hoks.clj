@@ -531,10 +531,9 @@
            (replace-pato-osaamisen-osoittamiset!
              pato-db (:osaamisen-osoittaminen values)))))
 
-(defn- replace-ooato-tarkentavat-tiedot-naytto! [ooato-db new-values]
-  (db/delete-aiemmin-hankitun-ammat-tutkinnon-osan-naytto-by-id!
-    (:id ooato-db))
-  (save-ooato-tarkentavat-tiedot-naytto! (:id ooato-db) new-values))
+(defn- replace-ooato-tarkentavat-tiedot-naytto! [ooato-id new-values]
+  (db/delete-aiemmin-hankitun-ammat-tutkinnon-osan-naytto-by-id! ooato-id)
+  (save-ooato-tarkentavat-tiedot-naytto! ooato-id new-values))
 
 (defn- replace-tta-aiemmin-hankitun-osaamisen-arvioijat! [tta-id new-values]
   (db/delete-todennettu-arviointi-arvioijat-by-tta-id! tta-id)
@@ -554,7 +553,21 @@
     (update-tarkentavat-tiedot-arvioija!
       (:tarkentavat-tiedot-arvioija-id ooato-from-db) new-tta))
   (when-let [new-ttn (:tarkentavat-tiedot-naytto new-values)]
-    (replace-ooato-tarkentavat-tiedot-naytto! ooato-from-db new-ttn)))
+    (replace-ooato-tarkentavat-tiedot-naytto! (:id ooato-from-db) new-ttn)))
+
+(defn- replace-oopto-tarkentavat-tiedot-naytto! [oopto-id new-values]
+  (db/delete-aiemmin-hankitun-paikallisen-tutkinnon-osan-naytto-by-id! oopto-id)
+  (save-oopto-tarkentavat-tiedot-naytto! oopto-id new-values))
+
+(defn update-aiemmin-hankittu-paikallinen-tutkinnon-osa!
+  [oopto-from-db new-values]
+  (db/update-aiemmin-hankittu-paikallinen-tutkinnon-osa-by-id!
+    (:id oopto-from-db) new-values)
+  (when-let [new-tta (:tarkentavat-tiedot-arvioija new-values)]
+    (update-tarkentavat-tiedot-arvioija!
+      (:tarkentavat-tiedot-arvioija-id oopto-from-db) new-tta))
+  (when-let [new-ttn (:tarkentavat-tiedot-naytto new-values)]
+    (replace-oopto-tarkentavat-tiedot-naytto! (:id oopto-from-db) new-ttn)))
 
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!

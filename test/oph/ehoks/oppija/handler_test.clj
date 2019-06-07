@@ -1,6 +1,6 @@
 (ns oph.ehoks.oppija.handler-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [oph.ehoks.handler :as handler]
+            [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils
