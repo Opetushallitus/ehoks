@@ -422,6 +422,6 @@
           ooato (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
                   {:hoks-id (:id hoks)})
           data {}
-          tta (h/save-ooato-tarkentavat-tiedot-arvioija! data)]
+          tta (h/save-tarkentavat-tiedot-arvioija! data)]
       (eq (h/get-tarkentavat-tiedot-arvioija (:id tta))
           (assoc data :aiemmin-hankitun-osaamisen-arvioijat [])))))

@@ -521,7 +521,15 @@
        annetaan myös arvioijan lisätiedot")}))
 
 (s/defschema
-  HankittavaPaikallinenTutkinnonOsaLuonti
+  AiemminHankitunPaikallisenTutkinnonOsanLuonti
+  (modify
+    AiemminHankittuPaikallinenTutkinnonOsa
+    (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot uutta"
+         "merkintää luotaessa (POST")
+    {:removed [:id]}))
+
+(s/defschema
+  HankittavanPaikallisenTutkinnonOsanLuonti
   (modify
     HankittavaPaikallinenTutkinnonOsa
     (str "Hankittavan paikallisen tutkinnon osan tiedot uutta merkintää "
@@ -585,12 +593,23 @@
       liittyvän osaamisen hankkimisessa tai osoittamisessa."))}))
 
 (s/defschema
-  AiemminHankittuAmmatillinenTutkinnonOsanLuonti
+  AiemminHankitunAmmatillisenTutkinnonOsanLuonti
   (modify
     AiemminHankittuAmmatillinenTutkinnonOsa
-    (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot uutta"
+    (str "Olemassa olevan ammatillisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST)")
     {:removed [:id]}))
+
+(s/defschema
+  AiemminHankitunAmmatillisenTutkinnonOsanPaivitys
+  (modify
+    AiemminHankittuAmmatillinenTutkinnonOsa
+    (str "Olemassa olevan ammatillisen tutkinnon osan tiedot "
+         " kenttää tai kenttiä päivittäessä (PATCH)")
+    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+                 :valittu-todentamisen-prosessi-koodi-uri
+                 :tutkinnon-osa-koodi-versio
+                 :tutkinnon-osa-koodi-uri]}))
 
 (def HOKSModel
   ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"

@@ -78,6 +78,11 @@
     (to-underscore-keys (convert-sql m operations)))
   ([m] (to-sql m {})))
 
+(defn hoks-from-sql [h]
+  (from-sql
+    h
+    {:removals [:manuaalisyotto]}))
+
 (defn hoks-to-sql [h]
   (to-sql
     h

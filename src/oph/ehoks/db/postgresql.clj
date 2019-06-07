@@ -50,24 +50,24 @@
 (defn select-hoksit []
   (query
     [queries/select-hoksit]
-    :row-fn h/from-sql))
+    :row-fn h/hoks-from-sql))
 
 (defn select-hoks-by-oppija-oid [oid]
   (query
     [queries/select-hoksit-by-oppija-oid oid]
-    :row-fn h/from-sql))
+    :row-fn h/hoks-from-sql))
 
 (defn select-hoks-by-id [id]
   (first
     (query
       [queries/select-hoksit-by-id id]
-      {:row-fn h/from-sql})))
+      {:row-fn h/hoks-from-sql})))
 
 (defn select-hoks-by-eid [eid]
   (first
     (query
       [queries/select-hoksit-by-eid eid]
-      {:row-fn h/from-sql})))
+      {:row-fn h/hoks-from-sql})))
 
 (defn select-hoksit-eid-by-eid [eid]
   (query
@@ -77,7 +77,7 @@
 (defn select-hoksit-by-opiskeluoikeus-oid [oid]
   (query
     [queries/select-hoksit-by-opiskeluoikeus-oid oid]
-    {:row-fn h/from-sql}))
+    {:row-fn h/hoks-from-sql}))
 
 (defn generate-unique-eid []
   (loop [eid nil]
@@ -127,11 +127,11 @@
     [queries/select-arvioijat-by-todennettu-arviointi-id id]
     {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
 
-(defn insert-todennettu-arviointi-arvioija! [tta m]
+(defn insert-todennettu-arviointi-arvioijat! [tta-id arvioija-id]
   (insert-one!
     :todennettu_arviointi_arvioijat
-    {:todennettu_arviointi_lisatiedot_id (:id tta)
-     :koulutuksen_jarjestaja_osaamisen_arvioija_id (:id m)}))
+    {:todennettu_arviointi_lisatiedot_id tta-id
+     :koulutuksen_jarjestaja_osaamisen_arvioija_id arvioija-id}))
 
 (defn insert-koulutuksen-jarjestaja-osaamisen-arvioijat! [c]
   (insert-multi!
@@ -143,6 +143,10 @@
     :koulutuksen_jarjestaja_osaamisen_arvioijat
     (h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql m)))
 
+(defn select-tarkentavat-tiedot-naytto-by-oopto-id [oopto-id]
+  (query [queries/select-osaamisen-osoittamiset-by-oopto-id oopto-id]
+         {:row-fn h/osaamisen-osoittaminen-from-sql}))
+
 (defn select-tarkentavat-tiedot-naytto-by-ooato-id
   "Aiemmin hankitun ammat tutkinnon osan näytön tarkentavat tiedot
    (hankitun osaamisen näytöt)"
@@ -151,10 +155,10 @@
     [queries/select-osaamisen-osoittamiset-by-ooato-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-(defn insert-ooato-osaamisen-osoittaminen! [ooato n]
+(defn insert-aiemmin-hankitun-ammat-tutkinnon-osan-naytto! [ooato-id n]
   (insert-one!
     :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
-    {:aiemmin_hankittu_ammat_tutkinnon_osa_id (:id ooato)
+    {:aiemmin_hankittu_ammat_tutkinnon_osa_id ooato-id
      :osaamisen_osoittaminen_id (:id n)}))
 
 (defn insert-ooyto-osaamisen-osoittaminen! [ooyto n]
@@ -418,6 +422,13 @@
       [queries/select-nayttoymparistot-by-id id]
       {:row-fn h/nayttoymparisto-from-sql})))
 
+(defn select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id [id]
+  (->
+    (query [queries/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id
+            id])
+    first
+    h/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql))
+
 (defn select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id [id]
   (query
     [queries/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id id]
@@ -430,7 +441,7 @@
 
 (defn select-osaamisen-osoittaminen-by-oopto-id [id]
   (query
-    [queries/select-tarkentavat-tiedot-naytto-by-oopto-id id]
+    [queries/select-osaamisen-osoittamiset-by-oopto-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
 (defn insert-oopto-arvioija! [oopto-id arvioija-id]
@@ -547,6 +558,28 @@
     :hankittavat_ammat_tutkinnon_osat
     (h/hankittava-ammat-tutkinnon-osa-to-sql m)
     ["id = ? AND deleted_at IS NULL" id]))
+
+(defn update-aiemmin-hankittu-ammat-tutkinnon-osa-by-id! [id new-values]
+  (update!
+    :aiemmin_hankitut_ammat_tutkinnon_osat
+    (h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql new-values)
+    ["id = ? AND deleted_at IS NULL" id]))
+
+(defn update-todennettu-arviointi-lisatiedot-by-id! [id new-values]
+  (update!
+    :todennettu_arviointi_lisatiedot
+    (h/todennettu-arviointi-lisatiedot-to-sql new-values)
+    ["id = ? AND deleted_at IS NULL" id]))
+
+(defn delete-todennettu-arviointi-arvioijat-by-tta-id! [id]
+  (shallow-delete!
+    :todennettu_arviointi_arvioijat
+    ["todennettu_arviointi_lisatiedot_id = ?" id]))
+
+(defn delete-aiemmin-hankitun-ammat-tutkinnon-osan-naytto-by-id! [id]
+  (shallow-delete!
+    :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
+    ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ?" id]))
 
 (defn insert-hankittavan-ammat-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]

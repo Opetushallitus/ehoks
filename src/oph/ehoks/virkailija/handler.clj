@@ -21,10 +21,26 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.eperusteet :as eperusteet]
-            [oph.ehoks.external.koski :as koski]))
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
+
+(defn wrap-require-virkailija-user [handler]
+  (fn
+    ([request respond raise]
+      (if (= (get-in request [:session :virkailija-user :kayttajaTyyppi])
+             "VIRKAILIJA")
+        (handler request respond raise)
+        (respond (response/forbidden
+                   {:error "User type 'VIRKAILIJA' is required"}))))
+    ([request]
+      (if (= (get-in request [:session :virkailija-user :kayttajaTyyppi])
+             "VIRKAILIJA")
+        (handler request)
+        (response/forbidden
+          {:error "User type 'VIRKAILIJA' is required"})))))
 
 (defn wrap-virkailija-authorize [handler]
   (fn
@@ -48,18 +64,20 @@
         (handler request)
         (response/forbidden)))))
 
-(defn virkailija-has-access? [ticket-user oppija-oid]
-  (or (user/oph-super-user? ticket-user)
-      (some?
-        (some
-          (fn [opiskeluoikeus]
-            (when
-             (contains?
-               (user/get-organisation-privileges
-                 ticket-user (:oppilaitos-oid opiskeluoikeus))
-               :read)
-              opiskeluoikeus))
-          (oppijaindex/get-oppija-opiskeluoikeudet oppija-oid)))))
+(defn virkailija-has-privilege? [ticket-user oppija-oid privilege]
+  (some?
+    (some
+      (fn [opiskeluoikeus]
+        (when
+         (contains?
+           (user/get-organisation-privileges
+             ticket-user (:oppilaitos-oid opiskeluoikeus))
+           privilege)
+          opiskeluoikeus))
+      (oppijaindex/get-oppija-opiskeluoikeudet oppija-oid))))
+
+(defn virkailija-has-access? [virkailija-user oppija-oid]
+  (virkailija-has-privilege? virkailija-user oppija-oid :read))
 
 (defn wrap-virkailija-oppija-access [handler]
   (fn
@@ -95,7 +113,7 @@
           auth/routes
 
           (route-middleware
-            [wrap-virkailija-authorize]
+            [wrap-virkailija-authorize wrap-require-virkailija-user]
 
             (c-api/context "/oppijat" []
               (c-api/GET "/" request
@@ -177,6 +195,8 @@
             (c-api/context "/external" []
               :tags ["virkailija-external"]
 
+              lokalisointi-handler/routes
+
               (c-api/context "/koodisto" []
                 (c-api/GET "/:koodi-uri" []
                   :path-params [koodi-uri :- s/Str]
@@ -209,26 +229,57 @@
                             Koodisto-Koodi-Urilla."
                   :return (restful/response [s/Any])
                   (restful/rest-ok
-                    (eperusteet/find-tutkinnon-osat koodi-uri))))))
-
-          (route-middleware
-            [wrap-virkailija-authorize wrap-oph-super-user]
+                    (eperusteet/find-tutkinnon-osat koodi-uri)))))
 
             (c-api/context "/hoksit" []
 
-              (c-api/GET "/" []
-                :summary "Kaikki hoksit (perustiedot)"
-                (restful/rest-ok (db/select-hoksit)))
+              (c-api/POST "/" [:as request]
+                :summary "Luo uuden HOKSin. Vaatii manuaalisyöttäjän oikeudet"
+                :body [hoks hoks-schema/HOKSLuonti]
+                :return (restful/response schema/POSTResponse :id s/Int)
+                (let [virkailija-user (get-in
+                                        request [:session :virkailija-user])]
+                  (when-not (virkailija-has-privilege?
+                              virkailija-user (:oppija-oid hoks) :write)
+                    (response/forbidden!
+                      {:error (str "User has unsufficient privileges")}))
+                  (when (seq (db/select-hoksit-by-opiskeluoikeus-oid
+                               (:opiskeluoikeus-oid hoks)))
+                    (response/bad-request!
+                      {:error (str "HOKS with the same opiskeluoikeus-oid "
+                                   "already exists")})))
+                (let [hoks-db (h/save-hoks! hoks)]
+                  (restful/rest-ok
+                    {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
+                    :id (:id hoks-db))))
 
-              (c-api/GET "/:hoks-id" []
+              (c-api/GET "/:hoks-id" request
                 :path-params [hoks-id :- s/Int]
-                :summary "Hoksin tiedot"
-                (restful/rest-ok (h/get-hoks-by-id hoks-id))))
+                :summary "Hoksin tiedot. Vaatii manuaalisyöttäjän oikeudet"
+                (let [hoks (db/select-hoks-by-id hoks-id)
+                      virkailija-user (get-in
+                                        request [:session :virkailija-user])]
+                  (if (virkailija-has-privilege?
+                        virkailija-user (:oppija-oid hoks) :write)
+                    (restful/rest-ok (h/get-hoks-by-id hoks-id))
+                    (response/forbidden
+                      {:error (str "User has unsufficient privileges")}))))
 
-            (c-api/DELETE "/cache" []
-              :summary "Välimuistin tyhjennys"
-              (c/clear-cache!)
-              (response/ok))))
+              (route-middleware
+                [wrap-oph-super-user]
+
+                (c-api/GET "/" []
+                  :summary "Kaikki hoksit (perustiedot).
+                         Tarvitsee OPH-pääkäyttäjän oikeudet"
+                  (restful/rest-ok (db/select-hoksit)))))
+
+            (route-middleware
+              [wrap-oph-super-user]
+
+              (c-api/DELETE "/cache" []
+                :summary "Välimuistin tyhjennys"
+                (c/clear-cache!)
+                (response/ok)))))
 
         healthcheck-handler/routes
         misc-handler/routes))
