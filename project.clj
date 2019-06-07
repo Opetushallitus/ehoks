@@ -77,6 +77,7 @@
                          [hiccup "1.0.5"]
                          [org.clojure/tools.namespace "0.2.11"]
                          [environ "1.1.0"]
+                         [software.amazon.awssdk/sqs "2.5.37"]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.3.2"]

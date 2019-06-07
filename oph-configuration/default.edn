@@ -16,4 +16,5 @@
  :opintopolku-tt-auth-url "http://localhost:3000/auth-dev/opintopolku-tt-login/"
  :ext-cache-lifetime-minutes 180
  :save-hoks-json? false
- :opintopolku-host "localhost:3000"}
+ :opintopolku-host "localhost:3000"
+ :heratepalvelu-queue "sieni-heratepalvelu-eHOKSHerateQueue"}
