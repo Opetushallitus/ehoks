@@ -420,19 +420,19 @@
          (:tarkentavat-tiedot %)))
     osa-alueet))
 
-(defn save-olemassa-oleva-yhteinen-tutkinnon-osa! [o]
-  (let [yto (db/insert-olemassa-oleva-yhteinen-tutkinnon-osa! o)]
-    (save-ooyto-tarkentavat-tiedot-naytto! yto (:tarkentavat-tiedot-naytto o))
+(defn save-olemassa-oleva-yhteinen-tutkinnon-osa! [hoks-id ooyto]
+  (let [yto (db/insert-olemassa-oleva-yhteinen-tutkinnon-osa! ooyto)]
+    (save-ooyto-tarkentavat-tiedot-naytto! yto (:tarkentavat-tiedot-naytto ooyto))
     (save-ooyto-arvioijat!
       (:id yto)
       (get-in
-        o [:tarkentavat-tiedot-arvioija :aiemmin-hankitun-osaamisen-arvioijat]))
-    (save-ooyto-osa-alueet! (:id yto) (:osa-alueet o))
+        ooyto [:tarkentavat-tiedot-arvioija :aiemmin-hankitun-osaamisen-arvioijat]))
+    (save-ooyto-osa-alueet! (:id yto) (:osa-alueet ooyto))
     yto))
 
-(defn save-olemassa-olevat-yhteiset-tutkinnon-osat! [h c]
+(defn save-olemassa-olevat-yhteiset-tutkinnon-osat! [hoks c]
   (mapv
-    #(save-olemassa-oleva-yhteinen-tutkinnon-osa! (assoc % :hoks-id (:id h)))
+    #(save-olemassa-oleva-yhteinen-tutkinnon-osa! (:id hoks) (assoc % :hoks-id (:id hoks)))
     c))
 
 (defn save-ooato-tarkentavat-tiedot-naytto! [ooato-id new-values]
