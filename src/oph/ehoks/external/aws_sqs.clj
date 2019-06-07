@@ -1,16 +1,22 @@
 (ns oph.ehoks.external.aws-sqs
   (:require [clojure.data.json :as json]
-            [oph.ehoks.config :refer [config]])
+            [oph.ehoks.config :refer [config]]
+            [clojure.tools.logging :as log])
   (:import (software.amazon.awssdk.services.sqs SqsClient)
            (software.amazon.awssdk.regions Region)
            (software.amazon.awssdk.services.sqs.model SendMessageRequest GetQueueUrlRequest)))
 
-(def sqs-client (.build (.region (SqsClient/builder) (Region/EU_WEST_1))))
+(def sqs-client (-> (SqsClient/builder)
+                    (.region (Region/EU_WEST_1))
+                    (.build)))
 
 (def queue-url
-  (.sendMessage sqs-client (-> (GetQueueUrlRequest/builder)
-                               (.queueName (:heratepalvelu-queue config))
-                               .build)))
+  (if (nil? (:heratepalvelu-queue config))
+    (log/warn "Heratepalvelu-queue name missing from config")
+    (.queueUrl (.getQueueUrl sqs-client (-> (GetQueueUrlRequest/builder)
+                                            (.queueName (:heratepalvelu-queue config))
+                                            (.build))))))
+
 (defn build-hoks-hyvaksytty-msg [id hoks]
   {:ehoks-id id
    :kyselytyyppi "HOKS_hyvaksytty"
@@ -20,7 +26,8 @@
    :ensikertainen-hyvaksyminen (:ensikertainen-hyvaksyminen hoks)})
 
 (defn send-message [msg]
-  (.sendMessage sqs-client (-> (SendMessageRequest/builder)
-                               (.queueUrl queue-url)
-                               (.messageBody (json/write-str msg))
-                               .build)))
+  (when (some? queue-url)
+    (.sendMessage sqs-client (-> (SendMessageRequest/builder)
+                                 (.queueUrl queue-url)
+                                 (.messageBody (json/write-str msg))
+                                 (.build)))))
