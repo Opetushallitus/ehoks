@@ -273,6 +273,12 @@
 (def ^:private olemassa-olevat-yhteiset-tutkinnon-osat
   (c-api/context "/olemassa-olevat-yhteiset-tutkinnon-osat" []
 
+    (c-api/GET "/:id" []
+      :summary "Palauttaa HOKSin olemassa olevan yhteisen tutkinnon osan"
+      :path-params [id :- s/Int]
+      :return (rest/response hoks-schema/OlemassaOlevaYhteinenTutkinnonOsa)
+      (rest/rest-ok (h/get-olemassa-olevat-yhteinen-tutkinnon-osa id)))
+
     (c-api/POST "/" [:as request]
       :summary "Luo olemassa olevan yhteisen tutkinnon osan HOKSiin"
       :body [ooyto hoks-schema/OlemassaOlevanYhteisenTutkinnonOsanLuonti]

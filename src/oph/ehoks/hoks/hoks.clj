@@ -155,6 +155,9 @@
        :id)
     (db/select-tarkentavat-tiedot-naytto-by-ooyto-id id)))
 
+(defn get-olemassa-olevat-yhteinen-tutkinnon-osa [id]
+  ())
+
 (defn get-olemassa-olevat-yhteiset-tutkinnon-osat [hoks-id]
   (mapv
     #(-> %
