@@ -554,7 +554,7 @@
   {:tavoitteet-ja-sisallot "Muutettu tavoite."
 
    :tarkentavat-tiedot-arvioija
-      {:lahetetty-arvioitavaksi "2020-01-01"
+   {:lahetetty-arvioitavaksi "2020-01-01"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Uusi tyyppi"
       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453955555"}}]}
@@ -578,8 +578,8 @@
         ttn-patch-values
         (assoc (first (:tarkentavat-tiedot-naytto
                         multiple-oopto-values-patched))
-          :keskeiset-tyotehtavat-naytto []
-          :osa-alueet [] :tyoelama-arvioijat [])]
+               :keskeiset-tyotehtavat-naytto []
+               :osa-alueet [] :tyoelama-arvioijat [])]
     (eq ttn-after-update ttn-patch-values)))
 
 (deftest patch-olemassa-oleva-paikalliset-tutkinnon-osat
