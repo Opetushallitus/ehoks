@@ -405,6 +405,7 @@
           puuttuva-paikallinen-tutkinnon-osa
           olemassa-olevat-ammatilliset-tutkinnon-osat
           olemassa-olevat-paikalliset-tutkinnon-osat
+          olemassa-olevat-yhteiset-tutkinnon-osat
           puuttuva-ammatillinen-osaaminen))
 
       (c-api/undocumented
