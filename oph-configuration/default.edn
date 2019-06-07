@@ -17,4 +17,4 @@
  :ext-cache-lifetime-minutes 180
  :save-hoks-json? false
  :opintopolku-host "localhost:3000"
- :heratepalvelu-queue "sieni-heratepalvelu-eHOKSHerateQueue"}
+ :heratepalvelu-queue "heratepalvelu-eHOKSHerateQueue"}
