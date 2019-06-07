@@ -582,22 +582,29 @@
                :osa-alueet [] :tyoelama-arvioijat [])]
     (eq ttn-after-update ttn-patch-values)))
 
+(defn- test-patch-of-olemassa-oleva-osa
+  [osa-path osa-data osa-patched-data assert-function]
+  (with-hoks
+    hoks
+    (let [app (create-app nil)
+          post-response (create-mock-post-request
+                          osa-path osa-data app hoks)
+          patch-response (create-mock-patch-request
+                           osa-path app osa-patched-data)
+          get-response (create-mock-get-request osa-path app hoks)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status patch-response) 204))
+      (is (= (:status get-response) 200))
+      (assert-function get-response-data osa-data))))
+
 (deftest patch-olemassa-oleva-paikalliset-tutkinnon-osat
   (testing "Patching multple values of oopto"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
-                            oopto-path oopto-data app hoks)
-            patch-response (create-mock-patch-request
-                             oopto-path app multiple-oopto-values-patched)
-            get-response (create-mock-get-request oopto-path app hoks)
-            get-response-data (:data (utils/parse-body (:body get-response)))]
-        (is (= (:status post-response) 200))
-        (is (= (:status patch-response) 204))
-        (is (= (:status get-response) 200))
-        (assert-oopto-data-is-patched-correctly
-          get-response-data oopto-data)))))
+    (test-patch-of-olemassa-oleva-osa
+      oopto-path
+      oopto-data
+      multiple-oopto-values-patched
+      assert-oopto-data-is-patched-correctly)))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
