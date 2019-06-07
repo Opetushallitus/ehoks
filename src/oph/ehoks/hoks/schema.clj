@@ -499,7 +499,7 @@
   OlemassaOlevanPaikallisenTutkinnonOsanLuonti
   (modify
     OlemassaOlevaPaikallinenTutkinnonOsa
-    (str "Olemassa olevan paikallisen tutkinnon osan tiedot uutta"
+    (str "Olemassa olevan paikallisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST")
     {:removed [:id]}))
 
@@ -561,6 +561,14 @@
        (s/optional-key :tarkentavat-tiedot-arvioija)
        TodennettuArviointiLisatiedot "Mikäli arvioijan kautta todennettu,
        annetaan myös arvioijan lisätiedot")}))
+
+(s/defschema
+  OlemassaOlevanYhteisenTutkinnonOsanLuonti
+  (modify
+    OlemassaOlevaYhteinenTutkinnonOsa
+    (str "Olemassa olevan yhteisen tutkinnon osan tiedot uutta "
+         "merkintää luotaessa (POST)")
+    {:removed [:id]}))
 
 (s/defschema
   OlemassaOlevaAmmatillinenTutkinnonOsa
