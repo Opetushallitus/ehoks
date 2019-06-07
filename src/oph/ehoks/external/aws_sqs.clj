@@ -12,16 +12,15 @@
                     (.build)))
 
 (def queue-url
-  (do (print config)
-      (if (nil? (:env-stage config))
-        (log/warn "Stage missing from env variables")
-        (.queueUrl (.getQueueUrl sqs-client
-                                 (-> (GetQueueUrlRequest/builder)
-                                     (.queueName
-                                       (str (:env-stage config) "-"
-                                            (:heratepalvelu-queue config)))
-                                     (.build))))))
-  )
+  (if (nil? (:env-stage config))
+    (log/warn "Stage missing from env variables")
+    (.queueUrl (.getQueueUrl sqs-client
+                             (-> (GetQueueUrlRequest/builder)
+                                 (.queueName
+                                   (str (:env-stage config) "-"
+                                        (:heratepalvelu-queue config)))
+                                 (.build))))))
+
 (defn build-hoks-hyvaksytty-msg [id hoks]
   {:ehoks-id id
    :kyselytyyppi "Amis_HOKS_hyväksytty"
