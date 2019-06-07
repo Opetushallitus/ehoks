@@ -54,6 +54,31 @@
 (defn get-hoks-url [hoks path]
   (format "%s/%d/%s" url (:id hoks) path))
 
+(defn- create-mock-post-request [path body app hoks]
+  (utils/with-service-ticket
+    app
+    (-> (mock/request
+          :post
+          (get-hoks-url hoks path))
+        (mock/json-body body))))
+
+(defn- create-mock-get-request [path app hoks]
+  (utils/with-service-ticket
+    app
+    (mock/request
+      :get
+      (get-hoks-url hoks (str path "/1")))))
+
+(defn- create-mock-patch-request [path app patched-data]
+  (utils/with-service-ticket
+    app
+    (-> (mock/request
+          :patch
+          (format
+            "%s/1/%s/1"
+            url path))
+        (mock/json-body patched-data))))
+
 (deftest post-and-get-ppto
   (testing "GET newly created puuttuva paikallinen tutkinnon osa"
     (db/clear)
@@ -361,6 +386,31 @@
                      :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
         (is (= (:status response) 204))))))
 
+(defn- assert-post-response [post-path post-response]
+  (is (= (:status post-response) 200))
+  (eq (utils/parse-body (:body post-response))
+      {:meta {:id 1}
+       :data {:uri
+              (format
+                "%1s/1/%2s/1"
+                url post-path)}}))
+
+(defn- test-patch-of-olemassa-oleva-osa
+  [osa-path osa-data osa-patched-data assert-function]
+  (with-hoks
+    hoks
+    (let [app (create-app nil)
+          post-response (create-mock-post-request
+                          osa-path osa-data app hoks)
+          patch-response (create-mock-patch-request
+                           osa-path app osa-patched-data)
+          get-response (create-mock-get-request osa-path app hoks)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status patch-response) 204))
+      (is (= (:status get-response) 200))
+      (assert-function get-response-data osa-data))))
+
 (def ooato-path "olemassa-olevat-ammatilliset-tutkinnon-osat")
 (def ooato-data
   {:valittu-todentamisen-prosessi-koodi-versio 3
@@ -396,40 +446,6 @@
      :alku "2019-02-09"
      :loppu "2019-01-12"}]})
 
-(defn- create-mock-post-request [path body app hoks]
-  (utils/with-service-ticket
-    app
-    (-> (mock/request
-          :post
-          (get-hoks-url hoks path))
-        (mock/json-body body))))
-
-(defn- create-mock-get-request [path app hoks]
-  (utils/with-service-ticket
-    app
-    (mock/request
-      :get
-      (get-hoks-url hoks (str path "/1")))))
-
-(defn- create-mock-patch-request [path app patched-data]
-  (utils/with-service-ticket
-    app
-    (-> (mock/request
-          :patch
-          (format
-            "%s/1/%s/1"
-            url path))
-        (mock/json-body patched-data))))
-
-(defn- assert-post-response [post-path post-response]
-  (is (= (:status post-response) 200))
-  (eq (utils/parse-body (:body post-response))
-      {:meta {:id 1}
-       :data {:uri
-              (format
-                "%1s/1/%2s/1"
-                url post-path)}}))
-
 (deftest post-and-get-olemassa-olevat-ammatilliset-tutkinnon-osat
   (testing "POST ooato and then get the created ooato"
     (with-hoks
@@ -443,22 +459,6 @@
         (eq (utils/parse-body
               (:body get-response))
             {:meta {} :data (assoc ooato-data :id 1)})))))
-
-(defn- test-patch-of-olemassa-oleva-osa
-  [osa-path osa-data osa-patched-data assert-function]
-  (with-hoks
-    hoks
-    (let [app (create-app nil)
-          post-response (create-mock-post-request
-                          osa-path osa-data app hoks)
-          patch-response (create-mock-patch-request
-                           osa-path app osa-patched-data)
-          get-response (create-mock-get-request osa-path app hoks)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
-      (is (= (:status post-response) 200))
-      (is (= (:status patch-response) 204))
-      (is (= (:status get-response) 200))
-      (assert-function get-response-data osa-data))))
 
 (def ^:private multiple-ooato-values-patched
   {:tutkinnon-osa-koodi-versio 3000
