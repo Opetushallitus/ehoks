@@ -4,22 +4,27 @@
             [clojure.tools.logging :as log])
   (:import (software.amazon.awssdk.services.sqs SqsClient)
            (software.amazon.awssdk.regions Region)
-           (software.amazon.awssdk.services.sqs.model SendMessageRequest GetQueueUrlRequest)))
+           (software.amazon.awssdk.services.sqs.model SendMessageRequest
+                                                      GetQueueUrlRequest)))
 
 (def sqs-client (-> (SqsClient/builder)
                     (.region (Region/EU_WEST_1))
                     (.build)))
 
 (def queue-url
-  (if (nil? (:heratepalvelu-queue config))
-    (log/warn "Heratepalvelu-queue name missing from config")
-    (.queueUrl (.getQueueUrl sqs-client (-> (GetQueueUrlRequest/builder)
-                                            (.queueName (:heratepalvelu-queue config))
-                                            (.build))))))
-
+  (do (print config)
+      (if (nil? (:env-stage config))
+        (log/warn "Stage missing from env variables")
+        (.queueUrl (.getQueueUrl sqs-client
+                                 (-> (GetQueueUrlRequest/builder)
+                                     (.queueName
+                                       (str (:env-stage config) "-"
+                                            (:heratepalvelu-queue config)))
+                                     (.build))))))
+  )
 (defn build-hoks-hyvaksytty-msg [id hoks]
   {:ehoks-id id
-   :kyselytyyppi "HOKS_hyvaksytty"
+   :kyselytyyppi "Amis_HOKS_hyväksytty"
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
    :oppija-oid (:oppija-oid hoks)
    :sahkoposti (:sahkoposti hoks)
