@@ -54,9 +54,6 @@
 (defn get-hoks-url [hoks path]
   (format "%s/%d/%s" url (:id hoks) path))
 
-(defn get-new-hoks-url [path]
-  (with-hoks hoks (get-hoks-url hoks path)))
-
 (deftest post-and-get-ppto
   (testing "GET newly created puuttuva paikallinen tutkinnon osa"
     (db/clear)
@@ -447,6 +444,22 @@
               (:body get-response))
             {:meta {} :data (assoc ooato-data :id 1)})))))
 
+(defn- test-patch-of-olemassa-oleva-osa
+  [osa-path osa-data osa-patched-data assert-function]
+  (with-hoks
+    hoks
+    (let [app (create-app nil)
+          post-response (create-mock-post-request
+                          osa-path osa-data app hoks)
+          patch-response (create-mock-patch-request
+                           osa-path app osa-patched-data)
+          get-response (create-mock-get-request osa-path app hoks)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status patch-response) 204))
+      (is (= (:status get-response) 200))
+      (assert-function get-response-data osa-data))))
+
 (def ^:private multiple-ooato-values-patched
   {:tutkinnon-osa-koodi-versio 3000
 
@@ -484,20 +497,11 @@
 
 (deftest patch-multiple-olemassa-olevat-ammatilliset-tutkinnon-osat
   (testing "Patching multiple values of ooato"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
-                            ooato-path ooato-data app hoks)
-            patch-response (create-mock-patch-request
-                             ooato-path app multiple-ooato-values-patched)
-            get-response (create-mock-get-request ooato-path app hoks)
-            get-response-data (:data (utils/parse-body (:body get-response)))]
-        (is (= (:status post-response) 200))
-        (is (= (:status patch-response) 204))
-        (is (= (:status get-response) 200))
-        (assert-ooato-data-is-patched-correctly
-          get-response-data ooato-data)))))
+    (test-patch-of-olemassa-oleva-osa
+      ooato-path
+      ooato-data
+      multiple-ooato-values-patched
+      assert-ooato-data-is-patched-correctly)))
 
 (def oopto-path "olemassa-olevat-paikalliset-tutkinnon-osat")
 (def oopto-data
@@ -552,6 +556,46 @@
         (eq (utils/parse-body
               (:body get-response))
             {:meta {} :data (assoc oopto-data :id 1)})))))
+
+(def ^:private multiple-oopto-values-patched
+  {:tavoitteet-ja-sisallot "Muutettu tavoite."
+
+   :tarkentavat-tiedot-arvioija
+   {:lahetetty-arvioitavaksi "2020-01-01"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Uusi tyyppi"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453955555"}}]}
+
+   :tarkentavat-tiedot-naytto
+   [{:koulutuksen-jarjestaja-arvioijat
+     [{:nimi "Muutettu Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911111"}}]
+     :nayttoymparisto {:nimi "Toinen Oy"
+                       :y-tunnus "12345699-2"
+                       :kuvaus "Testiyrityksen testiosasostalla"}
+     :alku "2018-01-01"
+     :loppu "2021-01-01"}]})
+
+(defn- assert-oopto-data-is-patched-correctly [updated-data old-data]
+  (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite."))
+  (is (= (:nimi updated-data) (:nimi old-data)))
+  (eq (:tarkentavat-tiedot-arvioija updated-data)
+      (:tarkentavat-tiedot-arvioija multiple-oopto-values-patched))
+  (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
+        ttn-patch-values
+        (assoc (first (:tarkentavat-tiedot-naytto
+                        multiple-oopto-values-patched))
+               :keskeiset-tyotehtavat-naytto []
+               :osa-alueet [] :tyoelama-arvioijat [])]
+    (eq ttn-after-update ttn-patch-values)))
+
+(deftest patch-olemassa-oleva-paikalliset-tutkinnon-osat
+  (testing "Patching multple values of oopto"
+    (test-patch-of-olemassa-oleva-osa
+      oopto-path
+      oopto-data
+      multiple-oopto-values-patched
+      assert-oopto-data-is-patched-correctly)))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 
