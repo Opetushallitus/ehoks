@@ -411,6 +411,19 @@
       (is (= (:status get-response) 200))
       (assert-function get-response-data osa-data))))
 
+(defn- test-post-and-get-of-olemassa-oleva-osa [osa-path osa-data]
+  (with-hoks
+    hoks
+    (let [app (create-app nil)
+          post-response (create-mock-post-request
+                          osa-path osa-data app hoks)
+          get-response (create-mock-get-request osa-path app hoks)]
+      (assert-post-response osa-path post-response)
+      (is (= (:status get-response) 200))
+      (eq (utils/parse-body
+            (:body get-response))
+          {:meta {} :data (assoc osa-data :id 1)}))))
+
 (def ooato-path "olemassa-olevat-ammatilliset-tutkinnon-osat")
 (def ooato-data
   {:valittu-todentamisen-prosessi-koodi-versio 3
@@ -448,17 +461,7 @@
 
 (deftest post-and-get-olemassa-olevat-ammatilliset-tutkinnon-osat
   (testing "POST ooato and then get the created ooato"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
-                            ooato-path ooato-data app hoks)
-            get-response (create-mock-get-request ooato-path app hoks)]
-        (assert-post-response ooato-path post-response)
-        (is (= (:status get-response) 200))
-        (eq (utils/parse-body
-              (:body get-response))
-            {:meta {} :data (assoc ooato-data :id 1)})))))
+    (test-post-and-get-of-olemassa-oleva-osa ooato-path ooato-data)))
 
 (def ^:private multiple-ooato-values-patched
   {:tutkinnon-osa-koodi-versio 3000
@@ -545,17 +548,7 @@
 
 (deftest post-and-get-olemassa-olevat-paikalliset-tutkinnon-osat
   (testing "POST oopto and then get the created oopto"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
-                            oopto-path oopto-data app hoks)
-            get-response (create-mock-get-request oopto-path app hoks)]
-        (assert-post-response oopto-path post-response)
-        (is (= (:status get-response) 200))
-        (eq (utils/parse-body
-              (:body get-response))
-            {:meta {} :data (assoc oopto-data :id 1)})))))
+    (test-post-and-get-of-olemassa-oleva-osa oopto-path oopto-data)))
 
 (def ^:private multiple-oopto-values-patched
   {:tavoitteet-ja-sisallot "Muutettu tavoite."
