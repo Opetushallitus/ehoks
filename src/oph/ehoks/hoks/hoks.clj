@@ -155,8 +155,15 @@
        :id)
     (db/select-tarkentavat-tiedot-naytto-by-ooyto-id id)))
 
-(defn get-olemassa-olevat-yhteinen-tutkinnon-osa [id]
+(defn- set-ooyto-values [ooyto]
   ())
+
+(defn get-olemassa-olevat-yhteinen-tutkinnon-osa [id]
+  (when-let [ooyto-from-db
+             (db/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-id id)]
+    ooyto-from-db
+    ;(set-ooyto-values ooyto-from-db)
+    ))
 
 (defn get-olemassa-olevat-yhteiset-tutkinnon-osat [hoks-id]
   (mapv
