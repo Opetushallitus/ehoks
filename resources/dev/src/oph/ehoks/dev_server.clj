@@ -96,7 +96,7 @@
     (require 'oph.ehoks.external.oph-url :reload))
   (log/info "Running migrations")
   (m/migrate!)
-  (log/infof "Starting %s development server..." (ehoks-app/get-app-name))
+  (log/infof "Starting %s development server..." app-name)
   (log/info "Not safe for production or public environments.")
   (populate-oppijaindex)
   (jetty/run-jetty app
