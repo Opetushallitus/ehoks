@@ -159,6 +159,8 @@
   (dissoc
     (assoc
       ooyto
+      :osa-alueet
+      (get-ooyto-osa-alueet (:id ooyto))
       :tarkentavat-tiedot-arvioija
       (get-tarkentavat-tiedot-arvioija (:tarkentavat-tiedot-arvioija-id ooyto))
       :tarkentavat-tiedot-naytto
