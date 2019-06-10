@@ -56,45 +56,29 @@
             (str "?" (:query-string request))
             "")))
 
-(defn get-full-app-name []
-  (let [app-name "" ;(ehoks-app/get-app-name)
-]
-    (if (= app-name "both")
-      "ehoks"
-      (format "ehoks_%s" app-name))))
-
-(def service-name ^:private (get-full-app-name))
-
 (defn get-session [request]
-  "")
+  (get-in request [:cookies "ring-session" :value]))
+
+(defn- current-fin-time-str []
+  (str (t/to-time-zone (t/now) (t/time-zone-for-id "Europe/Helsinki"))))
 
 (defn to-access-map [request response total-time]
   (let [method (-> request :request-method name cstr/upper-case)]
-    {:timestamp (str
-                  (t/to-time-zone
-                    (t/now)
-                    (t/time-zone-for-id "Europe/Helsinki")))
-     :responseCode (:status response)
+    {:timestamp (current-fin-time-str)
+     :response-code (:status response)
      :request (request-to-str method request)
-     :responseTime total-time
-     :requestMethod method
+     :response-time total-time
+     :request-method method
      :service service-name
-     :environment "" ;(:opintopolku-host config)
+     :environment (:opintopolku-host config)
      :user-agent (get-header request "user-agent")
      :caller-id (get-header request "caller-id")
-     :clientSubsystemCode (get-header request "clientsubsystemcode")
      :x-forwarded-for (get-header request "x-forwarded-for")
      :x-real-ip (get-header request "x-real-ip")
      :remote-ip (:remote-addr request)
      :session (get-session request)
-     :response-size (get-header request "Content-Length")
+     :content-length (get-header request "Content-Length")
      :referer (get-header request "referer")}))
-
-(defn auditf [f m]
-  (.info audit-logger (format-message f m)))
-
-(defn audit [m]
-  (log-audit-info (json/json-str m)))
 
 (defn- spy-access [request respond]
   (let [current-ms (System/currentTimeMillis)]
