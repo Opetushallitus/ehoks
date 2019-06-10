@@ -410,12 +410,6 @@
        n)
     c))
 
-(defn save-ooyto-arvioijat! [yto-id arvioijat]
-  (mapv
-    #(let [a (db/insert-koulutuksen-jarjestaja-arvioija! %)]
-       (db/insert-ooyto-arvioija! yto-id (:id a)))
-    arvioijat))
-
 (defn save-ooyto-osa-alueet! [yto-id osa-alueet]
   (mapv
     #(let [o (db/insert-olemassa-olevan-yhteisen-tutkinnon-osan-osa-alue!
