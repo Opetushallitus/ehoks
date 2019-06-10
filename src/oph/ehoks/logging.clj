@@ -2,9 +2,8 @@
   (:require [clojure.string :as cstr]
             [clojure.data.json :as json]
             [clj-time.core :as t]
-            ;[oph.ehoks.config :refer [config]]
-   ;         [oph.ehoks.ehoks-app :as ehoks-app]
-)
+            [oph.ehoks.config :refer [config]]
+            [environ.core :refer [env]])
   (:import org.apache.logging.log4j.LogManager))
 
 (defn- get-audit-logger []
@@ -16,6 +15,9 @@
 (def audit-logger ^:private (when-not *compile-files* (get-audit-logger)))
 
 (def access-logger ^:private (when-not *compile-files* (get-access-logger)))
+
+(def ^:private service-name
+  (cstr/lower-case (:name env (or (System/getProperty "name") "ehoks-both"))))
 
 (defn format-message
   "Format message. All {{:key}} are replaced with value of :key in given map"
