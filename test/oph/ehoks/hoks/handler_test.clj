@@ -54,8 +54,30 @@
 (defn get-hoks-url [hoks path]
   (format "%s/%d/%s" url (:id hoks) path))
 
-(defn get-new-hoks-url [path]
-  (with-hoks hoks (get-hoks-url hoks path)))
+(defn- create-mock-post-request [path body app hoks]
+  (utils/with-service-ticket
+    app
+    (-> (mock/request
+          :post
+          (get-hoks-url hoks path))
+        (mock/json-body body))))
+
+(defn- create-mock-get-request [path app hoks]
+  (utils/with-service-ticket
+    app
+    (mock/request
+      :get
+      (get-hoks-url hoks (str path "/1")))))
+
+(defn- create-mock-patch-request [path app patched-data]
+  (utils/with-service-ticket
+    app
+    (-> (mock/request
+          :patch
+          (format
+            "%s/1/%s/1"
+            url path))
+        (mock/json-body patched-data))))
 
 (deftest post-and-get-ppto
   (testing "GET newly created puuttuva paikallinen tutkinnon osa"
@@ -364,6 +386,44 @@
                      :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
         (is (= (:status response) 204))))))
 
+(defn- assert-post-response [post-path post-response]
+  (is (= (:status post-response) 200))
+  (eq (utils/parse-body (:body post-response))
+      {:meta {:id 1}
+       :data {:uri
+              (format
+                "%1s/1/%2s/1"
+                url post-path)}}))
+
+(defn- test-patch-of-olemassa-oleva-osa
+  [osa-path osa-data osa-patched-data assert-function]
+  (with-hoks
+    hoks
+    (let [app (create-app nil)
+          post-response (create-mock-post-request
+                          osa-path osa-data app hoks)
+          patch-response (create-mock-patch-request
+                           osa-path app osa-patched-data)
+          get-response (create-mock-get-request osa-path app hoks)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status patch-response) 204))
+      (is (= (:status get-response) 200))
+      (assert-function get-response-data osa-data))))
+
+(defn- test-post-and-get-of-olemassa-oleva-osa [osa-path osa-data]
+  (with-hoks
+    hoks
+    (let [app (create-app nil)
+          post-response (create-mock-post-request
+                          osa-path osa-data app hoks)
+          get-response (create-mock-get-request osa-path app hoks)]
+      (assert-post-response osa-path post-response)
+      (is (= (:status get-response) 200))
+      (eq (utils/parse-body
+            (:body get-response))
+          {:meta {} :data (assoc osa-data :id 1)}))))
+
 (def ooato-path "olemassa-olevat-ammatilliset-tutkinnon-osat")
 (def ooato-data
   {:valittu-todentamisen-prosessi-koodi-versio 3
@@ -399,53 +459,9 @@
      :alku "2019-02-09"
      :loppu "2019-01-12"}]})
 
-(defn- create-mock-post-request [path body app hoks]
-  (utils/with-service-ticket
-    app
-    (-> (mock/request
-          :post
-          (get-hoks-url hoks path))
-        (mock/json-body body))))
-
-(defn- create-mock-get-request [path app hoks]
-  (utils/with-service-ticket
-    app
-    (mock/request
-      :get
-      (get-hoks-url hoks (str path "/1")))))
-
-(defn- create-mock-patch-request [path app patched-data]
-  (utils/with-service-ticket
-    app
-    (-> (mock/request
-          :patch
-          (format
-            "%s/1/%s/1"
-            url path))
-        (mock/json-body patched-data))))
-
-(defn- assert-post-response [post-path post-response]
-  (is (= (:status post-response) 200))
-  (eq (utils/parse-body (:body post-response))
-      {:meta {:id 1}
-       :data {:uri
-              (format
-                "%1s/1/%2s/1"
-                url post-path)}}))
-
 (deftest post-and-get-olemassa-olevat-ammatilliset-tutkinnon-osat
   (testing "POST ooato and then get the created ooato"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
-                            ooato-path ooato-data app hoks)
-            get-response (create-mock-get-request ooato-path app hoks)]
-        (assert-post-response ooato-path post-response)
-        (is (= (:status get-response) 200))
-        (eq (utils/parse-body
-              (:body get-response))
-            {:meta {} :data (assoc ooato-data :id 1)})))))
+    (test-post-and-get-of-olemassa-oleva-osa ooato-path ooato-data)))
 
 (def ^:private multiple-ooato-values-patched
   {:tutkinnon-osa-koodi-versio 3000
@@ -484,20 +500,11 @@
 
 (deftest patch-multiple-olemassa-olevat-ammatilliset-tutkinnon-osat
   (testing "Patching multiple values of ooato"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
-                            ooato-path ooato-data app hoks)
-            patch-response (create-mock-patch-request
-                             ooato-path app multiple-ooato-values-patched)
-            get-response (create-mock-get-request ooato-path app hoks)
-            get-response-data (:data (utils/parse-body (:body get-response)))]
-        (is (= (:status post-response) 200))
-        (is (= (:status patch-response) 204))
-        (is (= (:status get-response) 200))
-        (assert-ooato-data-is-patched-correctly
-          get-response-data ooato-data)))))
+    (test-patch-of-olemassa-oleva-osa
+      ooato-path
+      ooato-data
+      multiple-ooato-values-patched
+      assert-ooato-data-is-patched-correctly)))
 
 (def oopto-path "olemassa-olevat-paikalliset-tutkinnon-osat")
 (def oopto-data
@@ -541,17 +548,116 @@
 
 (deftest post-and-get-olemassa-olevat-paikalliset-tutkinnon-osat
   (testing "POST oopto and then get the created oopto"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
-                            oopto-path oopto-data app hoks)
-            get-response (create-mock-get-request oopto-path app hoks)]
-        (assert-post-response oopto-path post-response)
-        (is (= (:status get-response) 200))
-        (eq (utils/parse-body
-              (:body get-response))
-            {:meta {} :data (assoc oopto-data :id 1)})))))
+    (test-post-and-get-of-olemassa-oleva-osa oopto-path oopto-data)))
+
+(def ^:private multiple-oopto-values-patched
+  {:tavoitteet-ja-sisallot "Muutettu tavoite."
+
+   :tarkentavat-tiedot-arvioija
+   {:lahetetty-arvioitavaksi "2020-01-01"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Uusi tyyppi"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453955555"}}]}
+
+   :tarkentavat-tiedot-naytto
+   [{:koulutuksen-jarjestaja-arvioijat
+     [{:nimi "Muutettu Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911111"}}]
+     :nayttoymparisto {:nimi "Toinen Oy"
+                       :y-tunnus "12345699-2"
+                       :kuvaus "Testiyrityksen testiosasostalla"}
+     :alku "2018-01-01"
+     :loppu "2021-01-01"}]})
+
+(defn- assert-oopto-data-is-patched-correctly [updated-data old-data]
+  (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite."))
+  (is (= (:nimi updated-data) (:nimi old-data)))
+  (eq (:tarkentavat-tiedot-arvioija updated-data)
+      (:tarkentavat-tiedot-arvioija multiple-oopto-values-patched))
+  (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
+        ttn-patch-values
+        (assoc (first (:tarkentavat-tiedot-naytto
+                        multiple-oopto-values-patched))
+               :keskeiset-tyotehtavat-naytto []
+               :osa-alueet [] :tyoelama-arvioijat [])]
+    (eq ttn-after-update ttn-patch-values)))
+
+(deftest patch-olemassa-oleva-paikalliset-tutkinnon-osat
+  (testing "Patching multple values of oopto"
+    (test-patch-of-olemassa-oleva-osa
+      oopto-path
+      oopto-data
+      multiple-oopto-values-patched
+      assert-oopto-data-is-patched-correctly)))
+
+(def ooyto-path "olemassa-olevat-yhteiset-tutkinnon-osat")
+(def ooyto-data
+  {:valittu-todentamisen-prosessi-koodi-uri
+   "osaamisentodentamisenprosessi_0001"
+   :valittu-todentamisen-prosessi-koodi-versio 3
+   :tutkinnon-osa-koodi-versio 2
+   :tutkinnon-osa-koodi-uri "tutkinnonosat_10203"
+   :tarkentavat-tiedot-arvioija
+   {:lahetetty-arvioitavaksi "2016-02-29"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Arttu Arvioija"
+      :organisaatio {:oppilaitos-oid
+                     "1.2.246.562.10.54453931311"}}]}
+   :osa-alueet
+   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
+     :osa-alue-koodi-versio 4
+     :koulutuksen-jarjestaja-oid
+     "1.2.246.562.10.54453923578"
+     :vaatimuksista-tai-tavoitteista-poikkeaminen
+     "Testaus ei kuulu vaatimuksiin."
+     :valittu-todentamisen-prosessi-koodi-uri
+     "osaamisentodentamisenprosessi_0003"
+     :valittu-todentamisen-prosessi-koodi-versio 4
+     :tarkentavat-tiedot
+     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
+                     :koodi-versio 3}]
+       :koulutuksen-jarjestaja-arvioijat
+       [{:nimi "Teppo Testaaja"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.54539267901"}}]
+       :jarjestaja {:oppilaitos-oid
+                    "1.2.246.562.10.55890967901"}
+
+       :nayttoymparisto {:nimi "Ab Yhtiö Oy"
+                         :y-tunnus "1234128-1"
+                         :kuvaus "Testi"}
+       :tyoelama-arvioijat
+       [{:nimi "Tellervo Työntekijä"
+         :organisaatio {:nimi "Ab Yhtiö Oy"
+                        :y-tunnus "1234128-1"}}]
+       :keskeiset-tyotehtavat-naytto ["Testaus" "Kirjoitus"]
+       :alku "2019-01-04"
+       :loppu "2019-03-01"}]}]
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590901"
+   :tarkentavat-tiedot-naytto
+   [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ma"
+                   :koodi-versio 6}]
+     :koulutuksen-jarjestaja-arvioijat
+     [{:nimi "Erkki Esimerkkitestaaja"
+       :organisaatio {:oppilaitos-oid
+                      "1.2.246.562.10.13490579090"}}]
+     :jarjestaja {:oppilaitos-oid
+                  "1.2.246.562.10.93270579090"}
+     :nayttoymparisto {:nimi "Testi Oy"
+                       :y-tunnus "1289235-2"
+                       :kuvaus "Testiyhtiö"}
+     :tyoelama-arvioijat
+     [{:nimi "Tapio Testihenkilö"
+       :organisaatio {:nimi "Testi Oy"
+                      :y-tunnus "1289235-2"}}]
+     :keskeiset-tyotehtavat-naytto ["Testauksen suunnittelu"
+                                    "Jokin toinen testi"]
+     :alku "2019-03-01"
+     :loppu "2019-06-01"}]})
+
+(deftest post-and-get-olemassa-olevat-yhteiset-tutkinnon-osat
+  (testing "POST ooyto and then get the created ooyto"
+    (test-post-and-get-of-olemassa-oleva-osa ooyto-path ooyto-data)))
 
 (def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
 

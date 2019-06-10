@@ -32,7 +32,7 @@
             (when (seq (:redis-url config))
               (redis-store {:pool {}
                             :spec {:uri (:redis-url config)}})))]
-      (log/infof "Starting %s" app-name)
+      (log/infof "Starting %s listening to port %d" app-name (:port config))
       (log/info "Running migrations")
       (m/migrate!)
       (jetty/run-jetty hoks-app {:port (:port config)

@@ -138,11 +138,6 @@
     :koulutuksen_jarjestaja_arvioijat
     (map h/koulutuksen-jarjestaja-arvioija-to-sql c)))
 
-(defn insert-koulutuksen-jarjestaja-arvioija! [m]
-  (insert-one!
-    :koulutuksen_jarjestaja_arvioijat
-    (h/koulutuksen-jarjestaja-arvioija-to-sql m)))
-
 (defn select-tarkentavat-tiedot-naytto-by-oopto-id [oopto-id]
   (query [queries/select-hankitun-osaamisen-naytot-by-oopto-id oopto-id]
          {:row-fn h/hankitun-osaamisen-naytto-from-sql}))
@@ -441,33 +436,11 @@
     :olemassa_olevat_paikalliset_tutkinnon_osat
     (h/olemassa-oleva-paikallinen-tutkinnon-osa-to-sql m)))
 
-(defn insert-oopto-arvioija! [oopto-id arvioija-id]
-  (insert-one!
-    :olemassa_olevan_paikallisen_tutkinnon_osan_arvioijat
-    {:olemassa_oleva_paikallinen_tutkinnon_osa_id oopto-id
-     :koulutuksen_jarjestaja_arvioija_id arvioija-id}))
-
-(defn select-arvioijat-by-oopto-id [id]
-  (query
-    [queries/select-arvioijat-by-oopto-id id]
-    {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
-
 (defn insert-oopto-hankitun-osaamisen-naytto! [oopto-id naytto-id]
   (insert-one!
     :olemassa_olevan_paikallisen_tutkinnon_osan_naytto
     {:olemassa_oleva_paikallinen_tutkinnon_osa_id oopto-id
      :hankitun_osaamisen_naytto_id naytto-id}))
-
-(defn insert-ooyto-arvioija! [yto-id a-id]
-  (insert-one!
-    :olemassa_olevan_yhteisen_tutkinnon_osan_arvioijat
-    {:olemassa_oleva_yhteinen_tutkinnon_osa_id yto-id
-     :koulutuksen_jarjestaja_arvioija_id a-id}))
-
-(defn select-arvioija-by-ooyto-id [id]
-  (query
-    [queries/select-arvioijat-by-ooyto-id id]
-    {:row-fn h/koulutuksen-jarjestaja-arvioija-from-sql}))
 
 (defn select-tarkentavat-tiedot-naytto-by-ooyto-id
   "Olemassa olevan yhteisen tutkinnon osan näytön tarkentavat tiedot
@@ -502,6 +475,12 @@
   (insert-one!
     :olemassa_olevat_yhteiset_tutkinnon_osat
     (h/olemassa-oleva-yhteinen-tutkinnon-osa-to-sql m)))
+
+(defn select-olemassa-olevat-yhteiset-tutkinnon-osat-by-id [id]
+  (->
+    (query [queries/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-id id])
+    first
+    h/olemassa-oleva-yhteinen-tutkinnon-osa-from-sql))
 
 (defn select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id [id]
   (query
@@ -562,6 +541,12 @@
     (h/olemassa-oleva-ammatillinen-tutkinnon-osa-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" id]))
 
+(defn update-olemassa-oleva-paikallinen-tutkinnon-osat-by-id! [id new-values]
+  (update!
+    :olemassa_olevat_paikalliset_tutkinnon_osat
+    (h/olemassa-oleva-paikallinen-tutkinnon-osa-to-sql new-values)
+    ["id = ?" id]))
+
 (defn update-todennettu-arviointi-lisatiedot-by-id! [id new-values]
   (update!
     :todennettu_arviointi_lisatiedot
@@ -577,6 +562,11 @@
   (shallow-delete!
     :olemassa_olevan_ammatillisen_tutkinnon_osan_naytto
     ["olemassa_oleva_ammatillinen_tutkinnon_osa_id = ?" id]))
+
+(defn delete-olemassa-olevan-paikallisen-tutkinnon-osan-naytto-by-id! [id]
+  (shallow-delete!
+    :olemassa_olevan_paikallisen_tutkinnon_osan_naytto
+    ["olemassa_oleva_paikallinen_tutkinnon_osa_id = ?" id]))
 
 (defn insert-puuttuvan-ammatillisen-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]
