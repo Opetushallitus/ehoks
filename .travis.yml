@@ -34,6 +34,7 @@ script:
   - export BASE_IMAGE="baseimage-fatjar:master"
   - ./ci-tools/common/pull-image.sh
   - ./ci-tools/build/build-fatjar.sh ehoks
+  - docker tag ehoks ehoks-virkailija
 
 deploy:
   provider: script
