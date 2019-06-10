@@ -503,6 +503,12 @@
     :olemassa_olevat_yhteiset_tutkinnon_osat
     (h/olemassa-oleva-yhteinen-tutkinnon-osa-to-sql m)))
 
+(defn select-olemassa-olevat-yhteiset-tutkinnon-osat-by-id [id]
+  (->
+    (query [queries/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-id id])
+    first
+    h/olemassa-oleva-yhteinen-tutkinnon-osa-from-sql))
+
 (defn select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id [id]
   (query
     [queries/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id id]

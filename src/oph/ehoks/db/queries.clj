@@ -82,6 +82,7 @@
      :secondary-column "koulutuksen_jarjestaja_arvioija_id"
      :primary-column "id"
      :column "olemassa_oleva_paikallinen_tutkinnon_osa_id"}))
+(defq select-olemassa-olevat-yhteiset-tutkinnon-osat-by-id)
 (defq select-olemassa-olevat-yhteiset-tutkinnon-osat-by-hoks-id)
 (def select-hankitun-osaamisen-naytot-by-ppto-id
   (generate-select-join
