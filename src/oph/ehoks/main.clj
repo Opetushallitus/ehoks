@@ -7,8 +7,7 @@
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.ehoks-app :as ehoks-app]
             [oph.ehoks.redis :refer [redis-store]]
-            [oph.ehoks.config :refer [config]]
-            [environ.core :refer [env]]))
+            [oph.ehoks.config :refer [config]]))
 
 (defn has-arg? [args s]
   (some? (some #(when (= (lower-case %) s) %) args)))
