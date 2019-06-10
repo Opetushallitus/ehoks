@@ -270,6 +270,25 @@
         (response/not-found
           {:error "Olemassa oleva paikallinen tutkinnon osa not found"})))))
 
+(def ^:private olemassa-olevat-yhteiset-tutkinnon-osat
+  (c-api/context "/olemassa-olevat-yhteiset-tutkinnon-osat" []
+
+    (c-api/GET "/:id" []
+      :summary "Palauttaa HOKSin olemassa olevan yhteisen tutkinnon osan"
+      :path-params [id :- s/Int]
+      :return (rest/response hoks-schema/OlemassaOlevaYhteinenTutkinnonOsa)
+      (rest/rest-ok (h/get-olemassa-olevat-yhteinen-tutkinnon-osa id)))
+
+    (c-api/POST "/" [:as request]
+      :summary "Luo olemassa olevan yhteisen tutkinnon osan HOKSiin"
+      :body [ooyto hoks-schema/OlemassaOlevanYhteisenTutkinnonOsanLuonti]
+      :return (rest/response schema/POSTResponse :id s/Int)
+      (let [ooyto-from-db (h/save-olemassa-oleva-yhteinen-tutkinnon-osa!
+                            (get-in request [:hoks :id]) ooyto)]
+        (rest/rest-ok
+          {:uri (format "%s/%d" (:uri request) (:id ooyto-from-db))}
+          :id (:id ooyto-from-db))))))
+
 (def ^:private puuttuvat-yhteisen-tutkinnon-osat
   (c-api/context "/:hoks-id/puuttuvat-yhteisen-tutkinnon-osat" [hoks-id]
 
@@ -393,6 +412,7 @@
           puuttuva-paikallinen-tutkinnon-osa
           olemassa-olevat-ammatilliset-tutkinnon-osat
           olemassa-olevat-paikalliset-tutkinnon-osat
+          olemassa-olevat-yhteiset-tutkinnon-osat
           puuttuva-ammatillinen-osaaminen))
 
       (c-api/undocumented
