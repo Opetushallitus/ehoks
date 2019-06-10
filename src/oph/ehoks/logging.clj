@@ -12,9 +12,14 @@
 (defn- get-access-logger []
   (LogManager/getLogger "access"))
 
-(def audit-logger ^:private (when-not *compile-files* (get-audit-logger)))
+(defn- get-root-logger []
+  (LogManager/getLogger))
 
-(def access-logger ^:private (when-not *compile-files* (get-access-logger)))
+(def ^:private audit-logger (when-not *compile-files* (get-audit-logger)))
+
+(def ^:private access-logger (when-not *compile-files* (get-access-logger)))
+
+(def ^:private root-logger (when-not *compile-files* (get-root-logger)))
 
 (def ^:private service-name
   (cstr/lower-case (:name env (or (System/getProperty "name") "ehoks-both"))))
@@ -33,17 +38,44 @@
 (defn- log-audit-info [msg]
   (when (:logging? config) (.info audit-logger msg)))
 
-(defn auditf [f m]
-  (log-audit-info (format-message f m)))
+(defn- log-debug [msg]
+  (when (:logging? config) (.debug root-logger msg)))
 
-(defn audit [m]
+(defn- log-info [msg]
+  (when (:logging? config) (.info root-logger msg)))
+
+(defn- log-warn [msg]
+  (when (:logging? config) (.warn root-logger msg)))
+
+(defn- log-error [msg]
+  (when (:logging? config) (.error root-logger msg)))
+
+(defn- audit [m]
   (log-audit-info (json/json-str m)))
 
-(defn accessf [f m]
-  (log-access-info (format-message f m)))
-
-(defn access [m]
+(defn- access [m]
   (log-access-info (json/json-str m)))
+
+(defn debug [^String s]
+  (log-debug s))
+
+(defn info [^String s]
+  (log-info s))
+
+(defn infof [^String s & args]
+  (log-info (apply format s args)))
+
+(defn error [^String s]
+  (log-error s))
+
+(defn errorf [^String s & args]
+  (log-error (apply format s args)))
+
+(defn warn [^String s]
+  (log-warn s))
+
+(defn warnf [^String s & args]
+  (log-warn (apply format s args)))
 
 (defn- get-header [request k]
   (get-in request [:headers k]))
