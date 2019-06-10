@@ -442,8 +442,7 @@
 
 (defn save-olemassa-olevat-yhteiset-tutkinnon-osat! [hoks c]
   (mapv
-    #(save-olemassa-oleva-yhteinen-tutkinnon-osa! (:id hoks)
-                                                  (assoc % :hoks-id (:id hoks)))
+    #(save-olemassa-oleva-yhteinen-tutkinnon-osa! (:id hoks) %)
     c))
 
 (defn save-ooato-tarkentavat-tiedot-naytto! [ooato-id new-values]
