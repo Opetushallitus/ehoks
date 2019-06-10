@@ -28,10 +28,16 @@
     m))
 
 (defn- log-access-info [msg]
-  (.info access-logger msg))
+  (when (:logging? config) (.info access-logger msg)))
 
 (defn- log-audit-info [msg]
-  (.info audit-logger msg))
+  (when (:logging? config) (.info audit-logger msg)))
+
+(defn auditf [f m]
+  (log-audit-info (format-message f m)))
+
+(defn audit [m]
+  (log-audit-info (json/json-str m)))
 
 (defn accessf [f m]
   (log-access-info (format-message f m)))
