@@ -174,7 +174,7 @@
     (str "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. "
          "Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai "
          "koulutussopimus.")
-    (s/optional-key :muut-oppimisymparisto)
+    (s/optional-key :muut-oppimisymparistot)
     [MuuOppimisymparisto]
     (str "Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen "
          "liittyvät tiedot")))
@@ -483,7 +483,7 @@
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
-    :osaamisen-osoittaminen [OsaamisenOsoittaminen]
+    (s/optional-key :osaamisen-osoittaminen ) [OsaamisenOsoittaminen]
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     (s/optional-key :olennainen-seikka) s/Bool
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
@@ -596,14 +596,7 @@
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
     "Aiemmin hankittu ammatillisen tutkinnon osa"
-    {:removed [:osa-alueet]
-     :added
-     (describe
-       ""
-       (s/optional-key :olennainen-seikka) s/Bool
-       (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
-      järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
-      liittyvän osaamisen hankkimisessa tai osoittamisessa."))}))
+    {:removed [:osa-alueet]}))
 
 (s/defschema
   AiemminHankitunAmmatillisenTutkinnonOsanLuonti

@@ -80,14 +80,14 @@
         :tyopaikalla-jarjestettava-koulutus
         (get-tyopaikalla-jarjestettava-koulutus
           (:tyopaikalla-jarjestettava-koulutus-id m))
-        :muut-oppimisymparisto
+        :muut-oppimisymparistot
         (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
           (:id m)))
       :id :tyopaikalla-jarjestettava-koulutus-id)
     (dissoc
       (assoc
         m
-        :muut-oppimisymparisto
+        :muut-oppimisymparistot
         (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
           (:id m)))
       :id)))
@@ -287,7 +287,7 @@
                (assoc oh :tyopaikalla-jarjestettava-koulutus-id
                       (:id tho)))]
     (db/insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
-      o-db (:muut-oppimisymparisto oh))
+      o-db (:muut-oppimisymparistot oh))
     o-db))
 
 (defn save-ppto-osaamisen-hankkimistapa! [ppto oh]
@@ -401,7 +401,7 @@
                           :hoks-id hoks-id
                           :tarkentavat-tiedot-osaamisen-arvioija-id
                           (:id (save-tarkentavat-tiedot-osaamisen-arvioija!
-                            tta))))]
+                                 tta))))]
     (assoc
       oopto-db
       :tarkentavat-tiedot-naytto

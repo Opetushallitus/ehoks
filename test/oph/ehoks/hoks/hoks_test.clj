@@ -133,7 +133,7 @@
        :tyopaikan-nimi "Ohjausyhtiö Oy"
        :tyopaikan-y-tunnus "12345212-4"
        :keskeiset-tyotehtavat ["Testitehtävä"]}
-      :muut-oppimisymparisto
+      :muut-oppimisymparistot
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
         :oppimisymparisto-koodi-versio 1
         :alku (java.time.LocalDate/of 2019 1 13)
@@ -240,7 +240,7 @@
        :tyopaikan-y-tunnus "12345689-4"
        :keskeiset-tyotehtavat ["Hälytysten valvonta"
                                "Vuoronvaihdon tarkistukset"]}
-      :muut-oppimisymparisto
+      :muut-oppimisymparistot
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
         :oppimisymparisto-koodi-versio 1
         :alku (java.time.LocalDate/of 2019 1 13)
@@ -294,7 +294,7 @@
          :tyopaikan-nimi "Ohjausyhtiö Oy"
          :tyopaikan-y-tunnus "12345212-4"
          :keskeiset-tyotehtavat ["Testitehtävä 2"]}
-        :muut-oppimisymparisto
+        :muut-oppimisymparistot
         [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
           :oppimisymparisto-koodi-versio 1
           :alku (java.time.LocalDate/of 2019 1 13)

@@ -168,7 +168,7 @@
                  :osaamisen-hankkimistapa-koodi-uri
                  "osaamisenhankkimistapa_koulutussopimus"
                  :osaamisen-hankkimistapa-koodi-versio 1
-                 :muut-oppimisymparisto
+                 :muut-oppimisymparistot
                  [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
                    :oppimisymparisto-koodi-versio 1
                    :alku "2019-03-10"
@@ -248,7 +248,7 @@
         :tyopaikan-nimi "Ohjaus Oyk"
         :tyopaikan-y-tunnus "12345222-4"
         :keskeiset-tyotehtavat ["Testitehtävä2"]}
-       :muut-oppimisymparisto []
+       :muut-oppimisymparistot []
        :ajanjakson-tarkenne "Ei ole"
        :hankkijan-edustaja
        {:nimi "Harri Hankkija"
