@@ -439,11 +439,11 @@
 
 (defn save-olemassa-oleva-yhteinen-tutkinnon-osa! [hoks-id ooyto]
   (let [yto (db/insert-olemassa-oleva-yhteinen-tutkinnon-osa! ooyto)]
-    (save-ooyto-tarkentavat-tiedot-naytto! yto (:tarkentavat-tiedot-naytto ooyto))
     (save-ooyto-arvioijat!
       (:id yto)
       (get-in
         ooyto [:tarkentavat-tiedot-arvioija :aiemmin-hankitun-osaamisen-arvioijat]))
+    (save-ooyto-tarkentavat-tiedot-naytto! yto (:tarkentavat-tiedot-naytto ooyto))
     (save-ooyto-osa-alueet! (:id yto) (:osa-alueet ooyto))
     yto))
 
