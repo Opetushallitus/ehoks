@@ -193,7 +193,3 @@
      :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "yhteisen_tutkinnon_osan_osa_alue_id"}))
-(def select-hankitun-yto-osaamisen-nayton-osaamistavoitteet
-  (generate-select-by
-    {:table "yto_osaamisen_osoittamisen_osaamistavoitteet"
-     :column "osaamisen_osoittaminen_id"}))

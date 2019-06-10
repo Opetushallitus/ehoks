@@ -176,7 +176,7 @@
       :valittu-todentamisen-prosessi-koodi-uri
       "osaamisentodentamisenprosessi_0003"
       :valittu-todentamisen-prosessi-koodi-versio 4
-      :tarkentavat-tiedot
+      :tarkentavat-tiedot-naytto
       [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
                       :koodi-versio 3}]
         :koulutuksen-jarjestaja-osaamisen-arvioijat
@@ -275,77 +275,42 @@
 (def pyto-data
   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_121123"
     :tutkinnon-osa-koodi-versio 3
-    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54452345789"
     :osa-alueet
     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ke"
       :osa-alue-koodi-versio 4
       :osaamisen-hankkimistavat
-      [{:jarjestajan-edustaja
-        {:nimi "Valmari Valvoja"
-         :rooli "Apulainen"
-         :oppilaitos-oid "1.2.246.562.10.54452355620"}
-        :osaamisen-hankkimistapa-koodi-uri
-        "osaamisenhankkimistapa_oppisopimus"
+      [{:osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
         :osaamisen-hankkimistapa-koodi-versio 2
-        :tyopaikalla-jarjestettava-koulutus
-        {:vastuullinen-tyopaikka-ohjaaja
-         {:nimi "Olli Ohjaaja"
-          :sahkoposti "olli.ohjaaja@esimerkki3.com"}
-         :tyopaikan-nimi "Ohjausyhtiö Oy"
-         :tyopaikan-y-tunnus "12345212-4"
-         :keskeiset-tyotehtavat ["Testitehtävä 2"]}
-        :muut-oppimisymparistot
-        [{:oppimisymparisto-koodi-uri "oppimisymparistot_0001"
-          :oppimisymparisto-koodi-versio 1
-          :alku (java.time.LocalDate/of 2019 1 13)
-          :loppu (java.time.LocalDate/of 2019 2 19)}]
-        :ajanjakson-tarkenne "Ei tarkennettavia asioita"
-        :hankkijan-edustaja
-        {:nimi "Heikki Hankkija"
-         :rooli "Opettaja"
-         :oppilaitos-oid "1.2.246.562.10.52224422420"}
         :alku (java.time.LocalDate/of 2019 1 13)
-        :loppu (java.time.LocalDate/of 2019 2 19)}]
-      :vaatimuksista-tai-tavoitteista-poikkeaminen
-      "Testaus ei kuulu vaatimuksiin tällä kertaa."
+        :loppu (java.time.LocalDate/of 2019 2 19)
+        :muut-oppimisymparistot [{:oppimisymparisto-koodi-uri
+                                  "oppimisymparistot_0001"
+                                  :oppimisymparisto-koodi-versio 1
+                                  :alku (java.time.LocalDate/of 2019 1 13)
+                                  :loppu (java.time.LocalDate/of 2019 2 19)}]}]
       :osaamisen-osoittaminen
-      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54423523330"}
-        :osaamistavoitteet ["Tavoite 1"
-                            "Tavoite 2"]
-        :nayttoymparisto {:nimi "Testiympäristö"
-                          :y-tunnus "12345258-1"
-                          :kuvaus "Test"}
-        :sisallon-kuvaus ["Testitehtävä 1"
-                          "Testitehtävä 2"]
-        :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
-        :koulutuksen-jarjestaja-osaamisen-arvioijat
-        [{:nimi "Toivo Testaaja"
-          :organisaatio
-          {:oppilaitos-oid "1.2.246.562.10.54452535232"}}]
-        :tyoelama-osaamisen-arvioijat [{:nimi "Taneli Työmies"
-                                        :organisaatio {:nimi "Tanelin Paja Ky"
-                                                       :y-tunnus "12323459-2"}}]
-        :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_cu"
-                      :koodi-versio 2}]
-        :alku (java.time.LocalDate/of 2019 3 1)
-        :loppu (java.time.LocalDate/of 2019 3 18)}]}]}])
+      [{:nayttoymparisto {:nimi "Nimi"}
+        :sisallon-kuvaus ["eka"]
+        :alku (java.time.LocalDate/of 2019 1 13)
+        :loppu (java.time.LocalDate/of 2019 2 19)
+        :osa-alueet []
+        :tyoelama-osaamisen-arvioijat []
+        :koulutuksen-jarjestaja-osaamisen-arvioijat []
+        :yksilolliset-kriteerit []}]}]}])
 
-(def hoks-data
-  {:aiemmin-hankitut-ammat-tutkinnon-osat ooato-data
-   :ensikertainen-hyvaksyminen
-   (java.time.LocalDate/of 2019 1 20)
-   :aiemmin-hankitut-paikalliset-tutkinnon-osat oopto-data
-   :sahkoposti "erkki.esimerkki@esimerkki.com"
-   :hankittavat-paikalliset-tutkinnon-osat ppto-data
-   :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
-   :aiemmin-hankitut-yhteiset-tutkinnon-osat ooyto-data
-   :opiskeluoikeus-oid "1.2.246.562.15.00000012345"
-   :hankittavat-ammat-tutkinnon-osat pao-data
-   :urasuunnitelma-koodi-versio 2
-   :opiskeluvalmiuksia-tukevat-opinnot oto-data
-   :oppija-oid "1.2.246.562.24.29790141661"
-   :hankittavat-yhteiset-tutkinnon-osat pyto-data
-   :osaamisen-hankkimisen-tarve false})
+(def  hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                 :oppija-oid "1.2.246.562.24.12312312312"
+                 :ensikertainen-hyvaksyminen
+                 (java.time.LocalDate/of 2019 3 18)
+                 :osaamisen-hankkimisen-tarve false
+                 :sahkoposti "erkki.esimerkki@esimerkki.com"
+                 :aiemmin-hankitut-yhteiset-tutkinnon-osat ooyto-data
+                 :hankittavat-paikalliset-tutkinnon-osat ppto-data
+                 :aiemmin-hankitut-paikalliset-tutkinnon-osat oopto-data
+                 :aiemmin-hankitut-ammat-tutkinnon-osat ooato-data
+                 :hankittavat-yhteiset-tutkinnon-osat pyto-data
+                 :hankittavat-ammat-tutkinnon-osat pao-data
+                 :opiskeluvalmiuksia-tukevat-opinnot oto-data})
 
 (deftest get-aiemmin-hankitut-ammat-tutkinnon-osat-test
   (testing "Set HOKS aiemmin hankitut tutkinnon osat"

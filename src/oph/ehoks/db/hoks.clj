@@ -156,7 +156,7 @@
 (defn osaamisen-hankkimistapa-to-sql [m]
   (to-sql
     m
-    {:removals [:muut-oppimisymparisto
+    {:removals [:muut-oppimisymparistot
                 :tyopaikalla-jarjestettava-koulutus]
      :replaces
      {[:jarjestajan-edustaja :nimi] :jarjestajan-edustaja-nimi
@@ -183,7 +183,6 @@
                 :sisallon-kuvaus
                 :koulutuksen-jarjestaja-osaamisen-arvioijat
                 :tyoelama-osaamisen-arvioijat
-                :osaamistavoitteet
                 :osa-alueet
                 :yksilolliset-kriteerit]
      :replaces {[:jarjestaja :oppilaitos-oid] :jarjestaja-oppilaitos-oid}}))
@@ -237,7 +236,7 @@
   (from-sql m {:removals [:aiemmin_hankittu_yhteinen_tutkinnon_osa_id]}))
 
 (defn aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-to-sql [m]
-  (to-sql m {:removals [:tarkentavat-tiedot]}))
+  (to-sql m {:removals [:tarkentavat-tiedot-naytto]}))
 
 (defn aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql [m]
   (to-sql m {:removals [:osa-alueet

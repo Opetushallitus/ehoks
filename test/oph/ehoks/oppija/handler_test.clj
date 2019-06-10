@@ -8,6 +8,7 @@
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hoks-test :refer [hoks-data]]
+            [oph.ehoks.hoks.handler-test :as handler-test]
             [clojure.walk :as w]))
 
 (def url "/ehoks-oppija-backend/api/v1/oppija/oppijat")
@@ -44,13 +45,13 @@
             app
             (mock/request
               :get
-              (format "%s/%s/hoks" url oppija-oid)))]
+              (format "%s/%s/hoks" url oppija-oid)))
+          body (utils/parse-body (:body response))]
       (is (= (:status response) 200))
-      (let [body (utils/parse-body (:body response))]
-        (eq
-          (:data body)
-          [(dates-to-str
-             (assoc hoks-data :eid (get-in body [:data 0 :eid])))])))))
+      (eq
+        (:data body)
+        [(dates-to-str
+           (assoc hoks-data :eid (get-in body [:data 0 :eid])))]))))
 
 (deftest buildversion
   (testing "GET /buildversion.txt"

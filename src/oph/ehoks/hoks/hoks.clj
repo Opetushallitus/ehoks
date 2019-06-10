@@ -156,16 +156,14 @@
     #(dissoc
        (assoc
          %
-         :tarkentavat-tiedot
+         :tarkentavat-tiedot-naytto
          (get-ooyto-osa-alue-tarkentavat-tiedot (:id %)))
        :id)
     (db/select-osa-alueet-by-ooyto-id id)))
 
 (defn get-ooyto-tarkentavat-tiedot-naytto [id]
   (mapv
-    #(dissoc
-       (set-osaamisen-osoittaminen-values %)
-       :id)
+    #(dissoc (set-osaamisen-osoittaminen-values %) :id)
     (db/select-tarkentavat-tiedot-naytto-by-ooyto-id id)))
 
 (defn get-aiemmin-hankitut-yhteiset-tutkinnon-osat [hoks-id]
@@ -226,12 +224,7 @@
 
 (defn get-yto-osa-alueen-osaamisen-osoittamiset [id]
   (mapv
-    #(dissoc
-       (assoc
-         (set-osaamisen-osoittaminen-values %)
-         :osaamistavoitteet
-         (db/select-hankitun-yto-osaamisen-nayton-osaamistavoitteet (:id %)))
-       :id)
+    #(dissoc (set-osaamisen-osoittaminen-values %) :id)
     (db/select-osaamisen-osoittamiset-by-yto-osa-alue-id id)))
 
 (defn get-yto-osa-alueet [id]
@@ -435,7 +428,7 @@
            (let [n (save-osaamisen-osoittaminen! naytto)]
              (db/insert-ooyto-osa-alue-osaamisen-osoittaminen!
                (:id o) (:id n))))
-         (:tarkentavat-tiedot %)))
+         (:tarkentavat-tiedot-naytto %)))
     osa-alueet))
 
 (defn save-aiemmin-hankittu-yhteinen-tutkinnon-osa! [o]
@@ -583,8 +576,6 @@
   (let [naytto (save-osaamisen-osoittaminen! n)
         yto-naytto (db/insert-yto-osa-alueen-osaamisen-osoittaminen!
                      (:id yto) (:id naytto))]
-    (db/insert-hankitun-yto-osaamisen-nayton-osaamistavoitteet!
-      (:id yto) (:id naytto) (:osaamistavoitteet n))
     yto-naytto))
 
 (defn save-pyto-osa-alue-osaamisen-hankkimistapa! [pyto-osa-alue oh]

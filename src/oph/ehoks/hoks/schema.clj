@@ -262,20 +262,6 @@
     ammattitaitovaatimukseen tai osaamistavoitteeseen.")))
 
 (s/defschema
-  YTOOsaamisenOsoittaminen
-  "Hankitun YTO osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
-  (st/assoc
-    (st/dissoc
-      OsaamisenOsoittaminen
-      :ammattitaitovaatimukset)
-    (s/optional-key :osaamistavoitteet)
-    (rsjs/describe
-      [s/Str]
-      (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan."
-           "Tunnisteen tyyppi voi vielä päivittyä ja tähän saattaa tulla vielä "
-           "Yksilölliset arvioinnin kriteerit"))))
-
-(s/defschema
   YhteisenTutkinnonOsanOsaAlue
   (describe
     "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
@@ -289,7 +275,7 @@
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     "vaatimuksista tai osaamistavoitteista poikkeaminen"
     (s/optional-key :osaamisen-osoittaminen)
-    [YTOOsaamisenOsoittaminen]
+    [OsaamisenOsoittaminen]
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     (s/optional-key :olennainen-seikka) s/Bool
     (str "Tieto sellaisen seikan
@@ -319,7 +305,7 @@
     :valittu-todentamisen-prosessi-koodi-versio s/Int
     "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio
     (Osaamisen todentamisen prosessi)"
-    (s/optional-key :tarkentavat-tiedot) [OsaamisenOsoittaminen]
+    (s/optional-key :tarkentavat-tiedot-naytto) [OsaamisenOsoittaminen]
     "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
     (s/optional-key :olennainen-seikka) s/Bool
     (str "Tieto sellaisen seikan
@@ -483,7 +469,7 @@
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
-    (s/optional-key :osaamisen-osoittaminen ) [OsaamisenOsoittaminen]
+    (s/optional-key :osaamisen-osoittaminen) [OsaamisenOsoittaminen]
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     (s/optional-key :olennainen-seikka) s/Bool
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
@@ -596,7 +582,14 @@
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
     "Aiemmin hankittu ammatillisen tutkinnon osa"
-    {:removed [:osa-alueet]}))
+    {:removed [:osa-alueet]
+     :added
+     (describe
+       ""
+       (s/optional-key :olennainen-seikka) s/Bool
+       (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
+    järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
+    liittyvän osaamisen hankkimisessa tai osoittamisessa."))}))
 
 (s/defschema
   AiemminHankitunAmmatillisenTutkinnonOsanLuonti
@@ -656,10 +649,6 @@
    :versio {:methods {:any :optional}
             :types {:any s/Int}
             :description "HOKS-dokumentin versio"}
-   :luotu {:methods {:any :optional}
-           :types {:any s/Inst}
-           :description
-           "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
    :ensikertainen-hyvaksyminen {:methods {:patch :optional}
                                 :types {:any LocalDate}
                                 :description

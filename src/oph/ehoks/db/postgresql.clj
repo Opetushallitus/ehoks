@@ -655,21 +655,6 @@
     {:yhteisen_tutkinnon_osan_osa_alue_id yto-id
      :osaamisen_osoittaminen_id naytto-id}))
 
-(defn insert-hankitun-yto-osaamisen-nayton-osaamistavoitteet! [yto-id hon-id c]
-  (insert-multi!
-    :yto_osaamisen_osoittamisen_osaamistavoitteet
-    (mapv
-      #(hash-map
-         :osaamisen_osoittaminen_id hon-id
-         :osaamistavoite %)
-      c)))
-
-(defn select-hankitun-yto-osaamisen-nayton-osaamistavoitteet
-  [naytto-id]
-  (query
-    [queries/select-hankitun-yto-osaamisen-nayton-osaamistavoitteet naytto-id]
-    {:row-fn h/osaamistavoite-from-sql}))
-
 (defn select-osaamisen-osoittamiset-by-yto-osa-alue-id [id]
   (query
     [queries/select-osaamisen-osoittamiset-by-yto-osa-alue-id id]

@@ -44,7 +44,6 @@
         h (assoc
             hoks
             :id (or (:id old) (get-next-id))
-            :luotu (java.util.Date.)
             :hyvaksytty (java.util.Date.)
             :versio (if (some? old) (inc (:versio old)) 1)
             :paivitetty (java.util.Date.))]
@@ -57,8 +56,7 @@
           (assoc
             values
             :paivitetty (java.util.Date.)
-            :versio (inc (:versio hoks))
-            :luotu (:luotu hoks))]
+            :versio (inc (:versio hoks)))]
       (swap! hoks-store conj updated-hoks)
       updated-hoks)))
 
@@ -69,8 +67,7 @@
               (merge values)
               (assoc
                 :paivitetty (java.util.Date.)
-                :versio (inc (:versio hoks))
-                :luotu (:luotu hoks)))]
+                :versio (inc (:versio hoks))))]
       (swap! hoks-store conj updated-hoks)
       updated-hoks)))
 
