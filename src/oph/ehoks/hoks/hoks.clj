@@ -148,22 +148,27 @@
        :id)
     (db/select-osa-alueet-by-ooyto-id id)))
 
-(defn get-ooyto-tarkentavat-tiedot-naytto [id]
+(defn get-ooyto-tarkentavat-tiedot-naytto [ooyto-id]
   (mapv
     #(dissoc
        (set-hankitun-osaamisen-naytto-values %)
        :id)
-    (db/select-tarkentavat-tiedot-naytto-by-ooyto-id id)))
+    (db/select-tarkentavat-tiedot-naytto-by-ooyto-id ooyto-id)))
 
 (defn- set-ooyto-values [ooyto]
-  ())
+  (dissoc
+    (assoc
+      ooyto
+      :tarkentavat-tiedot-arvioija
+      (get-tarkentavat-tiedot-arvioija (:tarkentavat-tiedot-arvioija-id ooyto))
+      :tarkentavat-tiedot-naytto
+      (get-ooyto-tarkentavat-tiedot-naytto (:id ooyto)))
+    :tarkentavat-tiedot-arvioija-id))
 
 (defn get-olemassa-olevat-yhteinen-tutkinnon-osa [id]
   (when-let [ooyto-from-db
              (db/select-olemassa-olevat-yhteiset-tutkinnon-osat-by-id id)]
-    ooyto-from-db
-    ;(set-ooyto-values ooyto-from-db)
-    ))
+    (set-ooyto-values ooyto-from-db)))
 
 (defn get-olemassa-olevat-yhteiset-tutkinnon-osat [hoks-id]
   (mapv
