@@ -426,9 +426,9 @@
   (let [tta (:tarkentavat-tiedot-arvioija ooyto)
         yto (db/insert-olemassa-oleva-yhteinen-tutkinnon-osa!
               (assoc ooyto
-                :hoks-id hoks-id
-                :tarkentavat-tiedot-arvioija-id
-                (:id (save-tarkentavat-tiedot-arvioija! tta))))]
+                     :hoks-id hoks-id
+                     :tarkentavat-tiedot-arvioija-id
+                     (:id (save-tarkentavat-tiedot-arvioija! tta))))]
     (save-ooyto-tarkentavat-tiedot-naytto! yto
                                            (:tarkentavat-tiedot-naytto ooyto))
     (save-ooyto-osa-alueet! (:id yto) (:osa-alueet ooyto))

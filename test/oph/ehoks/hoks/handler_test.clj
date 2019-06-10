@@ -653,7 +653,7 @@
      :keskeiset-tyotehtavat-naytto ["Testauksen suunnittelu"
                                     "Jokin toinen testi"]
      :alku "2019-03-01"
-     :loppu "2019-06-01" }]})
+     :loppu "2019-06-01"}]})
 
 (deftest post-and-get-olemassa-olevat-yhteiset-tutkinnon-osat
   (testing "POST ooyto and then get the created ooyto"
