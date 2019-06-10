@@ -402,11 +402,12 @@
             :return (rest/response hoks-schema/HOKS)
             (rest/rest-ok (h/get-hoks-values (:hoks request))))
 
-          (c-api/PATCH "/" [id :as request]
-            :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
-            :body [values hoks-schema/HOKSKentanPaivitys]
-            (pdb/update-hoks-by-id! id values)
-            (response/no-content))
+          (c-api/undocumented
+            (c-api/PATCH "/" [id :as request]
+              :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
+              :body [values hoks-schema/HOKSKentanPaivitys]
+              (pdb/update-hoks-by-id! id values)
+              (response/no-content)))
 
           puuttuva-paikallinen-tutkinnon-osa
           olemassa-olevat-ammatilliset-tutkinnon-osat
