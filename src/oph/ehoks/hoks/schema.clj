@@ -516,7 +516,7 @@
        (Osaamisen todentamisen prosessi)"
        (s/optional-key :tarkentavat-tiedot-naytto) [OsaamisenOsoittaminen]
        "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
-       (s/optional-key :tarkentavat-tiedot-arvioija)
+       (s/optional-key :tarkentavat-tiedot-osaamisen-arvioija)
        TodennettuArviointiLisatiedot "Mikäli arvioijan kautta todennettu,
        annetaan myös arvioijan lisätiedot")}))
 
@@ -587,7 +587,7 @@
        (Osaamisen todentamisen prosessi)"
        (s/optional-key :tarkentavat-tiedot-naytto) [OsaamisenOsoittaminen]
        "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
-       (s/optional-key :tarkentavat-tiedot-arvioija)
+       (s/optional-key :tarkentavat-tiedot-osaamisen-arvioija)
        TodennettuArviointiLisatiedot "Mikäli arvioijan kautta todennettu,
        annetaan myös arvioijan lisätiedot")}))
 

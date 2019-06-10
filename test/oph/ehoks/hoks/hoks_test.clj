@@ -26,7 +26,7 @@
     :valittu-todentamisen-prosessi-koodi-uri
     "osaamisentodentamisenprosessi_3"
     :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
-    :tarkentavat-tiedot-arvioija
+    :tarkentavat-tiedot-osaamisen-arvioija
     {:lahetetty-arvioitavaksi (java.time.LocalDate/of 2019 3 18)
      :aiemmin-hankitun-osaamisen-arvioijat
      [{:nimi "Erkki Esimerkki"
@@ -60,7 +60,7 @@
     :valittu-todentamisen-prosessi-koodi-uri
     "osaamisentodentamisenprosessi_0001"
     :amosaa-tunniste "12345"
-    :tarkentavat-tiedot-arvioija
+    :tarkentavat-tiedot-osaamisen-arvioija
     {:lahetetty-arvioitavaksi
      (java.time.LocalDate/of 2019 1 20)
      :aiemmin-hankitun-osaamisen-arvioijat
@@ -159,7 +159,7 @@
     :valittu-todentamisen-prosessi-koodi-versio 3
     :tutkinnon-osa-koodi-versio 2
     :tutkinnon-osa-koodi-uri "tutkinnonosat_10203"
-    :tarkentavat-tiedot-arvioija
+    :tarkentavat-tiedot-osaamisen-arvioija
     {:lahetetty-arvioitavaksi
      (java.time.LocalDate/of 2016 2 29)
      :aiemmin-hankitun-osaamisen-arvioijat
@@ -422,6 +422,6 @@
           ooato (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
                   {:hoks-id (:id hoks)})
           data {}
-          tta (h/save-tarkentavat-tiedot-arvioija! data)]
-      (eq (h/get-tarkentavat-tiedot-arvioija (:id tta))
+          tta (h/save-tarkentavat-tiedot-osaamisen-arvioija! data)]
+      (eq (h/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta))
           (assoc data :aiemmin-hankitun-osaamisen-arvioijat [])))))

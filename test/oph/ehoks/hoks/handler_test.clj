@@ -323,7 +323,7 @@
    :valittu-todentamisen-prosessi-koodi-uri "osaamisentodentamisenprosessi_3"
    :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
-   :tarkentavat-tiedot-arvioija
+   :tarkentavat-tiedot-osaamisen-arvioija
    {:lahetetty-arvioitavaksi "2019-03-18"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Erkki Esimerkki"
@@ -418,7 +418,7 @@
 
 (def ^:private multiple-ooato-values-patched
   {:tutkinnon-osa-koodi-versio 3000
-   :tarkentavat-tiedot-arvioija
+   :tarkentavat-tiedot-osaamisen-arvioija
    {:lahetetty-arvioitavaksi "2020-01-01"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Nimi Muutettu"
@@ -442,8 +442,9 @@
   (is (= (:tutkinnon-osa-koodi-versio updated-data) 3000))
   (is (= (:valittu-todentamisen-prosessi-koodi-versio updated-data)
          (:valittu-todentamisen-prosessi-koodi-versio old-data)))
-  (is (= (:tarkentavat-tiedot-arvioija updated-data)
-         (:tarkentavat-tiedot-arvioija multiple-ooato-values-patched)))
+  (is (= (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
+         (:tarkentavat-tiedot-osaamisen-arvioija
+           multiple-ooato-values-patched)))
   (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
         ttn-patch-values
         (assoc (first (:tarkentavat-tiedot-naytto
@@ -469,7 +470,7 @@
    :valittu-todentamisen-prosessi-koodi-uri
    "osaamisentodentamisenprosessi_0001"
    :amosaa-tunniste "12345"
-   :tarkentavat-tiedot-arvioija
+   :tarkentavat-tiedot-osaamisen-arvioija
    {:lahetetty-arvioitavaksi "2020-01-01"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Aarne Arvioija"
@@ -517,7 +518,7 @@
 
 (def ^:private multiple-oopto-values-patched
   {:tavoitteet-ja-sisallot "Muutettu tavoite."
-   :tarkentavat-tiedot-arvioija
+   :tarkentavat-tiedot-osaamisen-arvioija
    {:lahetetty-arvioitavaksi "2020-01-01"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Aarne Arvioija"
@@ -540,8 +541,8 @@
 (defn- assert-oopto-data-is-patched-correctly [updated-data old-data]
   (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite."))
   (is (= (:nimi updated-data) (:nimi old-data)))
-  (eq (:tarkentavat-tiedot-arvioija updated-data)
-      (:tarkentavat-tiedot-arvioija multiple-oopto-values-patched))
+  (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
+      (:tarkentavat-tiedot-osaamisen-arvioija multiple-oopto-values-patched))
   (eq (first (:tarkentavat-tiedot-naytto updated-data))
       (first (:tarkentavat-tiedot-naytto multiple-oopto-values-patched)))
   (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))

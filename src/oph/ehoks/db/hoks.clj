@@ -101,7 +101,7 @@
   (to-sql
     m
     {:removals [:tarkentavat-tiedot-naytto
-                :tarkentavat-tiedot-arvioija]}))
+                :tarkentavat-tiedot-osaamisen-arvioija]}))
 
 (defn hankittava-paikallinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]}))
@@ -223,12 +223,14 @@
   (from-sql m {:removals [:hoks_id]
                :replaces
                {:lahetetty_arvioitavaksi
-                [:tarkentavat_tiedot_arvioija :lahetetty-arvioitavaksi]}}))
+                [:tarkentavat_tiedot_osaamisen_arvioija
+                 :lahetetty-arvioitavaksi]}}))
 
 (defn aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql [m]
   (to-sql m {:removals [:tarkentavat-tiedot-naytto
-                        :tarkentavat-tiedot-arvioija]
-             :replaces {[:tarkentavat-tiedot-arvioija :lahetetty-arvioitavaksi]
+                        :tarkentavat-tiedot-osaamisen-arvioija]
+             :replaces {[:tarkentavat-tiedot-osaamisen-arvioija
+                         :lahetetty-arvioitavaksi]
                         :lahetetty-arvioitavaksi}}))
 
 (defn aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
@@ -240,15 +242,17 @@
 (defn aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql [m]
   (to-sql m {:removals [:osa-alueet
                         :tarkentavat-tiedot-naytto
-                        :tarkentavat-tiedot-arvioija]
-             :replaces {[:tarkentavat-tiedot-arvioija :lahetetty-arvioitavaksi]
+                        :tarkentavat-tiedot-osaamisen-arvioija]
+             :replaces {[:tarkentavat-tiedot-osaamisen-arvioija
+                         :lahetetty-arvioitavaksi]
                         :lahetetty-arvioitavaksi}}))
 
 (defn aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]
                :replaces
                {:lahetetty_arvioitavaksi
-                [:tarkentavat_tiedot_arvioija :lahetetty-arvioitavaksi]}}))
+                [:tarkentavat_tiedot_osaamisen_arvioija
+                 :lahetetty-arvioitavaksi]}}))
 
 (defn todennettu-arviointi-lisatiedot-to-sql [m]
   (to-sql m {:removals [:aiemmin-hankitun-osaamisen-arvioijat]}))
