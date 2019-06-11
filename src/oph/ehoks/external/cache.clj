@@ -1,7 +1,7 @@
 (ns oph.ehoks.external.cache
   (:require [clj-time.core :as t]
             [ring.util.codec :as codec]
-            [clojure.tools.logging :as log]
+            [oph.ehoks.logging :as log]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.connection :as c]
             [oph.ehoks.external.cas :as cas]))
