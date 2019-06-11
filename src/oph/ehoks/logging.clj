@@ -32,22 +32,22 @@
     f
     m))
 
-(defn- log-access-info [msg]
+(defn- log-access-info [^String msg]
   (when (:logging? config) (.info access-logger msg)))
 
-(defn- log-audit-info [msg]
+(defn- log-audit-info [^String msg]
   (when (:logging? config) (.info audit-logger msg)))
 
-(defn- log-debug [msg]
+(defn- log-debug [^String msg]
   (when (:logging? config) (.debug root-logger msg)))
 
-(defn- log-info [msg]
+(defn- log-info [^String msg]
   (when (:logging? config) (.info root-logger msg)))
 
-(defn- log-warn [msg]
+(defn- log-warn [^String msg]
   (when (:logging? config) (.warn root-logger msg)))
 
-(defn- log-error [msg]
+(defn- log-error [^String msg]
   (when (:logging? config) (.error root-logger msg)))
 
 (defn- audit [m]
