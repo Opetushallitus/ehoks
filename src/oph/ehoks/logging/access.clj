@@ -1,0 +1,66 @@
+(ns oph.ehoks.logging.access
+  (:require [oph.ehoks.logging.core :as log]
+            [clojure.string :as cstr]
+            [clj-time.core :as t]
+            [oph.ehoks.config :refer [config]]
+            [environ.core :refer [env]]))
+
+(def ^:private service-name
+  (cstr/lower-case (:name env (or (System/getProperty "name") "both"))))
+
+(defn- get-header [request k]
+  (get-in request [:headers k]))
+
+(defn- request-to-str [method request]
+  (format "%s %s%s"
+          method
+          (:uri request)
+          (if (:query-string request)
+            (str "?" (:query-string request))
+            "")))
+
+(defn get-session [request]
+  (get-in request [:cookies "ring-session" :value]))
+
+(defn current-fin-time-str []
+  (str (t/to-time-zone (t/now) (t/time-zone-for-id "Europe/Helsinki"))))
+
+(defn to-access-map [request response total-time]
+  (let [method (-> request :request-method name cstr/upper-case)]
+    {:timestamp (current-fin-time-str)
+     :response-code (:status response)
+     :request (request-to-str method request)
+     :response-time total-time
+     :request-method method
+     :service service-name
+     :environment (:opintopolku-host config)
+     :user-agent (get-header request "user-agent")
+     :caller-id (get-header request "caller-id")
+     :x-forwarded-for (get-header request "x-forwarded-for")
+     :x-real-ip (get-header request "x-real-ip")
+     :remote-ip (:remote-addr request)
+     :session (get-session request)
+     :content-length (get-header request "Content-Length")
+     :referer (get-header request "referer")}))
+
+(defn- spy-access [request respond]
+  (let [current-ms (System/currentTimeMillis)]
+    (fn [response]
+      (log/access (to-access-map
+                    request response (- (System/currentTimeMillis) current-ms)))
+      (respond response))))
+
+(defn- spy-access-sync [handler request]
+  (let [current-ms (System/currentTimeMillis)
+        response (handler request)]
+    (log/access
+      (to-access-map
+        request response (- (System/currentTimeMillis) current-ms)))
+    response))
+
+(defn wrap-access-logger [handler]
+  (fn
+    ([request respond raise]
+      (handler request (spy-access request respond) raise))
+    ([request]
+      (spy-access-sync handler request))))
