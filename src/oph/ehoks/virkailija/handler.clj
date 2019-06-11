@@ -86,7 +86,7 @@
     ([request respond raise]
       (if (virkailija-has-access?
             (get-in request [:session :virkailija-user])
-            (get-in request [:params :oid]))
+            (get-in request [:params :oppija-oid]))
         (handler request respond raise)
         (response/forbidden
           {:error (str "User privileges does not match oppija opiskeluoikeus "
@@ -94,7 +94,7 @@
     ([request]
       (if (virkailija-has-access?
             (get-in request [:session :virkailija-user])
-            (get-in request [:params :oid]))
+            (get-in request [:params :oppija-oid]))
         (handler request)
         (response/forbidden
           {:error (str "User privileges does not match oppija opiskeluoikeus "
