@@ -99,11 +99,11 @@ lein cljfmt check
 
 ### Ohjelman ajaminen
 
-Ohjelmalle voi antaa parametrina sovelluksen nimen (oppija, virkailija tai
-molemmat). Molemmat sovellukset on oletuksena valittuna. Lisäksi ohjelma ottaa
-vastaan parametreina käytettävän konfiguraatiotiedoston.
-Ohjelman nimen (`NAME`) ja konfiguraatiotiedoston (`CONFIG`) voi antaa myös
-ympäristömuuttujana.
+Ohjelmalle voi antaa parametrina sovelluksen nimen. Nimi on joko `ehoks`
+(oppija) tai `ehoks-virkailija` (virkailija). Molemmat sovellukset on
+oletuksena valittuna. Lisäksi ohjelma ottaa vastaan parametreina käytettävän
+konfiguraatiotiedoston. Ohjelman nimen (`NAME`) ja konfiguraatiotiedoston
+(`CONFIG`) voi antaa myös ympäristömuuttujana.
 
 Tuotantomoodissa:
 
@@ -120,21 +120,21 @@ lein with-profile +dev run
 tai
 
 ``` shell
-lein with-profile +dev run virkailija
+lein with-profile +dev run ehoks-virkailija
 ```
 
 Replissä `lein repl`:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
-user> (def server (start-server "oppija" nil))
+user> (def server (start-server "ehoks" nil))
 ```
 
 Tai omalla konfiguraatiolla:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
-user> (def server (start-server "virkailija" "config/custom.edn"))
+user> (def server (start-server "ehoks-virkailija" "config/custom.edn"))
 ```
 
 Ja ohjelman sammuttaminen:
@@ -277,10 +277,10 @@ tai päivättää oppijan HOKSia.
 
 Rajapintaa kutsuttaessa pitää tuoda seuraavat headerit:
 
-| header | selite |
-| ------ | ------ |
-| Caller-Id | OPH:n rajapintojen yhteinen tunniste |
-| ticket | Validi CAS service ticket |
+| header | selite | Lisätietoa |
+| ------ | ------ | ---------- |
+| Caller-Id | OPH:n rajapintojen yhteinen tunniste | [Kutsujan tunnisteen (Caller-Id) lisääminen rajapintakutsuihin](https://confluence.csc.fi/pages/viewpage.action?pageId=50858064) |
+| ticket | Validi CAS service ticket | [CAS-tunnistautuminen rajapinnassa (eHOKS)](https://confluence.csc.fi/pages/viewpage.action?pageId=79084600) |
 
 ## Ajettava jar
 

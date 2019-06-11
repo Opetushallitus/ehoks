@@ -133,15 +133,15 @@
     {:todennettu_arviointi_lisatiedot_id tta-id
      :koulutuksen_jarjestaja_osaamisen_arvioija_id arvioija-id}))
 
-(defn insert-koulutuksen-jarjestaja-osaamisen-arvioijat! [c]
-  (insert-multi!
-    :koulutuksen_jarjestaja_osaamisen_arvioijat
-    (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c)))
-
 (defn insert-koulutuksen-jarjestaja-osaamisen-arvioija! [m]
   (insert-one!
     :koulutuksen_jarjestaja_osaamisen_arvioijat
     (h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql m)))
+
+(defn insert-koulutuksen-jarjestaja-osaamisen-arvioijat! [c]
+  (insert-multi!
+    :koulutuksen_jarjestaja_osaamisen_arvioijat
+    (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c)))
 
 (defn select-tarkentavat-tiedot-naytto-by-oopto-id [oopto-id]
   (query [queries/select-osaamisen-osoittamiset-by-oopto-id oopto-id]
@@ -444,17 +444,6 @@
     [queries/select-osaamisen-osoittamiset-by-oopto-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-(defn insert-oopto-arvioija! [oopto-id arvioija-id]
-  (insert-one!
-    :aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
-    {:aiemmin_hankittu_paikallinen_tutkinnon_osa_id oopto-id
-     :koulutuksen_jarjestaja_osaamisen_arvioija_id arvioija-id}))
-
-(defn select-arvioijat-by-oopto-id [id]
-  (query
-    [queries/select-arvioijat-by-oopto-id id]
-    {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
-
 (defn insert-oopto-osaamisen-osoittaminen! [oopto-id naytto-id]
   (insert-one!
     :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
@@ -505,6 +494,12 @@
   (insert-one!
     :aiemmin_hankitut_yhteiset_tutkinnon_osat
     (h/aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql m)))
+
+(defn select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id [id]
+  (->
+    (query [queries/select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-id id])
+    first
+    h/aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql))
 
 (defn select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id [id]
   (query

@@ -275,6 +275,25 @@
         (response/not-found
           {:error "Aiemmin hankittu paikallinen tutkinnon osa not found"})))))
 
+(def ^:private aiemmin-hankittu-yhteinen-tutkinnon-osa
+  (c-api/context "/aiemmin-hankittu-yhteinen-tutkinnon-osa" []
+
+    (c-api/GET "/:id" []
+      :summary "Palauttaa HOKSin aiemmin hankitun yhteisen tutkinnon osan"
+      :path-params [id :- s/Int]
+      :return (rest/response hoks-schema/AiemminHankittuYhteinenTutkinnonOsa)
+      (rest/rest-ok (h/get-aiemmin-hankittu-yhteinen-tutkinnon-osa id)))
+
+    (c-api/POST "/" [:as request]
+      :summary "Luo aiemmin hankitun yhteisen tutkinnon osan HOKSiin"
+      :body [ooyto hoks-schema/AiemminHankitunYhteisenTutkinnonOsanLuonti]
+      :return (rest/response schema/POSTResponse :id s/Int)
+      (let [ooyto-from-db (h/save-aiemmin-hankittu-yhteinen-tutkinnon-osa!
+                            (get-in request [:hoks :id]) ooyto)]
+        (rest/rest-ok
+          {:uri (format "%s/%d" (:uri request) (:id ooyto-from-db))}
+          :id (:id ooyto-from-db))))))
+
 (def ^:private hankittava-yhteinen-tutkinnon-osa
   (c-api/context "/:hoks-id/hankittava-yhteinen-tutkinnon-osa" [hoks-id]
 
@@ -388,15 +407,17 @@
             :return (rest/response hoks-schema/HOKS)
             (rest/rest-ok (h/get-hoks-values (:hoks request))))
 
-          (c-api/PATCH "/" [id :as request]
-            :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
-            :body [values hoks-schema/HOKSKentanPaivitys]
-            (pdb/update-hoks-by-id! id values)
-            (response/no-content))
+          (c-api/undocumented
+            (c-api/PATCH "/" [id :as request]
+              :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
+              :body [values hoks-schema/HOKSKentanPaivitys]
+              (pdb/update-hoks-by-id! id values)
+              (response/no-content)))
 
           hankittava-paikallinen-tutkinnon-osa
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
+          aiemmin-hankittu-yhteinen-tutkinnon-osa
           hankittava-ammat-tutkinnon-osa))
 
       (c-api/undocumented

@@ -510,7 +510,7 @@
   AiemminHankitunPaikallisenTutkinnonOsanLuonti
   (modify
     AiemminHankittuPaikallinenTutkinnonOsa
-    (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot uutta"
+    (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST")
     {:removed [:id]}))
 
@@ -576,6 +576,14 @@
        (s/optional-key :tarkentavat-tiedot-osaamisen-arvioija)
        TodennettuArviointiLisatiedot "Mikäli arvioijan kautta todennettu,
        annetaan myös arvioijan lisätiedot")}))
+
+(s/defschema
+  AiemminHankitunYhteisenTutkinnonOsanLuonti
+  (modify
+    AiemminHankittuYhteinenTutkinnonOsa
+    (str "Olemassa olevan yhteisen tutkinnon osan tiedot uutta "
+         "merkintää luotaessa (POST)")
+    {:removed [:id]}))
 
 (s/defschema
   AiemminHankittuAmmatillinenTutkinnonOsa

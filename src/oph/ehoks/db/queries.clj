@@ -75,13 +75,7 @@
      :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
-(def select-arvioijat-by-oopto-id
-  (generate-select-join
-    {:table "koulutuksen_jarjestaja_osaamisen_arvioijat"
-     :join "aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat"
-     :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
-     :primary-column "id"
-     :column "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
+(defq select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id)
 (def select-osaamisen-osoittamiset-by-ppto-id
   (generate-select-join

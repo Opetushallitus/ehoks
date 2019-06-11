@@ -30,8 +30,8 @@
 (defn create-app [app-name]
   (common-api/create-app
     (case app-name
-      "virkailija" virkailija-handler/app-routes
-      "oppija" oppija-handler/app-routes
+      "ehoks-virkailija" virkailija-handler/app-routes
+      "ehoks" oppija-handler/app-routes
       both-app)
     (when (seq (:redis-url config))
       (redis-store {:pool {}
