@@ -4,7 +4,7 @@
             [compojure.route :as compojure-route]
             [schema.core :as s]
             [ring.util.http-response :as response]
-            [oph.ehoks.logging :refer [wrap-access-logger]]
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.external.cache :as c]

@@ -1,6 +1,6 @@
 (ns oph.ehoks.hoks.handler
   (:require [compojure.api.sweet :as c-api]
-            [oph.ehoks.logging :as log]
+            [oph.ehoks.logging.core :as log]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]

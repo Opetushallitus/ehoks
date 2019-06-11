@@ -1,6 +1,6 @@
 (ns oph.ehoks.common.api
   (:require [ring.util.http-response :as response]
-            [oph.ehoks.logging :as log]
+            [oph.ehoks.logging.core :as log]
             [compojure.api.exception :as c-ex]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]

@@ -10,7 +10,7 @@
             [oph.ehoks.config :refer [config]]
             [clojure.string :refer [lower-case]]
             [environ.core :refer [env]]
-            [oph.ehoks.logging :refer [wrap-access-logger]]))
+            [oph.ehoks.logging.core :refer [wrap-access-logger]]))
 
 (def both-app
   (c-api/api

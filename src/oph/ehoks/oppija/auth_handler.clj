@@ -9,7 +9,7 @@
             [oph.ehoks.oppija.opintopolku :as opintopolku]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.middleware :refer [wrap-authorize]]
-            [oph.ehoks.logging :as log]))
+            [oph.ehoks.logging.core :as log]))
 
 (def routes
   (c-api/context "/session" []

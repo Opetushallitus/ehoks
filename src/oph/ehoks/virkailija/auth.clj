@@ -6,7 +6,7 @@
             [oph.ehoks.external.cas :as cas]
             [oph.ehoks.user :as user]
             [oph.ehoks.external.oph-url :as u]
-            [oph.ehoks.logging :as log]))
+            [oph.ehoks.logging.core :as log]))
 
 (def routes
   (c-api/context "/session" []

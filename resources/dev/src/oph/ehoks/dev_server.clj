@@ -12,7 +12,7 @@
             [ring.middleware.params :refer [wrap-params]]
             [clojure.string :as c-str]
             [clojure.java.io :as io]
-            [oph.ehoks.logging :as log]))
+            [oph.ehoks.logging.core :as log]))
 
 (defn uri-to-filename [uri]
   (-> uri

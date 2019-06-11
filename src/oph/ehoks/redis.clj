@@ -1,7 +1,7 @@
 (ns oph.ehoks.redis
   (:require [ring.middleware.session.store :refer [SessionStore]]
             [taoensso.carmine :as car]
-            [oph.ehoks.logging :as log])
+            [oph.ehoks.logging.core :as log])
   (:import java.util.UUID))
 
 (defn create-session-key []

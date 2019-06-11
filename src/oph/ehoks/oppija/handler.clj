@@ -21,7 +21,7 @@
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.validation.handler :as validation-handler]
-            [oph.ehoks.logging :refer [wrap-access-logger]]))
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]))
 
 (def routes
   (c-api/context "/ehoks-oppija-backend" []
