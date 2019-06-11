@@ -277,10 +277,10 @@ tai päivättää oppijan HOKSia.
 
 Rajapintaa kutsuttaessa pitää tuoda seuraavat headerit:
 
-| header | selite |
-| ------ | ------ |
-| Caller-Id | OPH:n rajapintojen yhteinen tunniste |
-| ticket | Validi CAS service ticket |
+| header | selite | Lisätietoa |
+| ------ | ------ | ---------- |
+| Caller-Id | OPH:n rajapintojen yhteinen tunniste | [Kutsujan tunnisteen (Caller-Id) lisääminen rajapintakutsuihin](https://confluence.csc.fi/pages/viewpage.action?pageId=50858064) |
+| ticket | Validi CAS service ticket | [CAS-tunnistautuminen rajapinnassa (eHOKS)](https://confluence.csc.fi/pages/viewpage.action?pageId=79084600) |
 
 ## Ajettava jar
 

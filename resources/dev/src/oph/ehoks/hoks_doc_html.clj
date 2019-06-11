@@ -8,7 +8,7 @@
             [clj-time.format :as f]
             [clojure.string :as cstr]
             [oph.ehoks.schema.generator :as g]
-            [oph.ehoks.hoks-doc :refer [translations]]))
+            [oph.ehoks.hoks-doc :as hoks-doc]))
 
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
@@ -41,16 +41,11 @@
 (defn enum? [n]
   (= (and (coll? n) (first n)) 'enum))
 
-(defn translate-fi [n]
-  (if (enum? n)
-    (get-enum-translation n)
-    (get translations n (str n))))
-
 (defn get-name [v]
   (let [m (meta v)]
     (if (some? (:name m))
       (generate-link m)
-      (translate-fi (s/explain v)))))
+      (hoks-doc/translate-fi (s/explain v)))))
 
 (defn gen-type-element [t]
   (if (sequential? t)

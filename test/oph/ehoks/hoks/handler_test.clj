@@ -33,10 +33,9 @@
 (defn create-hoks []
   (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                    :oppija-oid "1.2.246.562.24.12312312312"
-                   :laatija {:nimi "Teppo Tekijä"}
-                   :paivittaja {:nimi "Pekka Päivittäjä"}
-                   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                   :ensikertainen-hyvaksyminen "2018-12-15"}]
+                   :ensikertainen-hyvaksyminen
+                   (java.time.LocalDate/of 2019 3 18)
+                   :osaamisen-hankkimisen-tarve false}]
     (-> (create-app nil)
         (utils/with-service-ticket
           (-> (mock/request :post url)
@@ -79,44 +78,50 @@
             url path))
         (mock/json-body patched-data))))
 
+(def ppto-data {:nimi "222"
+                :osaamisen-hankkimistavat []
+                :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
+                :olennainen-seikka true
+                :osaamisen-osoittaminen
+                [{:jarjestaja {:oppilaitos-oid
+                               "1.2.246.562.10.00000000002"}
+                  :koulutuksen-jarjestaja-osaamisen-arvioijat []
+                  :osa-alueet []
+                  :sisallon-kuvaus ["ensimmäinen sisältö" "toinenkin"]
+                  :nayttoymparisto {:nimi "aaa"}
+                  :alku "2018-12-12"
+                  :loppu "2018-12-20"
+                  :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                                  {:nimi "Organisaation nimi"}}]
+                  :vaatimuksista-tai-tavoitteista-poikkeaminen
+                  "Poikkeama onpi tämä."
+                  :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]}]})
+
 (deftest post-and-get-ppto
-  (testing "GET newly created puuttuva paikallinen tutkinnon osa"
+  (testing "GET newly created hankittava paikallinen tutkinnon osa"
     (db/clear)
     (with-hoks
       hoks
-      (let [ppto-data {:nimi "222"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :hankitun-osaamisen-naytto
-                       [{:jarjestaja {:oppilaitos-oid
-                                      "1.2.246.562.10.00000000002"}
-                         :koulutuksen-jarjestaja-arvioijat []
-                         :osa-alueet []
-                         :keskeiset-tyotehtavat-naytto []
-                         :nayttoymparisto {:nimi "aaa"}
-                         :alku "2018-12-12"
-                         :loppu "2018-12-20"
-                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                               {:nimi "Organisaation nimi"}}]}]}
-            ppto-response
+      (let [ppto-response
             (utils/with-service-ticket
               (create-app nil)
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
+                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
                   (mock/json-body ppto-data)))
             body (utils/parse-body (:body ppto-response))]
         (is (= (:status ppto-response) 200))
         (eq body {:data
                   {:uri
-                   (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1")}
+                   (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1")}
                   :meta {:id 1}})
         (let [ppto-new
               (utils/with-service-ticket
                 (create-app nil)
                 (mock/request
                   :get
-                  (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1")))]
+                  (get-hoks-url hoks
+                                "hankittava-paikallinen-tutkinnon-osa/1")))]
           (eq
             (:data (utils/parse-body (:body ppto-new)))
             (assoc
@@ -124,29 +129,15 @@
               :id 1)))))))
 
 (deftest patch-all-ppto
-  (testing "PATCH all puuttuva paikallinen tutkinnon osa"
+  (testing "PATCH all hankittava paikallinen tutkinnon osa"
     (with-hoks
       hoks
-      (let [ppto-data {:nimi "222"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :hankitun-osaamisen-naytto
-                       [{:jarjestaja {:oppilaitos-oid
-                                      "1.2.246.562.10.00000000002"}
-                         :koulutuksen-jarjestaja-arvioijat []
-                         :osa-alueet []
-                         :keskeiset-tyotehtavat-naytto []
-                         :nayttoymparisto {:nimi "aaa"}
-                         :alku "2018-12-12"
-                         :loppu "2018-12-20"
-                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                               {:nimi "Organisaation nimi"}}]}]}
-            ppto-response
+      (let [ppto-response
             (utils/with-service-ticket
               (create-app nil)
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
+                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
                   (mock/json-body ppto-data)))
             patch-response
             (utils/with-service-ticket
@@ -154,48 +145,21 @@
               (->
                 (mock/request
                   :patch
-                  (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1"))
+                  (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1"))
                 (mock/json-body
-                  {:id 1
-                   :nimi "222"
-                   :osaamisen-hankkimistavat []
-                   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000003"
-                   :hankitun-osaamisen-naytto
-                   [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000004"}
-                     :koulutuksen-jarjestaja-arvioijat []
-                     :osa-alueet []
-                     :keskeiset-tyotehtavat-naytto []
-                     :nayttoymparisto {:nimi "aaaf"}
-                     :alku "2018-12-14"
-                     :loppu "2018-12-22"
-                     :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                           {:nimi "Organisaation nimi"}}]}]})))]
+                  (assoc ppto-data :nimi "333" :olennainen-seikka false))))]
         (is (= (:status patch-response) 204))))))
 
 (deftest patch-one-ppto
-  (testing "PATCH one value puuttuva paikallinen tutkinnon osa"
+  (testing "PATCH one value hankittava paikallinen tutkinnon osa"
     (with-hoks
       hoks
-      (let [ppto-data {:nimi "222"
-                       :osaamisen-hankkimistavat []
-                       :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                       :hankitun-osaamisen-naytto
-                       [{:jarjestaja {:oppilaitos-oid
-                                      "1.2.246.562.10.00000000002"}
-                         :nayttoymparisto {:nimi "aaa"}
-                         :koulutuksen-jarjestaja-arvioijat []
-                         :osa-alueet []
-                         :keskeiset-tyotehtavat-naytto []
-                         :alku "2018-12-12"
-                         :loppu "2018-12-20"
-                         :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                                               {:nimi "Organisaation nimi"}}]}]}
-            ppto-response
+      (let [ppto-response
             (utils/with-service-ticket
               (create-app nil)
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa"))
+                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
                   (mock/json-body ppto-data)))
             ppto-body (utils/parse-body
                         (:body ppto-response))
@@ -204,7 +168,8 @@
               (create-app nil)
               (-> (mock/request
                     :patch
-                    (get-hoks-url hoks "puuttuva-paikallinen-tutkinnon-osa/1"))
+                    (get-hoks-url hoks
+                                  "hankittava-paikallinen-tutkinnon-osa/1"))
                   (mock/json-body
                     {:id 1 :nimi "2223"})))
             get-response (-> (get-in ppto-body [:data :uri])
@@ -215,62 +180,52 @@
                    :id 1
                    :nimi "2223"))))))
 
-(def pao-path "puuttuva-ammatillinen-osaaminen")
-(def pao-data
-  {:tutkinnon-osa-koodi-uri "tutkinnonosat_102499"
-   :tutkinnon-osa-koodi-versio 4
-   :vaatimuksista-tai-tavoitteista-poikkeaminen
-   "Ei poikkeamia."
-   :hankitun-osaamisen-naytto
-   [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
-     :nayttoymparisto {:nimi "Testiympäristö 2"
-                       :y-tunnus "12345671-2"
-                       :kuvaus "Testi test"}
-     :keskeiset-tyotehtavat-naytto ["Testaus"]
-     :koulutuksen-jarjestaja-arvioijat
-     [{:nimi "Timo Testaaja"
-       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54452521332"}}]
-     :tyoelama-arvioijat
-     [{:nimi "Taneli Työmies"
-       :organisaatio {:nimi "Tanelin Paja Ky"
-                      :y-tunnus "12345622-2"}}]
-     :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
-                   :koodi-versio 3}]
-     :alku "2019-03-10"
-     :loppu "2019-03-19"}]
-   :osaamisen-hankkimistavat
-   [{:jarjestajan-edustaja {:nimi "Ville Valvoja"
-                            :rooli "Valvojan apulainen"
-                            :oppilaitos-oid "1.2.246.562.10.54451211340"}
-     :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
-     :osaamisen-hankkimistapa-koodi-versio 2
-     :tyopaikalla-hankittava-osaaminen
-     {:vastuullinen-ohjaaja {:nimi "Aimo Ohjaaja"
-                             :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
-      :tyopaikan-nimi "Ohjausyhtiö Oy"
-      :tyopaikan-y-tunnus "12345212-4"
-      :muut-osallistujat [{:organisaatio {:nimi "Kolmas Esimerkki Oy"
-                                          :y-tunnus "12345233-5"}
-                           :nimi "Kalle Kirjuri"
-                           :rooli "Kirjuri"}]
-      :keskeiset-tyotehtavat ["Testitehtävä"]
-      :lisatiedot false}
-     :muut-oppimisymparisto
-     [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
-       :oppimisymparisto-koodi-versio 1
-       :selite "Testioppilaitos 2"
-       :lisatiedot false}]
-     :ajanjakson-tarkenne "Ei tarkennettavia asioita"
-     :hankkijan-edustaja
-     {:nimi "Heikki Hankkija"
-      :rooli "Opettaja"
-      :oppilaitos-oid "1.2.246.562.10.54452422420"}
-     :alku "2019-01-11"
-     :loppu "2019-03-14"}]
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"})
+(def pao-path "hankittava-ammat-tutkinnon-osa")
+
+(def pao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
+               :tutkinnon-osa-koodi-versio 1
+               :vaatimuksista-tai-tavoitteista-poikkeaminen
+               "Ei poikkeamia."
+               :osaamisen-hankkimistavat
+               [{:alku "2018-12-12"
+                 :loppu "2018-12-20"
+                 :ajanjakson-tarkenne "Tarkenne tässä"
+                 :osaamisen-hankkimistapa-koodi-uri
+                 "osaamisenhankkimistapa_koulutussopimus"
+                 :osaamisen-hankkimistapa-koodi-versio 1
+                 :muut-oppimisymparistot
+                 [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
+                   :oppimisymparisto-koodi-versio 1
+                   :alku "2019-03-10"
+                   :loppu "2019-03-19"}]
+                 :hankkijan-edustaja
+                 {:nimi "Heikki Hankkija"
+                  :rooli "Opettaja"
+                  :oppilaitos-oid "1.2.246.562.10.54452422420"}}]
+               :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"
+               :osaamisen-osoittaminen
+               [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+                 :nayttoymparisto {:nimi "Testiympäristö 2"
+                                   :y-tunnus "12345671-2"
+                                   :kuvaus "Testi test"}
+                 :sisallon-kuvaus ["Testaus"]
+                 :koulutuksen-jarjestaja-osaamisen-arvioijat
+                 [{:nimi "Timo Testaaja"
+                   :organisaatio {:oppilaitos-oid
+                                  "1.2.246.562.10.54452521332"}}]
+                 :tyoelama-osaamisen-arvioijat
+                 [{:nimi "Taneli Työmies"
+                   :organisaatio {:nimi "Tanelin Paja Ky"
+                                  :y-tunnus "12345622-2"}}]
+                 :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
+                               :koodi-versio 3}]
+                 :alku "2019-03-10"
+                 :loppu "2019-03-19"
+                 :yksilolliset-kriteerit ["Yksi kriteeri"]}]})
 
 (deftest post-and-get-pao
-  (testing "POST puuttuva ammatillinen osaaminen and then get the created ppao"
+  (testing "POST hankittava ammatillinen osaaminen and then get created ppao"
+    (db/clear)
     (with-hoks
       hoks
       (let [app (create-app nil)
@@ -291,7 +246,7 @@
               (:body post-response))
             {:meta {:id 1}
              :data {:uri
-                    (format "%s/1/puuttuva-ammatillinen-osaaminen/1" url)}})
+                    (format "%s/1/hankittava-ammat-tutkinnon-osa/1" url)}})
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
@@ -302,7 +257,7 @@
     pao-data
     {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"
      :tutkinnon-osa-koodi-versio 1
-     :hankitun-osaamisen-naytto []
+     :osaamisen-osoittaminen []
      :osaamisen-hankkimistavat
      [{:jarjestajan-edustaja
        {:nimi "Veikko Valvoja"
@@ -311,16 +266,14 @@
        :osaamisen-hankkimistapa-koodi-uri
        "osaamisenhankkimistapa_oppisopimus"
        :osaamisen-hankkimistapa-koodi-versio 2
-       :tyopaikalla-hankittava-osaaminen
-       {:vastuullinen-ohjaaja
+       :tyopaikalla-jarjestettava-koulutus
+       {:vastuullinen-tyopaikka-ohjaaja
         {:nimi "Oiva Ohjaaja"
          :sahkoposti "oiva.ohjaaja@esimerkki2.com"}
         :tyopaikan-nimi "Ohjaus Oyk"
         :tyopaikan-y-tunnus "12345222-4"
-        :muut-osallistujat []
-        :keskeiset-tyotehtavat ["Testitehtävä2"]
-        :lisatiedot false}
-       :muut-oppimisymparisto []
+        :keskeiset-tyotehtavat ["Testitehtävä2"]}
+       :muut-oppimisymparistot []
        :ajanjakson-tarkenne "Ei ole"
        :hankkijan-edustaja
        {:nimi "Harri Hankkija"
@@ -331,7 +284,8 @@
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000116"}))
 
 (deftest patch-all-pao
-  (testing "PATCH ALL puuttuva ammatillinen osaaminen"
+  (testing "PATCH ALL hankittava ammat osaaminen"
+    (db/clear)
     (with-hoks
       hoks
       (let [app (create-app nil)
@@ -359,7 +313,8 @@
             {:meta {} :data  (assoc patch-all-pao-data :id 1)})))))
 
 (deftest patch-one-pao
-  (testing "PATCH one value puuttuva ammatillinen osaaminen"
+  (testing "PATCH one value hankittava ammatillinen osaaminen"
+    (db/clear)
     (with-hoks
       hoks
       (let [app (create-app nil)
@@ -369,7 +324,7 @@
               (-> (mock/request
                     :post
                     (format
-                      "%s/1/puuttuva-ammatillinen-osaaminen"
+                      "%s/1/hankittava-ammat-tutkinnon-osa"
                       url))
                   (mock/json-body
                     pao-data)))
@@ -395,7 +350,7 @@
                 "%1s/1/%2s/1"
                 url post-path)}}))
 
-(defn- test-patch-of-olemassa-oleva-osa
+(defn- test-patch-of-aiemmin-hankittu-osa
   [osa-path osa-data osa-patched-data assert-function]
   (with-hoks
     hoks
@@ -411,7 +366,7 @@
       (is (= (:status get-response) 200))
       (assert-function get-response-data osa-data))))
 
-(defn- test-post-and-get-of-olemassa-oleva-osa [osa-path osa-data]
+(defn- test-post-and-get-of-aiemmin-hankittu-osa [osa-path osa-data]
   (with-hoks
     hoks
     (let [app (create-app nil)
@@ -424,89 +379,90 @@
             (:body get-response))
           {:meta {} :data (assoc osa-data :id 1)}))))
 
-(def ooato-path "olemassa-olevat-ammatilliset-tutkinnon-osat")
+(def ooato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
 (def ooato-data
   {:valittu-todentamisen-prosessi-koodi-versio 3
    :tutkinnon-osa-koodi-versio 100022
    :valittu-todentamisen-prosessi-koodi-uri "osaamisentodentamisenprosessi_3"
    :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
-
-   :tarkentavat-tiedot-arvioija
+   :tarkentavat-tiedot-osaamisen-arvioija
    {:lahetetty-arvioitavaksi "2019-03-18"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Erkki Esimerkki"
       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}
      {:nimi "Joku Tyyppi"
       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921000"}}]}
-
    :tarkentavat-tiedot-naytto
    [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_fy"
                    :koodi-versio 1}]
-     :koulutuksen-jarjestaja-arvioijat
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
      [{:nimi "Aapo Arvioija"
        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
      :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
      :nayttoymparisto {:nimi "Toinen Esimerkki Oyj"
                        :y-tunnus "12345699-2"
                        :kuvaus "Testiyrityksen testiosasostalla"}
-     :tyoelama-arvioijat [{:nimi "Teppo Työmies"
-                           :organisaatio
-                           {:nimi "Testiyrityksen Sisar Oy"
-                            :y-tunnus "12345689-3"}}]
-     :keskeiset-tyotehtavat-naytto ["Tutkimustyö"
-                                    "Raportointi"]
+     :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työmies"
+                                     :organisaatio
+                                     {:nimi "Testiyrityksen Sisar Oy"
+                                      :y-tunnus "12345689-3"}}]
+     :sisallon-kuvaus ["Tutkimustyö"
+                       "Raportointi"]
+     :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
      :alku "2019-02-09"
      :loppu "2019-01-12"}]})
 
-(deftest post-and-get-olemassa-olevat-ammatilliset-tutkinnon-osat
+(deftest post-and-get-aiemmin-hankitut-ammatilliset-tutkinnon-osat
   (testing "POST ooato and then get the created ooato"
-    (test-post-and-get-of-olemassa-oleva-osa ooato-path ooato-data)))
+    (test-post-and-get-of-aiemmin-hankittu-osa ooato-path ooato-data)))
 
 (def ^:private multiple-ooato-values-patched
   {:tutkinnon-osa-koodi-versio 3000
-
-   :tarkentavat-tiedot-arvioija
+   :tarkentavat-tiedot-osaamisen-arvioija
    {:lahetetty-arvioitavaksi "2020-01-01"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Nimi Muutettu"
       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453555555"}}
      {:nimi "Joku Tyyppi"
       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921000"}}]}
-
    :tarkentavat-tiedot-naytto
-   [{:koulutuksen-jarjestaja-arvioijat
+   [{:koulutuksen-jarjestaja-osaamisen-arvioijat
      [{:nimi "Muutettu Arvioija"
        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
+     :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
      :nayttoymparisto {:nimi "Testi Oy"
                        :y-tunnus "12345699-2"
                        :kuvaus "Testiyrityksen testiosasostalla"}
-     :alku "2018-01-01"
-     :loppu "2021-01-01"}]})
+     :sisallon-kuvaus ["Tutkimustyö"
+                       "Raportointi"]
+     :alku "2019-02-09"
+     :loppu "2019-01-12"}]})
 
 (defn- assert-ooato-data-is-patched-correctly [updated-data old-data]
   (is (= (:tutkinnon-osa-koodi-versio updated-data) 3000))
   (is (= (:valittu-todentamisen-prosessi-koodi-versio updated-data)
          (:valittu-todentamisen-prosessi-koodi-versio old-data)))
-  (is (= (:tarkentavat-tiedot-arvioija updated-data)
-         (:tarkentavat-tiedot-arvioija multiple-ooato-values-patched)))
+  (is (= (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
+         (:tarkentavat-tiedot-osaamisen-arvioija
+           multiple-ooato-values-patched)))
   (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
         ttn-patch-values
         (assoc (first (:tarkentavat-tiedot-naytto
                         multiple-ooato-values-patched))
-               :keskeiset-tyotehtavat-naytto []
-               :osa-alueet [] :tyoelama-arvioijat [])]
+               :osa-alueet [] :tyoelama-osaamisen-arvioijat []
+               :yksilolliset-kriteerit [])]
     (is (= ttn-after-update ttn-patch-values))))
 
-(deftest patch-multiple-olemassa-olevat-ammatilliset-tutkinnon-osat
+(deftest patch-multiple-aiemmin-hankitut-ammat-tutkinnon-osat
   (testing "Patching multiple values of ooato"
-    (test-patch-of-olemassa-oleva-osa
+    (test-patch-of-aiemmin-hankittu-osa
       ooato-path
       ooato-data
       multiple-ooato-values-patched
       assert-ooato-data-is-patched-correctly)))
 
-(def oopto-path "olemassa-olevat-paikalliset-tutkinnon-osat")
+(def oopto-path "aiemmin-hankittu-paikallinen-tutkinnon-osa")
 (def oopto-data
   {:valittu-todentamisen-prosessi-koodi-versio 2
    :laajuus 30
@@ -515,19 +471,16 @@
    :valittu-todentamisen-prosessi-koodi-uri
    "osaamisentodentamisenprosessi_0001"
    :amosaa-tunniste "12345"
-   :tarkentavat-tiedot-arvioija
-   {:lahetetty-arvioitavaksi "2019-01-20"
+   :tarkentavat-tiedot-osaamisen-arvioija
+   {:lahetetty-arvioitavaksi "2020-01-01"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Aarne Arvioija"
       :organisaatio {:oppilaitos-oid
                      "1.2.246.562.10.54453923411"}}]}
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453945322"
-   :vaatimuksista-tai-tavoitteista-poikkeaminen
-   "Ei poikkeamaa."
    :tarkentavat-tiedot-naytto
    [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_li"
                    :koodi-versio 6}]
-     :koulutuksen-jarjestaja-arvioijat
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
      [{:nimi "Teuvo Testaaja"
        :organisaatio {:oppilaitos-oid
                       "1.2.246.562.10.12346234690"}}]
@@ -537,67 +490,76 @@
      :nayttoymparisto {:nimi "Testi Oyj"
                        :y-tunnus "1289211-2"
                        :kuvaus "Testiyhtiö"}
-     :tyoelama-arvioijat
+     :tyoelama-osaamisen-arvioijat
      [{:nimi "Terttu Testihenkilö"
        :organisaatio {:nimi "Testi Oyj"
                       :y-tunnus "1289211-2"}}]
-     :keskeiset-tyotehtavat-naytto ["Testauksen suunnittelu"
-                                    "Jokin toinen testi"]
+     :sisallon-kuvaus ["Testauksen suunnittelu"
+                       "Jokin toinen testi"]
      :alku "2019-02-01"
-     :loppu "2019-03-01"}]})
+     :loppu "2019-03-01"
+     :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453945322"
+   :vaatimuksista-tai-tavoitteista-poikkeaminen "Ei poikkeamaa."})
 
-(deftest post-and-get-olemassa-olevat-paikalliset-tutkinnon-osat
+(deftest post-and-get-aiemmin-hankitut-paikalliset-tutkinnon-osat
   (testing "POST oopto and then get the created oopto"
-    (test-post-and-get-of-olemassa-oleva-osa oopto-path oopto-data)))
+    (test-post-and-get-of-aiemmin-hankittu-osa oopto-path oopto-data)))
 
 (def ^:private multiple-oopto-values-patched
   {:tavoitteet-ja-sisallot "Muutettu tavoite."
-
-   :tarkentavat-tiedot-arvioija
+   :tarkentavat-tiedot-osaamisen-arvioija
    {:lahetetty-arvioitavaksi "2020-01-01"
     :aiemmin-hankitun-osaamisen-arvioijat
-    [{:nimi "Uusi tyyppi"
-      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453955555"}}]}
-
+    [{:nimi "Aarne Arvioija"
+      :organisaatio {:oppilaitos-oid
+                     "1.2.246.562.10.54453923411"}}]}
    :tarkentavat-tiedot-naytto
-   [{:koulutuksen-jarjestaja-arvioijat
+   [{:koulutuksen-jarjestaja-osaamisen-arvioijat
      [{:nimi "Muutettu Arvioija"
-       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911111"}}]
-     :nayttoymparisto {:nimi "Toinen Oy"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
+     :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
+     :nayttoymparisto {:nimi "Testi Oy"
                        :y-tunnus "12345699-2"
                        :kuvaus "Testiyrityksen testiosasostalla"}
-     :alku "2018-01-01"
-     :loppu "2021-01-01"}]})
+     :sisallon-kuvaus ["Tutkimustyö"
+                       "Raportointi"]
+     :alku "2019-02-09"
+     :loppu "2019-01-12"
+     :yksilolliset-kriteerit ["Toinen kriteeri"]
+     :osa-alueet []
+     :tyoelama-osaamisen-arvioijat []}]})
 
 (defn- assert-oopto-data-is-patched-correctly [updated-data old-data]
   (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite."))
   (is (= (:nimi updated-data) (:nimi old-data)))
-  (eq (:tarkentavat-tiedot-arvioija updated-data)
-      (:tarkentavat-tiedot-arvioija multiple-oopto-values-patched))
+  (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
+      (:tarkentavat-tiedot-osaamisen-arvioija multiple-oopto-values-patched))
+  (eq (first (:tarkentavat-tiedot-naytto updated-data))
+      (first (:tarkentavat-tiedot-naytto multiple-oopto-values-patched)))
   (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
         ttn-patch-values
         (assoc (first (:tarkentavat-tiedot-naytto
                         multiple-oopto-values-patched))
-               :keskeiset-tyotehtavat-naytto []
-               :osa-alueet [] :tyoelama-arvioijat [])]
+               :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
     (eq ttn-after-update ttn-patch-values)))
 
-(deftest patch-olemassa-oleva-paikalliset-tutkinnon-osat
+(deftest patch-aiemmin-hankittu-paikalliset-tutkinnon-osat
   (testing "Patching multple values of oopto"
-    (test-patch-of-olemassa-oleva-osa
+    (test-patch-of-aiemmin-hankittu-osa
       oopto-path
       oopto-data
       multiple-oopto-values-patched
       assert-oopto-data-is-patched-correctly)))
 
-(def ooyto-path "olemassa-olevat-yhteiset-tutkinnon-osat")
+(def ooyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
 (def ooyto-data
   {:valittu-todentamisen-prosessi-koodi-uri
    "osaamisentodentamisenprosessi_0001"
    :valittu-todentamisen-prosessi-koodi-versio 3
    :tutkinnon-osa-koodi-versio 2
    :tutkinnon-osa-koodi-uri "tutkinnonosat_10203"
-   :tarkentavat-tiedot-arvioija
+   :tarkentavat-tiedot-osaamisen-arvioija
    {:lahetetty-arvioitavaksi "2016-02-29"
     :aiemmin-hankitun-osaamisen-arvioijat
     [{:nimi "Arttu Arvioija"
@@ -613,10 +575,11 @@
      :valittu-todentamisen-prosessi-koodi-uri
      "osaamisentodentamisenprosessi_0003"
      :valittu-todentamisen-prosessi-koodi-versio 4
-     :tarkentavat-tiedot
-     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
+     :tarkentavat-tiedot-naytto
+     [{:sisallon-kuvaus ["kuvaus1"]
+       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
                      :koodi-versio 3}]
-       :koulutuksen-jarjestaja-arvioijat
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
        [{:nimi "Teppo Testaaja"
          :organisaatio {:oppilaitos-oid
                         "1.2.246.562.10.54539267901"}}]
@@ -626,18 +589,18 @@
        :nayttoymparisto {:nimi "Ab Yhtiö Oy"
                          :y-tunnus "1234128-1"
                          :kuvaus "Testi"}
-       :tyoelama-arvioijat
+       :tyoelama-osaamisen-arvioijat
        [{:nimi "Tellervo Työntekijä"
          :organisaatio {:nimi "Ab Yhtiö Oy"
                         :y-tunnus "1234128-1"}}]
-       :keskeiset-tyotehtavat-naytto ["Testaus" "Kirjoitus"]
        :alku "2019-01-04"
-       :loppu "2019-03-01"}]}]
+       :loppu "2019-03-01"
+       :yksilolliset-kriteerit []}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590901"
    :tarkentavat-tiedot-naytto
    [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ma"
                    :koodi-versio 6}]
-     :koulutuksen-jarjestaja-arvioijat
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
      [{:nimi "Erkki Esimerkkitestaaja"
        :organisaatio {:oppilaitos-oid
                       "1.2.246.562.10.13490579090"}}]
@@ -646,20 +609,21 @@
      :nayttoymparisto {:nimi "Testi Oy"
                        :y-tunnus "1289235-2"
                        :kuvaus "Testiyhtiö"}
-     :tyoelama-arvioijat
+     :tyoelama-osaamisen-arvioijat
      [{:nimi "Tapio Testihenkilö"
        :organisaatio {:nimi "Testi Oy"
                       :y-tunnus "1289235-2"}}]
-     :keskeiset-tyotehtavat-naytto ["Testauksen suunnittelu"
-                                    "Jokin toinen testi"]
+     :sisallon-kuvaus ["Testauksen suunnittelu"
+                       "Jokin toinen testi"]
+     :yksilolliset-kriteerit ["kriteeri 1"]
      :alku "2019-03-01"
      :loppu "2019-06-01"}]})
 
-(deftest post-and-get-olemassa-olevat-yhteiset-tutkinnon-osat
+(deftest post-and-get-aiemmin-hankitut-yhteiset-tutkinnon-osat
   (testing "POST ooyto and then get the created ooyto"
-    (test-post-and-get-of-olemassa-oleva-osa ooyto-path ooyto-data)))
+    (test-post-and-get-of-aiemmin-hankittu-osa ooyto-path ooyto-data)))
 
-(def pyto-path "puuttuvat-yhteisen-tutkinnon-osat")
+(def pyto-path "hankittava-yhteinen-tutkinnon-osa")
 
 (def pyto-data
   {:osa-alueet
@@ -670,13 +634,15 @@
        :loppu "2018-12-23"
        :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
        :osaamisen-hankkimistapa-koodi-versio 1}]
-     :hankitun-osaamisen-naytto
+     :osaamisen-osoittaminen
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
        :nayttoymparisto {:nimi "aaa"}
        :alku "2018-12-12"
        :loppu "2018-12-20"
-       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                             {:nimi "Organisaation nimi"}}]}]}]
+       :sisallon-kuvaus ["Kuvaus"]
+       :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                       {:nimi "Organisaation nimi"}}]
+       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]}]
    :tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :tutkinnon-osa-koodi-versio 1
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"})
@@ -692,13 +658,14 @@
        :loppu "2018-12-22"
        :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
        :osaamisen-hankkimistapa-koodi-versio 1}]
-     :hankitun-osaamisen-naytto
+     :osaamisen-osoittaminen
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000008"}
        :nayttoymparisto {:nimi "aaa2"}
        :alku "2018-12-15"
        :loppu "2018-12-21"
-       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                             {:nimi "Organisaation nimi"}}]}]}]
+       :sisallon-kuvaus ["Kuvaus"]
+       :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                       {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"})
 
 (def pyto-patch-one-data
@@ -712,17 +679,18 @@
        :loppu "2018-12-22"
        :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
        :osaamisen-hankkimistapa-koodi-versio 1}]
-     :hankitun-osaamisen-naytto
+     :osaamisen-osoittaminen
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000010"}
        :nayttoymparisto {:nimi "aaa2"}
        :alku "2018-12-15"
        :loppu "2018-12-21"
-       :tyoelama-arvioijat [{:nimi "Nimi" :organisaatio
-                             {:nimi "Organisaation nimi"}}]}]}]
+       :sisallon-kuvaus ["Kuvaus"]
+       :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                       {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000011"})
 
 (deftest post-and-get-pyto
-  (testing "POST puuttuvat yhteisen tutkinnon osat"
+  (testing "POST hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
@@ -753,7 +721,7 @@
           1))))
 
 (deftest put-pyto
-  (testing "PUT puuttuvat yhteisen tutkinnon osat"
+  (testing "PUT hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
@@ -777,7 +745,7 @@
       (is (= (:status response) 204)))))
 
 (deftest patch-one-pyto
-  (testing "PATCH one value puuttuvat yhteisen tutkinnon osat"
+  (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
@@ -801,7 +769,7 @@
       (is (= (:status response) 204)))))
 
 (deftest patch-all-pyto
-  (testing "PATCH all puuttuvat yhteisen tutkinnon osat"
+  (testing "PATCH all hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
           (utils/with-service-ticket
@@ -950,22 +918,21 @@
 (defn add-empty-hoks-values [hoks]
   (assoc
     hoks
-    :olemassa-olevat-ammatilliset-tutkinnon-osat []
-    :puuttuvat-paikalliset-tutkinnon-osat []
-    :puuttuvat-ammatilliset-tutkinnon-osat []
-    :olemassa-olevat-yhteiset-tutkinnon-osat []
-    :puuttuvat-yhteiset-tutkinnon-osat []
-    :olemassa-olevat-paikalliset-tutkinnon-osat []
+    :aiemmin-hankitut-ammat-tutkinnon-osat []
+    :hankittavat-paikalliset-tutkinnon-osat []
+    :hankittavat-ammat-tutkinnon-osat []
+    :aiemmin-hankitut-yhteiset-tutkinnon-osat []
+    :hankittavat-yhteiset-tutkinnon-osat []
+    :aiemmin-hankitut-paikalliset-tutkinnon-osat []
     :opiskeluvalmiuksia-tukevat-opinnot []))
 
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
+    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}
           response
           (utils/with-service-ticket
             (create-app nil)
@@ -983,12 +950,11 @@
 
 (deftest prevent-creating-hoks-with-existing-opiskeluoikeus
   (testing "Prevent POST HOKS with existing opiskeluoikeus"
+    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}]
       (utils/with-service-ticket
         (create-app nil)
         (-> (mock/request :post url)
@@ -1007,10 +973,8 @@
   (testing "Prevent POST unauthorized HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}]
       (let [response
             (utils/with-service-ticket
               (create-app nil)
@@ -1022,10 +986,8 @@
   (testing "Prevent GET unauthorized HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}]
 
       (let [response
             (utils/with-service-ticket
@@ -1044,10 +1006,8 @@
   (testing "GET latest (second) version of HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}]
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}]
       (let [response
             (utils/with-service-ticket
               (create-app nil)
@@ -1068,10 +1028,8 @@
   (testing "PATCH updates value of created HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}
           response
           (utils/with-service-ticket
             (create-app nil)
@@ -1084,8 +1042,9 @@
               (create-app nil)
               (-> (mock/request :patch (get-in body [:data :uri]))
                   (mock/json-body
-                    {:id (:id hoks)
-                     :paivittaja {:nimi "Kalle Käyttäjä"}})))]
+                    {:id 1
+                     :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
+                     :urasuunnitelma-koodi-versio 1})))]
         (is (= (:status patch-response) 204))
         (let [updated-hoks
               (-> (get-in body [:data :uri]) get-authenticated :data)]
@@ -1093,7 +1052,9 @@
             updated-hoks
             (assoc
               hoks
-              :paivittaja {:nimi "Kalle Käyttäjä"})))))))
+              :id 1
+              :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
+              :urasuunnitelma-koodi-versio 1)))))))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
@@ -1101,37 +1062,35 @@
           (utils/with-service-ticket
             (create-app nil)
             (-> (mock/request :patch (format "%s/1" url))
-                (mock/json-body {:id 1
-                                 :paivittaja {:nimi "Kalle Käyttäjä"}})))]
+                (mock/json-body {:id 1})))]
       (is (= (:status response) 404)))))
 
 (deftest get-hoks-by-opiskeluoikeus-oid
-  (testing "GET HOKS by opiskeluoikeus-oid")
-  (let [opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-        hoks-data {:opiskeluoikeus-oid opiskeluoikeus-oid
-                   :oppija-oid "1.2.246.562.24.12312312312"
-                   :laatija {:nimi "Teppo Tekijä"}
-                   :paivittaja {:nimi "Pekka Päivittäjä"}
-                   :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                   :ensikertainen-hyvaksyminen "2018-12-15"}
-        app (create-app nil)]
-    (utils/with-service-ticket
-      app
-      (-> (mock/request :post url)
-          (mock/json-body hoks-data)))
-    (let [response
-          (utils/with-service-ticket
-            app
-            (mock/request :get
-                          (format "%s/opiskeluoikeus/%s"
-                                  url opiskeluoikeus-oid)))
-          body (utils/parse-body (:body response))]
+  (testing "GET HOKS by opiskeluoikeus-oid"
 
-      (is (= (:status response) 200))
-      (is (= (-> body
-                 :data
-                 :opiskeluoikeus-oid)
-             opiskeluoikeus-oid)))))
+    (let [opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+          hoks-data {:opiskeluoikeus-oid opiskeluoikeus-oid
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}
+          app (create-app nil)]
+      (utils/with-service-ticket
+        app
+        (-> (mock/request :post url)
+            (mock/json-body hoks-data)))
+      (let [response
+            (utils/with-service-ticket
+              app
+              (mock/request :get
+                            (format "%s/opiskeluoikeus/%s"
+                                    url opiskeluoikeus-oid)))
+            body (utils/parse-body (:body response))]
+
+        (is (= (:status response) 200))
+        (is (= (-> body
+                   :data
+                   :opiskeluoikeus-oid)
+               opiskeluoikeus-oid))))))
 
 (deftest non-service-user-test
   (testing "Deny access from non-service user"

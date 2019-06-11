@@ -249,10 +249,8 @@
                   (str base-url "/virkailija/hoksit"))
                 {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                  :oppija-oid "1.2.246.562.24.44000000001"
-                 :laatija {:nimi "Teppo Tekijä"}
-                 :paivittaja {:nimi "Pekka Päivittäjä"}
-                 :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                 :ensikertainen-hyvaksyminen "2018-12-15"})
+                 :ensikertainen-hyvaksyminen "2018-12-15"
+                 :osaamisen-hankkimisen-tarve false})
               {:name "Testivirkailija"
                :kayttajaTyyppi "VIRKAILIJA"
                :organisation-privileges
@@ -262,9 +260,7 @@
       (let [hoks-db (db/insert-hoks!
                       {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                        :oppija-oid "1.2.246.562.24.44000000001"
-                       :laatija {:nimi "Teppo Tekijä"}
-                       :paivittaja {:nimi "Pekka Päivittäjä"}
-                       :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                       :osaamisen-hankkimisen-tarve false
                        :ensikertainen-hyvaksyminen
                        (java.time.LocalDate/of 2018 12 15)})
             response
@@ -297,10 +293,8 @@
                   (str base-url "/virkailija/hoksit"))
                 {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                  :oppija-oid "1.2.246.562.24.44000000001"
-                 :laatija {:nimi "Teppo Tekijä"}
-                 :paivittaja {:nimi "Pekka Päivittäjä"}
-                 :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                 :ensikertainen-hyvaksyminen "2018-12-15"})
+                 :ensikertainen-hyvaksyminen "2018-12-15"
+                 :osaamisen-hankkimisen-tarve false})
               {:name "Testivirkailija"
                :kayttajaTyyppi "VIRKAILIJA"
                :organisation-privileges

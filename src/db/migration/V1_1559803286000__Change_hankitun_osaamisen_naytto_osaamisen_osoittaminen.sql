@@ -1,0 +1,53 @@
+ALTER TABLE hankitun_osaamisen_naytot RENAME TO
+osaamisen_osoittamiset;
+
+ALTER TABLE hankitun_osaamisen_tyotehtavat RENAME TO
+osaamisen_osoittamisen_tyotehtavat;
+
+ALTER TABLE osaamisen_osoittamisen_tyotehtavat RENAME COLUMN
+hankitun_osaamisen_naytto_id TO osaamisen_osoittaminen_id;
+
+ALTER TABLE hankitun_yto_osaamisen_nayton_osaamistavoitteet RENAME TO
+yto_osaamisen_osoittamisen_osaamistavoitteet;
+
+ALTER TABLE yto_osaamisen_osoittamisen_osaamistavoitteet RENAME COLUMN
+hankitun_osaamisen_naytto_id TO osaamisen_osoittaminen_id;
+
+ALTER TABLE hankitun_osaamisen_nayton_tyoelama_arvioija RENAME TO
+osaamisen_osoittamisen_tyoelama_arvioija;
+
+ALTER TABLE osaamisen_osoittamisen_tyoelama_arvioija RENAME COLUMN
+hankitun_osaamisen_naytto_id TO osaamisen_osoittaminen_id;
+
+ALTER TABLE hankitun_osaamisen_nayton_osa_alueet RENAME TO
+osaamisen_osoittamisen_osa_alueet;
+
+ALTER TABLE osaamisen_osoittamisen_osa_alueet RENAME COLUMN
+hankitun_osaamisen_naytto_id TO osaamisen_osoittaminen_id;
+
+ALTER TABLE hankitun_osaamisen_nayton_koulutuksen_jarjestaja_arvioija
+RENAME TO osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija;
+
+ALTER TABLE osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija RENAME
+COLUMN hankitun_osaamisen_naytto_id TO osaamisen_osoittaminen_id;
+
+ALTER TABLE aiemmin_hankitun_ammat_tutkinnon_osan_naytto RENAME
+COLUMN hankitun_osaamisen_naytto_id TO osaamisen_osoittaminen_id;
+
+ALTER TABLE aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto RENAME
+COLUMN hankitun_osaamisen_naytto_id TO osaamisen_osoittaminen_id;
+
+ALTER TABLE hankittavan_paikallisen_tutkinnon_osan_naytto RENAME
+COLUMN hankitun_osaamisen_naytto_id TO osaamisen_osoittaminen_id;
+
+ALTER TABLE aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto RENAME
+COLUMN hankitun_osaamisen_naytto_id TO osaamisen_osoittaminen_id;
+
+ALTER TABLE aiemmin_hankitun_yto_osa_alueen_naytto RENAME
+COLUMN hankitun_osaamisen_naytto_id TO osaamisen_osoittaminen_id;
+
+ALTER TABLE hankittavan_ammat_tutkinnon_osan_naytto RENAME
+COLUMN hankitun_osaamisen_naytto_id TO osaamisen_osoittaminen_id;
+
+ALTER TABLE yhteisen_tutkinnon_osan_osa_alueen_naytot RENAME
+COLUMN hankitun_osaamisen_naytto_id TO osaamisen_osoittaminen_id;
