@@ -684,7 +684,7 @@
 
 (deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa
   (testing "Patching values of ahyto"
-    (test-patch-of-olemassa-oleva-osa
+    (test-patch-of-aiemmin-hankittu-osa
       ahyto-path
       ahyto-data
       multiple-ahyto-values-patched
