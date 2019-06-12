@@ -1,6 +1,6 @@
 (ns oph.ehoks.hoks.handler
   (:require [compojure.api.sweet :as c-api]
-            [oph.ehoks.logging.core :as log]
+            [clojure.tools.logging :as log]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]

@@ -2,7 +2,7 @@
   (:require [oph.ehoks.external.cache :as cache]
             [oph.ehoks.external.cas :as cas]
             [oph.ehoks.external.oph-url :as u]
-            [oph.ehoks.logging.core :as log]))
+            [clojure.tools.logging :as log]))
 
 (defn get-user-details [^String username]
   (first

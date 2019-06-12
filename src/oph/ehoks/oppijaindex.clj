@@ -3,7 +3,7 @@
             [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
-            [oph.ehoks.logging.core :as log]
+            [clojure.tools.logging :as log]
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.hoks :refer [from-sql]])
   (:import java.time.LocalDate))

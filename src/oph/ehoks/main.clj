@@ -3,7 +3,7 @@
   (:require [ring.adapter.jetty :as jetty]
             [oph.ehoks.db.migrations :as m]
             [clojure.string :refer [lower-case]]
-            [oph.ehoks.logging.core :as log]
+            [clojure.tools.logging :as log]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.ehoks-app :as ehoks-app]
             [oph.ehoks.redis :refer [redis-store]]

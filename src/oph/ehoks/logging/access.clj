@@ -1,5 +1,5 @@
 (ns oph.ehoks.logging.access
-  (:require [oph.ehoks.logging.core :as log]
+  (:require [clojure.tools.logging :as log]
             [clojure.string :as cstr]
             [clj-time.core :as t]
             [oph.ehoks.config :refer [config]]
@@ -43,17 +43,21 @@
      :content-length (get-header request "Content-Length")
      :referer (get-header request "referer")}))
 
+(defn- log-access-map [m]
+  (log/log "access" :info nil (str m)))
+
 (defn- spy-access [request respond]
   (let [current-ms (System/currentTimeMillis)]
     (fn [response]
-      (log/access (to-access-map
-                    request response (- (System/currentTimeMillis) current-ms)))
+      (log-access-map (to-access-map
+                        request response (- (System/currentTimeMillis)
+                                            current-ms)))
       (respond response))))
 
 (defn- spy-access-sync [handler request]
   (let [current-ms (System/currentTimeMillis)
         response (handler request)]
-    (log/access
+    (log-access-map
       (to-access-map
         request response (- (System/currentTimeMillis) current-ms)))
     response))
