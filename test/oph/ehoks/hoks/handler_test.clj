@@ -679,7 +679,10 @@
 
 (defn- assert-ahyto-is-patched-correctly [updated-data old-data]
   (is (= (:valittu-todentamisen-prosessi-koodi-uri updated-data) "osaamisentodentamisenprosessi_2000"))
-  (is (= (:tutkinnon-osa-koodi-versio updated-data) (:tutkinnon-osa-koodi-versio old-data))))
+  (is (= (:tutkinnon-osa-koodi-versio updated-data) (:tutkinnon-osa-koodi-versio old-data)))
+  (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
+      (:tarkentavat-tiedot-osaamisen-arvioija multiple-ahyto-values-patched))
+  )
 
 (deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa
   (testing "Patching values of ahyto"
