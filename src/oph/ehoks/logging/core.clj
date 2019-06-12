@@ -4,20 +4,14 @@
             [oph.ehoks.config :refer [config]])
   (:import org.apache.logging.log4j.LogManager))
 
-(defn- get-audit-logger []
-  (LogManager/getLogger "audit"))
+(def ^:private audit-logger
+  (when-not *compile-files* (LogManager/getLogger "audit")))
 
-(defn- get-access-logger []
-  (LogManager/getLogger "access"))
+(def ^:private access-logger
+  (when-not *compile-files* (LogManager/getLogger "access")))
 
-(defn- get-root-logger []
-  (LogManager/getLogger))
-
-(def ^:private audit-logger (when-not *compile-files* (get-audit-logger)))
-
-(def ^:private access-logger (when-not *compile-files* (get-access-logger)))
-
-(def ^:private root-logger (when-not *compile-files* (get-root-logger)))
+(def ^:private root-logger
+  (when-not *compile-files* (LogManager/getLogger)))
 
 (defn format-message
   "Format message. All {{:key}} are replaced with value of :key in given map"
