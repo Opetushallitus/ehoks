@@ -576,6 +576,9 @@
 (defn update-aiemmin-hankittu-yhteinen-tutkinnon-osa! [ahyto-from-db new-values]
   (db/update-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id!
     (:id ahyto-from-db) new-values)
+  (when-let [new-ttoa (:tarkentavat-tiedot-osaamisen-arvioija new-values)]
+    (update-tarkentavat-tiedot-osaamisen-arvioija!
+      (:tarkentavat-tiedot-osaamisen-arvioija-id ahyto-from-db) new-ttoa))
   )
 
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
