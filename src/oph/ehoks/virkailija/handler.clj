@@ -228,7 +228,7 @@
                           (response/not-found {:message "HOKS not found"})))
 
                       (c-api/POST "/" [:as request]
-                        :summary "Luo uuden HOKSin. 
+                        :summary "Luo uuden HOKSin.
                                  Vaatii manuaalisyöttäjän oikeudet"
                         :body [hoks hoks-schema/HOKSLuonti]
                         :return (restful/response schema/POSTResponse :id s/Int)
