@@ -42,4 +42,4 @@
     ([request]
       (let [response (handler request)]
         (log-audit request response)
-        (handler request)))))
+        response))))
