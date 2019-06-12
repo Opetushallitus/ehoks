@@ -568,6 +568,12 @@
       new-ahpt
       ["id = ? AND deleted_at IS NULL" id])))
 
+(defn update-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id! [id new-values]
+  (update!
+    :aiemmin_hankitut_yhteiset_tutkinnon_osat
+    (h/aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql new-values)
+    ["id = ? AND deleted_at IS NULL" id]))
+
 (defn update-todennettu-arviointi-lisatiedot-by-id! [id new-values]
   (update!
     :todennettu_arviointi_lisatiedot
