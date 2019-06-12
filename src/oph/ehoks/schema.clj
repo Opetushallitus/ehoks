@@ -50,5 +50,4 @@
               :service-timeout-ms s/Int
               :ext-cache-lifetime-minutes s/Int
               :save-hoks-json? s/Bool
-              :opintopolku-host s/Str
-              :logging? s/Bool})
+              :opintopolku-host s/Str})
