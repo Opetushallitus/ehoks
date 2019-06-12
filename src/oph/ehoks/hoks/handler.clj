@@ -389,7 +389,7 @@
           (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
                         :id (:id hoks-db))))
 
-      (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" [oid :as request]
+      (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
         :path-params [opiskeluoikeus-oid :- s/Str]
         :return (rest/response hoks-schema/HOKS)
