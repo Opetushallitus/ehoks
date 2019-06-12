@@ -416,12 +416,12 @@
     #(save-aiemmin-hankittu-paikallinen-tutkinnon-osa! (:id hoks) %)
     c))
 
-(defn save-ahyto-tarkentavat-tiedot-naytto! [ahyto-id c]
+(defn save-ahyto-tarkentavat-tiedot-naytto! [ahyto-id new-values]
   (mapv
     #(let [n (save-osaamisen-osoittaminen! %)]
        (db/insert-ahyto-osaamisen-osoittaminen! ahyto-id n)
        n)
-    c))
+    new-values))
 
 (defn save-ooyto-osa-alueet! [yto-id osa-alueet]
   (mapv
@@ -575,6 +575,7 @@
 
 (defn- replace-ahyto-tarkentavat-tiedot-naytto! [ahyto-id new-values]
   (db/delete-aiemmin-hankitun-yhteisen-tutkinnon-osan-naytto-by-id! ahyto-id)
+  (save-ahyto-tarkentavat-tiedot-naytto! ahyto-id new-values)
   )
 
 (defn update-aiemmin-hankittu-yhteinen-tutkinnon-osa! [ahyto-from-db new-values]

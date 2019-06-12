@@ -668,28 +668,41 @@
    [{:nayttoymparisto {:nimi "Testi Oy"
                        :y-tunnus "1289235-2"
                        :kuvaus "Testiyhtiö"}
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
+     [{:nimi "Joku Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911333"}}]
      :sisallon-kuvaus ["Testauksen suunnittelu"
                        "Jokin toinen testi"]
      :alku "2015-03-31"
      :loppu "2021-06-01"}
     {:nayttoymparisto {:nimi "Toka Oy"}
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
+     [{:nimi "Joku Toinen Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911555"}}]
      :sisallon-kuvaus ["Jotakin sisaltoa"]
      :alku "2014-05-05"
      :loppu "2022-09-12"}]})
 
 (defn- assert-ahyto-is-patched-correctly [updated-data old-data]
-  (is (= (:valittu-todentamisen-prosessi-koodi-uri updated-data) "osaamisentodentamisenprosessi_2000"))
-  (is (= (:tutkinnon-osa-koodi-versio updated-data) (:tutkinnon-osa-koodi-versio old-data)))
+  (is (= (:valittu-todentamisen-prosessi-koodi-uri updated-data)
+         "osaamisentodentamisenprosessi_2000"))
+  (is (= (:tutkinnon-osa-koodi-versio updated-data)
+         (:tutkinnon-osa-koodi-versio old-data)))
   (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
       (:tarkentavat-tiedot-osaamisen-arvioija multiple-ahyto-values-patched))
   (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
        ttn-patch-values
        (assoc (first (:tarkentavat-tiedot-naytto
                        multiple-ahyto-values-patched))
-         :koulutuksen-jarjestaja-osaamisen-arvioijat [] :jarjestaja []
+         :yksilolliset-kriteerit []
          :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
-  (eq ttn-after-update ttn-patch-values))
+    (clojure.pprint/pprint ttn-after-update)
+    (println "---------------")
+    (clojure.pprint/pprint ttn-patch-values)
+    (println "---------------")
+    (eq ttn-after-update ttn-patch-values))
   )
+
 
 (deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa
   (testing "Patching values of ahyto"
