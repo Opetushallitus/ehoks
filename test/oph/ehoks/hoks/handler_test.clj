@@ -682,6 +682,13 @@
   (is (= (:tutkinnon-osa-koodi-versio updated-data) (:tutkinnon-osa-koodi-versio old-data)))
   (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
       (:tarkentavat-tiedot-osaamisen-arvioija multiple-ahyto-values-patched))
+  (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
+       ttn-patch-values
+       (assoc (first (:tarkentavat-tiedot-naytto
+                       multiple-ahyto-values-patched))
+         :koulutuksen-jarjestaja-osaamisen-arvioijat [] :jarjestaja []
+         :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
+  (eq ttn-after-update ttn-patch-values))
   )
 
 (deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa
