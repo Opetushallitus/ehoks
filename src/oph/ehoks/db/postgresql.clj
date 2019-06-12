@@ -161,10 +161,10 @@
     {:aiemmin_hankittu_ammat_tutkinnon_osa_id ooato-id
      :osaamisen_osoittaminen_id (:id n)}))
 
-(defn insert-ooyto-osaamisen-osoittaminen! [ooyto n]
+(defn insert-ahyto-osaamisen-osoittaminen! [ahyto-id n]
   (insert-one!
     :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-    {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id (:id ooyto)
+    {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id ahyto-id
      :osaamisen_osoittaminen_id (:id n)}))
 
 (defn insert-koodisto-koodi! [m]

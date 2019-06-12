@@ -416,10 +416,10 @@
     #(save-aiemmin-hankittu-paikallinen-tutkinnon-osa! (:id hoks) %)
     c))
 
-(defn save-ooyto-tarkentavat-tiedot-naytto! [ooyto c]
+(defn save-ahyto-tarkentavat-tiedot-naytto! [ahyto-id c]
   (mapv
     #(let [n (save-osaamisen-osoittaminen! %)]
-       (db/insert-ooyto-osaamisen-osoittaminen! ooyto n)
+       (db/insert-ahyto-osaamisen-osoittaminen! ahyto-id n)
        n)
     c))
 
@@ -442,7 +442,7 @@
                      :hoks-id hoks-id
                      :tarkentavat-tiedot-osaamisen-arvioija-id
                      (:id (save-tarkentavat-tiedot-osaamisen-arvioija! tta))))]
-    (save-ooyto-tarkentavat-tiedot-naytto! yto
+    (save-ahyto-tarkentavat-tiedot-naytto! (:id yto)
                                            (:tarkentavat-tiedot-naytto ooyto))
     (save-ooyto-osa-alueet! (:id yto) (:osa-alueet ooyto))
     yto))
