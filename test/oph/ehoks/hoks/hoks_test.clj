@@ -298,7 +298,7 @@
         :koulutuksen-jarjestaja-osaamisen-arvioijat []
         :yksilolliset-kriteerit []}]}]}])
 
-(def  hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+(def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                  :oppija-oid "1.2.246.562.24.12312312312"
                  :ensikertainen-hyvaksyminen
                  (java.time.LocalDate/of 2019 3 18)

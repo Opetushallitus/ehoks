@@ -661,7 +661,6 @@
        [{:nimi "Tellervo Työntekijä"
          :organisaatio {:nimi "Ab Betoni Oy"
                         :y-tunnus "1234128-1"}}]
-       :keskeiset-tyotehtavat-naytto ["Luku" "Kirjoitus"]
        :alku "2029-01-04"
        :loppu "2030-03-01"}]}]
 
