@@ -695,6 +695,8 @@
     updated-data multiple-ahyto-values-patched first)
   (compare-tarkentavat-tiedot-naytto-values
     updated-data multiple-ahyto-values-patched second)
+  (eq (:osa-alueet updated-data)
+      (:osa-alueet multiple-ahyto-values-patched))
   )
 
 
