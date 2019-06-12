@@ -341,7 +341,7 @@
                      :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
         (is (= (:status response) 204))))))
 
-(defn- assert-post-response [post-path post-response]
+(defn- assert-post-response-is-ok [post-path post-response]
   (is (= (:status post-response) 200))
   (eq (utils/parse-body (:body post-response))
       {:meta {:id 1}
@@ -373,7 +373,7 @@
           post-response (create-mock-post-request
                           osa-path osa-data app hoks)
           get-response (create-mock-get-request osa-path app hoks)]
-      (assert-post-response osa-path post-response)
+      (assert-post-response-is-ok osa-path post-response)
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
             (:body get-response))
