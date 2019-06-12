@@ -379,6 +379,16 @@
             (:body get-response))
           {:meta {} :data (assoc osa-data :id 1)}))))
 
+(defn- compare-tarkentavat-tiedot-naytto-values
+  [updated original selector-function]
+  (let [ttn-after-update
+        (selector-function (:tarkentavat-tiedot-naytto updated))
+        ttn-patch-values
+        (assoc (selector-function (:tarkentavat-tiedot-naytto original))
+          :yksilolliset-kriteerit []
+          :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
+    (eq ttn-after-update ttn-patch-values)))
+
 (def ahato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
 (def ahato-data
   {:valittu-todentamisen-prosessi-koodi-versio 3
@@ -446,16 +456,11 @@
   (is (= (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
          (:tarkentavat-tiedot-osaamisen-arvioija
            multiple-ahato-values-patched)))
-  (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
-        ttn-patch-values
-        (assoc (first (:tarkentavat-tiedot-naytto
-                        multiple-ahato-values-patched))
-               :osa-alueet [] :tyoelama-osaamisen-arvioijat []
-               :yksilolliset-kriteerit [])]
-    (is (= ttn-after-update ttn-patch-values))))
+  (compare-tarkentavat-tiedot-naytto-values
+    updated-data multiple-ahato-values-patched first))
 
-(deftest patch-multiple-aiemmin-hankitut-ammat-tutkinnon-osat
-  (testing "Patching multiple values of ooato"
+(deftest patch-aiemmin-hankitut-ammat-tutkinnon-osat
+  (testing "Patching multiple values of ahato"
     (test-patch-of-aiemmin-hankittu-osa
       ahato-path
       ahato-data
@@ -537,12 +542,8 @@
       (:tarkentavat-tiedot-osaamisen-arvioija multiple-ahpto-values-patched))
   (eq (first (:tarkentavat-tiedot-naytto updated-data))
       (first (:tarkentavat-tiedot-naytto multiple-ahpto-values-patched)))
-  (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
-        ttn-patch-values
-        (assoc (first (:tarkentavat-tiedot-naytto
-                        multiple-ahpto-values-patched))
-               :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
-    (eq ttn-after-update ttn-patch-values)))
+  (compare-tarkentavat-tiedot-naytto-values
+    updated-data multiple-ahpto-values-patched first))
 
 (deftest patch-aiemmin-hankittu-paikalliset-tutkinnon-osat
   (testing "Patching multiple values of ahpto"
@@ -682,16 +683,6 @@
      :sisallon-kuvaus ["Jotakin sisaltoa"]
      :alku "2014-05-05"
      :loppu "2022-09-12"}]})
-
-(defn- compare-tarkentavat-tiedot-naytto-values
-  [updated original selector-function]
-  (let [ttn-after-update
-        (selector-function (:tarkentavat-tiedot-naytto updated))
-        ttn-patch-values
-        (assoc (selector-function (:tarkentavat-tiedot-naytto original))
-          :yksilolliset-kriteerit []
-          :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
-    (eq ttn-after-update ttn-patch-values)))
 
 (defn- assert-ahyto-is-patched-correctly [updated-data old-data]
   (is (= (:valittu-todentamisen-prosessi-koodi-uri updated-data)
