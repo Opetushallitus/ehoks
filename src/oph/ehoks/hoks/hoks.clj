@@ -573,12 +573,18 @@
   (when-let [new-ttn (:tarkentavat-tiedot-naytto new-values)]
     (replace-oopto-tarkentavat-tiedot-naytto! (:id oopto-from-db) new-ttn)))
 
+(defn- replace-ahyto-tarkentavat-tiedot-naytto! [ahyto-id new-values]
+  (db/delete-aiemmin-hankitun-yhteisen-tutkinnon-osan-naytto-by-id! ahyto-id)
+  )
+
 (defn update-aiemmin-hankittu-yhteinen-tutkinnon-osa! [ahyto-from-db new-values]
   (db/update-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id!
     (:id ahyto-from-db) new-values)
   (when-let [new-ttoa (:tarkentavat-tiedot-osaamisen-arvioija new-values)]
     (update-tarkentavat-tiedot-osaamisen-arvioija!
       (:tarkentavat-tiedot-osaamisen-arvioija-id ahyto-from-db) new-ttoa))
+  (when-let [new-ttn (:tarkentavat-tiedot-naytto new-values)]
+    (replace-ahyto-tarkentavat-tiedot-naytto! (:id ahyto-from-db) new-ttn))
   )
 
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
