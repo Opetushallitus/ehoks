@@ -3,7 +3,8 @@
             [clojure.string :as cstr]
             [clj-time.core :as t]
             [oph.ehoks.config :refer [config]]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [clojure.data.json :as json]))
 
 (def ^:private service-name
   (cstr/lower-case (:name env (or (System/getProperty "name") "both"))))
@@ -44,7 +45,7 @@
      :referer (get-header request "referer")}))
 
 (defn- log-access-map [m]
-  (log/log "access" :info nil (str m)))
+  (log/log "access" :info nil (json/write-str m)))
 
 (defn- spy-access [request respond]
   (let [current-ms (System/currentTimeMillis)]

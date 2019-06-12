@@ -1,6 +1,7 @@
 (ns oph.ehoks.logging.audit
   (:require [clojure.tools.logging :as log]
-            [oph.ehoks.logging.access :refer [current-fin-time-str]]))
+            [oph.ehoks.logging.access :refer [current-fin-time-str]]
+            [clojure.data.json :as json]))
 
 (defn- get-user-oid [request]
   (when-let [user (or (:service-ticket-user request)
@@ -22,7 +23,7 @@
     m))
 
 (defn- log-audit-map [m]
-  (log/log "audit" :info nil (str m)))
+  (log/log "audit" :info nil (json/write-str m)))
 
 (defn- log-audit [request response]
   (log-audit-map {:timestamp (current-fin-time-str)
