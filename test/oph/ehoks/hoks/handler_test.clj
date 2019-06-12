@@ -702,6 +702,8 @@
       (:tarkentavat-tiedot-osaamisen-arvioija multiple-ahyto-values-patched))
   (compare-tarkentavat-tiedot-naytto-values
     updated-data multiple-ahyto-values-patched first)
+  (compare-tarkentavat-tiedot-naytto-values
+    updated-data multiple-ahyto-values-patched second)
   )
 
 
