@@ -683,6 +683,16 @@
      :alku "2014-05-05"
      :loppu "2022-09-12"}]})
 
+(defn- compare-tarkentavat-tiedot-naytto-values
+  [updated original selector-function]
+  (let [ttn-after-update
+        (selector-function (:tarkentavat-tiedot-naytto updated))
+        ttn-patch-values
+        (assoc (selector-function (:tarkentavat-tiedot-naytto original))
+          :yksilolliset-kriteerit []
+          :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
+    (eq ttn-after-update ttn-patch-values)))
+
 (defn- assert-ahyto-is-patched-correctly [updated-data old-data]
   (is (= (:valittu-todentamisen-prosessi-koodi-uri updated-data)
          "osaamisentodentamisenprosessi_2000"))
@@ -690,17 +700,8 @@
          (:tutkinnon-osa-koodi-versio old-data)))
   (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
       (:tarkentavat-tiedot-osaamisen-arvioija multiple-ahyto-values-patched))
-  (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
-       ttn-patch-values
-       (assoc (first (:tarkentavat-tiedot-naytto
-                       multiple-ahyto-values-patched))
-         :yksilolliset-kriteerit []
-         :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
-    (clojure.pprint/pprint ttn-after-update)
-    (println "---------------")
-    (clojure.pprint/pprint ttn-patch-values)
-    (println "---------------")
-    (eq ttn-after-update ttn-patch-values))
+  (compare-tarkentavat-tiedot-naytto-values
+    updated-data multiple-ahyto-values-patched first)
   )
 
 
