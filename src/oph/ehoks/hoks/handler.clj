@@ -303,10 +303,11 @@
       (if-let [ahyto-from-db
                (pdb/select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id id)]
         (do
-          (h/update-aiemmin-hankittu-yhteinen-tutkinnon-osa! ahyto-from-db values)
+          (h/update-aiemmin-hankittu-yhteinen-tutkinnon-osa!
+            ahyto-from-db values)
           (response/no-content))
         (response/not-found
-         {:error "Aiemmin hankitun yhteinen tutkinnon osa not found"})))))
+          {:error "Aiemmin hankitun yhteinen tutkinnon osa not found"})))))
 
 (def ^:private hankittava-yhteinen-tutkinnon-osa
   (c-api/context "/:hoks-id/hankittava-yhteinen-tutkinnon-osa" [hoks-id]

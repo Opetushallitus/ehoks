@@ -385,7 +385,7 @@
         (selector-function (:tarkentavat-tiedot-naytto updated))
         ttn-patch-values
         (assoc (selector-function (:tarkentavat-tiedot-naytto original))
-          :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
+               :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
     (eq ttn-after-update ttn-patch-values)))
 
 (def ahato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
@@ -700,7 +700,6 @@
     updated-data multiple-ahyto-values-patched second)
   (eq (:osa-alueet updated-data)
       (:osa-alueet multiple-ahyto-values-patched)))
-
 
 (deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa
   (testing "Patching values of ahyto"

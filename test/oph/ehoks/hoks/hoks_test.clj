@@ -299,18 +299,18 @@
         :yksilolliset-kriteerit []}]}]}])
 
 (def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                 :oppija-oid "1.2.246.562.24.12312312312"
-                 :ensikertainen-hyvaksyminen
-                 (java.time.LocalDate/of 2019 3 18)
-                 :osaamisen-hankkimisen-tarve false
-                 :sahkoposti "erkki.esimerkki@esimerkki.com"
-                 :aiemmin-hankitut-yhteiset-tutkinnon-osat ooyto-data
-                 :hankittavat-paikalliset-tutkinnon-osat ppto-data
-                 :aiemmin-hankitut-paikalliset-tutkinnon-osat oopto-data
-                 :aiemmin-hankitut-ammat-tutkinnon-osat ooato-data
-                 :hankittavat-yhteiset-tutkinnon-osat pyto-data
-                 :hankittavat-ammat-tutkinnon-osat pao-data
-                 :opiskeluvalmiuksia-tukevat-opinnot oto-data})
+                :oppija-oid "1.2.246.562.24.12312312312"
+                :ensikertainen-hyvaksyminen
+                (java.time.LocalDate/of 2019 3 18)
+                :osaamisen-hankkimisen-tarve false
+                :sahkoposti "erkki.esimerkki@esimerkki.com"
+                :aiemmin-hankitut-yhteiset-tutkinnon-osat ooyto-data
+                :hankittavat-paikalliset-tutkinnon-osat ppto-data
+                :aiemmin-hankitut-paikalliset-tutkinnon-osat oopto-data
+                :aiemmin-hankitut-ammat-tutkinnon-osat ooato-data
+                :hankittavat-yhteiset-tutkinnon-osat pyto-data
+                :hankittavat-ammat-tutkinnon-osat pao-data
+                :opiskeluvalmiuksia-tukevat-opinnot oto-data})
 
 (deftest get-aiemmin-hankitut-ammat-tutkinnon-osat-test
   (testing "Set HOKS aiemmin hankitut tutkinnon osat"

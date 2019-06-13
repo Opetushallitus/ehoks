@@ -427,7 +427,7 @@
   (let [stored-osa-alue
         (db/insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue!
           (assoc osa-alue :aiemmin-hankittu-yhteinen-tutkinnon-osa-id
-                          ahyto-id))]
+                 ahyto-id))]
     (mapv
       (fn [naytto]
         (let [stored-naytto (save-osaamisen-osoittaminen! naytto)]
