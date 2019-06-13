@@ -370,6 +370,8 @@
 (def routes
   (c-api/context "/hoks" []
     :tags ["hoks"]
+    :header-params [ticket :- s/Str
+                    caller-id :- s/Str]
 
     (route-middleware
       [wrap-user-details wrap-require-service-user wrap-audit-logger]
