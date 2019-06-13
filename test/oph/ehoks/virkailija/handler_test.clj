@@ -246,7 +246,9 @@
               (mock/json-body
                 (mock/request
                   :post
-                  (str base-url "/virkailija/hoksit"))
+                  (str
+                    base-url
+                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
                 {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                  :oppija-oid "1.2.246.562.24.44000000001"
                  :ensikertainen-hyvaksyminen "2018-12-15"
@@ -267,7 +269,10 @@
             (with-test-virkailija
               (mock/request
                 :get
-                (str base-url "/virkailija/hoksit/" (:id hoks-db)))
+                (str
+                  base-url
+                  "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit/"
+                  (:id hoks-db)))
               {:name "Testivirkailija"
                :kayttajaTyyppi "VIRKAILIJA"
                :organisation-privileges
@@ -290,7 +295,9 @@
               (mock/json-body
                 (mock/request
                   :post
-                  (str base-url "/virkailija/hoksit"))
+                  (str
+                    base-url
+                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
                 {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                  :oppija-oid "1.2.246.562.24.44000000001"
                  :ensikertainen-hyvaksyminen "2018-12-15"

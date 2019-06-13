@@ -34,10 +34,10 @@
   (GET "/dev-routes/*" [:as request]
     (let [filename (uri-to-filename (:uri request))
           file (find-dev-route-file filename)]
-      (log/debug
-        (format "Route %s searching for file resources/dev/dev-routes/%s"
-                (:uri request)
-                filename))
+      (log/debugf
+        "Route %s searching for file resources/dev/dev-routes/%s"
+        (:uri request)
+        filename)
       (assoc-in
         (if (some? file)
           (ok (slurp file))

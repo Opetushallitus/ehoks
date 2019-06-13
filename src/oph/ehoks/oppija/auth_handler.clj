@@ -76,7 +76,7 @@
       (let [headers (:headers request)]
         (if-let [result (opintopolku/validate headers)]
           (do
-            (log/error "Invalid headers: " result)
+            (log/errorf "Invalid headers: %s" result)
             (response/bad-request))
           (let [user (opintopolku/parse headers)]
             (assoc-in (response/see-other

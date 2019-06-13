@@ -3,7 +3,6 @@
             [clojure.edn :as edn]
             [oph.ehoks.schema :as schema]
             [schema.core :as s]
-            [clojure.tools.logging :as log]
             [environ.core :refer [env]]))
 
 (def ^:private default-file "oph-configuration/default.edn")
@@ -15,8 +14,6 @@
 (defn load-combined-config [custom-file]
   (let [default-config (load-config default-file)
         custom-config (if (seq custom-file) (load-config custom-file) {})]
-    (when (seq custom-file)
-      (log/info "Loading custom config file: " custom-file))
     (s/validate
       schema/Config
       (merge default-config custom-config))))

@@ -23,8 +23,8 @@
               (response/ok)
               [:session :virkailija-user]
               (merge ticket-user (user/get-auth-info ticket-user))))
-          (do (log/info {:message "Invalid ticket"
-                         :error (:error validation-data)})
+          (do (log/warnf "Ticket validation failed: %s"
+                         (:error validation-data))
               (response/unauthorized {:error "Invalid ticket"})))))
 
     (c-api/DELETE "/" []
