@@ -10,8 +10,8 @@
 
 (def routes
   (c-api/context "/session" []
-    (c-api/GET "/" []
-      :summary "Virkailijan istunnon luonti"
+    (c-api/GET "/opintopolku" []
+      :summary "Virkailijan Opintopolku-kirjautumisen endpoint"
       :query-params [ticket :- s/Str]
       (let [validation-data (cas/validate-ticket
                               (u/get-url "ehoks.virkailija-login-return")
