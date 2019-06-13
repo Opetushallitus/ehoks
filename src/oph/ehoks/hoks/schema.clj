@@ -700,7 +700,7 @@
    {:methods {:any :optional}
     :types {:any [HankittavaPaikallinenTutkinnonOsa]}
     :description "Hankittavat paikallisen tutkinnon osat"}
-   :osaamisen-hankkimisen-tarve {:methods {:patch :optional}
+   :osaamisen-hankkimisen-tarve {:methods {:any :optional}
                                  :types {:any s/Bool}
                                  :description
                                  "Tutkintokoulutuksen ja muun tarvittavan

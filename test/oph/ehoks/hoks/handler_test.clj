@@ -931,8 +931,7 @@
     (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"
-                     :osaamisen-hankkimisen-tarve false}
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (utils/with-service-ticket
             (create-app nil)
