@@ -518,7 +518,7 @@
   AiemminHankitunPaikallisenTutkinnonOsanPaivitys
   (modify
     AiemminHankittuPaikallinenTutkinnonOsa
-    (str "Olemassa olevan paikallisen tutkinnon osan tiedot "
+    (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot "
          "kenttää tai kenttiä päivitettäessä (PATCH)")
     {:optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri
@@ -581,9 +581,21 @@
   AiemminHankitunYhteisenTutkinnonOsanLuonti
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
-    (str "Olemassa olevan yhteisen tutkinnon osan tiedot uutta "
+    (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST)")
     {:removed [:id]}))
+
+(s/defschema
+  AiemminHankitunYhteisenTutkinnonOsanPaivitys
+  (modify
+    AiemminHankittuYhteinenTutkinnonOsa
+    (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot "
+         "kenttää tai kenttiä päivitettäessä (PATCH)")
+    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+                 :valittu-todentamisen-prosessi-koodi-uri
+                 :tutkinnon-osa-koodi-versio
+                 :tutkinnon-osa-koodi-uri
+                 :osa-alueet]}))
 
 (s/defschema
   AiemminHankittuAmmatillinenTutkinnonOsa
@@ -603,7 +615,7 @@
   AiemminHankitunAmmatillisenTutkinnonOsanLuonti
   (modify
     AiemminHankittuAmmatillinenTutkinnonOsa
-    (str "Olemassa olevan ammatillisen tutkinnon osan tiedot uutta "
+    (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST)")
     {:removed [:id]}))
 
@@ -611,7 +623,7 @@
   AiemminHankitunAmmatillisenTutkinnonOsanPaivitys
   (modify
     AiemminHankittuAmmatillinenTutkinnonOsa
-    (str "Olemassa olevan ammatillisen tutkinnon osan tiedot "
+    (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot "
          "kenttää tai kenttiä päivittäessä (PATCH)")
     {:optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri

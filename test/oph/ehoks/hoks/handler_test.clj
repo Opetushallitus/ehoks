@@ -341,7 +341,7 @@
                      :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
         (is (= (:status response) 204))))))
 
-(defn- assert-post-response [post-path post-response]
+(defn- assert-post-response-is-ok [post-path post-response]
   (is (= (:status post-response) 200))
   (eq (utils/parse-body (:body post-response))
       {:meta {:id 1}
@@ -373,14 +373,23 @@
           post-response (create-mock-post-request
                           osa-path osa-data app hoks)
           get-response (create-mock-get-request osa-path app hoks)]
-      (assert-post-response osa-path post-response)
+      (assert-post-response-is-ok osa-path post-response)
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
             (:body get-response))
           {:meta {} :data (assoc osa-data :id 1)}))))
 
-(def ooato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
-(def ooato-data
+(defn- compare-tarkentavat-tiedot-naytto-values
+  [updated original selector-function]
+  (let [ttn-after-update
+        (selector-function (:tarkentavat-tiedot-naytto updated))
+        ttn-patch-values
+        (assoc (selector-function (:tarkentavat-tiedot-naytto original))
+               :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
+    (eq ttn-after-update ttn-patch-values)))
+
+(def ahato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
+(def ahato-data
   {:valittu-todentamisen-prosessi-koodi-versio 3
    :tutkinnon-osa-koodi-versio 100022
    :valittu-todentamisen-prosessi-koodi-uri "osaamisentodentamisenprosessi_3"
@@ -414,10 +423,10 @@
      :loppu "2019-01-12"}]})
 
 (deftest post-and-get-aiemmin-hankitut-ammatilliset-tutkinnon-osat
-  (testing "POST ooato and then get the created ooato"
-    (test-post-and-get-of-aiemmin-hankittu-osa ooato-path ooato-data)))
+  (testing "POST ahato and then get the created ahato"
+    (test-post-and-get-of-aiemmin-hankittu-osa ahato-path ahato-data)))
 
-(def ^:private multiple-ooato-values-patched
+(def ^:private multiple-ahato-values-patched
   {:tutkinnon-osa-koodi-versio 3000
    :tarkentavat-tiedot-osaamisen-arvioija
    {:lahetetty-arvioitavaksi "2020-01-01"
@@ -436,34 +445,30 @@
                        :kuvaus "Testiyrityksen testiosasostalla"}
      :sisallon-kuvaus ["Tutkimustyö"
                        "Raportointi"]
+     :yksilolliset-kriteerit ["testikriteeri"]
      :alku "2019-02-09"
      :loppu "2019-01-12"}]})
 
-(defn- assert-ooato-data-is-patched-correctly [updated-data old-data]
+(defn- assert-ahato-data-is-patched-correctly [updated-data old-data]
   (is (= (:tutkinnon-osa-koodi-versio updated-data) 3000))
   (is (= (:valittu-todentamisen-prosessi-koodi-versio updated-data)
          (:valittu-todentamisen-prosessi-koodi-versio old-data)))
   (is (= (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
          (:tarkentavat-tiedot-osaamisen-arvioija
-           multiple-ooato-values-patched)))
-  (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
-        ttn-patch-values
-        (assoc (first (:tarkentavat-tiedot-naytto
-                        multiple-ooato-values-patched))
-               :osa-alueet [] :tyoelama-osaamisen-arvioijat []
-               :yksilolliset-kriteerit [])]
-    (is (= ttn-after-update ttn-patch-values))))
+           multiple-ahato-values-patched)))
+  (compare-tarkentavat-tiedot-naytto-values
+    updated-data multiple-ahato-values-patched first))
 
-(deftest patch-multiple-aiemmin-hankitut-ammat-tutkinnon-osat
-  (testing "Patching multiple values of ooato"
+(deftest patch-aiemmin-hankitut-ammat-tutkinnon-osat
+  (testing "Patching multiple values of ahato"
     (test-patch-of-aiemmin-hankittu-osa
-      ooato-path
-      ooato-data
-      multiple-ooato-values-patched
-      assert-ooato-data-is-patched-correctly)))
+      ahato-path
+      ahato-data
+      multiple-ahato-values-patched
+      assert-ahato-data-is-patched-correctly)))
 
-(def oopto-path "aiemmin-hankittu-paikallinen-tutkinnon-osa")
-(def oopto-data
+(def ahpto-path "aiemmin-hankittu-paikallinen-tutkinnon-osa")
+(def ahpto-data
   {:valittu-todentamisen-prosessi-koodi-versio 2
    :laajuus 30
    :nimi "Testiopintojakso"
@@ -504,9 +509,9 @@
 
 (deftest post-and-get-aiemmin-hankitut-paikalliset-tutkinnon-osat
   (testing "POST oopto and then get the created oopto"
-    (test-post-and-get-of-aiemmin-hankittu-osa oopto-path oopto-data)))
+    (test-post-and-get-of-aiemmin-hankittu-osa ahpto-path ahpto-data)))
 
-(def ^:private multiple-oopto-values-patched
+(def ^:private multiple-ahpto-values-patched
   {:tavoitteet-ja-sisallot "Muutettu tavoite."
    :tarkentavat-tiedot-osaamisen-arvioija
    {:lahetetty-arvioitavaksi "2020-01-01"
@@ -530,30 +535,26 @@
      :osa-alueet []
      :tyoelama-osaamisen-arvioijat []}]})
 
-(defn- assert-oopto-data-is-patched-correctly [updated-data old-data]
+(defn- assert-ahpto-data-is-patched-correctly [updated-data old-data]
   (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite."))
   (is (= (:nimi updated-data) (:nimi old-data)))
   (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
-      (:tarkentavat-tiedot-osaamisen-arvioija multiple-oopto-values-patched))
+      (:tarkentavat-tiedot-osaamisen-arvioija multiple-ahpto-values-patched))
   (eq (first (:tarkentavat-tiedot-naytto updated-data))
-      (first (:tarkentavat-tiedot-naytto multiple-oopto-values-patched)))
-  (let [ttn-after-update (first (:tarkentavat-tiedot-naytto updated-data))
-        ttn-patch-values
-        (assoc (first (:tarkentavat-tiedot-naytto
-                        multiple-oopto-values-patched))
-               :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
-    (eq ttn-after-update ttn-patch-values)))
+      (first (:tarkentavat-tiedot-naytto multiple-ahpto-values-patched)))
+  (compare-tarkentavat-tiedot-naytto-values
+    updated-data multiple-ahpto-values-patched first))
 
 (deftest patch-aiemmin-hankittu-paikalliset-tutkinnon-osat
-  (testing "Patching multple values of oopto"
+  (testing "Patching multiple values of ahpto"
     (test-patch-of-aiemmin-hankittu-osa
-      oopto-path
-      oopto-data
-      multiple-oopto-values-patched
-      assert-oopto-data-is-patched-correctly)))
+      ahpto-path
+      ahpto-data
+      multiple-ahpto-values-patched
+      assert-ahpto-data-is-patched-correctly)))
 
-(def ooyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
-(def ooyto-data
+(def ahyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
+(def ahyto-data
   {:valittu-todentamisen-prosessi-koodi-uri
    "osaamisentodentamisenprosessi_0001"
    :valittu-todentamisen-prosessi-koodi-versio 3
@@ -593,9 +594,9 @@
        [{:nimi "Tellervo Työntekijä"
          :organisaatio {:nimi "Ab Yhtiö Oy"
                         :y-tunnus "1234128-1"}}]
+       :yksilolliset-kriteerit ["Joku kriteeri"]
        :alku "2019-01-04"
-       :loppu "2019-03-01"
-       :yksilolliset-kriteerit []}]}]
+       :loppu "2019-03-01"}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590901"
    :tarkentavat-tiedot-naytto
    [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ma"
@@ -615,13 +616,98 @@
                       :y-tunnus "1289235-2"}}]
      :sisallon-kuvaus ["Testauksen suunnittelu"
                        "Jokin toinen testi"]
-     :yksilolliset-kriteerit ["kriteeri 1"]
+     :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
      :alku "2019-03-01"
      :loppu "2019-06-01"}]})
 
 (deftest post-and-get-aiemmin-hankitut-yhteiset-tutkinnon-osat
-  (testing "POST ooyto and then get the created ooyto"
-    (test-post-and-get-of-aiemmin-hankittu-osa ooyto-path ooyto-data)))
+  (testing "POST ahyto and then get the created ahyto"
+    (test-post-and-get-of-aiemmin-hankittu-osa ahyto-path ahyto-data)))
+
+(def ^:private multiple-ahyto-values-patched
+  {:valittu-todentamisen-prosessi-koodi-uri
+   "osaamisentodentamisenprosessi_2000"
+
+   :tarkentavat-tiedot-osaamisen-arvioija
+   {:lahetetty-arvioitavaksi "2020-04-01"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Muutettu Arvioija"
+      :organisaatio {:oppilaitos-oid
+                     "1.2.246.562.10.54453932222"}}
+     {:nimi "Toinen Arvioija"
+      :organisaatio {:oppilaitos-oid
+                     "1.2.246.562.10.54453933333"}}]}
+
+   :osa-alueet
+   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
+     :osa-alue-koodi-versio 4
+     :valittu-todentamisen-prosessi-koodi-uri
+     "osaamisentodentamisenprosessi_0003"
+     :valittu-todentamisen-prosessi-koodi-versio 4
+     :tarkentavat-tiedot-naytto
+     [{:sisallon-kuvaus ["kuvaus1"]
+       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
+                     :koodi-versio 5}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Teppo Testaaja2"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.54539267000"}}]
+       :jarjestaja {:oppilaitos-oid
+                    "1.2.246.562.10.55890967000"}
+
+       :nayttoymparisto {:nimi "Ab Betoni Oy"
+                         :y-tunnus "1234128-1"
+                         :kuvaus "Testi"}
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Tellervo Työntekijä"
+         :organisaatio {:nimi "Ab Betoni Oy"
+                        :y-tunnus "1234128-1"}}]
+       :yksilolliset-kriteerit ["testi"]
+       :alku "2029-01-04"
+       :loppu "2030-03-01"}]}]
+
+   :tarkentavat-tiedot-naytto
+   [{:nayttoymparisto {:nimi "Testi Oy"
+                       :y-tunnus "1289235-2"
+                       :kuvaus "Testiyhtiö"}
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
+     [{:nimi "Joku Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911333"}}]
+     :sisallon-kuvaus ["Testauksen suunnittelu"
+                       "Jokin toinen testi"]
+     :yksilolliset-kriteerit ["kriteeri"]
+     :alku "2015-03-31"
+     :loppu "2021-06-01"}
+    {:nayttoymparisto {:nimi "Toka Oy"}
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
+     [{:nimi "Joku Toinen Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911555"}}]
+     :sisallon-kuvaus ["Jotakin sisaltoa"]
+     :yksilolliset-kriteerit ["testi" "toinen"]
+     :alku "2014-05-05"
+     :loppu "2022-09-12"}]})
+
+(defn- assert-ahyto-is-patched-correctly [updated-data initial-data]
+  (is (= (:valittu-todentamisen-prosessi-koodi-uri updated-data)
+         "osaamisentodentamisenprosessi_2000"))
+  (is (= (:tutkinnon-osa-koodi-versio updated-data)
+         (:tutkinnon-osa-koodi-versio initial-data)))
+  (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
+      (:tarkentavat-tiedot-osaamisen-arvioija multiple-ahyto-values-patched))
+  (compare-tarkentavat-tiedot-naytto-values
+    updated-data multiple-ahyto-values-patched first)
+  (compare-tarkentavat-tiedot-naytto-values
+    updated-data multiple-ahyto-values-patched second)
+  (eq (:osa-alueet updated-data)
+      (:osa-alueet multiple-ahyto-values-patched)))
+
+(deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa
+  (testing "Patching values of ahyto"
+    (test-patch-of-aiemmin-hankittu-osa
+      ahyto-path
+      ahyto-data
+      multiple-ahyto-values-patched
+      assert-ahyto-is-patched-correctly)))
 
 (def pyto-path "hankittava-yhteinen-tutkinnon-osa")
 
