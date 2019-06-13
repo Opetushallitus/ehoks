@@ -594,6 +594,7 @@
        [{:nimi "Tellervo Työntekijä"
          :organisaatio {:nimi "Ab Yhtiö Oy"
                         :y-tunnus "1234128-1"}}]
+       :yksilolliset-kriteerit ["Joku kriteeri"]
        :alku "2019-01-04"
        :loppu "2019-03-01"}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590901"
@@ -615,6 +616,7 @@
                       :y-tunnus "1289235-2"}}]
      :sisallon-kuvaus ["Testauksen suunnittelu"
                        "Jokin toinen testi"]
+     :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
      :alku "2019-03-01"
      :loppu "2019-06-01"}]})
 
