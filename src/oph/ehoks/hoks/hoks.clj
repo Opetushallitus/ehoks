@@ -423,16 +423,21 @@
        n)
     new-values))
 
-(defn save-ahyto-osa-alueet! [yto-id osa-alueet]
+(defn- save-ahyto-osa-alue! [ahyto-id osa-alue]
+  (let [stored-osa-alue
+        (db/insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue!
+          (assoc osa-alue :aiemmin-hankittu-yhteinen-tutkinnon-osa-id
+                          ahyto-id))]
+    (mapv
+      (fn [naytto]
+        (let [stored-naytto (save-osaamisen-osoittaminen! naytto)]
+          (db/insert-ooyto-osa-alue-osaamisen-osoittaminen!
+            (:id stored-osa-alue) (:id stored-naytto))))
+      (:tarkentavat-tiedot-naytto osa-alue))))
+
+(defn save-ahyto-osa-alueet! [ahyto-id osa-alueet]
   (mapv
-    #(let [o (db/insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue!
-               (assoc % :aiemmin-hankittu-yhteinen-tutkinnon-osa-id yto-id))]
-       (mapv
-         (fn [naytto]
-           (let [n (save-osaamisen-osoittaminen! naytto)]
-             (db/insert-ooyto-osa-alue-osaamisen-osoittaminen!
-               (:id o) (:id n))))
-         (:tarkentavat-tiedot-naytto %)))
+    #(save-ahyto-osa-alue! ahyto-id %)
     osa-alueet))
 
 (defn save-aiemmin-hankittu-yhteinen-tutkinnon-osa! [hoks-id ooyto]
