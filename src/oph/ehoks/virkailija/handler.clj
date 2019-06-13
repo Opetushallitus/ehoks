@@ -303,7 +303,8 @@
     (c-api/undocumented
       (c-api/GET "/buildversion.txt" []
         (response/content-type
-          (response/resource-response "buildversion.txt") "text/plain")))))
+          (response/resource-response "buildversion.txt") "text/plain"))
+      (resources/create-routes "/json-viewer" "json-viewer"))))
 
 (def app-routes
   (c-api/api
@@ -323,5 +324,4 @@
       routes
       (c-api/undocumented
         (compojure-route/not-found
-          (response/not-found {:reason "Route not found"}))
-        (resources/create-routes "/json-viewer" "json-viewer")))))
+          (response/not-found {:reason "Route not found"}))))))
