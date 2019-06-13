@@ -1,11 +1,13 @@
 (ns oph.ehoks.virkailija.auth-test
-  (:require [oph.ehoks.virkailija.auth :as sut]
-            [clojure.test :as t]
+  (:require [clojure.test :as t]
             [ring.mock.request :as mock]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.virkailija.handler :as handler]
-            [oph.ehoks.common.api :as common-api]))
+            [oph.ehoks.common.api :as common-api]
+            [oph.ehoks.utils :refer [parse-body]]))
+
+(def session-url "/ehoks-virkailija-backend/api/v1/virkailija/session")
 
 (defn create-app [session-store]
   (common-api/create-app handler/app-routes session-store))
@@ -51,20 +53,25 @@
   {:status 201
    :headers {"location" "http://test.ticket/1234"}})
 
-(t/deftest create-ticket-session-test
-  (t/testing "Creating session with service ticket"
-    (client/set-get! ticket-response)
-    (client/set-post! create-ticket-response)
-    (let [store (atom {})
-          app (create-app (test-session-store store))
-          response
-          (app
-            (mock/request
-              :get
-              (str
-                "/ehoks-virkailija-backend/api/v1/virkailija/session"
-                "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
-      (t/is (= (:status response) 200)))))
+(defn with-ticket-session [app request ticket]
+  (client/set-get! ticket-response)
+  (client/set-post! create-ticket-response)
+  (let [auth-response
+        (app
+          (mock/request
+            :get
+            (format
+              "%s/opintopolku?ticket=%s"
+              session-url
+              ticket)))
+        response
+        (app
+          (mock/header
+            request
+            :cookie
+            (first (get-in auth-response [:headers "Set-Cookie"]))))]
+    (client/reset-functions!)
+    response))
 
 (t/deftest invalid-ticket-session-test
   (t/testing "Creating session with invalid service ticket"
@@ -77,6 +84,23 @@
             (mock/request
               :get
               (str
-                "/ehoks-virkailija-backend/api/v1/virkailija/session"
+                session-url
+                "/opintopolku"
                 "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
       (t/is (= (:status response) 401)))))
+
+(t/deftest get-session-test
+  (t/testing "Get virkailija session"
+    (let [response (with-ticket-session
+                     (create-app (test-session-store (atom {})))
+                     (mock/request :get session-url)
+                     "ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")]
+      (t/is (= (:status response) 200))
+      (t/is (= (parse-body (:body response))
+               {:meta {}
+                :data
+                {:oidHenkilo "1.2.246.562.24.11474338833"
+                 :organisation-privileges
+                 [{:oid "1.2.246.562.10.12944436166"
+                   :privileges ["read" "update" "delete" "write"]
+                   :roles []}]}})))))

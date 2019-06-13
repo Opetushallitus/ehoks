@@ -1,6 +1,7 @@
 (ns oph.ehoks.ehoks-app
   (:require [oph.ehoks.common.api :as common-api]
             [compojure.api.sweet :as c-api]
+            [compojure.api.core :refer [route-middleware]]
             [compojure.route :as compojure-route]
             [ring.util.http-response :as response]
             [oph.ehoks.redis :refer [redis-store]]
@@ -8,7 +9,8 @@
             [oph.ehoks.virkailija.handler :as virkailija-handler]
             [oph.ehoks.config :refer [config]]
             [clojure.string :refer [lower-case]]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]))
 
 (def both-app
   (c-api/api
@@ -20,12 +22,14 @@
              :tags [{:name "api", :description ""}]}}
      :exceptions
      {:handlers common-api/handlers}}
-    oppija-handler/routes
-    virkailija-handler/routes
+    (route-middleware
+      [wrap-access-logger]
+      oppija-handler/routes
+      virkailija-handler/routes
 
-    (c-api/undocumented
-      (compojure-route/not-found
-        (response/not-found {:reason "Route not found"})))))
+      (c-api/undocumented
+        (compojure-route/not-found
+          (response/not-found {:reason "Route not found"}))))))
 
 (defn create-app [app-name]
   (common-api/create-app

@@ -20,7 +20,8 @@
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.validation.handler :as validation-handler]))
+            [oph.ehoks.validation.handler :as validation-handler]
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]))
 
 (def routes
   (c-api/context "/ehoks-oppija-backend" []
@@ -129,8 +130,9 @@
      :exceptions
      {:handlers common-api/handlers}}
 
-    routes
-
-    (c-api/undocumented
-      (compojure-route/not-found
-        (response/not-found {:reason "Route not found"})))))
+    (route-middleware
+      [wrap-access-logger]
+      routes
+      (c-api/undocumented
+        (compojure-route/not-found
+          (response/not-found {:reason "Route not found"}))))))
