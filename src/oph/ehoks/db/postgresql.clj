@@ -600,6 +600,11 @@
     :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
     ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
 
+(defn delete-aiemmin-hankitut-yto-osa-alueet-by-id! [id]
+  (shallow-delete!
+    :aiemmin_hankitut_yto_osa_alueet
+    ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
+
 (defn insert-hankittavan-ammat-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]
   (insert-one!

@@ -385,7 +385,6 @@
         (selector-function (:tarkentavat-tiedot-naytto updated))
         ttn-patch-values
         (assoc (selector-function (:tarkentavat-tiedot-naytto original))
-          :yksilolliset-kriteerit []
           :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
     (eq ttn-after-update ttn-patch-values)))
 
@@ -595,8 +594,7 @@
          :organisaatio {:nimi "Ab Yhtiö Oy"
                         :y-tunnus "1234128-1"}}]
        :alku "2019-01-04"
-       :loppu "2019-03-01"
-       :yksilolliset-kriteerit []}]}]
+       :loppu "2019-03-01"}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590901"
    :tarkentavat-tiedot-naytto
    [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ma"
@@ -616,7 +614,6 @@
                       :y-tunnus "1289235-2"}}]
      :sisallon-kuvaus ["Testauksen suunnittelu"
                        "Jokin toinen testi"]
-     :yksilolliset-kriteerit ["kriteeri 1"]
      :alku "2019-03-01"
      :loppu "2019-06-01"}]})
 
@@ -662,6 +659,7 @@
        [{:nimi "Tellervo Työntekijä"
          :organisaatio {:nimi "Ab Betoni Oy"
                         :y-tunnus "1234128-1"}}]
+       :yksilolliset-kriteerit ["testi"]
        :alku "2029-01-04"
        :loppu "2030-03-01"}]}]
 
@@ -674,6 +672,7 @@
        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911333"}}]
      :sisallon-kuvaus ["Testauksen suunnittelu"
                        "Jokin toinen testi"]
+     :yksilolliset-kriteerit ["kriteeri"]
      :alku "2015-03-31"
      :loppu "2021-06-01"}
     {:nayttoymparisto {:nimi "Toka Oy"}
@@ -681,14 +680,15 @@
      [{:nimi "Joku Toinen Arvioija"
        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911555"}}]
      :sisallon-kuvaus ["Jotakin sisaltoa"]
+     :yksilolliset-kriteerit ["testi" "toinen"]
      :alku "2014-05-05"
      :loppu "2022-09-12"}]})
 
-(defn- assert-ahyto-is-patched-correctly [updated-data old-data]
+(defn- assert-ahyto-is-patched-correctly [updated-data initial-data]
   (is (= (:valittu-todentamisen-prosessi-koodi-uri updated-data)
          "osaamisentodentamisenprosessi_2000"))
   (is (= (:tutkinnon-osa-koodi-versio updated-data)
-         (:tutkinnon-osa-koodi-versio old-data)))
+         (:tutkinnon-osa-koodi-versio initial-data)))
   (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
       (:tarkentavat-tiedot-osaamisen-arvioija multiple-ahyto-values-patched))
   (compare-tarkentavat-tiedot-naytto-values
@@ -696,8 +696,7 @@
   (compare-tarkentavat-tiedot-naytto-values
     updated-data multiple-ahyto-values-patched second)
   (eq (:osa-alueet updated-data)
-      (:osa-alueet multiple-ahyto-values-patched))
-  )
+      (:osa-alueet multiple-ahyto-values-patched)))
 
 
 (deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa

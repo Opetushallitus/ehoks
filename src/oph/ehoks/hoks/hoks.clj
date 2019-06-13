@@ -423,7 +423,7 @@
        n)
     new-values))
 
-(defn save-ooyto-osa-alueet! [yto-id osa-alueet]
+(defn save-ahyto-osa-alueet! [yto-id osa-alueet]
   (mapv
     #(let [o (db/insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue!
                (assoc % :aiemmin-hankittu-yhteinen-tutkinnon-osa-id yto-id))]
@@ -444,7 +444,7 @@
                      (:id (save-tarkentavat-tiedot-osaamisen-arvioija! tta))))]
     (save-ahyto-tarkentavat-tiedot-naytto! (:id yto)
                                            (:tarkentavat-tiedot-naytto ooyto))
-    (save-ooyto-osa-alueet! (:id yto) (:osa-alueet ooyto))
+    (save-ahyto-osa-alueet! (:id yto) (:osa-alueet ooyto))
     yto))
 
 (defn save-aiemmin-hankitut-yhteiset-tutkinnon-osat! [hoks c]
@@ -575,8 +575,11 @@
 
 (defn- replace-ahyto-tarkentavat-tiedot-naytto! [ahyto-id new-values]
   (db/delete-aiemmin-hankitun-yhteisen-tutkinnon-osan-naytto-by-id! ahyto-id)
-  (save-ahyto-tarkentavat-tiedot-naytto! ahyto-id new-values)
-  )
+  (save-ahyto-tarkentavat-tiedot-naytto! ahyto-id new-values))
+
+(defn- replace-ahyto-osa-alueet! [ahyto-id new-values]
+  (db/delete-aiemmin-hankitut-yto-osa-alueet-by-id! ahyto-id)
+  (save-ahyto-osa-alueet! ahyto-id new-values))
 
 (defn update-aiemmin-hankittu-yhteinen-tutkinnon-osa! [ahyto-from-db new-values]
   (db/update-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id!
@@ -586,7 +589,8 @@
       (:tarkentavat-tiedot-osaamisen-arvioija-id ahyto-from-db) new-ttoa))
   (when-let [new-ttn (:tarkentavat-tiedot-naytto new-values)]
     (replace-ahyto-tarkentavat-tiedot-naytto! (:id ahyto-from-db) new-ttn))
-  )
+  (when-let [new-oa (:osa-alueet new-values)]
+    (replace-ahyto-osa-alueet! (:id ahyto-from-db) new-oa)))
 
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
