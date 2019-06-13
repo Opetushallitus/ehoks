@@ -13,7 +13,6 @@
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.eperusteet :as eperusteet]
-            [oph.ehoks.resources :as resources]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.oppija.auth-handler :as auth-handler]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
@@ -116,8 +115,7 @@
     (c-api/undocumented
       (GET "/buildversion.txt" []
         (response/content-type
-          (response/resource-response "buildversion.txt") "text/plain"))
-      (resources/create-routes "/json-viewer" "json-viewer"))))
+          (response/resource-response "buildversion.txt") "text/plain")))))
 
 (def app-routes
   (c-api/api
