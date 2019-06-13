@@ -4,6 +4,7 @@
             [compojure.route :as compojure-route]
             [schema.core :as s]
             [ring.util.http-response :as response]
+            [oph.ehoks.resources :as resources]
             [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.common.api :as common-api]
@@ -322,4 +323,5 @@
       routes
       (c-api/undocumented
         (compojure-route/not-found
-          (response/not-found {:reason "Route not found"}))))))
+          (response/not-found {:reason "Route not found"}))
+        (resources/create-routes "/json-viewer" "json-viewer")))))
