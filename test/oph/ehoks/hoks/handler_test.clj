@@ -445,6 +445,7 @@
                        :kuvaus "Testiyrityksen testiosasostalla"}
      :sisallon-kuvaus ["Tutkimustyö"
                        "Raportointi"]
+     :yksilolliset-kriteerit ["testikriteeri"]
      :alku "2019-02-09"
      :loppu "2019-01-12"}]})
 
