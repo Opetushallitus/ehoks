@@ -293,7 +293,21 @@
                             (get-in request [:hoks :id]) ooyto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ooyto-from-db))}
-          :id (:id ooyto-from-db))))))
+          :id (:id ooyto-from-db))))
+
+    (c-api/PATCH "/:id" []
+      :summary (str "Päivittää HOKSin aiemmin hankitun yhteisen tutkinnon "
+                    "osan arvoa tai arvoja")
+      :path-params [id :- s/Int]
+      :body [values hoks-schema/AiemminHankitunYhteisenTutkinnonOsanPaivitys]
+      (if-let [ahyto-from-db
+               (pdb/select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id id)]
+        (do
+          (h/update-aiemmin-hankittu-yhteinen-tutkinnon-osa!
+            ahyto-from-db values)
+          (response/no-content))
+        (response/not-found
+          {:error "Aiemmin hankitun yhteinen tutkinnon osa not found"})))))
 
 (def ^:private hankittava-yhteinen-tutkinnon-osa
   (c-api/context "/:hoks-id/hankittava-yhteinen-tutkinnon-osa" [hoks-id]

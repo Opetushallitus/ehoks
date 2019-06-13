@@ -161,10 +161,10 @@
     {:aiemmin_hankittu_ammat_tutkinnon_osa_id ooato-id
      :osaamisen_osoittaminen_id (:id n)}))
 
-(defn insert-ooyto-osaamisen-osoittaminen! [ooyto n]
+(defn insert-ahyto-osaamisen-osoittaminen! [ahyto-id n]
   (insert-one!
     :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-    {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id (:id ooyto)
+    {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id ahyto-id
      :osaamisen_osoittaminen_id (:id n)}))
 
 (defn insert-koodisto-koodi! [m]
@@ -568,6 +568,12 @@
       new-ahpt
       ["id = ? AND deleted_at IS NULL" id])))
 
+(defn update-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id! [id new-values]
+  (update!
+    :aiemmin_hankitut_yhteiset_tutkinnon_osat
+    (h/aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql new-values)
+    ["id = ? AND deleted_at IS NULL" id]))
+
 (defn update-todennettu-arviointi-lisatiedot-by-id! [id new-values]
   (update!
     :todennettu_arviointi_lisatiedot
@@ -588,6 +594,16 @@
   (shallow-delete!
     :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
     ["aiemmin_hankittu_paikallinen_tutkinnon_osa_id = ?" id]))
+
+(defn delete-aiemmin-hankitun-yhteisen-tutkinnon-osan-naytto-by-id! [id]
+  (shallow-delete!
+    :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
+    ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
+
+(defn delete-aiemmin-hankitut-yto-osa-alueet-by-id! [id]
+  (shallow-delete!
+    :aiemmin_hankitut_yto_osa_alueet
+    ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
 
 (defn insert-hankittavan-ammat-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]
