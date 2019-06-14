@@ -688,7 +688,6 @@
       assert-ahyto-is-patched-correctly)))
 
 (def hyto-path "hankittava-yhteinen-tutkinnon-osa")
-
 (def hyto-data
   {:osa-alueet
    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"

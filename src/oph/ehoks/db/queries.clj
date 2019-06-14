@@ -133,7 +133,7 @@
      :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
-(def select-osaamisen-osoittamiset-by-ooyto-osa-alue-id
+(def select-osaamisen-osoittamiset-by-ahyto-osa-alue-id
   (generate-select-join
     {:table "osaamisen_osoittamiset"
      :join "aiemmin_hankitun_yto_osa_alueen_naytto"
@@ -169,7 +169,7 @@
      :column "hankittava_ammat_tutkinnon_osa_id"}))
 (defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id)
-(def select-osaamisen-hankkimistavat-by-pyto-osa-alue-id
+(def select-osaamisen-hankkimistavat-by-yto-osa-alue-id
   (generate-select-join
     {:table "osaamisen_hankkimistavat"
      :join "yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat"

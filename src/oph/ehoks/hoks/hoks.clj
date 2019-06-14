@@ -22,41 +22,41 @@
         (:id naytto)))
     :nayttoymparisto-id))
 
-(defn get-ooato-tarkentavat-tiedot-naytto [id]
+(defn get-ahato-tarkentavat-tiedot-naytto [id]
   (mapv
     #(dissoc
        (set-osaamisen-osoittaminen-values %)
        :id)
     (db/select-tarkentavat-tiedot-naytto-by-ooato-id id)))
 
-(defn get-tarkentavat-tiedot-osaamisen-arvioija [tta-id]
-  (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id tta-id)]
+(defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
+  (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]
     (dissoc
       (assoc
         tta
         :aiemmin-hankitun-osaamisen-arvioijat
-        (db/select-arvioijat-by-todennettu-arviointi-id tta-id))
+        (db/select-arvioijat-by-todennettu-arviointi-id ttoa-id))
       :id)))
 
-(defn- set-ooato-values [ooato]
+(defn- set-ahato-values [ahato]
   (dissoc
     (assoc
-      ooato
+      ahato
       :tarkentavat-tiedot-osaamisen-arvioija
       (get-tarkentavat-tiedot-osaamisen-arvioija
-        (:tarkentavat-tiedot-osaamisen-arvioija-id ooato))
+        (:tarkentavat-tiedot-osaamisen-arvioija-id ahato))
       :tarkentavat-tiedot-naytto
-      (get-ooato-tarkentavat-tiedot-naytto (:id ooato)))
+      (get-ahato-tarkentavat-tiedot-naytto (:id ahato)))
     :tarkentavat-tiedot-osaamisen-arvioija-id))
 
 (defn get-aiemmin-hankittu-ammat-tutkinnon-osa [id]
-  (when-let [ooato-from-db
+  (when-let [ahato-from-db
              (db/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id id)]
-    (set-ooato-values ooato-from-db)))
+    (set-ahato-values ahato-from-db)))
 
 (defn get-aiemmin-hankitut-ammat-tutkinnon-osat [hoks-id]
   (mapv
-    #(dissoc (set-ooato-values %) :id)
+    #(dissoc (set-ahato-values %) :id)
     (db/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-osaamisen-osoittaminen [id]
@@ -93,7 +93,7 @@
       :id)))
 
 (defn get-osaamisen-hankkimistavat [id]
-  (let [hankkimistavat (db/select-osaamisen-hankkimistavat-by-ppto-id id)]
+  (let [hankkimistavat (db/select-osaamisen-hankkimistavat-by-hpto-id id)]
     (mapv
       set-osaamisen-hankkimistapa-values
       hankkimistavat)))
@@ -118,99 +118,99 @@
        :id)
     (db/select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
-(defn- get-oopto-tarkentavat-tiedot-naytto [oopto-id]
+(defn- get-ahpto-tarkentavat-tiedot-naytto [ahpto-id]
   (mapv
     #(dissoc
        (set-osaamisen-osoittaminen-values %)
        :id)
-    (db/select-tarkentavat-tiedot-naytto-by-oopto-id oopto-id)))
+    (db/select-tarkentavat-tiedot-naytto-by-ahpto-id ahpto-id)))
 
-(defn- set-oopto-values [oopto]
+(defn- set-ahpto-values [ahpto]
   (dissoc
     (assoc
-      oopto
+      ahpto
       :tarkentavat-tiedot-osaamisen-arvioija
       (get-tarkentavat-tiedot-osaamisen-arvioija
-        (:tarkentavat-tiedot-osaamisen-arvioija-id oopto))
+        (:tarkentavat-tiedot-osaamisen-arvioija-id ahpto))
       :tarkentavat-tiedot-naytto
-      (get-oopto-tarkentavat-tiedot-naytto (:id oopto)))
+      (get-ahpto-tarkentavat-tiedot-naytto (:id ahpto)))
     :tarkentavat-tiedot-osaamisen-arvioija-id))
 
 (defn get-aiemmin-hankittu-paikallinen-tutkinnon-osa [id]
-  (when-let [oopto-from-db
+  (when-let [ahpto-from-db
              (db/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id id)]
-    (set-oopto-values oopto-from-db)))
+    (set-ahpto-values ahpto-from-db)))
 
 (defn get-aiemmin-hankitut-paikalliset-tutkinnon-osat [hoks-id]
   (mapv
-    #(dissoc (set-oopto-values %) :id)
+    #(dissoc (set-ahpto-values %) :id)
     (db/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
-(defn get-ooyto-osa-alue-tarkentavat-tiedot [id]
+(defn get-ahyto-osa-alue-tarkentavat-tiedot [id]
   (mapv
     #(dissoc (set-osaamisen-osoittaminen-values %) :id)
-    (db/select-tarkentavat-tiedot-naytto-by-ooyto-osa-alue-id id)))
+    (db/select-tarkentavat-tiedot-naytto-by-ahyto-osa-alue-id id)))
 
-(defn get-ooyto-osa-alueet [id]
+(defn get-ahyto-osa-alueet [id]
   (mapv
     #(dissoc
        (assoc
          %
          :tarkentavat-tiedot-naytto
-         (get-ooyto-osa-alue-tarkentavat-tiedot (:id %)))
+         (get-ahyto-osa-alue-tarkentavat-tiedot (:id %)))
        :id)
-    (db/select-osa-alueet-by-ooyto-id id)))
+    (db/select-osa-alueet-by-ahyto-id id)))
 
-(defn get-ooyto-tarkentavat-tiedot-naytto [ooyto-id]
+(defn get-ahyto-tarkentavat-tiedot-naytto [ahyto-id]
   (mapv
     #(dissoc
        (set-osaamisen-osoittaminen-values %)
        :id)
-    (db/select-tarkentavat-tiedot-naytto-by-ooyto-id ooyto-id)))
+    (db/select-tarkentavat-tiedot-naytto-by-ahyto-id ahyto-id)))
 
-(defn- set-ooyto-values [ooyto]
+(defn- set-ahyto-values [ahyto]
   (dissoc
     (assoc
-      ooyto
+      ahyto
       :osa-alueet
-      (get-ooyto-osa-alueet (:id ooyto))
+      (get-ahyto-osa-alueet (:id ahyto))
       :tarkentavat-tiedot-osaamisen-arvioija
       (get-tarkentavat-tiedot-osaamisen-arvioija
-        (:tarkentavat-tiedot-osaamisen-arvioija-id ooyto))
+        (:tarkentavat-tiedot-osaamisen-arvioija-id ahyto))
       :tarkentavat-tiedot-naytto
-      (get-ooyto-tarkentavat-tiedot-naytto (:id ooyto)))
+      (get-ahyto-tarkentavat-tiedot-naytto (:id ahyto)))
     :tarkentavat-tiedot-osaamisen-arvioija-id))
 
 (defn get-aiemmin-hankittu-yhteinen-tutkinnon-osa [id]
-  (when-let [ooyto-from-db
+  (when-let [ahyto-from-db
              (db/select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id id)]
-    (set-ooyto-values ooyto-from-db)))
+    (set-ahyto-values ahyto-from-db)))
 
 (defn get-aiemmin-hankitut-yhteiset-tutkinnon-osat [hoks-id]
   (mapv
-    #(dissoc (set-ooyto-values %) :id)
+    #(dissoc (set-ahyto-values %) :id)
     (db/select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
 
-(defn get-pato-osaamisen-hankkimistavat [id]
+(defn get-hato-osaamisen-hankkimistavat [id]
   (mapv
     set-osaamisen-hankkimistapa-values
-    (db/select-osaamisen-hankkimistavat-by-pato-id id)))
+    (db/select-osaamisen-hankkimistavat-by-hato-id id)))
 
-(defn get-pato-osaamisen-osoittaminen [id]
+(defn get-hato-osaamisen-osoittaminen [id]
   (mapv
     #(dissoc
        (set-osaamisen-osoittaminen-values %)
        :id)
-    (db/select-osaamisen-osoittamiset-by-pato-id id)))
+    (db/select-osaamisen-osoittamiset-by-hato-id id)))
 
 (defn get-hankittava-ammat-tutkinnon-osa [id]
-  (when-let [pato-db (db/select-hankittava-ammat-tutkinnon-osa-by-id id)]
+  (when-let [hato-db (db/select-hankittava-ammat-tutkinnon-osa-by-id id)]
     (assoc
-      pato-db
+      hato-db
       :osaamisen-osoittaminen
-      (get-pato-osaamisen-osoittaminen id)
+      (get-hato-osaamisen-osoittaminen id)
       :osaamisen-hankkimistavat
-      (get-pato-osaamisen-hankkimistavat id))))
+      (get-hato-osaamisen-hankkimistavat id))))
 
 (defn get-hankittavat-ammat-tutkinnon-osat [hoks-id]
   (mapv
@@ -218,9 +218,9 @@
        (assoc
          %
          :osaamisen-osoittaminen
-         (get-pato-osaamisen-osoittaminen (:id %))
+         (get-hato-osaamisen-osoittaminen (:id %))
          :osaamisen-hankkimistavat
-         (get-pato-osaamisen-hankkimistavat (:id %)))
+         (get-hato-osaamisen-hankkimistavat (:id %)))
        :id)
     (db/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id hoks-id)))
 
@@ -230,7 +230,7 @@
 (defn get-yto-osa-alue-osaamisen-hankkimistavat [id]
   (mapv
     set-osaamisen-hankkimistapa-values
-    (db/select-osaamisen-hankkimistavat-by-pyto-osa-alue-id id)))
+    (db/select-osaamisen-hankkimistavat-by-hyto-osa-alue-id id)))
 
 (defn get-yto-osa-alueen-osaamisen-osoittamiset [id]
   (mapv
@@ -293,18 +293,18 @@
       o-db (:muut-oppimisymparistot oh))
     o-db))
 
-(defn save-ppto-osaamisen-hankkimistapa! [ppto oh]
+(defn save-hpto-osaamisen-hankkimistapa! [hpto oh]
   (let [o-db (save-osaamisen-hankkimistapa! oh)]
     (db/insert-hankittavan-paikallisen-tutkinnon-osan-osaamisen-hankkimistapa!
-      ppto o-db)
+      hpto o-db)
     o-db))
 
-(defn save-ppto-osaamisen-hankkimistavat! [ppto c]
-  (mapv #(save-ppto-osaamisen-hankkimistapa! ppto %) c))
+(defn save-hpto-osaamisen-hankkimistavat! [hpto c]
+  (mapv #(save-hpto-osaamisen-hankkimistapa! hpto %) c))
 
-(defn replace-ppto-osaamisen-hankkimistavat! [ppto c]
-  (db/delete-osaamisen-hankkimistavat-by-ppto-id! (:id ppto))
-  (save-ppto-osaamisen-hankkimistavat! ppto c))
+(defn replace-hpto-osaamisen-hankkimistavat! [hpto c]
+  (db/delete-osaamisen-hankkimistavat-by-hpto-id! (:id hpto))
+  (save-hpto-osaamisen-hankkimistavat! hpto c))
 
 (defn save-osaamisen-osoittamisen-tyoelama-osaamisen-arvioijat!
   [naytto arvioijat]
@@ -338,51 +338,51 @@
       naytto (:osa-alueet n))
     naytto))
 
-(defn save-ppto-osaamisen-osoittaminen! [ppto n]
+(defn save-hpto-osaamisen-osoittaminen! [hpto n]
   (let [naytto (save-osaamisen-osoittaminen! n)]
-    (db/insert-ppto-osaamisen-osoittaminen! ppto naytto)
+    (db/insert-hpto-osaamisen-osoittaminen! hpto naytto)
     naytto))
 
-(defn save-ppto-osaamisen-osoittamiset! [ppto c]
+(defn save-hpto-osaamisen-osoittamiset! [ppto c]
   (mapv
-    #(save-ppto-osaamisen-osoittaminen! ppto %)
+    #(save-hpto-osaamisen-osoittaminen! ppto %)
     c))
 
-(defn replace-ppto-osaamisen-osoittamiset! [ppto c]
-  (db/delete-osaamisen-osoittamiset-by-ppto-id! (:id ppto))
-  (save-ppto-osaamisen-osoittamiset! ppto c))
+(defn replace-hpto-osaamisen-osoittamiset! [hpto c]
+  (db/delete-osaamisen-osoittamiset-by-ppto-id! (:id hpto))
+  (save-hpto-osaamisen-osoittamiset! hpto c))
 
-(defn update-hankittava-paikallinen-tutkinnon-osa! [ppto-db values]
-  (db/update-hankittava-paikallinen-tutkinnon-osa-by-id! (:id ppto-db) values)
-  (cond-> ppto-db
+(defn update-hankittava-paikallinen-tutkinnon-osa! [hpto-db values]
+  (db/update-hankittava-paikallinen-tutkinnon-osa-by-id! (:id hpto-db) values)
+  (cond-> hpto-db
     (:osaamisen-hankkimistavat values)
     (assoc :osaamisen-hankkimistavat
-           (replace-ppto-osaamisen-hankkimistavat!
-             ppto-db (:osaamisen-hankkimistavat values)))
+           (replace-hpto-osaamisen-hankkimistavat!
+             hpto-db (:osaamisen-hankkimistavat values)))
     (:osaamisen-osoittaminen values)
     (assoc :osaamisen-osoittaminen
-           (replace-ppto-osaamisen-osoittamiset!
-             ppto-db (:osaamisen-osoittaminen values)))))
+           (replace-hpto-osaamisen-osoittamiset!
+             hpto-db (:osaamisen-osoittaminen values)))))
 
-(defn save-hankittava-paikallinen-tutkinnon-osa! [h ppto]
-  (let [ppto-db (db/insert-hankittava-paikallinen-tutkinnon-osa!
-                  (assoc ppto :hoks-id (:id h)))]
+(defn save-hankittava-paikallinen-tutkinnon-osa! [h hpto]
+  (let [hpto-db (db/insert-hankittava-paikallinen-tutkinnon-osa!
+                  (assoc hpto :hoks-id (:id h)))]
     (assoc
-      ppto-db
+      hpto-db
       :osaamisen-hankkimistavat
-      (save-ppto-osaamisen-hankkimistavat!
-        ppto-db (:osaamisen-hankkimistavat ppto))
+      (save-hpto-osaamisen-hankkimistavat!
+        hpto-db (:osaamisen-hankkimistavat hpto))
       :osaamisen-osoittaminen
-      (save-ppto-osaamisen-osoittamiset!
-        ppto-db (:osaamisen-osoittaminen ppto)))))
+      (save-hpto-osaamisen-osoittamiset!
+        hpto-db (:osaamisen-osoittaminen hpto)))))
 
 (defn save-hankittavat-paikalliset-tutkinnon-osat! [h c]
   (mapv #(save-hankittava-paikallinen-tutkinnon-osa! h %) c))
 
-(defn save-oopto-tarkentavat-tiedot-naytto! [oopto-id c]
+(defn save-ahpto-tarkentavat-tiedot-naytto! [ahpto-id c]
   (mapv
     #(let [n (save-osaamisen-osoittaminen! %)]
-       (db/insert-oopto-osaamisen-osoittaminen! oopto-id (:id n))
+       (db/insert-ahpto-osaamisen-osoittaminen! ahpto-id (:id n))
        n)
     c))
 
@@ -408,7 +408,7 @@
     (assoc
       oopto-db
       :tarkentavat-tiedot-naytto
-      (save-oopto-tarkentavat-tiedot-naytto!
+      (save-ahpto-tarkentavat-tiedot-naytto!
         (:id oopto-db) (:tarkentavat-tiedot-naytto oopto)))))
 
 (defn save-aiemmin-hankitut-paikalliset-tutkinnon-osat! [hoks c]
@@ -566,7 +566,7 @@
 
 (defn- replace-oopto-tarkentavat-tiedot-naytto! [oopto-id new-values]
   (db/delete-aiemmin-hankitun-paikallisen-tutkinnon-osan-naytto-by-id! oopto-id)
-  (save-oopto-tarkentavat-tiedot-naytto! oopto-id new-values))
+  (save-ahpto-tarkentavat-tiedot-naytto! oopto-id new-values))
 
 (defn update-aiemmin-hankittu-paikallinen-tutkinnon-osa!
   [oopto-from-db new-values]
