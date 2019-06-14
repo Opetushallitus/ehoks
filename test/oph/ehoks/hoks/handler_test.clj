@@ -180,9 +180,9 @@
                    :id 1
                    :nimi "2223"))))))
 
-(def pao-path "hankittava-ammat-tutkinnon-osa")
+(def hao-path "hankittava-ammat-tutkinnon-osa")
 
-(def pao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
+(def hao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
                :tutkinnon-osa-koodi-versio 1
                :vaatimuksista-tai-tavoitteista-poikkeaminen
                "Ei poikkeamia."
@@ -223,8 +223,8 @@
                  :loppu "2019-03-19"
                  :yksilolliset-kriteerit ["Yksi kriteeri"]}]})
 
-(deftest post-and-get-pao
-  (testing "POST hankittava ammatillinen osaaminen and then get created ppao"
+(deftest post-and-get-hankittava-ammatillinen-osaaminen
+  (testing "POST hankittava ammatillinen osaaminen and then get created hao"
     (db/clear)
     (with-hoks
       hoks
@@ -234,13 +234,13 @@
               app
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks pao-path))
-                  (mock/json-body pao-data)))
+                    (get-hoks-url hoks hao-path))
+                  (mock/json-body hao-data)))
             get-response (utils/with-service-ticket
                            app
                            (mock/request
                              :get
-                             (get-hoks-url hoks (str pao-path "/1"))))]
+                             (get-hoks-url hoks (str hao-path "/1"))))]
         (is (= (:status post-response) 200))
         (eq (utils/parse-body
               (:body post-response))
@@ -250,11 +250,11 @@
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
-            {:meta {} :data (assoc pao-data :id 1)})))))
+            {:meta {} :data (assoc hao-data :id 1)})))))
 
-(def patch-all-pao-data
+(def patch-all-hao-data
   (merge
-    pao-data
+    hao-data
     {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"
      :tutkinnon-osa-koodi-versio 1
      :osaamisen-osoittaminen []
@@ -283,7 +283,7 @@
        :loppu "2019-02-11"}]
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000116"}))
 
-(deftest patch-all-pao
+(deftest patch-all-hankittava-ammatillinen-osaaminen
   (testing "PATCH ALL hankittava ammat osaaminen"
     (db/clear)
     (with-hoks
@@ -294,25 +294,25 @@
               app
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks pao-path))
-                  (mock/json-body pao-data)))
+                    (get-hoks-url hoks hao-path))
+                  (mock/json-body hao-data)))
             patch-response
             (utils/with-service-ticket
               app
               (-> (mock/request
                     :patch
-                    (get-hoks-url hoks (str pao-path "/1")))
-                  (mock/json-body (assoc patch-all-pao-data :id 1))))
+                    (get-hoks-url hoks (str hao-path "/1")))
+                  (mock/json-body (assoc patch-all-hao-data :id 1))))
             get-response  (utils/with-service-ticket
                             (create-app nil)
                             (mock/request
                               :get
-                              (get-hoks-url hoks (str pao-path "/1"))))]
+                              (get-hoks-url hoks (str hao-path "/1"))))]
         (is (= (:status patch-response) 204))
         (eq (utils/parse-body (:body get-response))
-            {:meta {} :data  (assoc patch-all-pao-data :id 1)})))))
+            {:meta {} :data  (assoc patch-all-hao-data :id 1)})))))
 
-(deftest patch-one-pao
+(deftest patch-one-hankittava-ammatilinen-osaaminen
   (testing "PATCH one value hankittava ammatillinen osaaminen"
     (db/clear)
     (with-hoks
@@ -327,7 +327,7 @@
                       "%s/1/hankittava-ammat-tutkinnon-osa"
                       url))
                   (mock/json-body
-                    pao-data)))
+                    hao-data)))
             response
             (utils/with-service-ticket
               app
@@ -335,7 +335,7 @@
                     :patch
                     (format
                       "%s/1/%s/1"
-                      url pao-path))
+                      url hao-path))
                   (mock/json-body
                     {:id 1
                      :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
