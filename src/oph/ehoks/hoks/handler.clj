@@ -2,6 +2,7 @@
   (:require [compojure.api.sweet :as c-api]
             [clojure.tools.logging :as log]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
@@ -87,7 +88,7 @@
     ([request respond raise]
       (let [hoks (:hoks request)]
         (if (nil? hoks)
-          (respond response/not-found {:error "HOKS not found"})
+          (respond (response/not-found {:error "HOKS not found"}))
           (if (user-has-access? request hoks)
             (handler request respond raise)
             (do
@@ -388,7 +389,8 @@
                     caller-id :- s/Str]
 
     (route-middleware
-      [wrap-user-details wrap-require-service-user wrap-audit-logger]
+      [wrap-access-logger wrap-user-details
+       wrap-require-service-user wrap-audit-logger]
 
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
