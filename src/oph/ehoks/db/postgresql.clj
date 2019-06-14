@@ -523,10 +523,10 @@
     [queries/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/hankittava-ammat-tutkinnon-osa-from-sql}))
 
-(defn insert-pato-osaamisen-osoittaminen! [pato-id naytto-id]
+(defn insert-hato-osaamisen-osoittaminen! [hato-id naytto-id]
   (insert-one!
     :hankittavan_ammat_tutkinnon_osan_naytto
-    {:hankittava_ammat_tutkinnon_osa_id pato-id
+    {:hankittava_ammat_tutkinnon_osa_id hato-id
      :osaamisen_osoittaminen_id naytto-id}))
 
 (defn select-osaamisen-osoittamiset-by-hato-id [id]
