@@ -78,6 +78,7 @@
             url path))
         (mock/json-body patched-data))))
 
+(def hpto-path "hankittava-paikallinen-tutkinnon-osa")
 (def hpto-data {:nimi "222"
                 :osaamisen-hankkimistavat []
                 :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
@@ -107,21 +108,20 @@
               (create-app nil)
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
+                    (get-hoks-url hoks hpto-path))
                   (mock/json-body hpto-data)))
             body (utils/parse-body (:body ppto-response))]
         (is (= (:status ppto-response) 200))
         (eq body {:data
                   {:uri
-                   (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1")}
+                   (get-hoks-url hoks (format "%s/1" hpto-path))}
                   :meta {:id 1}})
         (let [ppto-new
               (utils/with-service-ticket
                 (create-app nil)
                 (mock/request
                   :get
-                  (get-hoks-url hoks
-                                "hankittava-paikallinen-tutkinnon-osa/1")))]
+                  (get-hoks-url hoks (format "%s/1" hpto-path))))]
           (eq
             (:data (utils/parse-body (:body ppto-new)))
             (assoc
@@ -137,7 +137,7 @@
               (create-app nil)
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
+                    (get-hoks-url hoks hpto-path))
                   (mock/json-body hpto-data)))
             patch-response
             (utils/with-service-ticket
@@ -145,7 +145,7 @@
               (->
                 (mock/request
                   :patch
-                  (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1"))
+                  (get-hoks-url hoks (format "%s/1" hpto-path)))
                 (mock/json-body
                   (assoc hpto-data :nimi "333" :olennainen-seikka false))))]
         (is (= (:status patch-response) 204))))))
@@ -159,7 +159,7 @@
               (create-app nil)
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
+                    (get-hoks-url hoks hpto-path))
                   (mock/json-body hpto-data)))
             ppto-body (utils/parse-body
                         (:body ppto-response))
@@ -168,8 +168,7 @@
               (create-app nil)
               (-> (mock/request
                     :patch
-                    (get-hoks-url hoks
-                                  "hankittava-paikallinen-tutkinnon-osa/1"))
+                    (get-hoks-url hoks (format "%s/1" hpto-path)))
                   (mock/json-body
                     {:id 1 :nimi "2223"})))
             get-response (-> (get-in ppto-body [:data :uri])
@@ -181,7 +180,6 @@
                    :nimi "2223"))))))
 
 (def hao-path "hankittava-ammat-tutkinnon-osa")
-
 (def hao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
                :tutkinnon-osa-koodi-versio 1
                :vaatimuksista-tai-tavoitteista-poikkeaminen
