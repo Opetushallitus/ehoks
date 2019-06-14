@@ -143,7 +143,7 @@
     :koulutuksen_jarjestaja_osaamisen_arvioijat
     (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c)))
 
-(defn select-tarkentavat-tiedot-naytto-by-oopto-id [oopto-id]
+(defn select-tarkentavat-tiedot-naytto-by-ahpto-id [oopto-id]
   (query [queries/select-osaamisen-osoittamiset-by-oopto-id oopto-id]
          {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
@@ -239,7 +239,7 @@
     [queries/select-osaamisen-osoittamiset-by-ppto-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-(defn delete-osaamisen-hankkimistavat-by-ppto-id!
+(defn delete-osaamisen-hankkimistavat-by-hpto-id!
   "hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat"
   [id]
   (shallow-delete!
@@ -310,7 +310,7 @@
     {:hankittava_paikallinen_tutkinnon_osa_id (:id ppto)
      :osaamisen_hankkimistapa_id (:id oh)}))
 
-(defn select-osaamisen-hankkimistavat-by-ppto-id
+(defn select-osaamisen-hankkimistavat-by-hpto-id
   "hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat"
   [id]
   (query
@@ -322,7 +322,7 @@
     :osaamisen_osoittamiset
     (h/osaamisen-osoittaminen-to-sql m)))
 
-(defn insert-ppto-osaamisen-osoittaminen!
+(defn insert-hpto-osaamisen-osoittaminen!
   "hankittavan paikallisen tutkinnon osan hankitun osaamisen näyttö"
   [ppto h]
   (insert-one!
@@ -444,7 +444,7 @@
     [queries/select-osaamisen-osoittamiset-by-oopto-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-(defn insert-oopto-osaamisen-osoittaminen! [oopto-id naytto-id]
+(defn insert-ahpto-osaamisen-osoittaminen! [oopto-id naytto-id]
   (insert-one!
     :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
     {:aiemmin_hankittu_paikallinen_tutkinnon_osa_id oopto-id
@@ -461,7 +461,7 @@
     [queries/select-arvioijat-by-ooyto-id id]
     {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
 
-(defn select-tarkentavat-tiedot-naytto-by-ooyto-id
+(defn select-tarkentavat-tiedot-naytto-by-ahyto-id
   "Aiemmin hankitun yhteisen tutkinnon osan näytön tarkentavat tiedot
    (hankitun osaamisen näytöt)"
   [id]
@@ -469,9 +469,9 @@
     [queries/select-osaamisen-osoittamiset-by-ooyto-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-(defn select-tarkentavat-tiedot-naytto-by-ooyto-osa-alue-id [id]
+(defn select-tarkentavat-tiedot-naytto-by-ahyto-osa-alue-id [id]
   (query
-    [queries/select-osaamisen-osoittamiset-by-ooyto-osa-alue-id id]
+    [queries/select-osaamisen-osoittamiset-by-ahyto-osa-alue-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
 (defn insert-ooyto-osa-alue-osaamisen-osoittaminen! [osa-alue-id naytto-id]
@@ -480,7 +480,7 @@
     {:aiemmin_hankittu_yto_osa_alue_id osa-alue-id
      :osaamisen_osoittaminen_id naytto-id}))
 
-(defn select-osa-alueet-by-ooyto-id [id]
+(defn select-osa-alueet-by-ahyto-id [id]
   (query
     [queries/select-osa-alueet-by-ooyto-id id]
     {:row-fn h/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-from-sql}))
@@ -523,13 +523,13 @@
     [queries/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/hankittava-ammat-tutkinnon-osa-from-sql}))
 
-(defn insert-pato-osaamisen-osoittaminen! [pato-id naytto-id]
+(defn insert-hato-osaamisen-osoittaminen! [hato-id naytto-id]
   (insert-one!
     :hankittavan_ammat_tutkinnon_osan_naytto
-    {:hankittava_ammat_tutkinnon_osa_id pato-id
+    {:hankittava_ammat_tutkinnon_osa_id hato-id
      :osaamisen_osoittaminen_id naytto-id}))
 
-(defn select-osaamisen-osoittamiset-by-pato-id [id]
+(defn select-osaamisen-osoittamiset-by-hato-id [id]
   (query
     [queries/select-osaamisen-osoittamiset-by-pato-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
@@ -612,7 +612,7 @@
     {:hankittava_ammat_tutkinnon_osa_id pato-id
      :osaamisen_hankkimistapa_id oh-id}))
 
-(defn select-osaamisen-hankkimistavat-by-pato-id
+(defn select-osaamisen-hankkimistavat-by-hato-id
   "hankittavan ammat tutkinnon osan osaamisen hankkimistavat"
   [id]
   (query
@@ -639,15 +639,15 @@
     [queries/select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/hankittava-yhteinen-tutkinnon-osa-from-sql}))
 
-(defn select-osaamisen-hankkimistavat-by-pyto-osa-alue-id [id]
+(defn select-osaamisen-hankkimistavat-by-hyto-osa-alue-id [id]
   (query
-    [queries/select-osaamisen-hankkimistavat-by-pyto-osa-alue-id id]
+    [queries/select-osaamisen-hankkimistavat-by-yto-osa-alue-id id]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
-(defn insert-pyto-osa-alueen-osaamisen-hankkimistapa! [pyto-osa-alue-id oh-id]
+(defn insert-hyto-osa-alueen-osaamisen-hankkimistapa! [hyto-osa-alue-id oh-id]
   (insert-one!
     :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
-    {:yhteisen_tutkinnon_osan_osa_alue_id pyto-osa-alue-id
+    {:yhteisen_tutkinnon_osan_osa_alue_id hyto-osa-alue-id
      :osaamisen_hankkimistapa_id oh-id}))
 
 (defn insert-yhteisen-tutkinnon-osan-osa-alue! [osa-alue]

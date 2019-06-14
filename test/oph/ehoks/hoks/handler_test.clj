@@ -78,7 +78,8 @@
             url path))
         (mock/json-body patched-data))))
 
-(def ppto-data {:nimi "222"
+(def hpto-path "hankittava-paikallinen-tutkinnon-osa")
+(def hpto-data {:nimi "222"
                 :osaamisen-hankkimistavat []
                 :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                 :olennainen-seikka true
@@ -97,7 +98,7 @@
                   "Poikkeama onpi tämä."
                   :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]}]})
 
-(deftest post-and-get-ppto
+(deftest post-and-get-hankittava-paikallinen-tutkinnon-osa
   (testing "GET newly created hankittava paikallinen tutkinnon osa"
     (db/clear)
     (with-hoks
@@ -107,50 +108,49 @@
               (create-app nil)
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
-                  (mock/json-body ppto-data)))
+                    (get-hoks-url hoks hpto-path))
+                  (mock/json-body hpto-data)))
             body (utils/parse-body (:body ppto-response))]
         (is (= (:status ppto-response) 200))
         (eq body {:data
                   {:uri
-                   (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1")}
+                   (get-hoks-url hoks (format "%s/1" hpto-path))}
                   :meta {:id 1}})
         (let [ppto-new
               (utils/with-service-ticket
                 (create-app nil)
                 (mock/request
                   :get
-                  (get-hoks-url hoks
-                                "hankittava-paikallinen-tutkinnon-osa/1")))]
+                  (get-hoks-url hoks (format "%s/1" hpto-path))))]
           (eq
             (:data (utils/parse-body (:body ppto-new)))
             (assoc
-              ppto-data
+              hpto-data
               :id 1)))))))
 
-(deftest patch-all-ppto
+(deftest patch-all-hankittavat-paikalliset-tutkinnon-osat
   (testing "PATCH all hankittava paikallinen tutkinnon osa"
     (with-hoks
       hoks
-      (let [ppto-response
+      (let [hpto-response
             (utils/with-service-ticket
               (create-app nil)
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
-                  (mock/json-body ppto-data)))
+                    (get-hoks-url hoks hpto-path))
+                  (mock/json-body hpto-data)))
             patch-response
             (utils/with-service-ticket
               (create-app nil)
               (->
                 (mock/request
                   :patch
-                  (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1"))
+                  (get-hoks-url hoks (format "%s/1" hpto-path)))
                 (mock/json-body
-                  (assoc ppto-data :nimi "333" :olennainen-seikka false))))]
+                  (assoc hpto-data :nimi "333" :olennainen-seikka false))))]
         (is (= (:status patch-response) 204))))))
 
-(deftest patch-one-ppto
+(deftest patch-one-hankittava-paikallinen-tutkinnon-osa
   (testing "PATCH one value hankittava paikallinen tutkinnon osa"
     (with-hoks
       hoks
@@ -159,8 +159,8 @@
               (create-app nil)
               (-> (mock/request
                     :post
-                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
-                  (mock/json-body ppto-data)))
+                    (get-hoks-url hoks hpto-path))
+                  (mock/json-body hpto-data)))
             ppto-body (utils/parse-body
                         (:body ppto-response))
             patch-response
@@ -168,21 +168,19 @@
               (create-app nil)
               (-> (mock/request
                     :patch
-                    (get-hoks-url hoks
-                                  "hankittava-paikallinen-tutkinnon-osa/1"))
+                    (get-hoks-url hoks (format "%s/1" hpto-path)))
                   (mock/json-body
                     {:id 1 :nimi "2223"})))
             get-response (-> (get-in ppto-body [:data :uri])
                              get-authenticated :data)]
         (is (= (:status patch-response) 204))
         (eq get-response
-            (assoc ppto-data
+            (assoc hpto-data
                    :id 1
                    :nimi "2223"))))))
 
-(def pao-path "hankittava-ammat-tutkinnon-osa")
-
-(def pao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
+(def hao-path "hankittava-ammat-tutkinnon-osa")
+(def hao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
                :tutkinnon-osa-koodi-versio 1
                :vaatimuksista-tai-tavoitteista-poikkeaminen
                "Ei poikkeamia."
@@ -223,24 +221,14 @@
                  :loppu "2019-03-19"
                  :yksilolliset-kriteerit ["Yksi kriteeri"]}]})
 
-(deftest post-and-get-pao
-  (testing "POST hankittava ammatillinen osaaminen and then get created ppao"
+(deftest post-and-get-hankittava-ammatillinen-osaaminen
+  (testing "POST hankittava ammatillinen osaaminen and then get created hao"
     (db/clear)
     (with-hoks
       hoks
       (let [app (create-app nil)
-            post-response
-            (utils/with-service-ticket
-              app
-              (-> (mock/request
-                    :post
-                    (get-hoks-url hoks pao-path))
-                  (mock/json-body pao-data)))
-            get-response (utils/with-service-ticket
-                           app
-                           (mock/request
-                             :get
-                             (get-hoks-url hoks (str pao-path "/1"))))]
+            post-response (create-mock-post-request hao-path hao-data app hoks)
+            get-response (create-mock-get-request hao-path app hoks)]
         (is (= (:status post-response) 200))
         (eq (utils/parse-body
               (:body post-response))
@@ -250,11 +238,11 @@
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
-            {:meta {} :data (assoc pao-data :id 1)})))))
+            {:meta {} :data (assoc hao-data :id 1)})))))
 
-(def patch-all-pao-data
+(def patch-all-hao-data
   (merge
-    pao-data
+    hao-data
     {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002681"
      :tutkinnon-osa-koodi-versio 1
      :osaamisen-osoittaminen []
@@ -283,36 +271,26 @@
        :loppu "2019-02-11"}]
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000116"}))
 
-(deftest patch-all-pao
+(deftest patch-all-hankittava-ammatillinen-osaaminen
   (testing "PATCH ALL hankittava ammat osaaminen"
     (db/clear)
     (with-hoks
       hoks
       (let [app (create-app nil)
-            post-response
-            (utils/with-service-ticket
-              app
-              (-> (mock/request
-                    :post
-                    (get-hoks-url hoks pao-path))
-                  (mock/json-body pao-data)))
+            post-response (create-mock-post-request hao-path hao-data app hoks)
             patch-response
             (utils/with-service-ticket
               app
               (-> (mock/request
                     :patch
-                    (get-hoks-url hoks (str pao-path "/1")))
-                  (mock/json-body (assoc patch-all-pao-data :id 1))))
-            get-response  (utils/with-service-ticket
-                            (create-app nil)
-                            (mock/request
-                              :get
-                              (get-hoks-url hoks (str pao-path "/1"))))]
+                    (get-hoks-url hoks (str hao-path "/1")))
+                  (mock/json-body (assoc patch-all-hao-data :id 1))))
+            get-response (create-mock-get-request hao-path app hoks)]
         (is (= (:status patch-response) 204))
         (eq (utils/parse-body (:body get-response))
-            {:meta {} :data  (assoc patch-all-pao-data :id 1)})))))
+            {:meta {} :data  (assoc patch-all-hao-data :id 1)})))))
 
-(deftest patch-one-pao
+(deftest patch-one-hankittava-ammatilinen-osaaminen
   (testing "PATCH one value hankittava ammatillinen osaaminen"
     (db/clear)
     (with-hoks
@@ -327,7 +305,7 @@
                       "%s/1/hankittava-ammat-tutkinnon-osa"
                       url))
                   (mock/json-body
-                    pao-data)))
+                    hao-data)))
             response
             (utils/with-service-ticket
               app
@@ -335,7 +313,7 @@
                     :patch
                     (format
                       "%s/1/%s/1"
-                      url pao-path))
+                      url hao-path))
                   (mock/json-body
                     {:id 1
                      :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
@@ -709,9 +687,8 @@
       multiple-ahyto-values-patched
       assert-ahyto-is-patched-correctly)))
 
-(def pyto-path "hankittava-yhteinen-tutkinnon-osa")
-
-(def pyto-data
+(def hyto-path "hankittava-yhteinen-tutkinnon-osa")
+(def hyto-data
   {:osa-alueet
    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
      :osa-alue-koodi-versio 1
@@ -733,7 +710,7 @@
    :tutkinnon-osa-koodi-versio 1
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"})
 
-(def pyto-patch-data
+(def hyto-patch-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :tutkinnon-osa-koodi-versio 1
    :osa-alueet
@@ -754,7 +731,7 @@
                                        {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"})
 
-(def pyto-patch-one-data
+(def hyto-patch-one-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :tutkinnon-osa-koodi-versio 1
    :osa-alueet
@@ -775,7 +752,7 @@
                                        {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000011"})
 
-(deftest post-and-get-pyto
+(deftest post-and-get-hankittava-yhteinen-tukinnon-osa
   (testing "POST hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
@@ -785,8 +762,8 @@
                   :post
                   (format
                     "%s/1/%s"
-                    url pyto-path))
-                (mock/json-body pyto-data)))
+                    url hyto-path))
+                (mock/json-body hyto-data)))
           get-response
           (utils/with-service-ticket
             (create-app nil)
@@ -794,19 +771,19 @@
               :get
               (format
                 "%s/1/%s/1"
-                url pyto-path)))]
+                url hyto-path)))]
       (is (= (:status post-response) 200))
       (eq (utils/parse-body
             (:body post-response))
           {:data {:uri   (format
                            "%s/1/%s/1"
-                           url pyto-path)} :meta {:id 1}})
+                           url hyto-path)} :meta {:id 1}})
       (is (= (:status get-response) 200))
       (eq (:id (:data (utils/parse-body
                         (:body get-response))))
           1))))
 
-(deftest put-pyto
+(deftest put-hankittava-yhteinen-tutkinnon-osa
   (testing "PUT hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
@@ -816,8 +793,8 @@
                   :post
                   (format
                     "%s/1/%s"
-                    url pyto-path))
-                (mock/json-body pyto-data)))
+                    url hyto-path))
+                (mock/json-body hyto-data)))
           response
           (utils/with-service-ticket
             (create-app nil)
@@ -825,12 +802,12 @@
                   :put
                   (format
                     "%s/1/%s/1"
-                    url pyto-path))
+                    url hyto-path))
                 (mock/json-body
-                  (assoc pyto-data :id 1))))]
+                  (assoc hyto-data :id 1))))]
       (is (= (:status response) 204)))))
 
-(deftest patch-one-pyto
+(deftest patch-one-hankittava-yhteinen-tutkinnon-osa
   (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
@@ -840,8 +817,8 @@
                   :post
                   (format
                     "%s/1/%s"
-                    url pyto-path))
-                (mock/json-body pyto-data)))
+                    url hyto-path))
+                (mock/json-body hyto-data)))
           response
           (utils/with-service-ticket
             (create-app nil)
@@ -849,12 +826,12 @@
                   :patch
                   (format
                     "%s/1/%s/1"
-                    url pyto-path))
+                    url hyto-path))
                 (mock/json-body
                   {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})))]
       (is (= (:status response) 204)))))
 
-(deftest patch-all-pyto
+(deftest patch-all-hankittavat-yhteiset-tutkinnon-osat
   (testing "PATCH all hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
@@ -864,8 +841,8 @@
                   :post
                   (format
                     "%s/1/%s"
-                    url pyto-path))
-                (mock/json-body pyto-data)))
+                    url hyto-path))
+                (mock/json-body hyto-data)))
           response
           (utils/with-service-ticket
             (create-app nil)
@@ -873,9 +850,9 @@
                   :patch
                   (format
                     "%s/1/%s/1"
-                    url pyto-path))
+                    url hyto-path))
                 (mock/json-body
-                  pyto-patch-data)))]
+                  hyto-patch-data)))]
       (is (= (:status response) 204)))))
 
 (def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")
