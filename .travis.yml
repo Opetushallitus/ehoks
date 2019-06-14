@@ -34,11 +34,14 @@ script:
   - export BASE_IMAGE="baseimage-fatjar:master"
   - ./ci-tools/common/pull-image.sh
   - ./ci-tools/build/build-fatjar.sh ehoks
+  - mv $DOCKER_BUILD_DIR/artifact/ehoks.jar $DOCKER_BUILD_DIR/artifact/ehoks-virkailija.jar
+  - ./ci-tools/build/build-fatjar.sh ehoks-virkailija
 
 deploy:
   provider: script
   script: >-
     ./ci-tools/build/upload-image.sh ehoks &&
+    ./ci-tools/build/upload-image.sh ehoks-virkailija &&
     lein dbmigrate
   on:
     all_branches: true

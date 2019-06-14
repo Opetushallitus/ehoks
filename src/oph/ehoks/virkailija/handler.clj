@@ -4,6 +4,7 @@
             [compojure.route :as compojure-route]
             [schema.core :as s]
             [ring.util.http-response :as response]
+            [oph.ehoks.resources :as resources]
             [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.common.api :as common-api]
@@ -302,7 +303,8 @@
     (c-api/undocumented
       (c-api/GET "/buildversion.txt" []
         (response/content-type
-          (response/resource-response "buildversion.txt") "text/plain")))))
+          (response/resource-response "buildversion.txt") "text/plain"))
+      (resources/create-routes "/json-viewer" "json-viewer"))))
 
 (def app-routes
   (c-api/api

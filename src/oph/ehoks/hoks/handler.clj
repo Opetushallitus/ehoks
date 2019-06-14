@@ -384,6 +384,8 @@
 (def routes
   (c-api/context "/hoks" []
     :tags ["hoks"]
+    :header-params [ticket :- s/Str
+                    caller-id :- s/Str]
 
     (route-middleware
       [wrap-user-details wrap-require-service-user wrap-audit-logger]
@@ -435,7 +437,6 @@
           aiemmin-hankittu-paikallinen-tutkinnon-osa
           aiemmin-hankittu-yhteinen-tutkinnon-osa
           hankittava-ammat-tutkinnon-osa))
-
       (c-api/undocumented
         hankittava-yhteinen-tutkinnon-osa
         opiskeluvalmiuksia-tukevat-opinnot))))
