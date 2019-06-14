@@ -709,9 +709,9 @@
       multiple-ahyto-values-patched
       assert-ahyto-is-patched-correctly)))
 
-(def pyto-path "hankittava-yhteinen-tutkinnon-osa")
+(def hyto-path "hankittava-yhteinen-tutkinnon-osa")
 
-(def pyto-data
+(def hyto-data
   {:osa-alueet
    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
      :osa-alue-koodi-versio 1
@@ -733,7 +733,7 @@
    :tutkinnon-osa-koodi-versio 1
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"})
 
-(def pyto-patch-data
+(def hyto-patch-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :tutkinnon-osa-koodi-versio 1
    :osa-alueet
@@ -754,7 +754,7 @@
                                        {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"})
 
-(def pyto-patch-one-data
+(def hyto-patch-one-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :tutkinnon-osa-koodi-versio 1
    :osa-alueet
@@ -775,7 +775,7 @@
                                        {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000011"})
 
-(deftest post-and-get-pyto
+(deftest post-and-get-hankittava-yhteinen-tukinnon-osa
   (testing "POST hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
@@ -785,8 +785,8 @@
                   :post
                   (format
                     "%s/1/%s"
-                    url pyto-path))
-                (mock/json-body pyto-data)))
+                    url hyto-path))
+                (mock/json-body hyto-data)))
           get-response
           (utils/with-service-ticket
             (create-app nil)
@@ -794,19 +794,19 @@
               :get
               (format
                 "%s/1/%s/1"
-                url pyto-path)))]
+                url hyto-path)))]
       (is (= (:status post-response) 200))
       (eq (utils/parse-body
             (:body post-response))
           {:data {:uri   (format
                            "%s/1/%s/1"
-                           url pyto-path)} :meta {:id 1}})
+                           url hyto-path)} :meta {:id 1}})
       (is (= (:status get-response) 200))
       (eq (:id (:data (utils/parse-body
                         (:body get-response))))
           1))))
 
-(deftest put-pyto
+(deftest put-hankittava-yhteinen-tutkinnon-osa
   (testing "PUT hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
@@ -816,8 +816,8 @@
                   :post
                   (format
                     "%s/1/%s"
-                    url pyto-path))
-                (mock/json-body pyto-data)))
+                    url hyto-path))
+                (mock/json-body hyto-data)))
           response
           (utils/with-service-ticket
             (create-app nil)
@@ -825,12 +825,12 @@
                   :put
                   (format
                     "%s/1/%s/1"
-                    url pyto-path))
+                    url hyto-path))
                 (mock/json-body
-                  (assoc pyto-data :id 1))))]
+                  (assoc hyto-data :id 1))))]
       (is (= (:status response) 204)))))
 
-(deftest patch-one-pyto
+(deftest patch-one-hankittava-yhteinen-tutkinnon-osa
   (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
@@ -840,8 +840,8 @@
                   :post
                   (format
                     "%s/1/%s"
-                    url pyto-path))
-                (mock/json-body pyto-data)))
+                    url hyto-path))
+                (mock/json-body hyto-data)))
           response
           (utils/with-service-ticket
             (create-app nil)
@@ -849,12 +849,12 @@
                   :patch
                   (format
                     "%s/1/%s/1"
-                    url pyto-path))
+                    url hyto-path))
                 (mock/json-body
                   {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})))]
       (is (= (:status response) 204)))))
 
-(deftest patch-all-pyto
+(deftest patch-all-hankittavat-yhteiset-tutkinnon-osat
   (testing "PATCH all hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
@@ -864,8 +864,8 @@
                   :post
                   (format
                     "%s/1/%s"
-                    url pyto-path))
-                (mock/json-body pyto-data)))
+                    url hyto-path))
+                (mock/json-body hyto-data)))
           response
           (utils/with-service-ticket
             (create-app nil)
@@ -873,9 +873,9 @@
                   :patch
                   (format
                     "%s/1/%s/1"
-                    url pyto-path))
+                    url hyto-path))
                 (mock/json-body
-                  pyto-patch-data)))]
+                  hyto-patch-data)))]
       (is (= (:status response) 204)))))
 
 (def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")
