@@ -635,7 +635,7 @@
   (let [p-db (db/insert-hankittava-yhteinen-tutkinnon-osa!
                (assoc hyto :hoks-id (:id h)))]
     (assoc p-db
-      :osa-alueet (save-hyto-osa-alueet! (:id p-db) (:osa-alueet hyto)))))
+           :osa-alueet (save-hyto-osa-alueet! (:id p-db) (:osa-alueet hyto)))))
 
 (defn save-hankittavat-yhteiset-tutkinnon-osat! [h c]
   (mapv
