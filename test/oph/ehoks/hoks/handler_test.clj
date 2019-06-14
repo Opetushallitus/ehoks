@@ -227,18 +227,8 @@
     (with-hoks
       hoks
       (let [app (create-app nil)
-            post-response
-            (utils/with-service-ticket
-              app
-              (-> (mock/request
-                    :post
-                    (get-hoks-url hoks hao-path))
-                  (mock/json-body hao-data)))
-            get-response (utils/with-service-ticket
-                           app
-                           (mock/request
-                             :get
-                             (get-hoks-url hoks (str hao-path "/1"))))]
+            post-response (create-mock-post-request hao-path hao-data app hoks)
+            get-response (create-mock-get-request hao-path app hoks)]
         (is (= (:status post-response) 200))
         (eq (utils/parse-body
               (:body post-response))
