@@ -78,7 +78,7 @@
             url path))
         (mock/json-body patched-data))))
 
-(def ppto-data {:nimi "222"
+(def hpto-data {:nimi "222"
                 :osaamisen-hankkimistavat []
                 :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                 :olennainen-seikka true
@@ -97,7 +97,7 @@
                   "Poikkeama onpi tämä."
                   :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]}]})
 
-(deftest post-and-get-ppto
+(deftest post-and-get-hankittava-paikallinen-tutkinnon-osa
   (testing "GET newly created hankittava paikallinen tutkinnon osa"
     (db/clear)
     (with-hoks
@@ -108,7 +108,7 @@
               (-> (mock/request
                     :post
                     (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
-                  (mock/json-body ppto-data)))
+                  (mock/json-body hpto-data)))
             body (utils/parse-body (:body ppto-response))]
         (is (= (:status ppto-response) 200))
         (eq body {:data
@@ -125,20 +125,20 @@
           (eq
             (:data (utils/parse-body (:body ppto-new)))
             (assoc
-              ppto-data
+              hpto-data
               :id 1)))))))
 
-(deftest patch-all-ppto
+(deftest patch-all-hankittavat-paikalliset-tutkinnon-osat
   (testing "PATCH all hankittava paikallinen tutkinnon osa"
     (with-hoks
       hoks
-      (let [ppto-response
+      (let [hpto-response
             (utils/with-service-ticket
               (create-app nil)
               (-> (mock/request
                     :post
                     (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
-                  (mock/json-body ppto-data)))
+                  (mock/json-body hpto-data)))
             patch-response
             (utils/with-service-ticket
               (create-app nil)
@@ -147,10 +147,10 @@
                   :patch
                   (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa/1"))
                 (mock/json-body
-                  (assoc ppto-data :nimi "333" :olennainen-seikka false))))]
+                  (assoc hpto-data :nimi "333" :olennainen-seikka false))))]
         (is (= (:status patch-response) 204))))))
 
-(deftest patch-one-ppto
+(deftest patch-one-hankittava-paikallinen-tutkinnon-osa
   (testing "PATCH one value hankittava paikallinen tutkinnon osa"
     (with-hoks
       hoks
@@ -160,7 +160,7 @@
               (-> (mock/request
                     :post
                     (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
-                  (mock/json-body ppto-data)))
+                  (mock/json-body hpto-data)))
             ppto-body (utils/parse-body
                         (:body ppto-response))
             patch-response
@@ -176,7 +176,7 @@
                              get-authenticated :data)]
         (is (= (:status patch-response) 204))
         (eq get-response
-            (assoc ppto-data
+            (assoc hpto-data
                    :id 1
                    :nimi "2223"))))))
 
