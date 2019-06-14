@@ -644,10 +644,10 @@
     [queries/select-osaamisen-hankkimistavat-by-yto-osa-alue-id id]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
-(defn insert-pyto-osa-alueen-osaamisen-hankkimistapa! [pyto-osa-alue-id oh-id]
+(defn insert-hyto-osa-alueen-osaamisen-hankkimistapa! [hyto-osa-alue-id oh-id]
   (insert-one!
     :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
-    {:yhteisen_tutkinnon_osan_osa_alue_id pyto-osa-alue-id
+    {:yhteisen_tutkinnon_osan_osa_alue_id hyto-osa-alue-id
      :osaamisen_hankkimistapa_id oh-id}))
 
 (defn insert-yhteisen-tutkinnon-osan-osa-alue! [osa-alue]
