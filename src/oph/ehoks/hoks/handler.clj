@@ -402,9 +402,11 @@
         (let [hoks-db (h/save-hoks! hoks)]
           (when (:save-hoks-json? config)
             (write-hoks-json! hoks))
-          (sqs/send-message (sqs/build-hoks-hyvaksytty-msg
-                              (:id hoks-db)
-                              hoks))
+          (when (or (nil? (:osaamisen-hankkimisen-tarve hoks))
+                    (:osaamisen-hankkimisen-tarve hoks))
+            (sqs/send-message (sqs/build-hoks-hyvaksytty-msg
+                                (:id hoks-db)
+                                hoks)))
           (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
                         :id (:id hoks-db))))
 
