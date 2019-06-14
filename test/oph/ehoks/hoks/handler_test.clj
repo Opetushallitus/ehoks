@@ -277,13 +277,7 @@
     (with-hoks
       hoks
       (let [app (create-app nil)
-            post-response
-            (utils/with-service-ticket
-              app
-              (-> (mock/request
-                    :post
-                    (get-hoks-url hoks hao-path))
-                  (mock/json-body hao-data)))
+            post-response (create-mock-post-request hao-path hao-data app hoks)
             patch-response
             (utils/with-service-ticket
               app
@@ -291,11 +285,7 @@
                     :patch
                     (get-hoks-url hoks (str hao-path "/1")))
                   (mock/json-body (assoc patch-all-hao-data :id 1))))
-            get-response  (utils/with-service-ticket
-                            (create-app nil)
-                            (mock/request
-                              :get
-                              (get-hoks-url hoks (str hao-path "/1"))))]
+            get-response (create-mock-get-request hao-path app hoks)]
         (is (= (:status patch-response) 204))
         (eq (utils/parse-body (:body get-response))
             {:meta {} :data  (assoc patch-all-hao-data :id 1)})))))
