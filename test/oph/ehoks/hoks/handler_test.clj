@@ -757,34 +757,17 @@
 
 (deftest post-and-get-hankittava-yhteinen-tukinnon-osa
   (testing "POST hankittavat yhteisen tutkinnon osat"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url hyto-path))
-                (mock/json-body hyto-data)))
-          get-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (mock/request
-              :get
-              (format
-                "%s/1/%s/1"
-                url hyto-path)))]
-      (is (= (:status post-response) 200))
-      (eq (utils/parse-body
-            (:body post-response))
-          {:data {:uri   (format
-                           "%s/1/%s/1"
-                           url hyto-path)} :meta {:id 1}})
-      (is (= (:status get-response) 200))
-      (eq (:id (:data (utils/parse-body
-                        (:body get-response))))
-          1))))
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            hyto-path hyto-data app hoks)
+            get-response (create-mock-get-request hyto-path app hoks)]
+        (assert-post-response-is-ok hyto-path post-response)
+        (is (:status get-response) 200)
+        (eq (utils/parse-body
+              (:body get-response))
+            {:meta {} :data (assoc hyto-data :id 1)})))))
 
 (deftest put-hankittava-yhteinen-tutkinnon-osa
   (testing "PUT hankittavat yhteisen tutkinnon osat"
