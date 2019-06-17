@@ -78,6 +78,12 @@
         (log/warnf "Oppija %s not found in Oppijanumerorekisteri" oid)
         (throw e)))))
 
+(defn update-oppija-and-opiskeluoikeudet! [oppija-oid]
+  (update-oppija! oppija-oid)
+  (doseq [opiskeluoikeus (:opiskeluoikeudet
+                           (k/get-student-info oppija-oid))]
+    (update-opiskeluoikeus! (:oid opiskeluoikeus) oppija-oid)))
+
 (defn update-oppijat-without-index! []
   (log/info "Start indexing oppijat")
   (doseq [{oid :oppija_oid} (get-oppijat-without-index)]
