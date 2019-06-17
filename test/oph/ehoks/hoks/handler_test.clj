@@ -223,7 +223,6 @@
 
 (deftest post-and-get-hankittava-ammatillinen-osaaminen
   (testing "POST hankittava ammatillinen osaaminen and then get created hao"
-    (db/clear)
     (with-hoks
       hoks
       (let [app (create-app nil)
