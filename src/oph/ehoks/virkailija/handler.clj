@@ -25,7 +25,8 @@
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.eperusteet :as eperusteet]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]))
+            [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
+            [clojure.core.async :as a]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -216,6 +217,15 @@
 
                 (c-api/context "/:oppija-oid" []
                   :path-params [oppija-oid :- s/Str]
+
+                  (c-api/POST "/index" []
+                    :summary "Indeksoi oppijan tiedot, jos on tarpeen"
+                    (a/go
+                      (when (empty? (oppijaindex/get-oppija-opiskeluoikeudet
+                                      oppija-oid))
+                        (oppijaindex/update-oppija-and-opiskeluoikeudet!
+                          oppija-oid))
+                      (response/ok)))
 
                   (route-middleware
                     [wrap-virkailija-oppija-access]
