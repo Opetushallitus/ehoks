@@ -722,27 +722,6 @@
                                        {:nimi "Organisaation nimi"}}]
        :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]}]})
 
-(def hyto-patch-data
-  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
-   :tutkinnon-osa-koodi-versio 1
-   :osa-alueet
-   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
-     :osa-alue-koodi-versio 1
-     :osaamisen-hankkimistavat
-     [{:alku "2018-12-13"
-       :loppu "2018-12-22"
-       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
-       :osaamisen-hankkimistapa-koodi-versio 1}]
-     :osaamisen-osoittaminen
-     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000008"}
-       :nayttoymparisto {:nimi "aaa2"}
-       :alku "2018-12-15"
-       :loppu "2018-12-21"
-       :sisallon-kuvaus ["Kuvaus"]
-       :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
-                                       {:nimi "Organisaation nimi"}}]}]}]
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"})
-
 (deftest post-and-get-hankittava-yhteinen-tukinnon-osa
   (testing "POST hankittavat yhteisen tutkinnon osat"
     (with-hoks
@@ -803,6 +782,27 @@
                 (mock/json-body
                   {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})))]
       (is (= (:status response) 204)))))
+
+(def hyto-patch-data
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :tutkinnon-osa-koodi-versio 1
+   :osa-alueet
+   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
+     :osa-alue-koodi-versio 1
+     :osaamisen-hankkimistavat
+     [{:alku "2018-12-13"
+       :loppu "2018-12-22"
+       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1}]
+     :osaamisen-osoittaminen
+     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000008"}
+       :nayttoymparisto {:nimi "aaa2"}
+       :alku "2018-12-15"
+       :loppu "2018-12-21"
+       :sisallon-kuvaus ["Kuvaus"]
+       :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                       {:nimi "Organisaation nimi"}}]}]}]
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"})
 
 ;(deftest patch-all-hankittavat-yhteiset-tutkinnon-osat
 ;  (testing "PATCH all hankittavat yhteisen tutkinnon osat"
