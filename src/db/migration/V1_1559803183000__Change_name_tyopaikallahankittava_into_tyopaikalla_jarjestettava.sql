@@ -1,0 +1,17 @@
+ALTER TABLE osaamisen_hankkimistavat RENAME COLUMN
+tyopaikalla_hankittava_osaaminen_id TO tyopaikalla_jarjestettava_koulutus_id;
+
+ALTER TABLE tyopaikalla_hankittavat_osaamisen_henkilot RENAME TO
+tyopaikalla_jarjestettavan_koulutuksen_henkilot;
+
+ALTER TABLE tyopaikalla_jarjestettavan_koulutuksen_henkilot RENAME COLUMN
+tyopaikalla_hankittava_osaaminen_id TO tyopaikalla_jarjestettava_koulutus_id;
+
+ALTER TABLE tyopaikalla_hankittavat_osaamisen_tyotehtavat RENAME TO
+tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat;
+
+ALTER TABLE tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat RENAME COLUMN
+tyopaikalla_hankittava_osaaminen_id TO tyopaikalla_jarjestettava_koulutus_id;
+
+ALTER TABLE tyopaikalla_hankittavat_osaamiset RENAME TO
+tyopaikalla_jarjestettavat_koulutukset;

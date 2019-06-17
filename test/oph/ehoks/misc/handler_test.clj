@@ -1,7 +1,7 @@
 (ns oph.ehoks.misc.handler-test
   (:require [clojure.test :refer [deftest testing is]]
             [oph.ehoks.utils :refer [parse-body]]
-            [oph.ehoks.handler :as handler]
+            [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]))
 

@@ -1,6 +1,6 @@
 (function($) {
-  var JSON_SCHEMA_PATH = "/ehoks-backend/doc/swagger.json";
-  // uncomment next line (and override dev_schema.json with latest /ehoks-backend/doc/swagger.json) when doing development
+  var JSON_SCHEMA_PATH = "/ehoks-virkailija-backend/doc/swagger.json";
+  // uncomment next line (and override dev_schema.json with latest /ehoks-virkailija-backend/doc/swagger.json) when doing development
   // JSON_SCHEMA_PATH = "dev_schema.json";
 
   JSV.schema = JSON_SCHEMA_PATH;

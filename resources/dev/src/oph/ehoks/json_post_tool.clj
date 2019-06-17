@@ -5,18 +5,19 @@
 (defn send-json [service path json-body]
   (try
     (cas/with-service-ticket
-     {:method :post
-      :service service
-      :url (format "%s/%s" service path)
-      :options {:as :json
-                :body json-body
-                :content-type :json
-                :accept :json}})
+      {:method :post
+       :service service
+       :url (format "%s/%s" service path)
+       :options {:as :json
+                 :body json-body
+                 :content-type :json
+                 :accept :json}})
     (catch Exception e
-
+      (when (:debug config) (.printStackTrace e))
       (let [data (ex-data e)]
-        (printf "Error: %s \nStatus: %d\nBody:\n%s\n"
-                (.getMessage e) (:status data) (:body data))))))
+        (printf
+          "Error: %s \nLocation: %s\nStatus: %d\nBody:\n%s\n"
+          (.getMessage e) (:location data) (:status data) (:body data))))))
 
 (defn lein-send-json! [json-file & params]
   (let [options (apply hash-map params)]

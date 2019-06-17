@@ -4,7 +4,8 @@
             [clojure.test :refer [is]]
             [clojure.data :as d]
             [clojure.pprint :as p]
-            [oph.ehoks.external.http-client :as client]))
+            [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.db.migrations :as m]))
 
 (defn get-auth-cookie [app]
   (-> (mock/request
@@ -23,8 +24,7 @@
     (app (mock/header request :cookie cookie))))
 
 (defn with-authenticated-oid [store oid app request]
-  (let [cookie (get-auth-cookie app)
-        session (first (vals @store))]
+  (let [cookie (get-auth-cookie app)]
     (swap! store assoc-in [(-> @store keys first) :user :oid] oid)
     (app (mock/header request :cookie cookie))))
 
@@ -68,6 +68,7 @@
               {:status 200
                :body [{:oidHenkilo "1.2.246.562.24.11474338834"
                        :username "ehoks-test"
+                       :kayttajaTyyppi "PALVELU"
                        :organisaatiot
                        [{:organisaatioOid "1.2.246.562.10.12944436166"
                          :kayttooikeudet [{:palvelu "EHOKS"
@@ -93,3 +94,20 @@
         (println "Missing:")
         (p/pprint (second diff)))))
   (is (= value expect)))
+
+(defn with-database [f]
+  (m/clean!)
+  (m/migrate!)
+  (f)
+  (m/clean!))
+
+(defn clean-db [f]
+  (m/clean!)
+  (m/migrate!)
+  (f))
+
+(defmacro with-db [& body]
+  `(do (m/clean!)
+       (m/migrate!)
+       (do ~@body)
+       (m/clean!)))

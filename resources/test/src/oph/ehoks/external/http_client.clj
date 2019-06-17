@@ -1,7 +1,6 @@
 (ns oph.ehoks.external.http-client
   (:refer-clojure :exclude [get])
-  (:require [clj-http.client :as client]
-            [oph.ehoks.config :refer [config]]))
+  (:require [clj-http.client :as client]))
 
 (def ^:private client-functions
   (atom {:get client/get

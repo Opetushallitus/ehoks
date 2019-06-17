@@ -8,7 +8,7 @@
             [clj-time.format :as f]
             [clojure.string :as cstr]
             [oph.ehoks.schema.generator :as g]
-            [oph.ehoks.hoks-doc :refer [translations]]))
+            [oph.ehoks.hoks-doc :as hoks-doc]))
 
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
@@ -41,16 +41,11 @@
 (defn enum? [n]
   (= (and (coll? n) (first n)) 'enum))
 
-(defn translate-fi [n]
-  (if (enum? n)
-    (get-enum-translation n)
-    (get translations n (str n))))
-
 (defn get-name [v]
   (let [m (meta v)]
     (if (some? (:name m))
       (generate-link m)
-      (translate-fi (s/explain v)))))
+      (hoks-doc/translate-fi (s/explain v)))))
 
 (defn gen-type-element [t]
   (if (sequential? t)
@@ -67,7 +62,7 @@
         a (g/get-access v method)]
     (when (not= a :excluded)
       [:span
-       (gen-type-element t)", " (gen-access-str a)])))
+       (gen-type-element t) ", " (gen-access-str a)])))
 
 (defn generate-restful-header [m-meta]
   [:div
@@ -104,13 +99,13 @@
     vector
     :div
     (mapv
-     (fn [s]
-       (let [m (deref s)
-             m-meta (meta m)]
-         [:div {:class "model" :id (:name m-meta)}
-          (generate-restful-header m-meta)
-          (generate-restful-table m)]))
-     (vals s-col))))
+      (fn [s]
+        (let [m (deref s)
+              m-meta (meta m)]
+          [:div {:class "model" :id (:name m-meta)}
+           (generate-restful-header m-meta)
+           (generate-restful-table m)]))
+      (vals s-col))))
 
 (defn basic? [v]
   (-> v
@@ -138,23 +133,23 @@
      ".model {border-top: 1px solid gray;}"]
     [:link {:rel "stylesheet" :href "https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"}]]
    [:div.container
-   [:div
-    [:h1 "HOKS doc"]
-    [:p "Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin"
-     "esittämiseen."]
-    [:p
-     "Tämä dokumentaatio keskittyy toistaiseksi ainoastaan HOKS-tietomallin"
-     "esittämiseen."]
-    [:p
-     "Katso myös "
-     [:a
-      {:href "https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md"}
-      "HOKS API doc"]
-     " dokumentaatio."]
-    [:p "Generoitu "
-     (f/unparse local-formatter (l/to-local-date-time (l/local-now)))]]
-   [:div
-    content]]])
+    [:div
+     [:h1 "HOKS doc"]
+     [:p "Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin"
+      "esittämiseen."]
+     [:p
+      "Tämä dokumentaatio keskittyy toistaiseksi ainoastaan HOKS-tietomallin"
+      "esittämiseen."]
+     [:p
+      "Katso myös "
+      [:a
+       {:href "https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md"}
+       "HOKS API doc"]
+      " dokumentaatio."]
+     [:p "Generoitu "
+      (f/unparse local-formatter (l/to-local-date-time (l/local-now)))]]
+    [:div
+     content]]])
 
 (defn gen-doc []
   (gen-hiccup (get-restful)))

@@ -99,7 +99,7 @@
     {:removed [:organisaatio :rooli :id]}))
 
 (s/defschema
-  VastuullinenOhjaaja
+  VastuullinenTyopaikkaOhjaaja
   (modify
     Henkilo
     "Vastuullinen ohjaaja"
@@ -123,18 +123,15 @@
        "Oppilaitoksen oid-tunniste Opintopolku-palvelussa.")}))
 
 (s/defschema
-  TyopaikallaHankittavaOsaaminen
+  TyopaikallaJarjestettavaKoulutus
   (describe
     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :vastuullinen-ohjaaja VastuullinenOhjaaja "Vastuullinen työpaikkaohjaaja"
+    :vastuullinen-tyopaikka-ohjaaja VastuullinenTyopaikkaOhjaaja "Vastuullinen
+    työpaikkaohjaaja"
     :tyopaikan-nimi s/Str "Työpaikan nimi"
     (s/optional-key :tyopaikan-y-tunnus) s/Str "Työpaikan y-tunnus"
-    (s/optional-key :muut-osallistujat) [Henkilo]
-    "Muut ohjaukseen osallistuvat henkilöt"
-    :keskeiset-tyotehtavat [s/Str] "Keskeiset työtehtävät"
-    :lisatiedot s/Bool
-    "Lisätietoja, esim. opiskelijalla tunnistettu ohjauksen ja tuen tarvetta"))
+    :keskeiset-tyotehtavat [s/Str] "Keskeiset työtehtävät"))
 
 (s/defschema
   MuuOppimisymparisto
@@ -146,9 +143,12 @@
     oppimisymparistot_0001"
     :oppimisymparisto-koodi-versio s/Int
     "Koodisto-koodin versio, koodistolle oppimisympäristöt"
-    :selite s/Str "Oppimisympäristön nimi"
-    :lisatiedot s/Bool
-    "Lisätiedoisssa, onko tunnistettu ohjauksen ja tuen tarvetta"))
+    :alku LocalDate
+    "Muussa oppimisympäristössä tapahtuvan osaamisen hankkimisen
+    aloituspäivämäärä."
+    :loppu LocalDate
+    "Muussa oppimisympäristössä tapahtuvan osaamisen hankkimisen
+    päättymispäivämäärä."))
 
 (s/defschema
   OsaamisenHankkimistapa
@@ -169,12 +169,12 @@
     "Koulutuksen järjestäjän edustaja"
     (s/optional-key :hankkijan-edustaja) Oppilaitoshenkilo
     "Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja"
-    (s/optional-key :tyopaikalla-hankittava-osaaminen)
-    TyopaikallaHankittavaOsaaminen
+    (s/optional-key :tyopaikalla-jarjestettava-koulutus)
+    TyopaikallaJarjestettavaKoulutus
     (str "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. "
          "Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai "
          "koulutussopimus.")
-    (s/optional-key :muut-oppimisymparisto)
+    (s/optional-key :muut-oppimisymparistot)
     [MuuOppimisymparisto]
     (str "Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen "
          "liittyvät tiedot")))
@@ -198,7 +198,7 @@
     :organisaatio Organisaatio "Arvioijan organisaatio"))
 
 (s/defschema
-  TyoelamaArvioija
+  TyoelamaOsaamisenArvioija
   (modify
     Arvioija
     "Työelämän arvioija"
@@ -221,10 +221,10 @@
        "KoulutuksenJarjestajan arvioijan organisaatio")}))
 
 (s/defschema
-  HankitunOsaamisenNaytto
+  OsaamisenOsoittaminen
   (describe
-    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen
-    osoittaminen"
+    "Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
+    sisältyvä osaamisen osoittaminen: näyttö tai muu osaamisen osoittaminen."
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
@@ -235,45 +235,36 @@
          "esim. ammatillisenoppiaineet_etk")
     :nayttoymparisto Nayttoymparisto
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
-    (s/optional-key :keskeiset-tyotehtavat-naytto) [s/Str] "Keskeiset
-    työtehtävät"
+    :sisallon-kuvaus [s/Str]
+    (str "Tiivis kuvaus (esim. lista) työtilanteista ja työprosesseista, joiden
+    avulla ammattitaitovaatimusten tai osaamistavoitteiden mukainen osaaminen
+    osoitetaan. Vastaavat tiedot muusta osaamisen osoittamisesta siten, että
+    tieto kuvaa sovittuja tehtäviä ja toimia, joiden avulla osaaminen
+    osoitetaan.")
     :alku LocalDate
     "Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa
     YYYY-MM-DD"
     :loppu LocalDate
     "Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa
     YYYY-MM-DD"
-    (s/optional-key :koulutuksen-jarjestaja-arvioijat)
+    (s/optional-key :koulutuksen-jarjestaja-osaamisen-arvioijat)
     [KoulutuksenJarjestajaArvioija] "Näytön tai osaamisen osoittamisen
     arvioijat"
-    (s/optional-key :tyoelama-arvioijat) [TyoelamaArvioija] "Näytön tai
-    osaamisen osoittamisen arvioijat"))
-
-(s/defschema
-  HankitunPaikallisenOsaamisenNaytto
-  (modify
-    HankitunOsaamisenNaytto
-    "Hankitun paikallisen osaamisen osoittaminen: Näyttö tai muu osaamisen
-     osoittaminen"))
-
-(s/defschema
-  HankitunYTOOsaamisenNaytto
-  "Hankitun YTO osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
-  (st/assoc
-    (st/dissoc
-      HankitunOsaamisenNaytto
-      :ammattitaitovaatimukset)
-    (s/optional-key :osaamistavoitteet)
-    (rsjs/describe
-      [s/Str]
-      (str "Ammattitaitovaatimukset, joiden osaaminen näytössä osoitetaan."
-           "Tunnisteen tyyppi voi vielä päivittyä ja tähän saattaa tulla vielä "
-           "Yksilölliset arvioinnin kriteerit"))))
+    (s/optional-key :tyoelama-osaamisen-arvioijat) [TyoelamaOsaamisenArvioija]
+    "Näytön tai osaamisen osoittamisen arvioijat"
+    (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
+    (str "Tutkinnon osan tai osa-alueen perusteisiin sisältyvät
+    ammattitaitovaatimukset tai osaamistavoitteet, joista opiskelijan kohdalla
+    poiketaan.")
+    (s/optional-key :yksilolliset-kriteerit) [s/Str]
+    (str "Ammattitaitovaatimus tai osaamistavoite, johon yksilölliset
+    arviointikriteerit kohdistuvat ja yksilölliset arviointikriteerit kyseiseen
+    ammattitaitovaatimukseen tai osaamistavoitteeseen.")))
 
 (s/defschema
   YhteisenTutkinnonOsanOsaAlue
   (describe
-    "Puuttuvan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
+    "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alue-koodi-uri OsaAlueKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
@@ -283,13 +274,19 @@
     "Osaamisen hankkimistavat"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     "vaatimuksista tai osaamistavoitteista poikkeaminen"
-    (s/optional-key :hankitun-osaamisen-naytto) [HankitunYTOOsaamisenNaytto]
-    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"))
+    (s/optional-key :osaamisen-osoittaminen)
+    [OsaamisenOsoittaminen]
+    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    (s/optional-key :olennainen-seikka) s/Bool
+    (str "Tieto sellaisen seikan
+    olemassaolosta, jonka koulutuksen järjestäjä katsoo oleelliseksi tutkinnon
+    osaan tai osa-alueeseen liittyvän osaamisen hankkimisessa tai
+    osoittamisessa.")))
 
 (s/defschema
-  OlemassaOlevanYTOOsaAlue
+  AiemminHankitunYTOOsaAlue
   (describe
-    "Olemassaolevan YTOn osa-alueen tiedot"
+    "AiemminHankitun YTOn osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :osa-alue-koodi-uri OsaAlueKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
@@ -308,8 +305,13 @@
     :valittu-todentamisen-prosessi-koodi-versio s/Int
     "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio
     (Osaamisen todentamisen prosessi)"
-    (s/optional-key :tarkentavat-tiedot) [HankitunOsaamisenNaytto]
-    "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."))
+    (s/optional-key :tarkentavat-tiedot-naytto) [OsaamisenOsoittaminen]
+    "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
+    (s/optional-key :olennainen-seikka) s/Bool
+    (str "Tieto sellaisen seikan
+    olemassaolosta, jonka koulutuksen järjestäjä katsoo oleelliseksi tutkinnon
+    osaan tai osa-alueeseen liittyvän osaamisen hankkimisessa tai
+    osoittamisessa.")))
 
 (s/defschema
   YhteinenTutkinnonOsa
@@ -330,10 +332,10 @@
          "koulutuksen järjestäjän oid.")))
 
 (s/defschema
-  PuuttuvaYTO
+  HankittavaYTO
   (modify
     YhteinenTutkinnonOsa
-    "Puuttuvan yhteinen tutkinnon osan (YTO) tiedot"
+    "Hankittavan yhteinen tutkinnon osan (YTO) tiedot"
     {:removed [:vaatimuksista-tai-tavoitteista-poikkeaminen]}))
 
 (s/defschema
@@ -371,9 +373,9 @@
      [:nimi :kuvaus :kesto :alku :loppu]}))
 
 (s/defschema
-  PuuttuvaAmmatillinenOsaaminen
+  HankittavaAmmatillinenTutkinnonOsa
   (describe
-    "Puuttuvan ammatillisen osaamisen tiedot (GET)"
+    "Hankittavan ammatillisen osaamisen tiedot (GET)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)"
@@ -383,33 +385,38 @@
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     (str "Tekstimuotoinen selite ammattitaitovaatimuksista tai "
          "osaamistavoitteista poikkeamiseen")
-    (s/optional-key :hankitun-osaamisen-naytto) [HankitunOsaamisenNaytto]
+    (s/optional-key :osaamisen-osoittaminen) [OsaamisenOsoittaminen]
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
     (s/optional-key :koulutuksen-jarjestaja-oid) Oid
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
-         "koulutuksen järjestäjän oid.")))
+         "koulutuksen järjestäjän oid.")
+    (s/optional-key :olennainen-seikka) s/Bool
+    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
+   järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
+   liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
 
 (s/defschema
-  PuuttuvaAmmatillinenOsaaminenLuonti
+  HankittavaAmmatillinenTutkinnonOsaLuonti
   (modify
-    PuuttuvaAmmatillinenOsaaminen
-    "Puuttuvan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)"
+    HankittavaAmmatillinenTutkinnonOsa
+    "Hankittavan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)"
     {:removed [:id]}))
 
 (s/defschema
-  PuuttuvaAmmatillinenOsaaminenPaivitys
+  HankittavaAmmatillinenTutkinnonOsaPaivitys
   (modify
-    PuuttuvaAmmatillinenOsaaminen
-    "Puuttuvan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa (PUT)"))
+    HankittavaAmmatillinenTutkinnonOsa
+    "Hankittavan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa
+    (PUT)"))
 
 (s/defschema
-  PuuttuvaAmmatillinenOsaaminenKentanPaivitys
+  HankittavaAmmatillinenTutkinnonOsaKentanPaivitys
   (modify
-    PuuttuvaAmmatillinenOsaaminen
-    (str "Puuttuvan ammatillisen osaamisen tiedot kenttää tai kenttiä "
+    HankittavaAmmatillinenTutkinnonOsa
+    (str "Hankittavan ammatillisen osaamisen tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
      [:tutkinnon-osa-koodi-uri
@@ -418,34 +425,34 @@
       :koulutuksen-jarjestaja-oid]}))
 
 (s/defschema
-  PuuttuvaYTOLuonti
+  HankittavaYTOLuonti
   (modify
-    PuuttuvaYTO
-    (str "Puuttuvan yhteinen tutkinnon osan tiedot uutta merkintää "
+    HankittavaYTO
+    (str "Hankittavan yhteinen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
     {:removed [:id]}))
 
 (s/defschema
-  PuuttuvaYTOPaivitys
+  HankittavaYTOPaivitys
   (modify
-    PuuttuvaYTO
-    (str "Puuttuvan yhteinen tutkinnon osa tiedot merkintää "
+    HankittavaYTO
+    (str "Hankittavan yhteinen tutkinnon osa tiedot merkintää "
          "ylikirjoittaessa (PUT)")))
 
 (s/defschema
-  PuuttuvaYTOKentanPaivitys
+  HankittavaYTOKentanPaivitys
   (modify
-    PuuttuvaYTO
-    (str "Puuttuvan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
+    HankittavaYTO
+    (str "Hankittavan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
      [:osa-alueet :koulutuksen-jarjestaja-oid :tutkinnon-osa-koodi-uri
       :tutkinnon-osa-koodi-versio]}))
 
 (s/defschema
-  PuuttuvaPaikallinenTutkinnonOsa
+  HankittavaPaikallinenTutkinnonOsa
   (describe
-    "Puuttuva paikallinen tutkinnon osa"
+    "Hankittava paikallinen tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     (s/optional-key :amosaa-tunniste) s/Str
     "Tunniste ePerusteet AMOSAA -palvelussa"
@@ -462,8 +469,12 @@
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
-    :hankitun-osaamisen-naytto [HankitunPaikallisenOsaamisenNaytto]
-    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"))
+    (s/optional-key :osaamisen-osoittaminen) [OsaamisenOsoittaminen]
+    "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    (s/optional-key :olennainen-seikka) s/Bool
+    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
+    järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
+    liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
 
 (s/defschema
   TodennettuArviointiLisatiedot
@@ -476,11 +487,11 @@
     "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
 
 (s/defschema
-  OlemassaOlevaPaikallinenTutkinnonOsa
+  AiemminHankittuPaikallinenTutkinnonOsa
   (modify
-    PuuttuvaPaikallinenTutkinnonOsa
-    "Olemassa oleva yhteinen tutkinnon osa"
-    {:removed [:osaamisen-hankkimistavat :hankitun-osaamisen-naytto]
+    HankittavaPaikallinenTutkinnonOsa
+    "Aiemmin hankittu yhteinen tutkinnon osa"
+    {:removed [:osaamisen-hankkimistavat :osaamisen-osoittaminen]
      :added
      (describe
        ""
@@ -489,68 +500,135 @@
        :valittu-todentamisen-prosessi-koodi-versio s/Int
        "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio
        (Osaamisen todentamisen prosessi)"
-       (s/optional-key :tarkentavat-tiedot-naytto) [HankitunOsaamisenNaytto]
+       (s/optional-key :tarkentavat-tiedot-naytto) [OsaamisenOsoittaminen]
        "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
-       (s/optional-key :tarkentavat-tiedot-arvioija)
+       (s/optional-key :tarkentavat-tiedot-osaamisen-arvioija)
        TodennettuArviointiLisatiedot "Mikäli arvioijan kautta todennettu,
        annetaan myös arvioijan lisätiedot")}))
 
 (s/defschema
-  PuuttuvaPaikallinenTutkinnonOsaLuonti
+  AiemminHankitunPaikallisenTutkinnonOsanLuonti
   (modify
-    PuuttuvaPaikallinenTutkinnonOsa
-    (str "Puuttuvan paikallisen tutkinnon osan tiedot uutta merkintää "
+    AiemminHankittuPaikallinenTutkinnonOsa
+    (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot uutta "
+         "merkintää luotaessa (POST")
+    {:removed [:id]}))
+
+(s/defschema
+  AiemminHankitunPaikallisenTutkinnonOsanPaivitys
+  (modify
+    AiemminHankittuPaikallinenTutkinnonOsa
+    (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot "
+         "kenttää tai kenttiä päivitettäessä (PATCH)")
+    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+                 :valittu-todentamisen-prosessi-koodi-uri
+                 :koulutuksen-jarjestaja-oid
+                 :kuvaus
+                 :laajuus
+                 :nimi]}))
+
+(s/defschema
+  HankittavanPaikallisenTutkinnonOsanLuonti
+  (modify
+    HankittavaPaikallinenTutkinnonOsa
+    (str "Hankittavan paikallisen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
     {:removed [:id]}))
 
 (s/defschema
-  PuuttuvaPaikallinenTutkinnonOsaPaivitys
+  HankittavaPaikallinenTutkinnonOsaPaivitys
   (modify
-    PuuttuvaPaikallinenTutkinnonOsa
-    (str "Puuttuvan paikallisen tutkinnon osan tiedot merkintää "
+    HankittavaPaikallinenTutkinnonOsa
+    (str "Hankittavan paikallisen tutkinnon osan tiedot merkintää "
          "ylikirjoittaessa (PUT)")))
 
 (s/defschema
-  PuuttuvaPaikallinenTutkinnonOsaKentanPaivitys
+  HankittavaPaikallinenTutkinnonOsaKentanPaivitys
   (modify
-    PuuttuvaPaikallinenTutkinnonOsa
-    (str "Puuttuvan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
+    HankittavaPaikallinenTutkinnonOsa
+    (str "Hankittavan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
      [:osaamisen-hankkimistavat
       :koulutuksen-jarjestaja-oid
-      :hankitun-osaamisen-naytto
+      :osaamisen-osoittaminen
       :kuvaus
       :laajuus
       :nimi]}))
 
 (s/defschema
-  OlemassaOlevaYhteinenTutkinnonOsa
+  AiemminHankittuYhteinenTutkinnonOsa
   (modify
     YhteinenTutkinnonOsa
-    "Olemassa oleva yhteinen tutkinnon osa"
+    "Aiemmin hankittu yhteinen tutkinnon osa"
     {:removed [:osa-alueet]
      :added
      (describe
        ""
-       :osa-alueet [OlemassaOlevanYTOOsaAlue] "YTO osa-alueet"
+       :osa-alueet [AiemminHankitunYTOOsaAlue] "YTO osa-alueet"
        :valittu-todentamisen-prosessi-koodi-uri TodentamisenProsessiKoodiUri
        "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
        :valittu-todentamisen-prosessi-koodi-versio s/Int
        "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio
        (Osaamisen todentamisen prosessi)"
-       (s/optional-key :tarkentavat-tiedot-naytto) [HankitunOsaamisenNaytto]
+       (s/optional-key :tarkentavat-tiedot-naytto) [OsaamisenOsoittaminen]
        "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
-       (s/optional-key :tarkentavat-tiedot-arvioija)
+       (s/optional-key :tarkentavat-tiedot-osaamisen-arvioija)
        TodennettuArviointiLisatiedot "Mikäli arvioijan kautta todennettu,
        annetaan myös arvioijan lisätiedot")}))
 
 (s/defschema
-  OlemassaOlevaAmmatillinenTutkinnonOsa
+  AiemminHankitunYhteisenTutkinnonOsanLuonti
   (modify
-    OlemassaOlevaYhteinenTutkinnonOsa
-    "Olemassa oleva yhteinen tutkinnon osa"
-    {:removed [:osa-alueet]}))
+    AiemminHankittuYhteinenTutkinnonOsa
+    (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot uutta "
+         "merkintää luotaessa (POST)")
+    {:removed [:id]}))
+
+(s/defschema
+  AiemminHankitunYhteisenTutkinnonOsanPaivitys
+  (modify
+    AiemminHankittuYhteinenTutkinnonOsa
+    (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot "
+         "kenttää tai kenttiä päivitettäessä (PATCH)")
+    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+                 :valittu-todentamisen-prosessi-koodi-uri
+                 :tutkinnon-osa-koodi-versio
+                 :tutkinnon-osa-koodi-uri
+                 :osa-alueet]}))
+
+(s/defschema
+  AiemminHankittuAmmatillinenTutkinnonOsa
+  (modify
+    AiemminHankittuYhteinenTutkinnonOsa
+    "Aiemmin hankittu ammatillisen tutkinnon osa"
+    {:removed [:osa-alueet]
+     :added
+     (describe
+       ""
+       (s/optional-key :olennainen-seikka) s/Bool
+       (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
+    järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
+    liittyvän osaamisen hankkimisessa tai osoittamisessa."))}))
+
+(s/defschema
+  AiemminHankitunAmmatillisenTutkinnonOsanLuonti
+  (modify
+    AiemminHankittuAmmatillinenTutkinnonOsa
+    (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot uutta "
+         "merkintää luotaessa (POST)")
+    {:removed [:id]}))
+
+(s/defschema
+  AiemminHankitunAmmatillisenTutkinnonOsanPaivitys
+  (modify
+    AiemminHankittuAmmatillinenTutkinnonOsa
+    (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot "
+         "kenttää tai kenttiä päivittäessä (PATCH)")
+    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+                 :valittu-todentamisen-prosessi-koodi-uri
+                 :tutkinnon-osa-koodi-versio
+                 :tutkinnon-osa-koodi-uri]}))
 
 (def HOKSModel
   ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
@@ -591,38 +669,23 @@
    :versio {:methods {:any :optional}
             :types {:any s/Int}
             :description "HOKS-dokumentin versio"}
-   :laatija {:methods {:any :optional}
-             :types {:any HoksToimija}
-             :description "HOKS-dokumentin luoneen henkilön nimi"}
-   :paivittaja {:methods {:post :optional
-                          :patch :required}
-                :types {:any HoksToimija}
-                :description
-                "HOKS-dokumenttia viimeksi päivittäneen henkilön nimi"}
-   :hyvaksyja {:methods {:patch :optional}
-               :types {:any HoksToimija}
-               :description "Luodun HOKS-dokumentn hyväksyjän nimi"}
-   :luotu {:methods {:any :optional}
-           :types {:any s/Inst}
-           :description
-           "HOKS-dokumentin luontiaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
    :ensikertainen-hyvaksyminen {:methods {:patch :optional}
                                 :types {:any LocalDate}
                                 :description
                                 "HOKS-dokumentin ensimmäinen hyväksymisaika
                                 muodossa YYYY-MM-DD"}
-   :olemassa-olevat-ammatilliset-tutkinnon-osat
+   :aiemmin-hankitut-ammat-tutkinnon-osat
    {:methods {:any :optional}
-    :types {:any [OlemassaOlevaAmmatillinenTutkinnonOsa]}
-    :description "Olemassa oleva ammatillinen osaaminen"}
-   :olemassa-olevat-yhteiset-tutkinnon-osat
+    :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]}
+    :description "Aiemmin hankittu ammatillinen osaaminen"}
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat
    {:methods {:any :optional}
-    :types {:any [OlemassaOlevaYhteinenTutkinnonOsa]}
-    :description "Olemassa olevat yhteiset tutkinnon osat (YTO)"}
-   :olemassa-olevat-paikalliset-tutkinnon-osat
+    :types {:any [AiemminHankittuYhteinenTutkinnonOsa]}
+    :description "Aiemmin hankitut yhteiset tutkinnon osat (YTO)"}
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat
    {:methods {:any :optional}
-    :types {:any [OlemassaOlevaPaikallinenTutkinnonOsa]}
-    :description "Olemassa oleva paikallinen tutkinnon osa"}
+    :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]}
+    :description "Aiemmin hankittu paikallinen tutkinnon osa"}
    :hyvaksytty
    {:methods {:any :optional}
     :types {:any s/Inst}
@@ -636,19 +699,26 @@
    {:methods {:any :optional}
     :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
     :description "Opiskeluvalmiuksia tukevat opinnot"}
-   :puuttuvat-ammatilliset-tutkinnon-osat
+   :hankittavat-ammat-tutkinnon-osat
    {:methods {:any :optional}
-    :types {:any [PuuttuvaAmmatillinenOsaaminen]}
+    :types {:any [HankittavaAmmatillinenTutkinnonOsa]}
     :description
-    "Puuttuvan ammatillisen osaamisen hankkimisen tiedot"}
-   :puuttuvat-yhteiset-tutkinnon-osat
+    "Hankittavan ammatillisen osaamisen hankkimisen tiedot"}
+   :hankittavat-yhteiset-tutkinnon-osat
    {:methods {:any :optional}
-    :types {:any [PuuttuvaYTO]}
-    :description "Puuttuvan yhteisen tutkinnon osan hankkimisen tiedot"}
-   :puuttuvat-paikalliset-tutkinnon-osat
+    :types {:any [HankittavaYTO]}
+    :description "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot"}
+   :hankittavat-paikalliset-tutkinnon-osat
    {:methods {:any :optional}
-    :types {:any [PuuttuvaPaikallinenTutkinnonOsa]}
-    :description "Puuttuvat paikallisen tutkinnon osat"}})
+    :types {:any [HankittavaPaikallinenTutkinnonOsa]}
+    :description "Hankittavat paikallisen tutkinnon osat"}
+   :osaamisen-hankkimisen-tarve {:methods {:any :optional}
+                                 :types {:any s/Bool}
+                                 :description
+                                 "Tutkintokoulutuksen ja muun tarvittavan
+                               ammattitaidon hankkimisen tarve; osaamisen
+                               tunnistamis- ja tunnustamisprosessin
+                               lopputulos."}})
 
 ; Following four schemas are only for generated markdown doc
 

@@ -1,0 +1,1 @@
+ALTER TABLE hoksit ADD COLUMN manuaalisyotto BOOLEAN DEFAULT false;

@@ -99,30 +99,42 @@ lein cljfmt check
 
 ### Ohjelman ajaminen
 
-Kehitysmoodissa:
+Ohjelmalle voi antaa parametrina sovelluksen nimen. Nimi on joko `ehoks`
+(oppija) tai `ehoks-virkailija` (virkailija). Molemmat sovellukset on
+oletuksena valittuna. Lisäksi ohjelma ottaa vastaan parametreina käytettävän
+konfiguraatiotiedoston. Ohjelman nimen (`NAME`) ja konfiguraatiotiedoston
+(`CONFIG`) voi antaa myös ympäristömuuttujana.
+
+Tuotantomoodissa:
 
 ``` shell
 lein run
 ```
 
-Tuotantomoodissa:
+Kehitysmoodissa:
 
 ``` shell
-lein with-profile -dev run
+lein with-profile +dev run
+```
+
+tai
+
+``` shell
+lein with-profile +dev run ehoks-virkailija
 ```
 
 Replissä `lein repl`:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
-user> (def server (start-server))
+user> (def server (start-server "ehoks" nil))
 ```
 
 Tai omalla konfiguraatiolla:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
-user> (def server (start-server "config/custom.edn"))
+user> (def server (start-server "ehoks-virkailija" "config/custom.edn"))
 ```
 
 Ja ohjelman sammuttaminen:
@@ -166,12 +178,13 @@ Kontin luonti:
 ``` shell
 cd scripts/redis-docker
 docker build -t ehoks-redis .
+docker volume create redisdata
 ```
 
 Kontin ajaminen:
 
 ``` shell
-docker run --rm --name ehoks-redis -p 6379:6379 --volume ~/path/to/ehoks-redis-data:/data ehoks-redis
+docker run --rm --name ehoks-redis -p 6379:6379 --volume redisdata:/data ehoks-redis
 ```
 
 Rediksen voi jättää myös pois, jolloin istuntoa pidetään muistissa. Tämä
@@ -184,26 +197,13 @@ Kontin luonti:
 ``` shell
 cd scripts/postgres-docker
 docker build -t ehoks-postgres .
+docker volume create pgdata
 ```
 
 Kontin ajaminen:
 
 ``` shell
-docker run --rm --name ehoks-postgres -p 5432:5432 --volume ~/path/to/ehoks-postgres-data:/data ehoks-postgres
-```
-
-### Testi-JSONin lähetys
-
-Sovelluksessa on mukana pieni skripti, jolla voi lähettää JSON-tiedoston
-palvelimelle. Tätä voi hyödyntää esimerkiksi testiympäristöön datan
-lähettämisessä. Skriptille voi määrittää ympäristömuuttujassa config-tiedoston,
-jossa on ympäristökohtainen CAS-palvelimen osoite, CAS-tunnukset ja palvelun
-tunniste.
-
-Skriptiä kutsutaan:
-
-```shell
-CONFIG="path/to/config.edn" lein send-json "path/to/file.json" :service "http://localhost:3000/ehoks-backend" :path "api/v1/hoks"
+docker run --rm --name ehoks-postgres -p 5432:5432 --volume pgdata:/data ehoks-postgres
 ```
 
 ### Schemat
@@ -277,10 +277,10 @@ tai päivättää oppijan HOKSia.
 
 Rajapintaa kutsuttaessa pitää tuoda seuraavat headerit:
 
-| header | selite |
-| ------ | ------ |
-| Caller-Id | OPH:n rajapintojen yhteinen tunniste |
-| ticket | Validi CAS service ticket |
+| header | selite | Lisätietoa |
+| ------ | ------ | ---------- |
+| Caller-Id | OPH:n rajapintojen yhteinen tunniste | [Kutsujan tunnisteen (Caller-Id) lisääminen rajapintakutsuihin](https://confluence.csc.fi/pages/viewpage.action?pageId=50858064) |
+| ticket | Validi CAS service ticket | [CAS-tunnistautuminen rajapinnassa (eHOKS)](https://confluence.csc.fi/pages/viewpage.action?pageId=79084600) |
 
 ## Ajettava jar
 

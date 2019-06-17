@@ -34,7 +34,7 @@
 (defn get-cached [url]
   (when-let [response (get @cache url)]
     (when-not (expired? response)
-      (log/debug "Using cached version for " url)
+      (log/debugf "Using cached version for %s" url)
       response)))
 
 (defn add-cached-response! [url response]
