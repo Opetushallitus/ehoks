@@ -219,12 +219,14 @@
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) hankittavan yhteisen tutkinnon osat HOKSiin"
-      :body [pyto hoks-schema/HankittavaYTOLuonti]
+      :body [hyto hoks-schema/HankittavaYTOLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [pyto-response (db/create-pyto! pyto)]
+      (let [hyto-response (h/save-hankittava-yhteinen-tutkinnon-osa!
+                            (get-in request [:hoks :id]) hyto)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id pyto-response))}
-          :id (:id pyto-response))))
+          {:uri (format "%s/%d" (:uri request) (:id hyto-response))}
+          :id (:id hyto-response)))
+      )
 
     (c-api/PUT "/:id" []
       :summary "Päivittää HOKSin hankittavan yhteisen tutkinnon osat"
