@@ -436,7 +436,7 @@
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
           aiemmin-hankittu-yhteinen-tutkinnon-osa
-          hankittava-ammat-tutkinnon-osa))
+          hankittava-ammat-tutkinnon-osa
+          hankittava-yhteinen-tutkinnon-osa))
       (c-api/undocumented
-        hankittava-yhteinen-tutkinnon-osa
         opiskeluvalmiuksia-tukevat-opinnot))))
