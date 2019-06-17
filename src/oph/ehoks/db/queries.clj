@@ -168,6 +168,7 @@
      :primary-column "id"
      :column "hankittava_ammat_tutkinnon_osa_id"}))
 (defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id)
+(defq select-hankittavat-yhteiset-tutkinnon-osat-by-id)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id)
 (def select-osaamisen-hankkimistavat-by-yto-osa-alue-id
   (generate-select-join
