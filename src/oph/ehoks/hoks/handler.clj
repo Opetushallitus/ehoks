@@ -206,6 +206,42 @@
         (response/not-found
           {:error "Hankittava ammatillinen tutkinnon osa not found"})))))
 
+(def ^:private hankittava-yhteinen-tutkinnon-osa
+  (c-api/context "/:hoks-id/hankittava-yhteinen-tutkinnon-osa" [hoks-id]
+
+    (c-api/GET "/:id" [id]
+      :summary "Palauttaa HOKSin hankittavan yhteisen tutkinnon osan"
+      :path-params [id :- s/Int]
+      :return (rest/response hoks-schema/HankittavaYTO)
+      (rest/rest-ok (db/get-pyto-by-id id)))
+
+    (c-api/POST "/" [:as request]
+      :summary
+      "Luo (tai korvaa vanhan) hankittavan yhteisen tutkinnon osat HOKSiin"
+      :body [pyto hoks-schema/HankittavaYTOLuonti]
+      :return (rest/response schema/POSTResponse :id s/Int)
+      (let [pyto-response (db/create-pyto! pyto)]
+        (rest/rest-ok
+          {:uri (format "%s/%d" (:uri request) (:id pyto-response))}
+          :id (:id pyto-response))))
+
+    (c-api/PUT "/:id" []
+      :summary "Päivittää HOKSin hankittavan yhteisen tutkinnon osat"
+      :path-params [id :- s/Int]
+      :body [values hoks-schema/HankittavaYTOPaivitys]
+      (if (db/update-pyto! id values)
+        (response/no-content)
+        (response/not-found "PYTO not found with given PYTO ID")))
+
+    (c-api/PATCH "/:id" []
+      :summary
+      "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
+      :path-params [id :- s/Int]
+      :body [values hoks-schema/HankittavaYTOKentanPaivitys]
+      (if (db/update-pyto-values! id values)
+        (response/no-content)
+        (response/not-found "PPTO not found with given PPTO ID")))))
+
 (def ^:private aiemmin-hankittu-ammat-tutkinnon-osa
   (c-api/context "/aiemmin-hankittu-ammat-tutkinnon-osa" []
 
@@ -309,42 +345,6 @@
         (response/not-found
           {:error "Aiemmin hankitun yhteinen tutkinnon osa not found"})))))
 
-(def ^:private hankittava-yhteinen-tutkinnon-osa
-  (c-api/context "/:hoks-id/hankittava-yhteinen-tutkinnon-osa" [hoks-id]
-
-    (c-api/GET "/:id" [id]
-      :summary "Palauttaa HOKSin hankittavan yhteisen tutkinnon osan"
-      :path-params [id :- s/Int]
-      :return (rest/response hoks-schema/HankittavaYTO)
-      (rest/rest-ok (db/get-pyto-by-id id)))
-
-    (c-api/POST "/" [:as request]
-      :summary
-      "Luo (tai korvaa vanhan) hankittavan yhteisen tutkinnon osat HOKSiin"
-      :body [pyto hoks-schema/HankittavaYTOLuonti]
-      :return (rest/response schema/POSTResponse :id s/Int)
-      (let [pyto-response (db/create-pyto! pyto)]
-        (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id pyto-response))}
-          :id (:id pyto-response))))
-
-    (c-api/PUT "/:id" []
-      :summary "Päivittää HOKSin hankittavan yhteisen tutkinnon osat"
-      :path-params [id :- s/Int]
-      :body [values hoks-schema/HankittavaYTOPaivitys]
-      (if (db/update-pyto! id values)
-        (response/no-content)
-        (response/not-found "PYTO not found with given PYTO ID")))
-
-    (c-api/PATCH "/:id" []
-      :summary
-      "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
-      :path-params [id :- s/Int]
-      :body [values hoks-schema/HankittavaYTOKentanPaivitys]
-      (if (db/update-pyto-values! id values)
-        (response/no-content)
-        (response/not-found "PPTO not found with given PPTO ID")))))
-
 (def ^:private opiskeluvalmiuksia-tukevat-opinnot
   (c-api/context "/:hoks-id/opiskeluvalmiuksia-tukevat-opinnot" [hoks-id]
 
@@ -432,11 +432,11 @@
               (pdb/update-hoks-by-id! id values)
               (response/no-content)))
 
-          hankittava-paikallinen-tutkinnon-osa
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
           aiemmin-hankittu-yhteinen-tutkinnon-osa
           hankittava-ammat-tutkinnon-osa
+          hankittava-paikallinen-tutkinnon-osa
           hankittava-yhteinen-tutkinnon-osa))
       (c-api/undocumented
         opiskeluvalmiuksia-tukevat-opinnot))))
