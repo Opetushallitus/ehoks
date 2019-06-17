@@ -801,7 +801,7 @@
 ;                (mock/json-body
 ;                  (assoc hyto-data :id 1))))]
 ;      (is (= (:status response) 204)))))
-;
+
 ;(deftest patch-one-hankittava-yhteinen-tutkinnon-osa
 ;  (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
 ;    (db/clear)
@@ -823,7 +823,8 @@
 ;                    "%s/1/%s/1"
 ;                    url hyto-path))
 ;                (mock/json-body
-;                  {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})))]
+;                  {:koulutuksen-jarjestaja-oid
+;                   "1.2.246.562.10.00000000012"})))]
 ;      (is (= (:status response) 204)))))
 ;
 ;(deftest patch-all-hankittavat-yhteiset-tutkinnon-osat
