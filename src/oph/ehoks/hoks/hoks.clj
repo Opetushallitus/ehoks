@@ -545,6 +545,9 @@
            (replace-hato-osaamisen-osoittamiset!
              hato-db (:osaamisen-osoittaminen values)))))
 
+(defn update-hankittava-yhteinen-tutkinnon-osa [hyto-id new-values]
+  (db/update-hankittava-yhteinen-tutkinnon-osa-by-id! hyto-id new-values))
+
 (defn- replace-ahato-tarkentavat-tiedot-naytto! [ahato-id new-values]
   (db/delete-aiemmin-hankitun-ammat-tutkinnon-osan-naytto-by-id! ahato-id)
   (save-ahato-tarkentavat-tiedot-naytto! ahato-id new-values))
