@@ -207,7 +207,7 @@
           {:error "Hankittava ammatillinen tutkinnon osa not found"})))))
 
 (def ^:private hankittava-yhteinen-tutkinnon-osa
-  (c-api/context "/:hoks-id/hankittava-yhteinen-tutkinnon-osa" [hoks-id]
+  (c-api/context "/hankittava-yhteinen-tutkinnon-osa" []
 
     (c-api/GET "/:id" [id]
       :summary "Palauttaa HOKSin hankittavan yhteisen tutkinnon osan"
