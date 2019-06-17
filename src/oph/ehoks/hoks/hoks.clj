@@ -526,7 +526,7 @@
   (mapv #(save-hankittava-ammat-tutkinnon-osa! h %) c))
 
 (defn replace-hato-osaamisen-hankkimistavat! [hato c]
-  (db/delete-osaamisen-hankkimistavat-by-pato-id! (:id hato))
+  (db/delete-osaamisen-hankkimistavat-by-hato-id! (:id hato))
   (save-hato-osaamisen-hankkimistavat! hato c))
 
 (defn replace-hato-osaamisen-osoittamiset! [hato c]

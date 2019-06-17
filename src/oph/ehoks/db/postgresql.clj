@@ -534,7 +534,7 @@
     [queries/select-osaamisen-osoittamiset-by-pato-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-(defn delete-osaamisen-hankkimistavat-by-pato-id!
+(defn delete-osaamisen-hankkimistavat-by-hato-id!
   "Hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat"
   [id]
   (shallow-delete!
