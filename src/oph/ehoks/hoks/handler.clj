@@ -232,7 +232,7 @@
       :body [values hoks-schema/HankittavaYTOPaivitys]
       (if (db/update-pyto! id values)
         (response/no-content)
-        (response/not-found "PYTO not found with given PYTO ID")))
+        (response/not-found {:error "HYTO not found with given HYTO ID"})))
 
     (c-api/PATCH "/:id" []
       :summary
@@ -241,7 +241,7 @@
       :body [values hoks-schema/HankittavaYTOKentanPaivitys]
       (if (db/update-pyto-values! id values)
         (response/no-content)
-        (response/not-found "PPTO not found with given PPTO ID")))))
+        (response/not-found {:error "HYTO not found with given HYTO ID"})))))
 
 (def ^:private aiemmin-hankittu-ammat-tutkinnon-osa
   (c-api/context "/aiemmin-hankittu-ammat-tutkinnon-osa" []
@@ -435,7 +435,7 @@
                   (first (pdb/update-hoks-by-id! hoks-id values))]
               (if (pos? count-of-rows-updated)
                 (response/no-content)
-                (response/not-found "HOKS not found with given HOKS ID"))))
+                (response/not-found {:error "HOKS not found with given HOKS ID"} ))))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
