@@ -92,6 +92,10 @@
             [lein-cloverage "1.0.13"]
             [lein-eftest "0.5.7"]
             [lein-environ "1.1.0"]]
+  :repositories [["releases" {:url           "https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local"
+                              :sign-releases false
+                              :snapshots     false}]
+                 ["snapshots" {:url "https://artifactory.opintopolku.fi/artifactory/oph-sade-snapshot-local"}]]
   :main oph.ehoks.main
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
