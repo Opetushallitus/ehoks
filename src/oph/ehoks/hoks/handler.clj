@@ -210,11 +210,11 @@
 (def ^:private hankittava-yhteinen-tutkinnon-osa
   (c-api/context "/hankittava-yhteinen-tutkinnon-osa" []
 
-    (c-api/GET "/:id" [id]
+    (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin hankittavan yhteisen tutkinnon osan"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/HankittavaYTO)
-      (rest/rest-ok (db/get-pyto-by-id id)))
+      (rest/rest-ok (h/get-hankittava-yhteinen-tutkinnon-osa id)))
 
     (c-api/POST "/" [:as request]
       :summary
@@ -437,7 +437,8 @@
                   (first (pdb/update-hoks-by-id! hoks-id values))]
               (if (pos? count-of-rows-updated)
                 (response/no-content)
-                (response/not-found {:error "HOKS not found with given HOKS ID"} ))))
+                (response/not-found
+                  {:error "HOKS not found with given HOKS ID"} ))))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
