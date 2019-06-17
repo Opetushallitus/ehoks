@@ -688,10 +688,16 @@
       assert-ahyto-is-patched-correctly)))
 
 (def hyto-path "hankittava-yhteinen-tutkinnon-osa")
+
 (def hyto-data
-  {:osa-alueet
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :tutkinnon-osa-koodi-versio 1
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"
+   :osa-alueet
    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
      :osa-alue-koodi-versio 1
+     :vaatimuksista-tai-tavoitteista-poikkeaminen "joku poikkeaminen"
+     :olennainen-seikka false
      :osaamisen-hankkimistavat
      [{:alku "2018-12-15"
        :loppu "2018-12-23"
@@ -705,10 +711,7 @@
        :sisallon-kuvaus ["Kuvaus"]
        :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
                                        {:nimi "Organisaation nimi"}}]
-       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]}]
-   :tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
-   :tutkinnon-osa-koodi-versio 1
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"})
+       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]}]})
 
 (def hyto-patch-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
