@@ -688,7 +688,6 @@
       assert-ahyto-is-patched-correctly)))
 
 (def hyto-path "hankittava-yhteinen-tutkinnon-osa")
-
 (def hyto-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :tutkinnon-osa-koodi-versio 1
@@ -702,10 +701,21 @@
      [{:alku "2018-12-15"
        :loppu "2018-12-23"
        :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
-       :osaamisen-hankkimistapa-koodi-versio 1}]
+       :osaamisen-hankkimistapa-koodi-versio 1
+       :muut-oppimisymparistot
+       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0222"
+         :oppimisymparisto-koodi-versio 3
+         :alku "2015-03-10"
+         :loppu "2021-03-19"}]}]
      :osaamisen-osoittaminen
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
        :nayttoymparisto {:nimi "aaa"}
+       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
+                     :koodi-versio 4}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Erkki Esimerkkitetsaaja"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.13490579333"}}]
        :alku "2018-12-12"
        :loppu "2018-12-20"
        :sisallon-kuvaus ["Kuvaus"]
