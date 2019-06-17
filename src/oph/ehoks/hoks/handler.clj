@@ -201,8 +201,8 @@
       :path-params [id :- s/Int]
       :body
       [values hoks-schema/HankittavaAmmatillinenTutkinnonOsaKentanPaivitys]
-      (if-let [pao-db (h/get-hankittava-ammat-tutkinnon-osa id)]
-        (do (h/update-hankittava-ammat-tutkinnon-osa! pao-db values)
+      (if-let [hao-db (h/get-hankittava-ammat-tutkinnon-osa id)]
+        (do (h/update-hankittava-ammat-tutkinnon-osa! hao-db values)
             (response/no-content))
         (response/not-found
           {:error "Hankittava ammatillinen tutkinnon osa not found"})))))
@@ -235,15 +235,15 @@
     ;    (response/no-content)
     ;    (response/not-found {:error "HYTO not found with given HYTO ID"})))
     ;
-    ;(c-api/PATCH "/:id" []
-    ;  :summary
-    ;  "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
-    ;  :path-params [id :- s/Int]
-    ;  :body [values hoks-schema/HankittavaYTOKentanPaivitys]
-    ;  (if (db/update-pyto-values! id values)
-    ;    (response/no-content)
-    ;    (response/not-found {:error "HYTO not found with given HYTO ID"})))
-))
+    (c-api/PATCH "/:id" []
+      :summary
+      "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
+      :path-params [id :- s/Int]
+      :body [values hoks-schema/HankittavaYTOKentanPaivitys]
+      (let [count-of-rows-updated (first (h/update-hankittava-yhteinen-tutkinnon-osa id values))]
+        (if (pos? count-of-rows-updated)
+          (response/no-content)
+          (response/not-found {:error "HYTO not found with given HYTO ID"}))))))
 
 (def ^:private aiemmin-hankittu-ammat-tutkinnon-osa
   (c-api/context "/aiemmin-hankittu-ammat-tutkinnon-osa" []
