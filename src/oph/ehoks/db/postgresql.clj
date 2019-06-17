@@ -634,6 +634,12 @@
     :hankittavat_yhteiset_tutkinnon_osat
     (h/hankittava-yhteinen-tutkinnon-osa-to-sql m)))
 
+(defn select-hankittava-yhteinen-tutkinnon-osa-by-id [hyto-id]
+  (->
+    (query [queries/select-hankittavat-yhteiset-tutkinnon-osat-by-id hyto-id])
+    first
+    h/hankittava-yhteinen-tutkinnon-osa-from-sql))
+
 (defn select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id [id]
   (query
     [queries/select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id id]

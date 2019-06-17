@@ -89,9 +89,10 @@
             (get-in request [:session :virkailija-user])
             (get-in request [:params :oppija-oid]))
         (handler request respond raise)
-        (response/forbidden
-          {:error (str "User privileges does not match oppija opiskeluoikeus "
-                       "organisation")})))
+        (respond
+          (response/forbidden
+            {:error (str "User privileges does not match oppija opiskeluoikeus "
+                         "organisation")}))))
     ([request]
       (if (virkailija-has-access?
             (get-in request [:session :virkailija-user])

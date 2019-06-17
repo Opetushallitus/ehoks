@@ -237,7 +237,7 @@
     #(dissoc (set-osaamisen-osoittaminen-values %) :id)
     (db/select-osaamisen-osoittamiset-by-yto-osa-alue-id id)))
 
-(defn get-yto-osa-alueet [id]
+(defn get-yto-osa-alueet [hyto-id]
   (mapv
     #(dissoc
        (assoc
@@ -247,7 +247,12 @@
          :osaamisen-osoittaminen
          (get-yto-osa-alueen-osaamisen-osoittamiset (:id %)))
        :id :yhteinen-tutkinnon-osa-id)
-    (db/select-yto-osa-alueet-by-yto-id id)))
+    (db/select-yto-osa-alueet-by-yto-id hyto-id)))
+
+(defn get-hankittava-yhteinen-tutkinnon-osa [hyto-id]
+  (when-let [hato-db
+             (db/select-hankittava-yhteinen-tutkinnon-osa-by-id hyto-id)]
+    (assoc hato-db :osa-alueet (get-yto-osa-alueet hyto-id))))
 
 (defn get-hankittavat-yhteiset-tutkinnon-osat [hoks-id]
   (mapv
@@ -631,15 +636,15 @@
            (:osaamisen-osoittaminen %))))
     osa-alueet))
 
-(defn save-hankittava-yhteinen-tutkinnon-osa! [h hyto]
-  (let [p-db (db/insert-hankittava-yhteinen-tutkinnon-osa!
-               (assoc hyto :hoks-id (:id h)))]
-    (assoc p-db
-           :osa-alueet (save-hyto-osa-alueet! (:id p-db) (:osa-alueet hyto)))))
+(defn save-hankittava-yhteinen-tutkinnon-osa! [hoks-id hyto]
+  (let [hyto-db (db/insert-hankittava-yhteinen-tutkinnon-osa!
+                  (assoc hyto :hoks-id hoks-id))]
+    (assoc hyto-db :osa-alueet
+           (save-hyto-osa-alueet! (:id hyto-db) (:osa-alueet hyto)))))
 
-(defn save-hankittavat-yhteiset-tutkinnon-osat! [h c]
+(defn save-hankittavat-yhteiset-tutkinnon-osat! [hoks c]
   (mapv
-    #(save-hankittava-yhteinen-tutkinnon-osa! h %)
+    #(save-hankittava-yhteinen-tutkinnon-osa! (:id hoks) %)
     c))
 
 (defn save-hoks! [h]
