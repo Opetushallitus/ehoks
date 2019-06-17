@@ -425,12 +425,14 @@
             :return (rest/response hoks-schema/HOKS)
             (rest/rest-ok (h/get-hoks-values (:hoks request))))
 
-          (c-api/undocumented
-            (c-api/PATCH "/" [id :as request]
-              :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
-              :body [values hoks-schema/HOKSKentanPaivitys]
-              (pdb/update-hoks-by-id! id values)
-              (response/no-content)))
+          (c-api/PATCH "/" []
+            :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
+            :body [values hoks-schema/HOKSKentanPaivitys]
+            (let [count-of-rows-updated (first (pdb/update-hoks-by-id! hoks-id values))]
+              (if (> count-of-rows-updated 0)
+                (response/no-content)
+                (response/not-found "HOKS not found with given HOKS ID"))
+              ))
 
           hankittava-paikallinen-tutkinnon-osa
           aiemmin-hankittu-ammat-tutkinnon-osa
