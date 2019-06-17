@@ -631,15 +631,15 @@
            (:osaamisen-osoittaminen %))))
     osa-alueet))
 
-(defn save-hankittava-yhteinen-tutkinnon-osa! [h hyto]
+(defn save-hankittava-yhteinen-tutkinnon-osa! [hoks-id hyto]
   (let [p-db (db/insert-hankittava-yhteinen-tutkinnon-osa!
-               (assoc hyto :hoks-id (:id h)))]
+               (assoc hyto :hoks-id hoks-id))]
     (assoc p-db
            :osa-alueet (save-hyto-osa-alueet! (:id p-db) (:osa-alueet hyto)))))
 
-(defn save-hankittavat-yhteiset-tutkinnon-osat! [h c]
+(defn save-hankittavat-yhteiset-tutkinnon-osat! [hoks c]
   (mapv
-    #(save-hankittava-yhteinen-tutkinnon-osa! h %)
+    #(save-hankittava-yhteinen-tutkinnon-osa! (:id hoks) %)
     c))
 
 (defn save-hoks! [h]
