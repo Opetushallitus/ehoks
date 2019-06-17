@@ -19,7 +19,8 @@
                  [org.apache.logging.log4j/log4j-slf4j-impl "2.11.1"]
                  [org.clojure/data.xml "0.0.8"]
                  [org.clojure/data.json "0.2.6"]
-                 [environ "1.1.0"]]
+                 [environ "1.1.0"]
+                 [fi.vm.sade/auditlogger "8.3.0-SNAPSHOT"]]
   :managed-dependencies [[org.clojure/clojure "1.10.0"]
 
                          ;; http server
@@ -55,6 +56,7 @@
                          [com.fasterxml.jackson.core/jackson-databind "2.9.8"]
                          [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.9.8"]
                          [org.clojure/data.json "0.2.6"]
+                         [com.google.code.gson/gson "2.8.0"]
 
                          ;; XML
                          [org.clojure/data.xml "0.0.8"]
