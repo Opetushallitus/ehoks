@@ -774,7 +774,7 @@
                             hyto-path hyto-data app hoks)
             get-response (create-mock-get-request hyto-path app hoks)]
         (assert-post-response-is-ok hyto-path post-response)
-        (is (:status get-response) 200)
+        (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
             {:meta {} :data (assoc hyto-data :id 1)})))))
