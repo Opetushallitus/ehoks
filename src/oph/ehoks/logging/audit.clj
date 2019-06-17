@@ -16,7 +16,7 @@
 
 (def  ^:private logger
   (proxy [Logger] [] (log [str]
-                        (log/log "audit" :info nil str))))
+                       (log/log "audit" :info nil str))))
 
 (def ^:private audit
   (Audit. logger (:name config) (ApplicationType/BACKEND)))
