@@ -2,6 +2,7 @@
   (:require [compojure.api.sweet :as c-api]
             [clojure.tools.logging :as log]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
@@ -87,7 +88,7 @@
     ([request respond raise]
       (let [hoks (:hoks request)]
         (if (nil? hoks)
-          (respond response/not-found {:error "HOKS not found"})
+          (respond (response/not-found {:error "HOKS not found"}))
           (if (user-has-access? request hoks)
             (handler request respond raise)
             (do
@@ -388,7 +389,8 @@
                     caller-id :- s/Str]
 
     (route-middleware
-      [wrap-user-details wrap-require-service-user wrap-audit-logger]
+      [wrap-access-logger wrap-user-details
+       wrap-require-service-user wrap-audit-logger]
 
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
@@ -425,12 +427,15 @@
             :return (rest/response hoks-schema/HOKS)
             (rest/rest-ok (h/get-hoks-values (:hoks request))))
 
-          (c-api/undocumented
-            (c-api/PATCH "/" [id :as request]
-              :summary "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
-              :body [values hoks-schema/HOKSKentanPaivitys]
-              (pdb/update-hoks-by-id! id values)
-              (response/no-content)))
+          (c-api/PATCH "/" []
+            :summary
+            "Päivittää olemassa olevan HOKSin päätason arvoa tai arvoja"
+            :body [values hoks-schema/HOKSKentanPaivitys]
+            (let [count-of-rows-updated
+                  (first (pdb/update-hoks-by-id! hoks-id values))]
+              (if (pos? count-of-rows-updated)
+                (response/no-content)
+                (response/not-found "HOKS not found with given HOKS ID"))))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
