@@ -762,26 +762,16 @@
 
 (deftest patch-one-value-of-hankittava-yhteinen-tutkinnon-osa
   (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url hyto-path))
-                (mock/json-body hyto-data)))
-          response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url hyto-path))
-                (mock/json-body
-                  {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})))]
-      (is (= (:status response) 204)))))
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            hyto-path hyto-data app hoks)
+            patch-response (create-mock-patch-request
+              hyto-path app
+              {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})
+            get-response (create-mock-get-request hyto-path app hoks)]
+        (is (= (:status patch-response) 204))))))
 
 (def hyto-patch-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
