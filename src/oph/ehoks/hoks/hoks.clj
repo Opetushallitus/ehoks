@@ -638,9 +638,9 @@
 
 (defn save-hankittava-yhteinen-tutkinnon-osa! [hoks-id hyto]
   (let [hyto-db (db/insert-hankittava-yhteinen-tutkinnon-osa!
-               (assoc hyto :hoks-id hoks-id))]
+                  (assoc hyto :hoks-id hoks-id))]
     (assoc hyto-db :osa-alueet
-                   (save-hyto-osa-alueet! (:id hyto-db) (:osa-alueet hyto)))))
+           (save-hyto-osa-alueet! (:id hyto-db) (:osa-alueet hyto)))))
 
 (defn save-hankittavat-yhteiset-tutkinnon-osat! [hoks c]
   (mapv

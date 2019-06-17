@@ -225,8 +225,7 @@
                             (get-in request [:hoks :id]) hyto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id hyto-response))}
-          :id (:id hyto-response)))
-      )
+          :id (:id hyto-response))))
 
     (c-api/PUT "/:id" []
       :summary "Päivittää HOKSin hankittavan yhteisen tutkinnon osat"
@@ -438,7 +437,7 @@
               (if (pos? count-of-rows-updated)
                 (response/no-content)
                 (response/not-found
-                  {:error "HOKS not found with given HOKS ID"} ))))
+                  {:error "HOKS not found with given HOKS ID"}))))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
