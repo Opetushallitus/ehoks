@@ -237,7 +237,7 @@
     #(dissoc (set-osaamisen-osoittaminen-values %) :id)
     (db/select-osaamisen-osoittamiset-by-yto-osa-alue-id id)))
 
-(defn get-yto-osa-alueet [id]
+(defn get-yto-osa-alueet [hyto-id]
   (mapv
     #(dissoc
        (assoc
@@ -247,7 +247,12 @@
          :osaamisen-osoittaminen
          (get-yto-osa-alueen-osaamisen-osoittamiset (:id %)))
        :id :yhteinen-tutkinnon-osa-id)
-    (db/select-yto-osa-alueet-by-yto-id id)))
+    (db/select-yto-osa-alueet-by-yto-id hyto-id)))
+
+(defn get-hankittava-yhteinen-tutkinnon-osa [hyto-id]
+  (when-let [hato-db
+             (db/select-hankittava-yhteinen-tutkinnon-osa-by-id hyto-id)]
+    (assoc hato-db :osa-alueet (get-yto-osa-alueet hyto-id))))
 
 (defn get-hankittavat-yhteiset-tutkinnon-osat [hoks-id]
   (mapv
