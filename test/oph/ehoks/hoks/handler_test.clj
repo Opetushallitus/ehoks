@@ -778,77 +778,77 @@
               (:body get-response))
             {:meta {} :data (assoc hyto-data :id 1)})))))
 
-(deftest put-hankittava-yhteinen-tutkinnon-osa
-  (testing "PUT hankittavat yhteisen tutkinnon osat"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url hyto-path))
-                (mock/json-body hyto-data)))
-          response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :put
-                  (format
-                    "%s/1/%s/1"
-                    url hyto-path))
-                (mock/json-body
-                  (assoc hyto-data :id 1))))]
-      (is (= (:status response) 204)))))
-
-(deftest patch-one-hankittava-yhteinen-tutkinnon-osa
-  (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url hyto-path))
-                (mock/json-body hyto-data)))
-          response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url hyto-path))
-                (mock/json-body
-                  {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})))]
-      (is (= (:status response) 204)))))
-
-(deftest patch-all-hankittavat-yhteiset-tutkinnon-osat
-  (testing "PATCH all hankittavat yhteisen tutkinnon osat"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url hyto-path))
-                (mock/json-body hyto-data)))
-          response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url hyto-path))
-                (mock/json-body
-                  hyto-patch-data)))]
-      (is (= (:status response) 204)))))
+;(deftest put-hankittava-yhteinen-tutkinnon-osa
+;  (testing "PUT hankittavat yhteisen tutkinnon osat"
+;    (db/clear)
+;    (let [post-response
+;          (utils/with-service-ticket
+;            (create-app nil)
+;            (-> (mock/request
+;                  :post
+;                  (format
+;                    "%s/1/%s"
+;                    url hyto-path))
+;                (mock/json-body hyto-data)))
+;          response
+;          (utils/with-service-ticket
+;            (create-app nil)
+;            (-> (mock/request
+;                  :put
+;                  (format
+;                    "%s/1/%s/1"
+;                    url hyto-path))
+;                (mock/json-body
+;                  (assoc hyto-data :id 1))))]
+;      (is (= (:status response) 204)))))
+;
+;(deftest patch-one-hankittava-yhteinen-tutkinnon-osa
+;  (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
+;    (db/clear)
+;    (let [post-response
+;          (utils/with-service-ticket
+;            (create-app nil)
+;            (-> (mock/request
+;                  :post
+;                  (format
+;                    "%s/1/%s"
+;                    url hyto-path))
+;                (mock/json-body hyto-data)))
+;          response
+;          (utils/with-service-ticket
+;            (create-app nil)
+;            (-> (mock/request
+;                  :patch
+;                  (format
+;                    "%s/1/%s/1"
+;                    url hyto-path))
+;                (mock/json-body
+;                  {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})))]
+;      (is (= (:status response) 204)))))
+;
+;(deftest patch-all-hankittavat-yhteiset-tutkinnon-osat
+;  (testing "PATCH all hankittavat yhteisen tutkinnon osat"
+;    (db/clear)
+;    (let [post-response
+;          (utils/with-service-ticket
+;            (create-app nil)
+;            (-> (mock/request
+;                  :post
+;                  (format
+;                    "%s/1/%s"
+;                    url hyto-path))
+;                (mock/json-body hyto-data)))
+;          response
+;          (utils/with-service-ticket
+;            (create-app nil)
+;            (-> (mock/request
+;                  :patch
+;                  (format
+;                    "%s/1/%s/1"
+;                    url hyto-path))
+;                (mock/json-body
+;                  hyto-patch-data)))]
+;      (is (= (:status response) 204)))))
 
 (def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")
 (def ovatu-data {:nimi "Nimi"
