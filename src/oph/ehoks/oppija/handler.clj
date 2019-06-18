@@ -19,7 +19,6 @@
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.validation.handler :as validation-handler]
             [oph.ehoks.logging.access :refer [wrap-access-logger]]))
 
 (def routes
@@ -33,7 +32,7 @@
         healthcheck-handler/routes
         external-handler/routes
         misc-handler/routes
-        validation-handler/routes
+
         (c-api/undocumented lokalisointi-handler/routes)
         (c-api/undocumented auth-handler/routes)
 
