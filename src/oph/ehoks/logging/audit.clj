@@ -5,6 +5,7 @@
 
 (defn- get-user-oid [request]
   (when-let [user (or (:service-ticket-user request)
+                      (get-in request [:session :virkailija-user])
                       (:virkailija-user request))]
     (:oidHenkilo user)))
 
