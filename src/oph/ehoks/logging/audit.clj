@@ -10,7 +10,7 @@
                                 User
                                 Operation
                                 Target$Builder
-                                Changes$Builder)
+                                Changes)
            (java.net InetAddress)
            (org.ietf.jgss Oid)))
 
@@ -51,20 +51,14 @@
     (or (get-session request) "no session")
     (or (:user-agent (:headers request)) "no user agent")))
 
-(defn- build-changes [response]
-  (.build (doto (Changes$Builder.)
-            (#(doseq [[path val] (get-in response
-                                         [:audit-data
-                                          :added])]
-                (.added % path (str val))))
-            (#(doseq [[path val] (get-in response
-                                         [:audit-data
-                                          :removed])]
-                (.removed % path (str val))))
-            (#(doseq [[path [n o]] (get-in response
-                                           [:audit-data
-                                            :updated])]
-                (.updated % (str path) (str o) (str n)))))))
+(defn- build-changes [response op]
+  (let [new (get-in response [:audit-data :new])
+        old (get-in response [:audit-data :old])]
+    (case (.name op)
+      "create" (Changes/addedDto new)
+      "update" (Changes/updatedDto new old)
+      "delete" (Changes/deleteDto old)
+      Changes/EMPTY)))
 
 (defn- build-target [request]
   (let [tb (Target$Builder.)]
@@ -84,7 +78,6 @@
 (defn- do-log [request response]
   (let [user (get-user request)
         method (:method request)
-        changes (build-changes response)
         target (build-target request)
         operation (if (or (server-error? response) (client-error? response))
                     operation-failed
@@ -92,7 +85,8 @@
                       :post operation-new
                       :patch operation-modify
                       :delete operation-delete
-                      operation-read))]
+                      operation-read))
+        changes (build-changes response operation)]
     (.log audit
           user
           operation
