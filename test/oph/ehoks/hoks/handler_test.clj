@@ -760,6 +760,9 @@
 ;                  (assoc hyto-data :id 1))))]
 ;      (is (= (:status response) 204)))))
 
+(def ^:private one-value-of-hyto-patched
+  {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})
+
 (deftest patch-one-value-of-hankittava-yhteinen-tutkinnon-osa
   (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
     (with-hoks
@@ -768,10 +771,16 @@
             post-response (create-mock-post-request
                             hyto-path hyto-data app hoks)
             patch-response (create-mock-patch-request
-              hyto-path app
-              {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})
-            get-response (create-mock-get-request hyto-path app hoks)]
-        (is (= (:status patch-response) 204))))))
+              hyto-path app one-value-of-hyto-patched)
+            get-response (create-mock-get-request hyto-path app hoks)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
+        (is (= (:status patch-response) 204))
+        (is (= (:koulutuksen-jarjestaja-oid get-response-data)
+               (:koulutuksen-jarjestaja-oid one-value-of-hyto-patched))
+            "Patched value should change.")
+        (is (= (:tutkinnon-osa-koodi-versio get-response-data)
+               (:tutkinnon-osa-koodi-versio hyto-data))
+            "Value should stay unchanged")))))
 
 (def hyto-patch-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
