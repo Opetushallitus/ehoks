@@ -22,7 +22,7 @@
           (let [ticket-user (kayttooikeus/get-user-details
                               (:user validation-data))]
             (assoc-in
-              (response/ok)
+              (response/see-other (u/get-url "ehoks-virkailija-frontend"))
               [:session :virkailija-user]
               (merge ticket-user (user/get-auth-info ticket-user))))
           (do (log/warnf "Ticket validation failed: %s"
