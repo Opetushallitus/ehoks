@@ -621,7 +621,7 @@
 (defn save-hyto-osa-alueet! [hyto-id osa-alueet]
   (mapv
     #(let [osa-alue-db (db/insert-yhteisen-tutkinnon-osan-osa-alue!
-               (assoc % :yhteinen-tutkinnon-osa-id hyto-id))]
+                         (assoc % :yhteinen-tutkinnon-osa-id hyto-id))]
        (assoc
          osa-alue-db
          :osaamisen-hankkimistavat

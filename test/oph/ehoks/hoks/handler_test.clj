@@ -747,7 +747,7 @@
             post-response (create-mock-post-request
                             hyto-path hyto-data app hoks)
             patch-response (create-mock-patch-request
-              hyto-path app one-value-of-hyto-patched)
+                             hyto-path app one-value-of-hyto-patched)
             get-response (create-mock-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
