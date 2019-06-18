@@ -232,7 +232,7 @@
       "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/HankittavaYTOKentanPaivitys]
-      (if-let [hyto-db (pdb/select-hankittava-yhteinen-tutkinnon-osa-by-id id)]
+      (if (not-empty (pdb/select-hankittava-yhteinen-tutkinnon-osa-by-id id))
         (do
           (h/update-hankittava-yhteinen-tutkinnon-osa! id values)
           (response/no-content))
