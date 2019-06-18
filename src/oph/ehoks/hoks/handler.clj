@@ -355,10 +355,10 @@
       "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin"
       :body [ovatu hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ovatu-response (db/create-ovatu! ovatu)]
+      (let [oto-response (db/create-ovatu! ovatu)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id ovatu-response))}
-          :id (:id ovatu-response))))
+          {:uri (format "%s/%d" (:uri request) (:id oto-response))}
+          :id (:id oto-response))))
 
     (c-api/PATCH "/:id" []
       :summary
@@ -367,7 +367,7 @@
       :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
       (if (db/update-ovatu-values! id values)
         (response/no-content)
-        (response/not-found "OVATU not found with given OVATU ID")))))
+        (response/not-found "OTO not found with given OTO ID")))))
 
 (def routes
   (c-api/context "/hoks" []

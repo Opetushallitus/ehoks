@@ -840,13 +840,13 @@
         (eq (:osa-alueet get-response-data)
             (:osa-alueet hyto-sub-entity-patched))))))
 
-(def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")
-(def ovatu-data {:nimi "Nimi"
+(def oto-path "opiskeluvalmiuksia-tukevat-opinnot")
+(def oto-data {:nimi "Nimi"
                  :kuvaus "Kuvaus"
                  :alku "2018-12-12"
                  :loppu "2018-12-20"})
 
-(deftest post-and-get-ovatu
+(deftest post-and-get-opiskeluvalmiuksia-tukevat-opinnot
   (testing "GET opiskeluvalmiuksia tukevat opinnot"
     (db/clear)
     (let [post-response
@@ -856,8 +856,8 @@
                   :post
                   (format
                     "%s/1/%s"
-                    url ovatu-path))
-                (mock/json-body ovatu-data)))
+                    url oto-path))
+                (mock/json-body oto-data)))
           get-response
           (utils/with-service-ticket
             (create-app nil)
@@ -865,13 +865,13 @@
               :get
               (format
                 "%s/1/%s/1"
-                url ovatu-path)))]
+                url oto-path)))]
       (is (= (:status post-response) 200))
       (eq (utils/parse-body
             (:body post-response))
           {:data {:uri (format
                          "%s/1/%s/1"
-                         url ovatu-path)} :meta {:id 1}})
+                         url oto-path)} :meta {:id 1}})
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
             (:body get-response))
@@ -882,7 +882,7 @@
                   :loppu "2018-12-20"}
            :meta {}}))))
 
-(deftest patch-one-ovatu
+(deftest patch-one-oto
   (testing "PATCH one value opiskeluvalmiuksia tukevat opinnot"
     (db/clear)
     (let [post-response
@@ -892,8 +892,8 @@
                   :post
                   (format
                     "%s/1/%s"
-                    url ovatu-path))
-                (mock/json-body ovatu-data)))
+                    url oto-path))
+                (mock/json-body oto-data)))
           patch-response
           (utils/with-service-ticket
             (create-app nil)
@@ -901,13 +901,13 @@
                   :patch
                   (format
                     "%s/1/%s/1"
-                    url ovatu-path))
+                    url oto-path))
                 (mock/json-body
                   {:id 1
                    :nimi "Uusi nimi"})))]
       (is (= (:status patch-response) 204)))))
 
-(deftest patch-all-ovatu
+(deftest patch-all-oto
   (testing "PATCH all opiskeluvalmiuksia tukevat opinnot"
     (db/clear)
     (let [post-response
@@ -917,8 +917,8 @@
                   :post
                   (format
                     "%s/1/%s"
-                    url ovatu-path))
-                (mock/json-body ovatu-data)))
+                    url oto-path))
+                (mock/json-body oto-data)))
           patch-response
           (utils/with-service-ticket
             (create-app nil)
@@ -926,7 +926,7 @@
                   :patch
                   (format
                     "%s/1/%s/1"
-                    url ovatu-path))
+                    url oto-path))
                 (mock/json-body
                   {:id 1
                    :nimi "Uusi nimi"
