@@ -767,8 +767,8 @@
      :vaatimuksista-tai-tavoitteista-poikkeaminen "uusi poikkeaminen"
      :olennainen-seikka true
      :osaamisen-hankkimistavat
-     [{:alku "2019-1-15"
-       :loppu "2020-2-23"
+     [{:alku "2019-01-15"
+       :loppu "2020-02-23"
        :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_muutettu"
        :osaamisen-hankkimistapa-koodi-versio 3
        :ajanjakson-tarkenne "tarkenne"
@@ -815,7 +815,7 @@
             post-response (create-mock-post-request
                             hyto-path hyto-data app hoks)
             patch-response (create-mock-patch-request
-                             hyto-path app one-value-of-hyto-patched)
+                             hyto-path app multiple-hyto-values-patched)
             get-response (create-mock-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
