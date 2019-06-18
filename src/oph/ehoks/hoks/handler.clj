@@ -355,7 +355,8 @@
       "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin"
       :body [oto hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [oto-response (h/save-opiskeluvalmiuksia-tukeva-opinto! (get-in request [:hoks :id]) oto)]
+      (let [oto-response (h/save-opiskeluvalmiuksia-tukeva-opinto!
+                           (get-in request [:hoks :id]) oto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id oto-response))}
           :id (:id oto-response))))

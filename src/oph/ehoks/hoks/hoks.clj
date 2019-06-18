@@ -603,7 +603,8 @@
     (replace-ahyto-osa-alueet! (:id ahyto-from-db) new-oa)))
 
 (defn save-opiskeluvalmiuksia-tukeva-opinto! [hoks-id new-oto-values]
-  ())
+  (db/insert-opiskeluvalmiuksia-tukeva-opinto!
+    (assoc new-oto-values :hoks-id hoks-id)))
 
 (defn save-opiskeluvalmiuksia-tukevat-opinnot! [hoks new-oto-values]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
