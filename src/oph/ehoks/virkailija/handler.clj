@@ -26,6 +26,7 @@
             [oph.ehoks.external.eperusteet :as eperusteet]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
+            [oph.ehoks.validation.handler :as validation-handler]
             [clojure.core.async :as a]))
 
 (defn- virkailija-authenticated? [request]
@@ -112,6 +113,7 @@
         :tags ["v1"]
 
         hoks-handler/routes
+        validation-handler/routes
 
         (c-api/context "/virkailija" []
           :tags ["virkailija"]
