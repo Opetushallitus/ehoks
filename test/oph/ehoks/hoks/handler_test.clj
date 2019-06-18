@@ -782,50 +782,69 @@
                (:tutkinnon-osa-koodi-versio hyto-data))
             "Value should stay unchanged")))))
 
-(def hyto-patch-data
+(def multiple-hyto-values-patched
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
-   :tutkinnon-osa-koodi-versio 1
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"
    :osa-alueet
-   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
-     :osa-alue-koodi-versio 1
+   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ru"
+     :osa-alue-koodi-versio 4
+     :vaatimuksista-tai-tavoitteista-poikkeaminen "uusi poikkeaminen"
+     :olennainen-seikka true
      :osaamisen-hankkimistavat
-     [{:alku "2018-12-13"
-       :loppu "2018-12-22"
-       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
-       :osaamisen-hankkimistapa-koodi-versio 1}]
+     [{:alku "2019-1-15"
+       :loppu "2020-2-23"
+       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_muutettu"
+       :osaamisen-hankkimistapa-koodi-versio 3
+       :ajanjakson-tarkenne "tarkenne"
+       :muut-oppimisymparistot
+       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0222"
+         :oppimisymparisto-koodi-versio 3
+         :alku "2016-03-12"
+         :loppu "2025-06-19"}]
+       :jarjestajan-edustaja
+       {:nimi "testi testaaja"
+        :oppilaitos-oid "1.2.246.562.10.00000000421"}
+       :hankkijan-edustaja
+       {:nimi "testi edustaja"
+        :oppilaitos-oid "1.2.246.562.10.00000000321"}
+       :tyopaikalla-jarjestettava-koulutus
+       {:tyopaikan-nimi "joku nimi"
+        :keskeiset-tyotehtavat ["tehtava" "toinen"]
+        :vastuullinen-tyopaikka-ohjaaja
+        {:nimi "ohjaaja o"}}
+       }]
      :osaamisen-osoittaminen
-     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000008"}
-       :nayttoymparisto {:nimi "aaa2"}
-       :alku "2018-12-15"
-       :loppu "2018-12-21"
+     [{:alku "2018-12-12"
+       :loppu "2018-12-20"
        :sisallon-kuvaus ["Kuvaus"]
+       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
+       :vaatimuksista-tai-tavoitteista-poikkeaminen "nyt poikettiin"
+       :jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
+       :nayttoymparisto {:nimi "aaa"}
+       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
+                     :koodi-versio 4}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Erkki Esimerkkitetsaaja"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.13490579333"}}]
        :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
-                                       {:nimi "Organisaation nimi"}}]}]}]
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"})
+                                       {:nimi "Organisaation nimi"}}]
+       }]}]})
 
-;(deftest patch-all-hankittavat-yhteiset-tutkinnon-osat
-;  (testing "PATCH all hankittavat yhteisen tutkinnon osat"
-;    (db/clear)
-;    (let [post-response
-;          (utils/with-service-ticket
-;            (create-app nil)
-;            (-> (mock/request
-;                  :post
-;                  (format
-;                    "%s/1/%s"
-;                    url hyto-path))
-;                (mock/json-body hyto-data)))
-;          response
-;          (utils/with-service-ticket
-;            (create-app nil)
-;            (-> (mock/request
-;                  :patch
-;                  (format
-;                    "%s/1/%s/1"
-;                    url hyto-path))
-;                (mock/json-body
-;                  hyto-patch-data)))]
-;      (is (= (:status response) 204)))))
+(deftest patch-multiple-values-of-hankittavat-yhteiset-tutkinnon-osat
+  (testing "PATCH all hankittavat yhteisen tutkinnon osat"
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            hyto-path hyto-data app hoks)
+            patch-response (create-mock-patch-request
+                             hyto-path app one-value-of-hyto-patched)
+            get-response (create-mock-get-request hyto-path app hoks)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
+        (is (= (:status patch-response) 204))
+        (eq (:osa-alueet get-response-data)
+            (:osa-alueet multiple-hyto-values-patched))))))
 
 (def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")
 (def ovatu-data {:nimi "Nimi"
