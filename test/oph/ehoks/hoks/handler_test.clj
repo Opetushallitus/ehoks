@@ -848,39 +848,17 @@
 
 (deftest post-and-get-opiskeluvalmiuksia-tukevat-opinnot
   (testing "GET opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url oto-path))
-                (mock/json-body oto-data)))
-          get-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (mock/request
-              :get
-              (format
-                "%s/1/%s/1"
-                url oto-path)))]
-      (is (= (:status post-response) 200))
-      (eq (utils/parse-body
-            (:body post-response))
-          {:data {:uri (format
-                         "%s/1/%s/1"
-                         url oto-path)} :meta {:id 1}})
-      (is (= (:status get-response) 200))
-      (eq (utils/parse-body
-            (:body get-response))
-          {:data {:id 1
-                  :nimi "Nimi"
-                  :kuvaus "Kuvaus"
-                  :alku "2018-12-12"
-                  :loppu "2018-12-20"}
-           :meta {}}))))
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            oto-path oto-data app hoks)
+            get-response (create-mock-get-request oto-path app hoks)]
+        (assert-post-response-is-ok oto-path post-response)
+        (is (= (:status get-response) 200))
+        (eq (utils/parse-body
+              (:body get-response))
+            {:meta {} :data (assoc oto-data :id 1)})))))
 
 ;(deftest patch-one-oto
 ;  (testing "PATCH one value opiskeluvalmiuksia tukevat opinnot"
