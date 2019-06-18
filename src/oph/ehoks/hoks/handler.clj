@@ -227,14 +227,6 @@
           {:uri (format "%s/%d" (:uri request) (:id hyto-response))}
           :id (:id hyto-response))))
 
-    ;(c-api/PUT "/:id" []
-    ;  :summary "Päivittää HOKSin hankittavan yhteisen tutkinnon osat"
-    ;  :path-params [id :- s/Int]
-    ;  :body [values hoks-schema/HankittavaYTOPaivitys]
-    ;  (if (db/update-pyto! id values)
-    ;    (response/no-content)
-    ;    (response/not-found {:error "HYTO not found with given HYTO ID"})))
-    ;
     (c-api/PATCH "/:id" []
       :summary
       "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
