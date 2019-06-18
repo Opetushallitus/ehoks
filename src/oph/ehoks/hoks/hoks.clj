@@ -602,9 +602,12 @@
   (when-let [new-oa (:osa-alueet new-values)]
     (replace-ahyto-osa-alueet! (:id ahyto-from-db) new-oa)))
 
-(defn save-opiskeluvalmiuksia-tukevat-opinnot! [hoks-id new-oto-values]
+(defn save-opiskeluvalmiuksia-tukeva-opinto! [hoks-id new-oto-values]
+  ())
+
+(defn save-opiskeluvalmiuksia-tukevat-opinnot! [hoks new-oto-values]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
-    (mapv #(assoc % :hoks-id (:id hoks-id)) new-oto-values)))
+    (mapv #(assoc % :hoks-id (:id hoks)) new-oto-values)))
 
 (defn save-yto-osa-alueen-osaamisen-osoittaminen! [yto n]
   (let [naytto (save-osaamisen-osoittaminen! n)
