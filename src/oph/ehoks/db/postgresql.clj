@@ -560,6 +560,11 @@
     (h/hankittava-yhteinen-tutkinnon-osa-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" hyto-id]))
 
+(defn delete-hyto-osa-alueet! [hyto-id]
+  (shallow-delete!
+    :yhteisen_tutkinnon_osan_osa_alueet
+    ["yhteinen_tutkinnon_osa_id = ?" hyto-id]))
+
 (defn update-aiemmin-hankittu-ammat-tutkinnon-osa-by-id! [id new-values]
   (update!
     :aiemmin_hankitut_ammat_tutkinnon_osat

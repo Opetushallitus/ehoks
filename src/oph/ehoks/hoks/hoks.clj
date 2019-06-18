@@ -545,9 +545,6 @@
            (replace-hato-osaamisen-osoittamiset!
              hato-db (:osaamisen-osoittaminen values)))))
 
-(defn update-hankittava-yhteinen-tutkinnon-osa [hyto-id new-values]
-  (db/update-hankittava-yhteinen-tutkinnon-osa-by-id! hyto-id new-values))
-
 (defn- replace-ahato-tarkentavat-tiedot-naytto! [ahato-id new-values]
   (db/delete-aiemmin-hankitun-ammat-tutkinnon-osan-naytto-by-id! ahato-id)
   (save-ahato-tarkentavat-tiedot-naytto! ahato-id new-values))
@@ -649,6 +646,14 @@
   (mapv
     #(save-hankittava-yhteinen-tutkinnon-osa! (:id hoks) %)
     c))
+
+(defn replace-hyto-osa-alueet! [hyto-id new-oa-values]
+  (db/delete-hyto-osa-alueet! hyto-id)
+  (save-hyto-osa-alueet! hyto-id new-oa-values))
+
+(defn update-hankittava-yhteinen-tutkinnon-osa! [hyto-id new-values]
+  (db/update-hankittava-yhteinen-tutkinnon-osa-by-id! hyto-id new-values)
+  (replace-hyto-osa-alueet! hyto-id (:osa-alueet new-values)))
 
 (defn save-hoks! [h]
   (let [saved-hoks (db/insert-hoks! h)]
