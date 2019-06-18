@@ -232,11 +232,11 @@
       "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/HankittavaYTOKentanPaivitys]
-      (let [count-of-rows-updated
-            (first (h/update-hankittava-yhteinen-tutkinnon-osa! id values))]
-        (if (pos? count-of-rows-updated)
-          (response/no-content)
-          (response/not-found {:error "HYTO not found with given HYTO ID"}))))))
+      (if-let [hyto-db (pdb/select-hankittava-yhteinen-tutkinnon-osa-by-id id)]
+        (do
+          (h/update-hankittava-yhteinen-tutkinnon-osa! id values)
+          (response/no-content))
+        (response/not-found {:error "HYTO not found with given HYTO ID"})))))
 
 (def ^:private aiemmin-hankittu-ammat-tutkinnon-osa
   (c-api/context "/aiemmin-hankittu-ammat-tutkinnon-osa" []

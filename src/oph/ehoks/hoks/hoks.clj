@@ -652,8 +652,11 @@
   (save-hyto-osa-alueet! hyto-id new-oa-values))
 
 (defn update-hankittava-yhteinen-tutkinnon-osa! [hyto-id new-values]
-  (db/update-hankittava-yhteinen-tutkinnon-osa-by-id! hyto-id new-values)
-  (replace-hyto-osa-alueet! hyto-id (:osa-alueet new-values)))
+  (let [bare-hyto (dissoc new-values :osa-alueet)]
+    (when (not-empty bare-hyto)
+      (db/update-hankittava-yhteinen-tutkinnon-osa-by-id! hyto-id new-values)))
+  (when-let [oa (:osa-alueet new-values)]
+    (replace-hyto-osa-alueet! hyto-id oa)))
 
 (defn save-hoks! [h]
   (let [saved-hoks (db/insert-hoks! h)]
