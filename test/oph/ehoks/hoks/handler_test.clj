@@ -882,58 +882,58 @@
                   :loppu "2018-12-20"}
            :meta {}}))))
 
-(deftest patch-one-oto
-  (testing "PATCH one value opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url oto-path))
-                (mock/json-body oto-data)))
-          patch-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url oto-path))
-                (mock/json-body
-                  {:id 1
-                   :nimi "Uusi nimi"})))]
-      (is (= (:status patch-response) 204)))))
-
-(deftest patch-all-oto
-  (testing "PATCH all opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url oto-path))
-                (mock/json-body oto-data)))
-          patch-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url oto-path))
-                (mock/json-body
-                  {:id 1
-                   :nimi "Uusi nimi"
-                   :kuvaus "Uusi kuvaus"
-                   :alku "2018-12-11"
-                   :loppu "2018-12-21"})))]
-      (is (= (:status patch-response) 204)))))
+;(deftest patch-one-oto
+;  (testing "PATCH one value opiskeluvalmiuksia tukevat opinnot"
+;    (db/clear)
+;    (let [post-response
+;          (utils/with-service-ticket
+;            (create-app nil)
+;            (-> (mock/request
+;                  :post
+;                  (format
+;                    "%s/1/%s"
+;                    url oto-path))
+;                (mock/json-body oto-data)))
+;          patch-response
+;          (utils/with-service-ticket
+;            (create-app nil)
+;            (-> (mock/request
+;                  :patch
+;                  (format
+;                    "%s/1/%s/1"
+;                    url oto-path))
+;                (mock/json-body
+;                  {:id 1
+;                   :nimi "Uusi nimi"})))]
+;      (is (= (:status patch-response) 204)))))
+;
+;(deftest patch-all-oto
+;  (testing "PATCH all opiskeluvalmiuksia tukevat opinnot"
+;    (db/clear)
+;    (let [post-response
+;          (utils/with-service-ticket
+;            (create-app nil)
+;            (-> (mock/request
+;                  :post
+;                  (format
+;                    "%s/1/%s"
+;                    url oto-path))
+;                (mock/json-body oto-data)))
+;          patch-response
+;          (utils/with-service-ticket
+;            (create-app nil)
+;            (-> (mock/request
+;                  :patch
+;                  (format
+;                    "%s/1/%s/1"
+;                    url oto-path))
+;                (mock/json-body
+;                  {:id 1
+;                   :nimi "Uusi nimi"
+;                   :kuvaus "Uusi kuvaus"
+;                   :alku "2018-12-11"
+;                   :loppu "2018-12-21"})))]
+;      (is (= (:status patch-response) 204)))))
 
 (defn add-empty-hoks-values [hoks]
   (assoc
