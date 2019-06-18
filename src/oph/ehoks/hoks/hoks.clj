@@ -224,6 +224,9 @@
        :id)
     (db/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id hoks-id)))
 
+(defn get-opiskeluvalmiuksia-tukeva-opinto [oto-id]
+  ())
+
 (defn get-opiskeluvalmiuksia-tukevat-opinnot [hoks-id]
   (db/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id))
 

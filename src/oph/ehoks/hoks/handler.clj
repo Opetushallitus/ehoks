@@ -344,11 +344,11 @@
 (def ^:private opiskeluvalmiuksia-tukevat-opinnot
   (c-api/context "/opiskeluvalmiuksia-tukevat-opinnot" []
 
-    (c-api/GET "/:id" [id]
+    (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin opiskeluvalmiuksia tukevat opinnot"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot)
-      (rest/rest-ok (db/get-ovatu-by-id id)))
+      (rest/rest-ok (h/get-opiskeluvalmiuksia-tukeva-opinto id)))
 
     (c-api/POST "/"  [:as request]
       :summary
