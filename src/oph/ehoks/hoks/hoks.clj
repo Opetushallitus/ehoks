@@ -620,19 +620,19 @@
 
 (defn save-hyto-osa-alueet! [hyto-id osa-alueet]
   (mapv
-    #(let [o (db/insert-yhteisen-tutkinnon-osan-osa-alue!
+    #(let [osa-alue-db (db/insert-yhteisen-tutkinnon-osan-osa-alue!
                (assoc % :yhteinen-tutkinnon-osa-id hyto-id))]
        (assoc
-         o
+         osa-alue-db
          :osaamisen-hankkimistavat
          (mapv
            (fn [oht]
-             (save-hyto-osa-alue-osaamisen-hankkimistapa! o oht))
+             (save-hyto-osa-alue-osaamisen-hankkimistapa! osa-alue-db oht))
            (:osaamisen-hankkimistavat %))
          :osaamisen-osoittaminen
          (mapv
            (fn [hon]
-             (save-yto-osa-alueen-osaamisen-osoittaminen! o hon))
+             (save-yto-osa-alueen-osaamisen-osoittaminen! osa-alue-db hon))
            (:osaamisen-osoittaminen %))))
     osa-alueet))
 
