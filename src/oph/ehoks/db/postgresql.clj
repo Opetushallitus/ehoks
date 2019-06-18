@@ -534,7 +534,7 @@
     [queries/select-osaamisen-osoittamiset-by-pato-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-(defn delete-osaamisen-hankkimistavat-by-pato-id!
+(defn delete-osaamisen-hankkimistavat-by-hato-id!
   "Hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat"
   [id]
   (shallow-delete!
@@ -553,6 +553,17 @@
     :hankittavat_ammat_tutkinnon_osat
     (h/hankittava-ammat-tutkinnon-osa-to-sql m)
     ["id = ? AND deleted_at IS NULL" id]))
+
+(defn update-hankittava-yhteinen-tutkinnon-osa-by-id! [hyto-id new-values]
+  (update!
+    :hankittavat_yhteiset_tutkinnon_osat
+    (h/hankittava-yhteinen-tutkinnon-osa-to-sql new-values)
+    ["id = ? AND deleted_at IS NULL" hyto-id]))
+
+(defn delete-hyto-osa-alueet! [hyto-id]
+  (shallow-delete!
+    :yhteisen_tutkinnon_osan_osa_alueet
+    ["yhteinen_tutkinnon_osa_id = ?" hyto-id]))
 
 (defn update-aiemmin-hankittu-ammat-tutkinnon-osa-by-id! [id new-values]
   (update!
