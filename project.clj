@@ -20,7 +20,7 @@
                  [org.clojure/data.xml "0.0.8"]
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.1.0"]
-                 [fi.vm.sade/auditlogger "8.3.0-SNAPSHOT"]]
+                 [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]]
   :managed-dependencies [[org.clojure/clojure "1.10.0"]
 
                          ;; http server
