@@ -360,14 +360,6 @@
           {:uri (format "%s/%d" (:uri request) (:id ovatu-response))}
           :id (:id ovatu-response))))
 
-    (c-api/PUT "/:id" []
-      :summary "Päivittää HOKSin opiskeluvalmiuksia tukevat opinnot"
-      :path-params [id :- s/Int]
-      :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
-      (if (db/update-ovatu! id values)
-        (response/no-content)
-        (response/not-found "OVATU not found with given OVATU ID")))
-
     (c-api/PATCH "/:id" []
       :summary
       "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"

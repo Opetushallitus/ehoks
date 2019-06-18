@@ -882,34 +882,6 @@
                   :loppu "2018-12-20"}
            :meta {}}))))
 
-(deftest put-ovatu
-  (testing "PUT opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url ovatu-path))
-                (mock/json-body ovatu-data)))
-          put-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :put
-                  (format
-                    "%s/1/%s/1"
-                    url ovatu-path))
-                (mock/json-body
-                  {:id 1
-                   :nimi "Uusi nimi"
-                   :kuvaus "Uusi kuvaus"
-                   :alku "2018-12-15"
-                   :loppu "2018-12-25"})))]
-      (is (= (:status put-response) 204)))))
-
 (deftest patch-one-ovatu
   (testing "PATCH one value opiskeluvalmiuksia tukevat opinnot"
     (db/clear)
