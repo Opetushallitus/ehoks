@@ -61,15 +61,19 @@
 
 (deftest get-organisation-privileges
   (testing "Get organisation privileges"
-    (client/set-get! (fn [url options]
-                       (cond (.endsWith
-                               url "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.00000000003")
-                             {:status 200
-                              :body {:parentOidPath "|1.2.246.562.10.00000000001|1.2.246.562.10.00000000002"}}
-                             (.endsWith
-                               url "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.00000000001")
-                             {:status 200
-                              :body {:parentOidPath "|1.2.246.562.10.00000000005|1.2.246.562.10.00000000008"}})))
+    (client/set-get!
+      (fn [url options]
+        (cond
+          (.endsWith
+            url "/rest/organisaatio/v4/1.2.246.562.10.00000000003")
+          {:status 200
+           :body {:parentOidPath
+                  "|1.2.246.562.10.00000000001|1.2.246.562.10.00000000002"}}
+          (.endsWith
+            url "/rest/organisaatio/v4/1.2.246.562.10.00000000001")
+          {:status 200
+           :body {:parentOidPath
+                  "|1.2.246.562.10.00000000005|1.2.246.562.10.00000000008"}})))
 
     (eq (user/get-organisation-privileges
           {:organisation-privileges

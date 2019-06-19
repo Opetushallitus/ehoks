@@ -72,7 +72,12 @@
                        :organisaatiot
                        [{:organisaatioOid "1.2.246.562.10.12944436166"
                          :kayttooikeudet [{:palvelu "EHOKS"
-                                           :oikeus "CRUD"}]}]}]})))
+                                           :oikeus "CRUD"}]}]}]}
+              (.endsWith
+                url "/rest/organisaatio/v4/1.2.246.562.24.47861388608")
+              {:status 200
+               :body {:parentOidPath
+                      "|"}})))
     (let [result (app (-> request
                           (mock/header "Caller-Id" "test")
                           (mock/header "ticket" "ST-testitiketti")))]
