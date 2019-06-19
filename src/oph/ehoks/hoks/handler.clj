@@ -361,15 +361,16 @@
           {:uri (format "%s/%d" (:uri request) (:id oto-response))}
           :id (:id oto-response))))
 
-    ;(c-api/PATCH "/:id" []
-    ;  :summary
-    ;  "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
-    ;  :path-params [id :- s/Int]
-    ;  :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
-    ;  (if (db/update-ovatu-values! id values)
-    ;    (response/no-content)
-    ;    (response/not-found "OTO not found with given OTO ID")))
-))
+    (c-api/PATCH "/:id" []
+      :summary
+      "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
+      :path-params [id :- s/Int]
+      :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
+      (let [count-of-updated-rows
+            (first (pdb/update-opiskeluvalmiuksia-tukevat-opinnot id values))]
+        (if (pos? count-of-updated-rows)
+          (response/no-content)
+          (response/not-found {:error "OTO not found with given OTO ID"}))))))
 
 (def routes
   (c-api/context "/hoks" []
