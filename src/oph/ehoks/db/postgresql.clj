@@ -640,6 +640,12 @@
     :opiskeluvalmiuksia_tukevat_opinnot
     (mapv h/to-sql c)))
 
+(defn select-opiskeluvalmiuksia-tukevat-opinnot-by-id [oto-id]
+  (->
+    (query [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-id oto-id])
+    first
+    h/opiskeluvalmiuksia-tukevat-opinnot-from-sql))
+
 (defn select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id [id]
   (query
     [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id id]

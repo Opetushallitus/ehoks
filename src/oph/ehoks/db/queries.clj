@@ -167,6 +167,7 @@
      :secondary-column "osaamisen_hankkimistapa_id"
      :primary-column "id"
      :column "hankittava_ammat_tutkinnon_osa_id"}))
+(defq select-opiskeluvalmiuksia-tukevat-opinnot-by-id)
 (defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-id)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id)
