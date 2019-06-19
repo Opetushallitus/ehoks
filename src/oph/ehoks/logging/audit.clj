@@ -2,7 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [oph.ehoks.logging.access :refer [current-fin-time-str
                                               get-session]]
-            [oph.ehoks.config :refer [config]]
+            [environ.core :refer [env]]
             [clj-http.client :refer [client-error? server-error?]])
   (:import (fi.vm.sade.auditlog Audit
                                 ApplicationType
@@ -19,7 +19,7 @@
                        (log/log "audit" :info nil str))))
 
 (def ^:private audit
-  (Audit. logger (:name config) (ApplicationType/BACKEND)))
+  (Audit. logger (or (:name env) "both") (ApplicationType/BACKEND)))
 
 (defn- create-operation [op]
   (proxy [Operation] [] (name [] op)))
