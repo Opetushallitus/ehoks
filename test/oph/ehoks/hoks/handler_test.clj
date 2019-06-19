@@ -1062,6 +1062,18 @@
                 (mock/json-body {:id 1})))]
       (is (= (:status response) 404)))))
 
+(deftest get-hoks-by-id-not-found
+  (testing "GET HOKS by hoks-id"
+
+    (let [app (create-app nil)]
+      (let [response
+            (utils/with-service-ticket
+              app
+              (mock/request :get
+                            (format "%s/%s"
+                                    url 43857)))]
+        (is (= (:status response) 404))))))
+
 (deftest get-hoks-by-opiskeluoikeus-oid
   (testing "GET HOKS by opiskeluoikeus-oid"
 
