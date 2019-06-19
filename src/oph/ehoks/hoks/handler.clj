@@ -369,7 +369,7 @@
     ;  (if (db/update-ovatu-values! id values)
     ;    (response/no-content)
     ;    (response/not-found "OTO not found with given OTO ID")))
-    ))
+))
 
 (def routes
   (c-api/context "/hoks" []

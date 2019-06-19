@@ -842,9 +842,9 @@
 
 (def oto-path "opiskeluvalmiuksia-tukevat-opinnot")
 (def oto-data {:nimi "Nimi"
-                 :kuvaus "Kuvaus"
-                 :alku "2018-12-12"
-                 :loppu "2018-12-20"})
+               :kuvaus "Kuvaus"
+               :alku "2018-12-12"
+               :loppu "2018-12-20"})
 
 (deftest post-and-get-opiskeluvalmiuksia-tukevat-opinnot
   (testing "GET opiskeluvalmiuksia tukevat opinnot"
