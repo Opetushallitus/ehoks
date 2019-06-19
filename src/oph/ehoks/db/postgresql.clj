@@ -630,10 +630,21 @@
     [queries/select-osaamisen-hankkmistavat-by-pato-id id]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
+(defn insert-opiskeluvalmiuksia-tukeva-opinto! [new-value]
+  (insert-one!
+    :opiskeluvalmiuksia_tukevat_opinnot
+    (h/to-sql new-value)))
+
 (defn insert-opiskeluvalmiuksia-tukevat-opinnot! [c]
   (insert-multi!
     :opiskeluvalmiuksia_tukevat_opinnot
     (mapv h/to-sql c)))
+
+(defn select-opiskeluvalmiuksia-tukevat-opinnot-by-id [oto-id]
+  (->
+    (query [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-id oto-id])
+    first
+    h/opiskeluvalmiuksia-tukevat-opinnot-from-sql))
 
 (defn select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id [id]
   (query

@@ -342,40 +342,34 @@
           {:error "Aiemmin hankitun yhteinen tutkinnon osa not found"})))))
 
 (def ^:private opiskeluvalmiuksia-tukevat-opinnot
-  (c-api/context "/:hoks-id/opiskeluvalmiuksia-tukevat-opinnot" [hoks-id]
+  (c-api/context "/opiskeluvalmiuksia-tukevat-opinnot" []
 
-    (c-api/GET "/:id" [id]
+    (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin opiskeluvalmiuksia tukevat opinnot"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot)
-      (rest/rest-ok (db/get-ovatu-by-id id)))
+      (rest/rest-ok (h/get-opiskeluvalmiuksia-tukeva-opinto id)))
 
     (c-api/POST "/"  [:as request]
       :summary
       "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin"
-      :body [ovatu hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
+      :body [oto hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ovatu-response (db/create-ovatu! ovatu)]
+      (let [oto-response (h/save-opiskeluvalmiuksia-tukeva-opinto!
+                           (get-in request [:hoks :id]) oto)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id ovatu-response))}
-          :id (:id ovatu-response))))
+          {:uri (format "%s/%d" (:uri request) (:id oto-response))}
+          :id (:id oto-response))))
 
-    (c-api/PUT "/:id" []
-      :summary "Päivittää HOKSin opiskeluvalmiuksia tukevat opinnot"
-      :path-params [id :- s/Int]
-      :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
-      (if (db/update-ovatu! id values)
-        (response/no-content)
-        (response/not-found "OVATU not found with given OVATU ID")))
-
-    (c-api/PATCH "/:id" []
-      :summary
-      "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
-      :path-params [id :- s/Int]
-      :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
-      (if (db/update-ovatu-values! id values)
-        (response/no-content)
-        (response/not-found "OVATU not found with given OVATU ID")))))
+    ;(c-api/PATCH "/:id" []
+    ;  :summary
+    ;  "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
+    ;  :path-params [id :- s/Int]
+    ;  :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
+    ;  (if (db/update-ovatu-values! id values)
+    ;    (response/no-content)
+    ;    (response/not-found "OTO not found with given OTO ID")))
+))
 
 (def routes
   (c-api/context "/hoks" []
@@ -438,6 +432,5 @@
           aiemmin-hankittu-yhteinen-tutkinnon-osa
           hankittava-ammat-tutkinnon-osa
           hankittava-paikallinen-tutkinnon-osa
-          hankittava-yhteinen-tutkinnon-osa))
-      (c-api/undocumented
-        opiskeluvalmiuksia-tukevat-opinnot))))
+          hankittava-yhteinen-tutkinnon-osa
+          opiskeluvalmiuksia-tukevat-opinnot)))))
