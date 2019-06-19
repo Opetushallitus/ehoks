@@ -225,10 +225,12 @@
     (db/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-opiskeluvalmiuksia-tukeva-opinto [oto-id]
-  ())
+  (db/select-opiskeluvalmiuksia-tukevat-opinnot-by-id oto-id))
 
 (defn get-opiskeluvalmiuksia-tukevat-opinnot [hoks-id]
-  (db/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id))
+  (mapv
+    #(dissoc % :id)
+    (db/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id)))
 
 (defn get-yto-osa-alue-osaamisen-hankkimistavat [id]
   (mapv

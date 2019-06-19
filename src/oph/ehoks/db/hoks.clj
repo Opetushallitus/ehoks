@@ -267,7 +267,7 @@
   (from-sql m {:removals [:hoks_id]}))
 
 (defn opiskeluvalmiuksia-tukevat-opinnot-from-sql [m]
-  (from-sql m {:removals [:id :hoks_id]}))
+  (from-sql m {:removals [:hoks_id]}))
 
 (defn hankittava-yhteinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id :osa-alueet]}))
