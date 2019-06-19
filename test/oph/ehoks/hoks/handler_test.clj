@@ -840,128 +840,67 @@
         (eq (:osa-alueet get-response-data)
             (:osa-alueet hyto-sub-entity-patched))))))
 
-(def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")
-(def ovatu-data {:nimi "Nimi"
-                 :kuvaus "Kuvaus"
-                 :alku "2018-12-12"
-                 :loppu "2018-12-20"})
+(def oto-path "opiskeluvalmiuksia-tukevat-opinnot")
+(def oto-data {:nimi "Nimi"
+               :kuvaus "Kuvaus"
+               :alku "2018-12-12"
+               :loppu "2018-12-20"})
 
-(deftest post-and-get-ovatu
+(deftest post-and-get-opiskeluvalmiuksia-tukevat-opinnot
   (testing "GET opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url ovatu-path))
-                (mock/json-body ovatu-data)))
-          get-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (mock/request
-              :get
-              (format
-                "%s/1/%s/1"
-                url ovatu-path)))]
-      (is (= (:status post-response) 200))
-      (eq (utils/parse-body
-            (:body post-response))
-          {:data {:uri (format
-                         "%s/1/%s/1"
-                         url ovatu-path)} :meta {:id 1}})
-      (is (= (:status get-response) 200))
-      (eq (utils/parse-body
-            (:body get-response))
-          {:data {:id 1
-                  :nimi "Nimi"
-                  :kuvaus "Kuvaus"
-                  :alku "2018-12-12"
-                  :loppu "2018-12-20"}
-           :meta {}}))))
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            oto-path oto-data app hoks)
+            get-response (create-mock-get-request oto-path app hoks)]
+        (assert-post-response-is-ok oto-path post-response)
+        (is (= (:status get-response) 200))
+        (eq (utils/parse-body
+              (:body get-response))
+            {:meta {} :data (assoc oto-data :id 1)})))))
 
-(deftest put-ovatu
-  (testing "PUT opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url ovatu-path))
-                (mock/json-body ovatu-data)))
-          put-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :put
-                  (format
-                    "%s/1/%s/1"
-                    url ovatu-path))
-                (mock/json-body
-                  {:id 1
-                   :nimi "Uusi nimi"
-                   :kuvaus "Uusi kuvaus"
-                   :alku "2018-12-15"
-                   :loppu "2018-12-25"})))]
-      (is (= (:status put-response) 204)))))
+(def ^:private one-value-of-oto-patched
+  {:nimi "Muuttunut Nimi"})
 
-(deftest patch-one-ovatu
-  (testing "PATCH one value opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url ovatu-path))
-                (mock/json-body ovatu-data)))
-          patch-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url ovatu-path))
-                (mock/json-body
-                  {:id 1
-                   :nimi "Uusi nimi"})))]
-      (is (= (:status patch-response) 204)))))
+(deftest patch-one-value-of-opiskeluvalmiuksia-tukevat-opinnot
+  (testing "PATCH one value of opiskeluvalmiuksia tukevat opinnot"
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            oto-path oto-data app hoks)
+            patch-response (create-mock-patch-request
+                             oto-path app one-value-of-oto-patched)
+            get-response (create-mock-get-request oto-path app hoks)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
+        (is (= (:status patch-response) 204))
+        (is (= (:nimi get-response-data)
+               (:nimi one-value-of-oto-patched))
+            "Patched value should change.")
+        (is (= (:kuvaus get-response-data)
+               (:kuvaus oto-data))
+            "Value should stay unchanged")))))
 
-(deftest patch-all-ovatu
+(def ^:private all-values-of-oto-patched
+  {:nimi "Muuttunut Nimi"
+   :kuvaus "Uusi Kuvaus"
+   :alku "2020-01-12"
+   :loppu "2021-10-20"})
+
+(deftest patch-multiple-values-of-oto
   (testing "PATCH all opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url ovatu-path))
-                (mock/json-body ovatu-data)))
-          patch-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url ovatu-path))
-                (mock/json-body
-                  {:id 1
-                   :nimi "Uusi nimi"
-                   :kuvaus "Uusi kuvaus"
-                   :alku "2018-12-11"
-                   :loppu "2018-12-21"})))]
-      (is (= (:status patch-response) 204)))))
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            oto-path oto-data app hoks)
+            patch-response (create-mock-patch-request
+                             oto-path app all-values-of-oto-patched)
+            get-response (create-mock-get-request oto-path app hoks)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
+        (is (= (:status patch-response) 204))
+        (eq get-response-data (assoc all-values-of-oto-patched :id 1))))))
 
 (defn add-empty-hoks-values [hoks]
   (assoc

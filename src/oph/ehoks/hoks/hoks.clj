@@ -224,8 +224,13 @@
        :id)
     (db/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id hoks-id)))
 
+(defn get-opiskeluvalmiuksia-tukeva-opinto [oto-id]
+  (db/select-opiskeluvalmiuksia-tukevat-opinnot-by-id oto-id))
+
 (defn get-opiskeluvalmiuksia-tukevat-opinnot [hoks-id]
-  (db/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id))
+  (mapv
+    #(dissoc % :id)
+    (db/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id)))
 
 (defn get-yto-osa-alue-osaamisen-hankkimistavat [id]
   (mapv
@@ -602,9 +607,13 @@
   (when-let [new-oa (:osa-alueet new-values)]
     (replace-ahyto-osa-alueet! (:id ahyto-from-db) new-oa)))
 
-(defn save-opiskeluvalmiuksia-tukevat-opinnot! [h c]
+(defn save-opiskeluvalmiuksia-tukeva-opinto! [hoks-id new-oto-values]
+  (db/insert-opiskeluvalmiuksia-tukeva-opinto!
+    (assoc new-oto-values :hoks-id hoks-id)))
+
+(defn save-opiskeluvalmiuksia-tukevat-opinnot! [hoks new-oto-values]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
-    (mapv #(assoc % :hoks-id (:id h)) c)))
+    (mapv #(assoc % :hoks-id (:id hoks)) new-oto-values)))
 
 (defn save-yto-osa-alueen-osaamisen-osoittaminen! [yto n]
   (let [naytto (save-osaamisen-osoittaminen! n)

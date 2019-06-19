@@ -357,13 +357,6 @@
     {:removed [:id]}))
 
 (s/defschema
-  OpiskeluvalmiuksiaTukevatOpinnotPaivitys
-  (modify
-    OpiskeluvalmiuksiaTukevatOpinnot
-    "Opiskeluvalmiuksia tukevien opintojen tiedot merkintää ylikirjoittaessa
-     (PUT)"))
-
-(s/defschema
   OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys
   (modify
     OpiskeluvalmiuksiaTukevatOpinnot
@@ -406,13 +399,6 @@
     {:removed [:id]}))
 
 (s/defschema
-  HankittavaAmmatillinenTutkinnonOsaPaivitys
-  (modify
-    HankittavaAmmatillinenTutkinnonOsa
-    "Hankittavan ammatillisen osaamisen tiedot merkintää ylikirjoittaessa
-    (PUT)"))
-
-(s/defschema
   HankittavaAmmatillinenTutkinnonOsaKentanPaivitys
   (modify
     HankittavaAmmatillinenTutkinnonOsa
@@ -431,13 +417,6 @@
     (str "Hankittavan yhteinen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
     {:removed [:id]}))
-
-(s/defschema
-  HankittavaYTOPaivitys
-  (modify
-    HankittavaYTO
-    (str "Hankittavan yhteinen tutkinnon osa tiedot merkintää "
-         "ylikirjoittaessa (PUT)")))
 
 (s/defschema
   HankittavaYTOKentanPaivitys
@@ -534,13 +513,6 @@
     (str "Hankittavan paikallisen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
     {:removed [:id]}))
-
-(s/defschema
-  HankittavaPaikallinenTutkinnonOsaPaivitys
-  (modify
-    HankittavaPaikallinenTutkinnonOsa
-    (str "Hankittavan paikallisen tutkinnon osan tiedot merkintää "
-         "ylikirjoittaessa (PUT)")))
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaKentanPaivitys
