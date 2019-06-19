@@ -651,6 +651,12 @@
     [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id id]
     {:row-fn h/opiskeluvalmiuksia-tukevat-opinnot-from-sql}))
 
+(defn update-opiskeluvalmiuksia-tukevat-opinnot [oto-id new-values]
+  (update!
+    :opiskeluvalmiuksia_tukevat_opinnot
+    (h/to-sql new-values)
+    ["id = ? AND deleted_at IS NULL" oto-id]))
+
 (defn insert-hankittava-yhteinen-tutkinnon-osa! [m]
   (insert-one!
     :hankittavat_yhteiset_tutkinnon_osat
