@@ -53,13 +53,16 @@
 (defn get-hoks-url [hoks path]
   (format "%s/%d/%s" url (:id hoks) path))
 
-(defn- create-mock-post-request [path body app hoks]
-  (utils/with-service-ticket
-    app
-    (-> (mock/request
-          :post
-          (get-hoks-url hoks path))
-        (mock/json-body body))))
+(defn- create-mock-post-request
+  ([path body app hoks]
+   (create-mock-post-request (format "%d/%s" (:id hoks) path) body app))
+  ([path body app]
+   (utils/with-service-ticket
+     app
+     (-> (mock/request
+           :post
+           (format "%s/%s" url path))
+         (mock/json-body body)))))
 
 (defn- create-mock-get-request [path app hoks]
   (utils/with-service-ticket
