@@ -1,7 +1,8 @@
 (ns oph.ehoks.user-test
   (:require [clojure.test :refer [deftest testing is]]
             [oph.ehoks.utils :refer [eq]]
-            [oph.ehoks.user :as user]))
+            [oph.ehoks.user :as user]
+            [oph.ehoks.external.http-client :as client]))
 
 (deftest get-auth-info-test
   (testing "Mapping kayttooikeus-service data to eHOKS privileges"
@@ -60,6 +61,16 @@
 
 (deftest get-organisation-privileges
   (testing "Get organisation privileges"
+    (client/set-get! (fn [url options]
+                       (cond (.endsWith
+                               url "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.00000000003")
+                             {:status 200
+                              :body {:parentOidPath "|1.2.246.562.10.00000000001|1.2.246.562.10.00000000002"}}
+                             (.endsWith
+                               url "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.00000000001")
+                             {:status 200
+                              :body {:parentOidPath "|1.2.246.562.10.00000000005|1.2.246.562.10.00000000008"}})))
+
     (eq (user/get-organisation-privileges
           {:organisation-privileges
            '({:oid "1.2.246.562.10.00000000002"
@@ -80,4 +91,14 @@
                 {:oid "1.2.246.562.10.00000000003"
                  :privileges #{}
                  :roles #{:oph-super-user}})}
-            "1.2.246.562.10.00000000001")))))
+            "1.2.246.562.10.00000000001")))
+
+    ; From parentOidPath
+    (eq (user/get-organisation-privileges
+          {:organisation-privileges
+           '({:oid "1.2.246.562.10.00000000002"
+              :privileges #{:read :write :update :delete}
+              :roles #{}})}
+          "1.2.246.562.10.00000000003")
+        #{:read :write :update :delete})
+    (client/reset-functions!)))
