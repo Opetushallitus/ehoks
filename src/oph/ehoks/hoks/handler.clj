@@ -419,14 +419,13 @@
 
           (c-api/PATCH "/" []
             :summary
-            "Päivittää olemassa olevan HOKSin päätason arvoa tai arvoja"
+            "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
             :body [values hoks-schema/HOKSPaivitys]
-            (let [count-of-rows-updated
-                  (first (pdb/update-hoks-by-id! hoks-id values))]
-              (if (pos? count-of-rows-updated)
-                (response/no-content)
-                (response/not-found
-                  {:error "HOKS not found with given HOKS ID"}))))
+            (if (not-empty (pdb/select-hoks-by-id hoks-id))
+              (do
+                (h/update-hoks! hoks-id values)
+                (response/no-content))
+              (response/not-found {:error "HOKS not found with given HOKS ID"})))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa

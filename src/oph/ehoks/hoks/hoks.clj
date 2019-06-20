@@ -692,3 +692,6 @@
       :hankittavat-yhteiset-tutkinnon-osat
       (save-hankittavat-yhteiset-tutkinnon-osat!
         saved-hoks (:hankittavat-yhteiset-tutkinnon-osat h)))))
+
+(defn update-hoks! [hoks-id new-values]
+  (db/update-hoks-by-id! hoks-id new-values))
