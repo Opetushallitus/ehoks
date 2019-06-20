@@ -1054,7 +1054,10 @@
 (def oto-of-hoks-patched
   {:id 1
    :opiskeluvalmiuksia-tukevat-opinnot
-   {:nimi "Uusi Nimi"}})
+   [{:nimi "Uusi Nimi"
+     :kuvaus "joku kuvaus"
+     :alku "2019-06-22"
+     :loppu "2021-05-07"}]})
 
 (deftest patch-oto-of-hoks
   (testing "PATCHes opiskeluvalmiuksia tukevat opinnot of HOKS"
