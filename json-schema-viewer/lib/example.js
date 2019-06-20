@@ -20,8 +20,7 @@
         jsonSchema.properties = [
           "HOKS",
           "HOKSKentanPaivitys",
-          "HOKSLuonti",
-          "HOKSPaivitys"
+          "HOKSLuonti"
         ].reduce(function(result, key) {
           if (jsonSchema.definitions[key]) {
             result[key] = { $ref: "#/definitions/" + key };
