@@ -1047,12 +1047,27 @@
       (is (= (:ensikertainen-hyvaksyminen get-response-data)
              (:ensikertainen-hyvaksyminen one-value-of-hoks-patched))
           "Patched value should change.")
-      (is (= (:ensikertainen-hyvaksyminen get-response-data)
-             (:ensikertainen-hyvaksyminen one-value-of-hoks-patched))
-          "Patched value should change.")
       (is (= (:kuvaus get-response-data)
              (:kuvaus one-value-of-hoks-patched))
           "Value should stay unchanged"))))
+
+(def oto-of-hoks-patched
+  {:id 1
+   :opiskeluvalmiuksia-tukevat-opinnot
+   {:nimi "Uusi Nimi"}})
+
+(deftest patch-oto-of-hoks
+  (testing "PATCHes opiskeluvalmiuksia tukevat opinnot of HOKS"
+    (let [app (create-app nil)
+          post-response (create-mock-post-request "" hoks-data app)
+          patch-response (create-mock-hoks-patch-request
+                           1 oto-of-hoks-patched app)
+          get-response (create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (get-in get-response-data
+                     [:opiskeluvalmiuksia-tukevat-opinnot :nimi])
+             (get-in oto-of-hoks-patched
+                     [:opiskeluvalmiuksia-tukevat-opinnot :nimi]))))))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
