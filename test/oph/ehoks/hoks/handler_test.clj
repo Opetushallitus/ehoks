@@ -64,32 +64,32 @@
             (format "%s/%s" url path))
           (mock/json-body body)))))
 
-(defn- create-mock-hoks-osa-get-request [path app hoks]
+(defn- create-mock-get-request [path app]
   (utils/with-service-ticket
     app
     (mock/request
       :get
-      (get-hoks-url hoks (str path "/1")))))
+      path)))
+
+(defn- create-mock-hoks-osa-get-request [path app hoks]
+  (create-mock-get-request (get-hoks-url hoks (str path "/1")) app))
+
+(defn- create-mock-hoks-get-request [hoks-id app]
+  (create-mock-get-request (format "%s/%d" url hoks-id) app))
+
+(defn- create-mock-patch-request [path patched-data app]
+  (utils/with-service-ticket
+    app
+    (-> (mock/request
+          :patch
+          path)
+        (mock/json-body patched-data))))
 
 (defn- create-mock-hoks-osa-patch-request [path app patched-data]
-  (utils/with-service-ticket
-    app
-    (-> (mock/request
-          :patch
-          (format
-            "%s/1/%s/1"
-            url path))
-        (mock/json-body patched-data))))
+  (create-mock-patch-request (format "%s/1/%s/1" url path) patched-data app))
 
 (defn- create-mock-hoks-patch-request [hoks-id patched-data app]
-  (utils/with-service-ticket
-    app
-    (-> (mock/request
-          :patch
-          (format
-            "%s/%d"
-            url hoks-id))
-        (mock/json-body patched-data))))
+  (create-mock-patch-request (format "%s/%d" url hoks-id) patched-data app))
 
 (def hpto-path "hankittava-paikallinen-tutkinnon-osa")
 (def hpto-data {:nimi "222"
