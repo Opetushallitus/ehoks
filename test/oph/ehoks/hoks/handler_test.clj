@@ -64,7 +64,7 @@
             (format "%s/%s" url path))
           (mock/json-body body)))))
 
-(defn- create-mock-get-request [path app hoks]
+(defn- create-mock-hoks-osa-get-request [path app hoks]
   (utils/with-service-ticket
     app
     (mock/request
@@ -240,7 +240,7 @@
       hoks
       (let [app (create-app nil)
             post-response (create-mock-post-request hao-path hao-data app hoks)
-            get-response (create-mock-get-request hao-path app hoks)]
+            get-response (create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status post-response) 200))
         (eq (utils/parse-body
               (:body post-response))
@@ -297,7 +297,7 @@
                     :patch
                     (get-hoks-url hoks (str hao-path "/1")))
                   (mock/json-body (assoc patch-all-hao-data :id 1))))
-            get-response (create-mock-get-request hao-path app hoks)]
+            get-response (create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status patch-response) 204))
         (eq (utils/parse-body (:body get-response))
             {:meta {} :data  (assoc patch-all-hao-data :id 1)})))))
@@ -349,7 +349,7 @@
                           osa-path osa-data app hoks)
           patch-response (create-mock-hoks-osa-patch-request
                            osa-path app osa-patched-data)
-          get-response (create-mock-get-request osa-path app hoks)
+          get-response (create-mock-hoks-osa-get-request osa-path app hoks)
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (is (= (:status post-response) 200))
       (is (= (:status patch-response) 204))
@@ -362,7 +362,7 @@
     (let [app (create-app nil)
           post-response (create-mock-post-request
                           osa-path osa-data app hoks)
-          get-response (create-mock-get-request osa-path app hoks)]
+          get-response (create-mock-hoks-osa-get-request osa-path app hoks)]
       (assert-post-response-is-ok osa-path post-response)
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
@@ -742,7 +742,7 @@
       (let [app (create-app nil)
             post-response (create-mock-post-request
                             hyto-path hyto-data app hoks)
-            get-response (create-mock-get-request hyto-path app hoks)]
+            get-response (create-mock-hoks-osa-get-request hyto-path app hoks)]
         (assert-post-response-is-ok hyto-path post-response)
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
@@ -761,7 +761,7 @@
                             hyto-path hyto-data app hoks)
             patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app one-value-of-hyto-patched)
-            get-response (create-mock-get-request hyto-path app hoks)
+            get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (is (= (:koulutuksen-jarjestaja-oid get-response-data)
@@ -829,7 +829,7 @@
                             hyto-path hyto-data app hoks)
             patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app multiple-hyto-values-patched)
-            get-response (create-mock-get-request hyto-path app hoks)
+            get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (eq (:osa-alueet get-response-data)
@@ -847,7 +847,7 @@
                             hyto-path hyto-data app hoks)
             patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app hyto-sub-entity-patched)
-            get-response (create-mock-get-request hyto-path app hoks)
+            get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (eq (:osa-alueet get-response-data)
@@ -866,7 +866,7 @@
       (let [app (create-app nil)
             post-response (create-mock-post-request
                             oto-path oto-data app hoks)
-            get-response (create-mock-get-request oto-path app hoks)]
+            get-response (create-mock-hoks-osa-get-request oto-path app hoks)]
         (assert-post-response-is-ok oto-path post-response)
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
@@ -885,7 +885,7 @@
                             oto-path oto-data app hoks)
             patch-response (create-mock-hoks-osa-patch-request
                              oto-path app one-value-of-oto-patched)
-            get-response (create-mock-get-request oto-path app hoks)
+            get-response (create-mock-hoks-osa-get-request oto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (is (= (:nimi get-response-data)
@@ -910,7 +910,7 @@
                             oto-path oto-data app hoks)
             patch-response (create-mock-hoks-osa-patch-request
                              oto-path app all-values-of-oto-patched)
-            get-response (create-mock-get-request oto-path app hoks)
+            get-response (create-mock-hoks-osa-get-request oto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (eq get-response-data (assoc all-values-of-oto-patched :id 1))))))
