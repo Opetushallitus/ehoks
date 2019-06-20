@@ -1023,37 +1023,36 @@
                    :id 1
                    :eid (:eid hoks))))))))
 
-(deftest patch-created-hoks
+(def hoks-data
+  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false})
+
+(def one-value-of-hoks-patched
+  {:id 1
+   :ensikertainen-hyvaksyminen "2020-01-05"})
+
+(deftest patch-one-value-of-hoks
   (testing "PATCH updates value of created HOKS"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"
-                     :osaamisen-hankkimisen-tarve false}
-          response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request :post url)
-                (mock/json-body hoks-data)))
-          body (utils/parse-body (:body response))]
-      (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)
-            patch-response
-            (utils/with-service-ticket
-              (create-app nil)
-              (-> (mock/request :patch (get-in body [:data :uri]))
-                  (mock/json-body
-                    {:id 1
-                     :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
-                     :urasuunnitelma-koodi-versio 1})))]
-        (is (= (:status patch-response) 204))
-        (let [updated-hoks
-              (-> (get-in body [:data :uri]) get-authenticated :data)]
-          (eq
-            updated-hoks
-            (assoc
-              hoks
-              :id 1
-              :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
-              :urasuunnitelma-koodi-versio 1)))))))
+    (let [app (create-app nil)
+          post-response (create-mock-post-request "" hoks-data app)
+          patch-response (create-mock-hoks-patch-request
+                           1 one-value-of-hoks-patched app)
+          get-response (create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status patch-response) 204))
+      (is (= (:status get-response) 200))
+      (is (= (:ensikertainen-hyvaksyminen get-response-data)
+             (:ensikertainen-hyvaksyminen one-value-of-hoks-patched))
+          "Patched value should change.")
+      (is (= (:ensikertainen-hyvaksyminen get-response-data)
+             (:ensikertainen-hyvaksyminen one-value-of-hoks-patched))
+          "Patched value should change.")
+      (is (= (:kuvaus get-response-data)
+             (:kuvaus one-value-of-hoks-patched))
+          "Value should stay unchanged"))))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
