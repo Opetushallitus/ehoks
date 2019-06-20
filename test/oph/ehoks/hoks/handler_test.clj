@@ -81,6 +81,16 @@
             url path))
         (mock/json-body patched-data))))
 
+(defn- create-mock-hoks-patch-request [hoks-id patched-data app]
+  (utils/with-service-ticket
+    app
+    (-> (mock/request
+          :patch
+          (format
+            "%s/%d"
+            url hoks-id))
+        (mock/json-body patched-data))))
+
 (def hpto-path "hankittava-paikallinen-tutkinnon-osa")
 (def hpto-data {:nimi "222"
                 :osaamisen-hankkimistavat []
