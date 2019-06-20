@@ -420,7 +420,7 @@
           (c-api/PATCH "/" []
             :summary
             "Päivittää olemassa olevan HOKSin päätason arvoa tai arvoja"
-            :body [values hoks-schema/HOKSKentanPaivitys]
+            :body [values hoks-schema/HOKSPaivitys]
             (let [count-of-rows-updated
                   (first (pdb/update-hoks-by-id! hoks-id values))]
               (if (pos? count-of-rows-updated)

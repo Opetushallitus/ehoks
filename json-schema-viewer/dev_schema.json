@@ -277,10 +277,10 @@
           },
           {
             "in": "body",
-            "name": "HOKSKentanPaivitys",
+            "name": "HOKSPaivitys",
             "description": "",
             "required": true,
-            "schema": { "$ref": "#/definitions/HOKSKentanPaivitys" }
+            "schema": { "$ref": "#/definitions/HOKSPaivitys" }
           }
         ],
         "responses": { "default": { "description": "" } }
@@ -1165,7 +1165,7 @@
         "hyvaksyja"
       ]
     },
-    "HOKSKentanPaivitys": {
+    "HOKSPaivitys": {
       "type": "object",
       "properties": {
         "urasuunnitelma-koodi-versio": {

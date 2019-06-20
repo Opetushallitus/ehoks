@@ -700,11 +700,11 @@
     {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
      :name "HOKS"}))
 
-(def HOKSKentanPaivitys
+(def HOKSPaivitys
   (with-meta
     (g/generate HOKSModel :patch)
     {:doc "HOKS-dokumentin ylikirjoitus (PATCH)"
-     :name "HOKSKentanPaivitys"}))
+     :name "HOKSPaivitys"}))
 
 (def HOKSLuonti
   (with-meta

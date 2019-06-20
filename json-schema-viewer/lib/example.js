@@ -19,7 +19,7 @@
         // defines which schema models we show at root level
         jsonSchema.properties = [
           "HOKS",
-          "HOKSKentanPaivitys",
+          "HOKSPaivitys",
           "HOKSLuonti"
         ].reduce(function(result, key) {
           if (jsonSchema.definitions[key]) {
