@@ -71,7 +71,7 @@
       :get
       (get-hoks-url hoks (str path "/1")))))
 
-(defn- create-mock-patch-request [path app patched-data]
+(defn- create-mock-hoks-osa-patch-request [path app patched-data]
   (utils/with-service-ticket
     app
     (-> (mock/request
@@ -337,7 +337,7 @@
     (let [app (create-app nil)
           post-response (create-mock-post-request
                           osa-path osa-data app hoks)
-          patch-response (create-mock-patch-request
+          patch-response (create-mock-hoks-osa-patch-request
                            osa-path app osa-patched-data)
           get-response (create-mock-get-request osa-path app hoks)
           get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -749,7 +749,7 @@
       (let [app (create-app nil)
             post-response (create-mock-post-request
                             hyto-path hyto-data app hoks)
-            patch-response (create-mock-patch-request
+            patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app one-value-of-hyto-patched)
             get-response (create-mock-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -817,7 +817,7 @@
       (let [app (create-app nil)
             post-response (create-mock-post-request
                             hyto-path hyto-data app hoks)
-            patch-response (create-mock-patch-request
+            patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app multiple-hyto-values-patched)
             get-response (create-mock-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -835,7 +835,7 @@
       (let [app (create-app nil)
             post-response (create-mock-post-request
                             hyto-path hyto-data app hoks)
-            patch-response (create-mock-patch-request
+            patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app hyto-sub-entity-patched)
             get-response (create-mock-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -873,7 +873,7 @@
       (let [app (create-app nil)
             post-response (create-mock-post-request
                             oto-path oto-data app hoks)
-            patch-response (create-mock-patch-request
+            patch-response (create-mock-hoks-osa-patch-request
                              oto-path app one-value-of-oto-patched)
             get-response (create-mock-get-request oto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -898,7 +898,7 @@
       (let [app (create-app nil)
             post-response (create-mock-post-request
                             oto-path oto-data app hoks)
-            patch-response (create-mock-patch-request
+            patch-response (create-mock-hoks-osa-patch-request
                              oto-path app all-values-of-oto-patched)
             get-response (create-mock-get-request oto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
