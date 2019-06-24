@@ -611,9 +611,9 @@
   (db/insert-opiskeluvalmiuksia-tukeva-opinto!
     (assoc new-oto-values :hoks-id hoks-id)))
 
-(defn save-opiskeluvalmiuksia-tukevat-opinnot! [hoks new-oto-values]
+(defn save-opiskeluvalmiuksia-tukevat-opinnot! [hoks-id new-oto-values]
   (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
-    (mapv #(assoc % :hoks-id (:id hoks)) new-oto-values)))
+    (mapv #(assoc % :hoks-id hoks-id) new-oto-values)))
 
 (defn save-yto-osa-alueen-osaamisen-osoittaminen! [yto n]
   (let [naytto (save-osaamisen-osoittaminen! n)
@@ -688,7 +688,7 @@
         saved-hoks (:hankittavat-ammat-tutkinnon-osat h))
       :opiskeluvalmiuksia-tukevat-opinnot
       (save-opiskeluvalmiuksia-tukevat-opinnot!
-        saved-hoks (:opiskeluvalmiuksia-tukevat-opinnot h))
+        (:id saved-hoks) (:opiskeluvalmiuksia-tukevat-opinnot h))
       :hankittavat-yhteiset-tutkinnon-osat
       (save-hankittavat-yhteiset-tutkinnon-osat!
         saved-hoks (:hankittavat-yhteiset-tutkinnon-osat h)))))

@@ -341,7 +341,7 @@
 (deftest get-opiskeluvalmiuksia-tukevat-opinnot-test
   (testing "Get HOKS opiskeluvalmiuksia tukevat opinnot"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-opiskeluvalmiuksia-tukevat-opinnot! hoks oto-data)
+      (h/save-opiskeluvalmiuksia-tukevat-opinnot! (:id hoks) oto-data)
       (eq
         (h/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks))
         oto-data))))
