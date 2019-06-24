@@ -693,5 +693,11 @@
       (save-hankittavat-yhteiset-tutkinnon-osat!
         saved-hoks (:hankittavat-yhteiset-tutkinnon-osat h)))))
 
+(defn replace-oto! [hoks-id new-oto-values]
+  (db/delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id)
+  (save-opiskeluvalmiuksia-tukevat-opinnot! hoks-id new-oto-values))
+
 (defn update-hoks! [hoks-id new-values]
-  (db/update-hoks-by-id! hoks-id new-values))
+  (db/update-hoks-by-id! hoks-id new-values)
+  (when-let [oto (:opiskeluvalmiuksia-tukevat-opinnot new-values)]
+    (replace-oto! hoks-id oto)))
