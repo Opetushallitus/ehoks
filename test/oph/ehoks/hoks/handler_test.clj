@@ -1027,7 +1027,8 @@
   {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :oppija-oid "1.2.246.562.24.12312312312"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :osaamisen-hankkimisen-tarve false})
+   :osaamisen-hankkimisen-tarve false
+   :opiskeluvalmiuksia-tukevat-opinnot [oto-data]})
 
 (def one-value-of-hoks-patched
   {:id 1
@@ -1067,10 +1068,8 @@
                            1 oto-of-hoks-patched app)
           get-response (create-mock-hoks-get-request 1 app)
           get-response-data (:data (utils/parse-body (:body get-response)))]
-      (is (= (get-in get-response-data
-                     [:opiskeluvalmiuksia-tukevat-opinnot :nimi])
-             (get-in oto-of-hoks-patched
-                     [:opiskeluvalmiuksia-tukevat-opinnot :nimi]))))))
+      (eq (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)
+          (:opiskeluvalmiuksia-tukevat-opinnot oto-of-hoks-patched)))))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
