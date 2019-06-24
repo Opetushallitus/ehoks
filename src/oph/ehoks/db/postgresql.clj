@@ -233,9 +233,9 @@
     ["id = ? AND deleted_at IS NULL" id]))
 
 (defn delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id [hoks-id]
-  ((shallow-delete!
-     :hankittavat_paikalliset_tutkinnon_osat
-     ["hoks_id = ?" hoks-id])))
+  (shallow-delete!
+    :hankittavat_paikalliset_tutkinnon_osat
+    ["hoks_id = ?" hoks-id]))
 
 (defn select-osaamisen-osoittamiset-by-ppto-id
   "hankittavan paikallisen tutkinnon osan hankitun osaamisen näytöt"
