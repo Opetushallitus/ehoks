@@ -190,7 +190,7 @@
       :body [pao hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [pao-db (h/save-hankittava-ammat-tutkinnon-osa!
-                     (:hoks request) pao)]
+                     hoks-id pao)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id pao-db))}
           :id (:id pao-db))))

@@ -333,7 +333,7 @@
 (deftest get-hankittava-ammat-tutkinnon-osa-test
   (testing "Get HOKS hankittava ammatillinen osaaminen"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-hankittavat-ammat-tutkinnon-osat! hoks hao-data)
+      (h/save-hankittavat-ammat-tutkinnon-osat! (:id hoks) hao-data)
       (eq
         (h/get-hankittavat-ammat-tutkinnon-osat (:id hoks))
         hao-data))))
