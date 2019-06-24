@@ -651,6 +651,11 @@
     [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id id]
     {:row-fn h/opiskeluvalmiuksia-tukevat-opinnot-from-sql}))
 
+(defn delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id [hoks-id]
+  (shallow-delete!
+    :opiskeluvalmiuksia_tukevat_opinnot
+    ["hoks_id = ?" hoks-id]))
+
 (defn update-opiskeluvalmiuksia-tukevat-opinnot-by-id! [oto-id new-values]
   (update!
     :opiskeluvalmiuksia_tukevat_opinnot
