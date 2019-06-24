@@ -157,7 +157,7 @@
       :body [ppto hoks-schema/HankittavanPaikallisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ppto-db (h/save-hankittava-paikallinen-tutkinnon-osa!
-                      (:hoks request) ppto)]
+                      hoks-id ppto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ppto-db))}
           :id (:id ppto-db))))

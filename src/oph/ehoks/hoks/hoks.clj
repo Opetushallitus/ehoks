@@ -374,9 +374,9 @@
            (replace-hpto-osaamisen-osoittamiset!
              hpto-db (:osaamisen-osoittaminen values)))))
 
-(defn save-hankittava-paikallinen-tutkinnon-osa! [hoks hpto]
+(defn save-hankittava-paikallinen-tutkinnon-osa! [hoks-id hpto]
   (let [hpto-db (db/insert-hankittava-paikallinen-tutkinnon-osa!
-                  (assoc hpto :hoks-id (:id hoks)))]
+                  (assoc hpto :hoks-id hoks-id))]
     (assoc
       hpto-db
       :osaamisen-hankkimistavat
@@ -386,8 +386,8 @@
       (save-hpto-osaamisen-osoittamiset!
         hpto-db (:osaamisen-osoittaminen hpto)))))
 
-(defn save-hankittavat-paikalliset-tutkinnon-osat! [hoks c]
-  (mapv #(save-hankittava-paikallinen-tutkinnon-osa! hoks %) c))
+(defn save-hankittavat-paikalliset-tutkinnon-osat! [hoks-id c]
+  (mapv #(save-hankittava-paikallinen-tutkinnon-osa! hoks-id %) c))
 
 (defn save-ahpto-tarkentavat-tiedot-naytto! [ahpto-id c]
   (mapv
@@ -679,7 +679,7 @@
         saved-hoks (:aiemmin-hankitut-paikalliset-tutkinnon-osat h))
       :hankittavat-paikalliset-tutkinnon-osat
       (save-hankittavat-paikalliset-tutkinnon-osat!
-        saved-hoks (:hankittavat-paikalliset-tutkinnon-osat h))
+        (:id saved-hoks) (:hankittavat-paikalliset-tutkinnon-osat h))
       :aiemmin-hankitut-yhteiset-tutkinnon-osat
       (save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
         saved-hoks (:aiemmin-hankitut-yhteiset-tutkinnon-osat h))
