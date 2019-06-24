@@ -1114,7 +1114,7 @@
                      :koodi-versio 3}]
        :alku "2019-03-10"
        :loppu "2019-03-19"
-       :yksilolliset-kriteerit ["Yksi kriteeri"]}]}]})
+       :yksilolliset-kriteerit ["Yksi kriteeri" "toinen kriteeri"]}]}]})
 
 (deftest patch-hato-of-hoks
   (testing "PATCHes hankittavat ammatilliset tutkinnon osat of HOKS"
