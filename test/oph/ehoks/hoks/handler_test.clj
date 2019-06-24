@@ -1028,7 +1028,8 @@
    :oppija-oid "1.2.246.562.24.12312312312"
    :ensikertainen-hyvaksyminen "2018-12-15"
    :osaamisen-hankkimisen-tarve false
-   :opiskeluvalmiuksia-tukevat-opinnot [oto-data]})
+   :opiskeluvalmiuksia-tukevat-opinnot [oto-data]
+   :hankittavat-ammat-tutkinnon-osat [hao-data]})
 
 (def one-value-of-hoks-patched
   {:id 1
@@ -1070,6 +1071,61 @@
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (eq (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)
           (:opiskeluvalmiuksia-tukevat-opinnot oto-of-hoks-patched)))))
+
+(def hato-of-hoks-patched
+  {:id 1
+   :hankittavat-ammat-tutkinnon-osat
+   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_300222"
+     :tutkinnon-osa-koodi-versio 2
+     :vaatimuksista-tai-tavoitteista-poikkeaminen
+     "Ei poikkeamia."
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"
+     :osaamisen-hankkimistavat
+     [{:alku "2018-12-12"
+       :loppu "2018-12-20"
+       :ajanjakson-tarkenne "Tarkenne muuttunut"
+       :osaamisen-hankkimistapa-koodi-uri
+       "osaamisenhankkimistapa_koulutussopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1
+       :muut-oppimisymparistot
+       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0003"
+         :oppimisymparisto-koodi-versio 1
+         :alku "2019-03-10"
+         :loppu "2019-03-19"}]
+       :hankkijan-edustaja
+       {:nimi "Heikki Hank"
+        :rooli "Opettaja"
+        :oppilaitos-oid "1.2.246.562.10.54452422420"}}]
+     :osaamisen-osoittaminen
+     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+       :nayttoymparisto {:nimi "Testiympäristö 2"
+                         :y-tunnus "12345671-2"
+                         :kuvaus "Testi test"}
+       :sisallon-kuvaus ["Testaus"]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Timo Testaaja2"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.54452521332"}}]
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Taneli Työmies2"
+         :organisaatio {:nimi "Tanelin Paja Oy"
+                        :y-tunnus "12345622-2"}}]
+       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
+                     :koodi-versio 3}]
+       :alku "2019-03-10"
+       :loppu "2019-03-19"
+       :yksilolliset-kriteerit ["Yksi kriteeri"]}]}]})
+
+(deftest patch-hato-of-hoks
+  (testing "PATCHes hankittavat ammatilliset tutkinnon osat of HOKS"
+    (let [app (create-app nil)
+          post-response (create-mock-post-request "" hoks-data app)
+          patch-response (create-mock-hoks-patch-request
+                           1 hato-of-hoks-patched app)
+          get-response (create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (eq (:hankittavat-ammat-tutkinnon-osat get-response-data)
+          (:hankittavat-ammat-tutkinnon-osat hato-of-hoks-patched)))))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
