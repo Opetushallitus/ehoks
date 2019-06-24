@@ -513,9 +513,9 @@
     #(save-hato-osaamisen-osoittaminen! hato-db %)
     c))
 
-(defn save-hankittava-ammat-tutkinnon-osa! [h hato]
+(defn save-hankittava-ammat-tutkinnon-osa! [hoks hato]
   (let [hato-db (db/insert-hankittava-ammat-tutkinnon-osa!
-                  (assoc hato :hoks-id (:id h)))]
+                  (assoc hato :hoks-id (:id hoks)))]
     (assoc
       hato-db
       :osaamisen-osoittaminen
@@ -527,8 +527,8 @@
         #(save-hato-osaamisen-hankkimistapa! hato-db %)
         (:osaamisen-hankkimistavat hato)))))
 
-(defn save-hankittavat-ammat-tutkinnon-osat! [h c]
-  (mapv #(save-hankittava-ammat-tutkinnon-osa! h %) c))
+(defn save-hankittavat-ammat-tutkinnon-osat! [hoks c]
+  (mapv #(save-hankittava-ammat-tutkinnon-osa! hoks %) c))
 
 (defn replace-hato-osaamisen-hankkimistavat! [hato c]
   (db/delete-osaamisen-hankkimistavat-by-hato-id! (:id hato))
