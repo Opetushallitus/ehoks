@@ -1127,6 +1127,56 @@
       (eq (:hankittavat-ammat-tutkinnon-osat get-response-data)
           (:hankittavat-ammat-tutkinnon-osat hato-of-hoks-patched)))))
 
+(def hpto-of-hoks-patched {:nimi "testinimi"
+                           :koulutuksen-jarjestaja-oid
+                           "1.2.246.562.10.00000000001"
+                           :olennainen-seikka false
+                           :osaamisen-hankkimistavat
+                           [{:alku "2019-12-12"
+                            :loppu "2020-12-20"
+                            :ajanjakson-tarkenne "Tarkenne muuttunut"
+                            :osaamisen-hankkimistapa-koodi-uri
+                            "osaamisenhankkimistapa_koulutussopimus"
+                            :osaamisen-hankkimistapa-koodi-versio 1
+                            :muut-oppimisymparistot
+                            [{:oppimisymparisto-koodi-uri
+                              "oppimisymparistot_0004"
+                              :oppimisymparisto-koodi-versio 2
+                              :alku "2019-03-10"
+                              :loppu "2021-03-19"}]
+                            :hankkijan-edustaja
+                            {:nimi "Heikki Hankk"
+                             :rooli "Opettaja"
+                             :oppilaitos-oid "1.2.246.562.10.54452422420"}}]
+                           :osaamisen-osoittaminen
+                           [{:jarjestaja {:oppilaitos-oid
+                                          "1.2.246.562.10.00000000022"}
+                             :koulutuksen-jarjestaja-osaamisen-arvioijat []
+                             :osa-alueet []
+                             :sisallon-kuvaus
+                             ["ensimmäinen sisältö" "toinenkin" "kolkki"]
+                             :nayttoymparisto {:nimi "aaab"}
+                             :alku "2018-12-12"
+                             :loppu "2018-12-20"
+                             :tyoelama-osaamisen-arvioijat
+                             [{:nimi "Nimi2"
+                               :organisaatio {:nimi "Organisaation nimi"}}]
+                             :vaatimuksista-tai-tavoitteista-poikkeaminen
+                             "Poikkeama tämä."
+                             :yksilolliset-kriteerit
+                             ["kriteeri 1"]}]})
+
+(deftest patch-hpto-of-hoks
+  (testing "PATCHes hankittavat paikalliset tutkinnon osat of HOKS"
+    (let [app (create-app nil)
+          post-response (create-mock-post-request "" hoks-data app)
+          patch-response (create-mock-hoks-patch-request
+                           1 hpto-of-hoks-patched app)
+          get-response (create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (eq (:hankittavat-ammat-tutkinnon-osat get-response-data)
+          (:hankittavat-ammat-tutkinnon-osat hpto-of-hoks-patched)))))
+
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
     (let [response
