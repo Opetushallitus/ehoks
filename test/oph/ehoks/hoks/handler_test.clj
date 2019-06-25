@@ -1032,7 +1032,9 @@
    :hankittavat-ammat-tutkinnon-osat [hao-data]
    :hankittavat-paikalliset-tutkinnon-osat [hpto-data]
    :hankittavat-yhteiset-tutkinnon-osat [hyto-data]
-   :aiemmin-hankitut-ammat-tutkinnon-osat [ahato-data]})
+   :aiemmin-hankitut-ammat-tutkinnon-osat [ahato-data]
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat [ahpto-data]
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat [ahyto-data]})
 
 (defn- assert-partial-patch-of-hoks [patched-hoks hoks-part]
   (let [app (create-app nil)
@@ -1257,6 +1259,51 @@
   (testing "PATCHes aiemmin hankitut ammatilliset tutkinnon osat of HOKS"
     (assert-partial-patch-of-hoks
       ahato-of-hoks-patched :aiemmin-hankitut-ammat-tutkinnon-osat)))
+
+(def ahpto-of-hoks-patched
+  {:id 1
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat
+   [{:valittu-todentamisen-prosessi-koodi-versio 3
+     :laajuus 40
+     :nimi "Testiopintojaksoo"
+     :tavoitteet-ja-sisallot "Tavoitteena on oppiminen."
+     :valittu-todentamisen-prosessi-koodi-uri
+     "osaamisentodentamisenprosessi_0003"
+     :amosaa-tunniste "12345"
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453945325"
+     :vaatimuksista-tai-tavoitteista-poikkeaminen "Ei poikkeamaa"
+     :tarkentavat-tiedot-osaamisen-arvioija
+     {:lahetetty-arvioitavaksi "2021-01-01"
+      :aiemmin-hankitun-osaamisen-arvioijat
+      [{:nimi "Aarne Arvioija toinen"
+        :organisaatio {:oppilaitos-oid
+                       "1.2.246.562.10.54453923421"}}]}
+     :tarkentavat-tiedot-naytto
+     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
+                     :koodi-versio 6}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Teuvo Test"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.12346234691"}}]
+       :jarjestaja {:oppilaitos-oid
+                    "1.2.246.562.10.93270534263"}
+       :nayttoymparisto {:nimi "Testi Oy"
+                         :y-tunnus "1289212-2"
+                         :kuvaus "Testiyhtiöö"}
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Terttu Test"
+         :organisaatio {:nimi "Testi Oy"
+                        :y-tunnus "1289211-4"}}]
+       :sisallon-kuvaus ["Testauksen suunnittelu"
+                         "Jokin toinen testi"]
+       :alku "2018-02-01"
+       :loppu "2021-03-01"
+       :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "Toinen"]}]}]})
+
+(deftest patch-ahpto-of-hoks
+  (testing "PATCHes aiemmin hankitut ammatilliset tutkinnon osat of HOKS"
+    (assert-partial-patch-of-hoks
+      ahpto-of-hoks-patched :aiemmin-hankitut-paikalliset-tutkinnon-osat)))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
