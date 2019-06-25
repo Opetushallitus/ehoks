@@ -62,7 +62,11 @@
           (.endsWith
             url "/rest/organisaatio/v4/1.2.246.562.10.12000000000")
           {:status 200
-           :body {:parentOidPath "|"}})))
+           :body {:parentOidPath "|"}}
+          (.endsWith
+            url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
+          {:status 200
+           :body {:oppilaitos {:oid "1.2.246.562.10.12944436166"}}})))
     (let [session "12345678-1234-1234-1234-1234567890ab"
           cookie (str "ring-session=" session)
           store (atom
