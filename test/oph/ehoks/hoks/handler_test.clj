@@ -1301,9 +1301,80 @@
        :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "Toinen"]}]}]})
 
 (deftest patch-ahpto-of-hoks
-  (testing "PATCHes aiemmin hankitut ammatilliset tutkinnon osat of HOKS"
+  (testing "PATCHes aiemmin hankitut paikalliset tutkinnon osat of HOKS"
     (assert-partial-patch-of-hoks
       ahpto-of-hoks-patched :aiemmin-hankitut-paikalliset-tutkinnon-osat)))
+
+(def ahyto-of-hoks-patched
+  {:id 1
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat
+   [{:valittu-todentamisen-prosessi-koodi-uri
+     "osaamisentodentamisenprosessi_0002"
+     :valittu-todentamisen-prosessi-koodi-versio 4
+     :tutkinnon-osa-koodi-versio 2
+     :tutkinnon-osa-koodi-uri "tutkinnonosat_10203"
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590921"
+     :tarkentavat-tiedot-osaamisen-arvioija
+     {:lahetetty-arvioitavaksi "2017-02-29"
+      :aiemmin-hankitun-osaamisen-arvioijat
+      [{:nimi "Arttu Arvioi"
+        :organisaatio {:oppilaitos-oid
+                       "1.2.246.562.10.54453931312"}}]}
+     :osa-alueet
+     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ru"
+       :osa-alue-koodi-versio 4
+       :koulutuksen-jarjestaja-oid
+       "1.2.246.562.10.54453923577"
+       :vaatimuksista-tai-tavoitteista-poikkeaminen
+       "Testaus ei kuulu."
+       :valittu-todentamisen-prosessi-koodi-uri
+       "osaamisentodentamisenprosessi_0004"
+       :valittu-todentamisen-prosessi-koodi-versio 4
+       :tarkentavat-tiedot-naytto
+       [{:sisallon-kuvaus ["kuvaus1" "kuvaus2"]
+         :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ai"
+                       :koodi-versio 5}]
+         :koulutuksen-jarjestaja-osaamisen-arvioijat
+         [{:nimi "Teppo Test"
+           :organisaatio {:oppilaitos-oid
+                          "1.2.246.562.10.54539267911"}}]
+         :jarjestaja {:oppilaitos-oid
+                      "1.2.246.562.10.55890967911"}
+         :nayttoymparisto {:nimi "Ab Yhtiö"
+                           :y-tunnus "1234128-2"
+                           :kuvaus "Testi1"}
+         :tyoelama-osaamisen-arvioijat
+         [{:nimi "Tellervo Tekijä"
+           :organisaatio {:nimi "Ab Yhtiö"
+                          :y-tunnus "1234128-1"}}]
+         :yksilolliset-kriteerit ["Joku kriteeri" "Toinen"]
+         :alku "2019-01-04"
+         :loppu "2021-03-01"}]}]
+     :tarkentavat-tiedot-naytto
+     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ru"
+                     :koodi-versio 7}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Erkki Esimerkkitest"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.13490579091"}}]
+       :jarjestaja {:oppilaitos-oid
+                    "1.2.246.562.10.93270579093"}
+       :nayttoymparisto {:nimi "Testi"
+                         :y-tunnus "1289235-3"
+                         :kuvaus "Testiyht"}
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Tapio Testi"
+         :organisaatio {:nimi "Testi Oyj"
+                        :y-tunnus "1289235-3"}}]
+       :sisallon-kuvaus ["Testauksen suunnittelu" "Jokin toinen testi" "kolmas"]
+       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
+       :alku "2019-03-01"
+       :loppu "2019-06-01"}]}]})
+
+(deftest patch-ahyto-of-hoks
+  (testing "PATCHes aiemmin hankitut yhteiset tutkinnon osat of HOKS"
+    (assert-partial-patch-of-hoks
+      ahyto-of-hoks-patched :aiemmin-hankitut-yhteiset-tutkinnon-osat)))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
