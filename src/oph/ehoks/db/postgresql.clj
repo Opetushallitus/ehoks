@@ -611,6 +611,11 @@
     :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
     ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ?" id]))
 
+(defn delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id [hoks-id]
+  (shallow-delete!
+    :aiemmin_hankitut_ammat_tutkinnon_osat
+    ["hoks_id = ?" hoks-id]))
+
 (defn delete-aiemmin-hankitun-paikallisen-tutkinnon-osan-naytto-by-id! [id]
   (shallow-delete!
     :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
