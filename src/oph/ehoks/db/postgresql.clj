@@ -631,6 +631,11 @@
     :aiemmin_hankitut_paikalliset_tutkinnon_osat
     ["hoks_id = ?" hoks-id]))
 
+(defn delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id [hoks-id]
+  (shallow-delete!
+    :aiemmin_hankitut_yhteiset_tutkinnon_osat
+    ["hoks_id = ?" hoks-id]))
+
 (defn delete-aiemmin-hankitut-yto-osa-alueet-by-id! [id]
   (shallow-delete!
     :aiemmin_hankitut_yto_osa_alueet
