@@ -713,6 +713,10 @@
   (db/delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id hoks-id)
   (save-aiemmin-hankitut-ammat-tutkinnon-osat! hoks-id new-ahato-values))
 
+(defn replace-ahpto! [hoks-id new-ahpto-values]
+  (db/delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)
+  (save-aiemmin-hankitut-paikalliset-tutkinnon-osat! hoks-id new-ahpto-values))
+
 (defn update-hoks! [hoks-id new-values]
   (db/update-hoks-by-id! hoks-id new-values)
   (when-let [oto (:opiskeluvalmiuksia-tukevat-opinnot new-values)]
@@ -724,4 +728,6 @@
   (when-let [hyto (:hankittavat-yhteiset-tutkinnon-osat new-values)]
     (replace-hyto! hoks-id hyto))
   (when-let [ahato (:aiemmin-hankitut-ammat-tutkinnon-osat new-values)]
-    (replace-ahato! hoks-id ahato)))
+    (replace-ahato! hoks-id ahato))
+  (when-let [ahpto (:aiemmin-hankitut-paikalliset-tutkinnon-osat new-values)]
+    (replace-ahpto! hoks-id ahpto)))
