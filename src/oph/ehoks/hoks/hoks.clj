@@ -721,8 +721,9 @@
   (db/delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)
   (save-aiemmin-hankitut-yhteiset-tutkinnon-osat! hoks-id new-ahyto-values))
 
-(defn update-hoks! [hoks-id new-values]
+(defn replace-hoks! [hoks-id new-values]
   (db/update-hoks-by-id! hoks-id new-values)
+  ;TODO make these replace even if new value doesn't exist
   (when-let [oto (:opiskeluvalmiuksia-tukevat-opinnot new-values)]
     (replace-oto! hoks-id oto))
   (when-let [hato (:hankittavat-ammat-tutkinnon-osat new-values)]
@@ -737,3 +738,6 @@
     (replace-ahpto! hoks-id ahpto))
   (when-let [ahyto (:aiemmin-hankitut-yhteiset-tutkinnon-osat new-values)]
     (replace-ahyto! hoks-id ahyto)))
+
+(defn update-hoks! [hoks-id new-values]
+  (db/update-hoks-by-id! hoks-id new-values))

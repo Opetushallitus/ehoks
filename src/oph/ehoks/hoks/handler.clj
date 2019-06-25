@@ -420,7 +420,7 @@
 
           (c-api/PATCH "/" []
             :summary
-            "Päivittää olemassa olevan HOKSin arvoa tai arvoja"
+            "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
             :body [values hoks-schema/HOKSPaivitys]
             (if (not-empty (pdb/select-hoks-by-id hoks-id))
               (do
