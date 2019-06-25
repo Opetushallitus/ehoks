@@ -157,7 +157,7 @@
       :body [ppto hoks-schema/HankittavanPaikallisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ppto-db (h/save-hankittava-paikallinen-tutkinnon-osa!
-                      (:hoks request) ppto)]
+                      hoks-id ppto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ppto-db))}
           :id (:id ppto-db))))
@@ -190,7 +190,7 @@
       :body [pao hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [pao-db (h/save-hankittava-ammat-tutkinnon-osa!
-                     (:hoks request) pao)]
+                     hoks-id pao)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id pao-db))}
           :id (:id pao-db))))
@@ -367,7 +367,8 @@
       :path-params [id :- s/Int]
       :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
       (let [count-of-updated-rows
-            (first (pdb/update-opiskeluvalmiuksia-tukevat-opinnot id values))]
+            (first
+              (pdb/update-opiskeluvalmiuksia-tukevat-opinnot-by-id! id values))]
         (if (pos? count-of-updated-rows)
           (response/no-content)
           (response/not-found {:error "OTO not found with given OTO ID"}))))))
@@ -419,14 +420,14 @@
 
           (c-api/PATCH "/" []
             :summary
-            "Päivittää olemassa olevan HOKSin päätason arvoa tai arvoja"
-            :body [values hoks-schema/HOKSKentanPaivitys]
-            (let [count-of-rows-updated
-                  (first (pdb/update-hoks-by-id! hoks-id values))]
-              (if (pos? count-of-rows-updated)
-                (response/no-content)
-                (response/not-found
-                  {:error "HOKS not found with given HOKS ID"}))))
+            "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
+            :body [values hoks-schema/HOKSPaivitys]
+            (if (not-empty (pdb/select-hoks-by-id hoks-id))
+              (do
+                (h/update-hoks! hoks-id values)
+                (response/no-content))
+              (response/not-found
+                {:error "HOKS not found with given HOKS ID"})))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
