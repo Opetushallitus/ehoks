@@ -1196,7 +1196,7 @@
        :osaamisen-hankkimistavat
        [{:alku "2018-12-15"
          :loppu "2018-12-23"
-         :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa"
+         :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_joku"
          :osaamisen-hankkimistapa-koodi-versio 3
          :muut-oppimisymparistot
          [{:oppimisymparisto-koodi-uri "oppimisymparistot_0232"
