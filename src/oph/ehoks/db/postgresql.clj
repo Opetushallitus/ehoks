@@ -105,6 +105,18 @@
     [queries/select-opiskeluoikeudet-by-oppija-oid oppija-oid]
     {:row-fn h/from-sql}))
 
+(defn select-oppija-by-oid [oppija-oid]
+  (first
+    (query
+      [queries/select-oppijat-by-oid oppija-oid]
+      {:row-fn h/from-sql})))
+
+(defn select-opiskeluoikeus-by-oid [oid]
+  (first
+    (query
+      [queries/select-opiskeluoikeudet-by-oid oid]
+      {:row-fn h/from-sql})))
+
 (defn insert-oppija [oppija]
   (insert-one! :oppijat (h/to-sql oppija)))
 
