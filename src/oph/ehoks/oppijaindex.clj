@@ -52,31 +52,39 @@
 (defn get-oppija-opiskeluoikeudet [oppija-oid]
   (db/select-opiskeluoikeudet-by-oppija-oid oppija-oid))
 
+(defn get-oppija-by-oid [oppija-oid]
+  (db/select-oppija-by-oid oppija-oid))
+
+(defn get-opiskeluoikeus-by-oid [oid]
+  (db/select-opiskeluoikeus-by-oid oid))
+
 (defn update-opiskeluoikeus! [oid oppija-oid]
-  (try
-    (let [opiskeluoikeus (k/get-opiskeluoikeus-info oid)]
-      (db/insert-opiskeluoikeus
-        {:oid oid
-         :oppija_oid oppija-oid
-         :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
-         :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
-         :tutkinto ""
-         :osaamisala ""}))
-    (catch Exception e
-      (if (= (:status (ex-data e)) 404)
-        (log/warnf "Opiskeluoikeus %s not found in Oppijanumerorekisteri" oid)
-        (throw e)))))
+  (when (empty? (get-opiskeluoikeus-by-oid oid))
+    (try
+      (let [opiskeluoikeus (k/get-opiskeluoikeus-info oid)]
+        (db/insert-opiskeluoikeus
+          {:oid oid
+           :oppija_oid oppija-oid
+           :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
+           :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
+           :tutkinto ""
+           :osaamisala ""}))
+      (catch Exception e
+        (if (= (:status (ex-data e)) 404)
+          (log/warnf "Opiskeluoikeus %s not found in Oppijanumerorekisteri" oid)
+          (throw e))))))
 
 (defn update-oppija! [oid]
-  (try
-    (let [oppija (:body (onr/find-student-by-oid oid))]
-      (db/insert-oppija
-        {:oid oid
-         :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
-    (catch Exception e
-      (if (= (:status (ex-data e)) 404)
-        (log/warnf "Oppija %s not found in Oppijanumerorekisteri" oid)
-        (throw e)))))
+  (when (empty? (get-oppija-by-oid oid))
+    (try
+      (let [oppija (:body (onr/find-student-by-oid oid))]
+        (db/insert-oppija
+          {:oid oid
+           :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
+      (catch Exception e
+        (if (= (:status (ex-data e)) 404)
+          (log/warnf "Oppija %s not found in Oppijanumerorekisteri" oid)
+          (throw e))))))
 
 (defn update-oppija-and-opiskeluoikeudet! [oppija-oid]
   (update-oppija! oppija-oid)
