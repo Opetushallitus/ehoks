@@ -61,7 +61,7 @@
 (defn update-opiskeluoikeus! [oid oppija-oid]
   (when (empty? (get-opiskeluoikeus-by-oid oid))
     (try
-      (let [opiskeluoikeus (k/get-opiskeluoikeus-info oid)]
+      (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
         (db/insert-opiskeluoikeus
           {:oid oid
            :oppija_oid oppija-oid
