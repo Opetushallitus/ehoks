@@ -349,7 +349,7 @@
 (deftest get-aiemmin-hankitut-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut yhteiset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! hoks ahyto-data)
+      (h/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! (:id hoks) ahyto-data)
       (eq
         (h/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks))
         ahyto-data))))

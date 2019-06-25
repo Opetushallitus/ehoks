@@ -462,9 +462,9 @@
     (save-ahyto-osa-alueet! (:id yto) (:osa-alueet ahyto))
     yto))
 
-(defn save-aiemmin-hankitut-yhteiset-tutkinnon-osat! [hoks c]
+(defn save-aiemmin-hankitut-yhteiset-tutkinnon-osat! [hoks-id c]
   (mapv
-    #(save-aiemmin-hankittu-yhteinen-tutkinnon-osa! (:id hoks) %)
+    #(save-aiemmin-hankittu-yhteinen-tutkinnon-osa! hoks-id %)
     c))
 
 (defn save-ahato-tarkentavat-tiedot-naytto! [ahato-id new-values]
@@ -682,7 +682,7 @@
         (:id saved-hoks) (:hankittavat-paikalliset-tutkinnon-osat h))
       :aiemmin-hankitut-yhteiset-tutkinnon-osat
       (save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
-        saved-hoks (:aiemmin-hankitut-yhteiset-tutkinnon-osat h))
+        (:id saved-hoks) (:aiemmin-hankitut-yhteiset-tutkinnon-osat h))
       :hankittavat-ammat-tutkinnon-osat
       (save-hankittavat-ammat-tutkinnon-osat!
         (:id saved-hoks) (:hankittavat-ammat-tutkinnon-osat h))
