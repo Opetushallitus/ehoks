@@ -702,15 +702,9 @@
 
 (def HOKSPaivitys
   (with-meta
-    (g/generate HOKSModel :put)
-    {:doc "HOKS-dokumentin ylikirjoitus (PUT)"
-     :name "HOKSPaivitys"}))
-
-(def HOKSKentanPaivitys
-  (with-meta
     (g/generate HOKSModel :patch)
     {:doc "HOKS-dokumentin ylikirjoitus (PATCH)"
-     :name "HOKSKentanPaivitys"}))
+     :name "HOKSPaivitys"}))
 
 (def HOKSLuonti
   (with-meta

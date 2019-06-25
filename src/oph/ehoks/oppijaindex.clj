@@ -70,6 +70,8 @@
            :tutkinto ""
            :osaamisala ""}))
       (catch Exception e
+        (log/errorf
+          "Error updating opiskeluoikeus %s of oppija %s" oid oppija-oid)
         (if (= (:status (ex-data e)) 404)
           (log/warnf "Opiskeluoikeus %s not found in Oppijanumerorekisteri" oid)
           (throw e))))))
@@ -82,6 +84,7 @@
           {:oid oid
            :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
       (catch Exception e
+        (log/errorf "Error updating oppija %s" oid)
         (if (= (:status (ex-data e)) 404)
           (log/warnf "Oppija %s not found in Oppijanumerorekisteri" oid)
           (throw e))))))

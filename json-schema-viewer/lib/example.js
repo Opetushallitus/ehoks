@@ -19,9 +19,8 @@
         // defines which schema models we show at root level
         jsonSchema.properties = [
           "HOKS",
-          "HOKSKentanPaivitys",
-          "HOKSLuonti",
-          "HOKSPaivitys"
+          "HOKSPaivitys",
+          "HOKSLuonti"
         ].reduce(function(result, key) {
           if (jsonSchema.definitions[key]) {
             result[key] = { $ref: "#/definitions/" + key };
