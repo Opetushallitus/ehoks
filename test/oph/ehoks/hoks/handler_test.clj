@@ -1315,7 +1315,7 @@
      :tutkinnon-osa-koodi-uri "tutkinnonosat_10203"
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590921"
      :tarkentavat-tiedot-osaamisen-arvioija
-     {:lahetetty-arvioitavaksi "2017-02-29"
+     {:lahetetty-arvioitavaksi "2017-03-29"
       :aiemmin-hankitun-osaamisen-arvioijat
       [{:nimi "Arttu Arvioi"
         :organisaatio {:oppilaitos-oid
