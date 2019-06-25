@@ -1367,7 +1367,8 @@
 ;       [{:nimi "Tapio Testi"
 ;         :organisaatio {:nimi "Testi Oyj"
 ;                        :y-tunnus "1289235-3"}}]
-;       :sisallon-kuvaus ["Testauksen suunnittelu" "Jokin toinen testi" "kolmas"]
+;       :sisallon-kuvaus
+;       ["Testauksen suunnittelu" "Jokin toinen testi" "kolmas"]
 ;       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
 ;       :alku "2019-03-01"
 ;       :loppu "2019-06-01"}]}]})
