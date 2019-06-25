@@ -704,6 +704,11 @@
     :yhteisen_tutkinnon_osan_osa_alueet
     (h/yhteisen-tutkinnon-osan-osa-alue-to-sql osa-alue)))
 
+(defn delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id [hoks-id]
+  (shallow-delete!
+    :hankittavat_yhteiset_tutkinnon_osat
+    ["hoks_id = ?" hoks-id]))
+
 (defn select-yto-osa-alueet-by-yto-id [id]
   (query
     [queries/select-yto-osa-alueet-by-yto-id id]
