@@ -316,7 +316,7 @@
   (testing "Set HOKS aiemmin hankitut tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
       (h/save-aiemmin-hankitut-ammat-tutkinnon-osat!
-        hoks
+        (:id hoks)
         ahato-data)
       (eq (h/get-aiemmin-hankitut-ammat-tutkinnon-osat
             (:id hoks))
@@ -325,7 +325,8 @@
 (deftest get-aiemmin-hankitut-paikalliset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut paikalliset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-aiemmin-hankitut-paikalliset-tutkinnon-osat! hoks ahpto-data)
+      (h/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
+        (:id hoks) ahpto-data)
       (eq
         (h/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks))
         ahpto-data))))
@@ -333,7 +334,7 @@
 (deftest get-hankittava-ammat-tutkinnon-osa-test
   (testing "Get HOKS hankittava ammatillinen osaaminen"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-hankittavat-ammat-tutkinnon-osat! hoks hao-data)
+      (h/save-hankittavat-ammat-tutkinnon-osat! (:id hoks) hao-data)
       (eq
         (h/get-hankittavat-ammat-tutkinnon-osat (:id hoks))
         hao-data))))
@@ -341,7 +342,7 @@
 (deftest get-opiskeluvalmiuksia-tukevat-opinnot-test
   (testing "Get HOKS opiskeluvalmiuksia tukevat opinnot"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-opiskeluvalmiuksia-tukevat-opinnot! hoks oto-data)
+      (h/save-opiskeluvalmiuksia-tukevat-opinnot! (:id hoks) oto-data)
       (eq
         (h/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks))
         oto-data))))
@@ -349,7 +350,7 @@
 (deftest get-aiemmin-hankitut-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut yhteiset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! hoks ahyto-data)
+      (h/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! (:id hoks) ahyto-data)
       (eq
         (h/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks))
         ahyto-data))))
@@ -358,7 +359,7 @@
   (testing "Set HOKS hankittavat paikalliset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})
           ppto-col
-          (h/save-hankittavat-paikalliset-tutkinnon-osat! hoks hpto-data)]
+          (h/save-hankittavat-paikalliset-tutkinnon-osat! (:id hoks) hpto-data)]
       (eq
         (h/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks))
         hpto-data))))
@@ -366,7 +367,7 @@
 (deftest get-hankittavat-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS hankittavat yhteiset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-hankittavat-yhteiset-tutkinnon-osat! hoks hyto-data)
+      (h/save-hankittavat-yhteiset-tutkinnon-osat! (:id hoks) hyto-data)
       (eq
         (h/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks))
         hyto-data))))
