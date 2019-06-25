@@ -1030,7 +1030,8 @@
    :osaamisen-hankkimisen-tarve false
    :opiskeluvalmiuksia-tukevat-opinnot [oto-data]
    :hankittavat-ammat-tutkinnon-osat [hao-data]
-   :hankittavat-paikalliset-tutkinnon-osat [hpto-data]})
+   :hankittavat-paikalliset-tutkinnon-osat [hpto-data]
+   :hankittavat-yhteiset-tutkinnon-osat [hyto-data]})
 
 (def one-value-of-hoks-patched
   {:id 1
@@ -1180,6 +1181,54 @@
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (eq (:hankittavat-paikalliset-tutkinnon-osat get-response-data)
           (:hankittavat-paikalliset-tutkinnon-osat hpto-of-hoks-patched)))))
+
+(def hyto-of-hoks-patched
+  {:id 1
+   :hankittavat-yhteiset-tutkinnon-osat
+   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_3002690"
+     :tutkinnon-osa-koodi-versio 3
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"
+     :osa-alueet
+     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
+       :osa-alue-koodi-versio 1
+       :vaatimuksista-tai-tavoitteista-poikkeaminen "poikkeaminen"
+       :olennainen-seikka true
+       :osaamisen-hankkimistavat
+       [{:alku "2018-12-15"
+         :loppu "2018-12-23"
+         :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa"
+         :osaamisen-hankkimistapa-koodi-versio 3
+         :muut-oppimisymparistot
+         [{:oppimisymparisto-koodi-uri "oppimisymparistot_0232"
+           :oppimisymparisto-koodi-versio 3
+           :alku "2016-03-10"
+           :loppu "2021-03-19"}]}]
+       :osaamisen-osoittaminen
+       [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000032"}
+         :nayttoymparisto {:nimi "aaab"}
+         :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ru"
+                       :koodi-versio 4}]
+         :koulutuksen-jarjestaja-osaamisen-arvioijat
+         [{:nimi "Erkki Esimerkkitest"
+           :organisaatio {:oppilaitos-oid
+                          "1.2.246.562.10.13490579322"}}]
+         :alku "2018-12-12"
+         :loppu "2019-12-20"
+         :sisallon-kuvaus ["Kuvaus" "toinen"]
+         :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                         {:nimi "Organisaation name"}}]
+         :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "toka"]}]}]}]})
+
+(deftest patch-hyto-of-hoks
+  (testing "PATCHes hankittavat yhteiset tutkinnon osat of HOKS"
+    (let [app (create-app nil)
+          post-response (create-mock-post-request "" hoks-data app)
+          patch-response (create-mock-hoks-patch-request
+                           1 hyto-of-hoks-patched app)
+          get-response (create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (eq (:hankittavat-yhteiset-tutkinnon-osat get-response-data)
+          (:hankittavat-yhteiset-tutkinnon-osat hyto-of-hoks-patched)))))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
