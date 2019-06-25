@@ -1034,6 +1034,18 @@
    :hankittavat-yhteiset-tutkinnon-osat [hyto-data]
    :aiemmin-hankitut-ammat-tutkinnon-osat [ahato-data]})
 
+(defn- assert-partial-patch-of-hoks [patched-hoks hoks-part]
+  (let [app (create-app nil)
+        post-response (create-mock-post-request "" hoks-data app)
+        patch-response (create-mock-hoks-patch-request 1 patched-hoks app)
+        get-response (create-mock-hoks-get-request 1 app)
+        get-response-data (:data (utils/parse-body (:body get-response)))]
+    (is (= (:status post-response) 200))
+    (is (= (:status patch-response) 204))
+    (is (= (:status get-response) 200))
+    (eq (hoks-part get-response-data)
+        (hoks-part patched-hoks))))
+
 (def one-value-of-hoks-patched
   {:id 1
    :ensikertainen-hyvaksyminen "2020-01-05"})
@@ -1066,14 +1078,8 @@
 
 (deftest patch-oto-of-hoks
   (testing "PATCHes opiskeluvalmiuksia tukevat opinnot of HOKS"
-    (let [app (create-app nil)
-          post-response (create-mock-post-request "" hoks-data app)
-          patch-response (create-mock-hoks-patch-request
-                           1 oto-of-hoks-patched app)
-          get-response (create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
-      (eq (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)
-          (:opiskeluvalmiuksia-tukevat-opinnot oto-of-hoks-patched)))))
+    (assert-partial-patch-of-hoks
+      oto-of-hoks-patched :opiskeluvalmiuksia-tukevat-opinnot)))
 
 (def hato-of-hoks-patched
   {:id 1
@@ -1121,14 +1127,8 @@
 
 (deftest patch-hato-of-hoks
   (testing "PATCHes hankittavat ammatilliset tutkinnon osat of HOKS"
-    (let [app (create-app nil)
-          post-response (create-mock-post-request "" hoks-data app)
-          patch-response (create-mock-hoks-patch-request
-                           1 hato-of-hoks-patched app)
-          get-response (create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
-      (eq (:hankittavat-ammat-tutkinnon-osat get-response-data)
-          (:hankittavat-ammat-tutkinnon-osat hato-of-hoks-patched)))))
+    (assert-partial-patch-of-hoks
+      hato-of-hoks-patched :hankittavat-ammat-tutkinnon-osat)))
 
 (def hpto-of-hoks-patched
   {:id 1
@@ -1174,14 +1174,8 @@
 
 (deftest patch-hpto-of-hoks
   (testing "PATCHes hankittavat paikalliset tutkinnon osat of HOKS"
-    (let [app (create-app nil)
-          post-response (create-mock-post-request "" hoks-data app)
-          patch-response (create-mock-hoks-patch-request
-                           1 hpto-of-hoks-patched app)
-          get-response (create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
-      (eq (:hankittavat-paikalliset-tutkinnon-osat get-response-data)
-          (:hankittavat-paikalliset-tutkinnon-osat hpto-of-hoks-patched)))))
+    (assert-partial-patch-of-hoks
+      hpto-of-hoks-patched :hankittavat-paikalliset-tutkinnon-osat)))
 
 (def hyto-of-hoks-patched
   {:id 1
@@ -1222,14 +1216,8 @@
 
 (deftest patch-hyto-of-hoks
   (testing "PATCHes hankittavat yhteiset tutkinnon osat of HOKS"
-    (let [app (create-app nil)
-          post-response (create-mock-post-request "" hoks-data app)
-          patch-response (create-mock-hoks-patch-request
-                           1 hyto-of-hoks-patched app)
-          get-response (create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
-      (eq (:hankittavat-yhteiset-tutkinnon-osat get-response-data)
-          (:hankittavat-yhteiset-tutkinnon-osat hyto-of-hoks-patched)))))
+    (assert-partial-patch-of-hoks
+      hyto-of-hoks-patched :hankittavat-yhteiset-tutkinnon-osat)))
 
 (def ahato-of-hoks-patched
   {:id 1
@@ -1267,14 +1255,8 @@
 
 (deftest patch-ahato-of-hoks
   (testing "PATCHes aiemmin hankitut ammatilliset tutkinnon osat of HOKS"
-    (let [app (create-app nil)
-          post-response (create-mock-post-request "" hoks-data app)
-          patch-response (create-mock-hoks-patch-request
-                           1 ahato-of-hoks-patched app)
-          get-response (create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
-      (eq (:aiemmin-hankitut-ammat-tutkinnon-osat get-response-data)
-          (:aiemmin-hankitut-ammat-tutkinnon-osat ahato-of-hoks-patched)))))
+    (assert-partial-patch-of-hoks
+      ahato-of-hoks-patched :aiemmin-hankitut-ammat-tutkinnon-osat)))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
