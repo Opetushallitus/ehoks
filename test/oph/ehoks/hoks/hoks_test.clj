@@ -366,7 +366,7 @@
 (deftest get-hankittavat-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS hankittavat yhteiset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-hankittavat-yhteiset-tutkinnon-osat! hoks hyto-data)
+      (h/save-hankittavat-yhteiset-tutkinnon-osat! (:id hoks) hyto-data)
       (eq
         (h/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks))
         hyto-data))))

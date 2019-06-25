@@ -651,9 +651,9 @@
     (assoc hyto-db :osa-alueet
            (save-hyto-osa-alueet! (:id hyto-db) (:osa-alueet hyto)))))
 
-(defn save-hankittavat-yhteiset-tutkinnon-osat! [hoks c]
+(defn save-hankittavat-yhteiset-tutkinnon-osat! [hoks-id c]
   (mapv
-    #(save-hankittava-yhteinen-tutkinnon-osa! (:id hoks) %)
+    #(save-hankittava-yhteinen-tutkinnon-osa! hoks-id %)
     c))
 
 (defn replace-hyto-osa-alueet! [hyto-id new-oa-values]
@@ -691,7 +691,7 @@
         (:id saved-hoks) (:opiskeluvalmiuksia-tukevat-opinnot h))
       :hankittavat-yhteiset-tutkinnon-osat
       (save-hankittavat-yhteiset-tutkinnon-osat!
-        saved-hoks (:hankittavat-yhteiset-tutkinnon-osat h)))))
+        (:id saved-hoks) (:hankittavat-yhteiset-tutkinnon-osat h)))))
 
 (defn replace-oto! [hoks-id new-oto-values]
   (db/delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id)
