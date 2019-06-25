@@ -7,7 +7,8 @@
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.ehoks-app :as ehoks-app]
             [oph.ehoks.redis :refer [redis-store]]
-            [oph.ehoks.config :refer [config]]))
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.oppijaindex :as oppijaindex]))
 
 (defn has-arg? [args s]
   (some? (some #(when (= (lower-case %) s) %) args)))
@@ -35,6 +36,13 @@
       (log/infof "Starting %s listening to port %d" app-name (:port config))
       (log/info "Running migrations")
       (m/migrate!)
+      (log/info "Migrations done.")
+      (log/info "Starting oppijaindex update in another thread.")
+      (future
+        (log/info "Updating oppijaindex")
+        (oppijaindex/update-oppijat-without-index!)
+        (oppijaindex/update-opiskeluoikeudet-without-index!)
+        (log/info "Updating oppijaindex finished"))
       (jetty/run-jetty hoks-app {:port (:port config)
                                  :join? true
                                  :async? true}))))

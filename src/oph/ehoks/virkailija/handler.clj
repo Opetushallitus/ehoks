@@ -223,10 +223,8 @@
                   (c-api/POST "/index" []
                     :summary "Indeksoi oppijan tiedot, jos on tarpeen"
                     (a/go
-                      (when (empty? (oppijaindex/get-oppija-opiskeluoikeudet
-                                      oppija-oid))
-                        (oppijaindex/update-oppija-and-opiskeluoikeudet!
-                          oppija-oid))
+                      (oppijaindex/update-oppija-and-opiskeluoikeudet!
+                        oppija-oid)
                       (response/ok)))
 
                   (route-middleware
