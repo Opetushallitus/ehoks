@@ -271,9 +271,7 @@
                           (catch Exception e
                             (if (= (:status (ex-data e)) 404)
                               (response/bad-request!
-                                {:error
-                                 (str "Opiskeluoikeus not found in "
-                                      "Oppijanumerorekisteri")})
+                                {:error "Opiskeluoikeus not found in Koski"})
                               (throw e))))
                         (let [hoks-db (h/save-hoks! hoks)]
                           (restful/rest-ok
