@@ -257,6 +257,24 @@
                               {:error
                                (str "HOKS with the same "
                                     "opiskeluoikeus-oid already exists")})))
+                        (try
+                          (oppijaindex/update-oppija! (:oppija-oid hoks))
+                          (catch Exception e
+                            (if (= (:status (ex-data e)) 404)
+                              (response/bad-request!
+                                {:error
+                                 "Oppija not found in Oppijanumerorekisteri"})
+                              (throw e))))
+                        (try
+                          (oppijaindex/update-opiskeluoikeus!
+                            (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
+                          (catch Exception e
+                            (if (= (:status (ex-data e)) 404)
+                              (response/bad-request!
+                                {:error
+                                 (str "Opiskeluoikeus not found in "
+                                      "Oppijanumerorekisteri")})
+                              (throw e))))
                         (let [hoks-db (h/save-hoks! hoks)]
                           (restful/rest-ok
                             {:uri (format "%s/%d"

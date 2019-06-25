@@ -16,7 +16,8 @@
             [oph.ehoks.config :refer [config]]
             [schema.core :as s]
             [clojure.data.json :as json]
-            [oph.ehoks.user :as user])
+            [oph.ehoks.user :as user]
+            [oph.ehoks.oppijaindex :as oppijaindex])
   (:import (java.time LocalDate)))
 
 (def method-privileges {:get :read
@@ -391,6 +392,21 @@
                      (:opiskeluoikeus-oid hoks)))
           (response/bad-request!
             {:error "HOKS with the same opiskeluoikeus-oid already exists"}))
+        (try
+          (oppijaindex/update-oppija! (:oppija-oid hoks))
+          (catch Exception e
+            (if (= (:status (ex-data e)) 404)
+              (response/bad-request!
+                {:error "Oppija not found in Oppijanumerorekisteri"})
+              (throw e))))
+        (try
+          (oppijaindex/update-opiskeluoikeus!
+            (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
+          (catch Exception e
+            (if (= (:status (ex-data e)) 404)
+              (response/bad-request!
+                {:error "Opiskeluoikeus not found in Oppijanumerorekisteri"})
+              (throw e))))
         (let [hoks-db (h/save-hoks! hoks)]
           (when (:save-hoks-json? config)
             (write-hoks-json! hoks))
