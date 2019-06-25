@@ -316,7 +316,7 @@
   (testing "Set HOKS aiemmin hankitut tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
       (h/save-aiemmin-hankitut-ammat-tutkinnon-osat!
-        hoks
+        (:id hoks)
         ahato-data)
       (eq (h/get-aiemmin-hankitut-ammat-tutkinnon-osat
             (:id hoks))

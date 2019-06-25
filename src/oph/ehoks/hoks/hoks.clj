@@ -489,8 +489,8 @@
       (save-ahato-tarkentavat-tiedot-naytto!
         (:id ahato-db) (:tarkentavat-tiedot-naytto ahato)))))
 
-(defn save-aiemmin-hankitut-ammat-tutkinnon-osat! [h c]
-  (mapv #(save-aiemmin-hankittu-ammat-tutkinnon-osa! (:id h) %) c))
+(defn save-aiemmin-hankitut-ammat-tutkinnon-osat! [hoks-id c]
+  (mapv #(save-aiemmin-hankittu-ammat-tutkinnon-osa! hoks-id %) c))
 
 (defn save-hato-osaamisen-hankkimistapa! [hato oh]
   (let [o-db (save-osaamisen-hankkimistapa! oh)]
@@ -673,7 +673,7 @@
       saved-hoks
       :aiemmin-hankitut-ammat-tutkinnon-osat
       (save-aiemmin-hankitut-ammat-tutkinnon-osat!
-        saved-hoks (:aiemmin-hankitut-ammat-tutkinnon-osat h))
+        (:id saved-hoks) (:aiemmin-hankitut-ammat-tutkinnon-osat h))
       :aiemmin-hankitut-paikalliset-tutkinnon-osat
       (save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
         saved-hoks (:aiemmin-hankitut-paikalliset-tutkinnon-osat h))
