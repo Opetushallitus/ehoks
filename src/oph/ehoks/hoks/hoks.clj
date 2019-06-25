@@ -421,9 +421,9 @@
       (save-ahpto-tarkentavat-tiedot-naytto!
         (:id ahpto-db) (:tarkentavat-tiedot-naytto ahpto)))))
 
-(defn save-aiemmin-hankitut-paikalliset-tutkinnon-osat! [hoks c]
+(defn save-aiemmin-hankitut-paikalliset-tutkinnon-osat! [hoks-id c]
   (mapv
-    #(save-aiemmin-hankittu-paikallinen-tutkinnon-osa! (:id hoks) %)
+    #(save-aiemmin-hankittu-paikallinen-tutkinnon-osa! hoks-id %)
     c))
 
 (defn save-ahyto-tarkentavat-tiedot-naytto! [ahyto-id new-values]
@@ -676,7 +676,7 @@
         (:id saved-hoks) (:aiemmin-hankitut-ammat-tutkinnon-osat h))
       :aiemmin-hankitut-paikalliset-tutkinnon-osat
       (save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
-        saved-hoks (:aiemmin-hankitut-paikalliset-tutkinnon-osat h))
+        (:id saved-hoks) (:aiemmin-hankitut-paikalliset-tutkinnon-osat h))
       :hankittavat-paikalliset-tutkinnon-osat
       (save-hankittavat-paikalliset-tutkinnon-osat!
         (:id saved-hoks) (:hankittavat-paikalliset-tutkinnon-osat h))

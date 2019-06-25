@@ -325,7 +325,7 @@
 (deftest get-aiemmin-hankitut-paikalliset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut paikalliset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-aiemmin-hankitut-paikalliset-tutkinnon-osat! hoks ahpto-data)
+      (h/save-aiemmin-hankitut-paikalliset-tutkinnon-osat! (:id hoks) ahpto-data)
       (eq
         (h/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks))
         ahpto-data))))
