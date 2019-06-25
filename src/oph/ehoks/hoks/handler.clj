@@ -367,7 +367,8 @@
       :path-params [id :- s/Int]
       :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
       (let [count-of-updated-rows
-            (first (pdb/update-opiskeluvalmiuksia-tukevat-opinnot-by-id! id values))]
+            (first
+              (pdb/update-opiskeluvalmiuksia-tukevat-opinnot-by-id! id values))]
         (if (pos? count-of-updated-rows)
           (response/no-content)
           (response/not-found {:error "OTO not found with given OTO ID"}))))))
@@ -425,7 +426,8 @@
               (do
                 (h/update-hoks! hoks-id values)
                 (response/no-content))
-              (response/not-found {:error "HOKS not found with given HOKS ID"})))
+              (response/not-found
+                {:error "HOKS not found with given HOKS ID"})))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
