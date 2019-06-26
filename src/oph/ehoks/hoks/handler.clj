@@ -2,7 +2,6 @@
   (:require [compojure.api.sweet :as c-api]
             [clojure.tools.logging :as log]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
-            [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
@@ -16,8 +15,7 @@
             [schema.core :as s]
             [clojure.data.json :as json]
             [oph.ehoks.user :as user]
-            [oph.ehoks.oppijaindex :as oppijaindex])
-  (:import (java.time LocalDate)))
+            [oph.ehoks.oppijaindex :as oppijaindex]))
 
 (def method-privileges {:get :read
                         :post :write
@@ -381,8 +379,7 @@
                     caller-id :- s/Str]
 
     (route-middleware
-      [wrap-access-logger wrap-user-details
-       wrap-require-service-user wrap-audit-logger]
+      [wrap-user-details wrap-require-service-user wrap-audit-logger]
 
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
