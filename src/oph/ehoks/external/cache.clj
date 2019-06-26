@@ -10,6 +10,8 @@
   ^:private
   (atom {}))
 
+(defonce cleaning? (atom false))
+
 (defn size [] (count @cache))
 
 (defn expired? [response]
@@ -23,15 +25,20 @@
   nil)
 
 (defn clean-cache! []
-  (let [non-expired
-        (reduce
-          (fn [n [k v]]
-            (if (expired? v)
-              n
-              (assoc n k v)))
-          {}
-          @cache)]
-    (reset! cache non-expired)))
+  (when-not @cleaning?
+    (log/debug "Cleaning cache")
+    (reset! cleaning? true)
+    (let [non-expired
+          (reduce
+            (fn [n [k v]]
+              (if (expired? v)
+                n
+                (assoc n k v)))
+            {}
+            @cache)]
+      (reset! cache non-expired))
+    (log/debug "Cleaning cache finished")
+    (reset! cleaning? false)))
 
 (defn get-cached [url]
   (when-let [response (get @cache url)]
@@ -57,6 +64,7 @@
       (let [response (if (:authenticate? data)
                        (cas/with-service-ticket data)
                        (c/with-api-headers data))]
+        (future (clean-cache!))
         (add-cached-response!
           (encode-url url (:query-params options)) response)
         (assoc response :cached :MISS))))
