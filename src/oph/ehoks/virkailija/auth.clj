@@ -34,12 +34,16 @@
                          (:error validation-data))
               (response/unauthorized {:error "Invalid ticket"})))))
 
-    (c-api/POST "/opintopolku" []
+    (c-api/POST "/opintopolku" request
       :summary "Virkailijan CAS SLO endpoint"
       :query-params [logoutRequest :- s/Str]
+      (log/info logoutRequest)
+      (log/info request)
+      (log/info (map :ticket (vals @session)))
       (let [ticket (some #(when (= (:tag %) :SessionIndex)
                             (first (:content %)))
                          (:content (xml/parse-str logoutRequest)))]
+        (log/info ticket)
         (loop [[key session-map] (first @session)]
           (if (= ticket (:ticket session-map))
             (swap! session dissoc key)
