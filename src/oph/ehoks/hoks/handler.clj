@@ -8,7 +8,6 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as rest]
-            [oph.ehoks.db.memory :as db]
             [oph.ehoks.db.postgresql :as pdb]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.middleware :refer [wrap-user-details]]
@@ -23,6 +22,7 @@
 (def method-privileges {:get :read
                         :post :write
                         :patch :update
+                        :put :update
                         :delete :delete})
 
 (defn value-writer [_ value]
@@ -444,6 +444,17 @@
                 (response/no-content))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
+
+          (c-api/undocumented
+            (c-api/PUT "/" []
+              :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
+              :body [values hoks-schema/HOKSKorvaus]
+              (if (not-empty (pdb/select-hoks-by-id hoks-id))
+                (do
+                  (h/replace-hoks! hoks-id values)
+                  (response/no-content))
+                (response/not-found
+                  {:error "HOKS not found with given HOKS ID"}))))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
