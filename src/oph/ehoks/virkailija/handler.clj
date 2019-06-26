@@ -27,7 +27,8 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
             [oph.ehoks.validation.handler :as validation-handler]
-            [clojure.core.async :as a]))
+            [clojure.core.async :as a]
+            [oph.ehoks.virkailija.schema :as virkailija-schema]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -163,6 +164,21 @@
 
             (route-middleware
               [wrap-oph-super-user]
+
+              (c-api/GET "/system-info" []
+                :summary "Järjestelmän tiedot"
+                :return (restful/response virkailija-schema/SystemInfo)
+                (let [runtime (Runtime/getRuntime)]
+                  (restful/rest-ok
+                    {:cache {:size (c/size)}
+                     :memory {:total (.totalMemory runtime)
+                              :free (.freeMemory runtime)
+                              :max (.maxMemory runtime)}
+                     :oppijaindex
+                     {:unindexedOppijat
+                      (oppijaindex/get-oppijat-without-index-count)
+                      :unindexedOpiskeluoikeudet
+                      (oppijaindex/get-opiskeluoikeudet-without-index-count)}})))
 
               (c-api/DELETE "/cache" []
                 :summary "Välimuistin tyhjennys"
