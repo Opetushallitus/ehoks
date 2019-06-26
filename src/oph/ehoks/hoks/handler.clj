@@ -435,16 +435,6 @@
             :return (rest/response hoks-schema/HOKS)
             (rest/rest-ok (h/get-hoks-values (:hoks request))))
 
-          (c-api/PUT "/" []
-            :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
-            :body [values hoks-schema/HOKSKorvaus]
-            (if (not-empty (pdb/select-hoks-by-id hoks-id))
-              (do
-                (h/replace-hoks! hoks-id values)
-                (response/no-content))
-              (response/not-found
-                {:error "HOKS not found with given HOKS ID"})))
-
           (c-api/PATCH "/" []
             :summary
             "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
@@ -455,6 +445,17 @@
                 (response/no-content))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
+
+          (c-api/undocumented
+            (c-api/PUT "/" []
+              :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
+              :body [values hoks-schema/HOKSKorvaus]
+              (if (not-empty (pdb/select-hoks-by-id hoks-id))
+                (do
+                  (h/replace-hoks! hoks-id values)
+                  (response/no-content))
+                (response/not-found
+                  {:error "HOKS not found with given HOKS ID"}))))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
