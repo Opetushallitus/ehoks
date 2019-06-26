@@ -40,11 +40,10 @@
       (let [ticket (some #(when (= (:tag %) :SessionIndex)
                             (first (:content %)))
                          (:content (xml/parse-str logoutRequest)))]
-        (some
-          (fn [[key session-map]]
-            (when (= ticket (:ticket session-map))
-              (swap! session dissoc key)))
-          @session)
+        (loop [[key session-map] (first @session)]
+          (if (= ticket (:ticket session-map))
+            (swap! session dissoc key)
+            (recur (rest @session))))
         (response/ok)))
 
     (c-api/GET "/" request
