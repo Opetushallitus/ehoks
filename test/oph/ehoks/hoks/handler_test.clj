@@ -1419,11 +1419,14 @@
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
-    (let [response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request :patch (format "%s/1" url))
-                (mock/json-body {:id 1})))]
+    (let [app (create-app nil)
+          response (create-mock-hoks-patch-request 1 {:id 1} app)]
+      (is (= (:status response) 404)))))
+
+(deftest put-non-existing-hoks
+  (testing "PUT prevents updating non existing HOKS"
+    (let [app (create-app nil)
+          response (create-mock-hoks-put-request 1 {:id 1} app)]
       (is (= (:status response) 404)))))
 
 (deftest get-hoks-by-id-not-found
