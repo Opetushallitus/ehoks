@@ -43,8 +43,7 @@
         (loop [sm @sessions]
           (let [[key session-map] (first sm)]
             (if (= ticket (:ticket session-map))
-              (do
-                (swap! sessions dissoc key))
+              (swap! sessions dissoc key)
               (when (pos? (count sm))
                 (recur (rest sm))))))
         (response/ok)))
