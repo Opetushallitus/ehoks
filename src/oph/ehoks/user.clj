@@ -51,7 +51,9 @@
       (some
         #(= user-org %)
         (str/split
-          (:parentOidPath (o/get-organisaatio target-org)) #"\|"))))
+          (get (o/get-organisaatio target-org)
+               :parentOidPath "")
+          #"\|"))))
 
 (defn get-organisation-privileges [ticket-user organisation-oid]
   (some

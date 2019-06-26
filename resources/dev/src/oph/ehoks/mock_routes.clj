@@ -227,5 +227,6 @@
         (json-response-file
           "dev-routes/kayttooikeus-service_kayttooikeus_kayttaja.json")))
     (GET "/organisaatio-service/rest/organisaatio/v4/:oid" request
-         {:parentOidPath (str "1.2.246.562.10.00000000001|"
-                              (get-in request [:params :oid]))})))
+         (json-response
+           {:oid (get-in request [:params :oid])
+            :parentOidPath "|1.2.246.562.10.00000000001|"}))))
