@@ -8,7 +8,6 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as rest]
-            [oph.ehoks.db.memory :as db]
             [oph.ehoks.db.postgresql :as pdb]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.middleware :refer [wrap-user-details]]

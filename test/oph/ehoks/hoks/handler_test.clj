@@ -4,7 +4,6 @@
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [oph.ehoks.db.memory :as db]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.cache :as cache]))
 
