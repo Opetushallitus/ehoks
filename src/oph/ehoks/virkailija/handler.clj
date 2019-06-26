@@ -20,7 +20,7 @@
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.hoks.handler :as hoks-handler]
-            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.oppijaindex :as op]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.eperusteet :as eperusteet]
@@ -80,7 +80,7 @@
              ticket-user (:oppilaitos-oid opiskeluoikeus))
            privilege)
           opiskeluoikeus))
-      (oppijaindex/get-oppija-opiskeluoikeudet oppija-oid))))
+      (op/get-oppija-opiskeluoikeudet oppija-oid))))
 
 (defn virkailija-has-access? [virkailija-user oppija-oid]
   (virkailija-has-privilege? virkailija-user oppija-oid :read))
@@ -176,15 +176,15 @@
                               :max (.maxMemory runtime)}
                      :oppijaindex
                      {:unindexedOppijat
-                      (oppijaindex/get-oppijat-without-index-count)
+                      (op/get-oppijat-without-index-count)
                       :unindexedOpiskeluoikeudet
-                      (oppijaindex/get-opiskeluoikeudet-without-index-count)}})))
+                      (op/get-opiskeluoikeudet-without-index-count)}})))
 
               (c-api/POST "/index" []
                 :summary "Indeksoi oppijat ja opiskeluoikeudet"
                 (a/go
-                  (oppijaindex/update-oppijat-without-index!)
-                  (oppijaindex/update-opiskeluoikeudet-without-index!)
+                  (op/update-oppijat-without-index!)
+                  (op/update-opiskeluoikeudet-without-index!)
                   (response/ok)))
 
               (c-api/DELETE "/cache" []
@@ -235,10 +235,10 @@
                           oppijat (mapv
                                     #(dissoc
                                        % :oppilaitos-oid :koulutustoimija-oid)
-                                    (oppijaindex/search search-params))]
+                                    (op/search search-params))]
                       (restful/rest-ok
                         oppijat
-                        :total-count (oppijaindex/get-count search-params)))))
+                        :total-count (op/get-count search-params)))))
 
                 (c-api/context "/:oppija-oid" []
                   :path-params [oppija-oid :- s/Str]
@@ -246,7 +246,7 @@
                   (c-api/POST "/index" []
                     :summary "Indeksoi oppijan tiedot, jos on tarpeen"
                     (a/go
-                      (oppijaindex/update-oppija-and-opiskeluoikeudet!
+                      (op/update-oppija-and-opiskeluoikeudet!
                         oppija-oid)
                       (response/ok)))
 
@@ -281,7 +281,7 @@
                                (str "HOKS with the same "
                                     "opiskeluoikeus-oid already exists")})))
                         (try
-                          (oppijaindex/update-oppija! (:oppija-oid hoks))
+                          (op/update-oppija! (:oppija-oid hoks))
                           (catch Exception e
                             (if (= (:status (ex-data e)) 404)
                               (response/bad-request!
@@ -289,7 +289,7 @@
                                  "Oppija not found in Oppijanumerorekisteri"})
                               (throw e))))
                         (try
-                          (oppijaindex/update-opiskeluoikeus!
+                          (op/update-opiskeluoikeus!
                             (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
                           (catch Exception e
                             (if (= (:status (ex-data e)) 404)
