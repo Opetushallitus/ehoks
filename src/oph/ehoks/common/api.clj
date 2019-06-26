@@ -14,8 +14,8 @@
 (defn log-exception [ex data]
   (log/errorf
     "Unhandled exception\nData: %s\nLog-data: %s\nError: %s\nStacktrace:\n%s"
-    ex-data
-    (:log-data ex-data)
+    data
+    (:log-data data)
     (.getMessage ex)
     (cstr/join "\n" (.getStackTrace ex))))
 
