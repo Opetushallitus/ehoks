@@ -8,7 +8,9 @@
             [oph.ehoks.external.oph-url :as u]
             [clojure.tools.logging :as log]
             [oph.ehoks.virkailija.schema :as schema]
-            [oph.ehoks.restful :as restful]))
+            [oph.ehoks.restful :as restful]
+            [oph.ehoks.common.api :refer [session]]
+            [clojure.data.xml :as xml]))
 
 (def routes
   (c-api/context "/session" []
@@ -22,12 +24,26 @@
           (let [ticket-user (kayttooikeus/get-user-details
                               (:user validation-data))]
             (assoc-in
-              (response/see-other (u/get-url "ehoks-virkailija-frontend"))
-              [:session :virkailija-user]
-              (merge ticket-user (user/get-auth-info ticket-user))))
+              (assoc-in
+                (response/see-other (u/get-url "ehoks-virkailija-frontend"))
+                [:session :virkailija-user]
+                (merge ticket-user (user/get-auth-info ticket-user)))
+              [:session :ticket]
+              ticket))
           (do (log/warnf "Ticket validation failed: %s"
                          (:error validation-data))
               (response/unauthorized {:error "Invalid ticket"})))))
+
+    (c-api/POST "/opintopolku" [logoutRequest]
+      :summary "Virkailijan CAS SLO endpoint"
+      (let [ticket (some #(when (= (:tag %) :SessionIndex)
+                            (first (:content %)))
+                         (xml/parse-str logoutRequest))]
+        (some
+          (fn [key session-map]
+            (when (= ticket (:ticket session-map))
+              (swap! session dissoc key)))
+          @session)))
 
     (c-api/GET "/" request
       :summary "Virkailijan istunto"
