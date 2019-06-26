@@ -10,6 +10,8 @@
   ^:private
   (atom {}))
 
+(defn size [] (count @cache))
+
 (defn expired? [response]
   (and (some? (:timestamp response))
        (t/before?
