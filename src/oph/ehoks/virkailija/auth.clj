@@ -41,7 +41,7 @@
                             (first (:content %)))
                          (xml/parse-str logoutRequest))]
         (some
-          (fn [key session-map]
+          (fn [[key session-map]]
             (when (= ticket (:ticket session-map))
               (swap! session dissoc key)))
           @session)))
