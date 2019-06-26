@@ -9,7 +9,7 @@
             [clojure.tools.logging :as log]
             [oph.ehoks.virkailija.schema :as schema]
             [oph.ehoks.restful :as restful]
-            [oph.ehoks.common.api :refer [session]]
+            [oph.ehoks.common.api :refer [session-store]]
             [clojure.data.xml :as xml]))
 
 (def routes
@@ -34,19 +34,20 @@
                          (:error validation-data))
               (response/unauthorized {:error "Invalid ticket"})))))
 
-    (c-api/POST "/opintopolku" [logoutRequest]
+    (c-api/POST "/opintopolku" []
       :summary "Virkailijan CAS SLO endpoint"
-      (log/info logoutRequest)
-      (log/info (xml/parse-str logoutRequest))
-      (log/info (map :ticket (vals @session)))
+      :form-params [logoutRequest :- s/Str]
       (let [ticket (some #(when (= (:tag %) :SessionIndex)
                             (first (:content %)))
                          (:content (xml/parse-str logoutRequest)))]
-        (log/info ticket)
-        (loop [[key session-map] (first @session)]
-          (if (= ticket (:ticket session-map))
-            (swap! session dissoc key)
-            (recur (rest @session))))
+        (loop [sm @session-store]
+          (let [[key session-map] (first sm)]
+            (if (= ticket (:ticket session-map))
+              (do
+                (log/info "TICKET " ticket " FOUND" )
+                (swap! session-store dissoc key))
+              (when (> (count sm) 0)
+                (recur (rest sm))))))
         (response/ok)))
 
     (c-api/GET "/" request

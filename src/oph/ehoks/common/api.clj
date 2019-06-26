@@ -8,7 +8,7 @@
             [oph.ehoks.middleware :as middleware]
             [clojure.string :as cstr]))
 
-(def session (atom {}))
+(def session-store (atom {}))
 
 (defn not-found-handler [_ __ ___]
   (response/not-found {:reason "Route not found"}))
@@ -33,6 +33,6 @@
     (-> app-routes
         (middleware/wrap-cache-control-no-cache)
         (session/wrap-session
-          {:store (or session-store (mem/memory-store session))
+          {:store (or session-store (mem/memory-store session-store))
            :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}})))
   ([app-routes] (create-app app-routes nil)))
