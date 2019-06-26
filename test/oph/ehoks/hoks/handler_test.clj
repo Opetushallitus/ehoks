@@ -1044,17 +1044,17 @@
    :aiemmin-hankitut-paikalliset-tutkinnon-osat [ahpto-data]
    :aiemmin-hankitut-yhteiset-tutkinnon-osat [ahyto-data]})
 
-(defn- assert-partial-put-of-hoks [patched-hoks hoks-part]
+(defn- assert-partial-put-of-hoks [updated-hoks hoks-part]
   (let [app (create-app nil)
         post-response (create-mock-post-request "" hoks-data app)
-        put-response (create-mock-hoks-put-request 1 patched-hoks app)
+        put-response (create-mock-hoks-put-request 1 updated-hoks app)
         get-response (create-mock-hoks-get-request 1 app)
         get-response-data (:data (utils/parse-body (:body get-response)))]
     (is (= (:status post-response) 200))
     (is (= (:status put-response) 204))
     (is (= (:status get-response) 200))
     (eq (hoks-part get-response-data)
-        (hoks-part patched-hoks))))
+        (hoks-part updated-hoks))))
 
 (def one-value-of-hoks-patched
   {:id 1
@@ -1080,6 +1080,9 @@
 
 (def oto-of-hoks-updated
   {:id 1
+   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :oppija-oid "1.2.246.562.24.12312312312"
    :opiskeluvalmiuksia-tukevat-opinnot
    [{:nimi "Uusi Nimi"
      :kuvaus "joku kuvaus"
