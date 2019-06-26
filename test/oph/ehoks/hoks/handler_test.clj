@@ -121,7 +121,6 @@
 
 (deftest post-and-get-hankittava-paikallinen-tutkinnon-osa
   (testing "GET newly created hankittava paikallinen tutkinnon osa"
-    (db/clear)
     (with-hoks
       hoks
       (let [ppto-response
@@ -293,7 +292,6 @@
 
 (deftest patch-all-hankittava-ammatillinen-osaaminen
   (testing "PATCH ALL hankittava ammat osaaminen"
-    (db/clear)
     (with-hoks
       hoks
       (let [app (create-app nil)
@@ -312,7 +310,6 @@
 
 (deftest patch-one-hankittava-ammatilinen-osaaminen
   (testing "PATCH one value hankittava ammatillinen osaaminen"
-    (db/clear)
     (with-hoks
       hoks
       (let [app (create-app nil)
@@ -936,7 +933,6 @@
 
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
-    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :ensikertainen-hyvaksyminen "2018-12-15"}
@@ -957,7 +953,6 @@
 
 (deftest prevent-creating-hoks-with-existing-opiskeluoikeus
   (testing "Prevent POST HOKS with existing opiskeluoikeus"
-    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :ensikertainen-hyvaksyminen "2018-12-15"
@@ -1433,7 +1428,6 @@
 
 (deftest get-hoks-by-id-not-found
   (testing "GET HOKS by hoks-id"
-
     (let [app (create-app nil)]
       (let [response
             (utils/with-service-ticket
