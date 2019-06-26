@@ -18,15 +18,18 @@
        :options {:basic-auth [(:cas-username config) (:cas-password config)]
                  :as :json}})))
 
+(defn get-opiskeluoikeus-info-raw [oid]
+  (:body
+    (c/with-api-headers
+      {:method :get
+       :service (u/get-url "koski-url")
+       :url (u/get-url "koski.get-opiskeluoikeus" oid)
+       :options {:basic-auth [(:cas-username config) (:cas-password config)]
+                 :as :json}})))
+
 (defn get-opiskeluoikeus-info [oid]
   (try
-    (:body
-      (c/with-api-headers
-        {:method :get
-         :service (u/get-url "koski-url")
-         :url (u/get-url "koski.get-opiskeluoikeus" oid)
-         :options {:basic-auth [(:cas-username config) (:cas-password config)]
-                   :as :json}}))
+    (get-opiskeluoikeus-info-raw oid)
     (catch clojure.lang.ExceptionInfo e
       (let [e-data (ex-data e)
             body (if (some? (:body e-data))

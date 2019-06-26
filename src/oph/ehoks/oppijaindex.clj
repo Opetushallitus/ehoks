@@ -61,7 +61,7 @@
 (defn update-opiskeluoikeus! [oid oppija-oid]
   (when (empty? (get-opiskeluoikeus-by-oid oid))
     (try
-      (let [opiskeluoikeus (k/get-opiskeluoikeus-info oid)]
+      (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
         (db/insert-opiskeluoikeus
           {:oid oid
            :oppija_oid oppija-oid
@@ -72,9 +72,7 @@
       (catch Exception e
         (log/errorf
           "Error updating opiskeluoikeus %s of oppija %s" oid oppija-oid)
-        (if (= (:status (ex-data e)) 404)
-          (log/warnf "Opiskeluoikeus %s not found in Oppijanumerorekisteri" oid)
-          (throw e))))))
+        (throw e)))))
 
 (defn update-oppija! [oid]
   (when (empty? (get-oppija-by-oid oid))
@@ -85,9 +83,7 @@
            :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
       (catch Exception e
         (log/errorf "Error updating oppija %s" oid)
-        (if (= (:status (ex-data e)) 404)
-          (log/warnf "Oppija %s not found in Oppijanumerorekisteri" oid)
-          (throw e))))))
+        (throw e)))))
 
 (defn update-oppija-and-opiskeluoikeudet! [oppija-oid]
   (update-oppija! oppija-oid)

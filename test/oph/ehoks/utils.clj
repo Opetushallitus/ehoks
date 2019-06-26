@@ -77,7 +77,17 @@
                 url "/rest/organisaatio/v4/1.2.246.562.24.47861388608")
               {:status 200
                :body {:parentOidPath
-                      "|"}})))
+                      "|"}}
+              (> (.indexOf url "oppijanumerorekisteri-service/henkilo") -1)
+              (let [oid (last (.split url "/"))]
+                (if (= oid "1.2.246.562.24.40404040404")
+                  (throw (ex-info "Not found" {:status 404}))
+                  {:status 200
+                   :body {:oidHenkilo oid
+                          :hetu "250103-5360"
+                          :etunimet "Tero Teuvo"
+                          :kutsumanimi "Tero"
+                          :sukunimi "Testaaja"}})))))
     (let [result (app (-> request
                           (mock/header "Caller-Id" "test")
                           (mock/header "ticket" "ST-testitiketti")))]

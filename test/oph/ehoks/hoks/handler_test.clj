@@ -976,6 +976,22 @@
                {:error
                 "HOKS with the same opiskeluoikeus-oid already exists"}))))))
 
+(deftest prevent-creating-hoks-with-non-existing-oppija
+  (testing "Prevent POST HOKS with non-existing oppija"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.40404040404"
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}]
+      (let [response
+            (utils/with-service-ticket
+              (create-app nil)
+              (-> (mock/request :post url)
+                  (mock/json-body hoks-data)))]
+        (is (= (:status response) 400))
+        (is (= (utils/parse-body (:body response))
+               {:error
+                "Oppija not found in Oppijanumerorekisteri"}))))))
+
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
