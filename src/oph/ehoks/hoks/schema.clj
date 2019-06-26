@@ -682,9 +682,6 @@
                                 :description
                                 "HOKS-dokumentin ensimmäinen hyväksymisaika
                                 muodossa YYYY-MM-DD"}
-   :aiemmin-hankitut-ammat-tutkinnon-osat ahato-part-of-hoks
-   :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-part-of-hoks
-   :aiemmin-hankitut-paikalliset-tutkinnon-osat ahpto-part-of-hoks
    :hyvaksytty
    {:methods {:any :optional}
     :types {:any s/Inst}
@@ -694,19 +691,20 @@
                 :types {:any s/Inst}
                 :description (str "HOKS-dokumentin viimeisin päivitysaika "
                                   "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
-   :opiskeluvalmiuksia-tukevat-opinnot oto-part-of-hoks
-   :hankittavat-ammat-tutkinnon-osat hato-part-of-hoks
-   :hankittavat-yhteiset-tutkinnon-osat hyto-part-of-hoks
-   :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks
    :osaamisen-hankkimisen-tarve {:methods {:any :optional}
                                  :types {:any s/Bool}
                                  :description
                                  "Tutkintokoulutuksen ja muun tarvittavan
                                ammattitaidon hankkimisen tarve; osaamisen
                                tunnistamis- ja tunnustamisprosessin
-                               lopputulos."}})
-
-; Following four schemas are only for generated markdown doc
+                               lopputulos."}
+   :aiemmin-hankitut-ammat-tutkinnon-osat ahato-part-of-hoks
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-part-of-hoks
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat ahpto-part-of-hoks
+   :opiskeluvalmiuksia-tukevat-opinnot oto-part-of-hoks
+   :hankittavat-ammat-tutkinnon-osat hato-part-of-hoks
+   :hankittavat-yhteiset-tutkinnon-osat hyto-part-of-hoks
+   :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks})
 
 (def HOKS
   (with-meta
