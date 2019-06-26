@@ -602,6 +602,49 @@
                  :tutkinnon-osa-koodi-versio
                  :tutkinnon-osa-koodi-uri]}))
 
+(def ^:private ahato-part-of-hoks
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]}
+   :description "Aiemmin hankittu ammatillinen osaaminen"})
+
+(def ^:private ahyto-part-of-hoks
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [AiemminHankittuYhteinenTutkinnonOsa]}
+   :description "Aiemmin hankitut yhteiset tutkinnon osat (YTO)"})
+
+(def ^:private ahpto-part-of-hoks
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]}
+   :description "Aiemmin hankittu paikallinen tutkinnon osa"})
+
+(def ^:private oto-part-of-hoks
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
+   :description "Opiskeluvalmiuksia tukevat opinnot"})
+
+(def ^:private hato-part-of-hoks
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [HankittavaAmmatillinenTutkinnonOsa]}
+   :description
+   "Hankittavan ammatillisen osaamisen hankkimisen tiedot"})
+
+(def ^:private hyto-part-of-hoks
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [HankittavaYTO]}
+   :description "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot"})
+
+(def ^:private hpto-part-of-hoks
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [HankittavaPaikallinenTutkinnonOsa]}
+   :description "Hankittavat paikallisen tutkinnon osat"})
+
 (def HOKSModel
   ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
     :restful true
@@ -646,18 +689,6 @@
                                 :description
                                 "HOKS-dokumentin ensimmäinen hyväksymisaika
                                 muodossa YYYY-MM-DD"}
-   :aiemmin-hankitut-ammat-tutkinnon-osat
-   {:methods {:any :optional}
-    :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]}
-    :description "Aiemmin hankittu ammatillinen osaaminen"}
-   :aiemmin-hankitut-yhteiset-tutkinnon-osat
-   {:methods {:any :optional}
-    :types {:any [AiemminHankittuYhteinenTutkinnonOsa]}
-    :description "Aiemmin hankitut yhteiset tutkinnon osat (YTO)"}
-   :aiemmin-hankitut-paikalliset-tutkinnon-osat
-   {:methods {:any :optional}
-    :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]}
-    :description "Aiemmin hankittu paikallinen tutkinnon osa"}
    :hyvaksytty
    {:methods {:any :optional}
     :types {:any s/Inst}
@@ -667,32 +698,20 @@
                 :types {:any s/Inst}
                 :description (str "HOKS-dokumentin viimeisin päivitysaika "
                                   "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
-   :opiskeluvalmiuksia-tukevat-opinnot
-   {:methods {:any :optional}
-    :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
-    :description "Opiskeluvalmiuksia tukevat opinnot"}
-   :hankittavat-ammat-tutkinnon-osat
-   {:methods {:any :optional}
-    :types {:any [HankittavaAmmatillinenTutkinnonOsa]}
-    :description
-    "Hankittavan ammatillisen osaamisen hankkimisen tiedot"}
-   :hankittavat-yhteiset-tutkinnon-osat
-   {:methods {:any :optional}
-    :types {:any [HankittavaYTO]}
-    :description "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot"}
-   :hankittavat-paikalliset-tutkinnon-osat
-   {:methods {:any :optional}
-    :types {:any [HankittavaPaikallinenTutkinnonOsa]}
-    :description "Hankittavat paikallisen tutkinnon osat"}
    :osaamisen-hankkimisen-tarve {:methods {:any :optional}
                                  :types {:any s/Bool}
                                  :description
                                  "Tutkintokoulutuksen ja muun tarvittavan
                                ammattitaidon hankkimisen tarve; osaamisen
                                tunnistamis- ja tunnustamisprosessin
-                               lopputulos."}})
-
-; Following four schemas are only for generated markdown doc
+                               lopputulos."}
+   :aiemmin-hankitut-ammat-tutkinnon-osat ahato-part-of-hoks
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-part-of-hoks
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat ahpto-part-of-hoks
+   :opiskeluvalmiuksia-tukevat-opinnot oto-part-of-hoks
+   :hankittavat-ammat-tutkinnon-osat hato-part-of-hoks
+   :hankittavat-yhteiset-tutkinnon-osat hyto-part-of-hoks
+   :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks})
 
 (def HOKS
   (with-meta
@@ -705,6 +724,12 @@
     (g/generate HOKSModel :patch)
     {:doc "HOKS-dokumentin ylikirjoitus (PATCH)"
      :name "HOKSPaivitys"}))
+
+(def HOKSKorvaus
+  (with-meta
+    (g/generate HOKSModel :put)
+    {:doc "HOKS-dokumentin ylikirjoitus (PUT)"
+     :name "HOKSKorvaus"}))
 
 (def HOKSLuonti
   (with-meta

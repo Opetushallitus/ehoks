@@ -20,6 +20,7 @@
         jsonSchema.properties = [
           "HOKS",
           "HOKSPaivitys",
+          "HOKSKorvaus",
           "HOKSLuonti"
         ].reduce(function(result, key) {
           if (jsonSchema.definitions[key]) {
