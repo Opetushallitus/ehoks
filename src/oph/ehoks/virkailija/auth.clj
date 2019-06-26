@@ -44,9 +44,9 @@
           (let [[key session-map] (first sm)]
             (if (= ticket (:ticket session-map))
               (do
-                (log/info "TICKET " ticket " FOUND" )
+                (log/info "TICKET " ticket " FOUND")
                 (swap! session-store dissoc key))
-              (when (> (count sm) 0)
+              (when (pos? (count sm))
                 (recur (rest sm))))))
         (response/ok)))
 
