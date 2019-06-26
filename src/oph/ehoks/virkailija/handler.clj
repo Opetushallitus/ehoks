@@ -180,6 +180,13 @@
                       :unindexedOpiskeluoikeudet
                       (oppijaindex/get-opiskeluoikeudet-without-index-count)}})))
 
+              (c-api/POST "/index" []
+                :summary "Indeksoi oppijat ja opiskeluoikeudet"
+                (a/go
+                  (oppijaindex/update-oppijat-without-index!)
+                  (oppijaindex/update-opiskeluoikeudet-without-index!)
+                  (response/ok)))
+
               (c-api/DELETE "/cache" []
                 :summary "Välimuistin tyhjennys"
                 (c/clear-cache!)
