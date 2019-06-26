@@ -46,8 +46,14 @@
 (defn get-oppijat-without-index []
   (db/select-hoks-oppijat-without-index))
 
+(defn get-oppijat-without-index-count []
+  (:count (first (db/select-hoks-oppijat-without-index-count))))
+
 (defn get-opiskeluoikeudet-without-index []
   (db/select-hoks-opiskeluoikeudet-without-index))
+
+(defn get-opiskeluoikeudet-without-index-count []
+  (:count (first (db/select-hoks-opiskeluoikeudet-without-index-count))))
 
 (defn get-oppija-opiskeluoikeudet [oppija-oid]
   (db/select-opiskeluoikeudet-by-oppija-oid oppija-oid))
