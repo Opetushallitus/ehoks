@@ -1089,6 +1089,15 @@
              (:kuvaus one-value-of-hoks-patched))
           "Value should stay unchanged"))))
 
+(deftest patching-of-hoks-part-not-allowed
+  (testing "PATCH of HOKS can't be used to update sub entities of HOKS"
+    (let [app (create-app nil)
+          post-response (create-mock-post-request "" hoks-data app)
+          patch-response (create-mock-hoks-patch-request
+                           1 hoks-data app)]
+      (is (= (:status post-response) 200))
+      (is (= (:status patch-response) 400)))))
+
 (def oto-of-hoks-updated
   {:id 1
    :opiskeluoikeus-oid "1.2.246.562.15.00000000001"

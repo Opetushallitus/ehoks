@@ -603,38 +603,45 @@
                  :tutkinnon-osa-koodi-uri]}))
 
 (def ^:private ahato-part-of-hoks
-  {:methods {:any :optional}
+  {:methods {:any :optional
+             :patch :excluded}
    :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]}
    :description "Aiemmin hankittu ammatillinen osaaminen"})
 
 (def ^:private ahyto-part-of-hoks
-  {:methods {:any :optional}
+  {:methods {:any :optional
+             :patch :excluded}
    :types {:any [AiemminHankittuYhteinenTutkinnonOsa]}
    :description "Aiemmin hankitut yhteiset tutkinnon osat (YTO)"})
 
 (def ^:private ahpto-part-of-hoks
-  {:methods {:any :optional}
+  {:methods {:any :optional
+             :patch :excluded}
    :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]}
    :description "Aiemmin hankittu paikallinen tutkinnon osa"})
 
 (def ^:private oto-part-of-hoks
-  {:methods {:any :optional}
+  {:methods {:any :optional
+             :patch :excluded}
    :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
    :description "Opiskeluvalmiuksia tukevat opinnot"})
 
 (def ^:private hato-part-of-hoks
-  {:methods {:any :optional}
+  {:methods {:any :optional
+             :patch :excluded}
    :types {:any [HankittavaAmmatillinenTutkinnonOsa]}
    :description
    "Hankittavan ammatillisen osaamisen hankkimisen tiedot"})
 
 (def ^:private hyto-part-of-hoks
-  {:methods {:any :optional}
+  {:methods {:any :optional
+             :patch :excluded}
    :types {:any [HankittavaYTO]}
    :description "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot"})
 
 (def ^:private hpto-part-of-hoks
-  {:methods {:any :optional}
+  {:methods {:any :optional
+             :patch :excluded}
    :types {:any [HankittavaPaikallinenTutkinnonOsa]}
    :description "Hankittavat paikallisen tutkinnon osat"})
 
