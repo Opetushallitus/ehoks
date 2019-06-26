@@ -40,8 +40,12 @@
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")
 (defq select-hoks-oppijat-without-index
       "hoksit/select_oppija_oids_without_info.sql")
+(defq select-hoks-oppijat-without-index-count
+      "hoksit/select_oppija_oids_without_info_count.sql")
 (defq select-hoks-opiskeluoikeudet-without-index
       "hoksit/select_opiskeluoikeus_oids_without_info.sql")
+(defq select-hoks-opiskeluoikeudet-without-index-count
+      "hoksit/select_opiskeluoikeus_oids_without_info_count.sql")
 (defq select-oppilaitos-oppijat
       "oppijat/select_oppilaitos_oppijat.sql")
 (defq select-oppilaitos-oppijat-search-count

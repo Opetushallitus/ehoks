@@ -11,3 +11,12 @@
   VirkailijaSession
   {:oidHenkilo s/Str
    :organisation-privileges [OrganisationPrivilege]})
+
+(s/defschema
+  SystemInfo
+  {:cache {:size s/Int}
+   :memory {:total Long
+            :free Long
+            :max Long}
+   :oppijaindex {:unindexedOppijat Long
+                 :unindexedOpiskeluoikeudet Long}})
