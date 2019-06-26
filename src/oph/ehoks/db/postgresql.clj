@@ -96,9 +96,17 @@
   (query
     [queries/select-hoks-oppijat-without-index]))
 
+(defn select-hoks-oppijat-without-index-count []
+  (query
+    [queries/select-hoks-oppijat-without-index-count]))
+
 (defn select-hoks-opiskeluoikeudet-without-index []
   (query
     [queries/select-hoks-opiskeluoikeudet-without-index]))
+
+(defn select-hoks-opiskeluoikeudet-without-index-count []
+  (query
+    [queries/select-hoks-opiskeluoikeudet-without-index-count]))
 
 (defn select-opiskeluoikeudet-by-oppija-oid [oppija-oid]
   (query
