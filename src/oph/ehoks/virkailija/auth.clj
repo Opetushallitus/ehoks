@@ -9,7 +9,7 @@
             [clojure.tools.logging :as log]
             [oph.ehoks.virkailija.schema :as schema]
             [oph.ehoks.restful :as restful]
-            [oph.ehoks.common.api :refer [session-store]]
+            [oph.ehoks.common.api :refer [sessions]]
             [clojure.data.xml :as xml]))
 
 (def routes
@@ -40,12 +40,12 @@
       (let [ticket (some #(when (= (:tag %) :SessionIndex)
                             (first (:content %)))
                          (:content (xml/parse-str logoutRequest)))]
-        (loop [sm @session-store]
+        (loop [sm @sessions]
           (let [[key session-map] (first sm)]
             (if (= ticket (:ticket session-map))
               (do
                 (log/info "TICKET " ticket " FOUND")
-                (swap! session-store dissoc key))
+                (swap! sessions dissoc key))
               (when (pos? (count sm))
                 (recur (rest sm))))))
         (response/ok)))
