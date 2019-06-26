@@ -36,6 +36,7 @@
 
     (c-api/POST "/opintopolku" [logoutRequest]
       :summary "Virkailijan CAS SLO endpoint"
+      (log/info logoutRequest)
       (let [ticket (some #(when (= (:tag %) :SessionIndex)
                             (first (:content %)))
                          (xml/parse-str logoutRequest))]
