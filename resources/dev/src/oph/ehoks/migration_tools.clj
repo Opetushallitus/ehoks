@@ -3,7 +3,7 @@
 
 (defn generate-migration! [^String folder ^String title]
   (if (.exists (clojure.java.io/file folder))
-    (let [filename (format "V1_%d_%s.sql"
+    (let [filename (format "V1_%d__%s.sql"
                            (System/currentTimeMillis)
                            (s/replace title #" |-" "_"))
           file (clojure.java.io/file folder filename)]
