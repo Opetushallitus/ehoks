@@ -117,7 +117,8 @@
             "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate!"]
             "dbclean" ["run" "-m" "oph.ehoks.db.migrations/clean!"]
             "import" ["run" "-m" "oph.ehoks.import/lein-import-file!"]
-            "send-json" ["run" "-m" "oph.ehoks.json-post-tool/lein-send-json!"]}
+            "send-json" ["run" "-m" "oph.ehoks.json-post-tool/lein-send-json!"]
+            "genmigration" ["run" "-m" "oph.ehoks.migration-tools/lein-genmigration"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:test {:resource-paths ["resources/test"
                                      "resources/test/src"
