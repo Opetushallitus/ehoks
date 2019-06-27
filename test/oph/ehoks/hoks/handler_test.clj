@@ -1156,6 +1156,26 @@
     (assert-partial-put-of-hoks
       oto-of-hoks-updated :opiskeluvalmiuksia-tukevat-opinnot)))
 
+(def multiple-otos-of-hoks-updated
+  {:id 1
+   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :opiskeluvalmiuksia-tukevat-opinnot
+   [{:nimi "Uusi Nimi"
+     :kuvaus "joku kuvaus"
+     :alku "2019-06-22"
+     :loppu "2021-05-07"}
+    {:nimi "Toinen Nimi"
+     :kuvaus "eri kuvaus"
+     :alku "2018-06-22"
+     :loppu "2022-05-07"}]})
+
+(deftest put-multiple-oto-of-hoks
+  (testing "PUTs multiple opiskeluvalmiuksia tukevat opinnot of HOKS"
+    (assert-partial-put-of-hoks
+      multiple-otos-of-hoks-updated :opiskeluvalmiuksia-tukevat-opinnot)))
+
 (def hato-of-hoks-updated
   {:id 1
    :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
