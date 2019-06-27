@@ -140,19 +140,35 @@
                   :path-params [id :- Long]
                   :summary "Tutkinnon osan viitteet."
                   :return (restful/response [s/Any])
-                  (restful/rest-ok (eperusteet/get-tutkinnon-osa-viitteet id)))
+                  (try
+                    (restful/rest-ok (eperusteet/get-tutkinnon-osa-viitteet id))
+                    (catch Exception e
+                      (if (= (:status (ex-data e)) 400)
+                        (response/not-found
+                          {:message "Tutkinnon osa not found"})
+                        (throw e)))))
 
                 (c-api/GET "/tutkinnot" []
                   :query-params [diaarinumero :- String]
                   :summary "Tutkinnon haku diaarinumeron perusteella."
                   :return (restful/response s/Any)
-                  (restful/rest-ok (eperusteet/find-tutkinto diaarinumero)))
+                  (try
+                    (restful/rest-ok (eperusteet/find-tutkinto diaarinumero))
+                    (catch Exception e
+                      (if (= (:status (ex-data e)) 404)
+                        (response/not-found {:message "Tutkinto not found"})
+                        (throw e)))))
 
                 (c-api/GET "/tutkinnot/:id/suoritustavat/reformi/rakenne" []
                   :path-params [id :- Long]
                   :summary "Tutkinnon rakenne."
                   :return (restful/response s/Any)
-                  (restful/rest-ok (eperusteet/get-suoritustavat id)))
+                  (try
+                    (restful/rest-ok (eperusteet/get-suoritustavat id))
+                    (catch Exception e
+                      (if (= (:status (ex-data e)) 404)
+                        (response/not-found {:message "Rakenne not found"})
+                        (throw e)))))
 
                 (c-api/GET "/:koodi-uri" []
                   :path-params [koodi-uri :- s/Str]
