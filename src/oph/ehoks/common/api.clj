@@ -8,7 +8,17 @@
             [oph.ehoks.middleware :as middleware]
             [clojure.string :as cstr]))
 
-(def sessions (atom {}))
+(def ^:private sessions (atom {}))
+
+(defn delete-session
+  "Delete session from memory-store with same CAS ticket id"
+  [ticket]
+  (loop [sm @sessions]
+    (let [[key session-map] (first sm)]
+      (if (= ticket (:ticket session-map))
+        (swap! sessions dissoc key)
+        (when (pos? (count sm))
+          (recur (rest sm)))))))
 
 (defn not-found-handler [_ __ ___]
   (response/not-found {:reason "Route not found"}))
