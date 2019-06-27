@@ -10,8 +10,9 @@
 
 (def ^:private sessions (atom {}))
 
-(defn delete-session [ticket]
+(defn delete-session
   "Delete session from memory-store with same CAS ticket id"
+  [ticket]
   (loop [sm @sessions]
     (let [[key session-map] (first sm)]
       (if (= ticket (:ticket session-map))
