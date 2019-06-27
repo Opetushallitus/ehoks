@@ -1088,6 +1088,27 @@
              (:kuvaus one-value-of-hoks-patched))
           "Value should stay unchanged"))))
 
+
+(def main-level-of-hoks-updated
+  {:id 1
+   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :oppija-oid "1.2.246.562.24.12312312312"})
+
+(deftest hoks-put-removes-parts
+  (testing "PUT only main level HOKS values, removes parts"
+    (let [app (create-app nil)
+          post-response (create-mock-post-request "" hoks-data app)
+          patch-response (create-mock-hoks-put-request
+                           1 main-level-of-hoks-updated app)
+          get-response (create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status patch-response) 204))
+      (is (= (:status get-response) 200))
+      ;TODO remove assert
+      )))
+
 (deftest patching-of-hoks-part-not-allowed
   (testing "PATCH of HOKS can't be used to update sub entities of HOKS"
     (let [app (create-app nil)
