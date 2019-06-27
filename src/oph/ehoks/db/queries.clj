@@ -33,6 +33,7 @@
                       (read-sql-file (cstr/join (quote ~filename))))))
 
 (defq select-hoksit "hoksit/select.sql")
+(defq delete-hoksit-by-id "hoksit/delete_by_id.sql")
 (defq select-hoksit-by-oppija-oid)
 (defq select-hoksit-by-id)
 (defq select-hoksit-by-opiskeluoikeus-oid)

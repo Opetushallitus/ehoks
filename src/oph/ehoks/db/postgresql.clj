@@ -75,6 +75,11 @@
     [queries/select-hoksit-eid-by-eid eid]
     {}))
 
+(defn delete-hoksit-by-id! [id]
+  (query
+    [queries/delete-hoksit-by-id id]
+    {}))
+
 (defn select-hoksit-by-opiskeluoikeus-oid [oid]
   (query
     [queries/select-hoksit-by-opiskeluoikeus-oid oid]
@@ -672,112 +677,115 @@
     [queries/select-osaamisen-osoittamiset-by-yto-osa-alue-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-
-(defn delete-hoks-or-part! [t id_name id_value]
-  (let [query (str id_name " = " id_value)]
-    (jdbc/delete! {:connection-uri (:database-url config)} t (vector query))))
-
-(defn delete-group! [delete-map ids]
-(doseq [[k v] delete-map]
-(let [delete-response (map #(delete-hoks-or-part! k v %) ids)
-      parsed-response
-      (mapv #(first (nth delete-response %)) (range (count ids)))]
-  (log/info "Deleted :" (reduce + parsed-response) " resources"))))
-
-(defn delete-hankittavat-paikalliset-tutkinnon-osat! [hpto-ids]
-(let [delete-map
-    {:hankittavan_paikallisen_tutkinnon_osan_naytto
-     "hankittava_paikallinen_tutkinnon_osa_id"
-     :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-     "hankittava_paikallinen_tutkinnon_osa_id"
-     :hankittavat_paikalliset_tutkinnon_osat "id"}]
-(delete-group! delete-map hpto-ids)))
-
-(defn delete-hankittavat-ammat-tutkinnon-osat! [hato-ids]
-(let [delete-map
-    {:hankittavan_ammat_tutkinnon_osan_naytto
-     "hankittava_ammat_tutkinnon_osa_id"
-     :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
-     "hankittava_ammat_tutkinnon_osa_id"
-     :hankittavat_ammat_tutkinnon_osat "id"}]
-(delete-group! delete-map hato-ids)))
-
-(defn delete-hankittavat-yhteiset-tutkinnon-osat! [hyto-ids]
-(let [delete-map
-    {:yhteisen_tutkinnon_osan_osa_alueet
-     "yhteisen_tutkinnon_osan_osa_alue_id"
-     :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
-     "yhteisen_tutkinnon_osan_osa_alue_id"
-     :yhteisen_tutkinnon_osan_osa_alueen_naytot
-     "yhteisen_tutkinnon_osan_osa_alue_id"
-     :hankittavat_ammat_tutkinnon_osat "id"}]
-(delete-group! delete-map hyto-ids)))
-
-(defn delete-aiemmin-hankitut-ammat-tutkinnon-osat! [ooato-ids]
-(let [delete-map
-    {:aiemmin_hankitun_ammat_tutkinnon_osan_naytto
-     "aiemmin_hankittu_ammat_tutkinnon_osa_id"
-     :aiemmin_hankitut_ammat_tutkinnon_osat "id"}]
-(delete-group! delete-map ooato-ids)))
-
-(defn delete-aiemmin-hankitut-paikalliset-tutkinnon-osat! [ahpto-ids]
-(let [delete-map
-    {:aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
-     "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"
-     :aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
-     "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"
-     :aiemmin_hankitut_paikalliset_tutkinnon_osat "id"}]
-(delete-group! delete-map ahpto-ids)))
-
-(defn delete-aiemmin-hankitut-yhteiset-tutkinnon-osat! [ahyto-ids]
-(let [delete-map
-    {:aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-     "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"
-     :aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat
-     "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"
-     :aiemmin_hankitun_yto_osa_alueen_naytto
-     "aiemmin_hankittu_yto_osa_alue_id"
-     :aiemmin_hankitut_yto_osa_alueet
-     "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"
-     :aiemmin_hankitut_yhteiset_tutkinnon_osat "id"}]
-(delete-group! delete-map ahyto-ids)))
-
-(defn delete-opiskeluvalmiuksia-tukevat-opinnot! [ovatu-ids]
-(let [delete-map
-    {:opiskeluvalmiuksia_tukevat_opinnot "id"}]
-(delete-group! delete-map ovatu-ids)))
-
-(defn delete-hoks! [hoks-id]
-(let [hpto-ids
-(mapv :id
-  (select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id
-    hoks-id))
-    hato-ids (mapv :id
-                   (select-hankittavat-ammat-tutkinnon-osat-by-hoks-id
-                     hoks-id))
-    hyto-ids (mapv :id
-      (select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id
-        hoks-id))
-    ooato-ids
-    (mapv :id
-      (select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id
-        hoks-id))
-    ahpto-ids
-    (mapv :id
-      (select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
-            hoks-id))
-    ahyto-ids
-  (mapv :id (select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id
-    hoks-id))
-    ovatu-ids (mapv :id
-      (select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id
-                      hoks-id))]
-
-(delete-hankittavat-paikalliset-tutkinnon-osat! hpto-ids)
-(delete-hankittavat-ammat-tutkinnon-osat! hato-ids)
-(delete-hankittavat-yhteiset-tutkinnon-osat! hyto-ids)
-(delete-aiemmin-hankitut-ammat-tutkinnon-osat! ooato-ids)
-(delete-aiemmin-hankitut-paikalliset-tutkinnon-osat! ahpto-ids)
-(delete-aiemmin-hankitut-yhteiset-tutkinnon-osat! ahyto-ids)
-(delete-opiskeluvalmiuksia-tukevat-opinnot! ovatu-ids)
-(delete-hoks-or-part! :hoksit "id" hoks-id)))
+; (defn delete-hoks-and-parts [hoks-id]
+;
+;   )
+;
+; (defn delete-hoks-or-part! [t id_name id_value]
+;   (let [query (str id_name " = " id_value)]
+;     (jdbc/delete! {:connection-uri (:database-url config)} t (vector query))))
+;
+; (defn delete-group! [delete-map ids]
+; (doseq [[k v] delete-map]
+; (let [delete-response (map #(delete-hoks-or-part! k v %) ids)
+;       parsed-response
+;       (mapv #(first (nth delete-response %)) (range (count ids)))]
+;   (log/info "Deleted :" (reduce + parsed-response) " resources"))))
+;
+; (defn delete-hankittavat-paikalliset-tutkinnon-osat! [hpto-ids]
+; (let [delete-map
+;     {:hankittavan_paikallisen_tutkinnon_osan_naytto
+;      "hankittava_paikallinen_tutkinnon_osa_id"
+;      :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
+;      "hankittava_paikallinen_tutkinnon_osa_id"
+;      :hankittavat_paikalliset_tutkinnon_osat "id"}]
+; (delete-group! delete-map hpto-ids)))
+;
+; (defn delete-hankittavat-ammat-tutkinnon-osat! [hato-ids]
+; (let [delete-map
+;     {:hankittavan_ammat_tutkinnon_osan_naytto
+;      "hankittava_ammat_tutkinnon_osa_id"
+;      :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
+;      "hankittava_ammat_tutkinnon_osa_id"
+;      :hankittavat_ammat_tutkinnon_osat "id"}]
+; (delete-group! delete-map hato-ids)))
+;
+; (defn delete-hankittavat-yhteiset-tutkinnon-osat! [hyto-ids]
+; (let [delete-map
+;     {:yhteisen_tutkinnon_osan_osa_alueet
+;      "yhteisen_tutkinnon_osan_osa_alue_id"
+;      :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
+;      "yhteisen_tutkinnon_osan_osa_alue_id"
+;      :yhteisen_tutkinnon_osan_osa_alueen_naytot
+;      "yhteisen_tutkinnon_osan_osa_alue_id"
+;      :hankittavat_ammat_tutkinnon_osat "id"}]
+; (delete-group! delete-map hyto-ids)))
+;
+; (defn delete-aiemmin-hankitut-ammat-tutkinnon-osat! [ooato-ids]
+; (let [delete-map
+;     {:aiemmin_hankitun_ammat_tutkinnon_osan_naytto
+;      "aiemmin_hankittu_ammat_tutkinnon_osa_id"
+;      :aiemmin_hankitut_ammat_tutkinnon_osat "id"}]
+; (delete-group! delete-map ooato-ids)))
+;
+; (defn delete-aiemmin-hankitut-paikalliset-tutkinnon-osat! [ahpto-ids]
+; (let [delete-map
+;     {:aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
+;      "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"
+;      :aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
+;      "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"
+;      :aiemmin_hankitut_paikalliset_tutkinnon_osat "id"}]
+; (delete-group! delete-map ahpto-ids)))
+;
+; (defn delete-aiemmin-hankitut-yhteiset-tutkinnon-osat! [ahyto-ids]
+; (let [delete-map
+;     {:aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
+;      "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"
+;      :aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat
+;      "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"
+;      :aiemmin_hankitun_yto_osa_alueen_naytto
+;      "aiemmin_hankittu_yto_osa_alue_id"
+;      :aiemmin_hankitut_yto_osa_alueet
+;      "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"
+;      :aiemmin_hankitut_yhteiset_tutkinnon_osat "id"}]
+; (delete-group! delete-map ahyto-ids)))
+;
+; (defn delete-opiskeluvalmiuksia-tukevat-opinnot! [ovatu-ids]
+; (let [delete-map
+;     {:opiskeluvalmiuksia_tukevat_opinnot "id"}]
+; (delete-group! delete-map ovatu-ids)))
+;
+; (defn delete-hoks! [hoks-id]
+; (let [hpto-ids
+; (mapv :id
+;   (select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id
+;     hoks-id))
+;     hato-ids (mapv :id
+;                    (select-hankittavat-ammat-tutkinnon-osat-by-hoks-id
+;                      hoks-id))
+;     hyto-ids (mapv :id
+;       (select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id
+;         hoks-id))
+;     ooato-ids
+;     (mapv :id
+;       (select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id
+;         hoks-id))
+;     ahpto-ids
+;     (mapv :id
+;       (select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
+;             hoks-id))
+;     ahyto-ids
+;   (mapv :id (select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id
+;     hoks-id))
+;     ovatu-ids (mapv :id
+;       (select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id
+;                       hoks-id))]
+;
+; (delete-hankittavat-paikalliset-tutkinnon-osat! hpto-ids)
+; (delete-hankittavat-ammat-tutkinnon-osat! hato-ids)
+; (delete-hankittavat-yhteiset-tutkinnon-osat! hyto-ids)
+; (delete-aiemmin-hankitut-ammat-tutkinnon-osat! ooato-ids)
+; (delete-aiemmin-hankitut-paikalliset-tutkinnon-osat! ahpto-ids)
+; (delete-aiemmin-hankitut-yhteiset-tutkinnon-osat! ahyto-ids)
+; (delete-opiskeluvalmiuksia-tukevat-opinnot! ovatu-ids)
+; (delete-hoks-or-part! :hoksit "id" hoks-id)))
