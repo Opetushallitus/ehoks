@@ -84,6 +84,7 @@
                     (case method
                       :post operation-new
                       :patch operation-modify
+                      :put operation-modify
                       :delete operation-delete
                       operation-read))
         changes (build-changes response operation)]
