@@ -1088,7 +1088,6 @@
              (:kuvaus one-value-of-hoks-patched))
           "Value should stay unchanged"))))
 
-
 (def main-level-of-hoks-updated
   {:id 1
    :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
@@ -1106,8 +1105,15 @@
       (is (= (:status post-response) 200))
       (is (= (:status patch-response) 204))
       (is (= (:status get-response) 200))
-      ;TODO remove assert
-      )))
+      (is (empty? (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)))
+      (is (empty? (:hankittavat-ammat-tutkinnon-osat get-response-data)))
+      (is (empty? (:hankittavat-paikalliset-tutkinnon-osat get-response-data)))
+      (is (empty? (:hankittavat-yhteiset-tutkinnon-osat get-response-data)))
+      (is (empty? (:aiemmin-hankitut-ammat-tutkinnon-osat get-response-data)))
+      (is (empty?
+            (:aiemmin_hankitut_paikalliset_tutkinnon_osat get-response-data)))
+      (is (empty?
+            (:aiemmin-hankitut-yhteiset-tutkinnon-osat get-response-data))))))
 
 (deftest patching-of-hoks-part-not-allowed
   (testing "PATCH of HOKS can't be used to update sub entities of HOKS"
