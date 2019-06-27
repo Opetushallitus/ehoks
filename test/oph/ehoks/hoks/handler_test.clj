@@ -1098,12 +1098,12 @@
   (testing "PUT only main level HOKS values, removes parts"
     (let [app (create-app nil)
           post-response (create-mock-post-request "" hoks-data app)
-          patch-response (create-mock-hoks-put-request
+          put-response (create-mock-hoks-put-request
                            1 main-level-of-hoks-updated app)
           get-response (create-mock-hoks-get-request 1 app)
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (is (= (:status post-response) 200))
-      (is (= (:status patch-response) 204))
+      (is (= (:status put-response) 204))
       (is (= (:status get-response) 200))
       (is (empty? (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)))
       (is (empty? (:hankittavat-ammat-tutkinnon-osat get-response-data)))
@@ -1114,6 +1114,22 @@
             (:aiemmin_hankitut_paikalliset_tutkinnon_osat get-response-data)))
       (is (empty?
             (:aiemmin-hankitut-yhteiset-tutkinnon-osat get-response-data))))))
+
+(deftest hoks-put-adds-non-existing-part
+  (testing "If HOKS part doesn't currently exist, PUT creates it"
+    (let [app (create-app nil)
+          post-response
+          (create-mock-post-request
+            "" (dissoc hoks-data :opiskeluvalmiuksia-tukevat-opinnot) app)
+          put-response (create-mock-hoks-put-request
+                           1 (assoc hoks-data :id 1) app)
+          get-response (create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status put-response) 204))
+      (is (= (:status get-response) 200))
+      (eq (:opiskeluvalmiuksia-tukevat-opinnot hoks-data)
+          (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)))))
 
 (deftest patching-of-hoks-part-not-allowed
   (testing "PATCH of HOKS can't be used to update sub entities of HOKS"
