@@ -77,7 +77,7 @@
 
 (defn- do-log [request response]
   (let [user (get-user request)
-        method (:method request)
+        method (:request-method request)
         target (build-target request)
         operation (if (or (server-error? response) (client-error? response))
                     operation-failed

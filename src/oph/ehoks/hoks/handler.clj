@@ -1,7 +1,6 @@
 (ns oph.ehoks.hoks.handler
   (:require [compojure.api.sweet :as c-api]
             [clojure.tools.logging :as log]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
@@ -379,7 +378,7 @@
                     caller-id :- s/Str]
 
     (route-middleware
-      [wrap-user-details wrap-require-service-user wrap-audit-logger]
+      [wrap-user-details wrap-require-service-user]
 
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
@@ -408,8 +407,11 @@
         (let [hoks-db (h/save-hoks! hoks)]
           (when (:save-hoks-json? config)
             (write-hoks-json! hoks))
-          (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
-                        :id (:id hoks-db))))
+          (assoc
+            (rest/rest-ok {:uri
+                           (format "%s/%d" (:uri request) (:id hoks-db))}
+                          :id (:id hoks-db))
+            :audit-data {:new hoks})))
 
       (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
