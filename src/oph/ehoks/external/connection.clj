@@ -37,7 +37,7 @@
     client/get))
 
 (defn with-api-headers
-  [{method :method service :service options :options url :url}]
+  [{method :method options :options url :url}]
   (try
     (let [client-method-fn (get-client-fn method)]
       (client-method-fn url
