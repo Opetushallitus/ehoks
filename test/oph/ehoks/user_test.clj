@@ -72,8 +72,12 @@
           (.endsWith
             url "/rest/organisaatio/v4/1.2.246.562.10.00000000001")
           {:status 200
+           :body {}}
+          (.endsWith
+            url "/rest/organisaatio/v4/1.2.246.562.10.00000000002")
+          {:status 200
            :body {:parentOidPath
-                  "|1.2.246.562.10.00000000005|1.2.246.562.10.00000000008"}})))
+                  "|1.2.246.562.10.00000000001|"}})))
 
     (eq (user/get-organisation-privileges
           {:organisation-privileges

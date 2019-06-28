@@ -217,162 +217,159 @@
                 (c/clear-cache!)
                 (response/ok)))
 
-            (route-middleware
-              [wrap-audit-logger]
+            (c-api/context "/oppijat" []
+              (c-api/GET "/" request
+                :return (restful/response
+                          [common-schema/OppijaSearchResult]
+                          :total-count s/Int)
+                :query-params [{order-by-column :- s/Keyword :nimi}
+                               {desc :- s/Bool false}
+                               {nimi :- s/Str nil}
+                               {tutkinto :- s/Str nil}
+                               {osaamisala :- s/Str nil}
+                               {item-count :- s/Int 10}
+                               {page :- s/Int 0}
+                               oppilaitos-oid :- s/Str]
+                :summary "Listaa virkailijan oppilaitoksen oppijat, joilla on
+                       HOKS luotuna. Käyttäjällä pitää olla READ käyttöoikeus
+                       annettuun organisaatioon eHOKS-palvelussa."
 
-              (c-api/context "/oppijat" []
-                (c-api/GET "/" request
-                  :return (restful/response
-                            [common-schema/OppijaSearchResult]
-                            :total-count s/Int)
-                  :query-params [{order-by-column :- s/Keyword :nimi}
-                                 {desc :- s/Bool false}
-                                 {nimi :- s/Str nil}
-                                 {tutkinto :- s/Str nil}
-                                 {osaamisala :- s/Str nil}
-                                 {item-count :- s/Int 10}
-                                 {page :- s/Int 0}
-                                 oppilaitos-oid :- s/Str]
-                  :summary "Listaa virkailijan oppilaitoksen oppijat, joilla on
-                         HOKS luotuna. Käyttäjällä pitää olla READ käyttöoikeus
-                         annettuun organisaatioon eHOKS-palvelussa."
+                (if-not (contains?
+                          (user/get-organisation-privileges
+                            (get-in
+                              request
+                              [:session :virkailija-user])
+                            oppilaitos-oid)
+                          :read)
+                  (response/forbidden
+                    {:error
+                     (str "User has insufficient privileges "
+                          "for given organisation")})
+                  (let [search-params
+                        (cond-> {:desc desc
+                                 :item-count item-count
+                                 :order-by-column order-by-column
+                                 :offset (* page item-count)
+                                 :oppilaitos-oid oppilaitos-oid}
+                          (some? nimi) (assoc :nimi nimi)
+                          (some? tutkinto) (assoc :tutkinto tutkinto)
+                          (some? osaamisala) (assoc :osaamisala osaamisala))
+                        oppijat (mapv
+                                  #(dissoc
+                                     % :oppilaitos-oid :koulutustoimija-oid)
+                                  (op/search search-params))]
+                    (restful/rest-ok
+                      oppijat
+                      :total-count (op/get-count search-params)))))
 
-                  (if-not (contains?
-                            (user/get-organisation-privileges
-                              (get-in
-                                request
-                                [:session :virkailija-user])
-                              oppilaitos-oid)
-                            :read)
-                    (response/forbidden
-                      {:error
-                       (str "User has insufficient privileges "
-                            "for given organisation")})
-                    (let [search-params
-                          (cond-> {:desc desc
-                                   :item-count item-count
-                                   :order-by-column order-by-column
-                                   :offset (* page item-count)
-                                   :oppilaitos-oid oppilaitos-oid}
-                            (some? nimi) (assoc :nimi nimi)
-                            (some? tutkinto) (assoc :tutkinto tutkinto)
-                            (some? osaamisala) (assoc :osaamisala osaamisala))
-                          oppijat (mapv
-                                    #(dissoc
-                                       % :oppilaitos-oid :koulutustoimija-oid)
-                                    (op/search search-params))]
-                      (restful/rest-ok
-                        oppijat
-                        :total-count (op/get-count search-params)))))
+              (c-api/context "/:oppija-oid" []
+                :path-params [oppija-oid :- s/Str]
 
-                (c-api/context "/:oppija-oid" []
-                  :path-params [oppija-oid :- s/Str]
+                (c-api/POST "/index" []
+                  :summary "Indeksoi oppijan tiedot, jos on tarpeen"
+                  (a/go
+                    (op/update-oppija-and-opiskeluoikeudet!
+                      oppija-oid)
+                    (response/ok)))
 
-                  (c-api/POST "/index" []
-                    :summary "Indeksoi oppijan tiedot, jos on tarpeen"
-                    (a/go
-                      (op/update-oppija-and-opiskeluoikeudet!
-                        oppija-oid)
-                      (response/ok)))
+                (route-middleware
+                  [wrap-virkailija-oppija-access]
 
-                  (route-middleware
-                    [wrap-virkailija-oppija-access]
-
-                    (c-api/context "/hoksit" []
-
-                      (c-api/GET "/" []
-                        :return (restful/response [hoks-schema/HOKS])
-                        :summary "Oppijan hoksit (perustiedot)"
-                        (if-let [hoks (db/select-hoks-by-oppija-oid oppija-oid)]
-                          (restful/rest-ok hoks)
-                          (response/not-found {:message "HOKS not found"})))
-
-                      (c-api/POST "/" [:as request]
-                        :summary "Luo uuden HOKSin.
-                                 Vaatii manuaalisyöttäjän oikeudet"
-                        :body [hoks hoks-schema/HOKSLuonti]
-                        :return (restful/response schema/POSTResponse :id s/Int)
-                        (let [virkailija-user
-                              (get-in request [:session :virkailija-user])]
-                          (when-not (virkailija-has-privilege?
-                                      virkailija-user (:oppija-oid hoks) :write)
-                            (response/forbidden!
-                              {:error
-                               (str "User has unsufficient privileges")})))
-                        (try
-                          (op/update-oppija! (:oppija-oid hoks))
-                          (catch Exception e
-                            (if (= (:status (ex-data e)) 404)
-                              (response/bad-request!
-                                {:error
-                                 "Oppija not found in Oppijanumerorekisteri"})
-                              (throw e))))
-                        (try
-                          (op/update-opiskeluoikeus!
-                            (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
-                          (catch Exception e
-                            (if (= (:status (ex-data e)) 404)
-                              (response/bad-request!
-                                {:error "Opiskeluoikeus not found in Koski"})
-                              (throw e))))
-                        (try
-                          (let [hoks-db (h/save-hoks! hoks)]
-                            (restful/rest-ok
-                              {:uri (format "%s/%d"
-                                            (:uri request)
-                                            (:id hoks-db))}
-                              :id (:id hoks-db)))
-                          (catch Exception e
-                            (if (= (:error (ex-data e)) :duplicate)
-                              (response/bad-request!
-                                {:error
-                                 (str "HOKS with the same "
-                                      "opiskeluoikeus-oid already exists")})
-                              (throw e)))))
-
-                      (c-api/GET "/:hoks-id" request
-                        :path-params [hoks-id :- s/Int]
-                        :summary "Hoksin tiedot.
-                                 Vaatii manuaalisyöttäjän oikeudet"
-                        (let [hoks (db/select-hoks-by-id hoks-id)
-                              virkailija-user (get-in
-                                                request
-                                                [:session :virkailija-user])]
-                          (if (virkailija-has-privilege?
-                                virkailija-user (:oppija-oid hoks) :write)
-                            (restful/rest-ok (h/get-hoks-by-id hoks-id))
-                            (response/forbidden
-                              {:error
-                               (str "User has unsufficient privileges")}))))
-
-                      (route-middleware
-                        [wrap-oph-super-user]
-
-                        (c-api/GET "/" []
-                          :summary "Kaikki hoksit (perustiedot).
-                         Tarvitsee OPH-pääkäyttäjän oikeudet"
-                          (restful/rest-ok (db/select-hoksit)))))
-
-                    (c-api/GET "/opiskeluoikeudet" [:as request]
-                      :summary "Oppijan opiskeluoikeudet"
-                      :return (restful/response [s/Any])
-                      (restful/rest-ok
-                        (:opiskeluoikeudet
-                          (koski/get-student-info oppija-oid))))
+                  (c-api/context "/hoksit" []
 
                     (c-api/GET "/" []
-                      :return (restful/response schema/UserInfo)
-                      :summary "Oppijan tiedot"
-                      (let [oppija-response (onr/find-student-by-oid
-                                              oppija-oid)]
-                        (if (= (:status oppija-response) 200)
-                          (restful/rest-ok
-                            (-> oppija-response
-                                :body
-                                onr/convert-student-info))
-                          (response/internal-server-error
+                      :return (restful/response [hoks-schema/HOKS])
+                      :summary "Oppijan hoksit (perustiedot)"
+                      (if-let [hoks (db/select-hoks-by-oppija-oid oppija-oid)]
+                        (restful/rest-ok hoks)
+                        (response/not-found {:message "HOKS not found"})))
+
+                    (c-api/POST "/" [:as request]
+                      :summary "Luo uuden HOKSin.
+                                Vaatii manuaalisyöttäjän oikeudet"
+                      :body [hoks hoks-schema/HOKSLuonti]
+                      :return (restful/response schema/POSTResponse :id s/Int)
+                      (let [virkailija-user
+                            (get-in request [:session :virkailija-user])]
+                        (when-not (virkailija-has-privilege?
+                                    virkailija-user (:oppija-oid hoks) :write)
+                          (response/forbidden!
                             {:error
-                             "Error with external connection"}))))))))))
+                             (str "User has unsufficient privileges")})))
+                      (try
+                        (op/update-oppija! (:oppija-oid hoks))
+                        (catch Exception e
+                          (if (= (:status (ex-data e)) 404)
+                            (response/bad-request!
+                              {:error
+                               "Oppija not found in Oppijanumerorekisteri"})
+                            (throw e))))
+                      (try
+                        (op/update-opiskeluoikeus!
+                          (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
+                        (catch Exception e
+                          (if (= (:status (ex-data e)) 404)
+                            (response/bad-request!
+                              {:error "Opiskeluoikeus not found in Koski"})
+                            (throw e))))
+                      (try
+                        (let [hoks-db (h/save-hoks! hoks)]
+                          (restful/rest-ok
+                            {:uri (format "%s/%d"
+                                          (:uri request)
+                                          (:id hoks-db))}
+                            :id (:id hoks-db)))
+                        (catch Exception e
+                          (if (= (:error (ex-data e)) :duplicate)
+                            (response/bad-request!
+                              {:error
+                               (str "HOKS with the same "
+                                    "opiskeluoikeus-oid already exists")})
+                            (throw e)))))
+
+                    (c-api/GET "/:hoks-id" request
+                      :path-params [hoks-id :- s/Int]
+                      :summary "Hoksin tiedot.
+                                Vaatii manuaalisyöttäjän oikeudet"
+                      (let [hoks (db/select-hoks-by-id hoks-id)
+                            virkailija-user (get-in
+                                              request
+                                              [:session :virkailija-user])]
+                        (if (virkailija-has-privilege?
+                              virkailija-user (:oppija-oid hoks) :write)
+                          (restful/rest-ok (h/get-hoks-by-id hoks-id))
+                          (response/forbidden
+                            {:error
+                             (str "User has unsufficient privileges")}))))
+
+                    (route-middleware
+                      [wrap-oph-super-user]
+
+                      (c-api/GET "/" []
+                        :summary "Kaikki hoksit (perustiedot).
+                        Tarvitsee OPH-pääkäyttäjän oikeudet"
+                        (restful/rest-ok (db/select-hoksit)))))
+
+                  (c-api/GET "/opiskeluoikeudet" [:as request]
+                    :summary "Oppijan opiskeluoikeudet"
+                    :return (restful/response [s/Any])
+                    (restful/rest-ok
+                      (:opiskeluoikeudet
+                        (koski/get-student-info oppija-oid))))
+
+                  (c-api/GET "/" []
+                    :return (restful/response schema/UserInfo)
+                    :summary "Oppijan tiedot"
+                    (let [oppija-response (onr/find-student-by-oid
+                                            oppija-oid)]
+                      (if (= (:status oppija-response) 200)
+                        (restful/rest-ok
+                          (-> oppija-response
+                              :body
+                              onr/convert-student-info))
+                        (response/internal-server-error
+                          {:error
+                           "Error with external connection"})))))))))
 
         healthcheck-handler/routes
         misc-handler/routes))
@@ -396,7 +393,7 @@
      {:handlers common-api/handlers}}
 
     (route-middleware
-      [wrap-access-logger]
+      [wrap-access-logger wrap-audit-logger]
 
       routes
       (c-api/undocumented
