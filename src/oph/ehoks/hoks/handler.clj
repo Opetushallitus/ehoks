@@ -386,10 +386,6 @@
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
         (check-hoks-access! hoks request)
-        (when (seq (pdb/select-hoksit-by-opiskeluoikeus-oid
-                     (:opiskeluoikeus-oid hoks)))
-          (response/bad-request!
-            {:error "HOKS with the same opiskeluoikeus-oid already exists"}))
         (try
           (oppijaindex/update-oppija! (:oppija-oid hoks))
           (catch Exception e
@@ -405,11 +401,17 @@
               (response/bad-request!
                 {:error "Opiskeluoikeus not found in Koski"})
               (throw e))))
-        (let [hoks-db (h/save-hoks! hoks)]
-          (when (:save-hoks-json? config)
-            (write-hoks-json! hoks))
-          (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
-                        :id (:id hoks-db))))
+        (try
+          (let [hoks-db (h/save-hoks! hoks)]
+            (when (:save-hoks-json? config)
+              (write-hoks-json! hoks))
+            (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
+                          :id (:id hoks-db)))
+          (catch Exception e
+            (if (= (:error (ex-data e)) :duplicate)
+              (response/bad-request!
+                {:error "HOKS with the same opiskeluoikeus-oid already exists"})
+              (throw e)))))
 
       (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"

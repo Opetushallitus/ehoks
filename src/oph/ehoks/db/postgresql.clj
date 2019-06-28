@@ -86,8 +86,17 @@
       eid)))
 
 (defn insert-hoks! [hoks]
-  (let [eid (generate-unique-eid)]
-    (insert-one! :hoksit (h/hoks-to-sql (assoc hoks :eid eid)))))
+  (jdbc/with-db-transaction
+    [conn {:connection-uri (:database-url config)}]
+    (when
+     (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
+                            (:opiskeluoikeus-oid hoks)]))
+      (throw (ex-info
+               "HOKS with given opiskeluoikeus already exists"
+               {:error :duplicate})))
+    (let [eid (generate-unique-eid)]
+      (first
+        (jdbc/insert! conn :hoksit (h/hoks-to-sql (assoc hoks :eid eid)))))))
 
 (defn update-hoks-by-id! [id hoks]
   (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
