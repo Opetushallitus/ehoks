@@ -131,7 +131,7 @@
 
               (c-api/context "/organisaatio" []
                 (c-api/GET "/find" []
-                  :path-params [oids :- [s/Str]]
+                  :query-params [oids :- [s/Str]]
                   :summary "Hakee organisaatiot oidien perusteella"
                   :return (restful/response s/Any)
                   (restful/rest-ok
