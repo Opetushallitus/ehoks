@@ -693,50 +693,54 @@
       (save-hankittavat-yhteiset-tutkinnon-osat!
         (:id saved-hoks) (:hankittavat-yhteiset-tutkinnon-osat h)))))
 
-(defn replace-oto! [hoks-id new-oto-values]
+(defn- replace-main-hoks! [hoks-id new-values]
+  (db/update-hoks-by-id! hoks-id new-values))
+
+(defn- replace-oto! [hoks-id new-oto-values]
   (db/delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id)
   (when
    new-oto-values
     (save-opiskeluvalmiuksia-tukevat-opinnot! hoks-id new-oto-values)))
 
-(defn replace-hato! [hoks-id new-hato-values]
+(defn- replace-hato! [hoks-id new-hato-values]
   (db/delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id hoks-id)
   (when
    new-hato-values
     (save-hankittavat-ammat-tutkinnon-osat! hoks-id new-hato-values)))
 
-(defn replace-hpto! [hoks-id new-hpto-values]
+(defn- replace-hpto! [hoks-id new-hpto-values]
   (db/delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)
   (when
    new-hpto-values
     (save-hankittavat-paikalliset-tutkinnon-osat! hoks-id new-hpto-values)))
 
-(defn replace-hyto! [hoks-id new-hyto-values]
+(defn- replace-hyto! [hoks-id new-hyto-values]
   (db/delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)
   (when
    new-hyto-values
     (save-hankittavat-yhteiset-tutkinnon-osat! hoks-id new-hyto-values)))
 
-(defn replace-ahato! [hoks-id new-ahato-values]
+(defn- replace-ahato! [hoks-id new-ahato-values]
   (db/delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id hoks-id)
   (when
    new-ahato-values
     (save-aiemmin-hankitut-ammat-tutkinnon-osat! hoks-id new-ahato-values)))
 
-(defn replace-ahpto! [hoks-id new-ahpto-values]
+(defn- replace-ahpto! [hoks-id new-ahpto-values]
   (db/delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)
   (when
    new-ahpto-values
-    (save-aiemmin-hankitut-paikalliset-tutkinnon-osat! hoks-id new-ahpto-values)))
+    (save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
+      hoks-id new-ahpto-values)))
 
-(defn replace-ahyto! [hoks-id new-ahyto-values]
+(defn- replace-ahyto! [hoks-id new-ahyto-values]
   (db/delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)
   (when
    new-ahyto-values
     (save-aiemmin-hankitut-yhteiset-tutkinnon-osat! hoks-id new-ahyto-values)))
 
 (defn replace-hoks! [hoks-id new-values]
-  (db/update-hoks-by-id! hoks-id new-values)
+  (replace-main-hoks! hoks-id new-values)
   (replace-oto! hoks-id (:opiskeluvalmiuksia-tukevat-opinnot new-values))
   (replace-hato! hoks-id (:hankittavat-ammat-tutkinnon-osat new-values))
   (replace-hpto! hoks-id (:hankittavat-paikalliset-tutkinnon-osat new-values))
