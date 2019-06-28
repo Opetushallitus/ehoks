@@ -29,7 +29,8 @@
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
             [oph.ehoks.validation.handler :as validation-handler]
             [clojure.core.async :as a]
-            [oph.ehoks.virkailija.schema :as virkailija-schema]))
+            [oph.ehoks.virkailija.schema :as virkailija-schema]
+            [clojure.tools.logging :as log]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -93,18 +94,28 @@
             (get-in request [:session :virkailija-user])
             (get-in request [:params :oppija-oid]))
         (handler request respond raise)
-        (respond
-          (response/forbidden
-            {:error (str "User privileges does not match oppija opiskeluoikeus "
-                         "organisation")}))))
+        (do
+          (log/warn "User "
+                    (get-in request [:session :virkailija-user :oidHenkilo])
+                    " privileges don't match oppija "
+                    (get-in request [:params :oppija-oid]))
+          (respond
+            (response/forbidden
+              {:error (str "User privileges does not match oppija "
+                           "opiskeluoikeus organisation")})))))
     ([request]
       (if (virkailija-has-access?
             (get-in request [:session :virkailija-user])
             (get-in request [:params :oppija-oid]))
         (handler request)
-        (response/forbidden
-          {:error (str "User privileges does not match oppija opiskeluoikeus "
-                       "organisation")})))))
+        (do
+          (log/warn "User "
+                    (get-in request [:session :virkailija-user :oidHenkilo])
+                    " privileges don't match oppija "
+                    (get-in request [:params :oppija-oid]))
+          (response/forbidden
+            {:error (str "User privileges does not match oppija opiskeluoikeus "
+                         "organisation")}))))))
 
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
