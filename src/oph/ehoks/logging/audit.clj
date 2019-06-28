@@ -51,14 +51,14 @@
     (or (get-session request) "no session")
     (or (:user-agent (:headers request)) "no user agent")))
 
-(defn- build-changes [response op]
+(defn- build-changes [response]
   (let [new (get-in response [:audit-data :new])
         old (get-in response [:audit-data :old])]
-    (case (.name op)
-      "create" (Changes/addedDto new)
-      "update" (Changes/updatedDto new old)
-      "delete" (Changes/deleteDto old)
-      Changes/EMPTY)))
+    (cond
+      (and (nil? new) (nil? old)) Changes/EMPTY
+      (nil? old) (Changes/addedDto new)
+      (nil? new) (Changes/deleteDto old)
+      :else (Changes/updatedDto new old))))
 
 (defn- build-target [request]
   (let [tb (Target$Builder.)]
@@ -86,7 +86,7 @@
                       :patch operation-modify
                       :delete operation-delete
                       operation-read))
-        changes (build-changes response operation)]
+        changes (build-changes response)]
     (.log audit
           user
           operation
