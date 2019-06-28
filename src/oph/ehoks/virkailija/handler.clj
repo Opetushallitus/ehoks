@@ -29,7 +29,8 @@
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
             [oph.ehoks.validation.handler :as validation-handler]
             [clojure.core.async :as a]
-            [oph.ehoks.virkailija.schema :as virkailija-schema]))
+            [oph.ehoks.virkailija.schema :as virkailija-schema]
+            [clojure.tools.logging :as log]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -93,18 +94,28 @@
             (get-in request [:session :virkailija-user])
             (get-in request [:params :oppija-oid]))
         (handler request respond raise)
-        (respond
-          (response/forbidden
-            {:error (str "User privileges does not match oppija opiskeluoikeus "
-                         "organisation")}))))
+        (do
+          (log/warn "User "
+                    (get-in request [:session :virkailija-user :oidHenkilo])
+                    " privileges don't match oppija "
+                    (get-in request [:params :oppija-oid]))
+          (respond
+            (response/forbidden
+              {:error (str "User privileges does not match oppija "
+                           "opiskeluoikeus organisation")})))))
     ([request]
       (if (virkailija-has-access?
             (get-in request [:session :virkailija-user])
             (get-in request [:params :oppija-oid]))
         (handler request)
-        (response/forbidden
-          {:error (str "User privileges does not match oppija opiskeluoikeus "
-                       "organisation")})))))
+        (do
+          (log/warn "User "
+                    (get-in request [:session :virkailija-user :oidHenkilo])
+                    " privileges don't match oppija "
+                    (get-in request [:params :oppija-oid]))
+          (response/forbidden
+            {:error (str "User privileges does not match oppija opiskeluoikeus "
+                         "organisation")}))))))
 
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
@@ -241,10 +252,17 @@
                               [:session :virkailija-user])
                             oppilaitos-oid)
                           :read)
-                  (response/forbidden
-                    {:error
-                     (str "User has insufficient privileges "
-                          "for given organisation")})
+                  (do
+                    (log/warn "User "
+                              (get-in request [:session
+                                               :virkailija-user
+                                               :oidHenkilo])
+                              " privileges don't match organisaatio "
+                              oppilaitos-oid)
+                    (response/forbidden
+                      {:error
+                       (str "User has insufficient privileges for "
+                            "given organisation")}))
                   (let [search-params
                         (cond-> {:desc desc
                                  :item-count item-count
@@ -293,6 +311,12 @@
                             (get-in request [:session :virkailija-user])]
                         (when-not (virkailija-has-privilege?
                                     virkailija-user (:oppija-oid hoks) :write)
+                          (log/warn "User "
+                                    (get-in request [:session
+                                                     :virkailija-user
+                                                     :oidHenkilo])
+                                    " privileges don't match oppija "
+                                    (:oppija-oid hoks))
                           (response/forbidden!
                             {:error
                              (str "User has unsufficient privileges")})))
@@ -300,17 +324,25 @@
                         (op/update-oppija! (:oppija-oid hoks))
                         (catch Exception e
                           (if (= (:status (ex-data e)) 404)
-                            (response/bad-request!
-                              {:error
-                               "Oppija not found in Oppijanumerorekisteri"})
+                            (do
+                              (log/warn "Oppija with oid "
+                                        (:oppija-oid hoks)
+                                        " not found in ONR")
+                              (response/bad-request!
+                                {:error
+                                 "Oppija not found in Oppijanumerorekisteri"}))
                             (throw e))))
                       (try
                         (op/update-opiskeluoikeus!
                           (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
                         (catch Exception e
                           (if (= (:status (ex-data e)) 404)
-                            (response/bad-request!
-                              {:error "Opiskeluoikeus not found in Koski"})
+                            (do
+                              (log/warn "Opiskeluoikeus with oid "
+                                        (:opiskeluoikeus-oid hoks)
+                                        " not found in Koski")
+                              (response/bad-request!
+                                {:error "Opiskeluoikeus not found in Koski"}))
                             (throw e))))
                       (try
                         (let [hoks-db (h/save-hoks! hoks)]
@@ -321,10 +353,14 @@
                             :id (:id hoks-db)))
                         (catch Exception e
                           (if (= (:error (ex-data e)) :duplicate)
-                            (response/bad-request!
-                              {:error
-                               (str "HOKS with the same "
-                                    "opiskeluoikeus-oid already exists")})
+                            (do
+                              (log/warn "HOKS with opiskeluoikeus-oid "
+                                        (:opiskeluoikeus-oid hoks)
+                                        " already exists!")
+                              (response/bad-request!
+                                {:error
+                                 (str "HOKS with the same "
+                                      "opiskeluoikeus-oid already exists")}))
                             (throw e)))))
 
                     (c-api/GET "/:hoks-id" request
@@ -338,9 +374,16 @@
                         (if (virkailija-has-privilege?
                               virkailija-user (:oppija-oid hoks) :write)
                           (restful/rest-ok (h/get-hoks-by-id hoks-id))
-                          (response/forbidden
-                            {:error
-                             (str "User has unsufficient privileges")}))))
+                          (do
+                            (log/warn "User "
+                                      (get-in request [:session
+                                                       :virkailija-user
+                                                       :oidHenkilo])
+                                      " privileges don't match oppija "
+                                      (get-in request [:params :oppija-oid]))
+                            (response/forbidden
+                              {:error
+                               (str "User has unsufficient privileges")})))))
 
                     (route-middleware
                       [wrap-oph-super-user]
@@ -367,9 +410,11 @@
                           (-> oppija-response
                               :body
                               onr/convert-student-info))
-                        (response/internal-server-error
-                          {:error
-                           "Error with external connection"})))))))))
+                        (do
+                          (log/warn "Error getting " oppija-oid " from ONR")
+                          (response/internal-server-error
+                            {:error
+                             "Error with external connection"}))))))))))
 
         healthcheck-handler/routes
         misc-handler/routes))

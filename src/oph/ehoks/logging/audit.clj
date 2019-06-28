@@ -3,6 +3,7 @@
             [oph.ehoks.logging.access :refer [current-fin-time-str
                                               get-session]]
             [environ.core :refer [env]]
+            [oph.ehoks.config :refer [config]]
             [clj-http.client :refer [client-error? server-error?]])
   (:import (fi.vm.sade.auditlog Audit
                                 ApplicationType
@@ -19,7 +20,8 @@
                        (log/log "audit" :info nil str))))
 
 (def ^:private audit
-  (Audit. logger (or (:name env) "both") (ApplicationType/BACKEND)))
+  (when (:audit config)
+    (Audit. logger (or (:name env) "both") (ApplicationType/BACKEND))))
 
 (defn- create-operation [op]
   (proxy [Operation] [] (name [] op)))
@@ -76,22 +78,23 @@
     (.build tb)))
 
 (defn- do-log [request response]
-  (let [user (get-user request)
-        method (:request-method request)
-        target (build-target request)
-        operation (if (or (server-error? response) (client-error? response))
-                    operation-failed
-                    (case method
-                      :post operation-new
-                      :patch operation-modify
-                      :delete operation-delete
-                      operation-read))
-        changes (build-changes response)]
-    (.log audit
-          user
-          operation
-          target
-          changes)))
+  (when audit
+    (let [user (get-user request)
+          method (:request-method request)
+          target (build-target request)
+          operation (if (or (server-error? response) (client-error? response))
+                      operation-failed
+                      (case method
+                        :post operation-new
+                        :patch operation-modify
+                        :delete operation-delete
+                        operation-read))
+          changes (build-changes response)]
+      (.log audit
+            user
+            operation
+            target
+            changes))))
 
 (defn- create-response-handler [request respond]
   (fn [response]

@@ -106,7 +106,7 @@
                    "resources/db"]
   :cloverage {;:fail-threshold 90
               :html? false}
-  :aliases {"checkall" ["do"
+  :aliases {"checkall" ["with-profile" "+test" "do"
                         ["kibit"]
                         ["bikeshed"]
                         ["eastwood"]
