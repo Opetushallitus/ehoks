@@ -129,7 +129,7 @@
 
               lokalisointi-handler/routes
 
-              (c-api/context "organisaatio" []
+              (c-api/context "/organisaatio" []
                 (c-api/GET "/find" []
                   :path-params [oids :- [s/Str]]
                   :summary "Hakee organisaatiot oidien perusteella"
