@@ -28,10 +28,10 @@
   #"^urasuunnitelma_\d{4}$")
 
 (def Oid
-  #"^1\.2\.246\.562\.[0-3]\d\.\d{11}$")
+  #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
 
 (def OpiskeluoikeusOid
-  #"^1\.2\.246\.562\.15\.\d{11}$")
+  #"^1\.2\.246\.562\.15\.\d+$")
 
 (s/defschema
   KoodistoKoodi

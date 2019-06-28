@@ -6,6 +6,7 @@
   (when (= (:palvelu privilege) "EHOKS")
     (case (:oikeus privilege)
       "CRUD" #{:read :write :delete :update}
+      "OPHPAAKAYTTAJA" #{:read :write :delete :update}
       "READ" #{:read}
       #{})))
 
