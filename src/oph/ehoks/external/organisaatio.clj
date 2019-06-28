@@ -8,7 +8,7 @@
     (cache/with-cache!
       {:method :get
        :service (u/get-url "organisaatio-service-url")
-       :url (u/get-url "organisaatio-service-url" oid)
+       :url (u/get-url "organisaatio-service.get-organisaatio" oid)
        :options {:as :json}})))
 
 (defn find-organisaatiot [oids]
