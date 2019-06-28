@@ -1,0 +1,187 @@
+[
+  {
+    "oid": "1.2.246.562.10.36059072441",
+    "nimi": {
+      "fi": "Työtehoseura ry"
+    },
+    "alkuPvm": "2008-08-01",
+    "oppilaitosKoodi": "10078",
+    "postiosoite": {
+      "postinumeroUri": "posti_05201",
+      "osoiteTyyppi": "posti",
+      "yhteystietoOid": "1.2.246.562.5.81132194044",
+      "postitoimipaikka": "RAJAMÄKI",
+      "osoite": "PL 5"
+    },
+    "ryhmatyypit": [],
+    "kayttoryhmat": [],
+    "kuvaus2": {},
+    "parentOid": "1.2.246.562.10.91034999945",
+    "tyypit": [
+      "organisaatiotyyppi_02"
+    ],
+    "yhteystietoArvos": [],
+    "yhteystiedot": [
+      {
+        "osoiteTyyppi": "kaynti",
+        "kieli": "kieli_fi#1",
+        "postinumeroUri": "posti_05200",
+        "yhteystietoOid": "1.2.246.562.5.21942635877",
+        "id": "2460165",
+        "postitoimipaikka": "RAJAMÄKI",
+        "osoite": "Kiljavantie 6"
+      },
+      {
+        "kieli": "kieli_fi#1",
+        "numero": "09  2904 1200",
+        "tyyppi": "puhelin",
+        "yhteystietoOid": "1.2.246.562.5.64917163228",
+        "id": "2460162"
+      },
+      {
+        "kieli": "kieli_fi#1",
+        "www": "http://www.tts.fi",
+        "yhteystietoOid": "1.2.246.562.5.52631550101",
+        "id": "2460164"
+      },
+      {
+        "kieli": "kieli_fi#1",
+        "yhteystietoOid": "1.2.246.562.5.60184990889",
+        "id": "2460161",
+        "email": "tts@tts.fi"
+      },
+      {
+        "osoiteTyyppi": "posti",
+        "kieli": "kieli_fi#1",
+        "postinumeroUri": "posti_05201",
+        "yhteystietoOid": "1.2.246.562.5.81132194044",
+        "id": "2460163",
+        "postitoimipaikka": "RAJAMÄKI",
+        "osoite": "PL 5"
+      }
+    ],
+    "nimet": [
+      {
+        "nimi": {
+          "fi": "TTS koulutus"
+        },
+        "alkuPvm": "2008-08-01",
+        "version": 0
+      },
+      {
+        "nimi": {
+          "fi": "TTS"
+        },
+        "alkuPvm": "2011-01-01",
+        "version": 0
+      },
+      {
+        "nimi": {
+          "fi": "Työtehoseura ry"
+        },
+        "alkuPvm": "2018-12-31",
+        "version": 0
+      }
+    ],
+    "parentOidPath": "|1.2.246.562.10.00000000001|1.2.246.562.10.91034999945|",
+    "toimipistekoodi": "10078",
+    "vuosiluokat": [],
+    "kieletUris": [
+      "oppilaitoksenopetuskieli_1#1"
+    ],
+    "maaUri": "maatjavaltiot1_fin",
+    "oppilaitosTyyppiUri": "oppilaitostyyppi_24#1",
+    "lisatiedot": [],
+    "kayntiosoite": {
+      "postinumeroUri": "posti_05200",
+      "osoiteTyyppi": "kaynti",
+      "yhteystietoOid": "1.2.246.562.5.21942635877",
+      "postitoimipaikka": "RAJAMÄKI",
+      "osoite": "Kiljavantie 6"
+    },
+    "kotipaikkaUri": "kunta_543",
+    "metadata": {
+      "nimi": {},
+      "hakutoimistoEctsNimi": {},
+      "hakutoimistoEctsEmail": {},
+      "hakutoimistoEctsPuhelin": {},
+      "hakutoimistoEctsTehtavanimike": {},
+      "yhteystiedot": [
+        {
+          "kieli": "kieli_fi#1",
+          "www": "http://www.tts.fi",
+          "yhteystietoOid": "1.2.246.562.5.2014021413471157261339",
+          "id": "2460154"
+        },
+        {
+          "kieli": "kieli_fi#1",
+          "numero": "09-29041200",
+          "tyyppi": "puhelin",
+          "yhteystietoOid": "1.2.246.562.5.2014021413471157297407",
+          "id": "2460153"
+        },
+        {
+          "osoiteTyyppi": "posti",
+          "kieli": "kieli_fi#1",
+          "postinumeroUri": "posti_05201",
+          "yhteystietoOid": "1.2.246.562.5.2014021413471157245065",
+          "id": "2460152",
+          "postitoimipaikka": "RAJAMÄKI",
+          "osoite": "PL 5"
+        }
+      ],
+      "hakutoimistonNimi": {},
+      "luontiPvm": 1392378432208,
+      "muokkausPvm": 1392378432208,
+      "data": {
+        "KANSAINVALISET_KOULUTUSOHJELMAT": {},
+        "YLEISKUVAUS": {
+          "kieli_fi#1": "<p>TTS  Työtehoseura on valtakunnallinen koulutus-, tutkimus- ja kehittämisorganisaatio, joka kouluttaa vuosittain noin 10000 opiskelijaa eri alojen ammattilaisiksi ja tekee tutkimustyötä vuosittain lähes 100:ssa projektissa.<br />TTS kouluttaa Sinut työelämään. Kaikkiin tutkintotavoitteisiin koulutuksiimme kuuluu työssäoppimisjakso, jolloin pääset tutustumaan työelämään ja tekemään oman alasi työtä jo opiskeluvaiheessa.<br /><br />Teemme laajaa yhteistyötä yritysten kanssa, mikä takaa Sinulle hyvät työssäoppimismahdollisuudet.<br /><br /><strong>Koulutamme:</strong></p><ul><li>pääasiassa aikuisia, mutta esim. maarakennus-, logistiikka- ja metsäalalla myös nuoria</li><li>tavoitteena tutkinto, mutta meillä voi suorittaa myös osatutkintoja, pätevyyksiä ja kehittää osaamista</li></ul><p> <br /><strong>Koulutamme seuraavilla aloilla:</strong></p><ul><li>Henkilöliikenne ja tavaraliikenne</li><li>Varastoala</li><li>Automekaanikot , työkonemekaanikot, pienkonemekaanikot</li><li>Autoalan myynti ja työnjohto</li><li>Korikorjaus- ja automaalaus</li><li>Talonrakennus, kiinteistö ja asuminen</li><li>Nosturit</li><li>Maarakennus</li><li>Puu, sisustus ja verhoilu</li><li>Puutarha</li><li>Matkailu ja ravintola</li><li>Johtamis- ja esimieskoulutus</li><li>Metsäkoulutus</li></ul><p><br /><strong>Toimipisteemme:</strong></p><ul><li>Kiljavantie 6, 05200 Rajamäki</li><li>Nuolikuja 6, 01740 Vantaa</li><li>Sarkatie 1, 01720 Vantaa</li><li>Nauvontie 3, 00280 Helsinki</li><li>Wärtsilänkatu 61, 04440 Järvenpää</li><li>Werlanderintie 170, 09220 Sammatti</li><li>Kangaskatu 1, 45200 Kouvola</li><li>Huoltotie 13, 88900 Kuhmo</li></ul>"
+        },
+        "KIELIOPINNOT": {},
+        "TERVEYDENHUOLTOPALVELUT": {},
+        "TEHTAVANIMIKE": {},
+        "SAHKOPOSTIOSOITE": {},
+        "RAHOITUS": {},
+        "AIEMMIN_HANKITTU_OSAAMINEN": {},
+        "sosiaalinenmedia_7#1": {},
+        "sosiaalinenmedia_5#1": {
+          "kieli_fi#1": "http://www.youtube.com/watch?v=p-788AHexaM"
+        },
+        "sosiaalinenmedia_6#1": {
+          "kieli_fi#1": "https://instagram.com/tts_tyotehoseura/"
+        },
+        "OPISKELIJALIIKKUVUUS": {},
+        "VAKUUTUKSET": {},
+        "OPISKELIJA_JARJESTOT": {},
+        "VALINTAMENETTELY": {},
+        "sosiaalinenmedia_3#1": {},
+        "sosiaalinenmedia_4#1": {},
+        "sosiaalinenmedia_1#1": {
+          "kieli_fi#1": "https://www.facebook.com/TTSfi"
+        },
+        "VASTUUHENKILOT": {},
+        "KUSTANNUKSET": {
+          "kieli_fi#1": "<p>Ammatillinen toisen asteen koulutus on maksutonta. Koulutusaloittain on kuitenkin joitain hankintoja, joita sinun täytyy itse maksaa.  Näitä ovat työvaatteet, jotkin työvälineet, turvavarusteet, oppikirjat ja viranomaismaksut korttikoulutuksissa.  Hankinnat ovat alakohtaisia ja tehdään yleensä yhteishankintoina, joka on myös sinulle opiskelijana edullisinta.</p><p>Tarkempia tietoja hankinnoista saat heti opiskelujen alussa alakohtaisesta liitteestä tai vastuukouluttajaltasi.</p>"
+        },
+        "OPPIMISYMPARISTO": {
+          "kieli_fi#1": "<p>Koulutusta toteutetaan hyvin käytännönläheisesti sekä nykyaikaisin laittein ja menetelmin. Koulutukseen sisältyy perinteisen luokkaopetuksen lisäksi runsaasti käytännön harjoituksia ja työssäoppimista.</p><p>TTS:n ajanmukainen opetuskalusto, korkealuokkaiset työkoneet, bussi- ja rekkasimulaattorit, metsäkonesimulaattorit ja maarakennuskonesimulaattori sekä kokeneet kouluttajat luotsaavat opiskelijat ammattiin.</p>"
+        },
+        "sosiaalinenmedia_2#1": {},
+        "PUHELINNUMERO": {},
+        "NIMI": {},
+        "OPISKELIJALIIKUNTA": {},
+        "VUOSIKELLO": {},
+        "OPISKELIJARUOKAILU": {},
+        "VAPAA_AIKA": {},
+        "ESTEETOMYYS": {
+          "kieli_fi#1": "<p>Tekniikan ja liikenteen alan koulutuksemme (maarakennuskoneenkuljettaja, autonkuljettaja, metsäkoneenkuljettaja) kuuluvat SORA-lainsäädännön piiriin (<a href=\"http://www.tts.fi/images/stories/Terveydentilavaatimukset.pdf\">katso tästä terveydentilavaatimukset</a>). TTS:n toiseen asteen ammatillisissa koulutuksissa (nuorisoasteen koulutukset) järjestetään soveltuvuustestit. Testi on maksuton.</p>"
+        },
+        "TIETOA_ASUMISESTA": {},
+        "TYOHARJOITTELU": {}
+      }
+    },
+    "version": 15,
+    "status": "AKTIIVINEN"
+  }
+]
