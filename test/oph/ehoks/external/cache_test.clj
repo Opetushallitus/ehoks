@@ -2,8 +2,7 @@
   (:require [clojure.test :refer [deftest testing is]]
             [oph.ehoks.external.cache :as c]
             [oph.ehoks.config :refer [config]]
-            [clj-time.core :as t]
-            [clojure.data.json :as json]))
+            [clj-time.core :as t]))
 
 (def example-responses
   {"https://some.url/"
@@ -74,24 +73,3 @@
     (is (= (c/encode-url "http://example.com"
                          {:param1 "Param1" :param2 "Param2"})
            "http://example.com?param1=Param1&param2=Param2"))))
-
-(def stubbed-with-api-headers (constantly {:status 200
-                                           :body {:test "testing"}}))
-
-(deftest cached-url-is-identified-by-query-params
-  (testing "If request has query params, those are appended to cached url"
-    (with-redefs [oph.ehoks.external.connection/with-api-headers
-                  stubbed-with-api-headers]
-      (let [oids ["100" "200" "300"]
-            stored-to-cache-response (c/with-cache!
-                                       {:method :post
-                                        :service "https://some.url/test"
-                                        :url "https://some.url/"
-                                        :options {:as :json
-                                                  :body (json/write-str oids)
-                                                  :query-params {:oids oids}
-                                                  :content-type :json}})
-            fetched-from-cache (c/get-cached-with-params
-                                       "https://some.url/" {:oids oids})]
-        (is (= (:cached stored-to-cache-response) :MISS))
-        (is (= (:cached fetched-from-cache) :HIT))))))
