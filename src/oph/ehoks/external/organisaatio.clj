@@ -12,7 +12,6 @@
            :service (u/get-url "organisaatio-service-url")
            :url (u/get-url "organisaatio-service.get-organisaatio" oid)
            :options {:as :json
-                     :query-params {:oid oid}
                      :throw-exceptions false}})]
     (if (success? resp)
       (:body resp)
