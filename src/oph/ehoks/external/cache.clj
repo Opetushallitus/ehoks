@@ -58,6 +58,9 @@
     url
     (format "%s?%s" url (codec/form-encode params))))
 
+(defn get-cached-with-params [url query-params]
+  (get-cached (encode-url url query-params)))
+
 (defn with-cache!
   [{url :url options :options :as data}]
   (or (get-cached (encode-url url (:query-params options)))
