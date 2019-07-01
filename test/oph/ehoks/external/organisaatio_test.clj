@@ -15,7 +15,5 @@
             (o/try-to-get-organisaatiot-from-cache oids)
             fetched-from-cache
             (o/try-to-get-organisaatiot-from-cache oids)]
-        (clojure.pprint/pprint stored-to-cache-response)
-        (clojure.pprint/pprint fetched-from-cache)
         (is (= (:cached stored-to-cache-response) :MISS))
         (is (= (:cached fetched-from-cache) :HIT))))))
