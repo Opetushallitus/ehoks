@@ -17,7 +17,7 @@
       (:body resp)
       (log/warn "Error getting organization " oid ", " resp))))
 
-(defn try-to-get-organisaatiot-from-cache [oids]
+(defn try-to-get-organisaatiot-from-cache! [oids]
   (cache/with-cache!
     {:method :post
      :service (u/get-url "organisaatio-service-url")
@@ -28,4 +28,4 @@
                :content-type :json}}))
 
 (defn find-organisaatiot [oids]
-  (:body (try-to-get-organisaatiot-from-cache oids)))
+  (:body (try-to-get-organisaatiot-from-cache! oids)))

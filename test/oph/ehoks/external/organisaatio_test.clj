@@ -1,7 +1,14 @@
 (ns oph.ehoks.external.organisaatio-test
-  (:require [clojure.test :refer [deftest testing is]]
+  (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [oph.ehoks.external.connection :as c]
-            [oph.ehoks.external.organisaatio :as o]))
+            [oph.ehoks.external.organisaatio :as o]
+            [oph.ehoks.external.cache :as cache]))
+
+(defn cache-clean-fixture [test-function]
+  (reset! cache/cache {})
+  (test-function))
+
+(use-fixtures :each cache-clean-fixture)
 
 (defn mocked-with-api-headers [{url :url options :options}]
   {:status 200
@@ -14,9 +21,9 @@
                   mocked-with-api-headers]
       (let [oids ["100" "200" "300"]
             stored-to-cache-response
-            (o/try-to-get-organisaatiot-from-cache oids)
+            (o/try-to-get-organisaatiot-from-cache! oids)
             fetched-from-cache
-            (o/try-to-get-organisaatiot-from-cache oids)]
+            (o/try-to-get-organisaatiot-from-cache! oids)]
         (is (= (:cached stored-to-cache-response) :MISS))
         (is (= (:cached fetched-from-cache) :HIT))))))
 
@@ -27,13 +34,13 @@
       (let [first-group-of-oids ["100" "200" "300"]
             second-group-of-oids ["111" "222" "333"]
             first-group-stored-to-cache-response
-            (o/try-to-get-organisaatiot-from-cache first-group-of-oids)
+            (o/try-to-get-organisaatiot-from-cache! first-group-of-oids)
             second-group-stored-to-cache-response
-            (o/try-to-get-organisaatiot-from-cache second-group-of-oids)
+            (o/try-to-get-organisaatiot-from-cache! second-group-of-oids)
             first-group-fetched-from-cache
-            (o/try-to-get-organisaatiot-from-cache first-group-of-oids)
+            (o/try-to-get-organisaatiot-from-cache! first-group-of-oids)
             second-group-fetched-from-cache
-            (o/try-to-get-organisaatiot-from-cache second-group-of-oids)]
+            (o/try-to-get-organisaatiot-from-cache! second-group-of-oids)]
         (is (= (:cached first-group-stored-to-cache-response) :MISS))
         (is (= (:cached second-group-stored-to-cache-response) :MISS))
         (is (= (:cached first-group-fetched-from-cache) :HIT))
