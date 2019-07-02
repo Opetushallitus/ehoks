@@ -85,7 +85,7 @@
                          [instaparse "1.4.10"]]
   :plugins [[lein-cljfmt "0.6.0" :exclusions [org.clojure/tools.cli]]
             [lein-kibit "0.1.6"]
-            [lein-bikeshed "0.5.1"]
+            [lein-bikeshed "0.5.2"]
             [jonase/eastwood "0.3.1"]
             [lein-auto "0.1.3"]
             [lein-ancient "0.6.15"]
