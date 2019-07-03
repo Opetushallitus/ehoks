@@ -406,8 +406,7 @@
                       :summary "Oppijan opiskeluoikeudet"
                       :return (restful/response [s/Any])
                       (restful/rest-ok
-                        (:opiskeluoikeudet
-                          (koski/get-student-info oppija-oid))))
+                        (koski/get-oppija-opiskeluoikeudet oppija-oid)))
 
                     (c-api/GET "/" []
                       :return (restful/response schema/UserInfo)

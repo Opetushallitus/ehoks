@@ -93,8 +93,7 @@
 
 (defn update-oppija-and-opiskeluoikeudet! [oppija-oid]
   (update-oppija! oppija-oid)
-  (doseq [opiskeluoikeus (:opiskeluoikeudet
-                           (k/get-student-info oppija-oid))]
+  (doseq [opiskeluoikeus (k/get-oppija-opiskeluoikeudet oppija-oid)]
     (update-opiskeluoikeus! (:oid opiskeluoikeus) oppija-oid)))
 
 (defn update-oppijat-without-index! []
