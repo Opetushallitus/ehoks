@@ -47,10 +47,14 @@
 
 (defn authorized? [hoks ticket-user method]
   (let [oppilaitos-oid (koski/get-opiskeluoikeus-oppilaitos-oid
-                         (:opiskeluoikeus-oid hoks))
-        organisation-privileges
-        (user/get-organisation-privileges ticket-user oppilaitos-oid)]
-    (some? (get organisation-privileges method))))
+                         (:opiskeluoikeus-oid hoks))]
+    (if oppilaitos-oid
+      (some?
+        (get
+          (user/get-organisation-privileges ticket-user oppilaitos-oid)
+          method))
+      (response/not-found!
+        {:error "Opiskeluoikeus not found from Koski"}))))
 
 (defn hoks-access? [hoks ticket-user method]
   (and
