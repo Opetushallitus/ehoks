@@ -47,10 +47,14 @@
 
 (defn authorized? [hoks ticket-user method]
   (let [oppilaitos-oid (koski/get-opiskeluoikeus-oppilaitos-oid
-                         (:opiskeluoikeus-oid hoks))
-        organisation-privileges
-        (user/get-organisation-privileges ticket-user oppilaitos-oid)]
-    (some? (get organisation-privileges method))))
+                         (:opiskeluoikeus-oid hoks))]
+    (if oppilaitos-oid
+      (some?
+        (get
+          (user/get-organisation-privileges ticket-user oppilaitos-oid)
+          method))
+      (response/bad-request!
+        {:error "Opiskeluoikeus not found from Koski"}))))
 
 (defn hoks-access? [hoks ticket-user method]
   (and
@@ -424,8 +428,15 @@
         :return (rest/response hoks-schema/HOKS)
         (let [hoks (first (pdb/select-hoksit-by-opiskeluoikeus-oid
                             opiskeluoikeus-oid))]
-          (check-hoks-access! hoks request)
-          (rest/rest-ok hoks)))
+          (if hoks
+            (do
+              (check-hoks-access! hoks request)
+              (rest/rest-ok hoks))
+            (do
+              (log/warn "No HOKS found with given opiskeluoikeus "
+                        opiskeluoikeus-oid)
+              (response/not-found
+                {:error "No HOKS found with given opiskeluoikeus"})))))
 
       (c-api/context "/:hoks-id" []
         :path-params [hoks-id :- s/Int]

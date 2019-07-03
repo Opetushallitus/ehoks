@@ -3,7 +3,8 @@
             [oph.ehoks.external.connection :as c]
             [ring.util.http-status :as status]
             [clojure.data.json :as json]
-            [oph.ehoks.external.oph-url :as u]))
+            [oph.ehoks.external.oph-url :as u]
+            [clojure.tools.logging :as log]))
 
 (defn filter-oppija [values]
   (update values :henkilö select-keys
@@ -35,6 +36,7 @@
             body (if (some? (:body e-data))
                    (json/read-str (:body e-data) :key-fn keyword)
                    {})]
+        (log/warn "Error getting opiskeluoikeus " oid ", " e-data)
         (when-not (and (= (:status e-data) status/not-found)
                        (= (get-in body [0 :key])
                           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
