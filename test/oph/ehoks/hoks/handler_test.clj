@@ -1457,6 +1457,14 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}
           app (create-app nil)]
+      (let [response
+            (utils/with-service-ticket
+              app
+              (mock/request :get
+                            (format "%s/opiskeluoikeus/%s"
+                                    url opiskeluoikeus-oid)))]
+
+        (is (= (:status response) 404)))
       (utils/with-service-ticket
         app
         (-> (mock/request :post url)
