@@ -16,6 +16,8 @@
   (result-set-read-column [o _ _]
     (.toLocalDate o)))
 
+(defn get-db-connection [] {:connection-uri (:database-url config)})
+
 (defn insert-empty! [t]
   (jdbc/execute!
     {:connection-uri (:database-url config)}
@@ -37,9 +39,12 @@
 
 (defn insert-one! [t v] (first (insert! t v)))
 
-(defn update! [t v w]
-  (jdbc/update! {:connection-uri (:database-url config)}
-                t v w))
+(defn update!
+  ([table values where-clause]
+   (jdbc/update! {:connection-uri (:database-url config)}
+                 table values where-clause))
+  ([table values where-clause db]
+    (jdbc/update! db table values where-clause)))
 
 (defn shallow-delete! [t w]
   (update! t {:deleted_at (java.util.Date.)} w))
@@ -98,8 +103,11 @@
       (first
         (jdbc/insert! conn :hoksit (h/hoks-to-sql (assoc hoks :eid eid)))))))
 
-(defn update-hoks-by-id! [id hoks]
-  (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
+(defn update-hoks-by-id!
+  ([id hoks]
+   (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
+  ([id hoks db]
+   (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id] db)))
 
 (defn select-hoks-oppijat-without-index []
   (query
