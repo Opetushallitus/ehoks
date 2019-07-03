@@ -226,6 +226,11 @@
           "dev-routes/kayttooikeus-service_kayttooikeus_kayttaja_virkailija.json")
         (json-response-file
           "dev-routes/kayttooikeus-service_kayttooikeus_kayttaja.json")))
+
+    (POST "/organisaatio-service/rest/organisaatio/v4/findbyoids" request
+      (json-response-file
+        "dev-routes/organisaatio-service_rest_organisaatio_v4_findbyoids.json"))
+
     (GET "/organisaatio-service/rest/organisaatio/v4/:oid" request
       (json-response
         {:oid (get-in request [:params :oid])

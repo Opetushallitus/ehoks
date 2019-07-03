@@ -3,6 +3,7 @@
             [oph.ehoks.logging.access :refer [current-fin-time-str
                                               get-session]]
             [environ.core :refer [env]]
+            [oph.ehoks.config :refer [config]]
             [clj-http.client :refer [client-error? server-error?]])
   (:import (fi.vm.sade.auditlog Audit
                                 ApplicationType
@@ -19,7 +20,8 @@
                        (log/log "audit" :info nil str))))
 
 (def ^:private audit
-  (Audit. logger (or (:name env) "both") (ApplicationType/BACKEND)))
+  (when (:audit config)
+    (Audit. logger (or (:name env) "both") (ApplicationType/BACKEND))))
 
 (defn- create-operation [op]
   (proxy [Operation] [] (name [] op)))
@@ -51,14 +53,14 @@
     (or (get-session request) "no session")
     (or (:user-agent (:headers request)) "no user agent")))
 
-(defn- build-changes [response op]
+(defn- build-changes [response]
   (let [new (get-in response [:audit-data :new])
         old (get-in response [:audit-data :old])]
-    (case (.name op)
-      "create" (Changes/addedDto new)
-      "update" (Changes/updatedDto new old)
-      "delete" (Changes/deleteDto old)
-      Changes/EMPTY)))
+    (cond
+      (and (nil? new) (nil? old)) Changes/EMPTY
+      (nil? old) (Changes/addedDto new)
+      (nil? new) (Changes/deleteDto old)
+      :else (Changes/updatedDto new old))))
 
 (defn- build-target [request]
   (let [tb (Target$Builder.)]
@@ -76,23 +78,23 @@
     (.build tb)))
 
 (defn- do-log [request response]
-  (let [user (get-user request)
-        method (:method request)
-        target (build-target request)
-        operation (if (or (server-error? response) (client-error? response))
-                    operation-failed
-                    (case method
-                      :post operation-new
-                      :patch operation-modify
-                      :put operation-modify
-                      :delete operation-delete
-                      operation-read))
-        changes (build-changes response operation)]
-    (.log audit
-          user
-          operation
-          target
-          changes)))
+  (when audit
+    (let [user (get-user request)
+          method (:request-method request)
+          target (build-target request)
+          operation (if (or (server-error? response) (client-error? response))
+                      operation-failed
+                      (case method
+                        :post operation-new
+                        :patch operation-modify
+                        :delete operation-delete
+                        operation-read))
+          changes (build-changes response)]
+      (.log audit
+            user
+            operation
+            target
+            changes))))
 
 (defn- create-response-handler [request respond]
   (fn [response]

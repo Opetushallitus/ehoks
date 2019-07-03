@@ -52,11 +52,15 @@
       (some
         #(= user-org %)
         (str/split
-          (get (o/get-organisaatio target-org)
-               :parentOidPath "")
+          (:parentOidPath (o/get-organisaatio target-org) "")
           #"\|"))))
 
 (defn get-organisation-privileges [ticket-user organisation-oid]
-  (some
-    #(when (check-parent-oids (:oid %) organisation-oid) (:privileges %))
-    (:organisation-privileges ticket-user)))
+  (let [privileges
+        (reduce into
+                (map :privileges
+                     (filter
+                       #(check-parent-oids (:oid %) organisation-oid)
+                       (:organisation-privileges ticket-user))))]
+    (when (seq privileges)
+      privileges)))
