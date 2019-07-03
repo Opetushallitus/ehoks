@@ -693,8 +693,18 @@
       (save-hankittavat-yhteiset-tutkinnon-osat!
         (:id saved-hoks) (:hankittavat-yhteiset-tutkinnon-osat h)))))
 
+(defn- merge-not-given-hoks-values [new-hoks-values]
+  (let [empty-top-level-hoks {:versio nil
+                              :sahkoposti nil
+                              :urasuunnitelma-koodi-uri nil
+                              :osaamisen-hankkimisen-tarve nil
+                              :hyvaksytty nil
+                              :urasuunnitelma-koodi-versio nil
+                              :paivitetty nil}]
+    (merge empty-top-level-hoks new-hoks-values)))
+
 (defn- replace-main-hoks! [hoks-id new-values]
-  (db/update-hoks-by-id! hoks-id new-values))
+  (db/update-hoks-by-id! hoks-id (merge-not-given-hoks-values new-values)))
 
 (defn- replace-oto! [hoks-id new-oto-values]
   (db/delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id)
