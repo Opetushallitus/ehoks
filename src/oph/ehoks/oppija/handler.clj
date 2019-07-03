@@ -99,7 +99,7 @@
                   :return (rest/response [s/Any])
                   (if (= (get-in request [:session :user :oid]) oid)
                     (rest/rest-ok
-                      (:opiskeluoikeudet (koski/get-student-info oid)))
+                      (koski/get-oppija-opiskeluoikeudet oid))
                     (response/forbidden)))
 
                 (c-api/GET "/hoks" [:as request]

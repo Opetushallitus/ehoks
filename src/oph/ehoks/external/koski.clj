@@ -10,7 +10,31 @@
   (update values :henkilö select-keys
           [:oid :hetu :syntymäaika :etunimet :kutsumanimi :sukunimi]))
 
-(defn get-student-info [oid]
+(defn get-oppijat-opiskeluoikeudet
+  "Palauttaa annettujen oppijoiden kaikki opiskeluoikeudet"
+  [oppija-oids]
+  (:body
+    (c/with-api-headers
+      {:method :post
+       :service (u/get-url "koski-url")
+       :url (u/get-url "koski.post-sure-oids")
+       :options {:body (json/write-str oppija-oids)
+                 :basic-auth [(:cas-username config) (:cas-password config)]
+                 :as :json}})))
+
+(defn get-oppija-opiskeluoikeudet
+  "Palauttaa oppijan opiskeluoikeudet"
+  [oppija-oid]
+  (some
+    #(when (= (get-in % [:henkilö :oid]) oppija-oid)
+       (:opiskeluoikeudet %))
+    (get-oppijat-opiskeluoikeudet [oppija-oid])))
+
+(defn get-student-info
+  "Palauttaa opiskelijan henkilötiedot ja opiskeluoikeudet, raskas kysely.
+   Suositeltavaa käyttää vain jos tarvitsee molemmat, muissa tilanteissa
+   muita rajapintoja."
+  [oid]
   (:body
     (c/with-api-headers
       {:method :get
