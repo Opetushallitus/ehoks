@@ -1191,7 +1191,12 @@
       (is (= (:status put-response) 204))
       (is (= (:status get-response) 200))
       (is (nil? (:versio get-response-data)))
-      )))
+      (is (nil? (:sahkoposti get-response-data)))
+      (is (nil? (:urasuunnitelma-koodi-uri get-response-data)))
+      (is (nil? (:osaamisen-hankkimisen-tarve get-response-data)))
+      (is (nil? (:hyvaksytty get-response-data)))
+      (is (nil? (:urasuunnitelma-koodi-versio get-response-data)))
+      (is (nil? (:paivitetty get-response-data))))))
 
 (def hato-of-hoks-updated
   {:id 1
