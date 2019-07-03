@@ -1114,7 +1114,7 @@
       (is (empty? (:hankittavat-yhteiset-tutkinnon-osat get-response-data)))
       (is (empty? (:aiemmin-hankitut-ammat-tutkinnon-osat get-response-data)))
       (is (empty?
-            (:aiemmin_hankitut_paikalliset_tutkinnon_osat get-response-data)))
+            (:aiemmin-hankitut-paikalliset-tutkinnon-osat get-response-data)))
       (is (empty?
             (:aiemmin-hankitut-yhteiset-tutkinnon-osat get-response-data))))))
 
