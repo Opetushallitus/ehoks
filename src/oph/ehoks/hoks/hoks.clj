@@ -705,7 +705,8 @@
     (merge empty-top-level-hoks new-hoks-values)))
 
 (defn- replace-main-hoks! [hoks-id new-values db-conn]
-  (db/update-hoks-by-id! hoks-id (merge-not-given-hoks-values new-values) db-conn))
+  (db/update-hoks-by-id!
+    hoks-id (merge-not-given-hoks-values new-values) db-conn))
 
 (defn- replace-oto! [hoks-id new-oto-values db-conn]
   (db/delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id db-conn)
@@ -753,7 +754,8 @@
     (save-aiemmin-hankitut-yhteiset-tutkinnon-osat! hoks-id new-ahyto-values)))
 
 (defn replace-hoks! [hoks-id new-values]
-  (jdbc/with-db-transaction [db-conn (db/get-db-connection)]
+  (jdbc/with-db-transaction
+    [db-conn (db/get-db-connection)]
     (replace-main-hoks! hoks-id new-values db-conn)
     (replace-oto! hoks-id (:opiskeluvalmiuksia-tukevat-opinnot new-values)
                   db-conn)
@@ -765,11 +767,11 @@
                    db-conn)
     (replace-ahato! hoks-id (:aiemmin-hankitut-ammat-tutkinnon-osat new-values)
                     db-conn)
-    (replace-ahpto! hoks-id
-                    (:aiemmin-hankitut-paikalliset-tutkinnon-osat new-values)
+    (replace-ahpto! hoks-id (:aiemmin-hankitut-paikalliset-tutkinnon-osat
+                              new-values)
                     db-conn)
-    (replace-ahyto! hoks-id
-                    (:aiemmin-hankitut-yhteiset-tutkinnon-osat new-values))))
+    (replace-ahyto! hoks-id (:aiemmin-hankitut-yhteiset-tutkinnon-osat
+                              new-values))))
 
 (defn update-hoks! [hoks-id new-values]
   (db/update-hoks-by-id! hoks-id new-values))

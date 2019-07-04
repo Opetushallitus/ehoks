@@ -1102,7 +1102,7 @@
     (let [app (create-app nil)
           post-response (create-mock-post-request "" hoks-data app)
           put-response (create-mock-hoks-put-request
-                           1 main-level-of-hoks-updated app)
+                         1 main-level-of-hoks-updated app)
           get-response (create-mock-hoks-get-request 1 app)
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (is (= (:status post-response) 200))
@@ -1149,9 +1149,9 @@
                     (is (not-empty (:aiemmin-hankitut-ammat-tutkinnon-osat
                                      get-response-data)))
                     (is (not-empty (:aiemmin-hankitut-paikalliset-tutkinnon-osat
-                            get-response-data)))
+                                     get-response-data)))
                     (is (not-empty (:aiemmin-hankitut-yhteiset-tutkinnon-osat
-                            get-response-data))))))))
+                                     get-response-data))))))))
 
 (deftest hoks-put-adds-non-existing-part
   (testing "If HOKS part doesn't currently exist, PUT creates it"
@@ -1160,7 +1160,7 @@
           (create-mock-post-request
             "" (dissoc hoks-data :opiskeluvalmiuksia-tukevat-opinnot) app)
           put-response (create-mock-hoks-put-request
-                           1 (assoc hoks-data :id 1) app)
+                         1 (assoc hoks-data :id 1) app)
           get-response (create-mock-hoks-get-request 1 app)
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (is (= (:status post-response) 200))

@@ -41,15 +41,15 @@
 
 (defn update!
   ([table values where-clause]
-   (jdbc/update! (get-db-connection) table values where-clause))
+    (jdbc/update! (get-db-connection) table values where-clause))
   ([table values where-clause db]
-   (jdbc/update! db table values where-clause)))
+    (jdbc/update! db table values where-clause)))
 
 (defn shallow-delete!
   ([table where-clause]
-   (update! table {:deleted_at (java.util.Date.)} where-clause))
+    (update! table {:deleted_at (java.util.Date.)} where-clause))
   ([table where-clause db-conn]
-   (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
+    (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
 
 (defn insert-multi! [t v]
   (jdbc/insert-multi! (get-db-connection) t v))
@@ -109,7 +109,8 @@
   ([id hoks]
    (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
   ([id hoks db]
-   (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id] db)))
+   (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]
+            db)))
 
 (defn select-hoks-oppijat-without-index []
   (query
@@ -604,7 +605,8 @@
     (h/hankittava-yhteinen-tutkinnon-osa-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" hyto-id]))
 
-(defn delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id [hoks-id db-conn]
+(defn delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id
+  [hoks-id db-conn]
   (shallow-delete!
     :hankittavat_ammat_tutkinnon_osat
     ["hoks_id = ?" hoks-id] db-conn))
@@ -650,7 +652,8 @@
     :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
     ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ?" id]))
 
-(defn delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id [hoks-id db-conn]
+(defn delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id
+  [hoks-id db-conn]
   (shallow-delete!
     :aiemmin_hankitut_ammat_tutkinnon_osat
     ["hoks_id = ?" hoks-id] db-conn))
@@ -665,7 +668,8 @@
     :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
     ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
 
-(defn delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id [hoks-id db-conn]
+(defn delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
+  [hoks-id db-conn]
   (shallow-delete!
     :aiemmin_hankitut_paikalliset_tutkinnon_osat
     ["hoks_id = ?" hoks-id] db-conn))
