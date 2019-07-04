@@ -20,13 +20,13 @@
 
 (defn insert-empty! [t]
   (jdbc/execute!
-    {:connection-uri (:database-url config)}
+    (get-db-connection)
     (format
       "INSERT INTO %s DEFAULT VALUES" (name t))))
 
 (defn query
   ([queries opts]
-    (jdbc/query {:connection-uri (:database-url config)} queries opts))
+    (jdbc/query (get-db-connection) queries opts))
   ([queries]
     (query queries {}))
   ([queries arg & opts]
@@ -34,15 +34,14 @@
 
 (defn insert! [t v]
   (if (seq v)
-    (jdbc/insert! {:connection-uri (:database-url config)} t v)
+    (jdbc/insert! (get-db-connection) t v)
     (insert-empty! t)))
 
 (defn insert-one! [t v] (first (insert! t v)))
 
 (defn update!
   ([table values where-clause]
-   (jdbc/update! {:connection-uri (:database-url config)}
-                 table values where-clause))
+   (jdbc/update! (get-db-connection) table values where-clause))
   ([table values where-clause db]
    (jdbc/update! db table values where-clause)))
 
@@ -53,7 +52,7 @@
    (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
 
 (defn insert-multi! [t v]
-  (jdbc/insert-multi! {:connection-uri (:database-url config)} t v))
+  (jdbc/insert-multi! (get-db-connection) t v))
 
 (defn select-hoksit []
   (query
@@ -95,7 +94,7 @@
 
 (defn insert-hoks! [hoks]
   (jdbc/with-db-transaction
-    [conn {:connection-uri (:database-url config)}]
+    [conn (get-db-connection)]
     (when
      (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
                             (:opiskeluoikeus-oid hoks)]))
