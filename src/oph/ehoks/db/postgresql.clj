@@ -107,10 +107,10 @@
 
 (defn update-hoks-by-id!
   ([id hoks]
-   (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
+    (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
   ([id hoks db]
-   (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]
-            db)))
+    (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]
+             db)))
 
 (defn select-hoks-oppijat-without-index []
   (query
