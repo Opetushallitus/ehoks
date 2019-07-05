@@ -170,3 +170,59 @@ ALTER TABLE  aiemmin_hankitut_yto_osa_alueet DROP COLUMN
 aiemmin_hankittu_yhteinen_tutkinnon_osa_id;
 ALTER TABLE aiemmin_hankitut_yto_osa_alueet RENAME COLUMN
 aiemmin_hankittu_yhteinen_tutkinnon_osa_id_copy TO aiemmin_hankittu_yhteinen_tutkinnon_osa_id;
+
+ALTER TABLE  osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija ADD COLUMN
+osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
+UPDATE osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija SET
+osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
+ALTER TABLE  osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija DROP COLUMN
+osaamisen_osoittaminen_id;
+ALTER TABLE osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija RENAME COLUMN
+osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
+
+ALTER TABLE  osaamisen_osoittamisen_osa_alueet ADD COLUMN
+osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id)
+ON DELETE CASCADE;
+UPDATE osaamisen_osoittamisen_osa_alueet SET
+osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
+ALTER TABLE  osaamisen_osoittamisen_osa_alueet DROP COLUMN
+osaamisen_osoittaminen_id;
+ALTER TABLE osaamisen_osoittamisen_osa_alueet RENAME COLUMN
+osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
+
+ALTER TABLE  osaamisen_osoittamisen_sisallot ADD COLUMN
+osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
+UPDATE osaamisen_osoittamisen_sisallot SET
+osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
+ALTER TABLE  osaamisen_osoittamisen_sisallot DROP COLUMN
+osaamisen_osoittaminen_id;
+ALTER TABLE osaamisen_osoittamisen_sisallot RENAME COLUMN
+osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
+
+ALTER TABLE  osaamisen_osoittamisen_tyoelama_arvioija ADD COLUMN
+osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
+UPDATE osaamisen_osoittamisen_tyoelama_arvioija SET
+osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
+ALTER TABLE  osaamisen_osoittamisen_tyoelama_arvioija DROP COLUMN
+osaamisen_osoittaminen_id;
+ALTER TABLE osaamisen_osoittamisen_tyoelama_arvioija RENAME COLUMN
+osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
+
+ALTER TABLE  osaamisen_osoittamisen_yksilolliset_kriteerit ADD COLUMN
+osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
+UPDATE osaamisen_osoittamisen_yksilolliset_kriteerit SET
+osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
+ALTER TABLE  osaamisen_osoittamisen_yksilolliset_kriteerit DROP COLUMN
+osaamisen_osoittaminen_id;
+ALTER TABLE osaamisen_osoittamisen_yksilolliset_kriteerit RENAME COLUMN
+osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
+
+ALTER TABLE  osaamisen_osoittamiset ADD COLUMN
+nayttoymparisto_id_copy INTEGER REFERENCES nayttoymparistot(id)
+ON DELETE CASCADE;
+UPDATE osaamisen_osoittamiset SET
+nayttoymparisto_id_copy=nayttoymparisto_id;
+ALTER TABLE  osaamisen_osoittamiset DROP COLUMN
+nayttoymparisto_id;
+ALTER TABLE osaamisen_osoittamiset RENAME COLUMN
+nayttoymparisto_id_copy TO nayttoymparisto_id;

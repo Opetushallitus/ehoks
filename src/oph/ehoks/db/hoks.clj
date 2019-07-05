@@ -218,6 +218,12 @@
 (defn yksilolliset-kriteerit-from-sql [m]
   (get m :yksilollinen_kriteeri))
 
+(defn id-from-sql [m]
+  (get m :id))
+
+(defn osaamisen-osoittaminen-id-from-sql [m]
+(get m :osaamisen_osoittaminen_id))
+
 (defn aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql [m]
   (from-sql m {:removals [:hoks_id]
                :replaces

@@ -7,7 +7,8 @@
             [oph.ehoks.db.memory :as db]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.hoks.hoks :as h]))
+            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.db.postgresql :as pdb]))
 
 (def url "/ehoks-virkailija-backend/api/v1/hoks")
 
@@ -180,6 +181,43 @@
                    :id 1
                    :nimi "2223"))))))
 
+ (def hpto-url (format "%1s/1/%2s" url hpto-path))
+
+ (deftest create-and-delete-hoks-with-hpto
+   (testing "Creating a hoks with hpto and deleting it"
+     (db/clear)
+       (let [hoks (create-hoks)
+             hpto-response
+             (utils/with-service-ticket
+               (create-app nil)
+               (-> (mock/request
+                     :post
+                     hpto-url)
+                   (mock/json-body hpto-data)))
+             hpto-id (:id (:meta (utils/parse-body (:body hpto-response))))
+             get-hpto-before-delete-response
+               (utils/with-service-ticket
+                         (create-app nil)
+                         (mock/request
+                           :get
+                           (format
+                             "%s/1/%s/1"
+                             url hpto-path)))
+             delete-response (h/delete-hoks-by-id! (:id hoks))
+             get-hpto-after-delete-response
+               (utils/with-service-ticket
+                         (create-app nil)
+                         (mock/request
+                           :get
+                           (format
+                             "%s/1/%s/1"
+                             url hpto-path)))
+             get-hoks-after-delete (pdb/select-hoks-by-id 1)]
+           (is (= (:status get-hpto-before-delete-response) 200))
+           (is (= (:status get-hpto-after-delete-response) 404))
+           (is (empty? (h/get-hankittavat-paikalliset-tutkinnon-osat 1)) true)
+           (is (= get-hoks-after-delete nil)))))
+
 (def hao-path "hankittava-ammat-tutkinnon-osa")
 (def hao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
                :tutkinnon-osa-koodi-versio 1
@@ -320,6 +358,41 @@
                      :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
         (is (= (:status response) 204))))))
 
+(def hao-url (format "%1s/1/%2s" url hao-path))
+(deftest create-and-delete-hoks-with-hao
+  (testing "Creating a hoks with hao and deleting it"
+    (db/clear)
+      (let [hoks (create-hoks)
+            hao-response
+            (utils/with-service-ticket
+              (create-app nil)
+              (-> (mock/request
+                    :post
+                    hao-url)
+                  (mock/json-body hao-data)))
+            hao-id (:id (:meta (utils/parse-body (:body hao-response))))
+            get-hao-before-delete-response
+              (utils/with-service-ticket
+                        (create-app nil)
+                        (mock/request
+                          :get
+                          (format
+                            "%s/1/%s/1"
+                            url hao-path)))
+            delete-response (h/delete-hoks-by-id! (:id hoks))
+            get-hao-after-delete-response
+              (utils/with-service-ticket
+                        (create-app nil)
+                        (mock/request
+                          :get
+                          (format
+                            "%s/1/%s/1"
+                            url hao-path)))
+            get-hoks-after-delete (pdb/select-hoks-by-id 1)]
+          (is (= (:status get-hao-before-delete-response) 200))
+          (is (= (:status get-hao-after-delete-response) 404))
+          (is (= get-hoks-after-delete nil)))))
+
 (defn- assert-post-response-is-ok [post-path post-response]
   (is (= (:status post-response) 200))
   (eq (utils/parse-body (:body post-response))
@@ -445,6 +518,41 @@
       ahato-data
       multiple-ahato-values-patched
       assert-ahato-data-is-patched-correctly)))
+
+(def ahato-url (format "%1s/1/%2s" url ahato-path))
+(deftest create-and-delete-hoks-with-ahato
+  (testing "Creating a hoks with ahato and deleting it"
+    (db/clear)
+      (let [hoks (create-hoks)
+            ahato-response
+            (utils/with-service-ticket
+              (create-app nil)
+              (-> (mock/request
+                    :post
+                    ahato-url)
+                  (mock/json-body ahato-data)))
+            ahato-id (:id (:meta (utils/parse-body (:body ahato-response))))
+            get-ahato-before-delete-response
+              (utils/with-service-ticket
+                        (create-app nil)
+                        (mock/request
+                          :get
+                          (format
+                            "%s/1/%s/1"
+                            url ahato-path)))
+            delete-response (h/delete-hoks-by-id! (:id hoks))
+            get-ahato-after-delete-response
+              (utils/with-service-ticket
+                        (create-app nil)
+                        (mock/request
+                          :get
+                          (format
+                            "%s/1/%s/1"
+                            url ahato-path)))
+            get-hoks-after-delete (pdb/select-hoks-by-id 1)]
+          (is (= (:status get-ahato-before-delete-response) 200))
+          (is (= (:status get-ahato-after-delete-response) 404))
+          (is (= get-hoks-after-delete nil)))))
 
 (def ahpto-path "aiemmin-hankittu-paikallinen-tutkinnon-osa")
 (def ahpto-data
@@ -597,7 +705,27 @@
                        "Jokin toinen testi"]
      :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
      :alku "2019-03-01"
-     :loppu "2019-06-01"}]})
+     :loppu "2019-06-01"}
+     {:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ma"
+                     :koodi-versio 6}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Toinen Esimerkkitestaaja"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.13490579090"}}]
+       :jarjestaja {:oppilaitos-oid
+                    "1.2.246.562.10.93270579090"}
+       :nayttoymparisto {:nimi "Testi Oy"
+                         :y-tunnus "1289235-2"
+                         :kuvaus "Testiyhtiö"}
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Taina Testihenkilö"
+         :organisaatio {:nimi "Testia Oy"
+                        :y-tunnus "1289235-2"}}]
+       :sisallon-kuvaus ["Testauksen suunnittelu"
+                         "Jokin toinen testi"]
+       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
+       :alku "2019-03-01"
+       :loppu "2019-06-01"}]})
 
 (deftest post-and-get-aiemmin-hankitut-yhteiset-tutkinnon-osat
   (testing "POST ahyto and then get the created ahyto"
@@ -688,6 +816,43 @@
       multiple-ahyto-values-patched
       assert-ahyto-is-patched-correctly)))
 
+(def ahyto-url (format "%1s/1/%2s" url ahyto-path))
+
+(deftest create-and-delete-hoks-with-ahyto
+  (testing "Creating a hoks with ahyto and deleting it"
+    (db/clear)
+      (let [hoks (create-hoks)
+            ahyto-response
+            (utils/with-service-ticket
+              (create-app nil)
+              (-> (mock/request
+                    :post
+                    ahyto-url)
+                  (mock/json-body ahyto-data)))
+            ahyto-id (:id (:meta (utils/parse-body (:body ahyto-response))))
+            get-ahyto-before-delete-response
+              (utils/with-service-ticket
+                        (create-app nil)
+                        (mock/request
+                          :get
+                          (format
+                            "%s/1/%s/1"
+                            url ahyto-path)))
+            delete-response (h/delete-hoks-by-id! (:id hoks))
+            get-ahyto-after-delete-response
+              (utils/with-service-ticket
+                        (create-app nil)
+                        (mock/request
+                          :get
+                          (format
+                            "%s/1/%s/1"
+                            url ahyto-path)))
+            get-hoks-after-delete (pdb/select-hoks-by-id 1)]
+          (is (= (empty? delete-response) false))
+          (is (= (:status get-ahyto-before-delete-response) 200))
+          (is (= (:status get-ahyto-after-delete-response) 404))
+          (is (= get-hoks-after-delete nil)))))
+
 (def hyto-path "hankittava-yhteinen-tutkinnon-osa")
 (def hyto-data
   {:osa-alueet
@@ -753,7 +918,7 @@
                                        {:nimi "Organisaation nimi"}}]}]}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000011"})
 
-(deftest post-and-get-hankittava-yhteinen-tukinnon-osa
+(deftest post-and-get-hankittava-yhteinen-tutkinnon-osa
   (testing "POST hankittavat yhteisen tutkinnon osat"
     (db/clear)
     (let [post-response
@@ -855,6 +1020,41 @@
                 (mock/json-body
                   hyto-patch-data)))]
       (is (= (:status response) 204)))))
+
+  (def hyto-url (format "%1s/1/%2s" url hyto-path))
+  (deftest create-and-delete-hoks-with-hyto
+    (testing "Creating a hoks with hyto and deleting it"
+      (db/clear)
+        (let [hoks (create-hoks)
+              hyto-response
+              (utils/with-service-ticket
+                (create-app nil)
+                (-> (mock/request
+                      :post
+                      hyto-url)
+                    (mock/json-body hyto-data)))
+              hyto-id (:id (:meta (utils/parse-body (:body hyto-response))))
+              get-hyto-before-delete-response
+                (utils/with-service-ticket
+                          (create-app nil)
+                          (mock/request
+                            :get
+                            (format
+                              "%s/1/%s/1"
+                              url hyto-path)))
+              delete-response (h/delete-hoks-by-id! (:id hoks))
+              get-hyto-after-delete-response
+                (utils/with-service-ticket
+                          (create-app nil)
+                          (mock/request
+                            :get
+                            (format
+                              "%s/1/%s/1"
+                              url hyto-path)))
+              get-hoks-after-delete (pdb/select-hoks-by-id 1)]
+            (is (= (:status get-hyto-before-delete-response) 200))
+            (is (= (:status get-hyto-after-delete-response) 404))
+            (is (= get-hoks-after-delete nil)))))
 
 (def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")
 (def ovatu-data {:nimi "Nimi"

@@ -417,7 +417,7 @@
           (rest/rest-ok hoks)))
 
       (c-api/DELETE "/:hoks-id" [hoks-id :as request]
-        :summary "Vain testaukseen: poistaa hoksin sekä liitetyt ppto:t"
+        :summary "Vain testaukseen: poistaa hoksin sekä liitetyt tutkinnonosat"
         :path-params [hoks-id :- s/Int]
         :return (rest/response hoks-schema/HOKS)
         (let [hoks (pdb/select-hoks-by-id hoks-id)]
