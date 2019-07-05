@@ -15,18 +15,6 @@
    :url url
    :query-params (:query-params options)})
 
-(deftest fetch-for-organisaatiot-is-cached
-  (testing "Query with multiple oids is cached"
-    (with-redefs [c/with-api-headers
-                  mocked-with-api-headers]
-      (let [oids ["100" "200" "300"]
-            stored-to-cache-response
-            (o/try-to-get-organisaatiot-from-cache! oids)
-            fetched-from-cache
-            (o/try-to-get-organisaatiot-from-cache! oids)]
-        (is (= (:cached stored-to-cache-response) :MISS))
-        (is (= (:cached fetched-from-cache) :HIT))))))
-
 (deftest multiple-fetches-for-organisaatiot-are-cached
   (testing "Multiple query with multiple oids are cached"
     (with-redefs [c/with-api-headers
