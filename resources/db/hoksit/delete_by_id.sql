@@ -1,1 +1,1 @@
-DELETE FROM hoksit WHERE id = ?;
+DELETE FROM hoksit WHERE id = ? RETURNING id;
