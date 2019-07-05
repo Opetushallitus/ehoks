@@ -19,7 +19,6 @@
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]))
 
 (def routes
@@ -129,7 +128,7 @@
      {:handlers common-api/handlers}}
 
     (route-middleware
-      [wrap-access-logger wrap-audit-logger]
+      [wrap-audit-logger]
       routes
       (c-api/undocumented
         (compojure-route/not-found

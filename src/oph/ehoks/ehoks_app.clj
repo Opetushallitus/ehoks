@@ -10,7 +10,6 @@
             [oph.ehoks.config :refer [config]]
             [clojure.string :refer [lower-case]]
             [environ.core :refer [env]]
-            [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]))
 
 (def both-app
@@ -24,7 +23,7 @@
      :exceptions
      {:handlers common-api/handlers}}
     (route-middleware
-      [wrap-access-logger wrap-audit-logger]
+      [wrap-audit-logger]
       oppija-handler/routes
       virkailija-handler/routes
 
