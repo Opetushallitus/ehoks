@@ -20,7 +20,7 @@
 
 (use-fixtures :once clean-db)
 
-(def ooato-data
+(def ahato-data
   [{:valittu-todentamisen-prosessi-koodi-versio 1
     :tutkinnon-osa-koodi-versio 2
     :valittu-todentamisen-prosessi-koodi-uri
@@ -52,7 +52,7 @@
       :alku (java.time.LocalDate/of 2019 2 9)
       :loppu (java.time.LocalDate/of 2019 1 10)}]}])
 
-(def oopto-data
+(def ahpto-data
   [{:valittu-todentamisen-prosessi-koodi-versio 2
     :laajuus 30
     :nimi "Testiopintojakso"
@@ -93,7 +93,7 @@
       :alku (java.time.LocalDate/of 2019 2 1)
       :loppu (java.time.LocalDate/of 2019 2 1)}]}])
 
-(def pao-data
+(def hao-data
   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_102499"
     :tutkinnon-osa-koodi-versio 4
     :vaatimuksista-tai-tavoitteista-poikkeaminen
@@ -153,7 +153,7 @@
     :alku (java.time.LocalDate/of 2018 06 01)
     :loppu (java.time.LocalDate/of 2018 07 31)}])
 
-(def ooyto-data
+(def ahyto-data
   [{:valittu-todentamisen-prosessi-koodi-uri
     "osaamisentodentamisenprosessi_0001"
     :valittu-todentamisen-prosessi-koodi-versio 3
@@ -220,7 +220,7 @@
       :alku (java.time.LocalDate/of 2019 3 1)
       :loppu (java.time.LocalDate/of 2019 3 1)}]}])
 
-(def ppto-data
+(def hpto-data
   [{:koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"
     :tavoitteet-ja-sisallot "Testitavoite"
     :nimi "Orientaatio alaan"
@@ -272,7 +272,7 @@
       :alku (java.time.LocalDate/of 2019 3 11)
       :loppu (java.time.LocalDate/of 2019 3 13)}]}])
 
-(def pyto-data
+(def hyto-data
   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_121123"
     :tutkinnon-osa-koodi-versio 3
     :osa-alueet
@@ -304,44 +304,45 @@
                 (java.time.LocalDate/of 2019 3 18)
                 :osaamisen-hankkimisen-tarve false
                 :sahkoposti "erkki.esimerkki@esimerkki.com"
-                :aiemmin-hankitut-yhteiset-tutkinnon-osat ooyto-data
-                :hankittavat-paikalliset-tutkinnon-osat ppto-data
-                :aiemmin-hankitut-paikalliset-tutkinnon-osat oopto-data
-                :aiemmin-hankitut-ammat-tutkinnon-osat ooato-data
-                :hankittavat-yhteiset-tutkinnon-osat pyto-data
-                :hankittavat-ammat-tutkinnon-osat pao-data
+                :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-data
+                :hankittavat-paikalliset-tutkinnon-osat hpto-data
+                :aiemmin-hankitut-paikalliset-tutkinnon-osat ahpto-data
+                :aiemmin-hankitut-ammat-tutkinnon-osat ahato-data
+                :hankittavat-yhteiset-tutkinnon-osat hyto-data
+                :hankittavat-ammat-tutkinnon-osat hao-data
                 :opiskeluvalmiuksia-tukevat-opinnot oto-data})
 
 (deftest get-aiemmin-hankitut-ammat-tutkinnon-osat-test
   (testing "Set HOKS aiemmin hankitut tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
       (h/save-aiemmin-hankitut-ammat-tutkinnon-osat!
-        hoks
-        ooato-data)
+        (:id hoks)
+        ahato-data)
       (eq (h/get-aiemmin-hankitut-ammat-tutkinnon-osat
             (:id hoks))
-          ooato-data))))
+          ahato-data))))
 
 (deftest get-aiemmin-hankitut-paikalliset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut paikalliset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-aiemmin-hankitut-paikalliset-tutkinnon-osat! hoks oopto-data)
+      (h/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
+        (:id hoks) ahpto-data)
       (eq
         (h/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks))
-        oopto-data))))
+        ahpto-data))))
 
 (deftest get-hankittava-ammat-tutkinnon-osa-test
   (testing "Get HOKS hankittava ammatillinen osaaminen"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-hankittavat-ammat-tutkinnon-osat! hoks pao-data)
+      (h/save-hankittavat-ammat-tutkinnon-osat! (:id hoks) hao-data)
       (eq
         (h/get-hankittavat-ammat-tutkinnon-osat (:id hoks))
-        pao-data))))
+        hao-data))))
 
 (deftest get-opiskeluvalmiuksia-tukevat-opinnot-test
   (testing "Get HOKS opiskeluvalmiuksia tukevat opinnot"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-opiskeluvalmiuksia-tukevat-opinnot! hoks oto-data)
+      (h/save-opiskeluvalmiuksia-tukevat-opinnot! (:id hoks) oto-data)
       (eq
         (h/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks))
         oto-data))))
@@ -349,27 +350,27 @@
 (deftest get-aiemmin-hankitut-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut yhteiset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! hoks ooyto-data)
+      (h/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! (:id hoks) ahyto-data)
       (eq
         (h/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks))
-        ooyto-data))))
+        ahyto-data))))
 
 (deftest get-hankittavat-paikalliset-tutkinnon-osat-test
   (testing "Set HOKS hankittavat paikalliset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})
           ppto-col
-          (h/save-hankittavat-paikalliset-tutkinnon-osat! hoks ppto-data)]
+          (h/save-hankittavat-paikalliset-tutkinnon-osat! (:id hoks) hpto-data)]
       (eq
         (h/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks))
-        ppto-data))))
+        hpto-data))))
 
 (deftest get-hankittavat-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS hankittavat yhteiset tutkinnon osat"
     (let [hoks (db/insert-hoks! {})]
-      (h/save-hankittavat-yhteiset-tutkinnon-osat! hoks pyto-data)
+      (h/save-hankittavat-yhteiset-tutkinnon-osat! (:id hoks) hyto-data)
       (eq
         (h/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks))
-        pyto-data))))
+        hyto-data))))
 
 (deftest get-hoks-test
   (testing "Save and get full HOKS"
@@ -384,7 +385,7 @@
 (deftest empty-values-test
   (testing "DB handling of empty values"
     (let [hoks (db/insert-hoks! {})
-          ooato (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
+          ahato (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
                   {:hoks-id (:id hoks)})
           data {}
           tta (h/save-tarkentavat-tiedot-osaamisen-arvioija! data)]

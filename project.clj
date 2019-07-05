@@ -19,7 +19,8 @@
                  [org.apache.logging.log4j/log4j-slf4j-impl "2.11.1"]
                  [org.clojure/data.xml "0.0.8"]
                  [org.clojure/data.json "0.2.6"]
-                 [environ "1.1.0"]]
+                 [environ "1.1.0"]
+                 [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]]
   :managed-dependencies [[org.clojure/clojure "1.10.0"]
 
                          ;; http server
@@ -55,6 +56,7 @@
                          [com.fasterxml.jackson.core/jackson-databind "2.9.8"]
                          [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.9.8"]
                          [org.clojure/data.json "0.2.6"]
+                         [com.google.code.gson/gson "2.8.0"]
 
                          ;; XML
                          [org.clojure/data.xml "0.0.8"]
@@ -90,6 +92,10 @@
             [lein-cloverage "1.0.13"]
             [lein-eftest "0.5.7"]
             [lein-environ "1.1.0"]]
+  :repositories [["releases" {:url           "https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local"
+                              :sign-releases false
+                              :snapshots     false}]
+                 ["snapshots" {:url "https://artifactory.opintopolku.fi/artifactory/oph-sade-snapshot-local"}]]
   :main oph.ehoks.main
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
@@ -111,7 +117,8 @@
             "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate!"]
             "dbclean" ["run" "-m" "oph.ehoks.db.migrations/clean!"]
             "import" ["run" "-m" "oph.ehoks.import/lein-import-file!"]
-            "send-json" ["run" "-m" "oph.ehoks.json-post-tool/lein-send-json!"]}
+            "send-json" ["run" "-m" "oph.ehoks.json-post-tool/lein-send-json!"]
+            "genmigration" ["run" "-m" "oph.ehoks.migration-tools/lein-genmigration"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:test {:resource-paths ["resources/test"
                                      "resources/test/src"

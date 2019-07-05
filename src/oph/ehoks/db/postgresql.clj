@@ -99,7 +99,6 @@
       [queries/select-hyto-osa-alue-ids-by-hyto-id hyto-id]
       {:row-fn h/id-from-sql})))
 
-
 (defn select-ahato-ids-by-hoks-id [hoks-id]
   (vec
     (query
@@ -137,76 +136,88 @@
       {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
 
 (defn select-oo-ids-by-ahyto-osa-alue-id [ahyto-osa-alue-id]
-(vec
-  (query
-    [queries/select-oo-ids-by-ahyto-osa-alue-id ahyto-osa-alue-id]
-    {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
+  (vec
+    (query
+      [queries/select-oo-ids-by-ahyto-osa-alue-id ahyto-osa-alue-id]
+      {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
 
 (defn select-oo-ids-by-ahato-id [ahato-id]
-(vec
-  (query
-    [queries/select-oo-ids-by-ahato-id ahato-id]
-    {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
+  (vec
+    (query
+      [queries/select-oo-ids-by-ahato-id ahato-id]
+      {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
 
 (defn select-oo-ids-by-hato-id [hato-id]
-(vec
-  (query
-    [queries/select-oo-ids-by-hato-id hato-id]
-    {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
+  (vec
+    (query
+      [queries/select-oo-ids-by-hato-id hato-id]
+      {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
 
 (defn select-oo-ids-by-hpto-id [hpto-id]
-(vec
-(query
-  [queries/select-oo-ids-by-hpto-id hpto-id]
-  {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
+  (vec
+    (query
+      [queries/select-oo-ids-by-hpto-id hpto-id]
+      {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
 
 (defn select-oo-ids-by-hyto-osa-alue-id [hyto-osa-alue-id]
-(vec
-(query
-  [queries/select-oo-ids-by-ahyto-osa-alue-id hyto-osa-alue-id]
-  {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
-
+  (vec
+    (query
+      [queries/select-oo-ids-by-ahyto-osa-alue-id hyto-osa-alue-id]
+      {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
 
 (defn delete-osaamisen-osoittaminen-and-nayttoymparisto-by-oo-id [oo-id]
   (query
     [queries/delete-osaamisen-osoittaminen-and-nayttoymparisto-by-oo-id
-    oo-id]
+     oo-id]
     {}))
 
 (defn delete-hoksit-by-id! [hoks-id]
   (let [ahyto-ids (select-ahyto-ids-by-hoks-id hoks-id)
-        ahyto-osaamisen-osoittamiset-ids (into [] cat
-          (mapv #(select-oo-ids-by-ahyto-id %) ahyto-ids))
-        ahyto-osa-alue-ids (into [] cat
-          (mapv #(select-ahyto-osa-alue-ids-by-ahyto-id %) ahyto-ids))
-        ahyto-osa-alue-oo-ids  (into [] cat
-          (mapv #(select-oo-ids-by-ahyto-osa-alue-id %) ahyto-osa-alue-ids))
+        ahyto-osaamisen-osoittamiset-ids
+        (into [] cat
+              (mapv select-oo-ids-by-ahyto-id ahyto-ids))
+        ahyto-osa-alue-ids
+        (into [] cat
+              (mapv select-ahyto-osa-alue-ids-by-ahyto-id ahyto-ids))
+        ahyto-osa-alue-oo-ids
+        (into [] cat
+              (mapv select-oo-ids-by-ahyto-osa-alue-id ahyto-osa-alue-ids))
         ahato-ids (select-ahato-ids-by-hoks-id hoks-id)
-        ahato-osaamisen-osoittamiset-ids (into [] cat
-          (mapv #(select-oo-ids-by-ahato-id %) ahato-ids))
-        ahpto-ids   (select-ahpto-ids-by-hoks-id hoks-id)
-        ahpto-osaamisen-osoittamiset-ids (into [] cat
-          (mapv #(select-oo-ids-by-ahpto-id %) ahpto-ids))
+        ahato-osaamisen-osoittamiset-ids
+        (into [] cat
+              (mapv select-oo-ids-by-ahato-id ahato-ids))
+        ahpto-ids (select-ahpto-ids-by-hoks-id hoks-id)
+        ahpto-osaamisen-osoittamiset-ids
+        (into [] cat
+              (mapv select-oo-ids-by-ahpto-id ahpto-ids))
         hato-ids (select-hato-ids-by-hoks-id hoks-id)
-        hato-osaamisen-osoittamiset-ids (into [] cat
-          (mapv #(select-oo-ids-by-hato-id %) ahyto-ids))
+        hato-osaamisen-osoittamiset-ids
+        (into [] cat
+              (mapv select-oo-ids-by-hato-id ahyto-ids))
         hpto-ids (select-hpto-ids-by-hoks-id hoks-id)
-        hpto-osaamisen-osoittamiset-ids (into [] cat
-          (mapv #(select-oo-ids-by-hpto-id %) hpto-ids))
+        hpto-osaamisen-osoittamiset-ids
+        (into [] cat
+              (mapv select-oo-ids-by-hpto-id hpto-ids))
         hyto-ids (select-hyto-ids-by-hoks-id hoks-id)
-        hyto-osa-alue-ids (into [] cat
-          (mapv #(select-hyto-osa-alue-ids-by-hyto-id %) hyto-ids))
-        hyto-osa-alue-oo-ids  (into [] cat
-          (mapv #(select-oo-ids-by-hyto-osa-alue-id %) hyto-osa-alue-ids))
-        oo-ids (into [] (concat ahyto-osaamisen-osoittamiset-ids
-          ahyto-osa-alue-oo-ids ahpto-osaamisen-osoittamiset-ids
-          ahato-osaamisen-osoittamiset-ids ahpto-osaamisen-osoittamiset-ids
-          hato-osaamisen-osoittamiset-ids hpto-osaamisen-osoittamiset-ids
-          hyto-osa-alue-oo-ids))]
-        (query
-          [queries/delete-hoksit-by-id hoks-id]
-          {})
-         (map #(delete-osaamisen-osoittaminen-and-nayttoymparisto-by-oo-id %)
+        hyto-osa-alue-ids
+        (into [] cat
+              (mapv select-hyto-osa-alue-ids-by-hyto-id hyto-ids))
+        hyto-osa-alue-oo-ids
+        (into [] cat
+              (mapv select-oo-ids-by-hyto-osa-alue-id hyto-osa-alue-ids))
+        oo-ids
+        (vec
+          (concat ahyto-osaamisen-osoittamiset-ids
+                  ahyto-osa-alue-oo-ids ahpto-osaamisen-osoittamiset-ids
+                  ahato-osaamisen-osoittamiset-ids
+                  ahpto-osaamisen-osoittamiset-ids
+                  hato-osaamisen-osoittamiset-ids
+                  hpto-osaamisen-osoittamiset-ids
+                  hyto-osa-alue-oo-ids))]
+    (query
+      [queries/delete-hoksit-by-id hoks-id]
+      {})
+    (map delete-osaamisen-osoittaminen-and-nayttoymparisto-by-oo-id
          oo-ids)))
 
 (defn select-hoksit-by-opiskeluoikeus-oid [oid]
@@ -231,14 +242,34 @@
   (query
     [queries/select-hoks-oppijat-without-index]))
 
+(defn select-hoks-oppijat-without-index-count []
+  (query
+    [queries/select-hoks-oppijat-without-index-count]))
+
 (defn select-hoks-opiskeluoikeudet-without-index []
   (query
     [queries/select-hoks-opiskeluoikeudet-without-index]))
+
+(defn select-hoks-opiskeluoikeudet-without-index-count []
+  (query
+    [queries/select-hoks-opiskeluoikeudet-without-index-count]))
 
 (defn select-opiskeluoikeudet-by-oppija-oid [oppija-oid]
   (query
     [queries/select-opiskeluoikeudet-by-oppija-oid oppija-oid]
     {:row-fn h/from-sql}))
+
+(defn select-oppija-by-oid [oppija-oid]
+  (first
+    (query
+      [queries/select-oppijat-by-oid oppija-oid]
+      {:row-fn h/from-sql})))
+
+(defn select-opiskeluoikeus-by-oid [oid]
+  (first
+    (query
+      [queries/select-opiskeluoikeudet-by-oid oid]
+      {:row-fn h/from-sql})))
 
 (defn insert-oppija [oppija]
   (insert-one! :oppijat (h/to-sql oppija)))
@@ -366,6 +397,11 @@
     :hankittavat_paikalliset_tutkinnon_osat
     (h/hankittava-paikallinen-tutkinnon-osa-to-sql m)
     ["id = ? AND deleted_at IS NULL" id]))
+
+(defn delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id [hoks-id]
+  (shallow-delete!
+    :hankittavat_paikalliset_tutkinnon_osat
+    ["hoks_id = ?" hoks-id]))
 
 (defn select-osaamisen-osoittamiset-by-ppto-id
   "hankittavan paikallisen tutkinnon osan hankitun osaamisen näytöt"
@@ -669,7 +705,7 @@
     [queries/select-osaamisen-osoittamiset-by-pato-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-(defn delete-osaamisen-hankkimistavat-by-pato-id!
+(defn delete-osaamisen-hankkimistavat-by-hato-id!
   "Hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat"
   [id]
   (shallow-delete!
@@ -688,6 +724,22 @@
     :hankittavat_ammat_tutkinnon_osat
     (h/hankittava-ammat-tutkinnon-osa-to-sql m)
     ["id = ? AND deleted_at IS NULL" id]))
+
+(defn update-hankittava-yhteinen-tutkinnon-osa-by-id! [hyto-id new-values]
+  (update!
+    :hankittavat_yhteiset_tutkinnon_osat
+    (h/hankittava-yhteinen-tutkinnon-osa-to-sql new-values)
+    ["id = ? AND deleted_at IS NULL" hyto-id]))
+
+(defn delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id [hoks-id]
+  (shallow-delete!
+    :hankittavat_ammat_tutkinnon_osat
+    ["hoks_id = ?" hoks-id]))
+
+(defn delete-hyto-osa-alueet! [hyto-id]
+  (shallow-delete!
+    :yhteisen_tutkinnon_osan_osa_alueet
+    ["yhteinen_tutkinnon_osa_id = ?" hyto-id]))
 
 (defn update-aiemmin-hankittu-ammat-tutkinnon-osa-by-id! [id new-values]
   (update!
@@ -725,6 +777,11 @@
     :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
     ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ?" id]))
 
+(defn delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id [hoks-id]
+  (shallow-delete!
+    :aiemmin_hankitut_ammat_tutkinnon_osat
+    ["hoks_id = ?" hoks-id]))
+
 (defn delete-aiemmin-hankitun-paikallisen-tutkinnon-osan-naytto-by-id! [id]
   (shallow-delete!
     :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
@@ -734,6 +791,16 @@
   (shallow-delete!
     :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
     ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
+
+(defn delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id [hoks-id]
+  (shallow-delete!
+    :aiemmin_hankitut_paikalliset_tutkinnon_osat
+    ["hoks_id = ?" hoks-id]))
+
+(defn delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id [hoks-id]
+  (shallow-delete!
+    :aiemmin_hankitut_yhteiset_tutkinnon_osat
+    ["hoks_id = ?" hoks-id]))
 
 (defn delete-aiemmin-hankitut-yto-osa-alueet-by-id! [id]
   (shallow-delete!
@@ -754,20 +821,48 @@
     [queries/select-osaamisen-hankkmistavat-by-pato-id id]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
+(defn insert-opiskeluvalmiuksia-tukeva-opinto! [new-value]
+  (insert-one!
+    :opiskeluvalmiuksia_tukevat_opinnot
+    (h/to-sql new-value)))
+
 (defn insert-opiskeluvalmiuksia-tukevat-opinnot! [c]
   (insert-multi!
     :opiskeluvalmiuksia_tukevat_opinnot
     (mapv h/to-sql c)))
+
+(defn select-opiskeluvalmiuksia-tukevat-opinnot-by-id [oto-id]
+  (->
+    (query [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-id oto-id])
+    first
+    h/opiskeluvalmiuksia-tukevat-opinnot-from-sql))
 
 (defn select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id [id]
   (query
     [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id id]
     {:row-fn h/opiskeluvalmiuksia-tukevat-opinnot-from-sql}))
 
+(defn delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id [hoks-id]
+  (shallow-delete!
+    :opiskeluvalmiuksia_tukevat_opinnot
+    ["hoks_id = ?" hoks-id]))
+
+(defn update-opiskeluvalmiuksia-tukevat-opinnot-by-id! [oto-id new-values]
+  (update!
+    :opiskeluvalmiuksia_tukevat_opinnot
+    (h/to-sql new-values)
+    ["id = ? AND deleted_at IS NULL" oto-id]))
+
 (defn insert-hankittava-yhteinen-tutkinnon-osa! [m]
   (insert-one!
     :hankittavat_yhteiset_tutkinnon_osat
     (h/hankittava-yhteinen-tutkinnon-osa-to-sql m)))
+
+(defn select-hankittava-yhteinen-tutkinnon-osa-by-id [hyto-id]
+  (->
+    (query [queries/select-hankittavat-yhteiset-tutkinnon-osat-by-id hyto-id])
+    first
+    h/hankittava-yhteinen-tutkinnon-osa-from-sql))
 
 (defn select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id [id]
   (query
@@ -789,6 +884,11 @@
   (insert-one!
     :yhteisen_tutkinnon_osan_osa_alueet
     (h/yhteisen-tutkinnon-osan-osa-alue-to-sql osa-alue)))
+
+(defn delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id [hoks-id]
+  (shallow-delete!
+    :hankittavat_yhteiset_tutkinnon_osat
+    ["hoks_id = ?" hoks-id]))
 
 (defn select-yto-osa-alueet-by-yto-id [id]
   (query

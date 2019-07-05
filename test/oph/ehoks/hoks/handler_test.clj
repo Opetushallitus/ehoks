@@ -4,7 +4,6 @@
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
-            [oph.ehoks.db.memory :as db]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.cache :as cache]
             [oph.ehoks.hoks.hoks :as h]
@@ -55,30 +54,51 @@
 (defn get-hoks-url [hoks path]
   (format "%s/%d/%s" url (:id hoks) path))
 
-(defn- create-mock-post-request [path body app hoks]
-  (utils/with-service-ticket
-    app
-    (-> (mock/request
-          :post
-          (get-hoks-url hoks path))
-        (mock/json-body body))))
+(defn- create-mock-post-request
+  ([path body app hoks]
+    (create-mock-post-request (format "%d/%s" (:id hoks) path) body app))
+  ([path body app]
+    (utils/with-service-ticket
+      app
+      (-> (mock/request
+            :post
+            (format "%s/%s" url path))
+          (mock/json-body body)))))
 
-(defn- create-mock-get-request [path app hoks]
+(defn- create-mock-get-request [path app]
   (utils/with-service-ticket
     app
     (mock/request
       :get
-      (get-hoks-url hoks (str path "/1")))))
+      path)))
 
-(defn- create-mock-patch-request [path app patched-data]
+(defn- create-mock-hoks-osa-get-request [path app hoks]
+  (create-mock-get-request (get-hoks-url hoks (str path "/1")) app))
+
+(defn- create-mock-hoks-get-request [hoks-id app]
+  (create-mock-get-request (format "%s/%d" url hoks-id) app))
+
+(defn- create-mock-patch-request [path patched-data app]
   (utils/with-service-ticket
     app
     (-> (mock/request
           :patch
-          (format
-            "%s/1/%s/1"
-            url path))
+          path)
         (mock/json-body patched-data))))
+
+(defn- create-mock-hoks-osa-patch-request [path app patched-data]
+  (create-mock-patch-request (format "%s/1/%s/1" url path) patched-data app))
+
+(defn- create-mock-hoks-patch-request [hoks-id patched-data app]
+  (create-mock-patch-request (format "%s/%d" url hoks-id) patched-data app))
+
+(defn- create-mock-hoks-put-request [hoks-id updated-data app]
+  (utils/with-service-ticket
+    app
+    (-> (mock/request
+          :put
+          (format "%s/%d" url hoks-id))
+        (mock/json-body updated-data))))
 
 (def hpto-path "hankittava-paikallinen-tutkinnon-osa")
 (def hpto-data {:nimi "222"
@@ -102,7 +122,6 @@
 
 (deftest post-and-get-hankittava-paikallinen-tutkinnon-osa
   (testing "GET newly created hankittava paikallinen tutkinnon osa"
-    (db/clear)
     (with-hoks
       hoks
       (let [ppto-response
@@ -181,42 +200,41 @@
                    :id 1
                    :nimi "2223"))))))
 
- (def hpto-url (format "%1s/1/%2s" url hpto-path))
+(def hpto-url (format "%1s/1/%2s" url hpto-path))
 
- (deftest create-and-delete-hoks-with-hpto
-   (testing "Creating a hoks with hpto and deleting it"
-     (db/clear)
-       (let [hoks (create-hoks)
-             hpto-response
-             (utils/with-service-ticket
-               (create-app nil)
-               (-> (mock/request
-                     :post
-                     hpto-url)
-                   (mock/json-body hpto-data)))
-             hpto-id (:id (:meta (utils/parse-body (:body hpto-response))))
-             get-hpto-before-delete-response
-               (utils/with-service-ticket
-                         (create-app nil)
-                         (mock/request
-                           :get
-                           (format
-                             "%s/1/%s/1"
-                             url hpto-path)))
-             delete-response (h/delete-hoks-by-id! (:id hoks))
-             get-hpto-after-delete-response
-               (utils/with-service-ticket
-                         (create-app nil)
-                         (mock/request
-                           :get
-                           (format
-                             "%s/1/%s/1"
-                             url hpto-path)))
-             get-hoks-after-delete (pdb/select-hoks-by-id 1)]
-           (is (= (:status get-hpto-before-delete-response) 200))
-           (is (= (:status get-hpto-after-delete-response) 404))
-           (is (empty? (h/get-hankittavat-paikalliset-tutkinnon-osat 1)) true)
-           (is (= get-hoks-after-delete nil)))))
+(deftest create-and-delete-hoks-with-hpto
+  (testing "Creating a hoks with hpto and deleting it"
+    (let [hoks (create-hoks)
+          hpto-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (-> (mock/request
+                  :post
+                  hpto-url)
+                (mock/json-body hpto-data)))
+          hpto-id (:id (:meta (utils/parse-body (:body hpto-response))))
+          get-hpto-before-delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :get
+              (format
+                "%s/1/%s/1"
+                url hpto-path)))
+          delete-response (h/delete-hoks-by-id! (:id hoks))
+          get-hpto-after-delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :get
+              (format
+                "%s/1/%s/1"
+                url hpto-path)))
+          get-hoks-after-delete (pdb/select-hoks-by-id 1)]
+      (is (= (:status get-hpto-before-delete-response) 200))
+      (is (= (:status get-hpto-after-delete-response) 404))
+      (is (= (empty? (h/get-hankittavat-paikalliset-tutkinnon-osat 1)) true))
+      (is (= get-hoks-after-delete nil)))))
 
 (def hao-path "hankittava-ammat-tutkinnon-osa")
 (def hao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
@@ -262,12 +280,11 @@
 
 (deftest post-and-get-hankittava-ammatillinen-osaaminen
   (testing "POST hankittava ammatillinen osaaminen and then get created hao"
-    (db/clear)
     (with-hoks
       hoks
       (let [app (create-app nil)
             post-response (create-mock-post-request hao-path hao-data app hoks)
-            get-response (create-mock-get-request hao-path app hoks)]
+            get-response (create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status post-response) 200))
         (eq (utils/parse-body
               (:body post-response))
@@ -312,7 +329,6 @@
 
 (deftest patch-all-hankittava-ammatillinen-osaaminen
   (testing "PATCH ALL hankittava ammat osaaminen"
-    (db/clear)
     (with-hoks
       hoks
       (let [app (create-app nil)
@@ -324,14 +340,13 @@
                     :patch
                     (get-hoks-url hoks (str hao-path "/1")))
                   (mock/json-body (assoc patch-all-hao-data :id 1))))
-            get-response (create-mock-get-request hao-path app hoks)]
+            get-response (create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status patch-response) 204))
         (eq (utils/parse-body (:body get-response))
             {:meta {} :data  (assoc patch-all-hao-data :id 1)})))))
 
 (deftest patch-one-hankittava-ammatilinen-osaaminen
   (testing "PATCH one value hankittava ammatillinen osaaminen"
-    (db/clear)
     (with-hoks
       hoks
       (let [app (create-app nil)
@@ -361,37 +376,36 @@
 (def hao-url (format "%1s/1/%2s" url hao-path))
 (deftest create-and-delete-hoks-with-hao
   (testing "Creating a hoks with hao and deleting it"
-    (db/clear)
-      (let [hoks (create-hoks)
-            hao-response
-            (utils/with-service-ticket
-              (create-app nil)
-              (-> (mock/request
-                    :post
-                    hao-url)
-                  (mock/json-body hao-data)))
-            hao-id (:id (:meta (utils/parse-body (:body hao-response))))
-            get-hao-before-delete-response
-              (utils/with-service-ticket
-                        (create-app nil)
-                        (mock/request
-                          :get
-                          (format
-                            "%s/1/%s/1"
-                            url hao-path)))
-            delete-response (h/delete-hoks-by-id! (:id hoks))
-            get-hao-after-delete-response
-              (utils/with-service-ticket
-                        (create-app nil)
-                        (mock/request
-                          :get
-                          (format
-                            "%s/1/%s/1"
-                            url hao-path)))
-            get-hoks-after-delete (pdb/select-hoks-by-id 1)]
-          (is (= (:status get-hao-before-delete-response) 200))
-          (is (= (:status get-hao-after-delete-response) 404))
-          (is (= get-hoks-after-delete nil)))))
+    (let [hoks (create-hoks)
+          hao-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (-> (mock/request
+                  :post
+                  hao-url)
+                (mock/json-body hao-data)))
+          hao-id (:id (:meta (utils/parse-body (:body hao-response))))
+          get-hao-before-delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :get
+              (format
+                "%s/1/%s/1"
+                url hao-path)))
+          delete-response (h/delete-hoks-by-id! (:id hoks))
+          get-hao-after-delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :get
+              (format
+                "%s/1/%s/1"
+                url hao-path)))
+          get-hoks-after-delete (pdb/select-hoks-by-id 1)]
+      (is (= (:status get-hao-before-delete-response) 200))
+      (is (= (:status get-hao-after-delete-response) 404))
+      (is (= get-hoks-after-delete nil)))))
 
 (defn- assert-post-response-is-ok [post-path post-response]
   (is (= (:status post-response) 200))
@@ -409,9 +423,9 @@
     (let [app (create-app nil)
           post-response (create-mock-post-request
                           osa-path osa-data app hoks)
-          patch-response (create-mock-patch-request
+          patch-response (create-mock-hoks-osa-patch-request
                            osa-path app osa-patched-data)
-          get-response (create-mock-get-request osa-path app hoks)
+          get-response (create-mock-hoks-osa-get-request osa-path app hoks)
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (is (= (:status post-response) 200))
       (is (= (:status patch-response) 204))
@@ -424,7 +438,7 @@
     (let [app (create-app nil)
           post-response (create-mock-post-request
                           osa-path osa-data app hoks)
-          get-response (create-mock-get-request osa-path app hoks)]
+          get-response (create-mock-hoks-osa-get-request osa-path app hoks)]
       (assert-post-response-is-ok osa-path post-response)
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
@@ -522,37 +536,36 @@
 (def ahato-url (format "%1s/1/%2s" url ahato-path))
 (deftest create-and-delete-hoks-with-ahato
   (testing "Creating a hoks with ahato and deleting it"
-    (db/clear)
-      (let [hoks (create-hoks)
-            ahato-response
-            (utils/with-service-ticket
-              (create-app nil)
-              (-> (mock/request
-                    :post
-                    ahato-url)
-                  (mock/json-body ahato-data)))
-            ahato-id (:id (:meta (utils/parse-body (:body ahato-response))))
-            get-ahato-before-delete-response
-              (utils/with-service-ticket
-                        (create-app nil)
-                        (mock/request
-                          :get
-                          (format
-                            "%s/1/%s/1"
-                            url ahato-path)))
-            delete-response (h/delete-hoks-by-id! (:id hoks))
-            get-ahato-after-delete-response
-              (utils/with-service-ticket
-                        (create-app nil)
-                        (mock/request
-                          :get
-                          (format
-                            "%s/1/%s/1"
-                            url ahato-path)))
-            get-hoks-after-delete (pdb/select-hoks-by-id 1)]
-          (is (= (:status get-ahato-before-delete-response) 200))
-          (is (= (:status get-ahato-after-delete-response) 404))
-          (is (= get-hoks-after-delete nil)))))
+    (let [hoks (create-hoks)
+          ahato-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (-> (mock/request
+                  :post
+                  ahato-url)
+                (mock/json-body ahato-data)))
+          ahato-id (:id (:meta (utils/parse-body (:body ahato-response))))
+          get-ahato-before-delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :get
+              (format
+                "%s/1/%s/1"
+                url ahato-path)))
+          delete-response (h/delete-hoks-by-id! (:id hoks))
+          get-ahato-after-delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :get
+              (format
+                "%s/1/%s/1"
+                url ahato-path)))
+          get-hoks-after-delete (pdb/select-hoks-by-id 1)]
+      (is (= (:status get-ahato-before-delete-response) 200))
+      (is (= (:status get-ahato-after-delete-response) 404))
+      (is (= get-hoks-after-delete nil)))))
 
 (def ahpto-path "aiemmin-hankittu-paikallinen-tutkinnon-osa")
 (def ahpto-data
@@ -706,26 +719,26 @@
      :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
      :alku "2019-03-01"
      :loppu "2019-06-01"}
-     {:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ma"
-                     :koodi-versio 6}]
-       :koulutuksen-jarjestaja-osaamisen-arvioijat
-       [{:nimi "Toinen Esimerkkitestaaja"
-         :organisaatio {:oppilaitos-oid
-                        "1.2.246.562.10.13490579090"}}]
-       :jarjestaja {:oppilaitos-oid
-                    "1.2.246.562.10.93270579090"}
-       :nayttoymparisto {:nimi "Testi Oy"
-                         :y-tunnus "1289235-2"
-                         :kuvaus "Testiyhtiö"}
-       :tyoelama-osaamisen-arvioijat
-       [{:nimi "Taina Testihenkilö"
-         :organisaatio {:nimi "Testia Oy"
-                        :y-tunnus "1289235-2"}}]
-       :sisallon-kuvaus ["Testauksen suunnittelu"
-                         "Jokin toinen testi"]
-       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
-       :alku "2019-03-01"
-       :loppu "2019-06-01"}]})
+    {:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ma"
+                   :koodi-versio 6}]
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
+     [{:nimi "Toinen Esimerkkitestaaja"
+       :organisaatio {:oppilaitos-oid
+                      "1.2.246.562.10.13490579090"}}]
+     :jarjestaja {:oppilaitos-oid
+                  "1.2.246.562.10.93270579090"}
+     :nayttoymparisto {:nimi "Testi Oy"
+                       :y-tunnus "1289235-2"
+                       :kuvaus "Testiyhtiö"}
+     :tyoelama-osaamisen-arvioijat
+     [{:nimi "Taina Testihenkilö"
+       :organisaatio {:nimi "Testia Oy"
+                      :y-tunnus "1289235-2"}}]
+     :sisallon-kuvaus ["Testauksen suunnittelu"
+                       "Jokin toinen testi"]
+     :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
+     :alku "2019-03-01"
+     :loppu "2019-06-01"}]})
 
 (deftest post-and-get-aiemmin-hankitut-yhteiset-tutkinnon-osat
   (testing "POST ahyto and then get the created ahyto"
@@ -820,364 +833,288 @@
 
 (deftest create-and-delete-hoks-with-ahyto
   (testing "Creating a hoks with ahyto and deleting it"
-    (db/clear)
-      (let [hoks (create-hoks)
-            ahyto-response
-            (utils/with-service-ticket
-              (create-app nil)
-              (-> (mock/request
-                    :post
-                    ahyto-url)
-                  (mock/json-body ahyto-data)))
-            ahyto-id (:id (:meta (utils/parse-body (:body ahyto-response))))
-            get-ahyto-before-delete-response
-              (utils/with-service-ticket
-                        (create-app nil)
-                        (mock/request
-                          :get
-                          (format
-                            "%s/1/%s/1"
-                            url ahyto-path)))
-            delete-response (h/delete-hoks-by-id! (:id hoks))
-            get-ahyto-after-delete-response
-              (utils/with-service-ticket
-                        (create-app nil)
-                        (mock/request
-                          :get
-                          (format
-                            "%s/1/%s/1"
-                            url ahyto-path)))
-            get-hoks-after-delete (pdb/select-hoks-by-id 1)]
-          (is (= (empty? delete-response) false))
-          (is (= (:status get-ahyto-before-delete-response) 200))
-          (is (= (:status get-ahyto-after-delete-response) 404))
-          (is (= get-hoks-after-delete nil)))))
+    (let [hoks (create-hoks)
+          ahyto-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (-> (mock/request
+                  :post
+                  ahyto-url)
+                (mock/json-body ahyto-data)))
+          ahyto-id (:id (:meta (utils/parse-body (:body ahyto-response))))
+          get-ahyto-before-delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :get
+              (format
+                "%s/1/%s/1"
+                url ahyto-path)))
+          delete-response (h/delete-hoks-by-id! (:id hoks))
+          get-ahyto-after-delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :get
+              (format
+                "%s/1/%s/1"
+                url ahyto-path)))
+          get-hoks-after-delete (pdb/select-hoks-by-id 1)]
+      (is (= (empty? delete-response) false))
+      (is (= (:status get-ahyto-before-delete-response) 200))
+      (is (= (:status get-ahyto-after-delete-response) 404))
+      (is (= get-hoks-after-delete nil)))))
 
 (def hyto-path "hankittava-yhteinen-tutkinnon-osa")
 (def hyto-data
-  {:osa-alueet
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :tutkinnon-osa-koodi-versio 1
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"
+   :osa-alueet
    [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
      :osa-alue-koodi-versio 1
+     :vaatimuksista-tai-tavoitteista-poikkeaminen "joku poikkeaminen"
+     :olennainen-seikka false
      :osaamisen-hankkimistavat
      [{:alku "2018-12-15"
        :loppu "2018-12-23"
        :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
-       :osaamisen-hankkimistapa-koodi-versio 1}]
+       :osaamisen-hankkimistapa-koodi-versio 1
+       :muut-oppimisymparistot
+       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0222"
+         :oppimisymparisto-koodi-versio 3
+         :alku "2015-03-10"
+         :loppu "2021-03-19"}]}]
      :osaamisen-osoittaminen
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
        :nayttoymparisto {:nimi "aaa"}
+       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
+                     :koodi-versio 4}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Erkki Esimerkkitetsaaja"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.13490579333"}}]
        :alku "2018-12-12"
        :loppu "2018-12-20"
        :sisallon-kuvaus ["Kuvaus"]
        :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
                                        {:nimi "Organisaation nimi"}}]
-       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]}]
-   :tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
-   :tutkinnon-osa-koodi-versio 1
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"})
-
-(def hyto-patch-data
-  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
-   :tutkinnon-osa-koodi-versio 1
-   :osa-alueet
-   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
-     :osa-alue-koodi-versio 1
-     :osaamisen-hankkimistavat
-     [{:alku "2018-12-13"
-       :loppu "2018-12-22"
-       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
-       :osaamisen-hankkimistapa-koodi-versio 1}]
-     :osaamisen-osoittaminen
-     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000008"}
-       :nayttoymparisto {:nimi "aaa2"}
-       :alku "2018-12-15"
-       :loppu "2018-12-21"
-       :sisallon-kuvaus ["Kuvaus"]
-       :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
-                                       {:nimi "Organisaation nimi"}}]}]}]
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"})
-
-(def hyto-patch-one-data
-  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
-   :tutkinnon-osa-koodi-versio 1
-   :osa-alueet
-   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
-     :osa-alue-koodi-versio 1
-     :osaamisen-hankkimistavat
-     [{:alku "2018-12-13"
-       :loppu "2018-12-22"
-       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
-       :osaamisen-hankkimistapa-koodi-versio 1}]
-     :osaamisen-osoittaminen
-     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000010"}
-       :nayttoymparisto {:nimi "aaa2"}
-       :alku "2018-12-15"
-       :loppu "2018-12-21"
-       :sisallon-kuvaus ["Kuvaus"]
-       :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
-                                       {:nimi "Organisaation nimi"}}]}]}]
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000011"})
+       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]}]})
 
 (deftest post-and-get-hankittava-yhteinen-tutkinnon-osa
   (testing "POST hankittavat yhteisen tutkinnon osat"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url hyto-path))
-                (mock/json-body hyto-data)))
-          get-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (mock/request
-              :get
-              (format
-                "%s/1/%s/1"
-                url hyto-path)))]
-      (is (= (:status post-response) 200))
-      (eq (utils/parse-body
-            (:body post-response))
-          {:data {:uri   (format
-                           "%s/1/%s/1"
-                           url hyto-path)} :meta {:id 1}})
-      (is (= (:status get-response) 200))
-      (eq (:id (:data (utils/parse-body
-                        (:body get-response))))
-          1))))
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            hyto-path hyto-data app hoks)
+            get-response (create-mock-hoks-osa-get-request hyto-path app hoks)]
+        (assert-post-response-is-ok hyto-path post-response)
+        (is (= (:status get-response) 200))
+        (eq (utils/parse-body
+              (:body get-response))
+            {:meta {} :data (assoc hyto-data :id 1)})))))
 
-(deftest put-hankittava-yhteinen-tutkinnon-osa
-  (testing "PUT hankittavat yhteisen tutkinnon osat"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url hyto-path))
-                (mock/json-body hyto-data)))
-          response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :put
-                  (format
-                    "%s/1/%s/1"
-                    url hyto-path))
-                (mock/json-body
-                  (assoc hyto-data :id 1))))]
-      (is (= (:status response) 204)))))
+(def ^:private one-value-of-hyto-patched
+  {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})
 
-(deftest patch-one-hankittava-yhteinen-tutkinnon-osa
+(deftest patch-one-value-of-hankittava-yhteinen-tutkinnon-osa
   (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url hyto-path))
-                (mock/json-body hyto-data)))
-          response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url hyto-path))
-                (mock/json-body
-                  {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})))]
-      (is (= (:status response) 204)))))
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            hyto-path hyto-data app hoks)
+            patch-response (create-mock-hoks-osa-patch-request
+                             hyto-path app one-value-of-hyto-patched)
+            get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
+        (is (= (:status patch-response) 204))
+        (is (= (:koulutuksen-jarjestaja-oid get-response-data)
+               (:koulutuksen-jarjestaja-oid one-value-of-hyto-patched))
+            "Patched value should change.")
+        (is (= (:tutkinnon-osa-koodi-versio get-response-data)
+               (:tutkinnon-osa-koodi-versio hyto-data))
+            "Value should stay unchanged")))))
 
-(deftest patch-all-hankittavat-yhteiset-tutkinnon-osat
+(def osa-alueet-of-hyto
+  [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ru"
+    :osa-alue-koodi-versio 4
+    :vaatimuksista-tai-tavoitteista-poikkeaminen "uusi poikkeaminen"
+    :olennainen-seikka true
+    :osaamisen-hankkimistavat
+    [{:alku "2019-01-15"
+      :loppu "2020-02-23"
+      :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_muutettu"
+      :osaamisen-hankkimistapa-koodi-versio 3
+      :ajanjakson-tarkenne "tarkenne"
+      :muut-oppimisymparistot
+      [{:oppimisymparisto-koodi-uri "oppimisymparistot_0222"
+        :oppimisymparisto-koodi-versio 3
+        :alku "2016-03-12"
+        :loppu "2025-06-19"}]
+      :jarjestajan-edustaja
+      {:nimi "testi testaaja"
+       :oppilaitos-oid "1.2.246.562.10.00000000421"}
+      :hankkijan-edustaja
+      {:nimi "testi edustaja"
+       :oppilaitos-oid "1.2.246.562.10.00000000321"}
+      :tyopaikalla-jarjestettava-koulutus
+      {:tyopaikan-nimi "joku nimi"
+       :keskeiset-tyotehtavat ["tehtava" "toinen"]
+       :vastuullinen-tyopaikka-ohjaaja
+       {:nimi "ohjaaja o"}}}]
+    :osaamisen-osoittaminen
+    [{:alku "2018-12-12"
+      :loppu "2018-12-20"
+      :sisallon-kuvaus ["Kuvaus"]
+      :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
+      :vaatimuksista-tai-tavoitteista-poikkeaminen "nyt poikettiin"
+      :jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
+      :nayttoymparisto {:nimi "aaa"}
+      :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
+                    :koodi-versio 4}]
+      :koulutuksen-jarjestaja-osaamisen-arvioijat
+      [{:nimi "Erkki Esimerkkitetsaaja"
+        :organisaatio {:oppilaitos-oid
+                       "1.2.246.562.10.13490579333"}}]
+      :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                      {:nimi "Organisaation nimi"}}]}]}])
+
+(def multiple-hyto-values-patched
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"
+   :osa-alueet osa-alueet-of-hyto})
+
+(deftest patch-multiple-values-of-hankittavat-yhteiset-tutkinnon-osat
   (testing "PATCH all hankittavat yhteisen tutkinnon osat"
-    (db/clear)
-    (let [post-response
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            hyto-path hyto-data app hoks)
+            patch-response (create-mock-hoks-osa-patch-request
+                             hyto-path app multiple-hyto-values-patched)
+            get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
+        (is (= (:status patch-response) 204))
+        (eq (:osa-alueet get-response-data)
+            (:osa-alueet multiple-hyto-values-patched))))))
+
+(def hyto-sub-entity-patched
+  {:osa-alueet osa-alueet-of-hyto})
+
+(deftest only-sub-entity-of-hyto-patched
+  (testing "PATCH only osa-alueet of hyto and leave base hyto untouched."
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            hyto-path hyto-data app hoks)
+            patch-response (create-mock-hoks-osa-patch-request
+                             hyto-path app hyto-sub-entity-patched)
+            get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
+        (is (= (:status patch-response) 204))
+        (eq (:osa-alueet get-response-data)
+            (:osa-alueet hyto-sub-entity-patched))))))
+
+(def hyto-url (format "%1s/1/%2s" url hyto-path))
+
+(deftest create-and-delete-hoks-with-hyto
+  (testing "Creating a hoks with hyto and deleting it"
+    (let [hoks (create-hoks)
+          hyto-response
           (utils/with-service-ticket
             (create-app nil)
             (-> (mock/request
                   :post
-                  (format
-                    "%s/1/%s"
-                    url hyto-path))
+                  hyto-url)
                 (mock/json-body hyto-data)))
-          response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url hyto-path))
-                (mock/json-body
-                  hyto-patch-data)))]
-      (is (= (:status response) 204)))))
-
-  (def hyto-url (format "%1s/1/%2s" url hyto-path))
-  (deftest create-and-delete-hoks-with-hyto
-    (testing "Creating a hoks with hyto and deleting it"
-      (db/clear)
-        (let [hoks (create-hoks)
-              hyto-response
-              (utils/with-service-ticket
-                (create-app nil)
-                (-> (mock/request
-                      :post
-                      hyto-url)
-                    (mock/json-body hyto-data)))
-              hyto-id (:id (:meta (utils/parse-body (:body hyto-response))))
-              get-hyto-before-delete-response
-                (utils/with-service-ticket
-                          (create-app nil)
-                          (mock/request
-                            :get
-                            (format
-                              "%s/1/%s/1"
-                              url hyto-path)))
-              delete-response (h/delete-hoks-by-id! (:id hoks))
-              get-hyto-after-delete-response
-                (utils/with-service-ticket
-                          (create-app nil)
-                          (mock/request
-                            :get
-                            (format
-                              "%s/1/%s/1"
-                              url hyto-path)))
-              get-hoks-after-delete (pdb/select-hoks-by-id 1)]
-            (is (= (:status get-hyto-before-delete-response) 200))
-            (is (= (:status get-hyto-after-delete-response) 404))
-            (is (= get-hoks-after-delete nil)))))
-
-(def ovatu-path "opiskeluvalmiuksia-tukevat-opinnot")
-(def ovatu-data {:nimi "Nimi"
-                 :kuvaus "Kuvaus"
-                 :alku "2018-12-12"
-                 :loppu "2018-12-20"})
-
-(deftest post-and-get-ovatu
-  (testing "GET opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url ovatu-path))
-                (mock/json-body ovatu-data)))
-          get-response
+          hyto-id (:id (:meta (utils/parse-body (:body hyto-response))))
+          get-hyto-before-delete-response
           (utils/with-service-ticket
             (create-app nil)
             (mock/request
               :get
               (format
                 "%s/1/%s/1"
-                url ovatu-path)))]
-      (is (= (:status post-response) 200))
-      (eq (utils/parse-body
-            (:body post-response))
-          {:data {:uri (format
-                         "%s/1/%s/1"
-                         url ovatu-path)} :meta {:id 1}})
-      (is (= (:status get-response) 200))
-      (eq (utils/parse-body
-            (:body get-response))
-          {:data {:id 1
-                  :nimi "Nimi"
-                  :kuvaus "Kuvaus"
-                  :alku "2018-12-12"
-                  :loppu "2018-12-20"}
-           :meta {}}))))
+                url hyto-path)))
+          delete-response (h/delete-hoks-by-id! (:id hoks))
+          get-hyto-after-delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :get
+              (format
+                "%s/1/%s/1"
+                url hyto-path)))
+          get-hoks-after-delete (pdb/select-hoks-by-id 1)]
+      (is (= (:status get-hyto-before-delete-response) 200))
+      (is (= (:status get-hyto-after-delete-response) 404))
+      (is (= get-hoks-after-delete nil)))))
 
-(deftest put-ovatu
-  (testing "PUT opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url ovatu-path))
-                (mock/json-body ovatu-data)))
-          put-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :put
-                  (format
-                    "%s/1/%s/1"
-                    url ovatu-path))
-                (mock/json-body
-                  {:id 1
-                   :nimi "Uusi nimi"
-                   :kuvaus "Uusi kuvaus"
-                   :alku "2018-12-15"
-                   :loppu "2018-12-25"})))]
-      (is (= (:status put-response) 204)))))
+(def oto-path "opiskeluvalmiuksia-tukevat-opinnot")
+(def oto-data {:nimi "Nimi"
+               :kuvaus "Kuvaus"
+               :alku "2018-12-12"
+               :loppu "2018-12-20"})
 
-(deftest patch-one-ovatu
-  (testing "PATCH one value opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url ovatu-path))
-                (mock/json-body ovatu-data)))
-          patch-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url ovatu-path))
-                (mock/json-body
-                  {:id 1
-                   :nimi "Uusi nimi"})))]
-      (is (= (:status patch-response) 204)))))
+(deftest post-and-get-opiskeluvalmiuksia-tukevat-opinnot
+  (testing "GET opiskeluvalmiuksia tukevat opinnot"
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            oto-path oto-data app hoks)
+            get-response (create-mock-hoks-osa-get-request oto-path app hoks)]
+        (assert-post-response-is-ok oto-path post-response)
+        (is (= (:status get-response) 200))
+        (eq (utils/parse-body
+              (:body get-response))
+            {:meta {} :data (assoc oto-data :id 1)})))))
 
-(deftest patch-all-ovatu
+(def ^:private one-value-of-oto-patched
+  {:nimi "Muuttunut Nimi"})
+
+(deftest patch-one-value-of-opiskeluvalmiuksia-tukevat-opinnot
+  (testing "PATCH one value of opiskeluvalmiuksia tukevat opinnot"
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            oto-path oto-data app hoks)
+            patch-response (create-mock-hoks-osa-patch-request
+                             oto-path app one-value-of-oto-patched)
+            get-response (create-mock-hoks-osa-get-request oto-path app hoks)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
+        (is (= (:status patch-response) 204))
+        (is (= (:nimi get-response-data)
+               (:nimi one-value-of-oto-patched))
+            "Patched value should change.")
+        (is (= (:kuvaus get-response-data)
+               (:kuvaus oto-data))
+            "Value should stay unchanged")))))
+
+(def ^:private all-values-of-oto-patched
+  {:nimi "Muuttunut Nimi"
+   :kuvaus "Uusi Kuvaus"
+   :alku "2020-01-12"
+   :loppu "2021-10-20"})
+
+(deftest patch-multiple-values-of-oto
   (testing "PATCH all opiskeluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (let [post-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :post
-                  (format
-                    "%s/1/%s"
-                    url ovatu-path))
-                (mock/json-body ovatu-data)))
-          patch-response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request
-                  :patch
-                  (format
-                    "%s/1/%s/1"
-                    url ovatu-path))
-                (mock/json-body
-                  {:id 1
-                   :nimi "Uusi nimi"
-                   :kuvaus "Uusi kuvaus"
-                   :alku "2018-12-11"
-                   :loppu "2018-12-21"})))]
-      (is (= (:status patch-response) 204)))))
+    (with-hoks
+      hoks
+      (let [app (create-app nil)
+            post-response (create-mock-post-request
+                            oto-path oto-data app hoks)
+            patch-response (create-mock-hoks-osa-patch-request
+                             oto-path app all-values-of-oto-patched)
+            get-response (create-mock-hoks-osa-get-request oto-path app hoks)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
+        (is (= (:status patch-response) 204))
+        (eq get-response-data (assoc all-values-of-oto-patched :id 1))))))
 
 (defn add-empty-hoks-values [hoks]
   (assoc
@@ -1192,7 +1129,6 @@
 
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
-    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :ensikertainen-hyvaksyminen "2018-12-15"}
@@ -1213,7 +1149,6 @@
 
 (deftest prevent-creating-hoks-with-existing-opiskeluoikeus
   (testing "Prevent POST HOKS with existing opiskeluoikeus"
-    (db/clear)
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :ensikertainen-hyvaksyminen "2018-12-15"
@@ -1231,6 +1166,22 @@
         (is (= (utils/parse-body (:body response))
                {:error
                 "HOKS with the same opiskeluoikeus-oid already exists"}))))))
+
+(deftest prevent-creating-hoks-with-non-existing-oppija
+  (testing "Prevent POST HOKS with non-existing oppija"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.40404040404"
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}]
+      (let [response
+            (utils/with-service-ticket
+              (create-app nil)
+              (-> (mock/request :post url)
+                  (mock/json-body hoks-data)))]
+        (is (= (:status response) 400))
+        (is (= (utils/parse-body (:body response))
+               {:error
+                "Oppija not found in Oppijanumerorekisteri"}))))))
 
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
@@ -1287,171 +1238,412 @@
                    :id 1
                    :eid (:eid hoks))))))))
 
-(deftest patch-created-hoks
+(def hoks-data
+  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
+   :opiskeluvalmiuksia-tukevat-opinnot [oto-data]
+   :hankittavat-ammat-tutkinnon-osat [hao-data]
+   :hankittavat-paikalliset-tutkinnon-osat [hpto-data]
+   :hankittavat-yhteiset-tutkinnon-osat [hyto-data]
+   :aiemmin-hankitut-ammat-tutkinnon-osat [ahato-data]
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat [ahpto-data]
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat [ahyto-data]})
+
+(defn- assert-partial-put-of-hoks [updated-hoks hoks-part]
+  (let [app (create-app nil)
+        post-response (create-mock-post-request "" hoks-data app)
+        put-response (create-mock-hoks-put-request 1 updated-hoks app)
+        get-response (create-mock-hoks-get-request 1 app)
+        get-response-data (:data (utils/parse-body (:body get-response)))]
+    (is (= (:status post-response) 200))
+    (is (= (:status put-response) 204))
+    (is (= (:status get-response) 200))
+    (eq (hoks-part get-response-data)
+        (hoks-part updated-hoks))))
+
+(def one-value-of-hoks-patched
+  {:id 1
+   :ensikertainen-hyvaksyminen "2020-01-05"})
+
+(deftest patch-one-value-of-hoks
   (testing "PATCH updates value of created HOKS"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"
-                     :osaamisen-hankkimisen-tarve false}
-          response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request :post url)
-                (mock/json-body hoks-data)))
-          body (utils/parse-body (:body response))]
-      (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)
-            patch-response
-            (utils/with-service-ticket
-              (create-app nil)
-              (-> (mock/request :patch (get-in body [:data :uri]))
-                  (mock/json-body
-                    {:id 1
-                     :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
-                     :urasuunnitelma-koodi-versio 1})))]
-        (is (= (:status patch-response) 204))
-        (let [updated-hoks
-              (-> (get-in body [:data :uri]) get-authenticated :data)]
-          (eq
-            updated-hoks
-            (assoc
-              hoks
-              :id 1
-              :urasuunnitelma-koodi-uri "urasuunnitelma_0001"
-              :urasuunnitelma-koodi-versio 1)))))))
+    (let [app (create-app nil)
+          post-response (create-mock-post-request "" hoks-data app)
+          patch-response (create-mock-hoks-patch-request
+                           1 one-value-of-hoks-patched app)
+          get-response (create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status patch-response) 204))
+      (is (= (:status get-response) 200))
+      (is (= (:ensikertainen-hyvaksyminen get-response-data)
+             (:ensikertainen-hyvaksyminen one-value-of-hoks-patched))
+          "Patched value should change.")
+      (is (= (:kuvaus get-response-data)
+             (:kuvaus one-value-of-hoks-patched))
+          "Value should stay unchanged"))))
+
+(deftest patching-of-hoks-part-not-allowed
+  (testing "PATCH of HOKS can't be used to update sub entities of HOKS"
+    (let [app (create-app nil)
+          post-response (create-mock-post-request "" hoks-data app)
+          patch-response (create-mock-hoks-patch-request
+                           1 hoks-data app)]
+      (is (= (:status post-response) 200))
+      (is (= (:status patch-response) 400)))))
+
+(def oto-of-hoks-updated
+  {:id 1
+   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :opiskeluvalmiuksia-tukevat-opinnot
+   [{:nimi "Uusi Nimi"
+     :kuvaus "joku kuvaus"
+     :alku "2019-06-22"
+     :loppu "2021-05-07"}]})
+
+(deftest put-oto-of-hoks
+  (testing "PUTs opiskeluvalmiuksia tukevat opinnot of HOKS"
+    (assert-partial-put-of-hoks
+      oto-of-hoks-updated :opiskeluvalmiuksia-tukevat-opinnot)))
+
+(def hato-of-hoks-updated
+  {:id 1
+   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :hankittavat-ammat-tutkinnon-osat
+   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_300222"
+     :tutkinnon-osa-koodi-versio 2
+     :vaatimuksista-tai-tavoitteista-poikkeaminen
+     "Ei poikkeamia."
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"
+     :osaamisen-hankkimistavat
+     [{:alku "2018-12-12"
+       :loppu "2018-12-20"
+       :ajanjakson-tarkenne "Tarkenne muuttunut"
+       :osaamisen-hankkimistapa-koodi-uri
+       "osaamisenhankkimistapa_koulutussopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1
+       :muut-oppimisymparistot
+       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0003"
+         :oppimisymparisto-koodi-versio 1
+         :alku "2019-03-10"
+         :loppu "2019-03-19"}]
+       :hankkijan-edustaja
+       {:nimi "Heikki Hank"
+        :rooli "Opettaja"
+        :oppilaitos-oid "1.2.246.562.10.54452422420"}}]
+     :osaamisen-osoittaminen
+     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+       :nayttoymparisto {:nimi "Testiympäristö 2"
+                         :y-tunnus "12345671-2"
+                         :kuvaus "Testi test"}
+       :sisallon-kuvaus ["Testaus"]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Timo Testaaja2"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.54452521332"}}]
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Taneli Työmies2"
+         :organisaatio {:nimi "Tanelin Paja Oy"
+                        :y-tunnus "12345622-2"}}]
+       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
+                     :koodi-versio 3}]
+       :alku "2019-03-10"
+       :loppu "2019-03-19"
+       :yksilolliset-kriteerit ["Yksi kriteeri" "toinen kriteeri"]}]}]})
+
+(deftest put-hato-of-hoks
+  (testing "PUTs hankittavat ammatilliset tutkinnon osat of HOKS"
+    (assert-partial-put-of-hoks
+      hato-of-hoks-updated :hankittavat-ammat-tutkinnon-osat)))
+
+(def hpto-of-hoks-updated
+  {:id 1
+   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :hankittavat-paikalliset-tutkinnon-osat
+   [{:nimi "testinimi"
+     :koulutuksen-jarjestaja-oid
+     "1.2.246.562.10.00000000001"
+     :olennainen-seikka false
+     :osaamisen-hankkimistavat
+     [{:alku "2019-12-12"
+       :loppu "2020-12-20"
+       :ajanjakson-tarkenne "Tarkenne muuttunut"
+       :osaamisen-hankkimistapa-koodi-uri
+       "osaamisenhankkimistapa_koulutussopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1
+       :muut-oppimisymparistot
+       [{:oppimisymparisto-koodi-uri
+         "oppimisymparistot_0004"
+         :oppimisymparisto-koodi-versio 2
+         :alku "2019-03-10"
+         :loppu "2021-03-19"}]
+       :hankkijan-edustaja
+       {:nimi "Heikki Hankk"
+        :rooli "Opettaja"
+        :oppilaitos-oid "1.2.246.562.10.54452422420"}}]
+     :osaamisen-osoittaminen
+     [{:jarjestaja {:oppilaitos-oid
+                    "1.2.246.562.10.00000000022"}
+       :koulutuksen-jarjestaja-osaamisen-arvioijat []
+       :osa-alueet []
+       :sisallon-kuvaus
+       ["ensimmäinen sisältö" "toinenkin" "kolkki"]
+       :nayttoymparisto {:nimi "aaab"}
+       :alku "2018-12-12"
+       :loppu "2018-12-20"
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Nimi2"
+         :organisaatio {:nimi "Organisaation nimi"}}]
+       :vaatimuksista-tai-tavoitteista-poikkeaminen
+       "Poikkeama tämä."
+       :yksilolliset-kriteerit
+       ["kriteeri 1"]}]}]})
+
+(deftest put-hpto-of-hoks
+  (testing "PUTs hankittavat paikalliset tutkinnon osat of HOKS"
+    (assert-partial-put-of-hoks
+      hpto-of-hoks-updated :hankittavat-paikalliset-tutkinnon-osat)))
+
+(def hyto-of-hoks-updated
+  {:id 1
+   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :hankittavat-yhteiset-tutkinnon-osat
+   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_3002690"
+     :tutkinnon-osa-koodi-versio 3
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"
+     :osa-alueet
+     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
+       :osa-alue-koodi-versio 1
+       :vaatimuksista-tai-tavoitteista-poikkeaminen "poikkeaminen"
+       :olennainen-seikka true
+       :osaamisen-hankkimistavat
+       [{:alku "2018-12-15"
+         :loppu "2018-12-23"
+         :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_joku"
+         :osaamisen-hankkimistapa-koodi-versio 3
+         :muut-oppimisymparistot
+         [{:oppimisymparisto-koodi-uri "oppimisymparistot_0232"
+           :oppimisymparisto-koodi-versio 3
+           :alku "2016-03-10"
+           :loppu "2021-03-19"}]}]
+       :osaamisen-osoittaminen
+       [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000032"}
+         :nayttoymparisto {:nimi "aaab"}
+         :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ru"
+                       :koodi-versio 4}]
+         :koulutuksen-jarjestaja-osaamisen-arvioijat
+         [{:nimi "Erkki Esimerkkitest"
+           :organisaatio {:oppilaitos-oid
+                          "1.2.246.562.10.13490579322"}}]
+         :alku "2018-12-12"
+         :loppu "2019-12-20"
+         :sisallon-kuvaus ["Kuvaus" "toinen"]
+         :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                         {:nimi "Organisaation name"}}]
+         :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "toka"]}]}]}]})
+
+(deftest put-hyto-of-hoks
+  (testing "PUTs hankittavat yhteiset tutkinnon osat of HOKS"
+    (assert-partial-put-of-hoks
+      hyto-of-hoks-updated :hankittavat-yhteiset-tutkinnon-osat)))
+
+(def ahato-of-hoks-updated
+  {:id 1
+   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :aiemmin-hankitut-ammat-tutkinnon-osat
+   [{:valittu-todentamisen-prosessi-koodi-versio 5
+     :tutkinnon-osa-koodi-versio 100033
+     :valittu-todentamisen-prosessi-koodi-uri "osaamisentodentamisenprosessi_2"
+     :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921429"
+     :tarkentavat-tiedot-osaamisen-arvioija
+     {:lahetetty-arvioitavaksi "2012-03-18"
+      :aiemmin-hankitun-osaamisen-arvioijat
+      [{:nimi "Erkki Esimerk"
+        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921633"}}
+       {:nimi "Joku Tyyp"
+        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921001"}}]}
+     :tarkentavat-tiedot-naytto
+     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
+                     :koodi-versio 3}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Aapo Arvo"
+         :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921684"}}]
+       :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921785"}
+       :nayttoymparisto {:nimi "Esimerkki Oyj"
+                         :y-tunnus "12345699-3"
+                         :kuvaus "Testiyrityksen testiosa"}
+       :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työm"
+                                       :organisaatio
+                                       {:nimi "Testiyrityksen Sisar"
+                                        :y-tunnus "12345689-5"}}]
+       :sisallon-kuvaus ["Tutkimustyö" "Raportointi" "joku"]
+       :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "toinen"]
+       :alku "2018-02-09"
+       :loppu "2021-01-12"}]}]})
+
+(deftest put-ahato-of-hoks
+  (testing "PUTs aiemmin hankitut ammatilliset tutkinnon osat of HOKS"
+    (assert-partial-put-of-hoks
+      ahato-of-hoks-updated :aiemmin-hankitut-ammat-tutkinnon-osat)))
+
+(def ahpto-of-hoks-updated
+  {:id 1
+   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat
+   [{:valittu-todentamisen-prosessi-koodi-versio 3
+     :laajuus 40
+     :nimi "Testiopintojaksoo"
+     :tavoitteet-ja-sisallot "Tavoitteena on oppiminen."
+     :valittu-todentamisen-prosessi-koodi-uri
+     "osaamisentodentamisenprosessi_0003"
+     :amosaa-tunniste "12345"
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453945325"
+     :vaatimuksista-tai-tavoitteista-poikkeaminen "Ei poikkeamaa"
+     :tarkentavat-tiedot-osaamisen-arvioija
+     {:lahetetty-arvioitavaksi "2021-01-01"
+      :aiemmin-hankitun-osaamisen-arvioijat
+      [{:nimi "Aarne Arvioija toinen"
+        :organisaatio {:oppilaitos-oid
+                       "1.2.246.562.10.54453923421"}}]}
+     :tarkentavat-tiedot-naytto
+     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
+                     :koodi-versio 6}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Teuvo Test"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.12346234691"}}]
+       :jarjestaja {:oppilaitos-oid
+                    "1.2.246.562.10.93270534263"}
+       :nayttoymparisto {:nimi "Testi Oy"
+                         :y-tunnus "1289212-2"
+                         :kuvaus "Testiyhtiöö"}
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Terttu Test"
+         :organisaatio {:nimi "Testi Oy"
+                        :y-tunnus "1289211-4"}}]
+       :sisallon-kuvaus ["Testauksen suunnittelu"
+                         "Jokin toinen testi"]
+       :alku "2018-02-01"
+       :loppu "2021-03-01"
+       :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "Toinen"]}]}]})
+
+(deftest put-ahpto-of-hoks
+  (testing "PUTs aiemmin hankitut paikalliset tutkinnon osat of HOKS"
+    (assert-partial-put-of-hoks
+      ahpto-of-hoks-updated :aiemmin-hankitut-paikalliset-tutkinnon-osat)))
+
+(def ahyto-of-hoks-updated
+  {:id 1
+   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat
+   [{:valittu-todentamisen-prosessi-koodi-uri
+     "osaamisentodentamisenprosessi_0002"
+     :valittu-todentamisen-prosessi-koodi-versio 4
+     :tutkinnon-osa-koodi-versio 2
+     :tutkinnon-osa-koodi-uri "tutkinnonosat_10203"
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590921"
+     :tarkentavat-tiedot-osaamisen-arvioija
+     {:lahetetty-arvioitavaksi "2017-03-29"
+      :aiemmin-hankitun-osaamisen-arvioijat
+      [{:nimi "Arttu Arvioi"
+        :organisaatio {:oppilaitos-oid
+                       "1.2.246.562.10.54453931312"}}]}
+     :osa-alueet
+     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ru"
+       :osa-alue-koodi-versio 4
+       :koulutuksen-jarjestaja-oid
+       "1.2.246.562.10.54453923577"
+       :vaatimuksista-tai-tavoitteista-poikkeaminen
+       "Testaus ei kuulu."
+       :valittu-todentamisen-prosessi-koodi-uri
+       "osaamisentodentamisenprosessi_0004"
+       :valittu-todentamisen-prosessi-koodi-versio 4
+       :tarkentavat-tiedot-naytto
+       [{:sisallon-kuvaus ["kuvaus1" "kuvaus2"]
+         :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ai"
+                       :koodi-versio 5}]
+         :koulutuksen-jarjestaja-osaamisen-arvioijat
+         [{:nimi "Teppo Test"
+           :organisaatio {:oppilaitos-oid
+                          "1.2.246.562.10.54539267911"}}]
+         :jarjestaja {:oppilaitos-oid
+                      "1.2.246.562.10.55890967911"}
+         :nayttoymparisto {:nimi "Ab Yhtiö"
+                           :y-tunnus "1234128-2"
+                           :kuvaus "Testi1"}
+         :tyoelama-osaamisen-arvioijat
+         [{:nimi "Tellervo Tekijä"
+           :organisaatio {:nimi "Ab Yhtiö"
+                          :y-tunnus "1234128-1"}}]
+         :yksilolliset-kriteerit ["Joku kriteeri" "Toinen"]
+         :alku "2019-01-04"
+         :loppu "2021-03-01"}]}]
+     :tarkentavat-tiedot-naytto
+     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ru"
+                     :koodi-versio 7}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Erkki Esimerkkitest"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.13490579091"}}]
+       :jarjestaja {:oppilaitos-oid
+                    "1.2.246.562.10.93270579093"}
+       :nayttoymparisto {:nimi "Testi"
+                         :y-tunnus "1289235-3"
+                         :kuvaus "Testiyht"}
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Tapio Testi"
+         :organisaatio {:nimi "Testi Oyj"
+                        :y-tunnus "1289235-3"}}]
+       :sisallon-kuvaus
+       ["Testauksen suunnittelu" "Jokin toinen testi" "kolmas"]
+       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
+       :alku "2019-03-01"
+       :loppu "2019-06-01"}]}]})
+
+(deftest put-ahyto-of-hoks
+  (testing "PUTs aiemmin hankitut yhteiset tutkinnon osat of HOKS"
+    (assert-partial-put-of-hoks
+      ahyto-of-hoks-updated :aiemmin-hankitut-yhteiset-tutkinnon-osat)))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
-    (let [response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request :patch (format "%s/1" url))
-                (mock/json-body {:id 1})))]
+    (let [app (create-app nil)
+          response (create-mock-hoks-patch-request 1 {:id 1} app)]
       (is (= (:status response) 404)))))
 
-(deftest create-and-delete-hoks-with-hpto-and-hao
-  (testing "delete hoks and newly created puuttuva paikallinen tutkinnon osa"
-    (db/clear)
-    (with-hoks
-      hoks
-      (let [hoks-id (:id hoks)
-            hpto-response
+(deftest put-non-existing-hoks
+  (testing "PUT prevents updating non existing HOKS"
+    (let [app (create-app nil)
+          response (create-mock-hoks-put-request 1 {:id 1} app)]
+      (is (= (:status response) 404)))))
+
+(deftest get-hoks-by-id-not-found
+  (testing "GET HOKS by hoks-id"
+    (let [app (create-app nil)]
+      (let [response
             (utils/with-service-ticket
-              (create-app nil)
-              (-> (mock/request
-                    :post
-                    (get-hoks-url hoks "hankittava-paikallinen-tutkinnon-osa"))
-                  (mock/json-body hpto-data)))
-            body (utils/parse-body (:body hpto-response))
-            hao-response
-            (utils/with-service-ticket
-              (create-app nil)
-              (-> (mock/request
-                    :post
-                    (format
-                      "%s/1/hankittava-ammat-tutkinnon-osa"
-                      url))
-                  (mock/json-body
-                    hao-data)))
-            delete-response (h/delete-hoks-by-id! (:id hoks))]
-        (is (= (:status hpto-response) 200))
-        (is (= (:status hao-response) 200))
-        (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
-        (is (empty? (h/get-hankittavat-paikalliset-tutkinnon-osat  hoks-id)))
-        (is (empty? (h/get-hankittavat-ammat-tutkinnon-osat hoks-id)))))))
-
-(deftest create-and-delete-hoks-with-opto-and-oao
-  (testing "delete hoks and newly created olemassa-oleva tutkinnon osa and
-olemassaoleva paikallinen tutkinnonosa"
-    (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"
-                     :aiemmin-hankitut-ammat-tutkinnon-osat
-                     [{:tutkinnon-osa-koodi-uri "tutkinnonosat_0001"
-                       :tutkinnon-osa-koodi-versio 1
-                       :valittu-todentamisen-prosessi-koodi-uri
-                       "osaamisentodentamisenprosessi_0001"
-                       :valittu-todentamisen-prosessi-koodi-versio 1}]
-                     :aiemmin-hankitut-paikalliset-tutkinnon-osat
-                     [{:valittu-todentamisen-prosessi-koodi-versio 1
-                       :valittu-todentamisen-prosessi-koodi-uri
-                       "osaamisentodentamisenprosessi_0001"}]}
-          response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request :post url)
-                (mock/json-body hoks-data)))
-          body (utils/parse-body (:body response))
-          hoks (-> (get-in body [:data :uri]) get-authenticated :data)
-          hoks-id (:id hoks)
-          oao-response (h/get-aiemmin-hankitut-ammat-tutkinnon-osat
-                         hoks-id)
-          opto-response (h/get-aiemmin-hankitut-paikalliset-tutkinnon-osat
-                          hoks-id)
-          delete-response (h/delete-hoks-by-id! (:id hoks))]
-      (is (= (:status response) 200))
-      (eq (empty? oao-response) false)
-      (eq (empty? opto-response) false)
-      (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
-      (is (empty? (h/get-aiemmin-hankitut-ammat-tutkinnon-osat hoks-id)))
-      (is (empty? (h/get-aiemmin-hankitut-paikalliset-tutkinnon-osat
-                    hoks-id))))))
-
-(deftest create-and-delete-hoks-with-ooyto
-  (testing "delete hoks and newly created olemassa-oleva yto"
-    (db/clear)
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"
-                     :aiemmin-hankitut-yhteiset-tutkinnon-osat
-                     [{:valittu-todentamisen-prosessi-koodi-uri
-                       "osaamisentodentamisenprosessi_0001"
-                       :valittu-todentamisen-prosessi-koodi-versio 1
-                       :tutkinnon-osa-koodi-uri "tutkinnonosat_0001"
-                       :tutkinnon-osa-koodi-versio 1
-                       :osa-alueet
-                       [{:osa-alue-koodi-uri "ammatillisenoppiaineet_0001"
-                         :osa-alue-koodi-versio 1
-                         :valittu-todentamisen-prosessi-koodi-uri
-                         "osaamisentodentamisenprosessi_0001"
-                         :valittu-todentamisen-prosessi-koodi-versio 1}]}]}
-
-          response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request :post url)
-                (mock/json-body hoks-data)))
-          body (utils/parse-body (:body response))
-          hoks (-> (get-in body [:data :uri]) get-authenticated :data)
-          hoks-id (:id hoks)
-          ooyto-response (h/get-aiemmin-hankitut-yhteiset-tutkinnon-osat
-                           hoks-id)
-          delete-response (h/delete-hoks-by-id! (:id hoks))]
-      (is (= (:status response) 200))
-      (eq (empty? ooyto-response) false)
-      (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
-      (is (empty? (h/get-aiemmin-hankitut-yhteiset-tutkinnon-osat
-                    hoks-id))))))
-
-(deftest create-and-delete-hoks-with-ovatu
-  (testing "delete hoks and newly created opikseluvalmiuksia tukevat opinnot"
-    (db/clear)
-    (with-hoks
-      hoks
-      (let [hoks-id (:id hoks)
-            ovatu-response (utils/with-service-ticket
-                             (create-app nil)
-                             (-> (mock/request
-                                   :post
-                                   (format
-                                     "%s/1/%s"
-                                     url ovatu-path))
-                                 (mock/json-body ovatu-data)))
-            delete-response (h/delete-hoks-by-id! (:id hoks))]
-        (is (= (:status ovatu-response) 200))
-        (is (= (:id (h/get-hoks-by-id hoks-id)) nil))
-        (is (empty? (h/get-opiskeluvalmiuksia-tukevat-opinnot
-                      hoks-id)))))))
+              app
+              (mock/request :get
+                            (format "%s/%s"
+                                    url 43857)))]
+        (is (= (:status response) 404))))))
 
 (deftest get-hoks-by-opiskeluoikeus-oid
   (testing "GET HOKS by opiskeluoikeus-oid"

@@ -161,6 +161,12 @@ Tämän jälkeen migraatiot pitää ajaa uudelleen.
 
 Migraatiot voi ajaa myös JAR:lla. Katso [Ajettava jar](#ajettava-jar)
 
+Migraation voi luoda:
+
+``` shell
+lein genmigration /path/to/migrations "Title of the migration"
+```
+
 ### Testit
 
 Ulkoiset API-kutsut voidaan mockata. Kehitysresursseissa on konfiguroitava

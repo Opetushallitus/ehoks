@@ -1,4 +1,6 @@
-(ns oph.ehoks.user)
+(ns oph.ehoks.user
+  (:require [clojure.string :as str]
+            [oph.ehoks.external.organisaatio :as o]))
 
 (defn resolve-privilege [privilege]
   (when (= (:palvelu privilege) "EHOKS")
@@ -44,7 +46,16 @@
     #(when (get (:roles %) :oph-super-user) true)
     (:organisation-privileges ticket-user)))
 
+(defn check-parent-oids [user-org target-org]
+  (or (= user-org target-org)
+      (some
+        #(= user-org %)
+        (str/split
+          (get (o/get-organisaatio target-org)
+               :parentOidPath "")
+          #"\|"))))
+
 (defn get-organisation-privileges [ticket-user organisation-oid]
   (some
-    #(when (= (:oid %) organisation-oid) (:privileges %))
+    #(when (check-parent-oids (:oid %) organisation-oid) (:privileges %))
     (:organisation-privileges ticket-user)))

@@ -5,7 +5,8 @@
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.db.postgresql :as db]))
+            [oph.ehoks.db.postgresql :as db]
+            [oph.ehoks.external.http-client :as client]))
 
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
@@ -51,6 +52,21 @@
 
 (defn with-test-virkailija
   ([request virkailija]
+    (client/set-get!
+      (fn [url options]
+        (cond
+          (.endsWith
+            url "/rest/organisaatio/v4/1.2.246.562.10.12000000001")
+          {:status 200
+           :body {:parentOidPath "|"}}
+          (.endsWith
+            url "/rest/organisaatio/v4/1.2.246.562.10.12000000000")
+          {:status 200
+           :body {:parentOidPath "|"}}
+          (.endsWith
+            url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
+          {:status 200
+           :body {:oppilaitos {:oid "1.2.246.562.10.12944436166"}}})))
     (let [session "12345678-1234-1234-1234-1234567890ab"
           cookie (str "ring-session=" session)
           store (atom

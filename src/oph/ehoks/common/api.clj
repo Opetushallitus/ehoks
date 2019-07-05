@@ -8,17 +8,20 @@
             [oph.ehoks.middleware :as middleware]
             [clojure.string :as cstr]))
 
+(def sessions (atom {}))
+
 (defn not-found-handler [_ __ ___]
   (response/not-found {:reason "Route not found"}))
 
+(defn log-exception [ex data]
+  (log/errorf
+    "Unhandled exception\n%s\n%s"
+    (str ex)
+    (cstr/join "\n" (.getStackTrace ex))))
+
 (defn exception-handler [^Exception ex & other]
-  (let [ex-data (if (map? (first other)) (first other) (ex-data ex))]
-    (log/errorf
-      "Error: %s\nData: %s\nLog-data: %s\nStacktrace:\n%s"
-      (.getMessage ex)
-      ex-data
-      (:log-data ex-data)
-      (cstr/join "\n" (.getStackTrace ex))))
+  (let [exception-data (if (map? (first other)) (first other) (ex-data ex))]
+    (log-exception ex exception-data))
   (response/internal-server-error {:type "unknown-exception"}))
 
 (def handlers
@@ -30,6 +33,6 @@
     (-> app-routes
         (middleware/wrap-cache-control-no-cache)
         (session/wrap-session
-          {:store (or session-store (mem/memory-store))
+          {:store (or session-store (mem/memory-store sessions))
            :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}})))
   ([app-routes] (create-app app-routes nil)))
