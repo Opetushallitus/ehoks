@@ -20,6 +20,7 @@
        :url (u/get-url "koski.post-sure-oids")
        :options {:body (json/write-str oppija-oids)
                  :basic-auth [(:cas-username config) (:cas-password config)]
+                 :content-type :json
                  :as :json}})))
 
 (defn get-oppija-opiskeluoikeudet
