@@ -1,9 +1,12 @@
-(ns oph.ehoks.user)
+(ns oph.ehoks.user
+  (:require [clojure.string :as str]
+            [oph.ehoks.external.organisaatio :as o]))
 
 (defn resolve-privilege [privilege]
   (when (= (:palvelu privilege) "EHOKS")
     (case (:oikeus privilege)
       "CRUD" #{:read :write :delete :update}
+      "OPHPAAKAYTTAJA" #{:read :write :delete :update}
       "READ" #{:read}
       #{})))
 
@@ -44,7 +47,20 @@
     #(when (get (:roles %) :oph-super-user) true)
     (:organisation-privileges ticket-user)))
 
+(defn check-parent-oids [user-org target-org]
+  (or (= user-org target-org)
+      (some
+        #(= user-org %)
+        (str/split
+          (:parentOidPath (o/get-organisaatio target-org) "")
+          #"\|"))))
+
 (defn get-organisation-privileges [ticket-user organisation-oid]
-  (some
-    #(when (= (:oid %) organisation-oid) (:privileges %))
-    (:organisation-privileges ticket-user)))
+  (let [privileges
+        (reduce into
+                (map :privileges
+                     (filter
+                       #(check-parent-oids (:oid %) organisation-oid)
+                       (:organisation-privileges ticket-user))))]
+    (when (seq privileges)
+      privileges)))

@@ -19,8 +19,8 @@
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.validation.handler :as validation-handler]
-            [oph.ehoks.logging.access :refer [wrap-access-logger]]))
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]
+            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]))
 
 (def routes
   (c-api/context "/ehoks-oppija-backend" []
@@ -33,7 +33,7 @@
         healthcheck-handler/routes
         external-handler/routes
         misc-handler/routes
-        validation-handler/routes
+
         (c-api/undocumented lokalisointi-handler/routes)
         (c-api/undocumented auth-handler/routes)
 
@@ -129,7 +129,7 @@
      {:handlers common-api/handlers}}
 
     (route-middleware
-      [wrap-access-logger]
+      [wrap-access-logger wrap-audit-logger]
       routes
       (c-api/undocumented
         (compojure-route/not-found

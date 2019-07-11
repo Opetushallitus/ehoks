@@ -20,7 +20,8 @@
                  [org.clojure/data.xml "0.0.8"]
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.1.0"]
-                 [software.amazon.awssdk/sqs "2.5.37"]]
+                 [software.amazon.awssdk/sqs "2.5.37"]
+                 [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]]
   :managed-dependencies [[org.clojure/clojure "1.10.0"]
 
                          ;; http server
@@ -56,6 +57,7 @@
                          [com.fasterxml.jackson.core/jackson-databind "2.9.8"]
                          [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.9.8"]
                          [org.clojure/data.json "0.2.6"]
+                         [com.google.code.gson/gson "2.8.0"]
 
                          ;; XML
                          [org.clojure/data.xml "0.0.8"]
@@ -85,13 +87,17 @@
                          [instaparse "1.4.10"]]
   :plugins [[lein-cljfmt "0.6.0" :exclusions [org.clojure/tools.cli]]
             [lein-kibit "0.1.6"]
-            [lein-bikeshed "0.5.1"]
+            [lein-bikeshed "0.5.2"]
             [jonase/eastwood "0.3.1"]
             [lein-auto "0.1.3"]
             [lein-ancient "0.6.15"]
             [lein-cloverage "1.0.13"]
             [lein-eftest "0.5.7"]
             [lein-environ "1.1.0"]]
+  :repositories [["releases" {:url           "https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local"
+                              :sign-releases false
+                              :snapshots     false}]
+                 ["snapshots" {:url "https://artifactory.opintopolku.fi/artifactory/oph-sade-snapshot-local"}]]
   :main oph.ehoks.main
   :aot [oph.ehoks.main]
   :uberjar-name "ehoks-standalone.jar"
@@ -102,7 +108,7 @@
                    "resources/db"]
   :cloverage {;:fail-threshold 90
               :html? false}
-  :aliases {"checkall" ["do"
+  :aliases {"checkall" ["with-profile" "+test" "do"
                         ["kibit"]
                         ["bikeshed"]
                         ["eastwood"]
@@ -113,7 +119,8 @@
             "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate!"]
             "dbclean" ["run" "-m" "oph.ehoks.db.migrations/clean!"]
             "import" ["run" "-m" "oph.ehoks.import/lein-import-file!"]
-            "send-json" ["run" "-m" "oph.ehoks.json-post-tool/lein-send-json!"]}
+            "send-json" ["run" "-m" "oph.ehoks.json-post-tool/lein-send-json!"]
+            "genmigration" ["run" "-m" "oph.ehoks.migration-tools/lein-genmigration"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:test {:resource-paths ["resources/test"
                                      "resources/test/src"

@@ -40,14 +40,21 @@
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")
 (defq select-hoks-oppijat-without-index
       "hoksit/select_oppija_oids_without_info.sql")
+(defq select-hoks-oppijat-without-index-count
+      "hoksit/select_oppija_oids_without_info_count.sql")
 (defq select-hoks-opiskeluoikeudet-without-index
       "hoksit/select_opiskeluoikeus_oids_without_info.sql")
+(defq select-hoks-opiskeluoikeudet-without-index-count
+      "hoksit/select_opiskeluoikeus_oids_without_info_count.sql")
 (defq select-oppilaitos-oppijat
       "oppijat/select_oppilaitos_oppijat.sql")
 (defq select-oppilaitos-oppijat-search-count
       "oppijat/select_oppilaitos_oppijat_search_count.sql")
 (defq select-opiskeluoikeudet-by-oppija-oid
       "oppijat/select_opiskeluoikeudet_by_oppija_oid.sql")
+(defq select-oppijat-by-oid "oppijat/select_oppijat_by_oid.sql")
+(defq select-opiskeluoikeudet-by-oid
+      "oppijat/select_opiskeluoikeudet_by_oid" .sql)
 (defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id)
 (def select-osaamisen-osoittamiset-by-ooato-id
@@ -133,7 +140,7 @@
      :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
-(def select-osaamisen-osoittamiset-by-ooyto-osa-alue-id
+(def select-osaamisen-osoittamiset-by-ahyto-osa-alue-id
   (generate-select-join
     {:table "osaamisen_osoittamiset"
      :join "aiemmin_hankitun_yto_osa_alueen_naytto"
@@ -167,9 +174,11 @@
      :secondary-column "osaamisen_hankkimistapa_id"
      :primary-column "id"
      :column "hankittava_ammat_tutkinnon_osa_id"}))
+(defq select-opiskeluvalmiuksia-tukevat-opinnot-by-id)
 (defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id)
+(defq select-hankittavat-yhteiset-tutkinnon-osat-by-id)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id)
-(def select-osaamisen-hankkimistavat-by-pyto-osa-alue-id
+(def select-osaamisen-hankkimistavat-by-yto-osa-alue-id
   (generate-select-join
     {:table "osaamisen_hankkimistavat"
      :join "yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat"
