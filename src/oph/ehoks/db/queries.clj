@@ -196,3 +196,7 @@
      :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "yhteisen_tutkinnon_osan_osa_alue_id"}))
+(defq select-oppilaitos-oids
+      "oppijat/select_oppilaitos_oids.sql")
+(defq select-oppilaitos-oids-by-koulutustoimija-oid
+      "oppijat/select_oppilaitos_oids_by_koulutustoimija_oid.sql")
