@@ -69,7 +69,8 @@
 
 (defn get-oppilaitos-oids-by-koulutustoimija-oid [koulutustoimija-oid]
   (filter some?
-    (db/select-oppilaitos-oids-by-koulutustoimija-oid koulutustoimija-oid)))
+          (db/select-oppilaitos-oids-by-koulutustoimija-oid
+            koulutustoimija-oid)))
 
 (defn update-opiskeluoikeus! [oid oppija-oid]
   (when (empty? (get-opiskeluoikeus-by-oid oid))
