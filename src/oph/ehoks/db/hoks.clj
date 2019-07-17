@@ -73,6 +73,9 @@
         to-dash-keys))
   ([m] (from-sql m {})))
 
+(defn oppilaitos-oid-from-sql [m]
+  (:oppilaitos_oid m))
+
 (defn to-sql
   ([m operations]
     (to-underscore-keys (convert-sql m operations)))
