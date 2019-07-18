@@ -3,7 +3,8 @@
             [oph.ehoks.utils :refer [eq with-db]]
             [oph.ehoks.user :as user]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.db.postgresql :as db]))
+            [oph.ehoks.db.postgresql :as db]
+            [clj-time.coerce :as c]))
 
 (deftest get-auth-info-test
   (testing "Mapping kayttooikeus-service data to eHOKS privileges"
@@ -62,6 +63,14 @@
          :koulutustoimija_oid "1.2.246.562.10.00000000002"
          :tutkinto "Testitutkinto 1"
          :osaamisala "Testiosaamisala numero 1"})
+      (db/insert-hoks! {:opiskeluoikeus_oid "1.2.246.562.15.76000000002"
+                        :oppija_oid "1.2.246.562.24.44000000002"
+                        :ensikertainen_hyvaksyminen
+                        (c/to-sql-date (c/from-string "2019-07-17"))})
+      (db/insert-hoks! {:opiskeluoikeus_oid "1.2.246.562.15.76000000003"
+                        :oppija_oid "1.2.246.562.24.44000000002"
+                        :ensikertainen_hyvaksyminen
+                        (c/to-sql-date (c/from-string "2019-07-17"))})
 
       (eq (user/get-auth-info
             {:organisaatiot [{:organisaatioOid "1.2.246.562.10.00000000002"
