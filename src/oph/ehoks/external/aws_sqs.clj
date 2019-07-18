@@ -32,9 +32,7 @@
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
    :oppija-oid (:oppija-oid hoks)
    :sahkoposti (:sahkoposti hoks)
-   :alkupvm (f/unparse-local-date
-              (:date f/formatters)
-              (:ensikertainen-hyvaksyminen hoks))})
+   :alkupvm (str (:ensikertainen-hyvaksyminen hoks))})
 
 (defn send-message [msg]
   (when (some? queue-url)
