@@ -27,7 +27,7 @@
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
    :oppija-oid (:oppija-oid hoks)
    :sahkoposti (:sahkoposti hoks)
-   :ensikertainen-hyvaksyminen (:ensikertainen-hyvaksyminen hoks)})
+   :alkupvm (:ensikertainen-hyvaksyminen hoks)})
 
 (defn send-message [msg]
   (when (some? queue-url)
