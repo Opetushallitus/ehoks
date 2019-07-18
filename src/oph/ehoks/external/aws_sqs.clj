@@ -1,6 +1,7 @@
 (ns oph.ehoks.external.aws-sqs
   (:require [clojure.data.json :as json]
             [oph.ehoks.config :refer [config]]
+            [environ.core :refer [env]]
             [clojure.tools.logging :as log])
   (:import (software.amazon.awssdk.services.sqs SqsClient)
            (software.amazon.awssdk.regions Region)
@@ -12,14 +13,17 @@
                     (.build)))
 
 (def queue-url
-  (if (nil? (:env-stage config))
+  (if (nil? (:env-stage env))
     (log/warn "Stage missing from env variables")
-    (.queueUrl (.getQueueUrl sqs-client
-                             (-> (GetQueueUrlRequest/builder)
-                                 (.queueName
-                                   (str (:env-stage config) "-"
-                                        (:heratepalvelu-queue config)))
-                                 (.build))))))
+    (do
+      (log/info (str (:env-stage env) "-"
+                     (:heratepalvelu-queue config))
+      (.queueUrl (.getQueueUrl sqs-client
+                               (-> (GetQueueUrlRequest/builder)
+                                   (.queueName
+                                     (str (:env-stage env) "-"
+                                          (:heratepalvelu-queue config)))
+                                   (.build)))))))
 
 (defn build-hoks-hyvaksytty-msg [id hoks]
   {:ehoks-id id
