@@ -17,7 +17,7 @@
     (log/warn "Stage missing from env variables")
     (do
       (log/info (str (:env-stage env) "-"
-                     (:heratepalvelu-queue config))
+                     (:heratepalvelu-queue config)))
       (.queueUrl (.getQueueUrl sqs-client
                                (-> (GetQueueUrlRequest/builder)
                                    (.queueName
