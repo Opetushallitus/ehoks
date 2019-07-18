@@ -2,7 +2,8 @@
   (:require [clojure.data.json :as json]
             [oph.ehoks.config :refer [config]]
             [environ.core :refer [env]]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [clj-time.format :as f])
   (:import (software.amazon.awssdk.services.sqs SqsClient)
            (software.amazon.awssdk.regions Region)
            (software.amazon.awssdk.services.sqs.model SendMessageRequest
@@ -31,7 +32,9 @@
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
    :oppija-oid (:oppija-oid hoks)
    :sahkoposti (:sahkoposti hoks)
-   :alkupvm (:ensikertainen-hyvaksyminen hoks)})
+   :alkupvm (f/unparse-local-date
+              (:date f/formatters)
+              (:ensikertainen-hyvaksyminen hoks))})
 
 (defn send-message [msg]
   (when (some? queue-url)
