@@ -10,7 +10,6 @@
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.config :refer [config]]
             [schema.core :as s]
             [clojure.data.json :as json]
@@ -409,10 +408,6 @@
           (let [hoks-db (h/save-hoks! hoks)]
             (when (:save-hoks-json? config)
               (write-hoks-json! hoks))
-            (when (:osaamisen-hankkimisen-tarve hoks)
-              (sqs/send-message (sqs/build-hoks-hyvaksytty-msg
-                                  (:id hoks-db)
-                                  hoks)))
             (assoc
               (rest/rest-ok {:uri
                              (format "%s/%d" (:uri request) (:id hoks-db))}
