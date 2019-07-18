@@ -1,2 +1,3 @@
 SELECT DISTINCT oppilaitos_oid
-  FROM opiskeluoikeudet
+  FROM opiskeluoikeudet, hoksit
+  WHERE hoksit.opiskeluoikeus_oid = opiskeluoikeudet.oid
