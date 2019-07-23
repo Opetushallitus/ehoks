@@ -782,3 +782,13 @@
   (query
     [queries/select-osaamisen-osoittamiset-by-yto-osa-alue-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
+
+(defn select-oppilaitos-oids []
+  (query
+    [queries/select-oppilaitos-oids]
+    {:row-fn h/oppilaitos-oid-from-sql}))
+
+(defn select-oppilaitos-oids-by-koulutustoimija-oid [oid]
+  (query
+    [queries/select-oppilaitos-oids-by-koulutustoimija-oid oid]
+    {:row-fn h/oppilaitos-oid-from-sql}))
