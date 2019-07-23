@@ -6,6 +6,7 @@
             [ring.middleware.session.memory :as mem]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.middleware :as middleware]
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [clojure.string :as cstr]))
 
 (def ^:private sessions (atom {}))
@@ -44,5 +45,6 @@
         (middleware/wrap-cache-control-no-cache)
         (session/wrap-session
           {:store (or session-store (mem/memory-store sessions))
-           :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}})))
+           :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}})
+        (wrap-access-logger)))
   ([app-routes] (create-app app-routes nil)))

@@ -5,7 +5,6 @@
             [schema.core :as s]
             [ring.util.http-response :as response]
             [oph.ehoks.resources :as resources]
-            [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
@@ -406,8 +405,7 @@
                       :summary "Oppijan opiskeluoikeudet"
                       :return (restful/response [s/Any])
                       (restful/rest-ok
-                        (:opiskeluoikeudet
-                          (koski/get-student-info oppija-oid))))
+                        (koski/get-oppija-opiskeluoikeudet oppija-oid)))
 
                     (c-api/GET "/" []
                       :return (restful/response schema/UserInfo)
@@ -446,10 +444,7 @@
      :exceptions
      {:handlers common-api/handlers}}
 
-    (route-middleware
-      [wrap-access-logger]
-
-      routes
-      (c-api/undocumented
-        (compojure-route/not-found
-          (response/not-found {:reason "Route not found"}))))))
+    routes
+    (c-api/undocumented
+      (compojure-route/not-found
+        (response/not-found {:reason "Route not found"})))))
