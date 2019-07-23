@@ -5,7 +5,8 @@
   OrganisationPrivilege
   {:oid s/Str
    :privileges #{s/Keyword}
-   :roles #{s/Keyword}})
+   :roles #{s/Keyword}
+   :child-organisations [s/Str]})
 
 (s/defschema
   VirkailijaSession
