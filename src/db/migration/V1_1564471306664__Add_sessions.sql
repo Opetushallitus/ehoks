@@ -1,0 +1,7 @@
+CREATE TABLE sessions(
+  id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  session_key VARCHAR(256) UNIQUE,
+  data JSONB
+);
