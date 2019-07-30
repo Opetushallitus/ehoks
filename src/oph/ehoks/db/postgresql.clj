@@ -3,18 +3,32 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db.hoks :as h]
             [clj-time.coerce :as c]
-            [oph.ehoks.db.queries :as queries]))
+            [oph.ehoks.db.queries :as queries]
+            [clojure.data.json :as json])
+  (:import [org.postgresql.util PGobject]))
 
 (extend-protocol jdbc/ISQLValue
   java.time.LocalDate
   (sql-value [value] (java.sql.Date/valueOf value))
   java.util.Date
-  (sql-value [value] (c/to-sql-time value)))
+  (sql-value [value] (c/to-sql-time value))
+  clojure.lang.IPersistentMap
+  (sql-value [value]
+    (doto (PGobject.)
+      (.setType "json")
+      (.setValue (json/write-str value)))))
 
 (extend-protocol jdbc/IResultSetReadColumn
   java.sql.Date
   (result-set-read-column [o _ _]
-    (.toLocalDate o)))
+    (.toLocalDate o))
+  PGobject
+  (result-set-read-column [pgobj metadata idx]
+    (let [type  (.getType pgobj)
+          value (.getValue pgobj)]
+      (if (= type "json")
+        (json/read-str value :key-fn keyword)
+        value))))
 
 (defn get-db-connection [] {:connection-uri (:database-url config)})
 
@@ -50,6 +64,10 @@
     (update! table {:deleted_at (java.util.Date.)} where-clause))
   ([table where-clause db-conn]
     (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
+
+(defn delete!
+  [table where-clause]
+  (jdbc/delete! (get-db-connection) table where-clause))
 
 (defn insert-multi! [t v]
   (jdbc/insert-multi! (get-db-connection) t v))
@@ -792,3 +810,30 @@
   (query
     [queries/select-oppilaitos-oids-by-koulutustoimija-oid oid]
     {:row-fn h/oppilaitos-oid-from-sql}))
+
+(defn select-sessions-by-session-key [session-key]
+  (->
+    (query
+      [queries/select-sessions-by-session-key session-key])
+    first))
+
+(defn insert-or-update-session! [session-key data]
+  (jdbc/with-db-transaction
+    [conn (get-db-connection)]
+    (let [db-sessions (jdbc/query
+                        conn
+                        [queries/select-sessions-by-session-key session-key])]
+      (if (empty? db-sessions)
+        (jdbc/insert!
+          conn
+          :sessions
+          {:session_key session-key :data data})
+        (jdbc/update!
+          conn
+          :sessions
+          ["session_key = ?" session-key]
+          {:data data
+           :updated_at (java.util.Date.)})))))
+
+(defn delete-session! [session-key]
+  (delete! :sessions ["session_key = ?" session-key]))
