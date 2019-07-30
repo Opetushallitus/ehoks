@@ -5,9 +5,6 @@
             [clojure.data.json :as json])
   (:import java.util.UUID))
 
-(defn create-session-key []
-  (str (UUID/randomUUID)))
-
 (deftype DBStore []
   SessionStore
   (read-session [_ session-key]
@@ -17,9 +14,7 @@
           (:data s)
           :key-fn keyword))))
   (write-session [_ session-key data]
-    (let [session-key (or session-key (create-session-key))]
-      (db/insert-or-update-session! session-key data)
-      session-key))
+    (db/insert-or-update-session! session-key data))
   (delete-session [_ session-key]
     (db/delete-session! session-key)
     nil))

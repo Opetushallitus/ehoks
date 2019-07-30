@@ -817,23 +817,34 @@
       [queries/select-sessions-by-session-key session-key])
     first))
 
+(defn generate-session-key [conn]
+  (loop [session-key nil]
+    (if (or (nil? session-key)
+            (seq (jdbc/query
+                   conn
+                   [queries/select-sessions-by-session-key session-key])))
+      (recur (str (java.util.UUID/randomUUID)))
+      session-key)))
+
 (defn insert-or-update-session! [session-key data]
   (jdbc/with-db-transaction
     [conn (get-db-connection)]
-    (let [db-sessions (jdbc/query
+    (let [k (or session-key (generate-session-key conn))
+          db-sessions (jdbc/query
                         conn
-                        [queries/select-sessions-by-session-key session-key])]
+                        [queries/select-sessions-by-session-key k])]
       (if (empty? db-sessions)
         (jdbc/insert!
           conn
           :sessions
-          {:session_key session-key :data data})
+          {:session_key k :data data})
         (jdbc/update!
           conn
           :sessions
-          ["session_key = ?" session-key]
           {:data data
-           :updated_at (java.util.Date.)})))))
+           :updated_at (java.util.Date.)}
+          ["session_key = ?" k]))
+      k)))
 
 (defn delete-session! [session-key]
   (delete! :sessions ["session_key = ?" session-key]))
