@@ -812,10 +812,7 @@
     {:row-fn h/oppilaitos-oid-from-sql}))
 
 (defn select-sessions-by-session-key [session-key]
-  (->
-    (query
-      [queries/select-sessions-by-session-key session-key])
-    first))
+  (first (query [queries/select-sessions-by-session-key session-key])))
 
 (defn generate-session-key [conn]
   (loop [session-key nil]
