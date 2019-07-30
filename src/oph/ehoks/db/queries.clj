@@ -200,3 +200,5 @@
       "oppijat/select_oppilaitos_oids.sql")
 (defq select-oppilaitos-oids-by-koulutustoimija-oid
       "oppijat/select_oppilaitos_oids_by_koulutustoimija_oid.sql")
+(defq select-sessions-by-session-key
+      "sessions/select_by_session_key.sql")
