@@ -67,9 +67,6 @@
                          [org.flywaydb/flyway-core "5.2.4"]
                          [org.postgresql/postgresql "42.2.5"]
 
-                         ;; redis
-                         [com.taoensso/carmine "2.19.1"]
-
                          ;; other
                          [org.clojure/core.async "0.4.490"]
                          [commons-codec "1.11"]
