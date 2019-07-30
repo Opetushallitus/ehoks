@@ -16,15 +16,21 @@
           (update :privileges to-kw-set)))
     c))
 
+(defn- convert-virkailija-privileges [session]
+  (if (get-in session [:virkailija-user :organisation-privileges])
+    (update-in
+      session
+      [:virkailija-user :organisation-privileges]
+      convert-privileges)
+    session))
+
 (deftype DBStore []
   SessionStore
   (read-session [_ session-key]
     (when session-key
       (when-let [s (db/select-sessions-by-session-key session-key)]
-        (update-in
-          (json/read-str (:data s) :key-fn keyword)
-          [:virkailija-user :organisation-privileges]
-          convert-privileges))))
+        (convert-virkailija-privileges
+          (json/read-str (:data s) :key-fn keyword)))))
   (write-session [_ session-key data]
     (db/insert-or-update-session! session-key data))
   (delete-session [_ session-key]
