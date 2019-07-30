@@ -29,8 +29,6 @@ rajapintojen polut on jaettu palveluittain.
 + [clj-http](https://github.com/dakrone/clj-http)
 + [Cheshire](https://github.com/dakrone/cheshire)
 + [Environ](https://github.com/weavejester/environ)
-+ [Redis](https://redis.io/)
-+ [Redis Client](https://github.com/ptaoussanis/carmine)
 + [Logback](https://logback.qos.ch/)
 + [tools.logging](https://github.com/clojure/tools.logging)
 
@@ -172,29 +170,6 @@ lein genmigration /path/to/migrations "Title of the migration"
 Ulkoiset API-kutsut voidaan mockata. Kehitysresursseissa on konfiguroitava
 HTTP-asiakasohjelma, jonka GET- ja POST-kutsut voidaan yliajaa. Tämä toimii
 ainoastaan `test`-profiililla.
-
-### Redis
-
-Redis toimii istunnon tallennuksessa.
-
-Paikallisessa ajossa voidaan käyttää valmista Docker-imagea:
-
-Kontin luonti:
-
-``` shell
-cd scripts/redis-docker
-docker build -t ehoks-redis .
-docker volume create redisdata
-```
-
-Kontin ajaminen:
-
-``` shell
-docker run --rm --name ehoks-redis -p 6379:6379 --volume redisdata:/data ehoks-redis
-```
-
-Rediksen voi jättää myös pois, jolloin istuntoa pidetään muistissa. Tämä
-tapahtuu asettamalla `:redis-url` konfiguraation nil:ksi.
 
 ### PostgreSQL
 
