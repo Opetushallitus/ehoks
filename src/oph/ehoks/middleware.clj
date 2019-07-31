@@ -39,21 +39,34 @@
     (nil? (get-in request [:headers "ticket"]))
     {:error "Ticket is missing"}))
 
-(defn set-user-details [request]
-  (let [ticket-user (kayttooikeus/get-ticket-user
-                      (get-in request [:headers "ticket"]))]
-    (assoc
-      request
-      :service-ticket-user
-      (merge ticket-user (user/get-auth-info ticket-user)))))
-
 (defn wrap-user-details [handler]
   (fn
     ([request respond raise]
       (if-let [result (validate-headers request)]
         (respond (unauthorized result))
-        (handler (set-user-details request) respond raise)))
+        (if-let [ticket-user (kayttooikeus/get-ticket-user
+                               (get-in request [:headers "ticket"]))]
+          (handler
+            (assoc
+              request
+              :service-ticket-user
+              (merge ticket-user (user/get-auth-info ticket-user)))
+            respond
+            raise)
+          (respond
+            (unauthorized
+              {:error
+               "User not found for given ticket. Ticket may be expired."})))))
     ([request]
       (if-let [result (validate-headers request)]
         (unauthorized result)
-        (handler (set-user-details request))))))
+        (if-let [ticket-user (kayttooikeus/get-ticket-user
+                               (get-in request [:headers "ticket"]))]
+          (handler (assoc
+                     request
+                     :service-ticket-user
+                     (merge ticket-user (user/get-auth-info ticket-user))))
+
+          (unauthorized
+            {:error
+             "User not found for given ticket. Ticket may be expired."}))))))
