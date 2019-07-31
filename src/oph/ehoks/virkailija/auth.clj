@@ -9,7 +9,6 @@
             [clojure.tools.logging :as log]
             [oph.ehoks.virkailija.schema :as schema]
             [oph.ehoks.restful :as restful]
-            [oph.ehoks.common.api :refer [delete-session]]
             [clojure.data.xml :as xml]
             [oph.ehoks.db.postgresql :as db]))
 
