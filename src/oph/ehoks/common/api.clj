@@ -24,7 +24,13 @@
   (response/internal-server-error {:type "unknown-exception"}))
 
 (def handlers
-  {:not-found not-found-handler
+  {::c-ex/request-parsing (c-ex/with-logging
+                            c-ex/request-parsing-handler :info)
+   ::c-ex/request-validation (c-ex/with-logging
+                               c-ex/request-validation-handler :info)
+   ::c-ex/response-validation (c-ex/with-logging
+                                c-ex/response-validation-handler :error)
+   :not-found not-found-handler
    ::c-ex/default exception-handler})
 
 (defn create-app
