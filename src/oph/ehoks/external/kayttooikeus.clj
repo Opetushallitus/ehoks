@@ -34,7 +34,9 @@
   (let [validation-data (cas/validate-ticket service ticket)]
     (if (:success? validation-data)
       (get-user-details (:user validation-data))
-      (log/warnf "Service ticket validation failed: %s" validation-data))))
+      (do
+        (log/warnf "Service ticket validation failed: %s" validation-data)
+        nil))))
 
 (defn get-ticket-user [ticket]
   (get-service-ticket-user ticket (u/get-url "ehoks-virkailija-backend-url")))
