@@ -10,7 +10,8 @@
             [oph.ehoks.virkailija.schema :as schema]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.common.api :refer [delete-session]]
-            [clojure.data.xml :as xml]))
+            [clojure.data.xml :as xml]
+            [oph.ehoks.db.postgresql :as db]))
 
 (def routes
   (c-api/context "/session" []
@@ -40,7 +41,7 @@
       (let [ticket (some #(when (= (:tag %) :SessionIndex)
                             (first (:content %)))
                          (:content (xml/parse-str logoutRequest)))]
-        (delete-session ticket)
+        (db/delete-sessions-by-ticket! ticket)
         (response/ok)))
 
     (c-api/GET "/" request
