@@ -39,8 +39,8 @@
       :summary "Virkailijan CAS SLO endpoint"
       :form-params [logoutRequest :- s/Str]
       (when-let [ticket (some #(when (= (:tag %) :SessionIndex)
-                               (first (:content %)))
-                            (:content (xml/parse-str logoutRequest)))]
+                                 (first (:content %)))
+                              (:content (xml/parse-str logoutRequest)))]
         (db/delete-sessions-by-ticket! ticket))
       (response/ok))
 
