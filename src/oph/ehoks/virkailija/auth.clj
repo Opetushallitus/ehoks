@@ -38,11 +38,11 @@
     (c-api/POST "/opintopolku" []
       :summary "Virkailijan CAS SLO endpoint"
       :form-params [logoutRequest :- s/Str]
-      (let [ticket (some #(when (= (:tag %) :SessionIndex)
-                            (first (:content %)))
-                         (:content (xml/parse-str logoutRequest)))]
-        (db/delete-sessions-by-ticket! ticket)
-        (response/ok)))
+      (when-let [ticket (some #(when (= (:tag %) :SessionIndex)
+                               (first (:content %)))
+                            (:content (xml/parse-str logoutRequest)))]
+        (db/delete-sessions-by-ticket! ticket))
+      (response/ok))
 
     (c-api/GET "/" request
       :summary "Virkailijan istunto"
