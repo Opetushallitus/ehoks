@@ -667,10 +667,6 @@
     :types {:any OpiskeluoikeusOid}
     :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
                   '1.2.246.562.15.00000000001'"}
-   :tutkinto {:methods {:get :optional
-                        :any :excluded}
-              :types {:any common-schema/Tutkinto}
-              :description "Tutkinnon tiedot ePerusteet palvelussa"}
    :urasuunnitelma-koodi-uri
    {:methods {:any :optional}
     :types {:any UrasuunnitelmaKoodiUri}
