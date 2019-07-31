@@ -845,3 +845,6 @@
 
 (defn delete-session! [session-key]
   (delete! :sessions ["session_key = ?" session-key]))
+
+(defn delete-sessions-by-ticket! [ticket]
+  (delete! :sessions ["data->>'ticket' = ?" ticket]))
