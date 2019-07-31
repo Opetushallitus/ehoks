@@ -9,18 +9,6 @@
             [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [clojure.string :as cstr]))
 
-(def ^:private sessions (atom {}))
-
-(defn delete-session
-  "Delete session from memory-store with same CAS ticket id"
-  [ticket]
-  (loop [sm @sessions]
-    (let [[key session-map] (first sm)]
-      (if (= ticket (:ticket session-map))
-        (swap! sessions dissoc key)
-        (when (pos? (count sm))
-          (recur (rest sm)))))))
-
 (defn not-found-handler [_ __ ___]
   (response/not-found {:reason "Route not found"}))
 
@@ -44,7 +32,7 @@
     (-> app-routes
         (middleware/wrap-cache-control-no-cache)
         (session/wrap-session
-          {:store (or session-store (mem/memory-store sessions))
+          {:store (or session-store (mem/memory-store))
            :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}})
         (wrap-access-logger)))
   ([app-routes] (create-app app-routes nil)))
