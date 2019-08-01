@@ -104,8 +104,10 @@
                 [wrap-authorize wrap-match-user]
                 (c-api/GET "/" []
                   :summary "Oppijan perustiedot"
-                  :return (rest/response [common-schema/Oppija])
-                  (rest/rest-ok []))
+                  :return (rest/response common-schema/Oppija)
+                  (if-let [oppija (oppijaindex/get-oppija-by-oid oid)]
+                    (rest/rest-ok oppija)
+                    (response/not-found)))
 
                 (c-api/GET "/opiskeluoikeudet" [:as request]
                   :summary "Oppijan opiskeluoikeudet"
