@@ -19,7 +19,21 @@
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]))
+            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.oppijaindex :as oppijaindex]))
+
+(defn wrap-match-user [handler]
+  (fn
+    ([request respond raise]
+      (if (= (get-in request [:session :user :oid])
+             (get-in request [:route-params :oid]))
+        (handler request respond raise)
+        (respond (response/forbidden))))
+    ([request]
+      (if (= (get-in request [:session :user :oid])
+             (get-in request [:route-params :oid]))
+        (handler request)
+        (response/forbidden)))))
 
 (def routes
   (c-api/context "/ehoks-oppija-backend" []
@@ -87,7 +101,7 @@
             (c-api/context "/:oid" [oid]
 
               (route-middleware
-                [wrap-authorize]
+                [wrap-authorize wrap-match-user]
                 (c-api/GET "/" []
                   :summary "Oppijan perustiedot"
                   :return (rest/response [common-schema/Oppija])
@@ -96,20 +110,16 @@
                 (c-api/GET "/opiskeluoikeudet" [:as request]
                   :summary "Oppijan opiskeluoikeudet"
                   :return (rest/response [s/Any])
-                  (if (= (get-in request [:session :user :oid]) oid)
-                    (rest/rest-ok
-                      (koski/get-oppija-opiskeluoikeudet oid))
-                    (response/forbidden)))
+                  (rest/rest-ok
+                    (koski/get-oppija-opiskeluoikeudet oid)))
 
                 (c-api/GET "/hoks" [:as request]
                   :summary "Oppijan HOKSit kokonaisuudessaan"
                   :return (rest/response [oppija-schema/OppijaHOKS])
-                  (if (= (get-in request [:session :user :oid]) oid)
-                    (let [hokses (h/get-hokses-by-oppija oid)]
-                      (if (empty? hokses)
-                        (response/not-found {:message "No HOKSes found"})
-                        (rest/rest-ok (map #(dissoc % :id) hokses))))
-                    (response/forbidden)))))))))
+                  (let [hokses (h/get-hokses-by-oppija oid)]
+                    (if (empty? hokses)
+                      (response/not-found {:message "No HOKSes found"})
+                      (rest/rest-ok (map #(dissoc % :id) hokses)))))))))))
 
     (c-api/undocumented
       (GET "/buildversion.txt" []
