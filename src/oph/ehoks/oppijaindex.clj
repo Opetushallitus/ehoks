@@ -99,11 +99,6 @@
         (log/errorf "Error updating oppija %s" oid)
         (throw e)))))
 
-(defn update-oppija-and-opiskeluoikeudet! [oppija-oid]
-  (update-oppija! oppija-oid)
-  (doseq [opiskeluoikeus (k/get-oppija-opiskeluoikeudet oppija-oid)]
-    (update-opiskeluoikeus! (:oid opiskeluoikeus) oppija-oid)))
-
 (defn update-oppijat-without-index! []
   (log/info "Start indexing oppijat")
   (doseq [{oid :oppija_oid} (get-oppijat-without-index)]
