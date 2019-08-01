@@ -70,7 +70,8 @@
                        :username "ehoks-test"
                        :kayttajaTyyppi "PALVELU"
                        :organisaatiot
-                       [{:organisaatioOid "1.2.246.562.10.12944436166"
+                       [{:organisaatioOid (or oppilaitos-oid
+                                              "1.2.246.562.10.12944436166")
                          :kayttooikeudet [{:palvelu "EHOKS"
                                            :oikeus "CRUD"}]}]}]}
               (.endsWith
