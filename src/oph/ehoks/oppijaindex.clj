@@ -84,7 +84,7 @@
          :osaamisala ""}))
     (catch Exception e
       (log/errorf
-        "Error updating opiskeluoikeus %s of oppija %s" oid oppija-oid)
+        "Error adding opiskeluoikeus %s of oppija %s" oid oppija-oid)
       (throw e))))
 
 (defn update-opiskeluoikeus! [oid oppija-oid]
@@ -113,7 +113,7 @@
         {:oid oid
          :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
     (catch Exception e
-      (log/errorf "Error updating oppija %s" oid)
+      (log/errorf "Error adding oppija %s" oid)
       (throw e))))
 
 (defn add-oppija! [oid]
