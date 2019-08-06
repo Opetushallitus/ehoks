@@ -5,6 +5,7 @@
             [clojure.data :as d]
             [clojure.pprint :as p]
             [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.external.cache :as cache]
             [oph.ehoks.db.migrations :as m]))
 
 (defn get-auth-cookie [app]
@@ -73,6 +74,7 @@
 (defmacro with-ticket-auth
   [[organisaatio-oid unmatched-fn] & body]
   `(do
+     (cache/clear-cache!)
      (set-auth-functions! ~organisaatio-oid ~unmatched-fn)
      (do ~@body)
      (client/reset-functions!)))

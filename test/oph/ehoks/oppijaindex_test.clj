@@ -2,8 +2,7 @@
   (:require [oph.ehoks.oppijaindex :as sut]
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]
-            [oph.ehoks.db.postgresql :as db]
-            [oph.ehoks.external.cache :as cache]))
+            [oph.ehoks.db.postgresql :as db]))
 
 (t/use-fixtures :each utils/with-database)
 
@@ -163,8 +162,6 @@
          :oppilaitos-oid "1.2.246.562.10.222222222222"
          :tutkinto ""
          :osaamisala ""}))
-
-    (cache/clear-cache!)
 
     (utils/with-ticket-auth
       ["1.2.246.562.10.222222222222"
