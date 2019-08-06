@@ -2,7 +2,8 @@
   (:require [oph.ehoks.oppijaindex :as sut]
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]
-            [oph.ehoks.db.postgresql :as db]))
+            [oph.ehoks.db.postgresql :as db]
+            [oph.ehoks.external.cache :as cache]))
 
 (t/use-fixtures :each utils/with-database)
 
@@ -100,3 +101,96 @@
               :oppija-oid "1.2.246.562.24.11111111111"
               :tutkinto ""
               :osaamisala ""}))))
+
+(t/deftest add-oppija-opiskeluoikeus
+  (t/testing "Add oppija and opiskeluoikeus"
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ url __]
+         (cond
+           (> (.indexOf url "oppijanumerorekisteri-service") -1)
+           {:status 200
+            :body {:oidHenkilo "1.2.246.562.24.111111111111"
+                   :hetu "250103-5360"
+                   :etunimet "Tero"
+                   :kutsumanimi "Tero"
+                   :sukunimi "Testaaja"}}
+           (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
+           {:status 200
+            :body {:oppilaitos {:oid "1.2.246.562.10.222222222222"}}}))]
+      (sut/add-oppija! "1.2.246.562.24.111111111111")
+      (sut/add-opiskeluoikeus!
+        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
+        {:oid "1.2.246.562.24.111111111111"
+         :nimi "Tero Testaaja"})
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        {:oid "1.2.246.562.15.00000000001"
+         :oppija-oid "1.2.246.562.24.111111111111"
+         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :tutkinto ""
+         :osaamisala ""}))))
+
+(t/deftest update-oppija-opiskeluoikeus
+  (t/testing "Update oppija and opiskeluoikeus"
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ url __]
+         (cond
+           (> (.indexOf url "oppijanumerorekisteri-service") -1)
+           {:status 200
+            :body {:oidHenkilo "1.2.246.562.24.111111111111"
+                   :hetu "250103-5360"
+                   :etunimet "Tero"
+                   :kutsumanimi "Tero"
+                   :sukunimi "Testaaja"}}
+           (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
+           {:status 200
+            :body {:oppilaitos {:oid "1.2.246.562.10.222222222222"}}}))]
+      (sut/add-oppija! "1.2.246.562.24.111111111111")
+      (sut/add-opiskeluoikeus!
+        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
+        {:oid "1.2.246.562.24.111111111111"
+         :nimi "Tero Testaaja"})
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        {:oid "1.2.246.562.15.00000000001"
+         :oppija-oid "1.2.246.562.24.111111111111"
+         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :tutkinto ""
+         :osaamisala ""}))
+
+    (cache/clear-cache!)
+
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ url __]
+         (cond
+           (> (.indexOf url "oppijanumerorekisteri-service") -1)
+           {:status 200
+            :body {:oidHenkilo "1.2.246.562.24.111111111111"
+                   :hetu "250103-5360"
+                   :etunimet "Tero"
+                   :kutsumanimi "Tero"
+                   :sukunimi "Testinen"}}
+           (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
+           {:status 200
+            :body {:oppilaitos {:oid "1.2.246.562.10.222222222223"}}}))]
+      (sut/update-oppija! "1.2.246.562.24.111111111111")
+      (sut/update-opiskeluoikeus!
+        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
+        {:oid "1.2.246.562.24.111111111111"
+         :nimi "Tero Testinen"})
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        {:oid "1.2.246.562.15.00000000001"
+         :oppija-oid "1.2.246.562.24.111111111111"
+         :oppilaitos-oid "1.2.246.562.10.222222222223"
+         :tutkinto ""
+         :osaamisala ""}))))
