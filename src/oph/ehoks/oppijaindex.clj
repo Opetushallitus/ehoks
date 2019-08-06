@@ -72,7 +72,7 @@
           (db/select-oppilaitos-oids-by-koulutustoimija-oid
             koulutustoimija-oid)))
 
-(defn update-opiskeluoikeus! [oid oppija-oid]
+(defn add-opiskeluoikeus! [oid oppija-oid]
   (when (empty? (get-opiskeluoikeus-by-oid oid))
     (try
       (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
@@ -88,7 +88,7 @@
           "Error updating opiskeluoikeus %s of oppija %s" oid oppija-oid)
         (throw e)))))
 
-(defn update-oppija! [oid]
+(defn add-oppija! [oid]
   (when (empty? (get-oppija-by-oid oid))
     (try
       (let [oppija (:body (onr/find-student-by-oid oid))]
@@ -102,12 +102,12 @@
 (defn update-oppijat-without-index! []
   (log/info "Start indexing oppijat")
   (doseq [{oid :oppija_oid} (get-oppijat-without-index)]
-    (update-oppija! oid))
+    (add-oppija! oid))
   (log/info "Indexing oppijat finished"))
 
 (defn update-opiskeluoikeudet-without-index! []
   (log/info "Start indexing opiskeluoikeudet")
   (doseq [{oid :opiskeluoikeus_oid oppija-oid :oppija_oid}
           (get-opiskeluoikeudet-without-index)]
-    (update-opiskeluoikeus! oid oppija-oid))
+    (add-opiskeluoikeus! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))

@@ -303,7 +303,7 @@
                       :body [hoks hoks-schema/HOKSLuonti]
                       :return (restful/response schema/POSTResponse :id s/Int)
                       (try
-                        (op/update-oppija! (:oppija-oid hoks))
+                        (op/add-oppija! (:oppija-oid hoks))
                         (catch Exception e
                           (if (= (:status (ex-data e)) 404)
                             (do
@@ -316,7 +316,7 @@
                                       " Oppijanumerorekisteri")}))
                             (throw e))))
                       (try
-                        (op/update-opiskeluoikeus!
+                        (op/add-opiskeluoikeus!
                           (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
                         (catch Exception e
                           (if (= (:status (ex-data e)) 404)
