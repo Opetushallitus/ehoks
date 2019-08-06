@@ -72,42 +72,73 @@
           (db/select-oppilaitos-oids-by-koulutustoimija-oid
             koulutustoimija-oid)))
 
+(defn add-new-opiskeluoikeus! [oid oppija-oid]
+  (try
+    (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
+      (db/insert-opiskeluoikeus
+        {:oid oid
+         :oppija_oid oppija-oid
+         :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
+         :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
+         :tutkinto ""
+         :osaamisala ""}))
+    (catch Exception e
+      (log/errorf
+        "Error adding opiskeluoikeus %s of oppija %s" oid oppija-oid)
+      (throw e))))
+
 (defn update-opiskeluoikeus! [oid oppija-oid]
+  (try
+    (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
+      (db/update-opiskeluoikeus!
+        oid
+        {:oppija_oid oppija-oid
+         :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
+         :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
+         :tutkinto ""
+         :osaamisala ""}))
+    (catch Exception e
+      (log/errorf
+        "Error updating opiskeluoikeus %s of oppija %s" oid oppija-oid)
+      (throw e))))
+
+(defn add-opiskeluoikeus! [oid oppija-oid]
   (when (empty? (get-opiskeluoikeus-by-oid oid))
-    (try
-      (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
-        (db/insert-opiskeluoikeus
-          {:oid oid
-           :oppija_oid oppija-oid
-           :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
-           :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
-           :tutkinto ""
-           :osaamisala ""}))
-      (catch Exception e
-        (log/errorf
-          "Error updating opiskeluoikeus %s of oppija %s" oid oppija-oid)
-        (throw e)))))
+    (add-new-opiskeluoikeus! oid oppija-oid)))
+
+(defn add-new-oppija! [oid]
+  (try
+    (let [oppija (:body (onr/find-student-by-oid oid))]
+      (db/insert-oppija
+        {:oid oid
+         :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
+    (catch Exception e
+      (log/errorf "Error adding oppija %s" oid)
+      (throw e))))
+
+(defn add-oppija! [oid]
+  (when (empty? (get-oppija-by-oid oid))
+    (add-new-oppija! oid)))
 
 (defn update-oppija! [oid]
-  (when (empty? (get-oppija-by-oid oid))
-    (try
-      (let [oppija (:body (onr/find-student-by-oid oid))]
-        (db/insert-oppija
-          {:oid oid
-           :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
-      (catch Exception e
-        (log/errorf "Error updating oppija %s" oid)
-        (throw e)))))
+  (try
+    (let [oppija (:body (onr/find-student-by-oid oid))]
+      (db/update-oppija!
+        oid
+        {:nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
+    (catch Exception e
+      (log/errorf "Error updating oppija %s" oid)
+      (throw e))))
 
 (defn update-oppijat-without-index! []
   (log/info "Start indexing oppijat")
   (doseq [{oid :oppija_oid} (get-oppijat-without-index)]
-    (update-oppija! oid))
+    (add-oppija! oid))
   (log/info "Indexing oppijat finished"))
 
 (defn update-opiskeluoikeudet-without-index! []
   (log/info "Start indexing opiskeluoikeudet")
   (doseq [{oid :opiskeluoikeus_oid oppija-oid :oppija_oid}
           (get-opiskeluoikeudet-without-index)]
-    (update-opiskeluoikeus! oid oppija-oid))
+    (add-opiskeluoikeus! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))
