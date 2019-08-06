@@ -1058,7 +1058,8 @@
                    app
                    (-> (mock/request :patch (get-in body [:data :uri]))
                        (mock/json-body
-                         {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"}))))
+                         {:id (get-in body [:meta :id])
+                          :opiskeluoikeus-oid "1.2.246.562.15.00000000001"}))))
                400)
             "Should return bad request for updating opiskeluoikeus oid")
 
@@ -1067,7 +1068,8 @@
                    app
                    (-> (mock/request :patch (get-in body [:data :uri]))
                        (mock/json-body
-                         {:oppija-oid "1.2.246.562.24.12312312313"}))))
+                         {:id (get-in body [:meta :id])
+                          :oppija-oid "1.2.246.562.24.12312312313"}))))
                400)
             "Should return bad request for updating oppija oid")))))
 
