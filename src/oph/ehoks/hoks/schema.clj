@@ -656,14 +656,16 @@
                    :get :required}
          :types {:any s/Str}
          :description "HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä"}
-   :oppija-oid {:methods {:patch :optional}
+   :oppija-oid {:methods {:patch :excluded
+                          :put :excluded}
                 :types {:any Oid}
                 :description "Oppijan tunniste Opintopolku-ympäristössä"}
    :sahkoposti {:methods {:any :optional}
                 :types {:any s/Str}
                 :description "Oppijan sähköposti, merkkijono."}
    :opiskeluoikeus-oid
-   {:methods {:patch :optional}
+   {:methods {:patch :excluded
+              :put :excluded}
     :types {:any OpiskeluoikeusOid}
     :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
                   '1.2.246.562.15.00000000001'"}
