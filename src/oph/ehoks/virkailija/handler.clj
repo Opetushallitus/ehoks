@@ -119,6 +119,9 @@
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
+    (c-api/GET "/cas-security-check" []
+      :summary "CAS security check (ei vielä käytössä)"
+      (response/no-content))
     (c-api/context "/api" []
       :tags ["api"]
       (c-api/context "/v1" []
