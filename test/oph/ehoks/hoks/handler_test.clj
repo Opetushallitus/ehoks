@@ -1041,6 +1041,36 @@
                    :id 1
                    :eid (:eid hoks))))))))
 
+(deftest prevent-oppija-opiskeluoikeus-patch
+  (testing "Prevent patching opiskeluoikeus or oppija oid"
+    (let [app (create-app nil)]
+      (let [response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request :post url)
+                  (mock/json-body
+                    {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :ensikertainen-hyvaksyminen "2018-12-15"})))
+            body (utils/parse-body (:body response))]
+        (is (= (:status
+                 (utils/with-service-ticket
+                   app
+                   (-> (mock/request :patch (get-in body [:data :uri]))
+                       (mock/json-body
+                         {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"}))))
+               400)
+            "Should return bad request for updating opiskeluoikeus oid")
+
+        (is (= (:status
+                 (utils/with-service-ticket
+                   app
+                   (-> (mock/request :patch (get-in body [:data :uri]))
+                       (mock/json-body
+                         {:oppija-oid "1.2.246.562.24.12312312313"}))))
+               400)
+            "Should return bad request for updating oppija oid")))))
+
 (def hoks-data
   {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :oppija-oid "1.2.246.562.24.12312312312"
