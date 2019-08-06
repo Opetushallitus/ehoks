@@ -16,7 +16,7 @@
    :query-params (:query-params options)})
 
 (deftest multiple-fetches-for-organisaatiot-are-cached
-  (testing "Multiple query with multiple oids are cached"
+  (testing "Multiple queries with multiple oids are cached"
     (with-redefs [c/with-api-headers
                   mocked-with-api-headers]
       (let [first-group-of-oids ["100" "200" "300"]
