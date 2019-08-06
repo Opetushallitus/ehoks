@@ -72,32 +72,38 @@
           (db/select-oppilaitos-oids-by-koulutustoimija-oid
             koulutustoimija-oid)))
 
+(defn add-new-opiskeluoikeus! [oid oppija-oid]
+  (try
+    (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
+      (db/insert-opiskeluoikeus
+        {:oid oid
+         :oppija_oid oppija-oid
+         :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
+         :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
+         :tutkinto ""
+         :osaamisala ""}))
+    (catch Exception e
+      (log/errorf
+        "Error updating opiskeluoikeus %s of oppija %s" oid oppija-oid)
+      (throw e))))
+
 (defn add-opiskeluoikeus! [oid oppija-oid]
   (when (empty? (get-opiskeluoikeus-by-oid oid))
-    (try
-      (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
-        (db/insert-opiskeluoikeus
-          {:oid oid
-           :oppija_oid oppija-oid
-           :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
-           :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
-           :tutkinto ""
-           :osaamisala ""}))
-      (catch Exception e
-        (log/errorf
-          "Error updating opiskeluoikeus %s of oppija %s" oid oppija-oid)
-        (throw e)))))
+    (add-new-opiskeluoikeus! oid oppija-oid)))
+
+(defn add-new-oppija! [oid]
+  (try
+    (let [oppija (:body (onr/find-student-by-oid oid))]
+      (db/insert-oppija
+        {:oid oid
+         :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
+    (catch Exception e
+      (log/errorf "Error updating oppija %s" oid)
+      (throw e))))
 
 (defn add-oppija! [oid]
   (when (empty? (get-oppija-by-oid oid))
-    (try
-      (let [oppija (:body (onr/find-student-by-oid oid))]
-        (db/insert-oppija
-          {:oid oid
-           :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
-      (catch Exception e
-        (log/errorf "Error updating oppija %s" oid)
-        (throw e)))))
+    (add-new-oppija! oid)))
 
 (defn update-oppijat-without-index! []
   (log/info "Start indexing oppijat")
