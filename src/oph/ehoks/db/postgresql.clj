@@ -166,8 +166,20 @@
 (defn insert-oppija [oppija]
   (insert-one! :oppijat (h/to-sql oppija)))
 
+(defn update-oppija! [oid oppija]
+  (update!
+    :oppijat
+    (h/to-sql oppija)
+    ["oid = ?" oid]))
+
 (defn insert-opiskeluoikeus [opiskeluoikeus]
   (insert-one! :opiskeluoikeudet (h/to-sql opiskeluoikeus)))
+
+(defn update-opiskeluoikeus! [oid opiskeluoikeus]
+  (update!
+    :opiskeluoikeudet
+    (h/to-sql opiskeluoikeus)
+    ["oid = ?" oid]))
 
 (defn select-todennettu-arviointi-lisatiedot-by-id [id]
   (first

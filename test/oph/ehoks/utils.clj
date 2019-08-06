@@ -5,6 +5,7 @@
             [clojure.data :as d]
             [clojure.pprint :as p]
             [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.external.cache :as cache]
             [oph.ehoks.db.migrations :as m]))
 
 (defn get-auth-cookie [app]
@@ -27,6 +28,56 @@
   (let [cookie (get-auth-cookie app)]
     (swap! store assoc-in [(-> @store keys first) :user :oid] oid)
     (app (mock/header request :cookie cookie))))
+
+(defn set-auth-functions! [organisaatio-oid unmatched-fn]
+  (client/set-post!
+    (fn [url options]
+      (cond
+        (.endsWith url "/v1/tickets")
+        {:status 201
+         :headers {"location" "http://test.ticket/1234"}}
+        (= url "http://test.ticket/1234")
+        {:status 200
+         :body "ST-1234-testi"}
+        :else (unmatched-fn :post url options))))
+  (client/set-get!
+    (fn [url options]
+      (cond (.endsWith url "/serviceValidate")
+            {:status 200
+             :body
+             (str "<cas:serviceResponse"
+                  "  xmlns:cas='http://www.yale.edu/tp/cas'>"
+                  "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
+                  "<cas:attributes>"
+                  "<cas:longTermAuthenticationRequestTokenUsed>false"
+                  "</cas:longTermAuthenticationRequestTokenUsed>"
+                  "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
+                  "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
+                  "</cas:authenticationDate></cas:attributes>"
+                  "</cas:authenticationSuccess></cas:serviceResponse>")}
+            (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
+            {:status 200
+             :body [{:oidHenkilo "1.2.246.562.24.11474338834"
+                     :username "ehoks-test"
+                     :kayttajaTyyppi "PALVELU"
+                     :organisaatiot
+                     [{:organisaatioOid organisaatio-oid
+                       :kayttooikeudet [{:palvelu "EHOKS"
+                                         :oikeus "CRUD"}]}]}]}
+            (.endsWith
+              url (str "/rest/organisaatio/v4/" organisaatio-oid))
+            {:status 200
+             :body {:parentOidPath
+                    "|"}}
+            :else (unmatched-fn :get url options)))))
+
+(defmacro with-ticket-auth
+  [[organisaatio-oid unmatched-fn] & body]
+  `(do
+     (cache/clear-cache!)
+     (set-auth-functions! ~organisaatio-oid ~unmatched-fn)
+     (do ~@body)
+     (client/reset-functions!)))
 
 (defn with-service-ticket
   ([app request oppilaitos-oid]
