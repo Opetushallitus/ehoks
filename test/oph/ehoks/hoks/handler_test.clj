@@ -225,10 +225,10 @@
                 url hpto-path)))
           delete-response
           (utils/with-service-ticket
-                 (create-app nil)
-                 (mock/request
-                       :delete
-                       (format "%s/%s" url (:id hoks))))
+            (create-app nil)
+            (mock/request
+              :delete
+              (format "%s/%s" url (:id hoks))))
           get-hpto-after-delete-response
           (utils/with-service-ticket
             (create-app nil)
