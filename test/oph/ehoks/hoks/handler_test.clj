@@ -1125,9 +1125,7 @@
 
 (def main-level-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-   :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"})
+   :ensikertainen-hyvaksyminen "2018-12-15"})
 
 (deftest hoks-put-removes-parts
   (testing "PUT only main level HOKS values, removes parts"
@@ -1192,7 +1190,11 @@
           (create-mock-post-request
             "" (dissoc hoks-data :opiskeluvalmiuksia-tukevat-opinnot) app)
           put-response (create-mock-hoks-put-request
-                         1 (assoc hoks-data :id 1) app)
+                         1
+                         (-> hoks-data
+                             (assoc :id 1)
+                             (dissoc :opiskeluoikeus-oid :oppija-oid))
+                         app)
           get-response (create-mock-hoks-get-request 1 app)
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (is (= (:status post-response) 200))
@@ -1212,9 +1214,7 @@
 
 (def oto-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :opiskeluvalmiuksia-tukevat-opinnot
    [{:nimi "Uusi Nimi"
      :kuvaus "joku kuvaus"
@@ -1228,9 +1228,7 @@
 
 (def multiple-otos-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :opiskeluvalmiuksia-tukevat-opinnot
    [{:nimi "Uusi Nimi"
      :kuvaus "joku kuvaus"
@@ -1267,9 +1265,7 @@
 
 (def hato-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :hankittavat-ammat-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_300222"
      :tutkinnon-osa-koodi-versio 2
@@ -1319,9 +1315,7 @@
 
 (def hpto-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :hankittavat-paikalliset-tutkinnon-osat
    [{:nimi "testinimi"
      :koulutuksen-jarjestaja-oid
@@ -1369,9 +1363,7 @@
 
 (def hyto-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :hankittavat-yhteiset-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_3002690"
      :tutkinnon-osa-koodi-versio 3
@@ -1414,9 +1406,7 @@
 
 (def ahato-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :aiemmin-hankitut-ammat-tutkinnon-osat
    [{:valittu-todentamisen-prosessi-koodi-versio 5
      :tutkinnon-osa-koodi-versio 100033
@@ -1456,9 +1446,7 @@
 
 (def ahpto-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :aiemmin-hankitut-paikalliset-tutkinnon-osat
    [{:valittu-todentamisen-prosessi-koodi-versio 3
      :laajuus 40
@@ -1504,9 +1492,7 @@
 
 (def ahyto-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :aiemmin-hankitut-yhteiset-tutkinnon-osat
    [{:valittu-todentamisen-prosessi-koodi-uri
      "osaamisentodentamisenprosessi_0002"
