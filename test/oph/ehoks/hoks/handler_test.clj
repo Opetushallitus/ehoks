@@ -400,7 +400,12 @@
               (format
                 "%s/1/%s/1"
                 url hao-path)))
-          delete-response (h/delete-hoks-by-id! (:id hoks))
+          delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :delete
+              (format "%s/%s" url (:id hoks))))
           get-hao-after-delete-response
           (utils/with-service-ticket
             (create-app nil)
@@ -560,7 +565,12 @@
               (format
                 "%s/1/%s/1"
                 url ahato-path)))
-          delete-response (h/delete-hoks-by-id! (:id hoks))
+          delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :delete
+              (format "%s/%s" url (:id hoks))))
           get-ahato-after-delete-response
           (utils/with-service-ticket
             (create-app nil)
@@ -857,7 +867,12 @@
               (format
                 "%s/1/%s/1"
                 url ahyto-path)))
-          delete-response (h/delete-hoks-by-id! (:id hoks))
+          delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :delete
+              (format "%s/%s" url (:id hoks))))
           get-ahyto-after-delete-response
           (utils/with-service-ticket
             (create-app nil)
@@ -1047,7 +1062,12 @@
               (format
                 "%s/1/%s/1"
                 url hyto-path)))
-          delete-response (h/delete-hoks-by-id! (:id hoks))
+          delete-response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request
+              :delete
+              (format "%s/%s" url (:id hoks))))
           get-hyto-after-delete-response
           (utils/with-service-ticket
             (create-app nil)
