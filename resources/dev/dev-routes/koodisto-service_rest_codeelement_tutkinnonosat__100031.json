@@ -1,0 +1,36 @@
+[
+  {
+  "koodiUri": "tutkinnonosat_100031",
+  "metadata": [
+  {
+  "nimi": "Motor- och transmissionsservice och -reparation",
+  "lyhytNimi": "Motor- och transmissionsservice och -reparation",
+  "kieli": "SV"
+  },
+  {
+  "nimi": "Moottorin ja voimansiirron huolto ja korjaus",
+  "lyhytNimi": "Moottorin ja voimansiirron huolto ja korjaus",
+  "kieli": "FI"
+  }
+  ],
+  "versio": 1,
+  "koodiArvo": "100031"
+  },
+  {
+  "koodiUri": "tutkinnonosat_100031",
+  "metadata": [
+  {
+  "nimi": "Moottorin ja voimansiirron huolto ja korjaus",
+  "lyhytNimi": "Moottorin ja voimansiirron huolto ja korjaus",
+  "kieli": "FI"
+  },
+  {
+  "nimi": "Motor- och transmissionsservice och -reparation",
+  "lyhytNimi": "Motor- och transmissionsservice och -reparation",
+  "kieli": "SV"
+  }
+  ],
+  "versio": 2,
+  "koodiArvo": "100031"
+  }
+  ]
