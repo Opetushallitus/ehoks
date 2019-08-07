@@ -417,20 +417,11 @@
                         (koski/get-oppija-opiskeluoikeudet oppija-oid)))
 
                     (c-api/GET "/" []
-                      :return (restful/response schema/UserInfo)
+                      :return (restful/response common-schema/Oppija)
                       :summary "Oppijan tiedot"
-                      (let [oppija-response (onr/find-student-by-oid
-                                              oppija-oid)]
-                        (if (= (:status oppija-response) 200)
-                          (restful/rest-ok
-                            (-> oppija-response
-                                :body
-                                onr/convert-student-info))
-                          (do
-                            (log/warn "Error getting " oppija-oid " from ONR")
-                            (response/internal-server-error
-                              {:error
-                               "Error with external connection"})))))))))))
+                      (if-let [oppija (op/get-oppija-by-oid oppija-oid)]
+                        (restful/rest-ok oppija)
+                        (response/not-found)))))))))
 
         healthcheck-handler/routes
         misc-handler/routes))
