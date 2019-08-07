@@ -1215,7 +1215,7 @@
               (create-app nil)
               (-> (mock/request :post url)
                   (mock/json-body hoks-data))
-              "1.2.246.562.10.12944436166")
+              "1.2.246.562.24.47861388608")
             body (utils/parse-body (:body response))]
         (is (= (:status
                  (utils/with-service-ticket
@@ -1245,11 +1245,46 @@
                    :id 1
                    :eid (:eid hoks))))))))
 
+(deftest prevent-oppija-opiskeluoikeus-patch
+  (testing "Prevent patching opiskeluoikeus or oppija oid"
+    (let [app (create-app nil)]
+      (let [response
+            (utils/with-service-ticket
+              app
+              (-> (mock/request :post url)
+                  (mock/json-body
+                    {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :ensikertainen-hyvaksyminen "2018-12-15"})))
+            body (utils/parse-body (:body response))]
+        (is (= (:status
+                 (utils/with-service-ticket
+                   app
+                   (-> (mock/request :patch (get-in body [:data :uri]))
+                       (mock/json-body
+                         {:id (get-in body [:meta :id])
+                          :opiskeluoikeus-oid "1.2.246.562.15.00000000001"}))))
+               400)
+            "Should return bad request for updating opiskeluoikeus oid")
+
+        (is (= (:status
+                 (utils/with-service-ticket
+                   app
+                   (-> (mock/request :patch (get-in body [:data :uri]))
+                       (mock/json-body
+                         {:id (get-in body [:meta :id])
+                          :oppija-oid "1.2.246.562.24.12312312313"}))))
+               400)
+            "Should return bad request for updating oppija oid")))))
+
 (def hoks-data
   {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :oppija-oid "1.2.246.562.24.12312312312"
    :ensikertainen-hyvaksyminen "2018-12-15"
    :osaamisen-hankkimisen-tarve false
+   :urasuunnitelma-koodi-uri "urasuunnitelma_0002"
+   :versio 4
+   :sahkoposti "testi@gmail.com"
    :opiskeluvalmiuksia-tukevat-opinnot [oto-data]
    :hankittavat-ammat-tutkinnon-osat [hao-data]
    :hankittavat-paikalliset-tutkinnon-osat [hpto-data]
@@ -1292,6 +1327,86 @@
              (:kuvaus one-value-of-hoks-patched))
           "Value should stay unchanged"))))
 
+(def main-level-of-hoks-updated
+  {:id 1
+   :ensikertainen-hyvaksyminen "2018-12-15"})
+
+(deftest hoks-put-removes-parts
+  (testing "PUT only main level HOKS values, removes parts"
+    (let [app (create-app nil)
+          post-response (create-mock-post-request "" hoks-data app)
+          put-response (create-mock-hoks-put-request
+                         1 main-level-of-hoks-updated app)
+          get-response (create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status put-response) 204))
+      (is (= (:status get-response) 200))
+      (is (empty? (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)))
+      (is (empty? (:hankittavat-ammat-tutkinnon-osat get-response-data)))
+      (is (empty? (:hankittavat-paikalliset-tutkinnon-osat get-response-data)))
+      (is (empty? (:hankittavat-yhteiset-tutkinnon-osat get-response-data)))
+      (is (empty? (:aiemmin-hankitut-ammat-tutkinnon-osat get-response-data)))
+      (is (empty?
+            (:aiemmin-hankitut-paikalliset-tutkinnon-osat get-response-data)))
+      (is (empty?
+            (:aiemmin-hankitut-yhteiset-tutkinnon-osat get-response-data))))))
+
+(defn mock-replace-ahyto [& _]
+  (throw (Exception. "Failed.")))
+
+(deftest hoks-part-put-fails-whole-operation-is-aborted
+  (testing (str "PUT of HOKS should be inside transaction so that when"
+                "one part of operation fails, everything is aborted"
+                (with-redefs [oph.ehoks.hoks.hoks/replace-ahyto!
+                              mock-replace-ahyto]
+                  (let [app (create-app nil)
+                        post-response (create-mock-post-request
+                                        "" hoks-data app)
+                        put-response (create-mock-hoks-put-request
+                                       1 main-level-of-hoks-updated app)
+                        get-response (create-mock-hoks-get-request 1 app)
+                        get-response-data (:data (utils/parse-body
+                                                   (:body get-response)))]
+                    (is (= (:status post-response) 200))
+                    (is (= (:status put-response) 500))
+                    (is (= (:status get-response) 200))
+                    (is (= (:versio get-response-data) 4))
+                    (is (not-empty (:opiskeluvalmiuksia-tukevat-opinnot
+                                     get-response-data)))
+                    (is (not-empty (:hankittavat-ammat-tutkinnon-osat
+                                     get-response-data)))
+                    (is (not-empty (:hankittavat-paikalliset-tutkinnon-osat
+                                     get-response-data)))
+                    (is (not-empty (:hankittavat-yhteiset-tutkinnon-osat
+                                     get-response-data)))
+                    (is (not-empty (:aiemmin-hankitut-ammat-tutkinnon-osat
+                                     get-response-data)))
+                    (is (not-empty (:aiemmin-hankitut-paikalliset-tutkinnon-osat
+                                     get-response-data)))
+                    (is (not-empty (:aiemmin-hankitut-yhteiset-tutkinnon-osat
+                                     get-response-data))))))))
+
+(deftest hoks-put-adds-non-existing-part
+  (testing "If HOKS part doesn't currently exist, PUT creates it"
+    (let [app (create-app nil)
+          post-response
+          (create-mock-post-request
+            "" (dissoc hoks-data :opiskeluvalmiuksia-tukevat-opinnot) app)
+          put-response (create-mock-hoks-put-request
+                         1
+                         (-> hoks-data
+                             (assoc :id 1)
+                             (dissoc :opiskeluoikeus-oid :oppija-oid))
+                         app)
+          get-response (create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status put-response) 204))
+      (is (= (:status get-response) 200))
+      (eq (:opiskeluvalmiuksia-tukevat-opinnot hoks-data)
+          (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)))))
+
 (deftest patching-of-hoks-part-not-allowed
   (testing "PATCH of HOKS can't be used to update sub entities of HOKS"
     (let [app (create-app nil)
@@ -1303,9 +1418,7 @@
 
 (def oto-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :opiskeluvalmiuksia-tukevat-opinnot
    [{:nimi "Uusi Nimi"
      :kuvaus "joku kuvaus"
@@ -1317,11 +1430,46 @@
     (assert-partial-put-of-hoks
       oto-of-hoks-updated :opiskeluvalmiuksia-tukevat-opinnot)))
 
+(def multiple-otos-of-hoks-updated
+  {:id 1
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :opiskeluvalmiuksia-tukevat-opinnot
+   [{:nimi "Uusi Nimi"
+     :kuvaus "joku kuvaus"
+     :alku "2019-06-22"
+     :loppu "2021-05-07"}
+    {:nimi "Toinen Nimi"
+     :kuvaus "eri kuvaus"
+     :alku "2018-06-22"
+     :loppu "2022-05-07"}]})
+
+(deftest put-multiple-oto-of-hoks
+  (testing "PUTs multiple opiskeluvalmiuksia tukevat opinnot of HOKS"
+    (assert-partial-put-of-hoks
+      multiple-otos-of-hoks-updated :opiskeluvalmiuksia-tukevat-opinnot)))
+
+(deftest omitted-hoks-fields-are-nullified
+  (testing "If HOKS main level value isn't given in PUT, it's nullified"
+    (let [app (create-app nil)
+          post-response (create-mock-post-request "" hoks-data app)
+          put-response (create-mock-hoks-put-request
+                         1 main-level-of-hoks-updated app)
+          get-response (create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status put-response) 204))
+      (is (= (:status get-response) 200))
+      (is (nil? (:versio get-response-data)))
+      (is (nil? (:sahkoposti get-response-data)))
+      (is (nil? (:urasuunnitelma-koodi-uri get-response-data)))
+      (is (nil? (:osaamisen-hankkimisen-tarve get-response-data)))
+      (is (nil? (:hyvaksytty get-response-data)))
+      (is (nil? (:urasuunnitelma-koodi-versio get-response-data)))
+      (is (nil? (:paivitetty get-response-data))))))
+
 (def hato-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :hankittavat-ammat-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_300222"
      :tutkinnon-osa-koodi-versio 2
@@ -1371,9 +1519,7 @@
 
 (def hpto-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :hankittavat-paikalliset-tutkinnon-osat
    [{:nimi "testinimi"
      :koulutuksen-jarjestaja-oid
@@ -1421,9 +1567,7 @@
 
 (def hyto-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :hankittavat-yhteiset-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_3002690"
      :tutkinnon-osa-koodi-versio 3
@@ -1466,9 +1610,7 @@
 
 (def ahato-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :aiemmin-hankitut-ammat-tutkinnon-osat
    [{:valittu-todentamisen-prosessi-koodi-versio 5
      :tutkinnon-osa-koodi-versio 100033
@@ -1508,9 +1650,7 @@
 
 (def ahpto-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :aiemmin-hankitut-paikalliset-tutkinnon-osat
    [{:valittu-todentamisen-prosessi-koodi-versio 3
      :laajuus 40
@@ -1556,9 +1696,7 @@
 
 (def ahyto-of-hoks-updated
   {:id 1
-   :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
    :ensikertainen-hyvaksyminen "2018-12-15"
-   :oppija-oid "1.2.246.562.24.12312312312"
    :aiemmin-hankitut-yhteiset-tutkinnon-osat
    [{:valittu-todentamisen-prosessi-koodi-uri
      "osaamisentodentamisenprosessi_0002"
@@ -1661,6 +1799,14 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}
           app (create-app nil)]
+      (let [response
+            (utils/with-service-ticket
+              app
+              (mock/request :get
+                            (format "%s/opiskeluoikeus/%s"
+                                    url opiskeluoikeus-oid)))]
+
+        (is (= (:status response) 404)))
       (utils/with-service-ticket
         app
         (-> (mock/request :post url)

@@ -1,7 +1,6 @@
 (ns oph.ehoks.hoks.handler
   (:require [compojure.api.sweet :as c-api]
             [clojure.tools.logging :as log]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
@@ -47,11 +46,15 @@
       ".json")))
 
 (defn authorized? [hoks ticket-user method]
-  (let [oppilaitos-oid (koski/get-opiskeluoikeus-oppilaitos-oid
-                         (:opiskeluoikeus-oid hoks))
-        organisation-privileges
-        (user/get-organisation-privileges ticket-user oppilaitos-oid)]
-    (some? (get organisation-privileges method))))
+  (let [oppilaitos-oid (:oppilaitos-oid (oppijaindex/get-opiskeluoikeus-by-oid
+                                          (:opiskeluoikeus-oid hoks)))]
+    (if oppilaitos-oid
+      (some?
+        (get
+          (user/get-organisation-privileges ticket-user oppilaitos-oid)
+          method))
+      (response/bad-request!
+        {:error "Opiskeluoikeus not found"}))))
 
 (defn hoks-access? [hoks ticket-user method]
   (and
@@ -379,37 +382,45 @@
                     caller-id :- s/Str]
 
     (route-middleware
-      [wrap-user-details wrap-require-service-user wrap-audit-logger]
+      [wrap-user-details wrap-require-service-user]
 
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
-        (check-hoks-access! hoks request)
-        (when (seq (pdb/select-hoksit-by-opiskeluoikeus-oid
-                     (:opiskeluoikeus-oid hoks)))
-          (response/bad-request!
-            {:error "HOKS with the same opiskeluoikeus-oid already exists"}))
         (try
-          (oppijaindex/update-oppija! (:oppija-oid hoks))
+          (oppijaindex/add-oppija! (:oppija-oid hoks))
           (catch Exception e
             (if (= (:status (ex-data e)) 404)
               (response/bad-request!
                 {:error "Oppija not found in Oppijanumerorekisteri"})
               (throw e))))
         (try
-          (oppijaindex/update-opiskeluoikeus!
+          (oppijaindex/add-opiskeluoikeus!
             (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
           (catch Exception e
             (if (= (:status (ex-data e)) 404)
               (response/bad-request!
                 {:error "Opiskeluoikeus not found in Koski"})
               (throw e))))
-        (let [hoks-db (h/save-hoks! hoks)]
-          (when (:save-hoks-json? config)
-            (write-hoks-json! hoks))
-          (rest/rest-ok {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
-                        :id (:id hoks-db))))
+        (check-hoks-access! hoks request)
+        (try
+          (let [hoks-db (h/save-hoks! hoks)]
+            (when (:save-hoks-json? config)
+              (write-hoks-json! hoks))
+            (assoc
+              (rest/rest-ok {:uri
+                             (format "%s/%d" (:uri request) (:id hoks-db))}
+                            :id (:id hoks-db))
+              :audit-data {:new hoks}))
+          (catch Exception e
+            (if (= (:error (ex-data e)) :duplicate)
+              (assoc
+                (response/bad-request!
+                  {:error
+                   "HOKS with the same opiskeluoikeus-oid already exists"})
+                :audit-data {:new hoks})
+              (throw e)))))
 
       (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
@@ -417,8 +428,15 @@
         :return (rest/response hoks-schema/HOKS)
         (let [hoks (first (pdb/select-hoksit-by-opiskeluoikeus-oid
                             opiskeluoikeus-oid))]
-          (check-hoks-access! hoks request)
-          (rest/rest-ok hoks)))
+          (if hoks
+            (do
+              (check-hoks-access! hoks request)
+              (rest/rest-ok hoks))
+            (do
+              (log/warn "No HOKS found with given opiskeluoikeus "
+                        opiskeluoikeus-oid)
+              (response/not-found
+                {:error "No HOKS found with given opiskeluoikeus"})))))
 
       (c-api/DELETE "/:hoks-id" [hoks-id :as request]
         :summary "Vain testaukseen: poistaa hoksin sekä liitetyt tutkinnonosat"
@@ -453,16 +471,15 @@
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
 
-          (c-api/undocumented
-            (c-api/PUT "/" []
-              :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
-              :body [values hoks-schema/HOKSKorvaus]
-              (if (not-empty (pdb/select-hoks-by-id hoks-id))
-                (do
-                  (h/replace-hoks! hoks-id values)
-                  (response/no-content))
-                (response/not-found
-                  {:error "HOKS not found with given HOKS ID"}))))
+          (c-api/PUT "/" []
+            :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
+            :body [values hoks-schema/HOKSKorvaus]
+            (if (not-empty (pdb/select-hoks-by-id hoks-id))
+              (do
+                (h/replace-hoks! hoks-id values)
+                (response/no-content))
+              (response/not-found
+                {:error "HOKS not found with given HOKS ID"})))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa

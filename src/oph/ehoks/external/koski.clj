@@ -3,13 +3,39 @@
             [oph.ehoks.external.connection :as c]
             [ring.util.http-status :as status]
             [clojure.data.json :as json]
-            [oph.ehoks.external.oph-url :as u]))
+            [oph.ehoks.external.oph-url :as u]
+            [clojure.tools.logging :as log]))
 
 (defn filter-oppija [values]
   (update values :henkilö select-keys
           [:oid :hetu :syntymäaika :etunimet :kutsumanimi :sukunimi]))
 
-(defn get-student-info [oid]
+(defn get-oppijat-opiskeluoikeudet
+  "Palauttaa annettujen oppijoiden kaikki opiskeluoikeudet"
+  [oppija-oids]
+  (:body
+    (c/with-api-headers
+      {:method :post
+       :service (u/get-url "koski-url")
+       :url (u/get-url "koski.post-sure-oids")
+       :options {:body (json/write-str oppija-oids)
+                 :basic-auth [(:cas-username config) (:cas-password config)]
+                 :content-type :json
+                 :as :json}})))
+
+(defn get-oppija-opiskeluoikeudet
+  "Palauttaa oppijan opiskeluoikeudet"
+  [oppija-oid]
+  (some
+    #(when (= (get-in % [:henkilö :oid]) oppija-oid)
+       (:opiskeluoikeudet %))
+    (get-oppijat-opiskeluoikeudet [oppija-oid])))
+
+(defn get-student-info
+  "Palauttaa opiskelijan henkilötiedot ja opiskeluoikeudet, raskas kysely.
+   Suositeltavaa käyttää vain jos tarvitsee molemmat, muissa tilanteissa
+   muita rajapintoja."
+  [oid]
   (:body
     (c/with-api-headers
       {:method :get
@@ -35,6 +61,7 @@
             body (if (some? (:body e-data))
                    (json/read-str (:body e-data) :key-fn keyword)
                    {})]
+        (log/warn "Error getting opiskeluoikeus " oid ", " e-data)
         (when-not (and (= (:status e-data) status/not-found)
                        (= (get-in body [0 :key])
                           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))

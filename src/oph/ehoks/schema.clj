@@ -38,7 +38,6 @@
               :eperusteet-peruste-url s/Str
               :tyopaikan-toimija-frontend-path s/Str
               :database-url s/Str
-              :redis-url (s/maybe s/Str)
               :opintopolku-login-url s/Str
               :opintopolku-logout-url s/Str
               :opintopolku-return-url s/Str
@@ -51,4 +50,5 @@
               :ext-cache-lifetime-minutes s/Int
               :save-hoks-json? s/Bool
               :opintopolku-host s/Str
-              (s/optional-key :delete-allowed?) s/Bool})
+              :audit s/Bool
+              (s/optional-key :delete-allowed?) s/Bool}})

@@ -60,22 +60,31 @@
       (response/ok "ST-1234-aBcDeFgHiJkLmN123456-cas.1234567890ab"))
 
     (GET "/cas/p3/serviceValidate" request
-      (let [username (if (= (get-in request [:query-params "ticket"])
-                            "ST-6777-aBcDeFgHiJkLmN123456-cas.1234567890ac")
-                       "ehoksvirkailija"
-                       "ehoks")]
+
+      (if (= (get-in request [:query-params "ticket"]) "invalid")
         (response/ok
-          (format
-            (str "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>"
-                 "<cas:authenticationSuccess><cas:user>%s</cas:user>"
-                 "<cas:attributes>"
-                 "<cas:longTermAuthenticationRequestTokenUsed>false"
-                 "</cas:longTermAuthenticationRequestTokenUsed>"
-                 "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
-                 "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
-                 "</cas:authenticationDate></cas:attributes>"
-                 "</cas:authenticationSuccess></cas:serviceResponse>")
-            username))))
+          (str
+            "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>\n"
+            "<cas:authenticationFailure code=\"INVALID_TICKET\">"
+            "Ticket &#39;%s&#39; not recognized"
+            "</cas:authenticationFailure>\n"
+            "</cas:serviceResponse>\n"))
+        (let [username (if (= (get-in request [:query-params "ticket"])
+                              "ST-6777-aBcDeFgHiJkLmN123456-cas.1234567890ac")
+                         "ehoksvirkailija"
+                         "ehoks")]
+          (response/ok
+            (format
+              (str "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>"
+                   "<cas:authenticationSuccess><cas:user>%s</cas:user>"
+                   "<cas:attributes>"
+                   "<cas:longTermAuthenticationRequestTokenUsed>false"
+                   "</cas:longTermAuthenticationRequestTokenUsed>"
+                   "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
+                   "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
+                   "</cas:authenticationDate></cas:attributes>"
+                   "</cas:authenticationSuccess></cas:serviceResponse>")
+              username)))))
 
     (GET "/cas/login" request
       (response/see-other
@@ -219,6 +228,9 @@
             :koodistoUri "opiskeluoikeudentyyppi"
             :koodistoVersio 1}
            :alkamispäivä "2018-11-15"})))
+    (POST "/koski/api/sure/oids" []
+      (json-response-file
+        "dev-routes/koski_api_sure_oids_1.2.246.562.24.44651722625.json"))
 
     (GET "/kayttooikeus-service/kayttooikeus/kayttaja" request
       (if (= (get-in request [:query-params "username"]) "ehoksvirkailija")
@@ -226,7 +238,12 @@
           "dev-routes/kayttooikeus-service_kayttooikeus_kayttaja_virkailija.json")
         (json-response-file
           "dev-routes/kayttooikeus-service_kayttooikeus_kayttaja.json")))
+
+    (POST "/organisaatio-service/rest/organisaatio/v4/findbyoids" request
+      (json-response-file
+        "dev-routes/organisaatio-service_rest_organisaatio_v4_findbyoids.json"))
+
     (GET "/organisaatio-service/rest/organisaatio/v4/:oid" request
-         (json-response
-           {:oid (get-in request [:params :oid])
-            :parentOidPath "|1.2.246.562.10.00000000001|"}))))
+      (json-response
+        {:oid (get-in request [:params :oid])
+         :parentOidPath "|1.2.246.562.10.00000000001|"}))))

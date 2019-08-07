@@ -4,7 +4,6 @@
  :eperusteet-peruste-url "https://eperusteet.testiopintopolku.fi"
  :tyopaikan-toimija-frontend-path "tyopaikan-toimija"
  :database-url "jdbc:postgresql://localhost:5432/ehoks?user=ehoks_user&password=ehoks"
- :redis-url nil
  :cas-username ""
  :cas-password ""
  :client-sub-system-code "example-code"
@@ -16,4 +15,5 @@
  :opintopolku-tt-auth-url "http://localhost:3000/auth-dev/opintopolku-tt-login/"
  :ext-cache-lifetime-minutes 180
  :save-hoks-json? false
- :opintopolku-host "localhost:3000"}
+ :opintopolku-host "localhost:3000"
+ :audit true}

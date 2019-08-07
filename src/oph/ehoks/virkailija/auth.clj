@@ -9,8 +9,8 @@
             [clojure.tools.logging :as log]
             [oph.ehoks.virkailija.schema :as schema]
             [oph.ehoks.restful :as restful]
-            [oph.ehoks.common.api :refer [sessions]]
-            [clojure.data.xml :as xml]))
+            [clojure.data.xml :as xml]
+            [oph.ehoks.db.postgresql :as db]))
 
 (def routes
   (c-api/context "/session" []
@@ -37,16 +37,11 @@
     (c-api/POST "/opintopolku" []
       :summary "Virkailijan CAS SLO endpoint"
       :form-params [logoutRequest :- s/Str]
-      (let [ticket (some #(when (= (:tag %) :SessionIndex)
-                            (first (:content %)))
-                         (:content (xml/parse-str logoutRequest)))]
-        (loop [sm @sessions]
-          (let [[key session-map] (first sm)]
-            (if (= ticket (:ticket session-map))
-              (swap! sessions dissoc key)
-              (when (pos? (count sm))
-                (recur (rest sm))))))
-        (response/ok)))
+      (when-let [ticket (some #(when (= (:tag %) :SessionIndex)
+                                 (first (:content %)))
+                              (:content (xml/parse-str logoutRequest)))]
+        (db/delete-sessions-by-ticket! ticket))
+      (response/ok))
 
     (c-api/GET "/" request
       :summary "Virkailijan istunto"

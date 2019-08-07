@@ -4,28 +4,43 @@
             [oph.ehoks.db.hoks :as h]
             [clj-time.coerce :as c]
             [oph.ehoks.db.queries :as queries]
-            [clojure.tools.logging :as log]))
+            [clojure.data.json :as json])
+  (:import [org.postgresql.util PGobject]))
 
 (extend-protocol jdbc/ISQLValue
   java.time.LocalDate
   (sql-value [value] (java.sql.Date/valueOf value))
   java.util.Date
-  (sql-value [value] (c/to-sql-time value)))
+  (sql-value [value] (c/to-sql-time value))
+  clojure.lang.IPersistentMap
+  (sql-value [value]
+    (doto (PGobject.)
+      (.setType "json")
+      (.setValue (json/write-str value)))))
 
 (extend-protocol jdbc/IResultSetReadColumn
   java.sql.Date
   (result-set-read-column [o _ _]
-    (.toLocalDate o)))
+    (.toLocalDate o))
+  PGobject
+  (result-set-read-column [pgobj metadata idx]
+    (let [type  (.getType pgobj)
+          value (.getValue pgobj)]
+      (if (= type "json")
+        (json/read-str value :key-fn keyword)
+        value))))
+
+(defn get-db-connection [] {:connection-uri (:database-url config)})
 
 (defn insert-empty! [t]
   (jdbc/execute!
-    {:connection-uri (:database-url config)}
+    (get-db-connection)
     (format
       "INSERT INTO %s DEFAULT VALUES" (name t))))
 
 (defn query
   ([queries opts]
-    (jdbc/query {:connection-uri (:database-url config)} queries opts))
+    (jdbc/query (get-db-connection) queries opts))
   ([queries]
     (query queries {}))
   ([queries arg & opts]
@@ -33,20 +48,29 @@
 
 (defn insert! [t v]
   (if (seq v)
-    (jdbc/insert! {:connection-uri (:database-url config)} t v)
+    (jdbc/insert! (get-db-connection) t v)
     (insert-empty! t)))
 
 (defn insert-one! [t v] (first (insert! t v)))
 
-(defn update! [t v w]
-  (jdbc/update! {:connection-uri (:database-url config)}
-                t v w))
+(defn update!
+  ([table values where-clause]
+    (jdbc/update! (get-db-connection) table values where-clause))
+  ([table values where-clause db]
+    (jdbc/update! db table values where-clause)))
 
-(defn shallow-delete! [t w]
-  (update! t {:deleted_at (java.util.Date.)} w))
+(defn shallow-delete!
+  ([table where-clause]
+    (update! table {:deleted_at (java.util.Date.)} where-clause))
+  ([table where-clause db-conn]
+    (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
+
+(defn delete!
+  [table where-clause]
+  (jdbc/delete! (get-db-connection) table where-clause))
 
 (defn insert-multi! [t v]
-  (jdbc/insert-multi! {:connection-uri (:database-url config)} t v))
+  (jdbc/insert-multi! (get-db-connection) t v))
 
 (defn select-hoksit []
   (query
@@ -232,11 +256,24 @@
       eid)))
 
 (defn insert-hoks! [hoks]
-  (let [eid (generate-unique-eid)]
-    (insert-one! :hoksit (h/hoks-to-sql (assoc hoks :eid eid)))))
+  (jdbc/with-db-transaction
+    [conn (get-db-connection)]
+    (when
+     (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
+                            (:opiskeluoikeus-oid hoks)]))
+      (throw (ex-info
+               "HOKS with given opiskeluoikeus already exists"
+               {:error :duplicate})))
+    (let [eid (generate-unique-eid)]
+      (first
+        (jdbc/insert! conn :hoksit (h/hoks-to-sql (assoc hoks :eid eid)))))))
 
-(defn update-hoks-by-id! [id hoks]
-  (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
+(defn update-hoks-by-id!
+  ([id hoks]
+    (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
+  ([id hoks db]
+    (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]
+             db)))
 
 (defn select-hoks-oppijat-without-index []
   (query
@@ -274,8 +311,20 @@
 (defn insert-oppija [oppija]
   (insert-one! :oppijat (h/to-sql oppija)))
 
+(defn update-oppija! [oid oppija]
+  (update!
+    :oppijat
+    (h/to-sql oppija)
+    ["oid = ?" oid]))
+
 (defn insert-opiskeluoikeus [opiskeluoikeus]
   (insert-one! :opiskeluoikeudet (h/to-sql opiskeluoikeus)))
+
+(defn update-opiskeluoikeus! [oid opiskeluoikeus]
+  (update!
+    :opiskeluoikeudet
+    (h/to-sql opiskeluoikeus)
+    ["oid = ?" oid]))
 
 (defn select-todennettu-arviointi-lisatiedot-by-id [id]
   (first
@@ -398,10 +447,10 @@
     (h/hankittava-paikallinen-tutkinnon-osa-to-sql m)
     ["id = ? AND deleted_at IS NULL" id]))
 
-(defn delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id [hoks-id]
+(defn delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id [hoks-id db-conn]
   (shallow-delete!
     :hankittavat_paikalliset_tutkinnon_osat
-    ["hoks_id = ?" hoks-id]))
+    ["hoks_id = ?" hoks-id] db-conn))
 
 (defn select-osaamisen-osoittamiset-by-ppto-id
   "hankittavan paikallisen tutkinnon osan hankitun osaamisen näytöt"
@@ -731,10 +780,11 @@
     (h/hankittava-yhteinen-tutkinnon-osa-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" hyto-id]))
 
-(defn delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id [hoks-id]
+(defn delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id
+  [hoks-id db-conn]
   (shallow-delete!
     :hankittavat_ammat_tutkinnon_osat
-    ["hoks_id = ?" hoks-id]))
+    ["hoks_id = ?" hoks-id] db-conn))
 
 (defn delete-hyto-osa-alueet! [hyto-id]
   (shallow-delete!
@@ -777,10 +827,11 @@
     :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
     ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ?" id]))
 
-(defn delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id [hoks-id]
+(defn delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id
+  [hoks-id db-conn]
   (shallow-delete!
     :aiemmin_hankitut_ammat_tutkinnon_osat
-    ["hoks_id = ?" hoks-id]))
+    ["hoks_id = ?" hoks-id] db-conn))
 
 (defn delete-aiemmin-hankitun-paikallisen-tutkinnon-osan-naytto-by-id! [id]
   (shallow-delete!
@@ -792,10 +843,11 @@
     :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
     ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
 
-(defn delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id [hoks-id]
+(defn delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
+  [hoks-id db-conn]
   (shallow-delete!
     :aiemmin_hankitut_paikalliset_tutkinnon_osat
-    ["hoks_id = ?" hoks-id]))
+    ["hoks_id = ?" hoks-id] db-conn))
 
 (defn delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id [hoks-id]
   (shallow-delete!
@@ -842,10 +894,10 @@
     [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id id]
     {:row-fn h/opiskeluvalmiuksia-tukevat-opinnot-from-sql}))
 
-(defn delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id [hoks-id]
+(defn delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id [hoks-id db-conn]
   (shallow-delete!
     :opiskeluvalmiuksia_tukevat_opinnot
-    ["hoks_id = ?" hoks-id]))
+    ["hoks_id = ?" hoks-id] db-conn))
 
 (defn update-opiskeluvalmiuksia-tukevat-opinnot-by-id! [oto-id new-values]
   (update!
@@ -885,10 +937,10 @@
     :yhteisen_tutkinnon_osan_osa_alueet
     (h/yhteisen-tutkinnon-osan-osa-alue-to-sql osa-alue)))
 
-(defn delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id [hoks-id]
+(defn delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id [hoks-id db-conn]
   (shallow-delete!
     :hankittavat_yhteiset_tutkinnon_osat
-    ["hoks_id = ?" hoks-id]))
+    ["hoks_id = ?" hoks-id] db-conn))
 
 (defn select-yto-osa-alueet-by-yto-id [id]
   (query
@@ -905,3 +957,51 @@
   (query
     [queries/select-osaamisen-osoittamiset-by-yto-osa-alue-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
+
+(defn select-oppilaitos-oids []
+  (query
+    [queries/select-oppilaitos-oids]
+    {:row-fn h/oppilaitos-oid-from-sql}))
+
+(defn select-oppilaitos-oids-by-koulutustoimija-oid [oid]
+  (query
+    [queries/select-oppilaitos-oids-by-koulutustoimija-oid oid]
+    {:row-fn h/oppilaitos-oid-from-sql}))
+
+(defn select-sessions-by-session-key [session-key]
+  (first (query [queries/select-sessions-by-session-key session-key])))
+
+(defn generate-session-key [conn]
+  (loop [session-key nil]
+    (if (or (nil? session-key)
+            (seq (jdbc/query
+                   conn
+                   [queries/select-sessions-by-session-key session-key])))
+      (recur (str (java.util.UUID/randomUUID)))
+      session-key)))
+
+(defn insert-or-update-session! [session-key data]
+  (jdbc/with-db-transaction
+    [conn (get-db-connection)]
+    (let [k (or session-key (generate-session-key conn))
+          db-sessions (jdbc/query
+                        conn
+                        [queries/select-sessions-by-session-key k])]
+      (if (empty? db-sessions)
+        (jdbc/insert!
+          conn
+          :sessions
+          {:session_key k :data data})
+        (jdbc/update!
+          conn
+          :sessions
+          {:data data
+           :updated_at (java.util.Date.)}
+          ["session_key = ?" k]))
+      k)))
+
+(defn delete-session! [session-key]
+  (delete! :sessions ["session_key = ?" session-key]))
+
+(defn delete-sessions-by-ticket! [ticket]
+  (delete! :sessions ["data->>'ticket' = ?" ticket]))

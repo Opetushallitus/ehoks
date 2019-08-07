@@ -51,6 +51,15 @@
    :nimi s/Str})
 
 (s/defschema
+  Opiskeluoikeus
+  {:oid s/Str
+   :oppija-oid s/Str
+   :oppilaitos-oid s/Str
+   :koulutustoimija-oid s/Str
+   :tutkinto s/Str
+   :osaamisala s/Str})
+
+(s/defschema
   Tutkinto
   "Tutkinnon perustiedot ePerusteet järjestelmässä"
   {:laajuus s/Int

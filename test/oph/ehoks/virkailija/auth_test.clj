@@ -5,7 +5,7 @@
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.virkailija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
-            [oph.ehoks.utils :refer [parse-body]]))
+            [oph.ehoks.utils :refer [parse-body with-db]]))
 
 (def session-url "/ehoks-virkailija-backend/api/v1/virkailija/session")
 
@@ -91,16 +91,19 @@
 
 (t/deftest get-session-test
   (t/testing "Get virkailija session"
-    (let [response (with-ticket-session
-                     (create-app (test-session-store (atom {})))
-                     (mock/request :get session-url)
-                     "ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")]
-      (t/is (= (:status response) 200))
-      (t/is (= (parse-body (:body response))
-               {:meta {}
-                :data
-                {:oidHenkilo "1.2.246.562.24.11474338833"
-                 :organisation-privileges
-                 [{:oid "1.2.246.562.10.12944436166"
-                   :privileges ["read" "update" "delete" "write"]
-                   :roles []}]}})))))
+    (with-db
+      (let [response (with-ticket-session
+                       (create-app (test-session-store (atom {})))
+                       (mock/request :get session-url)
+                       "ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")]
+        (t/is (= (:status response) 200))
+        (t/is (= (parse-body (:body response))
+                 {:meta {}
+                  :data
+                  {:oidHenkilo "1.2.246.562.24.11474338833"
+                   :organisation-privileges
+                   [{:oid "1.2.246.562.10.12944436166"
+                     :privileges
+                     ["read" "update" "delete" "write"]
+                     :roles []
+                     :child-organisations []}]}}))))))

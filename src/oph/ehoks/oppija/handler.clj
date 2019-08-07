@@ -19,7 +19,21 @@
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.logging.access :refer [wrap-access-logger]]))
+            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.oppijaindex :as oppijaindex]))
+
+(defn wrap-match-user [handler]
+  (fn
+    ([request respond raise]
+      (if (= (get-in request [:session :user :oid])
+             (get-in request [:route-params :oid]))
+        (handler request respond raise)
+        (respond (response/forbidden))))
+    ([request]
+      (if (= (get-in request [:session :user :oid])
+             (get-in request [:route-params :oid]))
+        (handler request)
+        (response/forbidden)))))
 
 (def routes
   (c-api/context "/ehoks-oppija-backend" []
@@ -87,29 +101,29 @@
             (c-api/context "/:oid" [oid]
 
               (route-middleware
-                [wrap-authorize]
+                [wrap-authorize wrap-match-user]
                 (c-api/GET "/" []
                   :summary "Oppijan perustiedot"
-                  :return (rest/response [common-schema/Oppija])
-                  (rest/rest-ok []))
+                  :return (rest/response common-schema/Oppija)
+                  (if-let [oppija (oppijaindex/get-oppija-by-oid oid)]
+                    (rest/rest-ok oppija)
+                    (response/not-found)))
 
                 (c-api/GET "/opiskeluoikeudet" [:as request]
                   :summary "Oppijan opiskeluoikeudet"
-                  :return (rest/response [s/Any])
-                  (if (= (get-in request [:session :user :oid]) oid)
-                    (rest/rest-ok
-                      (:opiskeluoikeudet (koski/get-student-info oid)))
-                    (response/forbidden)))
+                  :return (rest/response [common-schema/Opiskeluoikeus])
+                  (if-let [opiskeluoikeudet
+                           (oppijaindex/get-oppija-opiskeluoikeudet oid)]
+                    (rest/rest-ok opiskeluoikeudet)
+                    (response/not-found)))
 
                 (c-api/GET "/hoks" [:as request]
                   :summary "Oppijan HOKSit kokonaisuudessaan"
                   :return (rest/response [oppija-schema/OppijaHOKS])
-                  (if (= (get-in request [:session :user :oid]) oid)
-                    (let [hokses (h/get-hokses-by-oppija oid)]
-                      (if (empty? hokses)
-                        (response/not-found {:message "No HOKSes found"})
-                        (rest/rest-ok (map #(dissoc % :id) hokses))))
-                    (response/forbidden)))))))))
+                  (let [hokses (h/get-hokses-by-oppija oid)]
+                    (if (empty? hokses)
+                      (response/not-found {:message "No HOKSes found"})
+                      (rest/rest-ok (map #(dissoc % :id) hokses)))))))))))
 
     (c-api/undocumented
       (GET "/buildversion.txt" []
@@ -128,7 +142,7 @@
      {:handlers common-api/handlers}}
 
     (route-middleware
-      [wrap-access-logger]
+      [wrap-audit-logger]
       routes
       (c-api/undocumented
         (compojure-route/not-found

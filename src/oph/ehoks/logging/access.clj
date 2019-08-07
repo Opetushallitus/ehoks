@@ -66,6 +66,16 @@
 (defn wrap-access-logger [handler]
   (fn
     ([request respond raise]
-      (handler request (spy-access request respond) raise))
+      (try
+        (handler request (spy-access request respond) raise)
+        (catch Exception e
+          (log-access-map
+            (to-access-map request {} -1))
+          (throw e))))
     ([request]
-      (spy-access-sync handler request))))
+      (try
+        (spy-access-sync handler request)
+        (catch Exception e
+          (log-access-map
+            (to-access-map request {} -1))
+          (throw e))))))

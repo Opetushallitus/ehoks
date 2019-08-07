@@ -6,9 +6,8 @@
             [ring.middleware.session.memory :as mem]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.middleware :as middleware]
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [clojure.string :as cstr]))
-
-(def sessions (atom {}))
 
 (defn not-found-handler [_ __ ___]
   (response/not-found {:reason "Route not found"}))
@@ -25,7 +24,13 @@
   (response/internal-server-error {:type "unknown-exception"}))
 
 (def handlers
-  {:not-found not-found-handler
+  {::c-ex/request-parsing (c-ex/with-logging
+                            c-ex/request-parsing-handler :info)
+   ::c-ex/request-validation (c-ex/with-logging
+                               c-ex/request-validation-handler :info)
+   ::c-ex/response-validation (c-ex/with-logging
+                                c-ex/response-validation-handler :error)
+   :not-found not-found-handler
    ::c-ex/default exception-handler})
 
 (defn create-app
@@ -33,6 +38,7 @@
     (-> app-routes
         (middleware/wrap-cache-control-no-cache)
         (session/wrap-session
-          {:store (or session-store (mem/memory-store sessions))
-           :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}})))
+          {:store (or session-store (mem/memory-store))
+           :cookie-attrs {:max-age (:session-max-age config (* 60 60 4))}})
+        (wrap-access-logger)))
   ([app-routes] (create-app app-routes nil)))
