@@ -158,7 +158,13 @@
                     :path-params [koodi-uri :- s/Str]
                     :summary "Koodiston haku Koodisto-Koodi-Urilla."
                     :return (restful/response s/Any)
-                    (restful/rest-ok (koodisto/get-koodi koodi-uri))))
+                    (restful/rest-ok (koodisto/get-koodi koodi-uri)))
+
+                  (c-api/GET "/:koodi-uri/versiot" []
+                    :path-params [koodi-uri :- s/Str]
+                    :summary "Koodiston versioiden haku Koodisto-koodi-urilla."
+                    :return (restful/response s/Any)
+                    (restful/rest-ok (koodisto/get-koodi-versiot koodi-uri))))
 
                 (c-api/context "/eperusteet" []
                   (c-api/GET "/tutkinnonosat/:id/viitteet" []
