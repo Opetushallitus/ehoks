@@ -389,14 +389,14 @@
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
         (try
-          (oppijaindex/update-oppija! (:oppija-oid hoks))
+          (oppijaindex/add-oppija! (:oppija-oid hoks))
           (catch Exception e
             (if (= (:status (ex-data e)) 404)
               (response/bad-request!
                 {:error "Oppija not found in Oppijanumerorekisteri"})
               (throw e))))
         (try
-          (oppijaindex/update-opiskeluoikeus!
+          (oppijaindex/add-opiskeluoikeus!
             (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
           (catch Exception e
             (if (= (:status (ex-data e)) 404)
