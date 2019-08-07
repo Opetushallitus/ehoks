@@ -2,4 +2,5 @@
  :ext-cache-lifetime-minutes 30
  :database-url "jdbc:postgresql://localhost:5433/ehoks_test?user=ehoks_user&password=ehoks"
  :opintopolku-host "localhost:3001"
- :audit false}
+ :audit false
+ :delete-allowed? true}
