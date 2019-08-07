@@ -386,7 +386,7 @@
                                                 request
                                                 [:session :virkailija-user])]
                           (if (virkailija-has-privilege?
-                                virkailija-user (:oppija-oid hoks) :write)
+                                virkailija-user (:oppija-oid hoks) :read)
                             (restful/rest-ok (h/get-hoks-by-id hoks-id))
                             (do
                               (log/warn "User "
