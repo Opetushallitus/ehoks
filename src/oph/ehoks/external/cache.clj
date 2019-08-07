@@ -24,21 +24,16 @@
   (swap! cache dissoc url)
   nil)
 
-(defn- get-non-expired []
-  (reduce
-    (fn [n [response url]]
-      (if (expired? url)
-        n
-        (assoc n response url)))
-    {}
-    @cache))
+(defn- filter-expired! []
+  (doseq [[url response] @cache]
+    (when (expired? response)
+      (swap! cache dissoc url))))
 
 (defn clean-cache! []
   (when-not @cleaning?
     (log/debug "Cleaning cache")
     (reset! cleaning? true)
-    (let [non-expired (get-non-expired)]
-      (reset! cache non-expired))
+    (filter-expired!)
     (log/debug "Cleaning cache finished")
     (reset! cleaning? false)))
 
