@@ -426,7 +426,10 @@
         :return (rest/response hoks-schema/HOKS)
         (let [hoks (pdb/select-hoks-by-id hoks-id)]
           (check-hoks-access! hoks request)
-          (rest/rest-ok (h/delete-hoks-by-id! hoks-id))))
+            (if (:delete-allowed? config)
+              (rest/rest-ok (h/delete-hoks-by-id! hoks-id))
+              (response/bad-request!
+                {:error "Delete method is not allowed in this environment."}))))
 
       (c-api/context "/:hoks-id" []
         :path-params [hoks-id :- s/Int]

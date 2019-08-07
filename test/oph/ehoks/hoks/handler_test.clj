@@ -202,6 +202,8 @@
 
 (def hpto-url (format "%1s/1/%2s" url hpto-path))
 
+;; Note, if this fails, check that you have :delete-allowed? set to true
+;; in your test.edn
 (deftest create-and-delete-hoks-with-hpto
   (testing "Creating a hoks with hpto and deleting it"
     (let [hoks (create-hoks)
@@ -221,7 +223,12 @@
               (format
                 "%s/1/%s/1"
                 url hpto-path)))
-          delete-response (h/delete-hoks-by-id! (:id hoks))
+          delete-response
+          (utils/with-service-ticket
+                 (create-app nil)
+                 (mock/request
+                       :delete
+                       (format "%s/%s" url (:id hoks))))
           get-hpto-after-delete-response
           (utils/with-service-ticket
             (create-app nil)
