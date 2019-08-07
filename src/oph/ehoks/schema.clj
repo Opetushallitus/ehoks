@@ -51,4 +51,4 @@
               :save-hoks-json? s/Bool
               :opintopolku-host s/Str
               :audit s/Bool
-              (s/optional-key :delete-allowed?) s/Bool}})
+              (s/optional-key :delete-allowed?) s/Bool})
