@@ -1,0 +1,1 @@
+SELECT * FROM opiskeluoikeudet WHERE tutkinto = '' OR tutkinto IS NULL
