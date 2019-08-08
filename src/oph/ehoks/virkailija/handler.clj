@@ -226,13 +226,16 @@
                        {:unindexedOppijat
                         (op/get-oppijat-without-index-count)
                         :unindexedOpiskeluoikeudet
-                        (op/get-opiskeluoikeudet-without-index-count)}})))
+                        (op/get-opiskeluoikeudet-without-index-count)
+                        :unindexedTutkinnot
+                        (op/get-opiskeluoikeudet-without-tutkinto-count)}})))
 
                 (c-api/POST "/index" []
                   :summary "Indeksoi oppijat ja opiskeluoikeudet"
                   (a/go
                     (op/update-oppijat-without-index!)
                     (op/update-opiskeluoikeudet-without-index!)
+                    (op/update-opiskeluoikeudet-without-tutkinto!)
                     (response/ok)))
 
                 (c-api/DELETE "/cache" []

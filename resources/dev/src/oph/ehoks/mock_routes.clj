@@ -176,6 +176,10 @@
       (json-response-file
         "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.76811932037.json"))
 
+    (GET "/koski/api/opiskeluoikeus/1.2.246.562.15.60063016194" []
+      (json-response-file
+        "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.60063016194.json"))
+
     (GET "/lokalisointi/cxf/rest/v1/localisation" []
       (json-response-file
         "dev-routes/lokalisointi_cxf_rest_v1_localisation.json"))
@@ -185,7 +189,8 @@
             oppilaitos-oid
             (if (.startsWith opiskeluoikeus-oid "1.2.246.562.15.76811932")
               "1.2.246.562.10.12424158689"
-              (mock-gen/generate-oppilaitos-oid))]
+              (mock-gen/generate-oppilaitos-oid))
+            tutkinto (mock-gen/generate-tutkinto)]
         (json-response
           {:oid opiskeluoikeus-oid
            :oppilaitos
@@ -222,7 +227,34 @@
                 :en "present"}
                :koodistoUri "koskiopiskeluoikeudentila"
                :koodistoVersio 1}}]}
-           :suoritukset []
+           :suoritukset
+           [{:koulutusmoduuli
+             {:tunniste
+              {:koodiarvo (str (rand-int 999999))
+               :nimi
+               {:fi tutkinto}}
+              :koodistoUri "koulutus"
+              :koodistoVersio 11}
+             :perusteenDiaarinumero "77/011/2014"
+             :perusteenNimi
+             {:fi tutkinto}
+             :koulutustyyppi
+             {:koodiarvo "1"
+              :nimi
+              {:fi "Ammatillinen perustutkinto"
+               :sv "Yrkesinriktad grundexamen"
+               :en "Vocational upper secondary qualification"}
+              :lyhytNimi
+              {:fi "Ammatillinen perustutkinto"
+               :sv "Yrkesinriktad grundexamen"}
+              :koodistoUri "koulutustyyppi"
+              :koodistoVersio 2}
+             :suoritustapa {}
+             :toimipiste {}
+             :alkamispäivä "2016-08-05"
+             :suorituskieli {}
+             :osasuoritukset []
+             :tyyppi {}}]
            :tyyppi
            {:koodiarvo "perusopetus"
             :nimi

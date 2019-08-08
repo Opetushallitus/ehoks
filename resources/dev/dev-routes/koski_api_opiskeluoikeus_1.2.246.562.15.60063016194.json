@@ -1,0 +1,74 @@
+{
+  "oid": "1.2.246.562.15.60063016194",
+  "versionumero": 1,
+  "aikaleima": "2019-07-01T09:46:22.802764",
+  "lähdejärjestelmänId": {},
+  "oppilaitos": {},
+  "koulutustoimija": {},
+  "ostettu": false,
+  "tila": {},
+  "suoritukset": [
+    {
+      "koulutusmoduuli": {
+        "tunniste": {
+          "koodiarvo": "351407",
+          "nimi": {
+            "fi": "Sähkö- ja automaatioalan perustutkinto",
+            "sv": "Grundexamen inom el- och automationsbranschen",
+            "en": "Vocational qualification in Electrical Engineering and Automation Technology"
+          },
+          "lyhytNimi": {
+            "fi": "Sähkö- ja automaatioalan pt",
+            "sv": "Grundexamen inom el- och automationsbranschen",
+            "en": "Vocational qualification in Electrical Engineering and Automation Technology"
+          },
+          "koodistoUri": "koulutus",
+          "koodistoVersio": 11
+        },
+        "perusteenDiaarinumero": "77/011/2014",
+        "perusteenNimi": {
+          "fi": "Sähkö- ja automaatiotekniikan perustutkinto",
+          "sv": "Grundexamen inom el- och automationsteknik"
+        },
+        "koulutustyyppi": {
+          "koodiarvo": "1",
+          "nimi": {
+            "fi": "Ammatillinen perustutkinto",
+            "sv": "Yrkesinriktad grundexamen",
+            "en": "Vocational upper secondary qualification"
+          },
+          "lyhytNimi": {
+            "fi": "Ammatillinen perustutkinto",
+            "sv": "Yrkesinriktad grundexamen"
+          },
+          "koodistoUri": "koulutustyyppi",
+          "koodistoVersio": 2
+        }
+      },
+      "suoritustapa": {},
+      "toimipiste": {},
+      "alkamispäivä": "2016-08-05",
+      "suorituskieli": {},
+      "osasuoritukset": [],
+      "tyyppi": {}
+    }
+  ],
+  "lisätiedot": {
+    "oikeusMaksuttomaanAsuntolapaikkaan": false,
+    "henkilöstökoulutus": false,
+    "koulutusvienti": false
+  },
+  "tyyppi": {
+    "koodiarvo": "ammatillinenkoulutus",
+    "nimi": {
+      "fi": "Ammatillinen koulutus",
+      "sv": "Yrkesutbildning"
+    },
+    "lyhytNimi": {
+      "fi": "Ammatillinen koulutus"
+    },
+    "koodistoUri": "opiskeluoikeudentyyppi",
+    "koodistoVersio": 1
+  },
+  "alkamispäivä": "2016-08-05"
+}
