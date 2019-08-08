@@ -176,6 +176,10 @@
       (json-response-file
         "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.76811932037.json"))
 
+    (GET "/koski/api/opiskeluoikeus/1.2.246.562.15.60063016194" []
+      (json-response-file
+        "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.60063016194.json"))
+
     (GET "/lokalisointi/cxf/rest/v1/localisation" []
       (json-response-file
         "dev-routes/lokalisointi_cxf_rest_v1_localisation.json"))
