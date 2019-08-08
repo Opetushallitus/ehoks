@@ -95,9 +95,13 @@
                  opiskeluoikeus
                  [:suoritukset 0 :koulutusmoduuli :tunniste :nimi :fi]
                  "")
-     :osaamisala (get-in
-                   opiskeluoikeus
-                   [:suoritukset 0 :osaamisala 0 :nimi :fi]
+     :osaamisala (or
+                   (get-in
+                     opiskeluoikeus
+                     [:suoritukset 0 :osaamisala 0 :nimi :fi])
+                   (get-in
+                     opiskeluoikeus
+                     [:suoritukset 0 :osaamisala 0 :osaamisala :nimi :fi])
                    "")}))
 
 (defn add-new-opiskeluoikeus! [oid oppija-oid]
