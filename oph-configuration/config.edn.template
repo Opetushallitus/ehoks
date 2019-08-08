@@ -8,4 +8,9 @@
  :opintopolku-login-url "{{ehoks_opintopolku_login_url}}"
  :opintopolku-logout-url "{{ehoks_opintopolku_logout_url}}"
  :opintopolku-return-url "{{ehoks_opintopolku_return_url}}"
- :opintopolku-host "{{ehoks_opintopolku_host}}"}
+ :opintopolku-host "{{ehoks_opintopolku_host}}"
+ :db-server {{ehoks_db_server}}
+ :db-port {{ehoks_db_port}}
+ :db-name {{ehoks_db_name}}
+ :db-username {{ehoks_db_username}}
+ :db-password {{ehoks_db_password}}}
