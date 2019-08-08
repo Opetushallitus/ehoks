@@ -74,6 +74,9 @@
 
 (defn- get-opiskeluoikeus-info [oid oppija-oid]
   (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
+    (when (> (count (:suoritukset opiskeluoikeus)) 1)
+      (log/warnf "Opiskeluoikeus %s has multiple suoritukset.
+                    First one is used for tutkinto"))
     {:oid oid
      :oppija_oid oppija-oid
      :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
