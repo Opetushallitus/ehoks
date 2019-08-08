@@ -55,6 +55,12 @@
 (defn get-opiskeluoikeudet-without-index-count []
   (:count (first (db/select-hoks-opiskeluoikeudet-without-index-count))))
 
+(defn get-opiskeluoikeudet-without-tutkinto []
+  (db/select-opiskeluoikeudet-without-tutkinto))
+
+(defn get-opiskeluoikeudet-without-tutkinto-count []
+  (:count (first (db/select-opiskeluoikeudet-without-tutkinto-count))))
+
 (defn get-oppija-opiskeluoikeudet [oppija-oid]
   (db/select-opiskeluoikeudet-by-oppija-oid oppija-oid))
 
@@ -97,7 +103,9 @@
 
 (defn update-opiskeluoikeus! [oid oppija-oid]
   (try
-    (db/update-opiskeluoikeus! (get-opiskeluoikeus-info oid oppija-oid))
+    (db/update-opiskeluoikeus!
+      oid
+      (dissoc (get-opiskeluoikeus-info oid oppija-oid) :oid :oppija_oid))
     (catch Exception e
       (log/errorf
         "Error updating opiskeluoikeus %s of oppija %s" oid oppija-oid)
@@ -142,4 +150,11 @@
   (doseq [{oid :opiskeluoikeus_oid oppija-oid :oppija_oid}
           (get-opiskeluoikeudet-without-index)]
     (add-opiskeluoikeus! oid oppija-oid))
+  (log/info "Indexing opiskeluoikeudet finished"))
+
+(defn update-opiskeluoikeudet-without-tutkinto! []
+  (log/info "Start indexing opiskeluoikeudet without tutkinto")
+  (doseq [{oid :oid oppija-oid :oppija_oid}
+          (get-opiskeluoikeudet-without-tutkinto)]
+    (update-opiskeluoikeus! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))
