@@ -36,3 +36,12 @@
 
 (defn generate-henkilo-oid []
   (format "1.2.246.562.24.44%09d" (rand-int 999999999)))
+
+(def tutkinto-parts
+  ["sähkö" "tietotekniikka" "terveydenhoito" "kaupan" "ohjelmatuotanto"
+   "rakennus" "liikenne" "valtiohallinto" "vartiointi" "palvelu" "siivous"])
+
+(defn generate-tutkinto []
+  (cs/capitalize
+    (format "%salan perustutkinto"
+            (get tutkinto-parts (rand-int (count tutkinto-parts))))))
