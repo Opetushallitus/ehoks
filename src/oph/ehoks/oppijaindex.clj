@@ -81,7 +81,10 @@
      :oppija_oid oppija-oid
      :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
      :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
-     :tutkinto ""
+     :tutkinto (get-in
+                 opiskeluoikeus
+                 [:suoritukset 0 :koulutusmoduuli :tunniste :nimi :fi]
+                 "")
      :osaamisala ""}))
 
 (defn add-new-opiskeluoikeus! [oid oppija-oid]
