@@ -152,6 +152,14 @@
   (query
     [queries/select-hoks-opiskeluoikeudet-without-index-count]))
 
+(defn select-opiskeluoikeudet-without-tutkinto []
+  (query
+    [queries/select-hoks-opiskeluoikeudet-without-tutkinto]))
+
+(defn select-opiskeluoikeudet-without-tutkinto-count []
+  (query
+    [queries/select-hoks-opiskeluoikeudet-without-tutkinto-count]))
+
 (defn select-opiskeluoikeudet-by-oppija-oid [oppija-oid]
   (query
     [queries/select-opiskeluoikeudet-by-oppija-oid oppija-oid]
