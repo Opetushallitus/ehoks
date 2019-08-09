@@ -50,6 +50,10 @@
   (with-koodisto-get
     (u/get-url "koodisto-service.get-versio-by-uri" uri versio)))
 
+(defn get-koodi-latest-versiot [uri]
+  (with-koodisto-get
+    (u/get-url "koodisto-service.get-latest-by-uri" uri)))
+
 (defn convert-metadata [m]
   {:nimi (:nimi m)
    :lyhyt-nimi (:lyhytNimi m)
