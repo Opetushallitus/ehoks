@@ -18,8 +18,10 @@
       schema/Config
       (merge default-config custom-config))))
 
+(defn get-config-file []
+  (or (System/getenv "CONFIG")
+      (System/getProperty "config")
+      (:config env)))
+
 (def config (when-not *compile-files*
-              (load-combined-config
-                (or (System/getenv "CONFIG")
-                    (System/getProperty "config")
-                    (:config env)))))
+              (load-combined-config (get-config-file))))
