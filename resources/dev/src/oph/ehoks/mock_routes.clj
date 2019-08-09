@@ -145,6 +145,9 @@
       (json-response-file
         "dev-routes/rest_codeelement_ravintolakokinatjarjestys__4_2.json"))
 
+    (GET "/koodisto-service/rest/json/*/koodi" []
+      (json-response []))
+
     (GET "/eperusteet-service/api/perusteet" request
       (json-response-file
         "dev-routes/eperusteet_api_perusteet.json"))
