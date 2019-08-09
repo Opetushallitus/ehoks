@@ -1,6 +1,7 @@
 (ns oph.ehoks.user
   (:require [clojure.string :as str]
-            [oph.ehoks.external.organisaatio :as o]))
+            [oph.ehoks.external.organisaatio :as o]
+            [oph.ehoks.oppijaindex :as op]))
 
 (defn resolve-privilege [privilege]
   (when (= (:palvelu privilege) "EHOKS")
@@ -33,9 +34,14 @@
     service-privileges))
 
 (defn resolve-privileges [organisation]
-  {:oid (:organisaatioOid organisation)
-   :privileges (get-service-privileges (:kayttooikeudet organisation))
-   :roles (get-service-roles (:kayttooikeudet organisation))})
+  {:oid                (:organisaatioOid organisation)
+   :privileges         (get-service-privileges (:kayttooikeudet organisation))
+   :roles              (get-service-roles (:kayttooikeudet organisation))
+   :child-organisations (if (= (:organisaatioOid organisation)
+                               "1.2.246.562.10.00000000001")
+                          (op/get-oppilaitos-oids)
+                          (op/get-oppilaitos-oids-by-koulutustoimija-oid
+                            (:organisaatioOid organisation)))})
 
 (defn get-auth-info [ticket-user]
   (when (some? ticket-user)

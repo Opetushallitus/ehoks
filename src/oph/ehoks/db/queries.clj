@@ -46,6 +46,10 @@
       "hoksit/select_opiskeluoikeus_oids_without_info.sql")
 (defq select-hoks-opiskeluoikeudet-without-index-count
       "hoksit/select_opiskeluoikeus_oids_without_info_count.sql")
+(defq select-hoks-opiskeluoikeudet-without-tutkinto
+      "opiskeluoikeudet/select_without_tutkinto.sql")
+(defq select-hoks-opiskeluoikeudet-without-tutkinto-count
+      "opiskeluoikeudet/select_without_tutkinto_count.sql")
 (defq select-oppilaitos-oppijat
       "oppijat/select_oppilaitos_oppijat.sql")
 (defq select-oppilaitos-oppijat-search-count
@@ -196,3 +200,9 @@
      :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "yhteisen_tutkinnon_osan_osa_alue_id"}))
+(defq select-oppilaitos-oids
+      "oppijat/select_oppilaitos_oids.sql")
+(defq select-oppilaitos-oids-by-koulutustoimija-oid
+      "oppijat/select_oppilaitos_oids_by_koulutustoimija_oid.sql")
+(defq select-sessions-by-session-key
+      "sessions/select_by_session_key.sql")

@@ -46,15 +46,15 @@
       ".json")))
 
 (defn authorized? [hoks ticket-user method]
-  (let [oppilaitos-oid (koski/get-opiskeluoikeus-oppilaitos-oid
-                         (:opiskeluoikeus-oid hoks))]
+  (let [oppilaitos-oid (:oppilaitos-oid (oppijaindex/get-opiskeluoikeus-by-oid
+                                          (:opiskeluoikeus-oid hoks)))]
     (if oppilaitos-oid
       (some?
         (get
           (user/get-organisation-privileges ticket-user oppilaitos-oid)
           method))
       (response/bad-request!
-        {:error "Opiskeluoikeus not found from Koski"}))))
+        {:error "Opiskeluoikeus not found"}))))
 
 (defn hoks-access? [hoks ticket-user method]
   (and
@@ -388,22 +388,22 @@
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
-        (check-hoks-access! hoks request)
         (try
-          (oppijaindex/update-oppija! (:oppija-oid hoks))
+          (oppijaindex/add-oppija! (:oppija-oid hoks))
           (catch Exception e
             (if (= (:status (ex-data e)) 404)
               (response/bad-request!
                 {:error "Oppija not found in Oppijanumerorekisteri"})
               (throw e))))
         (try
-          (oppijaindex/update-opiskeluoikeus!
+          (oppijaindex/add-opiskeluoikeus!
             (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
           (catch Exception e
             (if (= (:status (ex-data e)) 404)
               (response/bad-request!
                 {:error "Opiskeluoikeus not found in Koski"})
               (throw e))))
+        (check-hoks-access! hoks request)
         (try
           (let [hoks-db (h/save-hoks! hoks)]
             (when (:save-hoks-json? config)

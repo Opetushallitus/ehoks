@@ -5,7 +5,8 @@
   OrganisationPrivilege
   {:oid s/Str
    :privileges #{s/Keyword}
-   :roles #{s/Keyword}})
+   :roles #{s/Keyword}
+   :child-organisations [s/Str]})
 
 (s/defschema
   VirkailijaSession
@@ -19,4 +20,5 @@
             :free Long
             :max Long}
    :oppijaindex {:unindexedOppijat Long
-                 :unindexedOpiskeluoikeudet Long}})
+                 :unindexedOpiskeluoikeudet Long
+                 :unindexedTutkinnot Long}})

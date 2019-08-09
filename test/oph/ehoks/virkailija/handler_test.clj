@@ -55,12 +55,8 @@
     (client/set-get!
       (fn [url options]
         (cond
-          (.endsWith
-            url "/rest/organisaatio/v4/1.2.246.562.10.12000000001")
-          {:status 200
-           :body {:parentOidPath "|"}}
-          (.endsWith
-            url "/rest/organisaatio/v4/1.2.246.562.10.12000000000")
+          (.contains
+            url "/rest/organisaatio/v4/")
           {:status 200
            :body {:parentOidPath "|"}}
           (.endsWith

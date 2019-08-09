@@ -3,8 +3,6 @@
  :frontend-url-path "ehoks"
  :eperusteet-peruste-url "https://eperusteet.testiopintopolku.fi"
  :tyopaikan-toimija-frontend-path "tyopaikan-toimija"
- :database-url "jdbc:postgresql://localhost:5432/ehoks?user=ehoks_user&password=ehoks"
- :redis-url nil
  :cas-username ""
  :cas-password ""
  :client-sub-system-code "example-code"
@@ -18,4 +16,10 @@
  :save-hoks-json? false
  :opintopolku-host "localhost:3000"
  :heratepalvelu-queue "heratepalvelu-eHOKSHerateQueue"
- :audit true}
+ :audit true
+ :db-type "postgresql"
+ :db-server "localhost"
+ :db-name "ehoks"
+ :db-port 5432
+ :db-username "ehoks_user"
+ :db-password "ehoks"}

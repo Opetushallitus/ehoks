@@ -4,13 +4,11 @@
             [compojure.api.core :refer [route-middleware]]
             [compojure.route :as compojure-route]
             [ring.util.http-response :as response]
-            [oph.ehoks.redis :refer [redis-store]]
+            [oph.ehoks.db.session-store :as session-store]
             [oph.ehoks.oppija.handler :as oppija-handler]
             [oph.ehoks.virkailija.handler :as virkailija-handler]
-            [oph.ehoks.config :refer [config]]
             [clojure.string :refer [lower-case]]
             [environ.core :refer [env]]
-            [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]))
 
 (def both-app
@@ -24,7 +22,7 @@
      :exceptions
      {:handlers common-api/handlers}}
     (route-middleware
-      [wrap-access-logger wrap-audit-logger]
+      [wrap-audit-logger]
       oppija-handler/routes
       virkailija-handler/routes
 
@@ -38,9 +36,7 @@
       "ehoks-virkailija" virkailija-handler/app-routes
       "ehoks" oppija-handler/app-routes
       both-app)
-    (when (seq (:redis-url config))
-      (redis-store {:pool {}
-                    :spec {:uri (:redis-url config)}}))))
+    (session-store/db-store)))
 
 (defn get-app-name []
   (lower-case (:name env (or (System/getProperty "name") "both"))))

@@ -37,8 +37,6 @@
               :frontend-url-path s/Str
               :eperusteet-peruste-url s/Str
               :tyopaikan-toimija-frontend-path s/Str
-              :database-url s/Str
-              :redis-url (s/maybe s/Str)
               :opintopolku-login-url s/Str
               :opintopolku-logout-url s/Str
               :opintopolku-return-url s/Str
@@ -52,4 +50,10 @@
               :save-hoks-json? s/Bool
               :opintopolku-host s/Str
               :heratepalvelu-queue s/Str
-              :audit s/Bool})
+              :audit s/Bool
+              :db-type s/Str
+              :db-server s/Str
+              :db-name s/Str
+              :db-port s/Int
+              :db-username s/Str
+              :db-password s/Str})
