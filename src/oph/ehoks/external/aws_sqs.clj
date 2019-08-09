@@ -9,26 +9,27 @@
            (software.amazon.awssdk.services.sqs.model SendMessageRequest
                                                       GetQueueUrlRequest)))
 
-(def sqs-client (-> (SqsClient/builder)
-                    (.region (Region/EU_WEST_1))
-                    (.build)))
+(def ^:private sqs-client
+  (when (:send-herate-messsages? config)
+    (-> (SqsClient/builder)
+        (.region (Region/EU_WEST_1))
+        (.build))))
 
-(def queue-url
-  (if (nil? (:env-stage env))
-    (log/warn "Stage missing from env variables")
-    (do
-      (log/info (str (:env-stage env) "-"
-                     (:heratepalvelu-queue config)))
-      (.queueUrl (.getQueueUrl sqs-client
-                               (-> (GetQueueUrlRequest/builder)
-                                   (.queueName
-                                     (str (:env-stage env) "-"
-                                          (:heratepalvelu-queue config)))
-                                   (.build)))))))
+(def ^:private queue-url
+  (when (some? sqs-client)
+    (if (nil? (:env-stage env))
+      (log/warn "Stage missing from env variables")
+      (.queueUrl (.getQueueUrl
+                   sqs-client
+                   (-> (GetQueueUrlRequest/builder)
+                       (.queueName
+                         (str (:env-stage env) "-"
+                              (:heratepalvelu-queue config)))
+                       (.build)))))))
 
 (defn build-hoks-hyvaksytty-msg [id hoks]
   {:ehoks-id id
-   :kyselytyyppi "Amis_HOKS_hyväksytty"
+   :kyselytyyppi "aloittaneet"
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
    :oppija-oid (:oppija-oid hoks)
    :sahkoposti (:sahkoposti hoks)

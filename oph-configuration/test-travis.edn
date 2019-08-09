@@ -7,4 +7,4 @@
  :db-username "ehoks_user"
  :db-password "ehoks"
  :opintopolku-host "localhost:3001"
- :audit false}
+ :audit? false}
