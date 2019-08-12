@@ -1,1 +1,294 @@
-{"oid":"1.2.246.562.15.76811932037","versionumero":2,"aikaleima":"2018-12-21T10:37:24.244002","oppilaitos":{"oid":"1.2.246.562.10.12944436166","oppilaitosnumero":{"koodiarvo":"10076","nimi":{"fi":"Testi-yliopisto","sv":"Test-universitetet","en":"Test University"},"lyhytNimi":{"fi":"Testi-yliopisto","sv":"Test-universitetet"},"koodistoUri":"oppilaitosnumero","koodistoVersio":1},"nimi":{"fi":"Testi-yliopisto","sv":"Testi-universitetet","en":"Testi University"},"kotipaikka":{"koodiarvo":"091","nimi":{"fi":"Helsinki","sv":"Helsingfors"},"koodistoUri":"kunta","koodistoVersio":2}},"koulutustoimija":{"oid":"1.2.246.562.10.82388989657","nimi":{"fi":"Testi-korkeakoulusäätiö sr"},"yTunnus":"2228357-4","kotipaikka":{"koodiarvo":"091","nimi":{"fi":"Helsinki","sv":"Helsingfors"},"koodistoUri":"kunta","koodistoVersio":2}},"tila":{"opiskeluoikeusjaksot":[{"alku":"2018-11-15","tila":{"koodiarvo":"lasna","nimi":{"fi":"Läsnä","sv":"Närvarande","en":"present"},"koodistoUri":"koskiopiskeluoikeudentila","koodistoVersio":1}}]},"suoritukset":[{"koulutusmoduuli":{"perusteenDiaarinumero":"OPH-2652-2017","tunniste":{"koodiarvo":"201101","nimi":{"fi":"Perusopetus","sv":"Grundläggande utbildning","en":"Basic education"},"koodistoUri":"koulutus","koodistoVersio":11},"koulutustyyppi":{"koodiarvo":"16","nimi":{"fi":"Perusopetus","sv":"Grundläggande utbildning"},"lyhytNimi":{"fi":"Perusopetus","sv":"Grundläggande utbildning"},"koodistoUri":"koulutustyyppi"}},"toimipiste":{"oid":"1.2.246.562.10.56753942459","oppilaitosnumero":{"koodiarvo":"10076","nimi":{"fi":"Testi-yliopisto","sv":"Testi-universitetet","en":"Testi University"},"lyhytNimi":{"fi":"Testi-yliopisto","sv":"Testi-yliopisto"},"koodistoUri":"oppilaitosnumero","koodistoVersio":1},"nimi":{"fi":"Testi-yliopisto","sv":"Testi-universitetet","en":"Testi University"},"kotipaikka":{"koodiarvo":"091","nimi":{"fi":"Helsinki","sv":"Helsingfors"},"koodistoUri":"kunta","koodistoVersio":2}},"suoritustapa":{"koodiarvo":"koulutus","nimi":{"fi":"Koulutus","sv":"Utbildning"},"koodistoUri":"perusopetuksensuoritustapa","koodistoVersio":1},"suorituskieli":{"koodiarvo":"FI","nimi":{"fi":"suomi","sv":"finska","en":"Finnish"},"lyhytNimi":{"fi":"suomi","sv":"finska","en":"Finnish"},"koodistoUri":"kieli","koodistoVersio":1},"osasuoritukset":[{"koulutusmoduuli":{"tunniste":{"koodiarvo":"AI","nimi":{"fi":"Äidinkieli ja kirjallisuus","sv":"Modersmålet och litteratur"},"lyhytNimi":{"fi":"Äidinkieli ja kirjallisuus","sv":"Modersmålet och litteratur"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"kieli":{"koodiarvo":"AI1","nimi":{"fi":"Suomen kieli ja kirjallisuus","sv":"Finska och litteratur"},"koodistoUri":"oppiaineaidinkielijakirjallisuus","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"A1","nimi":{"fi":"A1-kieli","sv":"A1-språk"},"lyhytNimi":{"fi":"A1-kieli","sv":"A1-språk"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"kieli":{"koodiarvo":"EN","nimi":{"fi":"englanti","sv":"engelska","en":"English"},"lyhytNimi":{"fi":"englanti","sv":"engelska","en":"English"},"koodistoUri":"kielivalikoima","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"B1","nimi":{"fi":"B1-kieli","sv":"B1-språk"},"lyhytNimi":{"fi":"B1-kieli","sv":"B1-språk"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"kieli":{"koodiarvo":"SV","nimi":{"fi":"ruotsi","sv":"svenska","en":"Swedish"},"lyhytNimi":{"fi":"ruotsi","sv":"svenska","en":"Swedish"},"koodistoUri":"kielivalikoima","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"MA","nimi":{"fi":"Matematiikka","sv":"Matematik"},"lyhytNimi":{"fi":"Matematiikka","sv":"Matematik"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"BI","nimi":{"fi":"Biologia","sv":"Biologi"},"lyhytNimi":{"fi":"Biologia","sv":"Biologi"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"GE","nimi":{"fi":"Maantieto","sv":"Geografi"},"lyhytNimi":{"fi":"Maantieto","sv":"Geografi"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"FY","nimi":{"fi":"Fysiikka","sv":"Fysik"},"lyhytNimi":{"fi":"Fysiikka","sv":"Fysik"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"KE","nimi":{"fi":"Kemia","sv":"Kemi"},"lyhytNimi":{"fi":"Kemia","sv":"Kemi"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"TE","nimi":{"fi":"Terveystieto","sv":"Hälsokunskap"},"lyhytNimi":{"fi":"Terveystieto","sv":"Hälsokunskap"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"KT","nimi":{"fi":"Uskonto/Elämänkatsomustieto","sv":"Religion/Livsåskådningskunskap"},"lyhytNimi":{"fi":"Uskonto","sv":"Religion"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"HI","nimi":{"fi":"Historia","sv":"Historia"},"lyhytNimi":{"fi":"Historia","sv":"Historia"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"YH","nimi":{"fi":"Yhteiskuntaoppi","sv":"Samhällslära"},"lyhytNimi":{"fi":"Yhteiskuntaoppi","sv":"Samhällslära"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"MU","nimi":{"fi":"Musiikki","sv":"Musik"},"lyhytNimi":{"fi":"Musiikki","sv":"Musik"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"KU","nimi":{"fi":"Kuvataide","sv":"Bildkonst"},"lyhytNimi":{"fi":"Kuvataide","sv":"Bildkonst"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"KS","nimi":{"fi":"Käsityö","sv":"Slöjd"},"lyhytNimi":{"fi":"Käsityö","sv":"Slöjd"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"LI","nimi":{"fi":"Liikunta","sv":"Gymnastik"},"lyhytNimi":{"fi":"Liikunta","sv":"Gymnastik"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}},{"koulutusmoduuli":{"tunniste":{"koodiarvo":"KO","nimi":{"fi":"Kotitalous","sv":"Huslig ekonomi"},"lyhytNimi":{"fi":"Kotitalous","sv":"Huslig ekonomi"},"koodistoUri":"koskioppiaineetyleissivistava","koodistoVersio":1},"pakollinen":true},"yksilöllistettyOppimäärä":false,"painotettuOpetus":false,"tyyppi":{"koodiarvo":"perusopetuksenoppiaine","nimi":{"fi":"Perusopetuksen oppiaine","sv":"Läroämne i grundläggande utbildning","en":"Basic education subject"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}}],"tyyppi":{"koodiarvo":"perusopetuksenoppimaara","nimi":{"fi":"Perusopetuksen oppimäärä","sv":"Grundläggande utbildningens lärokurs","en":"Basic education syllabus"},"koodistoUri":"suorituksentyyppi","koodistoVersio":1}}],"tyyppi":{"koodiarvo":"perusopetus","nimi":{"fi":"Perusopetus","sv":"Grundläggande utbildning"},"lyhytNimi":{"fi":"Perusopetus"},"koodistoUri":"opiskeluoikeudentyyppi","koodistoVersio":1},"alkamispäivä":"2018-11-15"}
+{
+  "oid": "1.2.246.562.15.76811932037",
+  "versionumero": 1,
+  "aikaleima": "2019-07-01T09:46:24.834939",
+  "lähdejärjestelmänId": {
+    "id": "1051",
+    "lähdejärjestelmä": {
+      "koodiarvo": "primus",
+      "nimi": {
+        "fi": "primus"
+      },
+      "koodistoUri": "lahdejarjestelma",
+      "koodistoVersio": 1
+    }
+  },
+  "oppilaitos": {
+    "oid": "1.2.246.562.10.84189747029",
+    "oppilaitosnumero": {
+      "koodiarvo": "01963",
+      "nimi": {
+        "fi": "Lappeenrannan musiikkiopisto"
+      },
+      "lyhytNimi": {
+        "fi": "Lappeenrannan musiikkiopisto"
+      },
+      "koodistoUri": "oppilaitosnumero",
+      "koodistoVersio": 1
+    },
+    "nimi": {
+      "fi": "Lappeenrannan musiikkiopisto"
+    },
+    "kotipaikka": {
+      "koodiarvo": "405",
+      "nimi": {
+        "fi": "Lappeenranta",
+        "sv": "Villmanstrand"
+      },
+      "koodistoUri": "kunta",
+      "koodistoVersio": 2
+    }
+  },
+  "koulutustoimija": {
+    "oid": "1.2.246.562.10.63964626889",
+    "nimi": {
+      "fi": "Lappeenrannan Musiikkiopiston kannatusyhdistys r.y."
+    },
+    "yTunnus": "0206823-6",
+    "kotipaikka": {
+      "koodiarvo": "405",
+      "nimi": {
+        "fi": "Lappeenranta",
+        "sv": "Villmanstrand"
+      },
+      "koodistoUri": "kunta",
+      "koodistoVersio": 2
+    }
+  },
+  "ostettu": false,
+  "tila": {
+    "opiskeluoikeusjaksot": [
+      {
+        "alku": "2016-08-05",
+        "tila": {
+          "koodiarvo": "lasna",
+          "nimi": {
+            "fi": "Läsnä",
+            "sv": "Närvarande",
+            "en": "Present"
+          },
+          "koodistoUri": "koskiopiskeluoikeudentila",
+          "koodistoVersio": 1
+        }
+      }
+    ]
+  },
+  "suoritukset": [
+    {
+      "koulutusmoduuli": {
+        "tunniste": {
+          "koodiarvo": "355102",
+          "nimi": {
+            "fi": "Leipurin ammattitutkinto",
+            "sv": "Yrkesexamen för bagare",
+            "en": "Baker, FQ"
+          },
+          "lyhytNimi": {
+            "fi": "Leipurin at",
+            "sv": "Yrkesexamen för bagare",
+            "en": "Baker, Further Qualification"
+          },
+          "koodistoUri": "koulutus",
+          "koodistoVersio": 11
+        },
+        "perusteenDiaarinumero": "5/011/2016",
+        "perusteenNimi": {
+          "fi": "Leipurin ammattitutkinto",
+          "sv": "Yrkesexamen för bagare"
+        },
+        "koulutustyyppi": {
+          "koodiarvo": "11",
+          "nimi": {
+            "fi": "Ammattitutkinto",
+            "sv": "Yrkesexamen"
+          },
+          "lyhytNimi": {
+            "fi": "Ammattitutkinto",
+            "sv": "Yrkesexamen"
+          },
+          "koodistoUri": "koulutustyyppi",
+          "koodistoVersio": 2
+        }
+      },
+      "suoritustapa": {
+        "koodiarvo": "ops",
+        "nimi": {
+          "fi": "Ammatillinen perustutkinto",
+          "sv": "Läroplansbaserad",
+          "en": "Opetussuunnitelman mukainen"
+        },
+        "lyhytNimi": {
+          "fi": "ops",
+          "sv": "ops",
+          "en": "ops"
+        },
+        "koodistoUri": "ammatillisentutkinnonsuoritustapa",
+        "koodistoVersio": 1
+      },
+      "toimipiste": {
+        "oid": "1.2.246.562.10.84189747029",
+        "oppilaitosnumero": {
+          "koodiarvo": "01963",
+          "nimi": {
+            "fi": "Lappeenrannan musiikkiopisto"
+          },
+          "lyhytNimi": {
+            "fi": "Lappeenrannan musiikkiopisto"
+          },
+          "koodistoUri": "oppilaitosnumero",
+          "koodistoVersio": 1
+        },
+        "nimi": {
+          "fi": "Lappeenrannan musiikkiopisto"
+        },
+        "kotipaikka": {
+          "koodiarvo": "405",
+          "nimi": {
+            "fi": "Lappeenranta",
+            "sv": "Villmanstrand"
+          },
+          "koodistoUri": "kunta",
+          "koodistoVersio": 2
+        }
+      },
+      "alkamispäivä": "2016-08-05",
+      "suorituskieli": {
+        "koodiarvo": "FI",
+        "nimi": {
+          "fi": "suomi",
+          "sv": "finska",
+          "en": "Finnish"
+        },
+        "lyhytNimi": {
+          "fi": "suomi",
+          "sv": "finska",
+          "en": "Finnish"
+        },
+        "koodistoUri": "kieli",
+        "koodistoVersio": 1
+      },
+      "työssäoppimisjaksot": [
+        {
+          "alku": "2017-10-20",
+          "loppu": "2017-12-09",
+          "paikkakunta": {
+            "koodiarvo": "200",
+            "nimi": {
+              "fi": "Ulkomaa",
+              "sv": "Utlandet",
+              "en": "Ulkomaa"
+            },
+            "koodistoUri": "kunta",
+            "koodistoVersio": 2
+          },
+          "maa": {
+            "koodiarvo": "530",
+            "nimi": {
+              "fi": "Alankomaiden Antillit",
+              "sv": "Det forna Nederländska Antillerna",
+              "en": "Former Netherlands Antilles"
+            },
+            "koodistoUri": "maatjavaltiot2",
+            "koodistoVersio": 2
+          },
+          "laajuus": {
+            "arvo": 7,
+            "yksikkö": {
+              "koodiarvo": "6",
+              "nimi": {
+                "fi": "osaamispistettä",
+                "sv": "kompetenspoäng",
+                "en": "ECVET competence points"
+              },
+              "lyhytNimi": {
+                "fi": "osp",
+                "sv": "kp",
+                "en": "competence points"
+              },
+              "koodistoUri": "opintojenlaajuusyksikko",
+              "koodistoVersio": 1
+            }
+          }
+        },
+        {
+          "alku": "2017-12-24",
+          "loppu": "2017-12-26",
+          "työssäoppimispaikka": {
+            "fi": "Acme Oy"
+          },
+          "paikkakunta": {
+            "koodiarvo": "035",
+            "nimi": {
+              "fi": "Brändö",
+              "sv": "Brändö"
+            },
+            "koodistoUri": "kunta",
+            "koodistoVersio": 2
+          },
+          "maa": {
+            "koodiarvo": "246",
+            "nimi": {
+              "fi": "Suomi",
+              "sv": "Finland",
+              "en": "Finland"
+            },
+            "lyhytNimi": {
+              "fi": "FI",
+              "sv": "FI",
+              "en": "FI"
+            },
+            "koodistoUri": "maatjavaltiot2",
+            "koodistoVersio": 2
+          },
+          "laajuus": {
+            "arvo": 2,
+            "yksikkö": {
+              "koodiarvo": "6",
+              "nimi": {
+                "fi": "osaamispistettä",
+                "sv": "kompetenspoäng",
+                "en": "ECVET competence points"
+              },
+              "lyhytNimi": {
+                "fi": "osp",
+                "sv": "kp",
+                "en": "competence points"
+              },
+              "koodistoUri": "opintojenlaajuusyksikko",
+              "koodistoVersio": 1
+            }
+          }
+        }
+      ],
+      "osasuoritukset": [],
+      "tyyppi": {
+        "koodiarvo": "ammatillinentutkinto",
+        "nimi": {
+          "fi": "Ammatillinen tutkinto",
+          "sv": "Yrkesinriktad examen",
+          "en": "Vocational education  qualification"
+        },
+        "koodistoUri": "suorituksentyyppi",
+        "koodistoVersio": 1
+      }
+    }
+  ],
+  "lisätiedot": {
+    "oikeusMaksuttomaanAsuntolapaikkaan": false,
+    "henkilöstökoulutus": false,
+    "koulutusvienti": false
+  },
+  "tyyppi": {
+    "koodiarvo": "ammatillinenkoulutus",
+    "nimi": {
+      "fi": "Ammatillinen koulutus",
+      "sv": "Yrkesutbildning"
+    },
+    "lyhytNimi": {
+      "fi": "Ammatillinen koulutus"
+    },
+    "koodistoUri": "opiskeluoikeudentyyppi",
+    "koodistoVersio": 1
+  },
+  "alkamispäivä": "2016-08-05"
+}

@@ -20,4 +20,5 @@
             :free Long
             :max Long}
    :oppijaindex {:unindexedOppijat Long
-                 :unindexedOpiskeluoikeudet Long}})
+                 :unindexedOpiskeluoikeudet Long
+                 :unindexedTutkinnot Long}})

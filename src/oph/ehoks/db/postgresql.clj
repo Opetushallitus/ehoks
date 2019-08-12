@@ -30,7 +30,13 @@
         (json/read-str value :key-fn keyword)
         value))))
 
-(defn get-db-connection [] {:connection-uri (:database-url config)})
+(defn get-db-connection []
+  {:dbtype (:db-type config)
+   :dbname (:db-name config)
+   :host (:db-server config)
+   :port (:db-port config)
+   :user (:db-username config)
+   :password (:db-password config)})
 
 (defn insert-empty! [t]
   (jdbc/execute!
@@ -145,6 +151,14 @@
 (defn select-hoks-opiskeluoikeudet-without-index-count []
   (query
     [queries/select-hoks-opiskeluoikeudet-without-index-count]))
+
+(defn select-opiskeluoikeudet-without-tutkinto []
+  (query
+    [queries/select-hoks-opiskeluoikeudet-without-tutkinto]))
+
+(defn select-opiskeluoikeudet-without-tutkinto-count []
+  (query
+    [queries/select-hoks-opiskeluoikeudet-without-tutkinto-count]))
 
 (defn select-opiskeluoikeudet-by-oppija-oid [oppija-oid]
   (query

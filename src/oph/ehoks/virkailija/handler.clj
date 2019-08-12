@@ -158,7 +158,20 @@
                     :path-params [koodi-uri :- s/Str]
                     :summary "Koodiston haku Koodisto-Koodi-Urilla."
                     :return (restful/response s/Any)
-                    (restful/rest-ok (koodisto/get-koodi koodi-uri))))
+                    (restful/rest-ok (koodisto/get-koodi koodi-uri)))
+
+                  (c-api/GET "/:koodi-uri/versiot" []
+                    :path-params [koodi-uri :- s/Str]
+                    :summary "Koodiston versioiden haku Koodisto-koodi-urilla."
+                    :return (restful/response s/Any)
+                    (restful/rest-ok (koodisto/get-koodi-versiot koodi-uri)))
+
+                  (c-api/GET "/:koodi-uri/koodi" []
+                    :path-params [koodi-uri :- s/Str]
+                    :summary "Koodiston uusimpien versioiden haku."
+                    :return (restful/response s/Any)
+                    (restful/rest-ok
+                      (koodisto/get-koodi-latest-versiot koodi-uri))))
 
                 (c-api/context "/eperusteet" []
                   (c-api/GET "/tutkinnonosat/:id/viitteet" []
@@ -220,13 +233,16 @@
                        {:unindexedOppijat
                         (op/get-oppijat-without-index-count)
                         :unindexedOpiskeluoikeudet
-                        (op/get-opiskeluoikeudet-without-index-count)}})))
+                        (op/get-opiskeluoikeudet-without-index-count)
+                        :unindexedTutkinnot
+                        (op/get-opiskeluoikeudet-without-tutkinto-count)}})))
 
                 (c-api/POST "/index" []
                   :summary "Indeksoi oppijat ja opiskeluoikeudet"
                   (a/go
                     (op/update-oppijat-without-index!)
                     (op/update-opiskeluoikeudet-without-index!)
+                    (op/update-opiskeluoikeudet-without-tutkinto!)
                     (response/ok)))
 
                 (c-api/DELETE "/cache" []
@@ -380,7 +396,7 @@
                                                 request
                                                 [:session :virkailija-user])]
                           (if (virkailija-has-privilege?
-                                virkailija-user (:oppija-oid hoks) :write)
+                                virkailija-user (:oppija-oid hoks) :read)
                             (restful/rest-ok (h/get-hoks-by-id hoks-id))
                             (do
                               (log/warn "User "
@@ -411,20 +427,11 @@
                         (koski/get-oppija-opiskeluoikeudet oppija-oid)))
 
                     (c-api/GET "/" []
-                      :return (restful/response schema/UserInfo)
+                      :return (restful/response common-schema/Oppija)
                       :summary "Oppijan tiedot"
-                      (let [oppija-response (onr/find-student-by-oid
-                                              oppija-oid)]
-                        (if (= (:status oppija-response) 200)
-                          (restful/rest-ok
-                            (-> oppija-response
-                                :body
-                                onr/convert-student-info))
-                          (do
-                            (log/warn "Error getting " oppija-oid " from ONR")
-                            (response/internal-server-error
-                              {:error
-                               "Error with external connection"})))))))))))
+                      (if-let [oppija (op/get-oppija-by-oid oppija-oid)]
+                        (restful/rest-ok oppija)
+                        (response/not-found)))))))))
 
         healthcheck-handler/routes
         misc-handler/routes))
