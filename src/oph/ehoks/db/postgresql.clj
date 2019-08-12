@@ -195,7 +195,7 @@
      oo-id]
     {}))
 
-(defn delete-hoksit-by-id! [hoks-id]
+(defn delete-hoksit2-by-id! [hoks-id]
   (let [ahyto-ids (select-ahyto-ids-by-hoks-id hoks-id)
         ahyto-osaamisen-osoittamiset-ids
         (into [] cat
@@ -243,6 +243,11 @@
       {})
     (map delete-osaamisen-osoittaminen-and-nayttoymparisto-by-oo-id
          oo-ids)))
+
+(defn delete-hoksit-by-id! [hoks-id]
+  (query
+    [queries/delete-hoksit-by-id hoks-id]
+    {}))
 
 (defn select-hoksit-by-opiskeluoikeus-oid [oid]
   (query
