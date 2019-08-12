@@ -20,6 +20,7 @@
                  [org.clojure/data.xml "0.0.8"]
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.1.0"]
+                 [software.amazon.awssdk/sqs "2.5.37"]
                  [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]]
   :managed-dependencies [[org.clojure/clojure "1.10.0"]
 
@@ -75,6 +76,7 @@
                          [hiccup "1.0.5"]
                          [org.clojure/tools.namespace "0.2.11"]
                          [environ "1.1.0"]
+                         [software.amazon.awssdk/sqs "2.5.37"]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.3.2"]

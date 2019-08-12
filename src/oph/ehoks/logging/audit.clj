@@ -20,7 +20,7 @@
                        (log/log "audit" :info nil str))))
 
 (def ^:private audit
-  (when (:audit config)
+  (when (:audit? config)
     (Audit. logger (or (:name env) "both") (ApplicationType/BACKEND))))
 
 (defn- create-operation [op]

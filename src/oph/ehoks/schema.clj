@@ -49,7 +49,9 @@
               :ext-cache-lifetime-minutes s/Int
               :save-hoks-json? s/Bool
               :opintopolku-host s/Str
-              :audit s/Bool
+              :heratepalvelu-queue s/Str
+              :send-herate-messages? s/Bool
+              :audit? s/Bool
               :db-type s/Str
               :db-server s/Str
               :db-name s/Str
