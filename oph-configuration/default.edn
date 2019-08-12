@@ -16,7 +16,7 @@
  :save-hoks-json? false
  :opintopolku-host "localhost:3000"
  :heratepalvelu-queue "heratepalvelu-eHOKSHerateQueue"
- :send-herate-messsages? false
+ :send-herate-messages? false
  :audit? true
  :db-type "postgresql"
  :db-server "localhost"

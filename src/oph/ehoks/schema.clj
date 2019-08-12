@@ -50,7 +50,7 @@
               :save-hoks-json? s/Bool
               :opintopolku-host s/Str
               :heratepalvelu-queue s/Str
-              :send-herate-messsages? s/Bool
+              :send-herate-messages? s/Bool
               :audit? s/Bool
               :db-type s/Str
               :db-server s/Str
