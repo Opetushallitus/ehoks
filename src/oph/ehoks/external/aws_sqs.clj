@@ -10,7 +10,7 @@
                                                       GetQueueUrlRequest)))
 
 (def ^:private sqs-client
-  (when (:send-herate-messsages? config)
+  (when (:send-herate-messages? config)
     (-> (SqsClient/builder)
         (.region (Region/EU_WEST_1))
         (.build))))
