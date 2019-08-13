@@ -113,3 +113,16 @@
                      ["read" "update" "delete" "write"]
                      :roles []
                      :child-organisations []}]}}))))))
+
+(t/deftest delete-session-test
+  (t/testing "Delete virkailija session"
+    (with-db
+      (let [responses (with-ticket-session-multi
+                        (create-app (test-session-store (atom {})))
+                        [(mock/request :get session-url)
+                         (mock/request :delete session-url)
+                         (mock/request :get session-url)]
+                        "ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")]
+        (t/is (= (:status (first responses)) 200))
+        (t/is (= (:status (second responses)) 200))
+        (t/is (= (:status (nth responses 2)) 401))))))
