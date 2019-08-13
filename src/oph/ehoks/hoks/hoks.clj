@@ -476,7 +476,7 @@
        n)
     new-values))
 
-(defn  save-aiemmin-hankittu-ammat-tutkinnon-osa! [hoks-id ahato]
+(defn save-aiemmin-hankittu-ammat-tutkinnon-osa! [hoks-id ahato]
   (let [ahato-db (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
                    (assoc ahato
                           :hoks-id hoks-id
