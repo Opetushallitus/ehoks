@@ -53,4 +53,4 @@
 
     (c-api/DELETE "/" []
       :summary "Virkailijan istunnon päättäminen"
-      (dissoc (response/ok) :session))))
+      (assoc (response/ok) :session nil))))
