@@ -1,7 +1,8 @@
 (ns oph.ehoks.external.oph-url
   (:require [clojure.java.io :as io]
             [oph.ehoks.config :refer [config]]
-            [clojure.string :as cstr]))
+            [clojure.string :as cstr]
+            [environ.core :refer [env]]))
 
 (def base-urls
   {"opintopolku-host" (:opintopolku-host config)})
@@ -43,10 +44,15 @@
       read-lines
       (parse-urls base-urls)))
 
+(defn get-file []
+  (or (io/file (or (System/getenv "SERVICES_FILE")
+                   (System/getProperty "services_file")
+                   (:services-file env)))
+      (io/resource "ehoks-oph.properties")))
+
 (def oph-service-urls
   (when-not *compile-files*
-    (load-urls (or (io/file (System/getProperty "services_file"))
-                   (io/resource "services-oph.properties")))))
+    (load-urls (get-file))))
 
 (defn replace-arg [url i v]
   (cstr/replace url (format "$%d" i) (str v)))

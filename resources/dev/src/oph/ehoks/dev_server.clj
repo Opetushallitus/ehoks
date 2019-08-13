@@ -1,7 +1,7 @@
 (ns oph.ehoks.dev-server
   (:require [oph.ehoks.ehoks-app :as ehoks-app]
             [oph.ehoks.db.migrations :as m]
-            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.config :refer [config] :as c]
             [oph.ehoks.mock-routes :as mock]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [compojure.core :refer [GET defroutes routes]]
@@ -110,6 +110,7 @@
   (start-app-server! dev-reload-app app-name config-file))
 
 (defn start [app-name config-file]
+  (log/infof "Starting %s with config %s" app-name config-file)
   (let [app (wrap-dev-cors
               (routes
                 (wrap-params (wrap-cookies mock/mock-routes))
@@ -119,5 +120,5 @@
 
 (defn -main
   ([app-name config-file] (start app-name config-file))
-  ([app-name] (start app-name nil))
-  ([] (start "both" nil)))
+  ([app-name] (start app-name (c/get-config-file)))
+  ([] (start (ehoks-app/get-app-name) (c/get-config-file))))

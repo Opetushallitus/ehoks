@@ -37,7 +37,6 @@
               :frontend-url-path s/Str
               :eperusteet-peruste-url s/Str
               :tyopaikan-toimija-frontend-path s/Str
-              :database-url s/Str
               :opintopolku-login-url s/Str
               :opintopolku-logout-url s/Str
               :opintopolku-return-url s/Str
@@ -50,5 +49,13 @@
               :ext-cache-lifetime-minutes s/Int
               :save-hoks-json? s/Bool
               :opintopolku-host s/Str
-              :audit s/Bool
+              :heratepalvelu-queue s/Str
+              :send-herate-messages? s/Bool
+              :audit? s/Bool
+              :db-type s/Str
+              :db-server s/Str
+              :db-name s/Str
+              :db-port s/Int
+              :db-username s/Str
+              :db-password s/Str
               (s/optional-key :delete-allowed?) s/Bool})

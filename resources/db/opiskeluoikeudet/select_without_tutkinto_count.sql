@@ -1,0 +1,1 @@
+SELECT COUNT(*) FROM opiskeluoikeudet WHERE tutkinto = '' OR tutkinto IS NULL

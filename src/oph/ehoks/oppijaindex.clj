@@ -55,6 +55,12 @@
 (defn get-opiskeluoikeudet-without-index-count []
   (:count (first (db/select-hoks-opiskeluoikeudet-without-index-count))))
 
+(defn get-opiskeluoikeudet-without-tutkinto []
+  (db/select-opiskeluoikeudet-without-tutkinto))
+
+(defn get-opiskeluoikeudet-without-tutkinto-count []
+  (:count (first (db/select-opiskeluoikeudet-without-tutkinto-count))))
+
 (defn get-oppija-opiskeluoikeudet [oppija-oid]
   (db/select-opiskeluoikeudet-by-oppija-oid oppija-oid))
 
@@ -72,16 +78,35 @@
           (db/select-oppilaitos-oids-by-koulutustoimija-oid
             koulutustoimija-oid)))
 
+(defn- get-opiskeluoikeus-info [oid oppija-oid]
+  (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
+    (when (> (count (:suoritukset opiskeluoikeus)) 1)
+      (log/warnf
+        "Opiskeluoikeus %s has multiple suoritukset. First is used for tutkinto"
+        oid))
+    (when (> (count (get-in opiskeluoikeus [:suoritukset 0 :osaamisala])) 1)
+      (log/warnf
+        "Opiskeluoikeus %s has multiple osaamisala. First one is used."))
+    {:oid oid
+     :oppija_oid oppija-oid
+     :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
+     :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
+     :tutkinto (get-in
+                 opiskeluoikeus
+                 [:suoritukset 0 :koulutusmoduuli :tunniste :nimi :fi]
+                 "")
+     :osaamisala (or
+                   (get-in
+                     opiskeluoikeus
+                     [:suoritukset 0 :osaamisala 0 :nimi :fi])
+                   (get-in
+                     opiskeluoikeus
+                     [:suoritukset 0 :osaamisala 0 :osaamisala :nimi :fi])
+                   "")}))
+
 (defn add-new-opiskeluoikeus! [oid oppija-oid]
   (try
-    (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
-      (db/insert-opiskeluoikeus
-        {:oid oid
-         :oppija_oid oppija-oid
-         :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
-         :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
-         :tutkinto ""
-         :osaamisala ""}))
+    (db/insert-opiskeluoikeus (get-opiskeluoikeus-info oid oppija-oid))
     (catch Exception e
       (log/errorf
         "Error adding opiskeluoikeus %s of oppija %s" oid oppija-oid)
@@ -89,14 +114,9 @@
 
 (defn update-opiskeluoikeus! [oid oppija-oid]
   (try
-    (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
-      (db/update-opiskeluoikeus!
-        oid
-        {:oppija_oid oppija-oid
-         :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
-         :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
-         :tutkinto ""
-         :osaamisala ""}))
+    (db/update-opiskeluoikeus!
+      oid
+      (dissoc (get-opiskeluoikeus-info oid oppija-oid) :oid :oppija_oid))
     (catch Exception e
       (log/errorf
         "Error updating opiskeluoikeus %s of oppija %s" oid oppija-oid)
@@ -141,4 +161,11 @@
   (doseq [{oid :opiskeluoikeus_oid oppija-oid :oppija_oid}
           (get-opiskeluoikeudet-without-index)]
     (add-opiskeluoikeus! oid oppija-oid))
+  (log/info "Indexing opiskeluoikeudet finished"))
+
+(defn update-opiskeluoikeudet-without-tutkinto! []
+  (log/info "Start indexing opiskeluoikeudet without tutkinto")
+  (doseq [{oid :oid oppija-oid :oppija_oid}
+          (get-opiskeluoikeudet-without-tutkinto)]
+    (update-opiskeluoikeus! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))

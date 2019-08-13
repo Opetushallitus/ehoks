@@ -58,6 +58,10 @@
       "hoksit/select_opiskeluoikeus_oids_without_info.sql")
 (defq select-hoks-opiskeluoikeudet-without-index-count
       "hoksit/select_opiskeluoikeus_oids_without_info_count.sql")
+(defq select-hoks-opiskeluoikeudet-without-tutkinto
+      "opiskeluoikeudet/select_without_tutkinto.sql")
+(defq select-hoks-opiskeluoikeudet-without-tutkinto-count
+      "opiskeluoikeudet/select_without_tutkinto_count.sql")
 (defq select-oppilaitos-oppijat
       "oppijat/select_oppilaitos_oppijat.sql")
 (defq select-oppilaitos-oppijat-search-count
