@@ -53,7 +53,7 @@
   {:status 201
    :headers {"location" "http://test.ticket/1234"}})
 
-(defn with-ticket-session [app request ticket]
+(defn with-ticket-session-multi [app requests ticket]
   (client/set-get! ticket-response)
   (client/set-post! create-ticket-response)
   (let [auth-response
@@ -64,14 +64,20 @@
               "%s/opintopolku?ticket=%s"
               session-url
               ticket)))
-        response
-        (app
-          (mock/header
-            request
-            :cookie
-            (first (get-in auth-response [:headers "Set-Cookie"]))))]
+        responses
+        (mapv
+          (fn [request]
+            (app
+              (mock/header
+                request
+                :cookie
+                (first (get-in auth-response [:headers "Set-Cookie"])))))
+          requests)]
     (client/reset-functions!)
-    response))
+    responses))
+
+(defn with-ticket-session [app request ticket]
+  (first (with-ticket-session-multi app [request] ticket)))
 
 (t/deftest invalid-ticket-session-test
   (t/testing "Creating session with invalid service ticket"
