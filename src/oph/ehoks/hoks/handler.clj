@@ -124,7 +124,7 @@
       :body [ooato hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ooato-from-db (h/save-aiemmin-hankittu-ammat-tutkinnon-osa!
-                            (:id (:hoks request)) ooato)]
+                            (get-in request [:hoks :id]) ooato)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ooato-from-db))}
           :id (:id ooato-from-db))))
