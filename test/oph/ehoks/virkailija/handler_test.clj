@@ -1,5 +1,6 @@
 (ns oph.ehoks.virkailija.handler-test
   (:require [oph.ehoks.virkailija.handler :as handler]
+            [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [clojure.test :as t]
@@ -224,20 +225,20 @@
                    :koulutustoimija-oid ""})
       (t/is
         (not
-          (handler/virkailija-has-access?
+          (m/virkailija-has-access?
             {:organisation-privileges
              [{:oid "1.2.246.562.10.12000000002"
                :privileges #{:read}}]}
             "1.2.246.562.24.44000000001")))
       (t/is
         (not
-          (handler/virkailija-has-access?
+          (m/virkailija-has-access?
             {:organisation-privileges
              [{:oid "1.2.246.562.10.12000000000"
                :privileges #{}}]}
             "1.2.246.562.24.44000000001")))
       (t/is
-        (handler/virkailija-has-access?
+        (m/virkailija-has-access?
           {:organisation-privileges
            [{:oid "1.2.246.562.10.12000000000"
              :privileges #{:read}}]}

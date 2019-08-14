@@ -2,37 +2,16 @@
   (:require [compojure.api.sweet :as c-api]
             [schema.core :as s]
             [ring.util.http-response :as response]
-            [oph.ehoks.external.kayttooikeus :as kayttooikeus]
-            [oph.ehoks.external.cas :as cas]
-            [oph.ehoks.user :as user]
-            [oph.ehoks.external.oph-url :as u]
-            [clojure.tools.logging :as log]
             [oph.ehoks.virkailija.schema :as schema]
             [oph.ehoks.restful :as restful]
             [clojure.data.xml :as xml]
-            [oph.ehoks.db.postgresql :as db]))
+            [oph.ehoks.db.postgresql :as db]
+            [oph.ehoks.virkailija.cas-handler :as cas-handler]))
 
 (def routes
   (c-api/context "/session" []
-    (c-api/GET "/opintopolku" []
-      :summary "Virkailijan Opintopolku-kirjautumisen endpoint"
-      :query-params [ticket :- s/Str]
-      (let [validation-data (cas/validate-ticket
-                              (u/get-url "ehoks.virkailija-login-return")
-                              ticket)]
-        (if (:success? validation-data)
-          (let [ticket-user (kayttooikeus/get-user-details
-                              (:user validation-data))]
-            (assoc-in
-              (assoc-in
-                (response/see-other (u/get-url "ehoks-virkailija-frontend"))
-                [:session :virkailija-user]
-                (merge ticket-user (user/get-auth-info ticket-user)))
-              [:session :ticket]
-              ticket))
-          (do (log/warnf "Ticket validation failed: %s"
-                         (:error validation-data))
-              (response/unauthorized {:error "Invalid ticket"})))))
+    (c-api/context "/opintopolku" []
+      cas-handler/routes)
 
     (c-api/POST "/opintopolku" []
       :summary "Virkailijan CAS SLO endpoint"
