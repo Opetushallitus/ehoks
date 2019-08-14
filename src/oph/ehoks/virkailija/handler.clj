@@ -8,7 +8,6 @@
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
-            [oph.ehoks.external.cache :as c]
             [oph.ehoks.virkailija.auth :as auth]
             [oph.ehoks.user :as user]
             [oph.ehoks.schema :as schema]
@@ -27,9 +26,9 @@
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
             [oph.ehoks.validation.handler :as validation-handler]
             [clojure.core.async :as a]
-            [oph.ehoks.virkailija.schema :as virkailija-schema]
             [clojure.tools.logging :as log]
-            [oph.ehoks.virkailija.middleware :as m]))
+            [oph.ehoks.virkailija.middleware :as m]
+            [oph.ehoks.virkailija.system-handler :as system-handler]))
 
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
@@ -132,38 +131,7 @@
                     (restful/rest-ok
                       (eperusteet/find-tutkinnon-osat koodi-uri)))))
 
-              (route-middleware
-                [m/wrap-oph-super-user]
-
-                (c-api/GET "/system-info" []
-                  :summary "Järjestelmän tiedot"
-                  :return (restful/response virkailija-schema/SystemInfo)
-                  (let [runtime (Runtime/getRuntime)]
-                    (restful/rest-ok
-                      {:cache {:size (c/size)}
-                       :memory {:total (.totalMemory runtime)
-                                :free (.freeMemory runtime)
-                                :max (.maxMemory runtime)}
-                       :oppijaindex
-                       {:unindexedOppijat
-                        (op/get-oppijat-without-index-count)
-                        :unindexedOpiskeluoikeudet
-                        (op/get-opiskeluoikeudet-without-index-count)
-                        :unindexedTutkinnot
-                        (op/get-opiskeluoikeudet-without-tutkinto-count)}})))
-
-                (c-api/POST "/index" []
-                  :summary "Indeksoi oppijat ja opiskeluoikeudet"
-                  (a/go
-                    (op/update-oppijat-without-index!)
-                    (op/update-opiskeluoikeudet-without-index!)
-                    (op/update-opiskeluoikeudet-without-tutkinto!)
-                    (response/ok)))
-
-                (c-api/DELETE "/cache" []
-                  :summary "Välimuistin tyhjennys"
-                  (c/clear-cache!)
-                  (response/ok)))
+              system-handler/routes
 
               (c-api/context "/oppijat" []
                 (c-api/GET "/" request
