@@ -38,10 +38,6 @@
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
 
-(defn delete!
-  [table where-clause]
-  (jdbc/delete! (db-ops/get-db-connection) table where-clause))
-
 (defn insert-multi! [t v]
   (jdbc/insert-multi! (db-ops/get-db-connection) t v))
 
@@ -837,7 +833,7 @@
       k)))
 
 (defn delete-session! [session-key]
-  (delete! :sessions ["session_key = ?" session-key]))
+  (db-ops/delete! :sessions ["session_key = ?" session-key]))
 
 (defn delete-sessions-by-ticket! [ticket]
-  (delete! :sessions ["data->>'ticket' = ?" ticket]))
+  (db-ops/delete! :sessions ["data->>'ticket' = ?" ticket]))

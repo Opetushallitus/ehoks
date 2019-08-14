@@ -34,3 +34,7 @@
    (update! table {:deleted_at (java.util.Date.)} where-clause))
   ([table where-clause db-conn]
    (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
+
+(defn delete!
+  [table where-clause]
+  (jdbc/delete! (get-db-connection) table where-clause))
