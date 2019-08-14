@@ -20,7 +20,6 @@
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.oppijaindex :as op]
-            [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.eperusteet :as eperusteet]
             [oph.ehoks.external.koski :as koski]
@@ -29,92 +28,8 @@
             [oph.ehoks.validation.handler :as validation-handler]
             [clojure.core.async :as a]
             [oph.ehoks.virkailija.schema :as virkailija-schema]
-            [clojure.tools.logging :as log]))
-
-(defn- virkailija-authenticated? [request]
-  (some? (get-in request [:session :virkailija-user])))
-
-(defn wrap-require-virkailija-user [handler]
-  (fn
-    ([request respond raise]
-      (if (= (get-in request [:session :virkailija-user :kayttajaTyyppi])
-             "VIRKAILIJA")
-        (handler request respond raise)
-        (respond (response/forbidden
-                   {:error "User type 'VIRKAILIJA' is required"}))))
-    ([request]
-      (if (= (get-in request [:session :virkailija-user :kayttajaTyyppi])
-             "VIRKAILIJA")
-        (handler request)
-        (response/forbidden
-          {:error "User type 'VIRKAILIJA' is required"})))))
-
-(defn wrap-virkailija-authorize [handler]
-  (fn
-    ([request respond raise]
-      (if (virkailija-authenticated? request)
-        (handler request respond raise)
-        (respond (response/unauthorized))))
-    ([request]
-      (if (virkailija-authenticated? request)
-        (handler request)
-        (response/unauthorized)))))
-
-(defn wrap-oph-super-user [handler]
-  (fn
-    ([request respond raise]
-      (if (user/oph-super-user? (get-in request [:session :virkailija-user]))
-        (handler request respond raise)
-        (respond (response/forbidden))))
-    ([request]
-      (if (user/oph-super-user? (get-in request [:session :virkailija-user]))
-        (handler request)
-        (response/forbidden)))))
-
-(defn virkailija-has-privilege? [ticket-user oppija-oid privilege]
-  (some?
-    (some
-      (fn [opiskeluoikeus]
-        (when
-         (contains?
-           (user/get-organisation-privileges
-             ticket-user (:oppilaitos-oid opiskeluoikeus))
-           privilege)
-          opiskeluoikeus))
-      (op/get-oppija-opiskeluoikeudet oppija-oid))))
-
-(defn virkailija-has-access? [virkailija-user oppija-oid]
-  (virkailija-has-privilege? virkailija-user oppija-oid :read))
-
-(defn wrap-virkailija-oppija-access [handler]
-  (fn
-    ([request respond raise]
-      (if (virkailija-has-access?
-            (get-in request [:session :virkailija-user])
-            (get-in request [:params :oppija-oid]))
-        (handler request respond raise)
-        (do
-          (log/warn "User "
-                    (get-in request [:session :virkailija-user :oidHenkilo])
-                    " privileges don't match oppija "
-                    (get-in request [:params :oppija-oid]))
-          (respond
-            (response/forbidden
-              {:error (str "User privileges does not match oppija "
-                           "opiskeluoikeus organisation")})))))
-    ([request]
-      (if (virkailija-has-access?
-            (get-in request [:session :virkailija-user])
-            (get-in request [:params :oppija-oid]))
-        (handler request)
-        (do
-          (log/warn "User "
-                    (get-in request [:session :virkailija-user :oidHenkilo])
-                    " privileges don't match oppija "
-                    (get-in request [:params :oppija-oid]))
-          (response/forbidden
-            {:error (str "User privileges does not match oppija opiskeluoikeus "
-                         "organisation")}))))))
+            [clojure.tools.logging :as log]
+            [oph.ehoks.virkailija.middleware :as m]))
 
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
@@ -138,7 +53,7 @@
             auth/routes
 
             (route-middleware
-              [wrap-virkailija-authorize wrap-require-virkailija-user]
+              [m/wrap-virkailija-authorize m/wrap-require-virkailija-user]
 
               (c-api/context "/external" []
                 :tags ["virkailija-external"]
@@ -218,7 +133,7 @@
                       (eperusteet/find-tutkinnon-osat koodi-uri)))))
 
               (route-middleware
-                [wrap-oph-super-user]
+                [m/wrap-oph-super-user]
 
                 (c-api/GET "/system-info" []
                   :summary "Järjestelmän tiedot"
@@ -348,7 +263,7 @@
                             (throw e))))
                       (let [virkailija-user
                             (get-in request [:session :virkailija-user])]
-                        (when-not (virkailija-has-privilege?
+                        (when-not (m/virkailija-has-privilege?
                                     virkailija-user (:oppija-oid hoks) :write)
                           (log/warn "User "
                                     (get-in request [:session
@@ -379,7 +294,7 @@
                             (throw e)))))
 
                     (route-middleware
-                      [wrap-virkailija-oppija-access]
+                      [m/wrap-virkailija-oppija-access]
                       (c-api/GET "/" []
                         :return (restful/response [hoks-schema/HOKS])
                         :summary "Oppijan hoksit (perustiedot)"
@@ -395,7 +310,7 @@
                               virkailija-user (get-in
                                                 request
                                                 [:session :virkailija-user])]
-                          (if (virkailija-has-privilege?
+                          (if (m/virkailija-has-privilege?
                                 virkailija-user (:oppija-oid hoks) :read)
                             (restful/rest-ok (h/get-hoks-by-id hoks-id))
                             (do
@@ -410,7 +325,7 @@
                                  (str "User has insufficient privileges")})))))
 
                       (route-middleware
-                        [wrap-oph-super-user]
+                        [m/wrap-oph-super-user]
 
                         (c-api/GET "/" []
                           :summary "Kaikki hoksit (perustiedot).
@@ -418,7 +333,7 @@
                           (restful/rest-ok (db/select-hoksit))))))
 
                   (route-middleware
-                    [wrap-virkailija-oppija-access]
+                    [m/wrap-virkailija-oppija-access]
 
                     (c-api/GET "/opiskeluoikeudet" [:as request]
                       :summary "Oppijan opiskeluoikeudet"
