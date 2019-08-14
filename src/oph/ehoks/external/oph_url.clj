@@ -48,7 +48,7 @@
   (or (io/file (or (System/getenv "SERVICES_FILE")
                    (System/getProperty "services_file")
                    (:services-file env)))
-      (io/resource "services-oph.properties")))
+      (io/resource "ehoks-oph.properties")))
 
 (def oph-service-urls
   (when-not *compile-files*

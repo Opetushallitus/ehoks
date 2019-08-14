@@ -1,6 +1,7 @@
 (ns oph.ehoks.hoks.hoks
   (:require [oph.ehoks.db.postgresql :as db]
-            [clojure.java.jdbc :as jdbc]))
+            [clojure.java.jdbc :as jdbc]
+            [oph.ehoks.external.aws-sqs :as sqs]))
 
 (defn set-osaamisen-osoittaminen-values [naytto]
   (dissoc
@@ -670,6 +671,9 @@
 
 (defn save-hoks! [h]
   (let [saved-hoks (db/insert-hoks! h)]
+    (when (:osaamisen-hankkimisen-tarve h)
+      (sqs/send-message (sqs/build-hoks-hyvaksytty-msg
+                          (:id saved-hoks) h)))
     (assoc
       saved-hoks
       :aiemmin-hankitut-ammat-tutkinnon-osat

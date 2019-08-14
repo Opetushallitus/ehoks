@@ -12,4 +12,5 @@
  :db-port {{ehoks_db_port}}
  :db-name "{{ehoks_db_name}}"
  :db-username "{{ehoks_db_username}}"
- :db-password "{{ehoks_db_password}}"}
+ :db-password "{{ehoks_db_password}}"
+ :send-herate-messages? {{ehoks_send_herate_messages}}}

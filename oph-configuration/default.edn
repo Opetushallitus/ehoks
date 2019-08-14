@@ -15,7 +15,9 @@
  :ext-cache-lifetime-minutes 180
  :save-hoks-json? false
  :opintopolku-host "localhost:3000"
- :audit true
+ :heratepalvelu-queue "heratepalvelu-eHOKSHerateQueue"
+ :send-herate-messages? false
+ :audit? true
  :db-type "postgresql"
  :db-server "localhost"
  :db-name "ehoks"
