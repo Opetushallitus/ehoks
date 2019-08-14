@@ -25,14 +25,16 @@
             [clojure.tools.logging :as log]
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.virkailija.system-handler :as system-handler]
-            [oph.ehoks.virkailija.external-handler :as external-handler]))
+            [oph.ehoks.virkailija.external-handler :as external-handler]
+            [oph.ehoks.virkailija.cas-handler :as cas-handler]))
 
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
-    (c-api/GET "/cas-security-check" []
-      :summary "CAS security check (ei vielä käytössä)"
-      (response/no-content))
+
+    (c-api/context "/cas-security-check" []
+      cas-handler/routes)
+
     (c-api/context "/api" []
       :tags ["api"]
       (c-api/context "/v1" []
