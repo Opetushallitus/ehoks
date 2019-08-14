@@ -39,8 +39,6 @@
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
 
-(defn insert-one! [t v] (first (db-ops/insert! t v)))
-
 (defn shallow-delete!
   ([table where-clause]
     (db-ops/update! table {:deleted_at (java.util.Date.)} where-clause))
@@ -154,7 +152,7 @@
       {:row-fn h/from-sql})))
 
 (defn insert-oppija [oppija]
-  (insert-one! :oppijat (h/to-sql oppija)))
+  (db-ops/insert-one! :oppijat (h/to-sql oppija)))
 
 (defn update-oppija! [oid oppija]
   (db-ops/update!
@@ -163,7 +161,7 @@
     ["oid = ?" oid]))
 
 (defn insert-opiskeluoikeus [opiskeluoikeus]
-  (insert-one! :opiskeluoikeudet (h/to-sql opiskeluoikeus)))
+  (db-ops/insert-one! :opiskeluoikeudet (h/to-sql opiskeluoikeus)))
 
 (defn update-opiskeluoikeus! [oid opiskeluoikeus]
   (db-ops/update!
@@ -178,7 +176,7 @@
       {:row-fn h/todennettu-arviointi-lisatiedot-from-sql})))
 
 (defn insert-todennettu-arviointi-lisatiedot! [m]
-  (insert-one!
+  (db-ops/insert-one!
     :todennettu_arviointi_lisatiedot
     (h/todennettu-arviointi-lisatiedot-to-sql m)))
 
@@ -188,13 +186,13 @@
     {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
 
 (defn insert-todennettu-arviointi-arvioijat! [tta-id arvioija-id]
-  (insert-one!
+  (db-ops/insert-one!
     :todennettu_arviointi_arvioijat
     {:todennettu_arviointi_lisatiedot_id tta-id
      :koulutuksen_jarjestaja_osaamisen_arvioija_id arvioija-id}))
 
 (defn insert-koulutuksen-jarjestaja-osaamisen-arvioija! [m]
-  (insert-one!
+  (db-ops/insert-one!
     :koulutuksen_jarjestaja_osaamisen_arvioijat
     (h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql m)))
 
@@ -216,24 +214,24 @@
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
 (defn insert-aiemmin-hankitun-ammat-tutkinnon-osan-naytto! [ooato-id n]
-  (insert-one!
+  (db-ops/insert-one!
     :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
     {:aiemmin_hankittu_ammat_tutkinnon_osa_id ooato-id
      :osaamisen_osoittaminen_id (:id n)}))
 
 (defn insert-ahyto-osaamisen-osoittaminen! [ahyto-id n]
-  (insert-one!
+  (db-ops/insert-one!
     :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
     {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id ahyto-id
      :osaamisen_osoittaminen_id (:id n)}))
 
 (defn insert-koodisto-koodi! [m]
-  (insert-one!
+  (db-ops/insert-one!
     :koodisto_koodit
     (h/to-sql m)))
 
 (defn insert-osaamisen-osoittamisen-osa-alue! [naytto-id koodi-id]
-  (insert-one!
+  (db-ops/insert-one!
     :osaamisen_osoittamisen_osa_alueet
     {:osaamisen_osoittaminen_id naytto-id
      :koodisto_koodi_id koodi-id}))
@@ -256,7 +254,7 @@
     {:row-fn h/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql}))
 
 (defn insert-aiemmin-hankittu-ammat-tutkinnon-osa! [m]
-  (insert-one!
+  (db-ops/insert-one!
     :aiemmin_hankitut_ammat_tutkinnon_osat
     (h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql m)))
 
@@ -282,7 +280,7 @@
     (map h/hankittava-paikallinen-tutkinnon-osa-to-sql c)))
 
 (defn insert-hankittava-paikallinen-tutkinnon-osa! [m]
-  (insert-one!
+  (db-ops/insert-one!
     :hankittavat_paikalliset_tutkinnon_osat
     (h/hankittava-paikallinen-tutkinnon-osa-to-sql m)))
 
@@ -338,7 +336,7 @@
 
 (defn insert-tyopaikalla-jarjestettava-koulutus! [o]
   (when (some? o)
-    (let [o-db (insert-one!
+    (let [o-db (db-ops/insert-one!
                  :tyopaikalla_jarjestettavat_koulutukset
                  (h/tyopaikalla-jarjestettava-koulutus-to-sql o))]
       (insert-tho-tyotehtavat! o-db (:keskeiset-tyotehtavat o))
@@ -364,13 +362,13 @@
     {:row-fn h/muu-oppimisymparisto-from-sql}))
 
 (defn insert-osaamisen-hankkimistapa! [oh]
-  (insert-one!
+  (db-ops/insert-one!
     :osaamisen_hankkimistavat
     (h/osaamisen-hankkimistapa-to-sql oh)))
 
 (defn insert-hankittavan-paikallisen-tutkinnon-osan-osaamisen-hankkimistapa!
   [ppto oh]
-  (insert-one!
+  (db-ops/insert-one!
     :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
     {:hankittava_paikallinen_tutkinnon_osa_id (:id ppto)
      :osaamisen_hankkimistapa_id (:id oh)}))
@@ -383,14 +381,14 @@
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
 (defn insert-osaamisen-osoittaminen! [m]
-  (insert-one!
+  (db-ops/insert-one!
     :osaamisen_osoittamiset
     (h/osaamisen-osoittaminen-to-sql m)))
 
 (defn insert-hpto-osaamisen-osoittaminen!
   "hankittavan paikallisen tutkinnon osan hankitun osaamisen näyttö"
   [ppto h]
-  (insert-one!
+  (db-ops/insert-one!
     :hankittavan_paikallisen_tutkinnon_osan_naytto
     {:hankittava_paikallinen_tutkinnon_osa_id (:id ppto)
      :osaamisen_osoittaminen_id (:id h)}))
@@ -430,12 +428,12 @@
     {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
 
 (defn insert-tyoelama-arvioija! [arvioija]
-  (insert-one!
+  (db-ops/insert-one!
     :tyoelama_osaamisen_arvioijat
     (h/tyoelama-arvioija-to-sql arvioija)))
 
 (defn insert-osaamisen-osoittamisen-tyoelama-arvioija! [hon arvioija]
-  (insert-one!
+  (db-ops/insert-one!
     :osaamisen_osoittamisen_tyoelama_arvioija
     {:osaamisen_osoittaminen_id (:id hon)
      :tyoelama_arvioija_id (:id arvioija)}))
@@ -472,7 +470,7 @@
     {:row-fn h/yksilolliset-kriteerit-from-sql}))
 
 (defn insert-nayttoymparisto! [m]
-  (insert-one!
+  (db-ops/insert-one!
     :nayttoymparistot
     (h/to-sql m)))
 
@@ -500,7 +498,7 @@
     {:row-fn h/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql}))
 
 (defn insert-aiemmin-hankittu-paikallinen-tutkinnon-osa! [m]
-  (insert-one!
+  (db-ops/insert-one!
     :aiemmin_hankitut_paikalliset_tutkinnon_osat
     (h/aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql m)))
 
@@ -510,13 +508,13 @@
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
 (defn insert-ahpto-osaamisen-osoittaminen! [oopto-id naytto-id]
-  (insert-one!
+  (db-ops/insert-one!
     :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
     {:aiemmin_hankittu_paikallinen_tutkinnon_osa_id oopto-id
      :osaamisen_osoittaminen_id naytto-id}))
 
 (defn insert-ooyto-arvioija! [yto-id a-id]
-  (insert-one!
+  (db-ops/insert-one!
     :aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat
     {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id yto-id
      :koulutuksen_jarjestaja_osaamisen_arvioija_id a-id}))
@@ -540,7 +538,7 @@
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
 (defn insert-ooyto-osa-alue-osaamisen-osoittaminen! [osa-alue-id naytto-id]
-  (insert-one!
+  (db-ops/insert-one!
     :aiemmin_hankitun_yto_osa_alueen_naytto
     {:aiemmin_hankittu_yto_osa_alue_id osa-alue-id
      :osaamisen_osoittaminen_id naytto-id}))
@@ -551,12 +549,12 @@
     {:row-fn h/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-from-sql}))
 
 (defn insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue! [m]
-  (insert-one!
+  (db-ops/insert-one!
     :aiemmin_hankitut_yto_osa_alueet
     (h/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-to-sql m)))
 
 (defn insert-aiemmin-hankittu-yhteinen-tutkinnon-osa! [m]
-  (insert-one!
+  (db-ops/insert-one!
     :aiemmin_hankitut_yhteiset_tutkinnon_osat
     (h/aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql m)))
 
@@ -572,7 +570,7 @@
     {:row-fn h/aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql}))
 
 (defn insert-hankittava-ammat-tutkinnon-osa! [m]
-  (insert-one!
+  (db-ops/insert-one!
     :hankittavat_ammat_tutkinnon_osat
     (h/hankittava-ammat-tutkinnon-osa-to-sql m)))
 
@@ -589,7 +587,7 @@
     {:row-fn h/hankittava-ammat-tutkinnon-osa-from-sql}))
 
 (defn insert-hato-osaamisen-osoittaminen! [hato-id naytto-id]
-  (insert-one!
+  (db-ops/insert-one!
     :hankittavan_ammat_tutkinnon_osan_naytto
     {:hankittava_ammat_tutkinnon_osa_id hato-id
      :osaamisen_osoittaminen_id naytto-id}))
@@ -706,7 +704,7 @@
 
 (defn insert-hankittavan-ammat-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]
-  (insert-one!
+  (db-ops/insert-one!
     :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
     {:hankittava_ammat_tutkinnon_osa_id pato-id
      :osaamisen_hankkimistapa_id oh-id}))
@@ -719,7 +717,7 @@
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
 (defn insert-opiskeluvalmiuksia-tukeva-opinto! [new-value]
-  (insert-one!
+  (db-ops/insert-one!
     :opiskeluvalmiuksia_tukevat_opinnot
     (h/to-sql new-value)))
 
@@ -751,7 +749,7 @@
     ["id = ? AND deleted_at IS NULL" oto-id]))
 
 (defn insert-hankittava-yhteinen-tutkinnon-osa! [m]
-  (insert-one!
+  (db-ops/insert-one!
     :hankittavat_yhteiset_tutkinnon_osat
     (h/hankittava-yhteinen-tutkinnon-osa-to-sql m)))
 
@@ -772,13 +770,13 @@
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
 (defn insert-hyto-osa-alueen-osaamisen-hankkimistapa! [hyto-osa-alue-id oh-id]
-  (insert-one!
+  (db-ops/insert-one!
     :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
     {:yhteisen_tutkinnon_osan_osa_alue_id hyto-osa-alue-id
      :osaamisen_hankkimistapa_id oh-id}))
 
 (defn insert-yhteisen-tutkinnon-osan-osa-alue! [osa-alue]
-  (insert-one!
+  (db-ops/insert-one!
     :yhteisen_tutkinnon_osan_osa_alueet
     (h/yhteisen-tutkinnon-osan-osa-alue-to-sql osa-alue)))
 
@@ -793,7 +791,7 @@
     {:row-fn h/yhteisen-tutkinnon-osan-osa-alue-from-sql}))
 
 (defn insert-yto-osa-alueen-osaamisen-osoittaminen! [yto-id naytto-id]
-  (insert-one!
+  (db-ops/insert-one!
     :yhteisen_tutkinnon_osan_osa_alueen_naytot
     {:yhteisen_tutkinnon_osan_osa_alue_id yto-id
      :osaamisen_osoittaminen_id naytto-id}))

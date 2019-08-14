@@ -26,3 +26,5 @@
    (jdbc/update! (get-db-connection) table values where-clause))
   ([table values where-clause db]
    (jdbc/update! db table values where-clause)))
+
+(defn insert-one! [t v] (first (insert! t v)))
