@@ -21,7 +21,7 @@
   (result-set-read-column [o _ _]
     (.toLocalDate o))
   PGobject
-  (result-set-read-column [pgobj metadata idx]
+  (result-set-read-column [pgobj _ _]
     (let [type  (.getType pgobj)
           value (.getValue pgobj)]
       (if (= type "json")
