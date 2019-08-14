@@ -26,5 +26,6 @@
   `(do
      (set-get! ~get-response)
      (set-post! ~post-response)
-     (do ~@body)
-     (reset-functions!)))
+     (let [result# (do ~@body)]
+       (reset-functions!)
+       result#)))
