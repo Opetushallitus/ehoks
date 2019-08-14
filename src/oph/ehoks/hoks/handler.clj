@@ -9,9 +9,7 @@
             [oph.ehoks.db.postgresql :as pdb]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.middleware :refer [wrap-user-details]]
-            [oph.ehoks.config :refer [config]]
             [schema.core :as s]
-            [clojure.data.json :as json]
             [oph.ehoks.user :as user]
             [oph.ehoks.oppijaindex :as oppijaindex]))
 
@@ -20,29 +18,6 @@
                         :patch :update
                         :put :update
                         :delete :delete})
-
-(defn value-writer [_ value]
-  (cond
-    (= (type value) java.util.Date) (str (java.sql.Date. (.getTime value)))
-    (= (type value) java.time.LocalDate) (str value)
-    :else value))
-
-(defn write-hoks-json-file! [h file]
-  (spit
-    file
-    (json/write-str
-      h
-      :value-fn value-writer
-      :escape-unicode false)))
-
-(defn write-hoks-json! [h]
-  (write-hoks-json-file!
-    h
-    (java.io.File/createTempFile
-      (format "hoks_%d_%d"
-              (:id h)
-              (quot (System/currentTimeMillis) 1000))
-      ".json")))
 
 (defn authorized? [hoks ticket-user method]
   (let [oppilaitos-oid (:oppilaitos-oid (oppijaindex/get-opiskeluoikeus-by-oid
@@ -405,8 +380,6 @@
         (check-hoks-access! hoks request)
         (try
           (let [hoks-db (h/save-hoks! hoks)]
-            (when (:save-hoks-json? config)
-              (write-hoks-json! hoks))
             (assoc
               (rest/rest-ok {:uri
                              (format "%s/%d" (:uri request) (:id hoks-db))}
