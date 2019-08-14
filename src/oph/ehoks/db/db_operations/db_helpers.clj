@@ -41,3 +41,11 @@
 (defn delete!
   [table where-clause]
   (jdbc/delete! (get-db-connection) table where-clause))
+
+(defn query
+  ([queries opts]
+   (jdbc/query (get-db-connection) queries opts))
+  ([queries]
+   (query queries {}))
+  ([queries arg & opts]
+   (query queries (apply hash-map arg opts))))

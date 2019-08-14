@@ -5,7 +5,8 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [clojure.tools.logging :as log]
             [oph.ehoks.db.queries :as queries]
-            [oph.ehoks.db.hoks :refer [from-sql]]))
+            [oph.ehoks.db.hoks :refer [from-sql]]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
 (defn- get-like [v]
   (format "%%%s%%" (or v "")))
@@ -20,7 +21,7 @@
       (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))))
 
 (defn search [params]
-  (db/query
+  (db-ops/query
     [(set-query queries/select-oppilaitos-oppijat params)
      (:oppilaitos-oid params)
      (:koulutustoimija-oid params)
@@ -34,7 +35,7 @@
 (defn get-count [params]
   (:count
     (first
-      (db/query
+      (db-ops/query
         [queries/select-oppilaitos-oppijat-search-count
          (:oppilaitos-oid params)
          (:koulutustoimija-oid params)
