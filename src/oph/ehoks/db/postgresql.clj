@@ -57,10 +57,11 @@
 
 (defn update-hoks-by-id!
   ([id hoks]
-    (db-ops/update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
+    (db-ops/update! :hoksit (h/hoks-to-sql hoks)
+                    ["id = ? AND deleted_at IS NULL" id]))
   ([id hoks db]
-    (db-ops/update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]
-             db)))
+    (db-ops/update! :hoksit (h/hoks-to-sql hoks)
+                    ["id = ? AND deleted_at IS NULL" id] db)))
 
 (defn select-hoks-oppijat-without-index []
   (db-ops/query
@@ -155,7 +156,7 @@
 
 (defn select-tarkentavat-tiedot-naytto-by-ahpto-id [oopto-id]
   (db-ops/query [queries/select-osaamisen-osoittamiset-by-oopto-id oopto-id]
-         {:row-fn h/osaamisen-osoittaminen-from-sql}))
+                {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
 (defn select-tarkentavat-tiedot-naytto-by-ooato-id
   "Aiemmin hankitun ammat tutkinnon osan näytön tarkentavat tiedot
@@ -196,7 +197,7 @@
 (defn select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id [id]
   (->
     (db-ops/query [queries/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id
-            id])
+                   id])
     first
     h/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql))
 
@@ -439,8 +440,8 @@
 
 (defn select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id [id]
   (->
-    (db-ops/query [queries/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id
-            id])
+    (db-ops/query
+      [queries/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id id])
     first
     h/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql))
 
@@ -512,7 +513,8 @@
 
 (defn select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id [id]
   (->
-    (db-ops/query [queries/select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-id id])
+    (db-ops/query [queries/select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-id
+                   id])
     first
     h/aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql))
 
@@ -680,7 +682,8 @@
 
 (defn select-opiskeluvalmiuksia-tukevat-opinnot-by-id [oto-id]
   (->
-    (db-ops/query [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-id oto-id])
+    (db-ops/query [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-id
+                   oto-id])
     first
     h/opiskeluvalmiuksia-tukevat-opinnot-from-sql))
 
@@ -707,7 +710,8 @@
 
 (defn select-hankittava-yhteinen-tutkinnon-osa-by-id [hyto-id]
   (->
-    (db-ops/query [queries/select-hankittavat-yhteiset-tutkinnon-osat-by-id hyto-id])
+    (db-ops/query [queries/select-hankittavat-yhteiset-tutkinnon-osat-by-id
+                   hyto-id])
     first
     h/hankittava-yhteinen-tutkinnon-osa-from-sql))
 

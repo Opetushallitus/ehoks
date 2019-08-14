@@ -22,7 +22,7 @@
     (.toLocalDate o))
   PGobject
   (result-set-read-column [pgobj _ _]
-    (let [type  (.getType pgobj)
+    (let [type (.getType pgobj)
           value (.getValue pgobj)]
       (if (= type "json")
         (json/read-str value :key-fn keyword)
@@ -54,15 +54,15 @@
 
 (defn update!
   ([table values where-clause]
-   (jdbc/update! (get-db-connection) table values where-clause))
+    (jdbc/update! (get-db-connection) table values where-clause))
   ([table values where-clause db]
-   (jdbc/update! db table values where-clause)))
+    (jdbc/update! db table values where-clause)))
 
 (defn shallow-delete!
   ([table where-clause]
-   (update! table {:deleted_at (java.util.Date.)} where-clause))
+    (update! table {:deleted_at (java.util.Date.)} where-clause))
   ([table where-clause db-conn]
-   (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
+    (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
 
 (defn delete!
   [table where-clause]
@@ -70,8 +70,8 @@
 
 (defn query
   ([queries opts]
-   (jdbc/query (get-db-connection) queries opts))
+    (jdbc/query (get-db-connection) queries opts))
   ([queries]
-   (query queries {}))
+    (query queries {}))
   ([queries arg & opts]
-   (query queries (apply hash-map arg opts))))
+    (query queries (apply hash-map arg opts))))
