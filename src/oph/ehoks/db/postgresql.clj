@@ -38,9 +38,6 @@
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
 
-(defn insert-multi! [t v]
-  (jdbc/insert-multi! (db-ops/get-db-connection) t v))
-
 (defn select-hoksit []
   (query
     [queries/select-hoksit]
@@ -186,7 +183,7 @@
     (h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql m)))
 
 (defn insert-koulutuksen-jarjestaja-osaamisen-arvioijat! [c]
-  (insert-multi!
+  (db-ops/insert-multi!
     :koulutuksen_jarjestaja_osaamisen_arvioijat
     (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c)))
 
@@ -248,7 +245,7 @@
     (h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql m)))
 
 (defn insert-aiemmin-hankitut-ammat-tutkinnon-osat! [c]
-  (insert-multi!
+  (db-ops/insert-multi!
     :aiemmin_hankitut_ammat_tutkinnon_osat
     (map h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql c)))
 
@@ -264,7 +261,7 @@
       {:row-fn h/hankittava-paikallinen-tutkinnon-osa-from-sql})))
 
 (defn insert-hankittavat-paikalliset-tutkinnon-osat! [c]
-  (insert-multi!
+  (db-ops/insert-multi!
     :hankittavat_paikalliset_tutkinnon_osat
     (map h/hankittava-paikallinen-tutkinnon-osa-to-sql c)))
 
@@ -308,7 +305,7 @@
 (defn insert-tho-tyotehtavat!
   "Työpaikalla hankittavan osaamisen keskeiset työtehtävät"
   [tho c]
-  (insert-multi!
+  (db-ops/insert-multi!
     :tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat
     (map
       #(hash-map
@@ -338,7 +335,7 @@
       {:row-fn h/tyopaikalla-jarjestettava-koulutus-from-sql})))
 
 (defn insert-osaamisen-hankkimistavan-muut-oppimisymparistot! [oh c]
-  (insert-multi!
+  (db-ops/insert-multi!
     :muut_oppimisymparistot
     (map
       #(h/to-sql
@@ -385,10 +382,10 @@
 (defn insert-ppto-osaamisen-osoittamiset!
   "hankittavan paikallisen tutkinnon osan hankitun osaamisen näytöt"
   [ppto c]
-  (let [h-col (insert-multi!
+  (let [h-col (db-ops/insert-multi!
                 :osaamisen_osoittamiset
                 (map h/osaamisen-osoittaminen-to-sql c))]
-    (insert-multi!
+    (db-ops/insert-multi!
       :hankittavan_paikallisen_tutkinnon_osan_naytto
       (map #(hash-map
               :hankittava_paikallinen_tutkinnon_osa_id (:id ppto)
@@ -398,10 +395,10 @@
 
 (defn insert-osaamisen-osoittamisen-koulutuksen-jarjestaja-osaamisen-arvioija!
   [hon c]
-  (let [kja-col (insert-multi!
+  (let [kja-col (db-ops/insert-multi!
                   :koulutuksen_jarjestaja_osaamisen_arvioijat
                   (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c))]
-    (insert-multi!
+    (db-ops/insert-multi!
       :osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija
       (map #(hash-map
               :osaamisen_osoittaminen_id (:id hon)
@@ -435,7 +432,7 @@
     {:row-fn h/tyoelama-arvioija-from-sql}))
 
 (defn insert-osaamisen-osoittamisen-sisallot! [hon c]
-  (insert-multi!
+  (db-ops/insert-multi!
     :osaamisen_osoittamisen_sisallot
     (map #(hash-map :osaamisen_osoittaminen_id (:id hon) :sisallon_kuvaus %)
          c)))
@@ -447,7 +444,7 @@
     {:row-fn h/sisallon-kuvaus-from-sql}))
 
 (defn insert-osaamisen-osoittamisen-yksilolliset-kriteerit! [hon c]
-  (insert-multi!
+  (db-ops/insert-multi!
     :osaamisen_osoittamisen_yksilolliset_kriteerit
     (map #(hash-map :osaamisen_osoittaminen_id (:id hon)
                     :yksilollinen_kriteeri %) c)))
@@ -464,7 +461,7 @@
     (h/to-sql m)))
 
 (defn insert-nayttoymparistot! [c]
-  (insert-multi!
+  (db-ops/insert-multi!
     :nayttoymparistot
     (map h/to-sql c)))
 
@@ -711,7 +708,7 @@
     (h/to-sql new-value)))
 
 (defn insert-opiskeluvalmiuksia-tukevat-opinnot! [c]
-  (insert-multi!
+  (db-ops/insert-multi!
     :opiskeluvalmiuksia_tukevat_opinnot
     (mapv h/to-sql c)))
 

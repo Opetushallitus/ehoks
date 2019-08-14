@@ -21,13 +21,16 @@
     (jdbc/insert! (get-db-connection) t v)
     (insert-empty! t)))
 
+(defn insert-one! [t v] (first (insert! t v)))
+
+(defn insert-multi! [t v]
+  (jdbc/insert-multi! (get-db-connection) t v))
+
 (defn update!
   ([table values where-clause]
    (jdbc/update! (get-db-connection) table values where-clause))
   ([table values where-clause db]
    (jdbc/update! db table values where-clause)))
-
-(defn insert-one! [t v] (first (insert! t v)))
 
 (defn shallow-delete!
   ([table where-clause]
