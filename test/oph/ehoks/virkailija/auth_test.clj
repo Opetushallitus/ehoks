@@ -53,7 +53,7 @@
   {:status 201
    :headers {"location" "http://test.ticket/1234"}})
 
-(defn with-ticket-session [app request ticket]
+(defn with-ticket-session-multi [app requests ticket]
   (client/set-get! ticket-response)
   (client/set-post! create-ticket-response)
   (let [auth-response
@@ -64,14 +64,20 @@
               "%s/opintopolku?ticket=%s"
               session-url
               ticket)))
-        response
-        (app
-          (mock/header
-            request
-            :cookie
-            (first (get-in auth-response [:headers "Set-Cookie"]))))]
+        responses
+        (mapv
+          (fn [request]
+            (app
+              (mock/header
+                request
+                :cookie
+                (first (get-in auth-response [:headers "Set-Cookie"])))))
+          requests)]
     (client/reset-functions!)
-    response))
+    responses))
+
+(defn with-ticket-session [app request ticket]
+  (first (with-ticket-session-multi app [request] ticket)))
 
 (t/deftest invalid-ticket-session-test
   (t/testing "Creating session with invalid service ticket"
@@ -107,3 +113,16 @@
                      ["read" "update" "delete" "write"]
                      :roles []
                      :child-organisations []}]}}))))))
+
+(t/deftest delete-session-test
+  (t/testing "Delete virkailija session"
+    (with-db
+      (let [responses (with-ticket-session-multi
+                        (create-app (test-session-store (atom {})))
+                        [(mock/request :get session-url)
+                         (mock/request :delete session-url)
+                         (mock/request :get session-url)]
+                        "ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")]
+        (t/is (= (:status (first responses)) 200))
+        (t/is (= (:status (second responses)) 200))
+        (t/is (= (:status (nth responses 2)) 401))))))
