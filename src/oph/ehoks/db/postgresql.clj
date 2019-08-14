@@ -31,12 +31,6 @@
         (json/read-str value :key-fn keyword)
         value))))
 
-(defn insert-empty! [t]
-  (jdbc/execute!
-    (db-ops/get-db-connection)
-    (format
-      "INSERT INTO %s DEFAULT VALUES" (name t))))
-
 (defn query
   ([queries opts]
     (jdbc/query (db-ops/get-db-connection) queries opts))
@@ -45,12 +39,7 @@
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
 
-(defn insert! [t v]
-  (if (seq v)
-    (jdbc/insert! (db-ops/get-db-connection) t v)
-    (insert-empty! t)))
-
-(defn insert-one! [t v] (first (insert! t v)))
+(defn insert-one! [t v] (first (db-ops/insert! t v)))
 
 (defn update!
   ([table values where-clause]
