@@ -9,140 +9,9 @@
             [oph.ehoks.db.postgresql :as pdb]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.middleware :refer [wrap-user-details]]
-            [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.config :refer [config]]
             [schema.core :as s]
-            [clojure.data.json :as json]
-            [oph.ehoks.user :as user]
-            [oph.ehoks.oppijaindex :as oppijaindex]))
-
-(def method-privileges {:get :read
-                        :post :write
-                        :patch :update
-                        :put :update
-                        :delete :delete})
-
-(defn value-writer [_ value]
-  (cond
-    (= (type value) java.util.Date) (str (java.sql.Date. (.getTime value)))
-    (= (type value) java.time.LocalDate) (str value)
-    :else value))
-
-(defn write-hoks-json-file! [h file]
-  (spit
-    file
-    (json/write-str
-      h
-      :value-fn value-writer
-      :escape-unicode false)))
-
-(defn write-hoks-json! [h]
-  (write-hoks-json-file!
-    h
-    (java.io.File/createTempFile
-      (format "hoks_%d_%d"
-              (:id h)
-              (quot (System/currentTimeMillis) 1000))
-      ".json")))
-
-(defn authorized? [hoks ticket-user method]
-  (let [oppilaitos-oid (:oppilaitos-oid (oppijaindex/get-opiskeluoikeus-by-oid
-                                          (:opiskeluoikeus-oid hoks)))]
-    (if oppilaitos-oid
-      (some?
-        (get
-          (user/get-organisation-privileges ticket-user oppilaitos-oid)
-          method))
-      (response/bad-request!
-        {:error "Opiskeluoikeus not found"}))))
-
-(defn hoks-access? [hoks ticket-user method]
-  (and
-    (some? (:opiskeluoikeus-oid hoks))
-    (authorized? hoks ticket-user method)))
-
-(defn check-hoks-access! [hoks request]
-  (if (nil? hoks)
-    (response/not-found!)
-    (let [ticket-user (:service-ticket-user request)]
-      (when-not
-       (hoks-access?
-         hoks
-         ticket-user
-         (get method-privileges (:request-method request)))
-        (log/warnf "User %s has no access to hoks %d with opiskeluoikeus %s"
-                   (:username ticket-user)
-                   (:id hoks)
-                   (:opiskeluoikeus-oid hoks))
-        (response/unauthorized!
-          {:error (str "No access is allowed. Check Opintopolku privileges and "
-                       "'opiskeluoikeus'")})))))
-
-(defn user-has-access? [request hoks]
-  (let [ticket-user (:service-ticket-user request)]
-    (hoks-access?
-      hoks
-      ticket-user
-      (get method-privileges (:request-method request)))))
-
-(defn wrap-hoks-access [handler]
-  (fn
-    ([request respond raise]
-      (let [hoks (:hoks request)]
-        (if (nil? hoks)
-          (respond (response/not-found {:error "HOKS not found"}))
-          (if (user-has-access? request hoks)
-            (handler request respond raise)
-            (do
-              (log/warnf
-                "User %s has no access to hoks %d with opiskeluoikeus %s"
-                (get-in request [:service-ticket-user :username])
-                (:id hoks)
-                (:opiskeluoikeus-oid hoks))
-              (respond
-                (response/unauthorized
-                  {:error (str "No access is allowed. Check Opintopolku "
-                               "privileges and 'opiskeluoikeus'")})))))))
-    ([request]
-      (let [hoks (:hoks request)]
-        (if (nil? hoks)
-          (response/not-found {:error "HOKS not found"})
-          (if (user-has-access? request hoks)
-            (handler request)
-            (do
-              (log/warnf
-                "User %s has no access to hoks %d with opiskeluoikeus %s"
-                (get-in request [:service-ticket-user :username])
-                (:id hoks)
-                (:opiskeluoikeus-oid hoks))
-              (response/unauthorized
-                {:error (str "No access is allowed. Check Opintopolku "
-                             "privileges and 'opiskeluoikeus'")}))))))))
-
-(defn wrap-require-service-user [handler]
-  (fn
-    ([request respond raise]
-      (if (= (:kayttajaTyyppi (:service-ticket-user request)) "PALVELU")
-        (handler request respond raise)
-        (respond (response/forbidden
-                   {:error "User type 'PALVELU' is required"}))))
-    ([request]
-      (if (= (:kayttajaTyyppi (:service-ticket-user request)) "PALVELU")
-        (handler request)
-        (response/forbidden
-          {:error "User type 'PALVELU' is required"})))))
-
-(defn add-hoks [request]
-  (let [hoks-id (Integer/parseInt (get-in request [:route-params :hoks-id]))
-        hoks (pdb/select-hoks-by-id hoks-id)]
-    (assoc request :hoks hoks)))
-
-(defn wrap-hoks [handler]
-  (fn
-    ([request respond raise]
-      (handler (add-hoks request) respond raise))
-    ([request]
-      (handler (add-hoks request)))))
+            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.hoks.middleware :as m]))
 
 (def ^:private hankittava-paikallinen-tutkinnon-osa
   (c-api/context "/hankittava-paikallinen-tutkinnon-osa" []
@@ -255,7 +124,7 @@
       :body [ooato hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ooato-from-db (h/save-aiemmin-hankittu-ammat-tutkinnon-osa!
-                            (:id (:hoks request)) ooato)]
+                            (get-in request [:hoks :id]) ooato)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ooato-from-db))}
           :id (:id ooato-from-db))))
@@ -382,7 +251,7 @@
                     caller-id :- s/Str]
 
     (route-middleware
-      [wrap-user-details wrap-require-service-user]
+      [wrap-user-details m/wrap-require-service-user]
 
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
@@ -403,11 +272,9 @@
               (response/bad-request!
                 {:error "Opiskeluoikeus not found in Koski"})
               (throw e))))
-        (check-hoks-access! hoks request)
+        (m/check-hoks-access! hoks request)
         (try
           (let [hoks-db (h/save-hoks! hoks)]
-            (when (:save-hoks-json? config)
-              (write-hoks-json! hoks))
             (assoc
               (rest/rest-ok {:uri
                              (format "%s/%d" (:uri request) (:id hoks-db))}
@@ -430,7 +297,7 @@
                             opiskeluoikeus-oid))]
           (if hoks
             (do
-              (check-hoks-access! hoks request)
+              (m/check-hoks-access! hoks request)
               (rest/rest-ok hoks))
             (do
               (log/warn "No HOKS found with given opiskeluoikeus "
@@ -439,33 +306,32 @@
                 {:error "No HOKS found with given opiskeluoikeus"})))))
 
       (c-api/context "/:hoks-id" []
-        :path-params [hoks-id :- s/Int]
 
         (route-middleware
-          [wrap-hoks wrap-hoks-access]
+          [m/wrap-hoks m/wrap-hoks-access]
 
-          (c-api/GET "/" [id :as request]
+          (c-api/GET "/" request
             :summary "Palauttaa HOKSin"
             :return (rest/response hoks-schema/HOKS)
             (rest/rest-ok (h/get-hoks-values (:hoks request))))
 
-          (c-api/PATCH "/" []
+          (c-api/PATCH "/" request
             :summary
             "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
             :body [values hoks-schema/HOKSPaivitys]
-            (if (not-empty (pdb/select-hoks-by-id hoks-id))
+            (if (not-empty (:hoks request))
               (do
-                (h/update-hoks! hoks-id values)
+                (h/update-hoks! (get-in request [:hoks :id]) values)
                 (response/no-content))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
 
-          (c-api/PUT "/" []
+          (c-api/PUT "/" request
             :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
             :body [values hoks-schema/HOKSKorvaus]
-            (if (not-empty (pdb/select-hoks-by-id hoks-id))
+            (if (not-empty (:hoks request))
               (do
-                (h/replace-hoks! hoks-id values)
+                (h/replace-hoks! (get-in request [:hoks :id]) values)
                 (response/no-content))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
