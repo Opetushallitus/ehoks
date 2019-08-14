@@ -54,71 +54,75 @@
    :headers {"location" "http://test.ticket/1234"}})
 
 (defn with-ticket-session [app request ticket]
-  (client/set-get! ticket-response)
-  (client/set-post! create-ticket-response)
-  (let [auth-response
-        (app
-          (mock/request
-            :get
-            (format
-              "%s/opintopolku?ticket=%s"
-              session-url
-              ticket)))
-        response
-        (app
-          (mock/header
-            request
-            :cookie
-            (first (get-in auth-response [:headers "Set-Cookie"]))))]
-    (client/reset-functions!)
-    response))
+  (client/with-mock-responses
+    [ticket-response
+     create-ticket-response]
+    (let [auth-response
+          (app
+            (mock/request
+              :get
+              (format
+                "%s/opintopolku?ticket=%s"
+                session-url
+                ticket)))
+          response
+          (app
+            (mock/header
+              request
+              :cookie
+              (first (get-in auth-response [:headers "Set-Cookie"]))))]
+      (client/reset-functions!)
+      response)))
 
 (t/deftest ticket-session-test
   (t/testing "Creating session with service ticket"
-    (client/set-get! ticket-response)
-    (client/set-post! create-ticket-response)
-    (let [store (atom {})
-          app (create-app (test-session-store store))
-          response
-          (app
-            (mock/request
-              :get
-              (str
-                session-url
-                "/opintopolku"
-                "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
-      (t/is (= (:status response) 303)))))
+    (client/with-mock-responses
+      [ticket-response
+       create-ticket-response]
+      (let [store (atom {})
+            app (create-app (test-session-store store))
+            response
+            (app
+              (mock/request
+                :get
+                (str
+                  session-url
+                  "/opintopolku"
+                  "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
+        (t/is (= (:status response) 303))))))
 
 (t/deftest cas-ticket-session-test
   (t/testing "Creating session with service ticket (CAS endpoint)"
-    (client/set-get! ticket-response)
-    (client/set-post! create-ticket-response)
-    (let [store (atom {})
-          app (create-app (test-session-store store))
-          response
-          (app
-            (mock/request
-              :get
-              (str
-                "/ehoks-virkailija-backend/cas-security-check"
-                "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
-      (t/is (= (:status response) 303)))))
+    (client/with-mock-responses
+      [ticket-response
+       create-ticket-response]
+      (let [store (atom {})
+            app (create-app (test-session-store store))
+            response
+            (app
+              (mock/request
+                :get
+                (str
+                  "/ehoks-virkailija-backend/cas-security-check"
+                  "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
+        (t/is (= (:status response) 303))))))
 
 (t/deftest invalid-ticket-session-test
   (t/testing "Creating session with invalid service ticket"
-    (client/set-get! invalid-ticket-response)
-    (client/set-post! create-ticket-response)
-    (let [store (atom {})
-          app (create-app (test-session-store store))
-          response
-          (app
-            (mock/request
-              :get
-              (str
-                session-url
-                "/opintopolku"
-                "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
-      (t/is (= (:status response) 401)))))
+    (client/with-mock-responses
+      [invalid-ticket-response
+       create-ticket-response]
+      (let [store (atom {})
+            app (create-app (test-session-store store))
+            response
+            (app
+              (mock/request
+                :get
+                (str
+                  session-url
+                  "/opintopolku"
+                  "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
+        (t/is (= (:status response) 401))))))
 
 (t/deftest get-session-test
   (t/testing "Get virkailija session"
