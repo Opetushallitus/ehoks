@@ -5,8 +5,7 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [clojure.tools.logging :as log]
             [oph.ehoks.db.queries :as queries]
-            [oph.ehoks.db.hoks :refer [from-sql]])
-  (:import java.time.LocalDate))
+            [oph.ehoks.db.hoks :refer [from-sql]]))
 
 (defn- get-like [v]
   (format "%%%s%%" (or v "")))
