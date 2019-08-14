@@ -21,3 +21,10 @@
 
 (defn set-post! [f]
   (swap! client-functions assoc :post f))
+
+(defmacro with-mock-responses [[get-response post-response] & body]
+  `(do
+     (set-get! ~get-response)
+     (set-post! ~post-response)
+     (do ~@body)
+     (reset-functions!)))
