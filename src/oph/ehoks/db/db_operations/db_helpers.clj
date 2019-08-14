@@ -1,6 +1,32 @@
 (ns oph.ehoks.db.db-operations.db-helpers
   (:require [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.config :refer [config]]))
+            [oph.ehoks.config :refer [config]]
+            [clojure.data.json :as json]
+            [clj-time.coerce :as c])
+  (:import (org.postgresql.util PGobject)))
+
+(extend-protocol jdbc/ISQLValue
+  java.time.LocalDate
+  (sql-value [value] (java.sql.Date/valueOf value))
+  java.util.Date
+  (sql-value [value] (c/to-sql-time value))
+  clojure.lang.IPersistentMap
+  (sql-value [value]
+    (doto (PGobject.)
+      (.setType "json")
+      (.setValue (json/write-str value)))))
+
+(extend-protocol jdbc/IResultSetReadColumn
+  java.sql.Date
+  (result-set-read-column [o _ _]
+    (.toLocalDate o))
+  PGobject
+  (result-set-read-column [pgobj metadata idx]
+    (let [type  (.getType pgobj)
+          value (.getValue pgobj)]
+      (if (= type "json")
+        (json/read-str value :key-fn keyword)
+        value))))
 
 (defn get-db-connection []
   {:dbtype (:db-type config)
