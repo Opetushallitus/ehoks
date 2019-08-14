@@ -20,12 +20,6 @@
       [queries/select-hoksit-by-id id]
       {:row-fn h/hoks-from-sql})))
 
-(defn select-hoks-by-eid [eid]
-  (first
-    (db-ops/query
-      [queries/select-hoksit-by-eid eid]
-      {:row-fn h/hoks-from-sql})))
-
 (defn select-hoksit-eid-by-eid [eid]
   (db-ops/query
     [queries/select-hoksit-eid-by-eid eid]
