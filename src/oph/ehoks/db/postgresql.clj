@@ -38,12 +38,6 @@
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
 
-(defn shallow-delete!
-  ([table where-clause]
-    (db-ops/update! table {:deleted_at (java.util.Date.)} where-clause))
-  ([table where-clause db-conn]
-    (db-ops/update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
-
 (defn delete!
   [table where-clause]
   (jdbc/delete! (db-ops/get-db-connection) table where-clause))
@@ -290,7 +284,7 @@
     ["id = ? AND deleted_at IS NULL" id]))
 
 (defn delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id [hoks-id db-conn]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :hankittavat_paikalliset_tutkinnon_osat
     ["hoks_id = ?" hoks-id] db-conn))
 
@@ -304,14 +298,14 @@
 (defn delete-osaamisen-hankkimistavat-by-hpto-id!
   "hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat"
   [id]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
     ["hankittava_paikallinen_tutkinnon_osa_id = ?" id]))
 
 (defn delete-osaamisen-osoittamiset-by-ppto-id!
   "hankittavan paikallisen tutkinnon osan hankitun osaamisen näytöt"
   [id]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :hankittavan_paikallisen_tutkinnon_osan_naytto
     ["hankittava_paikallinen_tutkinnon_osa_id = ?" id]))
 
@@ -599,14 +593,14 @@
 (defn delete-osaamisen-hankkimistavat-by-hato-id!
   "Hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat"
   [id]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
     ["hankittava_ammat_tutkinnon_osa_id = ?" id]))
 
 (defn delete-osaamisen-osoittamiset-by-pato-id!
   "Hankittavan ammatillisen tutkinnon osan hankitun osaamisen näytöt"
   [id]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :hankittavan_ammat_tutkinnon_osan_naytto
     ["hankittava_ammat_tutkinnon_osa_id = ?" id]))
 
@@ -624,12 +618,12 @@
 
 (defn delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id
   [hoks-id db-conn]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :hankittavat_ammat_tutkinnon_osat
     ["hoks_id = ?" hoks-id] db-conn))
 
 (defn delete-hyto-osa-alueet! [hyto-id]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :yhteisen_tutkinnon_osan_osa_alueet
     ["yhteinen_tutkinnon_osa_id = ?" hyto-id]))
 
@@ -660,44 +654,44 @@
     ["id = ? AND deleted_at IS NULL" id]))
 
 (defn delete-todennettu-arviointi-arvioijat-by-tta-id! [id]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :todennettu_arviointi_arvioijat
     ["todennettu_arviointi_lisatiedot_id = ?" id]))
 
 (defn delete-aiemmin-hankitun-ammat-tutkinnon-osan-naytto-by-id! [id]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
     ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ?" id]))
 
 (defn delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id
   [hoks-id db-conn]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :aiemmin_hankitut_ammat_tutkinnon_osat
     ["hoks_id = ?" hoks-id] db-conn))
 
 (defn delete-aiemmin-hankitun-paikallisen-tutkinnon-osan-naytto-by-id! [id]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
     ["aiemmin_hankittu_paikallinen_tutkinnon_osa_id = ?" id]))
 
 (defn delete-aiemmin-hankitun-yhteisen-tutkinnon-osan-naytto-by-id! [id]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
     ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
 
 (defn delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
   [hoks-id db-conn]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :aiemmin_hankitut_paikalliset_tutkinnon_osat
     ["hoks_id = ?" hoks-id] db-conn))
 
 (defn delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id [hoks-id]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :aiemmin_hankitut_yhteiset_tutkinnon_osat
     ["hoks_id = ?" hoks-id]))
 
 (defn delete-aiemmin-hankitut-yto-osa-alueet-by-id! [id]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :aiemmin_hankitut_yto_osa_alueet
     ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
 
@@ -737,7 +731,7 @@
     {:row-fn h/opiskeluvalmiuksia-tukevat-opinnot-from-sql}))
 
 (defn delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id [hoks-id db-conn]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :opiskeluvalmiuksia_tukevat_opinnot
     ["hoks_id = ?" hoks-id] db-conn))
 
@@ -780,7 +774,7 @@
     (h/yhteisen-tutkinnon-osan-osa-alue-to-sql osa-alue)))
 
 (defn delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id [hoks-id db-conn]
-  (shallow-delete!
+  (db-ops/shallow-delete!
     :hankittavat_yhteiset_tutkinnon_osat
     ["hoks_id = ?" hoks-id] db-conn))
 

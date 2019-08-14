@@ -16,7 +16,7 @@
     (format
       "INSERT INTO %s DEFAULT VALUES" (name t))))
 
-(defn insert! [t v]
+(defn- insert! [t v]
   (if (seq v)
     (jdbc/insert! (get-db-connection) t v)
     (insert-empty! t)))
@@ -28,3 +28,9 @@
    (jdbc/update! db table values where-clause)))
 
 (defn insert-one! [t v] (first (insert! t v)))
+
+(defn shallow-delete!
+  ([table where-clause]
+   (update! table {:deleted_at (java.util.Date.)} where-clause))
+  ([table where-clause db-conn]
+   (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
