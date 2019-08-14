@@ -4,7 +4,8 @@
             [oph.ehoks.db.hoks :as h]
             [clj-time.coerce :as c]
             [oph.ehoks.db.queries :as queries]
-            [clojure.data.json :as json])
+            [clojure.data.json :as json]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops])
   (:import [org.postgresql.util PGobject]))
 
 (extend-protocol jdbc/ISQLValue
@@ -30,23 +31,15 @@
         (json/read-str value :key-fn keyword)
         value))))
 
-(defn get-db-connection []
-  {:dbtype (:db-type config)
-   :dbname (:db-name config)
-   :host (:db-server config)
-   :port (:db-port config)
-   :user (:db-username config)
-   :password (:db-password config)})
-
 (defn insert-empty! [t]
   (jdbc/execute!
-    (get-db-connection)
+    (db-ops/get-db-connection)
     (format
       "INSERT INTO %s DEFAULT VALUES" (name t))))
 
 (defn query
   ([queries opts]
-    (jdbc/query (get-db-connection) queries opts))
+    (jdbc/query (db-ops/get-db-connection) queries opts))
   ([queries]
     (query queries {}))
   ([queries arg & opts]
@@ -54,14 +47,14 @@
 
 (defn insert! [t v]
   (if (seq v)
-    (jdbc/insert! (get-db-connection) t v)
+    (jdbc/insert! (db-ops/get-db-connection) t v)
     (insert-empty! t)))
 
 (defn insert-one! [t v] (first (insert! t v)))
 
 (defn update!
   ([table values where-clause]
-    (jdbc/update! (get-db-connection) table values where-clause))
+    (jdbc/update! (db-ops/get-db-connection) table values where-clause))
   ([table values where-clause db]
     (jdbc/update! db table values where-clause)))
 
@@ -73,10 +66,10 @@
 
 (defn delete!
   [table where-clause]
-  (jdbc/delete! (get-db-connection) table where-clause))
+  (jdbc/delete! (db-ops/get-db-connection) table where-clause))
 
 (defn insert-multi! [t v]
-  (jdbc/insert-multi! (get-db-connection) t v))
+  (jdbc/insert-multi! (db-ops/get-db-connection) t v))
 
 (defn select-hoksit []
   (query
@@ -118,7 +111,7 @@
 
 (defn insert-hoks! [hoks]
   (jdbc/with-db-transaction
-    [conn (get-db-connection)]
+    [conn (db-ops/get-db-connection)]
     (when
      (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
                             (:opiskeluoikeus-oid hoks)]))
@@ -851,7 +844,7 @@
 
 (defn insert-or-update-session! [session-key data]
   (jdbc/with-db-transaction
-    [conn (get-db-connection)]
+    [conn (db-ops/get-db-connection)]
     (let [k (or session-key (generate-session-key conn))
           db-sessions (jdbc/query
                         conn
