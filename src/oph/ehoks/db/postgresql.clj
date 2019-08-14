@@ -41,17 +41,11 @@
 
 (defn insert-one! [t v] (first (db-ops/insert! t v)))
 
-(defn update!
-  ([table values where-clause]
-    (jdbc/update! (db-ops/get-db-connection) table values where-clause))
-  ([table values where-clause db]
-    (jdbc/update! db table values where-clause)))
-
 (defn shallow-delete!
   ([table where-clause]
-    (update! table {:deleted_at (java.util.Date.)} where-clause))
+    (db-ops/update! table {:deleted_at (java.util.Date.)} where-clause))
   ([table where-clause db-conn]
-    (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
+    (db-ops/update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
 
 (defn delete!
   [table where-clause]
@@ -113,9 +107,9 @@
 
 (defn update-hoks-by-id!
   ([id hoks]
-    (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
+    (db-ops/update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]))
   ([id hoks db]
-    (update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]
+    (db-ops/update! :hoksit (h/hoks-to-sql hoks) ["id = ? AND deleted_at IS NULL" id]
              db)))
 
 (defn select-hoks-oppijat-without-index []
@@ -163,7 +157,7 @@
   (insert-one! :oppijat (h/to-sql oppija)))
 
 (defn update-oppija! [oid oppija]
-  (update!
+  (db-ops/update!
     :oppijat
     (h/to-sql oppija)
     ["oid = ?" oid]))
@@ -172,7 +166,7 @@
   (insert-one! :opiskeluoikeudet (h/to-sql opiskeluoikeus)))
 
 (defn update-opiskeluoikeus! [oid opiskeluoikeus]
-  (update!
+  (db-ops/update!
     :opiskeluoikeudet
     (h/to-sql opiskeluoikeus)
     ["oid = ?" oid]))
@@ -293,7 +287,7 @@
     (h/hankittava-paikallinen-tutkinnon-osa-to-sql m)))
 
 (defn update-hankittava-paikallinen-tutkinnon-osa-by-id! [id m]
-  (update!
+  (db-ops/update!
     :hankittavat_paikalliset_tutkinnon_osat
     (h/hankittava-paikallinen-tutkinnon-osa-to-sql m)
     ["id = ? AND deleted_at IS NULL" id]))
@@ -620,13 +614,13 @@
     ["hankittava_ammat_tutkinnon_osa_id = ?" id]))
 
 (defn update-hankittava-ammat-tutkinnon-osa-by-id! [id m]
-  (update!
+  (db-ops/update!
     :hankittavat_ammat_tutkinnon_osat
     (h/hankittava-ammat-tutkinnon-osa-to-sql m)
     ["id = ? AND deleted_at IS NULL" id]))
 
 (defn update-hankittava-yhteinen-tutkinnon-osa-by-id! [hyto-id new-values]
-  (update!
+  (db-ops/update!
     :hankittavat_yhteiset_tutkinnon_osat
     (h/hankittava-yhteinen-tutkinnon-osa-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" hyto-id]))
@@ -643,7 +637,7 @@
     ["yhteinen_tutkinnon_osa_id = ?" hyto-id]))
 
 (defn update-aiemmin-hankittu-ammat-tutkinnon-osa-by-id! [id new-values]
-  (update!
+  (db-ops/update!
     :aiemmin_hankitut_ammat_tutkinnon_osat
     (h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" id]))
@@ -651,19 +645,19 @@
 (defn update-aiemmin-hankittu-paikallinen-tutkinnon-osa-by-id! [id new-values]
   (when-let
    [new-ahpt (h/aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql new-values)]
-    (update!
+    (db-ops/update!
       :aiemmin_hankitut_paikalliset_tutkinnon_osat
       new-ahpt
       ["id = ? AND deleted_at IS NULL" id])))
 
 (defn update-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id! [id new-values]
-  (update!
+  (db-ops/update!
     :aiemmin_hankitut_yhteiset_tutkinnon_osat
     (h/aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" id]))
 
 (defn update-todennettu-arviointi-lisatiedot-by-id! [id new-values]
-  (update!
+  (db-ops/update!
     :todennettu_arviointi_lisatiedot
     (h/todennettu-arviointi-lisatiedot-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" id]))
@@ -751,7 +745,7 @@
     ["hoks_id = ?" hoks-id] db-conn))
 
 (defn update-opiskeluvalmiuksia-tukevat-opinnot-by-id! [oto-id new-values]
-  (update!
+  (db-ops/update!
     :opiskeluvalmiuksia_tukevat_opinnot
     (h/to-sql new-values)
     ["id = ? AND deleted_at IS NULL" oto-id]))

@@ -10,7 +10,7 @@
    :user (:db-username config)
    :password (:db-password config)})
 
-(defn insert-empty! [t]
+(defn- insert-empty! [t]
   (jdbc/execute!
     (get-db-connection)
     (format
@@ -20,3 +20,9 @@
   (if (seq v)
     (jdbc/insert! (get-db-connection) t v)
     (insert-empty! t)))
+
+(defn update!
+  ([table values where-clause]
+   (jdbc/update! (get-db-connection) table values where-clause))
+  ([table values where-clause db]
+   (jdbc/update! db table values where-clause)))
