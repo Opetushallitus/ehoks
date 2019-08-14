@@ -306,33 +306,32 @@
                 {:error "No HOKS found with given opiskeluoikeus"})))))
 
       (c-api/context "/:hoks-id" []
-        :path-params [hoks-id :- s/Int]
 
         (route-middleware
           [m/wrap-hoks m/wrap-hoks-access]
 
-          (c-api/GET "/" [id :as request]
+          (c-api/GET "/" request
             :summary "Palauttaa HOKSin"
             :return (rest/response hoks-schema/HOKS)
             (rest/rest-ok (h/get-hoks-values (:hoks request))))
 
-          (c-api/PATCH "/" []
+          (c-api/PATCH "/" request
             :summary
             "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
             :body [values hoks-schema/HOKSPaivitys]
-            (if (not-empty (pdb/select-hoks-by-id hoks-id))
+            (if (not-empty (:hoks request))
               (do
-                (h/update-hoks! hoks-id values)
+                (h/update-hoks! (get-in request [:hoks :id]) values)
                 (response/no-content))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
 
-          (c-api/PUT "/" []
+          (c-api/PUT "/" request
             :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
             :body [values hoks-schema/HOKSKorvaus]
-            (if (not-empty (pdb/select-hoks-by-id hoks-id))
+            (if (not-empty (:hoks request))
               (do
-                (h/replace-hoks! hoks-id values)
+                (h/replace-hoks! (get-in request [:hoks :id]) values)
                 (response/no-content))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
