@@ -1,6 +1,5 @@
 (ns oph.ehoks.db.postgresql
   (:require [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.config :refer [config]]
             [oph.ehoks.db.hoks :as h]
             [clj-time.coerce :as c]
             [oph.ehoks.db.queries :as queries]
