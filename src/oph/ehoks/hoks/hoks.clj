@@ -31,7 +31,7 @@
     #(dissoc
        (set-osaamisen-osoittaminen-values %)
        :id)
-    (db/select-tarkentavat-tiedot-naytto-by-ooato-id id)))
+    (db/select-tarkentavat-tiedot-naytto-by-ahato-id id)))
 
 (defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
   (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]

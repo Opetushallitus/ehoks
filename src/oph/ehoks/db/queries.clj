@@ -60,7 +60,7 @@
       "oppijat/select_opiskeluoikeudet_by_oid" .sql)
 (defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id)
-(def select-osaamisen-osoittamiset-by-ooato-id
+(def select-osaamisen-osoittamiset-by-ahato-id
   (generate-select-join
     {:table "osaamisen_osoittamiset"
      :join "aiemmin_hankitun_ammat_tutkinnon_osan_naytto"

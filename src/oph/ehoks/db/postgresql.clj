@@ -39,12 +39,12 @@
   (db-ops/query [queries/select-osaamisen-osoittamiset-by-oopto-id oopto-id]
                 {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-(defn select-tarkentavat-tiedot-naytto-by-ooato-id
+(defn select-tarkentavat-tiedot-naytto-by-ahato-id
   "Aiemmin hankitun ammat tutkinnon osan näytön tarkentavat tiedot
    (hankitun osaamisen näytöt)"
   [id]
   (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-ooato-id id]
+    [queries/select-osaamisen-osoittamiset-by-ahato-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
 (defn insert-aiemmin-hankitun-ammat-tutkinnon-osan-naytto! [ooato-id n]
