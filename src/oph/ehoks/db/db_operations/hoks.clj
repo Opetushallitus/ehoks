@@ -1,5 +1,6 @@
 (ns oph.ehoks.db.db-operations.hoks
   (:require [clojure.set :refer [rename-keys]]
+            [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
 (defn oppilaitos-oid-from-sql [m]
@@ -210,3 +211,8 @@
   (db-ops/from-sql m))
 
 (defn osaamistavoite-from-sql [m] (get m :osaamistavoite))
+
+(defn select-hoksit []
+  (db-ops/query
+    [queries/select-hoksit]
+    :row-fn hoks-from-sql))
