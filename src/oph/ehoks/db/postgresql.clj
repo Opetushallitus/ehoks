@@ -1,6 +1,6 @@
 (ns oph.ehoks.db.postgresql
   (:require [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.db.hoks :as h]
+            [oph.ehoks.db.db-operations.hoks :as h]
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 

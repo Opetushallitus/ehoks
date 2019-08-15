@@ -1,6 +1,5 @@
 (ns oph.ehoks.db.hoks-test
-  (:require [oph.ehoks.db.hoks :as h]
-            [clojure.test :as t]
+  (:require [clojure.test :as t]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
 (t/deftest replace-with-in-test

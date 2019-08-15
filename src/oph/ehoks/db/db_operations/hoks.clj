@@ -1,4 +1,4 @@
-(ns oph.ehoks.db.hoks
+(ns oph.ehoks.db.db-operations.hoks
   (:require [clojure.set :refer [rename-keys]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
