@@ -20,3 +20,12 @@
     (db-ops/query
       [queries/select-opiskeluoikeudet-by-oid oid]
       {:row-fn db-ops/from-sql})))
+
+(defn insert-opiskeluoikeus [opiskeluoikeus]
+  (db-ops/insert-one! :opiskeluoikeudet (db-ops/to-sql opiskeluoikeus)))
+
+(defn update-opiskeluoikeus! [oid opiskeluoikeus]
+  (db-ops/update!
+    :opiskeluoikeudet
+    (db-ops/to-sql opiskeluoikeus)
+    ["oid = ?" oid]))

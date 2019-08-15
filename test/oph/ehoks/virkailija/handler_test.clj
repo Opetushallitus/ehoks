@@ -8,7 +8,8 @@
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]))
 
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
@@ -115,7 +116,7 @@
   (db/insert-oppija
     {:oid (:oid oppija)
      :nimi (:nimi oppija)})
-  (db/insert-opiskeluoikeus
+  (db-opiskeluoikeus/insert-opiskeluoikeus
     {:oid (:opiskeluoikeus-oid oppija)
      :oppija_oid (:oid oppija)
      :oppilaitos_oid (:oppilaitos-oid oppija)

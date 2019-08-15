@@ -3,7 +3,8 @@
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.db.postgresql :as db]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]))
 
 (t/use-fixtures :each utils/with-database)
 
@@ -48,14 +49,14 @@
 (t/deftest get-oppija-opiskeluoikeudet
   (t/testing "Get oppija opiskeluoikeudet"
     (db/insert-oppija {:oid "1.2.246.562.24.11111111111"})
-    (db/insert-opiskeluoikeus
+    (db-opiskeluoikeus/insert-opiskeluoikeus
       {:oppija-oid "1.2.246.562.24.11111111111"
        :oid "1.2.246.562.15.22222222222"})
-    (db/insert-opiskeluoikeus
+    (db-opiskeluoikeus/insert-opiskeluoikeus
       {:oppija-oid "1.2.246.562.24.11111111111"
        :oid "1.2.246.562.15.22222222224"})
     (db/insert-oppija {:oid "1.2.246.562.24.11111111112"})
-    (db/insert-opiskeluoikeus
+    (db-opiskeluoikeus/insert-opiskeluoikeus
       {:oppija-oid "1.2.246.562.24.11111111112"
        :oid "1.2.246.562.15.22222222223"})
     (t/is
@@ -87,9 +88,9 @@
 (t/deftest get-opiskeluoikeus-by-oid
   (t/testing "Get opiskeluoikeus by oid"
     (db/insert-oppija {:oid "1.2.246.562.24.11111111111" :nimi "Test 1"})
-    (db/insert-opiskeluoikeus {:oid "1.2.246.562.15.22222222222"
+    (db-opiskeluoikeus/insert-opiskeluoikeus {:oid "1.2.246.562.15.22222222222"
                                :oppija_oid "1.2.246.562.24.11111111111"})
-    (db/insert-opiskeluoikeus {:oid "1.2.246.562.15.22222222223"
+    (db-opiskeluoikeus/insert-opiskeluoikeus {:oid "1.2.246.562.15.22222222223"
                                :oppija_oid "1.2.246.562.24.11111111111"})
     (t/is (= (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.22222222222")
              {:oid "1.2.246.562.15.22222222222"

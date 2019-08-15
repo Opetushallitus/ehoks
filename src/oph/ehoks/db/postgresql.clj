@@ -18,15 +18,6 @@
     (db-ops/to-sql oppija)
     ["oid = ?" oid]))
 
-(defn insert-opiskeluoikeus [opiskeluoikeus]
-  (db-ops/insert-one! :opiskeluoikeudet (db-ops/to-sql opiskeluoikeus)))
-
-(defn update-opiskeluoikeus! [oid opiskeluoikeus]
-  (db-ops/update!
-    :opiskeluoikeudet
-    (db-ops/to-sql opiskeluoikeus)
-    ["oid = ?" oid]))
-
 (defn select-todennettu-arviointi-lisatiedot-by-id [id]
   (first
     (db-ops/query
