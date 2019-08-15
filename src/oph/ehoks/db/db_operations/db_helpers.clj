@@ -129,3 +129,14 @@
 
 (defn remove-nils [m]
   (apply dissoc m (filter #(nil? (get m %)) (keys m))))
+
+(defn convert-sql
+  [m {removals :removals replaces :replaces
+      :or {removals [] replaces {}}, :as operations}]
+  (as-> m x
+        (reduce
+          (fn [c [kss kst]]
+            (replace-with-in c kss kst))
+          x
+          replaces)
+        (apply dissoc x removals)))

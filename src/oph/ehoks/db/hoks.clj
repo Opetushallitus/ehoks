@@ -2,20 +2,9 @@
   (:require [clojure.set :refer [rename-keys]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn- convert-sql
-  [m {removals :removals replaces :replaces
-      :or {removals [] replaces {}}, :as operations}]
-  (as-> m x
-    (reduce
-      (fn [c [kss kst]]
-        (db-ops/replace-with-in c kss kst))
-      x
-      replaces)
-    (apply dissoc x removals)))
-
 (defn from-sql
   ([m operations]
-    (-> (convert-sql m operations)
+    (-> (db-ops/convert-sql m operations)
         db-ops/remove-nils
         db-ops/remove-db-columns
         db-ops/to-dash-keys))
@@ -23,7 +12,7 @@
 
 (defn to-sql
   ([m operations]
-    (db-ops/to-underscore-keys (convert-sql m operations)))
+    (db-ops/to-underscore-keys (db-ops/convert-sql m operations)))
   ([m] (to-sql m {})))
 
 (defn oppilaitos-oid-from-sql [m]
