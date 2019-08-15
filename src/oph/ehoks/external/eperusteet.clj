@@ -45,13 +45,14 @@
     [:body :data]))
 
 (defn get-tutkinnon-osa-viitteet [^Long id]
-  (get
-    (cache/with-cache!
-      {:method :get
-       :service (u/get-url "eperusteet-service-url")
-       :url (u/get-url "eperusteet-service.get-tutkinnonosa-viitteet" id)
-       :options {:as :json}})
-    :body))
+  (let [response (cache/with-cache!
+                   {:method :get
+                    :service (u/get-url "eperusteet-service-url")
+                    :url (u/get-url "eperusteet-service.get-tutkinnonosa-viitteet" id)
+                    :options {:as :json}})]
+    (if (= (:status response) 200)
+      (:body response)
+      [])))
 
 (defn find-tutkinto [^String diaarinumero]
   (get
