@@ -1,5 +1,6 @@
 (ns oph.ehoks.db.db-operations.db-helpers
-  (:require [clojure.java.jdbc :as jdbc]
+  (:require [clojure.set :refer [rename-keys]]
+            [clojure.java.jdbc :as jdbc]
             [oph.ehoks.config :refer [config]]
             [clojure.data.json :as json]
             [clj-time.coerce :as c])
@@ -75,3 +76,12 @@
     (query queries {}))
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
+
+(defn convert-keys [f m]
+  (rename-keys
+    m
+    (reduce
+      (fn [c n]
+        (assoc c n (f n)))
+      {}
+      (keys m))))

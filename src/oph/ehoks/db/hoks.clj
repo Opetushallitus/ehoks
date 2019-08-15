@@ -1,16 +1,8 @@
 (ns oph.ehoks.db.hoks
-  (:require [clojure.set :refer [rename-keys]]))
+  (:require [clojure.set :refer [rename-keys]]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn convert-keys [f m]
-  (rename-keys
-    m
-    (reduce
-      (fn [c n]
-        (assoc c n (f n)))
-      {}
-      (keys m))))
-
-(defn remove-db-columns [m & others]
+(defn- remove-db-columns [m & others]
   (apply
     dissoc m
     :created_at
@@ -18,11 +10,11 @@
     :deleted_at
     others))
 
-(defn to-underscore-keys [m]
-  (convert-keys #(keyword (.replace (name %) \- \_)) m))
+(defn- to-underscore-keys [m]
+  (db-ops/convert-keys #(keyword (.replace (name %) \- \_)) m))
 
-(defn to-dash-keys [m]
-  (convert-keys #(keyword (.replace (name %) \_ \-)) m))
+(defn- to-dash-keys [m]
+  (db-ops/convert-keys #(keyword (.replace (name %) \_ \-)) m))
 
 (defn- replace-in [h sk tks]
   (if (some? (get h sk))
@@ -54,7 +46,7 @@
 (defn- remove-nils [m]
   (apply dissoc m (filter #(nil? (get m %)) (keys m))))
 
-(defn convert-sql
+(defn- convert-sql
   [m {removals :removals replaces :replaces
       :or {removals [] replaces {}}, :as operations}]
   (as-> m x
@@ -73,13 +65,13 @@
         to-dash-keys))
   ([m] (from-sql m {})))
 
-(defn oppilaitos-oid-from-sql [m]
-  (:oppilaitos_oid m))
-
 (defn to-sql
   ([m operations]
     (to-underscore-keys (convert-sql m operations)))
   ([m] (to-sql m {})))
+
+(defn oppilaitos-oid-from-sql [m]
+  (:oppilaitos_oid m))
 
 (defn hoks-from-sql [h]
   (from-sql
