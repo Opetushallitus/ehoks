@@ -53,7 +53,8 @@
                     :options {:as :json}})]
     (if (= (:status response) 200)
       (:body response)
-      [])))
+      (do (log/warnf "Tutkinnon osa viitteet %d not found" id)
+          []))))
 
 (defn find-tutkinto [^String diaarinumero]
   (get
