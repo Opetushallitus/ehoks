@@ -2,9 +2,6 @@
   (:require [clojure.set :refer [rename-keys]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn- to-underscore-keys [m]
-  (db-ops/convert-keys #(keyword (.replace (name %) \- \_)) m))
-
 (defn- to-dash-keys [m]
   (db-ops/convert-keys #(keyword (.replace (name %) \_ \-)) m))
 
@@ -59,7 +56,7 @@
 
 (defn to-sql
   ([m operations]
-    (to-underscore-keys (convert-sql m operations)))
+    (db-ops/to-underscore-keys (convert-sql m operations)))
   ([m] (to-sql m {})))
 
 (defn oppilaitos-oid-from-sql [m]

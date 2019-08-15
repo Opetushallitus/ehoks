@@ -93,3 +93,6 @@
     :updated_at
     :deleted_at
     others))
+
+(defn to-underscore-keys [m]
+  (convert-keys #(keyword (.replace (name %) \- \_)) m))
