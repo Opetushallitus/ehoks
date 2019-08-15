@@ -70,7 +70,7 @@
   (db/select-oppija-by-oid oppija-oid))
 
 (defn get-opiskeluoikeus-by-oid [oid]
-  (db/select-opiskeluoikeus-by-oid oid))
+  (db-opiskeluoikeus/select-opiskeluoikeus-by-oid oid))
 
 (defn get-oppilaitos-oids []
   (filter some? (db/select-oppilaitos-oids)))

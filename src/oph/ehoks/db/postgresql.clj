@@ -9,12 +9,6 @@
       [queries/select-oppijat-by-oid oppija-oid]
       {:row-fn db-ops/from-sql})))
 
-(defn select-opiskeluoikeus-by-oid [oid]
-  (first
-    (db-ops/query
-      [queries/select-opiskeluoikeudet-by-oid oid]
-      {:row-fn db-ops/from-sql})))
-
 (defn insert-oppija [oppija]
   (db-ops/insert-one! :oppijat (db-ops/to-sql oppija)))
 

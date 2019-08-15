@@ -14,3 +14,9 @@
   (db-ops/query
     [queries/select-opiskeluoikeudet-by-oppija-oid oppija-oid]
     {:row-fn db-ops/from-sql}))
+
+(defn select-opiskeluoikeus-by-oid [oid]
+  (first
+    (db-ops/query
+      [queries/select-opiskeluoikeudet-by-oid oid]
+      {:row-fn db-ops/from-sql})))
