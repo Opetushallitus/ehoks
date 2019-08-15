@@ -4,10 +4,6 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn select-hoks-oppijat-without-index []
-  (db-ops/query
-    [queries/select-hoks-oppijat-without-index]))
-
 (defn select-hoks-oppijat-without-index-count []
   (db-ops/query
     [queries/select-hoks-oppijat-without-index-count]))

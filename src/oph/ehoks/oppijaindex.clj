@@ -5,7 +5,8 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [clojure.tools.logging :as log]
             [oph.ehoks.db.queries :as queries]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (defn- get-like [v]
   (format "%%%s%%" (or v "")))
@@ -43,7 +44,7 @@
          (get-like (:osaamisala params))]))))
 
 (defn get-oppijat-without-index []
-  (db/select-hoks-oppijat-without-index))
+  (db-hoks/select-hoks-oppijat-without-index))
 
 (defn get-oppijat-without-index-count []
   (:count (first (db/select-hoks-oppijat-without-index-count))))
