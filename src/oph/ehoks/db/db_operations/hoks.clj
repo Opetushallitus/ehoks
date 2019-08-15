@@ -221,3 +221,14 @@
   (db-ops/query
     [queries/select-hoksit-by-oppija-oid oid]
     :row-fn hoks-from-sql))
+
+(defn select-hoks-by-id [id]
+  (first
+    (db-ops/query
+      [queries/select-hoksit-by-id id]
+      {:row-fn hoks-from-sql})))
+
+(defn select-hoksit-by-opiskeluoikeus-oid [oid]
+  (db-ops/query
+    [queries/select-hoksit-by-opiskeluoikeus-oid oid]
+    {:row-fn hoks-from-sql}))

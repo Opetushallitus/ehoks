@@ -4,21 +4,10 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn select-hoks-by-id [id]
-  (first
-    (db-ops/query
-      [queries/select-hoksit-by-id id]
-      {:row-fn h/hoks-from-sql})))
-
 (defn select-hoksit-eid-by-eid [eid]
   (db-ops/query
     [queries/select-hoksit-eid-by-eid eid]
     {}))
-
-(defn select-hoksit-by-opiskeluoikeus-oid [oid]
-  (db-ops/query
-    [queries/select-hoksit-by-opiskeluoikeus-oid oid]
-    {:row-fn h/hoks-from-sql}))
 
 (defn generate-unique-eid []
   (loop [eid nil]

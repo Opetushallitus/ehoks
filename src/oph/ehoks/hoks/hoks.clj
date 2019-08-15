@@ -295,7 +295,7 @@
     (db-hoks/select-hoks-by-oppija-oid oid)))
 
 (defn get-hoks-by-id [id]
-  (get-hoks-values (db/select-hoks-by-id id)))
+  (get-hoks-values (db-hoks/select-hoks-by-id id)))
 
 (defn save-osaamisen-hankkimistapa! [oh]
   (let [tho (db/insert-tyopaikalla-jarjestettava-koulutus!

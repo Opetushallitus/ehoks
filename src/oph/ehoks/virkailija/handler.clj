@@ -198,7 +198,7 @@
                         :path-params [hoks-id :- s/Int]
                         :summary "Hoksin tiedot.
                                 Vaatii manuaalisyöttäjän oikeudet"
-                        (let [hoks (db/select-hoks-by-id hoks-id)
+                        (let [hoks (db-hoks/select-hoks-by-id hoks-id)
                               virkailija-user (get-in
                                                 request
                                                 [:session :virkailija-user])]
