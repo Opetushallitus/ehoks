@@ -2,9 +2,6 @@
   (:require [clojure.set :refer [rename-keys]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn- remove-nils [m]
-  (apply dissoc m (filter #(nil? (get m %)) (keys m))))
-
 (defn- convert-sql
   [m {removals :removals replaces :replaces
       :or {removals [] replaces {}}, :as operations}]
@@ -19,7 +16,7 @@
 (defn from-sql
   ([m operations]
     (-> (convert-sql m operations)
-        remove-nils
+        db-ops/remove-nils
         db-ops/remove-db-columns
         db-ops/to-dash-keys))
   ([m] (from-sql m {})))

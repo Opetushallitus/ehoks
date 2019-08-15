@@ -126,3 +126,6 @@
   (if (coll? kss)
     (replace-from m kss kst)
     (replace-in m kss kst)))
+
+(defn remove-nils [m]
+  (apply dissoc m (filter #(nil? (get m %)) (keys m))))
