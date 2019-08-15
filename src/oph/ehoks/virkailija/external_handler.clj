@@ -18,7 +18,7 @@
       (c-api/GET "/find" []
         :query-params [oids :- [s/Str]]
         :summary "Hakee organisaatiot oidien perusteella"
-        :return (restful/response s/Any)
+        :return (restful/response [s/Any])
         (restful/rest-ok
           (organisaatio/find-organisaatiot oids))))
 
@@ -38,7 +38,7 @@
       (c-api/GET "/:koodi-uri/koodi" []
         :path-params [koodi-uri :- s/Str]
         :summary "Koodiston uusimpien versioiden haku."
-        :return (restful/response s/Any)
+        :return (restful/response [s/Any])
         (restful/rest-ok
           (koodisto/get-koodi-latest-versiot koodi-uri))))
 
