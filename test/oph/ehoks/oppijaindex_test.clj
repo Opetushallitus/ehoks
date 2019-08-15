@@ -2,7 +2,8 @@
   (:require [oph.ehoks.oppijaindex :as sut]
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]
-            [oph.ehoks.db.postgresql :as db]))
+            [oph.ehoks.db.postgresql :as db]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (t/use-fixtures :each utils/with-database)
 
@@ -10,11 +11,11 @@
 
 (t/deftest get-oppijat-without-index
   (t/testing "Get oppijat without index"
-    (db/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
+    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
                       :opiskeluoikeus-oid "1.2.246.562.15.22222222222"})
-    (db/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
+    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
                       :opiskeluoikeus-oid "1.2.246.562.15.22222222223"})
-    (db/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111112"
+    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111112"
                       :opiskeluoikeus-oid "1.2.246.562.15.22222222224"})
     (t/is
       (= (sut/get-oppijat-without-index)
@@ -26,11 +27,11 @@
 
 (t/deftest get-opiskeluoikeudet-without-index
   (t/testing "Get opiskeluoikeudet without index"
-    (db/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
+    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
                       :opiskeluoikeus-oid "1.2.246.562.15.22222222222"})
-    (db/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
+    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
                       :opiskeluoikeus-oid "1.2.246.562.15.22222222223"})
-    (db/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111112"
+    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111112"
                       :opiskeluoikeus-oid "1.2.246.562.15.22222222224"})
     (t/is
       (= (sut/get-opiskeluoikeudet-without-index)

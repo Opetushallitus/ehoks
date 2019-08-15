@@ -4,30 +4,6 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn select-hoksit-eid-by-eid [eid]
-  (db-ops/query
-    [queries/select-hoksit-eid-by-eid eid]
-    {}))
-
-(defn generate-unique-eid []
-  (loop [eid nil]
-    (if (or (nil? eid) (seq (select-hoksit-eid-by-eid eid)))
-      (recur (str (java.util.UUID/randomUUID)))
-      eid)))
-
-(defn insert-hoks! [hoks]
-  (jdbc/with-db-transaction
-    [conn (db-ops/get-db-connection)]
-    (when
-     (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
-                            (:opiskeluoikeus-oid hoks)]))
-      (throw (ex-info
-               "HOKS with given opiskeluoikeus already exists"
-               {:error :duplicate})))
-    (let [eid (generate-unique-eid)]
-      (first
-        (jdbc/insert! conn :hoksit (h/hoks-to-sql (assoc hoks :eid eid)))))))
-
 (defn update-hoks-by-id!
   ([id hoks]
     (db-ops/update! :hoksit (h/hoks-to-sql hoks)

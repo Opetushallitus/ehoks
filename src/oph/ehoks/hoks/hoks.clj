@@ -672,7 +672,7 @@
     (replace-hyto-osa-alueet! hyto-id oa)))
 
 (defn save-hoks! [h]
-  (let [saved-hoks (db/insert-hoks! h)]
+  (let [saved-hoks (db-hoks/insert-hoks! h)]
     (when (:osaamisen-hankkimisen-tarve h)
       (sqs/send-message (sqs/build-hoks-hyvaksytty-msg
                           (:id saved-hoks) h)))

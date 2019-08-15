@@ -1,7 +1,8 @@
 (ns oph.ehoks.db.db-operations.hoks
   (:require [clojure.set :refer [rename-keys]]
             [oph.ehoks.db.queries :as queries]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [clojure.java.jdbc :as jdbc]))
 
 (defn oppilaitos-oid-from-sql [m]
   (:oppilaitos_oid m))
@@ -232,3 +233,27 @@
   (db-ops/query
     [queries/select-hoksit-by-opiskeluoikeus-oid oid]
     {:row-fn hoks-from-sql}))
+
+(defn- select-hoksit-eid-by-eid [eid]
+  (db-ops/query
+    [queries/select-hoksit-eid-by-eid eid]
+    {}))
+
+(defn- generate-unique-eid []
+  (loop [eid nil]
+    (if (or (nil? eid) (seq (select-hoksit-eid-by-eid eid)))
+      (recur (str (java.util.UUID/randomUUID)))
+      eid)))
+
+(defn insert-hoks! [hoks]
+  (jdbc/with-db-transaction
+    [conn (db-ops/get-db-connection)]
+    (when
+      (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
+                             (:opiskeluoikeus-oid hoks)]))
+      (throw (ex-info
+               "HOKS with given opiskeluoikeus already exists"
+               {:error :duplicate})))
+    (let [eid (generate-unique-eid)]
+      (first
+        (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid)))))))
