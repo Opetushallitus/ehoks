@@ -55,7 +55,7 @@
   {:oid s/Str
    :oppija-oid s/Str
    :oppilaitos-oid s/Str
-   :koulutustoimija-oid s/Str
+   (s/optional-key :koulutustoimija-oid) (s/maybe s/Str)
    :tutkinto s/Str
    :osaamisala s/Str})
 
