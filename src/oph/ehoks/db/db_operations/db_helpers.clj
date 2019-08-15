@@ -96,3 +96,6 @@
 
 (defn to-underscore-keys [m]
   (convert-keys #(keyword (.replace (name %) \- \_)) m))
+
+(defn to-dash-keys [m]
+  (convert-keys #(keyword (.replace (name %) \_ \-)) m))
