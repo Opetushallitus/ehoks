@@ -2,7 +2,8 @@
   (:require [oph.ehoks.db.postgresql :as db]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (defn set-osaamisen-osoittaminen-values [naytto]
   (dissoc
@@ -291,7 +292,7 @@
 (defn get-hokses-by-oppija [oid]
   (mapv
     get-hoks-values
-    (db/select-hoks-by-oppija-oid oid)))
+    (db-hoks/select-hoks-by-oppija-oid oid)))
 
 (defn get-hoks-by-id [id]
   (get-hoks-values (db/select-hoks-by-id id)))

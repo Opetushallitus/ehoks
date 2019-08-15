@@ -216,3 +216,8 @@
   (db-ops/query
     [queries/select-hoksit]
     :row-fn hoks-from-sql))
+
+(defn select-hoks-by-oppija-oid [oid]
+  (db-ops/query
+    [queries/select-hoksit-by-oppija-oid oid]
+    :row-fn hoks-from-sql))

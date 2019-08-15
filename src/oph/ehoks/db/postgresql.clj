@@ -4,11 +4,6 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn select-hoks-by-oppija-oid [oid]
-  (db-ops/query
-    [queries/select-hoksit-by-oppija-oid oid]
-    :row-fn h/hoks-from-sql))
-
 (defn select-hoks-by-id [id]
   (first
     (db-ops/query
