@@ -6,6 +6,7 @@
             [clojure.tools.logging :as log]
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (defn- get-like [v]
@@ -56,7 +57,7 @@
   (:count (first (db-hoks/select-hoks-opiskeluoikeudet-without-index-count))))
 
 (defn get-opiskeluoikeudet-without-tutkinto []
-  (db/select-opiskeluoikeudet-without-tutkinto))
+  (db-opiskeluoikeus/select-opiskeluoikeudet-without-tutkinto))
 
 (defn get-opiskeluoikeudet-without-tutkinto-count []
   (:count (first (db/select-opiskeluoikeudet-without-tutkinto-count))))

@@ -1,12 +1,7 @@
 (ns oph.ehoks.db.postgresql
-  (:require [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.db.db-operations.hoks :as h]
+  (:require [oph.ehoks.db.db-operations.hoks :as h]
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
-
-(defn select-opiskeluoikeudet-without-tutkinto []
-  (db-ops/query
-    [queries/select-hoks-opiskeluoikeudet-without-tutkinto]))
 
 (defn select-opiskeluoikeudet-without-tutkinto-count []
   (db-ops/query
@@ -415,7 +410,7 @@
     [queries/select-osaamisen-osoittamiset-by-ahyto-osa-alue-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-(defn insert-ooyto-osa-alue-osaamisen-osoittaminen! [osa-alue-id naytto-id]
+(defn insert-ahyto-osa-alue-osaamisen-osoittaminen! [osa-alue-id naytto-id]
   (db-ops/insert-one!
     :aiemmin_hankitun_yto_osa_alueen_naytto
     {:aiemmin_hankittu_yto_osa_alue_id osa-alue-id
