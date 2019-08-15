@@ -2,14 +2,6 @@
   (:require [clojure.set :refer [rename-keys]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn- remove-db-columns [m & others]
-  (apply
-    dissoc m
-    :created_at
-    :updated_at
-    :deleted_at
-    others))
-
 (defn- to-underscore-keys [m]
   (db-ops/convert-keys #(keyword (.replace (name %) \- \_)) m))
 
@@ -61,7 +53,7 @@
   ([m operations]
     (-> (convert-sql m operations)
         remove-nils
-        remove-db-columns
+        db-ops/remove-db-columns
         to-dash-keys))
   ([m] (from-sql m {})))
 

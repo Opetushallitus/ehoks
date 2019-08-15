@@ -85,3 +85,11 @@
         (assoc c n (f n)))
       {}
       (keys m))))
+
+(defn remove-db-columns [m & others]
+  (apply
+    dissoc m
+    :created_at
+    :updated_at
+    :deleted_at
+    others))
