@@ -2,26 +2,9 @@
   (:require [clojure.set :refer [rename-keys]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn- replace-from [h sks tk]
-  (cond
-    (get-in h sks)
-    (if (= (count (get-in h (drop-last sks))) 1)
-      (apply
-        dissoc
-        (assoc h tk (get-in h sks))
-        (drop-last sks))
-      (update-in
-        (assoc h tk (get-in h sks))
-        (drop-last sks)
-        dissoc
-        (last sks)))
-    (empty? (get-in h (drop-last sks)))
-    (apply dissoc h (drop-last sks))
-    :else h))
-
 (defn replace-with-in [m kss kst]
   (if (coll? kss)
-    (replace-from m kss kst)
+    (db-ops/replace-from m kss kst)
     (db-ops/replace-in m kss kst)))
 
 (defn- remove-nils [m]
