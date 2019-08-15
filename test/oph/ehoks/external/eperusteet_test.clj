@@ -69,9 +69,11 @@
     (client/with-mock-responses
       [(fn [_ __] (throw (ex-info
                            "HTTP Exception"
-                           {:status 400 :body {:koodi 400
-                                               :syy "tutkinnon-osaa-ei-ole"}})))]
-      (is (thrown? clojure.lang.ExceptionInfo (ep/get-tutkinnon-osa-viitteet 100000))))))
+                           {:status 400
+                            :body {:koodi 400
+                                   :syy "tutkinnon-osaa-ei-ole"}})))]
+      (is (thrown? clojure.lang.ExceptionInfo
+                   (ep/get-tutkinnon-osa-viitteet 100000))))))
 
 (deftest find-tutkinto-not-found
   (testing "Not finding any tutkinto items"
