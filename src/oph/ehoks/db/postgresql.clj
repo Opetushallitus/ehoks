@@ -691,6 +691,3 @@
   (db-ops/query
     [queries/select-oppilaitos-oids-by-koulutustoimija-oid oid]
     {:row-fn h/oppilaitos-oid-from-sql}))
-
-(defn delete-sessions-by-ticket! [ticket]
-  (db-ops/delete! :sessions ["data->>'ticket' = ?" ticket]))

@@ -37,3 +37,6 @@
 
 (defn delete-session! [session-key]
   (db-ops/delete! :sessions ["session_key = ?" session-key]))
+
+(defn delete-sessions-by-ticket! [ticket]
+  (db-ops/delete! :sessions ["data->>'ticket' = ?" ticket]))
