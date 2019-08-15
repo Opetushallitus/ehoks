@@ -7,6 +7,7 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (defn- get-like [v]
@@ -67,7 +68,7 @@
   (db-opiskeluoikeus/select-opiskeluoikeudet-by-oppija-oid oppija-oid))
 
 (defn get-oppija-by-oid [oppija-oid]
-  (db/select-oppija-by-oid oppija-oid))
+  (db-oppija/select-oppija-by-oid oppija-oid))
 
 (defn get-opiskeluoikeus-by-oid [oid]
   (db-opiskeluoikeus/select-opiskeluoikeus-by-oid oid))
