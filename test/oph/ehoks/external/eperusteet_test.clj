@@ -50,8 +50,8 @@
 (deftest get-perusteet-not-found
   (testing "Not getting any perusteet items"
     (client/with-mock-responses
-      [(fn [_ __] {:status 404})]
-      (is (nil? (ep/get-perusteet 100000))))))
+      [(fn [_ __] (throw (ex-info "HTTP Exception" {:status 404})))]
+      (is (thrown? clojure.lang.ExceptionInfo (ep/get-perusteet 100000))))))
 
 (deftest find-tutkinnon-osat-not-found
   (testing "Not findind any tutkinnon osat items"
@@ -67,19 +67,23 @@
 (deftest get-tutkinnon-osa-vitteet-not-found
   (testing "Not getting any tutkinnon osa viitteet items"
     (client/with-mock-responses
-      [(fn [_ __] {:status 400 :body {:koodi 400
-                                      :syy "tutkinnon-osaa-ei-ole"}})]
-      (is (= (ep/get-tutkinnon-osa-viitteet 100000) [])))))
+      [(fn [_ __] (throw (ex-info
+                           "HTTP Exception"
+                           {:status 400 :body {:koodi 400
+                                               :syy "tutkinnon-osaa-ei-ole"}})))]
+      (is (thrown? clojure.lang.ExceptionInfo (ep/get-tutkinnon-osa-viitteet 100000))))))
 
 (deftest find-tutkinto-not-found
   (testing "Not finding any tutkinto items"
     (client/with-mock-responses
-      [(fn [_ __] {:status 404})]
-      (is (nil? (ep/find-tutkinto "no-found"))))))
+      [(fn [_ __] (throw (ex-info "HTTP Exception" {:status 404})))]
+      (is (thrown? clojure.lang.ExceptionInfo (ep/find-tutkinto "no-found"))))))
 
 (deftest get-suoritustavat-not-found
   (testing "Not finding any suoritustavat items"
     (client/with-mock-responses
-      [(fn [_ __] {:status 404 :body {:syy "Tilaa ei asetettu"
-                                      :koodi "404"}})]
-      (is (= (ep/get-suoritustavat 100000) [])))))
+      [(fn [_ __] (throw (ex-info
+                           "HTTP Exception"
+                           {:status 404 :body {:syy "Tilaa ei asetettu"
+                                               :koodi "404"}})))]
+      (is (thrown? clojure.lang.ExceptionInfo (ep/get-suoritustavat 100000))))))
