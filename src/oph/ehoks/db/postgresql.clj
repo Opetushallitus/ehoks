@@ -6,12 +6,6 @@
 (defn insert-oppija [oppija]
   (db-ops/insert-one! :oppijat (db-ops/to-sql oppija)))
 
-(defn update-oppija! [oid oppija]
-  (db-ops/update!
-    :oppijat
-    (db-ops/to-sql oppija)
-    ["oid = ?" oid]))
-
 (defn select-todennettu-arviointi-lisatiedot-by-id [id]
   (first
     (db-ops/query

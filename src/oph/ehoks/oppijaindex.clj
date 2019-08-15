@@ -146,7 +146,7 @@
 (defn update-oppija! [oid]
   (try
     (let [oppija (:body (onr/find-student-by-oid oid))]
-      (db/update-oppija!
+      (db-oppija/update-oppija!
         oid
         {:nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
     (catch Exception e

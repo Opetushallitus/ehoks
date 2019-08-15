@@ -7,3 +7,9 @@
     (db-ops/query
       [queries/select-oppijat-by-oid oppija-oid]
       {:row-fn db-ops/from-sql})))
+
+(defn update-oppija! [oid oppija]
+  (db-ops/update!
+    :oppijat
+    (db-ops/to-sql oppija)
+    ["oid = ?" oid]))
