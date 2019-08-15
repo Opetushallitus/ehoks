@@ -148,3 +148,8 @@
        remove-db-columns
        to-dash-keys))
   ([m] (from-sql m {})))
+
+(defn to-sql
+  ([m operations]
+   (to-underscore-keys (convert-sql m operations)))
+  ([m] (to-sql m {})))

@@ -99,21 +99,21 @@
       {:row-fn db-ops/from-sql})))
 
 (defn insert-oppija [oppija]
-  (db-ops/insert-one! :oppijat (h/to-sql oppija)))
+  (db-ops/insert-one! :oppijat (db-ops/to-sql oppija)))
 
 (defn update-oppija! [oid oppija]
   (db-ops/update!
     :oppijat
-    (h/to-sql oppija)
+    (db-ops/to-sql oppija)
     ["oid = ?" oid]))
 
 (defn insert-opiskeluoikeus [opiskeluoikeus]
-  (db-ops/insert-one! :opiskeluoikeudet (h/to-sql opiskeluoikeus)))
+  (db-ops/insert-one! :opiskeluoikeudet (db-ops/to-sql opiskeluoikeus)))
 
 (defn update-opiskeluoikeus! [oid opiskeluoikeus]
   (db-ops/update!
     :opiskeluoikeudet
-    (h/to-sql opiskeluoikeus)
+    (db-ops/to-sql opiskeluoikeus)
     ["oid = ?" oid]))
 
 (defn select-todennettu-arviointi-lisatiedot-by-id [id]
@@ -175,7 +175,7 @@
 (defn insert-koodisto-koodi! [m]
   (db-ops/insert-one!
     :koodisto_koodit
-    (h/to-sql m)))
+    (db-ops/to-sql m)))
 
 (defn insert-osaamisen-osoittamisen-osa-alue! [naytto-id koodi-id]
   (db-ops/insert-one!
@@ -299,7 +299,7 @@
   (db-ops/insert-multi!
     :muut_oppimisymparistot
     (map
-      #(h/to-sql
+      #(db-ops/to-sql
          (assoc % :osaamisen-hankkimistapa-id (:id oh)))
       c)))
 
@@ -419,12 +419,12 @@
 (defn insert-nayttoymparisto! [m]
   (db-ops/insert-one!
     :nayttoymparistot
-    (h/to-sql m)))
+    (db-ops/to-sql m)))
 
 (defn insert-nayttoymparistot! [c]
   (db-ops/insert-multi!
     :nayttoymparistot
-    (map h/to-sql c)))
+    (map db-ops/to-sql c)))
 
 (defn select-nayttoymparisto-by-id [id]
   (first
@@ -667,12 +667,12 @@
 (defn insert-opiskeluvalmiuksia-tukeva-opinto! [new-value]
   (db-ops/insert-one!
     :opiskeluvalmiuksia_tukevat_opinnot
-    (h/to-sql new-value)))
+    (db-ops/to-sql new-value)))
 
 (defn insert-opiskeluvalmiuksia-tukevat-opinnot! [c]
   (db-ops/insert-multi!
     :opiskeluvalmiuksia_tukevat_opinnot
-    (mapv h/to-sql c)))
+    (mapv db-ops/to-sql c)))
 
 (defn select-opiskeluvalmiuksia-tukevat-opinnot-by-id [oto-id]
   (->
@@ -694,7 +694,7 @@
 (defn update-opiskeluvalmiuksia-tukevat-opinnot-by-id! [oto-id new-values]
   (db-ops/update!
     :opiskeluvalmiuksia_tukevat_opinnot
-    (h/to-sql new-values)
+    (db-ops/to-sql new-values)
     ["id = ? AND deleted_at IS NULL" oto-id]))
 
 (defn insert-hankittava-yhteinen-tutkinnon-osa! [m]
