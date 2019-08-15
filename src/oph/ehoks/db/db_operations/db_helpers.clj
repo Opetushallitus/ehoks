@@ -121,3 +121,8 @@
     (empty? (get-in h (drop-last sks)))
     (apply dissoc h (drop-last sks))
     :else h))
+
+(defn replace-with-in [m kss kst]
+  (if (coll? kss)
+    (replace-from m kss kst)
+    (replace-in m kss kst)))
