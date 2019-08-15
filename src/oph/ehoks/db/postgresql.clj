@@ -4,14 +4,6 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn update-hoks-by-id!
-  ([id hoks]
-    (db-ops/update! :hoksit (h/hoks-to-sql hoks)
-                    ["id = ? AND deleted_at IS NULL" id]))
-  ([id hoks db]
-    (db-ops/update! :hoksit (h/hoks-to-sql hoks)
-                    ["id = ? AND deleted_at IS NULL" id] db)))
-
 (defn select-hoks-oppijat-without-index []
   (db-ops/query
     [queries/select-hoks-oppijat-without-index]))

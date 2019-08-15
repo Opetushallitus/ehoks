@@ -711,7 +711,7 @@
     (merge empty-top-level-hoks new-hoks-values)))
 
 (defn- replace-main-hoks! [hoks-id new-values db-conn]
-  (db/update-hoks-by-id!
+  (db-hoks/update-hoks-by-id!
     hoks-id (merge-not-given-hoks-values new-values) db-conn))
 
 (defn- replace-oto! [hoks-id new-oto-values db-conn]
@@ -781,4 +781,4 @@
                               new-values))))
 
 (defn update-hoks! [hoks-id new-values]
-  (db/update-hoks-by-id! hoks-id new-values))
+  (db-hoks/update-hoks-by-id! hoks-id new-values))

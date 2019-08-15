@@ -257,3 +257,11 @@
     (let [eid (generate-unique-eid)]
       (first
         (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid)))))))
+
+(defn update-hoks-by-id!
+  ([id hoks]
+   (db-ops/update! :hoksit (hoks-to-sql hoks)
+                   ["id = ? AND deleted_at IS NULL" id]))
+  ([id hoks db]
+   (db-ops/update! :hoksit (hoks-to-sql hoks)
+                   ["id = ? AND deleted_at IS NULL" id] db)))
