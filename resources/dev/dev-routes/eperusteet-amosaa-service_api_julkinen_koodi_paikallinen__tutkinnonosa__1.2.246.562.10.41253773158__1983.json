@@ -1,0 +1,67 @@
+[
+  {
+    "id": 351612,
+    "tekstiKappale": {
+      "id": 349218,
+      "nimi": {
+        "_tunniste": "c0239d0d-1f8f-42ab-94d9-b6d69d81a398",
+        "fi": "Palvelujen tuottaminen",
+        "_id": "351821"
+      }
+    },
+    "owner": {
+      "id": 167482,
+      "nimi": {
+        "_tunniste": "7c878e73-50c8-482e-8f3e-21b8b7f4b4ba",
+        "fi": "Liiketoiminnan perustutkinto, merkonomi",
+        "_id": "271739"
+      },
+      "tila": "julkaistu",
+      "tyyppi": "ops",
+      "kuvaus": {
+        "_tunniste": "86832dbf-e4f7-4ccc-8c7c-54ea7f5712a2",
+        "fi": "<p>Tule opiskelemaan Ammattiiopisto Lappiaan liiketoiminnan perustutkintoa. Meillä on tarjolla koulutusta asiakaspalvelun ja myynnin sekä taloushallinnon työtehtäviin liittyviin tutkinnon osiin. Voit valita tutkinnon osia joustavasti oman mieltymyksesi mukaan ja hyödyntää aikaisempia opintojasi ja työkokemustasi koulutuksen toteuttamisessa.</p>\n\n<p> </p>\n\n<p> </p>\n\n<p>Opintojen alussa sinulle laaditaan henkilökohtainen osaamisen kehittämisen suunnitelma, HOKS, joka toimii opintojen ohjenuorana koko opiskelun ajan. Tässä yhteydessä tunnistetaan ja tunnustetaan aikaisemmissa opinnoissasi hankittu ja työkokemuksen kautta saavutettu osaamisesi sekä suunnitellaan, millä tavalla ja missä aikataulussa puuttuva osaaminen tulee hankkittavaksi.</p>\n\n<p> </p>\n\n<p> </p>\n\n<p>Täällä esitellyt suorituspolut ovat <strong>vain esimerkkejä</strong> siitä, millaisista tutkinnon osista tutkinto voi muodostua.</p>",
+        "_id": "362296"
+      },
+      "koulutustoimija": {
+        "id": 18322,
+        "organisaatio": "1.2.246.562.10.41253773158",
+        "nimi": {
+          "_tunniste": "a2091fe5-69d7-4470-8113-9aa8996fc945",
+          "fi": "Kemi-Tornionlaakson koulutuskuntayhtymä Lappia",
+          "_id": "18307"
+        }
+      },
+      "luotu": 1521116737817,
+      "perusteDiaarinumero": "OPH-2697-2017",
+      "peruste": {
+        "id": 165840,
+        "diaarinumero": "OPH-2697-2017",
+        "perusteId": 3855077,
+        "nimi": {
+          "_tunniste": "00e21df3-13a5-4784-a0ae-d9bbf83e47fa",
+          "fi": "Liiketoiminnan perustutkinto",
+          "sv": "Grundexamen i affärsverksamhet",
+          "en": "Business, Administration, VQ",
+          "_id": "165772"
+        },
+        "koulutustyyppi": "koulutustyyppi_1",
+        "koulutukset": [
+          {
+            "nimi": {
+              "_tunniste": "a541776f-b3cc-489e-8d60-87a3c214a0d9",
+              "fi": "Liiketoiminnan perustutkinto",
+              "sv": "Grundexamen i affärsverksamhet",
+              "en": "Business, Administration, VQ",
+              "_id": "4305978"
+            },
+            "koulutuskoodiArvo": "331101",
+            "koulutuskoodiUri": "koulutus_331101",
+            "koulutusalakoodi": "koulutusalaoph2002_3",
+            "opintoalakoodi": "opintoalaoph2002_301"
+          }
+        ]
+      }
+    }
+  }
+]
