@@ -10,7 +10,7 @@
   (atom {:url nil
          :expires nil}))
 
-(defn get-cas-url [service]
+(defn- get-cas-url [service]
   (cond
     (.contains service (u/get-url "ehoks.virkailija-login-return"))
     service
@@ -81,7 +81,7 @@
             (some #(get % k) c))
           (rest ks))))))
 
-(defn convert-response-data [data]
+(defn- convert-response-data [data]
   (let [m (xml->map data)
         success (some?
                   (find-value m [:serviceResponse :authenticationSuccess]))]

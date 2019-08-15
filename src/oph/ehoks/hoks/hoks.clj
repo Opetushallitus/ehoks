@@ -1,7 +1,8 @@
 (ns oph.ehoks.hoks.hoks
   (:require [oph.ehoks.db.postgresql :as db]
             [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.external.aws-sqs :as sqs]))
+            [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
 (defn set-osaamisen-osoittaminen-values [naytto]
   (dissoc
@@ -477,7 +478,7 @@
        n)
     new-values))
 
-(defn  save-aiemmin-hankittu-ammat-tutkinnon-osa! [hoks-id ahato]
+(defn save-aiemmin-hankittu-ammat-tutkinnon-osa! [hoks-id ahato]
   (let [ahato-db (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
                    (assoc ahato
                           :hoks-id hoks-id
@@ -759,7 +760,7 @@
 
 (defn replace-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
-    [db-conn (db/get-db-connection)]
+    [db-conn (db-ops/get-db-connection)]
     (replace-main-hoks! hoks-id new-values db-conn)
     ;TODO db-conn should be also used when saving hoks parts, see EH-465
     (replace-oto! hoks-id (:opiskeluvalmiuksia-tukevat-opinnot new-values)
