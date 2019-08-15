@@ -2,11 +2,6 @@
   (:require [clojure.set :refer [rename-keys]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn- replace-in [h sk tks]
-  (if (some? (get h sk))
-    (dissoc (assoc-in h tks (get h sk)) sk)
-    h))
-
 (defn- replace-from [h sks tk]
   (cond
     (get-in h sks)
@@ -27,7 +22,7 @@
 (defn replace-with-in [m kss kst]
   (if (coll? kss)
     (replace-from m kss kst)
-    (replace-in m kss kst)))
+    (db-ops/replace-in m kss kst)))
 
 (defn- remove-nils [m]
   (apply dissoc m (filter #(nil? (get m %)) (keys m))))

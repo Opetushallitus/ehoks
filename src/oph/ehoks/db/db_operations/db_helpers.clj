@@ -99,3 +99,8 @@
 
 (defn to-dash-keys [m]
   (convert-keys #(keyword (.replace (name %) \_ \-)) m))
+
+(defn replace-in [h sk tks]
+  (if (some? (get h sk))
+    (dissoc (assoc-in h tks (get h sk)) sk)
+    h))
