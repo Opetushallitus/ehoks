@@ -5,3 +5,12 @@
 (defn select-opiskeluoikeudet-without-tutkinto []
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-tutkinto]))
+
+(defn select-opiskeluoikeudet-without-tutkinto-count []
+  (db-ops/query
+    [queries/select-hoks-opiskeluoikeudet-without-tutkinto-count]))
+
+(defn select-opiskeluoikeudet-by-oppija-oid [oppija-oid]
+  (db-ops/query
+    [queries/select-opiskeluoikeudet-by-oppija-oid oppija-oid]
+    {:row-fn db-ops/from-sql}))

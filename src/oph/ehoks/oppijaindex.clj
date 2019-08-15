@@ -60,10 +60,11 @@
   (db-opiskeluoikeus/select-opiskeluoikeudet-without-tutkinto))
 
 (defn get-opiskeluoikeudet-without-tutkinto-count []
-  (:count (first (db/select-opiskeluoikeudet-without-tutkinto-count))))
+  (:count
+    (first (db-opiskeluoikeus/select-opiskeluoikeudet-without-tutkinto-count))))
 
 (defn get-oppija-opiskeluoikeudet [oppija-oid]
-  (db/select-opiskeluoikeudet-by-oppija-oid oppija-oid))
+  (db-opiskeluoikeus/select-opiskeluoikeudet-by-oppija-oid oppija-oid))
 
 (defn get-oppija-by-oid [oppija-oid]
   (db/select-oppija-by-oid oppija-oid))

@@ -3,15 +3,6 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn select-opiskeluoikeudet-without-tutkinto-count []
-  (db-ops/query
-    [queries/select-hoks-opiskeluoikeudet-without-tutkinto-count]))
-
-(defn select-opiskeluoikeudet-by-oppija-oid [oppija-oid]
-  (db-ops/query
-    [queries/select-opiskeluoikeudet-by-oppija-oid oppija-oid]
-    {:row-fn db-ops/from-sql}))
-
 (defn select-oppija-by-oid [oppija-oid]
   (first
     (db-ops/query
