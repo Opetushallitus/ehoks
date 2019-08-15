@@ -1,7 +1,8 @@
 (ns oph.ehoks.external.eperusteet
   (:require [oph.ehoks.external.connection :as c]
             [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.external.oph-url :as u]))
+            [oph.ehoks.external.oph-url :as u]
+            [clojure.tools.logging :as log]))
 
 (defn map-perusteet [values]
   (map
@@ -65,10 +66,12 @@
     :body))
 
 (defn get-suoritustavat [^Long id]
-  (get
-    (cache/with-cache!
-      {:method :get
-       :service (u/get-url "eperusteet-service-url")
-       :url (u/get-url "eperusteet-service.get-rakenne" id)
-       :options {:as :json}})
-    :body))
+  (let [response (cache/with-cache!
+                   {:method :get
+                    :service (u/get-url "eperusteet-service-url")
+                    :url (u/get-url "eperusteet-service.get-rakenne" id)
+                    :options {:as :json}})]
+    (if (= (:status response) 200)
+      (:body response)
+      (do (log/warnf "Suoritustavat %d not found" id)
+          []))))
