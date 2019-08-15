@@ -5,10 +5,12 @@
 
 (defn get-tutkinnon-osa-response [url __]
   {:status 200
-   :body {:data (if (.endsWith url "1.2.246.562.10.11111111111_1234")
-                  [{:id 10642
-                    :nimi {:fi "Testi"}}]
-                  [])}})
+   :body (if (.endsWith
+               url
+               "/paikallinen_tutkinnonosa_1.2.246.562.10.11111111111_1234")
+           [{:id 10642
+             :nimi {:fi "Testi"}}]
+           [])})
 
 (t/deftest test-get-tutkinnon-osa-by-koodi
   (t/testing "Get tutkinnon osa by koodi"
