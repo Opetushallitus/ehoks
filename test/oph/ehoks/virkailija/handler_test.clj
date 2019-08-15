@@ -9,7 +9,8 @@
             [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]))
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.db.db-operations.oppija :as db-oppija]))
 
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
@@ -113,7 +114,7 @@
         (t/is (= (:status response) 403))))))
 
 (defn- add-oppija [oppija]
-  (db/insert-oppija
+  (db-oppija/insert-oppija
     {:oid (:oid oppija)
      :nimi (:nimi oppija)})
   (db-opiskeluoikeus/insert-opiskeluoikeus

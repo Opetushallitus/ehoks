@@ -6,7 +6,8 @@
             [oph.ehoks.db.postgresql :as db]
             [clj-time.coerce :as c]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]))
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.db.db-operations.oppija :as db-oppija]))
 
 (deftest get-auth-info-test
   (testing "Mapping kayttooikeus-service data to eHOKS privileges"
@@ -48,7 +49,7 @@
               :roles #{}
               :child-organisations []})})
 
-      (db/insert-oppija
+      (db-oppija/insert-oppija
         {:oid "1.2.246.562.24.44000000002"
          :nimi "Tellervo Testi"})
       (db-opiskeluoikeus/insert-opiskeluoikeus

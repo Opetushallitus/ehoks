@@ -132,7 +132,7 @@
 (defn add-new-oppija! [oid]
   (try
     (let [oppija (:body (onr/find-student-by-oid oid))]
-      (db/insert-oppija
+      (db-oppija/insert-oppija
         {:oid oid
          :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
     (catch Exception e

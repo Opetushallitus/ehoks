@@ -3,9 +3,6 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn insert-oppija [oppija]
-  (db-ops/insert-one! :oppijat (db-ops/to-sql oppija)))
-
 (defn select-todennettu-arviointi-lisatiedot-by-id [id]
   (first
     (db-ops/query
