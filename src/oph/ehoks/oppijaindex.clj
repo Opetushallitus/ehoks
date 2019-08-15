@@ -47,13 +47,13 @@
   (db-hoks/select-hoks-oppijat-without-index))
 
 (defn get-oppijat-without-index-count []
-  (:count (first (db/select-hoks-oppijat-without-index-count))))
+  (:count (first (db-hoks/select-hoks-oppijat-without-index-count))))
 
 (defn get-opiskeluoikeudet-without-index []
-  (db/select-hoks-opiskeluoikeudet-without-index))
+  (db-hoks/select-hoks-opiskeluoikeudet-without-index))
 
 (defn get-opiskeluoikeudet-without-index-count []
-  (:count (first (db/select-hoks-opiskeluoikeudet-without-index-count))))
+  (:count (first (db-hoks/select-hoks-opiskeluoikeudet-without-index-count))))
 
 (defn get-opiskeluoikeudet-without-tutkinto []
   (db/select-opiskeluoikeudet-without-tutkinto))

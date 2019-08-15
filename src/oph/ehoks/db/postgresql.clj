@@ -4,18 +4,6 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn select-hoks-oppijat-without-index-count []
-  (db-ops/query
-    [queries/select-hoks-oppijat-without-index-count]))
-
-(defn select-hoks-opiskeluoikeudet-without-index []
-  (db-ops/query
-    [queries/select-hoks-opiskeluoikeudet-without-index]))
-
-(defn select-hoks-opiskeluoikeudet-without-index-count []
-  (db-ops/query
-    [queries/select-hoks-opiskeluoikeudet-without-index-count]))
-
 (defn select-opiskeluoikeudet-without-tutkinto []
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-tutkinto]))

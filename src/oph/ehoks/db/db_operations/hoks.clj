@@ -269,3 +269,15 @@
 (defn select-hoks-oppijat-without-index []
   (db-ops/query
     [queries/select-hoks-oppijat-without-index]))
+
+(defn select-hoks-oppijat-without-index-count []
+  (db-ops/query
+    [queries/select-hoks-oppijat-without-index-count]))
+
+(defn select-hoks-opiskeluoikeudet-without-index []
+  (db-ops/query
+    [queries/select-hoks-opiskeluoikeudet-without-index]))
+
+(defn select-hoks-opiskeluoikeudet-without-index-count []
+  (db-ops/query
+    [queries/select-hoks-opiskeluoikeudet-without-index-count]))
