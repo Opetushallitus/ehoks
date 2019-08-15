@@ -1,8 +1,7 @@
 (ns oph.ehoks.external.eperusteet
   (:require [oph.ehoks.external.connection :as c]
             [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.external.oph-url :as u]
-            [clojure.tools.logging :as log]))
+            [oph.ehoks.external.oph-url :as u]))
 
 (defn map-perusteet [values]
   (map
@@ -46,16 +45,13 @@
     [:body :data]))
 
 (defn get-tutkinnon-osa-viitteet [^Long id]
-  (let [response (cache/with-cache!
-                   {:method :get
-                    :service (u/get-url "eperusteet-service-url")
-                    :url (u/get-url
-                           "eperusteet-service.get-tutkinnonosa-viitteet" id)
-                    :options {:as :json}})]
-    (if (= (:status response) 200)
-      (:body response)
-      (do (log/warnf "Tutkinnon osa viitteet %d not found" id)
-          []))))
+  (get
+    (cache/with-cache!
+      {:method :get
+       :service (u/get-url "eperusteet-service-url")
+       :url (u/get-url "eperusteet-service.get-tutkinnonosa-viitteet" id)
+       :options {:as :json}})
+    :body))
 
 (defn find-tutkinto [^String diaarinumero]
   (get
@@ -68,12 +64,10 @@
     :body))
 
 (defn get-suoritustavat [^Long id]
-  (let [response (cache/with-cache!
-                   {:method :get
-                    :service (u/get-url "eperusteet-service-url")
-                    :url (u/get-url "eperusteet-service.get-rakenne" id)
-                    :options {:as :json}})]
-    (if (= (:status response) 200)
-      (:body response)
-      (do (log/warnf "Suoritustavat %d not found" id)
-          []))))
+  (get
+    (cache/with-cache!
+      {:method :get
+       :service (u/get-url "eperusteet-service-url")
+       :url (u/get-url "eperusteet-service.get-rakenne" id)
+       :options {:as :json}})
+    :body))
