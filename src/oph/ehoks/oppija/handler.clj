@@ -111,11 +111,9 @@
 
                 (c-api/GET "/opiskeluoikeudet" [:as request]
                   :summary "Oppijan opiskeluoikeudet"
-                  :return (rest/response [common-schema/Opiskeluoikeus])
-                  (if-let [opiskeluoikeudet
-                           (oppijaindex/get-oppija-opiskeluoikeudet oid)]
-                    (rest/rest-ok opiskeluoikeudet)
-                    (response/not-found)))
+                  :return (rest/response [s/Any])
+                  (rest/rest-ok
+                    (koski/get-oppija-opiskeluoikeudet oid)))
 
                 (c-api/GET "/hoks" [:as request]
                   :summary "Oppijan HOKSit kokonaisuudessaan"
