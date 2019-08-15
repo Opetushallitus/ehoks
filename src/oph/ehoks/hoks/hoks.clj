@@ -445,7 +445,7 @@
     (mapv
       (fn [naytto]
         (let [stored-naytto (save-osaamisen-osoittaminen! naytto)]
-          (db/insert-ooyto-osa-alue-osaamisen-osoittaminen!
+          (db/insert-ahyto-osa-alue-osaamisen-osoittaminen!
             (:id stored-osa-alue) (:id stored-naytto))))
       (:tarkentavat-tiedot-naytto osa-alue))))
 
