@@ -140,3 +140,11 @@
           x
           replaces)
         (apply dissoc x removals)))
+
+(defn from-sql
+  ([m operations]
+   (-> (convert-sql m operations)
+       remove-nils
+       remove-db-columns
+       to-dash-keys))
+  ([m] (from-sql m {})))

@@ -5,7 +5,6 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [clojure.tools.logging :as log]
             [oph.ehoks.db.queries :as queries]
-            [oph.ehoks.db.hoks :refer [from-sql]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
 (defn- get-like [v]
@@ -30,7 +29,7 @@
      (get-like (:osaamisala params))
      (:item-count params)
      (:offset params)]
-    {:row-fn from-sql}))
+    {:row-fn db-ops/from-sql}))
 
 (defn get-count [params]
   (:count

@@ -2,14 +2,6 @@
   (:require [clojure.set :refer [rename-keys]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn from-sql
-  ([m operations]
-    (-> (db-ops/convert-sql m operations)
-        db-ops/remove-nils
-        db-ops/remove-db-columns
-        db-ops/to-dash-keys))
-  ([m] (from-sql m {})))
-
 (defn to-sql
   ([m operations]
     (db-ops/to-underscore-keys (db-ops/convert-sql m operations)))
@@ -19,7 +11,7 @@
   (:oppilaitos_oid m))
 
 (defn hoks-from-sql [h]
-  (from-sql
+  (db-ops/from-sql
     h
     {:removals [:manuaalisyotto]}))
 
@@ -35,7 +27,7 @@
                 :hankittavat-paikalliset-tutkinnon-osat]}))
 
 (defn aiemmin-hankittu-ammat-tutkinnon-osa-from-sql [m]
-  (from-sql m {:removals [:hoks_id]}))
+  (db-ops/from-sql m {:removals [:hoks_id]}))
 
 (defn aiemmin-hankittu-ammat-tutkinnon-osa-to-sql [m]
   (to-sql
@@ -44,13 +36,13 @@
                 :tarkentavat-tiedot-osaamisen-arvioija]}))
 
 (defn hankittava-paikallinen-tutkinnon-osa-from-sql [m]
-  (from-sql m {:removals [:hoks_id]}))
+  (db-ops/from-sql m {:removals [:hoks_id]}))
 
 (defn hankittava-paikallinen-tutkinnon-osa-to-sql [m]
   (to-sql m {:removals [:osaamisen-osoittaminen :osaamisen-hankkimistavat]}))
 
 (defn tyopaikalla-jarjestettava-koulutus-from-sql [m]
-  (from-sql
+  (db-ops/from-sql
     m
     {:replaces
      {:vastuullinen_tyopaikka_ohjaaja_nimi
@@ -69,7 +61,7 @@
       :vastuullinen-tyopaikka-ohjaaja-sahkoposti}}))
 
 (defn henkilo-from-sql [m]
-  (from-sql
+  (db-ops/from-sql
     m
     {:removals [:id :tyopaikalla_jarjestettava_koulutus_id]
      :replaces
@@ -81,7 +73,7 @@
                         [:organisaatio :y-tunnus] :organisaatio_y_tunnus}}))
 
 (defn osaamisen-hankkimistapa-from-sql [m]
-  (from-sql
+  (db-ops/from-sql
     m
     {:replaces
      {:jarjestajan_edustaja_nimi [:jarjestajan-edustaja :nimi]
@@ -109,10 +101,10 @@
       :hankkijan-edustaja-oppilaitos-oid}}))
 
 (defn muu-oppimisymparisto-from-sql [m]
-  (from-sql m {:removals [:id :osaamisen_hankkimistapa_id]}))
+  (db-ops/from-sql m {:removals [:id :osaamisen_hankkimistapa_id]}))
 
 (defn osaamisen-osoittaminen-from-sql [m]
-  (from-sql
+  (db-ops/from-sql
     m
     {:replaces {:jarjestaja_oppilaitos_oid [:jarjestaja :oppilaitos-oid]}}))
 
@@ -128,17 +120,17 @@
      :replaces {[:jarjestaja :oppilaitos-oid] :jarjestaja-oppilaitos-oid}}))
 
 (defn koodi-uri-from-sql [m]
-  (from-sql m {:removals [:id]}))
+  (db-ops/from-sql m {:removals [:id]}))
 
 (defn koulutuksen-jarjestaja-osaamisen-arvioija-from-sql [m]
-  (from-sql m {:replaces {:oppilaitos_oid [:organisaatio :oppilaitos-oid]}
+  (db-ops/from-sql m {:replaces {:oppilaitos_oid [:organisaatio :oppilaitos-oid]}
                :removals [:id]}))
 
 (defn koulutuksen-jarjestaja-osaamisen-arvioija-to-sql [m]
   (to-sql m {:replaces {[:organisaatio :oppilaitos-oid] :oppilaitos-oid}}))
 
 (defn tyoelama-arvioija-from-sql [m]
-  (from-sql m {:replaces {:organisaatio_nimi [:organisaatio :nimi]
+  (db-ops/from-sql m {:replaces {:organisaatio_nimi [:organisaatio :nimi]
                           :organisaatio_y_tunnus [:organisaatio :y-tunnus]}
                :removals [:id]}))
 
@@ -147,7 +139,7 @@
                         [:organisaatio :y-tunnus] :organisaatio-y-tunnus}}))
 
 (defn nayttoymparisto-from-sql [m]
-  (from-sql m {:removals [:id]}))
+  (db-ops/from-sql m {:removals [:id]}))
 
 (defn tyotehtava-from-sql [m]
   (get m :tyotehtava))
@@ -159,7 +151,7 @@
   (get m :yksilollinen_kriteeri))
 
 (defn aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql [m]
-  (from-sql m {:removals [:hoks_id]
+  (db-ops/from-sql m {:removals [:hoks_id]
                :replaces
                {:lahetetty_arvioitavaksi
                 [:tarkentavat_tiedot_osaamisen_arvioija
@@ -173,7 +165,7 @@
                         :lahetetty-arvioitavaksi}}))
 
 (defn aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
-  (from-sql m {:removals [:aiemmin_hankittu_yhteinen_tutkinnon_osa_id]}))
+  (db-ops/from-sql m {:removals [:aiemmin_hankittu_yhteinen_tutkinnon_osa_id]}))
 
 (defn aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-to-sql [m]
   (to-sql m {:removals [:tarkentavat-tiedot-naytto]}))
@@ -187,7 +179,7 @@
                         :lahetetty-arvioitavaksi}}))
 
 (defn aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql [m]
-  (from-sql m {:removals [:hoks_id]
+  (db-ops/from-sql m {:removals [:hoks_id]
                :replaces
                {:lahetetty_arvioitavaksi
                 [:tarkentavat_tiedot_osaamisen_arvioija
@@ -197,20 +189,20 @@
   (to-sql m {:removals [:aiemmin-hankitun-osaamisen-arvioijat]}))
 
 (defn todennettu-arviointi-lisatiedot-from-sql [m]
-  (from-sql m))
+  (db-ops/from-sql m))
 
 (defn hankittava-ammat-tutkinnon-osa-to-sql [m]
   (to-sql m {:removals [:osaamisen-osoittaminen
                         :osaamisen-hankkimistavat]}))
 
 (defn hankittava-ammat-tutkinnon-osa-from-sql [m]
-  (from-sql m {:removals [:hoks_id]}))
+  (db-ops/from-sql m {:removals [:hoks_id]}))
 
 (defn opiskeluvalmiuksia-tukevat-opinnot-from-sql [m]
-  (from-sql m {:removals [:hoks_id]}))
+  (db-ops/from-sql m {:removals [:hoks_id]}))
 
 (defn hankittava-yhteinen-tutkinnon-osa-from-sql [m]
-  (from-sql m {:removals [:hoks_id :osa-alueet]}))
+  (db-ops/from-sql m {:removals [:hoks_id :osa-alueet]}))
 
 (defn hankittava-yhteinen-tutkinnon-osa-to-sql [m]
   (to-sql m {:removals [:osa-alueet]}))
@@ -220,6 +212,6 @@
                         :osaamisen-osoittaminen]}))
 
 (defn yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
-  (from-sql m))
+  (db-ops/from-sql m))
 
 (defn osaamistavoite-from-sql [m] (get m :osaamistavoite))
