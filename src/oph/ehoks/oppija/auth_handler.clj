@@ -28,24 +28,12 @@
             (throw (ex-info "External system error" user-info-response)))))
 
       (c-api/POST "/update-user-info" [:as request]
-        :summary "Päivittää istunnon käyttäjän tiedot Oppijanumerorekisteristä"
+        :summary "Päivittää istunnon käyttäjän tiedot Oppijanumerorekisteristä.
+                  DEPRECATED"
         :return (rest/response [schema/User])
-        (let [session-user (get-in request [:session :user])
-              user-info-response (onr/find-student-by-nat-id
-                                   (:hetu session-user))
-              user-info (first (get-in user-info-response [:body :results]))
-              oid (:oidHenkilo user-info)]
-          (when-not (= (:status user-info-response) 200)
-            (throw (ex-info "External integration error" user-info-response)))
-          (if (seq user-info)
-            (assoc-in
-              (rest/rest-ok
-                [(assoc
-                   (select-keys session-user
-                                [:first-name :common-name :surname])
-                   :oid oid)])
-              [:session :user] (assoc session-user :oid oid))
-            (throw (ex-info "No user found" user-info-response)))))
+        (rest/rest-ok
+          [(select-keys (get-in request [:session :user])
+                        [:oid :first-name :common-name :surname])]))
 
       (c-api/GET "/" [:as request]
         :summary "Käyttäjän istunto"
@@ -79,8 +67,17 @@
             (log/errorf "Invalid headers: %s" result)
             (response/bad-request))
           (let [user (opintopolku/parse headers)]
-            (assoc-in (response/see-other
-                        (format "%s/%s"
-                                (:frontend-url config)
-                                (:frontend-url-path config)))
-                      [:session :user] user)))))))
+            (let [user-info-response (onr/find-student-by-nat-id (:hetu user))
+                  user-info (first (get-in user-info-response [:body :results]))
+                  oid (:oidHenkilo user-info)]
+              (when-not (= (:status user-info-response) 200)
+                (throw (ex-info
+                         "External integration error" user-info-response)))
+              (if (seq user-info)
+                (assoc-in
+                  (response/see-other
+                    (format "%s/%s"
+                            (:frontend-url config)
+                            (:frontend-url-path config)))
+                  [:session :user] (assoc user :oid oid))
+                (throw (ex-info "No user found" user-info-response))))))))))
