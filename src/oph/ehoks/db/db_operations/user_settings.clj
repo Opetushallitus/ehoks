@@ -1,13 +1,12 @@
 (ns oph.ehoks.db.db-operations.user-settings
   (:require [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
-            [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.db.hoks :as h]))
+            [clojure.java.jdbc :as jdbc]))
 
 (defn select-user-settings-by-user-oid [user-oid]
   (db-ops/query
     [queries/select-user-settings-by-user-oid user-oid]
-    {:row-fn h/hoks-from-sql}))
+    {:row-fn db-ops/from-sql}))
 
 (defn delete-user-settings! [user-oid]
   (db-ops/delete! :user_settings ["user_oid = ?" user-oid]))
