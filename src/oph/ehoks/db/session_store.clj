@@ -29,8 +29,7 @@
   (read-session [_ session-key]
     (when session-key
       (when-let [s (db/select-sessions-by-session-key session-key)]
-        (convert-virkailija-privileges
-          (json/read-str (:data s) :key-fn keyword)))))
+        (convert-virkailija-privileges (:data s)))))
   (write-session [_ session-key data]
     (db/insert-or-update-session! session-key data))
   (delete-session [_ session-key]
