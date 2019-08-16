@@ -12,6 +12,7 @@
             [oph.ehoks.user :as user]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.db.postgresql :as db]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as restful]
@@ -189,7 +190,8 @@
                       (c-api/GET "/" []
                         :return (restful/response [hoks-schema/HOKS])
                         :summary "Oppijan hoksit (perustiedot)"
-                        (if-let [hoks (db/select-hoks-by-oppija-oid oppija-oid)]
+                        (if-let [hoks
+                                 (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
                           (restful/rest-ok hoks)
                           (response/not-found {:message "HOKS not found"})))
 
@@ -197,7 +199,7 @@
                         :path-params [hoks-id :- s/Int]
                         :summary "Hoksin tiedot.
                                 Vaatii manuaalisyöttäjän oikeudet"
-                        (let [hoks (db/select-hoks-by-id hoks-id)
+                        (let [hoks (db-hoks/select-hoks-by-id hoks-id)
                               virkailija-user (get-in
                                                 request
                                                 [:session :virkailija-user])]
@@ -221,7 +223,7 @@
                         (c-api/GET "/" []
                           :summary "Kaikki hoksit (perustiedot).
                         Tarvitsee OPH-pääkäyttäjän oikeudet"
-                          (restful/rest-ok (db/select-hoksit))))))
+                          (restful/rest-ok (db-hoks/select-hoksit))))))
 
                   (route-middleware
                     [m/wrap-virkailija-oppija-access]

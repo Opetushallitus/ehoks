@@ -11,7 +11,8 @@
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [schema.core :as s]
             [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.hoks.middleware :as m]))
+            [oph.ehoks.hoks.middleware :as m]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (def ^:private hankittava-paikallinen-tutkinnon-osa
   (c-api/context "/hankittava-paikallinen-tutkinnon-osa" []
@@ -293,7 +294,7 @@
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
         :path-params [opiskeluoikeus-oid :- s/Str]
         :return (rest/response hoks-schema/HOKS)
-        (let [hoks (first (pdb/select-hoksit-by-opiskeluoikeus-oid
+        (let [hoks (first (db-hoks/select-hoksit-by-opiskeluoikeus-oid
                             opiskeluoikeus-oid))]
           (if hoks
             (do

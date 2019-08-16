@@ -4,7 +4,10 @@
             [oph.ehoks.user :as user]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.db.postgresql :as db]
-            [clj-time.coerce :as c]))
+            [clj-time.coerce :as c]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.db.db-operations.oppija :as db-oppija]))
 
 (deftest get-auth-info-test
   (testing "Mapping kayttooikeus-service data to eHOKS privileges"
@@ -46,31 +49,31 @@
               :roles #{}
               :child-organisations []})})
 
-      (db/insert-oppija
+      (db-oppija/insert-oppija
         {:oid "1.2.246.562.24.44000000002"
          :nimi "Tellervo Testi"})
-      (db/insert-opiskeluoikeus
+      (db-opiskeluoikeus/insert-opiskeluoikeus
         {:oid "1.2.246.562.15.76000000002"
          :oppija_oid "1.2.246.562.24.44000000002"
          :oppilaitos_oid "1.2.246.562.10.00000000003"
          :koulutustoimija_oid "1.2.246.562.10.00000000002"
          :tutkinto "Testitutkinto 1"
          :osaamisala "Testiosaamisala numero 1"})
-      (db/insert-opiskeluoikeus
+      (db-opiskeluoikeus/insert-opiskeluoikeus
         {:oid "1.2.246.562.15.76000000003"
          :oppija_oid "1.2.246.562.24.44000000002"
          :oppilaitos_oid "1.2.246.562.10.00000000004"
          :koulutustoimija_oid "1.2.246.562.10.00000000002"
          :tutkinto "Testitutkinto 1"
          :osaamisala "Testiosaamisala numero 1"})
-      (db/insert-hoks! {:opiskeluoikeus_oid "1.2.246.562.15.76000000002"
-                        :oppija_oid "1.2.246.562.24.44000000002"
-                        :ensikertainen_hyvaksyminen
-                        (c/to-sql-date (c/from-string "2019-07-17"))})
-      (db/insert-hoks! {:opiskeluoikeus_oid "1.2.246.562.15.76000000003"
-                        :oppija_oid "1.2.246.562.24.44000000002"
-                        :ensikertainen_hyvaksyminen
-                        (c/to-sql-date (c/from-string "2019-07-17"))})
+      (db-hoks/insert-hoks! {:opiskeluoikeus_oid "1.2.246.562.15.76000000002"
+                             :oppija_oid "1.2.246.562.24.44000000002"
+                             :ensikertainen_hyvaksyminen
+                             (c/to-sql-date (c/from-string "2019-07-17"))})
+      (db-hoks/insert-hoks! {:opiskeluoikeus_oid "1.2.246.562.15.76000000003"
+                             :oppija_oid "1.2.246.562.24.44000000002"
+                             :ensikertainen_hyvaksyminen
+                             (c/to-sql-date (c/from-string "2019-07-17"))})
 
       (eq (user/get-auth-info
             {:organisaatiot [{:organisaatioOid "1.2.246.562.10.00000000002"

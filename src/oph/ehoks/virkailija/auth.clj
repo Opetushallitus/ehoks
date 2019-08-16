@@ -6,7 +6,8 @@
             [oph.ehoks.restful :as restful]
             [clojure.data.xml :as xml]
             [oph.ehoks.db.postgresql :as db]
-            [oph.ehoks.virkailija.cas-handler :as cas-handler]))
+            [oph.ehoks.virkailija.cas-handler :as cas-handler]
+            [oph.ehoks.db.db-operations.session :as db-session]))
 
 (def routes
   (c-api/context "/session" []
@@ -19,7 +20,7 @@
       (when-let [ticket (some #(when (= (:tag %) :SessionIndex)
                                  (first (:content %)))
                               (:content (xml/parse-str logoutRequest)))]
-        (db/delete-sessions-by-ticket! ticket))
+        (db-session/delete-sessions-by-ticket! ticket))
       (response/ok))
 
     (c-api/GET "/" request
