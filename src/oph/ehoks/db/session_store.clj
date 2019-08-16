@@ -1,8 +1,6 @@
 (ns oph.ehoks.db.session-store
   (:require [ring.middleware.session.store :refer [SessionStore]]
-            [oph.ehoks.db.postgresql :as db]
             [clojure.tools.logging :as log]
-            [clojure.data.json :as json]
             [oph.ehoks.db.db-operations.session :as db-session]))
 
 (defn- to-kw-set [v]
