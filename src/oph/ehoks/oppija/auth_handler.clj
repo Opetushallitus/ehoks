@@ -38,13 +38,10 @@
 
       (c-api/GET "/" [:as request]
         :summary "Käyttäjän istunto"
-        :return (rest/response [schema/User] :opintopolku-login-url s/Str)
+        :return (rest/response [schema/User])
         (let [{{:keys [user]} :session} request]
           (rest/rest-ok
-            (if (some? user)
-              [(select-keys user [:oid :first-name :common-name :surname])]
-              [])
-            :opintopolku-login-url (:opintopolku-login-url config))))
+            [(select-keys user [:oid :first-name :common-name :surname])])))
 
       (c-api/DELETE "/" []
         :summary "Uloskirjautuminen."
