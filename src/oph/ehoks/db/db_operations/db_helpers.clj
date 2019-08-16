@@ -24,7 +24,7 @@
   (result-set-read-column [pgobj _ _]
     (let [type (.getType pgobj)
           value (.getValue pgobj)]
-      (if (= type "json")
+      (if (or (= type "json") (= type "jsonb"))
         (json/read-str value :key-fn keyword)
         value))))
 
