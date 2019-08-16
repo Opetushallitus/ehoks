@@ -290,6 +290,9 @@ ajaa tietokantamigraatiot.
 - [Lokalistointi](https://confluence.csc.fi/display/OPHPALV/Lokalisointipalvelu)
 - [Oppijanumerorekisteri](https://confluence.csc.fi/display/OPHPALV/Oppijanumerorekisteri)
 
+![Integraatiot](doc/integrations.png "Integraatiot")
+
+
 ## Linkit
 
 + [eHOKS Confluence](https://confluence.csc.fi/display/OPHPALV/eHOKS+-+hanke)
