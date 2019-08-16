@@ -9,6 +9,7 @@
             [oph.ehoks.oppija.opintopolku :as opintopolku]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.middleware :refer [wrap-authorize]]
+            [oph.ehoks.oppija.settings-handler :as settings-handler]
             [clojure.tools.logging :as log]))
 
 (def routes
@@ -49,7 +50,9 @@
         :summary "Uloskirjautuminen."
         (assoc
           (response/ok)
-          :session nil)))
+          :session nil))
+
+      settings-handler/routes)
 
     (c-api/OPTIONS "/" []
       (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, DELETE"))
