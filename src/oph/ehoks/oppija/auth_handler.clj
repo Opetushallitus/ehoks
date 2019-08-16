@@ -2,7 +2,6 @@
   (:require [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
-            [schema.core :as s]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.config :refer [config]]
