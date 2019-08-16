@@ -3,7 +3,8 @@
             [ring.util.http-response :as response]
             [oph.ehoks.db.postgresql :as pdb]
             [oph.ehoks.user :as user]
-            [oph.ehoks.oppijaindex :as oppijaindex]))
+            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (def method-privileges {:get :read
                         :post :write
@@ -100,7 +101,7 @@
 
 (defn add-hoks [request]
   (let [hoks-id (Integer/parseInt (get-in request [:route-params :hoks-id]))
-        hoks (pdb/select-hoks-by-id hoks-id)]
+        hoks (db-hoks/select-hoks-by-id hoks-id)]
     (assoc request :hoks hoks)))
 
 (defn wrap-hoks [handler]

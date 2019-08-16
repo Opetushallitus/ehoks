@@ -1,5 +1,6 @@
 (ns oph.ehoks.db.db-operations.db-helpers
-  (:require [clojure.java.jdbc :as jdbc]
+  (:require [clojure.set :refer [rename-keys]]
+            [clojure.java.jdbc :as jdbc]
             [oph.ehoks.config :refer [config]]
             [clojure.data.json :as json]
             [clj-time.coerce :as c])
@@ -75,3 +76,80 @@
     (query queries {}))
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
+
+(defn convert-keys [f m]
+  (rename-keys
+    m
+    (reduce
+      (fn [c n]
+        (assoc c n (f n)))
+      {}
+      (keys m))))
+
+(defn remove-db-columns [m & others]
+  (apply
+    dissoc m
+    :created_at
+    :updated_at
+    :deleted_at
+    others))
+
+(defn to-underscore-keys [m]
+  (convert-keys #(keyword (.replace (name %) \- \_)) m))
+
+(defn to-dash-keys [m]
+  (convert-keys #(keyword (.replace (name %) \_ \-)) m))
+
+(defn replace-in [h sk tks]
+  (if (some? (get h sk))
+    (dissoc (assoc-in h tks (get h sk)) sk)
+    h))
+
+(defn replace-from [h sks tk]
+  (cond
+    (get-in h sks)
+    (if (= (count (get-in h (drop-last sks))) 1)
+      (apply
+        dissoc
+        (assoc h tk (get-in h sks))
+        (drop-last sks))
+      (update-in
+        (assoc h tk (get-in h sks))
+        (drop-last sks)
+        dissoc
+        (last sks)))
+    (empty? (get-in h (drop-last sks)))
+    (apply dissoc h (drop-last sks))
+    :else h))
+
+(defn replace-with-in [m kss kst]
+  (if (coll? kss)
+    (replace-from m kss kst)
+    (replace-in m kss kst)))
+
+(defn remove-nils [m]
+  (apply dissoc m (filter #(nil? (get m %)) (keys m))))
+
+(defn convert-sql
+  [m {removals :removals replaces :replaces
+      :or {removals [] replaces {}}, :as operations}]
+  (as-> m x
+    (reduce
+      (fn [c [kss kst]]
+        (replace-with-in c kss kst))
+      x
+      replaces)
+    (apply dissoc x removals)))
+
+(defn from-sql
+  ([m operations]
+    (-> (convert-sql m operations)
+        remove-nils
+        remove-db-columns
+        to-dash-keys))
+  ([m] (from-sql m {})))
+
+(defn to-sql
+  ([m operations]
+    (to-underscore-keys (convert-sql m operations)))
+  ([m] (to-sql m {})))

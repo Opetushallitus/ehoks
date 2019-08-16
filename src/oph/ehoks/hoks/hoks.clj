@@ -2,7 +2,8 @@
   (:require [oph.ehoks.db.postgresql :as db]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (defn set-osaamisen-osoittaminen-values [naytto]
   (dissoc
@@ -30,7 +31,7 @@
     #(dissoc
        (set-osaamisen-osoittaminen-values %)
        :id)
-    (db/select-tarkentavat-tiedot-naytto-by-ooato-id id)))
+    (db/select-tarkentavat-tiedot-naytto-by-ahato-id id)))
 
 (defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
   (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]
@@ -291,10 +292,10 @@
 (defn get-hokses-by-oppija [oid]
   (mapv
     get-hoks-values
-    (db/select-hoks-by-oppija-oid oid)))
+    (db-hoks/select-hoks-by-oppija-oid oid)))
 
 (defn get-hoks-by-id [id]
-  (get-hoks-values (db/select-hoks-by-id id)))
+  (get-hoks-values (db-hoks/select-hoks-by-id id)))
 
 (defn save-osaamisen-hankkimistapa! [oh]
   (let [tho (db/insert-tyopaikalla-jarjestettava-koulutus!
@@ -444,7 +445,7 @@
     (mapv
       (fn [naytto]
         (let [stored-naytto (save-osaamisen-osoittaminen! naytto)]
-          (db/insert-ooyto-osa-alue-osaamisen-osoittaminen!
+          (db/insert-ahyto-osa-alue-osaamisen-osoittaminen!
             (:id stored-osa-alue) (:id stored-naytto))))
       (:tarkentavat-tiedot-naytto osa-alue))))
 
@@ -671,7 +672,7 @@
     (replace-hyto-osa-alueet! hyto-id oa)))
 
 (defn save-hoks! [h]
-  (let [saved-hoks (db/insert-hoks! h)]
+  (let [saved-hoks (db-hoks/insert-hoks! h)]
     (when (:osaamisen-hankkimisen-tarve h)
       (sqs/send-message (sqs/build-hoks-hyvaksytty-msg
                           (:id saved-hoks) h)))
@@ -710,7 +711,7 @@
     (merge empty-top-level-hoks new-hoks-values)))
 
 (defn- replace-main-hoks! [hoks-id new-values db-conn]
-  (db/update-hoks-by-id!
+  (db-hoks/update-hoks-by-id!
     hoks-id (merge-not-given-hoks-values new-values) db-conn))
 
 (defn- replace-oto! [hoks-id new-oto-values db-conn]
@@ -780,4 +781,4 @@
                               new-values))))
 
 (defn update-hoks! [hoks-id new-values]
-  (db/update-hoks-by-id! hoks-id new-values))
+  (db-hoks/update-hoks-by-id! hoks-id new-values))

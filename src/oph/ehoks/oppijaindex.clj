@@ -5,8 +5,10 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [clojure.tools.logging :as log]
             [oph.ehoks.db.queries :as queries]
-            [oph.ehoks.db.hoks :refer [from-sql]]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.db.db-operations.oppija :as db-oppija]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (defn- get-like [v]
   (format "%%%s%%" (or v "")))
@@ -30,7 +32,7 @@
      (get-like (:osaamisala params))
      (:item-count params)
      (:offset params)]
-    {:row-fn from-sql}))
+    {:row-fn db-ops/from-sql}))
 
 (defn get-count [params]
   (:count
@@ -44,31 +46,32 @@
          (get-like (:osaamisala params))]))))
 
 (defn get-oppijat-without-index []
-  (db/select-hoks-oppijat-without-index))
+  (db-hoks/select-hoks-oppijat-without-index))
 
 (defn get-oppijat-without-index-count []
-  (:count (first (db/select-hoks-oppijat-without-index-count))))
+  (:count (first (db-hoks/select-hoks-oppijat-without-index-count))))
 
 (defn get-opiskeluoikeudet-without-index []
-  (db/select-hoks-opiskeluoikeudet-without-index))
+  (db-hoks/select-hoks-opiskeluoikeudet-without-index))
 
 (defn get-opiskeluoikeudet-without-index-count []
-  (:count (first (db/select-hoks-opiskeluoikeudet-without-index-count))))
+  (:count (first (db-hoks/select-hoks-opiskeluoikeudet-without-index-count))))
 
 (defn get-opiskeluoikeudet-without-tutkinto []
-  (db/select-opiskeluoikeudet-without-tutkinto))
+  (db-opiskeluoikeus/select-opiskeluoikeudet-without-tutkinto))
 
 (defn get-opiskeluoikeudet-without-tutkinto-count []
-  (:count (first (db/select-opiskeluoikeudet-without-tutkinto-count))))
+  (:count
+    (first (db-opiskeluoikeus/select-opiskeluoikeudet-without-tutkinto-count))))
 
 (defn get-oppija-opiskeluoikeudet [oppija-oid]
-  (db/select-opiskeluoikeudet-by-oppija-oid oppija-oid))
+  (db-opiskeluoikeus/select-opiskeluoikeudet-by-oppija-oid oppija-oid))
 
 (defn get-oppija-by-oid [oppija-oid]
-  (db/select-oppija-by-oid oppija-oid))
+  (db-oppija/select-oppija-by-oid oppija-oid))
 
 (defn get-opiskeluoikeus-by-oid [oid]
-  (db/select-opiskeluoikeus-by-oid oid))
+  (db-opiskeluoikeus/select-opiskeluoikeus-by-oid oid))
 
 (defn get-oppilaitos-oids []
   (filter some? (db/select-oppilaitos-oids)))
@@ -106,7 +109,8 @@
 
 (defn add-new-opiskeluoikeus! [oid oppija-oid]
   (try
-    (db/insert-opiskeluoikeus (get-opiskeluoikeus-info oid oppija-oid))
+    (db-opiskeluoikeus/insert-opiskeluoikeus
+      (get-opiskeluoikeus-info oid oppija-oid))
     (catch Exception e
       (log/errorf
         "Error adding opiskeluoikeus %s of oppija %s" oid oppija-oid)
@@ -114,7 +118,7 @@
 
 (defn update-opiskeluoikeus! [oid oppija-oid]
   (try
-    (db/update-opiskeluoikeus!
+    (db-opiskeluoikeus/update-opiskeluoikeus!
       oid
       (dissoc (get-opiskeluoikeus-info oid oppija-oid) :oid :oppija_oid))
     (catch Exception e
@@ -129,7 +133,7 @@
 (defn add-new-oppija! [oid]
   (try
     (let [oppija (:body (onr/find-student-by-oid oid))]
-      (db/insert-oppija
+      (db-oppija/insert-oppija
         {:oid oid
          :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
     (catch Exception e
@@ -143,7 +147,7 @@
 (defn update-oppija! [oid]
   (try
     (let [oppija (:body (onr/find-student-by-oid oid))]
-      (db/update-oppija!
+      (db-oppija/update-oppija!
         oid
         {:nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
     (catch Exception e

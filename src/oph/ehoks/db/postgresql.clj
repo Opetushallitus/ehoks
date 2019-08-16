@@ -1,120 +1,7 @@
 (ns oph.ehoks.db.postgresql
-  (:require [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.db.hoks :as h]
+  (:require [oph.ehoks.db.db-operations.hoks :as h]
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
-
-(defn select-hoksit []
-  (db-ops/query
-    [queries/select-hoksit]
-    :row-fn h/hoks-from-sql))
-
-(defn select-hoks-by-oppija-oid [oid]
-  (db-ops/query
-    [queries/select-hoksit-by-oppija-oid oid]
-    :row-fn h/hoks-from-sql))
-
-(defn select-hoks-by-id [id]
-  (first
-    (db-ops/query
-      [queries/select-hoksit-by-id id]
-      {:row-fn h/hoks-from-sql})))
-
-(defn select-hoksit-eid-by-eid [eid]
-  (db-ops/query
-    [queries/select-hoksit-eid-by-eid eid]
-    {}))
-
-(defn select-hoksit-by-opiskeluoikeus-oid [oid]
-  (db-ops/query
-    [queries/select-hoksit-by-opiskeluoikeus-oid oid]
-    {:row-fn h/hoks-from-sql}))
-
-(defn generate-unique-eid []
-  (loop [eid nil]
-    (if (or (nil? eid) (seq (select-hoksit-eid-by-eid eid)))
-      (recur (str (java.util.UUID/randomUUID)))
-      eid)))
-
-(defn insert-hoks! [hoks]
-  (jdbc/with-db-transaction
-    [conn (db-ops/get-db-connection)]
-    (when
-     (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
-                            (:opiskeluoikeus-oid hoks)]))
-      (throw (ex-info
-               "HOKS with given opiskeluoikeus already exists"
-               {:error :duplicate})))
-    (let [eid (generate-unique-eid)]
-      (first
-        (jdbc/insert! conn :hoksit (h/hoks-to-sql (assoc hoks :eid eid)))))))
-
-(defn update-hoks-by-id!
-  ([id hoks]
-    (db-ops/update! :hoksit (h/hoks-to-sql hoks)
-                    ["id = ? AND deleted_at IS NULL" id]))
-  ([id hoks db]
-    (db-ops/update! :hoksit (h/hoks-to-sql hoks)
-                    ["id = ? AND deleted_at IS NULL" id] db)))
-
-(defn select-hoks-oppijat-without-index []
-  (db-ops/query
-    [queries/select-hoks-oppijat-without-index]))
-
-(defn select-hoks-oppijat-without-index-count []
-  (db-ops/query
-    [queries/select-hoks-oppijat-without-index-count]))
-
-(defn select-hoks-opiskeluoikeudet-without-index []
-  (db-ops/query
-    [queries/select-hoks-opiskeluoikeudet-without-index]))
-
-(defn select-hoks-opiskeluoikeudet-without-index-count []
-  (db-ops/query
-    [queries/select-hoks-opiskeluoikeudet-without-index-count]))
-
-(defn select-opiskeluoikeudet-without-tutkinto []
-  (db-ops/query
-    [queries/select-hoks-opiskeluoikeudet-without-tutkinto]))
-
-(defn select-opiskeluoikeudet-without-tutkinto-count []
-  (db-ops/query
-    [queries/select-hoks-opiskeluoikeudet-without-tutkinto-count]))
-
-(defn select-opiskeluoikeudet-by-oppija-oid [oppija-oid]
-  (db-ops/query
-    [queries/select-opiskeluoikeudet-by-oppija-oid oppija-oid]
-    {:row-fn h/from-sql}))
-
-(defn select-oppija-by-oid [oppija-oid]
-  (first
-    (db-ops/query
-      [queries/select-oppijat-by-oid oppija-oid]
-      {:row-fn h/from-sql})))
-
-(defn select-opiskeluoikeus-by-oid [oid]
-  (first
-    (db-ops/query
-      [queries/select-opiskeluoikeudet-by-oid oid]
-      {:row-fn h/from-sql})))
-
-(defn insert-oppija [oppija]
-  (db-ops/insert-one! :oppijat (h/to-sql oppija)))
-
-(defn update-oppija! [oid oppija]
-  (db-ops/update!
-    :oppijat
-    (h/to-sql oppija)
-    ["oid = ?" oid]))
-
-(defn insert-opiskeluoikeus [opiskeluoikeus]
-  (db-ops/insert-one! :opiskeluoikeudet (h/to-sql opiskeluoikeus)))
-
-(defn update-opiskeluoikeus! [oid opiskeluoikeus]
-  (db-ops/update!
-    :opiskeluoikeudet
-    (h/to-sql opiskeluoikeus)
-    ["oid = ?" oid]))
 
 (defn select-todennettu-arviointi-lisatiedot-by-id [id]
   (first
@@ -152,12 +39,12 @@
   (db-ops/query [queries/select-osaamisen-osoittamiset-by-oopto-id oopto-id]
                 {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-(defn select-tarkentavat-tiedot-naytto-by-ooato-id
+(defn select-tarkentavat-tiedot-naytto-by-ahato-id
   "Aiemmin hankitun ammat tutkinnon osan näytön tarkentavat tiedot
    (hankitun osaamisen näytöt)"
   [id]
   (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-ooato-id id]
+    [queries/select-osaamisen-osoittamiset-by-ahato-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
 (defn insert-aiemmin-hankitun-ammat-tutkinnon-osan-naytto! [ooato-id n]
@@ -175,7 +62,7 @@
 (defn insert-koodisto-koodi! [m]
   (db-ops/insert-one!
     :koodisto_koodit
-    (h/to-sql m)))
+    (db-ops/to-sql m)))
 
 (defn insert-osaamisen-osoittamisen-osa-alue! [naytto-id koodi-id]
   (db-ops/insert-one!
@@ -299,7 +186,7 @@
   (db-ops/insert-multi!
     :muut_oppimisymparistot
     (map
-      #(h/to-sql
+      #(db-ops/to-sql
          (assoc % :osaamisen-hankkimistapa-id (:id oh)))
       c)))
 
@@ -419,12 +306,12 @@
 (defn insert-nayttoymparisto! [m]
   (db-ops/insert-one!
     :nayttoymparistot
-    (h/to-sql m)))
+    (db-ops/to-sql m)))
 
 (defn insert-nayttoymparistot! [c]
   (db-ops/insert-multi!
     :nayttoymparistot
-    (map h/to-sql c)))
+    (map db-ops/to-sql c)))
 
 (defn select-nayttoymparisto-by-id [id]
   (first
@@ -484,7 +371,7 @@
     [queries/select-osaamisen-osoittamiset-by-ahyto-osa-alue-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
-(defn insert-ooyto-osa-alue-osaamisen-osoittaminen! [osa-alue-id naytto-id]
+(defn insert-ahyto-osa-alue-osaamisen-osoittaminen! [osa-alue-id naytto-id]
   (db-ops/insert-one!
     :aiemmin_hankitun_yto_osa_alueen_naytto
     {:aiemmin_hankittu_yto_osa_alue_id osa-alue-id
@@ -667,12 +554,12 @@
 (defn insert-opiskeluvalmiuksia-tukeva-opinto! [new-value]
   (db-ops/insert-one!
     :opiskeluvalmiuksia_tukevat_opinnot
-    (h/to-sql new-value)))
+    (db-ops/to-sql new-value)))
 
 (defn insert-opiskeluvalmiuksia-tukevat-opinnot! [c]
   (db-ops/insert-multi!
     :opiskeluvalmiuksia_tukevat_opinnot
-    (mapv h/to-sql c)))
+    (mapv db-ops/to-sql c)))
 
 (defn select-opiskeluvalmiuksia-tukevat-opinnot-by-id [oto-id]
   (->
@@ -694,7 +581,7 @@
 (defn update-opiskeluvalmiuksia-tukevat-opinnot-by-id! [oto-id new-values]
   (db-ops/update!
     :opiskeluvalmiuksia_tukevat_opinnot
-    (h/to-sql new-values)
+    (db-ops/to-sql new-values)
     ["id = ? AND deleted_at IS NULL" oto-id]))
 
 (defn insert-hankittava-yhteinen-tutkinnon-osa! [m]
@@ -760,41 +647,3 @@
   (db-ops/query
     [queries/select-oppilaitos-oids-by-koulutustoimija-oid oid]
     {:row-fn h/oppilaitos-oid-from-sql}))
-
-(defn select-sessions-by-session-key [session-key]
-  (first (db-ops/query [queries/select-sessions-by-session-key session-key])))
-
-(defn generate-session-key [conn]
-  (loop [session-key nil]
-    (if (or (nil? session-key)
-            (seq (jdbc/query
-                   conn
-                   [queries/select-sessions-by-session-key session-key])))
-      (recur (str (java.util.UUID/randomUUID)))
-      session-key)))
-
-(defn insert-or-update-session! [session-key data]
-  (jdbc/with-db-transaction
-    [conn (db-ops/get-db-connection)]
-    (let [k (or session-key (generate-session-key conn))
-          db-sessions (jdbc/query
-                        conn
-                        [queries/select-sessions-by-session-key k])]
-      (if (empty? db-sessions)
-        (jdbc/insert!
-          conn
-          :sessions
-          {:session_key k :data data})
-        (jdbc/update!
-          conn
-          :sessions
-          {:data data
-           :updated_at (java.util.Date.)}
-          ["session_key = ?" k]))
-      k)))
-
-(defn delete-session! [session-key]
-  (db-ops/delete! :sessions ["session_key = ?" session-key]))
-
-(defn delete-sessions-by-ticket! [ticket]
-  (db-ops/delete! :sessions ["data->>'ticket' = ?" ticket]))
