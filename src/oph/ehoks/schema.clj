@@ -28,6 +28,11 @@
                   :contact [{:value s/Str
                              :type s/Str}]}]}))
 
+(s/defschema
+  UserSettings
+  "User settings"
+  {})
+
 (s/defschema Config
              "Application configuration file"
              {(s/optional-key :version) s/Str
