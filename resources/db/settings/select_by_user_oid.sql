@@ -1,0 +1,1 @@
+SELECT * FROM user_settings WHERE user_oid = ?

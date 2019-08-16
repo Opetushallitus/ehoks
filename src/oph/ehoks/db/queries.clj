@@ -205,3 +205,5 @@
       "oppijat/select_oppilaitos_oids_by_koulutustoimija_oid.sql")
 (defq select-sessions-by-session-key
       "sessions/select_by_session_key.sql")
+(defq select-user-settings-by-user-oid
+      "settings/select_by_user_oid.sql")
