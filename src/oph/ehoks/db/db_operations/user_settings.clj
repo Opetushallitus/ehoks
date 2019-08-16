@@ -1,4 +1,4 @@
-(ns oph.ehoks.db.user-settings
+(ns oph.ehoks.db.db-operations.user-settings
   (:require [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [clojure.java.jdbc :as jdbc]

@@ -1,5 +1,5 @@
 (ns oph.ehoks.user-settings
-  (:require [oph.ehoks.db.user-settings :as db]))
+  (:require [oph.ehoks.db.db-operations.user-settings :as db]))
 
 (defn save-settings! [user-oid data]
   (db/insert-or-update-user-settings! user-oid data)
