@@ -31,7 +31,7 @@
 (s/defschema
   UserSettings
   "User settings"
-  {})
+  s/Any)
 
 (s/defschema Config
              "Application configuration file"
