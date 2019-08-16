@@ -67,8 +67,9 @@
       :organisaatio_y_tunnus [:organisaatio :y-tunnus]}}))
 
 (defn henkilo-to-sql [m]
-  (db-ops/to-sql m {:replaces {[:organisaatio :nimi] :organisaatio_nimi
-                               [:organisaatio :y-tunnus] :organisaatio_y_tunnus}}))
+  (db-ops/to-sql
+    m {:replaces {[:organisaatio :nimi] :organisaatio_nimi
+                  [:organisaatio :y-tunnus] :organisaatio_y_tunnus}}))
 
 (defn osaamisen-hankkimistapa-from-sql [m]
   (db-ops/from-sql
@@ -130,13 +131,15 @@
     m {:replaces {[:organisaatio :oppilaitos-oid] :oppilaitos-oid}}))
 
 (defn tyoelama-arvioija-from-sql [m]
-  (db-ops/from-sql m {:replaces {:organisaatio_nimi [:organisaatio :nimi]
-                                 :organisaatio_y_tunnus [:organisaatio :y-tunnus]}
-                      :removals [:id]}))
+  (db-ops/from-sql
+    m {:replaces {:organisaatio_nimi [:organisaatio :nimi]
+                  :organisaatio_y_tunnus [:organisaatio :y-tunnus]}
+       :removals [:id]}))
 
 (defn tyoelama-arvioija-to-sql [m]
-  (db-ops/to-sql m {:replaces {[:organisaatio :nimi] :organisaatio-nimi
-                               [:organisaatio :y-tunnus] :organisaatio-y-tunnus}}))
+  (db-ops/to-sql
+    m {:replaces {[:organisaatio :nimi] :organisaatio-nimi
+                  [:organisaatio :y-tunnus] :organisaatio-y-tunnus}}))
 
 (defn nayttoymparisto-from-sql [m]
   (db-ops/from-sql m {:removals [:id]}))
