@@ -67,13 +67,13 @@
          :tutkinto "Testitutkinto 1"
          :osaamisala "Testiosaamisala numero 1"})
       (db-hoks/insert-hoks! {:opiskeluoikeus_oid "1.2.246.562.15.76000000002"
-                        :oppija_oid "1.2.246.562.24.44000000002"
-                        :ensikertainen_hyvaksyminen
-                        (c/to-sql-date (c/from-string "2019-07-17"))})
+                             :oppija_oid "1.2.246.562.24.44000000002"
+                             :ensikertainen_hyvaksyminen
+                             (c/to-sql-date (c/from-string "2019-07-17"))})
       (db-hoks/insert-hoks! {:opiskeluoikeus_oid "1.2.246.562.15.76000000003"
-                        :oppija_oid "1.2.246.562.24.44000000002"
-                        :ensikertainen_hyvaksyminen
-                        (c/to-sql-date (c/from-string "2019-07-17"))})
+                             :oppija_oid "1.2.246.562.24.44000000002"
+                             :ensikertainen_hyvaksyminen
+                             (c/to-sql-date (c/from-string "2019-07-17"))})
 
       (eq (user/get-auth-info
             {:organisaatiot [{:organisaatioOid "1.2.246.562.10.00000000002"

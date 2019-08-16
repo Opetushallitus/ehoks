@@ -14,11 +14,11 @@
 (t/deftest get-oppijat-without-index
   (t/testing "Get oppijat without index"
     (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
-                      :opiskeluoikeus-oid "1.2.246.562.15.22222222222"})
+                           :opiskeluoikeus-oid "1.2.246.562.15.22222222222"})
     (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
-                      :opiskeluoikeus-oid "1.2.246.562.15.22222222223"})
+                           :opiskeluoikeus-oid "1.2.246.562.15.22222222223"})
     (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111112"
-                      :opiskeluoikeus-oid "1.2.246.562.15.22222222224"})
+                           :opiskeluoikeus-oid "1.2.246.562.15.22222222224"})
     (t/is
       (= (sut/get-oppijat-without-index)
          [{:oppija_oid "1.2.246.562.24.11111111111"}
@@ -30,11 +30,11 @@
 (t/deftest get-opiskeluoikeudet-without-index
   (t/testing "Get opiskeluoikeudet without index"
     (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
-                      :opiskeluoikeus-oid "1.2.246.562.15.22222222222"})
+                           :opiskeluoikeus-oid "1.2.246.562.15.22222222222"})
     (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
-                      :opiskeluoikeus-oid "1.2.246.562.15.22222222223"})
+                           :opiskeluoikeus-oid "1.2.246.562.15.22222222223"})
     (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111112"
-                      :opiskeluoikeus-oid "1.2.246.562.15.22222222224"})
+                           :opiskeluoikeus-oid "1.2.246.562.15.22222222224"})
     (t/is
       (= (sut/get-opiskeluoikeudet-without-index)
          [{:oppija_oid "1.2.246.562.24.11111111111"
@@ -89,10 +89,12 @@
 (t/deftest get-opiskeluoikeus-by-oid
   (t/testing "Get opiskeluoikeus by oid"
     (db-oppija/insert-oppija {:oid "1.2.246.562.24.11111111111" :nimi "Test 1"})
-    (db-opiskeluoikeus/insert-opiskeluoikeus {:oid "1.2.246.562.15.22222222222"
-                               :oppija_oid "1.2.246.562.24.11111111111"})
-    (db-opiskeluoikeus/insert-opiskeluoikeus {:oid "1.2.246.562.15.22222222223"
-                               :oppija_oid "1.2.246.562.24.11111111111"})
+    (db-opiskeluoikeus/insert-opiskeluoikeus
+      {:oid "1.2.246.562.15.22222222222"
+       :oppija_oid "1.2.246.562.24.11111111111"})
+    (db-opiskeluoikeus/insert-opiskeluoikeus
+      {:oid "1.2.246.562.15.22222222223"
+       :oppija_oid "1.2.246.562.24.11111111111"})
     (t/is (= (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.22222222222")
              {:oid "1.2.246.562.15.22222222222"
               :oppija-oid "1.2.246.562.24.11111111111"

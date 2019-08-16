@@ -190,7 +190,8 @@
                       (c-api/GET "/" []
                         :return (restful/response [hoks-schema/HOKS])
                         :summary "Oppijan hoksit (perustiedot)"
-                        (if-let [hoks (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
+                        (if-let [hoks
+                                 (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
                           (restful/rest-ok hoks)
                           (response/not-found {:message "HOKS not found"})))
 

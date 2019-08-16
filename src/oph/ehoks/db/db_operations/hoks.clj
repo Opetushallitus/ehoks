@@ -36,7 +36,8 @@
   (db-ops/from-sql m {:removals [:hoks_id]}))
 
 (defn hankittava-paikallinen-tutkinnon-osa-to-sql [m]
-  (db-ops/to-sql m {:removals [:osaamisen-osoittaminen :osaamisen-hankkimistavat]}))
+  (db-ops/to-sql
+    m {:removals [:osaamisen-osoittaminen :osaamisen-hankkimistavat]}))
 
 (defn tyopaikalla-jarjestettava-koulutus-from-sql [m]
   (db-ops/from-sql
@@ -67,7 +68,7 @@
 
 (defn henkilo-to-sql [m]
   (db-ops/to-sql m {:replaces {[:organisaatio :nimi] :organisaatio_nimi
-                        [:organisaatio :y-tunnus] :organisaatio_y_tunnus}}))
+                               [:organisaatio :y-tunnus] :organisaatio_y_tunnus}}))
 
 (defn osaamisen-hankkimistapa-from-sql [m]
   (db-ops/from-sql
@@ -120,20 +121,22 @@
   (db-ops/from-sql m {:removals [:id]}))
 
 (defn koulutuksen-jarjestaja-osaamisen-arvioija-from-sql [m]
-  (db-ops/from-sql m {:replaces {:oppilaitos_oid [:organisaatio :oppilaitos-oid]}
-               :removals [:id]}))
+  (db-ops/from-sql
+    m {:replaces {:oppilaitos_oid [:organisaatio :oppilaitos-oid]}
+       :removals [:id]}))
 
 (defn koulutuksen-jarjestaja-osaamisen-arvioija-to-sql [m]
-  (db-ops/to-sql m {:replaces {[:organisaatio :oppilaitos-oid] :oppilaitos-oid}}))
+  (db-ops/to-sql
+    m {:replaces {[:organisaatio :oppilaitos-oid] :oppilaitos-oid}}))
 
 (defn tyoelama-arvioija-from-sql [m]
   (db-ops/from-sql m {:replaces {:organisaatio_nimi [:organisaatio :nimi]
-                          :organisaatio_y_tunnus [:organisaatio :y-tunnus]}
-               :removals [:id]}))
+                                 :organisaatio_y_tunnus [:organisaatio :y-tunnus]}
+                      :removals [:id]}))
 
 (defn tyoelama-arvioija-to-sql [m]
   (db-ops/to-sql m {:replaces {[:organisaatio :nimi] :organisaatio-nimi
-                        [:organisaatio :y-tunnus] :organisaatio-y-tunnus}}))
+                               [:organisaatio :y-tunnus] :organisaatio-y-tunnus}}))
 
 (defn nayttoymparisto-from-sql [m]
   (db-ops/from-sql m {:removals [:id]}))
@@ -149,17 +152,17 @@
 
 (defn aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql [m]
   (db-ops/from-sql m {:removals [:hoks_id]
-               :replaces
-               {:lahetetty_arvioitavaksi
-                [:tarkentavat_tiedot_osaamisen_arvioija
-                 :lahetetty-arvioitavaksi]}}))
+                      :replaces
+                      {:lahetetty_arvioitavaksi
+                       [:tarkentavat_tiedot_osaamisen_arvioija
+                        :lahetetty-arvioitavaksi]}}))
 
 (defn aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql [m]
   (db-ops/to-sql m {:removals [:tarkentavat-tiedot-naytto
-                        :tarkentavat-tiedot-osaamisen-arvioija]
-             :replaces {[:tarkentavat-tiedot-osaamisen-arvioija
-                         :lahetetty-arvioitavaksi]
-                        :lahetetty-arvioitavaksi}}))
+                               :tarkentavat-tiedot-osaamisen-arvioija]
+                    :replaces {[:tarkentavat-tiedot-osaamisen-arvioija
+                                :lahetetty-arvioitavaksi]
+                               :lahetetty-arvioitavaksi}}))
 
 (defn aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
   (db-ops/from-sql m {:removals [:aiemmin_hankittu_yhteinen_tutkinnon_osa_id]}))
@@ -169,18 +172,18 @@
 
 (defn aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql [m]
   (db-ops/to-sql m {:removals [:osa-alueet
-                        :tarkentavat-tiedot-naytto
-                        :tarkentavat-tiedot-osaamisen-arvioija]
-             :replaces {[:tarkentavat-tiedot-osaamisen-arvioija
-                         :lahetetty-arvioitavaksi]
-                        :lahetetty-arvioitavaksi}}))
+                               :tarkentavat-tiedot-naytto
+                               :tarkentavat-tiedot-osaamisen-arvioija]
+                    :replaces {[:tarkentavat-tiedot-osaamisen-arvioija
+                                :lahetetty-arvioitavaksi]
+                               :lahetetty-arvioitavaksi}}))
 
 (defn aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql [m]
   (db-ops/from-sql m {:removals [:hoks_id]
-               :replaces
-               {:lahetetty_arvioitavaksi
-                [:tarkentavat_tiedot_osaamisen_arvioija
-                 :lahetetty-arvioitavaksi]}}))
+                      :replaces
+                      {:lahetetty_arvioitavaksi
+                       [:tarkentavat_tiedot_osaamisen_arvioija
+                        :lahetetty-arvioitavaksi]}}))
 
 (defn todennettu-arviointi-lisatiedot-to-sql [m]
   (db-ops/to-sql m {:removals [:aiemmin-hankitun-osaamisen-arvioijat]}))
@@ -190,7 +193,7 @@
 
 (defn hankittava-ammat-tutkinnon-osa-to-sql [m]
   (db-ops/to-sql m {:removals [:osaamisen-osoittaminen
-                        :osaamisen-hankkimistavat]}))
+                               :osaamisen-hankkimistavat]}))
 
 (defn hankittava-ammat-tutkinnon-osa-from-sql [m]
   (db-ops/from-sql m {:removals [:hoks_id]}))
@@ -206,7 +209,7 @@
 
 (defn yhteisen-tutkinnon-osan-osa-alue-to-sql [m]
   (db-ops/to-sql m {:removals [:osaamisen-hankkimistavat
-                        :osaamisen-osoittaminen]}))
+                               :osaamisen-osoittaminen]}))
 
 (defn yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
   (db-ops/from-sql m))
@@ -249,8 +252,8 @@
   (jdbc/with-db-transaction
     [conn (db-ops/get-db-connection)]
     (when
-      (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
-                             (:opiskeluoikeus-oid hoks)]))
+     (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
+                            (:opiskeluoikeus-oid hoks)]))
       (throw (ex-info
                "HOKS with given opiskeluoikeus already exists"
                {:error :duplicate})))
@@ -260,11 +263,11 @@
 
 (defn update-hoks-by-id!
   ([id hoks]
-   (db-ops/update! :hoksit (hoks-to-sql hoks)
-                   ["id = ? AND deleted_at IS NULL" id]))
+    (db-ops/update! :hoksit (hoks-to-sql hoks)
+                    ["id = ? AND deleted_at IS NULL" id]))
   ([id hoks db]
-   (db-ops/update! :hoksit (hoks-to-sql hoks)
-                   ["id = ? AND deleted_at IS NULL" id] db)))
+    (db-ops/update! :hoksit (hoks-to-sql hoks)
+                    ["id = ? AND deleted_at IS NULL" id] db)))
 
 (defn select-hoks-oppijat-without-index []
   (db-ops/query

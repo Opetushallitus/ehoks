@@ -134,22 +134,22 @@
   [m {removals :removals replaces :replaces
       :or {removals [] replaces {}}, :as operations}]
   (as-> m x
-        (reduce
-          (fn [c [kss kst]]
-            (replace-with-in c kss kst))
-          x
-          replaces)
-        (apply dissoc x removals)))
+    (reduce
+      (fn [c [kss kst]]
+        (replace-with-in c kss kst))
+      x
+      replaces)
+    (apply dissoc x removals)))
 
 (defn from-sql
   ([m operations]
-   (-> (convert-sql m operations)
-       remove-nils
-       remove-db-columns
-       to-dash-keys))
+    (-> (convert-sql m operations)
+        remove-nils
+        remove-db-columns
+        to-dash-keys))
   ([m] (from-sql m {})))
 
 (defn to-sql
   ([m operations]
-   (to-underscore-keys (convert-sql m operations)))
+    (to-underscore-keys (convert-sql m operations)))
   ([m] (to-sql m {})))

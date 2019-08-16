@@ -109,7 +109,8 @@
 
 (defn add-new-opiskeluoikeus! [oid oppija-oid]
   (try
-    (db-opiskeluoikeus/insert-opiskeluoikeus (get-opiskeluoikeus-info oid oppija-oid))
+    (db-opiskeluoikeus/insert-opiskeluoikeus
+      (get-opiskeluoikeus-info oid oppija-oid))
     (catch Exception e
       (log/errorf
         "Error adding opiskeluoikeus %s of oppija %s" oid oppija-oid)
