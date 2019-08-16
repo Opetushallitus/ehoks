@@ -152,6 +152,13 @@
       (json-response-file
         "dev-routes/eperusteet_api_perusteet.json"))
 
+    (GET "/eperusteet-amosaa-service/api/julkinen/koodi/:koodi" request
+      (if (= (get-in request [:params :koodi])
+             "paikallinen_tutkinnonosa_1.2.246.562.10.41253773158_1983")
+        (json-response-file
+          "dev-routes/eperusteet-amosaa-service_api_julkinen_koodi_paikallinen__tutkinnonosa__1.2.246.562.10.41253773158__1983.json")
+        (json-response [])))
+
     (GET "/eperusteet-service/api/tutkinnonosat/52824/viitteet" []
       (json-response-file
         "dev-routes/eperusteet-service_api_tutkinnonosat_52824_viitteet.json"))

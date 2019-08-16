@@ -13,6 +13,7 @@
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.eperusteet :as eperusteet]
+            [oph.ehoks.external.amosaa :as amosaa]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.oppija.auth-handler :as auth-handler]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
@@ -93,7 +94,16 @@
                   :summary "Tutkinnon osan perusteiden
                            haku Koodisto-Koodi-Urilla."
                   :return (rest/response [s/Any])
-                  (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))))
+                  (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))
+
+              (c-api/context "/eperusteet-amosaa" []
+                (c-api/GET "/koodi/:koodi" []
+                  :path-params [koodi :- String]
+                  :summary "Amosaa tutkinnon osan hakeminen koodin perusteella.
+                 Koodiin täydennetään automaattisesti
+                 'paikallinen_tutkinnonosa'"
+                  :return (rest/response [s/Any])
+                  (rest/rest-ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))))
 
           (c-api/context "/oppijat" []
             :tags ["oppijat"]
@@ -111,11 +121,9 @@
 
                 (c-api/GET "/opiskeluoikeudet" [:as request]
                   :summary "Oppijan opiskeluoikeudet"
-                  :return (rest/response [common-schema/Opiskeluoikeus])
-                  (if-let [opiskeluoikeudet
-                           (oppijaindex/get-oppija-opiskeluoikeudet oid)]
-                    (rest/rest-ok opiskeluoikeudet)
-                    (response/not-found)))
+                  :return (rest/response [s/Any])
+                  (rest/rest-ok
+                    (koski/get-oppija-opiskeluoikeudet oid)))
 
                 (c-api/GET "/hoks" [:as request]
                   :summary "Oppijan HOKSit kokonaisuudessaan"
