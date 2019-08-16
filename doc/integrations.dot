@@ -1,0 +1,40 @@
+digraph{
+  graph [fontname = "monospace", fontsize="10", color="grey", fontcolor="grey"];
+  node [fontname = "monospace", shape="box", style="filled"];
+  edge [fontname = "monospace", color="blue", fontcolor="blue",fontsize="10"];
+
+  subgraph clusterEhoks {
+    label="eHOKS"
+    "virkailija-backend"
+    "oppija-backend"
+  }
+
+  subgraph clusterOpetushallitus {
+    label="Opetushallitus"
+    "koodisto"
+    "cas"
+    "oppijanumerorekisteri"
+    "koski"
+    "ePerusteet"
+    "lokalisointi"
+    "opintopolku-tunnistautuminen"
+    "kayttöoikeus-service"
+  }
+
+  "ohj" -> "virkailija-backend"
+  "koodisto" -> "virkailija-backend"
+  "cas" -> "virkailija-backend"
+  "virkailija-backend" -> "cas"
+  "oppijanumerorekisteri" -> "virkailija-backend"
+  "kayttöoikeus-service" -> "virkailija-backend"
+  "koski" -> "virkailija-backend"
+  "ePerusteet" -> "virkailija-backend"
+  "lokalisointi" -> "virkailija-backend"
+
+  "opintopolku-tunnistautuminen" -> "oppija-backend"
+  "koski" -> "oppija-backend"
+  "ePerusteet" -> "oppija-backend"
+  "lokalisointi" -> "oppija-backend"
+  "oppijanumerorekisteri" -> "oppija-backend"
+  "koodisto" -> "oppija-backend"
+}
