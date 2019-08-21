@@ -20,7 +20,7 @@
                 (get-in request [:session :user :oid])
                 (:id hoks)
                 (:eid hoks))
-              (respond (response/forbidden {:error "Iidee ei mätsää"})))))))
+              (respond (response/forbidden)))))))
     ([request]
       (if (empty? (get-in request [:route-params :eid]))
         (response/bad-request {:error "EID is missing"})
@@ -37,4 +37,4 @@
                 (:id hoks)
                 (:eid hoks)
                 (:oppija-oid hoks))
-              (response/forbidden {:error "Iidee ei mätsää"}))))))))
+              (response/forbidden))))))))
