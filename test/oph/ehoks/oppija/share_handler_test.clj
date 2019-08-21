@@ -149,3 +149,55 @@
                                      "tutkinnonosat_121123")))]
         (t/is (= (:status get-response) 200))
         (t/is (empty? (:data (utils/parse-body (:body get-response)))))))))
+
+(t/deftest delete-shared-link
+  (t/testing "DELETE shared link"
+    (let [share-url (format
+                      "%s/%s/share/%s"
+                      url
+                      (:eid (h/save-hoks! hoks-data))
+                      "tutkinnonosat_121123")
+          store (atom {})
+          responses
+          (utils/with-authenticated-oid
+            store
+            (:oppija-oid hoks-data)
+            (common-api/create-app
+              handler/app-routes (test-session-store store))
+            (mock/json-body
+              (mock/request
+                :post
+                share-url)
+              {:voimassaolo-alku (str (java.time.LocalDate/now))
+               :voimassaolo-loppu (str (str (java.time.LocalDate/now)))
+               :tyyppi ""})
+            (mock/request
+              :get
+              share-url))
+          body (utils/parse-body (:body (first responses)))]
+      (t/is (= (:status (first responses)) 200))
+      (t/is (= (:status (second responses)) 200))
+      (t/is (-> (:body (second responses))
+                utils/parse-body
+                :data
+                first
+                :uuid)
+            (get-in body [:meta :uuid]))
+      (let [delete-response (utils/with-authenticated-oid
+                              store
+                              (:oppija-oid hoks-data)
+                              (common-api/create-app
+                                handler/app-routes (test-session-store store))
+                              (mock/request
+                                :delete
+                                (get-in body [:data :uri])))
+            post-delete-response (utils/with-authenticated-oid
+                                   store
+                                   (:oppija-oid hoks-data)
+                                   (common-api/create-app
+                                     handler/app-routes (test-session-store store))
+                                   (mock/request
+                                     :get
+                                     share-url))]
+        (t/is (= (:status delete-response) 200))
+        (t/is (empty? (:data (utils/parse-body (:body post-delete-response)))))))))
