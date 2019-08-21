@@ -178,6 +178,7 @@
               :get
               share-url))
           body (utils/parse-body (:body (first responses)))]
+      (reset! store {})
       (t/is (= (:status (first responses)) 200))
       (t/is (= (:status (second responses)) 200))
       (t/is (= (-> (:body (second responses))
