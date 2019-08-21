@@ -1,10 +1,7 @@
 (ns oph.ehoks.hoks.schema
   (:require [schema.core :as s]
-            [schema-tools.core :as st]
-            [ring.swagger.json-schema :as rsjs]
             [oph.ehoks.schema-tools :refer [describe modify]]
-            [oph.ehoks.schema.generator :as g]
-            [oph.ehoks.common.schema :as common-schema])
+            [oph.ehoks.schema.generator :as g])
   (:import (java.time LocalDate)))
 
 (def TutkinnonOsaKoodiUri
