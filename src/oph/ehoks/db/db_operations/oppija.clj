@@ -47,3 +47,8 @@
   (db-ops/query
     [queries/select-hoks-tutkinnon-osa-shares hoks-id koodi-uri]
     {:row-fn share-from-sql}))
+
+(defn delete-tutkinnon-osa-share! [uuid hoks-id]
+  (db-ops/delete!
+    :tutkinnon_osa_shares
+    ["uuid = ? AND hoks_id = ?" (java.util.UUID/fromString uuid) hoks-id]))
