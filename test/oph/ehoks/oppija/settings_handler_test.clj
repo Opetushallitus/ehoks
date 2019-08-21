@@ -3,7 +3,6 @@
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
-            [oph.ehoks.oppija.auth-handler-test :refer [authenticate]]
             [oph.ehoks.utils :as utils]))
 
 (t/use-fixtures :each utils/with-database)
@@ -15,7 +14,7 @@
 (t/deftest user-settings
   (t/testing "GET current session user settings"
     (let [app (common-api/create-app handler/app-routes nil)
-          auth-response (authenticate app)
+          auth-response (utils/authenticate app)
           session-cookie (first (get-in auth-response [:headers "Set-Cookie"]))
           post-response (app (-> (mock/request
                                    :put
