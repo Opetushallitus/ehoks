@@ -8,7 +8,6 @@
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hoks-test :refer [hoks-data]]
-            [oph.ehoks.hoks.handler-test :as handler-test]
             [clojure.walk :as w]))
 
 (def url "/ehoks-oppija-backend/api/v1/oppija/oppijat")
