@@ -73,12 +73,12 @@
           body (utils/parse-body (:body (first responses)))]
       (t/is (= (:status (first responses)) 200))
       (t/is (= (:status (second responses)) 200))
-      (t/is (-> (:body (second responses))
-                utils/parse-body
-                :data
-                first
-                :uuid)
-            (get-in body [:meta :uuid])))))
+      (t/is (= (-> (:body (second responses))
+                   utils/parse-body
+                   :data
+                   first
+                   :uuid)
+               (get-in body [:meta :uuid]))))))
 
 (t/deftest unauthorized-shared-link
   (t/testing "Prevent getting unauthorized shared link"
@@ -180,12 +180,12 @@
           body (utils/parse-body (:body (first responses)))]
       (t/is (= (:status (first responses)) 200))
       (t/is (= (:status (second responses)) 200))
-      (t/is (-> (:body (second responses))
-                utils/parse-body
-                :data
-                first
-                :uuid)
-            (get-in body [:meta :uuid]))
+      (t/is (= (-> (:body (second responses))
+                   utils/parse-body
+                   :data
+                   first
+                   :uuid)
+               (get-in body [:meta :uuid])))
       (let [delete-response (utils/with-authenticated-oid
                               store
                               (:oppija-oid hoks-data)
