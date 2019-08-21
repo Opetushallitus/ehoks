@@ -48,18 +48,18 @@
 
 (t/deftest get-shared-link
   (t/testing "GET shared link"
-    (let [hoks (h/save-hoks! hoks-data)
-          share-url (format
-                      "%s/%s/share/%s" url (:eid hoks) "tutkinnonosat_121123")
-          oppija-oid (:oppija-oid hoks-data)
+    (let [share-url (format
+                      "%s/%s/share/%s"
+                      url
+                      (:eid (h/save-hoks! hoks-data))
+                      "tutkinnonosat_121123")
           store (atom {})
-          app (common-api/create-app
-                handler/app-routes (test-session-store store))
           responses
           (utils/with-authenticated-oid
             store
-            oppija-oid
-            app
+            (:oppija-oid hoks-data)
+            (common-api/create-app
+              handler/app-routes (test-session-store store))
             (mock/json-body
               (mock/request
                 :post
