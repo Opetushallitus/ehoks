@@ -55,7 +55,7 @@
                       "tutkinnonosat_121123")
           store (atom {})
           responses
-          (utils/with-authenticated-oid
+          (utils/with-authenticated-oid-multi
             store
             (:oppija-oid hoks-data)
             (common-api/create-app
@@ -162,7 +162,7 @@
                       "tutkinnonosat_121123")
           store (atom {})
           responses
-          (utils/with-authenticated-oid
+          (utils/with-authenticated-oid-multi
             store
             (:oppija-oid hoks-data)
             (common-api/create-app
@@ -187,7 +187,7 @@
                    first
                    :uuid)
                (get-in body [:meta :uuid])))
-      (let [delete-responses (utils/with-authenticated-oid
+      (let [delete-responses (utils/with-authenticated-oid-multi
                                store
                                (:oppija-oid hoks-data)
                                (common-api/create-app

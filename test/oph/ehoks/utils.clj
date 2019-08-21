@@ -63,16 +63,16 @@
   (let [cookie (get-auth-cookie app)]
     (app (mock/header request :cookie cookie))))
 
-(defn with-authenticated-oid [store oid app & requests]
+(defn with-authenticated-oid-multi [store oid app & requests]
   (let [cookie (get-auth-cookie app oid)]
     (swap! store assoc-in [(-> @store keys first) :user :oid] oid)
-    (let [responses (mapv
-                      (fn [request]
-                        (app (mock/header request :cookie cookie)))
-                      requests)]
-      (if (= (count responses) 1)
-        (first responses)
-        responses))))
+    (mapv
+      (fn [request]
+        (app (mock/header request :cookie cookie)))
+      requests)))
+
+(defn with-authenticated-oid [store oid app request]
+  (first (with-authenticated-oid-multi store oid app request)))
 
 (defn set-auth-functions! [organisaatio-oid unmatched-fn]
   (client/set-post!
