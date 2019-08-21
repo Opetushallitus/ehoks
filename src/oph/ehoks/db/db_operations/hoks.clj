@@ -235,6 +235,11 @@
       [queries/select-hoksit-by-id id]
       {:row-fn hoks-from-sql})))
 
+(defn select-hoks-by-eid [eid]
+  (first (db-ops/query
+           [queries/select-hoksit-by-eid eid]
+           {:row-fn hoks-from-sql})))
+
 (defn select-hoksit-by-opiskeluoikeus-oid [oid]
   (db-ops/query
     [queries/select-hoksit-by-opiskeluoikeus-oid oid]

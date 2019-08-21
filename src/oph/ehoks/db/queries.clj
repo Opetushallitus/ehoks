@@ -35,6 +35,7 @@
 (defq select-hoksit "hoksit/select.sql")
 (defq select-hoksit-by-oppija-oid)
 (defq select-hoksit-by-id)
+(defq select-hoksit-by-eid)
 (defq select-hoksit-by-opiskeluoikeus-oid)
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")
 (defq select-hoks-oppijat-without-index
@@ -207,3 +208,5 @@
       "sessions/select_by_session_key.sql")
 (defq select-user-settings-by-user-oid
       "settings/select_by_user_oid.sql")
+(defq select-hoks-tutkinnon-osa-shares
+      "tutkinnon_osa_shares/select_by_hoks_and_tutkinnon_osa.sql")
