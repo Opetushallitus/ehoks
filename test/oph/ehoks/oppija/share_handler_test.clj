@@ -125,7 +125,10 @@
               (mock/request
                 :post
                 (format
-                  "%s/%s/share/%s" url (:eid (h/save-hoks! hoks-data)) "tutkinnonosat_121123"))
+                  "%s/%s/share/%s"
+                  url
+                  (:eid (h/save-hoks! hoks-data))
+                  "tutkinnonosat_121123"))
               {:voimassaolo-alku (str (java.time.LocalDate/now))
                :voimassaolo-loppu (str (str (java.time.LocalDate/now)))
                :tyyppi ""}))]
@@ -195,9 +198,11 @@
                                    store
                                    (:oppija-oid hoks-data)
                                    (common-api/create-app
-                                     handler/app-routes (test-session-store store))
+                                     handler/app-routes (test-session-store
+                                                          store))
                                    (mock/request
                                      :get
                                      share-url))]
         (t/is (= (:status delete-response) 200))
-        (t/is (empty? (:data (utils/parse-body (:body post-delete-response)))))))))
+        (t/is (empty? (:data (utils/parse-body
+                               (:body post-delete-response)))))))))
