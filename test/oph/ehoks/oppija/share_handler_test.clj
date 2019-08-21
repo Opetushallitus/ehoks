@@ -79,3 +79,73 @@
                 first
                 :uuid)
             (get-in body [:meta :uuid])))))
+
+(t/deftest unauthorized-shared-link
+  (t/testing "Prevent getting unauthorized shared link"
+    (let [hoks (h/save-hoks! hoks-data)
+          share-url (format
+                      "%s/%s/share/%s" url (:eid hoks) "tutkinnonosat_121123")
+          store (atom {})
+          app (common-api/create-app
+                handler/app-routes (test-session-store store))
+          response
+          (utils/with-authenticated-oid
+            store
+            (:oppija-oid hoks-data)
+            app
+            (mock/json-body
+              (mock/request
+                :post
+                share-url)
+              {:voimassaolo-alku (str (java.time.LocalDate/now))
+               :voimassaolo-loppu (str (str (java.time.LocalDate/now)))
+               :tyyppi ""}))]
+      (t/is (= (:status response) 200))
+      (reset! store {})
+      (let [get-response (utils/with-authenticated-oid
+                           store
+                           "1.2.246.562.24.12312312313"
+                           app
+                           (mock/request
+                             :get
+                             share-url))]
+        (t/is (= (:status get-response) 403))))))
+
+(t/deftest prevent-get-unauthorized-shared-link
+  (t/testing "Prevent getting unauthorized shared link"
+    (let [store (atom {})
+          app (common-api/create-app
+                handler/app-routes (test-session-store store))
+          response
+          (utils/with-authenticated-oid
+            store
+            (:oppija-oid hoks-data)
+            app
+            (mock/json-body
+              (mock/request
+                :post
+                (format
+                  "%s/%s/share/%s" url (:eid (h/save-hoks! hoks-data)) "tutkinnonosat_121123"))
+              {:voimassaolo-alku (str (java.time.LocalDate/now))
+               :voimassaolo-loppu (str (str (java.time.LocalDate/now)))
+               :tyyppi ""}))]
+      (t/is (= (:status response) 200))
+      (reset! store {})
+      (let [oppija-oid-other "1.2.246.562.24.12312312313"
+            hoks-other
+            (h/save-hoks!
+              (assoc hoks-data
+                     :oppija-oid oppija-oid-other
+                     :opiskeluoikeus-oid "1.2.246.562.15.00000000002"))
+            get-response (utils/with-authenticated-oid
+                           store
+                           oppija-oid-other
+                           app
+                           (mock/request
+                             :get
+                             (format "%s/%s/share/%s"
+                                     url
+                                     (:eid hoks-other)
+                                     "tutkinnonosat_121123")))]
+        (t/is (= (:status get-response) 200))
+        (t/is (empty? (:data (utils/parse-body (:body get-response)))))))))
