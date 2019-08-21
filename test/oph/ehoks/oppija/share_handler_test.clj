@@ -187,23 +187,18 @@
                    first
                    :uuid)
                (get-in body [:meta :uuid])))
-      (let [delete-response (utils/with-authenticated-oid
-                              store
-                              (:oppija-oid hoks-data)
-                              (common-api/create-app
-                                handler/app-routes (test-session-store store))
-                              (mock/request
-                                :delete
-                                (get-in body [:data :uri])))
-            post-delete-response (utils/with-authenticated-oid
-                                   store
-                                   (:oppija-oid hoks-data)
-                                   (common-api/create-app
-                                     handler/app-routes (test-session-store
-                                                          store))
-                                   (mock/request
-                                     :get
-                                     share-url))]
-        (t/is (= (:status delete-response) 200))
+      (let [delete-responses (utils/with-authenticated-oid
+                               store
+                               (:oppija-oid hoks-data)
+                               (common-api/create-app
+                                 handler/app-routes (test-session-store store))
+                               (mock/request
+                                 :delete
+                                 (get-in body [:data :uri]))
+                               (mock/request
+                                 :get
+                                 share-url))]
+        (t/is (= (:status (first delete-responses)) 200))
+        (t/is (= (:status (second delete-responses)) 200))
         (t/is (empty? (:data (utils/parse-body
-                               (:body post-delete-response)))))))))
+                               (:body (second delete-responses))))))))))
