@@ -21,7 +21,9 @@
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
-            [oph.ehoks.oppijaindex :as oppijaindex]))
+            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.oppija.share-handler :as share-handler]
+            [oph.ehoks.oppija.middleware :as m]))
 
 (defn wrap-match-user [handler]
   (fn
@@ -131,7 +133,14 @@
                   (let [hokses (h/get-hokses-by-oppija oid)]
                     (if (empty? hokses)
                       (response/not-found {:message "No HOKSes found"})
-                      (rest/rest-ok (map #(dissoc % :id) hokses)))))))))))
+                      (rest/rest-ok (map #(dissoc % :id) hokses))))))))
+
+          (c-api/context "/hoksit" []
+            :tags ["hoksit"]
+            (c-api/context "/:eid" []
+              (route-middleware
+                [wrap-authorize m/wrap-hoks-access]
+                share-handler/routes))))))
 
     (c-api/undocumented
       (GET "/buildversion.txt" []
