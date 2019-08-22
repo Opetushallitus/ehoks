@@ -196,16 +196,18 @@
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
 
-(defn eq [value expect]
-  (when (not= value expect)
-    (let [diff (d/diff value expect)]
-      (when (seq (first diff))
-        (println "Not expected:")
-        (p/pprint (first diff)))
-      (when (seq (second diff))
-        (println "Missing:")
-        (p/pprint (second diff)))))
-  (is (= value expect)))
+(defmacro eq
+  ([value expect msg]
+    `(do (when (not= ~value ~expect)
+           (let [diff# (d/diff ~value ~expect)]
+             (when (seq (first diff#))
+               (println "Not expected:")
+               (p/pprint (first diff#)))
+             (when (seq (second diff#))
+               (println "Missing:")
+               (p/pprint (second diff#)))))
+         (is (= ~value ~expect) ~msg)))
+  ([value expect] `(eq ~value ~expect nil)))
 
 (defn with-database [f]
   (m/clean!)
