@@ -89,13 +89,6 @@
     (s/optional-key :rooli) s/Str "Henkilön rooli"))
 
 (s/defschema
-  HoksToimija
-  (modify
-    Henkilo
-    "Hoksin hyväksyjä tai päivittäjä koulutusjärjestäjän organisaatiossa"
-    {:removed [:organisaatio :rooli :id]}))
-
-(s/defschema
   VastuullinenTyopaikkaOhjaaja
   (modify
     Henkilo
