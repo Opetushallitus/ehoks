@@ -206,9 +206,13 @@
         (println "Missing:")
         (p/pprint (second diff))))))
 
-(defmacro eq
+(defn eq [value expected]
+  (eq-check value expected)
+  (is (= value expected)))
+
+(defmacro eq=
   ([value expect msg]
-    `(do (eq-check value expect)
+    `(do (eq-check ~value ~expect)
          (is (= ~value ~expect) ~msg)))
   ([value expect]
     `(do (eq-check ~value ~expect)
