@@ -91,7 +91,7 @@
   (or
     (get-in
       opiskeluoikeus
-      [:suoritukset 0 :osaamisala 0 :nimi :fi])
+      [:suoritukset 0 :osaamisala 0 :nimi])
     (get-in
       opiskeluoikeus
       [:suoritukset 0 :osaamisala 0 :osaamisala :nimi])
