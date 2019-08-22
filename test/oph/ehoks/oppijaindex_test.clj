@@ -10,6 +10,16 @@
 
 (t/use-fixtures :once utils/clean-db)
 
+(def opiskeluoikeus-data
+  {:oppilaitos {:oid "1.2.246.562.10.222222222222"}
+   :suoritukset
+   [{:koulutusmoduuli
+     {:tunniste
+      {:koodiarvo "351407"
+       :nimi {:fi "Testialan perustutkinto"
+              :sv "Grundexamen inom testsbranschen"
+              :en "Testing"}}}}]})
+
 (t/deftest get-oppijat-without-index
   (t/testing "Get oppijat without index"
     (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
@@ -120,7 +130,7 @@
                    :sukunimi "Testaaja"}}
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
-            :body {:oppilaitos {:oid "1.2.246.562.10.222222222222"}}}))]
+            :body opiskeluoikeus-data}))]
       (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
@@ -133,8 +143,10 @@
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
-         :tutkinto ""
-         :tutkinto-nimi {:fi ""}
+         :tutkinto "Testialan perustutkinto"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
          :osaamisala ""
          :osaamisala-nimi {:fi ""}}))))
 
@@ -153,7 +165,7 @@
                    :sukunimi "Testaaja"}}
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
-            :body {:oppilaitos {:oid "1.2.246.562.10.222222222222"}}}))]
+            :body opiskeluoikeus-data}))]
       (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
@@ -166,8 +178,10 @@
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
-         :tutkinto ""
-         :tutkinto-nimi {:fi ""}
+         :tutkinto "Testialan perustutkinto"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
          :osaamisala ""
          :osaamisala-nimi {:fi ""}}))
 
