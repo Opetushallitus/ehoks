@@ -2,7 +2,6 @@
   (:require [oph.ehoks.oppijaindex :as sut]
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]
-            [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]))
