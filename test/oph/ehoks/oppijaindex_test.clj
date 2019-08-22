@@ -135,7 +135,9 @@
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
          :tutkinto ""
-         :osaamisala ""}))))
+         :tutkinto-nimi {:fi ""}
+         :osaamisala ""
+         :osaamisala-nimi {:fi ""}}))))
 
 (t/deftest update-oppija-opiskeluoikeus
   (t/testing "Update oppija and opiskeluoikeus"
@@ -166,7 +168,9 @@
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
          :tutkinto ""
-         :osaamisala ""}))
+         :tutkinto-nimi {:fi ""}
+         :osaamisala ""
+         :osaamisala-nimi {:fi ""}}))
 
     (utils/with-ticket-auth
       ["1.2.246.562.10.222222222222"
@@ -195,4 +199,6 @@
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222223"
          :tutkinto ""
-         :osaamisala ""}))))
+         :tutkinto-nimi {:fi ""}
+         :osaamisala ""
+         :osaamisala-nimi {:fi ""}}))))
