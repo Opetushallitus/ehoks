@@ -206,7 +206,9 @@
              (when (seq (second diff#))
                (println "Missing:")
                (p/pprint (second diff#)))))
-         (is (= ~value ~expect) ~msg)))
+         (if (some? ~msg)
+           (is (= ~value ~expect) ~msg)
+           (is (= ~value ~expect)))))
   ([value expect] `(eq ~value ~expect nil)))
 
 (defn with-database [f]
