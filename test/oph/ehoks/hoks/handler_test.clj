@@ -27,13 +27,13 @@
       :body
       utils/parse-body))
 
-(defn create-hoks []
+(defn create-hoks [app]
   (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                    :oppija-oid "1.2.246.562.24.12312312312"
                    :ensikertainen-hyvaksyminen
                    (java.time.LocalDate/of 2019 3 18)
                    :osaamisen-hankkimisen-tarve false}]
-    (-> (create-app nil)
+    (-> app
         (utils/with-service-ticket
           (-> (mock/request :post url)
               (mock/json-body hoks-data)))
@@ -45,6 +45,11 @@
 
 (defmacro with-hoks [hoks & body]
   `(let [~hoks (create-hoks)]
+     (do ~@body)))
+
+(defmacro with-hoks-and-app [[hoks app] & body]
+  `(let [~app (create-app nil)
+         ~hoks (create-hoks ~app)]
      (do ~@body)))
 
 (defn get-hoks-url [hoks path]
@@ -118,11 +123,11 @@
 
 (deftest post-and-get-hankittava-paikallinen-tutkinnon-osa
   (testing "GET newly created hankittava paikallinen tutkinnon osa"
-    (with-hoks
-      hoks
+    (with-hoks-and-app
+      [hoks app]
       (let [ppto-response
             (utils/with-service-ticket
-              (create-app nil)
+              app
               (-> (mock/request
                     :post
                     (get-hoks-url hoks hpto-path))
@@ -135,7 +140,7 @@
                   :meta {:id 1}})
         (let [ppto-new
               (utils/with-service-ticket
-                (create-app nil)
+                app
                 (mock/request
                   :get
                   (get-hoks-url hoks (format "%s/1" hpto-path))))]
@@ -147,18 +152,17 @@
 
 (deftest patch-all-hankittavat-paikalliset-tutkinnon-osat
   (testing "PATCH all hankittava paikallinen tutkinnon osa"
-    (with-hoks
-      hoks
-      (let [hpto-response
+    (with-hoks-and-app
+      [hoks app]
+      (utils/with-service-ticket
+        app
+        (-> (mock/request
+              :post
+              (get-hoks-url hoks hpto-path))
+            (mock/json-body hpto-data)))
+      (let [patch-response
             (utils/with-service-ticket
-              (create-app nil)
-              (-> (mock/request
-                    :post
-                    (get-hoks-url hoks hpto-path))
-                  (mock/json-body hpto-data)))
-            patch-response
-            (utils/with-service-ticket
-              (create-app nil)
+              app
               (->
                 (mock/request
                   :patch
@@ -169,11 +173,11 @@
 
 (deftest patch-one-hankittava-paikallinen-tutkinnon-osa
   (testing "PATCH one value hankittava paikallinen tutkinnon osa"
-    (with-hoks
-      hoks
+    (with-hoks-and-app
+      [hoks app]
       (let [ppto-response
             (utils/with-service-ticket
-              (create-app nil)
+              app
               (-> (mock/request
                     :post
                     (get-hoks-url hoks hpto-path))
@@ -182,7 +186,7 @@
                         (:body ppto-response))
             patch-response
             (utils/with-service-ticket
-              (create-app nil)
+              app
               (-> (mock/request
                     :patch
                     (get-hoks-url hoks (format "%s/1" hpto-path)))
@@ -240,10 +244,9 @@
 
 (deftest post-and-get-hankittava-ammatillinen-osaaminen
   (testing "POST hankittava ammatillinen osaaminen and then get created hao"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request hao-path hao-data app hoks)
+    (with-hoks-and-app
+      [hoks app]
+      (let [post-response (create-mock-post-request hao-path hao-data app hoks)
             get-response (create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status post-response) 200))
         (eq (utils/parse-body
@@ -289,11 +292,10 @@
 
 (deftest patch-all-hankittava-ammatillinen-osaaminen
   (testing "PATCH ALL hankittava ammat osaaminen"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request hao-path hao-data app hoks)
-            patch-response
+    (with-hoks-and-app
+      [hoks app]
+      (create-mock-post-request hao-path hao-data app hoks)
+      (let [patch-response
             (utils/with-service-ticket
               app
               (-> (mock/request
@@ -307,20 +309,18 @@
 
 (deftest patch-one-hankittava-ammatilinen-osaaminen
   (testing "PATCH one value hankittava ammatillinen osaaminen"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response
-            (utils/with-service-ticket
-              app
-              (-> (mock/request
-                    :post
-                    (format
-                      "%s/1/hankittava-ammat-tutkinnon-osa"
-                      url))
-                  (mock/json-body
-                    hao-data)))
-            response
+    (with-hoks-and-app
+      [hoks app]
+      (utils/with-service-ticket
+        app
+        (-> (mock/request
+              :post
+              (format
+                "%s/1/hankittava-ammat-tutkinnon-osa"
+                url))
+            (mock/json-body
+              hao-data)))
+      (let [response
             (utils/with-service-ticket
               app
               (-> (mock/request
@@ -344,10 +344,9 @@
 
 (defn- test-patch-of-aiemmin-hankittu-osa
   [osa-path osa-data osa-patched-data assert-function]
-  (with-hoks
-    hoks
-    (let [app (create-app nil)
-          post-response (create-mock-post-request
+  (with-hoks-and-app
+    [hoks app]
+    (let [post-response (create-mock-post-request
                           osa-path osa-data app hoks)
           patch-response (create-mock-hoks-osa-patch-request
                            osa-path app osa-patched-data)
@@ -359,10 +358,9 @@
       (assert-function get-response-data osa-data))))
 
 (defn- test-post-and-get-of-aiemmin-hankittu-osa [osa-path osa-data]
-  (with-hoks
-    hoks
-    (let [app (create-app nil)
-          post-response (create-mock-post-request
+  (with-hoks-and-app
+    [hoks app]
+    (let [post-response (create-mock-post-request
                           osa-path osa-data app hoks)
           get-response (create-mock-hoks-osa-get-request osa-path app hoks)]
       (assert-post-response-is-ok osa-path post-response)
@@ -739,10 +737,9 @@
 
 (deftest post-and-get-hankittava-yhteinen-tukinnon-osa
   (testing "POST hankittavat yhteisen tutkinnon osat"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
+    (with-hoks-and-app
+      [hoks app]
+      (let [post-response (create-mock-post-request
                             hyto-path hyto-data app hoks)
             get-response (create-mock-hoks-osa-get-request hyto-path app hoks)]
         (assert-post-response-is-ok hyto-path post-response)
@@ -756,12 +753,11 @@
 
 (deftest patch-one-value-of-hankittava-yhteinen-tutkinnon-osa
   (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
-                            hyto-path hyto-data app hoks)
-            patch-response (create-mock-hoks-osa-patch-request
+    (with-hoks-and-app
+      [hoks app]
+      (create-mock-post-request
+        hyto-path hyto-data app hoks)
+      (let [patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app one-value-of-hyto-patched)
             get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -824,12 +820,11 @@
 
 (deftest patch-multiple-values-of-hankittavat-yhteiset-tutkinnon-osat
   (testing "PATCH all hankittavat yhteisen tutkinnon osat"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
-                            hyto-path hyto-data app hoks)
-            patch-response (create-mock-hoks-osa-patch-request
+    (with-hoks-and-app
+      [hoks app]
+      (create-mock-post-request
+        hyto-path hyto-data app hoks)
+      (let [patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app multiple-hyto-values-patched)
             get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -842,12 +837,11 @@
 
 (deftest only-sub-entity-of-hyto-patched
   (testing "PATCH only osa-alueet of hyto and leave base hyto untouched."
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
-                            hyto-path hyto-data app hoks)
-            patch-response (create-mock-hoks-osa-patch-request
+    (with-hoks-and-app
+      [hoks app]
+      (create-mock-post-request
+        hyto-path hyto-data app hoks)
+      (let [patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app hyto-sub-entity-patched)
             get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -863,10 +857,9 @@
 
 (deftest post-and-get-opiskeluvalmiuksia-tukevat-opinnot
   (testing "GET opiskeluvalmiuksia tukevat opinnot"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
+    (with-hoks-and-app
+      [hoks app]
+      (let [post-response (create-mock-post-request
                             oto-path oto-data app hoks)
             get-response (create-mock-hoks-osa-get-request oto-path app hoks)]
         (assert-post-response-is-ok oto-path post-response)
@@ -880,12 +873,11 @@
 
 (deftest patch-one-value-of-opiskeluvalmiuksia-tukevat-opinnot
   (testing "PATCH one value of opiskeluvalmiuksia tukevat opinnot"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
-                            oto-path oto-data app hoks)
-            patch-response (create-mock-hoks-osa-patch-request
+    (with-hoks-and-app
+      [hoks app]
+      (create-mock-post-request
+        oto-path oto-data app hoks)
+      (let [patch-response (create-mock-hoks-osa-patch-request
                              oto-path app one-value-of-oto-patched)
             get-response (create-mock-hoks-osa-get-request oto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -905,12 +897,11 @@
 
 (deftest patch-multiple-values-of-oto
   (testing "PATCH all opiskeluvalmiuksia tukevat opinnot"
-    (with-hoks
-      hoks
-      (let [app (create-app nil)
-            post-response (create-mock-post-request
-                            oto-path oto-data app hoks)
-            patch-response (create-mock-hoks-osa-patch-request
+    (with-hoks-and-app
+      [hoks app]
+      (create-mock-post-request
+        oto-path oto-data app hoks)
+      (let [patch-response (create-mock-hoks-osa-patch-request
                              oto-path app all-values-of-oto-patched)
             get-response (create-mock-hoks-osa-get-request oto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -950,17 +941,18 @@
 
 (deftest prevent-creating-hoks-with-existing-opiskeluoikeus
   (testing "Prevent POST HOKS with existing opiskeluoikeus"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+    (let [app (create-app nil)
+          hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
       (utils/with-service-ticket
-        (create-app nil)
+        app
         (-> (mock/request :post url)
             (mock/json-body hoks-data)))
       (let [response
             (utils/with-service-ticket
-              (create-app nil)
+              app
               (-> (mock/request :post url)
                   (mock/json-body hoks-data)))]
         (is (= (:status response) 400))
@@ -1176,8 +1168,9 @@
                                      get-response-data)))
                     (is (not-empty (:aiemmin-hankitut-ammat-tutkinnon-osat
                                      get-response-data)))
-                    (is (not-empty (:aiemmin-hankitut-paikalliset-tutkinnon-osat
-                                     get-response-data)))
+                    (is (not-empty
+                          (:aiemmin-hankitut-paikalliset-tutkinnon-osat
+                            get-response-data)))
                     (is (not-empty (:aiemmin-hankitut-yhteiset-tutkinnon-osat
                                      get-response-data))))))))
 
@@ -1563,26 +1556,23 @@
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
-    (let [app (create-app nil)
-          response (create-mock-hoks-patch-request 1 {:id 1} app)]
+    (let [response (create-mock-hoks-patch-request 1 {:id 1} (create-app nil))]
       (is (= (:status response) 404)))))
 
 (deftest put-non-existing-hoks
   (testing "PUT prevents updating non existing HOKS"
-    (let [app (create-app nil)
-          response (create-mock-hoks-put-request 1 {:id 1} app)]
+    (let [response (create-mock-hoks-put-request 1 {:id 1} (create-app nil))]
       (is (= (:status response) 404)))))
 
 (deftest get-hoks-by-id-not-found
   (testing "GET HOKS by hoks-id"
-    (let [app (create-app nil)]
-      (let [response
-            (utils/with-service-ticket
-              app
-              (mock/request :get
-                            (format "%s/%s"
-                                    url 43857)))]
-        (is (= (:status response) 404))))))
+    (let [response
+          (utils/with-service-ticket
+            (create-app nil)
+            (mock/request :get
+                          (format "%s/%s"
+                                  url 43857)))]
+      (is (= (:status response) 404)))))
 
 (deftest get-hoks-by-opiskeluoikeus-oid
   (testing "GET HOKS by opiskeluoikeus-oid"
@@ -1621,55 +1611,53 @@
 
 (deftest non-service-user-test
   (testing "Deny access from non-service user"
-    (client/set-post!
-      (fn [url options]
-        (cond
-          (.endsWith url "/v1/tickets")
-          {:status 201
-           :headers {"location" "http://test.ticket/1234"}}
-          (= url "http://test.ticket/1234")
-          {:status 200
-           :body "ST-1234-testi"})))
-    (client/set-get!
-      (fn [url options]
-        (cond (.endsWith
-                url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
-              {:status 200
-               :body {:oppilaitos {:oid "1.2.246.562.10.12944436166"}}}
-              (.endsWith url "/serviceValidate")
-              {:status 200
-               :body
-               (str "<cas:serviceResponse"
-                    "  xmlns:cas='http://www.yale.edu/tp/cas'>"
-                    "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
-                    "<cas:attributes>"
-                    "<cas:longTermAuthenticationRequestTokenUsed>false"
-                    "</cas:longTermAuthenticationRequestTokenUsed>"
-                    "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
-                    "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
-                    "</cas:authenticationDate></cas:attributes>"
-                    "</cas:authenticationSuccess></cas:serviceResponse>")}
-              (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
-              {:status 200
-               :body [{:oidHenkilo "1.2.246.562.24.11474338834"
-                       :username "ehoks"
-                       :kayttajaTyyppi "VIRKAILIJA"
-                       :organisaatiot
-                       [{:organisaatioOid "1.2.246.562.10.12944436166"
-                         :kayttooikeudet [{:palvelu "EHOKS"
-                                           :oikeus "CRUD"}]}]}]})))
-    (let [app (create-app nil)
-          hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
-                     :laatija {:nimi "Teppo Tekijä"}
-                     :paivittaja {:nimi "Pekka Päivittäjä"}
-                     :hyvaksyja {:nimi "Heikki Hyväksyjä"}
-                     :ensikertainen-hyvaksyminen "2018-12-15"}
-          response (app (-> (mock/request :post url)
-                            (mock/json-body hoks-data)
-                            (mock/header "Caller-Id" "test")
-                            (mock/header "ticket" "ST-testitiketti")))]
-      (is (= (:status response) 403))
-      (is (= (utils/parse-body (:body response))
-             {:error "User type 'PALVELU' is required"}))
-      (client/reset-functions!))))
+    (client/with-mock-responses
+      [(fn [url options]
+         (cond (.endsWith
+                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
+               {:status 200
+                :body {:oppilaitos {:oid "1.2.246.562.10.12944436166"}}}
+               (.endsWith url "/serviceValidate")
+               {:status 200
+                :body
+                (str "<cas:serviceResponse"
+                     "  xmlns:cas='http://www.yale.edu/tp/cas'>"
+                     "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
+                     "<cas:attributes>"
+                     "<cas:longTermAuthenticationRequestTokenUsed>false"
+                     "</cas:longTermAuthenticationRequestTokenUsed>"
+                     "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
+                     "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
+                     "</cas:authenticationDate></cas:attributes>"
+                     "</cas:authenticationSuccess></cas:serviceResponse>")}
+               (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
+               {:status 200
+                :body [{:oidHenkilo "1.2.246.562.24.11474338834"
+                        :username "ehoks"
+                        :kayttajaTyyppi "VIRKAILIJA"
+                        :organisaatiot
+                        [{:organisaatioOid "1.2.246.562.10.12944436166"
+                          :kayttooikeudet [{:palvelu "EHOKS"
+                                            :oikeus "CRUD"}]}]}]}))
+       (fn [url options]
+         (cond
+           (.endsWith url "/v1/tickets")
+           {:status 201
+            :headers {"location" "http://test.ticket/1234"}}
+           (= url "http://test.ticket/1234")
+           {:status 200
+            :body "ST-1234-testi"}))]
+      (let [app (create-app nil)
+            hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                       :oppija-oid "1.2.246.562.24.12312312312"
+                       :laatija {:nimi "Teppo Tekijä"}
+                       :paivittaja {:nimi "Pekka Päivittäjä"}
+                       :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                       :ensikertainen-hyvaksyminen "2018-12-15"}
+            response (app (-> (mock/request :post url)
+                              (mock/json-body hoks-data)
+                              (mock/header "Caller-Id" "test")
+                              (mock/header "ticket" "ST-testitiketti")))]
+        (is (= (:status response) 403))
+        (is (= (utils/parse-body (:body response))
+               {:error "User type 'PALVELU' is required"}))))))
