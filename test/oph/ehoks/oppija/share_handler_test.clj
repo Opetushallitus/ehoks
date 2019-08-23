@@ -9,8 +9,6 @@
 
 (t/use-fixtures :each utils/with-database)
 
-(t/use-fixtures :once utils/clean-db)
-
 (def url "/ehoks-oppija-backend/api/v1/oppija/hoksit")
 
 (def hoks-data

@@ -1,25 +1,11 @@
 (ns oph.ehoks.hoks.hoks-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [oph.ehoks.utils :as utils :refer [eq]]
+            [oph.ehoks.utils :as utils :refer [eq with-database]]
             [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.db.migrations :as m]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
-(defn with-database [f]
-  (m/clean!)
-  (m/migrate!)
-  (f)
-  (m/clean!))
-
-(defn clean-db [f]
-  (m/clean!)
-  (m/migrate!)
-  (f))
-
 (use-fixtures :each with-database)
-
-(use-fixtures :once clean-db)
 
 (def ahato-data
   [{:valittu-todentamisen-prosessi-koodi-versio 1

@@ -14,8 +14,6 @@
 
 (use-fixtures :each utils/with-database)
 
-(use-fixtures :once utils/clean-db)
-
 (def dates #{:alku :loppu :lahetetty-arvioitavaksi :ensikertainen-hyvaksyminen})
 
 (defn v-to-str [m k]

@@ -5,8 +5,6 @@
 
 (t/use-fixtures :each u/with-database)
 
-(t/use-fixtures :once u/clean-db)
-
 (t/deftest get-no-session
   (t/testing "Get no session"
     (let [ss (sut/db-store)]
