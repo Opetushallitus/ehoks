@@ -2,7 +2,6 @@
   (:require [oph.ehoks.oppijaindex :as sut]
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]
-            [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]))
@@ -10,6 +9,16 @@
 (t/use-fixtures :each utils/with-database)
 
 (t/use-fixtures :once utils/clean-db)
+
+(def opiskeluoikeus-data
+  {:oppilaitos {:oid "1.2.246.562.10.222222222222"}
+   :suoritukset
+   [{:koulutusmoduuli
+     {:tunniste
+      {:koodiarvo "351407"
+       :nimi {:fi "Testialan perustutkinto"
+              :sv "Grundexamen inom testsbranschen"
+              :en "Testing"}}}}]})
 
 (t/deftest get-oppijat-without-index
   (t/testing "Get oppijat without index"
@@ -121,7 +130,7 @@
                    :sukunimi "Testaaja"}}
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
-            :body {:oppilaitos {:oid "1.2.246.562.10.222222222222"}}}))]
+            :body opiskeluoikeus-data}))]
       (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
@@ -134,8 +143,12 @@
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
-         :tutkinto ""
-         :osaamisala ""}))))
+         :tutkinto "Testialan perustutkinto"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
+         :osaamisala ""
+         :osaamisala-nimi {:fi ""}}))))
 
 (t/deftest update-oppija-opiskeluoikeus
   (t/testing "Update oppija and opiskeluoikeus"
@@ -152,7 +165,7 @@
                    :sukunimi "Testaaja"}}
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
-            :body {:oppilaitos {:oid "1.2.246.562.10.222222222222"}}}))]
+            :body opiskeluoikeus-data}))]
       (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
@@ -165,8 +178,12 @@
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
-         :tutkinto ""
-         :osaamisala ""}))
+         :tutkinto "Testialan perustutkinto"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
+         :osaamisala ""
+         :osaamisala-nimi {:fi ""}}))
 
     (utils/with-ticket-auth
       ["1.2.246.562.10.222222222222"
@@ -195,4 +212,6 @@
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222223"
          :tutkinto ""
-         :osaamisala ""}))))
+         :tutkinto-nimi {:fi ""}
+         :osaamisala ""
+         :osaamisala-nimi {:fi ""}}))))

@@ -11,7 +11,6 @@
             [oph.ehoks.virkailija.auth :as auth]
             [oph.ehoks.user :as user]
             [oph.ehoks.schema :as schema]
-            [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.schema :as hoks-schema]
