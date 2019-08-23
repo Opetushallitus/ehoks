@@ -206,17 +206,17 @@
         (println "Missing:")
         (p/pprint (second diff))))))
 
-(defn eq [value expected]
-  (eq-check value expected)
-  (is (= value expected)))
-
-(defmacro eq=
+(defmacro eq
   ([value expect msg]
-    `(do (eq-check ~value ~expect)
-         (is (= ~value ~expect) ~msg)))
+    `(do (let [v# ~value
+               e# ~expect]
+           (eq-check v# e#)
+           (is (= v# e# ~msg)))))
   ([value expect]
-    `(do (eq-check ~value ~expect)
-         (is (= ~value ~expect)))))
+    `(do (let [v# ~value
+               e# ~expect]
+           (eq-check v# e#)
+           (is (= v# e#))))))
 
 (defn with-database [f]
   (m/clean!)
