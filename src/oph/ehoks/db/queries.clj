@@ -10,9 +10,36 @@
 
 (def select-join-template (read-sql-file "select_join.sql"))
 
-(def delete-osaamisen-osoittamiset-template
-  (read-sql-file
-    "hoksit/delete_osaamisen_osoittaminen_and_nayttoymparisto_by_oo_id.sql"))
+; (def delete-osaamisen-osoittamiset-template
+;   (read-sql-file
+;     "hoksit/delete_osaamisen_osoittaminen_and_nayttoymparisto_by_oo_id.sql"))
+(def delete-by-tutkinnon-osa-by-hoks-id-by-template (read-sql-file "hoksit/delete_oo_by_tutkinnonosa_by_hoks_id.sql"))
+
+(def delete-by-yto-osa-alue-by-hoks-id-by-template (read-sql-file "hoksit/delete_oo_by_yto_osaalue_by_hoks_id.sql"))
+
+(def delete-nayttoymparisto-by-oo-osa-by-hoks-id-by-template
+  (read-sql-file "hoksit/delete_nayttoymparisto_by_osaamisen_osoittaminen_by_tutkinnon_osa_by_hoks.sql"))
+
+(def delete-nayttoymparisto-by-oo-osa-alue-by-hoks-id-by-template
+  (read-sql-file "hoksit/delete_nayttoymparisto_by_osaamisen_osoittaminen_by_yto_osa_alue_by_hoks.sql"))
+
+(def delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa-by-hoks-id-by-template
+  (read-sql-file "hoksit/delete_tyoelama_osaamisen_arvioijat_tutkinnon_osat.sql"))
+
+(def delete-tyoelama-osaamisen-arvioijat-yto-osa-alueet-by-hoks-id-by-template
+(read-sql-file "hoksit/delete_kj_osaamisen_arvioijat_yto_osa_alueet.sql"))
+
+(def delete-kj-osaamisen-arvioijat-tutkinnon-osa-by-hoks-id-by-template
+(read-sql-file "hoksit/delete_kj_osaamisen_arvioijat_tutkinnon_osat.sql"))
+
+(def delete-kj-osaamisen-arvioijat-yto-osa-alueet-by-hoks-id-by-template
+(read-sql-file "hoksit/delete_kj_osaamisen_arvioijat_yto_osa_alueet.sql"))
+
+(def delete-osaamisen-hankkimistavat-by-tutkinnon-osa-by-hoks-id-template
+(read-sql-file "hoksit/delete_osaamisen_hankkimistavat_by_tutkinnon_osa_by_hoks.sql"))
+
+(def delete-osaamisen-hankkimistavat-by-yto-osa-alue-by-hoks-id-template
+(read-sql-file "hoksit/delete_osaamisen_hankkimistavat_by_yto_osa_alue.sql"))
 
 (defn populate-sql [m sql]
   (reduce
@@ -26,6 +53,36 @@
 
 (defn generate-select-id-by [m]
   (populate-sql m select-id-by-template))
+
+(defn generate-delete-oo-tutkinnon-osa-by [m]
+  (populate-sql m delete-by-tutkinnon-osa-by-hoks-id-by-template))
+
+(defn generate-delete-oo-yto-osa-alue-by [m]
+  (populate-sql m delete-by-yto-osa-alue-by-hoks-id-by-template))
+
+(defn generate-delete-nayttoymparisto-by-oo-by-osa-by-hoks-id [m]
+  (populate-sql m delete-nayttoymparisto-by-oo-osa-by-hoks-id-by-template))
+
+(defn generate-delete-nayttoymparisto-by-oo-by-osa-alue-by-hoks-id [m]
+(populate-sql m delete-nayttoymparisto-by-oo-osa-alue-by-hoks-id-by-template))
+
+(defn generate-delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa [m]
+  (populate-sql m delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa-by-hoks-id-by-template))
+
+(defn generate-delete-tyoelama-osaamisen-arvioijat-osa-alueet [m]
+  (populate-sql m delete-tyoelama-osaamisen-arvioijat-yto-osa-alueet-by-hoks-id-by-template))
+
+(defn generate-delete-kj-osaamisen-arvioijat-tutkinnon-osa [m]
+  (populate-sql m delete-kj-osaamisen-arvioijat-tutkinnon-osa-by-hoks-id-by-template))
+
+(defn generate-delete-kj-osaamisen-arvioijat-osa-alueet [m]
+  (populate-sql m delete-tyoelama-osaamisen-arvioijat-yto-osa-alueet-by-hoks-id-by-template))
+
+(defn generate-delete-osaamisen-hankkimistavat-tutkinnon-osa [m]
+(populate-sql m delete-osaamisen-hankkimistavat-by-tutkinnon-osa-by-hoks-id-template))
+
+(defn generate-delete-osaamisen-hankkimistavat-tutkinnon-osan-osa-alue [m]
+  (populate-sql m delete-osaamisen-hankkimistavat-by-yto-osa-alue-by-hoks-id-template))
 
 (defn generate-select-join [m]
   (populate-sql m select-join-template))
@@ -43,8 +100,6 @@
 
 (defq select-hoksit "hoksit/select.sql")
 (defq delete-hoksit-by-id "hoksit/delete_by_id.sql")
-(defq delete-osaamisen-osoittaminen-and-nayttoymparisto-by-oo-id
-      "hoksit/delete_osaamisen_osoittaminen_and_nayttoymparisto_by_oo_id.sql")
 (defq select-hoksit-by-oppija-oid)
 (defq select-hoksit-by-id)
 (defq select-hoksit-by-opiskeluoikeus-oid)
@@ -100,6 +155,10 @@
      :column "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
 (defq select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id)
+; (defq delete-oo-ahyto-by-hoks-id
+;       "hoksit/delete_oo_ahyto_by_hoks_id.sql")
+; (defq delete-oo-ahyto-naytto-by-hoks-id
+;       "hoksit/delete_oo_ahyto_naytto_by_hoks_id.sql")
 (def select-osaamisen-osoittamiset-by-ppto-id
   (generate-select-join
     {:table "osaamisen_osoittamiset"
@@ -212,81 +271,258 @@
      :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "yhteisen_tutkinnon_osan_osa_alue_id"}))
-(def select-ahyto-ids-by-hoks-id
-  (generate-select-id-by
-    {:id "id"
-     :table "aiemmin_hankitut_yhteiset_tutkinnon_osat"
-     :column "hoks_id"}))
-(def select-oo-ids-by-ahyto-id
-  (generate-select-id-by
-    {:id "osaamisen_osoittaminen_id"
-     :table "aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto"
-     :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
-(def select-ahyto-osa-alue-ids-by-ahyto-id
-  (generate-select-id-by
-    {:id "id"
-     :table "aiemmin_hankitut_yto_osa_alueet"
-     :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
-(def select-oo-ids-by-ahyto-osa-alue-id
-  (generate-select-id-by
-    {:id "osaamisen_osoittaminen_id"
-     :table "aiemmin_hankitun_yto_osa_alueen_naytto"
-     :column "aiemmin_hankittu_yto_osa_alue_id"}))
-(def select-ahato-ids-by-hoks-id
-  (generate-select-id-by
-    {:id "id"
-     :table "aiemmin_hankitut_ammat_tutkinnon_osat"
-     :column "hoks_id"}))
-(def select-oo-ids-by-ahato-id
-  (generate-select-id-by
-    {:id "osaamisen_osoittaminen_id"
-     :table "aiemmin_hankitun_ammat_tutkinnon_osan_naytto"
-     :column "aiemmin_hankittu_ammat_tutkinnon_osa_id"}))
-(def select-ahpto-ids-by-hoks-id
-  (generate-select-id-by
-    {:id "id"
-     :table "aiemmin_hankitut_paikalliset_tutkinnon_osat"
-     :column "hoks_id"}))
-(def select-oo-ids-by-ahpto-id
-  (generate-select-id-by
-    {:id "osaamisen_osoittaminen_id"
-     :table "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
-     :column "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
-(def select-hato-ids-by-hoks-id
-  (generate-select-id-by
-    {:id "id"
-     :table "hankittavat_ammat_tutkinnon_osat"
-     :column "hoks_id"}))
-(def select-oo-ids-by-hato-id
-  (generate-select-id-by
-    {:id "osaamisen_osoittaminen_id"
-     :table "hankittavan_ammat_tutkinnon_osan_naytto"
-     :column "hankittava_ammat_tutkinnon_osa_id"}))
-(def select-hpto-ids-by-hoks-id
-  (generate-select-id-by
-    {:id "id"
-     :table "hankittavat_paikalliset_tutkinnon_osat"
-     :column "hoks_id"}))
-(def select-oo-ids-by-hpto-id
-  (generate-select-id-by
-    {:id "osaamisen_osoittaminen_id"
-     :table "hankittavan_paikallisen_tutkinnon_osan_naytto"
-     :column "hankittava_paikallinen_tutkinnon_osa_id"}))
-(def select-hyto-ids-by-hoks-id
-  (generate-select-id-by
-    {:id "id"
-     :table "hankittavat_yhteiset_tutkinnon_osat"
-     :column "hoks_id"}))
-(def select-hyto-osa-alue-ids-by-hyto-id
-  (generate-select-id-by
-    {:id "id"
-     :table "yhteisen_tutkinnon_osan_osa_alueet"
-     :column "yhteinen_tutkinnon_osa_id"}))
-(def select-oo-ids-by-hyto-osa-alue-id
-  (generate-select-id-by
-    {:id "osaamisen_osoittaminen_id"
-     :table "yhteisen_tutkinnon_osan_osa_alueen_naytot"
-     :column "yhteisen_tutkinnon_osan_osa_alue_id"}))
+(def delete-ahato-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id
+(generate-delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa
+ {:tutkinnon-osa-table "aiemmin_hankitut_ammat_tutkinnon_osat"
+ :tutkinnon-osa-naytto-table "aiemmin_hankitun_ammat_tutkinnon_osan_naytto"
+ :tutkinnon-osa-id "aiemmin_hankittu_ammat_tutkinnon_osa_id"}))
+ (def delete-ahato-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id
+ (generate-delete-kj-osaamisen-arvioijat-tutkinnon-osa
+  {:tutkinnon-osa-table "aiemmin_hankitut_ammat_tutkinnon_osat"
+  :tutkinnon-osa-naytto-table "aiemmin_hankitun_ammat_tutkinnon_osan_naytto"
+  :tutkinnon-osa-id "aiemmin_hankittu_ammat_tutkinnon_osa_id"}))
+(def delete-oo-by-ahato-by-hoks-id
+(generate-delete-oo-tutkinnon-osa-by
+  {:tutkinnon-osa-table "aiemmin_hankitut_ammat_tutkinnon_osat"
+  :tutkinnon-osa-naytto-table "aiemmin_hankitun_ammat_tutkinnon_osan_naytto"
+  :tutkinnon-osa-id "aiemmin_hankittu_ammat_tutkinnon_osa_id"}))
+(def delete-ahato-nayttoymparisto-tutkinnon-osa-by-hoks-id
+(generate-delete-nayttoymparisto-by-oo-by-osa-by-hoks-id
+{:tutkinnon-osa-table "aiemmin_hankitut_ammat_tutkinnon_osat"
+ :tutkinnon-osa-naytto-table "aiemmin_hankitun_ammat_tutkinnon_osan_naytto"
+ :tutkinnon-osa-id "aiemmin_hankittu_ammat_tutkinnon_osa_id"}))
+(def delete-oo-by-ahyto-by-hoks-id
+  (generate-delete-oo-tutkinnon-osa-by
+  {:tutkinnon-osa-table "aiemmin_hankitut_yhteiset_tutkinnon_osat"
+  :tutkinnon-osa-naytto-table "aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto"
+  :tutkinnon-osa-id "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
+(def delete-oo-by-ahyto-yto-osa-alue-by-hoks-id
+  (generate-delete-oo-yto-osa-alue-by
+ {:tutkinnon-osa-table "aiemmin_hankitut_yhteiset_tutkinnon_osat"
+  :yto-osa-alueet-table "aiemmin_hankitut_yto_osa_alueet"
+  :yto-osa-alue-naytto-table "aiemmin_hankitun_yto_osa_alueen_naytto"
+  :tutkinnon-osa-id "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"
+  :yto-osa-alue-id "aiemmin_hankittu_yto_osa_alue_id"}))
+(def delete-ahyto-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id
+(generate-delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa
+  {:tutkinnon-osa-table "aiemmin_hankitut_yhteiset_tutkinnon_osat"
+  :tutkinnon-osa-naytto-table "aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto"
+  :tutkinnon-osa-id "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
+  (def delete-ahyto-tyoelama-arvioijat-by-yto-osa-alue-by-hoks-id
+    (generate-delete-tyoelama-osaamisen-arvioijat-osa-alueet
+   {:tutkinnon-osa-table "aiemmin_hankitut_yhteiset_tutkinnon_osat"
+    :yto-osa-alueet-table "aiemmin_hankitut_yto_osa_alueet"
+    :yto-osa-alue-naytto-table "aiemmin_hankitun_yto_osa_alueen_naytto"
+    :tutkinnon-osa-id "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"
+    :yto-osa-alue-id "aiemmin_hankittu_yto_osa_alue_id"}))
+  (def delete-ahyto-koulutuksen-jarjestaja-arvioijat-by-yto-osa-alue-by-hoks-id
+    (generate-delete-kj-osaamisen-arvioijat-osa-alueet
+   {:tutkinnon-osa-table "aiemmin_hankitut_yhteiset_tutkinnon_osat"
+    :yto-osa-alueet-table "aiemmin_hankitut_yto_osa_alueet"
+    :yto-osa-alue-naytto-table "aiemmin_hankitun_yto_osa_alueen_naytto"
+    :tutkinnon-osa-id "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"
+    :yto-osa-alue-id "aiemmin_hankittu_yto_osa_alue_id"}))
+  (def delete-ahyto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id
+  (generate-delete-kj-osaamisen-arvioijat-tutkinnon-osa
+    {:tutkinnon-osa-table "aiemmin_hankitut_yhteiset_tutkinnon_osat"
+    :tutkinnon-osa-naytto-table "aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto"
+    :tutkinnon-osa-id "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
+(def delete-ahyto-nayttoymparisto-osa-alueet-by-hoks-id
+  (generate-delete-nayttoymparisto-by-oo-by-osa-alue-by-hoks-id
+    {:tutkinnon-osa-table "aiemmin_hankitut_yhteiset_tutkinnon_osat"
+     :yto-osa-alueet-table "aiemmin_hankitut_yto_osa_alueet"
+     :yto-osa-alue-naytto-table "aiemmin_hankitun_yto_osa_alueen_naytto"
+     :tutkinnon-osa-id "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"
+     :yto-osa-alue-id "aiemmin_hankittu_yto_osa_alue_id"}))
+ (def delete-ahyto-nayttoymparisto-tutkinnon-osa-by-hoks-id
+   (generate-delete-nayttoymparisto-by-oo-by-osa-by-hoks-id
+     {:tutkinnon-osa-table "aiemmin_hankitut_yhteiset_tutkinnon_osat"
+      :tutkinnon-osa-naytto-table "aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto"
+      :tutkinnon-osa-id "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
+; (def select-oo-ids-by-ahyto-id
+;   (generate-select-id-by
+;     {:id "osaamisen_osoittaminen_id"
+;      :table "aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto"
+;      :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
+; (def select-ahyto-osa-alue-ids-by-ahyto-id
+;   (generate-select-id-by
+;     {:id "id"
+;      :table "aiemmin_hankitut_yto_osa_alueet"
+;      :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
+; (def select-oo-ids-by-ahyto-osa-alue-id
+;   (generate-select-id-by
+;     {:id "osaamisen_osoittaminen_id"
+;      :table "aiemmin_hankitun_yto_osa_alueen_naytto"
+;      :column "aiemmin_hankittu_yto_osa_alue_id"}))
+
+(def delete-hato-osaamisen-hankkimistavat-tutkinnon-osa-by-hoks-id
+(generate-delete-osaamisen-hankkimistavat-tutkinnon-osa
+  {:tutkinnon-osa-table "hankittavat_ammat_tutkinnon_osat"
+  :tutkinnon-osa-hankkimistapa-table "hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat"
+  :tutkinnon-osa-id "hankittava_ammat_tutkinnon_osa_id"}))
+(def delete-hato-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id
+(generate-delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa
+ {:tutkinnon-osa-table "hankittavat_ammat_tutkinnon_osat"
+ :tutkinnon-osa-naytto-table "hankittavan_ammat_tutkinnon_osan_naytto"
+ :tutkinnon-osa-id "hankittava_ammat_tutkinnon_osa_id"}))
+ (def delete-hato-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id
+ (generate-delete-kj-osaamisen-arvioijat-tutkinnon-osa
+  {:tutkinnon-osa-table "hankittavat_ammat_tutkinnon_osat"
+  :tutkinnon-osa-naytto-table "hankittavan_ammat_tutkinnon_osan_naytto"
+  :tutkinnon-osa-id "hankittava_ammat_tutkinnon_osa_id"}))
+ (def delete-oo-by-hato-by-hoks-id
+ (generate-delete-oo-tutkinnon-osa-by
+  {:tutkinnon-osa-table "hankittavat_ammat_tutkinnon_osat"
+  :tutkinnon-osa-naytto-table "hankittavan_ammat_tutkinnon_osan_naytto"
+  :tutkinnon-osa-id "hankittava_ammat_tutkinnon_osa_id"}))
+(def delete-hato-nayttoymparisto-tutkinnon-osa-by-hoks-id
+  (generate-delete-nayttoymparisto-by-oo-by-osa-by-hoks-id
+    {:tutkinnon-osa-table "hankittavat_ammat_tutkinnon_osat"
+    :tutkinnon-osa-naytto-table "hankittavan_ammat_tutkinnon_osan_naytto"
+    :tutkinnon-osa-id "hankittava_ammat_tutkinnon_osa_id"}))
+
+; (def select-ahato-ids-by-hoks-id
+;   (generate-select-id-by
+;     {:id "id"
+;      :table "aiemmin_hankitut_ammat_tutkinnon_osat"
+;      :column "hoks_id"}))
+; (def select-oo-ids-by-ahato-id
+;   (generate-select-id-by
+;     {:id "osaamisen_osoittaminen_id"
+;      :table "aiemmin_hankitun_ammat_tutkinnon_osan_naytto"
+;      :column "aiemmin_hankittu_ammat_tutkinnon_osa_id"}))
+; (def select-ahpto-ids-by-hoks-id
+;   (generate-select-id-by
+;     {:id "id"
+;      :table "aiemmin_hankitut_paikalliset_tutkinnon_osat"
+;      :column "hoks_id"}))
+; (def select-oo-ids-by-ahpto-id
+;   (generate-select-id-by
+;     {:id "osaamisen_osoittaminen_id"
+;      :table "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
+;      :column "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
+; (def select-hato-ids-by-hoks-id
+;   (generate-select-id-by
+;     {:id "id"
+;      :table "hankittavat_ammat_tutkinnon_osat"
+;      :column "hoks_id"}))
+; (def select-oo-ids-by-hato-id
+;   (generate-select-id-by
+;     {:id "osaamisen_osoittaminen_id"
+;      :table "hankittavan_ammat_tutkinnon_osan_naytto"
+;      :column "hankittava_ammat_tutkinnon_osa_id"}))
+(def delete-hpto-osaamisen-hankkimistavat-tutkinnon-osa-by-hoks-id
+(generate-delete-osaamisen-hankkimistavat-tutkinnon-osa
+ {:tutkinnon-osa-table "hankittavat_paikalliset_tutkinnon_osat"
+ :tutkinnon-osa-hankkimistapa-table "hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat"
+ :tutkinnon-osa-id "hankittava_paikallinen_tutkinnon_osa_id"}))
+(def delete-hpto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id
+(generate-delete-kj-osaamisen-arvioijat-tutkinnon-osa
+ {:tutkinnon-osa-table "hankittavat_paikalliset_tutkinnon_osat"
+ :tutkinnon-osa-naytto-table "hankittavan_paikallisen_tutkinnon_osan_naytto"
+ :tutkinnon-osa-id "hankittava_paikallinen_tutkinnon_osa_id"}))
+ (def delete-hpto-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id
+ (generate-delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa
+  {:tutkinnon-osa-table "hankittavat_paikalliset_tutkinnon_osat"
+  :tutkinnon-osa-naytto-table "hankittavan_paikallisen_tutkinnon_osan_naytto"
+  :tutkinnon-osa-id "hankittava_paikallinen_tutkinnon_osa_id"}))
+ (def delete-oo-by-hpto-by-hoks-id
+ (generate-delete-oo-tutkinnon-osa-by
+  {:tutkinnon-osa-table "hankittavat_paikalliset_tutkinnon_osat"
+  :tutkinnon-osa-naytto-table "hankittavan_paikallisen_tutkinnon_osan_naytto"
+  :tutkinnon-osa-id "hankittava_paikallinen_tutkinnon_osa_id"}))
+(def delete-hpto-nayttoymparisto-tutkinnon-osa-by-hoks-id
+  (generate-delete-nayttoymparisto-by-oo-by-osa-by-hoks-id
+    {:tutkinnon-osa-table "hankittavat_paikalliset_tutkinnon_osat"
+    :tutkinnon-osa-naytto-table "hankittavan_paikallisen_tutkinnon_osan_naytto"
+    :tutkinnon-osa-id "hankittava_paikallinen_tutkinnon_osa_id"}))
+(def delete-ahpto-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id
+(generate-delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa
+{:tutkinnon-osa-table "aiemmin_hankitut_paikalliset_tutkinnon_osat"
+ :tutkinnon-osa-naytto-table "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
+ :tutkinnon-osa-id "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
+ (def delete-ahpto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id
+ (generate-delete-kj-osaamisen-arvioijat-tutkinnon-osa
+ {:tutkinnon-osa-table "aiemmin_hankitut_paikalliset_tutkinnon_osat"
+  :tutkinnon-osa-naytto-table "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
+  :tutkinnon-osa-id "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
+ (def delete-oo-by-ahpto-by-hoks-id
+ (generate-delete-oo-tutkinnon-osa-by
+ {:tutkinnon-osa-table "aiemmin_hankitut_paikalliset_tutkinnon_osat"
+  :tutkinnon-osa-naytto-table "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
+  :tutkinnon-osa-id "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
+(def delete-ahpto-nayttoymparisto-tutkinnon-osa-by-hoks-id
+  (generate-delete-nayttoymparisto-by-oo-by-osa-by-hoks-id
+  {:tutkinnon-osa-table "aiemmin_hankitut_paikalliset_tutkinnon_osat"
+   :tutkinnon-osa-naytto-table "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
+   :tutkinnon-osa-id "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
+ (def delete-ahpto-osaamisen-hankkimistavat-tutkinnon-osa-by-hoks-id
+ (generate-delete-osaamisen-hankkimistavat-tutkinnon-osa
+   {:tutkinnon-osa-table "aiemmin_hankitut_paikalliset_tutkinnon_osat"
+    :tutkinnon-osa-naytto-table "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
+    :tutkinnon-osa-id "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
+
+; (def select-hpto-ids-by-hoks-id
+;   (generate-select-id-by
+;     {:id "id"
+;      :table "hankittavat_paikalliset_tutkinnon_osat"
+;      :column "hoks_id"}))
+; (def select-oo-ids-by-hpto-id
+;   (generate-select-id-by
+;     {:id "osaamisen_osoittaminen_id"
+;      :table "hankittavan_paikallisen_tutkinnon_osan_naytto"
+;      :column "hankittava_paikallinen_tutkinnon_osa_id"}))
+; (def select-hyto-ids-by-hoks-id
+;   (generate-select-id-by
+;     {:id "id"
+;      :table "hankittavat_yhteiset_tutkinnon_osat"
+;      :column "hoks_id"}))
+; (def select-hyto-osa-alue-ids-by-hyto-id
+;   (generate-select-id-by
+;     {:id "id"
+;      :table "yhteisen_tutkinnon_osan_osa_alueet"
+;      :column "yhteinen_tutkinnon_osa_id"}))
+; (def select-oo-ids-by-hyto-osa-alue-id
+;   (generate-select-id-by
+;     {:id "osaamisen_osoittaminen_id"
+;      :table "yhteisen_tutkinnon_osan_osa_alueen_naytot"
+;      :column "yhteisen_tutkinnon_osan_osa_alue_id"}))
+(def delete-hyto-tyoelama-arvioijat-by-yto-osa-alue-by-hoks-id
+  (generate-delete-tyoelama-osaamisen-arvioijat-osa-alueet
+ {:tutkinnon-osa-table "hankittavat_yhteiset_tutkinnon_osat"
+  :yto-osa-alueet-table "yhteisen_tutkinnon_osan_osa_alueet"
+  :yto-osa-alue-naytto-table "yhteisen_tutkinnon_osan_osa_alueen_naytot"
+  :tutkinnon-osa-id "yhteinen_tutkinnon_osa_id"
+  :yto-osa-alue-id "yhteisen_tutkinnon_osan_osa_alue_id"}))
+(def delete-hyto-koulutuksen-jarjestaja-arvioijat-by-yto-osa-alue-by-hoks-id
+  (generate-delete-kj-osaamisen-arvioijat-osa-alueet
+ {:tutkinnon-osa-table "hankittavat_yhteiset_tutkinnon_osat"
+  :yto-osa-alueet-table "yhteisen_tutkinnon_osan_osa_alueet"
+  :yto-osa-alue-naytto-table "yhteisen_tutkinnon_osan_osa_alueen_naytot"
+  :tutkinnon-osa-id "yhteinen_tutkinnon_osa_id"
+  :yto-osa-alue-id "yhteisen_tutkinnon_osan_osa_alue_id"}))
+(def delete-hyto-nayttoymparisto-osa-alueet-by-hoks-id
+  (generate-delete-nayttoymparisto-by-oo-by-osa-alue-by-hoks-id
+ {:tutkinnon-osa-table "hankittavat_yhteiset_tutkinnon_osat"
+  :yto-osa-alueet-table "yhteisen_tutkinnon_osan_osa_alueet"
+  :yto-osa-alue-naytto-table "yhteisen_tutkinnon_osan_osa_alueen_naytot"
+  :tutkinnon-osa-id "yhteinen_tutkinnon_osa_id"
+  :yto-osa-alue-id "yhteisen_tutkinnon_osan_osa_alue_id"}))
+(def delete-oo-by-hyto-yto-osa-alue-by-hoks-id
+  (generate-delete-oo-yto-osa-alue-by
+ {:tutkinnon-osa-table "hankittavat_yhteiset_tutkinnon_osat"
+  :yto-osa-alueet-table "yhteisen_tutkinnon_osan_osa_alueet"
+  :yto-osa-alue-naytto-table "yhteisen_tutkinnon_osan_osa_alueen_naytot"
+  :tutkinnon-osa-id "yhteinen_tutkinnon_osa_id"
+  :yto-osa-alue-id "yhteisen_tutkinnon_osan_osa_alue_id"}))
+(def delete-hyto-osaamisen-hankkimistavat-yto-osa-alue-by-hoks-id
+  (generate-delete-osaamisen-hankkimistavat-tutkinnon-osan-osa-alue
+ {:tutkinnon-osa-table "hankittavat_yhteiset_tutkinnon_osat"
+  :yto-osa-alueet-table "yhteisen_tutkinnon_osan_osa_alueet"
+  :yto-osa-alue-hankkimistapa-table "yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat"
+  :tutkinnon-osa-id "yhteinen_tutkinnon_osa_id"
+  :yto-osa-alue-id "yhteisen_tutkinnon_osan_osa_alue_id"}))
+
 (defq select-oppilaitos-oids
       "oppijat/select_oppilaitos_oids.sql")
 (defq select-oppilaitos-oids-by-koulutustoimija-oid

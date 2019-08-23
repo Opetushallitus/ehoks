@@ -75,6 +75,12 @@
   [table where-clause]
   (jdbc/delete! (get-db-connection) table where-clause))
 
+(defn execute! [where-clause]
+  (jdbc/execute! (get-db-connection) where-clause))
+
+(defn db-do-prepared! [where-clause]
+  (jdbc/db-do-prepared (get-db-connection) where-clause))
+
 (defn insert-multi! [t v]
   (jdbc/insert-multi! (get-db-connection) t v))
 
@@ -105,155 +111,275 @@
     [queries/select-hoksit-eid-by-eid eid]
     {}))
 
-(defn select-ahyto-ids-by-hoks-id [hoks-id]
-  (vec
-    (query
-      [queries/select-ahyto-ids-by-hoks-id hoks-id]
-      {:row-fn h/id-from-sql})))
+; (defn select-ahyto-ids-by-hoks-id [hoks-id]
+;   (vec
+;     (query
+;       [queries/select-ahyto-ids-by-hoks-id hoks-id]
+;       {:row-fn h/id-from-sql})))
+;
+; (defn select-ahyto-osa-alue-ids-by-ahyto-id [ahyto-id]
+;   (vec
+;     (query
+;       [queries/select-ahyto-osa-alue-ids-by-ahyto-id ahyto-id]
+;       {:row-fn h/id-from-sql})))
 
-(defn select-ahyto-osa-alue-ids-by-ahyto-id [ahyto-id]
-  (vec
-    (query
-      [queries/select-ahyto-osa-alue-ids-by-ahyto-id ahyto-id]
-      {:row-fn h/id-from-sql})))
+; (defn select-hyto-ids-by-hoks-id [hoks-id]
+;   (vec
+;     (query
+;       [queries/select-hyto-ids-by-hoks-id hoks-id]
+;       {:row-fn h/id-from-sql})))
+;
+; (defn select-hyto-osa-alue-ids-by-hyto-id [hyto-id]
+;   (vec
+;     (query
+;       [queries/select-hyto-osa-alue-ids-by-hyto-id hyto-id]
+;       {:row-fn h/id-from-sql})))
 
-(defn select-hyto-ids-by-hoks-id [hoks-id]
-  (vec
-    (query
-      [queries/select-hyto-ids-by-hoks-id hoks-id]
-      {:row-fn h/id-from-sql})))
+; (defn select-ahato-ids-by-hoks-id [hoks-id]
+;   (vec
+;     (query
+;       [queries/select-ahato-ids-by-hoks-id hoks-id]
+;       {:row-fn h/id-from-sql})))
+;
+; (defn select-ahpto-ids-by-hoks-id [hoks-id]
+;   (vec
+;     (query
+;       [queries/select-ahpto-ids-by-hoks-id hoks-id]
+;       {:row-fn h/id-from-sql})))
+;
+; (defn select-hato-ids-by-hoks-id [hoks-id]
+;   (vec
+;     (query
+;       [queries/select-hato-ids-by-hoks-id hoks-id]
+;       {:row-fn h/id-from-sql})))
+;
+; (defn select-hpto-ids-by-hoks-id [hoks-id]
+;   (vec
+;     (query
+;       [queries/select-hpto-ids-by-hoks-id hoks-id]
+;       {:row-fn h/id-from-sql})))
+;
+; (defn select-oo-ids-by-ahpto-id [ahpto-id]
+;   (vec
+;     (query
+;       [queries/select-oo-ids-by-ahpto-id ahpto-id]
+;       {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
 
-(defn select-hyto-osa-alue-ids-by-hyto-id [hyto-id]
-  (vec
-    (query
-      [queries/select-hyto-osa-alue-ids-by-hyto-id hyto-id]
-      {:row-fn h/id-from-sql})))
+; (defn select-oo-ids-by-ahyto-id [ahyto-id]
+;   (vec
+;     (query
+;       [queries/select-oo-ids-by-ahyto-id ahyto-id]
+;       {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
+;
+; (defn select-oo-ids-by-ahyto-osa-alue-id [ahyto-osa-alue-id]
+;   (vec
+;     (query
+;       [queries/select-oo-ids-by-ahyto-osa-alue-id ahyto-osa-alue-id]
+;       {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
 
-(defn select-ahato-ids-by-hoks-id [hoks-id]
-  (vec
-    (query
-      [queries/select-ahato-ids-by-hoks-id hoks-id]
-      {:row-fn h/id-from-sql})))
+; (defn select-oo-ids-by-ahato-id [ahato-id]
+;   (vec
+;     (query
+;       [queries/select-oo-ids-by-ahato-id ahato-id]
+;       {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
+;
+; (defn select-oo-ids-by-hato-id [hato-id]
+;   (vec
+;     (query
+;       [queries/select-oo-ids-by-hato-id hato-id]
+;       {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
+;
+; (defn select-oo-ids-by-hpto-id [hpto-id]
+;   (vec
+;     (query
+;       [queries/select-oo-ids-by-hpto-id hpto-id]
+;       {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
 
-(defn select-ahpto-ids-by-hoks-id [hoks-id]
-  (vec
-    (query
-      [queries/select-ahpto-ids-by-hoks-id hoks-id]
-      {:row-fn h/id-from-sql})))
+; (defn select-oo-ids-by-hyto-osa-alue-id [hyto-osa-alue-id]
+;   (vec
+;     (query
+;       [queries/select-oo-ids-by-ahyto-osa-alue-id hyto-osa-alue-id]
+;       {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
 
-(defn select-hato-ids-by-hoks-id [hoks-id]
-  (vec
-    (query
-      [queries/select-hato-ids-by-hoks-id hoks-id]
-      {:row-fn h/id-from-sql})))
 
-(defn select-hpto-ids-by-hoks-id [hoks-id]
-  (vec
-    (query
-      [queries/select-hpto-ids-by-hoks-id hoks-id]
-      {:row-fn h/id-from-sql})))
+; (defn delete-hoksit2-by-id! [hoks-id]
+;   (let [
+;         ahato-ids (select-ahato-ids-by-hoks-id hoks-id)
+;         ahato-osaamisen-osoittamiset-ids
+;         (into [] cat
+;               (mapv select-oo-ids-by-ahato-id ahato-ids))
+;         ahpto-ids (select-ahpto-ids-by-hoks-id hoks-id)
+;         ahpto-osaamisen-osoittamiset-ids
+;         (into [] cat
+;               (mapv select-oo-ids-by-ahpto-id ahpto-ids))
+;         hato-ids (select-hato-ids-by-hoks-id hoks-id)
+;         hato-osaamisen-osoittamiset-ids
+;         (into [] cat
+;               (mapv select-oo-ids-by-hato-id ahyto-ids))
+;         hpto-ids (select-hpto-ids-by-hoks-id hoks-id)
+;         hpto-osaamisen-osoittamiset-ids
+;         (into [] cat
+;               (mapv select-oo-ids-by-hpto-id hpto-ids))
+;
+;
+;         hyto-ids (select-hyto-ids-by-hoks-id hoks-id)
+;         hyto-osa-alue-ids
+;         (into [] cat
+;               (mapv select-hyto-osa-alue-ids-by-hyto-id hyto-ids))
+;         hyto-osa-alue-oo-ids
+;         (into [] cat
+;               (mapv select-oo-ids-by-hyto-osa-alue-id hyto-osa-alue-ids))
+;         oo-ids
+;         (vec
+;           (concat ahyto-osaamisen-osoittamiset-ids
+;                   ahyto-osa-alue-oo-ids ahpto-osaamisen-osoittamiset-ids
+;                   ahato-osaamisen-osoittamiset-ids
+;                   ahpto-osaamisen-osoittamiset-ids
+;                   hato-osaamisen-osoittamiset-ids
+;                   hpto-osaamisen-osoittamiset-ids
+;                   hyto-osa-alue-oo-ids))]
+;     (query
+;       [queries/delete-hoksit-by-id hoks-id]
+;       {})
+;     (map delete-osaamisen-osoittaminen-and-nayttoymparisto-by-oo-id
+;          oo-ids)))
 
-(defn select-oo-ids-by-ahpto-id [ahpto-id]
-  (vec
-    (query
-      [queries/select-oo-ids-by-ahpto-id ahpto-id]
-      {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
+; (defn delete-ahyto-by-id! [hoks-id]
+;   (query
+;     [queries/delete-oo-ahyto-by-hoks-id hoks-id]
+;     {}))
 
-(defn select-oo-ids-by-ahyto-id [ahyto-id]
-  (vec
-    (query
-      [queries/select-oo-ids-by-ahyto-id ahyto-id]
-      {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
 
-(defn select-oo-ids-by-ahyto-osa-alue-id [ahyto-osa-alue-id]
-  (vec
-    (query
-      [queries/select-oo-ids-by-ahyto-osa-alue-id ahyto-osa-alue-id]
-      {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
+; (defn delete-hoksit-by-id! [hoks-id]
+;   (execute! [queries/delete-oo-ahyto-by-hoks-id hoks-id] :result-set-fn first))
 
-(defn select-oo-ids-by-ahato-id [ahato-id]
-  (vec
+(defn delete-tyoelama-osaamisen-arvioijat-by-hoks-id! [hoks-id]
+  (do
     (query
-      [queries/select-oo-ids-by-ahato-id ahato-id]
-      {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
-
-(defn select-oo-ids-by-hato-id [hato-id]
-  (vec
-    (query
-      [queries/select-oo-ids-by-hato-id hato-id]
-      {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
-
-(defn select-oo-ids-by-hpto-id [hpto-id]
-  (vec
-    (query
-      [queries/select-oo-ids-by-hpto-id hpto-id]
-      {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
-
-(defn select-oo-ids-by-hyto-osa-alue-id [hyto-osa-alue-id]
-  (vec
-    (query
-      [queries/select-oo-ids-by-ahyto-osa-alue-id hyto-osa-alue-id]
-      {:row-fn h/osaamisen-osoittaminen-id-from-sql})))
-
-(defn delete-osaamisen-osoittaminen-and-nayttoymparisto-by-oo-id [oo-id]
-  (query
-    [queries/delete-osaamisen-osoittaminen-and-nayttoymparisto-by-oo-id
-     oo-id]
-    {}))
-
-(defn delete-hoksit2-by-id! [hoks-id]
-  (let [ahyto-ids (select-ahyto-ids-by-hoks-id hoks-id)
-        ahyto-osaamisen-osoittamiset-ids
-        (into [] cat
-              (mapv select-oo-ids-by-ahyto-id ahyto-ids))
-        ahyto-osa-alue-ids
-        (into [] cat
-              (mapv select-ahyto-osa-alue-ids-by-ahyto-id ahyto-ids))
-        ahyto-osa-alue-oo-ids
-        (into [] cat
-              (mapv select-oo-ids-by-ahyto-osa-alue-id ahyto-osa-alue-ids))
-        ahato-ids (select-ahato-ids-by-hoks-id hoks-id)
-        ahato-osaamisen-osoittamiset-ids
-        (into [] cat
-              (mapv select-oo-ids-by-ahato-id ahato-ids))
-        ahpto-ids (select-ahpto-ids-by-hoks-id hoks-id)
-        ahpto-osaamisen-osoittamiset-ids
-        (into [] cat
-              (mapv select-oo-ids-by-ahpto-id ahpto-ids))
-        hato-ids (select-hato-ids-by-hoks-id hoks-id)
-        hato-osaamisen-osoittamiset-ids
-        (into [] cat
-              (mapv select-oo-ids-by-hato-id ahyto-ids))
-        hpto-ids (select-hpto-ids-by-hoks-id hoks-id)
-        hpto-osaamisen-osoittamiset-ids
-        (into [] cat
-              (mapv select-oo-ids-by-hpto-id hpto-ids))
-        hyto-ids (select-hyto-ids-by-hoks-id hoks-id)
-        hyto-osa-alue-ids
-        (into [] cat
-              (mapv select-hyto-osa-alue-ids-by-hyto-id hyto-ids))
-        hyto-osa-alue-oo-ids
-        (into [] cat
-              (mapv select-oo-ids-by-hyto-osa-alue-id hyto-osa-alue-ids))
-        oo-ids
-        (vec
-          (concat ahyto-osaamisen-osoittamiset-ids
-                  ahyto-osa-alue-oo-ids ahpto-osaamisen-osoittamiset-ids
-                  ahato-osaamisen-osoittamiset-ids
-                  ahpto-osaamisen-osoittamiset-ids
-                  hato-osaamisen-osoittamiset-ids
-                  hpto-osaamisen-osoittamiset-ids
-                  hyto-osa-alue-oo-ids))]
-    (query
-      [queries/delete-hoksit-by-id hoks-id]
+      [queries/delete-ahyto-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
       {})
-    (map delete-osaamisen-osoittaminen-and-nayttoymparisto-by-oo-id
-         oo-ids)))
+    (query
+      [queries/delete-ahyto-tyoelama-arvioijat-by-yto-osa-alue-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-hyto-tyoelama-arvioijat-by-yto-osa-alue-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-hpto-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-hato-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-ahato-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-ahpto-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})))
+
+(defn delete-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hoks-id! [hoks-id]
+  (do
+    (query
+      [queries/delete-ahyto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-ahyto-koulutuksen-jarjestaja-arvioijat-by-yto-osa-alue-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-hyto-koulutuksen-jarjestaja-arvioijat-by-yto-osa-alue-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-hpto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-hato-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-ahato-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-ahpto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+        ;; ahato ahpto ja ahyto delete kj-osaamisen arvioijat by todennettuarviointi
+
+        ))
+
+(defn delete-osaamisen-osoittamiset-by-hoks-id! [hoks-id]
+  (do
+    (query
+      [queries/delete-oo-by-ahyto-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-oo-by-ahyto-yto-osa-alue-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-oo-by-hyto-yto-osa-alue-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-oo-by-ahato-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-oo-by-hato-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-oo-by-hpto-by-hoks-id hoks-id]
+      {})
+    (query
+      [queries/delete-oo-by-ahpto-by-hoks-id hoks-id]
+      {})))
+
+(defn delete-nayttoymparistot-by-hoks-id! [hoks-id]
+(do
+  (query
+    [queries/delete-hyto-nayttoymparisto-osa-alueet-by-hoks-id hoks-id]
+    {})
+  (query
+    [queries/delete-ahyto-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
+    {})
+  (query
+    [queries/delete-ahyto-nayttoymparisto-osa-alueet-by-hoks-id hoks-id]
+    {})
+  (query
+    [queries/delete-ahpto-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
+    {})
+  (query
+    [queries/delete-hpto-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
+    {})
+  (query
+    [queries/delete-ahato-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
+    {})
+  (query
+    [queries/delete-hato-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
+    {})))
+
+(defn delete-eka! [hoks-id]
+  (query
+    [queries/delete-ahato-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+    {})
+  )
+
+(defn delete-osaamisen-hankimistavat-by-hoks-id! [hoks-id]
+(do
+  (query
+    [queries/delete-hyto-osaamisen-hankkimistavat-yto-osa-alue-by-hoks-id hoks-id]
+    {})
+  (query
+    [queries/delete-hato-osaamisen-hankkimistavat-tutkinnon-osa-by-hoks-id hoks-id]
+    {})
+  (query
+    [queries/delete-hpto-osaamisen-hankkimistavat-tutkinnon-osa-by-hoks-id hoks-id]
+    {})))
 
 (defn delete-hoksit-by-id! [hoks-id]
+(do
+  (delete-tyoelama-osaamisen-arvioijat-by-hoks-id! hoks-id)
+  (delete-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hoks-id! hoks-id)
+  (delete-nayttoymparistot-by-hoks-id! hoks-id)
+  (delete-osaamisen-hankimistavat-by-hoks-id! hoks-id)
+  (delete-osaamisen-osoittamiset-by-hoks-id! hoks-id)
   (query
     [queries/delete-hoksit-by-id hoks-id]
-    {}))
+    {})))
 
 (defn select-hoksit-by-opiskeluoikeus-oid [oid]
   (query
