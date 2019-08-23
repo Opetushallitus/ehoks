@@ -16,8 +16,6 @@
 
 (use-fixtures :each utils/with-database)
 
-(use-fixtures :once utils/clean-db)
-
 (defn create-app [session-store]
   (cache/clear-cache!)
   (common-api/create-app handler/app-routes session-store))

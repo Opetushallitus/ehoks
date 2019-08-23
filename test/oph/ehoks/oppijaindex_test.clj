@@ -8,8 +8,6 @@
 
 (t/use-fixtures :each utils/with-database)
 
-(t/use-fixtures :once utils/clean-db)
-
 (def opiskeluoikeus-data
   {:oppilaitos {:oid "1.2.246.562.10.222222222222"}
    :suoritukset

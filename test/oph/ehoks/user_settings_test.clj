@@ -5,8 +5,6 @@
 
 (t/use-fixtures :each utils/with-database)
 
-(t/use-fixtures :once utils/clean-db)
-
 (t/deftest save-settings-new-test
   (t/testing "Save new settings"
     (sut/save-settings! "1.2.246.562.24.42345678625" {:hello "World!"})

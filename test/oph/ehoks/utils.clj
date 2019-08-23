@@ -224,9 +224,6 @@
   (f)
   (m/clean!))
 
-(defn ^:deprecated clean-db [f]
-  (f))
-
 (defmacro with-db [& body]
   `(do (m/clean!)
        (m/migrate!)

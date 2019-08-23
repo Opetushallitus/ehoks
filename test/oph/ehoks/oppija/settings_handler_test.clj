@@ -7,8 +7,6 @@
 
 (t/use-fixtures :each utils/with-database)
 
-(t/use-fixtures :once utils/clean-db)
-
 (def base-url "/ehoks-oppija-backend/api/v1/oppija/session/settings")
 
 (t/deftest user-settings

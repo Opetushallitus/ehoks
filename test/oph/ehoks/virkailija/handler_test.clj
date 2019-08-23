@@ -6,7 +6,6 @@
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
