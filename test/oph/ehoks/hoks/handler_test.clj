@@ -55,51 +55,51 @@
 (defn get-hoks-url [hoks path]
   (format "%s/%d/%s" url (:id hoks) path))
 
+(defn- mock-st-request
+  ([app full-url method data]
+    (let [req (mock/request
+                method
+                full-url)]
+      (utils/with-service-ticket
+        app
+        (if (some? data)
+          (mock/json-body req data)
+          req))))
+  ([app full-url]
+    (mock-st-request app full-url :get nil)))
+
+(defn- mock-st-get [app full-url]
+  (mock-st-request app full-url))
+
+(defn- mock-st-post [app full-url data]
+  (mock-st-request app full-url :post data))
+
+(defn- mock-st-patch [app full-url data]
+  (mock-st-request app full-url :patch data))
+
+(defn- mock-st-put [app full-url data]
+  (mock-st-request app full-url :put data))
+
 (defn- create-mock-post-request
   ([path body app hoks]
     (create-mock-post-request (format "%d/%s" (:id hoks) path) body app))
   ([path body app]
-    (utils/with-service-ticket
-      app
-      (-> (mock/request
-            :post
-            (format "%s/%s" url path))
-          (mock/json-body body)))))
-
-(defn- create-mock-get-request [path app]
-  (utils/with-service-ticket
-    app
-    (mock/request
-      :get
-      path)))
+    (mock-st-post app (format "%s/%s" url path) body)))
 
 (defn- create-mock-hoks-osa-get-request [path app hoks]
-  (create-mock-get-request (get-hoks-url hoks (str path "/1")) app))
+  (mock-st-get app (get-hoks-url hoks (str path "/1"))))
 
 (defn- create-mock-hoks-get-request [hoks-id app]
-  (create-mock-get-request (format "%s/%d" url hoks-id) app))
-
-(defn- create-mock-patch-request [path patched-data app]
-  (utils/with-service-ticket
-    app
-    (-> (mock/request
-          :patch
-          path)
-        (mock/json-body patched-data))))
+  (mock-st-get app (format "%s/%d" url hoks-id)))
 
 (defn- create-mock-hoks-osa-patch-request [path app patched-data]
-  (create-mock-patch-request (format "%s/1/%s/1" url path) patched-data app))
+  (mock-st-patch app (format "%s/1/%s/1" url path) patched-data))
 
 (defn- create-mock-hoks-patch-request [hoks-id patched-data app]
-  (create-mock-patch-request (format "%s/%d" url hoks-id) patched-data app))
+  (mock-st-patch app (format "%s/%d" url hoks-id) patched-data))
 
 (defn- create-mock-hoks-put-request [hoks-id updated-data app]
-  (utils/with-service-ticket
-    app
-    (-> (mock/request
-          :put
-          (format "%s/%d" url hoks-id))
-        (mock/json-body updated-data))))
+  (mock-st-put app (format "%s/%d" url hoks-id) updated-data))
 
 (def hpto-path "hankittava-paikallinen-tutkinnon-osa")
 (def hpto-data {:nimi "222"
@@ -125,25 +125,16 @@
   (testing "GET newly created hankittava paikallinen tutkinnon osa"
     (with-hoks-and-app
       [hoks app]
-      (let [ppto-response
-            (utils/with-service-ticket
-              app
-              (-> (mock/request
-                    :post
-                    (get-hoks-url hoks hpto-path))
-                  (mock/json-body hpto-data)))
+      (let [ppto-response (mock-st-post
+                            app (get-hoks-url hoks hpto-path) hpto-data)
             body (utils/parse-body (:body ppto-response))]
         (is (= (:status ppto-response) 200))
         (eq body {:data
                   {:uri
                    (get-hoks-url hoks (format "%s/1" hpto-path))}
                   :meta {:id 1}})
-        (let [ppto-new
-              (utils/with-service-ticket
-                app
-                (mock/request
-                  :get
-                  (get-hoks-url hoks (format "%s/1" hpto-path))))]
+        (let [ppto-new (mock-st-get
+                         app (get-hoks-url hoks (format "%s/1" hpto-path)))]
           (eq
             (:data (utils/parse-body (:body ppto-new)))
             (assoc
@@ -154,21 +145,12 @@
   (testing "PATCH all hankittava paikallinen tutkinnon osa"
     (with-hoks-and-app
       [hoks app]
-      (utils/with-service-ticket
-        app
-        (-> (mock/request
-              :post
-              (get-hoks-url hoks hpto-path))
-            (mock/json-body hpto-data)))
+      (mock-st-post app (get-hoks-url hoks hpto-path) hpto-data)
       (let [patch-response
-            (utils/with-service-ticket
+            (mock-st-patch
               app
-              (->
-                (mock/request
-                  :patch
-                  (get-hoks-url hoks (format "%s/1" hpto-path)))
-                (mock/json-body
-                  (assoc hpto-data :nimi "333" :olennainen-seikka false))))]
+              (get-hoks-url hoks (format "%s/1" hpto-path))
+              (assoc hpto-data :nimi "333" :olennainen-seikka false))]
         (is (= (:status patch-response) 204))))))
 
 (deftest patch-one-hankittava-paikallinen-tutkinnon-osa
@@ -176,24 +158,16 @@
     (with-hoks-and-app
       [hoks app]
       (let [ppto-response
-            (utils/with-service-ticket
-              app
-              (-> (mock/request
-                    :post
-                    (get-hoks-url hoks hpto-path))
-                  (mock/json-body hpto-data)))
-            ppto-body (utils/parse-body
-                        (:body ppto-response))
+            (mock-st-post app (get-hoks-url hoks hpto-path) hpto-data)
+            ppto-body (utils/parse-body (:body ppto-response))
             patch-response
-            (utils/with-service-ticket
+            (mock-st-patch
               app
-              (-> (mock/request
-                    :patch
-                    (get-hoks-url hoks (format "%s/1" hpto-path)))
-                  (mock/json-body
-                    {:id 1 :nimi "2223"})))
+              (get-hoks-url hoks (format "%s/1" hpto-path))
+              {:id 1 :nimi "2223"})
             get-response (-> (get-in ppto-body [:data :uri])
-                             get-authenticated :data)]
+                             get-authenticated
+                             :data)]
         (is (= (:status patch-response) 204))
         (eq get-response
             (assoc hpto-data
@@ -296,12 +270,10 @@
       [hoks app]
       (create-mock-post-request hao-path hao-data app hoks)
       (let [patch-response
-            (utils/with-service-ticket
+            (mock-st-patch
               app
-              (-> (mock/request
-                    :patch
-                    (get-hoks-url hoks (str hao-path "/1")))
-                  (mock/json-body (assoc patch-all-hao-data :id 1))))
+              (get-hoks-url hoks (str hao-path "/1"))
+              (assoc patch-all-hao-data :id 1))
             get-response (create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status patch-response) 204))
         (eq (utils/parse-body (:body get-response))
@@ -311,26 +283,19 @@
   (testing "PATCH one value hankittava ammatillinen osaaminen"
     (with-hoks-and-app
       [hoks app]
-      (utils/with-service-ticket
+      (mock-st-post
         app
-        (-> (mock/request
-              :post
-              (format
-                "%s/1/hankittava-ammat-tutkinnon-osa"
-                url))
-            (mock/json-body
-              hao-data)))
+        (format
+          "%s/1/hankittava-ammat-tutkinnon-osa"
+          url) hao-data)
       (let [response
-            (utils/with-service-ticket
+            (mock-st-patch
               app
-              (-> (mock/request
-                    :patch
-                    (format
-                      "%s/1/%s/1"
-                      url hao-path))
-                  (mock/json-body
-                    {:id 1
-                     :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})))]
+              (format
+                "%s/1/%s/1"
+                url hao-path)
+              {:id 1
+               :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})]
         (is (= (:status response) 204))))))
 
 (defn- assert-post-response-is-ok [post-path post-response]
@@ -925,10 +890,7 @@
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           response
-          (utils/with-service-ticket
-            (create-app nil)
-            (-> (mock/request :post url)
-                (mock/json-body hoks-data)))
+          (mock-st-post (create-app nil) url hoks-data)
           body (utils/parse-body (:body response))]
       (is (= (:status response) 200))
       (eq body {:data {:uri (format "%s/1" url)} :meta {:id 1}})
@@ -946,15 +908,9 @@
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
-      (utils/with-service-ticket
-        app
-        (-> (mock/request :post url)
-            (mock/json-body hoks-data)))
+      (mock-st-post app url hoks-data)
       (let [response
-            (utils/with-service-ticket
-              app
-              (-> (mock/request :post url)
-                  (mock/json-body hoks-data)))]
+            (mock-st-post app url hoks-data)]
         (is (= (:status response) 400))
         (is (= (utils/parse-body (:body response))
                {:error
@@ -967,10 +923,7 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
       (let [response
-            (utils/with-service-ticket
-              (create-app nil)
-              (-> (mock/request :post url)
-                  (mock/json-body hoks-data)))]
+            (mock-st-post (create-app nil) url hoks-data)]
         (is (= (:status response) 400))
         (is (= (utils/parse-body (:body response))
                {:error
@@ -983,10 +936,7 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
       (let [response
-            (utils/with-service-ticket
-              (create-app nil)
-              (-> (mock/request :post url)
-                  (mock/json-body hoks-data)))]
+            (mock-st-post (create-app nil) url hoks-data)]
         (is (= (:status response) 401))))))
 
 (deftest prevent-getting-unauthorized-hoks
@@ -1004,9 +954,7 @@
               "1.2.246.562.24.47861388608")
             body (utils/parse-body (:body response))]
         (is (= (:status
-                 (utils/with-service-ticket
-                   (create-app nil)
-                   (mock/request :get (get-in body [:data :uri]))))
+                 (mock-st-get (create-app nil) (get-in body [:data :uri])))
                401))))))
 
 (deftest get-last-version-of-hoks
@@ -1016,10 +964,7 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
       (let [response
-            (utils/with-service-ticket
-              (create-app nil)
-              (-> (mock/request :post url)
-                  (mock/json-body hoks-data)))
+            (mock-st-post (create-app nil) url hoks-data)
             body (utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (eq body {:data {:uri (format "%s/1" url)} :meta {:id 1}})
@@ -1035,31 +980,30 @@
   (testing "Prevent patching opiskeluoikeus or oppija oid"
     (let [app (create-app nil)]
       (let [response
-            (utils/with-service-ticket
+            (mock-st-post
               app
-              (-> (mock/request :post url)
-                  (mock/json-body
-                    {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"})))
+              url
+              {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+               :oppija-oid "1.2.246.562.24.12312312312"
+               :ensikertainen-hyvaksyminen "2018-12-15"})
             body (utils/parse-body (:body response))]
-        (is (= (:status
-                 (utils/with-service-ticket
+        (is (= (get
+                 (mock-st-patch
                    app
-                   (-> (mock/request :patch (get-in body [:data :uri]))
-                       (mock/json-body
-                         {:id (get-in body [:meta :id])
-                          :opiskeluoikeus-oid "1.2.246.562.15.00000000001"}))))
+                   (get-in body [:data :uri])
+                   {:id (get-in body [:meta :id])
+                    :opiskeluoikeus-oid "1.2.246.562.15.00000000001"})
+                 :status)
                400)
             "Should return bad request for updating opiskeluoikeus oid")
 
-        (is (= (:status
-                 (utils/with-service-ticket
+        (is (= (get
+                 (mock-st-patch
                    app
-                   (-> (mock/request :patch (get-in body [:data :uri]))
-                       (mock/json-body
-                         {:id (get-in body [:meta :id])
-                          :oppija-oid "1.2.246.562.24.12312312313"}))))
+                   (get-in body [:data :uri])
+                   {:id (get-in body [:meta :id])
+                    :oppija-oid "1.2.246.562.24.12312312313"})
+                 :status)
                400)
             "Should return bad request for updating oppija oid")))))
 
@@ -1567,16 +1511,11 @@
 (deftest get-hoks-by-id-not-found
   (testing "GET HOKS by hoks-id"
     (let [response
-          (utils/with-service-ticket
-            (create-app nil)
-            (mock/request :get
-                          (format "%s/%s"
-                                  url 43857)))]
+          (mock-st-get (create-app nil) (format "%s/%s" url 43857))]
       (is (= (:status response) 404)))))
 
 (deftest get-hoks-by-opiskeluoikeus-oid
   (testing "GET HOKS by opiskeluoikeus-oid"
-
     (let [opiskeluoikeus-oid "1.2.246.562.15.00000000001"
           hoks-data {:opiskeluoikeus-oid opiskeluoikeus-oid
                      :oppija-oid "1.2.246.562.24.12312312312"
@@ -1584,25 +1523,14 @@
                      :osaamisen-hankkimisen-tarve false}
           app (create-app nil)]
       (let [response
-            (utils/with-service-ticket
-              app
-              (mock/request :get
-                            (format "%s/opiskeluoikeus/%s"
-                                    url opiskeluoikeus-oid)))]
-
+            (mock-st-get
+              app (format "%s/opiskeluoikeus/%s" url opiskeluoikeus-oid))]
         (is (= (:status response) 404)))
-      (utils/with-service-ticket
-        app
-        (-> (mock/request :post url)
-            (mock/json-body hoks-data)))
+      (mock-st-post app url hoks-data)
       (let [response
-            (utils/with-service-ticket
-              app
-              (mock/request :get
-                            (format "%s/opiskeluoikeus/%s"
-                                    url opiskeluoikeus-oid)))
+            (mock-st-get app (format "%s/opiskeluoikeus/%s"
+                                     url opiskeluoikeus-oid))
             body (utils/parse-body (:body response))]
-
         (is (= (:status response) 200))
         (is (= (-> body
                    :data
