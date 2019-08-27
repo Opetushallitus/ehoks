@@ -127,14 +127,14 @@
   (do
     (query
       [queries/delete-ahyto-tyoelama-arvioijat-by-yto-osa-alue-by-hoks-id
-      hoks-id]
+       hoks-id]
       {})
     (query
       [queries/delete-ahyto-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
       {})
     (query
       [queries/delete-hyto-tyoelama-arvioijat-by-yto-osa-alue-by-hoks-id
-      hoks-id]
+       hoks-id]
       {})
     (query
       [queries/delete-hpto-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
@@ -153,31 +153,31 @@
   (do
     (query
       [queries/delete-ahyto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa
-      hoks-id]
+       hoks-id]
       {})
     (query
       [queries/delete-ahyto-koulutuksen-jarjestaja-arvioijat-by-yto-osa-alue
-      hoks-id]
+       hoks-id]
       {})
     (query
       [queries/delete-hyto-koulutuksen-jarjestaja-arvioijat-by-yto-osa-alue
-      hoks-id]
+       hoks-id]
       {})
     (query
       [queries/delete-hpto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa
-      hoks-id]
+       hoks-id]
       {})
     (query
       [queries/delete-hato-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa
-      hoks-id]
+       hoks-id]
       {})
     (query
       [queries/delete-ahato-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa
-      hoks-id]
+       hoks-id]
       {})
     (query
       [queries/delete-ahpto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa
-      hoks-id]
+       hoks-id]
       {})
     (query
       [queries/delete-ahpto-kj-arvioijat-by-todennettu-arviointi hoks-id]
@@ -241,15 +241,15 @@
   (do
     (query
       [queries/delete-hyto-osaamisen-hankkimistavat-yto-osa-alue-by-hoks-id
-      hoks-id]
+       hoks-id]
       {})
     (query
       [queries/delete-hato-osaamisen-hankkimistavat-tutkinnon-osa-by-hoks-id
-      hoks-id]
+       hoks-id]
       {})
     (query
       [queries/delete-hpto-osaamisen-hankkimistavat-tutkinnon-osa-by-hoks-id
-      hoks-id]
+       hoks-id]
       {})))
 
 (defn delete-hoksit-by-id! [hoks-id]

@@ -24,28 +24,28 @@
   (read-sql-file
     "hoksit/delete_nayttoymparisto_by_oo_by_yto_osa_alue_by_hoks.sql"))
 
-(def delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa-by-hoks-id-by-template
+(def delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa-template
   (read-sql-file
     "hoksit/delete_tyoelama_osaamisen_arvioijat_tutkinnon_osat.sql"))
 
-(def delete-tyoelama-osaamisen-arvioijat-yto-osa-alueet-by-hoks-id-by-template
+(def delete-tyoelama-osaamisen-arvioijat-yto-osa-alueet-template
   (read-sql-file
     "hoksit/delete_tyoelama_osaamisen_arvioijat_yto_osa_alueet.sql"))
 
-(def delete-kj-osaamisen-arvioijat-tutkinnon-osa-by-hoks-id-by-template
+(def delete-kj-osaamisen-arvioijat-tutkinnon-osa-template
   (read-sql-file "hoksit/delete_kj_osaamisen_arvioijat_tutkinnon_osat.sql"))
 
-(def delete-kj-osaamisen-arvioijat-yto-osa-alueet-by-hoks-id-by-template
+(def delete-kj-osaamisen-arvioijat-yto-osa-alueet-template
   (read-sql-file "hoksit/delete_kj_osaamisen_arvioijat_yto_osa_alueet.sql"))
 
-(def delete-osaamisen-hankkimistavat-by-tutkinnon-osa-by-hoks-id-template
+(def delete-osaamisen-hankkimistavat-by-tutkinnon-osa-template
   (read-sql-file
     "hoksit/delete_osaamisen_hankkimistavat_by_tutkinnon_osa_by_hoks.sql"))
 
-(def delete-osaamisen-hankkimistavat-by-yto-osa-alue-by-hoks-id-template
+(def delete-osaamisen-hankkimistavat-by-yto-osa-alue-template
   (read-sql-file "hoksit/delete_osaamisen_hankkimistavat_by_yto_osa_alue.sql"))
 
-(def delete-koulutuksen-jarjestaja-arvioijat-by-todennettu-arviointi-template
+(def delete-kj-arvioijat-by-todennettu-arviointi-template
   (read-sql-file
     "hoksit/delete_kj_osaamisen_arvioijat_by_todennettu_arviointi.sql"))
 
@@ -79,31 +79,31 @@
 
 (defn generate-delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa [m]
   (populate-sql m
-    delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa-by-hoks-id-by-template))
+                delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa-template))
 
 (defn generate-delete-tyoelama-osaamisen-arvioijat-osa-alueet [m]
   (populate-sql m
-    delete-tyoelama-osaamisen-arvioijat-yto-osa-alueet-by-hoks-id-by-template))
+                delete-tyoelama-osaamisen-arvioijat-yto-osa-alueet-template))
 
 (defn generate-delete-kj-osaamisen-arvioijat-tutkinnon-osa [m]
   (populate-sql m
-    delete-kj-osaamisen-arvioijat-tutkinnon-osa-by-hoks-id-by-template))
+                delete-kj-osaamisen-arvioijat-tutkinnon-osa-template))
 
 (defn generate-delete-kj-osaamisen-arvioijat-osa-alueet [m]
   (populate-sql m
-    delete-kj-osaamisen-arvioijat-yto-osa-alueet-by-hoks-id-by-template))
+                delete-kj-osaamisen-arvioijat-yto-osa-alueet-template))
 
 (defn generate-delete-kj-osaamisen-arvioijat-todennettu-arviointi [m]
   (populate-sql m
-    delete-koulutuksen-jarjestaja-arvioijat-by-todennettu-arviointi-template))
+                delete-kj-arvioijat-by-todennettu-arviointi-template))
 
 (defn generate-delete-osaamisen-hankkimistavat-tutkinnon-osa [m]
   (populate-sql m
-    delete-osaamisen-hankkimistavat-by-tutkinnon-osa-by-hoks-id-template))
+                delete-osaamisen-hankkimistavat-by-tutkinnon-osa-template))
 
 (defn generate-delete-osaamisen-hankkimistavat-tutkinnon-osan-osa-alue [m]
   (populate-sql m
-    delete-osaamisen-hankkimistavat-by-yto-osa-alue-by-hoks-id-template))
+                delete-osaamisen-hankkimistavat-by-yto-osa-alue-template))
 
 (defn generate-delete-todennettu-arviointi-lisatiedot [m]
   (populate-sql m delete-todennettu-arviointi-lisatiedot-template))
@@ -179,10 +179,6 @@
      :column "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
 (defq select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id)
-; (defq delete-oo-ahyto-by-hoks-id
-;       "hoksit/delete_oo_ahyto_by_hoks_id.sql")
-; (defq delete-oo-ahyto-naytto-by-hoks-id
-;       "hoksit/delete_oo_ahyto_naytto_by_hoks_id.sql")
 (def select-osaamisen-osoittamiset-by-ppto-id
   (generate-select-join
     {:table "osaamisen_osoittamiset"
