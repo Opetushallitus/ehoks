@@ -309,8 +309,8 @@
       (c-api/DELETE "/:hoks-id" [hoks-id :as request]
         :summary "Vain testaukseen: poistaa hoksin sekä liitetyt tutkinnonosat"
         :path-params [hoks-id :- s/Int]
-        (let [hoks (pdb/select-hoks-by-id hoks-id)]
-          (check-hoks-access! hoks request)
+        (let [hoks (db-hoks/select-hoks-by-id hoks-id)]
+          (m/check-hoks-access! hoks request)
           (if (:delete-allowed? config)
             (rest/rest-ok (h/delete-hoks-by-id! hoks-id))
             (response/bad-request!

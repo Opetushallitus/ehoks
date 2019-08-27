@@ -298,7 +298,7 @@
   (get-hoks-values (db-hoks/select-hoks-by-id id)))
 
 (defn delete-hoks-by-id! [hoks-id]
-  (db/delete-hoksit-by-id! hoks-id))
+  (db-hoks/delete-hoksit-by-id! hoks-id))
 
 (defn save-osaamisen-hankkimistapa! [oh]
   (let [tho (db/insert-tyopaikalla-jarjestettava-koulutus!
