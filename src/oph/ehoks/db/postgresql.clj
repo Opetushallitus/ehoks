@@ -250,16 +250,25 @@
 ;     {}))
 
 
-; (defn delete-hoksit-by-id! [hoks-id]
-;   (execute! [queries/delete-oo-ahyto-by-hoks-id hoks-id] :result-set-fn first))
+(defn delete-todennettu-arviointi-lisatiedot-by-hoks-id! [hoks-id]
+  (do
+  (query
+    [queries/delete-ahato-todennettu-arviointi-lisatiedot-by-hoks-id hoks-id]
+    {})
+  (query
+    [queries/delete-ahpto-todennettu-arviointi-lisatiedot-by-hoks-id hoks-id]
+    {})
+  (query
+    [queries/delete-ahyto-todennettu-arviointi-lisatiedot-by-hoks-id hoks-id]
+    {})))
 
 (defn delete-tyoelama-osaamisen-arvioijat-by-hoks-id! [hoks-id]
   (do
+  (query
+    [queries/delete-ahyto-tyoelama-arvioijat-by-yto-osa-alue-by-hoks-id hoks-id]
+    {})
     (query
       [queries/delete-ahyto-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
-      {})
-    (query
-      [queries/delete-ahyto-tyoelama-arvioijat-by-yto-osa-alue-by-hoks-id hoks-id]
       {})
     (query
       [queries/delete-hyto-tyoelama-arvioijat-by-yto-osa-alue-by-hoks-id hoks-id]
@@ -300,9 +309,15 @@
     (query
       [queries/delete-ahpto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
       {})
-        ;; ahato ahpto ja ahyto delete kj-osaamisen arvioijat by todennettuarviointi
-
-        ))
+    (query
+      [queries/delete-ahpto-koulutuksen-jarjestaja-arvioijat-by-todennettu-arviointi hoks-id]
+      {})
+    (query
+      [queries/delete-ahato-koulutuksen-jarjestaja-arvioijat-by-todennettu-arviointi hoks-id]
+      {})
+    (query
+      [queries/delete-ahyto-koulutuksen-jarjestaja-arvioijat-by-todennettu-arviointi hoks-id]
+      {})))
 
 (defn delete-osaamisen-osoittamiset-by-hoks-id! [hoks-id]
   (do
@@ -352,12 +367,6 @@
     [queries/delete-hato-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
     {})))
 
-(defn delete-eka! [hoks-id]
-  (query
-    [queries/delete-ahato-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
-    {})
-  )
-
 (defn delete-osaamisen-hankimistavat-by-hoks-id! [hoks-id]
 (do
   (query
@@ -377,6 +386,7 @@
   (delete-nayttoymparistot-by-hoks-id! hoks-id)
   (delete-osaamisen-hankimistavat-by-hoks-id! hoks-id)
   (delete-osaamisen-osoittamiset-by-hoks-id! hoks-id)
+  (delete-todennettu-arviointi-lisatiedot-by-hoks-id! hoks-id)
   (query
     [queries/delete-hoksit-by-id hoks-id]
     {})))

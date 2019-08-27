@@ -3,7 +3,7 @@ DELETE FROM koulutuksen_jarjestaja_osaamisen_arvioijat WHERE id IN
   IN
 (SELECT n.id
   FROM todennettu_arviointi_lisatiedot AS n
-  LEFT OUTER JOIN :tutkinnon-osa-table AS to
+  LEFT OUTER JOIN :tutkinnon-osa-table AS t
   ON
-  (to.hoks_id = ? AND to.tarkentavat_tiedot_osaamisen_arvioija_id = n.id)))
+  (t.hoks_id = ? AND t.tarkentavat_tiedot_osaamisen_arvioija_id = n.id)))
   RETURNING id

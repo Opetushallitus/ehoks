@@ -27,7 +27,7 @@
   (read-sql-file "hoksit/delete_tyoelama_osaamisen_arvioijat_tutkinnon_osat.sql"))
 
 (def delete-tyoelama-osaamisen-arvioijat-yto-osa-alueet-by-hoks-id-by-template
-(read-sql-file "hoksit/delete_kj_osaamisen_arvioijat_yto_osa_alueet.sql"))
+(read-sql-file "hoksit/delete_tyoelama_osaamisen_arvioijat_yto_osa_alueet.sql"))
 
 (def delete-kj-osaamisen-arvioijat-tutkinnon-osa-by-hoks-id-by-template
 (read-sql-file "hoksit/delete_kj_osaamisen_arvioijat_tutkinnon_osat.sql"))
@@ -40,6 +40,12 @@
 
 (def delete-osaamisen-hankkimistavat-by-yto-osa-alue-by-hoks-id-template
 (read-sql-file "hoksit/delete_osaamisen_hankkimistavat_by_yto_osa_alue.sql"))
+
+(def delete-koulutuksen-jarjestaja-arvioijat-by-todennettu-arviointi-template
+  (read-sql-file "hoksit/delete_kj_osaamisen_arvioijat_by_todennettu_arviointi.sql"))
+
+(def delete-todennettu-arviointi-lisatiedot-template
+(read-sql-file "hoksit/delete_todennettu_arviointi_lisatiedot.sql"))
 
 (defn populate-sql [m sql]
   (reduce
@@ -76,13 +82,19 @@
   (populate-sql m delete-kj-osaamisen-arvioijat-tutkinnon-osa-by-hoks-id-by-template))
 
 (defn generate-delete-kj-osaamisen-arvioijat-osa-alueet [m]
-  (populate-sql m delete-tyoelama-osaamisen-arvioijat-yto-osa-alueet-by-hoks-id-by-template))
+  (populate-sql m delete-kj-osaamisen-arvioijat-yto-osa-alueet-by-hoks-id-by-template))
+
+(defn generate-delete-kj-osaamisen-arvioijat-todennettu-arviointi [m]
+  (populate-sql m delete-koulutuksen-jarjestaja-arvioijat-by-todennettu-arviointi-template))
 
 (defn generate-delete-osaamisen-hankkimistavat-tutkinnon-osa [m]
 (populate-sql m delete-osaamisen-hankkimistavat-by-tutkinnon-osa-by-hoks-id-template))
 
 (defn generate-delete-osaamisen-hankkimistavat-tutkinnon-osan-osa-alue [m]
   (populate-sql m delete-osaamisen-hankkimistavat-by-yto-osa-alue-by-hoks-id-template))
+
+(defn generate-delete-todennettu-arviointi-lisatiedot [m]
+  (populate-sql m delete-todennettu-arviointi-lisatiedot-template))
 
 (defn generate-select-join [m]
   (populate-sql m select-join-template))
@@ -281,6 +293,12 @@
   {:tutkinnon-osa-table "aiemmin_hankitut_ammat_tutkinnon_osat"
   :tutkinnon-osa-naytto-table "aiemmin_hankitun_ammat_tutkinnon_osan_naytto"
   :tutkinnon-osa-id "aiemmin_hankittu_ammat_tutkinnon_osa_id"}))
+(def delete-ahato-koulutuksen-jarjestaja-arvioijat-by-todennettu-arviointi
+(generate-delete-kj-osaamisen-arvioijat-todennettu-arviointi
+  {:tutkinnon-osa-table "aiemmin_hankitut_ammat_tutkinnon_osat"}))
+(def delete-ahato-todennettu-arviointi-lisatiedot-by-hoks-id
+(generate-delete-todennettu-arviointi-lisatiedot
+  {:tutkinnon-osa-table "aiemmin_hankitut_ammat_tutkinnon_osat"}))
 (def delete-oo-by-ahato-by-hoks-id
 (generate-delete-oo-tutkinnon-osa-by
   {:tutkinnon-osa-table "aiemmin_hankitut_ammat_tutkinnon_osat"
@@ -327,6 +345,12 @@
     {:tutkinnon-osa-table "aiemmin_hankitut_yhteiset_tutkinnon_osat"
     :tutkinnon-osa-naytto-table "aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto"
     :tutkinnon-osa-id "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
+(def delete-ahyto-koulutuksen-jarjestaja-arvioijat-by-todennettu-arviointi
+(generate-delete-kj-osaamisen-arvioijat-todennettu-arviointi
+  {:tutkinnon-osa-table "aiemmin_hankitut_yhteiset_tutkinnon_osat"}))
+(def delete-ahyto-todennettu-arviointi-lisatiedot-by-hoks-id
+(generate-delete-todennettu-arviointi-lisatiedot
+  {:tutkinnon-osa-table "aiemmin_hankitut_yhteiset_tutkinnon_osat"}))
 (def delete-ahyto-nayttoymparisto-osa-alueet-by-hoks-id
   (generate-delete-nayttoymparisto-by-oo-by-osa-alue-by-hoks-id
     {:tutkinnon-osa-table "aiemmin_hankitut_yhteiset_tutkinnon_osat"
@@ -446,6 +470,12 @@
  {:tutkinnon-osa-table "aiemmin_hankitut_paikalliset_tutkinnon_osat"
   :tutkinnon-osa-naytto-table "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
   :tutkinnon-osa-id "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
+(def delete-ahpto-koulutuksen-jarjestaja-arvioijat-by-todennettu-arviointi
+(generate-delete-kj-osaamisen-arvioijat-todennettu-arviointi
+ {:tutkinnon-osa-table "aiemmin_hankitut_paikalliset_tutkinnon_osat"}))
+(def delete-ahpto-todennettu-arviointi-lisatiedot-by-hoks-id
+(generate-delete-todennettu-arviointi-lisatiedot
+{:tutkinnon-osa-table "aiemmin_hankitut_paikalliset_tutkinnon_osat"}))
  (def delete-oo-by-ahpto-by-hoks-id
  (generate-delete-oo-tutkinnon-osa-by
  {:tutkinnon-osa-table "aiemmin_hankitut_paikalliset_tutkinnon_osat"
