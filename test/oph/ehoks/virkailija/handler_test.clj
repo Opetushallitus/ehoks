@@ -1,12 +1,15 @@
 (ns oph.ehoks.virkailija.handler-test
   (:require [oph.ehoks.virkailija.handler :as handler]
+            [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.db.postgresql :as db]
-            [oph.ehoks.external.http-client :as client]))
+            [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.db.db-operations.oppija :as db-oppija]))
 
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
@@ -110,10 +113,10 @@
         (t/is (= (:status response) 403))))))
 
 (defn- add-oppija [oppija]
-  (db/insert-oppija
+  (db-oppija/insert-oppija
     {:oid (:oid oppija)
      :nimi (:nimi oppija)})
-  (db/insert-opiskeluoikeus
+  (db-opiskeluoikeus/insert-opiskeluoikeus
     {:oid (:opiskeluoikeus-oid oppija)
      :oppija_oid (:oid oppija)
      :oppilaitos_oid (:oppilaitos-oid oppija)
@@ -224,20 +227,20 @@
                    :koulutustoimija-oid ""})
       (t/is
         (not
-          (handler/virkailija-has-access?
+          (m/virkailija-has-access?
             {:organisation-privileges
              [{:oid "1.2.246.562.10.12000000002"
                :privileges #{:read}}]}
             "1.2.246.562.24.44000000001")))
       (t/is
         (not
-          (handler/virkailija-has-access?
+          (m/virkailija-has-access?
             {:organisation-privileges
              [{:oid "1.2.246.562.10.12000000000"
                :privileges #{}}]}
             "1.2.246.562.24.44000000001")))
       (t/is
-        (handler/virkailija-has-access?
+        (m/virkailija-has-access?
           {:organisation-privileges
            [{:oid "1.2.246.562.10.12000000000"
              :privileges #{:read}}]}
@@ -271,7 +274,7 @@
                [{:oid "1.2.246.562.10.12000000001"
                  :privileges #{:write :read :update :delete}}]})]
         (t/is (= (:status response) 403)))
-      (let [hoks-db (db/insert-hoks!
+      (let [hoks-db (db-hoks/insert-hoks!
                       {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                        :oppija-oid "1.2.246.562.24.44000000001"
                        :osaamisen-hankkimisen-tarve false

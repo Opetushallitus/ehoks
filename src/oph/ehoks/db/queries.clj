@@ -126,8 +126,8 @@
 (defq delete-hoksit-by-id "hoksit/delete_by_id.sql")
 (defq select-hoksit-by-oppija-oid)
 (defq select-hoksit-by-id)
-(defq select-hoksit-by-opiskeluoikeus-oid)
 (defq select-hoksit-by-eid)
+(defq select-hoksit-by-opiskeluoikeus-oid)
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")
 (defq select-hoks-oppijat-without-index
       "hoksit/select_oppija_oids_without_info.sql")
@@ -152,7 +152,7 @@
       "oppijat/select_opiskeluoikeudet_by_oid" .sql)
 (defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id)
-(def select-osaamisen-osoittamiset-by-ooato-id
+(def select-osaamisen-osoittamiset-by-ahato-id
   (generate-select-join
     {:table "osaamisen_osoittamiset"
      :join "aiemmin_hankitun_ammat_tutkinnon_osan_naytto"
@@ -505,3 +505,7 @@
       "oppijat/select_oppilaitos_oids_by_koulutustoimija_oid.sql")
 (defq select-sessions-by-session-key
       "sessions/select_by_session_key.sql")
+(defq select-user-settings-by-user-oid
+      "settings/select_by_user_oid.sql")
+(defq select-hoks-tutkinnon-osa-shares
+      "tutkinnon_osa_shares/select_by_hoks_and_tutkinnon_osa.sql")

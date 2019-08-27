@@ -13,6 +13,7 @@
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.eperusteet :as eperusteet]
+            [oph.ehoks.external.amosaa :as amosaa]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.oppija.auth-handler :as auth-handler]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
@@ -20,7 +21,9 @@
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
-            [oph.ehoks.oppijaindex :as oppijaindex]))
+            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.oppija.share-handler :as share-handler]
+            [oph.ehoks.oppija.middleware :as m]))
 
 (defn wrap-match-user [handler]
   (fn
@@ -93,7 +96,16 @@
                   :summary "Tutkinnon osan perusteiden
                            haku Koodisto-Koodi-Urilla."
                   :return (rest/response [s/Any])
-                  (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))))
+                  (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))
+
+              (c-api/context "/eperusteet-amosaa" []
+                (c-api/GET "/koodi/:koodi" []
+                  :path-params [koodi :- String]
+                  :summary "Amosaa tutkinnon osan hakeminen koodin perusteella.
+                 Koodiin täydennetään automaattisesti
+                 'paikallinen_tutkinnonosa'"
+                  :return (rest/response [s/Any])
+                  (rest/rest-ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))))
 
           (c-api/context "/oppijat" []
             :tags ["oppijat"]
@@ -111,11 +123,9 @@
 
                 (c-api/GET "/opiskeluoikeudet" [:as request]
                   :summary "Oppijan opiskeluoikeudet"
-                  :return (rest/response [common-schema/Opiskeluoikeus])
-                  (if-let [opiskeluoikeudet
-                           (oppijaindex/get-oppija-opiskeluoikeudet oid)]
-                    (rest/rest-ok opiskeluoikeudet)
-                    (response/not-found)))
+                  :return (rest/response [s/Any])
+                  (rest/rest-ok
+                    (koski/get-oppija-opiskeluoikeudet oid)))
 
                 (c-api/GET "/hoks" [:as request]
                   :summary "Oppijan HOKSit kokonaisuudessaan"
@@ -123,7 +133,14 @@
                   (let [hokses (h/get-hokses-by-oppija oid)]
                     (if (empty? hokses)
                       (response/not-found {:message "No HOKSes found"})
-                      (rest/rest-ok (map #(dissoc % :id) hokses)))))))))))
+                      (rest/rest-ok (map #(dissoc % :id) hokses))))))))
+
+          (c-api/context "/hoksit" []
+            :tags ["hoksit"]
+            (c-api/context "/:eid" []
+              (route-middleware
+                [wrap-authorize m/wrap-hoks-access]
+                share-handler/routes))))))
 
     (c-api/undocumented
       (GET "/buildversion.txt" []

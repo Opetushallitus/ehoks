@@ -1,7 +1,9 @@
 (ns oph.ehoks.hoks.hoks
   (:require [oph.ehoks.db.postgresql :as db]
             [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.external.aws-sqs :as sqs]))
+            [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (defn set-osaamisen-osoittaminen-values [naytto]
   (dissoc
@@ -29,7 +31,7 @@
     #(dissoc
        (set-osaamisen-osoittaminen-values %)
        :id)
-    (db/select-tarkentavat-tiedot-naytto-by-ooato-id id)))
+    (db/select-tarkentavat-tiedot-naytto-by-ahato-id id)))
 
 (defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
   (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]
@@ -290,10 +292,10 @@
 (defn get-hokses-by-oppija [oid]
   (mapv
     get-hoks-values
-    (db/select-hoks-by-oppija-oid oid)))
+    (db-hoks/select-hoks-by-oppija-oid oid)))
 
 (defn get-hoks-by-id [id]
-  (get-hoks-values (db/select-hoks-by-id id)))
+  (get-hoks-values (db-hoks/select-hoks-by-id id)))
 
 (defn delete-hoks-by-id! [hoks-id]
   (db/delete-hoksit-by-id! hoks-id))
@@ -446,7 +448,7 @@
     (mapv
       (fn [naytto]
         (let [stored-naytto (save-osaamisen-osoittaminen! naytto)]
-          (db/insert-ooyto-osa-alue-osaamisen-osoittaminen!
+          (db/insert-ahyto-osa-alue-osaamisen-osoittaminen!
             (:id stored-osa-alue) (:id stored-naytto))))
       (:tarkentavat-tiedot-naytto osa-alue))))
 
@@ -480,7 +482,7 @@
        n)
     new-values))
 
-(defn  save-aiemmin-hankittu-ammat-tutkinnon-osa! [hoks-id ahato]
+(defn save-aiemmin-hankittu-ammat-tutkinnon-osa! [hoks-id ahato]
   (let [ahato-db (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
                    (assoc ahato
                           :hoks-id hoks-id
@@ -673,7 +675,7 @@
     (replace-hyto-osa-alueet! hyto-id oa)))
 
 (defn save-hoks! [h]
-  (let [saved-hoks (db/insert-hoks! h)]
+  (let [saved-hoks (db-hoks/insert-hoks! h)]
     (when (:osaamisen-hankkimisen-tarve h)
       (sqs/send-message (sqs/build-hoks-hyvaksytty-msg
                           (:id saved-hoks) h)))
@@ -712,7 +714,7 @@
     (merge empty-top-level-hoks new-hoks-values)))
 
 (defn- replace-main-hoks! [hoks-id new-values db-conn]
-  (db/update-hoks-by-id!
+  (db-hoks/update-hoks-by-id!
     hoks-id (merge-not-given-hoks-values new-values) db-conn))
 
 (defn- replace-oto! [hoks-id new-oto-values db-conn]
@@ -762,7 +764,7 @@
 
 (defn replace-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
-    [db-conn (db/get-db-connection)]
+    [db-conn (db-ops/get-db-connection)]
     (replace-main-hoks! hoks-id new-values db-conn)
     ;TODO db-conn should be also used when saving hoks parts, see EH-465
     (replace-oto! hoks-id (:opiskeluvalmiuksia-tukevat-opinnot new-values)
@@ -782,4 +784,4 @@
                               new-values))))
 
 (defn update-hoks! [hoks-id new-values]
-  (db/update-hoks-by-id! hoks-id new-values))
+  (db-hoks/update-hoks-by-id! hoks-id new-values))

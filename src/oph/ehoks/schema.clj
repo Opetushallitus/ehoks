@@ -28,6 +28,11 @@
                   :contact [{:value s/Str
                              :type s/Str}]}]}))
 
+(s/defschema
+  UserSettings
+  "User settings"
+  s/Any)
+
 (s/defschema Config
              "Application configuration file"
              {(s/optional-key :version) s/Str
@@ -47,7 +52,6 @@
               :session-max-age s/Int
               :service-timeout-ms s/Int
               :ext-cache-lifetime-minutes s/Int
-              :save-hoks-json? s/Bool
               :opintopolku-host s/Str
               :heratepalvelu-queue s/Str
               :send-herate-messages? s/Bool
