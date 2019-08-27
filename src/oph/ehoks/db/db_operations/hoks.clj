@@ -292,3 +292,156 @@
 (defn select-hoks-opiskeluoikeudet-without-index-count []
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-index-count]))
+
+    (defn delete-todennettu-arviointi-lisatiedot-by-hoks-id! [hoks-id]
+      (do
+        (db-ops/query
+          [queries/delete-ahato-todennettu-arviointi-lisatiedot-by-hoks-id hoks-id]
+          {})
+        (db-ops/query
+          [queries/delete-ahpto-todennettu-arviointi-lisatiedot-by-hoks-id hoks-id]
+          {})
+        (db-ops/query
+          [queries/delete-ahyto-todennettu-arviointi-lisatiedot-by-hoks-id hoks-id]
+          {})))
+
+(defn delete-tyoelama-osaamisen-arvioijat-by-hoks-id! [hoks-id]
+  (do
+    (db-ops/query
+      [queries/delete-ahyto-tyoelama-arvioijat-by-yto-osa-alue-by-hoks-id
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahyto-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-hyto-tyoelama-arvioijat-by-yto-osa-alue-by-hoks-id
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-hpto-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-hato-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahato-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahpto-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id hoks-id]
+      {})))
+
+(defn delete-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hoks-id! [hoks-id]
+  (do
+    (db-ops/query
+      [queries/delete-ahyto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahyto-koulutuksen-jarjestaja-arvioijat-by-yto-osa-alue
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-hyto-koulutuksen-jarjestaja-arvioijat-by-yto-osa-alue
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-hpto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-hato-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahato-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahpto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahpto-kj-arvioijat-by-todennettu-arviointi hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahato-kj-arvioijat-by-todennettu-arviointi hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahyto-kj-arvioijat-by-todennettu-arviointi hoks-id]
+      {})))
+
+(defn delete-osaamisen-osoittamiset-by-hoks-id! [hoks-id]
+  (do
+    (db-ops/query
+      [queries/delete-oo-by-ahyto-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-oo-by-ahyto-yto-osa-alue-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-oo-by-hyto-yto-osa-alue-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-oo-by-ahato-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-oo-by-hato-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-oo-by-hpto-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-oo-by-ahpto-by-hoks-id hoks-id]
+      {})))
+
+(defn delete-nayttoymparistot-by-hoks-id! [hoks-id]
+  (do
+    (db-ops/query
+      [queries/delete-hyto-nayttoymparisto-osa-alueet-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahyto-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahyto-nayttoymparisto-osa-alueet-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahpto-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-hpto-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahato-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-hato-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
+      {})))
+
+(defn delete-osaamisen-hankimistavat-by-hoks-id! [hoks-id]
+  (do
+    (db-ops/query
+      [queries/delete-hyto-osaamisen-hankkimistavat-yto-osa-alue-by-hoks-id
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-hato-osaamisen-hankkimistavat-tutkinnon-osa-by-hoks-id
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-hpto-osaamisen-hankkimistavat-tutkinnon-osa-by-hoks-id
+       hoks-id]
+      {})))
+
+(defn delete-hoksit-by-id! [hoks-id]
+  (do
+    (delete-tyoelama-osaamisen-arvioijat-by-hoks-id! hoks-id)
+    (delete-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hoks-id! hoks-id)
+    (delete-nayttoymparistot-by-hoks-id! hoks-id)
+    (delete-osaamisen-hankimistavat-by-hoks-id! hoks-id)
+    (delete-osaamisen-osoittamiset-by-hoks-id! hoks-id)
+    (delete-todennettu-arviointi-lisatiedot-by-hoks-id! hoks-id)
+    (db-ops/query
+      [queries/delete-hoksit-by-id hoks-id]
+      {})))
