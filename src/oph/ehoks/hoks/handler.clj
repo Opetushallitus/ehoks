@@ -13,7 +13,7 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.config :refer [config]))
+            [oph.ehoks.config :refer [config]]))
 
 (def ^:private hankittava-paikallinen-tutkinnon-osa
   (c-api/context "/hankittava-paikallinen-tutkinnon-osa" []
