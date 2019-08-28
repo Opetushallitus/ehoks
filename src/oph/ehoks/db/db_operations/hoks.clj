@@ -293,17 +293,17 @@
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-index-count]))
 
-    (defn delete-todennettu-arviointi-lisatiedot-by-hoks-id! [hoks-id]
-      (do
-        (db-ops/query
-          [queries/delete-ahato-todennettu-arviointi-lisatiedot-by-hoks-id hoks-id]
-          {})
-        (db-ops/query
-          [queries/delete-ahpto-todennettu-arviointi-lisatiedot-by-hoks-id hoks-id]
-          {})
-        (db-ops/query
-          [queries/delete-ahyto-todennettu-arviointi-lisatiedot-by-hoks-id hoks-id]
-          {})))
+(defn delete-todennettu-arviointi-lisatiedot-by-hoks-id! [hoks-id]
+  (do
+    (db-ops/query
+      [queries/delete-ahato-todennettu-arviointi-lisatiedot-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahpto-todennettu-arviointi-lisatiedot-by-hoks-id hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-ahyto-todennettu-arviointi-lisatiedot-by-hoks-id hoks-id]
+      {})))
 
 (defn delete-tyoelama-osaamisen-arvioijat-by-hoks-id! [hoks-id]
   (do
