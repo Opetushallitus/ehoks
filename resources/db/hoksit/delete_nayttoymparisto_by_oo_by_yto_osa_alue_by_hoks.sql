@@ -1,11 +1,8 @@
-DELETE FROM nayttoymparistot WHERE id IN
-(SELECT nayttoymparisto_id FROM osaamisen_osoittamiset WHERE id IN (
-  SELECT y.osaamisen_osoittaminen_id
-    FROM :yto-osa-alue-naytto-table AS y
-    LEFT OUTER JOIN :yto-osa-alueet-table AS o
-    ON
-    (y.:yto-osa-alue-id = o.id
-      AND o.:tutkinnon-osa-id IN
-    (SELECT id
-     FROM :tutkinnon-osa-table AS t WHERE t.hoks_id = ?))))
-   RETURNING id
+ DELETE FROM nayttoymparistot WHERE id IN(
+ SELECT nayttoymparisto_id FROM osaamisen_osoittamiset AS oo WHERE oo.id IN (
+ SELECT y.osaamisen_osoittaminen_id FROM :yto-osa-alue-naytto-table AS y
+ INNER JOIN :yto-osa-alueet-table AS o
+ ON (o.id = y.:yto-osa-alue-id)
+ INNER JOIN :tutkinnon-osa-table AS t
+ ON (t.hoks_id=? AND t.id = o.:tutkinnon-osa-id))
+ RETURNING id
