@@ -419,6 +419,22 @@
       [queries/delete-hato-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
       {})))
 
+
+(defn delete-tyopaikalla-jarjestettavat-by-hoks-id! [hoks-id]
+  (do
+    (db-ops/query
+      [queries/delete-hyto-tyopaikalla-jarjestettavat-yto-osa-alue-by-hoks-id
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-hato-tyopaikalla-jarjestettavat-tutkinnon-osa-hoks-id
+       hoks-id]
+      {})
+    (db-ops/query
+      [queries/delete-hpto-tyopaikalla-jarjestettavat-tutkinnon-osa-hoks-id
+       hoks-id]
+      {})))
+
 (defn delete-osaamisen-hankimistavat-by-hoks-id! [hoks-id]
   (do
     (db-ops/query
@@ -439,6 +455,7 @@
     (delete-tyoelama-osaamisen-arvioijat-by-hoks-id! hoks-id)
     (delete-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hoks-id! hoks-id)
     (delete-nayttoymparistot-by-hoks-id! hoks-id)
+    (delete-tyopaikalla-jarjestettavat-by-hoks-id! hoks-id)
     (delete-osaamisen-hankimistavat-by-hoks-id! hoks-id)
     (delete-osaamisen-osoittamiset-by-hoks-id! hoks-id)
     (delete-todennettu-arviointi-lisatiedot-by-hoks-id! hoks-id)
