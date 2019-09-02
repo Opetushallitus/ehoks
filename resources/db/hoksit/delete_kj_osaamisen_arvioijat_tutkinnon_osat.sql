@@ -1,4 +1,4 @@
-SELECT * FROM  koulutuksen_jarjestaja_osaamisen_arvioijat WHERE id IN
+DELETE FROM  koulutuksen_jarjestaja_osaamisen_arvioijat WHERE id IN
 (SELECT o.koulutuksen_jarjestaja_osaamisen_arvioija_id
  FROM osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija as o
  INNER JOIN :tutkinnon-osa-naytto-table as n

@@ -4,5 +4,5 @@
  INNER JOIN :yto-osa-alueet-table AS o
  ON (o.id = y.:yto-osa-alue-id)
  INNER JOIN :tutkinnon-osa-table AS t
- ON (t.hoks_id=? AND t.id = o.:tutkinnon-osa-id))
+ ON (t.hoks_id=? AND t.id = o.:tutkinnon-osa-id)))
  RETURNING id
