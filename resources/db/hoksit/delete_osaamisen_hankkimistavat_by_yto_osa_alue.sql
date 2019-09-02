@@ -1,9 +1,8 @@
 DELETE FROM osaamisen_hankkimistavat WHERE id IN
-(SELECT osaamisen_hankkimistapa_id
-FROM :yto-osa-alue-hankkimistapa-table AS h
-LEFT OUTER JOIN :yto-osa-alueet-table AS y
-ON
-(h.:yto-osa-alue-id = y.id AND y.:tutkinnon-osa-id IN
-(SELECT id
-  FROM :tutkinnon-osa-table AS t WHERE t.hoks_id = ?)))
-  RETURNING id
+(SELECT y.osaamisen_hankkimistapa_id FROM
+  :yto-osa-alue-hankkimistapa-table AS y
+  INNER JOIN :yto-osa-alueet-table as t
+  ON (t.id = y.:yto-osa-alue-id)
+  INNER JOIN :tutkinnon-osa-table AS o
+  ON (o.id = t.:tutkinnon-osa-id AND o.hoks_id = ?))
+  RETURNING id  
