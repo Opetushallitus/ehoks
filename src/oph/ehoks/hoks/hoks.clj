@@ -5,15 +5,8 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
-            [oph.ehoks.hoks.hankittavat :as h]))
-
-(defn get-opiskeluvalmiuksia-tukeva-opinto [oto-id]
-  (db/select-opiskeluvalmiuksia-tukevat-opinnot-by-id oto-id))
-
-(defn get-opiskeluvalmiuksia-tukevat-opinnot [hoks-id]
-  (mapv
-    #(dissoc % :id)
-    (db/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id)))
+            [oph.ehoks.hoks.hankittavat :as h]
+            [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]))
 
 (defn get-hoks-values [h]
   (let [id (:id h)]
@@ -30,7 +23,7 @@
       :hankittavat-ammat-tutkinnon-osat
       (h/get-hankittavat-ammat-tutkinnon-osat id)
       :opiskeluvalmiuksia-tukevat-opinnot
-      (get-opiskeluvalmiuksia-tukevat-opinnot id)
+      (ot/get-opiskeluvalmiuksia-tukevat-opinnot id)
       :hankittavat-yhteiset-tutkinnon-osat
       (h/get-hankittavat-yhteiset-tutkinnon-osat id))))
 
@@ -41,14 +34,6 @@
 
 (defn get-hoks-by-id [id]
   (get-hoks-values (db-hoks/select-hoks-by-id id)))
-
-(defn save-opiskeluvalmiuksia-tukeva-opinto! [hoks-id new-oto-values]
-  (db/insert-opiskeluvalmiuksia-tukeva-opinto!
-    (assoc new-oto-values :hoks-id hoks-id)))
-
-(defn save-opiskeluvalmiuksia-tukevat-opinnot! [hoks-id new-oto-values]
-  (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
-    (mapv #(assoc % :hoks-id hoks-id) new-oto-values)))
 
 (defn save-hoks! [h]
   (let [saved-hoks (db-hoks/insert-hoks! h)]
@@ -73,7 +58,7 @@
       (h/save-hankittavat-ammat-tutkinnon-osat!
         (:id saved-hoks) (:hankittavat-ammat-tutkinnon-osat h))
       :opiskeluvalmiuksia-tukevat-opinnot
-      (save-opiskeluvalmiuksia-tukevat-opinnot!
+      (ot/save-opiskeluvalmiuksia-tukevat-opinnot!
         (:id saved-hoks) (:opiskeluvalmiuksia-tukevat-opinnot h))
       :hankittavat-yhteiset-tutkinnon-osat
       (h/save-hankittavat-yhteiset-tutkinnon-osat!
@@ -97,7 +82,7 @@
   (db/delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id db-conn)
   (when
    new-oto-values
-    (save-opiskeluvalmiuksia-tukevat-opinnot! hoks-id new-oto-values)))
+    (ot/save-opiskeluvalmiuksia-tukevat-opinnot! hoks-id new-oto-values)))
 
 (defn- replace-hato! [hoks-id new-hato-values db-conn]
   (db/delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id hoks-id db-conn)

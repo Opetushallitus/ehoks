@@ -10,6 +10,7 @@
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
+            [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [schema.core :as s]
             [oph.ehoks.oppijaindex :as oppijaindex]
@@ -222,14 +223,14 @@
       :summary "Palauttaa HOKSin opiskeluvalmiuksia tukevat opinnot"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot)
-      (rest/rest-ok (h/get-opiskeluvalmiuksia-tukeva-opinto id)))
+      (rest/rest-ok (ot/get-opiskeluvalmiuksia-tukeva-opinto id)))
 
     (c-api/POST "/"  [:as request]
       :summary
       "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin"
       :body [oto hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [oto-response (h/save-opiskeluvalmiuksia-tukeva-opinto!
+      (let [oto-response (ot/save-opiskeluvalmiuksia-tukeva-opinto!
                            (get-in request [:hoks :id]) oto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id oto-response))}
