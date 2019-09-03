@@ -9,12 +9,21 @@
        :id)
     (db/select-tarkentavat-tiedot-naytto-by-ahato-id id)))
 
+(defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
+  (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]
+    (dissoc
+      (assoc
+        tta
+        :aiemmin-hankitun-osaamisen-arvioijat
+        (db/select-arvioijat-by-todennettu-arviointi-id ttoa-id))
+      :id)))
+
 (defn- set-ahato-values [ahato]
   (dissoc
     (assoc
       ahato
       :tarkentavat-tiedot-osaamisen-arvioija
-      (c/get-tarkentavat-tiedot-osaamisen-arvioija
+      (get-tarkentavat-tiedot-osaamisen-arvioija
         (:tarkentavat-tiedot-osaamisen-arvioija-id ahato))
       :tarkentavat-tiedot-naytto
       (get-ahato-tarkentavat-tiedot-naytto (:id ahato)))
@@ -36,15 +45,6 @@
        (c/set-osaamisen-osoittaminen-values %)
        :id)
     (db/select-tarkentavat-tiedot-naytto-by-ahpto-id ahpto-id)))
-
-(defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
-  (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]
-    (dissoc
-      (assoc
-        tta
-        :aiemmin-hankitun-osaamisen-arvioijat
-        (db/select-arvioijat-by-todennettu-arviointi-id ttoa-id))
-      :id)))
 
 (defn- set-ahpto-values [ahpto]
   (dissoc
@@ -96,7 +96,7 @@
       :osa-alueet
       (get-ahyto-osa-alueet (:id ahyto))
       :tarkentavat-tiedot-osaamisen-arvioija
-      (c/get-tarkentavat-tiedot-osaamisen-arvioija
+      (get-tarkentavat-tiedot-osaamisen-arvioija
         (:tarkentavat-tiedot-osaamisen-arvioija-id ahyto))
       :tarkentavat-tiedot-naytto
       (get-ahyto-tarkentavat-tiedot-naytto (:id ahyto)))
