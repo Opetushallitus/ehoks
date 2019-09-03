@@ -121,7 +121,8 @@
   (db/delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)
   (when
    new-ahyto-values
-    (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! hoks-id new-ahyto-values)))
+    (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
+      hoks-id new-ahyto-values)))
 
 (defn replace-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
