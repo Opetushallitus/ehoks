@@ -3,6 +3,9 @@
             [oph.ehoks.utils :as utils :refer [eq with-database]]
             [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks.hankittavat :as ha]
+            [oph.ehoks.hoks.aiemmin-hankitut :as ah]
+            [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (use-fixtures :each with-database)
@@ -302,61 +305,61 @@
 (deftest get-aiemmin-hankitut-ammat-tutkinnon-osat-test
   (testing "Set HOKS aiemmin hankitut tutkinnon osat"
     (let [hoks (db-hoks/insert-hoks! {})]
-      (h/save-aiemmin-hankitut-ammat-tutkinnon-osat!
+      (ah/save-aiemmin-hankitut-ammat-tutkinnon-osat!
         (:id hoks)
         ahato-data)
-      (eq (h/get-aiemmin-hankitut-ammat-tutkinnon-osat
+      (eq (ah/get-aiemmin-hankitut-ammat-tutkinnon-osat
             (:id hoks))
           ahato-data))))
 
 (deftest get-aiemmin-hankitut-paikalliset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut paikalliset tutkinnon osat"
     (let [hoks (db-hoks/insert-hoks! {})]
-      (h/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
+      (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
         (:id hoks) ahpto-data)
       (eq
-        (h/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks))
+        (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks))
         ahpto-data))))
 
 (deftest get-hankittava-ammat-tutkinnon-osa-test
   (testing "Get HOKS hankittava ammatillinen osaaminen"
     (let [hoks (db-hoks/insert-hoks! {})]
-      (h/save-hankittavat-ammat-tutkinnon-osat! (:id hoks) hao-data)
+      (ha/save-hankittavat-ammat-tutkinnon-osat! (:id hoks) hao-data)
       (eq
-        (h/get-hankittavat-ammat-tutkinnon-osat (:id hoks))
+        (ha/get-hankittavat-ammat-tutkinnon-osat (:id hoks))
         hao-data))))
 
 (deftest get-opiskeluvalmiuksia-tukevat-opinnot-test
   (testing "Get HOKS opiskeluvalmiuksia tukevat opinnot"
     (let [hoks (db-hoks/insert-hoks! {})]
-      (h/save-opiskeluvalmiuksia-tukevat-opinnot! (:id hoks) oto-data)
+      (ot/save-opiskeluvalmiuksia-tukevat-opinnot! (:id hoks) oto-data)
       (eq
-        (h/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks))
+        (ot/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks))
         oto-data))))
 
 (deftest get-aiemmin-hankitut-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut yhteiset tutkinnon osat"
     (let [hoks (db-hoks/insert-hoks! {})]
-      (h/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! (:id hoks) ahyto-data)
+      (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! (:id hoks) ahyto-data)
       (eq
-        (h/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks))
+        (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks))
         ahyto-data))))
 
 (deftest get-hankittavat-paikalliset-tutkinnon-osat-test
   (testing "Set HOKS hankittavat paikalliset tutkinnon osat"
     (let [hoks (db-hoks/insert-hoks! {})
           ppto-col
-          (h/save-hankittavat-paikalliset-tutkinnon-osat! (:id hoks) hpto-data)]
+          (ha/save-hankittavat-paikalliset-tutkinnon-osat! (:id hoks) hpto-data)]
       (eq
-        (h/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks))
+        (ha/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks))
         hpto-data))))
 
 (deftest get-hankittavat-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS hankittavat yhteiset tutkinnon osat"
     (let [hoks (db-hoks/insert-hoks! {})]
-      (h/save-hankittavat-yhteiset-tutkinnon-osat! (:id hoks) hyto-data)
+      (ha/save-hankittavat-yhteiset-tutkinnon-osat! (:id hoks) hyto-data)
       (eq
-        (h/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks))
+        (ha/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks))
         hyto-data))))
 
 (deftest get-hoks-test
@@ -375,6 +378,6 @@
           ahato (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
                   {:hoks-id (:id hoks)})
           data {}
-          tta (h/save-tarkentavat-tiedot-osaamisen-arvioija! data)]
-      (eq (h/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta))
+          tta (ah/save-tarkentavat-tiedot-osaamisen-arvioija! data)]
+      (eq (ah/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta))
           (assoc data :aiemmin-hankitun-osaamisen-arvioijat [])))))
