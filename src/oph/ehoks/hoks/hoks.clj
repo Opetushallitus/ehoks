@@ -5,7 +5,7 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
-            [oph.ehoks.hoks.hankittavat :as h]
+            [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]))
 
 (defn get-hoks-values [h]
@@ -17,15 +17,15 @@
       :aiemmin-hankitut-paikalliset-tutkinnon-osat
       (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat id)
       :hankittavat-paikalliset-tutkinnon-osat
-      (h/get-hankittavat-paikalliset-tutkinnon-osat id)
+      (ha/get-hankittavat-paikalliset-tutkinnon-osat id)
       :aiemmin-hankitut-yhteiset-tutkinnon-osat
       (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat id)
       :hankittavat-ammat-tutkinnon-osat
-      (h/get-hankittavat-ammat-tutkinnon-osat id)
+      (ha/get-hankittavat-ammat-tutkinnon-osat id)
       :opiskeluvalmiuksia-tukevat-opinnot
       (ot/get-opiskeluvalmiuksia-tukevat-opinnot id)
       :hankittavat-yhteiset-tutkinnon-osat
-      (h/get-hankittavat-yhteiset-tutkinnon-osat id))))
+      (ha/get-hankittavat-yhteiset-tutkinnon-osat id))))
 
 (defn get-hokses-by-oppija [oid]
   (mapv
@@ -49,19 +49,19 @@
       (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
         (:id saved-hoks) (:aiemmin-hankitut-paikalliset-tutkinnon-osat h))
       :hankittavat-paikalliset-tutkinnon-osat
-      (h/save-hankittavat-paikalliset-tutkinnon-osat!
+      (ha/save-hankittavat-paikalliset-tutkinnon-osat!
         (:id saved-hoks) (:hankittavat-paikalliset-tutkinnon-osat h))
       :aiemmin-hankitut-yhteiset-tutkinnon-osat
       (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
         (:id saved-hoks) (:aiemmin-hankitut-yhteiset-tutkinnon-osat h))
       :hankittavat-ammat-tutkinnon-osat
-      (h/save-hankittavat-ammat-tutkinnon-osat!
+      (ha/save-hankittavat-ammat-tutkinnon-osat!
         (:id saved-hoks) (:hankittavat-ammat-tutkinnon-osat h))
       :opiskeluvalmiuksia-tukevat-opinnot
       (ot/save-opiskeluvalmiuksia-tukevat-opinnot!
         (:id saved-hoks) (:opiskeluvalmiuksia-tukevat-opinnot h))
       :hankittavat-yhteiset-tutkinnon-osat
-      (h/save-hankittavat-yhteiset-tutkinnon-osat!
+      (ha/save-hankittavat-yhteiset-tutkinnon-osat!
         (:id saved-hoks) (:hankittavat-yhteiset-tutkinnon-osat h)))))
 
 (defn- merge-not-given-hoks-values [new-hoks-values]
@@ -88,19 +88,19 @@
   (db/delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id hoks-id db-conn)
   (when
    new-hato-values
-    (h/save-hankittavat-ammat-tutkinnon-osat! hoks-id new-hato-values)))
+    (ha/save-hankittavat-ammat-tutkinnon-osat! hoks-id new-hato-values)))
 
 (defn- replace-hpto! [hoks-id new-hpto-values db-conn]
   (db/delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id db-conn)
   (when
    new-hpto-values
-    (h/save-hankittavat-paikalliset-tutkinnon-osat! hoks-id new-hpto-values)))
+    (ha/save-hankittavat-paikalliset-tutkinnon-osat! hoks-id new-hpto-values)))
 
 (defn- replace-hyto! [hoks-id new-hyto-values db-conn]
   (db/delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id db-conn)
   (when
    new-hyto-values
-    (h/save-hankittavat-yhteiset-tutkinnon-osat! hoks-id new-hyto-values)))
+    (ha/save-hankittavat-yhteiset-tutkinnon-osat! hoks-id new-hyto-values)))
 
 (defn- replace-ahato! [hoks-id new-ahato-values db-conn]
   (db/delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id
