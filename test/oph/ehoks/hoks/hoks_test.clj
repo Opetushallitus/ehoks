@@ -349,7 +349,8 @@
   (testing "Set HOKS hankittavat paikalliset tutkinnon osat"
     (let [hoks (db-hoks/insert-hoks! {})
           ppto-col
-          (ha/save-hankittavat-paikalliset-tutkinnon-osat! (:id hoks) hpto-data)]
+          (ha/save-hankittavat-paikalliset-tutkinnon-osat!
+            (:id hoks) hpto-data)]
       (eq
         (ha/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks))
         hpto-data))))
