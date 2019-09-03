@@ -419,7 +419,6 @@
       [queries/delete-hato-nayttoymparisto-tutkinnon-osa-by-hoks-id hoks-id]
       {})))
 
-
 (defn delete-tyopaikalla-jarjestettavat-by-hoks-id! [hoks-id]
   (do
     (db-ops/query

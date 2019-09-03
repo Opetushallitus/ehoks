@@ -46,12 +46,11 @@
   (read-sql-file "hoksit/delete_tyopaikalla_jarjestettavat_yto_osa_alue.sql"))
 
 (def delete-osaamisen-hankkimistavat-by-tutkinnon-osa-template
-(read-sql-file
-  "hoksit/delete_osaamisen_hankkimistavat_by_tutkinnon_osa_by_hoks.sql"))
+  (read-sql-file
+    "hoksit/delete_osaamisen_hankkimistavat_by_tutkinnon_osa_by_hoks.sql"))
 
 (def delete-osaamisen-hankkimistavat-by-yto-osa-alue-template
-(read-sql-file "hoksit/delete_osaamisen_hankkimistavat_by_yto_osa_alue.sql"))
-
+  (read-sql-file "hoksit/delete_osaamisen_hankkimistavat_by_yto_osa_alue.sql"))
 
 (def delete-kj-arvioijat-by-todennettu-arviointi-template
   (read-sql-file
@@ -111,15 +110,15 @@
 
 (defn generate-delete-tyopaikalla-jarjestettavat-tutkinnon-osan-osa-alue [m]
   (populate-sql m
-                 delete-tyopaikalla-jarjestettavat-by-yto-osa-alue-template))
+                delete-tyopaikalla-jarjestettavat-by-yto-osa-alue-template))
 
 (defn generate-delete-osaamisen-hankkimistavat-tutkinnon-osa [m]
- (populate-sql m
-               delete-osaamisen-hankkimistavat-by-tutkinnon-osa-template))
+  (populate-sql m
+                delete-osaamisen-hankkimistavat-by-tutkinnon-osa-template))
 
 (defn generate-delete-osaamisen-hankkimistavat-tutkinnon-osan-osa-alue [m]
- (populate-sql m
-               delete-osaamisen-hankkimistavat-by-yto-osa-alue-template))
+  (populate-sql m
+                delete-osaamisen-hankkimistavat-by-yto-osa-alue-template))
 
 (defn generate-delete-todennettu-arviointi-lisatiedot [m]
   (populate-sql m delete-todennettu-arviointi-lisatiedot-template))
@@ -398,11 +397,11 @@
      "hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat"
      :tutkinnon-osa-id "hankittava_ammat_tutkinnon_osa_id"}))
 (def delete-hato-osaamisen-hankkimistavat-tutkinnon-osa-by-hoks-id
- (generate-delete-osaamisen-hankkimistavat-tutkinnon-osa
-   {:tutkinnon-osa-table "hankittavat_ammat_tutkinnon_osat"
-    :tutkinnon-osa-hankkimistapa-table
-    "hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat"
-    :tutkinnon-osa-id "hankittava_ammat_tutkinnon_osa_id"}))
+  (generate-delete-osaamisen-hankkimistavat-tutkinnon-osa
+    {:tutkinnon-osa-table "hankittavat_ammat_tutkinnon_osat"
+     :tutkinnon-osa-hankkimistapa-table
+     "hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat"
+     :tutkinnon-osa-id "hankittava_ammat_tutkinnon_osa_id"}))
 (def delete-hato-tyoelama-arvioijat-tutkinnon-osa-by-hoks-id
   (generate-delete-tyoelama-osaamisen-arvioijat-tutkinnon-osa
     {:tutkinnon-osa-table "hankittavat_ammat_tutkinnon_osat"
@@ -430,11 +429,11 @@
      "hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat"
      :tutkinnon-osa-id "hankittava_paikallinen_tutkinnon_osa_id"}))
 (def delete-hpto-osaamisen-hankkimistavat-tutkinnon-osa-by-hoks-id
- (generate-delete-osaamisen-hankkimistavat-tutkinnon-osa
-   {:tutkinnon-osa-table "hankittavat_paikalliset_tutkinnon_osat"
-    :tutkinnon-osa-hankkimistapa-table
-    "hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat"
-    :tutkinnon-osa-id "hankittava_paikallinen_tutkinnon_osa_id"}))
+  (generate-delete-osaamisen-hankkimistavat-tutkinnon-osa
+    {:tutkinnon-osa-table "hankittavat_paikalliset_tutkinnon_osat"
+     :tutkinnon-osa-hankkimistapa-table
+     "hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat"
+     :tutkinnon-osa-id "hankittava_paikallinen_tutkinnon_osa_id"}))
 (def delete-hpto-koulutuksen-jarjestaja-arvioijat-tutkinnon-osa
   (generate-delete-kj-osaamisen-arvioijat-tutkinnon-osa
     {:tutkinnon-osa-table "hankittavat_paikalliset_tutkinnon_osat"
@@ -492,11 +491,11 @@
      "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
      :tutkinnon-osa-id "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
 (def delete-ahpto-osaamisen-hankkimistavat-tutkinnon-osa-by-hoks-id
- (generate-delete-osaamisen-hankkimistavat-tutkinnon-osa
-   {:tutkinnon-osa-table "aiemmin_hankitut_paikalliset_tutkinnon_osat"
-    :tutkinnon-osa-naytto-table
-    "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
-    :tutkinnon-osa-id "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
+  (generate-delete-osaamisen-hankkimistavat-tutkinnon-osa
+    {:tutkinnon-osa-table "aiemmin_hankitut_paikalliset_tutkinnon_osat"
+     :tutkinnon-osa-naytto-table
+     "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
+     :tutkinnon-osa-id "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
 (def delete-hyto-tyoelama-arvioijat-by-yto-osa-alue-by-hoks-id
   (generate-delete-tyoelama-osaamisen-arvioijat-osa-alueet
     {:tutkinnon-osa-table "hankittavat_yhteiset_tutkinnon_osat"
@@ -534,13 +533,13 @@
      :tutkinnon-osa-id "yhteinen_tutkinnon_osa_id"
      :yto-osa-alue-id "yhteisen_tutkinnon_osan_osa_alue_id"}))
 (def delete-hyto-osaamisen-hankkimistavat-yto-osa-alue-by-hoks-id
-(generate-delete-osaamisen-hankkimistavat-tutkinnon-osan-osa-alue
- {:tutkinnon-osa-table "hankittavat_yhteiset_tutkinnon_osat"
-  :yto-osa-alueet-table "yhteisen_tutkinnon_osan_osa_alueet"
-  :yto-osa-alue-hankkimistapa-table
-  "yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat"
-  :tutkinnon-osa-id "yhteinen_tutkinnon_osa_id"
-  :yto-osa-alue-id "yhteisen_tutkinnon_osan_osa_alue_id"}))
+  (generate-delete-osaamisen-hankkimistavat-tutkinnon-osan-osa-alue
+    {:tutkinnon-osa-table "hankittavat_yhteiset_tutkinnon_osat"
+     :yto-osa-alueet-table "yhteisen_tutkinnon_osan_osa_alueet"
+     :yto-osa-alue-hankkimistapa-table
+     "yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat"
+     :tutkinnon-osa-id "yhteinen_tutkinnon_osa_id"
+     :yto-osa-alue-id "yhteisen_tutkinnon_osan_osa_alue_id"}))
 (defq select-oppilaitos-oids
       "oppijat/select_oppilaitos_oids.sql")
 (defq select-oppilaitos-oids-by-koulutustoimija-oid
