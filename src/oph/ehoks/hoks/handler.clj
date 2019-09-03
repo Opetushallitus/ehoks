@@ -9,6 +9,7 @@
             [oph.ehoks.db.postgresql :as pdb]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
+            [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [schema.core :as s]
             [oph.ehoks.oppijaindex :as oppijaindex]
@@ -23,13 +24,13 @@
       :summary "Palauttaa HOKSin hankittavan paikallisen tutkinnon osan"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/HankittavaPaikallinenTutkinnonOsa)
-      (rest/rest-ok (h/get-hankittava-paikallinen-tutkinnon-osa id)))
+      (rest/rest-ok (ha/get-hankittava-paikallinen-tutkinnon-osa id)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo hankittavan paikallisen tutkinnon osan"
       :body [ppto hoks-schema/HankittavanPaikallisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ppto-db (h/save-hankittava-paikallinen-tutkinnon-osa!
+      (let [ppto-db (ha/save-hankittava-paikallinen-tutkinnon-osa!
                       hoks-id ppto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ppto-db))}
@@ -43,7 +44,7 @@
       [values hoks-schema/HankittavaPaikallinenTutkinnonOsaKentanPaivitys]
       (let [ppto-db (pdb/select-hankittava-paikallinen-tutkinnon-osa-by-id id)]
         (if (some? ppto-db)
-          (do (h/update-hankittava-paikallinen-tutkinnon-osa! ppto-db values)
+          (do (ha/update-hankittava-paikallinen-tutkinnon-osa! ppto-db values)
               (response/no-content))
           (response/not-found
             {:error "Hankittava paikallinen tutkinnon osa not found"}))))))
@@ -56,13 +57,13 @@
       :summary "Palauttaa HOKSin hankittavan ammatillisen tutkinnon osan"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/HankittavaAmmatillinenTutkinnonOsa)
-      (rest/rest-ok (h/get-hankittava-ammat-tutkinnon-osa id)))
+      (rest/rest-ok (ha/get-hankittava-ammat-tutkinnon-osa id)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo hankittavan ammatillisen osaamisen HOKSiin"
       :body [pao hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [pao-db (h/save-hankittava-ammat-tutkinnon-osa!
+      (let [pao-db (ha/save-hankittava-ammat-tutkinnon-osa!
                      hoks-id pao)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id pao-db))}
@@ -74,8 +75,8 @@
       :path-params [id :- s/Int]
       :body
       [values hoks-schema/HankittavaAmmatillinenTutkinnonOsaKentanPaivitys]
-      (if-let [hao-db (h/get-hankittava-ammat-tutkinnon-osa id)]
-        (do (h/update-hankittava-ammat-tutkinnon-osa! hao-db values)
+      (if-let [hao-db (ha/get-hankittava-ammat-tutkinnon-osa id)]
+        (do (ha/update-hankittava-ammat-tutkinnon-osa! hao-db values)
             (response/no-content))
         (response/not-found
           {:error "Hankittava ammatillinen tutkinnon osa not found"})))))
@@ -87,14 +88,14 @@
       :summary "Palauttaa HOKSin hankittavan yhteisen tutkinnon osan"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/HankittavaYTO)
-      (rest/rest-ok (h/get-hankittava-yhteinen-tutkinnon-osa id)))
+      (rest/rest-ok (ha/get-hankittava-yhteinen-tutkinnon-osa id)))
 
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) hankittavan yhteisen tutkinnon osat HOKSiin"
       :body [hyto hoks-schema/HankittavaYTOLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [hyto-response (h/save-hankittava-yhteinen-tutkinnon-osa!
+      (let [hyto-response (ha/save-hankittava-yhteinen-tutkinnon-osa!
                             (get-in request [:hoks :id]) hyto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id hyto-response))}
@@ -107,7 +108,7 @@
       :body [values hoks-schema/HankittavaYTOKentanPaivitys]
       (if (not-empty (pdb/select-hankittava-yhteinen-tutkinnon-osa-by-id id))
         (do
-          (h/update-hankittava-yhteinen-tutkinnon-osa! id values)
+          (ha/update-hankittava-yhteinen-tutkinnon-osa! id values)
           (response/no-content))
         (response/not-found {:error "HYTO not found with given HYTO ID"})))))
 
