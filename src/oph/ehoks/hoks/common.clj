@@ -22,15 +22,6 @@
         (:id naytto)))
     :nayttoymparisto-id))
 
-(defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
-  (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]
-    (dissoc
-      (assoc
-        tta
-        :aiemmin-hankitun-osaamisen-arvioijat
-        (db/select-arvioijat-by-todennettu-arviointi-id ttoa-id))
-      :id)))
-
 (defn save-osaamisen-osoittamisen-tyoelama-osaamisen-arvioijat!
   [naytto arvioijat]
   (mapv

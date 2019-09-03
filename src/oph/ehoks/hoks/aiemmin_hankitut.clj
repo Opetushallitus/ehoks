@@ -37,12 +37,21 @@
        :id)
     (db/select-tarkentavat-tiedot-naytto-by-ahpto-id ahpto-id)))
 
+(defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
+  (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]
+    (dissoc
+      (assoc
+        tta
+        :aiemmin-hankitun-osaamisen-arvioijat
+        (db/select-arvioijat-by-todennettu-arviointi-id ttoa-id))
+      :id)))
+
 (defn- set-ahpto-values [ahpto]
   (dissoc
     (assoc
       ahpto
       :tarkentavat-tiedot-osaamisen-arvioija
-      (c/get-tarkentavat-tiedot-osaamisen-arvioija
+      (get-tarkentavat-tiedot-osaamisen-arvioija
         (:tarkentavat-tiedot-osaamisen-arvioija-id ahpto))
       :tarkentavat-tiedot-naytto
       (get-ahpto-tarkentavat-tiedot-naytto (:id ahpto)))
