@@ -8,6 +8,7 @@
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.postgresql :as pdb]
             [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [schema.core :as s]
             [oph.ehoks.oppijaindex :as oppijaindex]
@@ -118,13 +119,13 @@
       :path-params [id :- s/Int]
       :return (rest/response
                 hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsa)
-      (rest/rest-ok (h/get-aiemmin-hankittu-ammat-tutkinnon-osa id)))
+      (rest/rest-ok (ah/get-aiemmin-hankittu-ammat-tutkinnon-osa id)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo aiemmin hankitun ammat tutkinnon osan HOKSiin"
       :body [ooato hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ooato-from-db (h/save-aiemmin-hankittu-ammat-tutkinnon-osa!
+      (let [ooato-from-db (ah/save-aiemmin-hankittu-ammat-tutkinnon-osa!
                             (get-in request [:hoks :id]) ooato)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ooato-from-db))}
@@ -140,7 +141,7 @@
                (pdb/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id
                  id)]
         (do
-          (h/update-aiemmin-hankittu-ammat-tutkinnon-osa!
+          (ah/update-aiemmin-hankittu-ammat-tutkinnon-osa!
             ooato-from-db values)
           (response/no-content))
         (response/not-found
@@ -153,13 +154,13 @@
       :summary "Palauttaa HOKSin olemassa olevan paikallisen tutkinnon osan"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/AiemminHankittuPaikallinenTutkinnonOsa)
-      (rest/rest-ok (h/get-aiemmin-hankittu-paikallinen-tutkinnon-osa id)))
+      (rest/rest-ok (ah/get-aiemmin-hankittu-paikallinen-tutkinnon-osa id)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo olemassa olevan paikallisen tutkinnon osan HOKSiin"
       :body [oopto hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [oopto-from-db (h/save-aiemmin-hankittu-paikallinen-tutkinnon-osa!
+      (let [oopto-from-db (ah/save-aiemmin-hankittu-paikallinen-tutkinnon-osa!
                             (get-in request [:hoks :id]) oopto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id oopto-from-db))}
@@ -174,7 +175,7 @@
                (pdb/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id
                  id)]
         (do
-          (h/update-aiemmin-hankittu-paikallinen-tutkinnon-osa!
+          (ah/update-aiemmin-hankittu-paikallinen-tutkinnon-osa!
             oopto-from-db values)
           (response/no-content))
         (response/not-found
@@ -187,13 +188,13 @@
       :summary "Palauttaa HOKSin aiemmin hankitun yhteisen tutkinnon osan"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/AiemminHankittuYhteinenTutkinnonOsa)
-      (rest/rest-ok (h/get-aiemmin-hankittu-yhteinen-tutkinnon-osa id)))
+      (rest/rest-ok (ah/get-aiemmin-hankittu-yhteinen-tutkinnon-osa id)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo aiemmin hankitun yhteisen tutkinnon osan HOKSiin"
       :body [ooyto hoks-schema/AiemminHankitunYhteisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ooyto-from-db (h/save-aiemmin-hankittu-yhteinen-tutkinnon-osa!
+      (let [ooyto-from-db (ah/save-aiemmin-hankittu-yhteinen-tutkinnon-osa!
                             (get-in request [:hoks :id]) ooyto)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id ooyto-from-db))}
@@ -207,7 +208,7 @@
       (if-let [ahyto-from-db
                (pdb/select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id id)]
         (do
-          (h/update-aiemmin-hankittu-yhteinen-tutkinnon-osa!
+          (ah/update-aiemmin-hankittu-yhteinen-tutkinnon-osa!
             ahyto-from-db values)
           (response/no-content))
         (response/not-found
