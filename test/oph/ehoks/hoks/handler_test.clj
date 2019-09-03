@@ -192,7 +192,8 @@
   (testing "Creating a hoks with hpto and deleting it"
     (with-hoks-and-app
       [hoks app]
-      (let [hpto-response (create-mock-post-request hpto-path hpto-data app hoks)
+      (let [hpto-response
+            (create-mock-post-request hpto-path hpto-data app hoks)
             hpto-id (:id (:meta (utils/parse-body (:body hpto-response))))
             get-hpto-before-delete-response
             (create-mock-hoks-osa-get-request hpto-path app hoks)
@@ -329,7 +330,6 @@
               {:id 1
                :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})]
         (is (= (:status response) 204))))))
-
 
 (deftest create-and-delete-hoks-with-hao
   (testing "Creating a hoks with hao and deleting it"
@@ -473,24 +473,24 @@
       multiple-ahato-values-patched
       assert-ahato-data-is-patched-correctly)))
 
-  (deftest create-and-delete-hoks-with-ahato
-    (testing "Creating a hoks with ahato and deleting it"
-      (with-hoks-and-app
-        [hoks app]
-        (let [ahato-response (create-mock-post-request
-          ahato-path ahato-data app hoks)
-              ahato-id (:id (:meta (utils/parse-body (:body ahato-response))))
-              get-ahato-before-delete-response
-              (create-mock-hoks-osa-get-request ahato-path app hoks)
-              delete-hoks-response
-              (create-mock-hoks-delete-request (:id hoks) app)
-              get-ahato-after-delete-response
-              (create-mock-hoks-osa-get-request ahato-path app hoks)
-              get-hoks-after-delete (db-hoks/select-hoks-by-id 1)]
-          (is (= (:status ahato-response) 200))
-          (is (= (:status get-ahato-before-delete-response) 200))
-          (is (= (:status get-ahato-after-delete-response) 404))
-          (is (= get-hoks-after-delete nil))))))
+(deftest create-and-delete-hoks-with-ahato
+  (testing "Creating a hoks with ahato and deleting it"
+    (with-hoks-and-app
+      [hoks app]
+      (let [ahato-response (create-mock-post-request
+                             ahato-path ahato-data app hoks)
+            ahato-id (:id (:meta (utils/parse-body (:body ahato-response))))
+            get-ahato-before-delete-response
+            (create-mock-hoks-osa-get-request ahato-path app hoks)
+            delete-hoks-response
+            (create-mock-hoks-delete-request (:id hoks) app)
+            get-ahato-after-delete-response
+            (create-mock-hoks-osa-get-request ahato-path app hoks)
+            get-hoks-after-delete (db-hoks/select-hoks-by-id 1)]
+        (is (= (:status ahato-response) 200))
+        (is (= (:status get-ahato-before-delete-response) 200))
+        (is (= (:status get-ahato-after-delete-response) 404))
+        (is (= get-hoks-after-delete nil))))))
 
 (def ahpto-path "aiemmin-hankittu-paikallinen-tutkinnon-osa")
 (def ahpto-data
@@ -754,23 +754,24 @@
       multiple-ahyto-values-patched
       assert-ahyto-is-patched-correctly)))
 
-  (deftest create-and-delete-hoks-with-ahyto
-    (testing "Creating a hoks with ahyto and deleting it"
-      (with-hoks-and-app
-        [hoks app]
-        (let [ahyto-response (create-mock-post-request ahyto-path ahyto-data app hoks)
-              ahyto-id (:id (:meta (utils/parse-body (:body ahyto-response))))
-              get-ahyto-before-delete-response
-              (create-mock-hoks-osa-get-request ahyto-path app hoks)
-              delete-hoks-response
-              (create-mock-hoks-delete-request (:id hoks) app)
-              get-ahyto-after-delete-response
-              (create-mock-hoks-osa-get-request ahyto-path app hoks)
-              get-hoks-after-delete (db-hoks/select-hoks-by-id 1)]
-          (is (= (:status ahyto-response) 200))
-          (is (= (:status get-ahyto-before-delete-response) 200))
-          (is (= (:status get-ahyto-after-delete-response) 404))
-          (is (= get-hoks-after-delete nil))))))
+(deftest create-and-delete-hoks-with-ahyto
+  (testing "Creating a hoks with ahyto and deleting it"
+    (with-hoks-and-app
+      [hoks app]
+      (let [ahyto-response
+            (create-mock-post-request ahyto-path ahyto-data app hoks)
+            ahyto-id (:id (:meta (utils/parse-body (:body ahyto-response))))
+            get-ahyto-before-delete-response
+            (create-mock-hoks-osa-get-request ahyto-path app hoks)
+            delete-hoks-response
+            (create-mock-hoks-delete-request (:id hoks) app)
+            get-ahyto-after-delete-response
+            (create-mock-hoks-osa-get-request ahyto-path app hoks)
+            get-hoks-after-delete (db-hoks/select-hoks-by-id 1)]
+        (is (= (:status ahyto-response) 200))
+        (is (= (:status get-ahyto-before-delete-response) 200))
+        (is (= (:status get-ahyto-after-delete-response) 404))
+        (is (= get-hoks-after-delete nil))))))
 
 (def hyto-path "hankittava-yhteinen-tutkinnon-osa")
 (def hyto-data
@@ -926,7 +927,8 @@
   (testing "Creating a hoks with hyto and deleting it"
     (with-hoks-and-app
       [hoks app]
-      (let [hyto-response (create-mock-post-request hyto-path hyto-data app hoks)
+      (let [hyto-response
+            (create-mock-post-request hyto-path hyto-data app hoks)
             hyto-id (:id (:meta (utils/parse-body (:body hyto-response))))
             get-hyto-before-delete-response
             (create-mock-hoks-osa-get-request hyto-path app hoks)
@@ -950,7 +952,7 @@
             (create-mock-post-request hpto-path hpto-data app hoks)
             hpto-id (:id (:meta (utils/parse-body (:body hpto-response))))
             ahato-response (create-mock-post-request
-              ahato-path ahato-data app hoks)
+                             ahato-path ahato-data app hoks)
             ahato-id
             (:id (:meta (utils/parse-body (:body ahato-response))))
             tarkentava-tiedot-naytto-before-delete-ahato
