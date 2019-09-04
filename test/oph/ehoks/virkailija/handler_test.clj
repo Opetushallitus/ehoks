@@ -278,31 +278,39 @@
 (t/deftest test-virkailija-has-access
   (t/testing "Virkailija has oppija access"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Testi 1"
-                   :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
-                   :oppilaitos-oid "1.2.246.562.10.12000000000"
-                   :koulutustoimija-oid ""})
-      (t/is
-        (not
-          (m/virkailija-has-access?
-            {:organisation-privileges
-             [{:oid "1.2.246.562.10.12000000002"
-               :privileges #{:read}}]}
-            "1.2.246.562.24.44000000001")))
-      (t/is
-        (not
+      (client/with-mock-responses
+        [(fn [url options]
+           (cond
+             (.contains
+               url "/rest/organisaatio/v4/")
+             {:status 200
+              :body {:parentOidPath "|"}}))]
+
+        (add-oppija {:oid "1.2.246.562.24.44000000001"
+                     :nimi "Testi 1"
+                     :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
+                     :oppilaitos-oid "1.2.246.562.10.12000000000"
+                     :koulutustoimija-oid ""})
+        (t/is
+          (not
+            (m/virkailija-has-access?
+              {:organisation-privileges
+               [{:oid "1.2.246.562.10.12000000002"
+                 :privileges #{:read}}]}
+              "1.2.246.562.24.44000000001")))
+        (t/is
+          (not
+            (m/virkailija-has-access?
+              {:organisation-privileges
+               [{:oid "1.2.246.562.10.12000000000"
+                 :privileges #{}}]}
+              "1.2.246.562.24.44000000001")))
+        (t/is
           (m/virkailija-has-access?
             {:organisation-privileges
              [{:oid "1.2.246.562.10.12000000000"
-               :privileges #{}}]}
-            "1.2.246.562.24.44000000001")))
-      (t/is
-        (m/virkailija-has-access?
-          {:organisation-privileges
-           [{:oid "1.2.246.562.10.12000000000"
-             :privileges #{:read}}]}
-          "1.2.246.562.24.44000000001")))))
+               :privileges #{:read}}]}
+            "1.2.246.562.24.44000000001"))))))
 
 (t/deftest test-virkailija-hoks-forbidden
   (t/testing "Virkailija HOKS forbidden"
