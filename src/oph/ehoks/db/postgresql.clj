@@ -175,38 +175,10 @@
     :aiemmin_hankitut_yhteiset_tutkinnon_osat
     ["hoks_id = ?" hoks-id]))
 
-(defn insert-opiskeluvalmiuksia-tukeva-opinto! [new-value]
-  (db-ops/insert-one!
-    :opiskeluvalmiuksia_tukevat_opinnot
-    (db-ops/to-sql new-value)))
-
-(defn insert-opiskeluvalmiuksia-tukevat-opinnot! [c]
-  (db-ops/insert-multi!
-    :opiskeluvalmiuksia_tukevat_opinnot
-    (mapv db-ops/to-sql c)))
-
-(defn select-opiskeluvalmiuksia-tukevat-opinnot-by-id [oto-id]
-  (->
-    (db-ops/query [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-id
-                   oto-id])
-    first
-    h/opiskeluvalmiuksia-tukevat-opinnot-from-sql))
-
-(defn select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id [id]
-  (db-ops/query
-    [queries/select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id id]
-    {:row-fn h/opiskeluvalmiuksia-tukevat-opinnot-from-sql}))
-
 (defn delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id [hoks-id db-conn]
   (db-ops/shallow-delete!
     :opiskeluvalmiuksia_tukevat_opinnot
     ["hoks_id = ?" hoks-id] db-conn))
-
-(defn update-opiskeluvalmiuksia-tukevat-opinnot-by-id! [oto-id new-values]
-  (db-ops/update!
-    :opiskeluvalmiuksia_tukevat_opinnot
-    (db-ops/to-sql new-values)
-    ["id = ? AND deleted_at IS NULL" oto-id]))
 
 (defn delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id [hoks-id db-conn]
   (db-ops/shallow-delete!
