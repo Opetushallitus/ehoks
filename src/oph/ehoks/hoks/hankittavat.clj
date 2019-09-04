@@ -1,5 +1,5 @@
 (ns oph.ehoks.hoks.hankittavat
-  (:require [oph.ehoks.db.postgresql :as db]
+  (:require [oph.ehoks.db.postgresql.hankittavat :as db]
             [oph.ehoks.hoks.common :as c]))
 
 (defn- get-tyopaikalla-jarjestettava-koulutus [id]
