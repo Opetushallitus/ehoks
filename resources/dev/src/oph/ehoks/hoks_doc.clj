@@ -4,13 +4,11 @@
             [clojure.java.io :as io]
             [oph.ehoks.hoks.schema]
             [clj-time.local :as l]
-            [clj-time.format :as f]
-            [clojure.string :as cstr]))
+            [clj-time.format :as f]))
 
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
 (def filtered-schemas '#{OppijaHOKS})
-(def doc-url "https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md")
 
 (def schemas (let [m (ns-publics 'oph.ehoks.hoks.schema)]
                (select-keys
@@ -135,9 +133,6 @@
            "Generoitu "
            (f/unparse local-formatter (l/to-local-date-time (l/local-now)))
            "\n\n"))
-    (.write
-      w
-      (format "Katso myös [HOKS doc](%s)\n\n" doc-url))
     (doseq [line (flatten (generate-doc schemas))]
       (assert
         (string? line)

@@ -202,13 +202,13 @@
   KoulutuksenJarjestajaArvioija
   (modify
     Arvioija
-    "Työelämän arvioija"
+    "Koulutuksenjärjestäjän arvioija"
     {:removed [:organisaatio]
      :added
      (describe
        ""
        :organisaatio KoulutuksenJarjestajaOrganisaatio
-       "KoulutuksenJarjestajan arvioijan organisaatio")}))
+       "Koulutuksenjärjestäjän arvioijan organisaatio")}))
 
 (s/defschema
   OsaamisenOsoittaminen
