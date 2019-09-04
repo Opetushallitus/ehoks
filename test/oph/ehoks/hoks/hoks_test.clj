@@ -2,6 +2,7 @@
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [oph.ehoks.utils :as utils :refer [eq with-database]]
             [oph.ehoks.db.postgresql :as db]
+            [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
@@ -376,7 +377,7 @@
 (deftest empty-values-test
   (testing "DB handling of empty values"
     (let [hoks (db-hoks/insert-hoks! {})
-          ahato (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
+          ahato (db-ah/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
                   {:hoks-id (:id hoks)})
           data {}
           tta (ah/save-tarkentavat-tiedot-osaamisen-arvioija! data)]

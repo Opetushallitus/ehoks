@@ -3,61 +3,10 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn select-todennettu-arviointi-lisatiedot-by-id [id]
-  (first
-    (db-ops/query
-      [queries/select-todennettu-arviointi-lisatiedot-by-id id]
-      {:row-fn h/todennettu-arviointi-lisatiedot-from-sql})))
-
-(defn insert-todennettu-arviointi-lisatiedot! [m]
-  (db-ops/insert-one!
-    :todennettu_arviointi_lisatiedot
-    (h/todennettu-arviointi-lisatiedot-to-sql m)))
-
-(defn select-arvioijat-by-todennettu-arviointi-id [id]
-  (db-ops/query
-    [queries/select-arvioijat-by-todennettu-arviointi-id id]
-    {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
-
-(defn insert-todennettu-arviointi-arvioijat! [tta-id arvioija-id]
-  (db-ops/insert-one!
-    :todennettu_arviointi_arvioijat
-    {:todennettu_arviointi_lisatiedot_id tta-id
-     :koulutuksen_jarjestaja_osaamisen_arvioija_id arvioija-id}))
-
 (defn insert-koulutuksen-jarjestaja-osaamisen-arvioija! [m]
   (db-ops/insert-one!
     :koulutuksen_jarjestaja_osaamisen_arvioijat
     (h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql m)))
-
-(defn insert-koulutuksen-jarjestaja-osaamisen-arvioijat! [c]
-  (db-ops/insert-multi!
-    :koulutuksen_jarjestaja_osaamisen_arvioijat
-    (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c)))
-
-(defn select-tarkentavat-tiedot-naytto-by-ahpto-id [oopto-id]
-  (db-ops/query [queries/select-osaamisen-osoittamiset-by-oopto-id oopto-id]
-                {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
-(defn select-tarkentavat-tiedot-naytto-by-ahato-id
-  "Aiemmin hankitun ammat tutkinnon osan näytön tarkentavat tiedot
-   (hankitun osaamisen näytöt)"
-  [id]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-ahato-id id]
-    {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
-(defn insert-aiemmin-hankitun-ammat-tutkinnon-osan-naytto! [ooato-id n]
-  (db-ops/insert-one!
-    :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
-    {:aiemmin_hankittu_ammat_tutkinnon_osa_id ooato-id
-     :osaamisen_osoittaminen_id (:id n)}))
-
-(defn insert-ahyto-osaamisen-osoittaminen! [ahyto-id n]
-  (db-ops/insert-one!
-    :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-    {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id ahyto-id
-     :osaamisen_osoittaminen_id (:id n)}))
 
 (defn insert-koodisto-koodi! [m]
   (db-ops/insert-one!
@@ -74,23 +23,6 @@
   (db-ops/query
     [queries/select-osa-alueet-by-osaamisen-osoittaminen naytto-id]
     {:row-fn h/koodi-uri-from-sql}))
-
-(defn select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id [id]
-  (->
-    (db-ops/query [queries/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id
-                   id])
-    first
-    h/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql))
-
-(defn select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id [id]
-  (db-ops/query
-    [queries/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id id]
-    {:row-fn h/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql}))
-
-(defn insert-aiemmin-hankittu-ammat-tutkinnon-osa! [m]
-  (db-ops/insert-one!
-    :aiemmin_hankitut_ammat_tutkinnon_osat
-    (h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql m)))
 
 (defn insert-aiemmin-hankitut-ammat-tutkinnon-osat! [c]
   (db-ops/insert-multi!
@@ -319,33 +251,10 @@
       [queries/select-nayttoymparistot-by-id id]
       {:row-fn h/nayttoymparisto-from-sql})))
 
-(defn select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id [id]
-  (->
-    (db-ops/query
-      [queries/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id id])
-    first
-    h/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql))
-
-(defn select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id [id]
-  (db-ops/query
-    [queries/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id id]
-    {:row-fn h/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql}))
-
-(defn insert-aiemmin-hankittu-paikallinen-tutkinnon-osa! [m]
-  (db-ops/insert-one!
-    :aiemmin_hankitut_paikalliset_tutkinnon_osat
-    (h/aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql m)))
-
 (defn select-osaamisen-osoittaminen-by-oopto-id [id]
   (db-ops/query
     [queries/select-osaamisen-osoittamiset-by-oopto-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
-(defn insert-ahpto-osaamisen-osoittaminen! [oopto-id naytto-id]
-  (db-ops/insert-one!
-    :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
-    {:aiemmin_hankittu_paikallinen_tutkinnon_osa_id oopto-id
-     :osaamisen_osoittaminen_id naytto-id}))
 
 (defn insert-ooyto-arvioija! [yto-id a-id]
   (db-ops/insert-one!
@@ -357,52 +266,6 @@
   (db-ops/query
     [queries/select-arvioijat-by-ooyto-id id]
     {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
-
-(defn select-tarkentavat-tiedot-naytto-by-ahyto-id
-  "Aiemmin hankitun yhteisen tutkinnon osan näytön tarkentavat tiedot
-   (hankitun osaamisen näytöt)"
-  [id]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-ooyto-id id]
-    {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
-(defn select-tarkentavat-tiedot-naytto-by-ahyto-osa-alue-id [id]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-ahyto-osa-alue-id id]
-    {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
-(defn insert-ahyto-osa-alue-osaamisen-osoittaminen! [osa-alue-id naytto-id]
-  (db-ops/insert-one!
-    :aiemmin_hankitun_yto_osa_alueen_naytto
-    {:aiemmin_hankittu_yto_osa_alue_id osa-alue-id
-     :osaamisen_osoittaminen_id naytto-id}))
-
-(defn select-osa-alueet-by-ahyto-id [id]
-  (db-ops/query
-    [queries/select-osa-alueet-by-ooyto-id id]
-    {:row-fn h/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-from-sql}))
-
-(defn insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue! [m]
-  (db-ops/insert-one!
-    :aiemmin_hankitut_yto_osa_alueet
-    (h/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-to-sql m)))
-
-(defn insert-aiemmin-hankittu-yhteinen-tutkinnon-osa! [m]
-  (db-ops/insert-one!
-    :aiemmin_hankitut_yhteiset_tutkinnon_osat
-    (h/aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql m)))
-
-(defn select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id [id]
-  (->
-    (db-ops/query [queries/select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-id
-                   id])
-    first
-    h/aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql))
-
-(defn select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id [id]
-  (db-ops/query
-    [queries/select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id id]
-    {:row-fn h/aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql}))
 
 (defn insert-hankittava-ammat-tutkinnon-osa! [m]
   (db-ops/insert-one!
@@ -469,57 +332,11 @@
     :yhteisen_tutkinnon_osan_osa_alueet
     ["yhteinen_tutkinnon_osa_id = ?" hyto-id]))
 
-(defn update-aiemmin-hankittu-ammat-tutkinnon-osa-by-id! [id new-values]
-  (db-ops/update!
-    :aiemmin_hankitut_ammat_tutkinnon_osat
-    (h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql new-values)
-    ["id = ? AND deleted_at IS NULL" id]))
-
-(defn update-aiemmin-hankittu-paikallinen-tutkinnon-osa-by-id! [id new-values]
-  (when-let
-   [new-ahpt (h/aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql new-values)]
-    (db-ops/update!
-      :aiemmin_hankitut_paikalliset_tutkinnon_osat
-      new-ahpt
-      ["id = ? AND deleted_at IS NULL" id])))
-
-(defn update-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id! [id new-values]
-  (db-ops/update!
-    :aiemmin_hankitut_yhteiset_tutkinnon_osat
-    (h/aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql new-values)
-    ["id = ? AND deleted_at IS NULL" id]))
-
-(defn update-todennettu-arviointi-lisatiedot-by-id! [id new-values]
-  (db-ops/update!
-    :todennettu_arviointi_lisatiedot
-    (h/todennettu-arviointi-lisatiedot-to-sql new-values)
-    ["id = ? AND deleted_at IS NULL" id]))
-
-(defn delete-todennettu-arviointi-arvioijat-by-tta-id! [id]
-  (db-ops/shallow-delete!
-    :todennettu_arviointi_arvioijat
-    ["todennettu_arviointi_lisatiedot_id = ?" id]))
-
-(defn delete-aiemmin-hankitun-ammat-tutkinnon-osan-naytto-by-id! [id]
-  (db-ops/shallow-delete!
-    :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
-    ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ?" id]))
-
 (defn delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id
   [hoks-id db-conn]
   (db-ops/shallow-delete!
     :aiemmin_hankitut_ammat_tutkinnon_osat
     ["hoks_id = ?" hoks-id] db-conn))
-
-(defn delete-aiemmin-hankitun-paikallisen-tutkinnon-osan-naytto-by-id! [id]
-  (db-ops/shallow-delete!
-    :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
-    ["aiemmin_hankittu_paikallinen_tutkinnon_osa_id = ?" id]))
-
-(defn delete-aiemmin-hankitun-yhteisen-tutkinnon-osan-naytto-by-id! [id]
-  (db-ops/shallow-delete!
-    :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-    ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
 
 (defn delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
   [hoks-id db-conn]
@@ -531,11 +348,6 @@
   (db-ops/shallow-delete!
     :aiemmin_hankitut_yhteiset_tutkinnon_osat
     ["hoks_id = ?" hoks-id]))
-
-(defn delete-aiemmin-hankitut-yto-osa-alueet-by-id! [id]
-  (db-ops/shallow-delete!
-    :aiemmin_hankitut_yto_osa_alueet
-    ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
 
 (defn insert-hankittavan-ammat-tutkinnon-osan-osaamisen-hankkimistapa!
   [pato-id oh-id]
