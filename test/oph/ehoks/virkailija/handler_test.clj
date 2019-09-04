@@ -132,15 +132,24 @@
      :tutkinto (:tutkinto oppija "")
      :osaamisala (:osaamisala oppija "")}))
 
-(defn- get-search [params]
-  (let [response
-        (with-test-virkailija
-          (mock/request
-            :get
-            (str base-url "/virkailija/oppijat")
-            (assoc params :oppilaitos-oid "1.2.246.562.10.12000000000")))]
-    (t/is (= (:status response) 200))
-    (utils/parse-body (:body response))))
+(defn- get-search
+  ([params virkailija]
+    (let [response
+          (if (some? virkailija)
+            (with-test-virkailija
+              (mock/request
+                :get
+                (str base-url "/virkailija/oppijat")
+                params)
+              virkailija)
+            (with-test-virkailija
+              (mock/request
+                :get
+                (str base-url "/virkailija/oppijat")
+                (assoc params :oppilaitos-oid "1.2.246.562.10.12000000000"))))]
+      (t/is (= (:status response) 200))
+      (utils/parse-body (:body response))))
+  ([params] (get-search params nil)))
 
 (t/deftest test-list-virkailija-oppijat
   (t/testing "GET virkailija oppijat"
