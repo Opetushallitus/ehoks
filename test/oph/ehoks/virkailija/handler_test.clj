@@ -55,25 +55,33 @@
 
 (defn with-test-virkailija
   ([request virkailija]
-    (client/set-get!
-      (fn [url options]
-        (cond
-          (.contains
-            url "/rest/organisaatio/v4/")
-          {:status 200
-           :body {:parentOidPath "|"}}
-          (.endsWith
-            url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
-          {:status 200
-           :body {:oppilaitos {:oid "1.2.246.562.10.12944436166"}}})))
-    (let [session "12345678-1234-1234-1234-1234567890ab"
-          cookie (str "ring-session=" session)
-          store (atom
-                  {session
-                   {:virkailija-user virkailija}})
-          app (common-api/create-app
-                handler/app-routes (test-session-store store))]
-      (app (mock/header request :cookie cookie))))
+    (client/with-mock-responses
+      [(fn [url options]
+         (cond
+           (.contains
+             url "/rest/organisaatio/v4/")
+           {:status 200
+            :body {:parentOidPath "|"}}
+           (.endsWith
+             url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
+           {:status 200
+            :body {:oppilaitos {:oid "1.2.246.562.10.12944436166"}}}
+           (.endsWith
+             url "/koski/api/opiskeluoikeus/1.2.246.562.15.760000000010")
+           {:status 200
+            :body {:oppilaitos {:oid "1.2.246.562.10.1200000000010"}}}
+           (.endsWith
+             url "/koski/api/opiskeluoikeus/1.2.246.562.15.000000000020")
+           {:status 200
+            :body {:oppilaitos {:oid "1.2.246.562.10.1200000000200"}}}))]
+      (let [session "12345678-1234-1234-1234-1234567890ab"
+            cookie (str "ring-session=" session)
+            store (atom
+                    {session
+                     {:virkailija-user virkailija}})
+            app (common-api/create-app
+                  handler/app-routes (test-session-store store))]
+        (app (mock/header request :cookie cookie)))))
   ([request] (with-test-virkailija
                request
                {:name "Test"
