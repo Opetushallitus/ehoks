@@ -4,8 +4,7 @@
             [clojure.java.io :as io]
             [oph.ehoks.hoks.schema]
             [clj-time.local :as l]
-            [clj-time.format :as f]
-            [clojure.string :as cstr]))
+            [clj-time.format :as f]))
 
 (def local-formatter (f/formatter "dd.MM.yyyy HH.mm"))
 
