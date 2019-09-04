@@ -214,6 +214,47 @@
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000003"))))))
 
+(t/deftest test-list-virkailija-oppija-with-multi-opiskeluoikeus
+  (t/testing "GET virkailija oppijat"
+    (utils/with-db
+      (add-oppija {:oid "1.2.246.562.24.44000000001"
+                   :nimi "Teuvo Testaaja"
+                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                   :tutkinto "Testitutkinto 1"
+                   :osaamisala "Testiosaamisala numero 1"
+                   :koulutustoimija-oid ""})
+      (db-opiskeluoikeus/insert-opiskeluoikeus
+        {:oid "1.2.246.562.15.760000000020"
+         :oppija_oid "1.2.246.562.24.44000000001"
+         :oppilaitos_oid "1.2.246.562.10.1200000000020"
+         :koulutustoimija_oid ""
+         :tutkinto "Tutkinto 2"
+         :osaamisala "Osaamisala 2"})
+
+      (let [body (get-search
+                   {:oppilaitos-oid "1.2.246.562.10.1200000000020"}
+                   {:name "Test"
+                    :kayttajaTyyppi "VIRKAILIJA"
+                    :oidHenkilo "1.2.246.562.24.220000000030"
+                    :organisation-privileges
+                    [{:oid "1.2.246.562.10.1200000000020"
+                      :privileges #{:read}}]})]
+        (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:data 0 :oid])
+                 "1.2.246.562.24.44000000001")))
+      (let [body (get-search
+                   {:oppilaitos-oid "1.2.246.562.10.1200000000010"}
+                   {:name "Test"
+                    :kayttajaTyyppi "VIRKAILIJA"
+                    :oidHenkilo "1.2.246.562.24.220000000020"
+                    :organisation-privileges
+                    [{:oid "1.2.246.562.10.1200000000010"
+                      :privileges #{:read}}]})]
+        (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:data 0 :oid])
+                 "1.2.246.562.24.44000000001"))))))
+
 (t/deftest test-virkailija-with-no-read
   (t/testing "Prevent GET virkailija oppijat without read privilege"
     (utils/with-db
