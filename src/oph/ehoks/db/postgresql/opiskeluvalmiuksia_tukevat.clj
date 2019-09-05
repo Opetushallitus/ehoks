@@ -35,3 +35,9 @@
     :opiskeluvalmiuksia_tukevat_opinnot
     (db-ops/to-sql new-values)
     ["id = ? AND deleted_at IS NULL" oto-id]))
+
+(defn delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id [hoks-id db-conn]
+  "Poista opiskeluvalmiuksia tukevat opinnot"
+  (db-ops/shallow-delete!
+    :opiskeluvalmiuksia_tukevat_opinnot
+    ["hoks_id = ?" hoks-id] db-conn))

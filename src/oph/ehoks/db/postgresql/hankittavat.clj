@@ -267,3 +267,22 @@
     :hankittavat_yhteiset_tutkinnon_osat
     (h/hankittava-yhteinen-tutkinnon-osa-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" hyto-id]))
+
+(defn delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id
+  "Poista hankittavat ammatillisen tutkinnon osat"
+  [hoks-id db-conn]
+  (db-ops/shallow-delete!
+    :hankittavat_ammat_tutkinnon_osat
+    ["hoks_id = ?" hoks-id] db-conn))
+
+(defn delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id [hoks-id db-conn]
+  "Poista hankittavat paikalliset tutkinnot osat"
+  (db-ops/shallow-delete!
+    :hankittavat_paikalliset_tutkinnon_osat
+    ["hoks_id = ?" hoks-id] db-conn))
+
+(defn delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id [hoks-id db-conn]
+  "Poista hankittavat yhteiset tutkinnon osat"
+  (db-ops/shallow-delete!
+    :hankittavat_yhteiset_tutkinnon_osat
+    ["hoks_id = ?" hoks-id] db-conn))

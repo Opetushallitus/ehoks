@@ -221,3 +221,23 @@
     :aiemmin_hankitut_ammat_tutkinnon_osat
     (h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql new-values)
     ["id = ? AND deleted_at IS NULL" id]))
+
+(defn delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id
+  "Poista aiemmin hankitut ammatilliset tutkinnon osat"
+  [hoks-id db-conn]
+  (db-ops/shallow-delete!
+    :aiemmin_hankitut_ammat_tutkinnon_osat
+    ["hoks_id = ?" hoks-id] db-conn))
+
+(defn delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
+  "Poista aiemmin hankitut paikalliset tutkinnon osat"
+  [hoks-id db-conn]
+  (db-ops/shallow-delete!
+    :aiemmin_hankitut_paikalliset_tutkinnon_osat
+    ["hoks_id = ?" hoks-id] db-conn))
+
+(defn delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id [hoks-id]
+  "Poista aiemmin hankitut yhteiset tutkinnon osat"
+  (db-ops/shallow-delete!
+    :aiemmin_hankitut_yhteiset_tutkinnon_osat
+    ["hoks_id = ?" hoks-id]))

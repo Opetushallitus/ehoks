@@ -1,5 +1,7 @@
 (ns oph.ehoks.hoks.hoks
-  (:require [oph.ehoks.db.postgresql :as db]
+  (:require [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
+            [oph.ehoks.db.postgresql.hankittavat :as db-ha]
+            [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as db-ot]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
@@ -79,38 +81,38 @@
     hoks-id (merge-not-given-hoks-values new-values) db-conn))
 
 (defn- replace-oto! [hoks-id new-oto-values db-conn]
-  (db/delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id db-conn)
+  (db-ot/delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id hoks-id db-conn)
   (when
    new-oto-values
     (ot/save-opiskeluvalmiuksia-tukevat-opinnot! hoks-id new-oto-values)))
 
 (defn- replace-hato! [hoks-id new-hato-values db-conn]
-  (db/delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id hoks-id db-conn)
+  (db-ha/delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id hoks-id db-conn)
   (when
    new-hato-values
     (ha/save-hankittavat-ammat-tutkinnon-osat! hoks-id new-hato-values)))
 
 (defn- replace-hpto! [hoks-id new-hpto-values db-conn]
-  (db/delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id db-conn)
+  (db-ha/delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id db-conn)
   (when
    new-hpto-values
     (ha/save-hankittavat-paikalliset-tutkinnon-osat! hoks-id new-hpto-values)))
 
 (defn- replace-hyto! [hoks-id new-hyto-values db-conn]
-  (db/delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id db-conn)
+  (db-ha/delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id db-conn)
   (when
    new-hyto-values
     (ha/save-hankittavat-yhteiset-tutkinnon-osat! hoks-id new-hyto-values)))
 
 (defn- replace-ahato! [hoks-id new-ahato-values db-conn]
-  (db/delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id
+  (db-ah/delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id
     hoks-id db-conn)
   (when
    new-ahato-values
     (ah/save-aiemmin-hankitut-ammat-tutkinnon-osat! hoks-id new-ahato-values)))
 
 (defn- replace-ahpto! [hoks-id new-ahpto-values db-conn]
-  (db/delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
+  (db-ah/delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
     hoks-id db-conn)
   (when
    new-ahpto-values
@@ -118,7 +120,7 @@
       hoks-id new-ahpto-values)))
 
 (defn- replace-ahyto! [hoks-id new-ahyto-values]
-  (db/delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)
+  (db-ah/delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)
   (when
    new-ahyto-values
     (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
