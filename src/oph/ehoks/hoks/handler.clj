@@ -6,7 +6,9 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as rest]
-            [oph.ehoks.db.postgresql :as pdb]
+            [oph.ehoks.db.postgresql.aiemmin-hankitut :as pdb-ah]
+            [oph.ehoks.db.postgresql.hankittavat :as pdb-ha]
+            [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as pdb-ot]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
@@ -43,7 +45,7 @@
       :path-params [id :- s/Int]
       :body
       [values hoks-schema/HankittavaPaikallinenTutkinnonOsaKentanPaivitys]
-      (let [ppto-db (pdb/select-hankittava-paikallinen-tutkinnon-osa-by-id id)]
+      (let [ppto-db (pdb-ha/select-hankittava-paikallinen-tutkinnon-osa-by-id id)]
         (if (some? ppto-db)
           (do (ha/update-hankittava-paikallinen-tutkinnon-osa! ppto-db values)
               (response/no-content))
@@ -107,7 +109,7 @@
       "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values hoks-schema/HankittavaYTOKentanPaivitys]
-      (if (not-empty (pdb/select-hankittava-yhteinen-tutkinnon-osa-by-id id))
+      (if (not-empty (pdb-ha/select-hankittava-yhteinen-tutkinnon-osa-by-id id))
         (do
           (ha/update-hankittava-yhteinen-tutkinnon-osa! id values)
           (response/no-content))
@@ -140,7 +142,7 @@
       :body
       [values hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanPaivitys]
       (if-let [ooato-from-db
-               (pdb/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id
+               (pdb-ah/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id
                  id)]
         (do
           (ah/update-aiemmin-hankittu-ammat-tutkinnon-osa!
@@ -174,7 +176,7 @@
       :path-params [id :- s/Int]
       :body [values hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanPaivitys]
       (if-let [oopto-from-db
-               (pdb/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id
+               (pdb-ah/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id
                  id)]
         (do
           (ah/update-aiemmin-hankittu-paikallinen-tutkinnon-osa!
@@ -208,7 +210,7 @@
       :path-params [id :- s/Int]
       :body [values hoks-schema/AiemminHankitunYhteisenTutkinnonOsanPaivitys]
       (if-let [ahyto-from-db
-               (pdb/select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id id)]
+               (pdb-ah/select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id id)]
         (do
           (ah/update-aiemmin-hankittu-yhteinen-tutkinnon-osa!
             ahyto-from-db values)
@@ -243,7 +245,7 @@
       :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
       (let [count-of-updated-rows
             (first
-              (pdb/update-opiskeluvalmiuksia-tukevat-opinnot-by-id! id values))]
+              (pdb-ot/update-opiskeluvalmiuksia-tukevat-opinnot-by-id! id values))]
         (if (pos? count-of-updated-rows)
           (response/no-content)
           (response/not-found {:error "OTO not found with given OTO ID"}))))))
