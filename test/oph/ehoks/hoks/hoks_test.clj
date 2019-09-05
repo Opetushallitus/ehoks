@@ -1,7 +1,6 @@
 (ns oph.ehoks.hoks.hoks-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [oph.ehoks.utils :as utils :refer [eq with-database]]
-            [oph.ehoks.db.postgresql :as db]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hankittavat :as ha]
