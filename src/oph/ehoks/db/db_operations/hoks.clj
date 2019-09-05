@@ -8,8 +8,7 @@
 
 (defn hoks-from-sql [h]
   (db-ops/from-sql
-    h
-    {:removals [:manuaalisyotto]}))
+    h))
 
 (defn hoks-to-sql [h]
   (db-ops/to-sql
