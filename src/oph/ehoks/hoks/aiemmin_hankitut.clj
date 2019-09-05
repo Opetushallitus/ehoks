@@ -1,5 +1,5 @@
 (ns oph.ehoks.hoks.aiemmin-hankitut
-  (:require [oph.ehoks.db.postgresql :as db]
+  (:require [oph.ehoks.db.postgresql.aiemmin-hankitut :as db]
             [oph.ehoks.hoks.common :as c]))
 
 (defn get-ahato-tarkentavat-tiedot-naytto [id]
