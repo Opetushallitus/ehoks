@@ -226,7 +226,8 @@
                                                 request
                                                 [:session :virkailija-user])]
                           (if (m/virkailija-has-privilege-in-opiskeluoikeus?
-                                virkailija-user (:opiskeluoikeus hoks) :write)
+                                virkailija-user
+                                (:opiskeluoikeus-oid hoks) :write)
                             (do (h/update-hoks! hoks-id hoks-values)
                                 (response/no-content))
                             (do
