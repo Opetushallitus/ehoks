@@ -56,6 +56,15 @@
           opiskeluoikeus))
       (op/get-oppija-opiskeluoikeudet oppija-oid))))
 
+(defn virkailija-has-privilege-in-opiskeluoikeus?
+  [ticket-user opiskeluoikeus-oid privilege]
+  (let [opiskeluoikeus (op/get-opiskeluoikeus-by-oid opiskeluoikeus-oid)]
+    (and (some? opiskeluoikeus)
+         (contains?
+           (user/get-organisation-privileges
+             ticket-user (:oppilaitos-oid opiskeluoikeus))
+           privilege))))
+
 (defn virkailija-has-access? [virkailija-user oppija-oid]
   (virkailija-has-privilege? virkailija-user oppija-oid :read))
 
