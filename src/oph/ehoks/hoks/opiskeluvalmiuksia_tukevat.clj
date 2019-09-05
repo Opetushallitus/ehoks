@@ -1,5 +1,5 @@
 (ns oph.ehoks.hoks.opiskeluvalmiuksia-tukevat
-  (:require [oph.ehoks.db.postgresql :as db]))
+  (:require [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as db]))
 
 (defn get-opiskeluvalmiuksia-tukeva-opinto [oto-id]
   (db/select-opiskeluvalmiuksia-tukevat-opinnot-by-id oto-id))
