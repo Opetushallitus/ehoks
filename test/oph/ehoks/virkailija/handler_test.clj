@@ -55,25 +55,33 @@
 
 (defn with-test-virkailija
   ([request virkailija]
-    (client/set-get!
-      (fn [url options]
-        (cond
-          (.contains
-            url "/rest/organisaatio/v4/")
-          {:status 200
-           :body {:parentOidPath "|"}}
-          (.endsWith
-            url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
-          {:status 200
-           :body {:oppilaitos {:oid "1.2.246.562.10.12944436166"}}})))
-    (let [session "12345678-1234-1234-1234-1234567890ab"
-          cookie (str "ring-session=" session)
-          store (atom
-                  {session
-                   {:virkailija-user virkailija}})
-          app (common-api/create-app
-                handler/app-routes (test-session-store store))]
-      (app (mock/header request :cookie cookie))))
+    (client/with-mock-responses
+      [(fn [url options]
+         (cond
+           (.contains
+             url "/rest/organisaatio/v4/")
+           {:status 200
+            :body {:parentOidPath "|"}}
+           (.endsWith
+             url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
+           {:status 200
+            :body {:oppilaitos {:oid "1.2.246.562.10.12944436166"}}}
+           (.endsWith
+             url "/koski/api/opiskeluoikeus/1.2.246.562.15.760000000010")
+           {:status 200
+            :body {:oppilaitos {:oid "1.2.246.562.10.1200000000010"}}}
+           (.endsWith
+             url "/koski/api/opiskeluoikeus/1.2.246.562.15.000000000020")
+           {:status 200
+            :body {:oppilaitos {:oid "1.2.246.562.10.1200000000200"}}}))]
+      (let [session "12345678-1234-1234-1234-1234567890ab"
+            cookie (str "ring-session=" session)
+            store (atom
+                    {session
+                     {:virkailija-user virkailija}})
+            app (common-api/create-app
+                  handler/app-routes (test-session-store store))]
+        (app (mock/header request :cookie cookie)))))
   ([request] (with-test-virkailija
                request
                {:name "Test"
@@ -124,15 +132,24 @@
      :tutkinto (:tutkinto oppija "")
      :osaamisala (:osaamisala oppija "")}))
 
-(defn- get-search [params]
-  (let [response
-        (with-test-virkailija
-          (mock/request
-            :get
-            (str base-url "/virkailija/oppijat")
-            (assoc params :oppilaitos-oid "1.2.246.562.10.12000000000")))]
-    (t/is (= (:status response) 200))
-    (utils/parse-body (:body response))))
+(defn- get-search
+  ([params virkailija]
+    (let [response
+          (if (some? virkailija)
+            (with-test-virkailija
+              (mock/request
+                :get
+                (str base-url "/virkailija/oppijat")
+                params)
+              virkailija)
+            (with-test-virkailija
+              (mock/request
+                :get
+                (str base-url "/virkailija/oppijat")
+                (assoc params :oppilaitos-oid "1.2.246.562.10.12000000000"))))]
+      (t/is (= (:status response) 200))
+      (utils/parse-body (:body response))))
+  ([params] (get-search params nil)))
 
 (t/deftest test-list-virkailija-oppijat
   (t/testing "GET virkailija oppijat"
@@ -197,6 +214,47 @@
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000003"))))))
 
+(t/deftest test-list-virkailija-oppija-with-multi-opiskeluoikeus
+  (t/testing "GET virkailija oppijat"
+    (utils/with-db
+      (add-oppija {:oid "1.2.246.562.24.44000000001"
+                   :nimi "Teuvo Testaaja"
+                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                   :tutkinto "Testitutkinto 1"
+                   :osaamisala "Testiosaamisala numero 1"
+                   :koulutustoimija-oid ""})
+      (db-opiskeluoikeus/insert-opiskeluoikeus
+        {:oid "1.2.246.562.15.760000000020"
+         :oppija_oid "1.2.246.562.24.44000000001"
+         :oppilaitos_oid "1.2.246.562.10.1200000000020"
+         :koulutustoimija_oid ""
+         :tutkinto "Tutkinto 2"
+         :osaamisala "Osaamisala 2"})
+
+      (let [body (get-search
+                   {:oppilaitos-oid "1.2.246.562.10.1200000000020"}
+                   {:name "Test"
+                    :kayttajaTyyppi "VIRKAILIJA"
+                    :oidHenkilo "1.2.246.562.24.220000000030"
+                    :organisation-privileges
+                    [{:oid "1.2.246.562.10.1200000000020"
+                      :privileges #{:read}}]})]
+        (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:data 0 :oid])
+                 "1.2.246.562.24.44000000001")))
+      (let [body (get-search
+                   {:oppilaitos-oid "1.2.246.562.10.1200000000010"}
+                   {:name "Test"
+                    :kayttajaTyyppi "VIRKAILIJA"
+                    :oidHenkilo "1.2.246.562.24.220000000020"
+                    :organisation-privileges
+                    [{:oid "1.2.246.562.10.1200000000010"
+                      :privileges #{:read}}]})]
+        (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:data 0 :oid])
+                 "1.2.246.562.24.44000000001"))))))
+
 (t/deftest test-virkailija-with-no-read
   (t/testing "Prevent GET virkailija oppijat without read privilege"
     (utils/with-db
@@ -220,31 +278,39 @@
 (t/deftest test-virkailija-has-access
   (t/testing "Virkailija has oppija access"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Testi 1"
-                   :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
-                   :oppilaitos-oid "1.2.246.562.10.12000000000"
-                   :koulutustoimija-oid ""})
-      (t/is
-        (not
-          (m/virkailija-has-access?
-            {:organisation-privileges
-             [{:oid "1.2.246.562.10.12000000002"
-               :privileges #{:read}}]}
-            "1.2.246.562.24.44000000001")))
-      (t/is
-        (not
+      (client/with-mock-responses
+        [(fn [url options]
+           (cond
+             (.contains
+               url "/rest/organisaatio/v4/")
+             {:status 200
+              :body {:parentOidPath "|"}}))]
+
+        (add-oppija {:oid "1.2.246.562.24.44000000001"
+                     :nimi "Testi 1"
+                     :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
+                     :oppilaitos-oid "1.2.246.562.10.12000000000"
+                     :koulutustoimija-oid ""})
+        (t/is
+          (not
+            (m/virkailija-has-access?
+              {:organisation-privileges
+               [{:oid "1.2.246.562.10.12000000002"
+                 :privileges #{:read}}]}
+              "1.2.246.562.24.44000000001")))
+        (t/is
+          (not
+            (m/virkailija-has-access?
+              {:organisation-privileges
+               [{:oid "1.2.246.562.10.12000000000"
+                 :privileges #{}}]}
+              "1.2.246.562.24.44000000001")))
+        (t/is
           (m/virkailija-has-access?
             {:organisation-privileges
              [{:oid "1.2.246.562.10.12000000000"
-               :privileges #{}}]}
-            "1.2.246.562.24.44000000001")))
-      (t/is
-        (m/virkailija-has-access?
-          {:organisation-privileges
-           [{:oid "1.2.246.562.10.12000000000"
-             :privileges #{:read}}]}
-          "1.2.246.562.24.44000000001")))))
+               :privileges #{:read}}]}
+            "1.2.246.562.24.44000000001"))))))
 
 (t/deftest test-virkailija-hoks-forbidden
   (t/testing "Virkailija HOKS forbidden"
