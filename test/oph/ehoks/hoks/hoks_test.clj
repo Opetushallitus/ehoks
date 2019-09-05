@@ -371,7 +371,8 @@
         (assoc
           hoks-data
           :id 1
-          :eid (:eid hoks))))))
+          :eid (:eid hoks)
+          :manuaalisyotto false)))))
 
 (deftest empty-values-test
   (testing "DB handling of empty values"

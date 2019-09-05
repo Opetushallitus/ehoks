@@ -202,13 +202,13 @@
   KoulutuksenJarjestajaArvioija
   (modify
     Arvioija
-    "Työelämän arvioija"
+    "Koulutuksenjärjestäjän arvioija"
     {:removed [:organisaatio]
      :added
      (describe
        ""
        :organisaatio KoulutuksenJarjestajaOrganisaatio
-       "KoulutuksenJarjestajan arvioijan organisaatio")}))
+       "Koulutuksenjärjestäjän arvioijan organisaatio")}))
 
 (s/defschema
   OsaamisenOsoittaminen
@@ -693,6 +693,10 @@
                                ammattitaidon hankkimisen tarve; osaamisen
                                tunnistamis- ja tunnustamisprosessin
                                lopputulos."}
+   :manuaalisyotto {:methods {:any :excluded
+                              :get :optional}
+                    :types {:any s/Bool}
+                    :description "Tieto, onko HOKS tuotu manuaalisyötön kautta"}
    :aiemmin-hankitut-ammat-tutkinnon-osat ahato-part-of-hoks
    :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-part-of-hoks
    :aiemmin-hankitut-paikalliset-tutkinnon-osat ahpto-part-of-hoks

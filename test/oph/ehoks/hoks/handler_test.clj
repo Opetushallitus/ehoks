@@ -899,7 +899,8 @@
           hoks
           (assoc (add-empty-hoks-values hoks-data)
                  :id 1
-                 :eid (:eid hoks)))))))
+                 :eid (:eid hoks)
+                 :manuaalisyotto false))))))
 
 (deftest prevent-creating-hoks-with-existing-opiskeluoikeus
   (testing "Prevent POST HOKS with existing opiskeluoikeus"
@@ -974,7 +975,8 @@
             hoks
             (assoc (add-empty-hoks-values hoks-data)
                    :id 1
-                   :eid (:eid hoks))))))))
+                   :eid (:eid hoks)
+                   :manuaalisyotto false)))))))
 
 (deftest prevent-oppija-opiskeluoikeus-patch
   (testing "Prevent patching opiskeluoikeus or oppija oid"

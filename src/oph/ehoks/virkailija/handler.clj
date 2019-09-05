@@ -81,12 +81,12 @@
                               oppilaitos-oid)
                             :read)
                     (do
-                      (log/warn "User "
-                                (get-in request [:session
-                                                 :virkailija-user
-                                                 :oidHenkilo])
-                                " privileges don't match organisaatio "
-                                oppilaitos-oid)
+                      (log/warnf
+                        "User %s privileges does not match oppilaitos %s"
+                        (get-in request [:session
+                                         :virkailija-user
+                                         :oidHenkilo])
+                        oppilaitos-oid)
                       (response/forbidden
                         {:error
                          (str "User has insufficient privileges for "
@@ -166,7 +166,8 @@
                             {:error
                              (str "User has unsufficient privileges")})))
                       (try
-                        (let [hoks-db (h/save-hoks! hoks)]
+                        (let [hoks-db (h/save-hoks!
+                                        (assoc hoks :manuaalisyotto true))]
                           (restful/rest-ok
                             {:uri (format "%s/%d"
                                           (:uri request)

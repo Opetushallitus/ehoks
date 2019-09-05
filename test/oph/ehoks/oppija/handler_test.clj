@@ -48,7 +48,9 @@
       (eq
         (:data body)
         [(dates-to-str
-           (assoc hoks-data :eid (get-in body [:data 0 :eid])))]))))
+           (assoc hoks-data
+                  :eid (get-in body [:data 0 :eid])
+                  :manuaalisyotto false))]))))
 
 (deftest buildversion
   (testing "GET /buildversion.txt"

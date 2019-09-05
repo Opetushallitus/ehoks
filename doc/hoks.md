@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 16.08.2019 07.35
+Generoitu 04.09.2019 05.49
 
 Katso myös [HOKS doc](https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md)
 
@@ -602,12 +602,12 @@ Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot
 
 ### KoulutuksenJarjestajaArvioija  
 
-Työelämän arvioija
+Koulutuksenjärjestäjän arvioija
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | nimi | Merkkijono | Arvioijan nimi | Kyllä |
-| organisaatio | [KoulutuksenJarjestajaOrganisaatio](#KoulutuksenJarjestajaOrganisaatio) | KoulutuksenJarjestajan arvioijan organisaatio | Kyllä |
+| organisaatio | [KoulutuksenJarjestajaOrganisaatio](#KoulutuksenJarjestajaOrganisaatio) | Koulutuksenjärjestäjän arvioijan organisaatio | Kyllä |
 
 ### HankittavaAmmatillinenTutkinnonOsaLuonti  
 
@@ -636,12 +636,4 @@ Hankittavan ammatillisen osaamisen tiedot kenttää tai kenttiä päivittäessä
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
 | koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | olennainen-seikka | Totuusarvo | Tieto sellaisen seikan olemassaolosta, jonka koulutuksen<br>   järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen<br>   liittyvän osaamisen hankkimisessa tai osoittamisessa. | Ei |
-
-### HoksToimija  
-
-Hoksin hyväksyjä tai päivittäjä koulutusjärjestäjän organisaatiossa
-
-| Nimi | Tyyppi | Selite | Vaaditaan |
-| ---- | ------ | ------ | --------- |
-| nimi | Merkkijono | Henkilön nimi | Kyllä |
 

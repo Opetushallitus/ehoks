@@ -1,6 +1,5 @@
 (ns oph.ehoks.db.db-operations.hoks
-  (:require [clojure.set :refer [rename-keys]]
-            [oph.ehoks.db.queries :as queries]
+  (:require [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [clojure.java.jdbc :as jdbc]))
 
@@ -9,8 +8,7 @@
 
 (defn hoks-from-sql [h]
   (db-ops/from-sql
-    h
-    {:removals [:manuaalisyotto]}))
+    h))
 
 (defn hoks-to-sql [h]
   (db-ops/to-sql
