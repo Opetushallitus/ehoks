@@ -45,7 +45,8 @@
       :path-params [id :- s/Int]
       :body
       [values hoks-schema/HankittavaPaikallinenTutkinnonOsaKentanPaivitys]
-      (let [ppto-db (pdb-ha/select-hankittava-paikallinen-tutkinnon-osa-by-id id)]
+      (let [ppto-db (pdb-ha/select-hankittava-paikallinen-tutkinnon-osa-by-id
+                      id)]
         (if (some? ppto-db)
           (do (ha/update-hankittava-paikallinen-tutkinnon-osa! ppto-db values)
               (response/no-content))
@@ -245,7 +246,8 @@
       :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
       (let [count-of-updated-rows
             (first
-              (pdb-ot/update-opiskeluvalmiuksia-tukevat-opinnot-by-id! id values))]
+              (pdb-ot/update-opiskeluvalmiuksia-tukevat-opinnot-by-id!
+                id values))]
         (if (pos? count-of-updated-rows)
           (response/no-content)
           (response/not-found {:error "OTO not found with given OTO ID"}))))))

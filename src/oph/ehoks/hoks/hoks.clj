@@ -87,13 +87,15 @@
     (ot/save-opiskeluvalmiuksia-tukevat-opinnot! hoks-id new-oto-values)))
 
 (defn- replace-hato! [hoks-id new-hato-values db-conn]
-  (db-ha/delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id hoks-id db-conn)
+  (db-ha/delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id
+    hoks-id db-conn)
   (when
    new-hato-values
     (ha/save-hankittavat-ammat-tutkinnon-osat! hoks-id new-hato-values)))
 
 (defn- replace-hpto! [hoks-id new-hpto-values db-conn]
-  (db-ha/delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id db-conn)
+  (db-ha/delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id
+    hoks-id db-conn)
   (when
    new-hpto-values
     (ha/save-hankittavat-paikalliset-tutkinnon-osat! hoks-id new-hpto-values)))
