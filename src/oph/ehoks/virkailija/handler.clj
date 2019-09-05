@@ -166,7 +166,8 @@
                             {:error
                              (str "User has unsufficient privileges")})))
                       (try
-                        (let [hoks-db (h/save-hoks! hoks)]
+                        (let [hoks-db (h/save-hoks!
+                                        (assoc hoks :manuaalisyotto true))]
                           (restful/rest-ok
                             {:uri (format "%s/%d"
                                           (:uri request)
