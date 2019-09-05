@@ -387,5 +387,17 @@
                :kayttajaTyyppi "VIRKAILIJA"
                :organisation-privileges
                [{:oid "1.2.246.562.10.12000000001"
+                 :privileges #{:write :read :update :delete}}]})
+            get-response
+            (with-test-virkailija
+              (mock/request
+                :get
+                (get-in (utils/parse-body (:body response)) [:data :uri]))
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.12000000001"
                  :privileges #{:write :read :update :delete}}]})]
+        (t/is (get-in (utils/parse-body (:body get-response))
+                      [:data :manuaalisyotto]))
         (t/is (= (:status response) 200))))))
