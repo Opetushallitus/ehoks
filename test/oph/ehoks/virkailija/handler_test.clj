@@ -416,12 +416,13 @@
                   (str
                     base-url
                     "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
-                {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                {:opiskeluoikeus-oid "1.2.246.562.15.76000000001"
                  :oppija-oid "1.2.246.562.24.44000000001"
                  :ensikertainen-hyvaksyminen "2018-12-15"
                  :osaamisen-hankkimisen-tarve false})
               {:name "Testivirkailija"
                :kayttajaTyyppi "VIRKAILIJA"
+               :oidHenkilo "1.2.246.562.24.44000000333"
                :organisation-privileges
                [{:oid "1.2.246.562.10.12000000001"
                  :privileges #{:write :read :update :delete}}]})
@@ -432,6 +433,7 @@
                 (get-in (utils/parse-body (:body response)) [:data :uri]))
               {:name "Testivirkailija"
                :kayttajaTyyppi "VIRKAILIJA"
+               :oidHenkilo "1.2.246.562.24.44000000333"
                :organisation-privileges
                [{:oid "1.2.246.562.10.12000000001"
                  :privileges #{:write :read :update :delete}}]})]
