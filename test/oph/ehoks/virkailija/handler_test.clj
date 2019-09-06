@@ -312,6 +312,43 @@
                :privileges #{:read}}]}
             "1.2.246.562.24.44000000001"))))))
 
+(t/deftest test-virkailija-hoks-write-forbidden
+  (t/testing "Virkailija HOKS write is forbidden"
+    (utils/with-db
+      (add-oppija {:oid "1.2.246.562.24.44000000001"
+                   :nimi "Teuvo Testaaja"
+                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                   :tutkinto "Testitutkinto 1"
+                   :osaamisala "Testiosaamisala numero 1"
+                   :koulutustoimija-oid ""})
+      (db-opiskeluoikeus/insert-opiskeluoikeus
+        {:oid "1.2.246.562.15.760000000020"
+         :oppija_oid "1.2.246.562.24.44000000001"
+         :oppilaitos_oid "1.2.246.562.10.1200000000200"
+         :tutkinto "Testitutkinto 2"
+         :osaamisala "Testiosaamisala 2"})
+      (let [response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :post
+                  (str
+                    base-url
+                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
+                {:opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                 :oppija-oid "1.2.246.562.24.44000000001"
+                 :ensikertainen-hyvaksyminen "2018-12-15"
+                 :osaamisen-hankkimisen-tarve false})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000200"
+                 :privileges #{:write :read :update :delete}}
+                {:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:read}}]})]
+        (t/is (= (:status response) 403))))))
+
 (t/deftest test-virkailija-hoks-forbidden
   (t/testing "Virkailija HOKS forbidden"
     (utils/with-db
