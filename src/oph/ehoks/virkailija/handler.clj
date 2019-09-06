@@ -177,7 +177,7 @@
                           (if (= (:error (ex-data e)) :duplicate)
                             (do
                               (log/warnf
-                                "HOKS with opiskeluoikeus-oid %s already exists!"
+                                "HOKS with opiskeluoikeus-oid %s already exists"
                                 (:opiskeluoikeus-oid hoks))
                               (response/bad-request!
                                 {:error
