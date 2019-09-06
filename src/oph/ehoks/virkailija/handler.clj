@@ -157,12 +157,11 @@
                         (when-not
                          (m/virkailija-has-privilege-in-opiskeluoikeus?
                            virkailija-user (:opiskeluoikeus-oid hoks) :write)
-                          (log/warn "User "
-                                    (get-in request [:session
-                                                     :virkailija-user
-                                                     :oidHenkilo])
-                                    " privileges don't match oppija "
-                                    (:oppija-oid hoks))
+                          (log/warnf "User %s privileges don't match oppija %s"
+                                     (get-in request [:session
+                                                      :virkailija-user
+                                                      :oidHenkilo])
+                                     (:oppija-oid hoks))
                           (response/forbidden!
                             {:error
                              (str "User has unsufficient privileges")})))
@@ -177,9 +176,9 @@
                         (catch Exception e
                           (if (= (:error (ex-data e)) :duplicate)
                             (do
-                              (log/warn "HOKS with opiskeluoikeus-oid "
-                                        (:opiskeluoikeus-oid hoks)
-                                        " already exists!")
+                              (log/warnf
+                                "HOKS with opiskeluoikeus-oid %s already exists!"
+                                (:opiskeluoikeus-oid hoks))
                               (response/bad-request!
                                 {:error
                                  (str "HOKS with the same "
@@ -208,12 +207,12 @@
                                 virkailija-user (:oppija-oid hoks) :read)
                             (restful/rest-ok (h/get-hoks-by-id hoks-id))
                             (do
-                              (log/warn "User "
-                                        (get-in request [:session
-                                                         :virkailija-user
-                                                         :oidHenkilo])
-                                        " privileges don't match oppija "
-                                        (get-in request [:params :oppija-oid]))
+                              (log/warnf
+                                "User %s privileges don't match oppija %s"
+                                (get-in request [:session
+                                                 :virkailija-user
+                                                 :oidHenkilo])
+                                (get-in request [:params :oppija-oid]))
                               (response/forbidden
                                 {:error
                                  (str "User has insufficient privileges")})))))
