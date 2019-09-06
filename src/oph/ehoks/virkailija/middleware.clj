@@ -76,10 +76,9 @@
             (get-in request [:params :oppija-oid]))
         (handler request respond raise)
         (do
-          (log/warn "User "
-                    (get-in request [:session :virkailija-user :oidHenkilo])
-                    " privileges don't match oppija "
-                    (get-in request [:params :oppija-oid]))
+          (log/warnf "User %s privileges don't match oppija %s"
+                     (get-in request [:session :virkailija-user :oidHenkilo])
+                     (get-in request [:params :oppija-oid]))
           (respond
             (response/forbidden
               {:error (str "User privileges does not match oppija "
@@ -90,10 +89,9 @@
             (get-in request [:params :oppija-oid]))
         (handler request)
         (do
-          (log/warn "User "
-                    (get-in request [:session :virkailija-user :oidHenkilo])
-                    " privileges don't match oppija "
-                    (get-in request [:params :oppija-oid]))
+          (log/warnf "User %s privileges don't match oppija %s"
+                     (get-in request [:session :virkailija-user :oidHenkilo])
+                     (get-in request [:params :oppija-oid]))
           (response/forbidden
             {:error (str "User privileges does not match oppija opiskeluoikeus "
                          "organisation")}))))))
