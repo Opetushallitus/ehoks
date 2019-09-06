@@ -11,6 +11,6 @@
  :db-server "{{ehoks_db_server}}"
  :db-port {{ehoks_db_port}}
  :db-name "{{ehoks_db_name}}"
- :db-username "{{ehoks_db_username}}"
- :db-password "{{ehoks_db_password}}"
+ :db-username "{{postgres_app_user}}"
+ :db-password "{{ehoks_db_app_password}}"
  :send-herate-messages? {{ehoks_send_herate_messages}}}
