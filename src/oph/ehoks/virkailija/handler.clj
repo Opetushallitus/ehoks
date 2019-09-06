@@ -154,8 +154,9 @@
                             (throw e))))
                       (let [virkailija-user
                             (get-in request [:session :virkailija-user])]
-                        (when-not (m/virkailija-has-privilege?
-                                    virkailija-user (:oppija-oid hoks) :write)
+                        (when-not
+                         (m/virkailija-has-privilege-in-opiskeluoikeus?
+                           virkailija-user (:opiskeluoikeus-oid hoks) :write)
                           (log/warn "User "
                                     (get-in request [:session
                                                      :virkailija-user
