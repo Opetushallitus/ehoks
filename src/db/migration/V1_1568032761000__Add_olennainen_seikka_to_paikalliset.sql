@@ -1,0 +1,2 @@
+ALTER TABLE aiemmin_hankitut_paikalliset_tutkinnon_osat ADD COLUMN
+olennainen_seikka BOOLEAN;
