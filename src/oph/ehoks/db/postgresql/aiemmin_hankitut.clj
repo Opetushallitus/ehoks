@@ -75,7 +75,7 @@
   "Aiemmin hankitun yhteisen tutkinnon osan osa-alueet"
   [id]
   (db-ops/query
-    [queries/select-osa-alueet-by-ooyto-id id]
+    [queries/select-osa-alueet-by-ahyto-id id]
     {:row-fn h/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-from-sql}))
 
 (defn select-tarkentavat-tiedot-naytto-by-ahyto-id

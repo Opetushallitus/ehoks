@@ -3,11 +3,6 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn insert-koulutuksen-jarjestaja-osaamisen-arvioija! [m]
-  (db-ops/insert-one!
-    :koulutuksen_jarjestaja_osaamisen_arvioijat
-    (h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql m)))
-
 (defn insert-koodisto-koodi! [m]
   (db-ops/insert-one!
     :koodisto_koodit
@@ -101,22 +96,6 @@
     (db-ops/query
       [queries/select-nayttoymparistot-by-id id]
       {:row-fn h/nayttoymparisto-from-sql})))
-
-(defn select-osaamisen-osoittaminen-by-oopto-id [id]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-ahpto-id id]
-    {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
-(defn insert-ooyto-arvioija! [yto-id a-id]
-  (db-ops/insert-one!
-    :aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat
-    {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id yto-id
-     :koulutuksen_jarjestaja_osaamisen_arvioija_id a-id}))
-
-(defn select-arvioija-by-ooyto-id [id]
-  (db-ops/query
-    [queries/select-arvioijat-by-ooyto-id id]
-    {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
 
 (defn select-oppilaitos-oids []
   (db-ops/query
