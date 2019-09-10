@@ -292,4 +292,5 @@
     (GET "/organisaatio-service/rest/organisaatio/v4/:oid" request
       (json-response
         {:oid (get-in request [:params :oid])
+         :nimi {:fi "Esimerkki-organisaatio"}
          :parentOidPath "|1.2.246.562.10.00000000001|"}))))
