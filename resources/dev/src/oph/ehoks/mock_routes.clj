@@ -171,6 +171,10 @@
       (json-response-file
         "dev-routes/eperusteet-service_api_perusteet_3397335_suoritustavat_reformi_rakenne.json"))
 
+    (GET "/eperusteet-service/api/perusteet/1352660/suoritustavat/ops/tutkinnonosat" []
+      (json-response-file
+        "dev-routes/eperusteet-service_api_perusteet_1352660_suoritustavat_ops_tutkinnonosat.json"))
+
     (GET "/eperusteet-service/api/tutkinnonosat" request
       (if (= (get-in request [:query-params "koodiUri"]) "tutkinnonosat_101056")
         (json-response-file
