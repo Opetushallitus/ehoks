@@ -44,8 +44,8 @@
 
 (defn select-tarkentavat-tiedot-naytto-by-ahpto-id
   "Aiemmin hankitun paikallisen tutkinnon osan tarkentavien tietojen näyttö"
-  [oopto-id]
-  (db-ops/query [queries/select-osaamisen-osoittamiset-by-oopto-id oopto-id]
+  [ahpto-id]
+  (db-ops/query [queries/select-osaamisen-osoittamiset-by-ahpto-id ahpto-id]
                 {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
 (defn select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id
@@ -75,7 +75,7 @@
   "Aiemmin hankitun yhteisen tutkinnon osan osa-alueet"
   [id]
   (db-ops/query
-    [queries/select-osa-alueet-by-ooyto-id id]
+    [queries/select-osa-alueet-by-ahyto-id id]
     {:row-fn h/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-from-sql}))
 
 (defn select-tarkentavat-tiedot-naytto-by-ahyto-id
@@ -83,7 +83,7 @@
    (hankitun osaamisen näytöt)"
   [id]
   (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-ooyto-id id]
+    [queries/select-osaamisen-osoittamiset-by-ahyto-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
 (defn select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id
