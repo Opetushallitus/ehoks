@@ -92,6 +92,13 @@
                   :return (rest/response s/Any)
                   (rest/rest-ok (eperusteet/get-suoritustavat id)))
 
+                (c-api/GET "/tutkinnot/:id/suoritustavat/ops/tutkinnonosat" []
+                  :path-params [id :- Long]
+                  :summary "Tutkinnon ops suoritustavat"
+                  :return (rest/response s/Any)
+                  (rest/with-not-found-handling
+                    (eperusteet/get-ops-suoritustavat id)))
+
                 (c-api/GET "/:koodi-uri" [koodi-uri]
                   :path-params [koodi-uri :- s/Str]
                   :summary "Tutkinnon osan perusteiden
@@ -113,14 +120,8 @@
                   :path-params [oid :- s/Str]
                   :summary "Organisaation tiedot oidin perusteella"
                   :return (rest/response s/Any)
-                  (try
-                    (let [organisaatio (organisaatio/get-organisaatio-info oid)]
-                      (rest/rest-ok organisaatio))
-                    (catch Exception e
-                      (let [data (ex-data e)]
-                        (if (= (:status data) 404)
-                          (response/not-found)
-                          (throw e)))))))))
+                  (rest/with-not-found-handling
+                    (organisaatio/get-organisaatio-info oid))))))
 
           (c-api/context "/oppijat" []
             :tags ["oppijat"]

@@ -92,6 +92,13 @@
               (response/not-found {:message "Rakenne not found"})
               (throw e)))))
 
+      (c-api/GET "/tutkinnot/:id/suoritustavat/ops/tutkinnonosat" []
+        :path-params [id :- Long]
+        :summary "Tutkinnon ops suoritustavat"
+        :return (restful/response s/Any)
+        (restful/with-not-found-handling
+          (eperusteet/get-ops-suoritustavat id)))
+
       (c-api/GET "/:koodi-uri" []
         :path-params [koodi-uri :- s/Str]
         :summary "Tutkinnon osan perusteiden haku

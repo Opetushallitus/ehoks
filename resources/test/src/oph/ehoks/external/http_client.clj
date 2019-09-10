@@ -6,9 +6,14 @@
   (atom {:get client/get
          :post client/post}))
 
+(defn get-client-functions [] @client-functions)
+
 (defn reset-functions! []
   (reset! client-functions {:get client/get
                             :post client/post}))
+
+(defn restore-functions! [fns]
+  (reset! client-functions fns))
 
 (defn get [url options]
   (or ((:get @client-functions) url options) (client/get url options)))
@@ -24,8 +29,9 @@
 
 (defmacro with-mock-responses [[get-response post-response] & body]
   `(do
-     (set-get! ~get-response)
-     (set-post! ~post-response)
-     (let [result# (do ~@body)]
-       (reset-functions!)
-       result#)))
+     (let [fns# (get-client-functions)]
+       (set-get! ~get-response)
+       (set-post! ~post-response)
+       (let [result# (do ~@body)]
+         (restore-functions! fns#)
+         result#))))
