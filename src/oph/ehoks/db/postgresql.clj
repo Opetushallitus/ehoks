@@ -24,34 +24,10 @@
     [queries/select-osa-alueet-by-osaamisen-osoittaminen naytto-id]
     {:row-fn h/koodi-uri-from-sql}))
 
-(defn insert-aiemmin-hankitut-ammat-tutkinnon-osat! [c]
-  (db-ops/insert-multi!
-    :aiemmin_hankitut_ammat_tutkinnon_osat
-    (map h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql c)))
-
-(defn insert-hankittavat-paikalliset-tutkinnon-osat! [c]
-  (db-ops/insert-multi!
-    :hankittavat_paikalliset_tutkinnon_osat
-    (map h/hankittava-paikallinen-tutkinnon-osa-to-sql c)))
-
 (defn insert-osaamisen-osoittaminen! [m]
   (db-ops/insert-one!
     :osaamisen_osoittamiset
     (h/osaamisen-osoittaminen-to-sql m)))
-
-(defn insert-ppto-osaamisen-osoittamiset!
-  "hankittavan paikallisen tutkinnon osan hankitun osaamisen näytöt"
-  [ppto c]
-  (let [h-col (db-ops/insert-multi!
-                :osaamisen_osoittamiset
-                (map h/osaamisen-osoittaminen-to-sql c))]
-    (db-ops/insert-multi!
-      :hankittavan_paikallisen_tutkinnon_osan_naytto
-      (map #(hash-map
-              :hankittava_paikallinen_tutkinnon_osa_id (:id ppto)
-              :osaamisen_osoittaminen_id (:id %))
-           h-col))
-    h-col))
 
 (defn insert-osaamisen-osoittamisen-koulutuksen-jarjestaja-osaamisen-arvioija!
   [hon c]
@@ -120,11 +96,6 @@
     :nayttoymparistot
     (db-ops/to-sql m)))
 
-(defn insert-nayttoymparistot! [c]
-  (db-ops/insert-multi!
-    :nayttoymparistot
-    (map db-ops/to-sql c)))
-
 (defn select-nayttoymparisto-by-id [id]
   (first
     (db-ops/query
@@ -133,7 +104,7 @@
 
 (defn select-osaamisen-osoittaminen-by-oopto-id [id]
   (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-oopto-id id]
+    [queries/select-osaamisen-osoittamiset-by-ahpto-id id]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
 (defn insert-ooyto-arvioija! [yto-id a-id]

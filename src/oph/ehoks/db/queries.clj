@@ -79,7 +79,7 @@
 (defq select-hankittavat-paikalliset-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id)
-(def select-osaamisen-osoittamiset-by-oopto-id
+(def select-osaamisen-osoittamiset-by-ahpto-id
   (generate-select-join
     {:table "osaamisen_osoittamiset"
      :join "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
@@ -137,7 +137,7 @@
      :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
      :primary-column "id"
      :column "todennettu_arviointi_lisatiedot_id"}))
-(def select-osaamisen-osoittamiset-by-ooyto-id
+(def select-osaamisen-osoittamiset-by-ahyto-id
   (generate-select-join
     {:table "osaamisen_osoittamiset"
      :join "aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto"
