@@ -289,7 +289,16 @@
       (json-response-file
         "dev-routes/organisaatio-service_rest_organisaatio_v4_findbyoids.json"))
 
+    (GET "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.15.404" []
+      (assoc-in
+        (response/not-found
+          (cheshire/generate-string
+            {:errorMessage "organisaatio.exception.organisaatio.not.found"
+             :errorKey ""}))
+        [:headers "Content-Type"] "application/json"))
+
     (GET "/organisaatio-service/rest/organisaatio/v4/:oid" request
       (json-response
         {:oid (get-in request [:params :oid])
+         :nimi {:fi "Esimerkki-organisaatio"}
          :parentOidPath "|1.2.246.562.10.00000000001|"}))))

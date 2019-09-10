@@ -23,7 +23,8 @@
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppija.share-handler :as share-handler]
-            [oph.ehoks.oppija.middleware :as m]))
+            [oph.ehoks.oppija.middleware :as m]
+            [oph.ehoks.external.organisaatio :as organisaatio]))
 
 (defn wrap-match-user [handler]
   (fn
@@ -105,7 +106,21 @@
                  Koodiin täydennetään automaattisesti
                  'paikallinen_tutkinnonosa'"
                   :return (rest/response [s/Any])
-                  (rest/rest-ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))))
+                  (rest/rest-ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))
+
+              (c-api/context "/organisaatio" []
+                (c-api/GET "/:oid" []
+                  :path-params [oid :- s/Str]
+                  :summary "Organisaation tiedot oidin perusteella"
+                  :return (rest/response s/Any)
+                  (try
+                    (let [organisaatio (organisaatio/get-organisaatio-info oid)]
+                      (rest/rest-ok organisaatio))
+                    (catch Exception e
+                      (let [data (ex-data e)]
+                        (if (= (:status data) 404)
+                          (response/not-found)
+                          (throw e)))))))))
 
           (c-api/context "/oppijat" []
             :tags ["oppijat"]
