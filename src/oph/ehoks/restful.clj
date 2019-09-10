@@ -9,7 +9,10 @@
 (defn rest-ok [body & meta-data]
   (ok (apply response body meta-data)))
 
-(defmacro with-not-found-handling [& body]
+(defmacro with-not-found-handling
+  "Macro for handling automatically not found exception from external service.
+  When occurring one macro returns http not found response."
+  [& body]
   `(try
      (rest-ok (do ~@body))
      (catch Exception e#
