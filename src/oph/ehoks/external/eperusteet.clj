@@ -71,3 +71,12 @@
        :url (u/get-url "eperusteet-service.get-rakenne" id)
        :options {:as :json}})
     :body))
+
+(defn get-ops-suoritustavat [^Long id]
+  (get
+    (cache/with-cache!
+      {:method :get
+       :service (u/get-url "eperusteet-service-url")
+       :url (u/get-url "eperusteet-service.get-ops-rakenne" id)
+       :options {:as :json}})
+    :body))
