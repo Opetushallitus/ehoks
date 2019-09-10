@@ -21,7 +21,14 @@
         :summary "Hakee organisaatiot oidien perusteella"
         :return (restful/response [s/Any])
         (restful/rest-ok
-          (organisaatio/find-organisaatiot oids))))
+          (organisaatio/find-organisaatiot oids)))
+
+      (c-api/GET "/:oid" []
+        :path-params [oid :- s/Str]
+        :summary "Organisaation tiedot oidin perusteella"
+        :return (restful/response s/Any)
+        (restful/rest-ok
+          (organisaatio/get-organisaatio oid))))
 
     (c-api/context "/koodisto" []
       (c-api/GET "/:koodi-uri" []
