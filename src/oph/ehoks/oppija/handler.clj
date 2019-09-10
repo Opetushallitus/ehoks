@@ -92,6 +92,13 @@
                   :return (rest/response s/Any)
                   (rest/rest-ok (eperusteet/get-suoritustavat id)))
 
+                (c-api/GET "/tutkinnot/:id/suoritustavat/ops/tutkinnonosat" []
+                  :path-params [id :- Long]
+                  :summary "Tutkinnon ops suoritustavat"
+                  :return (rest/response s/Any)
+                  (rest/with-not-found-handling
+                    (eperusteet/get-ops-suoritustavat id)))
+
                 (c-api/GET "/:koodi-uri" [koodi-uri]
                   :path-params [koodi-uri :- s/Str]
                   :summary "Tutkinnon osan perusteiden
