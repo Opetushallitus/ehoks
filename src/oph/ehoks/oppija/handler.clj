@@ -113,14 +113,8 @@
                   :path-params [oid :- s/Str]
                   :summary "Organisaation tiedot oidin perusteella"
                   :return (rest/response s/Any)
-                  (try
-                    (let [organisaatio (organisaatio/get-organisaatio-info oid)]
-                      (rest/rest-ok organisaatio))
-                    (catch Exception e
-                      (let [data (ex-data e)]
-                        (if (= (:status data) 404)
-                          (response/not-found)
-                          (throw e)))))))))
+                  (rest/with-not-found-handling
+                    (organisaatio/get-organisaatio-info oid))))))
 
           (c-api/context "/oppijat" []
             :tags ["oppijat"]
