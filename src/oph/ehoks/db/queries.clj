@@ -79,7 +79,7 @@
 (defq select-hankittavat-paikalliset-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id)
-(def select-osaamisen-osoittamiset-by-oopto-id
+(def select-osaamisen-osoittamiset-by-ahpto-id
   (generate-select-join
     {:table "osaamisen_osoittamiset"
      :join "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
@@ -137,7 +137,7 @@
      :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
      :primary-column "id"
      :column "todennettu_arviointi_lisatiedot_id"}))
-(def select-osaamisen-osoittamiset-by-ooyto-id
+(def select-osaamisen-osoittamiset-by-ahyto-id
   (generate-select-join
     {:table "osaamisen_osoittamiset"
      :join "aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto"
@@ -151,27 +151,20 @@
      :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "aiemmin_hankittu_yto_osa_alue_id"}))
-(def select-arvioijat-by-ooyto-id
-  (generate-select-join
-    {:table "koulutuksen_jarjestaja_osaamisen_arvioijat"
-     :join "aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat"
-     :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
-     :primary-column "id"
-     :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
-(def select-osa-alueet-by-ooyto-id
+(def select-osa-alueet-by-ahyto-id
   (generate-select-by
     {:table "aiemmin_hankitut_yto_osa_alueet"
      :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
 (defq select-hankittavat-ammat-tutkinnon-osat-by-hoks-id)
 (defq select-hankittavat-ammat-tutkinnon-osat-by-id)
-(def select-osaamisen-osoittamiset-by-pato-id
+(def select-osaamisen-osoittamiset-by-hato-id
   (generate-select-join
     {:table "osaamisen_osoittamiset"
      :join "hankittavan_ammat_tutkinnon_osan_naytto"
      :secondary-column "osaamisen_osoittaminen_id"
      :primary-column "id"
      :column "hankittava_ammat_tutkinnon_osa_id"}))
-(def select-osaamisen-hankkmistavat-by-pato-id
+(def select-osaamisen-hankkmistavat-by-hato-id
   (generate-select-join
     {:table "osaamisen_hankkimistavat"
      :join "hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat"
