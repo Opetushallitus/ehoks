@@ -17,6 +17,17 @@
       (:body resp)
       (log/warn "Error getting organization " oid ", " resp))))
 
+(defn get-organisaatio-info
+  "Get organisaatio info without handling exceptions"
+  [oid]
+  (get
+    (cache/with-cache!
+      {:method :get
+       :service (u/get-url "organisaatio-service-url")
+       :url (u/get-url "organisaatio-service.get-organisaatio" oid)
+       :options {:as :json}})
+    :body))
+
 (defn try-to-get-organisaatiot-from-cache! [oids]
   (cache/with-cache!
     {:method :post
