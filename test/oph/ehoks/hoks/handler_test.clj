@@ -47,9 +47,6 @@
 (defn- mock-st-get [app full-url]
   (hoks-utils/mock-st-request app full-url))
 
-(defn- mock-st-post [app full-url data]
-  (hoks-utils/mock-st-request app full-url :post data))
-
 (defn- mock-st-patch [app full-url data]
   (hoks-utils/mock-st-request app full-url :patch data))
 
@@ -60,7 +57,7 @@
   ([path body app hoks]
     (create-mock-post-request (format "%d/%s" (:id hoks) path) body app))
   ([path body app]
-    (mock-st-post app (format "%s/%s" url path) body)))
+    (hoks-utils/mock-st-post app (format "%s/%s" url path) body)))
 
 (defn- create-mock-hoks-osa-get-request [path app hoks]
   (mock-st-get app (get-hoks-url hoks (str path "/1"))))
@@ -101,7 +98,7 @@
   (testing "GET newly created hankittava paikallinen tutkinnon osa"
     (with-hoks-and-app
       [hoks app]
-      (let [ppto-response (mock-st-post
+      (let [ppto-response (hoks-utils/mock-st-post
                             app (get-hoks-url hoks hpto-path) hpto-data)
             body (utils/parse-body (:body ppto-response))]
         (is (= (:status ppto-response) 200))
@@ -121,7 +118,7 @@
   (testing "PATCH all hankittava paikallinen tutkinnon osa"
     (with-hoks-and-app
       [hoks app]
-      (mock-st-post app (get-hoks-url hoks hpto-path) hpto-data)
+      (hoks-utils/mock-st-post app (get-hoks-url hoks hpto-path) hpto-data)
       (let [patch-response
             (mock-st-patch
               app
@@ -134,7 +131,7 @@
     (with-hoks-and-app
       [hoks app]
       (let [ppto-response
-            (mock-st-post app (get-hoks-url hoks hpto-path) hpto-data)
+            (hoks-utils/mock-st-post app (get-hoks-url hoks hpto-path) hpto-data)
             ppto-body (utils/parse-body (:body ppto-response))
             patch-response
             (mock-st-patch
@@ -259,7 +256,7 @@
   (testing "PATCH one value hankittava ammatillinen osaaminen"
     (with-hoks-and-app
       [hoks app]
-      (mock-st-post
+      (hoks-utils/mock-st-post
         app
         (format
           "%s/1/hankittava-ammat-tutkinnon-osa"
@@ -866,7 +863,7 @@
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           response
-          (mock-st-post (hoks-utils/create-app nil) url hoks-data)
+          (hoks-utils/mock-st-post (hoks-utils/create-app nil) url hoks-data)
           body (utils/parse-body (:body response))]
       (is (= (:status response) 200))
       (eq body {:data {:uri (format "%s/1" url)} :meta {:id 1}})
@@ -885,9 +882,9 @@
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
-      (mock-st-post app url hoks-data)
+      (hoks-utils/mock-st-post app url hoks-data)
       (let [response
-            (mock-st-post app url hoks-data)]
+            (hoks-utils/mock-st-post app url hoks-data)]
         (is (= (:status response) 400))
         (is (= (utils/parse-body (:body response))
                {:error
@@ -900,7 +897,7 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
       (let [response
-            (mock-st-post (hoks-utils/create-app nil) url hoks-data)]
+            (hoks-utils/mock-st-post (hoks-utils/create-app nil) url hoks-data)]
         (is (= (:status response) 400))
         (is (= (utils/parse-body (:body response))
                {:error
@@ -913,7 +910,7 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
       (let [response
-            (mock-st-post (hoks-utils/create-app nil) url hoks-data)]
+            (hoks-utils/mock-st-post (hoks-utils/create-app nil) url hoks-data)]
         (is (= (:status response) 401))))))
 
 (deftest prevent-getting-unauthorized-hoks
@@ -942,7 +939,7 @@
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
       (let [response
-            (mock-st-post (hoks-utils/create-app nil) url hoks-data)
+            (hoks-utils/mock-st-post (hoks-utils/create-app nil) url hoks-data)
             body (utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (eq body {:data {:uri (format "%s/1" url)} :meta {:id 1}})
@@ -959,7 +956,7 @@
   (testing "Prevent patching opiskeluoikeus or oppija oid"
     (let [app (hoks-utils/create-app nil)]
       (let [response
-            (mock-st-post
+            (hoks-utils/mock-st-post
               app
               url
               {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
@@ -1507,7 +1504,7 @@
             (mock-st-get
               app (format "%s/opiskeluoikeus/%s" url opiskeluoikeus-oid))]
         (is (= (:status response) 404)))
-      (mock-st-post app url hoks-data)
+      (hoks-utils/mock-st-post app url hoks-data)
       (let [response
             (mock-st-get app (format "%s/opiskeluoikeus/%s"
                                      url opiskeluoikeus-oid))

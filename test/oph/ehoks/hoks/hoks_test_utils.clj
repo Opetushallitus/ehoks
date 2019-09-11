@@ -21,3 +21,6 @@
          req))))
   ([app full-url]
    (mock-st-request app full-url :get nil)))
+
+(defn mock-st-post [app full-url data]
+  (mock-st-request app full-url :post data))
