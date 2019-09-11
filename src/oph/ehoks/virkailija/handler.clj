@@ -228,7 +228,12 @@
                           (if (m/virkailija-has-privilege-in-opiskeluoikeus?
                                 virkailija-user
                                 (:opiskeluoikeus-oid hoks) :write)
-                            (do (h/update-hoks! hoks-id hoks-values)
+                            (do (h/update-hoks!
+                                  hoks-id
+                                  (dissoc
+                                    hoks-values
+                                    :opiskeluoikeus-oid
+                                    :oppija-oid))
                                 (response/no-content))
                             (do
                               (log/warnf

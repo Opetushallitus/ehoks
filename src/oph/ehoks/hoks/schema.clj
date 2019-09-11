@@ -646,19 +646,19 @@
                    :get :required}
          :types {:any s/Str}
          :description "HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä"}
-   :oppija-oid {:methods {:patch :excluded
-                          :put :excluded}
+   :oppija-oid {:methods {:any :optional
+                          :post :required}
                 :types {:any Oid}
                 :description "Oppijan tunniste Opintopolku-ympäristössä"}
    :sahkoposti {:methods {:any :optional}
                 :types {:any s/Str}
                 :description "Oppijan sähköposti, merkkijono."}
    :opiskeluoikeus-oid
-   {:methods {:patch :excluded
-              :put :excluded}
+   {:methods {:any :optional
+              :post :required}
     :types {:any OpiskeluoikeusOid}
     :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
-                  '1.2.246.562.15.00000000001'"}
+                  '1.2.246.562.15.00000000001'."}
    :urasuunnitelma-koodi-uri
    {:methods {:any :optional}
     :types {:any UrasuunnitelmaKoodiUri}
