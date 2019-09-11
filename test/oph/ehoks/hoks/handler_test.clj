@@ -44,30 +44,17 @@
 (defn get-hoks-url [hoks path]
   (format "%s/%d/%s" url (:id hoks) path))
 
-(defn- mock-st-request
-  ([app full-url method data]
-    (let [req (mock/request
-                method
-                full-url)]
-      (utils/with-service-ticket
-        app
-        (if (some? data)
-          (mock/json-body req data)
-          req))))
-  ([app full-url]
-    (mock-st-request app full-url :get nil)))
-
 (defn- mock-st-get [app full-url]
-  (mock-st-request app full-url))
+  (hoks-utils/mock-st-request app full-url))
 
 (defn- mock-st-post [app full-url data]
-  (mock-st-request app full-url :post data))
+  (hoks-utils/mock-st-request app full-url :post data))
 
 (defn- mock-st-patch [app full-url data]
-  (mock-st-request app full-url :patch data))
+  (hoks-utils/mock-st-request app full-url :patch data))
 
 (defn- mock-st-put [app full-url data]
-  (mock-st-request app full-url :put data))
+  (hoks-utils/mock-st-request app full-url :put data))
 
 (defn- create-mock-post-request
   ([path body app hoks]
