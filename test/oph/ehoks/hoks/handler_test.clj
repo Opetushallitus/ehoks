@@ -44,35 +44,17 @@
 (defn get-hoks-url [hoks path]
   (format "%s/%d/%s" url (:id hoks) path))
 
-(defn- mock-st-get [app full-url]
-  (hoks-utils/mock-st-request app full-url))
-
 (defn- mock-st-patch [app full-url data]
   (hoks-utils/mock-st-request app full-url :patch data))
 
-(defn- mock-st-put [app full-url data]
-  (hoks-utils/mock-st-request app full-url :put data))
-
-(defn- create-mock-post-request
-  ([path body app hoks]
-    (create-mock-post-request (format "%d/%s" (:id hoks) path) body app))
-  ([path body app]
-    (hoks-utils/mock-st-post app (format "%s/%s" url path) body)))
-
 (defn- create-mock-hoks-osa-get-request [path app hoks]
-  (mock-st-get app (get-hoks-url hoks (str path "/1"))))
-
-(defn- create-mock-hoks-get-request [hoks-id app]
-  (mock-st-get app (format "%s/%d" url hoks-id)))
+  (hoks-utils/mock-st-get app (get-hoks-url hoks (str path "/1"))))
 
 (defn- create-mock-hoks-osa-patch-request [path app patched-data]
   (mock-st-patch app (format "%s/1/%s/1" url path) patched-data))
 
 (defn- create-mock-hoks-patch-request [hoks-id patched-data app]
   (mock-st-patch app (format "%s/%d" url hoks-id) patched-data))
-
-(defn- create-mock-hoks-put-request [hoks-id updated-data app]
-  (mock-st-put app (format "%s/%d" url hoks-id) updated-data))
 
 (def hpto-path "hankittava-paikallinen-tutkinnon-osa")
 (def hpto-data {:nimi "222"
@@ -106,7 +88,7 @@
                   {:uri
                    (get-hoks-url hoks (format "%s/1" hpto-path))}
                   :meta {:id 1}})
-        (let [ppto-new (mock-st-get
+        (let [ppto-new (hoks-utils/mock-st-get
                          app (get-hoks-url hoks (format "%s/1" hpto-path)))]
           (eq
             (:data (utils/parse-body (:body ppto-new)))
@@ -193,7 +175,7 @@
   (testing "POST hankittava ammatillinen osaaminen and then get created hao"
     (with-hoks-and-app
       [hoks app]
-      (let [post-response (create-mock-post-request hao-path hao-data app hoks)
+      (let [post-response (hoks-utils/create-mock-post-request hao-path hao-data app hoks)
             get-response (create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status post-response) 200))
         (eq (utils/parse-body
@@ -241,7 +223,7 @@
   (testing "PATCH ALL hankittava ammat osaaminen"
     (with-hoks-and-app
       [hoks app]
-      (create-mock-post-request hao-path hao-data app hoks)
+      (hoks-utils/create-mock-post-request hao-path hao-data app hoks)
       (let [patch-response
             (mock-st-patch
               app
@@ -284,7 +266,7 @@
   [osa-path osa-data osa-patched-data assert-function]
   (with-hoks-and-app
     [hoks app]
-    (let [post-response (create-mock-post-request
+    (let [post-response (hoks-utils/create-mock-post-request
                           osa-path osa-data app hoks)
           patch-response (create-mock-hoks-osa-patch-request
                            osa-path app osa-patched-data)
@@ -298,7 +280,7 @@
 (defn- test-post-and-get-of-aiemmin-hankittu-osa [osa-path osa-data]
   (with-hoks-and-app
     [hoks app]
-    (let [post-response (create-mock-post-request
+    (let [post-response (hoks-utils/create-mock-post-request
                           osa-path osa-data app hoks)
           get-response (create-mock-hoks-osa-get-request osa-path app hoks)]
       (assert-post-response-is-ok osa-path post-response)
@@ -677,7 +659,7 @@
   (testing "POST hankittavat yhteisen tutkinnon osat"
     (with-hoks-and-app
       [hoks app]
-      (let [post-response (create-mock-post-request
+      (let [post-response (hoks-utils/create-mock-post-request
                             hyto-path hyto-data app hoks)
             get-response (create-mock-hoks-osa-get-request hyto-path app hoks)]
         (assert-post-response-is-ok hyto-path post-response)
@@ -693,7 +675,7 @@
   (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
     (with-hoks-and-app
       [hoks app]
-      (create-mock-post-request
+      (hoks-utils/create-mock-post-request
         hyto-path hyto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app one-value-of-hyto-patched)
@@ -760,7 +742,7 @@
   (testing "PATCH all hankittavat yhteisen tutkinnon osat"
     (with-hoks-and-app
       [hoks app]
-      (create-mock-post-request
+      (hoks-utils/create-mock-post-request
         hyto-path hyto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app multiple-hyto-values-patched)
@@ -777,7 +759,7 @@
   (testing "PATCH only osa-alueet of hyto and leave base hyto untouched."
     (with-hoks-and-app
       [hoks app]
-      (create-mock-post-request
+      (hoks-utils/create-mock-post-request
         hyto-path hyto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app hyto-sub-entity-patched)
@@ -797,7 +779,7 @@
   (testing "GET opiskeluvalmiuksia tukevat opinnot"
     (with-hoks-and-app
       [hoks app]
-      (let [post-response (create-mock-post-request
+      (let [post-response (hoks-utils/create-mock-post-request
                             oto-path oto-data app hoks)
             get-response (create-mock-hoks-osa-get-request oto-path app hoks)]
         (assert-post-response-is-ok oto-path post-response)
@@ -813,7 +795,7 @@
   (testing "PATCH one value of opiskeluvalmiuksia tukevat opinnot"
     (with-hoks-and-app
       [hoks app]
-      (create-mock-post-request
+      (hoks-utils/create-mock-post-request
         oto-path oto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              oto-path app one-value-of-oto-patched)
@@ -837,7 +819,7 @@
   (testing "PATCH all opiskeluvalmiuksia tukevat opinnot"
     (with-hoks-and-app
       [hoks app]
-      (create-mock-post-request
+      (hoks-utils/create-mock-post-request
         oto-path oto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              oto-path app all-values-of-oto-patched)
@@ -928,7 +910,7 @@
               "1.2.246.562.24.47861388608")
             body (utils/parse-body (:body response))]
         (is (= (:status
-                 (mock-st-get (hoks-utils/create-app nil)
+                 (hoks-utils/mock-st-get (hoks-utils/create-app nil)
                               (get-in body [:data :uri])))
                401))))))
 
@@ -1001,9 +983,9 @@
 
 (defn- assert-partial-put-of-hoks [updated-hoks hoks-part]
   (let [app (hoks-utils/create-app nil)
-        post-response (create-mock-post-request "" hoks-data app)
-        put-response (create-mock-hoks-put-request 1 updated-hoks app)
-        get-response (create-mock-hoks-get-request 1 app)
+        post-response (hoks-utils/create-mock-post-request "" hoks-data app)
+        put-response (hoks-utils/create-mock-hoks-put-request 1 updated-hoks app)
+        get-response (hoks-utils/create-mock-hoks-get-request 1 app)
         get-response-data (:data (utils/parse-body (:body get-response)))]
     (is (= (:status post-response) 200))
     (is (= (:status put-response) 204))
@@ -1018,10 +1000,10 @@
 (deftest patch-one-value-of-hoks
   (testing "PATCH updates value of created HOKS"
     (let [app (hoks-utils/create-app nil)
-          post-response (create-mock-post-request "" hoks-data app)
+          post-response (hoks-utils/create-mock-post-request "" hoks-data app)
           patch-response (create-mock-hoks-patch-request
                            1 one-value-of-hoks-patched app)
-          get-response (create-mock-hoks-get-request 1 app)
+          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (is (= (:status post-response) 200))
       (is (= (:status patch-response) 204))
@@ -1040,10 +1022,10 @@
 (deftest hoks-put-removes-parts
   (testing "PUT only main level HOKS values, removes parts"
     (let [app (hoks-utils/create-app nil)
-          post-response (create-mock-post-request "" hoks-data app)
-          put-response (create-mock-hoks-put-request
+          post-response (hoks-utils/create-mock-post-request "" hoks-data app)
+          put-response (hoks-utils/create-mock-hoks-put-request
                          1 main-level-of-hoks-updated app)
-          get-response (create-mock-hoks-get-request 1 app)
+          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 204))
@@ -1067,11 +1049,11 @@
                 (with-redefs [oph.ehoks.hoks.hoks/replace-ahyto!
                               mock-replace-ahyto]
                   (let [app (hoks-utils/create-app nil)
-                        post-response (create-mock-post-request
+                        post-response (hoks-utils/create-mock-post-request
                                         "" hoks-data app)
-                        put-response (create-mock-hoks-put-request
+                        put-response (hoks-utils/create-mock-hoks-put-request
                                        1 main-level-of-hoks-updated app)
-                        get-response (create-mock-hoks-get-request 1 app)
+                        get-response (hoks-utils/create-mock-hoks-get-request 1 app)
                         get-response-data (:data (utils/parse-body
                                                    (:body get-response)))]
                     (is (= (:status post-response) 200))
@@ -1098,15 +1080,15 @@
   (testing "If HOKS part doesn't currently exist, PUT creates it"
     (let [app (hoks-utils/create-app nil)
           post-response
-          (create-mock-post-request
+          (hoks-utils/create-mock-post-request
             "" (dissoc hoks-data :opiskeluvalmiuksia-tukevat-opinnot) app)
-          put-response (create-mock-hoks-put-request
+          put-response (hoks-utils/create-mock-hoks-put-request
                          1
                          (-> hoks-data
                              (assoc :id 1)
                              (dissoc :opiskeluoikeus-oid :oppija-oid))
                          app)
-          get-response (create-mock-hoks-get-request 1 app)
+          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 204))
@@ -1117,7 +1099,7 @@
 (deftest patching-of-hoks-part-not-allowed
   (testing "PATCH of HOKS can't be used to update sub entities of HOKS"
     (let [app (hoks-utils/create-app nil)
-          post-response (create-mock-post-request "" hoks-data app)
+          post-response (hoks-utils/create-mock-post-request "" hoks-data app)
           patch-response (create-mock-hoks-patch-request
                            1 hoks-data app)]
       (is (= (:status post-response) 200))
@@ -1158,10 +1140,10 @@
 (deftest omitted-hoks-fields-are-nullified
   (testing "If HOKS main level value isn't given in PUT, it's nullified"
     (let [app (hoks-utils/create-app nil)
-          post-response (create-mock-post-request "" hoks-data app)
-          put-response (create-mock-hoks-put-request
+          post-response (hoks-utils/create-mock-post-request "" hoks-data app)
+          put-response (hoks-utils/create-mock-hoks-put-request
                          1 main-level-of-hoks-updated app)
-          get-response (create-mock-hoks-get-request 1 app)
+          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 204))
@@ -1482,14 +1464,14 @@
 
 (deftest put-non-existing-hoks
   (testing "PUT prevents updating non existing HOKS"
-    (let [response (create-mock-hoks-put-request
+    (let [response (hoks-utils/create-mock-hoks-put-request
                      1 {:id 1} (hoks-utils/create-app nil))]
       (is (= (:status response) 404)))))
 
 (deftest get-hoks-by-id-not-found
   (testing "GET HOKS by hoks-id"
     (let [response
-          (mock-st-get (hoks-utils/create-app nil) (format "%s/%s" url 43857))]
+          (hoks-utils/mock-st-get (hoks-utils/create-app nil) (format "%s/%s" url 43857))]
       (is (= (:status response) 404)))))
 
 (deftest get-hoks-by-opiskeluoikeus-oid
@@ -1501,12 +1483,12 @@
                      :osaamisen-hankkimisen-tarve false}
           app (hoks-utils/create-app nil)]
       (let [response
-            (mock-st-get
+            (hoks-utils/mock-st-get
               app (format "%s/opiskeluoikeus/%s" url opiskeluoikeus-oid))]
         (is (= (:status response) 404)))
       (hoks-utils/mock-st-post app url hoks-data)
       (let [response
-            (mock-st-get app (format "%s/opiskeluoikeus/%s"
+            (hoks-utils/mock-st-get app (format "%s/opiskeluoikeus/%s"
                                      url opiskeluoikeus-oid))
             body (utils/parse-body (:body response))]
         (is (= (:status response) 200))
