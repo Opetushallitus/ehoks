@@ -7,11 +7,6 @@
 
 (def url "/ehoks-virkailija-backend/api/v1/hoks")
 
-; TODO Change to use OHJ auth
-; TODO Test also role access
-; TODO update tests to use real-like data
-; TODO add test for removing at update (for example ppto)
-
 (use-fixtures :each utils/with-database)
 
 (defn get-authenticated [url]
@@ -949,7 +944,8 @@
               "1.2.246.562.24.47861388608")
             body (utils/parse-body (:body response))]
         (is (= (:status
-                 (mock-st-get (hoks-utils/create-app nil) (get-in body [:data :uri])))
+                 (mock-st-get (hoks-utils/create-app nil)
+                              (get-in body [:data :uri])))
                401))))))
 
 (deftest get-last-version-of-hoks
@@ -1496,12 +1492,14 @@
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
-    (let [response (create-mock-hoks-patch-request 1 {:id 1} (hoks-utils/create-app nil))]
+    (let [response (create-mock-hoks-patch-request
+                     1 {:id 1} (hoks-utils/create-app nil))]
       (is (= (:status response) 404)))))
 
 (deftest put-non-existing-hoks
   (testing "PUT prevents updating non existing HOKS"
-    (let [response (create-mock-hoks-put-request 1 {:id 1} (hoks-utils/create-app nil))]
+    (let [response (create-mock-hoks-put-request
+                     1 {:id 1} (hoks-utils/create-app nil))]
       (is (= (:status response) 404)))))
 
 (deftest get-hoks-by-id-not-found
