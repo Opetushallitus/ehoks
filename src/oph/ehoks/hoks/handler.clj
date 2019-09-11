@@ -340,7 +340,9 @@
             :body [values hoks-schema/HOKSKorvaus]
             (if (not-empty (:hoks request))
               (do
-                (h/replace-hoks! (get-in request [:hoks :id]) values)
+                (h/replace-hoks!
+                  (get-in request [:hoks :id])
+                  (dissoc values :oppija-oid :opiskeluoikeus-oid))
                 (response/no-content))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
