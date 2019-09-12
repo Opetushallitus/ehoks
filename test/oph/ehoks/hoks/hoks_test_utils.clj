@@ -7,7 +7,6 @@
             [oph.ehoks.utils :as utils :refer [eq]]))
 
 ;TODO laita privateiksi sopivat
-;TODO poista handler-testista duplikaatti url
 (def base-url "/ehoks-virkailija-backend/api/v1/hoks")
 
 (defn create-app [session-store]
