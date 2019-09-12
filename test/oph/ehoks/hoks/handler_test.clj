@@ -981,18 +981,6 @@
    :aiemmin-hankitut-paikalliset-tutkinnon-osat [ahpto-data]
    :aiemmin-hankitut-yhteiset-tutkinnon-osat [ahyto-data]})
 
-(defn- assert-partial-put-of-hoks [updated-hoks hoks-part]
-  (let [app (hoks-utils/create-app nil)
-        post-response (hoks-utils/create-mock-post-request "" hoks-data app)
-        put-response (hoks-utils/create-mock-hoks-put-request 1 updated-hoks app)
-        get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-        get-response-data (:data (utils/parse-body (:body get-response)))]
-    (is (= (:status post-response) 200))
-    (is (= (:status put-response) 204))
-    (is (= (:status get-response) 200))
-    (eq (hoks-part get-response-data)
-        (hoks-part updated-hoks))))
-
 (def one-value-of-hoks-patched
   {:id 1
    :ensikertainen-hyvaksyminen "2020-01-05"})
@@ -1116,8 +1104,8 @@
 
 (deftest put-oto-of-hoks
   (testing "PUTs opiskeluvalmiuksia tukevat opinnot of HOKS"
-    (assert-partial-put-of-hoks
-      oto-of-hoks-updated :opiskeluvalmiuksia-tukevat-opinnot)))
+    (hoks-utils/assert-partial-put-of-hoks
+      oto-of-hoks-updated :opiskeluvalmiuksia-tukevat-opinnot hoks-data)))
 
 (def multiple-otos-of-hoks-updated
   {:id 1
@@ -1134,8 +1122,10 @@
 
 (deftest put-multiple-oto-of-hoks
   (testing "PUTs multiple opiskeluvalmiuksia tukevat opinnot of HOKS"
-    (assert-partial-put-of-hoks
-      multiple-otos-of-hoks-updated :opiskeluvalmiuksia-tukevat-opinnot)))
+    (hoks-utils/assert-partial-put-of-hoks
+      multiple-otos-of-hoks-updated
+      :opiskeluvalmiuksia-tukevat-opinnot
+      hoks-data)))
 
 (deftest omitted-hoks-fields-are-nullified
   (testing "If HOKS main level value isn't given in PUT, it's nullified"
@@ -1203,8 +1193,8 @@
 
 (deftest put-hato-of-hoks
   (testing "PUTs hankittavat ammatilliset tutkinnon osat of HOKS"
-    (assert-partial-put-of-hoks
-      hato-of-hoks-updated :hankittavat-ammat-tutkinnon-osat)))
+    (hoks-utils/assert-partial-put-of-hoks
+      hato-of-hoks-updated :hankittavat-ammat-tutkinnon-osat hoks-data)))
 
 (def hpto-of-hoks-updated
   {:id 1
@@ -1251,8 +1241,8 @@
 
 (deftest put-hpto-of-hoks
   (testing "PUTs hankittavat paikalliset tutkinnon osat of HOKS"
-    (assert-partial-put-of-hoks
-      hpto-of-hoks-updated :hankittavat-paikalliset-tutkinnon-osat)))
+    (hoks-utils/assert-partial-put-of-hoks
+      hpto-of-hoks-updated :hankittavat-paikalliset-tutkinnon-osat hoks-data)))
 
 (def hyto-of-hoks-updated
   {:id 1
@@ -1294,8 +1284,8 @@
 
 (deftest put-hyto-of-hoks
   (testing "PUTs hankittavat yhteiset tutkinnon osat of HOKS"
-    (assert-partial-put-of-hoks
-      hyto-of-hoks-updated :hankittavat-yhteiset-tutkinnon-osat)))
+    (hoks-utils/assert-partial-put-of-hoks
+      hyto-of-hoks-updated :hankittavat-yhteiset-tutkinnon-osat hoks-data)))
 
 (def ahato-of-hoks-updated
   {:id 1
@@ -1334,8 +1324,8 @@
 
 (deftest put-ahato-of-hoks
   (testing "PUTs aiemmin hankitut ammatilliset tutkinnon osat of HOKS"
-    (assert-partial-put-of-hoks
-      ahato-of-hoks-updated :aiemmin-hankitut-ammat-tutkinnon-osat)))
+    (hoks-utils/assert-partial-put-of-hoks
+      ahato-of-hoks-updated :aiemmin-hankitut-ammat-tutkinnon-osat hoks-data)))
 
 (def ahpto-of-hoks-updated
   {:id 1
@@ -1380,8 +1370,10 @@
 
 (deftest put-ahpto-of-hoks
   (testing "PUTs aiemmin hankitut paikalliset tutkinnon osat of HOKS"
-    (assert-partial-put-of-hoks
-      ahpto-of-hoks-updated :aiemmin-hankitut-paikalliset-tutkinnon-osat)))
+    (hoks-utils/assert-partial-put-of-hoks
+      ahpto-of-hoks-updated
+      :aiemmin-hankitut-paikalliset-tutkinnon-osat
+      hoks-data)))
 
 (def ahyto-of-hoks-updated
   {:id 1
@@ -1453,8 +1445,10 @@
 
 (deftest put-ahyto-of-hoks
   (testing "PUTs aiemmin hankitut yhteiset tutkinnon osat of HOKS"
-    (assert-partial-put-of-hoks
-      ahyto-of-hoks-updated :aiemmin-hankitut-yhteiset-tutkinnon-osat)))
+    (hoks-utils/assert-partial-put-of-hoks
+      ahyto-of-hoks-updated
+      :aiemmin-hankitut-yhteiset-tutkinnon-osat
+      hoks-data)))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"

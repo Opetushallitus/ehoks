@@ -1,9 +1,10 @@
 (ns oph.ehoks.hoks.hoks-test-utils
   (:require [ring.mock.request :as mock]
             [oph.ehoks.virkailija.handler :as handler]
+            [clojure.test :refer [is]]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.utils :as utils]))
+            [oph.ehoks.utils :as utils :refer [eq]]))
 
 ;TODO laita privateiksi sopivat
 ;TODO poista handler-testista duplikaatti url
@@ -46,3 +47,15 @@
 
 (defn create-mock-hoks-get-request [hoks-id app]
   (mock-st-get app (format "%s/%d" url hoks-id)))
+
+(defn assert-partial-put-of-hoks [updated-hoks hoks-part initial-hoks-data]
+  (let [app (create-app nil)
+        post-response (create-mock-post-request "" initial-hoks-data app)
+        put-response (create-mock-hoks-put-request 1 updated-hoks app)
+        get-response (create-mock-hoks-get-request 1 app)
+        get-response-data (:data (utils/parse-body (:body get-response)))]
+    (is (= (:status post-response) 200))
+    (is (= (:status put-response) 204))
+    (is (= (:status get-response) 200))
+    (eq (hoks-part get-response-data)
+        (hoks-part updated-hoks))))
