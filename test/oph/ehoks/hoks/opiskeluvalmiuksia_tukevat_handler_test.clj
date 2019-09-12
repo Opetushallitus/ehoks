@@ -4,6 +4,8 @@
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.hoks.test-data :as test-data]))
 
+(use-fixtures :each utils/with-database)
+
 (def oto-path "opiskeluvalmiuksia-tukevat-opinnot")
 
 (deftest post-and-get-opiskeluvalmiuksia-tukevat-opinnot
