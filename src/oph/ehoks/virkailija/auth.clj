@@ -1,27 +1,14 @@
 (ns oph.ehoks.virkailija.auth
   (:require [compojure.api.sweet :as c-api]
-            [schema.core :as s]
             [ring.util.http-response :as response]
             [oph.ehoks.virkailija.schema :as schema]
             [oph.ehoks.restful :as restful]
-            [clojure.data.xml :as xml]
-            [oph.ehoks.db.postgresql :as db]
-            [oph.ehoks.virkailija.cas-handler :as cas-handler]
-            [oph.ehoks.db.db-operations.session :as db-session]))
+            [oph.ehoks.virkailija.cas-handler :as cas-handler]))
 
 (def routes
   (c-api/context "/session" []
     (c-api/context "/opintopolku" []
       cas-handler/routes)
-
-    (c-api/POST "/opintopolku" []
-      :summary "Virkailijan CAS SLO endpoint"
-      :form-params [logoutRequest :- s/Str]
-      (when-let [ticket (some #(when (= (:tag %) :SessionIndex)
-                                 (first (:content %)))
-                              (:content (xml/parse-str logoutRequest)))]
-        (db-session/delete-sessions-by-ticket! ticket))
-      (response/ok))
 
     (c-api/GET "/" request
       :summary "Virkailijan istunto"
