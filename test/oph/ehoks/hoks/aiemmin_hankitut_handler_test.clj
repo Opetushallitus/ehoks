@@ -7,6 +7,7 @@
 (use-fixtures :each utils/with-database)
 
 (def ahyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
+(def ahato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
 
 (deftest post-and-get-aiemmin-hankitut-yhteiset-tutkinnon-osat
   (testing "POST ahyto and then get the created ahyto"
@@ -70,3 +71,24 @@
       test-data/multiple-ahyto-values-patched
       assert-ahyto-is-patched-correctly)))
 
+(deftest post-and-get-aiemmin-hankitut-ammatilliset-tutkinnon-osat
+  (testing "POST ahato and then get the created ahato"
+    (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa ahato-path test-data/ahato-data)))
+
+(defn- assert-ahato-data-is-patched-correctly [updated-data old-data]
+  (is (= (:tutkinnon-osa-koodi-versio updated-data) 3000))
+  (is (= (:valittu-todentamisen-prosessi-koodi-versio updated-data)
+         (:valittu-todentamisen-prosessi-koodi-versio old-data)))
+  (is (= (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
+         (:tarkentavat-tiedot-osaamisen-arvioija
+           test-data/multiple-ahato-values-patched)))
+  (hoks-utils/compare-tarkentavat-tiedot-naytto-values
+    updated-data test-data/multiple-ahato-values-patched first))
+
+(deftest patch-aiemmin-hankitut-ammat-tutkinnon-osat
+  (testing "Patching multiple values of ahato"
+    (test-patch-of-aiemmin-hankittu-osa
+      ahato-path
+      test-data/ahato-data
+      test-data/multiple-ahato-values-patched
+      assert-ahato-data-is-patched-correctly)))

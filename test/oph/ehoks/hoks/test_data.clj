@@ -460,3 +460,26 @@
      :yksilolliset-kriteerit ["testi" "toinen"]
      :alku "2014-05-05"
      :loppu "2022-09-12"}]})
+
+(def multiple-ahato-values-patched
+  {:tutkinnon-osa-koodi-versio 3000
+   :tarkentavat-tiedot-osaamisen-arvioija
+   {:lahetetty-arvioitavaksi "2020-01-01"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Nimi Muutettu"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453555555"}}
+     {:nimi "Joku Tyyppi"
+      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921000"}}]}
+   :tarkentavat-tiedot-naytto
+   [{:koulutuksen-jarjestaja-osaamisen-arvioijat
+     [{:nimi "Muutettu Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
+     :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
+     :nayttoymparisto {:nimi "Testi Oy"
+                       :y-tunnus "12345699-2"
+                       :kuvaus "Testiyrityksen testiosasostalla"}
+     :sisallon-kuvaus ["Tutkimustyö"
+                       "Raportointi"]
+     :yksilolliset-kriteerit ["testikriteeri"]
+     :alku "2019-02-09"
+     :loppu "2019-01-12"}]})

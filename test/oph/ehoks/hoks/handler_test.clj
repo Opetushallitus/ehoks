@@ -164,53 +164,6 @@
       (is (= (:status get-response) 200))
       (assert-function get-response-data osa-data))))
 
-(def ahato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
-
-(deftest post-and-get-aiemmin-hankitut-ammatilliset-tutkinnon-osat
-  (testing "POST ahato and then get the created ahato"
-    (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa ahato-path test-data/ahato-data)))
-
-(def ^:private multiple-ahato-values-patched
-  {:tutkinnon-osa-koodi-versio 3000
-   :tarkentavat-tiedot-osaamisen-arvioija
-   {:lahetetty-arvioitavaksi "2020-01-01"
-    :aiemmin-hankitun-osaamisen-arvioijat
-    [{:nimi "Nimi Muutettu"
-      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453555555"}}
-     {:nimi "Joku Tyyppi"
-      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921000"}}]}
-   :tarkentavat-tiedot-naytto
-   [{:koulutuksen-jarjestaja-osaamisen-arvioijat
-     [{:nimi "Muutettu Arvioija"
-       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
-     :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
-     :nayttoymparisto {:nimi "Testi Oy"
-                       :y-tunnus "12345699-2"
-                       :kuvaus "Testiyrityksen testiosasostalla"}
-     :sisallon-kuvaus ["Tutkimustyö"
-                       "Raportointi"]
-     :yksilolliset-kriteerit ["testikriteeri"]
-     :alku "2019-02-09"
-     :loppu "2019-01-12"}]})
-
-(defn- assert-ahato-data-is-patched-correctly [updated-data old-data]
-  (is (= (:tutkinnon-osa-koodi-versio updated-data) 3000))
-  (is (= (:valittu-todentamisen-prosessi-koodi-versio updated-data)
-         (:valittu-todentamisen-prosessi-koodi-versio old-data)))
-  (is (= (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
-         (:tarkentavat-tiedot-osaamisen-arvioija
-           multiple-ahato-values-patched)))
-  (hoks-utils/compare-tarkentavat-tiedot-naytto-values
-    updated-data multiple-ahato-values-patched first))
-
-(deftest patch-aiemmin-hankitut-ammat-tutkinnon-osat
-  (testing "Patching multiple values of ahato"
-    (test-patch-of-aiemmin-hankittu-osa
-      ahato-path
-      test-data/ahato-data
-      multiple-ahato-values-patched
-      assert-ahato-data-is-patched-correctly)))
-
 (def ahpto-path "aiemmin-hankittu-paikallinen-tutkinnon-osa")
 
 (deftest post-and-get-aiemmin-hankitut-paikalliset-tutkinnon-osat
