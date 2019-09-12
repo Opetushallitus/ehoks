@@ -10,9 +10,6 @@
 
 (use-fixtures :each utils/with-database)
 
-(defn- create-mock-hoks-patch-request [hoks-id patched-data app]
-  (hoks-utils/mock-st-patch app (format "%s/%d" url hoks-id) patched-data))
-
 (def hpto-path "hankittava-paikallinen-tutkinnon-osa")
 
 (deftest post-and-get-hankittava-paikallinen-tutkinnon-osa
@@ -590,7 +587,7 @@
   (testing "PATCH updates value of created HOKS"
     (let [app (hoks-utils/create-app nil)
           post-response (hoks-utils/create-mock-post-request "" test-data/hoks-data app)
-          patch-response (create-mock-hoks-patch-request
+          patch-response (hoks-utils/create-mock-hoks-patch-request
                            1 one-value-of-hoks-patched app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
           get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -689,7 +686,7 @@
   (testing "PATCH of HOKS can't be used to update sub entities of HOKS"
     (let [app (hoks-utils/create-app nil)
           post-response (hoks-utils/create-mock-post-request "" test-data/hoks-data app)
-          patch-response (create-mock-hoks-patch-request
+          patch-response (hoks-utils/create-mock-hoks-patch-request
                            1 test-data/hoks-data app)]
       (is (= (:status post-response) 200))
       (is (= (:status patch-response) 400)))))
@@ -890,7 +887,7 @@
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
-    (let [response (create-mock-hoks-patch-request
+    (let [response (hoks-utils/create-mock-hoks-patch-request
                      1 {:id 1} (hoks-utils/create-app nil))]
       (is (= (:status response) 404)))))
 
