@@ -97,22 +97,6 @@
                   "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
         (t/is (= (:status response) 303))))))
 
-(t/deftest cas-ticket-session-test
-  (t/testing "Creating session with service ticket (CAS endpoint)"
-    (client/with-mock-responses
-      [ticket-response
-       create-ticket-response]
-      (let [store (atom {})
-            app (create-app (test-session-store store))
-            response
-            (app
-              (mock/request
-                :get
-                (str
-                  "/ehoks-virkailija-backend/cas-security-check"
-                  "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
-        (t/is (= (:status response) 303))))))
-
 (t/deftest invalid-ticket-session-test
   (t/testing "Creating session with invalid service ticket"
     (client/with-mock-responses
