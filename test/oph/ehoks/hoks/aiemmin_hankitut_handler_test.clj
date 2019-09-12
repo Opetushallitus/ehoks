@@ -8,6 +8,7 @@
 
 (def ahyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
 (def ahato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
+(def ahpto-path "aiemmin-hankittu-paikallinen-tutkinnon-osa")
 
 (deftest post-and-get-aiemmin-hankitut-yhteiset-tutkinnon-osat
   (testing "POST ahyto and then get the created ahyto"
@@ -92,3 +93,26 @@
       test-data/ahato-data
       test-data/multiple-ahato-values-patched
       assert-ahato-data-is-patched-correctly)))
+
+(deftest post-and-get-aiemmin-hankitut-paikalliset-tutkinnon-osat
+  (testing "POST oopto and then get the created oopto"
+    (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa ahpto-path test-data/ahpto-data)))
+
+(defn- assert-ahpto-data-is-patched-correctly [updated-data old-data]
+  (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite."))
+  (is (= (:nimi updated-data) (:nimi old-data)))
+  (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
+      (:tarkentavat-tiedot-osaamisen-arvioija test-data/multiple-ahpto-values-patched))
+  (eq (first (:tarkentavat-tiedot-naytto updated-data))
+      (first (:tarkentavat-tiedot-naytto test-data/multiple-ahpto-values-patched)))
+  (hoks-utils/compare-tarkentavat-tiedot-naytto-values
+    updated-data test-data/multiple-ahpto-values-patched first))
+
+(deftest patch-aiemmin-hankittu-paikalliset-tutkinnon-osat
+  (testing "Patching multiple values of ahpto"
+    (test-patch-of-aiemmin-hankittu-osa
+      ahpto-path
+      test-data/ahpto-data
+      test-data/multiple-ahpto-values-patched
+      assert-ahpto-data-is-patched-correctly)))
+

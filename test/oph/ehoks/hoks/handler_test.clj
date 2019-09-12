@@ -149,69 +149,6 @@
                :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})]
         (is (= (:status response) 204))))))
 
-(defn- test-patch-of-aiemmin-hankittu-osa
-  [osa-path osa-data osa-patched-data assert-function]
-  (hoks-utils/with-hoks-and-app
-    [hoks app]
-    (let [post-response (hoks-utils/create-mock-post-request
-                          osa-path osa-data app hoks)
-          patch-response (hoks-utils/create-mock-hoks-osa-patch-request
-                           osa-path app osa-patched-data)
-          get-response (hoks-utils/create-mock-hoks-osa-get-request osa-path app hoks)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
-      (is (= (:status post-response) 200))
-      (is (= (:status patch-response) 204))
-      (is (= (:status get-response) 200))
-      (assert-function get-response-data osa-data))))
-
-(def ahpto-path "aiemmin-hankittu-paikallinen-tutkinnon-osa")
-
-(deftest post-and-get-aiemmin-hankitut-paikalliset-tutkinnon-osat
-  (testing "POST oopto and then get the created oopto"
-    (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa ahpto-path test-data/ahpto-data)))
-
-(def ^:private multiple-ahpto-values-patched
-  {:tavoitteet-ja-sisallot "Muutettu tavoite."
-   :tarkentavat-tiedot-osaamisen-arvioija
-   {:lahetetty-arvioitavaksi "2020-01-01"
-    :aiemmin-hankitun-osaamisen-arvioijat
-    [{:nimi "Aarne Arvioija"
-      :organisaatio {:oppilaitos-oid
-                     "1.2.246.562.10.54453923411"}}]}
-   :tarkentavat-tiedot-naytto
-   [{:koulutuksen-jarjestaja-osaamisen-arvioijat
-     [{:nimi "Muutettu Arvioija"
-       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
-     :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
-     :nayttoymparisto {:nimi "Testi Oy"
-                       :y-tunnus "12345699-2"
-                       :kuvaus "Testiyrityksen testiosasostalla"}
-     :sisallon-kuvaus ["Tutkimustyö"
-                       "Raportointi"]
-     :alku "2019-02-09"
-     :loppu "2019-01-12"
-     :yksilolliset-kriteerit ["Toinen kriteeri"]
-     :osa-alueet []
-     :tyoelama-osaamisen-arvioijat []}]})
-
-(defn- assert-ahpto-data-is-patched-correctly [updated-data old-data]
-  (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite."))
-  (is (= (:nimi updated-data) (:nimi old-data)))
-  (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
-      (:tarkentavat-tiedot-osaamisen-arvioija multiple-ahpto-values-patched))
-  (eq (first (:tarkentavat-tiedot-naytto updated-data))
-      (first (:tarkentavat-tiedot-naytto multiple-ahpto-values-patched)))
-  (hoks-utils/compare-tarkentavat-tiedot-naytto-values
-    updated-data multiple-ahpto-values-patched first))
-
-(deftest patch-aiemmin-hankittu-paikalliset-tutkinnon-osat
-  (testing "Patching multiple values of ahpto"
-    (test-patch-of-aiemmin-hankittu-osa
-      ahpto-path
-      test-data/ahpto-data
-      multiple-ahpto-values-patched
-      assert-ahpto-data-is-patched-correctly)))
-
 (def hyto-path "hankittava-yhteinen-tutkinnon-osa")
 
 (deftest post-and-get-hankittava-yhteinen-tukinnon-osa

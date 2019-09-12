@@ -483,3 +483,27 @@
      :yksilolliset-kriteerit ["testikriteeri"]
      :alku "2019-02-09"
      :loppu "2019-01-12"}]})
+
+(def multiple-ahpto-values-patched
+  {:tavoitteet-ja-sisallot "Muutettu tavoite."
+   :tarkentavat-tiedot-osaamisen-arvioija
+   {:lahetetty-arvioitavaksi "2020-01-01"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Aarne Arvioija"
+      :organisaatio {:oppilaitos-oid
+                     "1.2.246.562.10.54453923411"}}]}
+   :tarkentavat-tiedot-naytto
+   [{:koulutuksen-jarjestaja-osaamisen-arvioijat
+     [{:nimi "Muutettu Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
+     :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
+     :nayttoymparisto {:nimi "Testi Oy"
+                       :y-tunnus "12345699-2"
+                       :kuvaus "Testiyrityksen testiosasostalla"}
+     :sisallon-kuvaus ["Tutkimustyö"
+                       "Raportointi"]
+     :alku "2019-02-09"
+     :loppu "2019-01-12"
+     :yksilolliset-kriteerit ["Toinen kriteeri"]
+     :osa-alueet []
+     :tyoelama-osaamisen-arvioijat []}]})
