@@ -262,31 +262,6 @@
       multiple-ahpto-values-patched
       assert-ahpto-data-is-patched-correctly)))
 
-;TODO poista nämä
-(def ahyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
-
-(defn- assert-ahyto-is-patched-correctly [updated-data initial-data]
-  (is (= (:valittu-todentamisen-prosessi-koodi-uri updated-data)
-         "osaamisentodentamisenprosessi_2000"))
-  (is (= (:tutkinnon-osa-koodi-versio updated-data)
-         (:tutkinnon-osa-koodi-versio initial-data)))
-  (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
-      (:tarkentavat-tiedot-osaamisen-arvioija test-data/multiple-ahyto-values-patched))
-  (hoks-utils/compare-tarkentavat-tiedot-naytto-values
-    updated-data test-data/multiple-ahyto-values-patched first)
-  (hoks-utils/compare-tarkentavat-tiedot-naytto-values
-    updated-data test-data/multiple-ahyto-values-patched second)
-  (eq (:osa-alueet updated-data)
-      (:osa-alueet test-data/multiple-ahyto-values-patched)))
-
-(deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa
-  (testing "Patching values of ahyto"
-    (test-patch-of-aiemmin-hankittu-osa
-      ahyto-path
-      test-data/ahyto-data
-      test-data/multiple-ahyto-values-patched
-      assert-ahyto-is-patched-correctly)))
-
 (def hyto-path "hankittava-yhteinen-tutkinnon-osa")
 
 (deftest post-and-get-hankittava-yhteinen-tukinnon-osa
