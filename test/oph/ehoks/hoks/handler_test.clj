@@ -10,15 +10,6 @@
 
 (use-fixtures :each utils/with-database)
 
-(defmacro with-hoks [hoks & body]
-  `(let [~hoks (hoks-utils/create-hoks)]
-     (do ~@body)))
-
-(defmacro with-hoks-and-app [[hoks app] & body]
-  `(let [~app (hoks-utils/create-app nil)
-         ~hoks (hoks-utils/create-hoks ~app)]
-     (do ~@body)))
-
 (defn- mock-st-patch [app full-url data]
   (hoks-utils/mock-st-request app full-url :patch data))
 
@@ -32,7 +23,7 @@
 
 (deftest post-and-get-hankittava-paikallinen-tutkinnon-osa
   (testing "GET newly created hankittava paikallinen tutkinnon osa"
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (let [ppto-response (hoks-utils/mock-st-post
                             app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
@@ -52,7 +43,7 @@
 
 (deftest patch-all-hankittavat-paikalliset-tutkinnon-osat
   (testing "PATCH all hankittava paikallinen tutkinnon osa"
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/mock-st-post app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
       (let [patch-response
@@ -64,7 +55,7 @@
 
 (deftest patch-one-hankittava-paikallinen-tutkinnon-osa
   (testing "PATCH one value hankittava paikallinen tutkinnon osa"
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (let [ppto-response
             (hoks-utils/mock-st-post app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
@@ -87,7 +78,7 @@
 
 (deftest post-and-get-hankittava-ammatillinen-osaaminen
   (testing "POST hankittava ammatillinen osaaminen and then get created hao"
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (let [post-response (hoks-utils/create-mock-post-request hao-path test-data/hao-data app hoks)
             get-response (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
@@ -135,7 +126,7 @@
 
 (deftest patch-all-hankittava-ammatillinen-osaaminen
   (testing "PATCH ALL hankittava ammat osaaminen"
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request hao-path test-data/hao-data app hoks)
       (let [patch-response
@@ -150,7 +141,7 @@
 
 (deftest patch-one-hankittava-ammatilinen-osaaminen
   (testing "PATCH one value hankittava ammatillinen osaaminen"
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/mock-st-post
         app
@@ -178,7 +169,7 @@
 
 (defn- test-patch-of-aiemmin-hankittu-osa
   [osa-path osa-data osa-patched-data assert-function]
-  (with-hoks-and-app
+  (hoks-utils/with-hoks-and-app
     [hoks app]
     (let [post-response (hoks-utils/create-mock-post-request
                           osa-path osa-data app hoks)
@@ -192,7 +183,7 @@
       (assert-function get-response-data osa-data))))
 
 (defn- test-post-and-get-of-aiemmin-hankittu-osa [osa-path osa-data]
-  (with-hoks-and-app
+  (hoks-utils/with-hoks-and-app
     [hoks app]
     (let [post-response (hoks-utils/create-mock-post-request
                           osa-path osa-data app hoks)
@@ -402,7 +393,7 @@
 
 (deftest post-and-get-hankittava-yhteinen-tukinnon-osa
   (testing "POST hankittavat yhteisen tutkinnon osat"
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (let [post-response (hoks-utils/create-mock-post-request
                             hyto-path test-data/hyto-data app hoks)
@@ -418,7 +409,7 @@
 
 (deftest patch-one-value-of-hankittava-yhteinen-tutkinnon-osa
   (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request
         hyto-path test-data/hyto-data app hoks)
@@ -485,7 +476,7 @@
 
 (deftest patch-multiple-values-of-hankittavat-yhteiset-tutkinnon-osat
   (testing "PATCH all hankittavat yhteisen tutkinnon osat"
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request
         hyto-path test-data/hyto-data app hoks)
@@ -502,7 +493,7 @@
 
 (deftest only-sub-entity-of-hyto-patched
   (testing "PATCH only osa-alueet of hyto and leave base hyto untouched."
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request
         hyto-path test-data/hyto-data app hoks)
@@ -518,7 +509,7 @@
 
 (deftest post-and-get-opiskeluvalmiuksia-tukevat-opinnot
   (testing "GET opiskeluvalmiuksia tukevat opinnot"
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (let [post-response (hoks-utils/create-mock-post-request
                             oto-path test-data/oto-data app hoks)
@@ -534,7 +525,7 @@
 
 (deftest patch-one-value-of-opiskeluvalmiuksia-tukevat-opinnot
   (testing "PATCH one value of opiskeluvalmiuksia tukevat opinnot"
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request
         oto-path test-data/oto-data app hoks)
@@ -558,7 +549,7 @@
 
 (deftest patch-multiple-values-of-oto
   (testing "PATCH all opiskeluvalmiuksia tukevat opinnot"
-    (with-hoks-and-app
+    (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request
         oto-path test-data/oto-data app hoks)
