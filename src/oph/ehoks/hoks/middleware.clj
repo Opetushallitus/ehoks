@@ -1,7 +1,6 @@
 (ns oph.ehoks.hoks.middleware
   (:require [clojure.tools.logging :as log]
             [ring.util.http-response :as response]
-            [oph.ehoks.db.postgresql :as pdb]
             [oph.ehoks.user :as user]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))

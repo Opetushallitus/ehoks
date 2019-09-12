@@ -950,9 +950,9 @@
                    app
                    (get-in body [:data :uri])
                    {:id (get-in body [:meta :id])
-                    :opiskeluoikeus-oid "1.2.246.562.15.00000000001"})
+                    :opiskeluoikeus-oid "1.2.246.562.15.00000000002"})
                  :status)
-               400)
+               204)
             "Should return bad request for updating opiskeluoikeus oid")
 
         (is (= (get
@@ -960,10 +960,22 @@
                    app
                    (get-in body [:data :uri])
                    {:id (get-in body [:meta :id])
-                    :oppija-oid "1.2.246.562.24.12312312313"})
+                    :oppija-oid "1.2.246.562.24.12312312314"})
                  :status)
-               400)
-            "Should return bad request for updating oppija oid")))))
+               204)
+            "Should return bad request for updating oppija oid")
+        (let [get-body (utils/parse-body
+                         (get
+                           (mock-st-get
+                             app
+                             (get-in body [:data :uri]))
+                           :body))]
+          (is (= (get-in get-body [:data :opiskeluoikeus-oid])
+                 "1.2.246.562.15.00000000001")
+              "Opiskeluoikeus oid should be unchanged")
+          (is (= (get-in get-body [:data :oppija-oid])
+                 "1.2.246.562.24.12312312312")
+              "Oppija oid should be unchanged"))))))
 
 (def hoks-data
   {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"

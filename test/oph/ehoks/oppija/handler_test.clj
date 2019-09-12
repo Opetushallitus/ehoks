@@ -8,7 +8,8 @@
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hoks-test :refer [hoks-data]]
-            [clojure.walk :as w]))
+            [clojure.walk :as w]
+            [oph.ehoks.external.http-client :as client]))
 
 (def url "/ehoks-oppija-backend/api/v1/oppija/oppijat")
 
@@ -51,6 +52,54 @@
            (assoc hoks-data
                   :eid (get-in body [:data 0 :eid])
                   :manuaalisyotto false))]))))
+
+(defn- mock-authenticated [request]
+  (let [store (atom {})
+        app (common-api/create-app
+              handler/app-routes (test-session-store store))]
+    (utils/with-authenticated-oid
+      store
+      "1.2.246.562.24.12312312312"
+      app
+      request)))
+
+(deftest get-organisaatio
+  (testing "GET organisaatio"
+    (client/with-mock-responses
+      [(fn [_ __]
+         {:status 200
+          :body {:oid "1.2.246.562.15.4042"
+                 :nimi {:fi "Test"}}})]
+      (let [response (mock-authenticated
+                       (mock/request
+                         :get
+                         (str
+                           "/ehoks-oppija-backend/api/v1/oppija"
+                           "/external/organisaatio/1.2.246.562.15.4042")))
+            body (utils/parse-body (:body response))]
+        (is (= (:status response) 200))
+        (eq
+          (:data body)
+          {:oid "1.2.246.562.15.4042"
+           :nimi {:fi "Test"}})))))
+
+(deftest get-not-found-organisaatio
+  (testing "GET organisaatio not found"
+    (client/with-mock-responses
+      [(fn [_ __]
+         (throw (ex-info
+                  "HTTP exception"
+                  {:status 404
+                   :body {:errorMessage
+                          "organisaatio.exception.organisaatio.not.found"
+                          :errorKey ""}})))]
+      (let [response (mock-authenticated
+                       (mock/request
+                         :get
+                         (str
+                           "/ehoks-oppija-backend/api/v1/oppija"
+                           "/external/organisaatio/1.2.246.562.15.404")))]
+        (is (= (:status response) 404))))))
 
 (deftest buildversion
   (testing "GET /buildversion.txt"
