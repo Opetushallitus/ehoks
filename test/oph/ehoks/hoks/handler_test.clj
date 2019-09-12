@@ -58,31 +58,13 @@
   (mock-st-patch app (format "%s/%d" url hoks-id) patched-data))
 
 (def hpto-path "hankittava-paikallinen-tutkinnon-osa")
-(def hpto-data {:nimi "222"
-                :osaamisen-hankkimistavat []
-                :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                :olennainen-seikka true
-                :osaamisen-osoittaminen
-                [{:jarjestaja {:oppilaitos-oid
-                               "1.2.246.562.10.00000000002"}
-                  :koulutuksen-jarjestaja-osaamisen-arvioijat []
-                  :osa-alueet []
-                  :sisallon-kuvaus ["ensimmäinen sisältö" "toinenkin"]
-                  :nayttoymparisto {:nimi "aaa"}
-                  :alku "2018-12-12"
-                  :loppu "2018-12-20"
-                  :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
-                                                  {:nimi "Organisaation nimi"}}]
-                  :vaatimuksista-tai-tavoitteista-poikkeaminen
-                  "Poikkeama onpi tämä."
-                  :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]}]})
 
 (deftest post-and-get-hankittava-paikallinen-tutkinnon-osa
   (testing "GET newly created hankittava paikallinen tutkinnon osa"
     (with-hoks-and-app
       [hoks app]
       (let [ppto-response (hoks-utils/mock-st-post
-                            app (get-hoks-url hoks hpto-path) hpto-data)
+                            app (get-hoks-url hoks hpto-path) test-data/hpto-data)
             body (utils/parse-body (:body ppto-response))]
         (is (= (:status ppto-response) 200))
         (eq body {:data
@@ -94,19 +76,19 @@
           (eq
             (:data (utils/parse-body (:body ppto-new)))
             (assoc
-              hpto-data
+              test-data/hpto-data
               :id 1)))))))
 
 (deftest patch-all-hankittavat-paikalliset-tutkinnon-osat
   (testing "PATCH all hankittava paikallinen tutkinnon osa"
     (with-hoks-and-app
       [hoks app]
-      (hoks-utils/mock-st-post app (get-hoks-url hoks hpto-path) hpto-data)
+      (hoks-utils/mock-st-post app (get-hoks-url hoks hpto-path) test-data/hpto-data)
       (let [patch-response
             (mock-st-patch
               app
               (get-hoks-url hoks (format "%s/1" hpto-path))
-              (assoc hpto-data :nimi "333" :olennainen-seikka false))]
+              (assoc test-data/hpto-data :nimi "333" :olennainen-seikka false))]
         (is (= (:status patch-response) 204))))))
 
 (deftest patch-one-hankittava-paikallinen-tutkinnon-osa
@@ -114,7 +96,7 @@
     (with-hoks-and-app
       [hoks app]
       (let [ppto-response
-            (hoks-utils/mock-st-post app (get-hoks-url hoks hpto-path) hpto-data)
+            (hoks-utils/mock-st-post app (get-hoks-url hoks hpto-path) test-data/hpto-data)
             ppto-body (utils/parse-body (:body ppto-response))
             patch-response
             (mock-st-patch
@@ -126,7 +108,7 @@
                              :data)]
         (is (= (:status patch-response) 204))
         (eq get-response
-            (assoc hpto-data
+            (assoc test-data/hpto-data
                    :id 1
                    :nimi "2223"))))))
 
@@ -944,7 +926,7 @@
    :sahkoposti "testi@gmail.com"
    :opiskeluvalmiuksia-tukevat-opinnot [test-data/oto-data]
    :hankittavat-ammat-tutkinnon-osat [test-data/hao-data]
-   :hankittavat-paikalliset-tutkinnon-osat [hpto-data]
+   :hankittavat-paikalliset-tutkinnon-osat [test-data/hpto-data]
    :hankittavat-yhteiset-tutkinnon-osat [hyto-data]
    :aiemmin-hankitut-ammat-tutkinnon-osat [ahato-data]
    :aiemmin-hankitut-paikalliset-tutkinnon-osat [ahpto-data]
