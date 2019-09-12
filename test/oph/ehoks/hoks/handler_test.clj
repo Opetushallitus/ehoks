@@ -289,48 +289,10 @@
       assert-ahato-data-is-patched-correctly)))
 
 (def ahpto-path "aiemmin-hankittu-paikallinen-tutkinnon-osa")
-(def ahpto-data
-  {:valittu-todentamisen-prosessi-koodi-versio 2
-   :laajuus 30
-   :nimi "Testiopintojakso"
-   :tavoitteet-ja-sisallot "Tavoitteena on testioppiminen."
-   :valittu-todentamisen-prosessi-koodi-uri
-   "osaamisentodentamisenprosessi_0001"
-   :amosaa-tunniste "12345"
-   :tarkentavat-tiedot-osaamisen-arvioija
-   {:lahetetty-arvioitavaksi "2020-01-01"
-    :aiemmin-hankitun-osaamisen-arvioijat
-    [{:nimi "Aarne Arvioija"
-      :organisaatio {:oppilaitos-oid
-                     "1.2.246.562.10.54453923411"}}]}
-   :tarkentavat-tiedot-naytto
-   [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_li"
-                   :koodi-versio 6}]
-     :koulutuksen-jarjestaja-osaamisen-arvioijat
-     [{:nimi "Teuvo Testaaja"
-       :organisaatio {:oppilaitos-oid
-                      "1.2.246.562.10.12346234690"}}]
-     :jarjestaja {:oppilaitos-oid
-                  "1.2.246.562.10.93270534262"}
-
-     :nayttoymparisto {:nimi "Testi Oyj"
-                       :y-tunnus "1289211-2"
-                       :kuvaus "Testiyhtiö"}
-     :tyoelama-osaamisen-arvioijat
-     [{:nimi "Terttu Testihenkilö"
-       :organisaatio {:nimi "Testi Oyj"
-                      :y-tunnus "1289211-2"}}]
-     :sisallon-kuvaus ["Testauksen suunnittelu"
-                       "Jokin toinen testi"]
-     :alku "2019-02-01"
-     :loppu "2019-03-01"
-     :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453945322"
-   :vaatimuksista-tai-tavoitteista-poikkeaminen "Ei poikkeamaa."})
 
 (deftest post-and-get-aiemmin-hankitut-paikalliset-tutkinnon-osat
   (testing "POST oopto and then get the created oopto"
-    (test-post-and-get-of-aiemmin-hankittu-osa ahpto-path ahpto-data)))
+    (test-post-and-get-of-aiemmin-hankittu-osa ahpto-path test-data/ahpto-data)))
 
 (def ^:private multiple-ahpto-values-patched
   {:tavoitteet-ja-sisallot "Muutettu tavoite."
@@ -370,80 +332,15 @@
   (testing "Patching multiple values of ahpto"
     (test-patch-of-aiemmin-hankittu-osa
       ahpto-path
-      ahpto-data
+      test-data/ahpto-data
       multiple-ahpto-values-patched
       assert-ahpto-data-is-patched-correctly)))
 
 (def ahyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
-(def ahyto-data
-  {:valittu-todentamisen-prosessi-koodi-uri
-   "osaamisentodentamisenprosessi_0001"
-   :valittu-todentamisen-prosessi-koodi-versio 3
-   :tutkinnon-osa-koodi-versio 2
-   :tutkinnon-osa-koodi-uri "tutkinnonosat_10203"
-   :tarkentavat-tiedot-osaamisen-arvioija
-   {:lahetetty-arvioitavaksi "2016-02-29"
-    :aiemmin-hankitun-osaamisen-arvioijat
-    [{:nimi "Arttu Arvioija"
-      :organisaatio {:oppilaitos-oid
-                     "1.2.246.562.10.54453931311"}}]}
-   :osa-alueet
-   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
-     :osa-alue-koodi-versio 4
-     :koulutuksen-jarjestaja-oid
-     "1.2.246.562.10.54453923578"
-     :vaatimuksista-tai-tavoitteista-poikkeaminen
-     "Testaus ei kuulu vaatimuksiin."
-     :valittu-todentamisen-prosessi-koodi-uri
-     "osaamisentodentamisenprosessi_0003"
-     :valittu-todentamisen-prosessi-koodi-versio 4
-     :tarkentavat-tiedot-naytto
-     [{:sisallon-kuvaus ["kuvaus1"]
-       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
-                     :koodi-versio 3}]
-       :koulutuksen-jarjestaja-osaamisen-arvioijat
-       [{:nimi "Teppo Testaaja"
-         :organisaatio {:oppilaitos-oid
-                        "1.2.246.562.10.54539267901"}}]
-       :jarjestaja {:oppilaitos-oid
-                    "1.2.246.562.10.55890967901"}
-
-       :nayttoymparisto {:nimi "Ab Yhtiö Oy"
-                         :y-tunnus "1234128-1"
-                         :kuvaus "Testi"}
-       :tyoelama-osaamisen-arvioijat
-       [{:nimi "Tellervo Työntekijä"
-         :organisaatio {:nimi "Ab Yhtiö Oy"
-                        :y-tunnus "1234128-1"}}]
-       :yksilolliset-kriteerit ["Joku kriteeri"]
-       :alku "2019-01-04"
-       :loppu "2019-03-01"}]}]
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590901"
-   :tarkentavat-tiedot-naytto
-   [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ma"
-                   :koodi-versio 6}]
-     :koulutuksen-jarjestaja-osaamisen-arvioijat
-     [{:nimi "Erkki Esimerkkitestaaja"
-       :organisaatio {:oppilaitos-oid
-                      "1.2.246.562.10.13490579090"}}]
-     :jarjestaja {:oppilaitos-oid
-                  "1.2.246.562.10.93270579090"}
-     :nayttoymparisto {:nimi "Testi Oy"
-                       :y-tunnus "1289235-2"
-                       :kuvaus "Testiyhtiö"}
-     :tyoelama-osaamisen-arvioijat
-     [{:nimi "Tapio Testihenkilö"
-       :organisaatio {:nimi "Testi Oy"
-                      :y-tunnus "1289235-2"}}]
-     :sisallon-kuvaus ["Testauksen suunnittelu"
-                       "Jokin toinen testi"]
-     :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
-     :alku "2019-03-01"
-     :loppu "2019-06-01"}]})
 
 (deftest post-and-get-aiemmin-hankitut-yhteiset-tutkinnon-osat
   (testing "POST ahyto and then get the created ahyto"
-    (test-post-and-get-of-aiemmin-hankittu-osa ahyto-path ahyto-data)))
+    (test-post-and-get-of-aiemmin-hankittu-osa ahyto-path test-data/ahyto-data)))
 
 (def ^:private multiple-ahyto-values-patched
   {:valittu-todentamisen-prosessi-koodi-uri
@@ -526,7 +423,7 @@
   (testing "Patching values of ahyto"
     (test-patch-of-aiemmin-hankittu-osa
       ahyto-path
-      ahyto-data
+      test-data/ahyto-data
       multiple-ahyto-values-patched
       assert-ahyto-is-patched-correctly)))
 
@@ -863,8 +760,8 @@
    :hankittavat-paikalliset-tutkinnon-osat [test-data/hpto-data]
    :hankittavat-yhteiset-tutkinnon-osat [test-data/hyto-data]
    :aiemmin-hankitut-ammat-tutkinnon-osat [test-data/ahato-data]
-   :aiemmin-hankitut-paikalliset-tutkinnon-osat [ahpto-data]
-   :aiemmin-hankitut-yhteiset-tutkinnon-osat [ahyto-data]})
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat [test-data/ahpto-data]
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat [test-data/ahyto-data]})
 
 (def one-value-of-hoks-patched
   {:id 1

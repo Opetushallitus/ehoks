@@ -132,3 +132,108 @@
      :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
      :alku "2019-02-09"
      :loppu "2019-01-12"}]})
+
+(def ahpto-data
+  {:valittu-todentamisen-prosessi-koodi-versio 2
+   :laajuus 30
+   :nimi "Testiopintojakso"
+   :tavoitteet-ja-sisallot "Tavoitteena on testioppiminen."
+   :valittu-todentamisen-prosessi-koodi-uri
+   "osaamisentodentamisenprosessi_0001"
+   :amosaa-tunniste "12345"
+   :tarkentavat-tiedot-osaamisen-arvioija
+   {:lahetetty-arvioitavaksi "2020-01-01"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Aarne Arvioija"
+      :organisaatio {:oppilaitos-oid
+                     "1.2.246.562.10.54453923411"}}]}
+   :tarkentavat-tiedot-naytto
+   [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_li"
+                   :koodi-versio 6}]
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
+     [{:nimi "Teuvo Testaaja"
+       :organisaatio {:oppilaitos-oid
+                      "1.2.246.562.10.12346234690"}}]
+     :jarjestaja {:oppilaitos-oid
+                  "1.2.246.562.10.93270534262"}
+
+     :nayttoymparisto {:nimi "Testi Oyj"
+                       :y-tunnus "1289211-2"
+                       :kuvaus "Testiyhtiö"}
+     :tyoelama-osaamisen-arvioijat
+     [{:nimi "Terttu Testihenkilö"
+       :organisaatio {:nimi "Testi Oyj"
+                      :y-tunnus "1289211-2"}}]
+     :sisallon-kuvaus ["Testauksen suunnittelu"
+                       "Jokin toinen testi"]
+     :alku "2019-02-01"
+     :loppu "2019-03-01"
+     :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453945322"
+   :vaatimuksista-tai-tavoitteista-poikkeaminen "Ei poikkeamaa."})
+
+(def ahyto-data
+  {:valittu-todentamisen-prosessi-koodi-uri
+   "osaamisentodentamisenprosessi_0001"
+   :valittu-todentamisen-prosessi-koodi-versio 3
+   :tutkinnon-osa-koodi-versio 2
+   :tutkinnon-osa-koodi-uri "tutkinnonosat_10203"
+   :tarkentavat-tiedot-osaamisen-arvioija
+   {:lahetetty-arvioitavaksi "2016-02-29"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Arttu Arvioija"
+      :organisaatio {:oppilaitos-oid
+                     "1.2.246.562.10.54453931311"}}]}
+   :osa-alueet
+   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
+     :osa-alue-koodi-versio 4
+     :koulutuksen-jarjestaja-oid
+     "1.2.246.562.10.54453923578"
+     :vaatimuksista-tai-tavoitteista-poikkeaminen
+     "Testaus ei kuulu vaatimuksiin."
+     :valittu-todentamisen-prosessi-koodi-uri
+     "osaamisentodentamisenprosessi_0003"
+     :valittu-todentamisen-prosessi-koodi-versio 4
+     :tarkentavat-tiedot-naytto
+     [{:sisallon-kuvaus ["kuvaus1"]
+       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
+                     :koodi-versio 3}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Teppo Testaaja"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.54539267901"}}]
+       :jarjestaja {:oppilaitos-oid
+                    "1.2.246.562.10.55890967901"}
+
+       :nayttoymparisto {:nimi "Ab Yhtiö Oy"
+                         :y-tunnus "1234128-1"
+                         :kuvaus "Testi"}
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Tellervo Työntekijä"
+         :organisaatio {:nimi "Ab Yhtiö Oy"
+                        :y-tunnus "1234128-1"}}]
+       :yksilolliset-kriteerit ["Joku kriteeri"]
+       :alku "2019-01-04"
+       :loppu "2019-03-01"}]}]
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.13490590901"
+   :tarkentavat-tiedot-naytto
+   [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ma"
+                   :koodi-versio 6}]
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
+     [{:nimi "Erkki Esimerkkitestaaja"
+       :organisaatio {:oppilaitos-oid
+                      "1.2.246.562.10.13490579090"}}]
+     :jarjestaja {:oppilaitos-oid
+                  "1.2.246.562.10.93270579090"}
+     :nayttoymparisto {:nimi "Testi Oy"
+                       :y-tunnus "1289235-2"
+                       :kuvaus "Testiyhtiö"}
+     :tyoelama-osaamisen-arvioijat
+     [{:nimi "Tapio Testihenkilö"
+       :organisaatio {:nimi "Testi Oy"
+                      :y-tunnus "1289235-2"}}]
+     :sisallon-kuvaus ["Testauksen suunnittelu"
+                       "Jokin toinen testi"]
+     :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
+     :alku "2019-03-01"
+     :loppu "2019-06-01"}]})
