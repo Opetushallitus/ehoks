@@ -1,0 +1,720 @@
+{
+  "kuvaus": {
+    "fi": "<p>Ammatillisena peruskoulutuksena suoritettava perustutkinto muodostuu ammatillisista tutkinnon osista (135 osaamispistettä), yhteisistä tutkinnon osista (35 osaamispistettä) ja vapaasti valittavista tutkinnon osista (10 osaamispistettä). Ammatillisen perustutkinnon laajuus on 180 osaamispistettä.</p>\n\n<p>Ammatillisessa peruskoulutuksessa opiskelija voi yksilöllisesti sisällyttää perustutkintoonsa enemmän tutkinnon osia, jos se on tarpeellista työelämän alakohtaisten tai paikallisten ammattitaitovaatimusten tai opiskelijan ammattitaidon syventämisen kannalta.</p>\n\n<p>Hotelli-, ravintola- ja catering-alan perustutkinto sisältää kolme osaamisalaa, asiakaspalvelun osaamisalan (tarjoilija), hotellipalvelun osaamisalan (vastaanottovirkailija) ja ruokapalvelun osaamisalan (kokki).</p>",
+    "sv": "<p>Grundexamen som avläggs som grundläggande yrkesutbildning består av yrkesinriktade examensdelar (135 kompetenspoäng), gemensamma examensdelar (35 kompetenspoäng) och fritt valbara examensdelar (10 kompetenspoäng). Omfattningen på en yrkesinriktad grundexamen är 180 kompetenspoäng.</p>\n\n<p>Den studerande kan inom grundläggande yrkesutbildning ta in fler examensdelar om det är nödvändigt med tanke på arbetslivets branschvisa eller lokala krav på yrkesskicklighet eller en fördjupning av studerandes yrkeskompetens.</p>\n\n<p>Grundexamen inom hotell-, restaurang- och cateringbranschen innehåller tre kompetensområden, kompetensområdet för kundservice (servitör), kompetensområdet inom hotellservice (receptionist) och kompetensområdet för matproduktion (kock).</p>",
+    "_id": "1353167"
+  },
+  "vieras": null,
+  "tunniste": "90f21e2d-c98b-45d3-b0a0-5f00fc5cf044",
+  "pakollinen": null,
+  "nimi": {
+    "fi": "Hotelli-, ravintola- ja catering-alan perustutkinto",
+    "_id": "619112"
+  },
+  "rooli": "määritelty",
+  "muodostumisSaanto": {
+    "laajuus": {
+      "minimi": 180,
+      "maksimi": 180,
+      "yksikko": null
+    },
+    "koko": null
+  },
+  "osaamisala": null,
+  "tutkintonimike": null,
+  "osat": [
+    {
+      "kuvaus": null,
+      "vieras": null,
+      "tunniste": "77d33203-ffe2-4091-9f5f-2c227f364de7",
+      "pakollinen": null,
+      "nimi": {
+        "fi": "Ammatilliset tutkinnon osat",
+        "sv": "Yrkesinriktade examensdelar",
+        "_id": "660641"
+      },
+      "rooli": "määritelty",
+      "muodostumisSaanto": {
+        "laajuus": {
+          "minimi": 135,
+          "maksimi": 135,
+          "yksikko": null
+        },
+        "koko": null
+      },
+      "osaamisala": null,
+      "tutkintonimike": null,
+      "osat": [
+        {
+          "kuvaus": null,
+          "vieras": null,
+          "tunniste": "a36bd5d4-d331-4bc2-b36b-563dbdab9a06",
+          "pakollinen": null,
+          "nimi": {
+            "fi": "Pakollinen tutkinnon osa",
+            "sv": "Obligatorisk examensdel",
+            "_id": "660642"
+          },
+          "rooli": "määritelty",
+          "muodostumisSaanto": {
+            "laajuus": {
+              "minimi": 30,
+              "maksimi": 30,
+              "yksikko": null
+            },
+            "koko": null
+          },
+          "osaamisala": null,
+          "tutkintonimike": null,
+          "osat": [
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "4490149e-299d-4544-bf4c-cfba19504406",
+              "pakollinen": true,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352619"
+            }
+          ],
+          "versioId": null
+        },
+        {
+          "kuvaus": null,
+          "vieras": null,
+          "tunniste": "4e2aaa3a-5d39-4db4-ba8a-82162ff2e05b",
+          "pakollinen": null,
+          "nimi": {
+            "fi": "Asiakaspalvelun osaamisala",
+            "sv": "Kompetensområdet för kundservice",
+            "_id": "660643"
+          },
+          "rooli": "osaamisala",
+          "muodostumisSaanto": {
+            "laajuus": {
+              "minimi": 60,
+              "maksimi": 60,
+              "yksikko": null
+            },
+            "koko": null
+          },
+          "osaamisala": null,
+          "tutkintonimike": null,
+          "osat": [
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "a99ba72f-03f5-4f22-a1ac-7ce54a94bcc0",
+              "pakollinen": true,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352618"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "ed42cf80-ce1e-4aa3-81c1-02291ec1ad87",
+              "pakollinen": true,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352620"
+            }
+          ],
+          "versioId": null
+        },
+        {
+          "kuvaus": null,
+          "vieras": null,
+          "tunniste": "826f1988-835b-4403-9394-a0aa4fe9ba59",
+          "pakollinen": null,
+          "nimi": {
+            "fi": "Hotellipalvelun osaamisala",
+            "sv": "Kompetensområdet för hotellservice",
+            "_id": "660644"
+          },
+          "rooli": "osaamisala",
+          "muodostumisSaanto": {
+            "laajuus": {
+              "minimi": 60,
+              "maksimi": 60,
+              "yksikko": null
+            },
+            "koko": null
+          },
+          "osaamisala": null,
+          "tutkintonimike": null,
+          "osat": [
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "151d4d90-798b-4475-8c70-13342c82c741",
+              "pakollinen": true,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352618"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "17d77e77-dcab-4177-afb7-b57ea454363b",
+              "pakollinen": true,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352623"
+            }
+          ],
+          "versioId": null
+        },
+        {
+          "kuvaus": null,
+          "vieras": null,
+          "tunniste": "cba1fc28-e3f2-483b-a447-d586faff58e4",
+          "pakollinen": null,
+          "nimi": {
+            "fi": "Ruokapalvelun osaamisala",
+            "sv": "Kompetensområdet för matservice",
+            "_id": "1352723"
+          },
+          "rooli": "osaamisala",
+          "muodostumisSaanto": {
+            "laajuus": {
+              "minimi": 60,
+              "maksimi": 60,
+              "yksikko": null
+            },
+            "koko": null
+          },
+          "osaamisala": {
+            "nimi": {
+              "sv": "Kompetensområdet för matservice",
+              "fi": "Ruokapalvelun osaamisala"
+            },
+            "osaamisalakoodiArvo": "1637",
+            "osaamisalakoodiUri": "osaamisala_1637"
+          },
+          "tutkintonimike": null,
+          "osat": [
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "75673d23-4111-4d1a-8930-70136ea04180",
+              "pakollinen": true,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352622"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "05bde31f-35d5-4e47-89ac-44a3d1785471",
+              "pakollinen": true,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352621"
+            }
+          ],
+          "versioId": null
+        },
+        {
+          "kuvaus": null,
+          "vieras": null,
+          "tunniste": "278a57d6-5035-4a0b-87d9-aba27d3cf51c",
+          "pakollinen": null,
+          "nimi": {
+            "fi": "Valinnaiset tutkinnon osat",
+            "sv": "Valbara examensdelar",
+            "_id": "660646"
+          },
+          "rooli": "määritelty",
+          "muodostumisSaanto": {
+            "laajuus": {
+              "minimi": 45,
+              "maksimi": 45,
+              "yksikko": null
+            },
+            "koko": null
+          },
+          "osaamisala": null,
+          "tutkintonimike": null,
+          "osat": [
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "30ff3de9-c433-41cb-90a5-85c843df4f8e",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352624"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "cd6989a3-3589-4e1c-beb3-a370db24e347",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352625"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "907b8699-0c40-48d2-89d2-c33ab783c552",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352626"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "e3a134b6-4b59-4e18-baaf-61f640dd662a",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352627"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "2cc98e0d-9a65-46e0-b1a3-5177dd1db274",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352628"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "1050b410-6a22-44d3-8931-615e580f34db",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352629"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "739b7731-8b6f-4037-bbd7-741b0aa9e4fd",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352630"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "a3b7b90d-c32b-472e-8927-6e39d3585b07",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352631"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "8ebcf824-030c-4176-8030-1609bcc8b880",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352632"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "85e1a6be-a75e-4316-a0a5-83e83cf0b30e",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352633"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "bb187c65-dbb7-45c2-a133-99aded52b93c",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352634"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "2ce5fb1c-28a9-4643-861c-dc4a2923953a",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352635"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "04a2abd6-e020-4c8b-abea-82363501ff02",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352610"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "4a075eb5-407d-4333-a80c-30fdbdf5198e",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352611"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "5bbb67ae-23fe-436a-8ecc-2c98c2c9d121",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352612"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "fb77e0c2-cd07-4530-a366-9436441cdd83",
+              "pakollinen": false,
+              "erikoisuus": null,
+              "_tutkinnonOsaViite": "1352613"
+            },
+            {
+              "kuvaus": null,
+              "vieras": null,
+              "tunniste": "e015fe04-9d00-452a-bdcb-6c16e77527b6",
+              "pakollinen": null,
+              "nimi": {
+                "fi": "Tutkinnon osa ammatillisesta perustutkinnosta",
+                "sv": "Examensdel från en yrkesinriktad grundexamen",
+                "_id": "660647"
+              },
+              "rooli": "määrittelemätön",
+              "muodostumisSaanto": {
+                "laajuus": {
+                  "minimi": 10,
+                  "maksimi": 15,
+                  "yksikko": null
+                },
+                "koko": null
+              },
+              "osaamisala": null,
+              "tutkintonimike": null,
+              "osat": [],
+              "versioId": null
+            },
+            {
+              "kuvaus": {
+                "fi": "Tämän valinnaisen tutkinnon osan laajuudeksi lasketaan 15 osp",
+                "sv": "Denna valbara examensdel är till sin omfattning 15 kp.",
+                "_id": "660648"
+              },
+              "vieras": null,
+              "tunniste": "23f306d9-1516-42f1-93ae-2c8674b32563",
+              "pakollinen": null,
+              "nimi": {
+                "fi": "Tutkinnon osa ammattitutkinnosta tai erikoisammattitutkinnosta",
+                "sv": "Examensdel från en yrkesexamen eller en specialyrkesexamen",
+                "_id": "660649"
+              },
+              "rooli": "määrittelemätön",
+              "muodostumisSaanto": null,
+              "osaamisala": null,
+              "tutkintonimike": null,
+              "osat": [],
+              "versioId": null
+            },
+            {
+              "kuvaus": {
+                "fi": "Tämä voi sisältää työelämän alueellisten ja paikallisten ammattitaitovaatimusten ja opiskelijan ammattitaidon syventämistarpeiden mukaisia tutkinnon osia, joiden tulee vastata laajemmin paikallisiin ammattitaitovaatimuksiin kuin pelkästään yhden yrityksen tarpeisiin. Nämä tutkinnon osat nimetään työelämän toimintakokonaisuuden pohjalta ja niille määritellään laajuus osaamispisteinä (5-15 osp). Lisäksi määritellään tutkinnon osien ammattitaitovaatimukset, osaamisen arviointi ja ammattitaidon osoittamistavat Opetushallituksen määräyksen (Osaamisen tunnistamisen ja tunnustamisen mitoituksen periaatteet ja arvosanojen muuntaminen ammatillisessa peruskoulutuksessa 93/011/2014) liitteessä olevan arviointitaulukon mukaisesti.",
+                "sv": "Detta kan vara examensdelar som tillgodoser de regionala och lokala kraven på yrkesskicklighet och studerandes behov av att fördjupa sin yrkesskicklighet. Examensdelarna bör svara mot mer omfattande lokala krav på yrkesskicklighet än endast mot behoven hos ett enskilt företag. Dessa examensdelar nämns utifrån en verksamhetshelhet inom arbetslivet och omfattningen på dem bestäms utifrån kompetenspoäng (5-15 kp). Dessutom bestäms för examensdelarna kraven på yrkesskicklighet, bedömning av kunnandet och sätten att påvisa yrkesskickligheten enligt bedömningstabellen i bilagan i Utbildningsstyrelsens föreskrift. (Principer för dimensioneringen av identifiering och erkännande av kunnande samt omvandling av vitsord i den grundläggande yrkesutbildningen 93/011/2014).",
+                "_id": "660690"
+              },
+              "vieras": null,
+              "tunniste": "ea32411c-1872-41bd-be2f-833b45150c44",
+              "pakollinen": null,
+              "nimi": {
+                "fi": "Paikallisiin ammattitaitovaatimuksiin perustuvia tutkinnon osia",
+                "sv": "Examensdelar som grundar sig på lokala krav på yrkesskicklighet",
+                "_id": "660691"
+              },
+              "rooli": "määrittelemätön",
+              "muodostumisSaanto": {
+                "laajuus": {
+                  "minimi": 5,
+                  "maksimi": 15,
+                  "yksikko": null
+                },
+                "koko": null
+              },
+              "osaamisala": null,
+              "tutkintonimike": null,
+              "osat": [],
+              "versioId": null
+            },
+            {
+              "kuvaus": {
+                "sv": "Dessa kan vara examensdelar (5-15 kp) som väljs bland de fritt valbara examensdelarna.",
+                "_id": "660692"
+              },
+              "vieras": null,
+              "tunniste": "00e907f3-360c-4ec9-b39d-566dfe41a022",
+              "pakollinen": null,
+              "nimi": {
+                "fi": "Tutkinnon osa vapaasti valittavista tutkinnon osista",
+                "sv": "Examensdelar från de fritt valbara examensdelarna",
+                "_id": "660693"
+              },
+              "rooli": "määrittelemätön",
+              "muodostumisSaanto": {
+                "laajuus": {
+                  "minimi": 5,
+                  "maksimi": 15,
+                  "yksikko": null
+                },
+                "koko": null
+              },
+              "osaamisala": null,
+              "tutkintonimike": null,
+              "osat": [],
+              "versioId": null
+            }
+          ],
+          "versioId": null
+        }
+      ],
+      "versioId": null
+    },
+    {
+      "kuvaus": {
+        "fi": "Tutkinnon perusteissa määrättyjen osa-alueiden valinnaisten osaamistavoitteiden lisäksi tai niiden sijaan koulutuksen järjestäjä voi päättää erilaajuisia muita valinnaisia osaamistavoitteita. Koulutuksen järjestäjän itse päättämille valinnaisille osaamistavoitteille määritellään osaamisen arviointi ja laajuus osaamispisteinä. Tutkinnon osien valinnaiset osaamistavoitteet voivat olla myös opiskelijan aikaisemmin hankkimaa osaamista, joka tukee kyseisen tutkinnon osan ja sen osa-alueiden osaamistavoitteita.",
+        "sv": "Förutom eller istället för de mål för kunnandet gällande de valbara delarna enligt det som föreskrivs i examensgrunderna, kan utbildningsanordnaren besluta om övriga valbara mål av olika omfattningar för kunnandet. För de valbara mål för kunnandet som utbildningsanordnaren själv beslutit om, bestäms bedömning av kunnandet och omfattning i kompetenspoäng. De valbara målen för kunnandet gällande delområdena kan även vara studerandes tidigare inhämtade kunnande som stöder målen för kunnandet i ifrågavarande examensdel eller dess delområden.",
+        "_id": "660694"
+      },
+      "vieras": null,
+      "tunniste": "0c61200b-d22f-4cdc-a368-00b721737901",
+      "pakollinen": null,
+      "nimi": {
+        "fi": "Yhteiset tutkinnon osat",
+        "sv": "Gemensamma examensdelar",
+        "_id": "660695"
+      },
+      "rooli": "määritelty",
+      "muodostumisSaanto": {
+        "laajuus": {
+          "minimi": 35,
+          "maksimi": 35,
+          "yksikko": null
+        },
+        "koko": null
+      },
+      "osaamisala": null,
+      "tutkintonimike": null,
+      "osat": [
+        {
+          "kuvaus": null,
+          "vieras": null,
+          "tunniste": "76685ad7-90bf-4700-b867-aab1c42bca8b",
+          "pakollinen": true,
+          "erikoisuus": null,
+          "_tutkinnonOsaViite": "1352614"
+        },
+        {
+          "kuvaus": null,
+          "vieras": null,
+          "tunniste": "df8baec6-1ed1-4d09-b2a4-dc69547651b4",
+          "pakollinen": true,
+          "erikoisuus": null,
+          "_tutkinnonOsaViite": "1352615"
+        },
+        {
+          "kuvaus": null,
+          "vieras": null,
+          "tunniste": "8ba04e91-d4b3-4a92-b251-2e231ccca05f",
+          "pakollinen": true,
+          "erikoisuus": null,
+          "_tutkinnonOsaViite": "1352616"
+        },
+        {
+          "kuvaus": null,
+          "vieras": null,
+          "tunniste": "6df7468b-13c1-4998-be5e-7f83a20919e9",
+          "pakollinen": true,
+          "erikoisuus": null,
+          "_tutkinnonOsaViite": "1352617"
+        }
+      ],
+      "versioId": null
+    },
+    {
+      "kuvaus": {
+        "fi": "Vapaasti valittavat tutkinnon osat (10 osp) tukevat tutkinnon ammattitaitovaatimuksia ja osaamistavoitteita ja ne voivat koostua yhdestä tai useammasta tutkinnon osasta. Tutkinnon osat voivat olla seuraavia:",
+        "sv": "De fritt valbara examensdelarna (10 kp) stöder kraven på yrkesskicklighet och mål för kunnandet i examen och de kan bestå av en eller flera examensdelar. Examensdelarna kan vara följande:",
+        "_id": "660696"
+      },
+      "vieras": null,
+      "tunniste": "113a3440-30b6-46e8-a090-f5c517a850fe",
+      "pakollinen": null,
+      "nimi": {
+        "fi": "Vapaasti valittavat tutkinnon osat",
+        "sv": "Fritt valbara examensdelar",
+        "_id": "660697"
+      },
+      "rooli": "määritelty",
+      "muodostumisSaanto": {
+        "laajuus": {
+          "minimi": 10,
+          "maksimi": 10,
+          "yksikko": null
+        },
+        "koko": null
+      },
+      "osaamisala": null,
+      "tutkintonimike": null,
+      "osat": [
+        {
+          "kuvaus": {
+            "fi": "Tämä voi sisältää ammatillisia tutkinnon osia oman tai jonkin muun koulu-tusalan ammatillisista perustutkinnoista, ammattitutkinnoista tai erikoisammattitutkinnoista.",
+            "sv": "Dessa kan vara yrkesinriktade examensdelar från det egna utbildningsområdet eller från yrkesinriktade grundexamina, yrkesexamina eller specialyrkesexamina från något annat utbildningsområde.",
+            "_id": "660698"
+          },
+          "vieras": null,
+          "tunniste": "be627fe1-f97c-4f84-a9a9-1161c9825735",
+          "pakollinen": null,
+          "nimi": {
+            "fi": "Ammatillisia tutkinnon osia",
+            "sv": "Yrkesinriktade examensdelar",
+            "_id": "660699"
+          },
+          "rooli": "määrittelemätön",
+          "muodostumisSaanto": {
+            "laajuus": {
+              "minimi": null,
+              "maksimi": 10,
+              "yksikko": null
+            },
+            "koko": null
+          },
+          "osaamisala": null,
+          "tutkintonimike": null,
+          "osat": [],
+          "versioId": null
+        },
+        {
+          "kuvaus": {
+            "fi": "Tämä voi sisältää työelämän alueellisten ja paikallisten ammattitaitovaatimusten ja opiskelijan ammattitaidon syventämistarpeiden mukaisia tutkinnon osia, joiden tulee vastata laajemmin paikallisiin ammattitaitovaatimuksiin kuin pelkästään yhden yrityksen tarpeisiin. Nämä tutkinnon osat nimetään työelämän toimintakokonaisuuden pohjalta ja niille määritellään laajuus osaamispisteinä. Lisäksi määritellään tutkinnon osien ammattitaitovaatimukset, osaamisen arviointi ja ammattitaidon osoittamistavat Opetushallituksen määräyksen (Osaamisen tunnistamisen ja tunnustamisen mitoituksen periaatteet ja arvosanojen muuntaminen ammatillisessa peruskoulutuksessa 93/011/2014) liitteessä olevan arviointitaulukon mukaisesti.",
+            "sv": "Denna kan innefatta examensdelar som tillgodoser de regionala och lokala kraven på yrkesskicklighet. Examensdelarna bör svara mot mer omfattande lokala krav på yrkesskicklighet än endast mot behoven hos ett enskilt företag. Dessa examensdelar nämns utifrån en verksamhetshelhet inom arbetslivet och omfattningen på dem bestäms utifrån kompetenspoäng. Dessutom bestäms för examensdelarna kraven på yrkesskicklighet, bedömningen av kunnandet och sätten att påvisa yrkesskickligheten enligt bedömningstabellen i bilagan i Utbildningsstyrelsens föreskrift (Principerna för dimensioneringen av identifiering och erkännande av kunnande och omvandling av vitsord i grundläggande yrkesutbildning 93/011/2014).",
+            "_id": "660710"
+          },
+          "vieras": null,
+          "tunniste": "8f41553c-0b2a-402c-b727-f36638b551cc",
+          "pakollinen": null,
+          "nimi": {
+            "fi": "Paikallisiin ammattitaitovaatimuksiin perustuvia tutkinnon osia",
+            "sv": "Examensdelar som grundar sig på lokala krav på yrkesskicklighet",
+            "_id": "660711"
+          },
+          "rooli": "määrittelemätön",
+          "muodostumisSaanto": {
+            "laajuus": {
+              "minimi": null,
+              "maksimi": 10,
+              "yksikko": null
+            },
+            "koko": null
+          },
+          "osaamisala": null,
+          "tutkintonimike": null,
+          "osat": [],
+          "versioId": null
+        },
+        {
+          "kuvaus": {
+            "fi": "Tämä voi sisältää ammatillisen perustutkinnon yhteisiä tutkinnon osia tai niiden osa-alueita tai lukio-opintoja, jotka toteutetaan lukion opetussuunnitelman perusteiden mukaisesti.",
+            "sv": "Dessa kan vara gemensamma examensdelar i en yrkesinriktad grundexamen, delområden av dessa examensdelar eller gymnasiestudier som genomförs i enlighet med grunderna för gymnasiets läroplan.",
+            "_id": "1034451"
+          },
+          "vieras": null,
+          "tunniste": "56cf352b-b28a-4ab9-be6b-f560a52ac9e3",
+          "pakollinen": null,
+          "nimi": {
+            "fi": "Yhteisten tutkinnon osien osa-alueita tai lukio-opintoja",
+            "sv": "Delområden av gemensamma examensdelar eller gymnasiestudier",
+            "_id": "1290268"
+          },
+          "rooli": "määrittelemätön",
+          "muodostumisSaanto": {
+            "laajuus": {
+              "minimi": null,
+              "maksimi": 10,
+              "yksikko": null
+            },
+            "koko": null
+          },
+          "osaamisala": null,
+          "tutkintonimike": null,
+          "osat": [],
+          "versioId": null
+        },
+        {
+          "kuvaus": {
+            "fi": "Tämä voi sisältää jatko-opintovalmiuksia tai ammatillista kehittymistä tukevia tutkinnon osia. Nämä tutkinnon osat nimetään ja niille määritellään laajuus osaamispisteinä. Lisäksi voidaan määritellä tutkinnon osien ammattitaitovaatimukset tai osaamistavoitteet, osaamisen arviointi ja ammattitaidon osoittamistavat. Osaaminen voidaan koulutuksen järjestäjän päätöksellä arvioida asteikolla hyväksytty/hylätty. Mikäli käytetään arviointiasteikkoa T1-K3, määrittelyssä voidaan hyödyntää Opetushallituksen määräyksen (Osaamisen tunnistamisen ja tunnustamisen mitoituksen periaatteet ja arvosanojen muuntaminen ammatillisessa peruskoulutuksessa 93/011/2014) liitteessä olevaa arviointitaulukkoa.",
+            "sv": "Dessa kan vara examensdelar som ger förutsättningar för fortsatta studier eller examensdelar som stöder den yrkesmässiga utvecklingen. Dessa examensdelar namnges och omfattningen bestäms som kompetens-poäng. För varje examensdel kan dessutom bestämmas kraven på yrkesskicklighet eller målen för kunnandet, bedömningen av kunnandet och sätten att påvisa yrkesskickligheten. Kunnandet kan enligt utbildningsanordnarens beslut bedömas enligt skalan godkänd/underkänd. Om bedömningsskalan N1–B3 tillämpas, kan bedöm-ningstabellen i bilagan till Utbildningsstyrelsens föreskrift (Principer för dimensioneringen av identifiering och erkännande av kunnande samt omvandling av vitsord \ti den grundläggande yrkesutbildningen 93/011/2014) användas.",
+            "_id": "1290269"
+          },
+          "vieras": null,
+          "tunniste": "34fec695-30d1-4723-8b97-dd5a74bc2b40",
+          "pakollinen": null,
+          "nimi": {
+            "fi": "Jatko-opintovalmiuksia tai ammatillista kehittymistä tukevia opintoja",
+            "sv": "Studier som stöder förutsättningarna för fortsatta studier eller yrkesmässig utveckling",
+            "_id": "660715"
+          },
+          "rooli": "määrittelemätön",
+          "muodostumisSaanto": {
+            "laajuus": {
+              "minimi": null,
+              "maksimi": 10,
+              "yksikko": null
+            },
+            "koko": null
+          },
+          "osaamisala": null,
+          "tutkintonimike": null,
+          "osat": [],
+          "versioId": null
+        },
+        {
+          "kuvaus": {
+            "fi": "Työkokemuksen kautta hankittuun osaamiseen perustuvat yksilölliset tutkinnon osat voivat olla oman tai muiden alojen työssä, itsenäisessä ammatin harjoittamisessa tai yrittämisessä hankittua osaamista. Nämä tutkinnon osat nimetään ja niille määritellään laajuus osaamispisteinä. Lisäksi voidaan määritellä tutkinnon osien ammattitaitovaatimukset, osaamisen arviointi ja ammattitaidon osoittamistavat. Osaaminen voidaan koulutuksen järjestäjän päätöksellä arvioida asteikolla hyväksytty/hylätty. Mikäli käytetään arviointiasteikkoa T1-K3, määrittelyssä voidaan hyödyntää Opetushallituksen määräyksen (Osaamisen tunnistamisen ja tunnustamisen mitoituksen periaatteet ja arvosanojen muuntaminen ammatillisessa peruskoulutuksessa 93/011/2014) liitteessä olevaa arviointitaulukkoa.",
+            "sv": "Individuella examensdelar som baserar sig på kunnande som förvärvats via arbetserfarenhet kan bestå av kunnande som förvärvats i arbete inom den egna branschen eller andra branscher, i arbete som självständig yrkesutövare eller vid drivande av ett företag. Dessa examensdelar namnges och omfattningen bestäms som kompetenspoäng. För varje examensdel kan dessutom bestämmas kraven på yrkesskicklighet eller målen för kunnandet, bedömningen av kunnandet och sätten att påvisa yrkesskickligheten. Kunnandet kan enligt utbildningsanordnarens beslut bedömas enligt skalan godkänd/underkänd. Om bedömningsskalan N1–B3 tillämpas, kan bedömningstabellen i bilagan till Utbildningsstyrelsens föreskrift (Principer för dimensioneringen av identifiering och erkännande avkunnande samt omvandling av vitsord i den grundläggande yrkesutbildningen 93/011/2014) användas.",
+            "_id": "1290590"
+          },
+          "vieras": null,
+          "tunniste": "44b9a18f-550f-4ffc-b487-e29791e0849d",
+          "pakollinen": null,
+          "nimi": {
+            "fi": "Työkokemuksen kautta hankittuun osaamiseen perustuvia yksilöllisiä tutkin-non osia",
+            "sv": "Individuella examensdelar som baserar sig på kunnande som förvärvats via arbetserfarenhet",
+            "_id": "660717"
+          },
+          "rooli": "määrittelemätön",
+          "muodostumisSaanto": {
+            "laajuus": {
+              "minimi": null,
+              "maksimi": 10,
+              "yksikko": null
+            },
+            "koko": null
+          },
+          "osaamisala": null,
+          "tutkintonimike": null,
+          "osat": [],
+          "versioId": null
+        }
+      ],
+      "versioId": null
+    },
+    {
+      "kuvaus": {
+        "fi": "Ammatillisessa peruskoulutuksessa opiskelija voi yksilöllisesti sisällyttää perustutkintoonsa enemmän tutkinnon osia, jos se on tarpeellista työelämän alakohtaisten tai paikallisten ammattitaitovaatimusten tai opiskelijan ammattitaidon syventämisen kannalta. Ne voivat olla ammatillisia tutkinnon osia tai paikallisiin ammattitaitovaatimuksiin perustuvia tutkinnon osia.",
+        "sv": "Den studerande kan inom grundläggande yrkesutbildning individuellt ta in fler examensdelar om det är nödvändigt med tanke på arbetslivets branschvisa eller lokala krav på yrkesskicklighet eller en fördjupning av studerandes yrkeskompetens. De kan vara examensdelar ur grunder för yrkesinriktade examina eller examensdelar som baserar sig på lokala krav på yrkesskicklighet.",
+        "_id": "660718"
+      },
+      "vieras": null,
+      "tunniste": "61ca2a3c-9021-4882-a94c-ef881d1ec9a5",
+      "pakollinen": null,
+      "nimi": {
+        "fi": "Tutkintoa yksilöllisesti laajentavat tutkinnon osat",
+        "sv": "Examensdelar som individuellt utvidgar examen",
+        "_id": "660719"
+      },
+      "rooli": "määrittelemätön",
+      "muodostumisSaanto": null,
+      "osaamisala": null,
+      "tutkintonimike": null,
+      "osat": [],
+      "versioId": null
+    }
+  ],
+  "versioId": 135475
+}
