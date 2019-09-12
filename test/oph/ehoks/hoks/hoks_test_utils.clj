@@ -8,7 +8,7 @@
 
 ;TODO laita privateiksi sopivat
 ;TODO poista handler-testista duplikaatti url
-(def url "/ehoks-virkailija-backend/api/v1/hoks")
+(def base-url "/ehoks-virkailija-backend/api/v1/hoks")
 
 (defn create-app [session-store]
   (cache/clear-cache!)
@@ -40,13 +40,13 @@
   ([path body app hoks]
    (create-mock-post-request (format "%d/%s" (:id hoks) path) body app))
   ([path body app]
-   (mock-st-post app (format "%s/%s" url path) body)))
+   (mock-st-post app (format "%s/%s" base-url path) body)))
 
 (defn create-mock-hoks-put-request [hoks-id updated-data app]
-  (mock-st-put app (format "%s/%d" url hoks-id) updated-data))
+  (mock-st-put app (format "%s/%d" base-url hoks-id) updated-data))
 
 (defn create-mock-hoks-get-request [hoks-id app]
-  (mock-st-get app (format "%s/%d" url hoks-id)))
+  (mock-st-get app (format "%s/%d" base-url hoks-id)))
 
 (defn assert-partial-put-of-hoks [updated-hoks hoks-part initial-hoks-data]
   (let [app (create-app nil)

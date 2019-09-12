@@ -237,3 +237,19 @@
      :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
      :alku "2019-03-01"
      :loppu "2019-06-01"}]})
+
+(def hoks-data
+  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
+   :urasuunnitelma-koodi-uri "urasuunnitelma_0002"
+   :versio 4
+   :sahkoposti "testi@gmail.com"
+   :opiskeluvalmiuksia-tukevat-opinnot [oto-data]
+   :hankittavat-ammat-tutkinnon-osat [hao-data]
+   :hankittavat-paikalliset-tutkinnon-osat [hpto-data]
+   :hankittavat-yhteiset-tutkinnon-osat [hyto-data]
+   :aiemmin-hankitut-ammat-tutkinnon-osat [ahato-data]
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat [ahpto-data]
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat [ahyto-data]})

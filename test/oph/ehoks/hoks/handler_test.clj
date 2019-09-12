@@ -747,22 +747,6 @@
                  "1.2.246.562.24.12312312312")
               "Oppija oid should be unchanged"))))))
 
-(def hoks-data
-  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-   :oppija-oid "1.2.246.562.24.12312312312"
-   :ensikertainen-hyvaksyminen "2018-12-15"
-   :osaamisen-hankkimisen-tarve false
-   :urasuunnitelma-koodi-uri "urasuunnitelma_0002"
-   :versio 4
-   :sahkoposti "testi@gmail.com"
-   :opiskeluvalmiuksia-tukevat-opinnot [test-data/oto-data]
-   :hankittavat-ammat-tutkinnon-osat [test-data/hao-data]
-   :hankittavat-paikalliset-tutkinnon-osat [test-data/hpto-data]
-   :hankittavat-yhteiset-tutkinnon-osat [test-data/hyto-data]
-   :aiemmin-hankitut-ammat-tutkinnon-osat [test-data/ahato-data]
-   :aiemmin-hankitut-paikalliset-tutkinnon-osat [test-data/ahpto-data]
-   :aiemmin-hankitut-yhteiset-tutkinnon-osat [test-data/ahyto-data]})
-
 (def one-value-of-hoks-patched
   {:id 1
    :ensikertainen-hyvaksyminen "2020-01-05"})
@@ -770,7 +754,7 @@
 (deftest patch-one-value-of-hoks
   (testing "PATCH updates value of created HOKS"
     (let [app (hoks-utils/create-app nil)
-          post-response (hoks-utils/create-mock-post-request "" hoks-data app)
+          post-response (hoks-utils/create-mock-post-request "" test-data/hoks-data app)
           patch-response (create-mock-hoks-patch-request
                            1 one-value-of-hoks-patched app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
@@ -792,7 +776,7 @@
 (deftest hoks-put-removes-parts
   (testing "PUT only main level HOKS values, removes parts"
     (let [app (hoks-utils/create-app nil)
-          post-response (hoks-utils/create-mock-post-request "" hoks-data app)
+          post-response (hoks-utils/create-mock-post-request "" test-data/hoks-data app)
           put-response (hoks-utils/create-mock-hoks-put-request
                          1 main-level-of-hoks-updated app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
@@ -820,7 +804,7 @@
                               mock-replace-ahyto]
                   (let [app (hoks-utils/create-app nil)
                         post-response (hoks-utils/create-mock-post-request
-                                        "" hoks-data app)
+                                        "" test-data/hoks-data app)
                         put-response (hoks-utils/create-mock-hoks-put-request
                                        1 main-level-of-hoks-updated app)
                         get-response (hoks-utils/create-mock-hoks-get-request 1 app)
@@ -851,10 +835,10 @@
     (let [app (hoks-utils/create-app nil)
           post-response
           (hoks-utils/create-mock-post-request
-            "" (dissoc hoks-data :opiskeluvalmiuksia-tukevat-opinnot) app)
+            "" (dissoc test-data/hoks-data :opiskeluvalmiuksia-tukevat-opinnot) app)
           put-response (hoks-utils/create-mock-hoks-put-request
                          1
-                         (-> hoks-data
+                         (-> test-data/hoks-data
                              (assoc :id 1)
                              (dissoc :opiskeluoikeus-oid :oppija-oid))
                          app)
@@ -863,15 +847,15 @@
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 204))
       (is (= (:status get-response) 200))
-      (eq (:opiskeluvalmiuksia-tukevat-opinnot hoks-data)
+      (eq (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data)
           (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)))))
 
 (deftest patching-of-hoks-part-not-allowed
   (testing "PATCH of HOKS can't be used to update sub entities of HOKS"
     (let [app (hoks-utils/create-app nil)
-          post-response (hoks-utils/create-mock-post-request "" hoks-data app)
+          post-response (hoks-utils/create-mock-post-request "" test-data/hoks-data app)
           patch-response (create-mock-hoks-patch-request
-                           1 hoks-data app)]
+                           1 test-data/hoks-data app)]
       (is (= (:status post-response) 200))
       (is (= (:status patch-response) 400)))))
 
@@ -887,7 +871,7 @@
 (deftest put-oto-of-hoks
   (testing "PUTs opiskeluvalmiuksia tukevat opinnot of HOKS"
     (hoks-utils/assert-partial-put-of-hoks
-      oto-of-hoks-updated :opiskeluvalmiuksia-tukevat-opinnot hoks-data)))
+      oto-of-hoks-updated :opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data)))
 
 (def multiple-otos-of-hoks-updated
   {:id 1
@@ -907,12 +891,12 @@
     (hoks-utils/assert-partial-put-of-hoks
       multiple-otos-of-hoks-updated
       :opiskeluvalmiuksia-tukevat-opinnot
-      hoks-data)))
+      test-data/hoks-data)))
 
 (deftest omitted-hoks-fields-are-nullified
   (testing "If HOKS main level value isn't given in PUT, it's nullified"
     (let [app (hoks-utils/create-app nil)
-          post-response (hoks-utils/create-mock-post-request "" hoks-data app)
+          post-response (hoks-utils/create-mock-post-request "" test-data/hoks-data app)
           put-response (hoks-utils/create-mock-hoks-put-request
                          1 main-level-of-hoks-updated app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
@@ -976,7 +960,7 @@
 (deftest put-hato-of-hoks
   (testing "PUTs hankittavat ammatilliset tutkinnon osat of HOKS"
     (hoks-utils/assert-partial-put-of-hoks
-      hato-of-hoks-updated :hankittavat-ammat-tutkinnon-osat hoks-data)))
+      hato-of-hoks-updated :hankittavat-ammat-tutkinnon-osat test-data/hoks-data)))
 
 (def hpto-of-hoks-updated
   {:id 1
@@ -1024,7 +1008,7 @@
 (deftest put-hpto-of-hoks
   (testing "PUTs hankittavat paikalliset tutkinnon osat of HOKS"
     (hoks-utils/assert-partial-put-of-hoks
-      hpto-of-hoks-updated :hankittavat-paikalliset-tutkinnon-osat hoks-data)))
+      hpto-of-hoks-updated :hankittavat-paikalliset-tutkinnon-osat test-data/hoks-data)))
 
 (def hyto-of-hoks-updated
   {:id 1
@@ -1067,7 +1051,7 @@
 (deftest put-hyto-of-hoks
   (testing "PUTs hankittavat yhteiset tutkinnon osat of HOKS"
     (hoks-utils/assert-partial-put-of-hoks
-      hyto-of-hoks-updated :hankittavat-yhteiset-tutkinnon-osat hoks-data)))
+      hyto-of-hoks-updated :hankittavat-yhteiset-tutkinnon-osat test-data/hoks-data)))
 
 (def ahato-of-hoks-updated
   {:id 1
@@ -1107,7 +1091,7 @@
 (deftest put-ahato-of-hoks
   (testing "PUTs aiemmin hankitut ammatilliset tutkinnon osat of HOKS"
     (hoks-utils/assert-partial-put-of-hoks
-      ahato-of-hoks-updated :aiemmin-hankitut-ammat-tutkinnon-osat hoks-data)))
+      ahato-of-hoks-updated :aiemmin-hankitut-ammat-tutkinnon-osat test-data/hoks-data)))
 
 (def ahpto-of-hoks-updated
   {:id 1
@@ -1155,7 +1139,7 @@
     (hoks-utils/assert-partial-put-of-hoks
       ahpto-of-hoks-updated
       :aiemmin-hankitut-paikalliset-tutkinnon-osat
-      hoks-data)))
+      test-data/hoks-data)))
 
 (def ahyto-of-hoks-updated
   {:id 1
@@ -1230,7 +1214,7 @@
     (hoks-utils/assert-partial-put-of-hoks
       ahyto-of-hoks-updated
       :aiemmin-hankitut-yhteiset-tutkinnon-osat
-      hoks-data)))
+      test-data/hoks-data)))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"
