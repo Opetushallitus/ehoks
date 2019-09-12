@@ -587,3 +587,129 @@
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"
    :osa-alueet osa-alueet-of-hyto})
+
+(def hato-of-hoks-updated
+  {:id 1
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :hankittavat-ammat-tutkinnon-osat
+   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_300222"
+     :tutkinnon-osa-koodi-versio 2
+     :vaatimuksista-tai-tavoitteista-poikkeaminen
+     "Ei poikkeamia."
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"
+     :osaamisen-hankkimistavat
+     [{:alku "2018-12-12"
+       :loppu "2018-12-20"
+       :ajanjakson-tarkenne "Tarkenne muuttunut"
+       :osaamisen-hankkimistapa-koodi-uri
+       "osaamisenhankkimistapa_koulutussopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1
+       :muut-oppimisymparistot
+       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0003"
+         :oppimisymparisto-koodi-versio 1
+         :alku "2019-03-10"
+         :loppu "2019-03-19"}]
+       :hankkijan-edustaja
+       {:nimi "Heikki Hank"
+        :rooli "Opettaja"
+        :oppilaitos-oid "1.2.246.562.10.54452422420"}}]
+     :osaamisen-osoittaminen
+     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+       :nayttoymparisto {:nimi "Testiympäristö 2"
+                         :y-tunnus "12345671-2"
+                         :kuvaus "Testi test"}
+       :sisallon-kuvaus ["Testaus"]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Timo Testaaja2"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.54452521332"}}]
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Taneli Työmies2"
+         :organisaatio {:nimi "Tanelin Paja Oy"
+                        :y-tunnus "12345622-2"}}]
+       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
+                     :koodi-versio 3}]
+       :alku "2019-03-10"
+       :loppu "2019-03-19"
+       :yksilolliset-kriteerit ["Yksi kriteeri" "toinen kriteeri"]}]}]})
+
+(def hpto-of-hoks-updated
+  {:id 1
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :hankittavat-paikalliset-tutkinnon-osat
+   [{:nimi "testinimi"
+     :koulutuksen-jarjestaja-oid
+     "1.2.246.562.10.00000000001"
+     :olennainen-seikka false
+     :osaamisen-hankkimistavat
+     [{:alku "2019-12-12"
+       :loppu "2020-12-20"
+       :ajanjakson-tarkenne "Tarkenne muuttunut"
+       :osaamisen-hankkimistapa-koodi-uri
+       "osaamisenhankkimistapa_koulutussopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1
+       :muut-oppimisymparistot
+       [{:oppimisymparisto-koodi-uri
+         "oppimisymparistot_0004"
+         :oppimisymparisto-koodi-versio 2
+         :alku "2019-03-10"
+         :loppu "2021-03-19"}]
+       :hankkijan-edustaja
+       {:nimi "Heikki Hankk"
+        :rooli "Opettaja"
+        :oppilaitos-oid "1.2.246.562.10.54452422420"}}]
+     :osaamisen-osoittaminen
+     [{:jarjestaja {:oppilaitos-oid
+                    "1.2.246.562.10.00000000022"}
+       :koulutuksen-jarjestaja-osaamisen-arvioijat []
+       :osa-alueet []
+       :sisallon-kuvaus
+       ["ensimmäinen sisältö" "toinenkin" "kolkki"]
+       :nayttoymparisto {:nimi "aaab"}
+       :alku "2018-12-12"
+       :loppu "2018-12-20"
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Nimi2"
+         :organisaatio {:nimi "Organisaation nimi"}}]
+       :vaatimuksista-tai-tavoitteista-poikkeaminen
+       "Poikkeama tämä."
+       :yksilolliset-kriteerit
+       ["kriteeri 1"]}]}]})
+
+(def hyto-of-hoks-updated
+  {:id 1
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :hankittavat-yhteiset-tutkinnon-osat
+   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_3002690"
+     :tutkinnon-osa-koodi-versio 3
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"
+     :osa-alueet
+     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
+       :osa-alue-koodi-versio 1
+       :vaatimuksista-tai-tavoitteista-poikkeaminen "poikkeaminen"
+       :olennainen-seikka true
+       :osaamisen-hankkimistavat
+       [{:alku "2018-12-15"
+         :loppu "2018-12-23"
+         :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_joku"
+         :osaamisen-hankkimistapa-koodi-versio 3
+         :muut-oppimisymparistot
+         [{:oppimisymparisto-koodi-uri "oppimisymparistot_0232"
+           :oppimisymparisto-koodi-versio 3
+           :alku "2016-03-10"
+           :loppu "2021-03-19"}]}]
+       :osaamisen-osoittaminen
+       [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000032"}
+         :nayttoymparisto {:nimi "aaab"}
+         :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ru"
+                       :koodi-versio 4}]
+         :koulutuksen-jarjestaja-osaamisen-arvioijat
+         [{:nimi "Erkki Esimerkkitest"
+           :organisaatio {:oppilaitos-oid
+                          "1.2.246.562.10.13490579322"}}]
+         :alku "2018-12-12"
+         :loppu "2019-12-20"
+         :sisallon-kuvaus ["Kuvaus" "toinen"]
+         :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                         {:nimi "Organisaation name"}}]
+         :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "toka"]}]}]}]})
