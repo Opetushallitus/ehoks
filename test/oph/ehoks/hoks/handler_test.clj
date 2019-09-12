@@ -10,14 +10,8 @@
 
 (use-fixtures :each utils/with-database)
 
-(defn- mock-st-patch [app full-url data]
-  (hoks-utils/mock-st-request app full-url :patch data))
-
-(defn- create-mock-hoks-osa-patch-request [path app patched-data]
-  (mock-st-patch app (format "%s/1/%s/1" url path) patched-data))
-
 (defn- create-mock-hoks-patch-request [hoks-id patched-data app]
-  (mock-st-patch app (format "%s/%d" url hoks-id) patched-data))
+  (hoks-utils/mock-st-patch app (format "%s/%d" url hoks-id) patched-data))
 
 (def hpto-path "hankittava-paikallinen-tutkinnon-osa")
 
@@ -47,7 +41,7 @@
       [hoks app]
       (hoks-utils/mock-st-post app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
       (let [patch-response
-            (mock-st-patch
+            (hoks-utils/mock-st-patch
               app
               (hoks-utils/get-hoks-url hoks (format "%s/1" hpto-path))
               (assoc test-data/hpto-data :nimi "333" :olennainen-seikka false))]
@@ -61,7 +55,7 @@
             (hoks-utils/mock-st-post app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
             ppto-body (utils/parse-body (:body ppto-response))
             patch-response
-            (mock-st-patch
+            (hoks-utils/mock-st-patch
               app
               (hoks-utils/get-hoks-url hoks (format "%s/1" hpto-path))
               {:id 1 :nimi "2223"})
@@ -130,7 +124,7 @@
       [hoks app]
       (hoks-utils/create-mock-post-request hao-path test-data/hao-data app hoks)
       (let [patch-response
-            (mock-st-patch
+            (hoks-utils/mock-st-patch
               app
               (hoks-utils/get-hoks-url hoks (str hao-path "/1"))
               (assoc patch-all-hao-data :id 1))
@@ -149,7 +143,7 @@
           "%s/1/hankittava-ammat-tutkinnon-osa"
           url) test-data/hao-data)
       (let [response
-            (mock-st-patch
+            (hoks-utils/mock-st-patch
               app
               (format
                 "%s/1/%s/1"
@@ -164,7 +158,7 @@
     [hoks app]
     (let [post-response (hoks-utils/create-mock-post-request
                           osa-path osa-data app hoks)
-          patch-response (create-mock-hoks-osa-patch-request
+          patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                            osa-path app osa-patched-data)
           get-response (hoks-utils/create-mock-hoks-osa-get-request osa-path app hoks)
           get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -268,6 +262,7 @@
       multiple-ahpto-values-patched
       assert-ahpto-data-is-patched-correctly)))
 
+;TODO poista nämä
 (def ahyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
 
 (defn- assert-ahyto-is-patched-correctly [updated-data initial-data]
@@ -316,7 +311,7 @@
       [hoks app]
       (hoks-utils/create-mock-post-request
         hyto-path test-data/hyto-data app hoks)
-      (let [patch-response (create-mock-hoks-osa-patch-request
+      (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              hyto-path app one-value-of-hyto-patched)
             get-response (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -383,7 +378,7 @@
       [hoks app]
       (hoks-utils/create-mock-post-request
         hyto-path test-data/hyto-data app hoks)
-      (let [patch-response (create-mock-hoks-osa-patch-request
+      (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              hyto-path app multiple-hyto-values-patched)
             get-response (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -400,7 +395,7 @@
       [hoks app]
       (hoks-utils/create-mock-post-request
         hyto-path test-data/hyto-data app hoks)
-      (let [patch-response (create-mock-hoks-osa-patch-request
+      (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              hyto-path app hyto-sub-entity-patched)
             get-response (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -432,7 +427,7 @@
       [hoks app]
       (hoks-utils/create-mock-post-request
         oto-path test-data/oto-data app hoks)
-      (let [patch-response (create-mock-hoks-osa-patch-request
+      (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              oto-path app one-value-of-oto-patched)
             get-response (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -456,7 +451,7 @@
       [hoks app]
       (hoks-utils/create-mock-post-request
         oto-path test-data/oto-data app hoks)
-      (let [patch-response (create-mock-hoks-osa-patch-request
+      (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              oto-path app all-values-of-oto-patched)
             get-response (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
@@ -581,7 +576,7 @@
                :ensikertainen-hyvaksyminen "2018-12-15"})
             body (utils/parse-body (:body response))]
         (is (= (get
-                 (mock-st-patch
+                 (hoks-utils/mock-st-patch
                    app
                    (get-in body [:data :uri])
                    {:id (get-in body [:meta :id])
@@ -591,7 +586,7 @@
             "Should return bad request for updating opiskeluoikeus oid")
 
         (is (= (get
-                 (mock-st-patch
+                 (hoks-utils/mock-st-patch
                    app
                    (get-in body [:data :uri])
                    {:id (get-in body [:meta :id])

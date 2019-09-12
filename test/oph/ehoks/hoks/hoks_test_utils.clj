@@ -64,6 +64,9 @@
 (defn mock-st-get [app full-url]
   (mock-st-request app full-url))
 
+(defn mock-st-patch [app full-url data]
+  (mock-st-request app full-url :patch data))
+
 (defn get-hoks-url [hoks path]
   (format "%s/%d/%s" base-url (:id hoks) path))
 
@@ -81,6 +84,9 @@
 
 (defn create-mock-hoks-get-request [hoks-id app]
   (mock-st-get app (format "%s/%d" base-url hoks-id)))
+
+(defn create-mock-hoks-osa-patch-request [path app patched-data]
+  (mock-st-patch app (format "%s/1/%s/1" base-url path) patched-data))
 
 (defn assert-partial-put-of-hoks [updated-hoks hoks-part initial-hoks-data]
   (let [app (create-app nil)
