@@ -95,7 +95,7 @@
       assert-ahato-data-is-patched-correctly)))
 
 (deftest post-and-get-aiemmin-hankitut-paikalliset-tutkinnon-osat
-  (testing "POST oopto and then get the created oopto"
+  (testing "POST ahpto and then get the created ahpto"
     (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa ahpto-path test-data/ahpto-data)))
 
 (defn- assert-ahpto-data-is-patched-correctly [updated-data old-data]
