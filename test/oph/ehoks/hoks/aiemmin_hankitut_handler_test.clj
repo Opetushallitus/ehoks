@@ -6,6 +6,8 @@
 
 (use-fixtures :each utils/with-database)
 
+(def ahyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
+
 (deftest put-ahyto-of-hoks
   (testing "PUTs aiemmin hankitut yhteiset tutkinnon osat of HOKS"
     (hoks-utils/assert-partial-put-of-hoks
@@ -18,4 +20,12 @@
     (hoks-utils/assert-partial-put-of-hoks
       test-data/ahpto-of-hoks-updated
       :aiemmin-hankitut-paikalliset-tutkinnon-osat
+      test-data/hoks-data)))
+
+
+(deftest put-ahato-of-hoks
+  (testing "PUTs aiemmin hankitut ammatilliset tutkinnon osat of HOKS"
+    (hoks-utils/assert-partial-put-of-hoks
+      test-data/ahato-of-hoks-updated
+      :aiemmin-hankitut-ammat-tutkinnon-osat
       test-data/hoks-data)))

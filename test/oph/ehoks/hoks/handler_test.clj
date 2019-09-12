@@ -10,46 +10,17 @@
 
 (use-fixtures :each utils/with-database)
 
-(defn get-authenticated [url]
-  (-> (utils/with-service-ticket
-        (hoks-utils/create-app nil)
-        (mock/request :get url))
-      :body
-      utils/parse-body))
-
-(defn create-hoks [app]
-  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                   :oppija-oid "1.2.246.562.24.12312312312"
-                   :ensikertainen-hyvaksyminen
-                   (java.time.LocalDate/of 2019 3 18)
-                   :osaamisen-hankkimisen-tarve false}]
-    (-> app
-        (utils/with-service-ticket
-          (-> (mock/request :post url)
-              (mock/json-body hoks-data)))
-        :body
-        utils/parse-body
-        (get-in [:data :uri])
-        get-authenticated
-        :data)))
-
 (defmacro with-hoks [hoks & body]
-  `(let [~hoks (create-hoks)]
+  `(let [~hoks (hoks-utils/create-hoks)]
      (do ~@body)))
 
 (defmacro with-hoks-and-app [[hoks app] & body]
   `(let [~app (hoks-utils/create-app nil)
-         ~hoks (create-hoks ~app)]
+         ~hoks (hoks-utils/create-hoks ~app)]
      (do ~@body)))
-
-(defn get-hoks-url [hoks path]
-  (format "%s/%d/%s" url (:id hoks) path))
 
 (defn- mock-st-patch [app full-url data]
   (hoks-utils/mock-st-request app full-url :patch data))
-
-(defn- create-mock-hoks-osa-get-request [path app hoks]
-  (hoks-utils/mock-st-get app (get-hoks-url hoks (str path "/1"))))
 
 (defn- create-mock-hoks-osa-patch-request [path app patched-data]
   (mock-st-patch app (format "%s/1/%s/1" url path) patched-data))
@@ -64,15 +35,15 @@
     (with-hoks-and-app
       [hoks app]
       (let [ppto-response (hoks-utils/mock-st-post
-                            app (get-hoks-url hoks hpto-path) test-data/hpto-data)
+                            app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
             body (utils/parse-body (:body ppto-response))]
         (is (= (:status ppto-response) 200))
         (eq body {:data
                   {:uri
-                   (get-hoks-url hoks (format "%s/1" hpto-path))}
+                   (hoks-utils/get-hoks-url hoks (format "%s/1" hpto-path))}
                   :meta {:id 1}})
         (let [ppto-new (hoks-utils/mock-st-get
-                         app (get-hoks-url hoks (format "%s/1" hpto-path)))]
+                         app (hoks-utils/get-hoks-url hoks (format "%s/1" hpto-path)))]
           (eq
             (:data (utils/parse-body (:body ppto-new)))
             (assoc
@@ -83,11 +54,11 @@
   (testing "PATCH all hankittava paikallinen tutkinnon osa"
     (with-hoks-and-app
       [hoks app]
-      (hoks-utils/mock-st-post app (get-hoks-url hoks hpto-path) test-data/hpto-data)
+      (hoks-utils/mock-st-post app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
       (let [patch-response
             (mock-st-patch
               app
-              (get-hoks-url hoks (format "%s/1" hpto-path))
+              (hoks-utils/get-hoks-url hoks (format "%s/1" hpto-path))
               (assoc test-data/hpto-data :nimi "333" :olennainen-seikka false))]
         (is (= (:status patch-response) 204))))))
 
@@ -96,15 +67,15 @@
     (with-hoks-and-app
       [hoks app]
       (let [ppto-response
-            (hoks-utils/mock-st-post app (get-hoks-url hoks hpto-path) test-data/hpto-data)
+            (hoks-utils/mock-st-post app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
             ppto-body (utils/parse-body (:body ppto-response))
             patch-response
             (mock-st-patch
               app
-              (get-hoks-url hoks (format "%s/1" hpto-path))
+              (hoks-utils/get-hoks-url hoks (format "%s/1" hpto-path))
               {:id 1 :nimi "2223"})
             get-response (-> (get-in ppto-body [:data :uri])
-                             get-authenticated
+                             hoks-utils/get-authenticated
                              :data)]
         (is (= (:status patch-response) 204))
         (eq get-response
@@ -119,7 +90,7 @@
     (with-hoks-and-app
       [hoks app]
       (let [post-response (hoks-utils/create-mock-post-request hao-path test-data/hao-data app hoks)
-            get-response (create-mock-hoks-osa-get-request hao-path app hoks)]
+            get-response (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status post-response) 200))
         (eq (utils/parse-body
               (:body post-response))
@@ -170,9 +141,9 @@
       (let [patch-response
             (mock-st-patch
               app
-              (get-hoks-url hoks (str hao-path "/1"))
+              (hoks-utils/get-hoks-url hoks (str hao-path "/1"))
               (assoc patch-all-hao-data :id 1))
-            get-response (create-mock-hoks-osa-get-request hao-path app hoks)]
+            get-response (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status patch-response) 204))
         (eq (utils/parse-body (:body get-response))
             {:meta {} :data  (assoc patch-all-hao-data :id 1)})))))
@@ -213,7 +184,7 @@
                           osa-path osa-data app hoks)
           patch-response (create-mock-hoks-osa-patch-request
                            osa-path app osa-patched-data)
-          get-response (create-mock-hoks-osa-get-request osa-path app hoks)
+          get-response (hoks-utils/create-mock-hoks-osa-get-request osa-path app hoks)
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (is (= (:status post-response) 200))
       (is (= (:status patch-response) 204))
@@ -225,7 +196,7 @@
     [hoks app]
     (let [post-response (hoks-utils/create-mock-post-request
                           osa-path osa-data app hoks)
-          get-response (create-mock-hoks-osa-get-request osa-path app hoks)]
+          get-response (hoks-utils/create-mock-hoks-osa-get-request osa-path app hoks)]
       (assert-post-response-is-ok osa-path post-response)
       (is (= (:status get-response) 200))
       (eq (utils/parse-body
@@ -435,7 +406,7 @@
       [hoks app]
       (let [post-response (hoks-utils/create-mock-post-request
                             hyto-path test-data/hyto-data app hoks)
-            get-response (create-mock-hoks-osa-get-request hyto-path app hoks)]
+            get-response (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)]
         (assert-post-response-is-ok hyto-path post-response)
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
@@ -453,7 +424,7 @@
         hyto-path test-data/hyto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app one-value-of-hyto-patched)
-            get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
+            get-response (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (is (= (:koulutuksen-jarjestaja-oid get-response-data)
@@ -520,7 +491,7 @@
         hyto-path test-data/hyto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app multiple-hyto-values-patched)
-            get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
+            get-response (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (eq (:osa-alueet get-response-data)
@@ -537,7 +508,7 @@
         hyto-path test-data/hyto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app hyto-sub-entity-patched)
-            get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
+            get-response (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (eq (:osa-alueet get-response-data)
@@ -551,7 +522,7 @@
       [hoks app]
       (let [post-response (hoks-utils/create-mock-post-request
                             oto-path test-data/oto-data app hoks)
-            get-response (create-mock-hoks-osa-get-request oto-path app hoks)]
+            get-response (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)]
         (assert-post-response-is-ok oto-path post-response)
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
@@ -569,7 +540,7 @@
         oto-path test-data/oto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              oto-path app one-value-of-oto-patched)
-            get-response (create-mock-hoks-osa-get-request oto-path app hoks)
+            get-response (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (is (= (:nimi get-response-data)
@@ -593,7 +564,7 @@
         oto-path test-data/oto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              oto-path app all-values-of-oto-patched)
-            get-response (create-mock-hoks-osa-get-request oto-path app hoks)
+            get-response (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (eq get-response-data (assoc all-values-of-oto-patched :id 1))))))
@@ -619,7 +590,7 @@
           body (utils/parse-body (:body response))]
       (is (= (:status response) 200))
       (eq body {:data {:uri (format "%s/1" url)} :meta {:id 1}})
-      (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
+      (let [hoks (-> (get-in body [:data :uri]) hoks-utils/get-authenticated :data)]
         (eq
           hoks
           (assoc (add-empty-hoks-values hoks-data)
@@ -695,7 +666,7 @@
             body (utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (eq body {:data {:uri (format "%s/1" url)} :meta {:id 1}})
-        (let [hoks (-> (get-in body [:data :uri]) get-authenticated :data)]
+        (let [hoks (-> (get-in body [:data :uri]) hoks-utils/get-authenticated :data)]
           (is (= (count (:eid hoks)) 36))
           (eq
             hoks
@@ -1052,46 +1023,6 @@
   (testing "PUTs hankittavat yhteiset tutkinnon osat of HOKS"
     (hoks-utils/assert-partial-put-of-hoks
       hyto-of-hoks-updated :hankittavat-yhteiset-tutkinnon-osat test-data/hoks-data)))
-
-(def ahato-of-hoks-updated
-  {:id 1
-   :ensikertainen-hyvaksyminen "2018-12-15"
-   :aiemmin-hankitut-ammat-tutkinnon-osat
-   [{:valittu-todentamisen-prosessi-koodi-versio 5
-     :tutkinnon-osa-koodi-versio 100033
-     :valittu-todentamisen-prosessi-koodi-uri "osaamisentodentamisenprosessi_2"
-     :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
-     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921429"
-     :tarkentavat-tiedot-osaamisen-arvioija
-     {:lahetetty-arvioitavaksi "2012-03-18"
-      :aiemmin-hankitun-osaamisen-arvioijat
-      [{:nimi "Erkki Esimerk"
-        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921633"}}
-       {:nimi "Joku Tyyp"
-        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921001"}}]}
-     :tarkentavat-tiedot-naytto
-     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
-                     :koodi-versio 3}]
-       :koulutuksen-jarjestaja-osaamisen-arvioijat
-       [{:nimi "Aapo Arvo"
-         :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921684"}}]
-       :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921785"}
-       :nayttoymparisto {:nimi "Esimerkki Oyj"
-                         :y-tunnus "12345699-3"
-                         :kuvaus "Testiyrityksen testiosa"}
-       :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työm"
-                                       :organisaatio
-                                       {:nimi "Testiyrityksen Sisar"
-                                        :y-tunnus "12345689-5"}}]
-       :sisallon-kuvaus ["Tutkimustyö" "Raportointi" "joku"]
-       :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "toinen"]
-       :alku "2018-02-09"
-       :loppu "2021-01-12"}]}]})
-
-(deftest put-ahato-of-hoks
-  (testing "PUTs aiemmin hankitut ammatilliset tutkinnon osat of HOKS"
-    (hoks-utils/assert-partial-put-of-hoks
-      ahato-of-hoks-updated :aiemmin-hankitut-ammat-tutkinnon-osat test-data/hoks-data)))
 
 (deftest patch-non-existing-hoks
   (testing "PATCH prevents updating non existing HOKS"

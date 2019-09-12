@@ -14,6 +14,29 @@
   (cache/clear-cache!)
   (common-api/create-app handler/app-routes session-store))
 
+(defn get-authenticated [url]
+  (-> (utils/with-service-ticket
+        (create-app nil)
+        (mock/request :get url))
+      :body
+      utils/parse-body))
+
+(defn create-hoks [app]
+  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                   :oppija-oid "1.2.246.562.24.12312312312"
+                   :ensikertainen-hyvaksyminen
+                   (java.time.LocalDate/of 2019 3 18)
+                   :osaamisen-hankkimisen-tarve false}]
+    (-> app
+        (utils/with-service-ticket
+          (-> (mock/request :post base-url)
+              (mock/json-body hoks-data)))
+        :body
+        utils/parse-body
+        (get-in [:data :uri])
+        get-authenticated
+        :data)))
+
 (defn mock-st-request
   ([app full-url method data]
    (let [req (mock/request
@@ -35,6 +58,12 @@
 
 (defn mock-st-get [app full-url]
   (mock-st-request app full-url))
+
+(defn get-hoks-url [hoks path]
+  (format "%s/%d/%s" base-url (:id hoks) path))
+
+(defn create-mock-hoks-osa-get-request [path app hoks]
+  (mock-st-get app (get-hoks-url hoks (str path "/1"))))
 
 (defn create-mock-post-request
   ([path body app hoks]

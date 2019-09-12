@@ -362,3 +362,38 @@
        :alku "2018-02-01"
        :loppu "2021-03-01"
        :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "Toinen"]}]}]})
+
+(def ahato-of-hoks-updated
+  {:id 1
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :aiemmin-hankitut-ammat-tutkinnon-osat
+   [{:valittu-todentamisen-prosessi-koodi-versio 5
+     :tutkinnon-osa-koodi-versio 100033
+     :valittu-todentamisen-prosessi-koodi-uri "osaamisentodentamisenprosessi_2"
+     :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921429"
+     :tarkentavat-tiedot-osaamisen-arvioija
+     {:lahetetty-arvioitavaksi "2012-03-18"
+      :aiemmin-hankitun-osaamisen-arvioijat
+      [{:nimi "Erkki Esimerk"
+        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921633"}}
+       {:nimi "Joku Tyyp"
+        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921001"}}]}
+     :tarkentavat-tiedot-naytto
+     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
+                     :koodi-versio 3}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Aapo Arvo"
+         :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921684"}}]
+       :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921785"}
+       :nayttoymparisto {:nimi "Esimerkki Oyj"
+                         :y-tunnus "12345699-3"
+                         :kuvaus "Testiyrityksen testiosa"}
+       :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työm"
+                                       :organisaatio
+                                       {:nimi "Testiyrityksen Sisar"
+                                        :y-tunnus "12345689-5"}}]
+       :sisallon-kuvaus ["Tutkimustyö" "Raportointi" "joku"]
+       :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "toinen"]
+       :alku "2018-02-09"
+       :loppu "2021-01-12"}]}]})
