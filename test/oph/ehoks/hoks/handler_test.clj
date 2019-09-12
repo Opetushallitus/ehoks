@@ -158,15 +158,6 @@
                :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})]
         (is (= (:status response) 204))))))
 
-(defn- assert-post-response-is-ok [post-path post-response]
-  (is (= (:status post-response) 200))
-  (eq (utils/parse-body (:body post-response))
-      {:meta {:id 1}
-       :data {:uri
-              (format
-                "%1s/1/%2s/1"
-                url post-path)}}))
-
 (defn- test-patch-of-aiemmin-hankittu-osa
   [osa-path osa-data osa-patched-data assert-function]
   (hoks-utils/with-hoks-and-app
@@ -182,18 +173,6 @@
       (is (= (:status get-response) 200))
       (assert-function get-response-data osa-data))))
 
-(defn- test-post-and-get-of-aiemmin-hankittu-osa [osa-path osa-data]
-  (hoks-utils/with-hoks-and-app
-    [hoks app]
-    (let [post-response (hoks-utils/create-mock-post-request
-                          osa-path osa-data app hoks)
-          get-response (hoks-utils/create-mock-hoks-osa-get-request osa-path app hoks)]
-      (assert-post-response-is-ok osa-path post-response)
-      (is (= (:status get-response) 200))
-      (eq (utils/parse-body
-            (:body get-response))
-          {:meta {} :data (assoc osa-data :id 1)}))))
-
 (defn- compare-tarkentavat-tiedot-naytto-values
   [updated original selector-function]
   (let [ttn-after-update
@@ -207,7 +186,7 @@
 
 (deftest post-and-get-aiemmin-hankitut-ammatilliset-tutkinnon-osat
   (testing "POST ahato and then get the created ahato"
-    (test-post-and-get-of-aiemmin-hankittu-osa ahato-path test-data/ahato-data)))
+    (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa ahato-path test-data/ahato-data)))
 
 (def ^:private multiple-ahato-values-patched
   {:tutkinnon-osa-koodi-versio 3000
@@ -254,7 +233,7 @@
 
 (deftest post-and-get-aiemmin-hankitut-paikalliset-tutkinnon-osat
   (testing "POST oopto and then get the created oopto"
-    (test-post-and-get-of-aiemmin-hankittu-osa ahpto-path test-data/ahpto-data)))
+    (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa ahpto-path test-data/ahpto-data)))
 
 (def ^:private multiple-ahpto-values-patched
   {:tavoitteet-ja-sisallot "Muutettu tavoite."
@@ -302,7 +281,7 @@
 
 (deftest post-and-get-aiemmin-hankitut-yhteiset-tutkinnon-osat
   (testing "POST ahyto and then get the created ahyto"
-    (test-post-and-get-of-aiemmin-hankittu-osa ahyto-path test-data/ahyto-data)))
+    (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa ahyto-path test-data/ahyto-data)))
 
 (def ^:private multiple-ahyto-values-patched
   {:valittu-todentamisen-prosessi-koodi-uri
@@ -398,7 +377,7 @@
       (let [post-response (hoks-utils/create-mock-post-request
                             hyto-path test-data/hyto-data app hoks)
             get-response (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)]
-        (assert-post-response-is-ok hyto-path post-response)
+        (hoks-utils/assert-post-response-is-ok hyto-path post-response)
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
@@ -514,7 +493,7 @@
       (let [post-response (hoks-utils/create-mock-post-request
                             oto-path test-data/oto-data app hoks)
             get-response (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)]
-        (assert-post-response-is-ok oto-path post-response)
+        (hoks-utils/assert-post-response-is-ok oto-path post-response)
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
