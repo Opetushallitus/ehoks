@@ -242,42 +242,10 @@
     (eq ttn-after-update ttn-patch-values)))
 
 (def ahato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
-(def ahato-data
-  {:valittu-todentamisen-prosessi-koodi-versio 3
-   :tutkinnon-osa-koodi-versio 100022
-   :valittu-todentamisen-prosessi-koodi-uri "osaamisentodentamisenprosessi_3"
-   :tutkinnon-osa-koodi-uri "tutkinnonosat_100022"
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
-   :tarkentavat-tiedot-osaamisen-arvioija
-   {:lahetetty-arvioitavaksi "2019-03-18"
-    :aiemmin-hankitun-osaamisen-arvioijat
-    [{:nimi "Erkki Esimerkki"
-      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}
-     {:nimi "Joku Tyyppi"
-      :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921000"}}]}
-   :tarkentavat-tiedot-naytto
-   [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_fy"
-                   :koodi-versio 1}]
-     :koulutuksen-jarjestaja-osaamisen-arvioijat
-     [{:nimi "Aapo Arvioija"
-       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
-     :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
-     :nayttoymparisto {:nimi "Toinen Esimerkki Oyj"
-                       :y-tunnus "12345699-2"
-                       :kuvaus "Testiyrityksen testiosasostalla"}
-     :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työmies"
-                                     :organisaatio
-                                     {:nimi "Testiyrityksen Sisar Oy"
-                                      :y-tunnus "12345689-3"}}]
-     :sisallon-kuvaus ["Tutkimustyö"
-                       "Raportointi"]
-     :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
-     :alku "2019-02-09"
-     :loppu "2019-01-12"}]})
 
 (deftest post-and-get-aiemmin-hankitut-ammatilliset-tutkinnon-osat
   (testing "POST ahato and then get the created ahato"
-    (test-post-and-get-of-aiemmin-hankittu-osa ahato-path ahato-data)))
+    (test-post-and-get-of-aiemmin-hankittu-osa ahato-path test-data/ahato-data)))
 
 (def ^:private multiple-ahato-values-patched
   {:tutkinnon-osa-koodi-versio 3000
@@ -316,7 +284,7 @@
   (testing "Patching multiple values of ahato"
     (test-patch-of-aiemmin-hankittu-osa
       ahato-path
-      ahato-data
+      test-data/ahato-data
       multiple-ahato-values-patched
       assert-ahato-data-is-patched-correctly)))
 
@@ -563,53 +531,19 @@
       assert-ahyto-is-patched-correctly)))
 
 (def hyto-path "hankittava-yhteinen-tutkinnon-osa")
-(def hyto-data
-  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
-   :tutkinnon-osa-koodi-versio 1
-   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"
-   :osa-alueet
-   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
-     :osa-alue-koodi-versio 1
-     :vaatimuksista-tai-tavoitteista-poikkeaminen "joku poikkeaminen"
-     :olennainen-seikka false
-     :osaamisen-hankkimistavat
-     [{:alku "2018-12-15"
-       :loppu "2018-12-23"
-       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
-       :osaamisen-hankkimistapa-koodi-versio 1
-       :muut-oppimisymparistot
-       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0222"
-         :oppimisymparisto-koodi-versio 3
-         :alku "2015-03-10"
-         :loppu "2021-03-19"}]}]
-     :osaamisen-osoittaminen
-     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
-       :nayttoymparisto {:nimi "aaa"}
-       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
-                     :koodi-versio 4}]
-       :koulutuksen-jarjestaja-osaamisen-arvioijat
-       [{:nimi "Erkki Esimerkkitetsaaja"
-         :organisaatio {:oppilaitos-oid
-                        "1.2.246.562.10.13490579333"}}]
-       :alku "2018-12-12"
-       :loppu "2018-12-20"
-       :sisallon-kuvaus ["Kuvaus"]
-       :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
-                                       {:nimi "Organisaation nimi"}}]
-       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]}]})
 
 (deftest post-and-get-hankittava-yhteinen-tukinnon-osa
   (testing "POST hankittavat yhteisen tutkinnon osat"
     (with-hoks-and-app
       [hoks app]
       (let [post-response (hoks-utils/create-mock-post-request
-                            hyto-path hyto-data app hoks)
+                            hyto-path test-data/hyto-data app hoks)
             get-response (create-mock-hoks-osa-get-request hyto-path app hoks)]
         (assert-post-response-is-ok hyto-path post-response)
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
-            {:meta {} :data (assoc hyto-data :id 1)})))))
+            {:meta {} :data (assoc test-data/hyto-data :id 1)})))))
 
 (def ^:private one-value-of-hyto-patched
   {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})
@@ -619,7 +553,7 @@
     (with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request
-        hyto-path hyto-data app hoks)
+        hyto-path test-data/hyto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app one-value-of-hyto-patched)
             get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
@@ -629,7 +563,7 @@
                (:koulutuksen-jarjestaja-oid one-value-of-hyto-patched))
             "Patched value should change.")
         (is (= (:tutkinnon-osa-koodi-versio get-response-data)
-               (:tutkinnon-osa-koodi-versio hyto-data))
+               (:tutkinnon-osa-koodi-versio test-data/hyto-data))
             "Value should stay unchanged")))))
 
 (def osa-alueet-of-hyto
@@ -686,7 +620,7 @@
     (with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request
-        hyto-path hyto-data app hoks)
+        hyto-path test-data/hyto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app multiple-hyto-values-patched)
             get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
@@ -703,7 +637,7 @@
     (with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request
-        hyto-path hyto-data app hoks)
+        hyto-path test-data/hyto-data app hoks)
       (let [patch-response (create-mock-hoks-osa-patch-request
                              hyto-path app hyto-sub-entity-patched)
             get-response (create-mock-hoks-osa-get-request hyto-path app hoks)
@@ -927,8 +861,8 @@
    :opiskeluvalmiuksia-tukevat-opinnot [test-data/oto-data]
    :hankittavat-ammat-tutkinnon-osat [test-data/hao-data]
    :hankittavat-paikalliset-tutkinnon-osat [test-data/hpto-data]
-   :hankittavat-yhteiset-tutkinnon-osat [hyto-data]
-   :aiemmin-hankitut-ammat-tutkinnon-osat [ahato-data]
+   :hankittavat-yhteiset-tutkinnon-osat [test-data/hyto-data]
+   :aiemmin-hankitut-ammat-tutkinnon-osat [test-data/ahato-data]
    :aiemmin-hankitut-paikalliset-tutkinnon-osat [ahpto-data]
    :aiemmin-hankitut-yhteiset-tutkinnon-osat [ahyto-data]})
 
