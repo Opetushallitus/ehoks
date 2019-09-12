@@ -8,6 +8,7 @@
 
 (def hpto-path "hankittava-paikallinen-tutkinnon-osa")
 (def hyto-path "hankittava-yhteinen-tutkinnon-osa")
+(def hao-path "hankittava-ammat-tutkinnon-osa")
 
 (deftest post-and-get-hankittava-paikallinen-tutkinnon-osa
   (testing "GET newly created hankittava paikallinen tutkinnon osa"
@@ -126,3 +127,54 @@
         (is (= (:status patch-response) 204))
         (eq (:osa-alueet get-response-data)
             (:osa-alueet hyto-sub-entity-patched))))))
+
+(deftest post-and-get-hankittava-ammatillinen-osaaminen
+  (testing "POST hankittava ammatillinen osaaminen and then get created hao"
+    (hoks-utils/with-hoks-and-app
+      [hoks app]
+      (let [post-response (hoks-utils/create-mock-post-request hao-path test-data/hao-data app hoks)
+            get-response (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
+        (is (= (:status post-response) 200))
+        (eq (utils/parse-body
+              (:body post-response))
+            {:meta {:id 1}
+             :data {:uri
+                    (format "%s/1/hankittava-ammat-tutkinnon-osa/1" hoks-utils/base-url)}})
+        (is (= (:status get-response) 200))
+        (eq (utils/parse-body
+              (:body get-response))
+            {:meta {} :data (assoc test-data/hao-data :id 1)})))))
+
+(deftest patch-all-hankittava-ammatillinen-osaaminen
+  (testing "PATCH ALL hankittava ammat osaaminen"
+    (hoks-utils/with-hoks-and-app
+      [hoks app]
+      (hoks-utils/create-mock-post-request hao-path test-data/hao-data app hoks)
+      (let [patch-response
+            (hoks-utils/mock-st-patch
+              app
+              (hoks-utils/get-hoks-url hoks (str hao-path "/1"))
+              (assoc test-data/patch-all-hao-data :id 1))
+            get-response (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
+        (is (= (:status patch-response) 204))
+        (eq (utils/parse-body (:body get-response))
+            {:meta {} :data  (assoc test-data/patch-all-hao-data :id 1)})))))
+
+(deftest patch-one-hankittava-ammatilinen-osaaminen
+  (testing "PATCH one value hankittava ammatillinen osaaminen"
+    (hoks-utils/with-hoks-and-app
+      [hoks app]
+      (hoks-utils/mock-st-post
+        app
+        (format
+          "%s/1/hankittava-ammat-tutkinnon-osa"
+          hoks-utils/base-url) test-data/hao-data)
+      (let [response
+            (hoks-utils/mock-st-patch
+              app
+              (format
+                "%s/1/%s/1"
+                hoks-utils/base-url hao-path)
+              {:id 1
+               :vaatimuksista-tai-tavoitteista-poikkeaminen "Test"})]
+        (is (= (:status response) 204))))))
