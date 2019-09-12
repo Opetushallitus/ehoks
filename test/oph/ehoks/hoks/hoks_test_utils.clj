@@ -114,3 +114,12 @@
       (eq (utils/parse-body
             (:body get-response))
           {:meta {} :data (assoc osa-data :id 1)}))))
+
+(defn compare-tarkentavat-tiedot-naytto-values
+  [updated original selector-function]
+  (let [ttn-after-update
+        (selector-function (:tarkentavat-tiedot-naytto updated))
+        ttn-patch-values
+        (assoc (selector-function (:tarkentavat-tiedot-naytto original))
+          :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
+    (eq ttn-after-update ttn-patch-values)))

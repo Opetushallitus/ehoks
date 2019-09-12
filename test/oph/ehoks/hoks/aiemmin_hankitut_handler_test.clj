@@ -8,6 +8,10 @@
 
 (def ahyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
 
+(deftest post-and-get-aiemmin-hankitut-yhteiset-tutkinnon-osat
+  (testing "POST ahyto and then get the created ahyto"
+    (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa ahyto-path test-data/ahyto-data)))
+
 (deftest put-ahyto-of-hoks
   (testing "PUTs aiemmin hankitut yhteiset tutkinnon osat of HOKS"
     (hoks-utils/assert-partial-put-of-hoks

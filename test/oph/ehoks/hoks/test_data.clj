@@ -397,3 +397,66 @@
        :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "toinen"]
        :alku "2018-02-09"
        :loppu "2021-01-12"}]}]})
+
+(def multiple-ahyto-values-patched
+  {:valittu-todentamisen-prosessi-koodi-uri
+   "osaamisentodentamisenprosessi_2000"
+
+   :tarkentavat-tiedot-osaamisen-arvioija
+   {:lahetetty-arvioitavaksi "2020-04-01"
+    :aiemmin-hankitun-osaamisen-arvioijat
+    [{:nimi "Muutettu Arvioija"
+      :organisaatio {:oppilaitos-oid
+                     "1.2.246.562.10.54453932222"}}
+     {:nimi "Toinen Arvioija"
+      :organisaatio {:oppilaitos-oid
+                     "1.2.246.562.10.54453933333"}}]}
+
+   :osa-alueet
+   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
+     :osa-alue-koodi-versio 4
+     :valittu-todentamisen-prosessi-koodi-uri
+     "osaamisentodentamisenprosessi_0003"
+     :valittu-todentamisen-prosessi-koodi-versio 4
+     :tarkentavat-tiedot-naytto
+     [{:sisallon-kuvaus ["kuvaus1"]
+       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
+                     :koodi-versio 5}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Teppo Testaaja2"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.54539267000"}}]
+       :jarjestaja {:oppilaitos-oid
+                    "1.2.246.562.10.55890967000"}
+
+       :nayttoymparisto {:nimi "Ab Betoni Oy"
+                         :y-tunnus "1234128-1"
+                         :kuvaus "Testi"}
+       :tyoelama-osaamisen-arvioijat
+       [{:nimi "Tellervo Työntekijä"
+         :organisaatio {:nimi "Ab Betoni Oy"
+                        :y-tunnus "1234128-1"}}]
+       :yksilolliset-kriteerit ["testi"]
+       :alku "2029-01-04"
+       :loppu "2030-03-01"}]}]
+
+   :tarkentavat-tiedot-naytto
+   [{:nayttoymparisto {:nimi "Testi Oy"
+                       :y-tunnus "1289235-2"
+                       :kuvaus "Testiyhtiö"}
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
+     [{:nimi "Joku Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911333"}}]
+     :sisallon-kuvaus ["Testauksen suunnittelu"
+                       "Jokin toinen testi"]
+     :yksilolliset-kriteerit ["kriteeri"]
+     :alku "2015-03-31"
+     :loppu "2021-06-01"}
+    {:nayttoymparisto {:nimi "Toka Oy"}
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
+     [{:nimi "Joku Toinen Arvioija"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911555"}}]
+     :sisallon-kuvaus ["Jotakin sisaltoa"]
+     :yksilolliset-kriteerit ["testi" "toinen"]
+     :alku "2014-05-05"
+     :loppu "2022-09-12"}]})

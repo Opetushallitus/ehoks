@@ -173,15 +173,6 @@
       (is (= (:status get-response) 200))
       (assert-function get-response-data osa-data))))
 
-(defn- compare-tarkentavat-tiedot-naytto-values
-  [updated original selector-function]
-  (let [ttn-after-update
-        (selector-function (:tarkentavat-tiedot-naytto updated))
-        ttn-patch-values
-        (assoc (selector-function (:tarkentavat-tiedot-naytto original))
-               :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
-    (eq ttn-after-update ttn-patch-values)))
-
 (def ahato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
 
 (deftest post-and-get-aiemmin-hankitut-ammatilliset-tutkinnon-osat
@@ -218,7 +209,7 @@
   (is (= (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
          (:tarkentavat-tiedot-osaamisen-arvioija
            multiple-ahato-values-patched)))
-  (compare-tarkentavat-tiedot-naytto-values
+  (hoks-utils/compare-tarkentavat-tiedot-naytto-values
     updated-data multiple-ahato-values-patched first))
 
 (deftest patch-aiemmin-hankitut-ammat-tutkinnon-osat
@@ -266,7 +257,7 @@
       (:tarkentavat-tiedot-osaamisen-arvioija multiple-ahpto-values-patched))
   (eq (first (:tarkentavat-tiedot-naytto updated-data))
       (first (:tarkentavat-tiedot-naytto multiple-ahpto-values-patched)))
-  (compare-tarkentavat-tiedot-naytto-values
+  (hoks-utils/compare-tarkentavat-tiedot-naytto-values
     updated-data multiple-ahpto-values-patched first))
 
 (deftest patch-aiemmin-hankittu-paikalliset-tutkinnon-osat
@@ -279,93 +270,26 @@
 
 (def ahyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
 
-(deftest post-and-get-aiemmin-hankitut-yhteiset-tutkinnon-osat
-  (testing "POST ahyto and then get the created ahyto"
-    (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa ahyto-path test-data/ahyto-data)))
-
-(def ^:private multiple-ahyto-values-patched
-  {:valittu-todentamisen-prosessi-koodi-uri
-   "osaamisentodentamisenprosessi_2000"
-
-   :tarkentavat-tiedot-osaamisen-arvioija
-   {:lahetetty-arvioitavaksi "2020-04-01"
-    :aiemmin-hankitun-osaamisen-arvioijat
-    [{:nimi "Muutettu Arvioija"
-      :organisaatio {:oppilaitos-oid
-                     "1.2.246.562.10.54453932222"}}
-     {:nimi "Toinen Arvioija"
-      :organisaatio {:oppilaitos-oid
-                     "1.2.246.562.10.54453933333"}}]}
-
-   :osa-alueet
-   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
-     :osa-alue-koodi-versio 4
-     :valittu-todentamisen-prosessi-koodi-uri
-     "osaamisentodentamisenprosessi_0003"
-     :valittu-todentamisen-prosessi-koodi-versio 4
-     :tarkentavat-tiedot-naytto
-     [{:sisallon-kuvaus ["kuvaus1"]
-       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
-                     :koodi-versio 5}]
-       :koulutuksen-jarjestaja-osaamisen-arvioijat
-       [{:nimi "Teppo Testaaja2"
-         :organisaatio {:oppilaitos-oid
-                        "1.2.246.562.10.54539267000"}}]
-       :jarjestaja {:oppilaitos-oid
-                    "1.2.246.562.10.55890967000"}
-
-       :nayttoymparisto {:nimi "Ab Betoni Oy"
-                         :y-tunnus "1234128-1"
-                         :kuvaus "Testi"}
-       :tyoelama-osaamisen-arvioijat
-       [{:nimi "Tellervo Työntekijä"
-         :organisaatio {:nimi "Ab Betoni Oy"
-                        :y-tunnus "1234128-1"}}]
-       :yksilolliset-kriteerit ["testi"]
-       :alku "2029-01-04"
-       :loppu "2030-03-01"}]}]
-
-   :tarkentavat-tiedot-naytto
-   [{:nayttoymparisto {:nimi "Testi Oy"
-                       :y-tunnus "1289235-2"
-                       :kuvaus "Testiyhtiö"}
-     :koulutuksen-jarjestaja-osaamisen-arvioijat
-     [{:nimi "Joku Arvioija"
-       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911333"}}]
-     :sisallon-kuvaus ["Testauksen suunnittelu"
-                       "Jokin toinen testi"]
-     :yksilolliset-kriteerit ["kriteeri"]
-     :alku "2015-03-31"
-     :loppu "2021-06-01"}
-    {:nayttoymparisto {:nimi "Toka Oy"}
-     :koulutuksen-jarjestaja-osaamisen-arvioijat
-     [{:nimi "Joku Toinen Arvioija"
-       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453911555"}}]
-     :sisallon-kuvaus ["Jotakin sisaltoa"]
-     :yksilolliset-kriteerit ["testi" "toinen"]
-     :alku "2014-05-05"
-     :loppu "2022-09-12"}]})
-
 (defn- assert-ahyto-is-patched-correctly [updated-data initial-data]
   (is (= (:valittu-todentamisen-prosessi-koodi-uri updated-data)
          "osaamisentodentamisenprosessi_2000"))
   (is (= (:tutkinnon-osa-koodi-versio updated-data)
          (:tutkinnon-osa-koodi-versio initial-data)))
   (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
-      (:tarkentavat-tiedot-osaamisen-arvioija multiple-ahyto-values-patched))
-  (compare-tarkentavat-tiedot-naytto-values
-    updated-data multiple-ahyto-values-patched first)
-  (compare-tarkentavat-tiedot-naytto-values
-    updated-data multiple-ahyto-values-patched second)
+      (:tarkentavat-tiedot-osaamisen-arvioija test-data/multiple-ahyto-values-patched))
+  (hoks-utils/compare-tarkentavat-tiedot-naytto-values
+    updated-data test-data/multiple-ahyto-values-patched first)
+  (hoks-utils/compare-tarkentavat-tiedot-naytto-values
+    updated-data test-data/multiple-ahyto-values-patched second)
   (eq (:osa-alueet updated-data)
-      (:osa-alueet multiple-ahyto-values-patched)))
+      (:osa-alueet test-data/multiple-ahyto-values-patched)))
 
 (deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa
   (testing "Patching values of ahyto"
     (test-patch-of-aiemmin-hankittu-osa
       ahyto-path
       test-data/ahyto-data
-      multiple-ahyto-values-patched
+      test-data/multiple-ahyto-values-patched
       assert-ahyto-is-patched-correctly)))
 
 (def hyto-path "hankittava-yhteinen-tutkinnon-osa")
