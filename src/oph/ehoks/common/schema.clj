@@ -69,7 +69,8 @@
                                     (s/optional-key :sv) s/Str}
    (s/optional-key :osaamisala-nimi) {(s/optional-key :fi) s/Str
                                       (s/optional-key :en) s/Str
-                                      (s/optional-key :sv) s/Str}})
+                                      (s/optional-key :sv) s/Str}
+   (s/optional-key :paattynyt) (s/maybe s/Inst)})
 
 (s/defschema
   Tutkinto
