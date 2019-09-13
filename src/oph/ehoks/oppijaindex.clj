@@ -183,3 +183,6 @@
           (get-opiskeluoikeudet-without-tutkinto)]
     (update-opiskeluoikeus! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))
+
+(defn set-opiskeluoikeus-paattynyt! [oid timestamp]
+  (db-opiskeluoikeus/update-opiskeluoikeus! oid {:paattynyt timestamp}))
