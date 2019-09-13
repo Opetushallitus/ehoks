@@ -213,3 +213,19 @@
          :tutkinto-nimi {:fi ""}
          :osaamisala ""
          :osaamisala-nimi {:fi ""}}))))
+
+(t/deftest set-paattynyt-test
+  (t/testing "Setting paattynyt timestamp"
+    (db-oppija/insert-oppija {:oid "1.2.246.562.24.11111111112"})
+    (db-opiskeluoikeus/insert-opiskeluoikeus
+      {:oppija-oid "1.2.246.562.24.11111111112"
+       :oid "1.2.246.562.15.22222222223"})
+    (let [timestamp (java.sql.Timestamp. 1568367627293)]
+      (sut/set-opiskeluoikeus-paattynyt! "1.2.246.562.15.22222222223" timestamp)
+      (t/is
+        (= (.compareTo
+             timestamp
+             (get
+               (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.22222222223")
+               :paattynyt))
+           0)))))
