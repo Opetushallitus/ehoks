@@ -15,7 +15,8 @@
     (hoks-utils/with-hoks-and-app
       [hoks app]
       (let [ppto-response (hoks-utils/mock-st-post
-                            app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
+                            app (hoks-utils/get-hoks-url hoks hpto-path)
+                            test-data/hpto-data)
             body (utils/parse-body (:body ppto-response))]
         (is (= (:status ppto-response) 200))
         (eq body {:data
@@ -23,7 +24,9 @@
                    (hoks-utils/get-hoks-url hoks (format "%s/1" hpto-path))}
                   :meta {:id 1}})
         (let [ppto-new (hoks-utils/mock-st-get
-                         app (hoks-utils/get-hoks-url hoks (format "%s/1" hpto-path)))]
+                         app
+                         (hoks-utils/get-hoks-url
+                           hoks (format "%s/1" hpto-path)))]
           (eq
             (:data (utils/parse-body (:body ppto-new)))
             (assoc
@@ -34,7 +37,8 @@
   (testing "PATCH all hankittava paikallinen tutkinnon osa"
     (hoks-utils/with-hoks-and-app
       [hoks app]
-      (hoks-utils/mock-st-post app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
+      (hoks-utils/mock-st-post
+        app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
       (let [patch-response
             (hoks-utils/mock-st-patch
               app
@@ -47,7 +51,8 @@
     (hoks-utils/with-hoks-and-app
       [hoks app]
       (let [ppto-response
-            (hoks-utils/mock-st-post app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
+            (hoks-utils/mock-st-post
+              app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
             ppto-body (utils/parse-body (:body ppto-response))
             patch-response
             (hoks-utils/mock-st-patch
@@ -60,8 +65,8 @@
         (is (= (:status patch-response) 204))
         (eq get-response
             (assoc test-data/hpto-data
-              :id 1
-              :nimi "2223"))))))
+                   :id 1
+                   :nimi "2223"))))))
 
 (deftest post-and-get-hankittava-yhteinen-tukinnon-osa
   (testing "POST hankittavat yhteisen tutkinnon osat"
@@ -69,7 +74,8 @@
       [hoks app]
       (let [post-response (hoks-utils/create-mock-post-request
                             hyto-path test-data/hyto-data app hoks)
-            get-response (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)]
+            get-response
+            (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)]
         (hoks-utils/assert-post-response-is-ok hyto-path post-response)
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
@@ -87,7 +93,8 @@
         hyto-path test-data/hyto-data app hoks)
       (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              hyto-path app one-value-of-hyto-patched)
-            get-response (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
+            get-response
+            (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (is (= (:koulutuksen-jarjestaja-oid get-response-data)
@@ -104,8 +111,11 @@
       (hoks-utils/create-mock-post-request
         hyto-path test-data/hyto-data app hoks)
       (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
-                             hyto-path app test-data/multiple-hyto-values-patched)
-            get-response (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
+                             hyto-path
+                             app
+                             test-data/multiple-hyto-values-patched)
+            get-response
+            (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (eq (:osa-alueet get-response-data)
@@ -122,7 +132,8 @@
         hyto-path test-data/hyto-data app hoks)
       (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              hyto-path app hyto-sub-entity-patched)
-            get-response (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
+            get-response
+            (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (eq (:osa-alueet get-response-data)
@@ -132,14 +143,20 @@
   (testing "POST hankittava ammatillinen osaaminen and then get created hao"
     (hoks-utils/with-hoks-and-app
       [hoks app]
-      (let [post-response (hoks-utils/create-mock-post-request hao-path test-data/hao-data app hoks)
-            get-response (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
+      (let [post-response
+            (hoks-utils/create-mock-post-request
+              hao-path test-data/hao-data app hoks)
+            get-response
+            (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status post-response) 200))
         (eq (utils/parse-body
               (:body post-response))
             {:meta {:id 1}
-             :data {:uri
-                    (format "%s/1/hankittava-ammat-tutkinnon-osa/1" hoks-utils/base-url)}})
+             :data
+             {:uri
+              (format
+                "%s/1/hankittava-ammat-tutkinnon-osa/1"
+                hoks-utils/base-url)}})
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
               (:body get-response))
@@ -155,7 +172,8 @@
               app
               (hoks-utils/get-hoks-url hoks (str hao-path "/1"))
               (assoc test-data/patch-all-hao-data :id 1))
-            get-response (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
+            get-response
+            (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status patch-response) 204))
         (eq (utils/parse-body (:body get-response))
             {:meta {} :data  (assoc test-data/patch-all-hao-data :id 1)})))))

@@ -6,7 +6,6 @@
             [oph.ehoks.external.cache :as cache]
             [oph.ehoks.utils :as utils :refer [eq]]))
 
-;TODO laita privateiksi sopivat
 (def base-url "/ehoks-virkailija-backend/api/v1/hoks")
 
 (defn create-app [session-store]
@@ -43,21 +42,21 @@
 
 (defn mock-st-request
   ([app full-url method data]
-   (let [req (mock/request
-               method
-               full-url)]
-     (utils/with-service-ticket
-       app
-       (if (some? data)
-         (mock/json-body req data)
-         req))))
+    (let [req (mock/request
+                method
+                full-url)]
+      (utils/with-service-ticket
+        app
+        (if (some? data)
+          (mock/json-body req data)
+          req))))
   ([app full-url]
-   (mock-st-request app full-url :get nil)))
+    (mock-st-request app full-url :get nil)))
 
 (defn mock-st-post [app full-url data]
   (mock-st-request app full-url :post data))
 
-(defn- mock-st-put [app full-url data]
+(defn mock-st-put [app full-url data]
   (mock-st-request app full-url :put data))
 
 (defn mock-st-get [app full-url]
@@ -74,9 +73,9 @@
 
 (defn create-mock-post-request
   ([path body app hoks]
-   (create-mock-post-request (format "%d/%s" (:id hoks) path) body app))
+    (create-mock-post-request (format "%d/%s" (:id hoks) path) body app))
   ([path body app]
-   (mock-st-post app (format "%s/%s" base-url path) body)))
+    (mock-st-post app (format "%s/%s" base-url path) body)))
 
 (defn create-mock-hoks-put-request [hoks-id updated-data app]
   (mock-st-put app (format "%s/%d" base-url hoks-id) updated-data))
@@ -129,5 +128,5 @@
         (selector-function (:tarkentavat-tiedot-naytto updated))
         ttn-patch-values
         (assoc (selector-function (:tarkentavat-tiedot-naytto original))
-          :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
+               :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
     (eq ttn-after-update ttn-patch-values)))

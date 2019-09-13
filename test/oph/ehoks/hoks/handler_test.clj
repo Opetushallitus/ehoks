@@ -1,9 +1,9 @@
 (ns oph.ehoks.hoks.handler-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [ring.mock.request :as mock]
-            [oph.ehoks.utils :as utils :refer [eq base-url]]
+            [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
+            [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.hoks.test-data :as test-data]))
 
 (use-fixtures :each utils/with-database)
@@ -35,9 +35,9 @@
         (eq
           hoks
           (assoc (add-empty-hoks-values hoks-data)
-            :id 1
-            :eid (:eid hoks)
-            :manuaalisyotto false))))))
+                 :id 1
+                 :eid (:eid hoks)
+                 :manuaalisyotto false))))))
 
 (deftest prevent-creating-hoks-with-existing-opiskeluoikeus
   (testing "Prevent POST HOKS with existing opiskeluoikeus"
@@ -118,9 +118,9 @@
           (eq
             hoks
             (assoc (add-empty-hoks-values hoks-data)
-              :id 1
-              :eid (:eid hoks)
-              :manuaalisyotto false)))))))
+                   :id 1
+                   :eid (:eid hoks)
+                   :manuaalisyotto false)))))))
 
 (deftest prevent-oppija-opiskeluoikeus-patch
   (testing "Prevent patching opiskeluoikeus or oppija oid"

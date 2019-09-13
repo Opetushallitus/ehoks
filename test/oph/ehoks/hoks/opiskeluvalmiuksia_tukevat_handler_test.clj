@@ -14,7 +14,8 @@
       [hoks app]
       (let [post-response (hoks-utils/create-mock-post-request
                             oto-path test-data/oto-data app hoks)
-            get-response (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)]
+            get-response
+            (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)]
         (hoks-utils/assert-post-response-is-ok oto-path post-response)
         (is (= (:status get-response) 200))
         (eq (utils/parse-body
@@ -32,7 +33,8 @@
         oto-path test-data/oto-data app hoks)
       (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              oto-path app one-value-of-oto-patched)
-            get-response (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)
+            get-response
+            (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (is (= (:nimi get-response-data)
@@ -56,7 +58,8 @@
         oto-path test-data/oto-data app hoks)
       (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              oto-path app all-values-of-oto-patched)
-            get-response (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)
+            get-response
+            (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (eq get-response-data (assoc all-values-of-oto-patched :id 1))))))
