@@ -132,7 +132,6 @@
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
     (replace-main-hoks! hoks-id new-values db-conn)
-    ;TODO db-conn should be also used when saving hoks parts, see EH-465
     (replace-oto! hoks-id (:opiskeluvalmiuksia-tukevat-opinnot new-values)
                   db-conn)
     (replace-hato! hoks-id (:hankittavat-ammat-tutkinnon-osat new-values)
