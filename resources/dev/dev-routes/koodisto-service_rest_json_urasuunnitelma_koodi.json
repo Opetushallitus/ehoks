@@ -1,0 +1,215 @@
+[
+  {
+    "tila": "LUONNOS",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/urasuunnitelma_0003",
+    "koodiArvo": "0003",
+    "voimassaLoppuPvm": null,
+    "koodisto": {
+      "koodistoUri": "urasuunnitelma",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2019-01-22",
+    "versio": 1,
+    "koodiUri": "urasuunnitelma_0003",
+    "paivitysPvm": 1561372380230,
+    "version": 1,
+    "metadata": [
+      {
+        "kuvaus": "Käytetään eHOKS palvelussa Urasuunnitelman tarkenteena",
+        "kasite": null,
+        "lyhytNimi": "Työuralla eteneminen",
+        "eiSisallaMerkitysta": null,
+        "kieli": "FI",
+        "nimi": "Työuralla eteneminen",
+        "sisaltaaMerkityksen": null,
+        "huomioitavaKoodi": null,
+        "kayttoohje": null,
+        "sisaltaaKoodiston": null
+      },
+      {
+        "kuvaus": null,
+        "kasite": null,
+        "lyhytNimi": null,
+        "eiSisallaMerkitysta": null,
+        "kieli": "SV",
+        "nimi": "Karriäravancemang",
+        "sisaltaaMerkityksen": null,
+        "huomioitavaKoodi": null,
+        "kayttoohje": null,
+        "sisaltaaKoodiston": null
+      }
+    ]
+  },
+  {
+    "tila": "LUONNOS",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/urasuunnitelma_0001",
+    "koodiArvo": "0001",
+    "voimassaLoppuPvm": null,
+    "koodisto": {
+      "koodistoUri": "urasuunnitelma",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2019-01-22",
+    "versio": 1,
+    "koodiUri": "urasuunnitelma_0001",
+    "paivitysPvm": 1561372380238,
+    "version": 1,
+    "metadata": [
+      {
+        "kuvaus": "Käytetään eHOKS palvelussa Urasuunnitelman tarkenteena",
+        "kasite": null,
+        "lyhytNimi": "Jatko-opinnot",
+        "eiSisallaMerkitysta": null,
+        "kieli": "FI",
+        "nimi": "Jatko-opinnot",
+        "sisaltaaMerkityksen": null,
+        "huomioitavaKoodi": null,
+        "kayttoohje": null,
+        "sisaltaaKoodiston": null
+      },
+      {
+        "kuvaus": null,
+        "kasite": null,
+        "lyhytNimi": null,
+        "eiSisallaMerkitysta": null,
+        "kieli": "SV",
+        "nimi": "Fortsatta studier",
+        "sisaltaaMerkityksen": null,
+        "huomioitavaKoodi": null,
+        "kayttoohje": null,
+        "sisaltaaKoodiston": null
+      }
+    ]
+  },
+  {
+    "tila": "LUONNOS",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/urasuunnitelma_0002",
+    "koodiArvo": "0002",
+    "voimassaLoppuPvm": null,
+    "koodisto": {
+      "koodistoUri": "urasuunnitelma",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2019-01-22",
+    "versio": 1,
+    "koodiUri": "urasuunnitelma_0002",
+    "paivitysPvm": 1561372380247,
+    "version": 1,
+    "metadata": [
+      {
+        "kuvaus": "Käytetään eHOKS palvelussa Urasuunnitelman tarkenteena",
+        "kasite": null,
+        "lyhytNimi": "Työelämään siirtyminen",
+        "eiSisallaMerkitysta": null,
+        "kieli": "FI",
+        "nimi": "Työelämään siirtyminen",
+        "sisaltaaMerkityksen": null,
+        "huomioitavaKoodi": null,
+        "kayttoohje": null,
+        "sisaltaaKoodiston": null
+      },
+      {
+        "kuvaus": null,
+        "kasite": null,
+        "lyhytNimi": null,
+        "eiSisallaMerkitysta": null,
+        "kieli": "SV",
+        "nimi": "Övergång till arbetslivet",
+        "sisaltaaMerkityksen": null,
+        "huomioitavaKoodi": null,
+        "kayttoohje": null,
+        "sisaltaaKoodiston": null
+      }
+    ]
+  },
+  {
+    "tila": "LUONNOS",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/urasuunnitelma_0005",
+    "koodiArvo": "0005",
+    "voimassaLoppuPvm": null,
+    "koodisto": {
+      "koodistoUri": "urasuunnitelma",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2019-09-17",
+    "versio": 1,
+    "koodiUri": "urasuunnitelma_0005",
+    "paivitysPvm": 1568716313636,
+    "version": 0,
+    "metadata": [
+      {
+        "kuvaus": "Opintojen keskeytyessä tai opiskelijan uudelleen ohjauksessa suunnitelma opintojen jatkamiseksi",
+        "kasite": null,
+        "lyhytNimi": null,
+        "eiSisallaMerkitysta": null,
+        "kieli": "FI",
+        "nimi": "Opintojen jatkaminen",
+        "sisaltaaMerkityksen": null,
+        "huomioitavaKoodi": null,
+        "kayttoohje": null,
+        "sisaltaaKoodiston": null
+      }
+    ]
+  },
+  {
+    "tila": "PASSIIVINEN",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/urasuunnitelma_004",
+    "koodiArvo": "0004",
+    "voimassaLoppuPvm": "2019-09-17",
+    "koodisto": {
+      "koodistoUri": "urasuunnitelma",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2019-03-27",
+    "versio": 1,
+    "koodiUri": "urasuunnitelma_004",
+    "paivitysPvm": 1568717348210,
+    "version": 7,
+    "metadata": [
+      {
+        "kuvaus": "",
+        "kasite": "",
+        "lyhytNimi": "",
+        "eiSisallaMerkitysta": "",
+        "kieli": "SV",
+        "nimi": "Återupptagna studier",
+        "sisaltaaMerkityksen": "",
+        "huomioitavaKoodi": "",
+        "kayttoohje": "",
+        "sisaltaaKoodiston": ""
+      },
+      {
+        "kuvaus": "Opintojen keskeytyessä tai opiskelijan uudelleen\nohjauksessa suunnitelma opintojen jatkamiseksi",
+        "kasite": "",
+        "lyhytNimi": "Opintojen jatkaminen",
+        "eiSisallaMerkitysta": "",
+        "kieli": "FI",
+        "nimi": "Opintojen jatkaminen",
+        "sisaltaaMerkityksen": "",
+        "huomioitavaKoodi": "",
+        "kayttoohje": "",
+        "sisaltaaKoodiston": ""
+      }
+    ]
+  }
+]

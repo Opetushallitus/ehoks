@@ -145,6 +145,10 @@
       (json-response-file
         "dev-routes/rest_codeelement_ravintolakokinatjarjestys__4_2.json"))
 
+    (GET "/koodisto-service/rest/json/urasuunnitelma/koodi" []
+      (json-response-file
+        "dev-routes/koodisto-service_rest_json_urasuunnitelma_koodi.json"))
+
     (GET "/koodisto-service/rest/json/*/koodi" []
       (json-response []))
 
