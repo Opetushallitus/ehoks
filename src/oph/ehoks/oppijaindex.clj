@@ -1,6 +1,6 @@
 (ns oph.ehoks.oppijaindex
   (:require [clojure.string :as cs]
-            [oph.ehoks.db.postgresql :as db]
+            [oph.ehoks.db.postgresql.common :as db]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [clojure.tools.logging :as log]
