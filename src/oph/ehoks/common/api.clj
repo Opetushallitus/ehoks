@@ -34,6 +34,8 @@
    ::c-ex/default exception-handler})
 
 (defn create-app
+  "Creates application with given routes and session store.
+   If store is nil memory store is being used"
   ([app-routes session-store]
     (-> app-routes
         (middleware/wrap-cache-control-no-cache)
