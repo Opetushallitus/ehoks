@@ -2,7 +2,8 @@
   (:require [ring.util.http-response :as response]
             [oph.ehoks.user :as user]
             [oph.ehoks.oppijaindex :as op]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (defn- virkailija-authenticated? [request]
   (some? (get-in request [:session :virkailija-user])))
@@ -67,6 +68,36 @@
 
 (defn virkailija-has-access? [virkailija-user oppija-oid]
   (virkailija-has-privilege? virkailija-user oppija-oid :read))
+
+(defn- handle-virkailija-write-access [request]
+  (let [hoks (db-hoks/select-hoks-by-id
+               (Integer/parseInt (get-in request [:params :hoks-id])))
+        virkailija-user (get-in
+                          request
+                          [:session :virkailija-user])]
+    (when-not (virkailija-has-privilege-in-opiskeluoikeus?
+                virkailija-user
+                (:opiskeluoikeus-oid hoks) :write)
+      (log/warnf
+        "User %s privileges do not match opiskeluoikeus
+                                %s of oppija %s"
+        (get-in request [:session
+                         :virkailija-user
+                         :oidHenkilo])
+        (:opiskeluoikeus hoks)
+        (get-in request [:params :oppija-oid]))
+      {:error "User has insufficient privileges"})))
+
+(defn wrap-virkailija-write-access [handler]
+  (fn
+    ([request respond raise]
+      (if-let [result (handle-virkailija-write-access request)]
+        (respond (response/forbidden result))
+        (handler request respond raise)))
+    ([request]
+      (if-let [result (handle-virkailija-write-access request)]
+        (response/forbidden result)
+        (handler request)))))
 
 (defn wrap-virkailija-oppija-access [handler]
   (fn
