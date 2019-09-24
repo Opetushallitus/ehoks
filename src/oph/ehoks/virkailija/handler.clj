@@ -225,7 +225,8 @@
 
                           (c-api/PUT "/" request
                             :summary
-                            "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
+                            "Ylikirjoittaa olemassa olevan HOKSin arvon tai
+                             arvot"
                             :body [hoks-values hoks-schema/HOKSKorvaus]
                             (h/replace-hoks!
                               hoks-id
