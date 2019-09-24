@@ -248,6 +248,37 @@
                                 {:error
                                  (str "User has insufficient privileges")})))))
 
+                      (c-api/PUT "/:hoks-id" request
+                        :path-params [hoks-id :- s/Int]
+                        :summary
+                        "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
+                        :body [values hoks-schema/HOKSKorvaus]
+                        (let [hoks (db-hoks/select-hoks-by-id hoks-id)
+                              virkailija-user (get-in
+                                                request
+                                                [:session :virkailija-user])]
+                          (if (m/virkailija-has-privilege-in-opiskeluoikeus?
+                                virkailija-user
+                                (:opiskeluoikeus-oid hoks) :write)
+                            (do (h/replace-hoks!
+                                  hoks-id
+                                  (dissoc values
+                                          :oppija-oid
+                                          :opiskeluoikeus-oid))
+                                (response/no-content))
+                            (do
+                              (log/warnf
+                                "User %s privileges do not match opiskeluoikeus
+                                %s of oppija %s"
+                                (get-in request [:session
+                                                 :virkailija-user
+                                                 :oidHenkilo])
+                                (:opiskeluoikeus hoks)
+                                (get-in request [:params :oppija-oid]))
+                              (response/forbidden
+                                {:error
+                                 (str "User has insufficient privileges")})))))
+
                       (route-middleware
                         [m/wrap-oph-super-user]
 
