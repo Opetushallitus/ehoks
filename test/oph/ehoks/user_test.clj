@@ -3,7 +3,6 @@
             [oph.ehoks.utils :refer [eq with-db]]
             [oph.ehoks.user :as user]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.db.postgresql :as db]
             [clj-time.coerce :as c]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]

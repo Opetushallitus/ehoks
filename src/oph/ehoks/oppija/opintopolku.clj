@@ -7,14 +7,18 @@
 (def valid-headers
   ["firstname" "cn" "givenname" "hetu" "sn"])
 
-(defn keys-to-lower [m]
+(defn keys-to-lower
+  "Change all keys of map to lower case. Works only on first layer."
+  [m]
   (reduce
     (fn [p [k v]]
       (assoc p (lower-case k) v))
     {}
     m))
 
-(defn validate [headers]
+(defn validate
+  "Validates headers that it contains predefined values in #valid-header"
+  [headers]
   (let [header-values (select-keys (keys-to-lower headers) valid-headers)]
     (loop [valid-keys valid-headers]
       (when-let [k (peek valid-keys)]
@@ -22,7 +26,9 @@
           (format "Header %s is missing" k)
           (recur (pop valid-keys)))))))
 
-(defn convert [value src dest]
+(defn convert
+  "Convert value from #src charset to #dest charset"
+  [value src dest]
   (-> value
       String.
       (.getBytes src)
@@ -33,7 +39,9 @@
 (defn convert-to-utf-8 [value]
   (convert value StandardCharsets/ISO_8859_1 StandardCharsets/UTF_8))
 
-(defn parse [headers]
+(defn parse
+  "Parse Opintopolku request headers"
+  [headers]
   (-> headers
       keys-to-lower
       (select-keys valid-headers)

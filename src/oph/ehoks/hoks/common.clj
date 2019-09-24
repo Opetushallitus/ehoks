@@ -1,5 +1,5 @@
 (ns oph.ehoks.hoks.common
-  (:require [oph.ehoks.db.postgresql :as db]))
+  (:require [oph.ehoks.db.postgresql.common :as db]))
 
 (defn- save-osaamisen-osoittamisen-tyoelama-osaamisen-arvioijat!
   [naytto arvioijat]

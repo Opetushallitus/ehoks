@@ -1,4 +1,4 @@
-(ns oph.ehoks.db.postgresql
+(ns oph.ehoks.db.postgresql.common
   (:require [oph.ehoks.db.db-operations.hoks :as h]
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
