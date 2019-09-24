@@ -217,67 +217,33 @@
                                 {:error
                                  (str "User has insufficient privileges")})))))
 
-                      (c-api/PATCH "/:hoks-id" request
-                        :path-params [hoks-id :- s/Int]
-                        :body [hoks-values hoks-schema/HOKSPaivitys]
-                        :summary "Oppijan hoksin päätason arvojen päivitys"
-                        (let [hoks (db-hoks/select-hoks-by-id hoks-id)
-                              virkailija-user (get-in
-                                                request
-                                                [:session :virkailija-user])]
-                          (if (m/virkailija-has-privilege-in-opiskeluoikeus?
-                                virkailija-user
-                                (:opiskeluoikeus-oid hoks) :write)
-                            (do (h/update-hoks!
-                                  hoks-id
-                                  (dissoc
-                                    hoks-values
-                                    :opiskeluoikeus-oid
-                                    :oppija-oid))
-                                (response/no-content))
-                            (do
-                              (log/warnf
-                                "User %s privileges do not match opiskeluoikeus
-                                %s of oppija %s"
-                                (get-in request [:session
-                                                 :virkailija-user
-                                                 :oidHenkilo])
-                                (:opiskeluoikeus hoks)
-                                (get-in request [:params :oppija-oid]))
-                              (response/forbidden
-                                {:error
-                                 (str "User has insufficient privileges")})))))
+                      (route-middleware
+                        [m/wrap-virkailija-write-access]
 
-                      (c-api/PUT "/:hoks-id" request
-                        :path-params [hoks-id :- s/Int]
-                        :summary
-                        "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
-                        :body [values hoks-schema/HOKSKorvaus]
-                        (let [hoks (db-hoks/select-hoks-by-id hoks-id)
-                              virkailija-user (get-in
-                                                request
-                                                [:session :virkailija-user])]
-                          (if (m/virkailija-has-privilege-in-opiskeluoikeus?
-                                virkailija-user
-                                (:opiskeluoikeus-oid hoks) :write)
-                            (do (h/replace-hoks!
-                                  hoks-id
-                                  (dissoc values
-                                          :oppija-oid
-                                          :opiskeluoikeus-oid))
-                                (response/no-content))
-                            (do
-                              (log/warnf
-                                "User %s privileges do not match opiskeluoikeus
-                                %s of oppija %s"
-                                (get-in request [:session
-                                                 :virkailija-user
-                                                 :oidHenkilo])
-                                (:opiskeluoikeus hoks)
-                                (get-in request [:params :oppija-oid]))
-                              (response/forbidden
-                                {:error
-                                 (str "User has insufficient privileges")})))))
+                        (c-api/context "/:hoks-id" []
+                          :path-params [hoks-id :- s/Int]
+
+                          (c-api/PUT "/" request
+                            :summary
+                            "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
+                            :body [hoks-values hoks-schema/HOKSKorvaus]
+                            (h/replace-hoks!
+                              hoks-id
+                              (dissoc hoks-values
+                                      :oppija-oid
+                                      :opiskeluoikeus-oid))
+                            (response/no-content))
+
+                          (c-api/PATCH "/" request
+                            :body [hoks-values hoks-schema/HOKSPaivitys]
+                            :summary "Oppijan hoksin päätason arvojen päivitys"
+                            (h/update-hoks!
+                              hoks-id
+                              (dissoc
+                                hoks-values
+                                :opiskeluoikeus-oid
+                                :oppija-oid))
+                            (response/no-content))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]
