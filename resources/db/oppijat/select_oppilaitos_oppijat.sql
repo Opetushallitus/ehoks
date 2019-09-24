@@ -9,8 +9,8 @@ FROM oppijat AS o
     ((oo.oppilaitos_oid IS NOT NULL AND oo.oppilaitos_oid LIKE ?) OR
      (oo.koulutustoimija_oid IS NOT NULL AND oo.koulutustoimija_oid LIKE ?)) AND
     o.nimi ILIKE ? AND
-    oo.tutkinto ILIKE ? AND
-    oo.osaamisala ILIKE ?
-  ORDER BY :column :desc
+    oo.tutkinto_nimi->>:locale ILIKE ? AND
+    oo.osaamisala_nimi->>:locale ILIKE ?
+  ORDER BY :order-by-column :desc
   LIMIT ?
   OFFSET ?

@@ -13,18 +13,35 @@
 (defn- get-like [v]
   (format "%%%s%%" (or v "")))
 
-(def oppija-columns
-  {:nimi "nimi" :tutkinto "tutkinto" :osaamisala "osaamisala"})
+(def translated-oppija-columns
+  {:tutkinto "tutkinto_nimi->>" :osaamisala "osaamisala_nimi->>"})
 
-(defn- set-query [q params]
+(def default-locale "fi")
+
+(defn- get-locale [params]
+  (str "'" (get params :locale default-locale) "'"))
+
+(defn- get-translated-oppija-column [column params]
+  (str (get translated-oppija-columns column) (get-locale params)))
+
+(defn- get-oppija-order-by-column [params]
+  (let [column (:order-by-column params)]
+   (case column
+     :nimi "nimi"
+     :tutkinto (get-translated-oppija-column column params)
+     :osaamisala (get-translated-oppija-column column params)
+     "nimi")))
+
+(defn- set-oppijat-query [params]
   (-> queries/select-oppilaitos-oppijat
       (cs/replace
-        ":column" (get oppija-columns (:order-by-column params) "nimi"))
-      (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))))
+        ":order-by-column" (get-oppija-order-by-column params))
+      (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))
+      (cs/replace ":locale" (get-locale params))))
 
 (defn search [params]
   (db-ops/query
-    [(set-query queries/select-oppilaitos-oppijat params)
+    [(set-oppijat-query params)
      (:oppilaitos-oid params)
      (:koulutustoimija-oid params)
      (get-like (:nimi params))
