@@ -220,7 +220,7 @@
                       (c-api/PATCH "/:hoks-id" request
                         :path-params [hoks-id :- s/Int]
                         :body [hoks-values hoks-schema/HOKSPaivitys]
-                        :summary "Oppijan hoksin päivitys"
+                        :summary "Oppijan hoksin päätason arvojen päivitys"
                         (let [hoks (db-hoks/select-hoks-by-id hoks-id)
                               virkailija-user (get-in
                                                 request
