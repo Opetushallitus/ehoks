@@ -75,9 +75,9 @@
         virkailija-user (get-in
                           request
                           [:session :virkailija-user])]
-    (when (not (virkailija-has-privilege-in-opiskeluoikeus?
-                 virkailija-user
-                 (:opiskeluoikeus-oid hoks) :write))
+    (when-not (virkailija-has-privilege-in-opiskeluoikeus?
+                virkailija-user
+                (:opiskeluoikeus-oid hoks) :write)
       (log/warnf
         "User %s privileges do not match opiskeluoikeus
                                 %s of oppija %s"
