@@ -548,3 +548,121 @@
                 {:oid "1.2.246.562.10.1200000000010"
                  :privileges #{:read}}]})]
         (t/is (= (:status patch-response) 403))))))
+
+(def hoks-data
+  {:opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+   :oppija-oid "1.2.246.562.24.44000000001"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false})
+
+(def hato-data
+  [{:tutkinnon-osa-koodi-uri "tutkinnonosat_102499"
+    :tutkinnon-osa-koodi-versio 4
+    :vaatimuksista-tai-tavoitteista-poikkeaminen
+    "Ei poikkeamia."
+    :osaamisen-osoittaminen
+    [{:jarjestaja
+      {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+      :nayttoymparisto {:nimi "Testiympäristö 2"
+                        :y-tunnus "12345671-2"
+                        :kuvaus "Testi test"}
+      :sisallon-kuvaus ["Testaus"]
+      :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
+      :koulutuksen-jarjestaja-osaamisen-arvioijat
+      [{:nimi "Timo Testaaja"
+        :organisaatio
+        {:oppilaitos-oid "1.2.246.562.10.54452521332"}}]
+      :tyoelama-osaamisen-arvioijat
+      [{:nimi "Taneli Työmies"
+        :organisaatio {:nimi "Tanelin Paja Ky"
+                       :y-tunnus "12345622-2"}}]
+      :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
+                    :koodi-versio 3}]
+      :alku "2019-03-10"
+      :loppu "2019-03-19"}]
+    :osaamisen-hankkimistavat
+    [{:jarjestajan-edustaja
+      {:nimi "Ville Valvoja"
+       :rooli "Valvojan apulainen"
+       :oppilaitos-oid "1.2.246.562.10.54451211340"}
+      :osaamisen-hankkimistapa-koodi-uri
+      "osaamisenhankkimistapa_oppisopimus"
+      :osaamisen-hankkimistapa-koodi-versio 2
+      :tyopaikalla-jarjestettava-koulutus
+      {:vastuullinen-tyopaikka-ohjaaja
+       {:nimi "Aimo Ohjaaja"
+        :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
+       :tyopaikan-nimi "Ohjausyhtiö Oy"
+       :tyopaikan-y-tunnus "12345212-4"
+       :keskeiset-tyotehtavat ["Testitehtävä"]}
+      :muut-oppimisymparistot
+      [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
+        :oppimisymparisto-koodi-versio 1
+        :alku "2019-01-13"
+        :loppu "2019-02-19"}]
+      :ajanjakson-tarkenne "Ei tarkennettavia asioita"
+      :hankkijan-edustaja
+      {:nimi "Heikki Hankkija"
+       :rooli "Opettaja"
+       :oppilaitos-oid "1.2.246.562.10.54452422420"}
+      :alku "2019-01-11"
+      :loppu "2019-03-14"}]
+    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"}])
+
+(t/deftest test-virkailija-put-hoks
+  (t/testing "PUT hoks virkailija"
+    (utils/with-db
+      (add-oppija {:oid "1.2.246.562.24.44000000001"
+                   :nimi "Teuvo Testaaja"
+                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                   :tutkinto "Testitutkinto 1"
+                   :osaamisala "Testiosaamisala numero 1"
+                   :koulutustoimija-oid ""})
+      (let [response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :post
+                  (str
+                    base-url
+                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
+                hoks-data)
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})
+            body (utils/parse-body (:body response))
+            hoks-url (get-in body [:data :uri])
+            put-response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :put
+                  hoks-url)
+                (assoc
+                  hoks-data
+                  :id (get-in body [:meta :id])
+                  :hankittavat-ammat-tutkinnon-osat
+                  hato-data))
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})
+            get-response
+            (with-test-virkailija
+              (mock/request
+                :get
+                hoks-url)
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})]
+        (let [body (utils/parse-body (:body get-response))]
+          (utils/eq (get-in body
+                            [:data :hankittavat-ammat-tutkinnon-osat])
+                    hato-data))
+        (t/is (= (:status put-response) 204))))))
