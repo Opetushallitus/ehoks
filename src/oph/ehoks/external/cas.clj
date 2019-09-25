@@ -5,7 +5,7 @@
             [clj-time.core :as t]
             [oph.ehoks.external.oph-url :as u]))
 
-(defonce service-ticket
+(defonce grant-ticket
   ^:private
   (atom {:url nil
          :expires nil}))
@@ -22,7 +22,7 @@
     :else
     (format "%s/j_spring_cas_security_check" service)))
 
-(defn refresh-service-ticket!
+(defn refresh-grant-ticket!
   "Get new ticket granting ticket"
   []
   (let [response (c/with-api-headers
@@ -34,7 +34,7 @@
         url (get-in response [:headers "location"])]
     (if (and (= (:status response) 201)
              (seq url))
-      (reset! service-ticket
+      (reset! grant-ticket
               {:url url
                :expires (t/plus (t/now) (t/hours 2))})
       (throw (ex-info "Failed to refresh CAS Service Ticket"
@@ -57,10 +57,10 @@
 (defn add-cas-ticket
   "Add service ticket to headers and params"
   [data service]
-  (when (or (nil? (:url @service-ticket))
-            (t/after? (t/now) (:expires @service-ticket)))
-    (refresh-service-ticket!))
-  (let [ticket (get-service-ticket (:url @service-ticket) service)]
+  (when (or (nil? (:url @grant-ticket))
+            (t/after? (t/now) (:expires @grant-ticket)))
+    (refresh-grant-ticket!))
+  (let [ticket (get-service-ticket (:url @grant-ticket) service)]
     (-> data
         (assoc-in [:headers "accept"] "*/*")
         (assoc-in [:headers "ticket"] ticket)
