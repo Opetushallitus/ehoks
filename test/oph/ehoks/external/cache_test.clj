@@ -61,6 +61,7 @@
 
 (deftest test-clean-cache
   (testing "Clean cache"
+    (reset! c/cleaning? false)
     (reset! c/cache example-responses)
     (c/clean-cache!)
     (is (= @c/cache
