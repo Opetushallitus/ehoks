@@ -10,7 +10,10 @@
   (atom {:url nil
          :expires nil}))
 
-(defn- get-cas-url [service]
+(defn- get-cas-url
+  "Get CAS url (service param) of url. Some uses spring and ehoks uses
+   cas-security-check."
+  [service]
   (cond
     (.contains service (u/get-url "ehoks.virkailija-login-return"))
     service
@@ -19,7 +22,9 @@
     :else
     (format "%s/j_spring_cas_security_check" service)))
 
-(defn refresh-service-ticket! []
+(defn refresh-service-ticket!
+  "Get new ticket granting ticket"
+  []
   (let [response (c/with-api-headers
                    {:method :post
                     :service (u/get-url "cas.service-ticket")
@@ -38,7 +43,9 @@
                                   :body (:body response)
                                   :location url}})))))
 
-(defn get-service-ticket [url service]
+(defn get-service-ticket
+  "Get new service ticket"
+  [url service]
   (:body (c/with-api-headers
            {:method :post
             :service url
@@ -47,7 +54,9 @@
             {:form-params
              {:service (get-cas-url service)}}})))
 
-(defn add-cas-ticket [data service]
+(defn add-cas-ticket
+  "Add service ticket to headers and params"
+  [data service]
   (when (or (nil? (:url @service-ticket))
             (t/after? (t/now) (:expires @service-ticket)))
     (refresh-service-ticket!))
@@ -57,7 +66,9 @@
         (assoc-in [:headers "ticket"] ticket)
         (assoc-in [:query-params :ticket] ticket))))
 
-(defn with-service-ticket [data]
+(defn with-service-ticket
+  "Perform request with API headers and valid service ticket"
+  [data]
   (c/with-api-headers
     (update data :options add-cas-ticket (:service data))))
 
@@ -70,7 +81,9 @@
          %)
       (:content x))))
 
-(defn find-value [m init-ks]
+(defn find-value
+  "Find value in map"
+  [m init-ks]
   (loop [c (get m (first init-ks)) ks (rest init-ks)]
     (if (empty? ks)
       c
@@ -91,7 +104,9 @@
      :user (first
              (find-value m [:serviceResponse :authenticationSuccess :user]))}))
 
-(defn validate-ticket [service ticket]
+(defn validate-ticket
+  "Validate service ticket"
+  [service ticket]
   (let [response (c/with-api-headers
                    {:method :get
                     :service (u/get-url "cas.validate-service")
