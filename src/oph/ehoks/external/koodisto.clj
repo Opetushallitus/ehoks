@@ -2,7 +2,9 @@
   (:require [oph.ehoks.external.cache :as cache]
             [oph.ehoks.external.oph-url :as u]))
 
-(defn filter-koodisto-values [values]
+(defn filter-koodisto-values
+  "Filter only used values"
+  [values]
   (let [filtered
         (select-keys
           values
@@ -20,7 +22,9 @@
                      x)))
       filtered)))
 
-(defn with-koodisto-get [url]
+(defn with-koodisto-get
+  "Wrap Koodisto request with special Koodisto not found handling"
+  [url]
   (try
     (:body
       (cache/with-cache!

@@ -3,7 +3,10 @@
             [ring.util.http-response :as response]
             [clojure.tools.logging :as log]))
 
-(defn wrap-hoks-access [handler]
+; TODO split and reuse hoks access
+(defn wrap-hoks-access
+  "Wrap with oppija hoks access"
+  [handler]
   (fn
     ([request respond raise]
       (if (empty? (get-in request [:route-params :eid]))

@@ -2,7 +2,10 @@
   (:require [ring.swagger.json-schema :as rsjs]
             [schema-tools.core :as st]))
 
-(defn describe [description & kvds]
+(defn describe
+  "Describe schema and its keys. Adds description to all keys. Requires
+   Key Value Description triples."
+  [description & kvds]
   (assert (or (seq kvds) (zero? (mod (count kvds) 3)))
           (format "%s: Invalid key-value-descriotion triples: %s"
                   description kvds))
@@ -15,6 +18,8 @@
     {:description description}))
 
 (defn modify
+  "Modifies schema. Removes removed, sets optionals, replaces values and adds
+   added. Returns new schema."
   ([schema
     description
     {removed :removed optionals :optionals replaced-in :replaced-in

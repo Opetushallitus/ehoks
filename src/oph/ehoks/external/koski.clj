@@ -44,7 +44,9 @@
        :options {:basic-auth [(:cas-username config) (:cas-password config)]
                  :as :json}})))
 
-(defn get-opiskeluoikeus-info-raw [oid]
+(defn get-opiskeluoikeus-info-raw
+  "Get opiskeluoikeus info without error handling"
+  [oid]
   (:body
     (c/with-api-headers
       {:method :get
@@ -67,7 +69,9 @@
                           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
           (throw e))))))
 
-(defn get-opiskeluoikeus-oppilaitos-oid [opiskeluoikeus-oid]
+(defn get-opiskeluoikeus-oppilaitos-oid
+  "Get oppilaitos of opiskeluoikeus"
+  [opiskeluoikeus-oid]
   (get-in
     (get-opiskeluoikeus-info opiskeluoikeus-oid)
     [:oppilaitos :oid]))

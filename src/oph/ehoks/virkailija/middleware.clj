@@ -5,10 +5,14 @@
             [clojure.tools.logging :as log]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
-(defn- virkailija-authenticated? [request]
+(defn- virkailija-authenticated?
+  "Is virkailija authenticated"
+  [request]
   (some? (get-in request [:session :virkailija-user])))
 
-(defn wrap-require-virkailija-user [handler]
+(defn wrap-require-virkailija-user
+  "Require 'VIRKAILIJA' user type"
+  [handler]
   (fn
     ([request respond raise]
       (if (= (get-in request [:session :virkailija-user :kayttajaTyyppi])
@@ -23,7 +27,9 @@
         (response/forbidden
           {:error "User type 'VIRKAILIJA' is required"})))))
 
-(defn wrap-virkailija-authorize [handler]
+(defn wrap-virkailija-authorize
+  "Require virkailija to be authenticated"
+  [handler]
   (fn
     ([request respond raise]
       (if (virkailija-authenticated? request)
@@ -34,7 +40,9 @@
         (handler request)
         (response/unauthorized)))))
 
-(defn wrap-oph-super-user [handler]
+(defn wrap-oph-super-user
+  "Require OPH PAAKAYTTAJA user"
+  [handler]
   (fn
     ([request respond raise]
       (if (user/oph-super-user? (get-in request [:session :virkailija-user]))
@@ -45,7 +53,9 @@
         (handler request)
         (response/forbidden)))))
 
-(defn virkailija-has-privilege? [ticket-user oppija-oid privilege]
+(defn virkailija-has-privilege?
+  "Check if user has privileges"
+  [ticket-user oppija-oid privilege]
   (some?
     (some
       (fn [opiskeluoikeus]
@@ -58,6 +68,7 @@
       (op/get-oppija-opiskeluoikeudet oppija-oid))))
 
 (defn virkailija-has-privilege-in-opiskeluoikeus?
+  "Check if user has access privileges to opiskeluoikeus"
   [ticket-user opiskeluoikeus-oid privilege]
   (let [opiskeluoikeus (op/get-opiskeluoikeus-by-oid opiskeluoikeus-oid)]
     (and (some? opiskeluoikeus)
@@ -66,7 +77,9 @@
              ticket-user (:oppilaitos-oid opiskeluoikeus))
            privilege))))
 
-(defn virkailija-has-access? [virkailija-user oppija-oid]
+(defn virkailija-has-access?
+  "Check if user has access to oppija"
+  [virkailija-user oppija-oid]
   (virkailija-has-privilege? virkailija-user oppija-oid :read))
 
 (defn- handle-virkailija-write-access [request]
@@ -88,7 +101,9 @@
         (get-in request [:params :oppija-oid]))
       {:error "User has insufficient privileges"})))
 
-(defn wrap-virkailija-write-access [handler]
+(defn wrap-virkailija-write-access
+  "Require write access"
+  [handler]
   (fn
     ([request respond raise]
       (if-let [result (handle-virkailija-write-access request)]
@@ -99,7 +114,9 @@
         (response/forbidden result)
         (handler request)))))
 
-(defn wrap-virkailija-oppija-access [handler]
+(defn wrap-virkailija-oppija-access
+  "Require access to oppija"
+  [handler]
   (fn
     ([request respond raise]
       (if (virkailija-has-access?

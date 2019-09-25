@@ -3,7 +3,9 @@
             [clojure.set :refer [rename-keys]]
             [oph.ehoks.external.oph-url :as u]))
 
-(defn find-student-by-nat-id [nat-id]
+(defn find-student-by-nat-id
+  "Find oppija with given HETU"
+  [nat-id]
   (cache/with-cache!
     {:method :get
      :service (u/get-url "oppijanumerorekisteri-url")
@@ -37,7 +39,9 @@
          (update :contact convert-contact-values))
     group))
 
-(defn convert-student-info [values]
+(defn convert-student-info
+  "Convert student info to snake case"
+  [values]
   (let [converted-values
         (-> values
             (select-keys [:oidHenkilo :etunimet :sukunimi

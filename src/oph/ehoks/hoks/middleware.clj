@@ -11,7 +11,9 @@
                         :put :update
                         :delete :delete})
 
-(defn authorized? [hoks ticket-user method]
+(defn authorized?
+  "Is user authorized"
+  [hoks ticket-user method]
   (let [oppilaitos-oid (:oppilaitos-oid (oppijaindex/get-opiskeluoikeus-by-oid
                                           (:opiskeluoikeus-oid hoks)))]
     (if oppilaitos-oid
@@ -22,12 +24,16 @@
       (response/bad-request!
         {:error "Opiskeluoikeus not found"}))))
 
-(defn hoks-access? [hoks ticket-user method]
+(defn hoks-access?
+  "Does user has access to hoks"
+  [hoks ticket-user method]
   (and
     (some? (:opiskeluoikeus-oid hoks))
     (authorized? hoks ticket-user method)))
 
-(defn check-hoks-access! [hoks request]
+(defn check-hoks-access!
+  "Check if ticket user has access privileges to hoks"
+  [hoks request]
   (if (nil? hoks)
     (response/not-found!)
     (let [ticket-user (:service-ticket-user request)]
@@ -44,14 +50,18 @@
           {:error (str "No access is allowed. Check Opintopolku privileges and "
                        "'opiskeluoikeus'")})))))
 
-(defn user-has-access? [request hoks]
+(defn user-has-access?
+  "Check if user has access privileges to hoks"
+  [request hoks]
   (let [ticket-user (:service-ticket-user request)]
     (hoks-access?
       hoks
       ticket-user
       (get method-privileges (:request-method request)))))
 
-(defn wrap-hoks-access [handler]
+(defn wrap-hoks-access
+  "Wrap with hoks access"
+  [handler]
   (fn
     ([request respond raise]
       (let [hoks (:hoks request)]
@@ -85,7 +95,9 @@
                 {:error (str "No access is allowed. Check Opintopolku "
                              "privileges and 'opiskeluoikeus'")}))))))))
 
-(defn wrap-require-service-user [handler]
+(defn wrap-require-service-user
+  "Require 'PALVELU' user"
+  [handler]
   (fn
     ([request respond raise]
       (if (= (:kayttajaTyyppi (:service-ticket-user request)) "PALVELU")
@@ -103,7 +115,9 @@
         hoks (db-hoks/select-hoks-by-id hoks-id)]
     (assoc request :hoks hoks)))
 
-(defn wrap-hoks [handler]
+(defn wrap-hoks
+  "Wrap request with hoks"
+  [handler]
   (fn
     ([request respond raise]
       (handler (add-hoks request) respond raise))

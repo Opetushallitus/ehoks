@@ -3,7 +3,9 @@
 
 (def jobs ^:private (atom {}))
 
-(defn add-job [id interval f & args]
+(defn add-job
+  "Schedule job"
+  [id interval f & args]
   (let [c (a/chan (a/sliding-buffer 1))]
     (swap! jobs assoc id c)
     (a/go-loop []
@@ -20,7 +22,9 @@
           (recur))))
     c))
 
-(defn remove-job [id]
+(defn remove-job
+  "Remove scheduled job"
+  [id]
   (if-some [c (get @jobs id)]
     (do (a/close! c)
         (swap! jobs dissoc id)

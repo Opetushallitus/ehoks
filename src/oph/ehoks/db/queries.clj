@@ -2,32 +2,47 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as cstr]))
 
-(defn read-sql-file [f] (slurp (io/resource f)))
+(defn read-sql-file
+  "Read SQL file from resource (default 'resources/db')"
+  [f] (slurp (io/resource f)))
 
-(def select-by-template (read-sql-file "select_by.sql"))
+(def select-by-template
+  (read-sql-file "select_by.sql"))
 
-(def select-join-template (read-sql-file "select_join.sql"))
+(def select-join-template
+  (read-sql-file "select_join.sql"))
 
-(defn populate-sql [m sql]
+(defn populate-sql
+  "Populates given template with values of keys in given map"
+  [m sql]
   (reduce
     (fn [c [k v]]
       (cstr/replace c (str k) v))
     sql
     m))
 
-(defn generate-select-by [m]
+(defn generate-select-by
+  "Generates select query of given values"
+  [m]
   (populate-sql m select-by-template))
 
-(defn generate-select-join [m]
+(defn generate-select-join
+  "Generates select join query of given values"
+  [m]
   (populate-sql m select-join-template))
 
-(defn parse-sql [n]
+(defn parse-sql
+  "Parse SQL query from symbol name"
+  [n]
   (let [[table column] (rest (clojure.string/split
                                (cstr/replace n #"-" "_")
                                #"(_by_)|(select_)"))]
     {:table table :column column}))
 
-(defmacro defq [query-name & filename]
+(defmacro defq
+  "Automatically create SQL query symbol. If filename is not given query will
+   be created of symbol name."
+  [query-name & filename]
   `(def ~query-name (if (nil? (first (quote ~filename)))
                       (generate-select-by (parse-sql (str (quote ~query-name))))
                       (read-sql-file (cstr/join (quote ~filename))))))
