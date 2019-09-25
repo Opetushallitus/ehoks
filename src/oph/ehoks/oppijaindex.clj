@@ -22,7 +22,9 @@
         ":column" (get oppija-columns (:order-by-column params) "nimi"))
       (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))))
 
-(defn search [params]
+(defn search
+  "Search oppijat with given params"
+  [params]
   (db-ops/query
     [(set-query queries/select-oppilaitos-oppijat params)
      (:oppilaitos-oid params)
@@ -34,7 +36,9 @@
      (:offset params)]
     {:row-fn db-ops/from-sql}))
 
-(defn get-count [params]
+(defn get-count
+  "Get total count of results"
+  [params]
   (:count
     (first
       (db-ops/query
@@ -45,29 +49,45 @@
          (get-like (:tutkinto params))
          (get-like (:osaamisala params))]))))
 
-(defn get-oppijat-without-index []
+(defn get-oppijat-without-index
+  "Get hoks oppijat without index"
+  []
   (db-hoks/select-hoks-oppijat-without-index))
 
-(defn get-oppijat-without-index-count []
+(defn get-oppijat-without-index-count
+  "Get count of hoks oppijat without index"
+  []
   (:count (first (db-hoks/select-hoks-oppijat-without-index-count))))
 
-(defn get-opiskeluoikeudet-without-index []
+(defn get-opiskeluoikeudet-without-index
+  "Get hoks opiskeluoikeudet without index"
+  []
   (db-hoks/select-hoks-opiskeluoikeudet-without-index))
 
-(defn get-opiskeluoikeudet-without-index-count []
+(defn get-opiskeluoikeudet-without-index-count
+  "Get hoks opiskeluoikeudet without index count"
+  []
   (:count (first (db-hoks/select-hoks-opiskeluoikeudet-without-index-count))))
 
-(defn get-opiskeluoikeudet-without-tutkinto []
+(defn get-opiskeluoikeudet-without-tutkinto
+  "Get opiskeluoikeudet which has no tutkinto info"
+  []
   (db-opiskeluoikeus/select-opiskeluoikeudet-without-tutkinto))
 
-(defn get-opiskeluoikeudet-without-tutkinto-count []
+(defn get-opiskeluoikeudet-without-tutkinto-count
+  "Get count of opiskeluoikeudet which has no tutkinto info"
+  []
   (:count
     (first (db-opiskeluoikeus/select-opiskeluoikeudet-without-tutkinto-count))))
 
-(defn get-oppija-opiskeluoikeudet [oppija-oid]
+(defn get-oppija-opiskeluoikeudet
+  "List opiskeluoikeudet of oppija"
+  [oppija-oid]
   (db-opiskeluoikeus/select-opiskeluoikeudet-by-oppija-oid oppija-oid))
 
-(defn get-oppija-by-oid [oppija-oid]
+(defn get-oppija-by-oid
+  "Get oppija by oppija-oid"
+  [oppija-oid]
   (db-oppija/select-oppija-by-oid oppija-oid))
 
 (defn get-opiskeluoikeus-by-oid [oid]

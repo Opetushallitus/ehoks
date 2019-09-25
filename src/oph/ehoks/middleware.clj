@@ -6,7 +6,9 @@
 (defn- authenticated? [request]
   (some? (get-in request [:session :user])))
 
-(defn wrap-authorize [handler]
+(defn wrap-authorize
+  "Require user with session"
+  [handler]
   (fn
     ([request respond raise]
       (if (authenticated? request)
@@ -32,14 +34,19 @@
     ([request]
       (cache-control-no-cache-response (handler request)))))
 
-(defn validate-headers [request]
+(defn validate-headers
+  "Require headers with caller id and service ticket"
+  [request]
   (cond
     (nil? (get-in request [:headers "caller-id"]))
     {:error "Caller-Id header is missing"}
     (nil? (get-in request [:headers "ticket"]))
     {:error "Ticket is missing"}))
 
-(defn wrap-user-details [handler]
+; TODO: Split and reuse code
+(defn wrap-user-details
+  "Wrap with user details (service ticket user)"
+  [handler]
   (fn
     ([request respond raise]
       (if-let [result (validate-headers request)]

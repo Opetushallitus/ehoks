@@ -11,7 +11,9 @@
   (with-open [reader (io/reader file)]
     (edn/read (java.io.PushbackReader. reader))))
 
-(defn load-combined-config [custom-file]
+(defn load-combined-config
+  "Load config combination of default and custom config"
+  [custom-file]
   (let [default-config (load-config default-file)
         custom-config (if (seq custom-file) (load-config custom-file) {})]
     (s/validate

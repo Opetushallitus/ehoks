@@ -3,7 +3,9 @@
             [oph.ehoks.external.organisaatio :as o]
             [oph.ehoks.oppijaindex :as op]))
 
-(defn resolve-privilege [privilege]
+(defn resolve-privilege
+  "Resolves OPH privilege to keyword sets"
+  [privilege]
   (when (= (:palvelu privilege) "EHOKS")
     (case (:oikeus privilege)
       "CRUD" #{:read :write :delete :update}
@@ -11,20 +13,26 @@
       "READ" #{:read}
       #{})))
 
-(defn get-service-privileges [service-privileges]
+(defn get-service-privileges
+  "Resolves service OPH privileges"
+  [service-privileges]
   (reduce
     (fn [c n]
       (into c (resolve-privilege n)))
     #{}
     service-privileges))
 
-(defn resolve-role [service-role]
+(defn resolve-role
+  "Detects role (currently only OPHPAAKAYTTAJA) in ehoks service"
+  [service-role]
   (when (= (:palvelu service-role) "EHOKS")
     (case (:oikeus service-role)
       "OPHPAAKAYTTAJA" :oph-super-user
       nil)))
 
-(defn get-service-roles [service-privileges]
+(defn get-service-roles
+  "Resolves user roles"
+  [service-privileges]
   (reduce
     (fn [c n]
       (if-let [r (resolve-role n)]
@@ -43,12 +51,16 @@
                           (op/get-oppilaitos-oids-by-koulutustoimija-oid
                             (:organisaatioOid organisation)))})
 
-(defn get-auth-info [ticket-user]
+(defn get-auth-info
+  "Get ticket user authentication info"
+  [ticket-user]
   (when (some? ticket-user)
     {:organisation-privileges
      (map resolve-privileges (:organisaatiot ticket-user))}))
 
-(defn oph-super-user? [ticket-user]
+(defn oph-super-user?
+  "Is user OPH ehoks super user"
+  [ticket-user]
   (some
     #(when (get (:roles %) :oph-super-user) true)
     (:organisation-privileges ticket-user)))
@@ -61,7 +73,9 @@
           (:parentOidPath (o/get-organisaatio target-org) "")
           #"\|"))))
 
-(defn get-organisation-privileges [ticket-user organisation-oid]
+(defn get-organisation-privileges
+  "Get ticket user privileges in organisation"
+  [ticket-user organisation-oid]
   (let [privileges
         (reduce into
                 (map :privileges

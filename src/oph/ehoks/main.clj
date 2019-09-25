@@ -10,7 +10,9 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.db.session-store :as session-store]))
 
-(defn has-arg? [args s]
+(defn has-arg?
+  "Is arg present"
+  [args s]
   (some? (some #(when (= (lower-case %) s) %) args)))
 
 (defn -main [& args]
