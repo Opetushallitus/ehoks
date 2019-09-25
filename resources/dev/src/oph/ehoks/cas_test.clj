@@ -2,7 +2,9 @@
   (:require [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.cas :as cas]))
 
-(defn test-auth []
+(defn test-auth
+  "Function for testing cas configuration"
+  []
   (let [service (:backend-url config)
         ticket-data (cas/add-cas-ticket {} service)]
     (cas/validate-ticket service (get-in ticket-data [:query-params :ticket]))))
