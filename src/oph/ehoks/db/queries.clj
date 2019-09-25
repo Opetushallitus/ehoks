@@ -7,15 +7,14 @@
   [f] (slurp (io/resource f)))
 
 (def select-by-template
-  "Simple select query template"
   (read-sql-file "select_by.sql"))
 
 (def select-join-template
-  "Join query template"
   (read-sql-file "select_join.sql"))
 
-(defn populate-sql [m sql]
+(defn populate-sql
   "Populates given template with values of keys in given map"
+  [m sql]
   (reduce
     (fn [c [k v]]
       (cstr/replace c (str k) v))
