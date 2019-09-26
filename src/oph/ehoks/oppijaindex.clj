@@ -116,7 +116,7 @@
   (get-in
     opiskeluoikeus
     [:suoritukset 0 :koulutusmoduuli :tunniste :nimi]
-    {:fi ""}))
+    {:fi "" :sv ""}))
 
 (defn get-osaamisala-nimi [opiskeluoikeus]
   (or
@@ -126,7 +126,7 @@
     (get-in
       opiskeluoikeus
       [:suoritukset 0 :osaamisala 0 :osaamisala :nimi])
-    {:fi ""}))
+    {:fi "" :sv ""}))
 
 (defn- get-opiskeluoikeus-info [oid oppija-oid]
   (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
