@@ -28,14 +28,20 @@
       convert-privileges)
     session))
 
+(defn get-session [session-key]
+  (when session-key
+    (when-let [s (db-session/select-sessions-by-session-key session-key)]
+      (convert-virkailija-privileges (:data s)))))
+
+(defn save-session! [session-key data]
+  (db-session/insert-or-update-session! session-key data))
+
 (deftype DBStore []
   SessionStore
   (read-session [_ session-key]
-    (when session-key
-      (when-let [s (db-session/select-sessions-by-session-key session-key)]
-        (convert-virkailija-privileges (:data s)))))
+    (get-session session-key))
   (write-session [_ session-key data]
-    (db-session/insert-or-update-session! session-key data))
+    (save-session! session-key data))
   (delete-session [_ session-key]
     (db-session/delete-session! session-key)
     nil))

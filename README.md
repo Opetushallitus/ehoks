@@ -224,6 +224,18 @@ tarjoilee `hello_world.json`-tiedoston. Turvallisuussyistä ainoastaan tiedostot
 kansiossa `dev-routes` luetaan ja endpointit toimivat ainoastaan
 kehityspalvelimen kanssa.
 
+### Dev tools
+
+Kun sovellusta ajetaan dev-profiililla, on kehittäjälle tarjolla
+dev-tools-rajapinta. Tämä on kokoelma erilaisia työkaluja, joilla voi muokata
+helposti käynnissä olevaa sovellusta ja kirjautuneen käyttäjän istuntoa.
+
+Paikallisessa kehityksessä on toteutettu mock-kirjautumiset, joihin pääset
+käsiksi environmentista löytyvillä linkeillä.
+
+[Sovelluksen environment](http://localhost:3000/ehoks-virkailija-backend/api/v1/misc/environment)
+[Rajapinta](http://localhost:3000/dev-tools/doc/index.htm)
+
 ## Dummy-datan tuonti tietokantaan
 
 Demodatan (HOKSit) voi tuoda komennolla `lein import path/to/demo.json`. Tämä
