@@ -139,7 +139,7 @@
 
 (defn add-new-opiskeluoikeus! [oid oppija-oid]
   (try
-    (db-opiskeluoikeus/insert-opiskeluoikeus
+    (db-opiskeluoikeus/insert-opiskeluoikeus!
       (get-opiskeluoikeus-info oid oppija-oid))
     (catch Exception e
       (log/errorf
@@ -163,7 +163,7 @@
 (defn add-new-oppija! [oid]
   (try
     (let [oppija (:body (onr/find-student-by-oid oid))]
-      (db-oppija/insert-oppija
+      (db-oppija/insert-oppija!
         {:oid oid
          :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
     (catch Exception e
