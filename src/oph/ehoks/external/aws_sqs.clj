@@ -2,8 +2,7 @@
   (:require [clojure.data.json :as json]
             [oph.ehoks.config :refer [config]]
             [environ.core :refer [env]]
-            [clojure.tools.logging :as log]
-            [clj-time.format :as f])
+            [clojure.tools.logging :as log])
   (:import (software.amazon.awssdk.services.sqs SqsClient)
            (software.amazon.awssdk.regions Region)
            (software.amazon.awssdk.services.sqs.model SendMessageRequest

@@ -12,24 +12,34 @@
 
 (defonce cleaning? (atom false))
 
-(defn size [] (count @cache))
+(defn size
+  "Size of caceh (item count)"
+  [] (count @cache))
 
-(defn expired? [response]
+(defn expired?
+  "Checks if response is too old. Max life time is set in config."
+  [response]
   (and (some? (:timestamp response))
        (t/before?
          (:timestamp response)
          (t/minus (t/now) (t/minutes (:ext-cache-lifetime-minutes config))))))
 
-(defn expire-response! [url]
+(defn expire-response!
+  "Makes response of url expired"
+  [url]
   (swap! cache dissoc url)
   nil)
 
-(defn- filter-expired! []
+(defn- filter-expired!
+  "Filter expired responses"
+  []
   (doseq [[url response] @cache]
     (when (expired? response)
       (swap! cache dissoc url))))
 
-(defn clean-cache! []
+(defn clean-cache!
+  "Removes expired responses"
+  []
   (when-not @cleaning?
     (log/debug "Cleaning cache")
     (reset! cleaning? true)
@@ -37,13 +47,17 @@
     (log/debug "Cleaning cache finished")
     (reset! cleaning? false)))
 
-(defn get-cached [url]
+(defn get-cached
+  "Get response of url if one exists"
+  [url]
   (when-let [response (get @cache url)]
     (when-not (expired? response)
       (log/debugf "Using cached version for %s" url)
       response)))
 
-(defn add-cached-response! [url response]
+(defn add-cached-response!
+  "Add response to cache"
+  [url response]
   (swap! cache assoc url
          (assoc response
                 :timestamp (t/now)
@@ -56,6 +70,8 @@
     (format "%s?%s" url (codec/form-encode params))))
 
 (defn with-cache!
+  "Returns cached response if one exists. In other case performs request and
+   stores response to cache."
   [{url :url options :options :as data}]
   (or (get-cached (encode-url url (:query-params options)))
       (let [response (if (:authenticate? data)
@@ -66,5 +82,7 @@
           (encode-url url (:query-params options)) response)
         (assoc response :cached :MISS))))
 
-(defn clear-cache! []
+(defn clear-cache!
+  "Removes all items in cache"
+  []
   (reset! cache {}))

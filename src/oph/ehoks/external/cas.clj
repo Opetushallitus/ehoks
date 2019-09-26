@@ -5,12 +5,15 @@
             [clj-time.core :as t]
             [oph.ehoks.external.oph-url :as u]))
 
-(defonce service-ticket
+(defonce grant-ticket
   ^:private
   (atom {:url nil
          :expires nil}))
 
-(defn- get-cas-url [service]
+(defn- get-cas-url
+  "Get CAS url (service param) of url. Some uses spring and ehoks uses
+   cas-security-check."
+  [service]
   (cond
     (.contains service (u/get-url "ehoks.virkailija-login-return"))
     service
@@ -19,7 +22,9 @@
     :else
     (format "%s/j_spring_cas_security_check" service)))
 
-(defn refresh-service-ticket! []
+(defn refresh-grant-ticket!
+  "Get new ticket granting ticket"
+  []
   (let [response (c/with-api-headers
                    {:method :post
                     :service (u/get-url "cas.service-ticket")
@@ -29,7 +34,7 @@
         url (get-in response [:headers "location"])]
     (if (and (= (:status response) 201)
              (seq url))
-      (reset! service-ticket
+      (reset! grant-ticket
               {:url url
                :expires (t/plus (t/now) (t/hours 2))})
       (throw (ex-info "Failed to refresh CAS Service Ticket"
@@ -38,7 +43,9 @@
                                   :body (:body response)
                                   :location url}})))))
 
-(defn get-service-ticket [url service]
+(defn get-service-ticket
+  "Get new service ticket"
+  [url service]
   (:body (c/with-api-headers
            {:method :post
             :service url
@@ -47,17 +54,21 @@
             {:form-params
              {:service (get-cas-url service)}}})))
 
-(defn add-cas-ticket [data service]
-  (when (or (nil? (:url @service-ticket))
-            (t/after? (t/now) (:expires @service-ticket)))
-    (refresh-service-ticket!))
-  (let [ticket (get-service-ticket (:url @service-ticket) service)]
+(defn add-cas-ticket
+  "Add service ticket to headers and params"
+  [data service]
+  (when (or (nil? (:url @grant-ticket))
+            (t/after? (t/now) (:expires @grant-ticket)))
+    (refresh-grant-ticket!))
+  (let [ticket (get-service-ticket (:url @grant-ticket) service)]
     (-> data
         (assoc-in [:headers "accept"] "*/*")
         (assoc-in [:headers "ticket"] ticket)
         (assoc-in [:query-params :ticket] ticket))))
 
-(defn with-service-ticket [data]
+(defn with-service-ticket
+  "Perform request with API headers and valid service ticket"
+  [data]
   (c/with-api-headers
     (update data :options add-cas-ticket (:service data))))
 
@@ -70,7 +81,9 @@
          %)
       (:content x))))
 
-(defn find-value [m init-ks]
+(defn find-value
+  "Find value in map"
+  [m init-ks]
   (loop [c (get m (first init-ks)) ks (rest init-ks)]
     (if (empty? ks)
       c
@@ -91,7 +104,9 @@
      :user (first
              (find-value m [:serviceResponse :authenticationSuccess :user]))}))
 
-(defn validate-ticket [service ticket]
+(defn validate-ticket
+  "Validate service ticket"
+  [service ticket]
   (let [response (c/with-api-headers
                    {:method :get
                     :service (u/get-url "cas.validate-service")

@@ -9,7 +9,7 @@
 (defn with-reset-cas [f]
   (f)
   (client/reset-functions!)
-  (reset! c/service-ticket {:url nil :expires nil}))
+  (reset! c/grant-ticket {:url nil :expires nil}))
 
 (use-fixtures :each with-reset-cas)
 
@@ -29,8 +29,8 @@
 
 (deftest test-refresh-service-ticket
   (testing "Refresh service ticket successfully"
-    (reset! c/service-ticket {:url nil :expires nil})
-    (is (= (deref c/service-ticket) {:url nil :expires nil}))
+    (reset! c/grant-ticket {:url nil :expires nil})
+    (is (= (deref c/grant-ticket) {:url nil :expires nil}))
     (client/set-post!
       (fn [_ options]
         (is (= (get-in options [:form-params :username])
@@ -39,17 +39,17 @@
                (:cas-password config)))
         {:status 201
          :headers {"location" "test-url"}}))
-    (c/refresh-service-ticket!)
-    (is (= (:url (deref c/service-ticket)) "test-url"))
-    (is (some? (:expires (deref c/service-ticket)))))
+    (c/refresh-grant-ticket!)
+    (is (= (:url (deref c/grant-ticket)) "test-url"))
+    (is (some? (:expires (deref c/grant-ticket)))))
 
   (testing "Refresh service ticket unsuccessfully"
-    (reset! c/service-ticket {:url nil :expires nil})
+    (reset! c/grant-ticket {:url nil :expires nil})
     (client/set-post! (fn [_ options]
                         {:status 404}))
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
                           #"Failed to refresh CAS Service Ticket"
-                          (c/refresh-service-ticket!)))))
+                          (c/refresh-grant-ticket!)))))
 
 (deftest test-get-service-ticket
   (testing "Get service ticket"
@@ -65,8 +65,8 @@
   (testing "Add service ticket"
     (client/set-post! (fn [_ options] {:body "test-ticket"}))
 
-    (reset! c/service-ticket {:url "http://ticket.url"
-                              :expires (t/plus (t/now) (t/hours 2))})
+    (reset! c/grant-ticket {:url "http://ticket.url"
+                            :expires (t/plus (t/now) (t/hours 2))})
     (let [data (c/add-cas-ticket {} "http://test-service")]
       (is (= (get-in data [:headers "accept"]) "*/*"))
       (is (= (get-in data [:query-params :ticket]) "test-ticket")))))
@@ -76,8 +76,8 @@
     (client/set-get! (fn [_ __] {:body {:value true}
                                  :status 200}))
     (client/set-post! (fn [_ __] {:body "test-ticket"}))
-    (reset! c/service-ticket {:url "http://ticket.url"
-                              :expires (t/plus (t/now) (t/hours 2))})
+    (reset! c/grant-ticket {:url "http://ticket.url"
+                            :expires (t/plus (t/now) (t/hours 2))})
     (let [response (c/with-service-ticket
                      {:method :get
                       :service "http://test-service"

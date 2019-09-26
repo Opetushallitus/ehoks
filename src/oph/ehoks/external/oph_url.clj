@@ -11,21 +11,29 @@
 
 (def re-line #"^.+=.+$")
 
-(defn valid-line? [s]
+(defn valid-line?
+  "Is line valid OPH service url"
+  [s]
   (and (re-matches re-line s)
        (nil? (re-matches re-comment s))))
 
-(defn replace-vars [s vars]
+(defn replace-vars
+  "Replace vars in url"
+  [s vars]
   (reduce
     (fn [c [k v]]
       (cstr/replace c (format "${%s}" k) v))
     s
     vars))
 
-(defn parse-line [s]
+(defn parse-line
+  "Parse OPH service url line"
+  [s]
   (cstr/split (cstr/trim s) #"="))
 
-(defn parse-urls [lines base]
+(defn parse-urls
+  "Parse service urls"
+  [lines base]
   (reduce
     (fn [c n]
       (if (valid-line? n)
@@ -44,7 +52,9 @@
       read-lines
       (parse-urls base-urls)))
 
-(defn get-file []
+(defn get-file
+  "Get OPH service urls file"
+  []
   (or (io/file (or (System/getenv "SERVICES_FILE")
                    (System/getProperty "services_file")
                    (:services-file env)))
@@ -54,14 +64,20 @@
   (when-not *compile-files*
     (load-urls (get-file))))
 
-(defn replace-arg [url i v]
+(defn replace-arg
+  "Replace argument"
+  [url i v]
   (cstr/replace url (format "$%d" i) (str v)))
 
-(defn replace-args [url args]
+(defn replace-args
+  "Replace predefined arguments with values."
+  [url args]
   (loop [u url a args]
     (if (empty? a)
       u
       (recur (replace-arg u (count a) (last a)) (drop-last a)))))
 
-(defn get-url [k & args]
+(defn get-url
+  "Get service url with populated path params"
+  [k & args]
   (replace-args (get oph-service-urls k) args))

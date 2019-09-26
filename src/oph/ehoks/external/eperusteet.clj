@@ -3,7 +3,9 @@
             [oph.ehoks.external.cache :as cache]
             [oph.ehoks.external.oph-url :as u]))
 
-(defn map-perusteet [values]
+(defn map-perusteet
+  "Map perusteet values"
+  [values]
   (map
     (fn [v]
       (-> (select-keys v [:id :nimi :osaamisalat :tutkintonimikkeet])

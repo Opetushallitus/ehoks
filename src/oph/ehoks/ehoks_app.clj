@@ -30,7 +30,10 @@
         (compojure-route/not-found
           (response/not-found {:reason "Route not found"}))))))
 
-(defn create-app [app-name]
+(defn create-app
+  "Create ehoks web app of given name. Name will decide if system has oppija
+  (ehoks), virkailija (ehoks-virkailija) or both routes."
+  [app-name]
   (common-api/create-app
     (case app-name
       "ehoks-virkailija" virkailija-handler/app-routes

@@ -29,7 +29,9 @@
         (json/read-str value :key-fn keyword)
         value))))
 
-(defn get-db-connection []
+(defn get-db-connection
+  "Get PostgreSQL DB connection settings from config values"
+  []
   {:dbtype (:db-type config)
    :dbname (:db-name config)
    :host (:db-server config)

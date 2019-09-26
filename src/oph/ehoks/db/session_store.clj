@@ -3,10 +3,14 @@
             [clojure.tools.logging :as log]
             [oph.ehoks.db.db-operations.session :as db-session]))
 
-(defn- to-kw-set [v]
+(defn- to-kw-set
+  "Convert collection to keyword set"
+  [v]
   (set (map keyword v)))
 
-(defn- convert-privileges [c]
+(defn- convert-privileges
+  "Convert user privileges (string list to keyword set)"
+  [c]
   (map
     (fn [p]
       (-> p
@@ -14,7 +18,9 @@
           (update :privileges to-kw-set)))
     c))
 
-(defn- convert-virkailija-privileges [session]
+(defn- convert-virkailija-privileges
+  "Convert virkailija privileges from database"
+  [session]
   (if (get-in session [:virkailija-user :organisation-privileges])
     (update-in
       session
@@ -34,6 +40,8 @@
     (db-session/delete-session! session-key)
     nil))
 
-(defn db-store []
+(defn db-store
+  "Creates simple DB store for session"
+  []
   (log/info "Database session store enabled")
   (DBStore.))

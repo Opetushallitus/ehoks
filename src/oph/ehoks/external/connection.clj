@@ -10,14 +10,18 @@
 (def oid-pattern
   #"(\d+\.){5}\d+")
 
-(defn sanitaze-path [path]
+(defn sanitaze-path
+  "Remove oids from path"
+  [path]
   (when (some? path)
     (cstr/replace
       path
       oid-pattern
       "*FILTERED*")))
 
-(defn sanitaze-params [options]
+(defn sanitaze-params
+  "Remove non-allower params"
+  [options]
   (if (and (some? options) (some? (:query-params options)))
     (assoc
       options
@@ -37,6 +41,8 @@
     client/get))
 
 (defn with-api-headers
+  "Perform request with API headers (OPH Caller ID) and error handling with
+   logging."
   [{method :method options :options url :url}]
   (try
     (let [client-method-fn (get-client-fn method)]
