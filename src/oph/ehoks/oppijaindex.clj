@@ -32,12 +32,28 @@
      :osaamisala (get-translated-oppija-column column params)
      "nimi")))
 
+(defn- get-translated-column-filter [column params]
+  (str
+    "AND "
+    (get-translated-oppija-column column params)
+    " ILIKE '"
+    (get-like (column params))
+    "'"))
+
 (defn- set-oppijat-query [params]
-  (-> queries/select-oppilaitos-oppijat
-      (cs/replace
-        ":order-by-column" (get-oppija-order-by-column params))
-      (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))
-      (cs/replace ":locale" (get-locale params))))
+  (as-> queries/select-oppilaitos-oppijat query
+        (cs/replace query ":order-by-column" (get-oppija-order-by-column params))
+        (cs/replace query ":desc" (if (:desc params) "DESC" "ASC"))
+        (cs/replace query
+                    ":tutkinto-filter"
+                    (if (:tutkinto params)
+                      (get-translated-column-filter :tutkinto params)
+                      ""))
+        (cs/replace query
+                    ":osaamisala-filter"
+                    (if (:osaamisala params)
+                      (get-translated-column-filter :osaamisala params)
+                      ""))))
 
 (defn search [params]
   (db-ops/query
@@ -45,8 +61,6 @@
      (:oppilaitos-oid params)
      (:koulutustoimija-oid params)
      (get-like (:nimi params))
-     (get-like (:tutkinto params))
-     (get-like (:osaamisala params))
      (:item-count params)
      (:offset params)]
     {:row-fn db-ops/from-sql}))
