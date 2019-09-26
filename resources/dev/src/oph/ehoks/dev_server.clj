@@ -12,7 +12,8 @@
             [ring.middleware.params :refer [wrap-params]]
             [clojure.string :as c-str]
             [clojure.java.io :as io]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [oph.ehoks.dev-tools :as dev-tools]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -66,6 +67,7 @@
 (def dev-reload-app
   (wrap-dev-cors
     (routes
+      (wrap-cookies (wrap-reload #'dev-tools/routes))
       (wrap-params (wrap-cookies (wrap-reload #'mock/mock-routes)))
       (wrap-reload #'dev-routes)
       (wrap-reload #'ehoks-app/app))))
