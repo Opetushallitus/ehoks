@@ -19,7 +19,7 @@
     (db-ops/to-sql oppija)
     ["oid = ?" oid]))
 
-(defn insert-oppija [oppija]
+(defn insert-oppija! [oppija]
   (db-ops/insert-one! :oppijat (db-ops/to-sql oppija)))
 
 (def psql-duplicate-error

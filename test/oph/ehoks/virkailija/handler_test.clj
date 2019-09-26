@@ -121,10 +121,10 @@
         (t/is (= (:status response) 403))))))
 
 (defn- add-oppija [oppija]
-  (db-oppija/insert-oppija
+  (db-oppija/insert-oppija!
     {:oid (:oid oppija)
      :nimi (:nimi oppija)})
-  (db-opiskeluoikeus/insert-opiskeluoikeus
+  (db-opiskeluoikeus/insert-opiskeluoikeus!
     {:oid (:opiskeluoikeus-oid oppija)
      :oppija_oid (:oid oppija)
      :oppilaitos_oid (:oppilaitos-oid oppija)
@@ -224,7 +224,7 @@
                    :tutkinto "Testitutkinto 1"
                    :osaamisala "Testiosaamisala numero 1"
                    :koulutustoimija-oid ""})
-      (db-opiskeluoikeus/insert-opiskeluoikeus
+      (db-opiskeluoikeus/insert-opiskeluoikeus!
         {:oid "1.2.246.562.15.760000000020"
          :oppija_oid "1.2.246.562.24.44000000001"
          :oppilaitos_oid "1.2.246.562.10.1200000000020"
@@ -322,7 +322,7 @@
                    :tutkinto "Testitutkinto 1"
                    :osaamisala "Testiosaamisala numero 1"
                    :koulutustoimija-oid ""})
-      (db-opiskeluoikeus/insert-opiskeluoikeus
+      (db-opiskeluoikeus/insert-opiskeluoikeus!
         {:oid "1.2.246.562.15.760000000020"
          :oppija_oid "1.2.246.562.24.44000000001"
          :oppilaitos_oid "1.2.246.562.10.1200000000200"
@@ -507,7 +507,7 @@
                    :tutkinto "Testitutkinto 1"
                    :osaamisala "Testiosaamisala numero 1"
                    :koulutustoimija-oid ""})
-      (db-opiskeluoikeus/insert-opiskeluoikeus
+      (db-opiskeluoikeus/insert-opiskeluoikeus!
         {:oid "1.2.246.562.15.760000000020"
          :oppija_oid "1.2.246.562.24.44000000001"
          :oppilaitos_oid "1.2.246.562.10.1200000000200"

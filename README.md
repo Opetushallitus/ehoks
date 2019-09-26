@@ -228,7 +228,9 @@ kehityspalvelimen kanssa.
 
 Kun sovellusta ajetaan dev-profiililla, on kehittäjälle tarjolla
 dev-tools-rajapinta. Tämä on kokoelma erilaisia työkaluja, joilla voi muokata
-helposti käynnissä olevaa sovellusta ja kirjautuneen käyttäjän istuntoa.
+helposti arvoja tietokannassa (oppijat ja opiskeluoikeudet) ja kirjautuneen
+käyttäjän istuntoa. Istunnon muokkaus onnistuu sekä oppijan että virkailijan
+puolella.
 
 Paikallisessa kehityksessä on toteutettu mock-kirjautumiset, joihin pääset
 käsiksi environmentista löytyvillä linkeillä.
