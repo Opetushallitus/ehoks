@@ -86,8 +86,10 @@
 
 (t/deftest get-oppija-by-oid
   (t/testing "Get oppija by oid"
-    (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111111" :nimi "Test 1"})
-    (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111112" :nimi "Test 2"})
+    (db-oppija/insert-oppija!
+      {:oid "1.2.246.562.24.11111111111" :nimi "Test 1"})
+    (db-oppija/insert-oppija!
+      {:oid "1.2.246.562.24.11111111112" :nimi "Test 2"})
     (t/is (= (sut/get-oppija-by-oid "1.2.246.562.24.11111111111")
              {:oid "1.2.246.562.24.11111111111" :nimi "Test 1"}))
     (t/is (= (sut/get-oppija-by-oid "1.2.246.562.24.11111111112")
@@ -95,7 +97,8 @@
 
 (t/deftest get-opiskeluoikeus-by-oid
   (t/testing "Get opiskeluoikeus by oid"
-    (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111111" :nimi "Test 1"})
+    (db-oppija/insert-oppija!
+      {:oid "1.2.246.562.24.11111111111" :nimi "Test 1"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       {:oid "1.2.246.562.15.22222222222"
        :oppija_oid "1.2.246.562.24.11111111111"})
