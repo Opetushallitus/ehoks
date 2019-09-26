@@ -41,19 +41,18 @@
     "'"))
 
 (defn- set-oppijat-query [params]
-  (as-> queries/select-oppilaitos-oppijat query
-        (cs/replace query ":order-by-column" (get-oppija-order-by-column params))
-        (cs/replace query ":desc" (if (:desc params) "DESC" "ASC"))
-        (cs/replace query
-                    ":tutkinto-filter"
-                    (if (:tutkinto params)
-                      (get-translated-column-filter :tutkinto params)
-                      ""))
-        (cs/replace query
-                    ":osaamisala-filter"
-                    (if (:osaamisala params)
-                      (get-translated-column-filter :osaamisala params)
-                      ""))))
+  (-> queries/select-oppilaitos-oppijat
+      (cs/replace ":order-by-column"
+                  (get-oppija-order-by-column params))
+      (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))
+      (cs/replace ":tutkinto-filter"
+                  (if (:tutkinto params)
+                    (get-translated-column-filter :tutkinto params)
+                    ""))
+      (cs/replace ":osaamisala-filter"
+                  (if (:osaamisala params)
+                    (get-translated-column-filter :osaamisala params)
+                    ""))))
 
 (defn search
   "Search oppijat with given params"
