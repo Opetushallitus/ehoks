@@ -26,11 +26,11 @@
 
 (defn- get-oppija-order-by-column [params]
   (let [column (:order-by-column params)]
-   (case column
-     :nimi "nimi"
-     :tutkinto (get-translated-oppija-column column params)
-     :osaamisala (get-translated-oppija-column column params)
-     "nimi")))
+    (case column
+      :nimi "nimi"
+      :tutkinto (get-translated-oppija-column column params)
+      :osaamisala (get-translated-oppija-column column params)
+      "nimi")))
 
 (defn- get-translated-column-filter [column params]
   (str

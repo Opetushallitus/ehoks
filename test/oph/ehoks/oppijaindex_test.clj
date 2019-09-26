@@ -146,7 +146,7 @@
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
          :osaamisala ""
-         :osaamisala-nimi {:fi ""}}))))
+         :osaamisala-nimi {:fi "" :sv ""}}))))
 
 (t/deftest update-oppija-opiskeluoikeus
   (t/testing "Update oppija and opiskeluoikeus"
@@ -181,7 +181,7 @@
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
          :osaamisala ""
-         :osaamisala-nimi {:fi ""}}))
+         :osaamisala-nimi {:fi "" :sv ""}}))
 
     (utils/with-ticket-auth
       ["1.2.246.562.10.222222222222"
@@ -210,9 +210,9 @@
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222223"
          :tutkinto ""
-         :tutkinto-nimi {:fi ""}
+         :tutkinto-nimi {:fi "" :sv ""}
          :osaamisala ""
-         :osaamisala-nimi {:fi ""}}))))
+         :osaamisala-nimi {:fi "" :sv ""}}))))
 
 (t/deftest set-paattynyt-test
   (t/testing "Setting paattynyt timestamp"

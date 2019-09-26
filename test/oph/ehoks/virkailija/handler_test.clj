@@ -131,13 +131,13 @@
      :koulutustoimija_oid (:koulutustoimija-oid oppija)
      :tutkinto (:tutkinto oppija "")
      :tutkinto-nimi (:tutkinto-nimi oppija
-                      {:fi "Testialan perustutkinto"
-                       :sv "Grundexamen inom testsbranschen"
-                       :en "Testing"})
+                                    {:fi "Testialan perustutkinto"
+                                     :sv "Grundexamen inom testsbranschen"
+                                     :en "Testing"})
      :osaamisala (:osaamisala oppija "")
      :osaamisala-nimi (:osaamisala-nimi oppija
-                        {:fi "Osaamisala suomeksi"
-                         :sv "På svenska"})}))
+                                        {:fi "Osaamisala suomeksi"
+                                         :sv "På svenska"})}))
 
 (defn- get-search
   ([params virkailija]
@@ -166,7 +166,8 @@
                :tutkinto-nimi {:fi "Testitutkinto 1" :sv "Testskrivning 1"}
                :tutkinto "Testitutkinto 1"
                :osaamisala "Testiosaamisala numero 1"
-               :osaamisala-nimi {:fi "Testiosaamisala numero 1" :sv "Kunnande 1"}
+               :osaamisala-nimi
+               {:fi "Testiosaamisala numero 1" :sv "Kunnande 1"}
                :koulutustoimija-oid ""})
   (add-oppija {:oid "1.2.246.562.24.44000000002"
                :nimi "Tellervo Testi"
@@ -175,7 +176,8 @@
                :tutkinto-nimi {:fi "Testitutkinto 2" :sv "Testskrivning 2"}
                :tutkinto "Testitutkinto 2"
                :osaamisala "Testiosaamisala numero 2"
-               :osaamisala-nimi {:fi "Testiosaamisala numero 2" :sv "Kunnande 2"}
+               :osaamisala-nimi
+               {:fi "Testiosaamisala numero 2" :sv "Kunnande 2"}
                :koulutustoimija-oid ""})
   (add-oppija {:oid "1.2.246.562.24.44000000003"
                :nimi "Olli Oppija"
@@ -267,7 +269,7 @@
 
 (t/deftest get-oppijat-with-swedish-locale-without-translation
   (t/testing
-    "Doesn't have swedish translation and no search filters, shouldn't filter"
+   "Doesn't have swedish translation and no search filters, shouldn't filter"
     (utils/with-db
       (add-oppija {:oid "1.2.246.562.24.44000000003"
                    :nimi "Olli Oppija"
