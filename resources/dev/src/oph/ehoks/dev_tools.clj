@@ -3,7 +3,9 @@
             [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [oph.ehoks.db.db-operations.oppija :as oppija-db]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as opiskeluoikeus-db]))
 
 (defn get-current-session-key [request]
   (get-in request [:cookies "ring-session" :value]))
@@ -65,6 +67,21 @@
               :privileges [s/Str]
               :child-organisations [s/Str]})
 
+(s/defschema Oppija
+             {:oid s/Str
+              :nimi s/Str})
+
+(s/defschema Opiskeluoikeus
+             {:oid s/Str
+              :oppija-oid s/Str
+              :oppilaitos-oid s/Str
+              :koulutustoimija-oid s/Str
+              :tutkinto s/Str
+              :osaamisala s/Str
+              :tutkinto-nimi {s/Keyword s/Str}
+              :osaamisala-nimi {s/Keyword s/Str}
+              :paattynyt s/Inst})
+
 (def routes
   (c-api/api
     {:swagger
@@ -103,4 +120,14 @@
             :summary "Add organisation privileges"
             :body [privileges OrganisationPrivilege]
             (add-session-privilege (:session-key request) privileges)
-            (response/no-content)))))))
+            (response/no-content)))
+
+        (c-api/context "/oppijaindex" []
+          (c-api/POST "/oppija" []
+            :body [oppija Oppija]
+            (response/ok (oppija-db/insert-oppija! oppija)))
+
+          (c-api/POST "/opiskeluoikeus" []
+            :body [opiskeluoikeus Opiskeluoikeus]
+            (response/ok
+              (opiskeluoikeus-db/insert-opiskeluoikeus! opiskeluoikeus))))))))
