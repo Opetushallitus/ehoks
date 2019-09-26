@@ -5,7 +5,8 @@
             [ring.util.http-response :as response]
             [schema.core :as s]
             [oph.ehoks.db.db-operations.oppija :as oppija-db]
-            [oph.ehoks.db.db-operations.opiskeluoikeus :as opiskeluoikeus-db]))
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as opiskeluoikeus-db]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
 (defn get-current-session-key [request]
   (get-in request [:cookies "ring-session" :value]))
@@ -123,11 +124,24 @@
             (response/no-content)))
 
         (c-api/context "/oppijaindex" []
+
           (c-api/POST "/oppija" []
             :body [oppija Oppija]
             (response/ok (oppija-db/insert-oppija! oppija)))
 
+          (c-api/DELETE "/oppija/:oppija-oid" []
+            :path-params [oppija-oid :- s/Str]
+            (response/ok
+              (db-ops/delete!
+                :oppijat ["oid = ?" oppija-oid])))
+
           (c-api/POST "/opiskeluoikeus" []
             :body [opiskeluoikeus Opiskeluoikeus]
             (response/ok
-              (opiskeluoikeus-db/insert-opiskeluoikeus! opiskeluoikeus))))))))
+              (opiskeluoikeus-db/insert-opiskeluoikeus! opiskeluoikeus)))
+
+          (c-api/DELETE "/opiskeluoikeus/:opiskeluoikeus-oid" []
+            :path-params [opiskeluoikeus-oid :- s/Str]
+            (response/ok
+              (db-ops/delete!
+                :opiskeluoikeudet ["oid = ?" opiskeluoikeus-oid]))))))))
