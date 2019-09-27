@@ -58,7 +58,6 @@
                     (get-translated-column-filter :osaamisala params)
                     ""))))
 
-
 (defn select-opiskeluoikeudet-without-tutkinto []
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-tutkinto]))
