@@ -201,6 +201,7 @@
       (add-oppijat)
       (let [body (get-search {})]
         (t/is (= (count (:data body)) 3))
+        (t/is (= (get-in body [:meta :total-count]) 3))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000004"))
         (t/is (= (get-in body [:data 1 :oid])
@@ -214,6 +215,7 @@
       (add-oppijat)
       (let [body (get-search {:nimi "teu"})]
         (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:meta :total-count]) 1))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000001"))))))
 
@@ -225,6 +227,7 @@
                               :order-by-column :nimi
                               :desc true})]
         (t/is (= (count (:data body)) 2))
+        (t/is (= (get-in body [:meta :total-count]) 2))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000003"))
         (t/is (= (get-in body [:data 1 :oid])
@@ -237,6 +240,7 @@
       (let [body (get-search {:nimi "oppi"
                               :order-by-column :nimi})]
         (t/is (= (count (:data body)) 2))
+        (t/is (= (get-in body [:meta :total-count]) 2))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000004"))
         (t/is (= (get-in body [:data 1 :oid])
@@ -249,6 +253,7 @@
       (let [body (get-search {:tutkinto "testitutkinto"
                               :osaamisala "kolme"})]
         (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:meta :total-count]) 1))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000003"))))))
 
@@ -262,6 +267,7 @@
                               :desc true
                               :locale "sv"})]
         (t/is (= (count (:data body)) 2))
+        (t/is (= (get-in body [:meta :total-count]) 2))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000003"))
         (t/is (= (get-in body [:data 1 :oid])
@@ -284,6 +290,7 @@
                               :desc true
                               :locale "sv"})]
         (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:meta :total-count]) 1))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000003"))))))
 

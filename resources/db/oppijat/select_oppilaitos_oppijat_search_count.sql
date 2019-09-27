@@ -6,6 +6,6 @@ FROM oppijat AS o
   WHERE 
     ((oo.oppilaitos_oid IS NOT NULL AND oo.oppilaitos_oid LIKE ?) OR 
      (oo.koulutustoimija_oid IS NOT NULL AND oo.koulutustoimija_oid LIKE ?)) AND
-    o.nimi ILIKE ? AND
-    oo.tutkinto ILIKE ? AND
-    oo.osaamisala ILIKE ?
+    o.nimi ILIKE ?
+    :tutkinto-filter
+    :osaamisala-filter

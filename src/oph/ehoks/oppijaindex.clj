@@ -1,6 +1,5 @@
 (ns oph.ehoks.oppijaindex
-  (:require [clojure.string :as cs]
-            [oph.ehoks.db.postgresql.common :as db]
+  (:require [oph.ehoks.db.postgresql.common :as db]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [clojure.tools.logging :as log]
@@ -10,58 +9,14 @@
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
-(defn- get-like [v]
-  (format "%%%s%%" (or v "")))
-
-(def translated-oppija-columns
-  {:tutkinto "tutkinto_nimi->>" :osaamisala "osaamisala_nimi->>"})
-
-(def default-locale "fi")
-
-(defn- get-locale [params]
-  (str "'" (get params :locale default-locale) "'"))
-
-(defn- get-translated-oppija-column [column params]
-  (str (get translated-oppija-columns column) (get-locale params)))
-
-(defn- get-oppija-order-by-column [params]
-  (let [column (:order-by-column params)]
-    (case column
-      :nimi "nimi"
-      :tutkinto (get-translated-oppija-column column params)
-      :osaamisala (get-translated-oppija-column column params)
-      "nimi")))
-
-(defn- get-translated-column-filter [column params]
-  (str
-    "AND "
-    (get-translated-oppija-column column params)
-    " ILIKE '"
-    (get-like (column params))
-    "'"))
-
-(defn- set-oppijat-query [params]
-  (-> queries/select-oppilaitos-oppijat
-      (cs/replace ":order-by-column"
-                  (get-oppija-order-by-column params))
-      (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))
-      (cs/replace ":tutkinto-filter"
-                  (if (:tutkinto params)
-                    (get-translated-column-filter :tutkinto params)
-                    ""))
-      (cs/replace ":osaamisala-filter"
-                  (if (:osaamisala params)
-                    (get-translated-column-filter :osaamisala params)
-                    ""))))
-
 (defn search
   "Search oppijat with given params"
   [params]
   (db-ops/query
-    [(set-oppijat-query params)
+    [(db-opiskeluoikeus/set-oppijat-query params)
      (:oppilaitos-oid params)
      (:koulutustoimija-oid params)
-     (get-like (:nimi params))
+     (db-opiskeluoikeus/get-like (:nimi params))
      (:item-count params)
      (:offset params)]
     {:row-fn db-ops/from-sql}))
@@ -72,12 +27,10 @@
   (:count
     (first
       (db-ops/query
-        [queries/select-oppilaitos-oppijat-search-count
+        [(db-opiskeluoikeus/set-oppijat-count-query params)
          (:oppilaitos-oid params)
          (:koulutustoimija-oid params)
-         (get-like (:nimi params))
-         (get-like (:tutkinto params))
-         (get-like (:osaamisala params))]))))
+         (db-opiskeluoikeus/get-like (:nimi params))]))))
 
 (defn get-oppijat-without-index
   "Get hoks oppijat without index"
