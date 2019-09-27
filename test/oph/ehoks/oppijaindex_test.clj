@@ -77,6 +77,25 @@
       (t/is (= (get-in results [1 :oid])
              "1.2.246.562.15.76000000003")))))
 
+(t/deftest get-opiskeluoikeudet-without-tutkinto-count
+  (t/testing "Get count of opiskeluoikeudet without tutkinto_nimi"
+    (db-oppija/insert-oppija!
+      {:oid "1.2.246.562.24.11111111111"
+       :nimi "Testi Oppija"})
+    (db-opiskeluoikeus/insert-opiskeluoikeus!
+      {:oid "1.2.246.562.15.76000000002"
+       :oppija_oid "1.2.246.562.24.11111111111"
+       :tutkinto "Testitutkinto 1"})
+    (db-opiskeluoikeus/insert-opiskeluoikeus!
+      {:oid "1.2.246.562.15.76000000003"
+       :oppija_oid "1.2.246.562.24.11111111111"
+       :tutkinto "Testitutkinto 2"})
+    (db-opiskeluoikeus/insert-opiskeluoikeus!
+      {:oid "1.2.246.562.15.76000000004"
+       :oppija_oid "1.2.246.562.24.11111111111"
+       :tutkinto-nimi {:fi "Testitutkinto" :sv "test"}})
+    (t/is (= (sut/get-opiskeluoikeudet-without-tutkinto-count) 2))))
+
 (t/deftest get-oppija-opiskeluoikeudet
   (t/testing "Get oppija opiskeluoikeudet"
     (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111111"})
