@@ -84,6 +84,63 @@
               :paattynyt s/Inst})
 
 (def routes
+  (c-api/context "/dev-tools" []
+    :tags ["dev"]
+
+    (route-middleware
+      [wrap-session-key wrap-require-session]
+
+      (c-api/context "/session" []
+        (c-api/GET "/" request
+          :summary "Get current session from db"
+          (response/ok (store/get-session (:session-key request))))
+
+        (c-api/PATCH "/" request
+          :summary "Update current session in db. Be aware. This is a powerful
+                     tool and might brake things easily."
+          :body [session s/Any]
+          (store/save-session! (:session-key request) session)
+          (response/no-content)))
+
+      (c-api/context "/organisation-privileges" []
+        (c-api/DELETE "/:organisation-oid" request
+          :path-params [organisation-oid :- s/Str]
+          :summary "Remove organisation from current user"
+          (remove-session-organisation (:session-key request) organisation-oid)
+          (response/no-content))
+
+        (c-api/POST "/" request
+          :summary "Add organisation privileges"
+          :body [privileges OrganisationPrivilege]
+          (add-session-privilege (:session-key request) privileges)
+          (response/no-content)))
+
+      (c-api/context "/oppijaindex" []
+
+        (c-api/POST "/oppija" []
+          :body [oppija Oppija]
+          (response/ok (oppija-db/insert-oppija! oppija)))
+
+        (c-api/DELETE "/oppija/:oppija-oid" []
+          :path-params [oppija-oid :- s/Str]
+          (response/ok
+            (db-ops/delete!
+              :oppijat ["oid = ?" oppija-oid])))
+
+        (c-api/POST "/opiskeluoikeus" []
+          :body [opiskeluoikeus Opiskeluoikeus]
+          (response/ok
+            (opiskeluoikeus-db/insert-opiskeluoikeus! opiskeluoikeus)))
+
+        (c-api/DELETE "/opiskeluoikeus/:opiskeluoikeus-oid" []
+          :path-params [opiskeluoikeus-oid :- s/Str]
+          (response/ok
+            (db-ops/delete!
+              :opiskeluoikeudet ["oid = ?" opiskeluoikeus-oid])))))))
+
+; Currently not in use. If this is enabled requests has no more body.
+; Cost of this is no swagger docs
+(def api-routes
   (c-api/api
     {:swagger
      {:ui "/dev-tools/doc"
@@ -91,57 +148,4 @@
       :data {:info {:title "Dev tools"
                     :description "Dev tools"}
              :tags [{:name "api", :description ""}]}}}
-
-    (c-api/context "/dev-tools" []
-      :tags ["dev"]
-
-      (route-middleware
-        [wrap-session-key wrap-require-session]
-
-        (c-api/context "/session" []
-          (c-api/GET "/" request
-            :summary "Get current session from db"
-            (response/ok (store/get-session (:session-key request))))
-
-          (c-api/PATCH "/" request
-            :summary "Update current session in db. Be aware. This is a powerful
-                     tool and might brake things easily."
-            :body [session s/Any]
-            (store/save-session! (:session-key request) session)
-            (response/no-content)))
-
-        (c-api/context "/organisation-privileges" []
-          (c-api/DELETE "/:organisation-oid" request
-            :path-params [organisation-oid :- s/Str]
-            :summary "Remove organisation from current user"
-            (remove-session-organisation (:session-key request) organisation-oid)
-            (response/no-content))
-
-          (c-api/POST "/" request
-            :summary "Add organisation privileges"
-            :body [privileges OrganisationPrivilege]
-            (add-session-privilege (:session-key request) privileges)
-            (response/no-content)))
-
-        (c-api/context "/oppijaindex" []
-
-          (c-api/POST "/oppija" []
-            :body [oppija Oppija]
-            (response/ok (oppija-db/insert-oppija! oppija)))
-
-          (c-api/DELETE "/oppija/:oppija-oid" []
-            :path-params [oppija-oid :- s/Str]
-            (response/ok
-              (db-ops/delete!
-                :oppijat ["oid = ?" oppija-oid])))
-
-          (c-api/POST "/opiskeluoikeus" []
-            :body [opiskeluoikeus Opiskeluoikeus]
-            (response/ok
-              (opiskeluoikeus-db/insert-opiskeluoikeus! opiskeluoikeus)))
-
-          (c-api/DELETE "/opiskeluoikeus/:opiskeluoikeus-oid" []
-            :path-params [opiskeluoikeus-oid :- s/Str]
-            (response/ok
-              (db-ops/delete!
-                :opiskeluoikeudet ["oid = ?" opiskeluoikeus-oid]))))))))
+    routes))
