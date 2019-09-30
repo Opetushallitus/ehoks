@@ -1,6 +1,5 @@
 (ns oph.ehoks.oppijaindex
-  (:require [clojure.string :as cs]
-            [oph.ehoks.db.postgresql.common :as db]
+  (:require [oph.ehoks.db.postgresql.common :as db]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [clojure.tools.logging :as log]
@@ -10,28 +9,14 @@
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
-(defn- get-like [v]
-  (format "%%%s%%" (or v "")))
-
-(def oppija-columns
-  {:nimi "nimi" :tutkinto "tutkinto" :osaamisala "osaamisala"})
-
-(defn- set-query [q params]
-  (-> queries/select-oppilaitos-oppijat
-      (cs/replace
-        ":column" (get oppija-columns (:order-by-column params) "nimi"))
-      (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))))
-
 (defn search
   "Search oppijat with given params"
   [params]
   (db-ops/query
-    [(set-query queries/select-oppilaitos-oppijat params)
+    [(db-opiskeluoikeus/set-oppijat-query params)
      (:oppilaitos-oid params)
      (:koulutustoimija-oid params)
-     (get-like (:nimi params))
-     (get-like (:tutkinto params))
-     (get-like (:osaamisala params))
+     (db-opiskeluoikeus/get-like (:nimi params))
      (:item-count params)
      (:offset params)]
     {:row-fn db-ops/from-sql}))
@@ -42,12 +27,10 @@
   (:count
     (first
       (db-ops/query
-        [queries/select-oppilaitos-oppijat-search-count
+        [(db-opiskeluoikeus/set-oppijat-count-query params)
          (:oppilaitos-oid params)
          (:koulutustoimija-oid params)
-         (get-like (:nimi params))
-         (get-like (:tutkinto params))
-         (get-like (:osaamisala params))]))))
+         (db-opiskeluoikeus/get-like (:nimi params))]))))
 
 (defn get-oppijat-without-index
   "Get hoks oppijat without index"
@@ -105,7 +88,7 @@
   (get-in
     opiskeluoikeus
     [:suoritukset 0 :koulutusmoduuli :tunniste :nimi]
-    {:fi ""}))
+    {:fi "" :sv ""}))
 
 (defn get-osaamisala-nimi [opiskeluoikeus]
   (or
@@ -115,7 +98,7 @@
     (get-in
       opiskeluoikeus
       [:suoritukset 0 :osaamisala 0 :osaamisala :nimi])
-    {:fi ""}))
+    {:fi "" :sv ""}))
 
 (defn- get-opiskeluoikeus-info [oid oppija-oid]
   (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]

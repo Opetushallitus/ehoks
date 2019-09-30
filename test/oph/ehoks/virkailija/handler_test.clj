@@ -130,7 +130,14 @@
      :oppilaitos_oid (:oppilaitos-oid oppija)
      :koulutustoimija_oid (:koulutustoimija-oid oppija)
      :tutkinto (:tutkinto oppija "")
-     :osaamisala (:osaamisala oppija "")}))
+     :tutkinto-nimi (:tutkinto-nimi oppija
+                                    {:fi "Testialan perustutkinto"
+                                     :sv "Grundexamen inom testsbranschen"
+                                     :en "Testing"})
+     :osaamisala (:osaamisala oppija "")
+     :osaamisala-nimi (:osaamisala-nimi oppija
+                                        {:fi "Osaamisala suomeksi"
+                                         :sv "På svenska"})}))
 
 (defn- get-search
   ([params virkailija]
@@ -151,66 +158,139 @@
       (utils/parse-body (:body response))))
   ([params] (get-search params nil)))
 
-(t/deftest test-list-virkailija-oppijat
-  (t/testing "GET virkailija oppijat"
+(defn- add-oppijat []
+  (add-oppija {:oid "1.2.246.562.24.44000000001"
+               :nimi "Teuvo Testaaja"
+               :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
+               :oppilaitos-oid "1.2.246.562.10.12000000000"
+               :tutkinto-nimi {:fi "Testitutkinto 1" :sv "Testskrivning 1"}
+               :tutkinto "Testitutkinto 1"
+               :osaamisala "Testiosaamisala numero 1"
+               :osaamisala-nimi
+               {:fi "Testiosaamisala numero 1" :sv "Kunnande 1"}
+               :koulutustoimija-oid ""})
+  (add-oppija {:oid "1.2.246.562.24.44000000002"
+               :nimi "Tellervo Testi"
+               :opiskeluoikeus-oid "1.2.246.562.15.76000000002"
+               :oppilaitos-oid "1.2.246.562.10.12000000001"
+               :tutkinto-nimi {:fi "Testitutkinto 2" :sv "Testskrivning 2"}
+               :tutkinto "Testitutkinto 2"
+               :osaamisala "Testiosaamisala numero 2"
+               :osaamisala-nimi
+               {:fi "Testiosaamisala numero 2" :sv "Kunnande 2"}
+               :koulutustoimija-oid ""})
+  (add-oppija {:oid "1.2.246.562.24.44000000003"
+               :nimi "Olli Oppija"
+               :opiskeluoikeus-oid "1.2.246.562.15.76000000003"
+               :oppilaitos-oid "1.2.246.562.10.12000000000"
+               :tutkinto-nimi {:fi "Testitutkinto 3" :sv "Testskrivning 3"}
+               :tutkinto "Testitutkinto 3"
+               :osaamisala "Osaamisala Kolme"
+               :osaamisala-nimi {:fi "Osaamisala Kolme" :sv "Kunnande 3"}
+               :koulutustoimija-oid ""})
+  (add-oppija {:oid "1.2.246.562.24.44000000004"
+               :nimi "Oiva Oppivainen"
+               :opiskeluoikeus-oid "1.2.246.562.15.76000000004"
+               :oppilaitos-oid "1.2.246.562.10.12000000000"
+               :tutkinto "Tutkinto 4"
+               :koulutustoimija-oid ""}))
+
+(t/deftest get-oppijat-without-filtering
+  (t/testing "GET virkailija oppijat without any search filters"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Teuvo Testaaja"
-                   :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
-                   :oppilaitos-oid "1.2.246.562.10.12000000000"
-                   :tutkinto "Testitutkinto 1"
-                   :osaamisala "Testiosaamisala numero 1"
-                   :koulutustoimija-oid ""})
-      (add-oppija {:oid "1.2.246.562.24.44000000002"
-                   :nimi "Tellervo Testi"
-                   :opiskeluoikeus-oid "1.2.246.562.15.76000000002"
-                   :oppilaitos-oid "1.2.246.562.10.12000000001"
-                   :tutkinto "Testitutkinto 2"
-                   :osaamisala "Testiosaamisala numero 2"
-                   :koulutustoimija-oid ""})
-      (add-oppija {:oid "1.2.246.562.24.44000000003"
-                   :nimi "Olli Oppija"
-                   :opiskeluoikeus-oid "1.2.246.562.15.76000000003"
-                   :oppilaitos-oid "1.2.246.562.10.12000000000"
-                   :tutkinto "Testitutkinto 3"
-                   :osaamisala "Osaamisala Kolme"
-                   :koulutustoimija-oid ""})
-      (add-oppija {:oid "1.2.246.562.24.44000000004"
-                   :nimi "Oiva Oppivainen"
-                   :opiskeluoikeus-oid "1.2.246.562.15.76000000004"
-                   :oppilaitos-oid "1.2.246.562.10.12000000000"
-                   :tutkinto "Tutkinto 4"
-                   :koulutustoimija-oid ""})
+      (add-oppijat)
       (let [body (get-search {})]
         (t/is (= (count (:data body)) 3))
+        (t/is (= (get-in body [:meta :total-count]) 3))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000004"))
         (t/is (= (get-in body [:data 1 :oid])
                  "1.2.246.562.24.44000000003"))
         (t/is (= (get-in body [:data 2 :oid])
-                 "1.2.246.562.24.44000000001")))
+                 "1.2.246.562.24.44000000001"))))))
+
+(t/deftest get-oppijat-with-name-filter
+  (t/testing "GET virkailija oppijat with name filtered"
+    (utils/with-db
+      (add-oppijat)
       (let [body (get-search {:nimi "teu"})]
         (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:meta :total-count]) 1))
         (t/is (= (get-in body [:data 0 :oid])
-                 "1.2.246.562.24.44000000001")))
+                 "1.2.246.562.24.44000000001"))))))
+
+(t/deftest get-oppijat-with-name-filter-and-order-desc
+  (t/testing "GET virkailija oppijat ordered descending and filtered with name"
+    (utils/with-db
+      (add-oppijat)
       (let [body (get-search {:nimi "oppi"
                               :order-by-column :nimi
                               :desc true})]
         (t/is (= (count (:data body)) 2))
+        (t/is (= (get-in body [:meta :total-count]) 2))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000003"))
         (t/is (= (get-in body [:data 1 :oid])
-                 "1.2.246.562.24.44000000004")))
+                 "1.2.246.562.24.44000000004"))))))
+
+(t/deftest get-oppijat-with-name-filter-and-order-asc
+  (t/testing "GET virkailija oppijat ordered ascending and filtered with name"
+    (utils/with-db
+      (add-oppijat)
       (let [body (get-search {:nimi "oppi"
                               :order-by-column :nimi})]
         (t/is (= (count (:data body)) 2))
+        (t/is (= (get-in body [:meta :total-count]) 2))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000004"))
         (t/is (= (get-in body [:data 1 :oid])
-                 "1.2.246.562.24.44000000003")))
+                 "1.2.246.562.24.44000000003"))))))
+
+(t/deftest get-oppijat-filtered-with-tutkinto-and-osaamisala
+  (t/testing "GET virkailija oppijat filtered with tutkinto and osaamisala"
+    (utils/with-db
+      (add-oppijat)
       (let [body (get-search {:tutkinto "testitutkinto"
                               :osaamisala "kolme"})]
         (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:meta :total-count]) 1))
+        (t/is (= (get-in body [:data 0 :oid])
+                 "1.2.246.562.24.44000000003"))))))
+
+(t/deftest get-oppijat-filtered-with-swedish-locale
+  (t/testing "GET virkailija oppijat filtered with swedish locale"
+    (utils/with-db
+      (add-oppijat)
+      (let [body (get-search {:tutkinto "testskrivning"
+                              :osaamisala "kunnande"
+                              :order-by-column "tutkinto"
+                              :desc true
+                              :locale "sv"})]
+        (t/is (= (count (:data body)) 2))
+        (t/is (= (get-in body [:meta :total-count]) 2))
+        (t/is (= (get-in body [:data 0 :oid])
+                 "1.2.246.562.24.44000000003"))
+        (t/is (= (get-in body [:data 1 :oid])
+                 "1.2.246.562.24.44000000001"))))))
+
+(t/deftest get-oppijat-with-swedish-locale-without-translation
+  (t/testing
+   "Doesn't have swedish translation and no search filters, shouldn't filter"
+    (utils/with-db
+      (add-oppija {:oid "1.2.246.562.24.44000000003"
+                   :nimi "Olli Oppija"
+                   :opiskeluoikeus-oid "1.2.246.562.15.76000000003"
+                   :oppilaitos-oid "1.2.246.562.10.12000000000"
+                   :tutkinto-nimi {:fi "Testitutkinto 3" :sv "Testskrivning 3"}
+                   :tutkinto "Testitutkinto 3"
+                   :osaamisala "Osaamisala Kolme"
+                   :osaamisala-nimi {:fi "Osaamisala Kolme"}
+                   :koulutustoimija-oid ""})
+      (let [body (get-search {:order-by-column "tutkinto"
+                              :desc true
+                              :locale "sv"})]
+        (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:meta :total-count]) 1))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000003"))))))
 

@@ -68,7 +68,8 @@
                                  {osaamisala :- s/Str nil}
                                  {item-count :- s/Int 10}
                                  {page :- s/Int 0}
-                                 oppilaitos-oid :- s/Str]
+                                 oppilaitos-oid :- s/Str
+                                 {locale :- s/Str "fi"}]
                   :summary "Listaa virkailijan oppilaitoksen oppijat, joilla on
                        HOKS luotuna. Käyttäjällä pitää olla READ käyttöoikeus
                        annettuun organisaatioon eHOKS-palvelussa."
@@ -97,7 +98,8 @@
                             :item-count item-count
                             :order-by-column order-by-column
                             :offset (* page item-count)
-                            :oppilaitos-oid oppilaitos-oid}
+                            :oppilaitos-oid oppilaitos-oid
+                            :locale locale}
                             (some? nimi)
                             (assoc :nimi nimi)
                             (some? tutkinto)

@@ -54,6 +54,49 @@
       (= (sut/get-opiskeluoikeudet-without-index-count)
          3))))
 
+(t/deftest get-opiskeluoikeudet-without-tutkinto-nimi
+  (t/testing "Get opiskeluoikeudet without tutkinto_nimi"
+    (db-oppija/insert-oppija!
+      {:oid "1.2.246.562.24.11111111111"
+       :nimi "Testi Oppija"})
+    (db-opiskeluoikeus/insert-opiskeluoikeus!
+      {:oid "1.2.246.562.15.76000000002"
+       :oppija_oid "1.2.246.562.24.11111111111"
+       :tutkinto "Testitutkinto 1"})
+    (db-opiskeluoikeus/insert-opiskeluoikeus!
+      {:oid "1.2.246.562.15.76000000003"
+       :oppija_oid "1.2.246.562.24.11111111111"
+       :tutkinto "Testitutkinto 2"})
+    (db-opiskeluoikeus/insert-opiskeluoikeus!
+      {:oid "1.2.246.562.15.76000000004"
+       :oppija_oid "1.2.246.562.24.11111111111"
+       :tutkinto-nimi {:fi "Testitutkinto" :sv "test"}})
+    (let [results (vec (sort-by :oid
+                                (sut/get-opiskeluoikeudet-without-tutkinto)))]
+      (t/is (= (get-in results [0 :oid])
+               "1.2.246.562.15.76000000002"))
+      (t/is (= (get-in results [1 :oid])
+               "1.2.246.562.15.76000000003")))))
+
+(t/deftest get-opiskeluoikeudet-without-tutkinto-count
+  (t/testing "Get count of opiskeluoikeudet without tutkinto_nimi"
+    (db-oppija/insert-oppija!
+      {:oid "1.2.246.562.24.11111111111"
+       :nimi "Testi Oppija"})
+    (db-opiskeluoikeus/insert-opiskeluoikeus!
+      {:oid "1.2.246.562.15.76000000002"
+       :oppija_oid "1.2.246.562.24.11111111111"
+       :tutkinto "Testitutkinto 1"})
+    (db-opiskeluoikeus/insert-opiskeluoikeus!
+      {:oid "1.2.246.562.15.76000000003"
+       :oppija_oid "1.2.246.562.24.11111111111"
+       :tutkinto "Testitutkinto 2"})
+    (db-opiskeluoikeus/insert-opiskeluoikeus!
+      {:oid "1.2.246.562.15.76000000004"
+       :oppija_oid "1.2.246.562.24.11111111111"
+       :tutkinto-nimi {:fi "Testitutkinto" :sv "test"}})
+    (t/is (= (sut/get-opiskeluoikeudet-without-tutkinto-count) 2))))
+
 (t/deftest get-oppija-opiskeluoikeudet
   (t/testing "Get oppija opiskeluoikeudet"
     (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111111"})
@@ -149,7 +192,7 @@
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
          :osaamisala ""
-         :osaamisala-nimi {:fi ""}}))))
+         :osaamisala-nimi {:fi "" :sv ""}}))))
 
 (t/deftest update-oppija-opiskeluoikeus
   (t/testing "Update oppija and opiskeluoikeus"
@@ -184,7 +227,7 @@
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
          :osaamisala ""
-         :osaamisala-nimi {:fi ""}}))
+         :osaamisala-nimi {:fi "" :sv ""}}))
 
     (utils/with-ticket-auth
       ["1.2.246.562.10.222222222222"
@@ -213,9 +256,9 @@
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222223"
          :tutkinto ""
-         :tutkinto-nimi {:fi ""}
+         :tutkinto-nimi {:fi "" :sv ""}
          :osaamisala ""
-         :osaamisala-nimi {:fi ""}}))))
+         :osaamisala-nimi {:fi "" :sv ""}}))))
 
 (t/deftest set-paattynyt-test
   (t/testing "Setting paattynyt timestamp"

@@ -1,1 +1,1 @@
-SELECT * FROM opiskeluoikeudet WHERE tutkinto = '' OR tutkinto IS NULL
+SELECT * FROM opiskeluoikeudet WHERE tutkinto_nimi->>'fi' = '' OR tutkinto_nimi->>'fi' IS NULL
