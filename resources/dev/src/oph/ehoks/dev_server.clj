@@ -67,9 +67,9 @@
 (def dev-reload-app
   (wrap-dev-cors
     (routes
-      (wrap-cookies (wrap-reload #'dev-tools/routes))
       (wrap-params (wrap-cookies (wrap-reload #'mock/mock-routes)))
       (wrap-reload #'dev-routes)
+      (wrap-cookies (wrap-reload #'dev-tools/routes))
       (wrap-reload #'ehoks-app/app))))
 
 (defn rand-str [max-len]
