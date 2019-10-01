@@ -3,7 +3,7 @@
 ## Arkkitehtuurista
 
 eHOKS-backend on jaettu kahteen osaan: virkailija ja oppija. Virkailijan puoli
-käsittää virkailijan käyttöliittymän rajapinnat sekä datan tuontiin tarkoitetut
+käsittää virkailijan käyttöliittymän rajapinnat ja datan tuontiin tarkoitetut
 rajapinnat.
 
 ![](doc/infrastructure.png)
