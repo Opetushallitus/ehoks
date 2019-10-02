@@ -1,6 +1,5 @@
 (ns oph.ehoks.external.kayttooikeus
-  (:require [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.external.cas :as cas]
+  (:require [oph.ehoks.external.cas :as cas]
             [oph.ehoks.external.oph-url :as u]
             [clojure.tools.logging :as log]))
 
@@ -18,13 +17,17 @@
               #(not-empty (:kayttooikeudet %))
               (map filter-non-ehoks-privileges orgs)))))
 
+(defn- fetch-user-privileges
+  [{:as data}]
+  (cas/with-service-ticket data))
+
 (defn get-user-details
   "Get user details of given username"
   [^String username]
   (remove-orgs-without-privileges
     (first
       (:body
-        (cache/with-cache!
+        (fetch-user-privileges
           {:method :get
            :authenticate? true
            :service (u/get-url "kayttooikeus-service-url")
