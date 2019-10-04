@@ -100,7 +100,7 @@
       [:suoritukset 0 :osaamisala 0 :osaamisala :nimi])
     {:fi "" :sv ""}))
 
-(defn get-opiskeluoikeus-info [oid oppija-oid]
+(defn- get-opiskeluoikeus-info [oid oppija-oid]
   (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
     (when (> (count (:suoritukset opiskeluoikeus)) 1)
       (log/warnf
