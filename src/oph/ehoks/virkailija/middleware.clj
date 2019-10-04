@@ -16,13 +16,13 @@
   (fn
     ([request respond raise]
       (if (not= (get-in request [:session :virkailija-user :kayttajaTyyppi])
-            "PALVELU")
+                "PALVELU")
         (handler request respond raise)
         (respond (response/forbidden
                    {:error "User type 'PALVELU' is not allowed"}))))
     ([request]
       (if (not= (get-in request [:session :virkailija-user :kayttajaTyyppi])
-             "PALVELU")
+                "PALVELU")
         (handler request)
         (response/forbidden
           {:error "User type 'PALVELU' is not allowed"})))))
