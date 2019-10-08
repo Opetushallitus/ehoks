@@ -15,17 +15,17 @@
   [handler]
   (fn
     ([request respond raise]
-      (if (= (get-in request [:session :virkailija-user :kayttajaTyyppi])
-             "VIRKAILIJA")
+      (if (not= (get-in request [:session :virkailija-user :kayttajaTyyppi])
+                "PALVELU")
         (handler request respond raise)
         (respond (response/forbidden
-                   {:error "User type 'VIRKAILIJA' is required"}))))
+                   {:error "User type 'PALVELU' is not allowed"}))))
     ([request]
-      (if (= (get-in request [:session :virkailija-user :kayttajaTyyppi])
-             "VIRKAILIJA")
+      (if (not= (get-in request [:session :virkailija-user :kayttajaTyyppi])
+                "PALVELU")
         (handler request)
         (response/forbidden
-          {:error "User type 'VIRKAILIJA' is required"})))))
+          {:error "User type 'PALVELU' is not allowed"})))))
 
 (defn wrap-virkailija-authorize
   "Require virkailija to be authenticated"

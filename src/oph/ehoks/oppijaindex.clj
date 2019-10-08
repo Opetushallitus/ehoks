@@ -108,7 +108,7 @@
         oid))
     (when (> (count (get-in opiskeluoikeus [:suoritukset 0 :osaamisala])) 1)
       (log/warnf
-        "Opiskeluoikeus %s has multiple osaamisala. First one is used."))
+        "Opiskeluoikeus %s has multiple osaamisala. First one is used." oid))
     (let [tutkinto (get-tutkinto-nimi opiskeluoikeus)
           osaamisala (get-osaamisala-nimi opiskeluoikeus)]
       {:oid oid
