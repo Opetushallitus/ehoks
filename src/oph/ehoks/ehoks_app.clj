@@ -37,7 +37,7 @@
   (common-api/create-app
     (case app-name
       "ehoks-virkailija" virkailija-handler/app-routes
-      "ehoks" oppija-handler/app-routes
+      "ehoks-oppija" oppija-handler/app-routes
       both-app)
     (session-store/db-store)))
 
