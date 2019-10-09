@@ -33,7 +33,7 @@ script:
   - cp -vr oph-configuration $DOCKER_BUILD_DIR/config/
   - export BASE_IMAGE="baseimage-fatjar:master"
   - ./ci-tools/common/pull-image.sh
-  - ./ci-tools/build/build-fatjar.sh ehoks-oppija
+  - ./ci-tools/build/build-fatjar.sh ehoks
   - mv $DOCKER_BUILD_DIR/artifact/ehoks.jar $DOCKER_BUILD_DIR/artifact/ehoks-virkailija.jar
   - ./ci-tools/build/build-fatjar.sh ehoks-virkailija
 
