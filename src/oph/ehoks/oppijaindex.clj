@@ -111,12 +111,15 @@
         "Opiskeluoikeus %s has multiple osaamisala. First one is used." oid))
     (let [tutkinto (get-tutkinto-nimi opiskeluoikeus)
           osaamisala (get-osaamisala-nimi opiskeluoikeus)]
-      {:oid oid
-       :oppija_oid oppija-oid
-       :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
-       :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
-       :tutkinto_nimi tutkinto
-       :osaamisala_nimi osaamisala})))
+      (-> {:oid oid
+           :oppija_oid oppija-oid
+           :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
+           :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
+           :tutkinto_nimi tutkinto
+           :osaamisala_nimi osaamisala}
+          (cond->  (not-empty tutkinto) (assoc :tutkinto (:fi tutkinto)))
+          (cond->  (not-empty osaamisala)
+            (assoc :osaamisala (:fi osaamisala)))))))
 
 (defn add-new-opiskeluoikeus! [oid oppija-oid]
   (try
