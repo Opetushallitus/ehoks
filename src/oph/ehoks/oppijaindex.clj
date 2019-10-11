@@ -117,9 +117,9 @@
            :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
            :tutkinto_nimi tutkinto
            :osaamisala_nimi osaamisala}
-          (cond->  (not-empty tutkinto) (assoc :tutkinto (:fi tutkinto)))
-          (cond->  (not-empty osaamisala)
-            (assoc :osaamisala (:fi osaamisala)))))))
+          (cond-> (some? (:fi tutkinto)) (assoc :tutkinto (:fi tutkinto)))
+          (cond-> (some? (:fi osaamisala))
+                  (assoc :osaamisala (:fi osaamisala)))))))
 
 (defn add-new-opiskeluoikeus! [oid oppija-oid]
   (try
