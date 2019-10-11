@@ -48,8 +48,10 @@
                        :get (str base-url "/misc/environment")))]
       (t/is (= (:status response) 200))
       (let [data (-> response :body utils/parse-body :data)]
-        (t/is (some? (:opintopolku-login-url data)))
-        (t/is (some? (:opintopolku-logout-url data)))
+        (t/is (some? (:opintopolku-login-url-fi data)))
+        (t/is (some? (:opintopolku-login-url-sv data)))
+        (t/is (some? (:opintopolku-logout-url-fi data)))
+        (t/is (some? (:opintopolku-logout-url-sv data)))
         (t/is (some? (:eperusteet-peruste-url data)))
         (t/is (some? (:virkailija-login-url data)))))))
 

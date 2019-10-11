@@ -19,6 +19,8 @@
              "%s?service=%s"
              (u/get-url "cas.login")
              (u/get-url "ehoks.virkailija-login-return"))}
-          (select-keys config [:opintopolku-login-url
+          (select-keys config [:opintopolku-login-url-fi
+                               :opintopolku-login-url-sv
                                :eperusteet-peruste-url
-                               :opintopolku-logout-url]))))))
+                               :opintopolku-logout-url-fi
+                               :opintopolku-logout-url-sv]))))))
