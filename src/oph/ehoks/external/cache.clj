@@ -13,7 +13,7 @@
 (defonce cleaning? (atom false))
 
 (defn size
-  "Size of caceh (item count)"
+  "Size of cache (item count)"
   [] (count @cache))
 
 (defn expired?

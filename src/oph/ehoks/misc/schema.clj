@@ -3,7 +3,9 @@
 
 (s/defschema Environment
              "Ympäristön tiedot ja asetukset"
-             {:opintopolku-login-url s/Str
+             {:opintopolku-login-url-fi s/Str
+              :opintopolku-login-url-sv s/Str
               :eperusteet-peruste-url s/Str
-              :opintopolku-logout-url s/Str
+              :opintopolku-logout-url-fi s/Str
+              :opintopolku-logout-url-sv s/Str
               :virkailija-login-url s/Str})
