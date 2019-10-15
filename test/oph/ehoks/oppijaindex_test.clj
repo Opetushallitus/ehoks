@@ -187,7 +187,7 @@
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
-         :tutkinto "Testialan perustutkinto"
+         :tutkinto ""
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
@@ -222,7 +222,7 @@
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
-         :tutkinto "Testialan perustutkinto"
+         :tutkinto ""
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}

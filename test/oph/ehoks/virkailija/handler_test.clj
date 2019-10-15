@@ -131,12 +131,10 @@
      :oppija_oid (:oid oppija)
      :oppilaitos_oid (:oppilaitos-oid oppija)
      :koulutustoimija_oid (:koulutustoimija-oid oppija)
-     :tutkinto (:tutkinto oppija "")
      :tutkinto-nimi (:tutkinto-nimi oppija
                                     {:fi "Testialan perustutkinto"
                                      :sv "Grundexamen inom testsbranschen"
                                      :en "Testing"})
-     :osaamisala (:osaamisala oppija "")
      :osaamisala-nimi (:osaamisala-nimi oppija
                                         {:fi "Osaamisala suomeksi"
                                          :sv "På svenska"})}))
@@ -303,16 +301,16 @@
                    :nimi "Teuvo Testaaja"
                    :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
                    :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                   :tutkinto "Testitutkinto 1"
-                   :osaamisala "Testiosaamisala numero 1"
+                   :tutkinto_nimi {:fi "Testitutkinto 1"}
+                   :osaamisala_nimi {:fi "Testiosaamisala numero 1"}
                    :koulutustoimija-oid ""})
       (db-opiskeluoikeus/insert-opiskeluoikeus!
         {:oid "1.2.246.562.15.760000000020"
          :oppija_oid "1.2.246.562.24.44000000001"
          :oppilaitos_oid "1.2.246.562.10.1200000000020"
          :koulutustoimija_oid ""
-         :tutkinto "Tutkinto 2"
-         :osaamisala "Osaamisala 2"})
+         :tutkinto_nimi {:fi "Tutkinto 2"}
+         :osaamisala_nimi {:fi "Osaamisala 2"}})
 
       (let [body (get-search
                    {:oppilaitos-oid "1.2.246.562.10.1200000000020"}
@@ -408,8 +406,8 @@
         {:oid "1.2.246.562.15.760000000020"
          :oppija_oid "1.2.246.562.24.44000000001"
          :oppilaitos_oid "1.2.246.562.10.1200000000200"
-         :tutkinto "Testitutkinto 2"
-         :osaamisala "Testiosaamisala 2"})
+         :tutkinto_nimi {:fi "Testitutkinto 2"}
+         :osaamisala_nimi {:fi "Testiosaamisala 2"}})
       (let [response
             (with-test-virkailija
               (mock/json-body
@@ -593,8 +591,8 @@
         {:oid "1.2.246.562.15.760000000020"
          :oppija_oid "1.2.246.562.24.44000000001"
          :oppilaitos_oid "1.2.246.562.10.1200000000200"
-         :tutkinto "Testitutkinto 2"
-         :osaamisala "Testiosaamisala 2"})
+         :tutkinto_nimi {:fi "Testitutkinto 2"}
+         :osaamisala_nimi {:fi "Testiosaamisala 2"}})
       (let [response
             (with-test-virkailija
               (mock/json-body
