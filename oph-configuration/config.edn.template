@@ -1,5 +1,6 @@
 {:port {{ehoks_backend_port}}
- :frontend-url "{{ehoks_frontend_url}}"
+ :frontend-url-fi "{{ehoks_frontend_url_fi}}"
+ :frontend-url-sv "{{ehoks_frontend_url_sv}}"
  :eperusteet-peruste-url "{{ehoks_eperusteet_peruste_url}}"
  :cas-username "{{ehoks_cas_username}}"
  :cas-password "{{ehoks_cas_password}}"

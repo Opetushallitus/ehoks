@@ -48,7 +48,7 @@
 (defn set-cors [response]
   (-> response
       (assoc-in [:headers "Access-Control-Allow-Origin"]
-                (:frontend-url config))
+                (:frontend-url-fi config))
       (assoc-in [:headers "Access-Control-Allow-Credentials"] "true")
       (assoc-in [:headers "Access-Control-Allow-Methods"]
                 "GET, PUT, POST, DELETE, OPTIONS")))

@@ -43,7 +43,7 @@
     (GET "/auth-dev/opintopolku-tt-login/" request
       (response/see-other
         (format "%s/%s/%s"
-                (:frontend-url config)
+                (:frontend-url-fi config)
                 (:frontend-url-path config)
                 (:tyopaikan-toimija-frontend-path config))))
 
