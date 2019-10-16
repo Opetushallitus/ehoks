@@ -41,8 +41,6 @@
   {:oid s/Str
    :nimi s/Str
    :opiskeluoikeus-oid s/Str
-   (s/optional-key :tutkinto) s/Str
-   (s/optional-key :osaamisala) s/Str
    (s/optional-key :tutkinto-nimi) {(s/optional-key :fi) s/Str
                                     (s/optional-key :en) s/Str
                                     (s/optional-key :sv) s/Str}
@@ -62,8 +60,6 @@
    :oppija-oid s/Str
    :oppilaitos-oid s/Str
    (s/optional-key :koulutustoimija-oid) (s/maybe s/Str)
-   :tutkinto s/Str
-   :osaamisala s/Str
    (s/optional-key :tutkinto-nimi) {(s/optional-key :fi) s/Str
                                     (s/optional-key :en) s/Str
                                     (s/optional-key :sv) s/Str}

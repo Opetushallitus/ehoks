@@ -56,15 +56,15 @@
          :oppija_oid "1.2.246.562.24.44000000002"
          :oppilaitos_oid "1.2.246.562.10.00000000003"
          :koulutustoimija_oid "1.2.246.562.10.00000000002"
-         :tutkinto "Testitutkinto 1"
-         :osaamisala "Testiosaamisala numero 1"})
+         :tutkinto-nimi {:fi "Testitutkinto 1"}
+         :osaamisala-nimi {:fi "Testiosaamisala numero 1"}})
       (db-opiskeluoikeus/insert-opiskeluoikeus!
         {:oid "1.2.246.562.15.76000000003"
          :oppija_oid "1.2.246.562.24.44000000002"
          :oppilaitos_oid "1.2.246.562.10.00000000004"
          :koulutustoimija_oid "1.2.246.562.10.00000000002"
-         :tutkinto "Testitutkinto 1"
-         :osaamisala "Testiosaamisala numero 1"})
+         :tutkinto-nimi {:fi "Testitutkinto 1"}
+         :osaamisala-nimi {:fi "Testiosaamisala numero 1"}})
       (db-hoks/insert-hoks! {:opiskeluoikeus_oid "1.2.246.562.15.76000000002"
                              :oppija_oid "1.2.246.562.24.44000000002"
                              :ensikertainen_hyvaksyminen
