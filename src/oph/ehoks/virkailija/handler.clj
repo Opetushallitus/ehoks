@@ -108,8 +108,7 @@
                             (assoc :osaamisala osaamisala))
                           oppijat (mapv
                                     #(dissoc
-                                       % :oppilaitos-oid :koulutustoimija-oid
-                                       :tutkinto :osaamisala)
+                                       % :oppilaitos-oid :koulutustoimija-oid)
                                     (op/search search-params))]
                       (restful/rest-ok
                         oppijat

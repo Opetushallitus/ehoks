@@ -71,7 +71,6 @@
        :tutkinto-nimi {:fi "Testitutkinto" :sv "test"}})
     (let [results (vec (sort-by :oid
                                 (sut/get-opiskeluoikeudet-without-tutkinto)))]
-      (clojure.pprint/pprint results)
       (t/is (= (get-in results [0 :oid])
                "1.2.246.562.15.76000000002"))
       (t/is (= (get-in results [1 :oid])
@@ -110,19 +109,13 @@
     (t/is
       (= (sut/get-oppija-opiskeluoikeudet "1.2.246.562.24.11111111111")
          [{:oid "1.2.246.562.15.22222222222"
-           :oppija-oid "1.2.246.562.24.11111111111"
-           :tutkinto ""
-           :osaamisala ""}
+           :oppija-oid "1.2.246.562.24.11111111111"}
           {:oid "1.2.246.562.15.22222222224"
-           :oppija-oid "1.2.246.562.24.11111111111"
-           :tutkinto ""
-           :osaamisala ""}]))
+           :oppija-oid "1.2.246.562.24.11111111111"}]))
     (t/is
       (= (sut/get-oppija-opiskeluoikeudet "1.2.246.562.24.11111111112")
          [{:oid "1.2.246.562.15.22222222223"
-           :oppija-oid "1.2.246.562.24.11111111112"
-           :tutkinto ""
-           :osaamisala ""}]))))
+           :oppija-oid "1.2.246.562.24.11111111112"}]))))
 
 (t/deftest get-oppija-by-oid
   (t/testing "Get oppija by oid"
@@ -147,14 +140,10 @@
        :oppija_oid "1.2.246.562.24.11111111111"})
     (t/is (= (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.22222222222")
              {:oid "1.2.246.562.15.22222222222"
-              :oppija-oid "1.2.246.562.24.11111111111"
-              :tutkinto ""
-              :osaamisala ""}))
+              :oppija-oid "1.2.246.562.24.11111111111"}))
     (t/is (= (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.22222222223")
              {:oid "1.2.246.562.15.22222222223"
-              :oppija-oid "1.2.246.562.24.11111111111"
-              :tutkinto ""
-              :osaamisala ""}))))
+              :oppija-oid "1.2.246.562.24.11111111111"}))))
 
 (t/deftest add-oppija-opiskeluoikeus
   (t/testing "Add oppija and opiskeluoikeus"
@@ -184,11 +173,9 @@
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
-         :tutkinto ""
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
-         :osaamisala ""
          :osaamisala-nimi {:fi "" :sv ""}}))))
 
 (t/deftest update-oppija-opiskeluoikeus
@@ -219,11 +206,9 @@
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
-         :tutkinto ""
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
-         :osaamisala ""
          :osaamisala-nimi {:fi "" :sv ""}}))
 
     (utils/with-ticket-auth
@@ -252,9 +237,7 @@
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222223"
-         :tutkinto ""
          :tutkinto-nimi {:fi "" :sv ""}
-         :osaamisala ""
          :osaamisala-nimi {:fi "" :sv ""}}))))
 
 (t/deftest set-paattynyt-test
