@@ -60,7 +60,8 @@
                     huolimatta metodin tyypistä luodaan uusi istunto. Tämä
                     ulkoisen järjestelmän vuoksi.
                     Lopuksi käyttäjä ohjataan käyttöliittymän urliin."
-      (let [headers (:headers request)]
+      (let [headers (:headers request)
+            locale (get-in request [:query-params "locale"])]
         (if-let [result (opintopolku/validate headers)]
           (do
             (log/errorf "Invalid headers: %s" result)
@@ -76,7 +77,7 @@
                 (assoc-in
                   (response/see-other
                     (format "%s/%s"
-                            (:frontend-url config)
+                            ((keyword (str "frontend-url-" locale)) config)
                             (:frontend-url-path config)))
                   [:session :user] (assoc user :oid oid))
                 (throw (ex-info "No user found" user-info-response))))))))))

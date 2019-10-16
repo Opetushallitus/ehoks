@@ -1,5 +1,6 @@
 {:port 3000
- :frontend-url "http://localhost:8080"
+ :frontend-url-fi "http://localhost:8080"
+ :frontend-url-sv "http://localhost:8080"
  :frontend-url-path "ehoks"
  :eperusteet-peruste-url "https://eperusteet.testiopintopolku.fi"
  :tyopaikan-toimija-frontend-path "tyopaikan-toimija"
@@ -12,7 +13,7 @@
  :opintopolku-login-url-sv "http://localhost:3000/auth-dev/opintopolku-login/"
  :opintopolku-logout-url-fi "http://localhost:3000/auth-dev/opintopolku-logout/?return=http://localhost:8080/ehoks?lang=fi"
  :opintopolku-logout-url-sv "http://localhost:3000/auth-dev/opintopolku-logout/?return=http://localhost:8080/ehoks?lang=sv"
- :opintopolku-return-url "http://localhost:3000/ehoks-oppija-backend/api/v1/oppija/session/opintopolku/"
+ :opintopolku-return-url "http://localhost:3000/ehoks-oppija-backend/api/v1/oppija/session/opintopolku/?locale=fi"
  :opintopolku-tt-auth-url "http://localhost:3000/auth-dev/opintopolku-tt-login/"
  :ext-cache-lifetime-minutes 180
  :opintopolku-host "localhost:3000"
