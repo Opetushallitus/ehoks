@@ -164,8 +164,6 @@
                :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
                :oppilaitos-oid "1.2.246.562.10.12000000000"
                :tutkinto-nimi {:fi "Testitutkinto 1" :sv "Testskrivning 1"}
-               :tutkinto "Testitutkinto 1"
-               :osaamisala "Testiosaamisala numero 1"
                :osaamisala-nimi
                {:fi "Testiosaamisala numero 1" :sv "Kunnande 1"}
                :koulutustoimija-oid ""})
@@ -174,8 +172,6 @@
                :opiskeluoikeus-oid "1.2.246.562.15.76000000002"
                :oppilaitos-oid "1.2.246.562.10.12000000001"
                :tutkinto-nimi {:fi "Testitutkinto 2" :sv "Testskrivning 2"}
-               :tutkinto "Testitutkinto 2"
-               :osaamisala "Testiosaamisala numero 2"
                :osaamisala-nimi
                {:fi "Testiosaamisala numero 2" :sv "Kunnande 2"}
                :koulutustoimija-oid ""})
@@ -184,15 +180,13 @@
                :opiskeluoikeus-oid "1.2.246.562.15.76000000003"
                :oppilaitos-oid "1.2.246.562.10.12000000000"
                :tutkinto-nimi {:fi "Testitutkinto 3" :sv "Testskrivning 3"}
-               :tutkinto "Testitutkinto 3"
-               :osaamisala "Osaamisala Kolme"
                :osaamisala-nimi {:fi "Osaamisala Kolme" :sv "Kunnande 3"}
                :koulutustoimija-oid ""})
   (add-oppija {:oid "1.2.246.562.24.44000000004"
                :nimi "Oiva Oppivainen"
                :opiskeluoikeus-oid "1.2.246.562.15.76000000004"
                :oppilaitos-oid "1.2.246.562.10.12000000000"
-               :tutkinto "Tutkinto 4"
+               :tutkinto-nimi {:fi "Tutkinto 4"}
                :koulutustoimija-oid ""}))
 
 (t/deftest get-oppijat-without-filtering
@@ -282,8 +276,6 @@
                    :opiskeluoikeus-oid "1.2.246.562.15.76000000003"
                    :oppilaitos-oid "1.2.246.562.10.12000000000"
                    :tutkinto-nimi {:fi "Testitutkinto 3" :sv "Testskrivning 3"}
-                   :tutkinto "Testitutkinto 3"
-                   :osaamisala "Osaamisala Kolme"
                    :osaamisala-nimi {:fi "Osaamisala Kolme"}
                    :koulutustoimija-oid ""})
       (let [body (get-search {:order-by-column "tutkinto"
@@ -301,16 +293,16 @@
                    :nimi "Teuvo Testaaja"
                    :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
                    :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                   :tutkinto_nimi {:fi "Testitutkinto 1"}
-                   :osaamisala_nimi {:fi "Testiosaamisala numero 1"}
+                   :tutkinto-nimi {:fi "Testitutkinto 1"}
+                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
                    :koulutustoimija-oid ""})
       (db-opiskeluoikeus/insert-opiskeluoikeus!
         {:oid "1.2.246.562.15.760000000020"
          :oppija_oid "1.2.246.562.24.44000000001"
          :oppilaitos_oid "1.2.246.562.10.1200000000020"
          :koulutustoimija_oid ""
-         :tutkinto_nimi {:fi "Tutkinto 2"}
-         :osaamisala_nimi {:fi "Osaamisala 2"}})
+         :tutkinto-nimi {:fi "Tutkinto 2"}
+         :osaamisala-nimi {:fi "Osaamisala 2"}})
 
       (let [body (get-search
                    {:oppilaitos-oid "1.2.246.562.10.1200000000020"}
@@ -399,15 +391,15 @@
                    :nimi "Teuvo Testaaja"
                    :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
                    :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                   :tutkinto "Testitutkinto 1"
-                   :osaamisala "Testiosaamisala numero 1"
+                   :tutkinto-nimi {:fi "Testitutkinto 1"}
+                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
                    :koulutustoimija-oid ""})
       (db-opiskeluoikeus/insert-opiskeluoikeus!
         {:oid "1.2.246.562.15.760000000020"
          :oppija_oid "1.2.246.562.24.44000000001"
          :oppilaitos_oid "1.2.246.562.10.1200000000200"
-         :tutkinto_nimi {:fi "Testitutkinto 2"}
-         :osaamisala_nimi {:fi "Testiosaamisala 2"}})
+         :tutkinto-nimi {:fi "Testitutkinto 2"}
+         :osaamisala-nimi {:fi "Testiosaamisala 2"}})
       (let [response
             (with-test-virkailija
               (mock/json-body
@@ -436,8 +428,8 @@
                    :nimi "Teuvo Testaaja"
                    :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
                    :oppilaitos-oid "1.2.246.562.10.12000000000"
-                   :tutkinto "Testitutkinto 1"
-                   :osaamisala "Testiosaamisala numero 1"
+                   :tutkinto-nimi {:fi "Testitutkinto 1"}
+                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
                    :koulutustoimija-oid ""})
       (let [response
             (with-test-virkailija
@@ -485,8 +477,8 @@
                    :nimi "Teuvo Testaaja"
                    :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
                    :oppilaitos-oid "1.2.246.562.10.12000000001"
-                   :tutkinto "Testitutkinto 1"
-                   :osaamisala "Testiosaamisala numero 1"
+                   :tutkinto-nimi {:fi "Testitutkinto 1"}
+                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
                    :koulutustoimija-oid ""})
       (let [response
             (with-test-virkailija
@@ -528,8 +520,8 @@
                    :nimi "Teuvo Testaaja"
                    :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
                    :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                   :tutkinto "Testitutkinto 1"
-                   :osaamisala "Testiosaamisala numero 1"
+                   :tutkinto-nimi {:fi "Testitutkinto 1"}
+                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
                    :koulutustoimija-oid ""})
       (let [response
             (with-test-virkailija
@@ -584,15 +576,15 @@
                    :nimi "Teuvo Testaaja"
                    :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
                    :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                   :tutkinto "Testitutkinto 1"
-                   :osaamisala "Testiosaamisala numero 1"
+                   :tutkinto-nimi {:fi "Testitutkinto 1"}
+                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
                    :koulutustoimija-oid ""})
       (db-opiskeluoikeus/insert-opiskeluoikeus!
         {:oid "1.2.246.562.15.760000000020"
          :oppija_oid "1.2.246.562.24.44000000001"
          :oppilaitos_oid "1.2.246.562.10.1200000000200"
-         :tutkinto_nimi {:fi "Testitutkinto 2"}
-         :osaamisala_nimi {:fi "Testiosaamisala 2"}})
+         :tutkinto-nimi {:fi "Testitutkinto 2"}
+         :osaamisala-nimi {:fi "Testiosaamisala 2"}})
       (let [response
             (with-test-virkailija
               (mock/json-body
@@ -696,8 +688,8 @@
                    :nimi "Teuvo Testaaja"
                    :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
                    :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                   :tutkinto "Testitutkinto 1"
-                   :osaamisala "Testiosaamisala numero 1"
+                   :tutkinto-nimi {:fi "Testitutkinto 1"}
+                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
                    :koulutustoimija-oid ""})
       (let [response
             (with-test-virkailija

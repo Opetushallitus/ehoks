@@ -61,18 +61,17 @@
        :nimi "Testi Oppija"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       {:oid "1.2.246.562.15.76000000002"
-       :oppija_oid "1.2.246.562.24.11111111111"
-       :tutkinto "Testitutkinto 1"})
+       :oppija_oid "1.2.246.562.24.11111111111"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       {:oid "1.2.246.562.15.76000000003"
-       :oppija_oid "1.2.246.562.24.11111111111"
-       :tutkinto "Testitutkinto 2"})
+       :oppija_oid "1.2.246.562.24.11111111111"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       {:oid "1.2.246.562.15.76000000004"
        :oppija_oid "1.2.246.562.24.11111111111"
        :tutkinto-nimi {:fi "Testitutkinto" :sv "test"}})
     (let [results (vec (sort-by :oid
                                 (sut/get-opiskeluoikeudet-without-tutkinto)))]
+      (clojure.pprint/pprint results)
       (t/is (= (get-in results [0 :oid])
                "1.2.246.562.15.76000000002"))
       (t/is (= (get-in results [1 :oid])
@@ -85,12 +84,10 @@
        :nimi "Testi Oppija"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       {:oid "1.2.246.562.15.76000000002"
-       :oppija_oid "1.2.246.562.24.11111111111"
-       :tutkinto "Testitutkinto 1"})
+       :oppija_oid "1.2.246.562.24.11111111111"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       {:oid "1.2.246.562.15.76000000003"
-       :oppija_oid "1.2.246.562.24.11111111111"
-       :tutkinto "Testitutkinto 2"})
+       :oppija_oid "1.2.246.562.24.11111111111"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       {:oid "1.2.246.562.15.76000000004"
        :oppija_oid "1.2.246.562.24.11111111111"
