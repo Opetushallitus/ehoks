@@ -76,8 +76,9 @@
               (if (seq user-info)
                 (assoc-in
                   (response/see-other
-                    (format "%s/%s"
+                    (format "%s/%s?lang=%s"
                             ((keyword (str "frontend-url-" locale)) config)
-                            (:frontend-url-path config)))
+                            (:frontend-url-path config)
+                            (str locale)))
                   [:session :user] (assoc user :oid oid))
                 (throw (ex-info "No user found" user-info-response))))))))))
