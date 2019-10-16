@@ -3,9 +3,7 @@ SELECT o.oid,
        oo.oid AS opiskeluoikeus_oid,
        oo.oppilaitos_oid,
        oo.koulutustoimija_oid,
-       oo.tutkinto,
        oo.tutkinto_nimi,
-       oo.osaamisala,
        oo.osaamisala_nimi
 FROM oppijat AS o
        LEFT OUTER JOIN opiskeluoikeudet AS oo
