@@ -47,10 +47,11 @@
         "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
         "tutkinnon-osa-koodi-versio": 1,
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-        "hankitun-osaamisen-naytto": [
+        "osaamisen-osoittaminen": [
           {
             "alku": "2017-10-25",
             "loppu": "2017-10-26",
+            "sisallon-kuvaus": ["Jotain kuvausta sisällöstä", "toinen kuvaus"],
             "jarjestaja": {
               "oppilaitos-oid": "1.2.246.562.10.54453921329"
             },
@@ -58,7 +59,7 @@
               "nimi": "",
               "y-tunnus": ""
             },
-            "koulutuksen-jarjestaja-arvioijat": [
+            "koulutuksen-jarjestaja-osaamisen-arvioijat": [
               {
                 "nimi": "Olson,Wava",
                 "organisaatio": {
@@ -74,10 +75,11 @@
         "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
         "tutkinnon-osa-koodi-versio": 1,
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-        "hankitun-osaamisen-naytto": [
+        "osaamisen-osoittaminen": [
           {
             "alku": "2017-10-25",
             "loppu": "2017-10-26",
+            "sisallon-kuvaus": ["Jotain kuvausta sisällöstä", "toinen kuvaus"],
             "jarjestaja": {
               "oppilaitos-oid": "1.2.246.562.10.54453921329"
             },
@@ -85,7 +87,7 @@
               "nimi": "",
               "y-tunnus": ""
             },
-            "koulutuksen-jarjestaja-arvioijat": [
+            "koulutuksen-jarjestaja-osaamisen-arvioijat": [
               {
                 "nimi": "Moen,Pearl",
                 "organisaatio": {
@@ -101,7 +103,7 @@
         "tutkinnon-osa-koodi-uri": "tutkinnonosat_200241",
         "tutkinnon-osa-koodi-versio": 1,
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-        "hankitun-osaamisen-naytto": [],
+        "osaamisen-osoittaminen": [],
         "osaamisen-hankkimistavat": []
       }
     ],
@@ -139,35 +141,34 @@
     "hankittavat-paikalliset-tutkinnon-osat": [
       {
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-        "hankitun-osaamisen-naytto": [],
+        "osaamisen-osoittaminen": [],
         "osaamisen-hankkimistavat": [],
         "tavoitteet-ja-sisallot": "",
         "nimi": "Orientaatio alaan"
       },
       {
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-        "hankitun-osaamisen-naytto": [],
+        "osaamisen-osoittaminen": [],
         "osaamisen-hankkimistavat": [],
         "nimi": "Infotilaisuus"
       },
       {
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-        "hankitun-osaamisen-naytto": [],
+        "osaamisen-osoittaminen": [],
         "osaamisen-hankkimistavat": [],
         "nimi": "Opintojen ohjaus"
       },
       {
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-        "hankitun-osaamisen-naytto": [],
+        "osaamisen-osoittaminen": [],
         "osaamisen-hankkimistavat": [],
         "nimi": "Tutkintotilaisuus"
       },
       {
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-        "hankitun-osaamisen-naytto": [],
+        "osaamisen-osoittaminen": [],
         "osaamisen-hankkimistavat": [],
         "nimi": "Työpaikalla oppiminen "
       }
     ]
   }
-
