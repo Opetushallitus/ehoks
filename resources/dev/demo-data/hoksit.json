@@ -1,27 +1,48 @@
-[
   {
     "ensikertainen-hyvaksyminen": "2017-10-25",
-    "luotu": "2017-10-25T21:00:00.000Z",
     "hyvaksytty": "2017-10-25T21:00:00.000Z",
     "paivitetty": "2017-10-25T21:00:00.000Z",
     "opiskeluoikeus-oid": "1.2.246.562.15.76811932037",
     "oppija-oid": "1.2.246.562.24.44651722625",
     "versio": 0,
-    "laatija": {
-      "nimi": "Simonis,Hollie"
-    },
-    "hyvaksyja": {
-      "nimi": "Ei tietoa"
-    },
-    "paivittaja": {
-      "nimi": "Ei tietoa"
-    },
     "urasuunnitelma-koodi-uri": "urasuunnitelma_0001",
     "urasuunnitelma-koodi-versio": 1,
-    "olemassa-olevat-ammatilliset-tutkinnon-osat": [],
-    "olemassa-olevat-paikalliset-tutkinnon-osat": [],
-    "olemassa-olevat-yhteiset-tutkinnon-osat": [],
-    "puuttuvat-ammatilliset-tutkinnon-osat": [
+    "aiemmin-hankitut-ammat-tutkinnon-osat": [
+      {
+        "valittu-todentamisen-prosessi-koodi-versio": 1,
+        "tutkinnon-osa-koodi-versio": 2,
+        "valittu-todentamisen-prosessi-koodi-uri": "osaamisentodentamisenprosessi_0001",
+        "tutkinnon-osa-koodi-uri": "tutkinnonosat_100703",
+        "tarkentavat-tiedot-naytto": [],
+        "tarkentavat-tiedot-osaamisen-arvioija": {
+          "aiemmin-hankitun-osaamisen-arvioijat": []
+        }
+      }
+    ],
+    "aiemmin-hankitut-paikalliset-tutkinnon-osat": [],
+    "aiemmin-hankitut-yhteiset-tutkinnon-osat": [
+      {
+        "valittu-todentamisen-prosessi-koodi-versio": 1,
+        "tutkinnon-osa-koodi-versio": 2,
+        "valittu-todentamisen-prosessi-koodi-uri": "osaamisentodentamisenprosessi_0001",
+        "tutkinnon-osa-koodi-uri": "tutkinnonosat_101040",
+        "tarkentavat-tiedot-naytto": [],
+        "osa-alueet": [
+          {
+            "valittu-todentamisen-prosessi-koodi-versio": 1,
+            "valittu-todentamisen-prosessi-koodi-uri": "osaamisentodentamisenprosessi_0001",
+            "tarkentavat-tiedot-naytto": [],
+            "osa-alue-koodi-uri": "ammatillisenoppiaineet_yttt",
+            "osa-alue-koodi-versio": 1
+          }
+        ],
+        "tarkentavat-tiedot-osaamisen-arvioija": {
+          "aiemmin-hankitun-osaamisen-arvioijat": []
+        }
+      }
+    ],
+    "opiskeluvalmiuksia-tukevat-opinnot": [],
+    "hankittavat-ammat-tutkinnon-osat": [
       {
         "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
         "tutkinnon-osa-koodi-versio": 1,
@@ -84,39 +105,38 @@
         "osaamisen-hankkimistavat": []
       }
     ],
-    "puuttuvat-yhteiset-tutkinnon-osat": [
+    "hankittavat-yhteiset-tutkinnon-osat": [
       {
-            "tutkinnon-osa-koodi-uri": "tutkinnonosat_101053",
-            "tutkinnon-osa-koodi-versio": 1,
-            "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-            "osa-alueet": [
-              {
-                "osa-alue-koodi-uri": "ammatillisenoppiaineet_fk",
-                "osa-alue-koodi-versio": 1
-              }
-            ]
-        },
-        {
-            "tutkinnon-osa-koodi-uri": "tutkinnonosat_101054",
-            "tutkinnon-osa-koodi-versio": 1,
-            "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-            "osa-alueet": []
-        },
-        {
-            "tutkinnon-osa-koodi-uri": "tutkinnonosat_101055",
-            "tutkinnon-osa-koodi-versio": 1,
-            "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-            "osa-alueet": []
-        },
-        {
-            "tutkinnon-osa-koodi-uri": "tutkinnonosat_101056",
-            "tutkinnon-osa-koodi-versio": 1,
-            "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-            "osa-alueet": []
-        }
+        "tutkinnon-osa-koodi-uri": "tutkinnonosat_101053",
+        "tutkinnon-osa-koodi-versio": 1,
+        "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+        "osa-alueet": [
+          {
+            "osa-alue-koodi-uri": "ammatillisenoppiaineet_fk",
+            "osa-alue-koodi-versio": 1
+          }
+        ]
+      },
+      {
+        "tutkinnon-osa-koodi-uri": "tutkinnonosat_101054",
+        "tutkinnon-osa-koodi-versio": 1,
+        "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+        "osa-alueet": []
+      },
+      {
+        "tutkinnon-osa-koodi-uri": "tutkinnonosat_101055",
+        "tutkinnon-osa-koodi-versio": 1,
+        "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+        "osa-alueet": []
+      },
+      {
+        "tutkinnon-osa-koodi-uri": "tutkinnonosat_101056",
+        "tutkinnon-osa-koodi-versio": 1,
+        "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+        "osa-alueet": []
+      }
     ],
-    "opiskeluvalmiuksia-tukevat-opinnot": [],
-    "puuttuvat-paikalliset-tutkinnon-osat": [
+    "hankittavat-paikalliset-tutkinnon-osat": [
       {
         "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
         "hankitun-osaamisen-naytto": [],
@@ -150,4 +170,4 @@
       }
     ]
   }
-]
+
