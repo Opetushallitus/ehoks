@@ -88,6 +88,7 @@
                         :post operation-new
                         :patch operation-modify
                         :delete operation-delete
+                        :put operation-modify
                         operation-read))
           changes (build-changes response)]
       (.log audit
