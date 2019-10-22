@@ -30,6 +30,7 @@
 (def operation-read (create-operation "read"))
 (def operation-new (create-operation "create"))
 (def operation-modify (create-operation "update"))
+(def operation-overwrite (create-operation "overwrite"))
 (def operation-delete (create-operation "delete"))
 
 (defn- get-user-oid [request]
@@ -88,9 +89,12 @@
                         :post operation-new
                         :patch operation-modify
                         :delete operation-delete
-                        :put operation-modify
+                        :put operation-overwrite
                         operation-read))
-          changes (build-changes response)]
+          changes
+          (if (method :put)
+            (build-changes (assoc {} :audit-data {:new (get-in request :hoks)}))
+            (build-changes response))]
       (.log audit
             user
             operation
