@@ -254,9 +254,10 @@
                                 :oppija-oid))
                             (assoc
                               (response/no-content)
-                              :audit-data {:new  (dissoc hoks-values
-                                                         :oppija-oid
-                                                         :opiskeluoikeus-oid)}))))
+                              :audit-data {:new
+                                           (dissoc hoks-values
+                                                   :oppija-oid
+                                                   :opiskeluoikeus-oid)}))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]
