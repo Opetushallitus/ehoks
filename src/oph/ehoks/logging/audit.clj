@@ -91,10 +91,7 @@
                         :delete operation-delete
                         :put operation-overwrite
                         operation-read))
-          changes
-          (if (method :put)
-            (build-changes (assoc {} :audit-data {:new (get-in request :hoks)}))
-            (build-changes response))]
+          changes (build-changes response)]
       (.log audit
             user
             operation

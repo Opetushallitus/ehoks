@@ -170,11 +170,13 @@
                       (try
                         (let [hoks-db (h/save-hoks!
                                         (assoc hoks :manuaalisyotto true))]
-                          (restful/rest-ok
+                         (assoc
+                           (restful/rest-ok
                             {:uri (format "%s/%d"
                                           (:uri request)
                                           (:id hoks-db))}
-                            :id (:id hoks-db)))
+                            :id (:id hoks-db))
+                           :audit-data {:new hoks}))
                         (catch Exception e
                           (if (= (:error (ex-data e)) :duplicate)
                             (do
@@ -235,7 +237,11 @@
                               (dissoc hoks-values
                                       :oppija-oid
                                       :opiskeluoikeus-oid))
-                            (response/no-content))
+                            (assoc
+                              (response/no-content)
+                              :audit-data {:new  (dissoc hoks-values
+                                                         :oppija-oid
+                                                         :opiskeluoikeus-oid)}))
 
                           (c-api/PATCH "/" request
                             :body [hoks-values hoks-schema/HOKSPaivitys]
@@ -246,7 +252,11 @@
                                 hoks-values
                                 :opiskeluoikeus-oid
                                 :oppija-oid))
-                            (response/no-content))))
+                            (assoc
+                              (response/no-content)
+                              :audit-data {:new  (dissoc hoks-values
+                                                         :oppija-oid
+                                                         :opiskeluoikeus-oid)}))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]
