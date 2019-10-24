@@ -170,13 +170,13 @@
                       (try
                         (let [hoks-db (h/save-hoks!
                                         (assoc hoks :manuaalisyotto true))]
-                         (assoc
-                           (restful/rest-ok
-                            {:uri (format "%s/%d"
-                                          (:uri request)
-                                          (:id hoks-db))}
-                            :id (:id hoks-db))
-                           :audit-data {:new hoks}))
+                          (assoc
+                            (restful/rest-ok
+                              {:uri (format "%s/%d"
+                                            (:uri request)
+                                            (:id hoks-db))}
+                              :id (:id hoks-db))
+                            :audit-data {:new hoks}))
                         (catch Exception e
                           (if (= (:error (ex-data e)) :duplicate)
                             (do
