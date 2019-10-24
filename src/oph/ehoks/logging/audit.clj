@@ -52,7 +52,7 @@
       (InetAddress/getByName ip)
       (InetAddress/getLocalHost))
     (or (get-session request) "no session")
-    (or (:user-agent (:headers request)) "no user agent")))
+    (or (get-in request [:headers "user-agent"]) "no user agent")))
 
 (defn- build-changes [response]
   (let [new (get-in response [:audit-data :new])
