@@ -118,7 +118,7 @@
        :tutkinto_nimi tutkinto
        :osaamisala_nimi osaamisala})))
 
-(defn add-new-opiskeluoikeus! [oid oppija-oid]
+(defn- add-new-opiskeluoikeus! [oid oppija-oid]
   (try
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       (get-opiskeluoikeus-info oid oppija-oid))
@@ -141,7 +141,7 @@
   (when (empty? (get-opiskeluoikeus-by-oid oid))
     (add-new-opiskeluoikeus! oid oppija-oid)))
 
-(defn add-new-oppija! [oid]
+(defn- add-new-oppija! [oid]
   (try
     (let [oppija (:body (onr/find-student-by-oid oid))]
       (db-oppija/insert-oppija!
