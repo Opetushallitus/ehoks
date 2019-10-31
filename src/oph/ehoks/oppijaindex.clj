@@ -150,21 +150,22 @@
 (defn- log-opiskelija-insert-error [oid exception]
   (log/errorf "Error adding oppija %s: %s" oid (.getMessage exception)))
 
-(defn- add-new-oppija! [oid]
+(defn- insert-oppija-with-error-forwarding! [oid]
   (try
     (let [oppija (:body (onr/find-student-by-oid oid))]
       (db-oppija/insert-oppija!
         {:oid oid
          :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
     (catch Exception e
-      (log-opiskelija-insert-error oid e))))
+      (log-opiskelija-insert-error oid e)
+      (throw e))))
 
 (defn- oppija-doesnt-exist [oid]
   (empty? (get-oppija-by-oid oid)))
 
-(defn add-oppija! [oid]
+(defn add-oppija-with-error-forwarding! [oid]
   (when (oppija-doesnt-exist oid)
-    (add-new-oppija! oid)))
+    (insert-oppija-with-error-forwarding! oid)))
 
 (defn update-oppija! [oid]
   (try
@@ -179,7 +180,7 @@
 (defn update-oppijat-without-index! []
   (log/info "Start indexing oppijat")
   (doseq [{oid :oppija_oid} (get-oppijat-without-index)]
-    (add-oppija! oid))
+    (add-oppija-with-error-forwarding! oid))
   (log/info "Indexing oppijat finished"))
 
 (defn update-opiskeluoikeudet-without-index! []

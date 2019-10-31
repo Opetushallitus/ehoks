@@ -130,7 +130,7 @@
                       :body [hoks hoks-schema/HOKSLuonti]
                       :return (restful/response schema/POSTResponse :id s/Int)
                       (try
-                        (op/add-oppija! (:oppija-oid hoks))
+                        (op/add-oppija-with-error-forwarding! (:oppija-oid hoks))
                         (catch Exception e
                           (if (= (:status (ex-data e)) 404)
                             (do

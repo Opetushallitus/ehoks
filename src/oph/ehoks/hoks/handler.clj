@@ -266,7 +266,7 @@
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
         (try
-          (oppijaindex/add-oppija! (:oppija-oid hoks))
+          (oppijaindex/add-oppija-with-error-forwarding! (:oppija-oid hoks))
           (catch Exception e
             (if (= (:status (ex-data e)) 404)
               (response/bad-request!
