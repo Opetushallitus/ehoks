@@ -150,12 +150,15 @@
 (defn- log-opiskelija-insert-error [oid exception]
   (log/errorf "Error adding oppija %s: %s" oid (.getMessage exception)))
 
+(defn- insert-oppija! [oid]
+  (let [oppija (:body (onr/find-student-by-oid oid))]
+    (db-oppija/insert-oppija!
+      {:oid oid
+       :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))})))
+
 (defn- insert-oppija-with-error-forwarding! [oid]
   (try
-    (let [oppija (:body (onr/find-student-by-oid oid))]
-      (db-oppija/insert-oppija!
-        {:oid oid
-         :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
+    (insert-oppija! oid)
     (catch Exception e
       (log-opiskelija-insert-error oid e)
       (throw e))))
