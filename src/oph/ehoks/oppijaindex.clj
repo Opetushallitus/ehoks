@@ -123,6 +123,13 @@
     "Error adding opiskeluoikeus %s of oppija %s: %s"
     oid oppija-oid (.getMessage exception)))
 
+(defn- insert-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
+  (try
+    (db-opiskeluoikeus/insert-opiskeluoikeus!
+      (get-opiskeluoikeus-info oid oppija-oid))
+    (catch Exception e
+      (log-opiskeluoikeus-insert-error! oid oppija-oid e))))
+
 (defn- insert-opiskeluoikeus-with-error-forwarding! [oid oppija-oid]
   (try
     (db-opiskeluoikeus/insert-opiskeluoikeus!
@@ -133,6 +140,10 @@
 
 (defn- opiskeluoikeus-doesnt-exist [oid]
   (empty? (get-opiskeluoikeus-by-oid oid)))
+
+(defn add-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
+  (when (opiskeluoikeus-doesnt-exist oid)
+    (insert-opiskeluoikeus-without-error-forwarding! oid oppija-oid)))
 
 (defn add-opiskeluoikeus-with-error-forwarding! [oid oppija-oid]
   (when (opiskeluoikeus-doesnt-exist oid)
@@ -201,7 +212,7 @@
   (log/info "Start indexing opiskeluoikeudet")
   (doseq [{oid :opiskeluoikeus_oid oppija-oid :oppija_oid}
           (get-opiskeluoikeudet-without-index)]
-    (add-opiskeluoikeus-with-error-forwarding! oid oppija-oid))
+    (add-opiskeluoikeus-without-error-forwarding! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))
 
 (defn update-opiskeluoikeudet-without-tutkinto! []
