@@ -123,14 +123,14 @@
     "Error adding opiskeluoikeus %s of oppija %s: %s"
     oid oppija-oid (.getMessage exception)))
 
-(defn- insert-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
+(defn- insert-new-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
   (try
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       (get-opiskeluoikeus-info oid oppija-oid))
     (catch Exception e
       (log-opiskeluoikeus-insert-error! oid oppija-oid e))))
 
-(defn- insert-opiskeluoikeus! [oid oppija-oid]
+(defn- insert-new-opiskeluoikeus! [oid oppija-oid]
   (try
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       (get-opiskeluoikeus-info oid oppija-oid))
@@ -143,11 +143,11 @@
 
 (defn add-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
   (when (opiskeluoikeus-doesnt-exist oid)
-    (insert-opiskeluoikeus-without-error-forwarding! oid oppija-oid)))
+    (insert-new-opiskeluoikeus-without-error-forwarding! oid oppija-oid)))
 
 (defn add-opiskeluoikeus! [oid oppija-oid]
   (when (opiskeluoikeus-doesnt-exist oid)
-    (insert-opiskeluoikeus! oid oppija-oid)))
+    (insert-new-opiskeluoikeus! oid oppija-oid)))
 
 (defn update-opiskeluoikeus! [oid oppija-oid]
   (try
@@ -168,13 +168,13 @@
       {:oid oid
        :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))})))
 
-(defn- insert-oppija-without-error-forwarding! [oid]
+(defn- insert-new-oppija-without-error-forwarding! [oid]
   (try
     (insert-oppija! oid)
     (catch Exception e
       (log-opiskelija-insert-error oid e))))
 
-(defn- insert-oppija-with-error-forwarding! [oid]
+(defn- insert-new-oppija! [oid]
   (try
     (insert-oppija! oid)
     (catch Exception e
@@ -186,11 +186,11 @@
 
 (defn add-oppija-without-error-forwarding! [oid]
   (when (oppija-doesnt-exist oid)
-    (insert-oppija-without-error-forwarding! oid)))
+    (insert-new-oppija-without-error-forwarding! oid)))
 
-(defn add-oppija-with-error-forwarding! [oid]
+(defn add-oppija! [oid]
   (when (oppija-doesnt-exist oid)
-    (insert-oppija-with-error-forwarding! oid)))
+    (insert-new-oppija! oid)))
 
 (defn update-oppija! [oid]
   (try

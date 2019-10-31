@@ -161,7 +161,7 @@
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
             :body opiskeluoikeus-data}))]
-      (sut/add-oppija-with-error-forwarding! "1.2.246.562.24.111111111111")
+      (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
       (utils/eq
@@ -194,7 +194,7 @@
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
             :body opiskeluoikeus-data}))]
-      (sut/add-oppija-with-error-forwarding! "1.2.246.562.24.111111111111")
+      (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
       (utils/eq
