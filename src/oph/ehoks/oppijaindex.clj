@@ -118,14 +118,17 @@
        :tutkinto_nimi tutkinto
        :osaamisala_nimi osaamisala})))
 
+(defn- log-opiskeluoikeus-insert-error! [oid oppija-oid exception]
+  (log/errorf
+    "Error adding opiskeluoikeus %s of oppija %s: %s"
+    oid oppija-oid (.getMessage exception)))
+
 (defn- add-new-opiskeluoikeus! [oid oppija-oid]
   (try
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       (get-opiskeluoikeus-info oid oppija-oid))
     (catch Exception e
-      (log/errorf
-        "Error adding opiskeluoikeus %s of oppija %s: %s"
-        oid oppija-oid (.getMessage e)))))
+      (log-opiskeluoikeus-insert-error! oid oppija-oid e))))
 
 (defn- opiskeluoikeus-doesnt-exist [oid]
   (empty? (get-opiskeluoikeus-by-oid oid)))
@@ -144,6 +147,9 @@
         "Error updating opiskeluoikeus %s of oppija %s: %s"
         oid oppija-oid (.getMessage e)))))
 
+(defn- log-opiskelija-insert-error [oid exception]
+  (log/errorf "Error adding oppija %s: %s" oid (.getMessage exception)))
+
 (defn- add-new-oppija! [oid]
   (try
     (let [oppija (:body (onr/find-student-by-oid oid))]
@@ -151,7 +157,7 @@
         {:oid oid
          :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
     (catch Exception e
-      (log/errorf "Error adding oppija %s: %s" oid (.getMessage e)))))
+      (log-opiskelija-insert-error oid e))))
 
 (defn- oppija-doesnt-exist [oid]
   (empty? (get-oppija-by-oid oid)))
