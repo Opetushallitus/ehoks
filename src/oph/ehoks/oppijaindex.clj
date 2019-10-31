@@ -156,6 +156,12 @@
       {:oid oid
        :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))})))
 
+(defn- insert-oppija-without-error-forwarding! [oid]
+  (try
+    (insert-oppija! oid)
+    (catch Exception e
+      (log-opiskelija-insert-error oid e))))
+
 (defn- insert-oppija-with-error-forwarding! [oid]
   (try
     (insert-oppija! oid)
@@ -165,6 +171,10 @@
 
 (defn- oppija-doesnt-exist [oid]
   (empty? (get-oppija-by-oid oid)))
+
+(defn add-oppija-without-error-forwarding! [oid]
+  (when (oppija-doesnt-exist oid)
+    (insert-oppija-without-error-forwarding! oid)))
 
 (defn add-oppija-with-error-forwarding! [oid]
   (when (oppija-doesnt-exist oid)
@@ -183,7 +193,7 @@
 (defn update-oppijat-without-index! []
   (log/info "Start indexing oppijat")
   (doseq [{oid :oppija_oid} (get-oppijat-without-index)]
-    (add-oppija-with-error-forwarding! oid))
+    (add-oppija-without-error-forwarding! oid))
   (log/info "Indexing oppijat finished"))
 
 (defn update-opiskeluoikeudet-without-index! []
