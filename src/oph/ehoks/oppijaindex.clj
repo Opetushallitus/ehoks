@@ -151,7 +151,7 @@
   (when (opiskeluoikeus-doesnt-exist oid)
     (insert-new-opiskeluoikeus! oid oppija-oid)))
 
-(defn update-opiskeluoikeus! [oid oppija-oid]
+(defn update-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
   (try
     (db-opiskeluoikeus/update-opiskeluoikeus!
       oid
@@ -221,7 +221,7 @@
   (log/info "Start indexing opiskeluoikeudet without tutkinto")
   (doseq [{oid :oid oppija-oid :oppija_oid}
           (get-opiskeluoikeudet-without-tutkinto)]
-    (update-opiskeluoikeus! oid oppija-oid))
+    (update-opiskeluoikeus-without-error-forwarding! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))
 
 (defn set-opiskeluoikeus-paattynyt! [oid timestamp]
