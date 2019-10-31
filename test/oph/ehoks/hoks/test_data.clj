@@ -29,7 +29,7 @@
                :osaamisen-osoittaminen
                [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
                  :nayttoymparisto {:nimi "Testiympäristö 2"
-                                   :y-tunnus "12345671-2"
+                                   :y-tunnus "1234567-2"
                                    :kuvaus "Testi test"}
                  :sisallon-kuvaus ["Testaus"]
                  :koulutuksen-jarjestaja-osaamisen-arvioijat
@@ -39,7 +39,7 @@
                  :tyoelama-osaamisen-arvioijat
                  [{:nimi "Taneli Työmies"
                    :organisaatio {:nimi "Tanelin Paja Ky"
-                                  :y-tunnus "12345622-2"}}]
+                                  :y-tunnus "1234562-2"}}]
                  :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
                                :koodi-versio 3}]
                  :alku "2019-03-10"
@@ -121,12 +121,12 @@
        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
      :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
      :nayttoymparisto {:nimi "Toinen Esimerkki Oyj"
-                       :y-tunnus "12345699-2"
+                       :y-tunnus "1234569-2"
                        :kuvaus "Testiyrityksen testiosasostalla"}
      :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työmies"
                                      :organisaatio
                                      {:nimi "Testiyrityksen Sisar Oy"
-                                      :y-tunnus "12345689-3"}}]
+                                      :y-tunnus "1234568-3"}}]
      :sisallon-kuvaus ["Tutkimustyö"
                        "Raportointi"]
      :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
@@ -387,12 +387,12 @@
          :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921684"}}]
        :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921785"}
        :nayttoymparisto {:nimi "Esimerkki Oyj"
-                         :y-tunnus "12345699-3"
+                         :y-tunnus "1234569-3"
                          :kuvaus "Testiyrityksen testiosa"}
        :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työm"
                                        :organisaatio
                                        {:nimi "Testiyrityksen Sisar"
-                                        :y-tunnus "12345689-5"}}]
+                                        :y-tunnus "1234568-5"}}]
        :sisallon-kuvaus ["Tutkimustyö" "Raportointi" "joku"]
        :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "toinen"]
        :alku "2018-02-09"
@@ -476,7 +476,7 @@
        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
      :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
      :nayttoymparisto {:nimi "Testi Oy"
-                       :y-tunnus "12345699-2"
+                       :y-tunnus "1234569-2"
                        :kuvaus "Testiyrityksen testiosasostalla"}
      :sisallon-kuvaus ["Tutkimustyö"
                        "Raportointi"]
@@ -498,7 +498,7 @@
        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
      :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
      :nayttoymparisto {:nimi "Testi Oy"
-                       :y-tunnus "12345699-2"
+                       :y-tunnus "1234569-2"
                        :kuvaus "Testiyrityksen testiosasostalla"}
      :sisallon-kuvaus ["Tutkimustyö"
                        "Raportointi"]
@@ -527,7 +527,7 @@
         {:nimi "Oiva Ohjaaja"
          :sahkoposti "oiva.ohjaaja@esimerkki2.com"}
         :tyopaikan-nimi "Ohjaus Oyk"
-        :tyopaikan-y-tunnus "12345222-4"
+        :tyopaikan-y-tunnus "1234522-4"
         :keskeiset-tyotehtavat ["Testitehtävä2"]}
        :muut-oppimisymparistot []
        :ajanjakson-tarkenne "Ei ole"
@@ -616,7 +616,7 @@
      :osaamisen-osoittaminen
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
        :nayttoymparisto {:nimi "Testiympäristö 2"
-                         :y-tunnus "12345671-2"
+                         :y-tunnus "1234561-2"
                          :kuvaus "Testi test"}
        :sisallon-kuvaus ["Testaus"]
        :koulutuksen-jarjestaja-osaamisen-arvioijat
@@ -626,7 +626,7 @@
        :tyoelama-osaamisen-arvioijat
        [{:nimi "Taneli Työmies2"
          :organisaatio {:nimi "Tanelin Paja Oy"
-                        :y-tunnus "12345622-2"}}]
+                        :y-tunnus "1234562-2"}}]
        :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
                      :koodi-versio 3}]
        :alku "2019-03-10"
