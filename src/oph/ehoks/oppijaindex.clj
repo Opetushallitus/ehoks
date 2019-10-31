@@ -124,7 +124,8 @@
       (get-opiskeluoikeus-info oid oppija-oid))
     (catch Exception e
       (log/errorf
-        "Error adding opiskeluoikeus %s of oppija %s" oid oppija-oid))))
+        "Error adding opiskeluoikeus %s of oppija %s: %s"
+        oid oppija-oid (.getMessage e)))))
 
 (defn update-opiskeluoikeus! [oid oppija-oid]
   (try
@@ -133,7 +134,8 @@
       (dissoc (get-opiskeluoikeus-info oid oppija-oid) :oid :oppija_oid))
     (catch Exception e
       (log/errorf
-        "Error updating opiskeluoikeus %s of oppija %s" oid oppija-oid))))
+        "Error updating opiskeluoikeus %s of oppija %s: %s"
+        oid oppija-oid (.getMessage e)))))
 
 (defn add-opiskeluoikeus! [oid oppija-oid]
   (when (empty? (get-opiskeluoikeus-by-oid oid))
@@ -146,7 +148,7 @@
         {:oid oid
          :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
     (catch Exception e
-      (log/errorf "Error adding oppija %s" oid))))
+      (log/errorf "Error adding oppija %s: %s" oid (.getMessage e)))))
 
 (defn add-oppija! [oid]
   (when (empty? (get-oppija-by-oid oid))
