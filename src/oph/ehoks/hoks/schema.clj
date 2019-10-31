@@ -30,6 +30,9 @@
 (def OpiskeluoikeusOid
   #"^1\.2\.246\.562\.15\.\d+$")
 
+(def YTunnus
+  #"^\d{1,7}-\d{1}+$")
+
 (s/defschema
   KoodistoKoodi
   (describe
@@ -42,7 +45,7 @@
   (describe
     "Organisaatio"
     :nimi s/Str "Organisaation nimi"
-    (s/optional-key :y-tunnus) s/Str "Mikäli organisaatiolla on y-tunnus,
+    (s/optional-key :y-tunnus) YTunnus "Mikäli organisaatiolla on y-tunnus,
     organisaation y-tunnus"))
 
 (s/defschema
@@ -120,7 +123,7 @@
     :vastuullinen-tyopaikka-ohjaaja VastuullinenTyopaikkaOhjaaja "Vastuullinen
     työpaikkaohjaaja"
     :tyopaikan-nimi s/Str "Työpaikan nimi"
-    (s/optional-key :tyopaikan-y-tunnus) s/Str "Työpaikan y-tunnus"
+    (s/optional-key :tyopaikan-y-tunnus) YTunnus "Työpaikan y-tunnus"
     :keskeiset-tyotehtavat [s/Str] "Keskeiset työtehtävät"))
 
 (s/defschema
