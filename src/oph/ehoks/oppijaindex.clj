@@ -130,7 +130,7 @@
     (catch Exception e
       (log-opiskeluoikeus-insert-error! oid oppija-oid e))))
 
-(defn- insert-opiskeluoikeus-with-error-forwarding! [oid oppija-oid]
+(defn- insert-opiskeluoikeus! [oid oppija-oid]
   (try
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       (get-opiskeluoikeus-info oid oppija-oid))
@@ -145,9 +145,9 @@
   (when (opiskeluoikeus-doesnt-exist oid)
     (insert-opiskeluoikeus-without-error-forwarding! oid oppija-oid)))
 
-(defn add-opiskeluoikeus-with-error-forwarding! [oid oppija-oid]
+(defn add-opiskeluoikeus! [oid oppija-oid]
   (when (opiskeluoikeus-doesnt-exist oid)
-    (insert-opiskeluoikeus-with-error-forwarding! oid oppija-oid)))
+    (insert-opiskeluoikeus! oid oppija-oid)))
 
 (defn update-opiskeluoikeus! [oid oppija-oid]
   (try

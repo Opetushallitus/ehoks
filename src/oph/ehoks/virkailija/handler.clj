@@ -143,7 +143,7 @@
                                       " Oppijanumerorekisteri")}))
                             (throw e))))
                       (try
-                        (op/add-opiskeluoikeus-with-error-forwarding!
+                        (op/add-opiskeluoikeus!
                           (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
                         (catch Exception e
                           (if (= (:status (ex-data e)) 404)
