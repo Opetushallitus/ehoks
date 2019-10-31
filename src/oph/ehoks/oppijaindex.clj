@@ -123,17 +123,19 @@
     "Error adding opiskeluoikeus %s of oppija %s: %s"
     oid oppija-oid (.getMessage exception)))
 
+(defn- insert-opiskeluoikeus [oid oppija-oid]
+  (db-opiskeluoikeus/insert-opiskeluoikeus!
+    (get-opiskeluoikeus-info oid oppija-oid)))
+
 (defn- insert-new-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
   (try
-    (db-opiskeluoikeus/insert-opiskeluoikeus!
-      (get-opiskeluoikeus-info oid oppija-oid))
+    (insert-opiskeluoikeus oid oppija-oid)
     (catch Exception e
       (log-opiskeluoikeus-insert-error! oid oppija-oid e))))
 
 (defn- insert-new-opiskeluoikeus! [oid oppija-oid]
   (try
-    (db-opiskeluoikeus/insert-opiskeluoikeus!
-      (get-opiskeluoikeus-info oid oppija-oid))
+    (insert-opiskeluoikeus oid oppija-oid)
     (catch Exception e
       (log-opiskeluoikeus-insert-error! oid oppija-oid e)
       (throw e))))
