@@ -273,7 +273,7 @@
                 {:error "Oppija not found in Oppijanumerorekisteri"})
               (throw e))))
         (try
-          (oppijaindex/add-opiskeluoikeus!
+          (oppijaindex/add-opiskeluoikeus-with-error-forwarding!
             (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
           (catch Exception e
             (if (= (:status (ex-data e)) 404)
