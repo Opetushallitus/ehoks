@@ -127,6 +127,13 @@
         "Error adding opiskeluoikeus %s of oppija %s: %s"
         oid oppija-oid (.getMessage e)))))
 
+(defn- opiskeluoikeus-doesnt-exist [oid]
+  (empty? (get-opiskeluoikeus-by-oid oid)))
+
+(defn add-opiskeluoikeus! [oid oppija-oid]
+  (when (opiskeluoikeus-doesnt-exist oid)
+    (add-new-opiskeluoikeus! oid oppija-oid)))
+
 (defn update-opiskeluoikeus! [oid oppija-oid]
   (try
     (db-opiskeluoikeus/update-opiskeluoikeus!
@@ -136,13 +143,6 @@
       (log/errorf
         "Error updating opiskeluoikeus %s of oppija %s: %s"
         oid oppija-oid (.getMessage e)))))
-
-(defn- opiskeluoikeus-doesnt-exist [oid]
-  (empty? (get-opiskeluoikeus-by-oid oid)))
-
-(defn add-opiskeluoikeus! [oid oppija-oid]
-  (when (opiskeluoikeus-doesnt-exist oid)
-    (add-new-opiskeluoikeus! oid oppija-oid)))
 
 (defn- add-new-oppija! [oid]
   (try
