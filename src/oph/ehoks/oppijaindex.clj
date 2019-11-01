@@ -118,42 +118,81 @@
        :tutkinto_nimi tutkinto
        :osaamisala_nimi osaamisala})))
 
-(defn add-new-opiskeluoikeus! [oid oppija-oid]
+(defn- log-opiskeluoikeus-insert-error! [oid oppija-oid exception]
+  (log/errorf
+    "Error adding opiskeluoikeus %s of oppija %s: %s"
+    oid oppija-oid (.getMessage exception)))
+
+(defn- insert-opiskeluoikeus [oid oppija-oid]
+  (db-opiskeluoikeus/insert-opiskeluoikeus!
+    (get-opiskeluoikeus-info oid oppija-oid)))
+
+(defn- insert-new-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
   (try
-    (db-opiskeluoikeus/insert-opiskeluoikeus!
-      (get-opiskeluoikeus-info oid oppija-oid))
+    (insert-opiskeluoikeus oid oppija-oid)
     (catch Exception e
-      (log/errorf
-        "Error adding opiskeluoikeus %s of oppija %s" oid oppija-oid)
+      (log-opiskeluoikeus-insert-error! oid oppija-oid e))))
+
+(defn- insert-new-opiskeluoikeus! [oid oppija-oid]
+  (try
+    (insert-opiskeluoikeus oid oppija-oid)
+    (catch Exception e
+      (log-opiskeluoikeus-insert-error! oid oppija-oid e)
       (throw e))))
 
-(defn update-opiskeluoikeus! [oid oppija-oid]
+(defn- opiskeluoikeus-doesnt-exist [oid]
+  (empty? (get-opiskeluoikeus-by-oid oid)))
+
+(defn add-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
+  (when (opiskeluoikeus-doesnt-exist oid)
+    (insert-new-opiskeluoikeus-without-error-forwarding! oid oppija-oid)))
+
+(defn add-opiskeluoikeus! [oid oppija-oid]
+  (when (opiskeluoikeus-doesnt-exist oid)
+    (insert-new-opiskeluoikeus! oid oppija-oid)))
+
+(defn update-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
   (try
     (db-opiskeluoikeus/update-opiskeluoikeus!
       oid
       (dissoc (get-opiskeluoikeus-info oid oppija-oid) :oid :oppija_oid))
     (catch Exception e
       (log/errorf
-        "Error updating opiskeluoikeus %s of oppija %s" oid oppija-oid)
-      (throw e))))
+        "Error updating opiskeluoikeus %s of oppija %s: %s"
+        oid oppija-oid (.getMessage e)))))
 
-(defn add-opiskeluoikeus! [oid oppija-oid]
-  (when (empty? (get-opiskeluoikeus-by-oid oid))
-    (add-new-opiskeluoikeus! oid oppija-oid)))
+(defn- log-opiskelija-insert-error [oid exception]
+  (log/errorf "Error adding oppija %s: %s" oid (.getMessage exception)))
 
-(defn add-new-oppija! [oid]
+(defn- insert-oppija! [oid]
+  (let [oppija (:body (onr/find-student-by-oid oid))]
+    (db-oppija/insert-oppija!
+      {:oid oid
+       :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))})))
+
+(defn- insert-new-oppija-without-error-forwarding! [oid]
   (try
-    (let [oppija (:body (onr/find-student-by-oid oid))]
-      (db-oppija/insert-oppija!
-        {:oid oid
-         :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
+    (insert-oppija! oid)
     (catch Exception e
-      (log/errorf "Error adding oppija %s" oid)
+      (log-opiskelija-insert-error oid e))))
+
+(defn- insert-new-oppija! [oid]
+  (try
+    (insert-oppija! oid)
+    (catch Exception e
+      (log-opiskelija-insert-error oid e)
       (throw e))))
+
+(defn- oppija-doesnt-exist [oid]
+  (empty? (get-oppija-by-oid oid)))
+
+(defn add-oppija-without-error-forwarding! [oid]
+  (when (oppija-doesnt-exist oid)
+    (insert-new-oppija-without-error-forwarding! oid)))
 
 (defn add-oppija! [oid]
-  (when (empty? (get-oppija-by-oid oid))
-    (add-new-oppija! oid)))
+  (when (oppija-doesnt-exist oid)
+    (insert-new-oppija! oid)))
 
 (defn update-oppija! [oid]
   (try
@@ -168,21 +207,21 @@
 (defn update-oppijat-without-index! []
   (log/info "Start indexing oppijat")
   (doseq [{oid :oppija_oid} (get-oppijat-without-index)]
-    (add-oppija! oid))
+    (add-oppija-without-error-forwarding! oid))
   (log/info "Indexing oppijat finished"))
 
 (defn update-opiskeluoikeudet-without-index! []
   (log/info "Start indexing opiskeluoikeudet")
   (doseq [{oid :opiskeluoikeus_oid oppija-oid :oppija_oid}
           (get-opiskeluoikeudet-without-index)]
-    (add-opiskeluoikeus! oid oppija-oid))
+    (add-opiskeluoikeus-without-error-forwarding! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))
 
 (defn update-opiskeluoikeudet-without-tutkinto! []
   (log/info "Start indexing opiskeluoikeudet without tutkinto")
   (doseq [{oid :oid oppija-oid :oppija_oid}
           (get-opiskeluoikeudet-without-tutkinto)]
-    (update-opiskeluoikeus! oid oppija-oid))
+    (update-opiskeluoikeus-without-error-forwarding! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))
 
 (defn set-opiskeluoikeus-paattynyt! [oid timestamp]

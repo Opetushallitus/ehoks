@@ -226,7 +226,7 @@
            {:status 200
             :body {:oppilaitos {:oid "1.2.246.562.10.222222222223"}}}))]
       (sut/update-oppija! "1.2.246.562.24.111111111111")
-      (sut/update-opiskeluoikeus!
+      (sut/update-opiskeluoikeus-without-error-forwarding!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
       (utils/eq
         (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
