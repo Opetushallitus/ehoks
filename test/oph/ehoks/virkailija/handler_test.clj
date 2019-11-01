@@ -479,7 +479,7 @@
                :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
                :koulutustoimija-oid ""}))
 
-(defn- post-new-hoks []
+(defn- post-new-hoks [opiskeluoikeus-oid organisaatio-oid]
   (with-test-virkailija
     (mock/json-body
       (mock/request
@@ -487,7 +487,7 @@
         (str
           base-url
           "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
-      {:opiskeluoikeus-oid "1.2.246.562.15.76000000001"
+      {:opiskeluoikeus-oid opiskeluoikeus-oid
        :oppija-oid "1.2.246.562.24.44000000001"
        :ensikertainen-hyvaksyminen "2018-12-15"
        :osaamisen-hankkimisen-tarve false})
@@ -495,7 +495,7 @@
      :kayttajaTyyppi "VIRKAILIJA"
      :oidHenkilo "1.2.246.562.24.44000000333"
      :organisation-privileges
-     [{:oid "1.2.246.562.10.12000000001"
+     [{:oid organisaatio-oid
        :privileges #{:write :read :update :delete}}]}))
 
 (defn- get-created-hoks [post-response]
@@ -514,7 +514,8 @@
   (t/testing "POST hoks virkailija"
     (utils/with-db
       (create-oppija-for-hoks-create)
-      (let [post-response (post-new-hoks)
+      (let [post-response (post-new-hoks
+              "1.2.246.562.15.76000000001" "1.2.246.562.10.12000000001")
             get-response (get-created-hoks post-response)]
         (t/is (get-in (utils/parse-body (:body get-response))
                       [:data :manuaalisyotto]))
