@@ -421,6 +421,34 @@
                  :privileges #{:read}}]})]
         (t/is (= (:status response) 403))))))
 
+(defn- create-oppija-for-hoks-post [oppilaitos-oid]
+  (add-oppija {:oid "1.2.246.562.24.44000000001"
+               :nimi "Teuvo Testaaja"
+               :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
+               :oppilaitos-oid oppilaitos-oid
+               :tutkinto-nimi {:fi "Testitutkinto 1"}
+               :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+               :koulutustoimija-oid ""}))
+
+(defn- post-new-hoks [opiskeluoikeus-oid organisaatio-oid]
+  (with-test-virkailija
+    (mock/json-body
+      (mock/request
+        :post
+        (str
+          base-url
+          "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
+      {:opiskeluoikeus-oid opiskeluoikeus-oid
+       :oppija-oid "1.2.246.562.24.44000000001"
+       :ensikertainen-hyvaksyminen "2018-12-15"
+       :osaamisen-hankkimisen-tarve false})
+    {:name "Testivirkailija"
+     :kayttajaTyyppi "VIRKAILIJA"
+     :oidHenkilo "1.2.246.562.24.44000000333"
+     :organisation-privileges
+     [{:oid organisaatio-oid
+       :privileges #{:write :read :update :delete}}]}))
+
 (t/deftest test-virkailija-hoks-forbidden
   (t/testing "Virkailija HOKS forbidden"
     (utils/with-db
@@ -432,22 +460,8 @@
                    :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
                    :koulutustoimija-oid ""})
       (let [response
-            (with-test-virkailija
-              (mock/json-body
-                (mock/request
-                  :post
-                  (str
-                    base-url
-                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
-                {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                 :oppija-oid "1.2.246.562.24.44000000001"
-                 :ensikertainen-hyvaksyminen "2018-12-15"
-                 :osaamisen-hankkimisen-tarve false})
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.12000000001"
-                 :privileges #{:write :read :update :delete}}]})]
+            (post-new-hoks
+              "1.2.246.562.15.00000000001" "1.2.246.562.10.12000000001")]
         (t/is (= (:status response) 403)))
       (let [hoks-db (db-hoks/insert-hoks!
                       {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
@@ -470,77 +484,69 @@
                  :privileges #{:write :read :update :delete}}]})]
         (t/is (= (:status response) 403))))))
 
+(defn- get-created-hoks [post-response]
+  (with-test-virkailija
+    (mock/request
+      :get
+      (get-in (utils/parse-body (:body post-response)) [:data :uri]))
+    {:name "Testivirkailija"
+     :kayttajaTyyppi "VIRKAILIJA"
+     :oidHenkilo "1.2.246.562.24.44000000333"
+     :organisation-privileges
+     [{:oid "1.2.246.562.10.12000000001"
+       :privileges #{:write :read :update :delete}}]}))
+
 (t/deftest test-virkailija-create-hoks
   (t/testing "POST hoks virkailija"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Teuvo Testaaja"
-                   :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
-                   :oppilaitos-oid "1.2.246.562.10.12000000001"
-                   :tutkinto-nimi {:fi "Testitutkinto 1"}
-                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
-                   :koulutustoimija-oid ""})
-      (let [response
-            (with-test-virkailija
-              (mock/json-body
-                (mock/request
-                  :post
-                  (str
-                    base-url
-                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
-                {:opiskeluoikeus-oid "1.2.246.562.15.76000000001"
-                 :oppija-oid "1.2.246.562.24.44000000001"
-                 :ensikertainen-hyvaksyminen "2018-12-15"
-                 :osaamisen-hankkimisen-tarve false})
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :oidHenkilo "1.2.246.562.24.44000000333"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.12000000001"
-                 :privileges #{:write :read :update :delete}}]})
-            get-response
-            (with-test-virkailija
-              (mock/request
-                :get
-                (get-in (utils/parse-body (:body response)) [:data :uri]))
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :oidHenkilo "1.2.246.562.24.44000000333"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.12000000001"
-                 :privileges #{:write :read :update :delete}}]})]
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (let [post-response
+            (post-new-hoks
+              "1.2.246.562.15.76000000001" "1.2.246.562.10.12000000001")
+            get-response (get-created-hoks post-response)]
         (t/is (get-in (utils/parse-body (:body get-response))
                       [:data :manuaalisyotto]))
-        (t/is (= (:status response) 200))))))
+        (t/is (= (:status post-response) 200))))))
+
+(defn mocked-get-opiskeluoikeus-info-raw [oid]
+  (throw (ex-info "Opiskeluoikeus fetch failed" {:status 404})))
+
+(t/deftest test-hoks-create-when-opiskeluoikeus-fetch-fails
+  (t/testing "Error thrown from koski is propagated to handler"
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info-raw
+                    mocked-get-opiskeluoikeus-info-raw]
+        (let [post-response
+              (post-new-hoks
+                "1.2.246.562.15.76000000002" "1.2.246.562.10.12000000001")]
+          (t/is (= (:status post-response) 400))
+          (t/is (= (utils/parse-body (:body post-response))
+                   {:error "Opiskeluoikeus not found in Koski"})))))))
+
+(defn mocked-find-student-by-oid [oid]
+  (throw (ex-info "Opiskelija fetch failed" {:status 404})))
+
+(t/deftest test-hoks-create-when-oppijanumerorekisteri-fails
+  (t/testing "Error thrown from oppijanumerorekisteri is propagated to handler"
+    (utils/with-db
+      (with-redefs [oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
+                    mocked-find-student-by-oid]
+        (let [post-response
+              (post-new-hoks
+                "1.2.246.562.15.76000000002" "1.2.246.562.10.12000000001")]
+          (t/is (= (:status post-response) 400))
+          (t/is (= (utils/parse-body (:body post-response))
+                   {:error "Oppija not found in Oppijanumerorekisteri"})))))))
 
 (t/deftest test-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Teuvo Testaaja"
-                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
-                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                   :tutkinto-nimi {:fi "Testitutkinto 1"}
-                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
-                   :koulutustoimija-oid ""})
-      (let [response
-            (with-test-virkailija
-              (mock/json-body
-                (mock/request
-                  :post
-                  (str
-                    base-url
-                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
-                {:opiskeluoikeus-oid "1.2.246.562.15.760000000010"
-                 :oppija-oid "1.2.246.562.24.44000000001"
-                 :ensikertainen-hyvaksyminen "2018-12-15"
-                 :osaamisen-hankkimisen-tarve false})
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.1200000000010"
-                 :privileges #{:write :read :update :delete}}]})
-            body (utils/parse-body (:body response))
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (let [post-response
+            (post-new-hoks
+              "1.2.246.562.15.760000000010" "1.2.246.562.10.1200000000010")
+            body (utils/parse-body (:body post-response))
             hoks-url (get-in body [:data :uri])
             patch-response
             (with-test-virkailija
