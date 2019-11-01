@@ -526,10 +526,10 @@
   (t/testing "PATCH hoks virkailija"
     (utils/with-db
       (create-oppija-for-hoks-create)
-      (let [response
+      (let [post-response
             (post-new-hoks
               "1.2.246.562.15.760000000010" "1.2.246.562.10.1200000000010")
-            body (utils/parse-body (:body response))
+            body (utils/parse-body (:body post-response))
             hoks-url (get-in body [:data :uri])
             patch-response
             (with-test-virkailija
