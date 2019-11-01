@@ -518,11 +518,11 @@
       (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info-raw
                     mocked-get-opiskeluoikeus-info-raw]
         (let [post-response
-             (post-new-hoks
-               "1.2.246.562.15.76000000002" "1.2.246.562.10.12000000001")]
-         (t/is (= (:status post-response) 400))
-         (t/is (= (utils/parse-body (:body post-response))
-                {:error "Opiskeluoikeus not found in Koski"})))))))
+              (post-new-hoks
+                "1.2.246.562.15.76000000002" "1.2.246.562.10.12000000001")]
+          (t/is (= (:status post-response) 400))
+          (t/is (= (utils/parse-body (:body post-response))
+                   {:error "Opiskeluoikeus not found in Koski"})))))))
 
 (defn mocked-find-student-by-oid [oid]
   (throw (ex-info "Opiskelija fetch failed" {:status 404})))
