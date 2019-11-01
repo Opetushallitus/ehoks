@@ -421,7 +421,7 @@
                  :privileges #{:read}}]})]
         (t/is (= (:status response) 403))))))
 
-(defn- create-oppija-for-hoks-create [oppilaitos-oid]
+(defn- create-oppija-for-hoks-post [oppilaitos-oid]
   (add-oppija {:oid "1.2.246.562.24.44000000001"
                :nimi "Teuvo Testaaja"
                :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
@@ -499,7 +499,7 @@
 (t/deftest test-virkailija-create-hoks
   (t/testing "POST hoks virkailija"
     (utils/with-db
-      (create-oppija-for-hoks-create "1.2.246.562.10.12000000001")
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
       (let [post-response
             (post-new-hoks
               "1.2.246.562.15.76000000001" "1.2.246.562.10.12000000001")
@@ -511,7 +511,7 @@
 (t/deftest test-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
     (utils/with-db
-      (create-oppija-for-hoks-create "1.2.246.562.10.12000000001")
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
       (let [post-response
             (post-new-hoks
               "1.2.246.562.15.760000000010" "1.2.246.562.10.1200000000010")
