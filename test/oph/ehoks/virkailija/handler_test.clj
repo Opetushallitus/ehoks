@@ -508,6 +508,22 @@
                       [:data :manuaalisyotto]))
         (t/is (= (:status post-response) 200))))))
 
+(defn mocked-get-opiskeluoikeus-info-raw [oid]
+  (throw (ex-info "Opiskeluoikeus fetch failed" {:status 404})))
+
+(t/deftest test-hoks-create-when-opiskeluoikeus-fetch-fails
+  (t/testing "Error thrown from koski is propagated to handler"
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info-raw
+                    mocked-get-opiskeluoikeus-info-raw]
+        (let [post-response
+             (post-new-hoks
+               "1.2.246.562.15.76000000002" "1.2.246.562.10.12000000001")]
+         (t/is (= (:status post-response) 400))
+         (t/is (= (utils/parse-body (:body post-response))
+                {:error "Opiskeluoikeus not found in Koski"})))))))
+
 (t/deftest test-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
     (utils/with-db
