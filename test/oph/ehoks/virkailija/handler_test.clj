@@ -524,6 +524,21 @@
          (t/is (= (utils/parse-body (:body post-response))
                 {:error "Opiskeluoikeus not found in Koski"})))))))
 
+(defn mocked-find-student-by-oid [oid]
+  (throw (ex-info "Opiskelija fetch failed" {:status 404})))
+
+(t/deftest test-hoks-create-when-oppijanumerorekisteri-fails
+  (t/testing "Error thrown from oppijanumerorekisteri is propagated to handler"
+    (utils/with-db
+      (with-redefs [oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
+                    mocked-find-student-by-oid]
+        (let [post-response
+              (post-new-hoks
+                "1.2.246.562.15.76000000002" "1.2.246.562.10.12000000001")]
+          (t/is (= (:status post-response) 400))
+          (t/is (= (utils/parse-body (:body post-response))
+                   {:error "Oppija not found in Oppijanumerorekisteri"})))))))
+
 (t/deftest test-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
     (utils/with-db
