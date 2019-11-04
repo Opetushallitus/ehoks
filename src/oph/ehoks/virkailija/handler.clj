@@ -66,18 +66,18 @@
                 "given organisation")}))
       (let [search-params
             (cond->
-              {:desc desc
-               :item-count item-count
-               :order-by-column order-by-column
-               :offset (* page item-count)
-               :oppilaitos-oid oppilaitos-oid
-               :locale locale}
-              (some? nimi)
-              (assoc :nimi nimi)
-              (some? tutkinto)
-              (assoc :tutkinto tutkinto)
-              (some? osaamisala)
-              (assoc :osaamisala osaamisala))
+             {:desc desc
+              :item-count item-count
+              :order-by-column order-by-column
+              :offset (* page item-count)
+              :oppilaitos-oid oppilaitos-oid
+              :locale locale}
+             (some? nimi)
+             (assoc :nimi nimi)
+             (some? tutkinto)
+             (assoc :tutkinto tutkinto)
+             (some? osaamisala)
+             (assoc :osaamisala osaamisala))
             oppijat (mapv
                       #(dissoc
                          % :oppilaitos-oid :koulutustoimija-oid)
@@ -119,8 +119,8 @@
     (let [virkailija-user
           (get-in request [:session :virkailija-user])]
       (when-not
-        (m/virkailija-has-privilege-in-opiskeluoikeus?
-          virkailija-user (:opiskeluoikeus-oid hoks) :write)
+       (m/virkailija-has-privilege-in-opiskeluoikeus?
+         virkailija-user (:opiskeluoikeus-oid hoks) :write)
         (log/warnf "User %s privileges don't match oppija %s"
                    (get-in request [:session
                                     :virkailija-user
