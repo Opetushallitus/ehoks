@@ -72,12 +72,12 @@
               :offset (* page item-count)
               :oppilaitos-oid oppilaitos-oid
               :locale locale}
-             (some? nimi)
-             (assoc :nimi nimi)
-             (some? tutkinto)
-             (assoc :tutkinto tutkinto)
-             (some? osaamisala)
-             (assoc :osaamisala osaamisala))
+              (some? nimi)
+              (assoc :nimi nimi)
+              (some? tutkinto)
+              (assoc :tutkinto tutkinto)
+              (some? osaamisala)
+              (assoc :osaamisala osaamisala))
             oppijat (mapv
                       #(dissoc
                          % :oppilaitos-oid :koulutustoimija-oid)
