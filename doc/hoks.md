@@ -1,9 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 04.09.2019 05.49
-
-Katso myös [HOKS doc](https://github.com/Opetushallitus/ehoks/blob/master/doc/hoks.md)
+Generoitu 05.11.2019 08.05
 
 ### MuuOppimisymparisto  
 
@@ -127,6 +125,7 @@ HOKS-dokumentin ylikirjoitus (PATCH)
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
+| opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d+$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001'. | Ei |
 | versio | Kokonaisluku | HOKS-dokumentin versio | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
 | ensikertainen-hyvaksyminen | Päivämäärä | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DD | Ei |
@@ -135,6 +134,7 @@ HOKS-dokumentin ylikirjoitus (PATCH)
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | urasuunnitelma-koodi-versio | Kokonaisluku | Opiskelijan tavoitteen Koodisto-koodin versio | Ei |
 | paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
+| oppija-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Oppijan tunniste Opintopolku-ympäristössä | Ei |
 
 ### OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys  
 
@@ -188,6 +188,7 @@ HOKS-dokumentin ylikirjoitus (PUT)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | ensikertainen-hyvaksyminen | Päivämäärä | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DD | Kyllä |
+| opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d+$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001'. | Ei |
 | aiemmin-hankitut-ammat-tutkinnon-osat | [[AiemminHankittuAmmatillinenTutkinnonOsa](#AiemminHankittuAmmatillinenTutkinnonOsa)] | Aiemmin hankittu ammatillinen osaaminen | Ei |
 | versio | Kokonaisluku | HOKS-dokumentin versio | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
@@ -202,6 +203,7 @@ HOKS-dokumentin ylikirjoitus (PUT)
 | urasuunnitelma-koodi-versio | Kokonaisluku | Opiskelijan tavoitteen Koodisto-koodin versio | Ei |
 | paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | opiskeluvalmiuksia-tukevat-opinnot | [[OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot)] | Opiskeluvalmiuksia tukevat opinnot | Ei |
+| oppija-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Oppijan tunniste Opintopolku-ympäristössä | Ei |
 
 ### HOKSLuonti  
 
@@ -219,7 +221,7 @@ HOKS-dokumentin arvot uutta merkintää luotaessa (POST)
 | urasuunnitelma-koodi-uri | Merkkijono, urasuunnitelman koodistokoodi uri, esim. urasuunnitelma_0001 | Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto<br>    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.<br>    urasuunnitelma_0001 | Ei |
 | osaamisen-hankkimisen-tarve | Totuusarvo | Tutkintokoulutuksen ja muun tarvittavan<br>                               ammattitaidon hankkimisen tarve; osaamisen<br>                               tunnistamis- ja tunnustamisprosessin<br>                               lopputulos. | Ei |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
-| opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d+$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001' | Kyllä |
+| opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d+$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001'. | Kyllä |
 | hankittavat-yhteiset-tutkinnon-osat | [[HankittavaYTO](#HankittavaYTO)] | Hankittavan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | hankittavat-paikalliset-tutkinnon-osat | [[HankittavaPaikallinenTutkinnonOsa](#HankittavaPaikallinenTutkinnonOsa)] | Hankittavat paikallisen tutkinnon osat | Ei |
 | urasuunnitelma-koodi-versio | Kokonaisluku | Opiskelijan tavoitteen Koodisto-koodin versio | Ei |
@@ -289,23 +291,24 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | ensikertainen-hyvaksyminen | Päivämäärä | HOKS-dokumentin ensimmäinen hyväksymisaika<br>                                muodossa YYYY-MM-DD | Kyllä |
+| opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d+$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001'. | Ei |
 | aiemmin-hankitut-ammat-tutkinnon-osat | [[AiemminHankittuAmmatillinenTutkinnonOsa](#AiemminHankittuAmmatillinenTutkinnonOsa)] | Aiemmin hankittu ammatillinen osaaminen | Ei |
 | versio | Kokonaisluku | HOKS-dokumentin versio | Ei |
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
 | hankittavat-ammat-tutkinnon-osat | [[HankittavaAmmatillinenTutkinnonOsa](#HankittavaAmmatillinenTutkinnonOsa)] | Hankittavan ammatillisen osaamisen hankkimisen tiedot | Ei |
+| manuaalisyotto | Totuusarvo | Tieto, onko HOKS tuotu manuaalisyötön kautta | Ei |
 | aiemmin-hankitut-paikalliset-tutkinnon-osat | [[AiemminHankittuPaikallinenTutkinnonOsa](#AiemminHankittuPaikallinenTutkinnonOsa)] | Aiemmin hankittu paikallinen tutkinnon osa | Ei |
 | aiemmin-hankitut-yhteiset-tutkinnon-osat | [[AiemminHankittuYhteinenTutkinnonOsa](#AiemminHankittuYhteinenTutkinnonOsa)] | Aiemmin hankitut yhteiset tutkinnon osat (YTO) | Ei |
 | urasuunnitelma-koodi-uri | Merkkijono, urasuunnitelman koodistokoodi uri, esim. urasuunnitelma_0001 | Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto<br>    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.<br>    urasuunnitelma_0001 | Ei |
 | osaamisen-hankkimisen-tarve | Totuusarvo | Tutkintokoulutuksen ja muun tarvittavan<br>                               ammattitaidon hankkimisen tarve; osaamisen<br>                               tunnistamis- ja tunnustamisprosessin<br>                               lopputulos. | Ei |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
-| opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d+$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001' | Kyllä |
 | hankittavat-yhteiset-tutkinnon-osat | [[HankittavaYTO](#HankittavaYTO)] | Hankittavan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
 | hankittavat-paikalliset-tutkinnon-osat | [[HankittavaPaikallinenTutkinnonOsa](#HankittavaPaikallinenTutkinnonOsa)] | Hankittavat paikallisen tutkinnon osat | Ei |
 | urasuunnitelma-koodi-versio | Kokonaisluku | Opiskelijan tavoitteen Koodisto-koodin versio | Ei |
 | paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | opiskeluvalmiuksia-tukevat-opinnot | [[OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot)] | Opiskeluvalmiuksia tukevat opinnot | Ei |
 | eid | Merkkijono | HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä | Kyllä |
-| oppija-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
+| oppija-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Oppijan tunniste Opintopolku-ympäristössä | Ei |
 
 ### HankittavaPaikallinenTutkinnonOsa  
 
