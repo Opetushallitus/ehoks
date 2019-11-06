@@ -118,10 +118,21 @@
        :tutkinto_nimi tutkinto
        :osaamisala_nimi osaamisala})))
 
-(defn- log-opiskeluoikeus-insert-error! [oid oppija-oid exception]
-  (log/errorf
-    "Error adding opiskeluoikeus %s of oppija %s: %s"
-    oid oppija-oid (.getMessage exception)))
+(defn- log-opiskeluoikeus-insert-error!
+  ([oid oppija-oid exception]
+    (log/errorf
+      "Error adding opiskeluoikeus %s of oppija %s: %s"
+      oid oppija-oid (.getMessage exception)))
+  ([oid oppija-oid exception skip-indexing]
+    (log/errorf
+      "%sError adding opiskeluoikeus %s of oppija %s: %s"
+      (if skip-indexing
+        "Skipped indexing. "
+        "")
+      oid oppija-oid (.getMessage exception))))
+
+(defn- log-opiskeluoikeus-insert-error-for-indexing! [oid oppija-oid exception]
+  (log-opiskeluoikeus-insert-error! oid oppija-oid exception true))
 
 (defn- insert-opiskeluoikeus [oid oppija-oid]
   (db-opiskeluoikeus/insert-opiskeluoikeus!
@@ -131,7 +142,7 @@
   (try
     (insert-opiskeluoikeus oid oppija-oid)
     (catch Exception e
-      (log-opiskeluoikeus-insert-error! oid oppija-oid e))))
+      (log-opiskeluoikeus-insert-error-for-indexing! oid oppija-oid e))))
 
 (defn- insert-new-opiskeluoikeus! [oid oppija-oid]
   (try
@@ -158,11 +169,21 @@
       (dissoc (get-opiskeluoikeus-info oid oppija-oid) :oid :oppija_oid))
     (catch Exception e
       (log/errorf
-        "Error updating opiskeluoikeus %s of oppija %s: %s"
+        "Skipped indexing. Error updating opiskeluoikeus %s of oppija %s: %s"
         oid oppija-oid (.getMessage e)))))
 
-(defn- log-opiskelija-insert-error [oid exception]
-  (log/errorf "Error adding oppija %s: %s" oid (.getMessage exception)))
+(defn- log-opiskelija-insert-error!
+  ([oid exception]
+    (log/errorf "Error adding oppija %s: %s" oid (.getMessage exception)))
+  ([oid exception skip-indexing]
+    (log/errorf "%sError adding oppija %s: %s"
+                (if skip-indexing
+                  "Skipped indexing. "
+                  "")
+                oid (.getMessage exception))))
+
+(defn- log-opiskelija-insert-error-for-indexing! [oid exception]
+  (log-opiskelija-insert-error! oid exception true))
 
 (defn- insert-oppija! [oid]
   (let [oppija (:body (onr/find-student-by-oid oid))]
@@ -174,13 +195,13 @@
   (try
     (insert-oppija! oid)
     (catch Exception e
-      (log-opiskelija-insert-error oid e))))
+      (log-opiskelija-insert-error-for-indexing! oid e))))
 
 (defn- insert-new-oppija! [oid]
   (try
     (insert-oppija! oid)
     (catch Exception e
-      (log-opiskelija-insert-error oid e)
+      (log-opiskelija-insert-error! oid e)
       (throw e))))
 
 (defn- oppija-doesnt-exist [oid]
