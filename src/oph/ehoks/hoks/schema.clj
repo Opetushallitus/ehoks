@@ -370,7 +370,7 @@
          "osaamistavoitteista poikkeamiseen")
     (s/optional-key :osaamisen-osoittaminen) [OsaamisenOsoittaminen]
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
-    :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
+    (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
     (s/optional-key :koulutuksen-jarjestaja-oid) Oid
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
@@ -432,7 +432,7 @@
          "osaamistavoitteet")
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     "vaatimuksista tai osaamistavoitteista poikkeaminen"
-    :osaamisen-hankkimistavat [OsaamisenHankkimistapa]
+    (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapa]
     "Osaamisen hankkimistavat"
     (s/optional-key :koulutuksen-jarjestaja-oid) Oid
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "

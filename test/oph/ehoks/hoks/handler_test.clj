@@ -165,6 +165,32 @@
                  "1.2.246.562.24.12312312312")
               "Oppija oid should be unchanged"))))))
 
+(deftest osaamisen-hankkimistavat-isnt-mandatory
+  (testing "Osaamisen hankkimistavat should be optional field in ehoks"
+    (let [app (hoks-utils/create-app nil)
+          hoks {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                :oppija-oid "1.2.246.562.24.12312312312"
+                :ensikertainen-hyvaksyminen "2018-12-15"
+                :hankittavat-ammat-tutkinnon-osat
+                [(dissoc test-data/hao-data :osaamisen-hankkimistavat)]
+                :hankittavat-paikalliset-tutkinnon-osat
+                [(dissoc test-data/hpto-data :osaamisen-hankkimistavat)]}
+          post-response (hoks-utils/create-mock-post-request "" hoks app)
+          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status get-response) 200))
+      (is (empty?
+            (get-in
+              get-response-data
+              [:hankittavat-ammat-tutkinnon-osat
+               :osaamisen-hankkimistavat])))
+      (is (empty?
+            (get-in
+              get-response-data
+              [:hankittavat-paikalliset-tutkinnon-osat
+               :osaamisen-hankkimistavat]))))))
+
 (def one-value-of-hoks-patched
   {:id 1
    :ensikertainen-hyvaksyminen "2020-01-05"})
