@@ -17,7 +17,7 @@
  :opintopolku-tt-auth-url "http://localhost:3000/auth-dev/opintopolku-tt-login/"
  :ext-cache-lifetime-minutes 180
  :opintopolku-host "localhost:3000"
- :heratepalvelu-queue "heratepalvelu-eHOKSHerateQueue"
+ :heratepalvelu-queue "services-heratepalvelu-eHOKSHerateQueue"
  :send-herate-messages? false
  :audit? true
  :db-type "postgresql"
