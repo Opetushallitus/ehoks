@@ -120,16 +120,16 @@
 
 (defn- log-opiskeluoikeus-insert-error!
   ([oid oppija-oid exception]
-   (log/errorf
-     "Error adding opiskeluoikeus %s of oppija %s: %s"
-     oid oppija-oid (.getMessage exception)))
+    (log/errorf
+      "Error adding opiskeluoikeus %s of oppija %s: %s"
+      oid oppija-oid (.getMessage exception)))
   ([oid oppija-oid exception skip-indexing]
-   (log/errorf
-     "%sError adding opiskeluoikeus %s of oppija %s: %s"
-     (if skip-indexing
-       "Skipped indexing. "
-       "")
-     oid oppija-oid (.getMessage exception))))
+    (log/errorf
+      "%sError adding opiskeluoikeus %s of oppija %s: %s"
+      (if skip-indexing
+        "Skipped indexing. "
+        "")
+      oid oppija-oid (.getMessage exception))))
 
 (defn- log-opiskeluoikeus-insert-error-for-indexing! [oid oppija-oid exception]
   (log-opiskeluoikeus-insert-error! oid oppija-oid exception true))
@@ -174,13 +174,13 @@
 
 (defn- log-opiskelija-insert-error!
   ([oid exception]
-   (log/errorf "Error adding oppija %s: %s" oid (.getMessage exception)))
+    (log/errorf "Error adding oppija %s: %s" oid (.getMessage exception)))
   ([oid exception skip-indexing]
-   (log/errorf "%sError adding oppija %s: %s"
-               (if skip-indexing
-                 "Skipped indexing. "
-                 "")
-               oid (.getMessage exception))))
+    (log/errorf "%sError adding oppija %s: %s"
+                (if skip-indexing
+                  "Skipped indexing. "
+                  "")
+                oid (.getMessage exception))))
 
 (defn- log-opiskelija-insert-error-for-indexing! [oid exception]
   (log-opiskelija-insert-error! oid exception true))
