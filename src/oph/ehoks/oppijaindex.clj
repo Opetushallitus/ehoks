@@ -132,7 +132,7 @@
      oid oppija-oid (.getMessage exception))))
 
 (defn- log-opiskeluoikeus-insert-error-for-indexing! [oid oppija-oid exception]
-  log-opiskeluoikeus-insert-error! oid oppija-oid exception true)
+  (log-opiskeluoikeus-insert-error! oid oppija-oid exception true))
 
 (defn- insert-opiskeluoikeus [oid oppija-oid]
   (db-opiskeluoikeus/insert-opiskeluoikeus!
