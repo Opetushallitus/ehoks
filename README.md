@@ -135,6 +135,20 @@ user> (use 'oph.ehoks.dev-server)
 user> (def server (start-server "ehoks-virkailija" "config/custom.edn"))
 ```
 
+Ajossa olevat kokonaisuudet näkee replissä
+
+``` repl
+user> (System/getProperty “name”)
+```
+
+Tämän voi vaihtaa ajamalla replissä
+
+``` repl
+user> (System/setProperty “name” “ehoks-virkailija”)
+```
+
+ja lataamalla tiedoston [ehoks_app.clj](src/oph/ehoks/ehoks_app.clj) uudelleen replissä.
+
 Ja ohjelman sammuttaminen:
 
 ``` repl
