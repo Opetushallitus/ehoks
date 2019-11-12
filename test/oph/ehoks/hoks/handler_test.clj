@@ -315,6 +315,7 @@
 (def oto-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
    :opiskeluvalmiuksia-tukevat-opinnot
    [{:nimi "Uusi Nimi"
      :kuvaus "joku kuvaus"
@@ -331,6 +332,7 @@
 (def multiple-otos-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
    :opiskeluvalmiuksia-tukevat-opinnot
    [{:nimi "Uusi Nimi"
      :kuvaus "joku kuvaus"
@@ -480,6 +482,7 @@
                        :laatija {:nimi "Teppo Tekijä"}
                        :paivittaja {:nimi "Pekka Päivittäjä"}
                        :hyvaksyja {:nimi "Heikki Hyväksyjä"}
+                       :osaamisen-hankkimisen-tarve false
                        :ensikertainen-hyvaksyminen "2018-12-15"}
             response (app (-> (mock/request :post base-url)
                               (mock/json-body hoks-data)

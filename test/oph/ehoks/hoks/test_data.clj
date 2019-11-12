@@ -591,6 +591,7 @@
 (def hato-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve true
    :hankittavat-ammat-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_300222"
      :tutkinnon-osa-koodi-versio 2
@@ -636,6 +637,7 @@
 (def hpto-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve true
    :hankittavat-paikalliset-tutkinnon-osat
    [{:nimi "testinimi"
      :koulutuksen-jarjestaja-oid
@@ -679,6 +681,7 @@
 (def hyto-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
    :hankittavat-yhteiset-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_3002690"
      :tutkinnon-osa-koodi-versio 3
