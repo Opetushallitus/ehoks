@@ -23,6 +23,7 @@
   (testing "GET newly created HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
+                     :osaamisen-hankkimisen-tarve true
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           response
           (hoks-utils/mock-st-post
@@ -365,7 +366,6 @@
       (is (nil? (:versio get-response-data)))
       (is (nil? (:sahkoposti get-response-data)))
       (is (nil? (:urasuunnitelma-koodi-uri get-response-data)))
-      (is (nil? (:osaamisen-hankkimisen-tarve get-response-data)))
       (is (nil? (:hyvaksytty get-response-data)))
       (is (nil? (:urasuunnitelma-koodi-versio get-response-data)))
       (is (nil? (:paivitetty get-response-data))))))
