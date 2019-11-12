@@ -257,6 +257,7 @@
 (def ahyto-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve true
    :aiemmin-hankitut-yhteiset-tutkinnon-osat
    [{:valittu-todentamisen-prosessi-koodi-uri
      "osaamisentodentamisenprosessi_0002"
@@ -325,6 +326,7 @@
 (def ahpto-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
    :aiemmin-hankitut-paikalliset-tutkinnon-osat
    [{:valittu-todentamisen-prosessi-koodi-versio 3
      :laajuus 40
@@ -366,6 +368,7 @@
 (def ahato-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve true
    :aiemmin-hankitut-ammat-tutkinnon-osat
    [{:valittu-todentamisen-prosessi-koodi-versio 5
      :tutkinnon-osa-koodi-versio 100033
