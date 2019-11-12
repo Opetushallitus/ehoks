@@ -687,6 +687,11 @@
                 :description (str "HOKS-dokumentin viimeisin päivitysaika "
                                   "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
    :osaamisen-hankkimisen-tarve {:methods {:any :optional}
+                                 ;FEATURE TOGGLE: osaamisen-hankkimisen-tarve
+                                 ;Laita methodseihin nämä
+                                 ;:any :required
+                                 ;:patch :optional
+                                 ;:get :optional}
                                  :types {:any s/Bool}
                                  :description
                                  "Tutkintokoulutuksen ja muun tarvittavan
