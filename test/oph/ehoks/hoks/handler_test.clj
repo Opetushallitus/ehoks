@@ -131,7 +131,8 @@
               base-url
               {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                :oppija-oid "1.2.246.562.24.12312312312"
-               :ensikertainen-hyvaksyminen "2018-12-15"})
+               :ensikertainen-hyvaksyminen "2018-12-15"
+               :osaamisen-hankkimisen-tarve false})
             body (utils/parse-body (:body response))]
         (is (= (get
                  (hoks-utils/mock-st-patch
@@ -141,7 +142,7 @@
                     :opiskeluoikeus-oid "1.2.246.562.15.00000000002"})
                  :status)
                204)
-            "Should return bad request for updating opiskeluoikeus oid")
+            "Should not return bad request for updating opiskeluoikeus oid")
 
         (is (= (get
                  (hoks-utils/mock-st-patch
@@ -151,7 +152,7 @@
                     :oppija-oid "1.2.246.562.24.12312312314"})
                  :status)
                204)
-            "Should return bad request for updating oppija oid")
+            "Should not return bad request for updating oppija oid")
         (let [get-body (utils/parse-body
                          (get
                            (hoks-utils/mock-st-get
@@ -171,6 +172,7 @@
           hoks {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                 :oppija-oid "1.2.246.562.24.12312312312"
                 :ensikertainen-hyvaksyminen "2018-12-15"
+                :osaamisen-hankkimisen-tarve false
                 :hankittavat-ammat-tutkinnon-osat
                 [(dissoc test-data/hao-data :osaamisen-hankkimistavat)]
                 :hankittavat-paikalliset-tutkinnon-osat
@@ -216,7 +218,8 @@
 
 (def main-level-of-hoks-updated
   {:id 1
-   :ensikertainen-hyvaksyminen "2018-12-15"})
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false})
 
 (deftest hoks-put-removes-parts
   (testing "PUT only main level HOKS values, removes parts"
