@@ -88,7 +88,13 @@
                   (let [hokses (h/get-hokses-by-oppija oid)]
                     (if (empty? hokses)
                       (response/not-found {:message "No HOKSes found"})
-                      (rest/rest-ok (map #(dissoc % :id) hokses))))))))
+                      (rest/rest-ok (map #(dissoc % :id) hokses)))))
+
+                (c-api/GET "/kyselytunnukset" []
+                  :summary "Palauttaa oppijan aktiiviset kyselytunnukset, ja poistaa vastatut & vanhentuneet"
+                  :return (rest/response [[s/Str]])
+                  (let [tunnukset (h/get-kyselytunnukset-by-oppija-oid oid)]
+                    (rest/rest-ok tunnukset))))))
 
           (c-api/context "/hoksit" []
             :tags ["hoksit"]

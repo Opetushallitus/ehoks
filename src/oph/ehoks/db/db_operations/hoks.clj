@@ -290,3 +290,8 @@
 (defn select-hoks-opiskeluoikeudet-without-index-count []
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-index-count]))
+
+(defn select-kyselytunnukset-by-oppija-oid [oid]
+  (db-ops/query
+    [queries/select-kyselytunnukset-by-oppija-oid]
+    {:row-fn db-ops/from-sql}))

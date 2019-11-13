@@ -367,8 +367,8 @@
                     (get-in request [:hoks :id])
                     (assoc
                       data
-                      :oppija-oid
-                      (get-in request [:hoks :oppija-oid])))
+                      :oppija-oid (get-in request [:hoks :oppija-oid])
+                      :hoks-id (get-in request [:hoks :id])))
                   (response/no-content))
                 (response/not-found
                   {:error "HOKS not found with given HOKS ID"})))))))))

@@ -154,4 +154,7 @@
 (defn insert-kyselytunnus! [id m]
   (db-ops/insert-one!
     :kyselytunnukset
-    (db-ops/to-sql (assoc m :hoks-id id))))
+    (db-ops/to-sql m)))
+
+(defn get-kyselytunnukset-by-oppija-oid [oid]
+  (db-hoks/select-kyselytunnukset-by-oppija-oid oid))
