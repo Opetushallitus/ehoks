@@ -734,7 +734,8 @@
     {:doc "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
      :name "HOKSLuonti"}))
 
-(s/defschema kyselytunnus
+(s/defschema
+  kyselytunnus
   {:kyselytunnus s/Str
    :alkupvm s/Str
    :tyyppi s/Str})

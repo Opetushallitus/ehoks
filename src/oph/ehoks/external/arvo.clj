@@ -7,5 +7,7 @@
   (c/with-api-headers {:method :get
                        :service (u/get-url "arvo-url")
                        :url (u/get-url "arvo.get-status" tunnus)
-                       :options {:basic-auth [(:arvo-username config) (:arvo-password config)]
+                       :options {:basic-auth
+                                 [(:arvo-username config)
+                                  (:arvo-password config)]
                                  :as :json}}))

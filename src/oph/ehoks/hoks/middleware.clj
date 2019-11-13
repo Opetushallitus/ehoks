@@ -137,15 +137,14 @@
   [handler]
   (fn
     ([request respond raise]
-
-     (if (oph-authorized? request)
-       (handler request respond raise)
-       (response/unauthorized
-         {:error (str "No access is allowed. Check Opintopolku "
-                      "privileges and 'opiskeluoikeus'")})))
+      (if (oph-authorized? request)
+        (handler request respond raise)
+        (response/unauthorized
+          {:error (str "No access is allowed. Check Opintopolku "
+                       "privileges and 'opiskeluoikeus'")})))
     ([request]
-     (if (oph-authorized? request)
-       (handler request)
-       (response/unauthorized
-         {:error (str "No access is allowed. Check Opintopolku "
-                      "privileges and 'opiskeluoikeus'")})))))
+      (if (oph-authorized? request)
+        (handler request)
+        (response/unauthorized
+          {:error (str "No access is allowed. Check Opintopolku "
+                       "privileges and 'opiskeluoikeus'")})))))

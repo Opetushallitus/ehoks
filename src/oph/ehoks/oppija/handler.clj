@@ -91,7 +91,7 @@
                       (rest/rest-ok (map #(dissoc % :id) hokses)))))
 
                 (c-api/GET "/kyselytunnukset" []
-                  :summary "Palauttaa oppijan aktiiviset kyselytunnukset, ja poistaa vastatut & vanhentuneet"
+                  :summary "Palauttaa oppijan aktiiviset kyselytunnukset"
                   :return (rest/response [[s/Str]])
                   (let [tunnukset (h/get-kyselytunnukset-by-oppija-oid oid)]
                     (rest/rest-ok tunnukset))))))
