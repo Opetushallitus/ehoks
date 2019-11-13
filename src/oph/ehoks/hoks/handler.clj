@@ -358,13 +358,12 @@
           (route-middleware
             [m/wrap-require-oph-privileges]
 
-            (c-api/POST "/kyselytunnus" request
-              :summary "Lisää kyselytunnuksen hoksille"
-              :body [data hoks-schema/kyselytunnus]
+            (c-api/POST "/kyselylinkki" request
+              :summary "Lisää kyselylinkin hoksille"
+              :body [data hoks-schema/kyselylinkki]
               (if (not-empty (:hoks request))
                 (do
-                  (h/insert-kyselytunnus!
-                    (get-in request [:hoks :id])
+                  (h/insert-kyselylinkki!
                     (assoc
                       data
                       :oppija-oid (get-in request [:hoks :oppija-oid])

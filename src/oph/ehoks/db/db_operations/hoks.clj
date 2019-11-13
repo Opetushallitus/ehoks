@@ -291,7 +291,7 @@
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-index-count]))
 
-(defn select-kyselytunnukset-by-oppija-oid [oid]
+(defn select-kyselylinkit-by-oppija-oid [oid]
   (db-ops/query
-    [queries/select-kyselytunnukset-by-oppija-oid]
+    [queries/select-kyselylinkit-by-oppija-oid]
     {:row-fn db-ops/from-sql}))

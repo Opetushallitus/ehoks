@@ -735,7 +735,7 @@
      :name "HOKSLuonti"}))
 
 (s/defschema
-  kyselytunnus
-  {:kyselytunnus s/Str
+  kyselylinkki
+  {:kyselylinkki s/Str
    :alkupvm s/Str
    :tyyppi s/Str})

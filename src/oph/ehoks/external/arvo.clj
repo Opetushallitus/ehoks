@@ -1,7 +1,8 @@
 (ns oph.ehoks.external.arvo
   (:require [oph.ehoks.external.connection :as c]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.oph-url :as u]))
+            [oph.ehoks.external.oph-url :as u]
+            [clojure.string :as str]))
 
 (defn get-kyselytunnus-status [tunnus]
   (c/with-api-headers {:method :get
@@ -11,3 +12,6 @@
                                  [(:arvo-username config)
                                   (:arvo-password config)]
                                  :as :json}}))
+
+(defn get-kyselylinkki-status [link]
+  (get-kyselytunnus-status (last (str/split link #"/"))))

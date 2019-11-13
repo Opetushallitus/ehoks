@@ -151,10 +151,10 @@
 (defn update-hoks! [hoks-id new-values]
   (db-hoks/update-hoks-by-id! hoks-id new-values))
 
-(defn insert-kyselytunnus! [id m]
+(defn insert-kyselylinkki! [m]
   (db-ops/insert-one!
-    :kyselytunnukset
+    :kyselylinkit
     (db-ops/to-sql m)))
 
-(defn get-kyselytunnukset-by-oppija-oid [oid]
-  (db-hoks/select-kyselytunnukset-by-oppija-oid oid))
+(defn get-kyselylinkit-by-oppija-oid [oid]
+  (db-hoks/select-kyselylinkit-by-oppija-oid oid))

@@ -1,3 +1,3 @@
-SELECT tunnus, tyyppi, alkupvm
-    FROM kyselytunnukset
+SELECT kyselylinkki, tyyppi, alkupvm
+    FROM kyselylinkit
     WHERE oppija_oid = ?

@@ -11,6 +11,7 @@
             [oph.ehoks.oppija.schema :as oppija-schema]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.oppija.auth-handler :as auth-handler]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
@@ -90,10 +91,10 @@
                       (response/not-found {:message "No HOKSes found"})
                       (rest/rest-ok (map #(dissoc % :id) hokses)))))
 
-                (c-api/GET "/kyselytunnukset" []
-                  :summary "Palauttaa oppijan aktiiviset kyselytunnukset"
+                (c-api/GET "/kyselylinkit" []
+                  :summary "Palauttaa oppijan aktiiviset kyselylinkit"
                   :return (rest/response [[s/Str]])
-                  (let [tunnukset (h/get-kyselytunnukset-by-oppija-oid oid)]
+                  (let [tunnukset (h/get-kyselylinkit-by-oppija-oid oid)]
                     (rest/rest-ok tunnukset))))))
 
           (c-api/context "/hoksit" []
