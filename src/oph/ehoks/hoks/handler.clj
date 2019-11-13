@@ -363,7 +363,12 @@
               :body [data hoks-schema/kyselytunnus]
               (if (not-empty (:hoks request))
                 (do
-                  (h/insert-kyselytunnus! request data)
+                  (h/insert-kyselytunnus!
+                    (get-in request [:hoks :id])
+                    (assoc
+                      data
+                      :oppija-oid
+                      (get-in request [:hoks :oppija-oid])))
                   (response/no-content))
                 (response/not-found
                   {:error "HOKS not found with given HOKS ID"})))))))))
