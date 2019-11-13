@@ -353,4 +353,17 @@
           hankittava-ammat-tutkinnon-osa
           hankittava-paikallinen-tutkinnon-osa
           hankittava-yhteinen-tutkinnon-osa
-          opiskeluvalmiuksia-tukevat-opinnot)))))
+          opiskeluvalmiuksia-tukevat-opinnot
+
+          (route-middleware
+            [m/wrap-require-oph-privileges]
+
+            (c-api/POST "/kyselytunnus" request
+              :summary "Lisää kyselytunnuksen hoksille"
+              :body [data hoks-schema/kyselytunnus]
+              (if (not-empty (:hoks request))
+                (do
+                  (h/insert-kyselytunnus! request data)
+                  (response/no-content))
+                (response/not-found
+                  {:error "HOKS not found with given HOKS ID"})))))))))

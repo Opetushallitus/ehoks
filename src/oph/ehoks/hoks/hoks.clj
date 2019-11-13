@@ -150,3 +150,8 @@
 
 (defn update-hoks! [hoks-id new-values]
   (db-hoks/update-hoks-by-id! hoks-id new-values))
+
+(defn insert-kyselytunnus! [id m]
+  (db-ops/insert-one!
+    :kyselytunnukset
+    (db-ops/to-sql (assoc m :hoks-id id))))
