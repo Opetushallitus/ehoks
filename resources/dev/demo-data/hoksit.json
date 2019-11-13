@@ -41,7 +41,20 @@
       }
     }
   ],
-  "opiskeluvalmiuksia-tukevat-opinnot": [],
+  "opiskeluvalmiuksia-tukevat-opinnot": [
+    {
+      "nimi": "Tietokoneen käyttövalmiudet",
+      "kuvaus": "Tietokoneen perusohjelmistojen käytön kertaus. Word, Excel ja sähköposti.",
+      "alku": "2019-11-12",
+      "loppu": "2019-12-12"
+    },
+    {
+      "nimi": "Hyvän tekstin tuottaminen",
+      "kuvaus": "Miten tuotan tekstiä, tekstin sisältö ja rakenne",
+      "alku": "2020-01-12",
+      "loppu": "2020-03-02"
+    }
+  ],
   "hankittavat-ammat-tutkinnon-osat": [
     {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
