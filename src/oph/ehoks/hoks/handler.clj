@@ -315,42 +315,49 @@
 
       (c-api/context "/:hoks-id" []
 
-        (route-middleware
-          [m/wrap-hoks m/wrap-hoks-access]
+        route-middleware
+        [m/wrap-hoks m/wrap-hoks-access]
 
-          (c-api/GET "/" request
-            :summary "Palauttaa HOKSin"
-            :return (rest/response hoks-schema/HOKS)
-            (rest/rest-ok (h/get-hoks-values (:hoks request))))
+        (c-api/GET "/" request
+          :summary "Palauttaa HOKSin"
+          :return (rest/response hoks-schema/HOKS)
+          (rest/rest-ok (h/get-hoks-values (:hoks request))))
 
-          (c-api/PATCH "/" request
-            :summary
-            "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
-            :body [values hoks-schema/HOKSPaivitys]
-            (if (not-empty (:hoks request))
-              (do
-                (h/update-hoks! (get-in request [:hoks :id])
-                                (dissoc values :oppija-oid :opiskeluoikeus-oid))
-                (response/no-content))
-              (response/not-found
-                {:error "HOKS not found with given HOKS ID"})))
+        (c-api/PATCH "/" request
+          :summary
+          "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
+          :body [values hoks-schema/HOKSPaivitys]
+          (if (not-empty (:hoks request))
+            (do
+              (h/update-hoks! (get-in request [:hoks :id])
+                              (dissoc values :oppija-oid :opiskeluoikeus-oid))
+              (response/no-content))
+            (response/not-found
+              {:error "HOKS not found with given HOKS ID"})))
 
-          (c-api/PUT "/" request
-            :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
-            :body [values hoks-schema/HOKSKorvaus]
-            (if (not-empty (:hoks request))
+        (c-api/PUT "/" request
+          :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
+          :body [values hoks-schema/HOKSKorvaus]
+          (let [hoks-id (get-in request [:hoks :id])
+                oid (:opiskeluoikeus-oid (h/get-hoks-by-id hoks-id))
+                new-oid (:opiskeluoikeus-oid values)]
+            (cond
+              (and (some? new-oid) (not= oid new-oid))
+              (response/bad-request!
+                {:error "Opiskeluoikeus-oid update not allowed!"})
+              (not-empty (:hoks request))
               (do
                 (h/replace-hoks!
-                  (get-in request [:hoks :id])
-                  (dissoc values :oppija-oid :opiskeluoikeus-oid))
+                  hoks-id (dissoc values :oppija-oid :opiskeluoikeus-oid))
                 (response/no-content))
-              (response/not-found
-                {:error "HOKS not found with given HOKS ID"})))
+              :else
+              (response/not-found {:error "HOKS not found with HOKS ID"}))))
 
-          aiemmin-hankittu-ammat-tutkinnon-osa
-          aiemmin-hankittu-paikallinen-tutkinnon-osa
-          aiemmin-hankittu-yhteinen-tutkinnon-osa
-          hankittava-ammat-tutkinnon-osa
-          hankittava-paikallinen-tutkinnon-osa
-          hankittava-yhteinen-tutkinnon-osa
-          opiskeluvalmiuksia-tukevat-opinnot)))))
+
+        aiemmin-hankittu-ammat-tutkinnon-osa
+        aiemmin-hankittu-paikallinen-tutkinnon-osa
+        aiemmin-hankittu-yhteinen-tutkinnon-osa
+        hankittava-ammat-tutkinnon-osa
+        hankittava-paikallinen-tutkinnon-osa
+        hankittava-yhteinen-tutkinnon-osa
+        opiskeluvalmiuksia-tukevat-opinnot))))
