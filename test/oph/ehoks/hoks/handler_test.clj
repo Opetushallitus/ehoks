@@ -316,7 +316,8 @@
                          (-> test-data/hoks-data
                              (assoc :id 1)
                              (dissoc :opiskeluoikeus-oid :oppija-oid)
-                             (assoc :opiskeluoikeus-oid "1.2.246.562.15.00000000002"))
+                             (assoc :opiskeluoikeus-oid
+                                    "1.2.246.562.15.00000000002"))
                          app)]
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 400)))))
