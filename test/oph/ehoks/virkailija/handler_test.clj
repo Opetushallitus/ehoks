@@ -627,6 +627,60 @@
                  :privileges #{:read}}]})]
         (t/is (= (:status patch-response) 403))))))
 
+(t/deftest prevent-patch-hoks-with-updated-opiskeluoikeus
+  (t/testing "PATCH hoks virkailija"
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (let [post-response
+            (post-new-hoks
+              "1.2.246.562.15.760000000010" "1.2.246.562.10.1200000000010")
+            body (utils/parse-body (:body post-response))
+            hoks-url (get-in body [:data :uri])
+            patch-response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :patch
+                  hoks-url)
+                {:osaamisen-hankkimisen-tarve true
+                 :id (get-in body [:meta :id])
+                 :opiskeluoikeus-oid "1.2.246.562.15.760000000011"})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})]
+        (t/is (= (:status patch-response) 400))
+        (t/is (= (utils/parse-body (:body patch-response))
+                 {:error "Opiskeluoikeus update not allowed!"}))))))
+
+(t/deftest prevent-patch-hoks-with-updated-oppija-oid
+  (t/testing "PATCH hoks virkailija"
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (let [post-response
+            (post-new-hoks
+              "1.2.246.562.15.760000000010" "1.2.246.562.10.1200000000010")
+            body (utils/parse-body (:body post-response))
+            hoks-url (get-in body [:data :uri])
+            patch-response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :patch
+                  hoks-url)
+                {:osaamisen-hankkimisen-tarve true
+                 :id (get-in body [:meta :id])
+                 :oppija-oid "1.2.246.562.10.1200000000011"})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})]
+        (t/is (= (:status patch-response) 400))
+        (t/is (= (utils/parse-body (:body patch-response))
+                 {:error "Oppija-oid update not allowed!"}))))))
+
 (def hoks-data
   {:opiskeluoikeus-oid "1.2.246.562.15.760000000010"
    :oppija-oid "1.2.246.562.24.44000000001"

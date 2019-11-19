@@ -264,18 +264,29 @@
                           (c-api/PATCH "/" request
                             :body [hoks-values hoks-schema/HOKSPaivitys]
                             :summary "Oppijan hoksin päätason arvojen päivitys"
-                            (h/update-hoks!
-                              hoks-id
-                              (dissoc
-                                hoks-values
-                                :opiskeluoikeus-oid
-                                :oppija-oid))
-                            (assoc
-                              (response/no-content)
-                              :audit-data {:new
-                                           (dissoc hoks-values
-                                                   :oppija-oid
-                                                   :opiskeluoikeus-oid)}))))
+                            (try
+                              (let [hoks-db
+                                    (h/update-hoks! hoks-id hoks-values)]
+                                (assoc
+                                  (response/no-content)
+                                  :audit-data
+                                  {:new  hoks-values}))
+                              (catch Exception e
+                                (cond
+                                  (= (:error (ex-data e))
+                                     :opiskeluoikeus-update)
+                                  (assoc
+                                    (response/bad-request!
+                                      {:error
+                                       "Opiskeluoikeus update not allowed!"})
+                                    :audit-data {:new hoks-values})
+                                  (= (:error (ex-data e)) :oppija-update)
+                                  (assoc
+                                    (response/bad-request!
+                                      {:error
+                                       "Oppija-oid update not allowed!"})
+                                    :audit-data {:new hoks-values}))
+                                (throw e))))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]

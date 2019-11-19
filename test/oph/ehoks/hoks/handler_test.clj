@@ -140,20 +140,22 @@
                    app
                    (get-in body [:data :uri])
                    {:id (get-in body [:meta :id])
-                    :opiskeluoikeus-oid "1.2.246.562.15.00000000002"})
+                    :opiskeluoikeus-oid "1.2.246.562.15.00000000001"})
                  :status)
                204)
-            "Should not return bad request for updating opiskeluoikeus oid")
+            "Should not return bad request for updating opiskeluoikeus oid
+             if the oid is not changed")
 
         (is (= (get
                  (hoks-utils/mock-st-patch
                    app
                    (get-in body [:data :uri])
                    {:id (get-in body [:meta :id])
-                    :oppija-oid "1.2.246.562.24.12312312314"})
+                    :oppija-oid "1.2.246.562.24.12312312312"})
                  :status)
                204)
-            "Should not return bad request for updating oppija oid")
+            "Should not return bad request for updating oppija oid if the
+             oid is not changed")
         (let [get-body (utils/parse-body
                          (get
                            (hoks-utils/mock-st-get
@@ -166,6 +168,70 @@
           (is (= (get-in get-body [:data :oppija-oid])
                  "1.2.246.562.24.12312312312")
               "Oppija oid should be unchanged"))))))
+
+(deftest prevent-oppija-oid-patch
+  (testing "Prevent patching oppija oid"
+    (let [app (hoks-utils/create-app nil)]
+      (let [response
+            (hoks-utils/mock-st-post
+              app
+              base-url
+              {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+               :oppija-oid "1.2.246.562.24.12312312312"
+               :ensikertainen-hyvaksyminen "2018-12-15"
+               :osaamisen-hankkimisen-tarve false})
+            body (utils/parse-body (:body response))]
+        (is (= (get
+                 (hoks-utils/mock-st-patch
+                   app
+                   (get-in body [:data :uri])
+                   {:id (get-in body [:meta :id])
+                    :oppija-oid "1.2.246.562.24.12312312313"})
+                 :status)
+               400)
+            "Should return bad request for updating oppija oid if the
+             oid is changed")
+        (let [get-body (utils/parse-body
+                         (get
+                           (hoks-utils/mock-st-get
+                             app
+                             (get-in body [:data :uri]))
+                           :body))]
+          (is (= (get-in get-body [:data :oppija-oid])
+                 "1.2.246.562.24.12312312312")
+              "Oppija oid should be unchanged"))))))
+
+(deftest prevent-opiskeluoikeus-patch
+  (testing "Prevent patching opiskeluoikeus-oid"
+    (let [app (hoks-utils/create-app nil)]
+      (let [response
+            (hoks-utils/mock-st-post
+              app
+              base-url
+              {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+               :oppija-oid "1.2.246.562.24.12312312312"
+               :ensikertainen-hyvaksyminen "2018-12-15"
+               :osaamisen-hankkimisen-tarve false})
+            body (utils/parse-body (:body response))]
+        (is (= (get
+                 (hoks-utils/mock-st-patch
+                   app
+                   (get-in body [:data :uri])
+                   {:id (get-in body [:meta :id])
+                    :opiskeluoikeus-oid "1.2.246.562.15.00000000002"})
+                 :status)
+               400)
+            "Should return bad request for updating opiskeluoikeus oid
+             if the oid is changed")
+        (let [get-body (utils/parse-body
+                         (get
+                           (hoks-utils/mock-st-get
+                             app
+                             (get-in body [:data :uri]))
+                           :body))]
+          (is (= (get-in get-body [:data :opiskeluoikeus-oid])
+                 "1.2.246.562.15.00000000001")
+              "Opiskeluoikeus oid should be unchanged"))))))
 
 (deftest osaamisen-hankkimistavat-isnt-mandatory
   (testing "Osaamisen hankkimistavat should be optional field in ehoks"
