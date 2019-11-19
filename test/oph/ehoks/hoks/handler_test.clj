@@ -303,7 +303,7 @@
       (eq (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data)
           (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)))))
 
-(deftest prevent-updating-hoks-with-existing-opiskeluoikeus
+(deftest prevent-updating-opiskeluoikeus
   (testing "Prevent PUT HOKS with existing opiskeluoikeus"
     (let [app (hoks-utils/create-app nil)
           post-response
@@ -320,7 +320,30 @@
                                     "1.2.246.562.15.00000000002"))
                          app)]
       (is (= (:status post-response) 200))
-      (is (= (:status put-response) 400)))))
+      (is (= (:status put-response) 400))
+      (is (= (utils/parse-body (:body put-response))
+             {:error "Opiskeluoikeus update not allowed!"})))))
+
+(deftest prevent-updating-oppija-oid
+  (testing "Prevent PUT HOKS with existing opiskeluoikeus"
+    (let [app (hoks-utils/create-app nil)
+          post-response
+          (hoks-utils/create-mock-post-request
+            ""
+            (dissoc test-data/hoks-data :opiskeluvalmiuksia-tukevat-opinnot)
+            app)
+          put-response (hoks-utils/create-mock-hoks-put-request
+                         1
+                         (-> test-data/hoks-data
+                             (assoc :id 1)
+                             (dissoc :opiskeluoikeus-oid :oppija-oid)
+                             (assoc :oppija-oid
+                                    "1.2.246.562.24.12312312313"))
+                         app)]
+      (is (= (:status post-response) 200))
+      (is (= (:status put-response) 400))
+      (is (= (utils/parse-body (:body put-response))
+             {:error "Oppija-oid update not allowed!"})))))
 
 (deftest patching-of-hoks-part-not-allowed
   (testing "PATCH of HOKS can't be used to update sub entities of HOKS"

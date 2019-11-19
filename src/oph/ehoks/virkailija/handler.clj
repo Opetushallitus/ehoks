@@ -237,16 +237,29 @@
                             "Ylikirjoittaa olemassa olevan HOKSin arvon tai
                              arvot"
                             :body [hoks-values hoks-schema/HOKSKorvaus]
-                            (h/replace-hoks!
-                              hoks-id
-                              (dissoc hoks-values
-                                      :oppija-oid
-                                      :opiskeluoikeus-oid))
-                            (assoc
-                              (response/no-content)
-                              :audit-data {:new  (dissoc hoks-values
-                                                         :oppija-oid
-                                                         :opiskeluoikeus-oid)}))
+                            (try
+                              (let [hoks-db
+                                    (h/replace-hoks! hoks-id hoks-values)]
+                                (assoc
+                                  (response/no-content)
+                                  :audit-data
+                                  {:new  hoks-values}))
+                              (catch Exception e
+                                (cond
+                                  (= (:error (ex-data e))
+                                     :opiskeluoikeus-update)
+                                  (assoc
+                                    (response/bad-request!
+                                      {:error
+                                       "Opiskeluoikeus update not allowed!"})
+                                    :audit-data {:new hoks-values})
+                                  (= (:error (ex-data e)) :oppija-update)
+                                  (assoc
+                                    (response/bad-request!
+                                      {:error
+                                       "Oppija-oid update not allowed!"})
+                                    :audit-data {:new hoks-values}))
+                                (throw e))))
 
                           (c-api/PATCH "/" request
                             :body [hoks-values hoks-schema/HOKSPaivitys]

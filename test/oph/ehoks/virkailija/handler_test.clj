@@ -744,3 +744,100 @@
                             [:data :hankittavat-ammat-tutkinnon-osat])
                     hato-data))
         (t/is (= (:status put-response) 204))))))
+
+(t/deftest test-put-prevent-updating-opiskeluoikeus
+  (t/testing "PUT hoks virkailija"
+    (utils/with-db
+      (add-oppija {:oid "1.2.246.562.24.44000000001"
+                   :nimi "Teuvo Testaaja"
+                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                   :tutkinto-nimi {:fi "Testitutkinto 1"}
+                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                   :koulutustoimija-oid ""})
+      (let [response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :post
+                  (str
+                    base-url
+                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
+                hoks-data)
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})
+            body (utils/parse-body (:body response))
+            hoks-url (get-in body [:data :uri])
+            put-response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :put
+                  hoks-url)
+                {:id (get-in body [:meta :id])
+                 :osaamisen-hankkimisen-tarve true
+                 :ensikertainen-hyvaksyminen "2018-12-15"
+                 :opiskeluoikeus-oid "1.2.246.562.15.760000000011"
+                 :hankittavat-ammat-tutkinnon-osat
+                 hato-data})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})
+            put-body (utils/parse-body (:body put-response))]
+        (t/is (= (:status put-response) 400))
+        (t/is (= put-body
+                 {:error "Opiskeluoikeus update not allowed!"}))))))
+
+(t/deftest test-put-prevent-updating-oppija-oid
+  (t/testing "PUT hoks virkailija"
+    (utils/with-db
+      (add-oppija {:oid "1.2.246.562.24.44000000001"
+                   :nimi "Teuvo Testaaja"
+                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                   :tutkinto-nimi {:fi "Testitutkinto 1"}
+                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                   :koulutustoimija-oid ""})
+      (let [response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :post
+                  (str
+                    base-url
+                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
+                hoks-data)
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})
+            body (utils/parse-body (:body response))
+            hoks-url (get-in body [:data :uri])
+            put-response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :put
+                  hoks-url)
+                {:id (get-in body [:meta :id])
+                 :osaamisen-hankkimisen-tarve true
+                 :ensikertainen-hyvaksyminen "2018-12-15"
+                 :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                 :oppija-oid "1.2.246.562.24.44000000002"
+                 :hankittavat-ammat-tutkinnon-osat
+                 hato-data})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})
+            put-body (utils/parse-body (:body put-response))]
+        (t/is (= (:status put-response) 400))
+        (t/is (= put-body
+                 {:error "Oppija-oid update not allowed!"}))))))

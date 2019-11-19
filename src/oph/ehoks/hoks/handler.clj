@@ -337,21 +337,32 @@
 
           (c-api/PUT "/" request
             :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
-            :body [values hoks-schema/HOKSKorvaus]
-            (let [hoks-id (get-in request [:hoks :id])
-                  oid (:opiskeluoikeus-oid (h/get-hoks-by-id hoks-id))
-                  new-oid (:opiskeluoikeus-oid values)]
-              (cond
-                (and (some? new-oid) (not= oid new-oid))
-                (response/bad-request!
-                  {:error "Opiskeluoikeus-oid update not allowed!"})
-                (not-empty (:hoks request))
-                (do
-                  (h/replace-hoks!
-                    hoks-id (dissoc values :oppija-oid :opiskeluoikeus-oid))
-                  (response/no-content))
-                :else
-                (response/not-found {:error "HOKS not found with HOKS ID"}))))
+            :body [hoks-values hoks-schema/HOKSKorvaus]
+            (if (not-empty (:hoks request))
+              (try
+                (let [hoks-db (h/replace-hoks!
+                                (get-in request [:hoks :id]) hoks-values)]
+                  (assoc
+                    (response/no-content)
+                    :audit-data
+                    {:new  hoks-values}))
+                (catch Exception e
+                  (cond
+                    (= (:error (ex-data e)) :opiskeluoikeus-update)
+                    (assoc
+                      (response/bad-request!
+                        {:error
+                         (str "Opiskeluoikeus update not allowed!")})
+                      :audit-data {:new hoks-values})
+                    (= (:error (ex-data e)) :oppija-update)
+                    (assoc
+                      (response/bad-request!
+                        {:error
+                         "Oppija-oid update not allowed!"})
+                      :audit-data {:new hoks-values}))
+                  (throw e)))
+              (response/not-found
+                {:error "HOKS not found with given HOKS ID"})))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
