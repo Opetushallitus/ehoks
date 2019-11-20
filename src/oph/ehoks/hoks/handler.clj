@@ -336,19 +336,11 @@
                     :audit-data
                     {:new  hoks-values}))
                 (catch Exception e
-                  (cond
-                    (= (:error (ex-data e)) :opiskeluoikeus-update)
-                    (assoc
-                      (response/bad-request!
-                        {:error
-                         (str "Opiskeluoikeus update not allowed!")})
-                      :audit-data {:new hoks-values})
-                    (= (:error (ex-data e)) :oppija-update)
-                    (assoc
-                      (response/bad-request!
-                        {:error
-                         "Oppija-oid update not allowed!"})
-                      :audit-data {:new hoks-values}))
+                  (assoc
+                    (response/bad-request!
+                      {:error
+                       (.getMessage e)})
+                    :audit-data {:new hoks-values})
                   (throw e)))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
@@ -365,18 +357,11 @@
                     :audit-data
                     {:new  hoks-values}))
                 (catch Exception e
-                  (cond
-                    (= (:error (ex-data e)) :opiskeluoikeus-update)
+                  (if (= (:error (ex-data e)) :disallowed-update)
                     (assoc
                       (response/bad-request!
                         {:error
-                         (str "Opiskeluoikeus update not allowed!")})
-                      :audit-data {:new hoks-values})
-                    (= (:error (ex-data e)) :oppija-update)
-                    (assoc
-                      (response/bad-request!
-                        {:error
-                         "Oppija-oid update not allowed!"})
+                         (.getMessage e)})
                       :audit-data {:new hoks-values}))
                   (throw e)))
               (response/not-found
