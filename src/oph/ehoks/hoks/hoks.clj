@@ -131,8 +131,9 @@
 (defn replace-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
-    (let [old-opiskeluoikeus-oid (:opiskeluoikeus-oid (get-hoks-by-id hoks-id))
-          old-oppija-oid (:oppija-oid (get-hoks-by-id hoks-id))
+    (let [hoks (get-hoks-by-id hoks-id)
+          old-opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+          old-oppija-oid (:oppija-oid hoks)
           new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
           new-oppija-oid (:oppija-oid new-values)]
       (cond
@@ -177,10 +178,10 @@
            (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
       (throw (ex-info
                "Opiskeluoikeus update not allowed!"
-               {:error :opiskeluoikeus-update}))
+               {:error :disallowed-update}))
       (and (some? new-oppija-oid) (not= new-oppija-oid old-oppija-oid))
       (throw (ex-info
                "Oppija-oid update not allowed!"
-               {:error :oppija-update}))
+               {:error :disallowed-update}))
       :else
       (db-hoks/update-hoks-by-id! hoks-id new-values))))

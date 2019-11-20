@@ -245,21 +245,13 @@
                                   :audit-data
                                   {:new  hoks-values}))
                               (catch Exception e
-                                (cond
-                                  (= (:error (ex-data e))
-                                     :opiskeluoikeus-update)
+                                (if (= (:error (ex-data e)) :disallowed-update)
                                   (assoc
                                     (response/bad-request!
                                       {:error
-                                       "Opiskeluoikeus update not allowed!"})
+                                       (.getMessage e)})
                                     :audit-data {:new hoks-values})
-                                  (= (:error (ex-data e)) :oppija-update)
-                                  (assoc
-                                    (response/bad-request!
-                                      {:error
-                                       "Oppija-oid update not allowed!"})
-                                    :audit-data {:new hoks-values}))
-                                (throw e))))
+                                  (throw e)))))
 
                           (c-api/PATCH "/" request
                             :body [hoks-values hoks-schema/HOKSPaivitys]
@@ -272,21 +264,13 @@
                                   :audit-data
                                   {:new  hoks-values}))
                               (catch Exception e
-                                (cond
-                                  (= (:error (ex-data e))
-                                     :opiskeluoikeus-update)
+                                (if (= (:error (ex-data e)) :disallowed-update)
                                   (assoc
                                     (response/bad-request!
                                       {:error
-                                       "Opiskeluoikeus update not allowed!"})
+                                       (.getMessage e)})
                                     :audit-data {:new hoks-values})
-                                  (= (:error (ex-data e)) :oppija-update)
-                                  (assoc
-                                    (response/bad-request!
-                                      {:error
-                                       "Oppija-oid update not allowed!"})
-                                    :audit-data {:new hoks-values}))
-                                (throw e))))))
+                                  (throw e)))))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]

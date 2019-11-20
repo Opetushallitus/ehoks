@@ -336,12 +336,13 @@
                     :audit-data
                     {:new  hoks-values}))
                 (catch Exception e
-                  (assoc
-                    (response/bad-request!
-                      {:error
-                       (.getMessage e)})
-                    :audit-data {:new hoks-values})
-                  (throw e)))
+                  (if (= (:error (ex-data e)) :disallowed-update)
+                    (assoc
+                      (response/bad-request!
+                        {:error
+                         (.getMessage e)})
+                      :audit-data {:new hoks-values})
+                    (throw e))))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
 
@@ -362,8 +363,8 @@
                       (response/bad-request!
                         {:error
                          (.getMessage e)})
-                      :audit-data {:new hoks-values}))
-                  (throw e)))
+                      :audit-data {:new hoks-values})
+                    (throw e))))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
 
