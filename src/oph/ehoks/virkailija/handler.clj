@@ -237,32 +237,40 @@
                             "Ylikirjoittaa olemassa olevan HOKSin arvon tai
                              arvot"
                             :body [hoks-values hoks-schema/HOKSKorvaus]
-                            (h/replace-hoks!
-                              hoks-id
-                              (dissoc hoks-values
-                                      :oppija-oid
-                                      :opiskeluoikeus-oid))
-                            (assoc
-                              (response/no-content)
-                              :audit-data {:new  (dissoc hoks-values
-                                                         :oppija-oid
-                                                         :opiskeluoikeus-oid)}))
+                            (try
+                              (let [hoks-db
+                                    (h/replace-hoks! hoks-id hoks-values)]
+                                (assoc
+                                  (response/no-content)
+                                  :audit-data
+                                  {:new  hoks-values}))
+                              (catch Exception e
+                                (if (= (:error (ex-data e)) :disallowed-update)
+                                  (assoc
+                                    (response/bad-request!
+                                      {:error
+                                       (.getMessage e)})
+                                    :audit-data {:new hoks-values})
+                                  (throw e)))))
 
                           (c-api/PATCH "/" request
                             :body [hoks-values hoks-schema/HOKSPaivitys]
                             :summary "Oppijan hoksin päätason arvojen päivitys"
-                            (h/update-hoks!
-                              hoks-id
-                              (dissoc
-                                hoks-values
-                                :opiskeluoikeus-oid
-                                :oppija-oid))
-                            (assoc
-                              (response/no-content)
-                              :audit-data {:new
-                                           (dissoc hoks-values
-                                                   :oppija-oid
-                                                   :opiskeluoikeus-oid)}))))
+                            (try
+                              (let [hoks-db
+                                    (h/update-hoks! hoks-id hoks-values)]
+                                (assoc
+                                  (response/no-content)
+                                  :audit-data
+                                  {:new  hoks-values}))
+                              (catch Exception e
+                                (if (= (:error (ex-data e)) :disallowed-update)
+                                  (assoc
+                                    (response/bad-request!
+                                      {:error
+                                       (.getMessage e)})
+                                    :audit-data {:new hoks-values})
+                                  (throw e)))))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]

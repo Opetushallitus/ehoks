@@ -131,25 +131,60 @@
 (defn replace-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
-    (replace-main-hoks! hoks-id new-values db-conn)
-    (replace-oto! hoks-id (:opiskeluvalmiuksia-tukevat-opinnot new-values)
-                  db-conn)
-    (replace-hato! hoks-id (:hankittavat-ammat-tutkinnon-osat new-values)
-                   db-conn)
-    (replace-hpto! hoks-id (:hankittavat-paikalliset-tutkinnon-osat new-values)
-                   db-conn)
-    (replace-hyto! hoks-id (:hankittavat-yhteiset-tutkinnon-osat new-values)
-                   db-conn)
-    (replace-ahato! hoks-id (:aiemmin-hankitut-ammat-tutkinnon-osat new-values)
-                    db-conn)
-    (replace-ahpto! hoks-id (:aiemmin-hankitut-paikalliset-tutkinnon-osat
-                              new-values)
-                    db-conn)
-    (replace-ahyto! hoks-id (:aiemmin-hankitut-yhteiset-tutkinnon-osat
-                              new-values))))
+    (let [hoks (get-hoks-by-id hoks-id)
+          old-opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+          old-oppija-oid (:oppija-oid hoks)
+          new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
+          new-oppija-oid (:oppija-oid new-values)]
+      (cond
+        (and (some? new-opiskeluoikeus-oid)
+             (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
+        (throw (ex-info
+                 "Opiskeluoikeus update not allowed!"
+                 {:error :disallowed-update}))
+        (and (some? new-oppija-oid) (not= new-oppija-oid old-oppija-oid))
+        (throw (ex-info
+                 "Oppija-oid update not allowed!"
+                 {:error :disallowed-update}))
+        :else
+        (do
+          (replace-main-hoks! hoks-id new-values db-conn)
+          (replace-oto! hoks-id (:opiskeluvalmiuksia-tukevat-opinnot new-values)
+                        db-conn)
+          (replace-hato! hoks-id (:hankittavat-ammat-tutkinnon-osat new-values)
+                         db-conn)
+          (replace-hpto! hoks-id
+                         (:hankittavat-paikalliset-tutkinnon-osat new-values)
+                         db-conn)
+          (replace-hyto! hoks-id
+                         (:hankittavat-yhteiset-tutkinnon-osat new-values)
+                         db-conn)
+          (replace-ahato! hoks-id
+                          (:aiemmin-hankitut-ammat-tutkinnon-osat new-values)
+                          db-conn)
+          (replace-ahpto! hoks-id (:aiemmin-hankitut-paikalliset-tutkinnon-osat
+                                    new-values)
+                          db-conn)
+          (replace-ahyto! hoks-id (:aiemmin-hankitut-yhteiset-tutkinnon-osat
+                                    new-values)))))))
 
 (defn update-hoks! [hoks-id new-values]
-  (db-hoks/update-hoks-by-id! hoks-id new-values))
+  (let [old-opiskeluoikeus-oid (:opiskeluoikeus-oid (get-hoks-by-id hoks-id))
+        old-oppija-oid (:oppija-oid (get-hoks-by-id hoks-id))
+        new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
+        new-oppija-oid (:oppija-oid new-values)]
+    (cond
+      (and (some? new-opiskeluoikeus-oid)
+           (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
+      (throw (ex-info
+               "Opiskeluoikeus update not allowed!"
+               {:error :disallowed-update}))
+      (and (some? new-oppija-oid) (not= new-oppija-oid old-oppija-oid))
+      (throw (ex-info
+               "Oppija-oid update not allowed!"
+               {:error :disallowed-update}))
+      :else
+      (db-hoks/update-hoks-by-id! hoks-id new-values))))
 
 (defn insert-kyselylinkki! [m]
   (db-ops/insert-one!

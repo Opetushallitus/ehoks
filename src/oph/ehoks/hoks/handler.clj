@@ -326,24 +326,45 @@
           (c-api/PATCH "/" request
             :summary
             "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
-            :body [values hoks-schema/HOKSPaivitys]
+            :body [hoks-values hoks-schema/HOKSPaivitys]
             (if (not-empty (:hoks request))
-              (do
-                (h/update-hoks! (get-in request [:hoks :id])
-                                (dissoc values :oppija-oid :opiskeluoikeus-oid))
-                (response/no-content))
+              (try
+                (let [hoks-db (h/update-hoks!
+                                (get-in request [:hoks :id]) hoks-values)]
+                  (assoc
+                    (response/no-content)
+                    :audit-data
+                    {:new  hoks-values}))
+                (catch Exception e
+                  (if (= (:error (ex-data e)) :disallowed-update)
+                    (assoc
+                      (response/bad-request!
+                        {:error
+                         (.getMessage e)})
+                      :audit-data {:new hoks-values})
+                    (throw e))))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
 
           (c-api/PUT "/" request
             :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
-            :body [values hoks-schema/HOKSKorvaus]
+            :body [hoks-values hoks-schema/HOKSKorvaus]
             (if (not-empty (:hoks request))
-              (do
-                (h/replace-hoks!
-                  (get-in request [:hoks :id])
-                  (dissoc values :oppija-oid :opiskeluoikeus-oid))
-                (response/no-content))
+              (try
+                (let [hoks-db (h/replace-hoks!
+                                (get-in request [:hoks :id]) hoks-values)]
+                  (assoc
+                    (response/no-content)
+                    :audit-data
+                    {:new  hoks-values}))
+                (catch Exception e
+                  (if (= (:error (ex-data e)) :disallowed-update)
+                    (assoc
+                      (response/bad-request!
+                        {:error
+                         (.getMessage e)})
+                      :audit-data {:new hoks-values})
+                    (throw e))))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
 
