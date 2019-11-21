@@ -5,13 +5,13 @@
             [clojure.string :as str]))
 
 (defn get-kyselytunnus-status [tunnus]
-  (c/with-api-headers {:method :get
-                       :service (u/get-url "arvo-url")
-                       :url (u/get-url "arvo.get-status" tunnus)
-                       :options {:basic-auth
-                                 [(:arvo-username config)
-                                  (:arvo-password config)]
-                                 :as :json}}))
+  (:body (c/with-api-headers {:method :get
+                              :service (u/get-url "arvo-url")
+                              :url (u/get-url "arvo.get-status" tunnus)
+                              :options {:basic-auth
+                                            [(:arvo-username config)
+                                             (:arvo-password config)]
+                                        :as :json}})))
 
 (defn get-kyselylinkki-status [link]
   (get-kyselytunnus-status (last (str/split link #"/"))))

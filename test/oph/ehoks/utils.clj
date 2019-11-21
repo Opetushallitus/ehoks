@@ -175,6 +175,11 @@
               {:status 200
                :body {:parentOidPath
                       "|"}}
+              (.endsWith
+                url "/rest/organisaatio/v4/1.2.246.562.10.12944436166")
+              {:status 200
+               :body {:parentOidPath
+                      "|1.2.246.562.10.00000000001|"}}
               (> (.indexOf url "oppijanumerorekisteri-service/henkilo") -1)
               (let [oid (last (.split url "/"))]
                 (if (= oid "1.2.246.562.24.40404040404")

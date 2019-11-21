@@ -22,7 +22,9 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppija.share-handler :as share-handler]
             [oph.ehoks.oppija.middleware :as m]
-            [oph.ehoks.oppija.oppija-external :as oppija-external]))
+            [oph.ehoks.oppija.oppija-external :as oppija-external]
+            [clj-time.format :as f]
+            [clj-time.core :as t]))
 
 (defn wrap-match-user [handler]
   (fn
@@ -93,9 +95,28 @@
 
                 (c-api/GET "/kyselylinkit" []
                   :summary "Palauttaa oppijan aktiiviset kyselylinkit"
-                  :return (rest/response [[s/Str]])
-                  (let [tunnukset (h/get-kyselylinkit-by-oppija-oid oid)]
-                    (rest/rest-ok tunnukset))))))
+                  :return (rest/response [s/Any])
+                  (try
+                    (let [kyselylinkit
+                          (reduce
+                            (fn [linkit linkki]
+                              (let [status (arvo/get-kyselylinkki-status
+                                             (:kyselylinkki linkki))
+                                    voimassa (f/parse
+                                               (:date-time f/formatters)
+                                               (:voimassa_loppupvm status))]
+                                (if (or (:vastattu status)
+                                        (t/after? (t/now) voimassa))
+                                  (do (h/delete-kyselylinkki!
+                                        (:kyselylinkki linkki))
+                                      linkit)
+                                  (conj linkit (:kyselylinkki linkki)))))
+                            []
+                            (h/get-kyselylinkit-by-oppija-oid oid))]
+                      (rest/rest-ok kyselylinkit))
+                    (catch Exception e
+                      (print e)
+                      (throw e)))))))
 
           (c-api/context "/hoksit" []
             :tags ["hoksit"]

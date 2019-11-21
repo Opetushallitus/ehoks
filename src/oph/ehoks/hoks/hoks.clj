@@ -158,3 +158,8 @@
 
 (defn get-kyselylinkit-by-oppija-oid [oid]
   (db-hoks/select-kyselylinkit-by-oppija-oid oid))
+
+(defn delete-kyselylinkki! [kyselylinkki]
+  (db-ops/delete!
+    :kyselylinkit
+    ["kyselylinkki = ?" kyselylinkki]))

@@ -129,8 +129,13 @@
         method (get method-privileges (:request-method request))]
     (some?
       (get
-        (user/get-organisation-privileges user "1.2.246.562.10.00000000001")
-        (get method-privileges method)))))
+        (:privileges
+          (first
+            (filter
+              #(= (:oid %) "1.2.246.562.10.00000000001")
+              (:organisation-privileges user))))
+        method))
+    ))
 
 (defn wrap-require-oph-privileges
   "Require oph org"

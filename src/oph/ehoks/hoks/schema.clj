@@ -737,5 +737,5 @@
 (s/defschema
   kyselylinkki
   {:kyselylinkki s/Str
-   :alkupvm s/Str
+   :alkupvm LocalDate
    :tyyppi s/Str})

@@ -3,8 +3,10 @@
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
-            [oph.ehoks.hoks.test-data :as test-data]))
+            [oph.ehoks.hoks.test-data :as test-data]
+            [clj-time.core :as t]))
 
 (use-fixtures :each utils/with-database)
 
@@ -491,3 +493,26 @@
         (is (= (:status response) 403))
         (is (= (utils/parse-body (:body response))
                {:error "User type 'PALVELU' is required"}))))))
+
+(deftest post-kyselylinkki
+  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                   :oppija-oid "1.2.246.562.24.12312312312"
+                   :osaamisen-hankkimisen-tarve true
+                   :ensikertainen-hyvaksyminen "2018-12-15"}
+        app (hoks-utils/create-app nil)
+        hoks-resp (hoks-utils/mock-st-post
+                    app base-url hoks-data)
+        req (mock/request
+              :post
+              (str base-url "/1/kyselylinkki"))
+        data {:kyselylinkki "https://palaute.fi/abc123"
+              :alkupvm (str (t/today))
+              :tyyppi "aloittaneet"}]
+
+    (utils/with-service-ticket
+      app
+      (mock/json-body req data)
+      "1.2.246.562.10.00000000001")
+
+    (is (= "https://palaute.fi/abc123"
+           (:kyselylinkki (first (h/get-kyselylinkit-by-oppija-oid "1.2.246.562.24.12312312312")))))))
