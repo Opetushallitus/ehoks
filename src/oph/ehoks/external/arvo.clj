@@ -9,8 +9,8 @@
                               :service (u/get-url "arvo-url")
                               :url (u/get-url "arvo.get-status" tunnus)
                               :options {:basic-auth
-                                            [(:arvo-username config)
-                                             (:arvo-password config)]
+                                        [(:arvo-username config)
+                                         (:arvo-password config)]
                                         :as :json}})))
 
 (defn get-kyselylinkki-status [link]

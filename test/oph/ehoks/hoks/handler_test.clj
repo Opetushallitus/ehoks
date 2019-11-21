@@ -515,4 +515,5 @@
       "1.2.246.562.10.00000000001")
 
     (is (= "https://palaute.fi/abc123"
-           (:kyselylinkki (first (h/get-kyselylinkit-by-oppija-oid "1.2.246.562.24.12312312312")))))))
+           (:kyselylinkki (first (h/get-kyselylinkit-by-oppija-oid
+                                   "1.2.246.562.24.12312312312")))))))
