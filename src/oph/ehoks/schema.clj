@@ -66,4 +66,5 @@
               :db-username s/Str
               :db-password s/Str
               :arvo-password s/Str
-              :arvo-username s/Str})
+              :arvo-username s/Str
+              :arvo-url s/Str})
