@@ -25,4 +25,6 @@
  :db-name "ehoks"
  :db-port 5432
  :db-username "ehoks_user"
- :db-password "ehoks"}
+ :db-password "ehoks"
+ :arvo-username "ehoks"
+ :arvo-password ""}
