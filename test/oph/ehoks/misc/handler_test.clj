@@ -18,4 +18,5 @@
         (is (some? (:opintopolku-logout-url-fi data)))
         (is (some? (:opintopolku-logout-url-sv data)))
         (is (some? (:eperusteet-peruste-url data)))
-        (is (some? (:virkailija-login-url data)))))))
+        (is (some? (:virkailija-login-url data)))
+        (is (some? (:raamit-url data)))))))
