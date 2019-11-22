@@ -16,4 +16,7 @@
  :db-name "{{ehoks_db_name}}"
  :db-username "{{postgres_app_user}}"
  :db-password "{{ehoks_db_app_password}}"
- :send-herate-messages? {{ehoks_send_herate_messages}}}
+ :send-herate-messages? {{ehoks_send_herate_messages}}
+ :arvo-username "{{ehoks_arvo_username}}"
+ :arvo-password "{{ehoks_arvo_password}}"
+ :arvo-url "{{ehoks_arvo_url}}"}
