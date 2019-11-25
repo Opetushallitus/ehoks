@@ -53,7 +53,8 @@
         (t/is (some? (:opintopolku-logout-url-fi data)))
         (t/is (some? (:opintopolku-logout-url-sv data)))
         (t/is (some? (:eperusteet-peruste-url data)))
-        (t/is (some? (:virkailija-login-url data)))))))
+        (t/is (some? (:virkailija-login-url data)))
+        (t/is (some? (:raamit-url data)))))))
 
 (defn with-test-virkailija
   ([request virkailija]
