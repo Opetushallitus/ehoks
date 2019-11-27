@@ -64,4 +64,7 @@
               :db-name s/Str
               :db-port s/Int
               :db-username s/Str
-              :db-password s/Str})
+              :db-password s/Str
+              :arvo-password s/Str
+              :arvo-username s/Str
+              :arvo-url s/Str})

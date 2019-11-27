@@ -185,3 +185,16 @@
                {:error :disallowed-update}))
       :else
       (db-hoks/update-hoks-by-id! hoks-id new-values))))
+
+(defn insert-kyselylinkki! [m]
+  (db-ops/insert-one!
+    :kyselylinkit
+    (db-ops/to-sql m)))
+
+(defn get-kyselylinkit-by-oppija-oid [oid]
+  (db-hoks/select-kyselylinkit-by-oppija-oid oid))
+
+(defn delete-kyselylinkki! [kyselylinkki]
+  (db-ops/delete!
+    :kyselylinkit
+    ["kyselylinkki = ?" kyselylinkki]))
