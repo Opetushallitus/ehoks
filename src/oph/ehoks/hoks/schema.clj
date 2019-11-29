@@ -308,6 +308,7 @@
   (describe
     "Yhteinen Tutkinnon osa (YTO)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :uuid) java.util.UUID "Ulkoinen tunniste"
     :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa
@@ -344,7 +345,7 @@
     OpiskeluvalmiuksiaTukevatOpinnot
     (str "Opiskeluvalmiuksia tukevien opintojen tiedot uutta merkintää "
          "luotaessa (POST)")
-    {:removed [:id]}))
+    {:removed [:id :uuid]}))
 
 (s/defschema
   OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys
@@ -353,13 +354,14 @@
     (str "Opiskeluvalmiuksia tukevien opintojen tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:optionals
-     [:nimi :kuvaus :kesto :alku :loppu]}))
+     [:nimi :kuvaus :kesto :alku :loppu :uuid]}))
 
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsa
   (describe
     "Hankittavan ammatillisen osaamisen tiedot (GET)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :uuid) java.util.UUID "Ulkoinen tunniste"
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)"
     :tutkinnon-osa-koodi-versio s/Int
@@ -386,7 +388,7 @@
   (modify
     HankittavaAmmatillinenTutkinnonOsa
     "Hankittavan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)"
-    {:removed [:id]}))
+    {:removed [:id :uuid]}))
 
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsaKentanPaivitys
@@ -398,7 +400,8 @@
      [:tutkinnon-osa-koodi-uri
       :tutkinnon-osa-koodi-versio
       :osaamisen-hankkimistavat
-      :koulutuksen-jarjestaja-oid]}))
+      :koulutuksen-jarjestaja-oid
+      :uuid]}))
 
 (s/defschema
   HankittavaYTOLuonti
@@ -406,7 +409,7 @@
     HankittavaYTO
     (str "Hankittavan yhteinen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
-    {:removed [:id]}))
+    {:removed [:id :uuid]}))
 
 (s/defschema
   HankittavaYTOKentanPaivitys
@@ -416,13 +419,14 @@
          "päivittäessä (PATCH)")
     {:optionals
      [:osa-alueet :koulutuksen-jarjestaja-oid :tutkinnon-osa-koodi-uri
-      :tutkinnon-osa-koodi-versio]}))
+      :tutkinnon-osa-koodi-versio :uuid]}))
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsa
   (describe
     "Hankittava paikallinen tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :uuid) java.util.UUID "Ulkoinen tunniste"
     (s/optional-key :amosaa-tunniste) s/Str
     "Tunniste ePerusteet AMOSAA -palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi"
@@ -481,7 +485,7 @@
     AiemminHankittuPaikallinenTutkinnonOsa
     (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST")
-    {:removed [:id]}))
+    {:removed [:id :uuid]}))
 
 (s/defschema
   AiemminHankitunPaikallisenTutkinnonOsanPaivitys
@@ -494,7 +498,8 @@
                  :koulutuksen-jarjestaja-oid
                  :kuvaus
                  :laajuus
-                 :nimi]}))
+                 :nimi
+                 :uuid]}))
 
 (s/defschema
   HankittavanPaikallisenTutkinnonOsanLuonti
@@ -502,7 +507,7 @@
     HankittavaPaikallinenTutkinnonOsa
     (str "Hankittavan paikallisen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
-    {:removed [:id]}))
+    {:removed [:id :uuid]}))
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaKentanPaivitys
@@ -516,7 +521,8 @@
       :osaamisen-osoittaminen
       :kuvaus
       :laajuus
-      :nimi]}))
+      :nimi
+      :uuid]}))
 
 (s/defschema
   AiemminHankittuYhteinenTutkinnonOsa
@@ -545,7 +551,7 @@
     AiemminHankittuYhteinenTutkinnonOsa
     (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST)")
-    {:removed [:id]}))
+    {:removed [:id :uuid]}))
 
 (s/defschema
   AiemminHankitunYhteisenTutkinnonOsanPaivitys
@@ -557,7 +563,8 @@
                  :valittu-todentamisen-prosessi-koodi-uri
                  :tutkinnon-osa-koodi-versio
                  :tutkinnon-osa-koodi-uri
-                 :osa-alueet]}))
+                 :osa-alueet
+                 :uuid]}))
 
 (s/defschema
   AiemminHankittuAmmatillinenTutkinnonOsa
@@ -579,7 +586,7 @@
     AiemminHankittuAmmatillinenTutkinnonOsa
     (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST)")
-    {:removed [:id]}))
+    {:removed [:id :uuid]}))
 
 (s/defschema
   AiemminHankitunAmmatillisenTutkinnonOsanPaivitys
@@ -590,7 +597,8 @@
     {:optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri
                  :tutkinnon-osa-koodi-versio
-                 :tutkinnon-osa-koodi-uri]}))
+                 :tutkinnon-osa-koodi-uri
+                 :uuid]}))
 
 (def ^:private ahato-part-of-hoks
   {:methods {:any :optional

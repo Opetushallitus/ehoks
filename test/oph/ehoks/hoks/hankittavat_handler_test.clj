@@ -28,7 +28,8 @@
                          (hoks-utils/get-hoks-url
                            hoks (format "%s/1" hpto-path)))]
           (eq
-            (:data (utils/parse-body (:body ppto-new)))
+            (dissoc (:data (utils/parse-body (:body ppto-new)))
+                    :uuid)
             (assoc
               test-data/hpto-data
               :id 1)))))))
@@ -63,7 +64,7 @@
                              hoks-utils/get-authenticated
                              :data)]
         (is (= (:status patch-response) 204))
-        (eq get-response
+        (eq (dissoc get-response :uuid)
             (assoc test-data/hpto-data
                    :id 1
                    :nimi "2223"))))))
@@ -78,8 +79,10 @@
             (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)]
         (hoks-utils/assert-post-response-is-ok hyto-path post-response)
         (is (= (:status get-response) 200))
-        (eq (utils/parse-body
-              (:body get-response))
+        (eq (update (utils/parse-body
+                      (:body get-response))
+                    :data
+                    #(dissoc %1 :uuid))
             {:meta {} :data (assoc test-data/hyto-data :id 1)})))))
 
 (def ^:private one-value-of-hyto-patched
@@ -158,8 +161,10 @@
                 "%s/1/hankittava-ammat-tutkinnon-osa/1"
                 hoks-utils/base-url)}})
         (is (= (:status get-response) 200))
-        (eq (utils/parse-body
-              (:body get-response))
+        (eq (update (utils/parse-body
+                      (:body get-response))
+                    :data
+                    #(dissoc %1 :uuid))
             {:meta {} :data (assoc test-data/hao-data :id 1)})))))
 
 (deftest patch-all-hankittava-ammatillinen-osaaminen
@@ -175,7 +180,10 @@
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status patch-response) 204))
-        (eq (utils/parse-body (:body get-response))
+        (eq (update (utils/parse-body
+                      (:body get-response))
+                    :data
+                    #(dissoc %1 :uuid))
             {:meta {} :data  (assoc test-data/patch-all-hao-data :id 1)})))))
 
 (deftest patch-one-hankittava-ammatilinen-osaaminen
