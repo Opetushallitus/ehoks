@@ -160,6 +160,7 @@
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
       "tutkinnon-osa-koodi-versio": 1,
       "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "olennainen-seikka": true,
       "osaamisen-osoittaminen": [
         {
           "alku": "2017-10-25",
