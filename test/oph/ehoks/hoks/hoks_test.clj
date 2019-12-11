@@ -311,9 +311,9 @@
         (:id hoks)
         ahato-data)
       (eq
-        (map #(dissoc %1 :uuid)
-             (ah/get-aiemmin-hankitut-ammat-tutkinnon-osat
-               (:id hoks)))
+        (utils/dissoc-uuids
+          (ah/get-aiemmin-hankitut-ammat-tutkinnon-osat
+            (:id hoks)))
         ahato-data))))
 
 (deftest get-aiemmin-hankitut-paikalliset-tutkinnon-osat-test
@@ -322,8 +322,8 @@
       (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
         (:id hoks) ahpto-data)
       (eq
-        (map #(dissoc %1 :uuid)
-             (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks)))
+        (utils/dissoc-uuids
+          (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks)))
         ahpto-data))))
 
 (deftest get-hankittava-ammat-tutkinnon-osa-test
@@ -331,8 +331,8 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ha/save-hankittavat-ammat-tutkinnon-osat! (:id hoks) hao-data)
       (eq
-        (map #(dissoc %1 :uuid)
-             (ha/get-hankittavat-ammat-tutkinnon-osat (:id hoks)))
+        (utils/dissoc-uuids
+          (ha/get-hankittavat-ammat-tutkinnon-osat (:id hoks)))
         hao-data))))
 
 (deftest get-opiskeluvalmiuksia-tukevat-opinnot-test
@@ -340,8 +340,8 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ot/save-opiskeluvalmiuksia-tukevat-opinnot! (:id hoks) oto-data)
       (eq
-        (map #(dissoc %1 :uuid)
-             (ot/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks)))
+        (utils/dissoc-uuids
+          (ot/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks)))
         oto-data))))
 
 (deftest get-aiemmin-hankitut-yhteiset-tutkinnon-osat-test
@@ -349,8 +349,8 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! (:id hoks) ahyto-data)
       (eq
-        (map #(dissoc %1 :uuid)
-             (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks)))
+        (utils/dissoc-uuids
+          (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks)))
         ahyto-data))))
 
 (deftest get-hankittavat-paikalliset-tutkinnon-osat-test
@@ -360,8 +360,8 @@
           (ha/save-hankittavat-paikalliset-tutkinnon-osat!
             (:id hoks) hpto-data)]
       (eq
-        (map #(dissoc %1 :uuid)
-             (ha/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks)))
+        (utils/dissoc-uuids
+          (ha/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks)))
         hpto-data))))
 
 (deftest get-hankittavat-yhteiset-tutkinnon-osat-test
@@ -369,27 +369,15 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ha/save-hankittavat-yhteiset-tutkinnon-osat! (:id hoks) hyto-data)
       (eq
-        (map #(dissoc %1 :uuid)
-             (ha/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks)))
+        (utils/dissoc-uuids
+          (ha/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks)))
         hyto-data))))
 
 (deftest get-hoks-test
   (testing "Save and get full HOKS"
     (let [hoks (h/save-hoks! hoks-data)]
       (eq
-        (-> (h/get-hoks-by-id (:id hoks))
-            (update-in [:hankittavat-ammat-tutkinnon-osat 0]
-                       #(dissoc %1 :uuid))
-            (update-in [:hankittavat-yhteiset-tutkinnon-osat 0]
-                       #(dissoc %1 :uuid))
-            (update-in [:aiemmin-hankitut-ammat-tutkinnon-osat 0]
-                       #(dissoc %1 :uuid))
-            (update-in [:aiemmin-hankitut-paikalliset-tutkinnon-osat 0]
-                       #(dissoc %1 :uuid))
-            (update-in [:hankittavat-paikalliset-tutkinnon-osat 0]
-                       #(dissoc %1 :uuid))
-            (update-in [:aiemmin-hankitut-yhteiset-tutkinnon-osat 0]
-                       #(dissoc %1 :uuid)))
+        (utils/dissoc-uuids (h/get-hoks-by-id (:id hoks)))
         (assoc
           hoks-data
           :id 1
@@ -403,5 +391,6 @@
                   {:hoks-id (:id hoks)})
           data {}
           tta (ah/save-tarkentavat-tiedot-osaamisen-arvioija! data)]
-      (eq (ah/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta))
+      (eq (utils/dissoc-uuids
+            (ah/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta)))
           (assoc data :aiemmin-hankitun-osaamisen-arvioijat [])))))

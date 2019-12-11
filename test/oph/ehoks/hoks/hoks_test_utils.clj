@@ -98,8 +98,7 @@
     (is (= (:status post-response) 200))
     (is (= (:status put-response) 204))
     (is (= (:status get-response) 200))
-    (eq (map
-          #(dissoc %1 :uuid)
+    (eq (utils/dissoc-uuids
           (hoks-part get-response-data))
         (hoks-part updated-hoks))))
 
@@ -123,7 +122,7 @@
       (eq (update
             (utils/parse-body
               (:body get-response))
-            :data #(dissoc %1 :uuid))
+            :data utils/dissoc-uuids)
           {:meta {} :data (assoc osa-data :id 1)}))))
 
 (defn compare-tarkentavat-tiedot-naytto-values
@@ -133,4 +132,4 @@
         ttn-patch-values
         (assoc (selector-function (:tarkentavat-tiedot-naytto original))
                :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
-    (eq ttn-after-update ttn-patch-values)))
+    (eq (utils/dissoc-uuids ttn-after-update) ttn-patch-values)))

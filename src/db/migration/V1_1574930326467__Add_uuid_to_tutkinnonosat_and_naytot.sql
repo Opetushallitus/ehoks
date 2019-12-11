@@ -30,3 +30,12 @@ ALTER TABLE hankittavan_ammat_tutkinnon_osan_naytto
 
 ALTER TABLE hankittavan_paikallisen_tutkinnon_osan_naytto
     ADD COLUMN uuid UUID UNIQUE DEFAULT gen_random_uuid();
+
+ALTER TABLE aiemmin_hankitut_yto_osa_alueet
+    ADD COLUMN uuid UUID UNIQUE DEFAULT gen_random_uuid();
+
+ALTER TABLE osaamisen_osoittamiset
+    ADD COLUMN uuid UUID UNIQUE DEFAULT gen_random_uuid();
+
+ALTER TABLE osaamisen_hankkimistavat
+    ADD COLUMN uuid UUID UNIQUE DEFAULT gen_random_uuid();

@@ -2,7 +2,8 @@
   (:require [schema.core :as s]
             [oph.ehoks.schema-tools :refer [describe modify]]
             [oph.ehoks.schema.generator :as g])
-  (:import (java.time LocalDate)))
+  (:import (java.time LocalDate)
+           (java.util UUID)))
 
 (def TutkinnonOsaKoodiUri
   "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosat)."
@@ -145,6 +146,7 @@
   (describe
     "Osaamisen hankkimisen tapa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :uuid) UUID "Ulkoinen tunniste"
     :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
     (s/optional-key :ajanjakson-tarkenne) s/Str
@@ -216,6 +218,7 @@
     "Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
     sisältyvä osaamisen osoittaminen: näyttö tai muu osaamisen osoittaminen."
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :uuid) UUID "Ulkoinen tunniste"
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
     (s/optional-key :osa-alueet) [KoodistoKoodi]
@@ -278,6 +281,7 @@
   (describe
     "AiemminHankitun YTOn osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :uuid) UUID "Ulkoinen tunniste"
     :osa-alue-koodi-uri OsaAlueKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
     :osa-alue-koodi-versio s/Int
@@ -308,7 +312,7 @@
   (describe
     "Yhteinen Tutkinnon osa (YTO)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :uuid) java.util.UUID "Ulkoinen tunniste"
+    (s/optional-key :uuid) UUID "Ulkoinen tunniste"
     :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa
@@ -361,7 +365,7 @@
   (describe
     "Hankittavan ammatillisen osaamisen tiedot (GET)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :uuid) java.util.UUID "Ulkoinen tunniste"
+    (s/optional-key :uuid) UUID "Ulkoinen tunniste"
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)"
     :tutkinnon-osa-koodi-versio s/Int
@@ -426,7 +430,7 @@
   (describe
     "Hankittava paikallinen tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :uuid) java.util.UUID "Ulkoinen tunniste"
+    (s/optional-key :uuid) UUID "Ulkoinen tunniste"
     (s/optional-key :amosaa-tunniste) s/Str
     "Tunniste ePerusteet AMOSAA -palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi"

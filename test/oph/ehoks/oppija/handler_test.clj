@@ -48,19 +48,7 @@
           body (utils/parse-body (:body response))]
       (is (= (:status response) 200))
       (eq
-        (-> (:data body)
-            (update-in [0 :hankittavat-ammat-tutkinnon-osat 0]
-                       #(dissoc %1 :uuid))
-            (update-in [0 :hankittavat-yhteiset-tutkinnon-osat 0]
-                       #(dissoc %1 :uuid))
-            (update-in [0 :aiemmin-hankitut-ammat-tutkinnon-osat 0]
-                       #(dissoc %1 :uuid))
-            (update-in [0 :aiemmin-hankitut-paikalliset-tutkinnon-osat 0]
-                       #(dissoc %1 :uuid))
-            (update-in [0 :hankittavat-paikalliset-tutkinnon-osat 0]
-                       #(dissoc %1 :uuid))
-            (update-in [0 :aiemmin-hankitut-yhteiset-tutkinnon-osat 0]
-                       #(dissoc %1 :uuid)))
+        (utils/dissoc-uuids (:data body))
         [(dates-to-str
            (assoc hoks-data
                   :eid (get-in body [:data 0 :eid])

@@ -64,7 +64,7 @@
     updated-data test-data/multiple-ahyto-values-patched first)
   (hoks-utils/compare-tarkentavat-tiedot-naytto-values
     updated-data test-data/multiple-ahyto-values-patched second)
-  (eq (:osa-alueet updated-data)
+  (eq (utils/dissoc-uuids (:osa-alueet updated-data))
       (:osa-alueet test-data/multiple-ahyto-values-patched)))
 
 (deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa
@@ -109,7 +109,8 @@
   (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
       (:tarkentavat-tiedot-osaamisen-arvioija
         test-data/multiple-ahpto-values-patched))
-  (eq (first (:tarkentavat-tiedot-naytto updated-data))
+  (eq (utils/dissoc-uuids
+        (first (:tarkentavat-tiedot-naytto updated-data)))
       (first (:tarkentavat-tiedot-naytto
                test-data/multiple-ahpto-values-patched)))
   (hoks-utils/compare-tarkentavat-tiedot-naytto-values
