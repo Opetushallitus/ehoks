@@ -169,18 +169,35 @@
             "Jotain kuvausta sisällöstä",
             "toinen kuvaus"
           ],
+          "yksilolliset-kriteerit": [
+            "perehtyy ohjattuna puhtaus- ja kiinteistöpalvelualan asiakaskohteen palvelusopimuksiin liittyviin palvelu- ja laatukuvauksiin",
+            "perehtyy ohjattuna asiakkaan tilanteeseen ja toteuttaa hänelle palvelusopimuksiin liittyviä ratkaisuja yrityksessä sovitulla tavalla",
+            "käyttää tuettuna puhtaus- ja kiinteistöpalvelualan käsitteitä johdonmukaisesti",
+            "tietää tuettuna asiakaskohteen likaantumiseen vaikuttavia tekijöitä"
+          ],
+          "vaatimuksista-tai-tavoitteista-poikkeaminen": "Opiskelija ei hanki osaamista ammattitaitovaatimukseen \"pukeutua työtehtävään\".",
           "jarjestaja": {
             "oppilaitos-oid": "1.2.246.562.10.54453921329"
           },
           "nayttoymparisto": {
             "nimi": "Jokin näyttöympäristö",
-            "y-tunnus": "1234567-8"
+            "y-tunnus": "1234567-8",
+            "kuvaus": "Tässä kuvataan näyttöympäristö"
           },
           "koulutuksen-jarjestaja-osaamisen-arvioijat": [
             {
               "nimi": "Testi, Seppo",
               "organisaatio": {
                 "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              }
+            }
+          ],
+          "tyoelama-osaamisen-arvioijat": [
+            {
+              "nimi": "Tyoelama, Arvi",
+              "organisaatio": {
+                "nimi": "Talvivaara",
+                "y-tunnus": "1234567-8"
               }
             }
           ]
