@@ -51,7 +51,9 @@
     (if-let [ip (get-client-ip request)]
       (InetAddress/getByName ip)
       (InetAddress/getLocalHost))
-    (or (get-session request) "no session")
+    (or (get-session request)
+        (get-in request [:headers "ticket"])
+        "no session")
     (or (get-in request [:headers "user-agent"]) "no user agent")))
 
 (defn- build-changes [response]
