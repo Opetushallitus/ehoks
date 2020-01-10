@@ -36,7 +36,8 @@
 (defn- get-user-oid [request]
   (when-let [user (or (:service-ticket-user request)
                       (get-in request [:session :virkailija-user])
-                      (:virkailija-user request))]
+                      (:virkailija-user request)
+                      (get-in request [:session :user]))]
     (:oidHenkilo user)))
 
 (defn- get-client-ip [request]
