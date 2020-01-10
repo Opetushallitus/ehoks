@@ -8,8 +8,7 @@
             [oph.ehoks.oppija.handler :as oppija-handler]
             [oph.ehoks.virkailija.handler :as virkailija-handler]
             [clojure.string :refer [lower-case]]
-            [environ.core :refer [env]]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]))
+            [environ.core :refer [env]]))
 
 (def both-app
   (c-api/api
