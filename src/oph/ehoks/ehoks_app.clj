@@ -8,8 +8,7 @@
             [oph.ehoks.oppija.handler :as oppija-handler]
             [oph.ehoks.virkailija.handler :as virkailija-handler]
             [clojure.string :refer [lower-case]]
-            [environ.core :refer [env]]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]))
+            [environ.core :refer [env]]))
 
 (def both-app
   (c-api/api
@@ -21,14 +20,13 @@
              :tags [{:name "api", :description ""}]}}
      :exceptions
      {:handlers common-api/handlers}}
-    (route-middleware
-      [wrap-audit-logger]
-      oppija-handler/routes
-      virkailija-handler/routes
 
-      (c-api/undocumented
-        (compojure-route/not-found
-          (response/not-found {:reason "Route not found"}))))))
+    oppija-handler/routes
+    virkailija-handler/routes
+
+    (c-api/undocumented
+      (compojure-route/not-found
+        (response/not-found {:reason "Route not found"})))))
 
 (defn create-app
   "Create ehoks web app of given name. Name will decide if system has oppija

@@ -163,10 +163,11 @@
       (c-api/context "/v1" []
         :tags ["v1"]
 
+        hoks-handler/routes
+
         (route-middleware
           [wrap-audit-logger]
 
-          hoks-handler/routes
           validation-handler/routes
 
           (c-api/context "/virkailija" []
