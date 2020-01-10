@@ -38,7 +38,8 @@
                       (get-in request [:session :virkailija-user])
                       (:virkailija-user request)
                       (get-in request [:session :user]))]
-    (:oidHenkilo user)))
+    (or (:oidHenkilo user)
+        (:oid user))))
 
 (defn- get-client-ip [request]
   (if-let [ips (get-in request [:headers "x-forwarded-for"])]
