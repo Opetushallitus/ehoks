@@ -296,3 +296,12 @@
   (db-ops/query
     [queries/select-kyselylinkit-by-oppija-oid oid]
     {:row-fn db-ops/from-sql}))
+
+(defn select-paattyneet-tyoelamajaksot [osa]
+  (case osa
+    "hpto" (db-ops/query
+             [queries/select-paattyneet-tyoelamajaksot-hpto])
+    "hato" (db-ops/query
+             [queries/select-paattyneet-tyoelamajaksot-hato])
+    "hyto" (db-ops/query
+             [queries/select-paattyneet-tyoelamajaksot-hyto])))
