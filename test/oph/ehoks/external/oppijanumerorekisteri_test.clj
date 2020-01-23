@@ -29,3 +29,111 @@
             '({:id 0
                :contact [{:value "kayttaja@domain.local"
                           :type "YHTEYSTIETO_SAHKOPOSTI"}]})}))))
+
+(def student-info {:oppijanumero "1.2.246.562.24.62444477777",
+                   :etunimet "Pauliina Joku",
+                   :asiointiKieli {:kieliKoodi "fi", :kieliTyyppi "suomi"},
+                   :syntymaaika "1975-04-20",
+                   :aidinkieli {:kieliKoodi "fi", :kieliTyyppi "suomi"},
+                   :sukunimi "Pouta",
+                   :kansalaisuus [{:kansalaisuusKoodi "246"}],
+                   :hetu "200475-0000",
+                   :oidHenkilo "1.2.246.562.24.62444477777",
+                   :kutsumanimi "Pauliina",
+                   :yhteystiedotRyhma
+                   [{:id 118888872,
+                     :ryhmaKuvaus "yhteystietotyyppi4",
+                     :ryhmaAlkuperaTieto "alkupera1",
+                     :yhteystieto
+                     [{:yhteystietoTyyppi "YHTEYSTIETO_KATUOSOITE",
+                       :yhteystietoArvo "Mannerheimintie 20 E 15"}
+                      {:yhteystietoTyyppi "YHTEYSTIETO_KAUPUNKI",
+                       :yhteystietoArvo "HELSINKI"}
+                      {:yhteystietoTyyppi "YHTEYSTIETO_MAA",
+                       :yhteystietoArvo "Suomi"}
+                      {:yhteystietoTyyppi "YHTEYSTIETO_POSTINUMERO",
+                       :yhteystietoArvo "00820"}]}
+                    {:id 118888877,
+                     :ryhmaKuvaus "yhteystietotyyppi8",
+                     :readOnly true,
+                     :yhteystieto [{:yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI",
+                                    :yhteystietoArvo "testi.maili@gmail.com"}]}
+                    {:id 155888715,
+                     :ryhmaKuvaus "yhteystietotyyppi2",
+                     :ryhmaAlkuperaTieto "alkupera6",
+                     :yhteystieto
+                     [{:yhteystietoTyyppi "YHTEYSTIETO_KUNTA",
+                       :yhteystietoArvo nil}
+                      {:yhteystietoTyyppi "YHTEYSTIETO_MATKAPUHELINNUMERO",
+                       :yhteystietoArvo nil}
+                      {:yhteystietoTyyppi "YHTEYSTIETO_KATUOSOITE",
+                       :yhteystietoArvo nil}
+                      {:yhteystietoTyyppi "YHTEYSTIETO_POSTINUMERO",
+                       :yhteystietoArvo nil}
+                      {:yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI",
+                       :yhteystietoArvo "testi.maili@oph.fi"}
+                      {:yhteystietoTyyppi "YHTEYSTIETO_PUHELINNUMERO",
+                       :yhteystietoArvo nil}]}]})
+
+(def converted-student-info {:oid "1.2.246.562.24.62444477777"
+            :first-name "Pauliina Joku"
+            :surname "Pouta"
+            :common-name "Pauliina"
+            :contact-values-group
+            '({:id 118888872
+               :contact [{:value "Mannerheimintie 20 E 15"
+                          :type "YHTEYSTIETO_KATUOSOITE"}
+                         {:value "HELSINKI"
+                          :type "YHTEYSTIETO_KAUPUNKI"}
+                         {:value "Suomi"
+                          :type "YHTEYSTIETO_MAA"}
+                         {:value "00820"
+                          :type "YHTEYSTIETO_POSTINUMERO"}]}
+              {:id 118888877
+               :contact [{:value "testi.maili@gmail.com"
+                          :type "YHTEYSTIETO_SAHKOPOSTI"}]}
+              {:id 155888715
+               :contact [{:value "testi.maili@oph.fi"
+                          :type "YHTEYSTIETO_SAHKOPOSTI"}
+                         ]})})
+
+(deftest convert-nil-contact-info
+  (testing "nil contact values should be pruned"
+    (is (= (onr/convert-student-info student-info)
+           converted-student-info))))
+
+(deftest convert-all-nil-contact-info
+  (testing "contact group containg only nil contact values should be pruned"
+    (is (= (onr/convert-student-info
+             {:oppijanumero "1.2.246.562.24.62444477777",
+              :etunimet "Pauliina Joku",
+              :sukunimi "Pouta",
+              :oidHenkilo "1.2.246.562.24.62444477777",
+              :kutsumanimi "Pauliina",
+              :yhteystiedotRyhma
+              [{:id 118888872,
+                :yhteystieto [{:yhteystietoTyyppi "YHTEYSTIETO_KATUOSOITE",
+                               :yhteystietoArvo "Mannerheimintie 20 E 15"}
+                              {:yhteystietoTyyppi "YHTEYSTIETO_POSTINUMERO",
+                               :yhteystietoArvo "00820"}]}
+               {:id 118888877,
+                :yhteystieto [{:yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI",
+                               :yhteystietoArvo "testi.maili@gmail.com"}]}
+               {:id 155888715,
+                :yhteystieto [{:yhteystietoTyyppi "YHTEYSTIETO_KUNTA",
+                               :yhteystietoArvo nil}
+                              {:yhteystietoTyyppi "YHTEYSTIETO_PUHELINNUMERO",
+                               :yhteystietoArvo nil}]}]})
+           {:oid "1.2.246.562.24.62444477777"
+            :first-name "Pauliina Joku"
+            :surname "Pouta"
+            :common-name "Pauliina"
+            :contact-values-group
+            '({:id 118888872
+               :contact [{:value "Mannerheimintie 20 E 15"
+                          :type "YHTEYSTIETO_KATUOSOITE"}
+                         {:value "00820"
+                          :type "YHTEYSTIETO_POSTINUMERO"}]}
+              {:id 118888877
+               :contact [{:value "testi.maili@gmail.com"
+                          :type "YHTEYSTIETO_SAHKOPOSTI"}]})}))))
