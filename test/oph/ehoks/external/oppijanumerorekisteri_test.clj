@@ -76,26 +76,25 @@
                        :yhteystietoArvo nil}]}]})
 
 (def converted-student-info {:oid "1.2.246.562.24.62444477777"
-            :first-name "Pauliina Joku"
-            :surname "Pouta"
-            :common-name "Pauliina"
-            :contact-values-group
-            '({:id 118888872
-               :contact [{:value "Mannerheimintie 20 E 15"
-                          :type "YHTEYSTIETO_KATUOSOITE"}
-                         {:value "HELSINKI"
-                          :type "YHTEYSTIETO_KAUPUNKI"}
-                         {:value "Suomi"
-                          :type "YHTEYSTIETO_MAA"}
-                         {:value "00820"
-                          :type "YHTEYSTIETO_POSTINUMERO"}]}
-              {:id 118888877
-               :contact [{:value "testi.maili@gmail.com"
-                          :type "YHTEYSTIETO_SAHKOPOSTI"}]}
-              {:id 155888715
-               :contact [{:value "testi.maili@oph.fi"
-                          :type "YHTEYSTIETO_SAHKOPOSTI"}
-                         ]})})
+                             :first-name "Pauliina Joku"
+                             :surname "Pouta"
+                             :common-name "Pauliina"
+                             :contact-values-group
+                             '({:id 118888872
+                                :contact [{:value "Mannerheimintie 20 E 15"
+                                           :type "YHTEYSTIETO_KATUOSOITE"}
+                                          {:value "HELSINKI"
+                                           :type "YHTEYSTIETO_KAUPUNKI"}
+                                          {:value "Suomi"
+                                           :type "YHTEYSTIETO_MAA"}
+                                          {:value "00820"
+                                           :type "YHTEYSTIETO_POSTINUMERO"}]}
+                                {:id 118888877
+                                 :contact [{:value "testi.maili@gmail.com"
+                                            :type "YHTEYSTIETO_SAHKOPOSTI"}]}
+                                {:id 155888715
+                                 :contact [{:value "testi.maili@oph.fi"
+                                            :type "YHTEYSTIETO_SAHKOPOSTI"}]})})
 
 (deftest convert-nil-contact-info
   (testing "nil contact values should be pruned"
@@ -134,6 +133,6 @@
                           :type "YHTEYSTIETO_KATUOSOITE"}
                          {:value "00820"
                           :type "YHTEYSTIETO_POSTINUMERO"}]}
-              {:id 118888877
-               :contact [{:value "testi.maili@gmail.com"
-                          :type "YHTEYSTIETO_SAHKOPOSTI"}]})}))))
+               {:id 118888877
+                :contact [{:value "testi.maili@gmail.com"
+                           :type "YHTEYSTIETO_SAHKOPOSTI"}]})}))))
