@@ -528,9 +528,10 @@
      (describe
        ""
        :osa-alueet [AiemminHankitunYTOOsaAlue] "YTO osa-alueet"
-       :valittu-todentamisen-prosessi-koodi-uri TodentamisenProsessiKoodiUri
+       (s/optional-key :valittu-todentamisen-prosessi-koodi-uri)
+       TodentamisenProsessiKoodiUri
        "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
-       :valittu-todentamisen-prosessi-koodi-versio s/Int
+       (s/optional-key :valittu-todentamisen-prosessi-koodi-versio) s/Int
        "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio
        (Osaamisen todentamisen prosessi)"
        (s/optional-key :tarkentavat-tiedot-naytto) [OsaamisenOsoittaminen]
