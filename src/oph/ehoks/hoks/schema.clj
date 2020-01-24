@@ -211,6 +211,16 @@
        "Koulutuksenjärjestäjän arvioijan organisaatio")}))
 
 (s/defschema
+  TodennettuArviointiLisatiedot
+  (describe
+    "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"
+    (s/optional-key :lahetetty-arvioitavaksi) LocalDate "Päivämäärä, jona
+    lähetetty arvioitavaksi, muodossa YYYY-MM-DD"
+    (s/optional-key :aiemmin-hankitun-osaamisen-arvioijat)
+    [KoulutuksenJarjestajaArvioija]
+    "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
+
+(s/defschema
   OsaamisenOsoittaminen
   (describe
     "Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
@@ -301,7 +311,10 @@
     (str "Tieto sellaisen seikan
     olemassaolosta, jonka koulutuksen järjestäjä katsoo oleelliseksi tutkinnon
     osaan tai osa-alueeseen liittyvän osaamisen hankkimisessa tai
-    osoittamisessa.")))
+    osoittamisessa.")
+    (s/optional-key :tarkentavat-tiedot-osaamisen-arvioija)
+    TodennettuArviointiLisatiedot
+    "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"))
 
 (s/defschema
   YhteinenTutkinnonOsa
@@ -444,16 +457,6 @@
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
     järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
     liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
-
-(s/defschema
-  TodennettuArviointiLisatiedot
-  (describe
-    "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"
-    (s/optional-key :lahetetty-arvioitavaksi) LocalDate "Päivämäärä, jona
-    lähetetty arvioitavaksi, muodossa YYYY-MM-DD"
-    (s/optional-key :aiemmin-hankitun-osaamisen-arvioijat)
-    [KoulutuksenJarjestajaArvioija]
-    "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
 
 (s/defschema
   AiemminHankittuPaikallinenTutkinnonOsa
