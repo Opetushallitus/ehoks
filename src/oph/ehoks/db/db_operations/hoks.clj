@@ -169,7 +169,8 @@
   (db-ops/from-sql m {:removals [:aiemmin_hankittu_yhteinen_tutkinnon_osa_id]}))
 
 (defn aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-to-sql [m]
-  (db-ops/to-sql m {:removals [:tarkentavat-tiedot-naytto]}))
+  (db-ops/to-sql m {:removals [:tarkentavat-tiedot-naytto
+                               :tarkentavat-tiedot-osaamisen-arvioija]}))
 
 (defn aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql [m]
   (db-ops/to-sql m {:removals [:osa-alueet
