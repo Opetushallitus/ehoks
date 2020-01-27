@@ -72,15 +72,19 @@
     #(dissoc (c/set-osaamisen-osoittaminen-values %) :id)
     (db/select-tarkentavat-tiedot-naytto-by-ahyto-osa-alue-id id)))
 
-(defn get-ahyto-osa-alueet [id]
+(defn get-ahyto-osa-alueet [ahyto-id]
   (mapv
     #(dissoc
        (assoc
          %
          :tarkentavat-tiedot-naytto
-         (get-ahyto-osa-alue-tarkentavat-tiedot (:id %)))
-       :id)
-    (db/select-osa-alueet-by-ahyto-id id)))
+         (get-ahyto-osa-alue-tarkentavat-tiedot (:id %))
+         :tarkentavat-tiedot-osaamisen-arvioija
+         (get-tarkentavat-tiedot-osaamisen-arvioija
+           (:tarkentavat-tiedot-osaamisen-arvioija-id %)))
+       :id
+       :tarkentavat-tiedot-osaamisen-arvioija-id)
+    (db/select-osa-alueet-by-ahyto-id ahyto-id)))
 
 (defn get-ahyto-tarkentavat-tiedot-naytto [ahyto-id]
   (mapv
