@@ -131,6 +131,12 @@
        n)
     new-values))
 
+(defn save-tarkentavat-tiedot-osaamisen-arvioija! [new-tta]
+  (let [tta-db (db/insert-todennettu-arviointi-lisatiedot! new-tta)]
+    (save-tta-aiemmin-hankitun-osaamisen-arvioijat!
+      (:id tta-db) (:aiemmin-hankitun-osaamisen-arvioijat new-tta))
+    tta-db))
+
 (defn- save-ahyto-osa-alue! [ahyto-id osa-alue]
   (let [stored-osa-alue
         (db/insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue!
@@ -147,12 +153,6 @@
   (mapv
     #(save-ahyto-osa-alue! ahyto-id %)
     osa-alueet))
-
-(defn save-tarkentavat-tiedot-osaamisen-arvioija! [new-tta]
-  (let [tta-db (db/insert-todennettu-arviointi-lisatiedot! new-tta)]
-    (save-tta-aiemmin-hankitun-osaamisen-arvioijat!
-      (:id tta-db) (:aiemmin-hankitun-osaamisen-arvioijat new-tta))
-    tta-db))
 
 (defn save-aiemmin-hankittu-yhteinen-tutkinnon-osa! [hoks-id ahyto]
   (let [tta (:tarkentavat-tiedot-osaamisen-arvioija ahyto)
