@@ -25,6 +25,7 @@
             [clojure.tools.logging :as log]
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.virkailija.system-handler :as system-handler]
+            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
             [oph.ehoks.virkailija.external-handler :as external-handler]
             [oph.ehoks.virkailija.cas-handler :as cas-handler]))
 
@@ -246,6 +247,7 @@
 
               external-handler/routes
               system-handler/routes
+              herate-handler/routes
 
               (c-api/context "/oppijat" []
                 get-oppijat-route
