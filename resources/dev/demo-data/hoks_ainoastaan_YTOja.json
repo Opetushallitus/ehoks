@@ -66,7 +66,18 @@
             }
           ],
           "osa-alue-koodi-uri": "ammatillisenoppiaineet_yttt",
-          "osa-alue-koodi-versio": 1
+          "osa-alue-koodi-versio": 1,
+          "tarkentavat-tiedot-osaamisen-arvioija": {
+            "lahetetty-arvioitavaksi": "2020-01-24",
+            "aiemmin-hankitun-osaamisen-arvioijat": [
+              {
+                "nimi": "Uusi Ominaisuus",
+                "organisaatio": {
+                  "oppilaitos-oid": "1.2.246.562.10.54453931322"
+                }
+              }
+            ]
+          }
         }
       ],
       "tarkentavat-tiedot-osaamisen-arvioija": {
