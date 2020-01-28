@@ -299,9 +299,12 @@
 
 (defn select-paattyneet-tyoelamajaksot [osa]
   (case osa
-    "hpto" (db-ops/query
-             [queries/select-paattyneet-tyoelamajaksot-hpto])
-    "hato" (db-ops/query
-             [queries/select-paattyneet-tyoelamajaksot-hato])
-    "hyto" (db-ops/query
-             [queries/select-paattyneet-tyoelamajaksot-hyto])))
+    "hpto" (map #(assoc % :tyyppi "hpto")
+                (db-ops/query
+                  [queries/select-paattyneet-tyoelamajaksot-hpto]))
+    "hato" (map #(assoc % :tyyppi "hato")
+                (db-ops/query
+                  [queries/select-paattyneet-tyoelamajaksot-hato]))
+    "hyto" (map #(assoc % :tyyppi "hyto")
+                (db-ops/query
+                  [queries/select-paattyneet-tyoelamajaksot-hyto]))))
