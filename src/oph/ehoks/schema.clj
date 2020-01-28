@@ -57,6 +57,7 @@
               :ext-cache-lifetime-minutes s/Int
               :opintopolku-host s/Str
               :heratepalvelu-queue s/Str
+              :heratepalvelu-tyoelamapalaute-queue s/Str
               :send-herate-messages? s/Bool
               :audit? s/Bool
               :db-type s/Str
