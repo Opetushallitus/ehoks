@@ -93,9 +93,9 @@
           get-response-data (:data (utils/parse-body (:body get-response)))]
       (is (= (:status post-response) 200))
       (is (= (:status get-response) 200))
-      (let [arvioija (get-arvioija get-response-data)
-            original (get-arvioija test-data/hoks-data)]
-        (eq arvioija original)))))
+      (let [output-arvioija (get-arvioija get-response-data)
+            input-arvioija (get-arvioija test-data/hoks-data)]
+        (eq output-arvioija input-arvioija)))))
 
 (deftest post-and-get-aiemmin-hankitut-ammatilliset-tutkinnon-osat
   (testing "POST ahato and then get the created ahato"
