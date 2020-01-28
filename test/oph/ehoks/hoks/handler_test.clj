@@ -285,24 +285,6 @@
              (:kuvaus one-value-of-hoks-patched))
           "Value should stay unchanged"))))
 
-(deftest ahyto-osa-alue-has-arvioija
-  (testing "tarkentavat-tiedot-osaamisen-arvioija was addded to ahyto osa-alue
-            according to EH-806"
-    (let [app (hoks-utils/create-app nil)
-          post-response
-          (hoks-utils/create-mock-post-request "" test-data/hoks-data app)
-          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
-      (is (= (:status post-response) 200))
-      (is (= (:status get-response) 200))
-      (let [arvioija (-> get-response-data
-                         :aiemmin-hankitut-yhteiset-tutkinnon-osat
-                         first
-                         :osa-alueet
-                         first
-                         :tarkentavat-tiedot-osaamisen-arvioija)]
-        (is (= (some? arvioija) true))))))
-
 (def main-level-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
