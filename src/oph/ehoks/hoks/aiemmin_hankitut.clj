@@ -146,9 +146,9 @@
         stored-osa-alue
         (db/insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue!
           (assoc osa-alue
-                :aiemmin-hankittu-yhteinen-tutkinnon-osa-id ahyto-id
-                :tarkentavat-tiedot-osaamisen-arvioija-id
-                (:id (save-tarkentavat-tiedot-osaamisen-arvioija! arvioija))))]
+                 :aiemmin-hankittu-yhteinen-tutkinnon-osa-id ahyto-id
+                 :tarkentavat-tiedot-osaamisen-arvioija-id
+                 (:id (save-tarkentavat-tiedot-osaamisen-arvioija! arvioija))))]
     (mapv
       (fn [naytto]
         (let [stored-naytto (c/save-osaamisen-osoittaminen! naytto)]

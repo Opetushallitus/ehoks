@@ -296,11 +296,11 @@
       (is (= (:status post-response) 200))
       (is (= (:status get-response) 200))
       (let [arvioija (-> get-response-data
-                      :aiemmin-hankitut-yhteiset-tutkinnon-osat
-                      first
-                      :osa-alueet
-                      first
-                      :tarkentavat-tiedot-osaamisen-arvioija)]
+                         :aiemmin-hankitut-yhteiset-tutkinnon-osat
+                         first
+                         :osa-alueet
+                         first
+                         :tarkentavat-tiedot-osaamisen-arvioija)]
         (is (= (some? arvioija) true))))))
 
 (def main-level-of-hoks-updated
