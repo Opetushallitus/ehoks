@@ -166,6 +166,12 @@
       :valittu-todentamisen-prosessi-koodi-uri
       "osaamisentodentamisenprosessi_0003"
       :valittu-todentamisen-prosessi-koodi-versio 4
+      :tarkentavat-tiedot-osaamisen-arvioija
+      {:lahetetty-arvioitavaksi (java.time.LocalDate/of 2020 5 25)
+       :aiemmin-hankitun-osaamisen-arvioijat
+       [{:nimi "Tama tyyppi"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.54453931444"}}]}
       :tarkentavat-tiedot-naytto
       [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
                       :koodi-versio 3}]
