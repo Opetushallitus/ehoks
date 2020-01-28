@@ -75,6 +75,28 @@
       test-data/multiple-ahyto-values-patched
       assert-ahyto-is-patched-correctly)))
 
+(defn- get-arvioija [model]
+  (-> model
+      :aiemmin-hankitut-yhteiset-tutkinnon-osat
+      first
+      :osa-alueet
+      first
+      :tarkentavat-tiedot-osaamisen-arvioija))
+
+(deftest ahyto-osa-alue-has-arvioija
+  (testing "tarkentavat-tiedot-osaamisen-arvioija was addded to ahyto osa-alue
+            according to EH-806"
+    (let [app (hoks-utils/create-app nil)
+          post-response
+          (hoks-utils/create-mock-post-request "" test-data/hoks-data app)
+          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status get-response) 200))
+      (let [output-arvioija (get-arvioija get-response-data)
+            input-arvioija (get-arvioija test-data/hoks-data)]
+        (eq output-arvioija input-arvioija)))))
+
 (deftest post-and-get-aiemmin-hankitut-ammatilliset-tutkinnon-osat
   (testing "POST ahato and then get the created ahato"
     (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa

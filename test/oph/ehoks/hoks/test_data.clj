@@ -172,6 +172,13 @@
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453945322"
    :vaatimuksista-tai-tavoitteista-poikkeaminen "Ei poikkeamaa."})
 
+(def tarkentavat-tiedot-osaamisen-arvioija
+  {:lahetetty-arvioitavaksi "2020-01-24"
+   :aiemmin-hankitun-osaamisen-arvioijat
+   [{:nimi "Uusi Ominaisuus"
+     :organisaatio {:oppilaitos-oid
+                    "1.2.246.562.10.54453931322"}}]})
+
 (def ahyto-data
   {:valittu-todentamisen-prosessi-koodi-uri
    "osaamisentodentamisenprosessi_0001"
@@ -194,6 +201,8 @@
      :valittu-todentamisen-prosessi-koodi-uri
      "osaamisentodentamisenprosessi_0003"
      :valittu-todentamisen-prosessi-koodi-versio 4
+     :tarkentavat-tiedot-osaamisen-arvioija
+     tarkentavat-tiedot-osaamisen-arvioija
      :tarkentavat-tiedot-naytto
      [{:sisallon-kuvaus ["kuvaus1"]
        :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
@@ -281,6 +290,8 @@
        :valittu-todentamisen-prosessi-koodi-uri
        "osaamisentodentamisenprosessi_0004"
        :valittu-todentamisen-prosessi-koodi-versio 4
+       :tarkentavat-tiedot-osaamisen-arvioija
+       tarkentavat-tiedot-osaamisen-arvioija
        :tarkentavat-tiedot-naytto
        [{:sisallon-kuvaus ["kuvaus1" "kuvaus2"]
          :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ai"
@@ -421,6 +432,8 @@
      :valittu-todentamisen-prosessi-koodi-uri
      "osaamisentodentamisenprosessi_0003"
      :valittu-todentamisen-prosessi-koodi-versio 4
+     :tarkentavat-tiedot-osaamisen-arvioija
+     tarkentavat-tiedot-osaamisen-arvioija
      :tarkentavat-tiedot-naytto
      [{:sisallon-kuvaus ["kuvaus1"]
        :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
