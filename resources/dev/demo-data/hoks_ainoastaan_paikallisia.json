@@ -1,0 +1,184 @@
+{
+  "ensikertainen-hyvaksyminen": "2017-10-25",
+  "hyvaksytty": "2017-10-25T21:00:00.000Z",
+  "paivitetty": "2017-10-25T21:00:00.000Z",
+  "opiskeluoikeus-oid": "1.2.246.562.15.76811932038",
+  "oppija-oid": "1.2.246.562.24.44651722625",
+  "versio": 0,
+  "urasuunnitelma-koodi-uri": "urasuunnitelma_0001",
+  "urasuunnitelma-koodi-versio": 1,
+  "osaamisen-hankkimisen-tarve": true,
+  "aiemmin-hankitut-ammat-tutkinnon-osat": [],
+  "aiemmin-hankitut-paikalliset-tutkinnon-osat": [
+    {
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "nimi": "Orientaatio alaan, aiemmin hankittu",
+      "valittu-todentamisen-prosessi-koodi-versio": 1,
+      "valittu-todentamisen-prosessi-koodi-uri": "osaamisentodentamisenprosessi_0001",
+      "tavoitteet-ja-sisallot": "Tässä pitäisi olla jotain tavoitteita ja sisältöä",
+      "olennainen-seikka": true,
+      "vaatimuksista-tai-tavoitteista-poikkeaminen": "Opiskelija ei hanki osaamista ammattitaitovaatimukseen \"pukeutua työtehtävään\".",
+      "laajuus": 9,
+      "amosaa-tunniste": "Tässä pitäisi olla amosaa-tunniste",
+      "tarkentavat-tiedot-naytto": [
+        {
+          "alku": "2019-09-25",
+          "loppu": "2024-12-04",
+          "sisallon-kuvaus": [
+            "Jotain kuvausta sisällöstä",
+            "toinen kuvaus",
+            "Sisältöä lisää"
+          ],
+          "yksilolliset-kriteerit": [
+            "aiemmin hankitun paikallisen tutkinnon osan kriteereitä tässä",
+            "perehtyy ohjattuna puhtaus- ja kiinteistöpalvelualan asiakaskohteen palvelusopimuksiin liittyviin palvelu- ja laatukuvauksiin",
+            "perehtyy ohjattuna asiakkaan tilanteeseen ja toteuttaa hänelle palvelusopimuksiin liittyviä ratkaisuja yrityksessä sovitulla tavalla",
+            "käyttää tuettuna puhtaus- ja kiinteistöpalvelualan käsitteitä johdonmukaisesti",
+            "tietää tuettuna asiakaskohteen likaantumiseen vaikuttavia tekijöitä"
+          ],
+          "vaatimuksista-tai-tavoitteista-poikkeaminen": "Opiskelija ei hanki osaamista ammattitaitovaatimukseen \"pukeutua työtehtävään\". Toinen poikkeaminen",
+          "jarjestaja": {
+            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+          },
+          "nayttoymparisto": {
+            "nimi": "Jokin näyttöympäristö on tämä",
+            "y-tunnus": "1234567-8",
+            "kuvaus": "Tässä kuvataan jokin näyttöympäristö"
+          },
+          "koulutuksen-jarjestaja-osaamisen-arvioijat": [
+            {
+              "nimi": "Arvioi, Seppo",
+              "organisaatio": {
+                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              }
+            }
+          ],
+          "tyoelama-osaamisen-arvioijat": [
+            {
+              "nimi": "Tyoelama, Arvi",
+              "organisaatio": {
+                "nimi": "Talvivaara",
+                "y-tunnus": "1234567-8"
+              }
+            }
+          ],
+          "osa-alueet": [
+            {
+              "koodi-uri": "ammatillisenoppiaineet_yttt",
+              "koodi-versio": 1
+            }
+          ]
+        }
+      ],
+      "tarkentavat-tiedot-osaamisen-arvioija": {
+        "lahetetty-arvioitavaksi": "2020-02-02",
+        "aiemmin-hankitun-osaamisen-arvioijat": [
+          {
+            "nimi": "Uusi Ominaisuus",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54453931322"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "aiemmin-hankitut-yhteiset-tutkinnon-osat": [],
+  "opiskeluvalmiuksia-tukevat-opinnot": [],
+  "hankittavat-ammat-tutkinnon-osat": [],
+  "hankittavat-yhteiset-tutkinnon-osat": [],
+  "hankittavat-paikalliset-tutkinnon-osat": [
+    {
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "nimi": "Orientaatio alaan",
+      "tavoitteet-ja-sisallot": "Tässä pitäisi olla jotain tavoitteita ja sisältöä",
+      "olennainen-seikka": true,
+      "vaatimuksista-tai-tavoitteista-poikkeaminen": "Opiskelija ei hanki osaamista ammattitaitovaatimukseen \"pukeutua työtehtävään\".",
+      "laajuus": 9,
+      "amosaa-tunniste": "Tässä pitäisi olla amosaa-tunniste",
+      "osaamisen-hankkimistavat": [
+        {
+          "tyopaikalla-jarjestettava-koulutus": {
+            "vastuullinen-tyopaikka-ohjaaja": {
+              "nimi": "Vastuussa, Veera",
+              "sahkoposti": "testimail@testi.com"
+            },
+            "tyopaikan-nimi": "Gofore Oyj",
+            "tyopaikan-y-tunnus": "123456-7",
+            "keskeiset-tyotehtavat": [
+              "Perustyötehtävät",
+              "Vaativat työtehtävät",
+              "Sekalaiset työtehtävät"
+            ]
+          },
+          "osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_koulutussopimus",
+          "osaamisen-hankkimistapa-koodi-versio": 1,
+          "hankkijan-edustaja": {
+            "nimi": "Heppu, Hemmo",
+            "rooli": "Edustushankkija",
+            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+          },
+          "jarjestajan-edustaja": {
+            "nimi": "Tyyppi, Joku",
+            "rooli": "Järjestysedustaja",
+            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+          },
+          "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
+          "alku": "2018-11-01",
+          "loppu": "2021-12-13",
+          "muut-oppimisymparistot": []
+        }
+      ],
+      "osaamisen-osoittaminen": [
+        {
+          "alku": "2017-09-25",
+          "loppu": "2023-12-04",
+          "sisallon-kuvaus": [
+            "Jotain kuvausta sisällöstä",
+            "toinen kuvaus",
+            "Sisältöä lisää"
+          ],
+          "yksilolliset-kriteerit": [
+            "paikallisen tutkinnon osan kriteereitä tässä",
+            "perehtyy ohjattuna puhtaus- ja kiinteistöpalvelualan asiakaskohteen palvelusopimuksiin liittyviin palvelu- ja laatukuvauksiin",
+            "perehtyy ohjattuna asiakkaan tilanteeseen ja toteuttaa hänelle palvelusopimuksiin liittyviä ratkaisuja yrityksessä sovitulla tavalla",
+            "käyttää tuettuna puhtaus- ja kiinteistöpalvelualan käsitteitä johdonmukaisesti",
+            "tietää tuettuna asiakaskohteen likaantumiseen vaikuttavia tekijöitä"
+          ],
+          "vaatimuksista-tai-tavoitteista-poikkeaminen": "Opiskelija ei hanki osaamista ammattitaitovaatimukseen \"pukeutua työtehtävään\". Toinen poikkeaminen",
+          "jarjestaja": {
+            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+          },
+          "nayttoymparisto": {
+            "nimi": "Jokin näyttöympäristö2",
+            "y-tunnus": "1234567-8",
+            "kuvaus": "Tässä kuvataan näyttöympäristö2"
+          },
+          "koulutuksen-jarjestaja-osaamisen-arvioijat": [
+            {
+              "nimi": "Arvioija, Seppo",
+              "organisaatio": {
+                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              }
+            }
+          ],
+          "tyoelama-osaamisen-arvioijat": [
+            {
+              "nimi": "Tyoelama, Arvii",
+              "organisaatio": {
+                "nimi": "Talvivaara",
+                "y-tunnus": "1234567-8"
+              }
+            }
+          ],
+          "osa-alueet": [
+            {
+              "koodi-uri": "ammatillisenoppiaineet_yttt",
+              "koodi-versio": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
