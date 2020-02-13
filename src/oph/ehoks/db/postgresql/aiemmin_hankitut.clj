@@ -160,7 +160,8 @@
   (let [refined-arvioija
         (ensure-lahetetty-arvioitavaksi-exists tarkentavat-tiedot-arvioija)]
     (db-ops/insert-one! :todennettu_arviointi_lisatiedot
-     (h/todennettu-arviointi-lisatiedot-to-sql refined-arvioija))))
+                        (h/todennettu-arviointi-lisatiedot-to-sql
+                          refined-arvioija))))
 
 (defn insert-aiemmin-hankittu-yhteinen-tutkinnon-osa!
   "Lisää aiemmin hankitun yhteisen tutkinnon osa"

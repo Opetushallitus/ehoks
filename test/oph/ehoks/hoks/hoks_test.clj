@@ -386,12 +386,14 @@
   (testing "If tarkentavat-tiedot-osaamisen-arvioija is missing
   lahetetty-arvioitavaksi, save should still succeed"
     (let [arvioija-without-lahetetty-date {:aiemmin-hankitun-osaamisen-arvioijat
-                [{:nimi "Paulanen Testi",
-                  :organisaatio
-                  {:oppilaitos-oid "1.2.246.562.10.63885480000"}}]}
+                                           [{:nimi "Paulanen Testi",
+                                             :organisaatio
+                                             {:oppilaitos-oid
+                                              "1.2.246.562.10.63885480000"}}]}
           tta (ah/save-tarkentavat-tiedot-osaamisen-arvioija!
                 arvioija-without-lahetetty-date)
-          stored-arvioija (ah/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta))]
+          stored-arvioija (ah/get-tarkentavat-tiedot-osaamisen-arvioija
+                            (:id tta))]
       (eq stored-arvioija
           arvioija-without-lahetetty-date))))
 
