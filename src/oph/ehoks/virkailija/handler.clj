@@ -101,8 +101,7 @@
                   " Oppijanumerorekisteri")}))
         (throw e)))))
 
-(defn- post-oppija [hoks request]
-  (add-oppija hoks)
+(defn- add-opiskeluoikeus [hoks]
   (try
     (op/add-opiskeluoikeus!
       (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
@@ -114,7 +113,11 @@
                     " not found in Koski")
           (response/bad-request!
             {:error "Opiskeluoikeus not found in Koski"}))
-        (throw e))))
+        (throw e)))))
+
+(defn- post-oppija [hoks request]
+  (add-oppija hoks)
+  (add-opiskeluoikeus hoks)
   (let [virkailija-user
         (get-in request [:session :virkailija-user])]
     (when-not
