@@ -119,8 +119,8 @@
   (let [virkailija-user
         (get-in request [:session :virkailija-user])]
     (when-not
-      (m/virkailija-has-privilege-in-opiskeluoikeus?
-        virkailija-user (:opiskeluoikeus-oid hoks) :write)
+     (m/virkailija-has-privilege-in-opiskeluoikeus?
+       virkailija-user (:opiskeluoikeus-oid hoks) :write)
       (log/warnf "User %s privileges don't match oppija %s"
                  (get-in request [:session
                                   :virkailija-user
