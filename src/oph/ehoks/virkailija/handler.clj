@@ -172,6 +172,23 @@
           {:error
            (str "User has insufficient privileges")})))))
 
+(defn- put-hoks [hoks-values hoks-id]
+  (try
+    (let [hoks-db
+          (h/replace-hoks! hoks-id hoks-values)]
+      (assoc
+        (response/no-content)
+        :audit-data
+        {:new  hoks-values}))
+    (catch Exception e
+      (if (= (:error (ex-data e)) :disallowed-update)
+        (assoc
+          (response/bad-request!
+            {:error
+             (.getMessage e)})
+          :audit-data {:new hoks-values})
+        (throw e)))))
+
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
@@ -244,21 +261,7 @@
                             "Ylikirjoittaa olemassa olevan HOKSin arvon tai
                              arvot"
                             :body [hoks-values hoks-schema/HOKSKorvaus]
-                            (try
-                              (let [hoks-db
-                                    (h/replace-hoks! hoks-id hoks-values)]
-                                (assoc
-                                  (response/no-content)
-                                  :audit-data
-                                  {:new  hoks-values}))
-                              (catch Exception e
-                                (if (= (:error (ex-data e)) :disallowed-update)
-                                  (assoc
-                                    (response/bad-request!
-                                      {:error
-                                       (.getMessage e)})
-                                    :audit-data {:new hoks-values})
-                                  (throw e)))))
+                            (put-hoks hoks-values hoks-id))
 
                           (c-api/PATCH "/" request
                             :body [hoks-values hoks-schema/HOKSPaivitys]
