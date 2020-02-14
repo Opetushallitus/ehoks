@@ -86,70 +86,91 @@
           oppijat
           :total-count (op/get-count search-params))))))
 
-(def post-oppija-hoks-route
-  (c-api/POST "/" [:as request]
-    :summary "Luo uuden HOKSin. Vaatii manuaalisyöttäjän oikeudet"
-    :body [hoks hoks-schema/HOKSLuonti]
-    :return (restful/response schema/POSTResponse :id s/Int)
-    (try
-      (op/add-oppija! (:oppija-oid hoks))
-      (catch Exception e
-        (if (= (:status (ex-data e)) 404)
-          (do
-            (log/warn "Oppija with oid "
-                      (:oppija-oid hoks)
-                      " not found in ONR")
-            (response/bad-request!
-              {:error
-               (str "Oppija not found in"
-                    " Oppijanumerorekisteri")}))
-          (throw e))))
-    (try
-      (op/add-opiskeluoikeus!
-        (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
-      (catch Exception e
-        (if (= (:status (ex-data e)) 404)
-          (do
-            (log/warn "Opiskeluoikeus with oid "
-                      (:opiskeluoikeus-oid hoks)
-                      " not found in Koski")
-            (response/bad-request!
-              {:error "Opiskeluoikeus not found in Koski"}))
-          (throw e))))
-    (let [virkailija-user
-          (get-in request [:session :virkailija-user])]
-      (when-not
-       (m/virkailija-has-privilege-in-opiskeluoikeus?
-         virkailija-user (:opiskeluoikeus-oid hoks) :write)
-        (log/warnf "User %s privileges don't match oppija %s"
-                   (get-in request [:session
-                                    :virkailija-user
-                                    :oidHenkilo])
-                   (:oppija-oid hoks))
-        (response/forbidden!
+(defn- post-oppija [hoks request]
+  (try
+    (op/add-oppija! (:oppija-oid hoks))
+    (catch Exception e
+      (if (= (:status (ex-data e)) 404)
+        (do
+          (log/warn "Oppija with oid "
+                    (:oppija-oid hoks)
+                    " not found in ONR")
+          (response/bad-request!
+            {:error
+             (str "Oppija not found in"
+                  " Oppijanumerorekisteri")}))
+        (throw e))))
+  (try
+    (op/add-opiskeluoikeus!
+      (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
+    (catch Exception e
+      (if (= (:status (ex-data e)) 404)
+        (do
+          (log/warn "Opiskeluoikeus with oid "
+                    (:opiskeluoikeus-oid hoks)
+                    " not found in Koski")
+          (response/bad-request!
+            {:error "Opiskeluoikeus not found in Koski"}))
+        (throw e))))
+  (let [virkailija-user
+        (get-in request [:session :virkailija-user])]
+    (when-not
+      (m/virkailija-has-privilege-in-opiskeluoikeus?
+        virkailija-user (:opiskeluoikeus-oid hoks) :write)
+      (log/warnf "User %s privileges don't match oppija %s"
+                 (get-in request [:session
+                                  :virkailija-user
+                                  :oidHenkilo])
+                 (:oppija-oid hoks))
+      (response/forbidden!
+        {:error
+         (str "User has unsufficient privileges")})))
+  (try
+    (let [hoks-db (h/save-hoks!
+                    (assoc hoks :manuaalisyotto true))]
+      (assoc
+        (restful/rest-ok
+          {:uri (format "%s/%d"
+                        (:uri request)
+                        (:id hoks-db))}
+          :id (:id hoks-db))
+        :audit-data {:new hoks}))
+    (catch Exception e
+      (if (= (:error (ex-data e)) :duplicate)
+        (do
+          (log/warnf
+            "HOKS with opiskeluoikeus-oid %s already exists"
+            (:opiskeluoikeus-oid hoks))
+          (response/bad-request!
+            {:error
+             (str "HOKS with the same "
+                  "opiskeluoikeus-oid already exists")}))
+        (throw e)))))
+
+(defn- get-hoks-perustiedot [oppija-oid]
+  (if-let [hoks
+           (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
+    (restful/rest-ok hoks)
+    (response/not-found {:message "HOKS not found"})))
+
+(defn- get-hoks [hoks-id request]
+  (let [hoks (db-hoks/select-hoks-by-id hoks-id)
+        virkailija-user (get-in
+                          request
+                          [:session :virkailija-user])]
+    (if (m/virkailija-has-privilege?
+          virkailija-user (:oppija-oid hoks) :read)
+      (restful/rest-ok (h/get-hoks-by-id hoks-id))
+      (do
+        (log/warnf
+          "User %s privileges don't match oppija %s"
+          (get-in request [:session
+                           :virkailija-user
+                           :oidHenkilo])
+          (get-in request [:params :oppija-oid]))
+        (response/forbidden
           {:error
-           (str "User has unsufficient privileges")})))
-    (try
-      (let [hoks-db (h/save-hoks!
-                      (assoc hoks :manuaalisyotto true))]
-        (assoc
-          (restful/rest-ok
-            {:uri (format "%s/%d"
-                          (:uri request)
-                          (:id hoks-db))}
-            :id (:id hoks-db))
-          :audit-data {:new hoks}))
-      (catch Exception e
-        (if (= (:error (ex-data e)) :duplicate)
-          (do
-            (log/warnf
-              "HOKS with opiskeluoikeus-oid %s already exists"
-              (:opiskeluoikeus-oid hoks))
-            (response/bad-request!
-              {:error
-               (str "HOKS with the same "
-                    "opiskeluoikeus-oid already exists")}))
-          (throw e))))))
+           (str "User has insufficient privileges")})))))
 
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
@@ -193,39 +214,24 @@
                       (response/ok {:message "Route is deprected."})))
 
                   (c-api/context "/hoksit" []
-                    post-oppija-hoks-route
+                    (c-api/POST "/" [:as request]
+                      :summary "Luo uuden HOKSin. Vaatii manuaalisyöttäjän oikeudet"
+                      :body [hoks hoks-schema/HOKSLuonti]
+                      :return (restful/response schema/POSTResponse :id s/Int)
+                      (post-oppija hoks request))
 
                     (route-middleware
                       [m/wrap-virkailija-oppija-access]
                       (c-api/GET "/" []
                         :return (restful/response [hoks-schema/HOKS])
                         :summary "Oppijan hoksit (perustiedot)"
-                        (if-let [hoks
-                                 (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
-                          (restful/rest-ok hoks)
-                          (response/not-found {:message "HOKS not found"})))
+                        (get-hoks-perustiedot oppija-oid))
 
                       (c-api/GET "/:hoks-id" request
                         :path-params [hoks-id :- s/Int]
                         :summary "Hoksin tiedot.
                                 Vaatii manuaalisyöttäjän oikeudet"
-                        (let [hoks (db-hoks/select-hoks-by-id hoks-id)
-                              virkailija-user (get-in
-                                                request
-                                                [:session :virkailija-user])]
-                          (if (m/virkailija-has-privilege?
-                                virkailija-user (:oppija-oid hoks) :read)
-                            (restful/rest-ok (h/get-hoks-by-id hoks-id))
-                            (do
-                              (log/warnf
-                                "User %s privileges don't match oppija %s"
-                                (get-in request [:session
-                                                 :virkailija-user
-                                                 :oidHenkilo])
-                                (get-in request [:params :oppija-oid]))
-                              (response/forbidden
-                                {:error
-                                 (str "User has insufficient privileges")})))))
+                        (get-hoks hoks-id request))
 
                       (route-middleware
                         [m/wrap-virkailija-write-access]
