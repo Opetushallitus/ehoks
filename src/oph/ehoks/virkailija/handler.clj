@@ -261,7 +261,8 @@
 
                   (c-api/context "/hoksit" []
                     (c-api/POST "/" [:as request]
-                      :summary "Luo uuden HOKSin. Vaatii manuaalisyöttäjän oikeudet"
+                      :summary (str "Luo uuden HOKSin. "
+                                    "Vaatii manuaalisyöttäjän oikeudet")
                       :body [hoks hoks-schema/HOKSLuonti]
                       :return (restful/response schema/POSTResponse :id s/Int)
                       (post-oppija hoks request))
