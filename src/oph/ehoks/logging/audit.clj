@@ -36,8 +36,10 @@
 (defn- get-user-oid [request]
   (when-let [user (or (:service-ticket-user request)
                       (get-in request [:session :virkailija-user])
-                      (:virkailija-user request))]
-    (:oidHenkilo user)))
+                      (:virkailija-user request)
+                      (get-in request [:session :user]))]
+    (or (:oidHenkilo user)
+        (:oid user))))
 
 (defn- get-client-ip [request]
   (if-let [ips (get-in request [:headers "x-forwarded-for"])]
@@ -51,7 +53,9 @@
     (if-let [ip (get-client-ip request)]
       (InetAddress/getByName ip)
       (InetAddress/getLocalHost))
-    (or (get-session request) "no session")
+    (or (get-session request)
+        (get-in request [:headers "ticket"])
+        "no session")
     (or (get-in request [:headers "user-agent"]) "no user agent")))
 
 (defn- build-changes [response]

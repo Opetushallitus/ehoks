@@ -166,6 +166,12 @@
       :valittu-todentamisen-prosessi-koodi-uri
       "osaamisentodentamisenprosessi_0003"
       :valittu-todentamisen-prosessi-koodi-versio 4
+      :tarkentavat-tiedot-osaamisen-arvioija
+      {:lahetetty-arvioitavaksi (java.time.LocalDate/of 2020 5 25)
+       :aiemmin-hankitun-osaamisen-arvioijat
+       [{:nimi "Tama tyyppi"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.54453931444"}}]}
       :tarkentavat-tiedot-naytto
       [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
                       :koodi-versio 3}]
@@ -383,6 +389,21 @@
           :id 1
           :eid (:eid hoks)
           :manuaalisyotto false)))))
+
+(deftest tarkentavat-tiedot-osaamisen-arvioija-save
+  (testing "If tarkentavat-tiedot-osaamisen-arvioija is missing
+  lahetetty-arvioitavaksi, save should still succeed"
+    (let [arvioija-without-lahetetty-date {:aiemmin-hankitun-osaamisen-arvioijat
+                                           [{:nimi "Paulanen Testi",
+                                             :organisaatio
+                                             {:oppilaitos-oid
+                                              "1.2.246.562.10.63885480000"}}]}
+          tta (ah/save-tarkentavat-tiedot-osaamisen-arvioija!
+                arvioija-without-lahetetty-date)
+          stored-arvioija (ah/get-tarkentavat-tiedot-osaamisen-arvioija
+                            (:id tta))]
+      (eq stored-arvioija
+          arvioija-without-lahetetty-date))))
 
 (deftest empty-values-test
   (testing "DB handling of empty values"

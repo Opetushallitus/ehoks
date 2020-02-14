@@ -72,15 +72,19 @@
     #(dissoc (c/set-osaamisen-osoittaminen-values %) :id)
     (db/select-tarkentavat-tiedot-naytto-by-ahyto-osa-alue-id id)))
 
-(defn get-ahyto-osa-alueet [id]
+(defn get-ahyto-osa-alueet [ahyto-id]
   (mapv
     #(dissoc
        (assoc
          %
          :tarkentavat-tiedot-naytto
-         (get-ahyto-osa-alue-tarkentavat-tiedot (:id %)))
-       :id)
-    (db/select-osa-alueet-by-ahyto-id id)))
+         (get-ahyto-osa-alue-tarkentavat-tiedot (:id %))
+         :tarkentavat-tiedot-osaamisen-arvioija
+         (get-tarkentavat-tiedot-osaamisen-arvioija
+           (:tarkentavat-tiedot-osaamisen-arvioija-id %)))
+       :id
+       :tarkentavat-tiedot-osaamisen-arvioija-id)
+    (db/select-osa-alueet-by-ahyto-id ahyto-id)))
 
 (defn get-ahyto-tarkentavat-tiedot-naytto [ahyto-id]
   (mapv
@@ -131,11 +135,20 @@
        n)
     new-values))
 
+(defn save-tarkentavat-tiedot-osaamisen-arvioija! [new-tta]
+  (let [tta-db (db/insert-todennettu-arviointi-lisatiedot! new-tta)]
+    (save-tta-aiemmin-hankitun-osaamisen-arvioijat!
+      (:id tta-db) (:aiemmin-hankitun-osaamisen-arvioijat new-tta))
+    tta-db))
+
 (defn- save-ahyto-osa-alue! [ahyto-id osa-alue]
-  (let [stored-osa-alue
+  (let [arvioija (:tarkentavat-tiedot-osaamisen-arvioija osa-alue)
+        stored-osa-alue
         (db/insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue!
-          (assoc osa-alue :aiemmin-hankittu-yhteinen-tutkinnon-osa-id
-                 ahyto-id))]
+          (assoc osa-alue
+                 :aiemmin-hankittu-yhteinen-tutkinnon-osa-id ahyto-id
+                 :tarkentavat-tiedot-osaamisen-arvioija-id
+                 (:id (save-tarkentavat-tiedot-osaamisen-arvioija! arvioija))))]
     (mapv
       (fn [naytto]
         (let [stored-naytto (c/save-osaamisen-osoittaminen! naytto)]
@@ -147,12 +160,6 @@
   (mapv
     #(save-ahyto-osa-alue! ahyto-id %)
     osa-alueet))
-
-(defn save-tarkentavat-tiedot-osaamisen-arvioija! [new-tta]
-  (let [tta-db (db/insert-todennettu-arviointi-lisatiedot! new-tta)]
-    (save-tta-aiemmin-hankitun-osaamisen-arvioijat!
-      (:id tta-db) (:aiemmin-hankitun-osaamisen-arvioijat new-tta))
-    tta-db))
 
 (defn save-aiemmin-hankittu-yhteinen-tutkinnon-osa! [hoks-id ahyto]
   (let [tta (:tarkentavat-tiedot-osaamisen-arvioija ahyto)

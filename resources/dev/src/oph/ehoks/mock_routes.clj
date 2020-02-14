@@ -5,7 +5,8 @@
             [clojure.java.io :as io]
             [cheshire.core :as cheshire]
             [clj-http.client :as client]
-            [oph.ehoks.mock-gen :as mock-gen]))
+            [oph.ehoks.mock-gen :as mock-gen]
+            [clj-time.core :as time]))
 
 (defn- json-response [value]
   (assoc-in
@@ -309,4 +310,9 @@
       (json-response
         {:oid (get-in request [:params :oid])
          :nimi {:fi "Esimerkki-organisaatio"}
-         :parentOidPath "|1.2.246.562.10.00000000001|"}))))
+         :parentOidPath "|1.2.246.562.10.00000000001|"}))
+
+    (GET "/api/vastauslinkki/v1/status/:linkId" request
+      (json-response
+        {:vastattu false
+         :voimassa_loppupvm (time/plus (time/now) (time/hours 2))}))))

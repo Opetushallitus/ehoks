@@ -149,12 +149,19 @@
     {:aiemmin_hankittu_yto_osa_alue_id osa-alue-id
      :osaamisen_osoittaminen_id naytto-id}))
 
+(defn- ensure-lahetetty-arvioitavaksi-exists [tarkentavat-tiedot-arvioija]
+  (if (:lahetetty-arvioitavaksi tarkentavat-tiedot-arvioija)
+    tarkentavat-tiedot-arvioija
+    (assoc tarkentavat-tiedot-arvioija :lahetetty-arvioitavaksi nil)))
+
 (defn insert-todennettu-arviointi-lisatiedot!
   "Lisää todennetun arvioinnin lisätiedot"
-  [m]
-  (db-ops/insert-one!
-    :todennettu_arviointi_lisatiedot
-    (h/todennettu-arviointi-lisatiedot-to-sql m)))
+  [tarkentavat-tiedot-arvioija]
+  (let [refined-arvioija
+        (ensure-lahetetty-arvioitavaksi-exists tarkentavat-tiedot-arvioija)]
+    (db-ops/insert-one! :todennettu_arviointi_lisatiedot
+                        (h/todennettu-arviointi-lisatiedot-to-sql
+                          refined-arvioija))))
 
 (defn insert-aiemmin-hankittu-yhteinen-tutkinnon-osa!
   "Lisää aiemmin hankitun yhteisen tutkinnon osa"

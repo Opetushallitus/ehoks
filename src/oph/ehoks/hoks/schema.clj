@@ -213,6 +213,16 @@
        "Koulutuksenjärjestäjän arvioijan organisaatio")}))
 
 (s/defschema
+  TodennettuArviointiLisatiedot
+  (describe
+    "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"
+    (s/optional-key :lahetetty-arvioitavaksi) LocalDate "Päivämäärä, jona
+    lähetetty arvioitavaksi, muodossa YYYY-MM-DD"
+    (s/optional-key :aiemmin-hankitun-osaamisen-arvioijat)
+    [KoulutuksenJarjestajaArvioija]
+    "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
+
+(s/defschema
   OsaamisenOsoittaminen
   (describe
     "Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
@@ -305,7 +315,10 @@
     (str "Tieto sellaisen seikan
     olemassaolosta, jonka koulutuksen järjestäjä katsoo oleelliseksi tutkinnon
     osaan tai osa-alueeseen liittyvän osaamisen hankkimisessa tai
-    osoittamisessa.")))
+    osoittamisessa.")
+    (s/optional-key :tarkentavat-tiedot-osaamisen-arvioija)
+    TodennettuArviointiLisatiedot
+    "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"))
 
 (s/defschema
   YhteinenTutkinnonOsa
@@ -454,16 +467,6 @@
     liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
 
 (s/defschema
-  TodennettuArviointiLisatiedot
-  (describe
-    "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"
-    (s/optional-key :lahetetty-arvioitavaksi) LocalDate "Päivämäärä, jona
-    lähetetty arvioitavaksi, muodossa YYYY-MM-DD"
-    (s/optional-key :aiemmin-hankitun-osaamisen-arvioijat)
-    [KoulutuksenJarjestajaArvioija]
-    "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
-
-(s/defschema
   AiemminHankittuPaikallinenTutkinnonOsa
   (modify
     HankittavaPaikallinenTutkinnonOsa
@@ -538,9 +541,10 @@
      (describe
        ""
        :osa-alueet [AiemminHankitunYTOOsaAlue] "YTO osa-alueet"
-       :valittu-todentamisen-prosessi-koodi-uri TodentamisenProsessiKoodiUri
+       (s/optional-key :valittu-todentamisen-prosessi-koodi-uri)
+       TodentamisenProsessiKoodiUri
        "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
-       :valittu-todentamisen-prosessi-koodi-versio s/Int
+       (s/optional-key :valittu-todentamisen-prosessi-koodi-versio) s/Int
        "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio
        (Osaamisen todentamisen prosessi)"
        (s/optional-key :tarkentavat-tiedot-naytto) [OsaamisenOsoittaminen]
@@ -698,12 +702,9 @@
                 :types {:any s/Inst}
                 :description (str "HOKS-dokumentin viimeisin päivitysaika "
                                   "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
-   :osaamisen-hankkimisen-tarve {:methods {:any :optional}
-                                 ;FEATURE TOGGLE: osaamisen-hankkimisen-tarve
-                                 ;Laita methodseihin nämä
-                                 ;:any :required
-                                 ;:patch :optional
-                                 ;:get :optional}
+   :osaamisen-hankkimisen-tarve {:methods {:any :required
+                                           :patch :optional
+                                           :get :optional}
                                  :types {:any s/Bool}
                                  :description
                                  "Tutkintokoulutuksen ja muun tarvittavan
