@@ -115,9 +115,7 @@
             {:error "Opiskeluoikeus not found in Koski"}))
         (throw e)))))
 
-(defn- post-oppija [hoks request]
-  (add-oppija hoks)
-  (add-opiskeluoikeus hoks)
+(defn- check-virkailija-privileges [hoks request]
   (let [virkailija-user
         (get-in request [:session :virkailija-user])]
     (when-not
@@ -130,7 +128,12 @@
                  (:oppija-oid hoks))
       (response/forbidden!
         {:error
-         (str "User has unsufficient privileges")})))
+         (str "User has unsufficient privileges")}))))
+
+(defn- post-oppija [hoks request]
+  (add-oppija hoks)
+  (add-opiskeluoikeus hoks)
+  (check-virkailija-privileges hoks request)
   (try
     (let [hoks-db (h/save-hoks!
                     (assoc hoks :manuaalisyotto true))]
