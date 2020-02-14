@@ -86,7 +86,7 @@
           oppijat
           :total-count (op/get-count search-params))))))
 
-(defn- post-oppija [hoks request]
+(defn- add-oppija [hoks]
   (try
     (op/add-oppija! (:oppija-oid hoks))
     (catch Exception e
@@ -99,7 +99,10 @@
             {:error
              (str "Oppija not found in"
                   " Oppijanumerorekisteri")}))
-        (throw e))))
+        (throw e)))))
+
+(defn- post-oppija [hoks request]
+  (add-oppija hoks)
   (try
     (op/add-opiskeluoikeus!
       (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
