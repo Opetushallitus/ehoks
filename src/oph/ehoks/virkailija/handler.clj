@@ -130,10 +130,7 @@
         {:error
          (str "User has unsufficient privileges")}))))
 
-(defn- post-oppija [hoks request]
-  (add-oppija hoks)
-  (add-opiskeluoikeus hoks)
-  (check-virkailija-privileges hoks request)
+(defn- save-hoks [hoks request]
   (try
     (let [hoks-db (h/save-hoks!
                     (assoc hoks :manuaalisyotto true))]
@@ -155,6 +152,12 @@
              (str "HOKS with the same "
                   "opiskeluoikeus-oid already exists")}))
         (throw e)))))
+
+(defn- post-oppija [hoks request]
+  (add-oppija hoks)
+  (add-opiskeluoikeus hoks)
+  (check-virkailija-privileges hoks request)
+  (save-hoks hoks request))
 
 (defn- get-hoks-perustiedot [oppija-oid]
   (if-let [hoks
