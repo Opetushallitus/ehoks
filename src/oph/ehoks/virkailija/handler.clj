@@ -189,6 +189,23 @@
           :audit-data {:new hoks-values})
         (throw e)))))
 
+(defn- patch-hoks [hoks-values hoks-id]
+  (try
+    (let [hoks-db
+          (h/update-hoks! hoks-id hoks-values)]
+      (assoc
+        (response/no-content)
+        :audit-data
+        {:new  hoks-values}))
+    (catch Exception e
+      (if (= (:error (ex-data e)) :disallowed-update)
+        (assoc
+          (response/bad-request!
+            {:error
+             (.getMessage e)})
+          :audit-data {:new hoks-values})
+        (throw e)))))
+
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
@@ -266,21 +283,7 @@
                           (c-api/PATCH "/" request
                             :body [hoks-values hoks-schema/HOKSPaivitys]
                             :summary "Oppijan hoksin päätason arvojen päivitys"
-                            (try
-                              (let [hoks-db
-                                    (h/update-hoks! hoks-id hoks-values)]
-                                (assoc
-                                  (response/no-content)
-                                  :audit-data
-                                  {:new  hoks-values}))
-                              (catch Exception e
-                                (if (= (:error (ex-data e)) :disallowed-update)
-                                  (assoc
-                                    (response/bad-request!
-                                      {:error
-                                       (.getMessage e)})
-                                    :audit-data {:new hoks-values})
-                                  (throw e)))))))
+                            (patch-hoks hoks-values hoks-id))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]
