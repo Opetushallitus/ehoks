@@ -18,7 +18,15 @@
             [schema.core :as s]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.hoks.middleware :as m]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [cheshire.core :as cheshire]))
+
+(defn- json-response [value]
+  (assoc-in
+    (response/ok
+      (cheshire/generate-string
+        value))
+    [:headers "Content-Type"] "application/json"))
 
 (def ^:private hankittava-paikallinen-tutkinnon-osa
   (c-api/context "/hankittava-paikallinen-tutkinnon-osa" []

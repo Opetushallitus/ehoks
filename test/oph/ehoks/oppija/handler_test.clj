@@ -48,7 +48,7 @@
           body (utils/parse-body (:body response))]
       (is (= (:status response) 200))
       (eq
-        (:data body)
+        (utils/dissoc-uuids (:data body))
         [(dates-to-str
            (assoc hoks-data
                   :eid (get-in body [:data 0 :eid])

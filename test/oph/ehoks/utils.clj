@@ -234,3 +234,13 @@
        (m/migrate!)
        (do ~@body)
        (m/clean!)))
+
+(defn dissoc-uuids [data]
+  (if (coll? data)
+    (if (map? data)
+      (reduce (fn [res val]
+                (conj res [(first val) (dissoc-uuids (second val))]))
+              {}
+              (dissoc data :uuid))
+      (map #(dissoc-uuids %) data))
+    data))

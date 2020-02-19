@@ -58,6 +58,64 @@
   ],
   "hankittavat-ammat-tutkinnon-osat": [
     {
+      "tutkinnon-osa-koodi-uri": "tutkinnonosat_105668",
+      "tutkinnon-osa-koodi-versio": 1,
+      "vaatimuksista-tai-tavoitteista-poikkeaminen": "false",
+      "osaamisen-osoittaminen": [
+        {
+          "koulutuksen-jarjestaja-osaamisen-arvioijat": [
+            {
+              "nimi": "Olson,Wava",
+              "organisaatio": {
+                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              }
+            }
+          ],
+          "nayttoymparisto": {
+            "nimi": "Nimi Niminen",
+            "y-tunnus": "0149669-3",
+            "kuvaus": "Kiva kuvaus"
+          },
+          "sisallon-kuvaus": [
+            "Eka kuvaus sisallolle",
+            "Toka kuvaus"
+          ],
+          "tyoelama-osaamisen-arvioijat": [
+            {
+              "nimi": "Matti Meikalainen",
+              "organisaatio": {
+                "nimi": "Mukava organisaatio",
+                "y-tunnus": "0149669-3"
+              }
+            }
+          ],
+          "alku": "2020-02-10",
+          "loppu": "2020-02-10"
+        }
+      ],
+      "osaamisen-hankkimistavat": [
+        {
+        "osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_koulutussopimus",
+        "hankkijan-edustaja": {
+          "nimi": "Hanken, Hank",
+          "rooli": "Edustushankkija",
+          "oppilaitos-oid": "1.2.246.562.10.54453921329"
+        },
+        "osaamisen-hankkimistapa-koodi-versio": 1,
+        "jarjestajan-edustaja": {
+          "nimi": "Jarjen, Jari",
+          "rooli": "Järjestysedustaja",
+          "oppilaitos-oid": "1.2.246.562.10.54453921329"
+        },
+        "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
+        "alku": "2020-02-10",
+        "loppu": "2020-02-10"
+        }
+      ],
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "olennainen-seikka": true
+    },
+    {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
       "tutkinnon-osa-koodi-versio": 1,
       "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
