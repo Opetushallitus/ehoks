@@ -127,36 +127,7 @@
               (c-api/context "/:eid" []
                 (route-middleware
                   [wrap-authorize m/wrap-hoks-access]
-                  share-handler/routes))
-
-              (c-api/GET "/share/:uuid" request
-                :summary "Palauttaa jakolinkit"
-                :path-params [uuid :- s/Str]
-                (json-response
-                  [{:jako-uuid "f4cb451f-d72f-4235-b376-3ce646bc0613"
-                    :uuid uuid
-                    :alku "2020-01-30"
-                    :loppu "2020-02-12"
-                    :tyyppi "HankittavaAmmatTutkinnonOsa"}
-                   {:jako-uuid "f4cb451f-d72f-4235-b376-3ce646bc0614"
-                    :uuid uuid
-                    :alku "2020-01-24"
-                    :loppu "2020-02-16"
-                    :tyyppi "HankittavaAmmatTutkinnonOsa"}]))
-
-              (c-api/POST "/share/:eid" [:as request]
-                :summary "Luo linkinjaon"
-                :body [body {:voimassaolo-alku s/Str
-                             :voimassaolo-loppu s/Str
-                             :uuid s/Str
-                             :tyyppi s/Str}]
-                (json-response
-                  {:jako-uuid "f4cb451f-d72f-4235-b376-3ce646bc0614"
-                   :uuid (:uuid body)
-                   :uri "uri.fi"
-                   :alku "2020-01-30"
-                   :loppu "2020-02-12"}))
-              )))))
+                  share-handler/routes)))))))
 
     (c-api/undocumented
       (GET "/buildversion.txt" []
