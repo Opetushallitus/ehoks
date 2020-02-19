@@ -322,7 +322,6 @@
               (response/not-found
                 {:error "No HOKS found with given opiskeluoikeus"})))))
 
-
       (c-api/context "/:hoks-id" []
 
         (route-middleware
