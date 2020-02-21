@@ -118,7 +118,6 @@ alter table yhteisen_tutkinnon_osan_osa_alueen_naytot
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
-
 alter table aiemmin_hankitun_ammat_tutkinnon_osan_naytto
     drop constraint olemassa_olevan_ammatillisen__olemassa_oleva_ammatillinen__fkey,
     add constraint aiemmin_hankitun_ammatillisen__olemassa_oleva_ammatillinen__fkey
@@ -221,15 +220,18 @@ alter table osaamisen_osoittamisen_sisallot
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
+alter table osaamisen_osoittamisen_tyoelama_arvioija
+    drop constraint hankitun_osaamisen_nayton_tyo_hankitun_osaamisen_naytto_id_fkey,
+    add constraint hankitun_osaamisen_nayton_tyo_hankitun_osaamisen_naytto_id_fkey
+        foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
+            on delete cascade;
 
-ALTER TABLE  osaamisen_osoittamisen_tyoelama_arvioija ADD COLUMN
-osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
-UPDATE osaamisen_osoittamisen_tyoelama_arvioija SET
-osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
-ALTER TABLE  osaamisen_osoittamisen_tyoelama_arvioija DROP COLUMN
-osaamisen_osoittaminen_id;
-ALTER TABLE osaamisen_osoittamisen_tyoelama_arvioija RENAME COLUMN
-osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
+alter table osaamisen_osoittamisen_tyoelama_arvioija
+    drop constraint hankitun_osaamisen_nayton_tyoelama_ar_tyoelama_arvioija_id_fkey,
+    add constraint hankitun_osaamisen_nayton_tyoelama_ar_tyoelama_arvioija_id_fkey
+        foreign key (tyoelama_arvioija_id) references tyoelama_osaamisen_arvioijat
+            on delete cascade;
+
 
 ALTER TABLE  osaamisen_osoittamisen_yksilolliset_kriteerit ADD COLUMN
 osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
@@ -250,14 +252,7 @@ nayttoymparisto_id;
 ALTER TABLE osaamisen_osoittamiset RENAME COLUMN
 nayttoymparisto_id_copy TO nayttoymparisto_id;
 
-ALTER TABLE  osaamisen_osoittamisen_tyoelama_arvioija ADD COLUMN
-tyoelama_arvioija_id_copy INTEGER REFERENCES tyoelama_osaamisen_arvioijat(id) ON DELETE CASCADE;
-UPDATE osaamisen_osoittamisen_tyoelama_arvioija SET
-tyoelama_arvioija_id_copy=tyoelama_arvioija_id;
-ALTER TABLE  osaamisen_osoittamisen_tyoelama_arvioija DROP COLUMN
-tyoelama_arvioija_id;
-ALTER TABLE osaamisen_osoittamisen_tyoelama_arvioija RENAME COLUMN
-tyoelama_arvioija_id_copy TO tyoelama_arvioija_id;
+
 
 ALTER TABLE  osaamisen_hankkimistavat
 ADD COLUMN tyopaikalla_jarjestettava_koulutus_id_copy INTEGER REFERENCES
