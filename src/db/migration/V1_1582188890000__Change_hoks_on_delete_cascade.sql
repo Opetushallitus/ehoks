@@ -191,16 +191,13 @@ alter table aiemmin_hankitun_yto_osa_alueen_naytto
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
+alter table aiemmin_hankitut_yto_osa_alueet
+    drop constraint olemassa_olevat_yto_osa_aluee_olemassa_oleva_yhteinen_tutk_fkey,
+    add constraint olemassa_olevat_yto_osa_aluee_olemassa_oleva_yhteinen_tutk_fkey
+        foreign key (aiemmin_hankittu_yhteinen_tutkinnon_osa_id) references aiemmin_hankitut_yhteiset_tutkinnon_osat
+            on delete cascade;
 
-ALTER TABLE  aiemmin_hankitut_yto_osa_alueet ADD COLUMN
-aiemmin_hankittu_yhteinen_tutkinnon_osa_id_copy INTEGER REFERENCES
-aiemmin_hankitut_yhteiset_tutkinnon_osat(id) ON DELETE CASCADE;
-UPDATE aiemmin_hankitut_yto_osa_alueet SET
-aiemmin_hankittu_yhteinen_tutkinnon_osa_id_copy=aiemmin_hankittu_yhteinen_tutkinnon_osa_id;
-ALTER TABLE  aiemmin_hankitut_yto_osa_alueet DROP COLUMN
-aiemmin_hankittu_yhteinen_tutkinnon_osa_id;
-ALTER TABLE aiemmin_hankitut_yto_osa_alueet RENAME COLUMN
-aiemmin_hankittu_yhteinen_tutkinnon_osa_id_copy TO aiemmin_hankittu_yhteinen_tutkinnon_osa_id;
+
 
 ALTER TABLE  osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija ADD COLUMN
 osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
