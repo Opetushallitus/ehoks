@@ -262,15 +262,17 @@ alter table muut_oppimisymparistot
         foreign key (osaamisen_hankkimistapa_id) references osaamisen_hankkimistavat
             on delete cascade;
 
-ALTER TABLE  todennettu_arviointi_arvioijat
-ADD COLUMN koulutuksen_jarjestaja_osaamisen_arvioija_id_copy INTEGER REFERENCES
-koulutuksen_jarjestaja_osaamisen_arvioijat(id) ON DELETE CASCADE;
-UPDATE todennettu_arviointi_arvioijat
-SET koulutuksen_jarjestaja_osaamisen_arvioija_id_copy=koulutuksen_jarjestaja_osaamisen_arvioija_id;
-ALTER TABLE  todennettu_arviointi_arvioijat
-DROP COLUMN koulutuksen_jarjestaja_osaamisen_arvioija_id;
-ALTER TABLE todennettu_arviointi_arvioijat
-RENAME COLUMN koulutuksen_jarjestaja_osaamisen_arvioija_id_copy TO koulutuksen_jarjestaja_osaamisen_arvioija_id;
+alter table todennettu_arviointi_arvioijat
+    drop constraint todennettu_arviointi_arvioija_koulutuksen_jarjestaja_arvio_fkey,
+    add constraint todennettu_arviointi_arvioija_koulutuksen_jarjestaja_arvio_fkey
+        foreign key (koulutuksen_jarjestaja_osaamisen_arvioija_id) references koulutuksen_jarjestaja_osaamisen_arvioijat
+            on delete cascade;
+
+alter table todennettu_arviointi_arvioijat
+    drop constraint todennettu_arviointi_arvioija_todennettu_arviointi_lisatie_fkey,
+    add constraint todennettu_arviointi_arvioija_todennettu_arviointi_lisatie_fkey
+        foreign key (todennettu_arviointi_lisatiedot_id) references todennettu_arviointi_lisatiedot
+            on delete cascade;
 
 
 
@@ -284,15 +286,7 @@ UPDATE aiemmin_hankitut_yhteiset_tutkinnon_osat SET tarkentavat_tiedot_osaamisen
 ALTER TABLE  aiemmin_hankitut_yhteiset_tutkinnon_osat DROP COLUMN tarkentavat_tiedot_osaamisen_arvioija_id;
 ALTER TABLE aiemmin_hankitut_yhteiset_tutkinnon_osat RENAME COLUMN tarkentavat_tiedot_osaamisen_arvioija_id_copy TO tarkentavat_tiedot_osaamisen_arvioija_id;
 
-ALTER TABLE  todennettu_arviointi_arvioijat
-ADD COLUMN todennettu_arviointi_lisatiedot_id_copy INTEGER REFERENCES
-todennettu_arviointi_lisatiedot(id) ON DELETE CASCADE;
-UPDATE todennettu_arviointi_arvioijat
-SET todennettu_arviointi_lisatiedot_id_copy=todennettu_arviointi_lisatiedot_id;
-ALTER TABLE  todennettu_arviointi_arvioijat
-DROP COLUMN todennettu_arviointi_lisatiedot_id;
-ALTER TABLE todennettu_arviointi_arvioijat
-RENAME COLUMN todennettu_arviointi_lisatiedot_id_copy TO todennettu_arviointi_lisatiedot_id;
+
 
 ALTER TABLE  tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat
 ADD COLUMN tyopaikalla_jarjestettava_koulutus_id_copy INTEGER REFERENCES
