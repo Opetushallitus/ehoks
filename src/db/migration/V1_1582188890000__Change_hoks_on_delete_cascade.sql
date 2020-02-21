@@ -28,6 +28,12 @@ alter table hankittavat_paikalliset_tutkinnon_osat
         foreign key (hoks_id) references hoksit
             on delete cascade;
 
+alter table aiemmin_hankitut_paikalliset_tutkinnon_osat
+    drop constraint olemassa_olevat_paikalliset__tarkentavat_tiedot_arvioija__fkey,
+    add constraint aiemmin_hankitut_paikalliset__tarkentavat_tiedot_arvioija__fkey
+        foreign key (tarkentavat_tiedot_osaamisen_arvioija_id) references todennettu_arviointi_lisatiedot
+            on delete cascade;
+
 alter table hankittavat_ammat_tutkinnon_osat
     drop constraint puuttuvat_ammat_tutkinnon_osat_hoks_id_fkey,
     add constraint hankittavat_ammat_tutkinnon_osat_hoks_id_fkey
@@ -281,10 +287,7 @@ alter table tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat
             on delete cascade;
 
 
-ALTER TABLE  aiemmin_hankitut_paikalliset_tutkinnon_osat ADD COLUMN tarkentavat_tiedot_osaamisen_arvioija_id_copy INTEGER REFERENCES todennettu_arviointi_lisatiedot(id) ON DELETE CASCADE;
-UPDATE aiemmin_hankitut_paikalliset_tutkinnon_osat SET tarkentavat_tiedot_osaamisen_arvioija_id_copy=tarkentavat_tiedot_osaamisen_arvioija_id;
-ALTER TABLE  aiemmin_hankitut_paikalliset_tutkinnon_osat DROP COLUMN tarkentavat_tiedot_osaamisen_arvioija_id;
-ALTER TABLE aiemmin_hankitut_paikalliset_tutkinnon_osat RENAME COLUMN tarkentavat_tiedot_osaamisen_arvioija_id_copy TO tarkentavat_tiedot_osaamisen_arvioija_id;
+
 
 ALTER TABLE  aiemmin_hankitut_yhteiset_tutkinnon_osat ADD COLUMN tarkentavat_tiedot_osaamisen_arvioija_id_copy INTEGER REFERENCES todennettu_arviointi_lisatiedot(id) ON DELETE CASCADE;
 UPDATE aiemmin_hankitut_yhteiset_tutkinnon_osat SET tarkentavat_tiedot_osaamisen_arvioija_id_copy=tarkentavat_tiedot_osaamisen_arvioija_id;
