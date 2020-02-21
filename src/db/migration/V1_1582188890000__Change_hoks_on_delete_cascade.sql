@@ -143,16 +143,19 @@ alter table aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
+alter table aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
+    drop constraint olemassa_olevan_paikallisen__olemassa_oleva_paikallinen_t_fkey1,
+    add constraint aiemmin_hankittu_paikallisen__olemassa_oleva_paikallinen_t_fkey1
+        foreign key (aiemmin_hankittu_paikallinen_tutkinnon_osa_id) references aiemmin_hankitut_paikalliset_tutkinnon_osat
+            on delete cascade;
 
-ALTER TABLE  aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
-ADD COLUMN aiemmin_hankittu_paikallinen_tutkinnon_osa_id_copy INTEGER REFERENCES
-aiemmin_hankitut_paikalliset_tutkinnon_osat(id) ON DELETE CASCADE;
-UPDATE aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
-SET aiemmin_hankittu_paikallinen_tutkinnon_osa_id_copy=aiemmin_hankittu_paikallinen_tutkinnon_osa_id;
-ALTER TABLE  aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
-DROP COLUMN aiemmin_hankittu_paikallinen_tutkinnon_osa_id;
-ALTER TABLE aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat RENAME COLUMN
-aiemmin_hankittu_paikallinen_tutkinnon_osa_id_copy TO aiemmin_hankittu_paikallinen_tutkinnon_osa_id;
+alter table aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
+    drop constraint olemassa_olevan_paikallisen_t_koulutuksen_jarjestaja_arvio_fkey,
+    add constraint aiemmin_hankittu_paikallisen_t_koulutuksen_jarjestaja_arvio_fkey
+        foreign key (koulutuksen_jarjestaja_osaamisen_arvioija_id) references koulutuksen_jarjestaja_osaamisen_arvioijat
+            on delete cascade;
+
+
 
 ALTER TABLE  aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
 ADD COLUMN aiemmin_hankittu_yhteinen_tutkinnon_osa_id_copy INTEGER REFERENCES
@@ -315,16 +318,6 @@ SET koulutuksen_jarjestaja_osaamisen_arvioija_id_copy=koulutuksen_jarjestaja_osa
 ALTER TABLE  osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija
 DROP COLUMN koulutuksen_jarjestaja_osaamisen_arvioija_id;
 ALTER TABLE osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija
-RENAME COLUMN koulutuksen_jarjestaja_osaamisen_arvioija_id_copy TO koulutuksen_jarjestaja_osaamisen_arvioija_id;
-
-ALTER TABLE  aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
-ADD COLUMN koulutuksen_jarjestaja_osaamisen_arvioija_id_copy INTEGER REFERENCES
-koulutuksen_jarjestaja_osaamisen_arvioijat(id) ON DELETE CASCADE;
-UPDATE aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
-SET koulutuksen_jarjestaja_osaamisen_arvioija_id_copy=koulutuksen_jarjestaja_osaamisen_arvioija_id;
-ALTER TABLE  aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
-DROP COLUMN koulutuksen_jarjestaja_osaamisen_arvioija_id;
-ALTER TABLE aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
 RENAME COLUMN koulutuksen_jarjestaja_osaamisen_arvioija_id_copy TO koulutuksen_jarjestaja_osaamisen_arvioija_id;
 
 ALTER TABLE  aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat
