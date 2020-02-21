@@ -88,16 +88,13 @@ alter table hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
         foreign key (osaamisen_hankkimistapa_id) references osaamisen_hankkimistavat
             on delete cascade;
 
+alter table yhteisen_tutkinnon_osan_osa_alueet
+    drop constraint yhteisen_tutkinnon_osan_osa_alue_yhteinen_tutkinnon_osa_id_fkey,
+    add constraint yhteisen_tutkinnon_osan_osa_alue_yhteinen_tutkinnon_osa_id_fkey
+        foreign key (yhteinen_tutkinnon_osa_id) references hankittavat_yhteiset_tutkinnon_osat
+            on delete cascade;
 
-ALTER TABLE  yhteisen_tutkinnon_osan_osa_alueet ADD COLUMN
-yhteinen_tutkinnon_osa_id_copy INTEGER REFERENCES
-hankittavat_yhteiset_tutkinnon_osat(id) ON DELETE CASCADE;
-UPDATE yhteisen_tutkinnon_osan_osa_alueet
-SET yhteinen_tutkinnon_osa_id_copy=yhteinen_tutkinnon_osa_id;
-ALTER TABLE  yhteisen_tutkinnon_osan_osa_alueet
-DROP COLUMN yhteinen_tutkinnon_osa_id;
-ALTER TABLE yhteisen_tutkinnon_osan_osa_alueet RENAME COLUMN
-yhteinen_tutkinnon_osa_id_copy TO yhteinen_tutkinnon_osa_id;
+
 
 ALTER TABLE  yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
 ADD COLUMN yhteisen_tutkinnon_osan_osa_alue_id_copy INTEGER REFERENCES
