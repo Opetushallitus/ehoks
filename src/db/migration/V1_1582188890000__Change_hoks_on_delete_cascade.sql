@@ -1,37 +1,43 @@
-ALTER TABLE  aiemmin_hankitut_paikalliset_tutkinnon_osat ADD COLUMN hoks_id_copy INTEGER REFERENCES hoksit(id) ON DELETE CASCADE;
-UPDATE aiemmin_hankitut_paikalliset_tutkinnon_osat SET hoks_id_copy=hoks_id;
-ALTER TABLE  aiemmin_hankitut_paikalliset_tutkinnon_osat DROP COLUMN hoks_id;
-ALTER TABLE aiemmin_hankitut_paikalliset_tutkinnon_osat RENAME COLUMN hoks_id_copy TO hoks_id;
+alter table aiemmin_hankitut_paikalliset_tutkinnon_osat
+    drop constraint olemassa_olevat_paikalliset_tutkinnon_osat_hoks_id_fkey,
+    add constraint aiemmin_hankitut_paikalliset_tutkinnon_osat_hoks_id_fkey
+        foreign key (hoks_id) references hoksit
+            on delete cascade;
 
-ALTER TABLE  aiemmin_hankitut_ammat_tutkinnon_osat ADD COLUMN hoks_id_copy INTEGER REFERENCES hoksit(id) ON DELETE CASCADE;
-UPDATE aiemmin_hankitut_ammat_tutkinnon_osat SET hoks_id_copy=hoks_id;
-ALTER TABLE  aiemmin_hankitut_ammat_tutkinnon_osat DROP COLUMN hoks_id;
-ALTER TABLE aiemmin_hankitut_ammat_tutkinnon_osat RENAME COLUMN hoks_id_copy TO hoks_id;
+alter table aiemmin_hankitut_ammat_tutkinnon_osat
+    drop constraint olemassa_olevat_ammatilliset_tutkinnon_osat_hoks_id_fkey,
+    add constraint aiemmin_hankitut_ammatilliset_tutkinnon_osat_hoks_id_fkey
+        foreign key (hoks_id) references hoksit
+            on delete cascade;
 
-ALTER TABLE  hankittavat_paikalliset_tutkinnon_osat ADD COLUMN hoks_id_copy INTEGER REFERENCES hoksit(id) ON DELETE CASCADE;
-UPDATE hankittavat_paikalliset_tutkinnon_osat SET hoks_id_copy=hoks_id;
-ALTER TABLE  hankittavat_paikalliset_tutkinnon_osat DROP COLUMN hoks_id;
-ALTER TABLE hankittavat_paikalliset_tutkinnon_osat RENAME COLUMN hoks_id_copy TO hoks_id;
+alter table aiemmin_hankitut_yhteiset_tutkinnon_osat
+    drop constraint olemassa_olevat_yhteiset_tutkinnon_osat_hoks_id_fkey,
+    add constraint aiemmin_hankitut_yhteiset_tutkinnon_osat_hoks_id_fkey
+        foreign key (hoks_id) references hoksit
+            on delete cascade;
 
-ALTER TABLE  aiemmin_hankitut_yhteiset_tutkinnon_osat ADD COLUMN hoks_id_copy INTEGER REFERENCES hoksit(id) ON DELETE CASCADE;
-UPDATE aiemmin_hankitut_yhteiset_tutkinnon_osat SET hoks_id_copy=hoks_id;
-ALTER TABLE  aiemmin_hankitut_yhteiset_tutkinnon_osat DROP COLUMN hoks_id;
-ALTER TABLE aiemmin_hankitut_yhteiset_tutkinnon_osat RENAME COLUMN hoks_id_copy TO hoks_id;
+alter table hankittavat_paikalliset_tutkinnon_osat
+    drop constraint puuttuvat_paikalliset_tutkinnon_osat_hoks_id_fkey,
+    add constraint hankittavat_paikalliset_tutkinnon_osat_hoks_id_fkey
+        foreign key (hoks_id) references hoksit
+            on delete cascade;
 
-ALTER TABLE  hankittavat_ammat_tutkinnon_osat ADD COLUMN hoks_id_copy INTEGER REFERENCES hoksit(id) ON DELETE CASCADE;
-UPDATE hankittavat_ammat_tutkinnon_osat SET hoks_id_copy=hoks_id;
-ALTER TABLE  hankittavat_ammat_tutkinnon_osat DROP COLUMN hoks_id;
-ALTER TABLE hankittavat_ammat_tutkinnon_osat RENAME COLUMN hoks_id_copy TO hoks_id;
+alter table hankittavat_ammat_tutkinnon_osat
+    drop constraint puuttuvat_ammat_tutkinnon_osat_hoks_id_fkey,
+    add constraint hankittavat_ammat_tutkinnon_osat_hoks_id_fkey
+        foreign key (hoks_id) references hoksit
+            on delete cascade;
+
+alter table hankittavat_yhteiset_tutkinnon_osat
+    drop constraint puuttuvat_yhteiset_tutkinnon_osat_hoks_id_fkey,
+    add constraint hankittavat_yhteiset_tutkinnon_osat_hoks_id_fkey
+        foreign key (hoks_id) references hoksit
+            on delete cascade;
 
 ALTER TABLE  opiskeluvalmiuksia_tukevat_opinnot ADD COLUMN hoks_id_copy INTEGER REFERENCES hoksit(id) ON DELETE CASCADE;
 UPDATE opiskeluvalmiuksia_tukevat_opinnot SET hoks_id_copy=hoks_id;
 ALTER TABLE  opiskeluvalmiuksia_tukevat_opinnot DROP COLUMN hoks_id;
 ALTER TABLE opiskeluvalmiuksia_tukevat_opinnot RENAME COLUMN hoks_id_copy TO hoks_id;
-
-ALTER TABLE  hankittavat_yhteiset_tutkinnon_osat ADD COLUMN hoks_id_copy INTEGER REFERENCES hoksit(id) ON DELETE CASCADE;
-UPDATE hankittavat_yhteiset_tutkinnon_osat SET hoks_id_copy=hoks_id;
-ALTER TABLE  hankittavat_yhteiset_tutkinnon_osat DROP COLUMN hoks_id;
-ALTER TABLE hankittavat_yhteiset_tutkinnon_osat RENAME COLUMN hoks_id_copy TO hoks_id;
 
 ALTER TABLE  hankittavan_paikallisen_tutkinnon_osan_naytto ADD COLUMN
 hankittava_paikallinen_tutkinnon_osa_id_copy INTEGER REFERENCES hankittavat_paikalliset_tutkinnon_osat(id) ON DELETE CASCADE;
