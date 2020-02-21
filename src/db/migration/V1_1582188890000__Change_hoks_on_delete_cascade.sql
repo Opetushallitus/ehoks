@@ -42,26 +42,28 @@ alter table opiskeluvalmiuksia_tukevat_opinnot
 
 alter table hankittavan_paikallisen_tutkinnon_osan_naytto
     drop constraint puuttuvan_paikallisen_tutkinn_puuttuva_paikallinen_tutkinn_fkey,
-    add constraint puuttuvan_paikallisen_tutkinn_puuttuva_paikallinen_tutkinn_fkey
+    add constraint hankittavan_paikallisen_tutkinn_puuttuva_paikallinen_tutkinn_fkey
         foreign key (hankittava_paikallinen_tutkinnon_osa_id) references hankittavat_paikalliset_tutkinnon_osat
             on delete cascade;
 
 
 alter table hankittavan_paikallisen_tutkinnon_osan_naytto
     drop constraint puuttuvan_paikallisen_tutkinn_hankitun_osaamisen_naytto_id_fkey,
-    add constraint puuttuvan_paikallisen_tutkinn_hankitun_osaamisen_naytto_id_fkey
+    add constraint hankittavan_paikallisen_tutkinn_hankitun_osaamisen_naytto_id_fkey
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
-ALTER TABLE  hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-ADD COLUMN hankittava_paikallinen_tutkinnon_osa_id_copy INTEGER REFERENCES
-hankittavat_paikalliset_tutkinnon_osat(id) ON DELETE CASCADE;
-UPDATE hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-SET hankittava_paikallinen_tutkinnon_osa_id_copy=hankittava_paikallinen_tutkinnon_osa_id;
-ALTER TABLE  hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-DROP COLUMN hankittava_paikallinen_tutkinnon_osa_id;
-ALTER TABLE hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-RENAME COLUMN hankittava_paikallinen_tutkinnon_osa_id_copy TO hankittava_paikallinen_tutkinnon_osa_id;
+alter table hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
+    drop constraint puuttuvan_paikallisen_tutkin_puuttuva_paikallinen_tutkinn_fkey1,
+    add constraint hankittavan_paikallisen_tutkin_hankitta_paikallinen_tutkinn_fkey
+        foreign key (hankittava_paikallinen_tutkinnon_osa_id) references hankittavat_paikalliset_tutkinnon_osat
+            on delete cascade;
+
+alter table hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
+    drop constraint puuttuvan_paikallisen_tutkinnon_osaamisen_hankkimistapa_id_fkey,
+    add constraint hankittavan_paikallisen_tutkinnon_osaamisen_hankkimistapa_id_fkey
+        foreign key (osaamisen_hankkimistapa_id) references osaamisen_hankkimistavat
+            on delete cascade;
 
 ALTER TABLE  hankittavan_ammat_tutkinnon_osan_naytto ADD COLUMN
 hankittava_ammat_tutkinnon_osa_id_copy INTEGER REFERENCES
@@ -369,16 +371,6 @@ SET osaamisen_hankkimistapa_id_copy=osaamisen_hankkimistapa_id;
 ALTER TABLE  yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
 DROP COLUMN osaamisen_hankkimistapa_id;
 ALTER TABLE yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
-RENAME COLUMN osaamisen_hankkimistapa_id_copy TO osaamisen_hankkimistapa_id;
-
-ALTER TABLE  hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-ADD COLUMN osaamisen_hankkimistapa_id_copy INTEGER REFERENCES
-osaamisen_hankkimistavat(id) ON DELETE CASCADE;
-UPDATE hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-SET osaamisen_hankkimistapa_id_copy=osaamisen_hankkimistapa_id;
-ALTER TABLE  hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-DROP COLUMN osaamisen_hankkimistapa_id;
-ALTER TABLE hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
 RENAME COLUMN osaamisen_hankkimistapa_id_copy TO osaamisen_hankkimistapa_id;
 
 ALTER TABLE  hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
