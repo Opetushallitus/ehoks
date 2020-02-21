@@ -155,26 +155,18 @@ alter table aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
         foreign key (koulutuksen_jarjestaja_osaamisen_arvioija_id) references koulutuksen_jarjestaja_osaamisen_arvioijat
             on delete cascade;
 
+alter table aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
+    drop constraint olemassa_olevan_yhteisen_tutk_olemassa_oleva_yhteinen_tutk_fkey,
+    add constraint aiemmin_hankittu_yhteisen_tutk_olemassa_oleva_yhteinen_tutk_fkey
+        foreign key (aiemmin_hankittu_yhteinen_tutkinnon_osa_id) references aiemmin_hankitut_yhteiset_tutkinnon_osat
+            on delete cascade;
 
+alter table aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
+    drop constraint olemassa_olevan_yhteisen_tutk_hankitun_osaamisen_naytto_id_fkey,
+    add constraint olemassa_olevan_yhteisen_tutk_hankitun_osaamisen_naytto_id_fkey
+        foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
+            on delete cascade;
 
-ALTER TABLE  aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-ADD COLUMN aiemmin_hankittu_yhteinen_tutkinnon_osa_id_copy INTEGER REFERENCES
-aiemmin_hankitut_yhteiset_tutkinnon_osat(id) ON DELETE CASCADE;
-UPDATE aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-SET aiemmin_hankittu_yhteinen_tutkinnon_osa_id_copy=aiemmin_hankittu_yhteinen_tutkinnon_osa_id;
-ALTER TABLE  aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-DROP COLUMN aiemmin_hankittu_yhteinen_tutkinnon_osa_id;
-ALTER TABLE aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-RENAME COLUMN aiemmin_hankittu_yhteinen_tutkinnon_osa_id_copy TO aiemmin_hankittu_yhteinen_tutkinnon_osa_id;
-
-ALTER TABLE aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto ADD COLUMN
-osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
-UPDATE  aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto SET
-osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
-ALTER TABLE   aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto DROP COLUMN
-osaamisen_osoittaminen_id;
-ALTER TABLE aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto RENAME COLUMN
-osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
 
 ALTER TABLE  aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat
 ADD COLUMN aiemmin_hankittu_yhteinen_tutkinnon_osa_id_copy INTEGER REFERENCES
