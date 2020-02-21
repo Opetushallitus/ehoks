@@ -41,8 +41,8 @@ alter table aiemmin_hankitut_paikalliset_tutkinnon_osat
             on delete cascade;
 
 alter table hankittavat_ammat_tutkinnon_osat
-    drop constraint puuttuvat_ammat_tutkinnon_osat_hoks_id_fkey,
-    add constraint hankittavat_ammat_tutkinnon_osat_hoks_id_fkey
+    drop constraint puuttuvat_ammatilliset_tutkinnon_osat_hoks_id_fkey,
+    add constraint hankittavat_ammatilliset_tutkinnon_osat_hoks_id_fkey
         foreign key (hoks_id) references hoksit
             on delete cascade;
 
