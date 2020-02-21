@@ -238,28 +238,18 @@ alter table osaamisen_osoittamisen_yksilolliset_kriteerit
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
+alter table osaamisen_osoittamiset
+    drop constraint hankitun_osaamisen_naytot_nayttoymparisto_id_fkey,
+    add constraint hankitun_osaamisen_naytot_nayttoymparisto_id_fkey
+        foreign key (nayttoymparisto_id) references nayttoymparistot
+            on delete cascade;
 
-ALTER TABLE  osaamisen_osoittamiset ADD COLUMN
-nayttoymparisto_id_copy INTEGER REFERENCES nayttoymparistot(id)
-ON DELETE CASCADE;
-UPDATE osaamisen_osoittamiset SET
-nayttoymparisto_id_copy=nayttoymparisto_id;
-ALTER TABLE  osaamisen_osoittamiset DROP COLUMN
-nayttoymparisto_id;
-ALTER TABLE osaamisen_osoittamiset RENAME COLUMN
-nayttoymparisto_id_copy TO nayttoymparisto_id;
+alter table osaamisen_hankkimistavat
+    drop constraint osaamisen_hankkimistavat_tyopaikalla_hankittava_osaaminen__fkey,
+    add constraint osaamisen_hankkimistavat_tyopaikalla_hankittava_osaaminen__fkey
+        foreign key (tyopaikalla_jarjestettava_koulutus_id) references tyopaikalla_jarjestettavat_koulutukset
+            on delete cascade;
 
-
-
-ALTER TABLE  osaamisen_hankkimistavat
-ADD COLUMN tyopaikalla_jarjestettava_koulutus_id_copy INTEGER REFERENCES
-tyopaikalla_jarjestettavat_koulutukset(id) ON DELETE CASCADE;
-UPDATE osaamisen_hankkimistavat
-SET tyopaikalla_jarjestettava_koulutus_id_copy=tyopaikalla_jarjestettava_koulutus_id;
-ALTER TABLE  osaamisen_hankkimistavat
-DROP COLUMN tyopaikalla_jarjestettava_koulutus_id;
-ALTER TABLE osaamisen_hankkimistavat
-RENAME COLUMN tyopaikalla_jarjestettava_koulutus_id_copy TO tyopaikalla_jarjestettava_koulutus_id;
 
 ALTER TABLE  muut_oppimisymparistot
 ADD COLUMN osaamisen_hankkimistapa_id_copy INTEGER REFERENCES
