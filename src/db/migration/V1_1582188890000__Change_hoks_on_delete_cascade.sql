@@ -106,16 +106,20 @@ alter table yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
         foreign key (osaamisen_hankkimistapa_id) references osaamisen_hankkimistavat
             on delete cascade;
 
+alter table yhteisen_tutkinnon_osan_osa_alueen_naytot
+    drop constraint yhteisen_tutkinnon_osan_osa__yhteisen_tutkinnon_osan_osa__fkey1,
+    add constraint yhteisen_tutkinnon_osan_osa__yhteisen_tutkinnon_osan_osa__fkey1
+        foreign key (yhteisen_tutkinnon_osan_osa_alue_id) references yhteisen_tutkinnon_osan_osa_alueet
+            on delete cascade;
 
-ALTER TABLE  yhteisen_tutkinnon_osan_osa_alueen_naytot ADD COLUMN
-yhteisen_tutkinnon_osan_osa_alue_id_copy INTEGER REFERENCES
-yhteisen_tutkinnon_osan_osa_alueet(id) ON DELETE CASCADE;
-UPDATE yhteisen_tutkinnon_osan_osa_alueen_naytot
-SET yhteisen_tutkinnon_osan_osa_alue_id_copy=yhteisen_tutkinnon_osan_osa_alue_id;
-ALTER TABLE  yhteisen_tutkinnon_osan_osa_alueen_naytot
-DROP COLUMN yhteisen_tutkinnon_osan_osa_alue_id;
-ALTER TABLE yhteisen_tutkinnon_osan_osa_alueen_naytot RENAME COLUMN
-yhteisen_tutkinnon_osan_osa_alue_id_copy TO yhteisen_tutkinnon_osan_osa_alue_id;
+alter table yhteisen_tutkinnon_osan_osa_alueen_naytot
+    drop constraint yhteisen_tutkinnon_osan_osa_a_hankitun_osaamisen_naytto_id_fkey,
+    add constraint yhteisen_tutkinnon_osan_osa_a_hankitun_osaamisen_naytto_id_fkey
+        foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
+            on delete cascade;
+
+
+
 
 ALTER TABLE  aiemmin_hankitun_ammat_tutkinnon_osan_naytto
 ADD COLUMN aiemmin_hankittu_ammat_tutkinnon_osa_id_copy INTEGER REFERENCES
@@ -287,15 +291,6 @@ ALTER TABLE  osaamisen_osoittamisen_tyoelama_arvioija DROP COLUMN
 tyoelama_arvioija_id;
 ALTER TABLE osaamisen_osoittamisen_tyoelama_arvioija RENAME COLUMN
 tyoelama_arvioija_id_copy TO tyoelama_arvioija_id;
-
-ALTER TABLE  yhteisen_tutkinnon_osan_osa_alueen_naytot ADD COLUMN
-osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
-UPDATE yhteisen_tutkinnon_osan_osa_alueen_naytot SET
-osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
-ALTER TABLE  yhteisen_tutkinnon_osan_osa_alueen_naytot DROP COLUMN
-osaamisen_osoittaminen_id;
-ALTER TABLE yhteisen_tutkinnon_osan_osa_alueen_naytot RENAME COLUMN
-osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
 
 ALTER TABLE  osaamisen_hankkimistavat
 ADD COLUMN tyopaikalla_jarjestettava_koulutus_id_copy INTEGER REFERENCES
