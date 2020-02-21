@@ -76,16 +76,18 @@ alter table hankittavan_ammat_tutkinnon_osan_naytto
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
+alter table hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
+    drop constraint puuttuvan_ammatillisen_tutki_puuttuva_ammatillinen_tutkin_fkey1,
+    add constraint hankittavan_ammatillisen_tutki_puuttuva_ammatillinen_tutkin_fkey1
+        foreign key (hankittava_ammat_tutkinnon_osa_id) references hankittavat_ammat_tutkinnon_osat
+            on delete cascade;
 
-ALTER TABLE  hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
-ADD COLUMN hankittava_ammat_tutkinnon_osa_id_copy INTEGER REFERENCES
-hankittavat_ammat_tutkinnon_osat(id) ON DELETE CASCADE;
-UPDATE hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
-SET hankittava_ammat_tutkinnon_osa_id_copy=hankittava_ammat_tutkinnon_osa_id;
-ALTER TABLE  hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
-DROP COLUMN hankittava_ammat_tutkinnon_osa_id;
-ALTER TABLE hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
-RENAME COLUMN hankittava_ammat_tutkinnon_osa_id_copy TO hankittava_ammat_tutkinnon_osa_id;
+alter table hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
+    drop constraint puuttuvan_ammatillisen_tutkinno_osaamisen_hankkimistapa_id_fkey,
+    add constraint hankittavan_ammatillisen_tutkinno_osaamisen_hankkimistapa_id_fkey
+        foreign key (osaamisen_hankkimistapa_id) references osaamisen_hankkimistavat
+            on delete cascade;
+
 
 ALTER TABLE  yhteisen_tutkinnon_osan_osa_alueet ADD COLUMN
 yhteinen_tutkinnon_osa_id_copy INTEGER REFERENCES
@@ -365,16 +367,6 @@ SET osaamisen_hankkimistapa_id_copy=osaamisen_hankkimistapa_id;
 ALTER TABLE  yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
 DROP COLUMN osaamisen_hankkimistapa_id;
 ALTER TABLE yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
-RENAME COLUMN osaamisen_hankkimistapa_id_copy TO osaamisen_hankkimistapa_id;
-
-ALTER TABLE  hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
-ADD COLUMN osaamisen_hankkimistapa_id_copy INTEGER REFERENCES
-osaamisen_hankkimistavat(id) ON DELETE CASCADE;
-UPDATE hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
-SET osaamisen_hankkimistapa_id_copy=osaamisen_hankkimistapa_id;
-ALTER TABLE  hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
-DROP COLUMN osaamisen_hankkimistapa_id;
-ALTER TABLE hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
 RENAME COLUMN osaamisen_hankkimistapa_id_copy TO osaamisen_hankkimistapa_id;
 
 ALTER TABLE  aiemmin_hankitut_ammat_tutkinnon_osat ADD COLUMN tarkentavat_tiedot_osaamisen_arvioija_id_copy INTEGER REFERENCES todennettu_arviointi_lisatiedot(id) ON DELETE CASCADE;
