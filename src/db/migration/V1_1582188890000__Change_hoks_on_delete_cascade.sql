@@ -274,6 +274,11 @@ alter table todennettu_arviointi_arvioijat
         foreign key (todennettu_arviointi_lisatiedot_id) references todennettu_arviointi_lisatiedot
             on delete cascade;
 
+alter table tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat
+    drop constraint tyopaikalla_hankittavat_osaa_tyopaikalla_hankittava_osaam_fkey1,
+    add constraint tyopaikalla_hankittavat_osaa_tyopaikalla_hankittava_osaam_fkey1
+        foreign key (tyopaikalla_jarjestettava_koulutus_id) references tyopaikalla_jarjestettavat_koulutukset
+            on delete cascade;
 
 
 ALTER TABLE  aiemmin_hankitut_paikalliset_tutkinnon_osat ADD COLUMN tarkentavat_tiedot_osaamisen_arvioija_id_copy INTEGER REFERENCES todennettu_arviointi_lisatiedot(id) ON DELETE CASCADE;
@@ -285,15 +290,3 @@ ALTER TABLE  aiemmin_hankitut_yhteiset_tutkinnon_osat ADD COLUMN tarkentavat_tie
 UPDATE aiemmin_hankitut_yhteiset_tutkinnon_osat SET tarkentavat_tiedot_osaamisen_arvioija_id_copy=tarkentavat_tiedot_osaamisen_arvioija_id;
 ALTER TABLE  aiemmin_hankitut_yhteiset_tutkinnon_osat DROP COLUMN tarkentavat_tiedot_osaamisen_arvioija_id;
 ALTER TABLE aiemmin_hankitut_yhteiset_tutkinnon_osat RENAME COLUMN tarkentavat_tiedot_osaamisen_arvioija_id_copy TO tarkentavat_tiedot_osaamisen_arvioija_id;
-
-
-
-ALTER TABLE  tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat
-ADD COLUMN tyopaikalla_jarjestettava_koulutus_id_copy INTEGER REFERENCES
-tyopaikalla_jarjestettavat_koulutukset(id) ON DELETE CASCADE;
-UPDATE tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat
-SET tyopaikalla_jarjestettava_koulutus_id_copy=tyopaikalla_jarjestettava_koulutus_id;
-ALTER TABLE  tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat
-DROP COLUMN tyopaikalla_jarjestettava_koulutus_id;
-ALTER TABLE tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat
-RENAME COLUMN tyopaikalla_jarjestettava_koulutus_id_copy TO tyopaikalla_jarjestettava_koulutus_id;
