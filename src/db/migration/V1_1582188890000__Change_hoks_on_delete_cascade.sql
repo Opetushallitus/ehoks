@@ -34,28 +34,24 @@ alter table hankittavat_yhteiset_tutkinnon_osat
         foreign key (hoks_id) references hoksit
             on delete cascade;
 
-ALTER TABLE  opiskeluvalmiuksia_tukevat_opinnot ADD COLUMN hoks_id_copy INTEGER REFERENCES hoksit(id) ON DELETE CASCADE;
-UPDATE opiskeluvalmiuksia_tukevat_opinnot SET hoks_id_copy=hoks_id;
-ALTER TABLE  opiskeluvalmiuksia_tukevat_opinnot DROP COLUMN hoks_id;
-ALTER TABLE opiskeluvalmiuksia_tukevat_opinnot RENAME COLUMN hoks_id_copy TO hoks_id;
+alter table opiskeluvalmiuksia_tukevat_opinnot
+    drop constraint opiskeluvalmiuksia_tukevat_opinnot_hoks_id_fkey,
+    add constraint opiskeluvalmiuksia_tukevat_opinnot_hoks_id_fkey
+        foreign key (hoks_id) references hoksit
+            on delete cascade;
 
-ALTER TABLE  hankittavan_paikallisen_tutkinnon_osan_naytto ADD COLUMN
-hankittava_paikallinen_tutkinnon_osa_id_copy INTEGER REFERENCES hankittavat_paikalliset_tutkinnon_osat(id) ON DELETE CASCADE;
-UPDATE hankittavan_paikallisen_tutkinnon_osan_naytto SET
-hankittava_paikallinen_tutkinnon_osa_id_copy=hankittava_paikallinen_tutkinnon_osa_id;
-ALTER TABLE  hankittavan_paikallisen_tutkinnon_osan_naytto
-DROP COLUMN hankittava_paikallinen_tutkinnon_osa_id;
-ALTER TABLE hankittavan_paikallisen_tutkinnon_osan_naytto RENAME COLUMN
-hankittava_paikallinen_tutkinnon_osa_id_copy TO hankittava_paikallinen_tutkinnon_osa_id;
+alter table hankittavan_paikallisen_tutkinnon_osan_naytto
+    drop constraint puuttuvan_paikallisen_tutkinn_puuttuva_paikallinen_tutkinn_fkey,
+    add constraint puuttuvan_paikallisen_tutkinn_puuttuva_paikallinen_tutkinn_fkey
+        foreign key (hankittava_paikallinen_tutkinnon_osa_id) references hankittavat_paikalliset_tutkinnon_osat
+            on delete cascade;
 
-ALTER TABLE hankittavan_paikallisen_tutkinnon_osan_naytto ADD COLUMN
-osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
-UPDATE  hankittavan_paikallisen_tutkinnon_osan_naytto SET
-osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
-ALTER TABLE   hankittavan_paikallisen_tutkinnon_osan_naytto DROP COLUMN
-osaamisen_osoittaminen_id;
-ALTER TABLE hankittavan_paikallisen_tutkinnon_osan_naytto RENAME COLUMN
-osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
+
+alter table hankittavan_paikallisen_tutkinnon_osan_naytto
+    drop constraint puuttuvan_paikallisen_tutkinn_hankitun_osaamisen_naytto_id_fkey,
+    add constraint puuttuvan_paikallisen_tutkinn_hankitun_osaamisen_naytto_id_fkey
+        foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
+            on delete cascade;
 
 ALTER TABLE  hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
 ADD COLUMN hankittava_paikallinen_tutkinnon_osa_id_copy INTEGER REFERENCES
