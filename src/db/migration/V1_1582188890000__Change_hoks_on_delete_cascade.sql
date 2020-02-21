@@ -209,25 +209,18 @@ alter table osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija
         foreign key (koulutuksen_jarjestaja_osaamisen_arvioija_id) references koulutuksen_jarjestaja_osaamisen_arvioijat
             on delete cascade;
 
+alter table osaamisen_osoittamisen_osa_alueet
+    drop constraint hankitun_osaamisen_nayton_osa_hankitun_osaamisen_naytto_id_fkey,
+    add constraint hankitun_osaamisen_nayton_osa_hankitun_osaamisen_naytto_id_fkey
+        foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
+            on delete cascade;
 
-ALTER TABLE  osaamisen_osoittamisen_osa_alueet ADD COLUMN
-osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id)
-ON DELETE CASCADE;
-UPDATE osaamisen_osoittamisen_osa_alueet SET
-osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
-ALTER TABLE  osaamisen_osoittamisen_osa_alueet DROP COLUMN
-osaamisen_osoittaminen_id;
-ALTER TABLE osaamisen_osoittamisen_osa_alueet RENAME COLUMN
-osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
+alter table osaamisen_osoittamisen_sisallot
+    drop constraint hankitun_osaamisen_tyotehtava_hankitun_osaamisen_naytto_id_fkey,
+    add constraint hankitun_osaamisen_tyotehtava_hankitun_osaamisen_naytto_id_fkey
+        foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
+            on delete cascade;
 
-ALTER TABLE  osaamisen_osoittamisen_sisallot ADD COLUMN
-osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
-UPDATE osaamisen_osoittamisen_sisallot SET
-osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
-ALTER TABLE  osaamisen_osoittamisen_sisallot DROP COLUMN
-osaamisen_osoittaminen_id;
-ALTER TABLE osaamisen_osoittamisen_sisallot RENAME COLUMN
-osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
 
 ALTER TABLE  osaamisen_osoittamisen_tyoelama_arvioija ADD COLUMN
 osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
