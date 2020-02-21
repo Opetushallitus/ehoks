@@ -119,26 +119,19 @@ alter table yhteisen_tutkinnon_osan_osa_alueen_naytot
             on delete cascade;
 
 
+alter table aiemmin_hankitun_ammat_tutkinnon_osan_naytto
+    drop constraint olemassa_olevan_ammatillisen__olemassa_oleva_ammatillinen__fkey,
+    add constraint aiemmin_hankitun_ammatillisen__olemassa_oleva_ammatillinen__fkey
+        foreign key (aiemmin_hankittu_ammat_tutkinnon_osa_id) references aiemmin_hankitut_ammat_tutkinnon_osat
+            on delete cascade;
+
+alter table aiemmin_hankitun_ammat_tutkinnon_osan_naytto
+    drop constraint olemassa_olevan_ammatillisen__hankitun_osaamisen_naytto_id_fkey,
+    add constraint aiemmin_hankitun_ammatillisen__hankitun_osaamisen_naytto_id_fkey
+        foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
+            on delete cascade;
 
 
-ALTER TABLE  aiemmin_hankitun_ammat_tutkinnon_osan_naytto
-ADD COLUMN aiemmin_hankittu_ammat_tutkinnon_osa_id_copy INTEGER REFERENCES
-aiemmin_hankitut_ammat_tutkinnon_osat(id) ON DELETE CASCADE;
-UPDATE aiemmin_hankitun_ammat_tutkinnon_osan_naytto
-SET aiemmin_hankittu_ammat_tutkinnon_osa_id_copy=aiemmin_hankittu_ammat_tutkinnon_osa_id;
-ALTER TABLE  aiemmin_hankitun_ammat_tutkinnon_osan_naytto
-DROP COLUMN aiemmin_hankittu_ammat_tutkinnon_osa_id;
-ALTER TABLE aiemmin_hankitun_ammat_tutkinnon_osan_naytto RENAME COLUMN
-aiemmin_hankittu_ammat_tutkinnon_osa_id_copy TO aiemmin_hankittu_ammat_tutkinnon_osa_id;
-
-ALTER TABLE aiemmin_hankitun_ammat_tutkinnon_osan_naytto ADD COLUMN
-osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
-UPDATE  aiemmin_hankitun_ammat_tutkinnon_osan_naytto SET
-osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
-ALTER TABLE   aiemmin_hankitun_ammat_tutkinnon_osan_naytto DROP COLUMN
-osaamisen_osoittaminen_id;
-ALTER TABLE aiemmin_hankitun_ammat_tutkinnon_osan_naytto RENAME COLUMN
-osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
 
 ALTER TABLE  aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto ADD COLUMN
 aiemmin_hankittu_paikallinen_tutkinnon_osa_id_copy INTEGER REFERENCES
