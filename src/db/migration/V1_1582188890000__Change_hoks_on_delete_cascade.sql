@@ -256,16 +256,11 @@ alter table osaamisen_hankkimistavat
         foreign key (tyopaikalla_jarjestettava_koulutus_id) references tyopaikalla_jarjestettavat_koulutukset
             on delete cascade;
 
-
-ALTER TABLE  muut_oppimisymparistot
-ADD COLUMN osaamisen_hankkimistapa_id_copy INTEGER REFERENCES
-osaamisen_hankkimistavat(id) ON DELETE CASCADE;
-UPDATE muut_oppimisymparistot
-SET osaamisen_hankkimistapa_id_copy=osaamisen_hankkimistapa_id;
-ALTER TABLE  muut_oppimisymparistot
-DROP COLUMN osaamisen_hankkimistapa_id;
-ALTER TABLE muut_oppimisymparistot
-RENAME COLUMN osaamisen_hankkimistapa_id_copy TO osaamisen_hankkimistapa_id;
+alter table muut_oppimisymparistot
+    drop constraint muut_oppimisymparistot_osaamisen_hankkimistapa_id_fkey,
+    add constraint muut_oppimisymparistot_osaamisen_hankkimistapa_id_fkey
+        foreign key (osaamisen_hankkimistapa_id) references osaamisen_hankkimistavat
+            on delete cascade;
 
 ALTER TABLE  todennettu_arviointi_arvioijat
 ADD COLUMN koulutuksen_jarjestaja_osaamisen_arvioija_id_copy INTEGER REFERENCES
