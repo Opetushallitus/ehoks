@@ -232,15 +232,12 @@ alter table osaamisen_osoittamisen_tyoelama_arvioija
         foreign key (tyoelama_arvioija_id) references tyoelama_osaamisen_arvioijat
             on delete cascade;
 
+alter table osaamisen_osoittamisen_yksilolliset_kriteerit
+    drop constraint osaamisen_osoittamisen_yksilolli_osaamisen_osoittaminen_id_fkey,
+    add constraint osaamisen_osoittamisen_yksilolli_osaamisen_osoittaminen_id_fkey
+        foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
+            on delete cascade;
 
-ALTER TABLE  osaamisen_osoittamisen_yksilolliset_kriteerit ADD COLUMN
-osaamisen_osoittaminen_id_copy INTEGER REFERENCES osaamisen_osoittamiset(id) ON DELETE CASCADE;
-UPDATE osaamisen_osoittamisen_yksilolliset_kriteerit SET
-osaamisen_osoittaminen_id_copy=osaamisen_osoittaminen_id;
-ALTER TABLE  osaamisen_osoittamisen_yksilolliset_kriteerit DROP COLUMN
-osaamisen_osoittaminen_id;
-ALTER TABLE osaamisen_osoittamisen_yksilolliset_kriteerit RENAME COLUMN
-osaamisen_osoittaminen_id_copy TO osaamisen_osoittaminen_id;
 
 ALTER TABLE  osaamisen_osoittamiset ADD COLUMN
 nayttoymparisto_id_copy INTEGER REFERENCES nayttoymparistot(id)
