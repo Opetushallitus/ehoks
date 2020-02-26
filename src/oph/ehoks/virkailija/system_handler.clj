@@ -59,5 +59,4 @@
             (log/warn "No HOKS found with given opiskeluoikeus "
                       opiskeluoikeus-oid)
             (response/not-found
-              {:error "No HOKS found with given opiskeluoikeus"})))))
-    ))
+              {:error "No HOKS found with given opiskeluoikeus"})))))))
