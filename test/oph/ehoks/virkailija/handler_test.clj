@@ -1,5 +1,6 @@
 (ns oph.ehoks.virkailija.handler-test
   (:require [oph.ehoks.virkailija.handler :as handler]
+            [oph.ehoks.virkailija.system-handler :as system-handler]
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
@@ -9,7 +10,8 @@
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
-            [oph.ehoks.db.db-operations.oppija :as db-oppija]))
+            [oph.ehoks.db.db-operations.oppija :as db-oppija]
+            [oph.ehoks.oppijaindex :as op]))
 
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
@@ -896,3 +898,38 @@
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
                  {:error "Oppija-oid update not allowed!"}))))))
+
+(t/deftest test-get-amount
+  (t/testing "Test getting the amount of hokses"
+    (utils/with-db
+      (add-oppija {:oid "1.2.246.562.24.44000000001"
+                   :nimi "Teuvo Testaaja"
+                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                   :tutkinto-nimi {:fi "Testitutkinto 1"}
+                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                   :koulutustoimija-oid ""})
+      (db-hoks/insert-hoks!
+        {:opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+         :oppija-oid "1.2.246.562.24.44000000001"
+         :osaamisen-hankkimisen-tarve false
+         :ensikertainen-hyvaksyminen
+         (java.time.LocalDate/of 2018 12 15)})
+      (let [amount-response
+            (with-test-virkailija
+              (mock/request
+                :get
+                (str
+                  base-url
+                  "/virkailija/system-info"))
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}
+                 :oikeus "OPHPAAKAYTTAJA"
+                 :palvelu "EHOKS"
+                 :roles {:oph-super-user true}}]})
+            amount-body (utils/parse-body (:body amount-response))]
+        (t/is (= (:status amount-response) 200))
+        (t/is (= (:hoksit (:data amount-body)) {:amount 1}))))))

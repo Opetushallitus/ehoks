@@ -21,4 +21,5 @@
             :max Long}
    :oppijaindex {:unindexedOppijat Long
                  :unindexedOpiskeluoikeudet Long
-                 :unindexedTutkinnot Long}})
+                 :unindexedTutkinnot Long}
+   :hoksit {:amount s/Any}})
