@@ -54,8 +54,7 @@
       (let [hoks (first (db-hoks/select-hoksit-by-opiskeluoikeus-oid
                           opiskeluoikeus-oid))]
         (if hoks
-          (do
-            (restful/rest-ok {:id (:id hoks)}))
+          (restful/rest-ok {:id (:id hoks)})
           (do
             (log/warn "No HOKS found with given opiskeluoikeus "
                       opiskeluoikeus-oid)
