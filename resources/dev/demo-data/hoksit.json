@@ -4,6 +4,7 @@
   "paivitetty": "2017-10-25T21:00:00.000Z",
   "opiskeluoikeus-oid": "1.2.246.562.15.76811932038",
   "oppija-oid": "1.2.246.562.24.44651722625",
+  "manuaalisyotto": true,
   "versio": 0,
   "urasuunnitelma-koodi-uri": "urasuunnitelma_0001",
   "urasuunnitelma-koodi-versio": 1,
