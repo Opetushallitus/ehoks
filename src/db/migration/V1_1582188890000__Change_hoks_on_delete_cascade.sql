@@ -96,7 +96,7 @@ alter table hankittavan_ammat_tutkinnon_osan_naytto
 
 alter table hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
     drop constraint puuttuvan_ammatillisen_tutki_puuttuva_ammatillinen_tutkin_fkey1,
-    add constraint hankittavan_ammatillisen_tutki_puuttuva_ammatillinen_tutkin_fkey1
+    add constraint hankittavan_ammatillisen_tutki_puuttuva_ammatillinen_tutkin_fkey
         foreign key (hankittava_ammat_tutkinnon_osa_id) references hankittavat_ammat_tutkinnon_osat
             on delete cascade;
 
@@ -126,7 +126,7 @@ alter table yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
 
 alter table yhteisen_tutkinnon_osan_osa_alueen_naytot
     drop constraint yhteisen_tutkinnon_osan_osa__yhteisen_tutkinnon_osan_osa__fkey1,
-    add constraint yhteisen_tutkinnon_osan_osa_yhteisen_tutkinnon_osan_osa_fkey1
+    add constraint yhteisen_tutkinnon_osan_osa_yhteisen_tutkinnon_osan_osa_fkey
         foreign key (yhteisen_tutkinnon_osan_osa_alue_id) references yhteisen_tutkinnon_osan_osa_alueet
             on delete cascade;
 
@@ -162,7 +162,7 @@ alter table aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
 
 alter table aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
     drop constraint olemassa_olevan_paikallisen__olemassa_oleva_paikallinen_t_fkey1,
-    add constraint aiemmin_hankitun_paikallisen_olemassa_oleva_paikallinen_t_fkey1
+    add constraint aiemmin_hankitun_paikallisen_olemassa_oleva_paikallinen_t_fkey
         foreign key (aiemmin_hankittu_paikallinen_tutkinnon_osa_id) references aiemmin_hankitut_paikalliset_tutkinnon_osat
             on delete cascade;
 
@@ -186,7 +186,7 @@ alter table aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
 
 alter table aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat
     drop constraint olemassa_olevan_yhteisen_tut_olemassa_oleva_yhteinen_tutk_fkey1,
-    add constraint aiemmin_hankitun_yhteisen_tut_olemassa_oleva_yhteinen_tutk_fkey1
+    add constraint aiemmin_hankitun_yhteisen_tut_olemassa_oleva_yhteinen_tutk_fkey
         foreign key (aiemmin_hankittu_yhteinen_tutkinnon_osa_id) references aiemmin_hankitut_yhteiset_tutkinnon_osat
             on delete cascade;
 
@@ -288,6 +288,6 @@ alter table todennettu_arviointi_arvioijat
 
 alter table tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat
     drop constraint tyopaikalla_hankittavat_osaa_tyopaikalla_hankittava_osaam_fkey1,
-    add constraint tyopaikalla_hankittavat_osaa_tyopaikalla_hankittava_osaam_fkey1
+    add constraint tyopaikalla_hankittavat_osaa_tyopaikalla_hankittava_osaam_fkey
         foreign key (tyopaikalla_jarjestettava_koulutus_id) references tyopaikalla_jarjestettavat_koulutukset
             on delete cascade;
