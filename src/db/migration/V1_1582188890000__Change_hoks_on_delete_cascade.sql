@@ -210,7 +210,7 @@ alter table aiemmin_hankitun_yto_osa_alueen_naytto
 
 alter table aiemmin_hankitut_yto_osa_alueet
     drop constraint olemassa_olevat_yto_osa_aluee_olemassa_oleva_yhteinen_tutk_fkey,
-    add constraint aiemmin_hankitut_yto_osa_aluee_olemassa_oleva_yhteinen_tutk_fkey
+    add constraint aiemmin_hankitut_yto_osa_al_aiem_hank_yht_tutk_fkey
         foreign key (aiemmin_hankittu_yhteinen_tutkinnon_osa_id) references aiemmin_hankitut_yhteiset_tutkinnon_osat
             on delete cascade;
 
