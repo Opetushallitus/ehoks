@@ -150,31 +150,31 @@ alter table aiemmin_hankitun_ammat_tutkinnon_osan_naytto
 
 alter table aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
     drop constraint olemassa_olevan_paikallisen_t_olemassa_oleva_paikallinen_t_fkey,
-    add constraint aiemmin_hankitun_paikallisen_t_olemassa_oleva_paikallinen_t_fkey
+    add constraint aiemmin_hankitun_paik_tutk_naytto_aiem_hank_paik_tutk_fkey
         foreign key (aiemmin_hankittu_paikallinen_tutkinnon_osa_id) references aiemmin_hankitut_paikalliset_tutkinnon_osat
             on delete cascade;
 
 alter table aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
     drop constraint olemassa_olevan_paikallisen_t_hankitun_osaamisen_naytto_id_fkey,
-    add constraint aiemmin_hankitun_paikallisen_t_hankitun_osaamisen_naytto_id_fkey
+    add constraint aiemmin_hankitun_paik_tutk_naytto_os_osoittamiset_fkey
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
 alter table aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
     drop constraint olemassa_olevan_paikallisen__olemassa_oleva_paikallinen_t_fkey1,
-    add constraint aiemmin_hankitun_paikallisen_olemassa_oleva_paikallinen_t_fkey
+    add constraint aiemmin_hank_paik_tutk_arvioijat_aiemm_hank_paik_tutk_fkey
         foreign key (aiemmin_hankittu_paikallinen_tutkinnon_osa_id) references aiemmin_hankitut_paikalliset_tutkinnon_osat
             on delete cascade;
 
 alter table aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat
     drop constraint olemassa_olevan_paikallisen_t_koulutuksen_jarjestaja_arvio_fkey,
-    add constraint aaiemmin_hankitun_paikallisen_t_koulutuksen_jarjestaja_arvio_fkey
+    add constraint aiemmin_hankitun_paik_tutk_arv_koul_jarj_os_arvioijat_fkey
         foreign key (koulutuksen_jarjestaja_osaamisen_arvioija_id) references koulutuksen_jarjestaja_osaamisen_arvioijat
             on delete cascade;
 
 alter table aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
     drop constraint olemassa_olevan_yhteisen_tutk_olemassa_oleva_yhteinen_tutk_fkey,
-    add constraint aiemmin_hankitun_yhteisen_tutk_olemassa_oleva_yhteinen_tutk_fkey
+    add constraint aiemmin_hankitun_yht_tutk_naytto_aiem_hank_yht_tutk_fkey
         foreign key (aiemmin_hankittu_yhteinen_tutkinnon_osa_id) references aiemmin_hankitut_yhteiset_tutkinnon_osat
             on delete cascade;
 
