@@ -12,7 +12,7 @@ alter table aiemmin_hankitut_ammat_tutkinnon_osat
 
 alter table aiemmin_hankitut_ammat_tutkinnon_osat
     drop constraint olemassa_olevat_ammatilliset__tarkentavat_tiedot_arvioija__fkey,
-    add constraint aiemmin_hankitut_ammatilliset__tarkentavat_tiedot_arvioija__fkey
+    add constraint aiemmin_hankitut_ammat_tarkentavat_tiedot_arvioija_fkey
         foreign key (tarkentavat_tiedot_osaamisen_arvioija_id) references todennettu_arviointi_lisatiedot
             on delete cascade;
 
@@ -60,7 +60,7 @@ alter table opiskeluvalmiuksia_tukevat_opinnot
 
 alter table hankittavan_paikallisen_tutkinnon_osan_naytto
     drop constraint puuttuvan_paikallisen_tutkinn_puuttuva_paikallinen_tutkinn_fkey,
-    add constraint hankittavan_paikallisen_tutkinn_puuttuva_paikallinen_tutkinn_fkey
+    add constraint hankittavan_paik_tutk_nayt_hank_paik_tutk_osa_fkey
         foreign key (hankittava_paikallinen_tutkinnon_osa_id) references hankittavat_paikalliset_tutkinnon_osat
             on delete cascade;
 
