@@ -180,31 +180,31 @@ alter table aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
 
 alter table aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
     drop constraint olemassa_olevan_yhteisen_tutk_hankitun_osaamisen_naytto_id_fkey,
-    add constraint aiemmin_hankitun_yhteisen_tutk_hankitun_osaamisen_naytto_id_fkey
+    add constraint aiemmin_hankitun_yht_tutk_naytto_os_osoittamiset_fkey
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
 alter table aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat
     drop constraint olemassa_olevan_yhteisen_tut_olemassa_oleva_yhteinen_tutk_fkey1,
-    add constraint aiemmin_hankitun_yhteisen_tut_olemassa_oleva_yhteinen_tutk_fkey
+    add constraint aiemmin_hankitun_yht_tutk_arv_aiem_hank_yht_tutk_fkey
         foreign key (aiemmin_hankittu_yhteinen_tutkinnon_osa_id) references aiemmin_hankitut_yhteiset_tutkinnon_osat
             on delete cascade;
 
 alter table aiemmin_hankitun_yhteisen_tutkinnon_osan_arvioijat
     drop constraint olemassa_olevan_yhteisen_tutk_koulutuksen_jarjestaja_arvio_fkey,
-    add constraint aiemmin_hankitun_yhteisen_tutk_koulutuksen_jarjestaja_arvio_fkey
+    add constraint aiemmin_hankitun_yht_tutk_arv_koul_jarj_os_arvioija_fkey
         foreign key (koulutuksen_jarjestaja_osaamisen_arvioija_id) references koulutuksen_jarjestaja_osaamisen_arvioijat
             on delete cascade;
 
 alter table aiemmin_hankitun_yto_osa_alueen_naytto
     drop constraint olemassa_olevan_yto_osa_aluee_olemassa_oleva_yto_osa_alue__fkey,
-    add constraint aiemmin_hankitun_yto_osa_aluee_olemassa_oleva_yto_osa_alue_fkey
+    add constraint aiemmin_hankitun_yto_osa_al_naytto_aiem_hank_yto_osa_alue_fkey
         foreign key (aiemmin_hankittu_yto_osa_alue_id) references aiemmin_hankitut_yto_osa_alueet
             on delete cascade;
 
 alter table aiemmin_hankitun_yto_osa_alueen_naytto
     drop constraint olemassa_olevan_yto_osa_aluee_hankitun_osaamisen_naytto_id_fkey,
-    add constraint aiemmin_hankitun_yto_osa_aluee_hankitun_osaamisen_naytto_id_fkey
+    add constraint aiemmin_hankitun_yto_osa_al_naytto_os_osoittamiset_fkey
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
