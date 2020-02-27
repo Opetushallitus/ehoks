@@ -90,19 +90,19 @@ alter table hankittavan_ammat_tutkinnon_osan_naytto
 
 alter table hankittavan_ammat_tutkinnon_osan_naytto
     drop constraint puuttuvan_ammatillisen_tutkin_hankitun_osaamisen_naytto_id_fkey,
-    add constraint hankittavan_ammatillisen_tutkin_hankitun_osaamisen_naytto_id_fkey
+    add constraint hankittavan_ammat_tutk_naytto_osaamisen_osoittamiset_id_fkey
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
 alter table hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
     drop constraint puuttuvan_ammatillisen_tutki_puuttuva_ammatillinen_tutkin_fkey1,
-    add constraint hankittavan_ammatillisen_tutki_puuttuva_ammatillinen_tutkin_fkey
+    add constraint hankittavan_ammat_tutk_os_hankkimistavat_hank_ammat_tutk_fkey
         foreign key (hankittava_ammat_tutkinnon_osa_id) references hankittavat_ammat_tutkinnon_osat
             on delete cascade;
 
 alter table hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
     drop constraint puuttuvan_ammatillisen_tutkinno_osaamisen_hankkimistapa_id_fkey,
-    add constraint hankittavan_ammatillisen_tutkinno_osaamisen_hankkimistapa_id_fkey
+    add constraint hankittavan_ammat_tutk_os_hankkimist_os_hankkimistavat_fkey
         foreign key (osaamisen_hankkimistapa_id) references osaamisen_hankkimistavat
             on delete cascade;
 
@@ -138,13 +138,13 @@ alter table yhteisen_tutkinnon_osan_osa_alueen_naytot
 
 alter table aiemmin_hankitun_ammat_tutkinnon_osan_naytto
     drop constraint olemassa_olevan_ammatillisen__olemassa_oleva_ammatillinen__fkey,
-    add constraint aiemmin_hankitun_ammatillisen_olemassa_oleva_ammatillinen_fkey
+    add constraint aiemmin_hankitun_ammat_tutk_naytto_aiemmin_hank_tutk_osa_fkey
         foreign key (aiemmin_hankittu_ammat_tutkinnon_osa_id) references aiemmin_hankitut_ammat_tutkinnon_osat
             on delete cascade;
 
 alter table aiemmin_hankitun_ammat_tutkinnon_osan_naytto
     drop constraint olemassa_olevan_ammatillisen__hankitun_osaamisen_naytto_id_fkey,
-    add constraint aiemmin_hankitun_ammatillisen_hankitun_osaamisen_naytto_id_fkey
+    add constraint aiemmin_hankitun_ammat_tutk_naytto_os_osoittamiset_fkey
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
