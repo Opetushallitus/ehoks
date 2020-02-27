@@ -66,25 +66,25 @@ alter table hankittavan_paikallisen_tutkinnon_osan_naytto
 
 alter table hankittavan_paikallisen_tutkinnon_osan_naytto
     drop constraint puuttuvan_paikallisen_tutkinn_hankitun_osaamisen_naytto_id_fkey,
-    add constraint hankittavan_paikallisen_tutkinn_hankitun_osaamisen_naytto_id_fkey
+    add constraint hankittavan_paik_tutk_naytto_osaamisen_osoittamiset_fkey
         foreign key (osaamisen_osoittaminen_id) references osaamisen_osoittamiset
             on delete cascade;
 
 alter table hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
     drop constraint puuttuvan_paikallisen_tutkin_puuttuva_paikallinen_tutkinn_fkey1,
-    add constraint hankittavan_paikallisen_tutkin_hankitta_paikallinen_tutkinn_fkey
+    add constraint hankittavan_paik_tutk_os_hank_hankitta_paik_tutk_fkey
         foreign key (hankittava_paikallinen_tutkinnon_osa_id) references hankittavat_paikalliset_tutkinnon_osat
             on delete cascade;
 
 alter table hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
     drop constraint puuttuvan_paikallisen_tutkinnon_osaamisen_hankkimistapa_id_fkey,
-    add constraint hankittavan_paikallisen_tutkinnon_osaamisen_hankkimistapa_id_fkey
+    add constraint hankittavan_paik_tutk_os_hank_osaamisen_hankkimistapa_id_fkey
         foreign key (osaamisen_hankkimistapa_id) references osaamisen_hankkimistavat
             on delete cascade;
 
 alter table hankittavan_ammat_tutkinnon_osan_naytto
     drop constraint puuttuvan_ammatillisen_tutkin_puuttuva_ammatillinen_tutkin_fkey,
-    add constraint hankittavan_ammatillisen_tutkin_puuttuva_ammatillinen_tutkin_fkey
+    add constraint hankittavan_ammat_tutk_naytto_hank_ammatillinen_tutk_fkey
         foreign key (hankittava_ammat_tutkinnon_osa_id) references hankittavat_ammat_tutkinnon_osat
             on delete cascade;
 
