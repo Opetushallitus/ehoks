@@ -5,8 +5,10 @@
             [clojure.tools.logging :as log])
   (:import (software.amazon.awssdk.services.sqs SqsClient)
            (software.amazon.awssdk.regions Region)
-           (software.amazon.awssdk.services.sqs.model SendMessageRequest
-                                                      GetQueueUrlRequest QueueDoesNotExistException)))
+           (software.amazon.awssdk.services.sqs.model
+             SendMessageRequest
+             GetQueueUrlRequest
+             QueueDoesNotExistException)))
 
 (def ^:private sqs-client
   (when (:send-herate-messages? config)
