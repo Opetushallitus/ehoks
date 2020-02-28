@@ -7,7 +7,10 @@
             [oph.ehoks.external.cache :as c]
             [oph.ehoks.oppijaindex :as op]
             [clojure.core.async :as a]
-            [ring.util.http-response :as response]))
+            [ring.util.http-response :as response]
+            [clojure.tools.logging :as log]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [schema.core :as s]))
 
 (def routes
   (route-middleware
@@ -28,7 +31,8 @@
             :unindexedOpiskeluoikeudet
             (op/get-opiskeluoikeudet-without-index-count)
             :unindexedTutkinnot
-            (op/get-opiskeluoikeudet-without-tutkinto-count)}})))
+            (op/get-opiskeluoikeudet-without-tutkinto-count)}
+           :hoksit {:amount (:count (op/get-amount-of-hoks))}})))
 
     (c-api/POST "/index" []
       :summary "Indeksoi oppijat ja opiskeluoikeudet"
@@ -41,4 +45,18 @@
     (c-api/DELETE "/cache" []
       :summary "Välimuistin tyhjennys"
       (c/clear-cache!)
-      (response/ok))))
+      (response/ok))
+
+    (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
+      :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
+      :path-params [opiskeluoikeus-oid :- s/Str]
+      :return (restful/response {:id s/Int})
+      (let [hoks (first (db-hoks/select-hoksit-by-opiskeluoikeus-oid
+                          opiskeluoikeus-oid))]
+        (if hoks
+          (restful/rest-ok {:id (:id hoks)})
+          (do
+            (log/warn "No HOKS found with given opiskeluoikeus "
+                      opiskeluoikeus-oid)
+            (response/not-found
+              {:error "No HOKS found with given opiskeluoikeus"})))))))

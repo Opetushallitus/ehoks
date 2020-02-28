@@ -296,3 +296,7 @@
   (db-ops/query
     [queries/select-kyselylinkit-by-oppija-oid oid]
     {:row-fn db-ops/from-sql}))
+
+(defn select-count-all-hoks []
+  (db-ops/query
+    [queries/select-count-all-hoks]))
