@@ -6,7 +6,7 @@
   (:import (software.amazon.awssdk.services.sqs SqsClient)
            (software.amazon.awssdk.regions Region)
            (software.amazon.awssdk.services.sqs.model SendMessageRequest
-                                                      GetQueueUrlRequest)))
+                                                      GetQueueUrlRequest QueueDoesNotExistException)))
 
 (def ^:private sqs-client
   (when (:send-herate-messages? config)
@@ -30,13 +30,16 @@
   (when (some? sqs-client)
     (if (nil? (:env-stage env))
       (log/warn "Stage missing from env variables")
-      (.queueUrl (.getQueueUrl
-                   sqs-client
-                   (-> (GetQueueUrlRequest/builder)
-                       (.queueName
-                         (str (:env-stage env) "-"
-                              (:heratepalvelu-tyoelamapalaute-queue config)))
-                       (.build)))))))
+      (try
+        (.queueUrl (.getQueueUrl
+                     sqs-client
+                     (-> (GetQueueUrlRequest/builder)
+                         (.queueName
+                           (str (:env-stage env) "-"
+                                (:heratepalvelu-tyoelamapalaute-queue config)))
+                         (.build))))
+        (catch QueueDoesNotExistException e
+          (log/error "Työelämäpalaute queue url not found!"))))))
 
 (defn build-hoks-hyvaksytty-msg [id hoks]
   {:ehoks-id id
@@ -62,15 +65,17 @@
    :tyopaikkaohjaaja-nimi (:tyopaikkaohjaaja_nimi msg)})
 
 (defn send-message [msg]
-  (when (some? queue-url)
+  (if (some? queue-url)
     (.sendMessage sqs-client (-> (SendMessageRequest/builder)
                                  (.queueUrl queue-url)
                                  (.messageBody (json/write-str msg))
-                                 (.build)))))
+                                 (.build)))
+    (log/error "No AMIS-palaute queue!")))
 
 (defn send-tyoelamapalaute-message [msg]
-  (when (some? tyoelamapalaute-queue-url)
+  (if (some? tyoelamapalaute-queue-url)
     (.sendMessage sqs-client (-> (SendMessageRequest/builder)
                                  (.queueUrl tyoelamapalaute-queue-url)
                                  (.messageBody (json/write-str msg))
-                                 (.build)))))
+                                 (.build)))
+    (log/error "No työelämäpalaute queue!")))
