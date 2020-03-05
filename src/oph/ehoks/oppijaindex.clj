@@ -32,6 +32,11 @@
          (:koulutustoimija-oid params)
          (db-opiskeluoikeus/get-like (:nimi params))]))))
 
+(defn get-amount-of-hoks
+  "Get total amount of hokses now"
+  []
+  (first (db-hoks/select-count-all-hoks)))
+
 (defn get-oppijat-without-index
   "Get hoks oppijat without index"
   []

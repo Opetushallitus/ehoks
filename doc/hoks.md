@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 24.01.2020 10.15
+Generoitu 04.03.2020 10.48
 
 ### MuuOppimisymparisto  
 

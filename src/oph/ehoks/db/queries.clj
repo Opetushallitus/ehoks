@@ -47,6 +47,7 @@
                       (generate-select-by (parse-sql (str (quote ~query-name))))
                       (read-sql-file (cstr/join (quote ~filename))))))
 
+(defq select-count-all-hoks "hoksit/select_count_all_hoksit.sql")
 (defq select-hoksit "hoksit/select.sql")
 (defq select-hoksit-by-oppija-oid)
 (defq select-hoksit-by-id)

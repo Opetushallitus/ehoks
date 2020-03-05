@@ -20,12 +20,12 @@
       "nimi": "Fine dining ‑ruoanvalmistus",
       "kuvaus": "valinnainen",
       "lyhytNimi": "at",
-      "kayttoohje": "",
-      "kasite": "",
-      "sisaltaaMerkityksen": "",
-      "eiSisallaMerkitysta": "",
-      "huomioitavaKoodi": "",
-      "sisaltaaKoodiston": "",
+      "kayttoohje": "Tähän joku käyttöohje",
+      "kasite": "Tähän joku käsite",
+      "sisaltaaMerkityksen": "Sisältääkö merkityksen?",
+      "eiSisallaMerkitysta": "Ei sisällä merkitystä?",
+      "huomioitavaKoodi": "Tähän huomioitava koodi",
+      "sisaltaaKoodiston": "Sisältääkö koodiston?",
       "kieli": "FI"
     }
   ],

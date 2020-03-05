@@ -308,3 +308,7 @@
     "hyto" (map #(assoc % :tyyppi "hyto")
                 (db-ops/query
                   [queries/select-paattyneet-tyoelamajaksot-hyto]))))
+
+(defn select-count-all-hoks []
+  (db-ops/query
+    [queries/select-count-all-hoks]))
