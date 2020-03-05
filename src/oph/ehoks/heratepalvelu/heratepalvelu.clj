@@ -18,9 +18,8 @@
   "Formats and sends a list of periods to a SQS queue"
   [periods]
   (log/info periods)
-  (map
-    #(sqs/send-tyoelamapalaute-message (sqs/build-tyoelamapalaute-msg %))
-    periods))
+  (doseq [period periods]
+    (sqs/send-tyoelamapalaute-message (sqs/build-tyoelamapalaute-msg period))))
 
 (defn process-finished-workplace-periods
   "Finds all finished workplace periods and sends them to a SQS queue"
