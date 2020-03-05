@@ -23,4 +23,5 @@ FROM hoksit h
 WHERE
   (oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_koulutussopimus' or
   oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_oppisopimus')
-  AND oh.loppu < now()::date
+  AND oh.loppu >= ?
+  AND oh.loppu <= ?
