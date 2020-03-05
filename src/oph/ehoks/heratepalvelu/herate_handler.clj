@@ -11,5 +11,5 @@
 
     (c-api/GET "/heratepalvelu/tyoelamajaksot" []
       :summary "Päättyneet työelämäjaksot"
-      (hp/process-finished-workplace-periods)
-      (restful/rest-ok "ok"))))
+      (let [periods (hp/process-finished-workplace-periods)]
+        (restful/rest-ok (count periods))))))
