@@ -9,9 +9,6 @@
   (let [hytos (db-hoks/select-paattyneet-tyoelamajaksot "hyto" start end)
         hptos (db-hoks/select-paattyneet-tyoelamajaksot "hpto" start end)
         hatos (db-hoks/select-paattyneet-tyoelamajaksot "hato" start end)]
-    (log/info hytos)
-    (log/info hptos)
-    (log/info hatos)
     (concat hytos hptos hatos)))
 
 (defn send-workplace-periods
@@ -26,5 +23,7 @@
   end and sends them to a SQS queue"
   [start end]
   (let [periods (find-finished-workplace-periods start end)]
+    (log/info "Sending %d finished workplace periods between %s - %s"
+              (count periods) start end)
     (send-workplace-periods periods)
     periods))
