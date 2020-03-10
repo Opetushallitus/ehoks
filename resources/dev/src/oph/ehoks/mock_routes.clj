@@ -306,6 +306,13 @@
              :errorKey ""}))
         [:headers "Content-Type"] "application/json"))
 
+    (GET "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.5921222"
+         request
+      (json-response
+        {:oid (get-in request [:params :oid])
+         :nimi {:fi "Testaus-organisaatio"}
+         :parentOidPath "|1.2.246.562.10.00000000001|"}))
+
     (GET "/organisaatio-service/rest/organisaatio/v4/:oid" request
       (json-response
         {:oid (get-in request [:params :oid])
