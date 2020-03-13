@@ -252,3 +252,11 @@
 
 (defn set-opiskeluoikeus-paattynyt! [oid timestamp]
   (db-opiskeluoikeus/update-opiskeluoikeus! oid {:paattynyt timestamp}))
+
+(defn oppija-opiskeluoikeus-match?
+  "Check that opiskeluoikeus belongs to oppija"
+  [oppija-oid opiskeluoikeus-oid]
+  (let [opiskeluoikeudet (k/get-oppija-opiskeluoikeudet oppija-oid)]
+    (boolean
+      (seq
+        (filter #(= opiskeluoikeus-oid (:oid %)) opiskeluoikeudet)))))

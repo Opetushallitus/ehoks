@@ -3,6 +3,7 @@
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.external.http-client :as client]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]))
 
@@ -255,3 +256,46 @@
                (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.22222222223")
                :paattynyt))
            0)))))
+
+(t/deftest oppija-opiskeluoikeus-match-test
+  (t/testing "Opintooikeus belonging to oppija return true"
+    (client/set-post!
+      (fn [url options]
+        (cond
+          (.endsWith url "/koski/api/sure/oids")
+          {:status 200
+           :body [{:henkilö {:oid "1.2.246.562.24.48727587473"}
+                   :opiskeluoikeudet
+                   [{:oid "1.2.246.562.15.55003456345"
+                     :oppilaitos
+                     {:oid "1.2.246.562.10.12944436166"}}
+                    {:oid "1.2.246.562.15.55003456346"
+                     :oppilaitos
+                     {:oid "1.2.246.562.10.12944436167"}}]}]})))
+    (t/is
+      (sut/oppija-opiskeluoikeus-match?
+        "1.2.246.562.24.48727587473"
+        "1.2.246.562.15.55003456345"))
+    (client/reset-functions!)))
+
+(t/deftest oppija-opiskeluoikeus-mismatch-test
+  (t/testing "Opintooikeus not belonging to oppija return false"
+    (client/set-post!
+      (fn [url options]
+        (cond
+          (.endsWith url "/koski/api/sure/oids")
+          {:status 200
+           :body [{:henkilö {:oid "1.2.246.562.24.48727587473"}
+                   :opiskeluoikeudet
+                   [{:oid "1.2.246.562.15.55003456345"
+                     :oppilaitos
+                     {:oid "1.2.246.562.10.12944436166"}}
+                    {:oid "1.2.246.562.15.55003456346"
+                     :oppilaitos
+                     {:oid "1.2.246.562.10.12944436167"}}]}]})))
+    (t/is
+      (not
+        (sut/oppija-opiskeluoikeus-match?
+          "1.2.246.562.24.48727587473"
+          "1.2.246.562.15.55003456347")))
+    (client/reset-functions!)))
