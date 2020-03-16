@@ -198,6 +198,18 @@
   ([app request]
     (with-service-ticket app request nil)))
 
+(defn match-oppija-and-opintooikeus [oppija-oid opiskeluoikeus-oid]
+  (client/set-post!
+    (fn [url options]
+      (cond
+        (.endsWith url "/koski/api/sure/oids")
+        {:status 200
+         :body [{:henkilö {:oid oppija-oid}
+                 :opiskeluoikeudet
+                 [{:oid opiskeluoikeus-oid
+                   :oppilaitos
+                   {:oid "1.2.246.562.10.12944436166"}}]}]}))))
+
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
 
