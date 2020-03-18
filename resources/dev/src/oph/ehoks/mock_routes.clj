@@ -312,6 +312,13 @@
          :nimi {:fi "Testaus-organisaatio"}
          :parentOidPath "|1.2.246.562.10.00000000001|"}))
 
+    (GET "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.54423333" []
+      (json-response
+        {:oid  "1.2.246.562.10.54423333"
+         :nimi {:fi "Osa-alueen järjestäjä-organisaatio"}
+         :parentOidPath "|1.2.246.562.10.00000000001|"}))
+
+
     (GET "/organisaatio-service/rest/organisaatio/v4/:oid" request
       (json-response
         {:oid (get-in request [:params :oid])
