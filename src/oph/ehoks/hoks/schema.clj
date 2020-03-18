@@ -277,6 +277,10 @@
     (s/optional-key :osaamisen-osoittaminen)
     [OsaamisenOsoittaminen]
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
+    (s/optional-key :koulutuksen-jarjestaja-oid) Oid
+    (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
+         "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
+         "koulutuksen järjestäjän oid.")
     (s/optional-key :olennainen-seikka) s/Bool
     (str "Tieto sellaisen seikan
     olemassaolosta, jonka koulutuksen järjestäjä katsoo oleelliseksi tutkinnon
