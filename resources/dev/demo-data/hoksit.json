@@ -472,16 +472,46 @@
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_101054",
       "tutkinnon-osa-koodi-versio": 1,
       "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-      "osa-alueet": []
+      "osa-alueet": [{
+        "osa-alue-koodi-uri": "ammatillisenoppiaineet_fk",
+        "osa-alue-koodi-versio": 1,
+        "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54423333",
+        "osaamisen-hankkimistavat": [
+          {
+            "tyopaikalla-jarjestettava-koulutus": {
+              "vastuullinen-tyopaikka-ohjaaja": {
+                "nimi": "Ohjaaja, Osa",
+                "sahkoposti": "ohjaajantestimail@testi.com"
+              },
+              "tyopaikan-nimi": "Kesko Oyj",
+              "tyopaikan-y-tunnus": "123456-7",
+              "keskeiset-tyotehtavat": [
+                "Jotkut työtehtävät",
+                "Sekalaiset työtehtävät"
+              ]
+            },
+            "osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_koulutussopimus",
+            "osaamisen-hankkimistapa-koodi-versio": 1,
+            "hankkijan-edustaja": {
+              "nimi": "Hankkija, Heikki",
+              "rooli": "Jonkinlainen hankkija",
+              "oppilaitos-oid": "1.2.246.562.10.54453921329"
+            },
+            "jarjestajan-edustaja": {
+              "nimi": "Järjestäjä, Joku",
+              "rooli": "Joku järjestysedustaja",
+              "oppilaitos-oid": "1.2.246.562.10.54453921329"
+            },
+            "ajanjakson-tarkenne": "Tässä tarkempia tietoja ajanjaksoista",
+            "alku": "2020-02-01",
+            "loppu": "2022-02-01"
+          }
+        ]
+
+      }]
     },
     {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_101055",
-      "tutkinnon-osa-koodi-versio": 1,
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
-      "osa-alueet": []
-    },
-    {
-      "tutkinnon-osa-koodi-uri": "tutkinnonosat_101056",
       "tutkinnon-osa-koodi-versio": 1,
       "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
       "osa-alueet": []
