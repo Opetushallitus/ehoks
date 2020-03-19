@@ -86,23 +86,25 @@
 
 (deftest prevent-getting-unauthorized-hoks
   (testing "Prevent GET unauthorized HOKS"
-    (with-redefs [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match? mock-opintooikeus-match]
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
-                     :oppija-oid "1.2.246.562.24.12312312312"
-                     :ensikertainen-hyvaksyminen "2018-12-15"
-                     :osaamisen-hankkimisen-tarve false}]
+    (with-redefs
+     [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match?
+      mock-opintooikeus-match]
+      (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
+                       :oppija-oid "1.2.246.562.24.12312312312"
+                       :ensikertainen-hyvaksyminen "2018-12-15"
+                       :osaamisen-hankkimisen-tarve false}]
 
-      (let [response
-            (utils/with-service-ticket
-              (hoks-utils/create-app nil)
-              (-> (mock/request :post base-url)
-                  (mock/json-body hoks-data))
-              "1.2.246.562.24.47861388608")
-            body (utils/parse-body (:body response))]
-        (is (= (:status
-                 (hoks-utils/mock-st-get (hoks-utils/create-app nil)
-                                         (get-in body [:data :uri])))
-               401)))))))
+        (let [response
+              (utils/with-service-ticket
+                (hoks-utils/create-app nil)
+                (-> (mock/request :post base-url)
+                    (mock/json-body hoks-data))
+                "1.2.246.562.24.47861388608")
+              body (utils/parse-body (:body response))]
+          (is (= (:status
+                   (hoks-utils/mock-st-get (hoks-utils/create-app nil)
+                                           (get-in body [:data :uri])))
+                 401)))))))
 
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"

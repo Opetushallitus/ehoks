@@ -11,9 +11,11 @@
 (defn mock-opintooikeus-match [_oid1 _oid2] true)
 
 (defn create-app [session-store]
-  (with-redefs [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match? mock-opintooikeus-match]
-  (cache/clear-cache!)
-  (common-api/create-app handler/app-routes session-store)))
+  (with-redefs
+   [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match?
+    mock-opintooikeus-match]
+    (cache/clear-cache!)
+    (common-api/create-app handler/app-routes session-store)))
 
 (defn get-authenticated [url]
   (-> (utils/with-service-ticket
@@ -23,21 +25,22 @@
       utils/parse-body))
 
 (defn create-hoks [app]
-  (with-redefs [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match? mock-opintooikeus-match]
-  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                   :oppija-oid "1.2.246.562.24.12312312312"
-                   :ensikertainen-hyvaksyminen
-                   (java.time.LocalDate/of 2019 3 18)
-                   :osaamisen-hankkimisen-tarve false}]
-    (-> app
-        (utils/with-service-ticket
-          (-> (mock/request :post base-url)
-              (mock/json-body hoks-data)))
-        :body
-        utils/parse-body
-        (get-in [:data :uri])
-        get-authenticated
-        :data))))
+  (with-redefs [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match?
+                mock-opintooikeus-match]
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :ensikertainen-hyvaksyminen
+                     (java.time.LocalDate/of 2019 3 18)
+                     :osaamisen-hankkimisen-tarve false}]
+      (-> app
+          (utils/with-service-ticket
+            (-> (mock/request :post base-url)
+                (mock/json-body hoks-data)))
+          :body
+          utils/parse-body
+          (get-in [:data :uri])
+          get-authenticated
+          :data))))
 
 (defmacro with-hoks-and-app [[hoks app] & body]
   `(let [~app (create-app nil)
@@ -46,18 +49,20 @@
 
 (defn mock-st-request
   ([app full-url method data]
-   (with-redefs [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match? mock-opintooikeus-match]
-    (let [req (mock/request
-                method
-                full-url)]
-      (utils/with-service-ticket
-        app
-        (if (some? data)
-          (mock/json-body req data)
-          req)))))
+    (with-redefs [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match?
+                  mock-opintooikeus-match]
+      (let [req (mock/request
+                  method
+                  full-url)]
+        (utils/with-service-ticket
+          app
+          (if (some? data)
+            (mock/json-body req data)
+            req)))))
   ([app full-url]
-   (with-redefs [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match? mock-opintooikeus-match]
-    (mock-st-request app full-url :get nil))))
+    (with-redefs [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match?
+                  mock-opintooikeus-match]
+      (mock-st-request app full-url :get nil))))
 
 (defn mock-st-post [app full-url data]
   (mock-st-request app full-url :post data))
@@ -96,18 +101,19 @@
   (mock-st-patch app (format "%s/1/%s/1" base-url path) patched-data))
 
 (defn assert-partial-put-of-hoks [updated-hoks hoks-part initial-hoks-data]
-  (with-redefs [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match? mock-opintooikeus-match]
-  (let [app (create-app nil)
-        post-response (create-mock-post-request "" initial-hoks-data app)
-        put-response (create-mock-hoks-put-request 1 updated-hoks app)
-        get-response (create-mock-hoks-get-request 1 app)
-        get-response-data (:data (utils/parse-body (:body get-response)))]
-    (is (= (:status post-response) 200))
-    (is (= (:status put-response) 204))
-    (is (= (:status get-response) 200))
-    (eq (utils/dissoc-uuids
-          (hoks-part get-response-data))
-        (hoks-part updated-hoks)))))
+  (with-redefs [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match?
+                mock-opintooikeus-match]
+    (let [app (create-app nil)
+          post-response (create-mock-post-request "" initial-hoks-data app)
+          put-response (create-mock-hoks-put-request 1 updated-hoks app)
+          get-response (create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status put-response) 204))
+      (is (= (:status get-response) 200))
+      (eq (utils/dissoc-uuids
+            (hoks-part get-response-data))
+          (hoks-part updated-hoks)))))
 
 (defn assert-post-response-is-ok [post-path post-response]
   (is (= (:status post-response) 200))
