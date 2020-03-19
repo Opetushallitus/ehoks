@@ -210,6 +210,9 @@
                    :oppilaitos
                    {:oid "1.2.246.562.10.12944436166"}}]}]}))))
 
+(defn reset-client-mocks []
+  (client/reset-functions!))
+
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
 

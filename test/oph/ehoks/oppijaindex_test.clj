@@ -3,7 +3,6 @@
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.external.http-client :as client]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]))
 
@@ -266,7 +265,7 @@
       (sut/oppija-opiskeluoikeus-match?
         "1.2.246.562.24.48727587473"
         "1.2.246.562.15.55003456345"))
-    (client/reset-functions!)))
+    (utils/reset-client-mocks)))
 
 (t/deftest oppija-opiskeluoikeus-mismatch-test
   (t/testing "Opintooikeus not belonging to oppija return false"
@@ -278,4 +277,4 @@
         (sut/oppija-opiskeluoikeus-match?
           "1.2.246.562.24.48727587473"
           "1.2.246.562.15.55003456347")))
-    (client/reset-functions!)))
+    (utils/reset-client-mocks)))

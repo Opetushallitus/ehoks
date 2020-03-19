@@ -20,6 +20,8 @@
     :hankittavat-yhteiset-tutkinnon-osat []
     :aiemmin-hankitut-paikalliset-tutkinnon-osat []
     :opiskeluvalmiuksia-tukevat-opinnot []))
+;; TODO: Refactor all the with-redefs parts into a single helper/place
+(defn mock-opintooikeus-match [_oid1 _oid2] true)
 
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
@@ -84,6 +86,7 @@
 
 (deftest prevent-getting-unauthorized-hoks
   (testing "Prevent GET unauthorized HOKS"
+    (with-redefs [oph.ehoks.oppijaindex/oppija-opiskeluoikeus-match? mock-opintooikeus-match]
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :ensikertainen-hyvaksyminen "2018-12-15"
@@ -99,7 +102,7 @@
         (is (= (:status
                  (hoks-utils/mock-st-get (hoks-utils/create-app nil)
                                          (get-in body [:data :uri])))
-               401))))))
+               401)))))))
 
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"
