@@ -257,24 +257,26 @@
            0)))))
 
 (t/deftest oppija-opiskeluoikeus-match-test
-  (t/testing "Opintooikeus belonging to oppija return true"
-    (utils/match-oppija-and-opintooikeus
-      "1.2.246.562.24.48727587473"
-      "1.2.246.562.15.55003456345")
-    (t/is
-      (sut/oppija-opiskeluoikeus-match?
+  (with-redefs [oph.ehoks.config/config {:enforce-opiskeluoikeus-match true}]
+    (t/testing "Opintooikeus belonging to oppija return true"
+      (utils/match-oppija-and-opintooikeus
         "1.2.246.562.24.48727587473"
-        "1.2.246.562.15.55003456345"))
-    (utils/reset-client-mocks)))
-
-(t/deftest oppija-opiskeluoikeus-mismatch-test
-  (t/testing "Opintooikeus not belonging to oppija return false"
-    (utils/match-oppija-and-opintooikeus
-      "1.2.246.562.24.48727587473"
-      "1.2.246.562.15.55003456345")
-    (t/is
-      (not
+        "1.2.246.562.15.55003456345")
+      (t/is
         (sut/oppija-opiskeluoikeus-match?
           "1.2.246.562.24.48727587473"
-          "1.2.246.562.15.55003456347")))
-    (utils/reset-client-mocks)))
+          "1.2.246.562.15.55003456345"))
+      (utils/reset-client-mocks))))
+
+(t/deftest oppija-opiskeluoikeus-mismatch-test
+  (with-redefs [oph.ehoks.config/config {:enforce-opiskeluoikeus-match true}]
+    (t/testing "Opintooikeus not belonging to oppija return false"
+      (utils/match-oppija-and-opintooikeus
+        "1.2.246.562.24.48727587473"
+        "1.2.246.562.15.55003456345")
+      (t/is
+        (not
+          (sut/oppija-opiskeluoikeus-match?
+            "1.2.246.562.24.48727587473"
+            "1.2.246.562.15.55003456347")))
+      (utils/reset-client-mocks))))
