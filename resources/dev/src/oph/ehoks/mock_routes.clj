@@ -138,9 +138,20 @@
               [{:yhteystietoArvo "kayttaja@domain.local"
                 :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})})))
 
+
     (GET "/koodisto-service/rest/codeelement/tutkinnonosat_100031" []
       (json-response-file
         "dev-routes/koodisto-service_rest_codeelement_tutkinnonosat__100031.json"))
+
+    (GET "/koodisto-service/rest/codeelement/*/oppimisymparistot_0002" []
+      (json-response
+        {:metadata [{:nimi "Verkko- ja virtuaaliympäristö",
+                     :kieli "FI"}]}))
+
+    (GET "/koodisto-service/rest/codeelement/*/oppimisymparistot_0003" []
+      (json-response
+        {:metadata [{:nimi "Lukio",
+                     :kieli "FI"}]}))
 
     (GET "/koodisto-service/rest/codeelement/*/*" []
       (json-response-file
