@@ -7,7 +7,8 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.config :refer [config]]))
 
 (defn search
   "Search oppijat with given params"
@@ -256,7 +257,9 @@
 (defn oppija-opiskeluoikeus-match?
   "Check that opiskeluoikeus belongs to oppija"
   [oppija-oid opiskeluoikeus-oid]
-  (let [opiskeluoikeudet (k/get-oppija-opiskeluoikeudet oppija-oid)]
-    (boolean
-      (seq
-        (filter #(= opiskeluoikeus-oid (:oid %)) opiskeluoikeudet)))))
+  (if (:enforce-opiskeluoikeus-match config)
+    (let [opiskeluoikeudet (k/get-oppija-opiskeluoikeudet oppija-oid)]
+      (boolean
+        (seq
+          (filter #(= opiskeluoikeus-oid (:oid %)) opiskeluoikeudet))))
+    true))
