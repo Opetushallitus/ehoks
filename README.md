@@ -35,7 +35,7 @@ rajapintojen polut on jaettu palveluittain.
 #### RESTful API
 Backend pyrkii seuraamaan
 [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer)
-periaatteita. Kaikki vataukset (paitsi no content) sisältävät meta- ja
+periaatteita. Kaikki vastaukset (paitsi no content) sisältävät meta- ja
 dataobjektit.
 
 Avaimet seuraavat Clojuren notaatiota.
