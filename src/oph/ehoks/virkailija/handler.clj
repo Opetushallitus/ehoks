@@ -155,6 +155,13 @@
         (throw e)))))
 
 (defn- post-oppija [hoks request]
+  (if-not
+   (op/oppija-opiskeluoikeus-match?
+     (:oppija-oid hoks) (:opiskeluoikeus-oid hoks))
+    (assoc
+      (response/bad-request!
+        {:error "Opiskeluoikeus does not match any held by oppija"})
+      :audit-data {:new hoks}))
   (add-oppija hoks)
   (add-opiskeluoikeus hoks)
   (check-virkailija-privileges hoks request)

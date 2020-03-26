@@ -68,4 +68,5 @@
               :db-password s/Str
               :arvo-password s/Str
               :arvo-username s/Str
-              :arvo-url s/Str})
+              :arvo-url s/Str
+              :enforce-opiskeluoikeus-match s/Bool})

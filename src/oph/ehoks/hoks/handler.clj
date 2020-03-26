@@ -274,6 +274,13 @@
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
+        (if-not
+         (oppijaindex/oppija-opiskeluoikeus-match?
+           (:oppija-oid hoks) (:opiskeluoikeus-oid hoks))
+          (assoc
+            (response/bad-request!
+              {:error "Opiskeluoikeus does not match any held by oppija"})
+            :audit-data {:new hoks}))
         (try
           (oppijaindex/add-oppija! (:oppija-oid hoks))
           (catch Exception e
