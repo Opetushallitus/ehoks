@@ -105,20 +105,20 @@
           "jarjestajan-edustaja": {
             "nimi": "Jarjen, Jari",
             "rooli": "Järjestysedustaja",
-            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+            "oppilaitos-oid": "1.2.246.562.10.54425555"
           },
           "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
           "alku": "2020-02-10",
           "loppu": "2020-02-10"
         }
       ],
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "olennainen-seikka": true
     },
     {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
       "tutkinnon-osa-koodi-versio": 1,
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osaamisen-osoittaminen": [
         {
           "alku": "2017-10-25",
@@ -149,7 +149,7 @@
     {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
       "tutkinnon-osa-koodi-versio": 1,
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osaamisen-osoittaminen": [
         {
           "alku": "2017-10-25",
@@ -200,7 +200,7 @@
           "jarjestajan-edustaja": {
             "nimi": "Jarjen, Jari",
             "rooli": "Järjestysedustaja",
-            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+            "oppilaitos-oid": "1.2.246.562.10.54425555"
           },
           "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
           "alku": "2018-11-01",
@@ -211,14 +211,14 @@
     {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_200241",
       "tutkinnon-osa-koodi-versio": 1,
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osaamisen-osoittaminen": [],
       "osaamisen-hankkimistavat": []
     },
     {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
       "tutkinnon-osa-koodi-versio": 1,
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "olennainen-seikka": true,
       "osaamisen-osoittaminen": [
         {
@@ -287,7 +287,7 @@
           "jarjestajan-edustaja": {
             "nimi": "Tyyppi, Joku",
             "rooli": "Järjestysedustaja",
-            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+            "oppilaitos-oid": "1.2.246.562.10.54425555"
           },
           "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
           "alku": "2018-11-01",
@@ -298,7 +298,7 @@
     {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
       "tutkinnon-osa-koodi-versio": 1,
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "olennainen-seikka": true,
       "osaamisen-osoittaminen": [
         {
@@ -419,7 +419,7 @@
           "jarjestajan-edustaja": {
             "nimi": "Tyyppi, Joku",
             "rooli": "Järjestysedustaja",
-            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+            "oppilaitos-oid": "1.2.246.562.10.54425555"
           },
           "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
           "alku": "2018-05-02",
@@ -450,7 +450,7 @@
           "jarjestajan-edustaja": {
             "nimi": "Tyyppi, Muu",
             "rooli": "Järjestysedustaja",
-            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+            "oppilaitos-oid": "1.2.246.562.10.54425555"
           },
           "ajanjakson-tarkenne": "Tämä on ajanjakson tarkenne",
           "alku": "2019-03-12",
@@ -463,7 +463,7 @@
     {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_101053",
       "tutkinnon-osa-koodi-versio": 1,
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osa-alueet": [
         {
           "osa-alue-koodi-uri": "ammatillisenoppiaineet_fk",
@@ -474,12 +474,12 @@
     {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_101054",
       "tutkinnon-osa-koodi-versio": 1,
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osa-alueet": [
         {
           "osa-alue-koodi-uri": "ammatillisenoppiaineet_fk",
           "osa-alue-koodi-versio": 1,
-          "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54423333",
+          "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
           "osaamisen-hankkimistavat": [
             {
               "tyopaikalla-jarjestettava-koulutus": {
@@ -504,7 +504,7 @@
               "jarjestajan-edustaja": {
                 "nimi": "Järjestäjä, Joku",
                 "rooli": "Joku järjestysedustaja",
-                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+                "oppilaitos-oid": "1.2.246.562.10.54425555"
               },
               "ajanjakson-tarkenne": "Tässä tarkempia tietoja ajanjaksoista",
               "alku": "2020-02-01",
@@ -517,38 +517,38 @@
     {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_101055",
       "tutkinnon-osa-koodi-versio": 1,
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osa-alueet": []
     }
   ],
   "hankittavat-paikalliset-tutkinnon-osat": [
     {
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osaamisen-osoittaminen": [],
       "osaamisen-hankkimistavat": [],
       "tavoitteet-ja-sisallot": "",
       "nimi": "Orientaatio alaan"
     },
     {
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osaamisen-osoittaminen": [],
       "osaamisen-hankkimistavat": [],
       "nimi": "Infotilaisuus"
     },
     {
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osaamisen-osoittaminen": [],
       "osaamisen-hankkimistavat": [],
       "nimi": "Opintojen ohjaus"
     },
     {
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osaamisen-osoittaminen": [],
       "osaamisen-hankkimistavat": [],
       "nimi": "Tutkintotilaisuus"
     },
     {
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osaamisen-osoittaminen": [],
       "osaamisen-hankkimistavat": [],
       "nimi": "Työpaikalla oppiminen "
