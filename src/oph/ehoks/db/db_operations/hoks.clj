@@ -297,6 +297,18 @@
     [queries/select-kyselylinkit-by-oppija-oid oid]
     {:row-fn db-ops/from-sql}))
 
+(defn select-paattyneet-tyoelamajaksot [osa start end]
+  (case osa
+    "hpto" (map #(assoc % :tyyppi "hpto")
+                (db-ops/query
+                  [queries/select-paattyneet-tyoelamajaksot-hpto start end]))
+    "hato" (map #(assoc % :tyyppi "hato")
+                (db-ops/query
+                  [queries/select-paattyneet-tyoelamajaksot-hato start end]))
+    "hyto" (map #(assoc % :tyyppi "hyto")
+                (db-ops/query
+                  [queries/select-paattyneet-tyoelamajaksot-hyto start end]))))
+
 (defn select-count-all-hoks []
   (db-ops/query
     [queries/select-count-all-hoks]))

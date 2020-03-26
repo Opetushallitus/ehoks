@@ -26,7 +26,8 @@
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.virkailija.system-handler :as system-handler]
             [oph.ehoks.virkailija.external-handler :as external-handler]
-            [oph.ehoks.virkailija.cas-handler :as cas-handler]))
+            [oph.ehoks.virkailija.cas-handler :as cas-handler]
+            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]))
 
 (def get-oppijat-route
   (c-api/GET "/" request
@@ -238,6 +239,7 @@
         :tags ["v1"]
 
         hoks-handler/routes
+        herate-handler/routes
 
         (route-middleware
           [wrap-audit-logger]

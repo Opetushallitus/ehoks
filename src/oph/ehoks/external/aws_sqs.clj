@@ -5,8 +5,10 @@
             [clojure.tools.logging :as log])
   (:import (software.amazon.awssdk.services.sqs SqsClient)
            (software.amazon.awssdk.regions Region)
-           (software.amazon.awssdk.services.sqs.model SendMessageRequest
-                                                      GetQueueUrlRequest)))
+           (software.amazon.awssdk.services.sqs.model
+             SendMessageRequest
+             GetQueueUrlRequest
+             QueueDoesNotExistException)))
 
 (def ^:private sqs-client
   (when (:send-herate-messages? config)
@@ -26,6 +28,21 @@
                               (:heratepalvelu-queue config)))
                        (.build)))))))
 
+(def ^:private tyoelamapalaute-queue-url
+  (when (some? sqs-client)
+    (if (nil? (:env-stage env))
+      (log/warn "Stage missing from env variables")
+      (try
+        (.queueUrl (.getQueueUrl
+                     sqs-client
+                     (-> (GetQueueUrlRequest/builder)
+                         (.queueName
+                           (str (:env-stage env) "-"
+                                (:heratepalvelu-tyoelamapalaute-queue config)))
+                         (.build))))
+        (catch QueueDoesNotExistException e
+          (log/error "Työelämäpalaute queue url not found!"))))))
+
 (defn build-hoks-hyvaksytty-msg [id hoks]
   {:ehoks-id id
    :kyselytyyppi "aloittaneet"
@@ -34,9 +51,33 @@
    :sahkoposti (:sahkoposti hoks)
    :alkupvm (str (:ensikertainen-hyvaksyminen hoks))})
 
+(defn build-tyoelamapalaute-msg [msg]
+  {:tyyppi (:tyyppi msg)
+   :alkupvm (str (:alkupvm msg))
+   :loppupvm (str (:loppupvm msg))
+   :hoks-id (:hoks_id msg)
+   :opiskeluoikeus-oid (:opiskeluoikeus_oid msg)
+   :oppija-oid (:oppija_oid msg)
+   :hankkimistapa-id (:hankkimistapa_id msg)
+   :hankkimistapa-tyyppi (:hankkimistapa_tyyppi msg)
+   :tutkinnonosa-id (:tutkinnonosa_id msg)
+   :tyopaikan-nimi (:tyopaikan_nimi msg)
+   :tyopaikan-ytunnus (:tyopaikan_ytunnus msg)
+   :tyopaikkaohjaaja-email (:tyopaikkaohjaaja_email msg)
+   :tyopaikkaohjaaja-nimi (:tyopaikkaohjaaja_nimi msg)})
+
 (defn send-message [msg]
-  (when (some? queue-url)
+  (if (some? queue-url)
     (.sendMessage sqs-client (-> (SendMessageRequest/builder)
                                  (.queueUrl queue-url)
                                  (.messageBody (json/write-str msg))
-                                 (.build)))))
+                                 (.build)))
+    (log/error "No AMIS-palaute queue!")))
+
+(defn send-tyoelamapalaute-message [msg]
+  (if (some? tyoelamapalaute-queue-url)
+    (.sendMessage sqs-client (-> (SendMessageRequest/builder)
+                                 (.queueUrl tyoelamapalaute-queue-url)
+                                 (.messageBody (json/write-str msg))
+                                 (.build)))
+    (log/error "No työelämäpalaute queue!")))
