@@ -20,6 +20,7 @@
     :hankittavat-yhteiset-tutkinnon-osat []
     :aiemmin-hankitut-paikalliset-tutkinnon-osat []
     :opiskeluvalmiuksia-tukevat-opinnot []))
+;; TODO: Refactor all the with-redefs parts into a single helper/place
 
 (deftest get-created-hoks
   (testing "GET newly created HOKS"

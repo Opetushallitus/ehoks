@@ -28,4 +28,5 @@
  :db-password "ehoks"
  :arvo-username "ehoks"
  :arvo-password ""
- :arvo-url "http://localhost:3000/api/vastauslinkki/v1"}
+ :arvo-url "http://localhost:3000/api/vastauslinkki/v1"
+ :enforce-opiskeluoikeus-match false}
