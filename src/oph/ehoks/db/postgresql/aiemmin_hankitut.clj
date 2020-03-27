@@ -105,85 +105,84 @@
 (defn insert-ahpto-osaamisen-osoittaminen!
   "Lisää aiemmin hankitun paikallisen tutkinnon osan osaamisen osoittaminen"
   ([oopto-id naytto-id]
-   (db-ops/insert-one!
-     :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
-     {:aiemmin_hankittu_paikallinen_tutkinnon_osa_id oopto-id
-      :osaamisen_osoittaminen_id naytto-id}))
+    (db-ops/insert-one!
+      :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
+      {:aiemmin_hankittu_paikallinen_tutkinnon_osa_id oopto-id
+       :osaamisen_osoittaminen_id naytto-id}))
   ([oopto-id naytto-id conn]
-   (if conn
-     (db-ops/insert-one!
-       :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
-       {:aiemmin_hankittu_paikallinen_tutkinnon_osa_id oopto-id
-        :osaamisen_osoittaminen_id naytto-id}
-       conn)
-     (insert-ahpto-osaamisen-osoittaminen! oopto-id naytto-id))))
+    (if conn
+      (db-ops/insert-one!
+        :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
+        {:aiemmin_hankittu_paikallinen_tutkinnon_osa_id oopto-id
+         :osaamisen_osoittaminen_id naytto-id}
+        conn))))
 
 (defn insert-todennettu-arviointi-arvioijat!
   "Lisää arvioijat todennetulle arvioinnille"
   ([tta-id arvioija-id]
-   (db-ops/insert-one!
-     :todennettu_arviointi_arvioijat
-     {:todennettu_arviointi_lisatiedot_id tta-id
-      :koulutuksen_jarjestaja_osaamisen_arvioija_id arvioija-id}))
+    (db-ops/insert-one!
+      :todennettu_arviointi_arvioijat
+      {:todennettu_arviointi_lisatiedot_id tta-id
+       :koulutuksen_jarjestaja_osaamisen_arvioija_id arvioija-id}))
   ([tta-id arvioija-id conn]
-   (db-ops/insert-one!
-     :todennettu_arviointi_arvioijat
-     {:todennettu_arviointi_lisatiedot_id tta-id
-      :koulutuksen_jarjestaja_osaamisen_arvioija_id arvioija-id}
-     conn)))
+    (db-ops/insert-one!
+      :todennettu_arviointi_arvioijat
+      {:todennettu_arviointi_lisatiedot_id tta-id
+       :koulutuksen_jarjestaja_osaamisen_arvioija_id arvioija-id}
+      conn)))
 
 (defn insert-koulutuksen-jarjestaja-osaamisen-arvioijat!
   "Lisää osaamisen arvioijat koulutuksen järjestäjälle"
   ([c]
-   (db-ops/insert-multi!
-     :koulutuksen_jarjestaja_osaamisen_arvioijat
-     (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c)))
+    (db-ops/insert-multi!
+      :koulutuksen_jarjestaja_osaamisen_arvioijat
+      (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c)))
   ([c conn]
-   (db-ops/insert-multi!
-     :koulutuksen_jarjestaja_osaamisen_arvioijat
-     (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c)
-     conn)))
+    (db-ops/insert-multi!
+      :koulutuksen_jarjestaja_osaamisen_arvioijat
+      (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c)
+      conn)))
 
 (defn insert-ahyto-osaamisen-osoittaminen!
   "Lisää aiemmin hankitun yhteisen tutkinnon osan osaamisen osoittaminen"
   ([ahyto-id n]
-   (db-ops/insert-one!
-     :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-     {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id ahyto-id
-      :osaamisen_osoittaminen_id (:id n)}))
+    (db-ops/insert-one!
+      :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
+      {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id ahyto-id
+       :osaamisen_osoittaminen_id (:id n)}))
   ([ahyto-id n conn]
-   (db-ops/insert-one!
-     :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-     {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id ahyto-id
-      :osaamisen_osoittaminen_id (:id n)}
-     conn)))
+    (db-ops/insert-one!
+      :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
+      {:aiemmin_hankittu_yhteinen_tutkinnon_osa_id ahyto-id
+       :osaamisen_osoittaminen_id (:id n)}
+      conn)))
 
 (defn insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue!
   "Lisää aiemmin hankitun yhteisen tutkinnon osan osa-alue"
   ([m]
-   (db-ops/insert-one!
-     :aiemmin_hankitut_yto_osa_alueet
-     (h/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-to-sql m)))
+    (db-ops/insert-one!
+      :aiemmin_hankitut_yto_osa_alueet
+      (h/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-to-sql m)))
   ([m conn]
-   (db-ops/insert-one!
-     :aiemmin_hankitut_yto_osa_alueet
-     (h/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-to-sql m)
-     conn)))
+    (db-ops/insert-one!
+      :aiemmin_hankitut_yto_osa_alueet
+      (h/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-to-sql m)
+      conn)))
 
 (defn insert-ahyto-osa-alue-osaamisen-osoittaminen!
   "Lisää aiemmin hankitun yhteisen tutkinnon osan osa-alueen osaamisen
   osoittaminen"
   ([osa-alue-id naytto-id]
-   (db-ops/insert-one!
-     :aiemmin_hankitun_yto_osa_alueen_naytto
-     {:aiemmin_hankittu_yto_osa_alue_id osa-alue-id
-      :osaamisen_osoittaminen_id naytto-id}))
+    (db-ops/insert-one!
+      :aiemmin_hankitun_yto_osa_alueen_naytto
+      {:aiemmin_hankittu_yto_osa_alue_id osa-alue-id
+       :osaamisen_osoittaminen_id naytto-id}))
   ([osa-alue-id naytto-id conn]
-   (db-ops/insert-one!
-     :aiemmin_hankitun_yto_osa_alueen_naytto
-     {:aiemmin_hankittu_yto_osa_alue_id osa-alue-id
-      :osaamisen_osoittaminen_id naytto-id}
-     conn)))
+    (db-ops/insert-one!
+      :aiemmin_hankitun_yto_osa_alueen_naytto
+      {:aiemmin_hankittu_yto_osa_alue_id osa-alue-id
+       :osaamisen_osoittaminen_id naytto-id}
+      conn)))
 
 (defn- ensure-lahetetty-arvioitavaksi-exists [tarkentavat-tiedot-arvioija]
   (if (:lahetetty-arvioitavaksi tarkentavat-tiedot-arvioija)
@@ -193,68 +192,68 @@
 (defn insert-todennettu-arviointi-lisatiedot!
   "Lisää todennetun arvioinnin lisätiedot"
   ([tarkentavat-tiedot-arvioija]
-   (let [refined-arvioija
-         (ensure-lahetetty-arvioitavaksi-exists tarkentavat-tiedot-arvioija)]
-     (db-ops/insert-one! :todennettu_arviointi_lisatiedot
-                         (h/todennettu-arviointi-lisatiedot-to-sql
-                           refined-arvioija))))
+    (let [refined-arvioija
+          (ensure-lahetetty-arvioitavaksi-exists tarkentavat-tiedot-arvioija)]
+      (db-ops/insert-one! :todennettu_arviointi_lisatiedot
+                          (h/todennettu-arviointi-lisatiedot-to-sql
+                            refined-arvioija))))
   ([tarkentavat-tiedot-arvioija conn]
-   (let [refined-arvioija
-         (ensure-lahetetty-arvioitavaksi-exists tarkentavat-tiedot-arvioija)]
-     (db-ops/insert-one! :todennettu_arviointi_lisatiedot
-                         (h/todennettu-arviointi-lisatiedot-to-sql
-                           refined-arvioija)
-                         conn))))
+    (let [refined-arvioija
+          (ensure-lahetetty-arvioitavaksi-exists tarkentavat-tiedot-arvioija)]
+      (db-ops/insert-one! :todennettu_arviointi_lisatiedot
+                          (h/todennettu-arviointi-lisatiedot-to-sql
+                            refined-arvioija)
+                          conn))))
 
 (defn insert-aiemmin-hankittu-yhteinen-tutkinnon-osa!
   "Lisää aiemmin hankitun yhteisen tutkinnon osa"
   ([m]
-  (db-ops/insert-one!
-    :aiemmin_hankitut_yhteiset_tutkinnon_osat
-    (h/aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql m)))
+    (db-ops/insert-one!
+      :aiemmin_hankitut_yhteiset_tutkinnon_osat
+      (h/aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql m)))
   ([m conn]
-   (db-ops/insert-one!
-     :aiemmin_hankitut_yhteiset_tutkinnon_osat
-     (h/aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql m)
-     conn)))
+    (db-ops/insert-one!
+      :aiemmin_hankitut_yhteiset_tutkinnon_osat
+      (h/aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql m)
+      conn)))
 
 (defn insert-aiemmin-hankittu-paikallinen-tutkinnon-osa!
   "Lisää aiemmin hankitun paikallisen tutkinnon osa"
   ([m]
-  (db-ops/insert-one!
-    :aiemmin_hankitut_paikalliset_tutkinnon_osat
-    (h/aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql m)))
+    (db-ops/insert-one!
+      :aiemmin_hankitut_paikalliset_tutkinnon_osat
+      (h/aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql m)))
   ([m conn]
-   (db-ops/insert-one!
-     :aiemmin_hankitut_paikalliset_tutkinnon_osat
-     (h/aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql m)
-     conn)))
+    (db-ops/insert-one!
+      :aiemmin_hankitut_paikalliset_tutkinnon_osat
+      (h/aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql m)
+      conn)))
 
 (defn insert-aiemmin-hankitun-ammat-tutkinnon-osan-naytto!
   "Lisää aiemmin hankitun ammatillisen tutkinnon osan näyttö"
   ([ooato-id n]
-   (db-ops/insert-one!
-     :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
-     {:aiemmin_hankittu_ammat_tutkinnon_osa_id ooato-id
-      :osaamisen_osoittaminen_id (:id n)}))
+    (db-ops/insert-one!
+      :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
+      {:aiemmin_hankittu_ammat_tutkinnon_osa_id ooato-id
+       :osaamisen_osoittaminen_id (:id n)}))
   ([ooato-id n conn]
-   (db-ops/insert-one!
-     :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
-     {:aiemmin_hankittu_ammat_tutkinnon_osa_id ooato-id
-      :osaamisen_osoittaminen_id (:id n)}
-     conn)))
+    (db-ops/insert-one!
+      :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
+      {:aiemmin_hankittu_ammat_tutkinnon_osa_id ooato-id
+       :osaamisen_osoittaminen_id (:id n)}
+      conn)))
 
 (defn insert-aiemmin-hankittu-ammat-tutkinnon-osa!
   "Lisää aiemmin hankitun ammatillisen tutkinnon osa"
   ([m]
-   (db-ops/insert-one!
-     :aiemmin_hankitut_ammat_tutkinnon_osat
-     (h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql m)))
+    (db-ops/insert-one!
+      :aiemmin_hankitut_ammat_tutkinnon_osat
+      (h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql m)))
   ([m conn]
-   (db-ops/insert-one!
-     :aiemmin_hankitut_ammat_tutkinnon_osat
-     (h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql m)
-     conn)))
+    (db-ops/insert-one!
+      :aiemmin_hankitut_ammat_tutkinnon_osat
+      (h/aiemmin-hankittu-ammat-tutkinnon-osa-to-sql m)
+      conn)))
 
 (defn delete-aiemmin-hankitun-ammat-tutkinnon-osan-naytto-by-id!
   "Poista aiemmin hankitun ammatillisen tutkinnon osan näyttö"

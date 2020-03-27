@@ -47,25 +47,25 @@
 
 (defn- insert!
   ([t v]
-   (if (seq v)
-     (jdbc/insert! (get-db-connection) t v)
-     (insert-empty! t)))
+    (if (seq v)
+      (jdbc/insert! (get-db-connection) t v)
+      (insert-empty! t)))
   ([t v db-conn]
-   (if (seq v)
-     (jdbc/insert! db-conn t v)
-     (insert-empty! t))))
+    (if (seq v)
+      (jdbc/insert! db-conn t v)
+      (insert-empty! t))))
 
 (defn insert-one!
   ([t v]
-   (first (insert! t v)))
+    (first (insert! t v)))
   ([t v db-conn]
-   (first (insert! t v db-conn))))
+    (first (insert! t v db-conn))))
 
 (defn insert-multi!
   ([t v]
-   (jdbc/insert-multi! (get-db-connection) t v))
+    (jdbc/insert-multi! (get-db-connection) t v))
   ([t v db-conn]
-   (jdbc/insert-multi! db-conn t v)))
+    (jdbc/insert-multi! db-conn t v)))
 
 (defn update!
   ([table values where-clause]
@@ -81,9 +81,9 @@
 
 (defn delete!
   ([table where-clause]
-   (jdbc/delete! (get-db-connection) table where-clause))
+    (jdbc/delete! (get-db-connection) table where-clause))
   ([table where-clause db-conn]
-   (jdbc/delete! db-conn table where-clause)))
+    (jdbc/delete! db-conn table where-clause)))
 
 (defn query
   ([queries opts]

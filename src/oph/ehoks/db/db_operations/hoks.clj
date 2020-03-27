@@ -257,19 +257,19 @@
 
 (defn insert-hoks!
   ([hoks]
-   (jdbc/with-db-transaction
-     [conn (db-ops/get-db-connection)]
-     (insert-hoks! hoks conn)))
+    (jdbc/with-db-transaction
+      [conn (db-ops/get-db-connection)]
+      (insert-hoks! hoks conn)))
   ([hoks conn]
-   (when
+    (when
      (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
                             (:opiskeluoikeus-oid hoks)]))
-     (throw (ex-info
-              "HOKS with given opiskeluoikeus already exists"
-              {:error :duplicate})))
-   (let [eid (generate-unique-eid)]
-     (first
-       (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid)))))))
+      (throw (ex-info
+               "HOKS with given opiskeluoikeus already exists"
+               {:error :duplicate})))
+    (let [eid (generate-unique-eid)]
+      (first
+        (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid)))))))
 
 (defn update-hoks-by-id!
   ([id hoks]
