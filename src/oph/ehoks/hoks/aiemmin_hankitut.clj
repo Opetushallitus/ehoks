@@ -1,6 +1,8 @@
 (ns oph.ehoks.hoks.aiemmin-hankitut
   (:require [oph.ehoks.db.postgresql.aiemmin-hankitut :as db]
-            [oph.ehoks.hoks.common :as c]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.hoks.common :as c]
+            [clojure.java.jdbc :as jdbc]))
 
 (defn get-ahato-tarkentavat-tiedot-naytto [id]
   (mapv
@@ -117,111 +119,182 @@
     #(dissoc (set-ahyto-values %) :id :uuid)
     (db/select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
 
-(defn save-ahpto-tarkentavat-tiedot-naytto! [ahpto-id c]
-  (mapv
-    #(let [n (c/save-osaamisen-osoittaminen! %)]
-       (db/insert-ahpto-osaamisen-osoittaminen! ahpto-id (:id n))
-       n)
-    c))
+(defn save-ahpto-tarkentavat-tiedot-naytto!
+  ([ahpto-id c]
+  (jdbc/with-db-transaction
+    [conn (db-ops/get-db-connection)]
+    (save-ahpto-tarkentavat-tiedot-naytto! ahpto-id c conn)))
+  ([ahpto-id c conn]
+   (mapv
+     #(let [n (c/save-osaamisen-osoittaminen! % conn)]
+        (db/insert-ahpto-osaamisen-osoittaminen! ahpto-id (:id n) conn)
+        n)
+     c)))
 
-(defn save-tta-aiemmin-hankitun-osaamisen-arvioijat! [tta-id new-arvioijat]
-  (mapv
-    #(db/insert-todennettu-arviointi-arvioijat! tta-id (:id %))
-    (db/insert-koulutuksen-jarjestaja-osaamisen-arvioijat! new-arvioijat)))
+(defn save-tta-aiemmin-hankitun-osaamisen-arvioijat!
+  ([tta-id new-arvioijat]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (save-tta-aiemmin-hankitun-osaamisen-arvioijat!
+       tta-id new-arvioijat conn)))
+  ([tta-id new-arvioijat conn]
+   (mapv
+     #(db/insert-todennettu-arviointi-arvioijat! tta-id (:id %) conn)
+     (db/insert-koulutuksen-jarjestaja-osaamisen-arvioijat!
+       new-arvioijat conn))))
 
-(defn save-ahyto-tarkentavat-tiedot-naytto! [ahyto-id new-values]
-  (mapv
-    #(let [n (c/save-osaamisen-osoittaminen! %)]
-       (db/insert-ahyto-osaamisen-osoittaminen! ahyto-id n)
-       n)
-    new-values))
+(defn save-ahyto-tarkentavat-tiedot-naytto!
+  ([ahyto-id new-values]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (save-ahyto-tarkentavat-tiedot-naytto! ahyto-id new-values conn)))
+  ([ahyto-id new-values conn]
+   (mapv
+     #(let [n (c/save-osaamisen-osoittaminen! % conn)]
+        (db/insert-ahyto-osaamisen-osoittaminen! ahyto-id n conn)
+        n)
+     new-values)))
 
-(defn save-tarkentavat-tiedot-osaamisen-arvioija! [new-tta]
-  (let [tta-db (db/insert-todennettu-arviointi-lisatiedot! new-tta)]
-    (save-tta-aiemmin-hankitun-osaamisen-arvioijat!
-      (:id tta-db) (:aiemmin-hankitun-osaamisen-arvioijat new-tta))
-    tta-db))
+(defn save-tarkentavat-tiedot-osaamisen-arvioija!
+  ([new-tta]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (save-tarkentavat-tiedot-osaamisen-arvioija! new-tta conn)))
+  ([new-tta conn]
+   (let [tta-db (db/insert-todennettu-arviointi-lisatiedot! new-tta conn)]
+     (save-tta-aiemmin-hankitun-osaamisen-arvioijat!
+       (:id tta-db) (:aiemmin-hankitun-osaamisen-arvioijat new-tta) conn)
+     tta-db)))
 
-(defn- save-ahyto-osa-alue! [ahyto-id osa-alue]
-  (let [arvioija (:tarkentavat-tiedot-osaamisen-arvioija osa-alue)
-        stored-osa-alue
-        (db/insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue!
-          (assoc osa-alue
-                 :aiemmin-hankittu-yhteinen-tutkinnon-osa-id ahyto-id
+(defn- save-ahyto-osa-alue!
+  ([ahyto-id osa-alue]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (save-ahyto-osa-alue! ahyto-id osa-alue conn)))
+  ([ahyto-id osa-alue conn]
+   (let [arvioija (:tarkentavat-tiedot-osaamisen-arvioija osa-alue)
+         stored-osa-alue
+         (db/insert-aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue!
+           (assoc osa-alue
+             :aiemmin-hankittu-yhteinen-tutkinnon-osa-id ahyto-id
+             :tarkentavat-tiedot-osaamisen-arvioija-id
+             (:id (save-tarkentavat-tiedot-osaamisen-arvioija! arvioija conn)))
+           conn)]
+     (mapv
+       (fn [naytto]
+         (let [stored-naytto (c/save-osaamisen-osoittaminen! naytto conn)]
+           (db/insert-ahyto-osa-alue-osaamisen-osoittaminen!
+             (:id stored-osa-alue) (:id stored-naytto) conn)))
+       (:tarkentavat-tiedot-naytto osa-alue)))))
+
+(defn save-ahyto-osa-alueet!
+  ([ahyto-id osa-alueet]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (save-ahyto-osa-alueet! ahyto-id osa-alueet conn)))
+  ([ahyto-id osa-alueet conn]
+   (mapv
+     #(save-ahyto-osa-alue! ahyto-id % conn)
+     osa-alueet)))
+
+(defn save-aiemmin-hankittu-yhteinen-tutkinnon-osa!
+  ([hoks-id ahyto]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (save-aiemmin-hankittu-yhteinen-tutkinnon-osa! hoks-id ahyto conn)))
+  ([hoks-id ahyto conn]
+   (let [tta (:tarkentavat-tiedot-osaamisen-arvioija ahyto)
+         yto (db/insert-aiemmin-hankittu-yhteinen-tutkinnon-osa!
+               (assoc ahyto
+                 :hoks-id hoks-id
                  :tarkentavat-tiedot-osaamisen-arvioija-id
-                 (:id (save-tarkentavat-tiedot-osaamisen-arvioija! arvioija))))]
-    (mapv
-      (fn [naytto]
-        (let [stored-naytto (c/save-osaamisen-osoittaminen! naytto)]
-          (db/insert-ahyto-osa-alue-osaamisen-osoittaminen!
-            (:id stored-osa-alue) (:id stored-naytto))))
-      (:tarkentavat-tiedot-naytto osa-alue))))
+                 (:id (save-tarkentavat-tiedot-osaamisen-arvioija! tta conn)))
+               conn)]
+     (save-ahyto-tarkentavat-tiedot-naytto! (:id yto)
+                                            (:tarkentavat-tiedot-naytto ahyto)
+                                            conn)
+     (save-ahyto-osa-alueet! (:id yto) (:osa-alueet ahyto) conn)
+     yto)))
 
-(defn save-ahyto-osa-alueet! [ahyto-id osa-alueet]
-  (mapv
-    #(save-ahyto-osa-alue! ahyto-id %)
-    osa-alueet))
+(defn save-aiemmin-hankittu-paikallinen-tutkinnon-osa!
+  ([hoks-id ahpto]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (save-aiemmin-hankittu-paikallinen-tutkinnon-osa! hoks-id ahpto conn)))
+  ([hoks-id ahpto conn]
+   (let [tta (:tarkentavat-tiedot-osaamisen-arvioija ahpto)
+         ahpto-db (db/insert-aiemmin-hankittu-paikallinen-tutkinnon-osa!
+                    (assoc ahpto
+                      :hoks-id hoks-id
+                      :tarkentavat-tiedot-osaamisen-arvioija-id
+                      (:id (save-tarkentavat-tiedot-osaamisen-arvioija!
+                             tta conn)))
+                    conn)]
+     (assoc
+       ahpto-db
+       :tarkentavat-tiedot-naytto
+       (save-ahpto-tarkentavat-tiedot-naytto!
+         (:id ahpto-db) (:tarkentavat-tiedot-naytto ahpto) conn)))))
 
-(defn save-aiemmin-hankittu-yhteinen-tutkinnon-osa! [hoks-id ahyto]
-  (let [tta (:tarkentavat-tiedot-osaamisen-arvioija ahyto)
-        yto (db/insert-aiemmin-hankittu-yhteinen-tutkinnon-osa!
-              (assoc ahyto
-                     :hoks-id hoks-id
-                     :tarkentavat-tiedot-osaamisen-arvioija-id
-                     (:id (save-tarkentavat-tiedot-osaamisen-arvioija! tta))))]
-    (save-ahyto-tarkentavat-tiedot-naytto! (:id yto)
-                                           (:tarkentavat-tiedot-naytto ahyto))
-    (save-ahyto-osa-alueet! (:id yto) (:osa-alueet ahyto))
-    yto))
+(defn save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
+  ([hoks-id c]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (save-aiemmin-hankitut-paikalliset-tutkinnon-osat! hoks-id c conn)))
+  ([hoks-id c conn]
+   (mapv
+     #(save-aiemmin-hankittu-paikallinen-tutkinnon-osa! hoks-id % conn) c)))
 
-(defn save-aiemmin-hankittu-paikallinen-tutkinnon-osa! [hoks-id ahpto]
-  (let [tta (:tarkentavat-tiedot-osaamisen-arvioija ahpto)
-        ahpto-db (db/insert-aiemmin-hankittu-paikallinen-tutkinnon-osa!
-                   (assoc ahpto
-                          :hoks-id hoks-id
-                          :tarkentavat-tiedot-osaamisen-arvioija-id
-                          (:id (save-tarkentavat-tiedot-osaamisen-arvioija!
-                                 tta))))]
-    (assoc
-      ahpto-db
-      :tarkentavat-tiedot-naytto
-      (save-ahpto-tarkentavat-tiedot-naytto!
-        (:id ahpto-db) (:tarkentavat-tiedot-naytto ahpto)))))
+(defn save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
+  ([hoks-id c]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (save-aiemmin-hankitut-yhteiset-tutkinnon-osat! hoks-id c conn)))
+  ([hoks-id c conn]
+   (mapv
+     #(save-aiemmin-hankittu-yhteinen-tutkinnon-osa! hoks-id % conn)
+     c)))
 
-(defn save-aiemmin-hankitut-paikalliset-tutkinnon-osat! [hoks-id c]
-  (mapv
-    #(save-aiemmin-hankittu-paikallinen-tutkinnon-osa! hoks-id %)
-    c))
+(defn save-ahato-tarkentavat-tiedot-naytto!
+  ([ahato-id new-values]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (save-ahato-tarkentavat-tiedot-naytto! ahato-id new-values conn)))
+  ([ahato-id new-values conn]
+   (mapv
+     #(let [n (c/save-osaamisen-osoittaminen! %)]
+        (db/insert-aiemmin-hankitun-ammat-tutkinnon-osan-naytto!
+          ahato-id n conn)
+        n)
+     new-values)))
 
-(defn save-aiemmin-hankitut-yhteiset-tutkinnon-osat! [hoks-id c]
-  (mapv
-    #(save-aiemmin-hankittu-yhteinen-tutkinnon-osa! hoks-id %)
-    c))
+(defn save-aiemmin-hankittu-ammat-tutkinnon-osa!
+  ([hoks-id ahato]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (save-aiemmin-hankittu-ammat-tutkinnon-osa! hoks-id ahato conn)))
+  ([hoks-id ahato conn]
+   (let [ahato-db (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
+                    (assoc ahato
+                      :hoks-id hoks-id
+                      :tarkentavat-tiedot-osaamisen-arvioija-id
+                      (:id (save-tarkentavat-tiedot-osaamisen-arvioija!
+                             (:tarkentavat-tiedot-osaamisen-arvioija
+                               ahato))))
+                    conn)]
+     (assoc
+       ahato-db
+       :tarkentavat-tiedot-naytto
+       (save-ahato-tarkentavat-tiedot-naytto!
+         (:id ahato-db) (:tarkentavat-tiedot-naytto ahato) conn)))))
 
-(defn save-ahato-tarkentavat-tiedot-naytto! [ahato-id new-values]
-  (mapv
-    #(let [n (c/save-osaamisen-osoittaminen! %)]
-       (db/insert-aiemmin-hankitun-ammat-tutkinnon-osan-naytto!
-         ahato-id n)
-       n)
-    new-values))
-
-(defn save-aiemmin-hankittu-ammat-tutkinnon-osa! [hoks-id ahato]
-  (let [ahato-db (db/insert-aiemmin-hankittu-ammat-tutkinnon-osa!
-                   (assoc ahato
-                          :hoks-id hoks-id
-                          :tarkentavat-tiedot-osaamisen-arvioija-id
-                          (:id (save-tarkentavat-tiedot-osaamisen-arvioija!
-                                 (:tarkentavat-tiedot-osaamisen-arvioija
-                                   ahato)))))]
-    (assoc
-      ahato-db
-      :tarkentavat-tiedot-naytto
-      (save-ahato-tarkentavat-tiedot-naytto!
-        (:id ahato-db) (:tarkentavat-tiedot-naytto ahato)))))
-
-(defn save-aiemmin-hankitut-ammat-tutkinnon-osat! [hoks-id c]
-  (mapv #(save-aiemmin-hankittu-ammat-tutkinnon-osa! hoks-id %) c))
+(defn save-aiemmin-hankitut-ammat-tutkinnon-osat!
+  ([hoks-id c]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (save-aiemmin-hankitut-ammat-tutkinnon-osat! hoks-id c conn)))
+  ([hoks-id c conn]
+   (mapv #(save-aiemmin-hankittu-ammat-tutkinnon-osa! hoks-id % conn) c)))
 
 (defn replace-ahato-tarkentavat-tiedot-naytto! [ahato-id new-values]
   (db/delete-aiemmin-hankitun-ammat-tutkinnon-osan-naytto-by-id! ahato-id)
