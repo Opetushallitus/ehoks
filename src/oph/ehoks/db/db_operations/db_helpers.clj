@@ -45,21 +45,33 @@
     (format
       "INSERT INTO %s DEFAULT VALUES" (name t))))
 
-(defn- insert! [t v]
-  (if (seq v)
-    (jdbc/insert! (get-db-connection) t v)
-    (insert-empty! t)))
+(defn- insert!
+  ([t v]
+   (if (seq v)
+     (jdbc/insert! (get-db-connection) t v)
+     (insert-empty! t)))
+  ([t v db-conn]
+   (if (seq v)
+     (jdbc/insert! db-conn t v)
+     (insert-empty! t))))
 
-(defn insert-one! [t v] (first (insert! t v)))
+(defn insert-one!
+  ([t v]
+   (first (insert! t v)))
+  ([t v db-conn]
+   (first (insert! t v db-conn))))
 
-(defn insert-multi! [t v]
-  (jdbc/insert-multi! (get-db-connection) t v))
+(defn insert-multi!
+  ([t v]
+   (jdbc/insert-multi! (get-db-connection) t v))
+  ([t v db-conn]
+   (jdbc/insert-multi! db-conn t v)))
 
 (defn update!
   ([table values where-clause]
     (jdbc/update! (get-db-connection) table values where-clause))
-  ([table values where-clause db]
-    (jdbc/update! db table values where-clause)))
+  ([table values where-clause db-conn]
+    (jdbc/update! db-conn table values where-clause)))
 
 (defn shallow-delete!
   ([table where-clause]
@@ -68,8 +80,10 @@
     (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
 
 (defn delete!
-  [table where-clause]
-  (jdbc/delete! (get-db-connection) table where-clause))
+  ([table where-clause]
+   (jdbc/delete! (get-db-connection) table where-clause))
+  ([table where-clause db-conn]
+   (jdbc/delete! db-conn table where-clause)))
 
 (defn query
   ([queries opts]
