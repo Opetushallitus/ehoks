@@ -7,5 +7,4 @@
  :db-username "ehoks_user"
  :db-password "ehoks"
  :opintopolku-host "localhost:3001"
- :audit? false
- :enforce-opiskeluoikeus-match false}
+ :audit? false}
