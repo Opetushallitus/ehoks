@@ -257,7 +257,7 @@
 (defn oppija-opiskeluoikeus-match?
   "Check that opiskeluoikeus belongs to oppija"
   [oppija-oid opiskeluoikeus-oid]
-  (if (:enforce-opiskeluoikeus-match config)
+  (if (:enforce-opiskeluoikeus-match? config)
     (let [opiskeluoikeudet (k/get-oppija-opiskeluoikeudet oppija-oid)]
       (boolean
         (seq
