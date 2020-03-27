@@ -20,4 +20,4 @@
  :arvo-username "{{ehoks_arvo_username}}"
  :arvo-password "{{ehoks_arvo_password}}"
  :arvo-url "{{ehoks_arvo_url}}"
- :enforce-opiskeluoikeus-match "{{ehoks_enforce_opiskeluoikeus_match}}"}
+ :enforce-opiskeluoikeus-match {{ehoks_enforce_opiskeluoikeus_match}}}
