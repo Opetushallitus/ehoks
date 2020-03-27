@@ -38,33 +38,35 @@
   (get-hoks-values (db-hoks/select-hoks-by-id id)))
 
 (defn save-hoks! [h]
-  (let [saved-hoks (db-hoks/insert-hoks! h)]
-    (when (:osaamisen-hankkimisen-tarve h)
-      (sqs/send-message (sqs/build-hoks-hyvaksytty-msg
-                          (:id saved-hoks) h)))
-    (assoc
-      saved-hoks
-      :aiemmin-hankitut-ammat-tutkinnon-osat
-      (ah/save-aiemmin-hankitut-ammat-tutkinnon-osat!
-        (:id saved-hoks) (:aiemmin-hankitut-ammat-tutkinnon-osat h))
-      :aiemmin-hankitut-paikalliset-tutkinnon-osat
-      (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
-        (:id saved-hoks) (:aiemmin-hankitut-paikalliset-tutkinnon-osat h))
-      :hankittavat-paikalliset-tutkinnon-osat
-      (ha/save-hankittavat-paikalliset-tutkinnon-osat!
-        (:id saved-hoks) (:hankittavat-paikalliset-tutkinnon-osat h))
-      :aiemmin-hankitut-yhteiset-tutkinnon-osat
-      (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
-        (:id saved-hoks) (:aiemmin-hankitut-yhteiset-tutkinnon-osat h))
-      :hankittavat-ammat-tutkinnon-osat
-      (ha/save-hankittavat-ammat-tutkinnon-osat!
-        (:id saved-hoks) (:hankittavat-ammat-tutkinnon-osat h))
-      :opiskeluvalmiuksia-tukevat-opinnot
-      (ot/save-opiskeluvalmiuksia-tukevat-opinnot!
-        (:id saved-hoks) (:opiskeluvalmiuksia-tukevat-opinnot h))
-      :hankittavat-yhteiset-tutkinnon-osat
-      (ha/save-hankittavat-yhteiset-tutkinnon-osat!
-        (:id saved-hoks) (:hankittavat-yhteiset-tutkinnon-osat h)))))
+  (jdbc/with-db-transaction
+    [conn (db-ops/get-db-connection)]
+    (let [saved-hoks (db-hoks/insert-hoks! h conn)]
+      (when (:osaamisen-hankkimisen-tarve h)
+        (sqs/send-message (sqs/build-hoks-hyvaksytty-msg
+                            (:id saved-hoks) h)))
+      (assoc
+        saved-hoks
+        :aiemmin-hankitut-ammat-tutkinnon-osat
+        (ah/save-aiemmin-hankitut-ammat-tutkinnon-osat!
+          (:id saved-hoks) (:aiemmin-hankitut-ammat-tutkinnon-osat h) conn)
+        :aiemmin-hankitut-paikalliset-tutkinnon-osat
+        (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
+          (:id saved-hoks) (:aiemmin-hankitut-paikalliset-tutkinnon-osat h) conn)
+        :hankittavat-paikalliset-tutkinnon-osat
+        (ha/save-hankittavat-paikalliset-tutkinnon-osat!
+          (:id saved-hoks) (:hankittavat-paikalliset-tutkinnon-osat h) conn)
+        :aiemmin-hankitut-yhteiset-tutkinnon-osat
+        (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
+          (:id saved-hoks) (:aiemmin-hankitut-yhteiset-tutkinnon-osat h) conn)
+        :hankittavat-ammat-tutkinnon-osat
+        (ha/save-hankittavat-ammat-tutkinnon-osat!
+          (:id saved-hoks) (:hankittavat-ammat-tutkinnon-osat h) conn)
+        :opiskeluvalmiuksia-tukevat-opinnot
+        (ot/save-opiskeluvalmiuksia-tukevat-opinnot!
+          (:id saved-hoks) (:opiskeluvalmiuksia-tukevat-opinnot h) conn)
+        :hankittavat-yhteiset-tutkinnon-osat
+        (ha/save-hankittavat-yhteiset-tutkinnon-osat!
+          (:id saved-hoks) (:hankittavat-yhteiset-tutkinnon-osat h) conn)))))
 
 (defn- merge-not-given-hoks-values [new-hoks-values]
   (let [empty-top-level-hoks {:versio nil
@@ -169,8 +171,9 @@
                                     new-values)))))))
 
 (defn update-hoks! [hoks-id new-values]
-  (let [old-opiskeluoikeus-oid (:opiskeluoikeus-oid (get-hoks-by-id hoks-id))
-        old-oppija-oid (:oppija-oid (get-hoks-by-id hoks-id))
+  (let [hoks (get-hoks-by-id hoks-id)
+        old-opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+        old-oppija-oid (:oppija-oid hoks)
         new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
         new-oppija-oid (:oppija-oid new-values)]
     (cond

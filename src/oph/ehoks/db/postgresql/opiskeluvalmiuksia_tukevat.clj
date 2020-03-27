@@ -28,10 +28,15 @@
 
 (defn insert-opiskeluvalmiuksia-tukevat-opinnot!
   "Lisää opiskeluvalmiuksia tukevat opinnot"
-  [c]
-  (db-ops/insert-multi!
-    :opiskeluvalmiuksia_tukevat_opinnot
-    (mapv db-ops/to-sql c)))
+  ([c]
+   (db-ops/insert-multi!
+     :opiskeluvalmiuksia_tukevat_opinnot
+     (mapv db-ops/to-sql c)))
+  ([c conn]
+   (db-ops/insert-multi!
+     :opiskeluvalmiuksia_tukevat_opinnot
+     (mapv db-ops/to-sql c)
+     conn)))
 
 (defn update-opiskeluvalmiuksia-tukevat-opinnot-by-id!
   "Päivitä opiskeluvalmiuksia tukevat opinnot"
