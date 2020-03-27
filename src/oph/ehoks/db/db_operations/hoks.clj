@@ -255,18 +255,21 @@
       (recur (str (java.util.UUID/randomUUID)))
       eid)))
 
-(defn insert-hoks! [hoks]
-  (jdbc/with-db-transaction
-    [conn (db-ops/get-db-connection)]
-    (when
+(defn insert-hoks!
+  ([hoks]
+   (jdbc/with-db-transaction
+     [conn (db-ops/get-db-connection)]
+     (insert-hoks! hoks conn)))
+  ([hoks conn]
+   (when
      (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
                             (:opiskeluoikeus-oid hoks)]))
-      (throw (ex-info
-               "HOKS with given opiskeluoikeus already exists"
-               {:error :duplicate})))
-    (let [eid (generate-unique-eid)]
-      (first
-        (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid)))))))
+     (throw (ex-info
+              "HOKS with given opiskeluoikeus already exists"
+              {:error :duplicate})))
+   (let [eid (generate-unique-eid)]
+     (first
+       (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid)))))))
 
 (defn update-hoks-by-id!
   ([id hoks]
