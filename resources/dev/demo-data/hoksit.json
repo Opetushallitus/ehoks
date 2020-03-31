@@ -16,7 +16,21 @@
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_100703",
       "tarkentavat-tiedot-naytto": [],
       "tarkentavat-tiedot-osaamisen-arvioija": {
-        "aiemmin-hankitun-osaamisen-arvioijat": []
+        "lahetetty-arvioitavaksi": "2020-04-01",
+        "aiemmin-hankitun-osaamisen-arvioijat": [
+          {
+            "nimi": "Antti Aiemmanarvioija",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54424444"
+            }
+          },
+          {
+            "nimi": "Taisto Toisen Aiemmanarvioija",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54424444"
+            }
+          }
+        ]
       }
     }
   ],
