@@ -263,8 +263,8 @@
 
 (defn- check-oids-match [hoks]
   (if-not
-    (oppijaindex/oppija-opiskeluoikeus-match?
-      (:oppija-oid hoks) (:opiskeluoikeus-oid hoks))
+   (oppijaindex/oppija-opiskeluoikeus-match?
+     (:oppija-oid hoks) (:opiskeluoikeus-oid hoks))
     (assoc
       (response/bad-request!
         {:error "Opiskeluoikeus does not match any held by oppija"})
