@@ -145,17 +145,17 @@
 (defn insert-tyopaikalla-jarjestettava-koulutus!
   "Lisää työpaikalla järjestettävä koulutus"
   ([o]
+    (insert-tyopaikalla-jarjestettava-koulutus! o (db-ops/get-db-connection)))
+  ([o db-conn]
     (jdbc/with-db-transaction
-      [conn (db-ops/get-db-connection)]
-      (insert-tyopaikalla-jarjestettava-koulutus! o conn)))
-  ([o conn]
-    (when (some? o)
-      (let [o-db (db-ops/insert-one!
-                   :tyopaikalla_jarjestettavat_koulutukset
-                   (h/tyopaikalla-jarjestettava-koulutus-to-sql o)
-                   conn)]
-        (insert-tho-tyotehtavat! o-db (:keskeiset-tyotehtavat o) conn)
-        o-db))))
+      [conn db-conn]
+      (when (some? o)
+        (let [o-db (db-ops/insert-one!
+                     :tyopaikalla_jarjestettavat_koulutukset
+                     (h/tyopaikalla-jarjestettava-koulutus-to-sql o)
+                     conn)]
+          (insert-tho-tyotehtavat! o-db (:keskeiset-tyotehtavat o) conn)
+          o-db)))))
 
 (defn insert-osaamisen-hankkimistapa!
   "Lisää osaamisen hankkimistapa"
@@ -187,7 +187,7 @@
         c)
       conn)))
 
-(defn insert-hankittavan-paikallisen-tutkinnon-osan-osaamisen-hankkimistapa!
+(defn insert-hpto-osaamisen-hankkimistapa!
   "Lisää hankittavan paikallisen tutkinnon osan osaamisen hankkimistapa"
   ([ppto oh]
     (db-ops/insert-one!

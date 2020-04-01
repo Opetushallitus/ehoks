@@ -46,23 +46,23 @@
 
 (defn insert-oo-koulutuksen-jarjestaja-osaamisen-arvioija!
   ([hon c]
+    (insert-oo-koulutuksen-jarjestaja-osaamisen-arvioija!
+      hon c (db-ops/get-db-connection)))
+  ([hon c db-conn]
     (jdbc/with-db-transaction
-      [conn (db-ops/get-db-connection)]
-      (insert-oo-koulutuksen-jarjestaja-osaamisen-arvioija!
-        hon c conn)))
-  ([hon c conn]
-    (let [kja-col (db-ops/insert-multi!
-                    :koulutuksen_jarjestaja_osaamisen_arvioijat
-                    (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c)
-                    conn)]
-      (db-ops/insert-multi!
-        :osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija
-        (map #(hash-map
-                :osaamisen_osoittaminen_id (:id hon)
-                :koulutuksen_jarjestaja_osaamisen_arvioija_id (:id %))
-             kja-col)
-        conn)
-      kja-col)))
+      [conn db-conn]
+      (let [kja-col (db-ops/insert-multi!
+                      :koulutuksen_jarjestaja_osaamisen_arvioijat
+                      (map h/koulutuksen-jarjestaja-osaamisen-arvioija-to-sql c)
+                      conn)]
+        (db-ops/insert-multi!
+          :osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija
+          (map #(hash-map
+                  :osaamisen_osoittaminen_id (:id hon)
+                  :koulutuksen_jarjestaja_osaamisen_arvioija_id (:id %))
+               kja-col)
+          conn)
+        kja-col))))
 
 (defn select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id
   "Hankitun osaamisen näytön koulutuksen järjestäjän arvioijat"
