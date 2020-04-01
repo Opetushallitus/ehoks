@@ -275,9 +275,9 @@
   ([id hoks]
     (db-ops/update! :hoksit (hoks-to-sql hoks)
                     ["id = ? AND deleted_at IS NULL" id]))
-  ([id hoks db]
+  ([id hoks db-conn]
     (db-ops/update! :hoksit (hoks-to-sql hoks)
-                    ["id = ? AND deleted_at IS NULL" id] db)))
+                    ["id = ? AND deleted_at IS NULL" id] db-conn)))
 
 (defn select-hoks-oppijat-without-index []
   (db-ops/query

@@ -169,9 +169,9 @@
       [conn db-conn]
       (mapv #(save-hpto-osaamisen-hankkimistapa! hpto % conn) c))))
 
-(defn replace-hpto-osaamisen-hankkimistavat! [hpto c]
-  (db/delete-osaamisen-hankkimistavat-by-hpto-id! (:id hpto))
-  (save-hpto-osaamisen-hankkimistavat! hpto c))
+(defn- replace-hpto-osaamisen-hankkimistavat! [hpto c db-conn]
+  (db/delete-osaamisen-hankkimistavat-by-hpto-id! (:id hpto) db-conn)
+  (save-hpto-osaamisen-hankkimistavat! hpto c db-conn))
 
 (defn save-hpto-osaamisen-osoittaminen!
   ([hpto n]
@@ -193,21 +193,24 @@
         #(save-hpto-osaamisen-osoittaminen! ppto % conn)
         c))))
 
-(defn replace-hpto-osaamisen-osoittamiset! [hpto c]
-  (db/delete-osaamisen-osoittamiset-by-ppto-id! (:id hpto))
-  (save-hpto-osaamisen-osoittamiset! hpto c))
+(defn- replace-hpto-osaamisen-osoittamiset! [hpto c db-conn]
+  (db/delete-osaamisen-osoittamiset-by-ppto-id! (:id hpto) db-conn)
+  (save-hpto-osaamisen-osoittamiset! hpto c db-conn))
 
 (defn update-hankittava-paikallinen-tutkinnon-osa! [hpto-db values]
-  (db/update-hankittava-paikallinen-tutkinnon-osa-by-id! (:id hpto-db) values)
-  (cond-> hpto-db
-    (:osaamisen-hankkimistavat values)
-    (assoc :osaamisen-hankkimistavat
-           (replace-hpto-osaamisen-hankkimistavat!
-             hpto-db (:osaamisen-hankkimistavat values)))
-    (:osaamisen-osoittaminen values)
-    (assoc :osaamisen-osoittaminen
-           (replace-hpto-osaamisen-osoittamiset!
-             hpto-db (:osaamisen-osoittaminen values)))))
+  (jdbc/with-db-transaction
+    [db-conn (db-ops/get-db-connection)]
+    (db/update-hankittava-paikallinen-tutkinnon-osa-by-id!
+      (:id hpto-db) values db-conn)
+    (cond-> hpto-db
+      (:osaamisen-hankkimistavat values)
+      (assoc :osaamisen-hankkimistavat
+             (replace-hpto-osaamisen-hankkimistavat!
+               hpto-db (:osaamisen-hankkimistavat values) db-conn))
+      (:osaamisen-osoittaminen values)
+      (assoc :osaamisen-osoittaminen
+             (replace-hpto-osaamisen-osoittamiset!
+               hpto-db (:osaamisen-osoittaminen values) db-conn)))))
 
 (defn save-yto-osa-alueen-osaamisen-osoittaminen!
   ([yto n]
@@ -259,9 +262,9 @@
           (:id hato) (:id o-db) conn)
         o-db))))
 
-(defn save-hato-osaamisen-hankkimistavat! [hato-db c]
+(defn save-hato-osaamisen-hankkimistavat! [hato-db c db-conn]
   (mapv
-    #(save-hato-osaamisen-hankkimistapa! hato-db %)
+    #(save-hato-osaamisen-hankkimistapa! hato-db % db-conn)
     c))
 
 (defn save-hato-osaamisen-osoittaminen!
@@ -275,9 +278,9 @@
         (db/insert-hato-osaamisen-osoittaminen! (:id hato) (:id naytto) conn)
         naytto))))
 
-(defn save-hato-osaamisen-osoittamiset! [hato-db c]
+(defn- save-hato-osaamisen-osoittamiset! [hato-db c db-conn]
   (mapv
-    #(save-hato-osaamisen-osoittaminen! hato-db %)
+    #(save-hato-osaamisen-osoittaminen! hato-db % db-conn)
     c))
 
 (defn save-hankittava-ammat-tutkinnon-osa!
@@ -309,25 +312,28 @@
       [conn db-conn]
       (mapv #(save-hankittava-ammat-tutkinnon-osa! hoks-id % conn) c))))
 
-(defn replace-hato-osaamisen-hankkimistavat! [hato c]
-  (db/delete-osaamisen-hankkimistavat-by-hato-id! (:id hato))
-  (save-hato-osaamisen-hankkimistavat! hato c))
+(defn- replace-hato-osaamisen-hankkimistavat! [hato c db-conn]
+  (db/delete-osaamisen-hankkimistavat-by-hato-id! (:id hato) db-conn)
+  (save-hato-osaamisen-hankkimistavat! hato c db-conn))
 
-(defn replace-hato-osaamisen-osoittamiset! [hato c]
-  (db/delete-osaamisen-osoittamiset-by-pato-id! (:id hato))
-  (save-hato-osaamisen-osoittamiset! hato c))
+(defn- replace-hato-osaamisen-osoittamiset! [hato c db-conn]
+  (db/delete-osaamisen-osoittamiset-by-pato-id! (:id hato) db-conn)
+  (save-hato-osaamisen-osoittamiset! hato c db-conn))
 
 (defn update-hankittava-ammat-tutkinnon-osa! [hato-db values]
-  (db/update-hankittava-ammat-tutkinnon-osa-by-id! (:id hato-db) values)
-  (cond-> hato-db
-    (:osaamisen-hankkimistavat values)
-    (assoc :osaamisen-hankkimistavat
-           (replace-hato-osaamisen-hankkimistavat!
-             hato-db (:osaamisen-hankkimistavat values)))
-    (:osaamisen-osoittaminen values)
-    (assoc :osaamisen-osoittaminen
-           (replace-hato-osaamisen-osoittamiset!
-             hato-db (:osaamisen-osoittaminen values)))))
+  (jdbc/with-db-transaction
+    [db-conn (db-ops/get-db-connection)]
+    (db/update-hankittava-ammat-tutkinnon-osa-by-id!
+      (:id hato-db) values db-conn)
+    (cond-> hato-db
+      (:osaamisen-hankkimistavat values)
+      (assoc :osaamisen-hankkimistavat
+             (replace-hato-osaamisen-hankkimistavat!
+               hato-db (:osaamisen-hankkimistavat values) db-conn))
+      (:osaamisen-osoittaminen values)
+      (assoc :osaamisen-osoittaminen
+             (replace-hato-osaamisen-osoittamiset!
+               hato-db (:osaamisen-osoittaminen values) db-conn)))))
 
 (defn save-hyto-osa-alue-osaamisen-hankkimistapa!
   ([hyto-osa-alue oh]
@@ -392,13 +398,16 @@
         #(save-hankittava-yhteinen-tutkinnon-osa! hoks-id % conn)
         c))))
 
-(defn replace-hyto-osa-alueet! [hyto-id new-oa-values]
-  (db/delete-hyto-osa-alueet! hyto-id)
-  (save-hyto-osa-alueet! hyto-id new-oa-values))
+(defn- replace-hyto-osa-alueet! [hyto-id new-oa-values db-conn]
+  (db/delete-hyto-osa-alueet! hyto-id db-conn)
+  (save-hyto-osa-alueet! hyto-id new-oa-values db-conn))
 
 (defn update-hankittava-yhteinen-tutkinnon-osa! [hyto-id new-values]
-  (let [bare-hyto (dissoc new-values :osa-alueet)]
-    (when (not-empty bare-hyto)
-      (db/update-hankittava-yhteinen-tutkinnon-osa-by-id! hyto-id new-values)))
-  (when-let [oa (:osa-alueet new-values)]
-    (replace-hyto-osa-alueet! hyto-id oa)))
+  (jdbc/with-db-transaction
+    [db-conn (db-ops/get-db-connection)]
+    (let [bare-hyto (dissoc new-values :osa-alueet)]
+      (when (not-empty bare-hyto)
+        (db/update-hankittava-yhteinen-tutkinnon-osa-by-id!
+          hyto-id new-values db-conn)))
+    (when-let [oa (:osa-alueet new-values)]
+      (replace-hyto-osa-alueet! hyto-id oa db-conn))))

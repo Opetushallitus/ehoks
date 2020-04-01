@@ -132,7 +132,7 @@
            :tyopaikalla_jarjestettava_koulutus_id (:id tho)
            :tyotehtava %)
         c)))
-  ([tho c conn]
+  ([tho c db-conn]
     (db-ops/insert-multi!
       :tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat
       (map
@@ -140,7 +140,7 @@
            :tyopaikalla_jarjestettava_koulutus_id (:id tho)
            :tyotehtava %)
         c)
-      conn)))
+      db-conn)))
 
 (defn insert-tyopaikalla-jarjestettava-koulutus!
   "Lisää työpaikalla järjestettävä koulutus"
@@ -163,11 +163,11 @@
     (db-ops/insert-one!
       :osaamisen_hankkimistavat
       (h/osaamisen-hankkimistapa-to-sql oh)))
-  ([oh conn]
+  ([oh db-conn]
     (db-ops/insert-one!
       :osaamisen_hankkimistavat
       (h/osaamisen-hankkimistapa-to-sql oh)
-      conn)))
+      db-conn)))
 
 (defn insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
   "Lisää osaamisen hankkimistavan muut oppimisympäristöt"
@@ -178,14 +178,14 @@
         #(db-ops/to-sql
            (assoc % :osaamisen-hankkimistapa-id (:id oh)))
         c)))
-  ([oh c conn]
+  ([oh c db-conn]
     (db-ops/insert-multi!
       :muut_oppimisymparistot
       (map
         #(db-ops/to-sql
            (assoc % :osaamisen-hankkimistapa-id (:id oh)))
         c)
-      conn)))
+      db-conn)))
 
 (defn insert-hpto-osaamisen-hankkimistapa!
   "Lisää hankittavan paikallisen tutkinnon osan osaamisen hankkimistapa"
@@ -194,19 +194,19 @@
       :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
       {:hankittava_paikallinen_tutkinnon_osa_id (:id ppto)
        :osaamisen_hankkimistapa_id (:id oh)}))
-  ([ppto oh conn]
+  ([ppto oh db-conn]
     (db-ops/insert-one!
       :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
       {:hankittava_paikallinen_tutkinnon_osa_id (:id ppto)
        :osaamisen_hankkimistapa_id (:id oh)}
-      conn)))
+      db-conn)))
 
 (defn delete-osaamisen-hankkimistavat-by-hpto-id!
   "Poista hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat"
-  [id]
+  [id db-conn]
   (db-ops/shallow-delete!
     :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-    ["hankittava_paikallinen_tutkinnon_osa_id = ?" id]))
+    ["hankittava_paikallinen_tutkinnon_osa_id = ?" id] db-conn))
 
 (defn insert-hpto-osaamisen-osoittaminen!
   "Lisää hankittavan paikallisen tutkinnon osan hankitun osaamisen näyttö"
@@ -215,27 +215,27 @@
       :hankittavan_paikallisen_tutkinnon_osan_naytto
       {:hankittava_paikallinen_tutkinnon_osa_id (:id ppto)
        :osaamisen_osoittaminen_id (:id h)}))
-  ([ppto h conn]
+  ([ppto h db-conn]
     (db-ops/insert-one!
       :hankittavan_paikallisen_tutkinnon_osan_naytto
       {:hankittava_paikallinen_tutkinnon_osa_id (:id ppto)
        :osaamisen_osoittaminen_id (:id h)}
-      conn)))
+      db-conn)))
 
 (defn delete-osaamisen-osoittamiset-by-ppto-id!
   "Poista hankittavan paikallisen tutkinnon osan hankitun osaamisen näytöt"
-  [id]
+  [id db-conn]
   (db-ops/shallow-delete!
     :hankittavan_paikallisen_tutkinnon_osan_naytto
-    ["hankittava_paikallinen_tutkinnon_osa_id = ?" id]))
+    ["hankittava_paikallinen_tutkinnon_osa_id = ?" id] db-conn))
 
 (defn update-hankittava-paikallinen-tutkinnon-osa-by-id!
   "Päivitä hankittavan paikallisen tutkinnon osa"
-  [id m]
+  [id m db-conn]
   (db-ops/update!
     :hankittavat_paikalliset_tutkinnon_osat
     (h/hankittava-paikallinen-tutkinnon-osa-to-sql m)
-    ["id = ? AND deleted_at IS NULL" id]))
+    ["id = ? AND deleted_at IS NULL" id] db-conn))
 
 (defn insert-yto-osa-alueen-osaamisen-osoittaminen!
   "Lisää yhteisen tutkinnon osan osa-alueen osaamisen näytöt"
@@ -244,12 +244,12 @@
       :yhteisen_tutkinnon_osan_osa_alueen_naytot
       {:yhteisen_tutkinnon_osan_osa_alue_id yto-id
        :osaamisen_osoittaminen_id naytto-id}))
-  ([yto-id naytto-id conn]
+  ([yto-id naytto-id db-conn]
     (db-ops/insert-one!
       :yhteisen_tutkinnon_osan_osa_alueen_naytot
       {:yhteisen_tutkinnon_osan_osa_alue_id yto-id
        :osaamisen_osoittaminen_id naytto-id}
-      conn)))
+      db-conn)))
 
 (defn insert-hankittava-paikallinen-tutkinnon-osa!
   "Lisää hankittavan paikallisen tutkinnon osa"
@@ -257,11 +257,11 @@
     (db-ops/insert-one!
       :hankittavat_paikalliset_tutkinnon_osat
       (h/hankittava-paikallinen-tutkinnon-osa-to-sql m)))
-  ([m conn]
+  ([m db-conn]
     (db-ops/insert-one!
       :hankittavat_paikalliset_tutkinnon_osat
       (h/hankittava-paikallinen-tutkinnon-osa-to-sql m)
-      conn)))
+      db-conn)))
 
 (defn insert-hankittavan-ammat-tutkinnon-osan-osaamisen-hankkimistapa!
   "Lisää hankittavan ammatillisen tutkinnon osan osaamisen hankkimistapa"
@@ -270,12 +270,12 @@
       :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
       {:hankittava_ammat_tutkinnon_osa_id pato-id
        :osaamisen_hankkimistapa_id oh-id}))
-  ([pato-id oh-id conn]
+  ([pato-id oh-id db-conn]
     (db-ops/insert-one!
       :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
       {:hankittava_ammat_tutkinnon_osa_id pato-id
        :osaamisen_hankkimistapa_id oh-id}
-      conn)))
+      db-conn)))
 
 (defn insert-hato-osaamisen-osoittaminen!
   "Lisää hankittavan ammatillisen tutkinnon osan osaamisen näyttö"
@@ -284,12 +284,12 @@
       :hankittavan_ammat_tutkinnon_osan_naytto
       {:hankittava_ammat_tutkinnon_osa_id hato-id
        :osaamisen_osoittaminen_id naytto-id}))
-  ([hato-id naytto-id conn]
+  ([hato-id naytto-id db-conn]
     (db-ops/insert-one!
       :hankittavan_ammat_tutkinnon_osan_naytto
       {:hankittava_ammat_tutkinnon_osa_id hato-id
        :osaamisen_osoittaminen_id naytto-id}
-      conn)))
+      db-conn)))
 
 (defn insert-hankittava-ammat-tutkinnon-osa!
   "Lisää hankittavan ammatillisen tutkinnon osa"
@@ -297,33 +297,33 @@
     (db-ops/insert-one!
       :hankittavat_ammat_tutkinnon_osat
       (h/hankittava-ammat-tutkinnon-osa-to-sql m)))
-  ([m conn]
+  ([m db-conn]
     (db-ops/insert-one!
       :hankittavat_ammat_tutkinnon_osat
       (h/hankittava-ammat-tutkinnon-osa-to-sql m)
-      conn)))
+      db-conn)))
 
 (defn delete-osaamisen-hankkimistavat-by-hato-id!
   "Poista hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat"
-  [id]
+  [id db-conn]
   (db-ops/shallow-delete!
     :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
-    ["hankittava_ammat_tutkinnon_osa_id = ?" id]))
+    ["hankittava_ammat_tutkinnon_osa_id = ?" id] db-conn))
 
 (defn delete-osaamisen-osoittamiset-by-pato-id!
   "Poista hankittavan ammatillisen tutkinnon osan hankitun osaamisen näytöt"
-  [id]
+  [id db-conn]
   (db-ops/shallow-delete!
     :hankittavan_ammat_tutkinnon_osan_naytto
-    ["hankittava_ammat_tutkinnon_osa_id = ?" id]))
+    ["hankittava_ammat_tutkinnon_osa_id = ?" id] db-conn))
 
 (defn update-hankittava-ammat-tutkinnon-osa-by-id!
   "Päivitä hankittavan ammatillisen tutkinnon osa"
-  [id m]
+  [id m db-conn]
   (db-ops/update!
     :hankittavat_ammat_tutkinnon_osat
     (h/hankittava-ammat-tutkinnon-osa-to-sql m)
-    ["id = ? AND deleted_at IS NULL" id]))
+    ["id = ? AND deleted_at IS NULL" id] db-conn))
 
 (defn insert-hyto-osa-alueen-osaamisen-hankkimistapa!
   "Lisää hankittavan yhteisen tutkinnon osan osa-alueen osaamisen hankkimistapa"
@@ -332,12 +332,12 @@
       :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
       {:yhteisen_tutkinnon_osan_osa_alue_id hyto-osa-alue-id
        :osaamisen_hankkimistapa_id oh-id}))
-  ([hyto-osa-alue-id oh-id conn]
+  ([hyto-osa-alue-id oh-id db-conn]
     (db-ops/insert-one!
       :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
       {:yhteisen_tutkinnon_osan_osa_alue_id hyto-osa-alue-id
        :osaamisen_hankkimistapa_id oh-id}
-      conn)))
+      db-conn)))
 
 (defn insert-yhteisen-tutkinnon-osan-osa-alue!
   "Lisää yhteisen tutkinnon osan osa-alue"
@@ -345,11 +345,11 @@
     (db-ops/insert-one!
       :yhteisen_tutkinnon_osan_osa_alueet
       (h/yhteisen-tutkinnon-osan-osa-alue-to-sql osa-alue)))
-  ([osa-alue conn]
+  ([osa-alue db-conn]
     (db-ops/insert-one!
       :yhteisen_tutkinnon_osan_osa_alueet
       (h/yhteisen-tutkinnon-osan-osa-alue-to-sql osa-alue)
-      conn)))
+      db-conn)))
 
 (defn insert-hankittava-yhteinen-tutkinnon-osa!
   "Lisää hankittavan yhteisen tutkinnon osa"
@@ -357,26 +357,26 @@
     (db-ops/insert-one!
       :hankittavat_yhteiset_tutkinnon_osat
       (h/hankittava-yhteinen-tutkinnon-osa-to-sql m)))
-  ([m conn]
+  ([m db-conn]
     (db-ops/insert-one!
       :hankittavat_yhteiset_tutkinnon_osat
       (h/hankittava-yhteinen-tutkinnon-osa-to-sql m)
-      conn)))
+      db-conn)))
 
 (defn delete-hyto-osa-alueet!
   "Poista hankittavan yhteisen tutkinnon osan osa-alueet"
-  [hyto-id]
+  [hyto-id db-conn]
   (db-ops/shallow-delete!
     :yhteisen_tutkinnon_osan_osa_alueet
-    ["yhteinen_tutkinnon_osa_id = ?" hyto-id]))
+    ["yhteinen_tutkinnon_osa_id = ?" hyto-id] db-conn))
 
 (defn update-hankittava-yhteinen-tutkinnon-osa-by-id!
   "Päivitä hankittavan yhteisen tutkinnon osa"
-  [hyto-id new-values]
+  [hyto-id new-values db-conn]
   (db-ops/update!
     :hankittavat_yhteiset_tutkinnon_osat
     (h/hankittava-yhteinen-tutkinnon-osa-to-sql new-values)
-    ["id = ? AND deleted_at IS NULL" hyto-id]))
+    ["id = ? AND deleted_at IS NULL" hyto-id] db-conn))
 
 (defn delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id
   "Poista hankittavat ammatillisen tutkinnon osat"
