@@ -326,7 +326,7 @@
     (GET "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.54425555" []
       (json-response
         {:oid  "1.2.246.562.10.54425555"
-         :nimi {:fi "Koulutuksen järjestäjä-organisaatio"}
+         :nimi {:fi "Joku koulutuksen järjestäjä-organisaatio"}
          :parentOidPath "|1.2.246.562.10.00000000001|"}))
 
     (GET "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.54424444" []
