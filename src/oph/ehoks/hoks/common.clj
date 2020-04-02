@@ -1,37 +1,56 @@
 (ns oph.ehoks.hoks.common
-  (:require [oph.ehoks.db.postgresql.common :as db]))
+  (:require [oph.ehoks.db.postgresql.common :as db]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [clojure.java.jdbc :as jdbc]))
 
 (defn- save-osaamisen-osoittamisen-tyoelama-osaamisen-arvioijat!
-  [naytto arvioijat]
-  (mapv
-    #(let [arvioija (db/insert-tyoelama-arvioija! %)]
-       (db/insert-osaamisen-osoittamisen-tyoelama-arvioija!
-         naytto arvioija)
-       arvioija)
-    arvioijat))
-
-(defn- save-osaamisen-osoittamisen-osa-alueet! [n c]
-  (mapv
-    #(let [k (db/insert-koodisto-koodi! %)]
-       (db/insert-osaamisen-osoittamisen-osa-alue! (:id n) (:id k))
-       k)
-    c))
-
-(defn save-osaamisen-osoittaminen! [n]
-  (let [nayttoymparisto (db/insert-nayttoymparisto! (:nayttoymparisto n))
-        naytto (db/insert-osaamisen-osoittaminen!
-                 (assoc n :nayttoymparisto-id (:id nayttoymparisto)))]
-    (db/insert-osaamisen-osoittamisen-koulutuksen-jarjestaja-osaamisen-arvioija!
-      naytto (:koulutuksen-jarjestaja-osaamisen-arvioijat n))
+  ([naytto arvioijat]
     (save-osaamisen-osoittamisen-tyoelama-osaamisen-arvioijat!
-      naytto (:tyoelama-osaamisen-arvioijat n))
-    (db/insert-osaamisen-osoittamisen-sisallot!
-      naytto (:sisallon-kuvaus n))
-    (db/insert-osaamisen-osoittamisen-yksilolliset-kriteerit!
-      naytto (:yksilolliset-kriteerit n))
-    (save-osaamisen-osoittamisen-osa-alueet!
-      naytto (:osa-alueet n))
-    naytto))
+      naytto arvioijat (db-ops/get-db-connection)))
+  ([naytto arvioijat db-conn]
+    (jdbc/with-db-transaction
+      [conn db-conn]
+      (mapv
+        #(let [arvioija (db/insert-tyoelama-arvioija! % conn)]
+           (db/insert-osaamisen-osoittamisen-tyoelama-arvioija!
+             naytto arvioija conn)
+           arvioija)
+        arvioijat))))
+
+(defn- save-osaamisen-osoittamisen-osa-alueet!
+  ([n c]
+    (save-osaamisen-osoittamisen-osa-alueet! n c (db-ops/get-db-connection)))
+  ([n c db-conn]
+    (jdbc/with-db-transaction
+      [conn db-conn]
+      (mapv
+        #(let [k (db/insert-koodisto-koodi! % conn)]
+           (db/insert-osaamisen-osoittamisen-osa-alue! (:id n) (:id k) conn)
+           k)
+        c))))
+
+(defn save-osaamisen-osoittaminen!
+  ([n]
+    (save-osaamisen-osoittaminen! n (db-ops/get-db-connection)))
+  ([n db-conn]
+    (jdbc/with-db-transaction
+      [conn db-conn]
+      (let [nayttoymparisto (db/insert-nayttoymparisto!
+                              (:nayttoymparisto n) conn)
+            naytto (db/insert-osaamisen-osoittaminen!
+                     (assoc n :nayttoymparisto-id (:id nayttoymparisto))
+                     conn)]
+        (db/insert-oo-koulutuksen-jarjestaja-osaamisen-arvioija!
+          naytto (:koulutuksen-jarjestaja-osaamisen-arvioijat n) conn)
+        (save-osaamisen-osoittamisen-tyoelama-osaamisen-arvioijat!
+          naytto (:tyoelama-osaamisen-arvioijat n) conn)
+        (db/insert-osaamisen-osoittamisen-sisallot!
+          naytto (:sisallon-kuvaus n) conn)
+        (db/insert-osaamisen-osoittamisen-yksilolliset-kriteerit!
+          naytto (:yksilolliset-kriteerit n) conn)
+        (save-osaamisen-osoittamisen-osa-alueet!
+          naytto (:osa-alueet n) conn)
+        naytto))))
 
 (defn set-osaamisen-osoittaminen-values [naytto]
   (dissoc

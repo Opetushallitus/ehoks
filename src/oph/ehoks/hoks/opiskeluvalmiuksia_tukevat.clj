@@ -13,6 +13,11 @@
   (db/insert-opiskeluvalmiuksia-tukeva-opinto!
     (assoc new-oto-values :hoks-id hoks-id)))
 
-(defn save-opiskeluvalmiuksia-tukevat-opinnot! [hoks-id new-oto-values]
-  (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
-    (mapv #(assoc % :hoks-id hoks-id) new-oto-values)))
+(defn save-opiskeluvalmiuksia-tukevat-opinnot!
+  ([hoks-id new-oto-values]
+    (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
+      (mapv #(assoc % :hoks-id hoks-id) new-oto-values)))
+  ([hoks-id new-oto-values conn]
+    (db/insert-opiskeluvalmiuksia-tukevat-opinnot!
+      (mapv #(assoc % :hoks-id hoks-id) new-oto-values)
+      conn)))
