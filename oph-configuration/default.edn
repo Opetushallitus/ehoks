@@ -18,6 +18,7 @@
  :ext-cache-lifetime-minutes 180
  :opintopolku-host "localhost:3000"
  :heratepalvelu-queue "services-heratepalvelu-eHOKSHerateQueue"
+ :heratepalvelu-tyoelamapalaute-queue "services-heratepalvelu-tep-TPOHerateQueue"
  :send-herate-messages? false
  :audit? true
  :db-type "postgresql"
@@ -28,4 +29,5 @@
  :db-password "ehoks"
  :arvo-username "ehoks"
  :arvo-password ""
- :arvo-url "http://localhost:3000/api/vastauslinkki/v1"}
+ :arvo-url "http://localhost:3000/api/vastauslinkki/v1"
+ :enforce-opiskeluoikeus-match false}

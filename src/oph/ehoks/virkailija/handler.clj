@@ -26,7 +26,8 @@
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.virkailija.system-handler :as system-handler]
             [oph.ehoks.virkailija.external-handler :as external-handler]
-            [oph.ehoks.virkailija.cas-handler :as cas-handler]))
+            [oph.ehoks.virkailija.cas-handler :as cas-handler]
+            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]))
 
 (def get-oppijat-route
   (c-api/GET "/" request
@@ -154,6 +155,13 @@
         (throw e)))))
 
 (defn- post-oppija [hoks request]
+  (if-not
+   (op/oppija-opiskeluoikeus-match?
+     (:oppija-oid hoks) (:opiskeluoikeus-oid hoks))
+    (assoc
+      (response/bad-request!
+        {:error "Opiskeluoikeus does not match any held by oppija"})
+      :audit-data {:new hoks}))
   (add-oppija hoks)
   (add-opiskeluoikeus hoks)
   (check-virkailija-privileges hoks request)
@@ -231,6 +239,7 @@
         :tags ["v1"]
 
         hoks-handler/routes
+        herate-handler/routes
 
         (route-middleware
           [wrap-audit-logger]

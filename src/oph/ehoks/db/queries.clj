@@ -221,3 +221,9 @@
       "tutkinnon_osa_shares/select_by_hoks_and_tutkinnon_osa.sql")
 (defq select-kyselylinkit-by-oppija-oid
       "hoksit/select_kyselylinkit_by_oppija_oid.sql")
+(defq select-paattyneet-tyoelamajaksot-hato
+      "heratepalvelu/select_paattyneet_tyoelamajaksot_hato.sql")
+(defq select-paattyneet-tyoelamajaksot-hpto
+      "heratepalvelu/select_paattyneet_tyoelamajaksot_hpto.sql")
+(defq select-paattyneet-tyoelamajaksot-hyto
+      "heratepalvelu/select_paattyneet_tyoelamajaksot_hyto.sql")

@@ -57,6 +57,7 @@
               :ext-cache-lifetime-minutes s/Int
               :opintopolku-host s/Str
               :heratepalvelu-queue s/Str
+              :heratepalvelu-tyoelamapalaute-queue s/Str
               :send-herate-messages? s/Bool
               :audit? s/Bool
               :db-type s/Str
@@ -67,4 +68,5 @@
               :db-password s/Str
               :arvo-password s/Str
               :arvo-username s/Str
-              :arvo-url s/Str})
+              :arvo-url s/Str
+              :enforce-opiskeluoikeus-match s/Bool})

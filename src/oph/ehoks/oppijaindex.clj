@@ -7,7 +7,8 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.config :refer [config]]))
 
 (defn search
   "Search oppijat with given params"
@@ -252,3 +253,13 @@
 
 (defn set-opiskeluoikeus-paattynyt! [oid timestamp]
   (db-opiskeluoikeus/update-opiskeluoikeus! oid {:paattynyt timestamp}))
+
+(defn oppija-opiskeluoikeus-match?
+  "Check that opiskeluoikeus belongs to oppija"
+  [oppija-oid opiskeluoikeus-oid]
+  (if (:enforce-opiskeluoikeus-match config)
+    (let [opiskeluoikeudet (k/get-oppija-opiskeluoikeudet oppija-oid)]
+      (boolean
+        (seq
+          (filter #(= opiskeluoikeus-oid (:oid %)) opiskeluoikeudet))))
+    true))

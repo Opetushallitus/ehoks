@@ -138,9 +138,20 @@
               [{:yhteystietoArvo "kayttaja@domain.local"
                 :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})})))
 
+
     (GET "/koodisto-service/rest/codeelement/tutkinnonosat_100031" []
       (json-response-file
         "dev-routes/koodisto-service_rest_codeelement_tutkinnonosat__100031.json"))
+
+    (GET "/koodisto-service/rest/codeelement/*/oppimisymparistot_0002" []
+      (json-response
+        {:metadata [{:nimi "Verkko- ja virtuaaliympäristö",
+                     :kieli "FI"}]}))
+
+    (GET "/koodisto-service/rest/codeelement/*/oppimisymparistot_0003" []
+      (json-response
+        {:metadata [{:nimi "Lukio",
+                     :kieli "FI"}]}))
 
     (GET "/koodisto-service/rest/codeelement/*/*" []
       (json-response-file
@@ -306,11 +317,28 @@
              :errorKey ""}))
         [:headers "Content-Type"] "application/json"))
 
-    (GET "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.5921222"
-         request
+    (GET "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.5921222" []
       (json-response
-        {:oid (get-in request [:params :oid])
+        {:oid  "1.2.246.562.10.5921222"
          :nimi {:fi "Testaus-organisaatio"}
+         :parentOidPath "|1.2.246.562.10.00000000001|"}))
+
+    (GET "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.54425555" []
+      (json-response
+        {:oid  "1.2.246.562.10.54425555"
+         :nimi {:fi "Joku koulutuksen järjestäjä-organisaatio"}
+         :parentOidPath "|1.2.246.562.10.00000000001|"}))
+
+    (GET "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.54424444" []
+      (json-response
+        {:oid  "1.2.246.562.10.54424444"
+         :nimi {:fi "Aiemman arvioijan organisaatio"}
+         :parentOidPath "|1.2.246.562.10.00000000001|"}))
+
+    (GET "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.54423333" []
+      (json-response
+        {:oid  "1.2.246.562.10.54423333"
+         :nimi {:fi "Osa-alueen järjestäjä-organisaatio"}
          :parentOidPath "|1.2.246.562.10.00000000001|"}))
 
     (GET "/organisaatio-service/rest/organisaatio/v4/:oid" request
