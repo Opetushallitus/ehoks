@@ -108,6 +108,11 @@
 
 (defn- get-opiskeluoikeus-info [oid oppija-oid]
   (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
+    (when (:sisältyyOpiskeluoikeuteen opiskeluoikeus)
+      (log/warn
+        "Opiskeluoikeus %s has sisältyyOpiskeluoikeuteen information" oid)
+      (throw (ex-info "Opiskeluoikeus sisältyy toiseen opiskeluoikeuteen"
+                      {:error :hankintakoulutus})))
     (when (> (count (:suoritukset opiskeluoikeus)) 1)
       (log/warnf
         "Opiskeluoikeus %s has multiple suoritukset. First is used for tutkinto"

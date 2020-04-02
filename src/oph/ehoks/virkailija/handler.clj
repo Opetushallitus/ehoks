@@ -107,14 +107,18 @@
     (op/add-opiskeluoikeus!
       (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
     (catch Exception e
-      (if (= (:status (ex-data e)) 404)
+      (cond
+        (= (:status (ex-data e)) 404)
         (do
           (log/warn "Opiskeluoikeus with oid "
                     (:opiskeluoikeus-oid hoks)
                     " not found in Koski")
           (response/bad-request!
             {:error "Opiskeluoikeus not found in Koski"}))
-        (throw e)))))
+        (= (:error (ex-data e)) :hankintakoulutus)
+        (response/bad-request!
+          {:error (ex-message e)})
+        :else (throw e)))))
 
 (defn- check-virkailija-privileges [hoks request]
   (let [virkailija-user
