@@ -16,6 +16,58 @@
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_100703",
       "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "olennainen-seikka": true,
+      "tarkentavat-tiedot-naytto": [],
+      "tarkentavat-tiedot-osaamisen-arvioija": {
+        "lahetetty-arvioitavaksi": "2020-04-01",
+        "aiemmin-hankitun-osaamisen-arvioijat": [
+          {
+            "nimi": "Antti Aiemmanarvioija",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54424444"
+            }
+          },
+          {
+            "nimi": "Taisto Toisen Aiemmanarvioija",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54424444"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "valittu-todentamisen-prosessi-koodi-versio": 1,
+      "tutkinnon-osa-koodi-versio": 2,
+      "valittu-todentamisen-prosessi-koodi-uri": "osaamisentodentamisenprosessi_0002",
+      "tutkinnon-osa-koodi-uri": "tutkinnonosat_100703",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
+      "olennainen-seikka": true,
+      "tarkentavat-tiedot-naytto": [],
+      "tarkentavat-tiedot-osaamisen-arvioija": {
+        "lahetetty-arvioitavaksi": "2020-04-01",
+        "aiemmin-hankitun-osaamisen-arvioijat": [
+          {
+            "nimi": "Antti Aiemmanarvioija",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54424444"
+            }
+          },
+          {
+            "nimi": "Taisto Toisen Aiemmanarvioija",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54424444"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "valittu-todentamisen-prosessi-koodi-versio": 1,
+      "tutkinnon-osa-koodi-versio": 2,
+      "valittu-todentamisen-prosessi-koodi-uri": "osaamisentodentamisenprosessi_0003",
+      "tutkinnon-osa-koodi-uri": "tutkinnonosat_100703",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
+      "olennainen-seikka": true,
       "tarkentavat-tiedot-naytto": [
         {
           "alku": "2019-10-25",
