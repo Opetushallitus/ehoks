@@ -3,22 +3,22 @@
   :min-lein-version "2.8.1"
   :pedantic? :abort
   :dependencies [[org.clojure/clojure "1.10.0"]
-                 [clj-http "3.9.1"]
-                 [com.layerware/hugsql "0.4.9"]
+                 [clj-http "3.10.0"]
+                 [com.layerware/hugsql "0.5.1"]
                  [com.taoensso/carmine "2.19.1"]
                  [metosin/compojure-api "2.0.0-alpha28"]
-                 [org.flywaydb/flyway-core "5.2.4"]
-                 [org.clojure/java.jdbc "0.7.9"]
-                 [org.postgresql/postgresql "42.2.5"]
-                 [ring/ring-jetty-adapter "1.7.1"]
-                 [clj-time "0.15.1"]
+                 [org.flywaydb/flyway-core "6.3.3"]
+                 [org.clojure/java.jdbc "0.7.11"]
+                 [org.postgresql/postgresql "42.2.12"]
+                 [ring/ring-jetty-adapter "1.8.0"]
+                 [clj-time "0.15.2"]
                  [org.clojure/core.async "0.4.490"]
-                 [org.clojure/tools.logging "0.4.1"]
+                 [org.clojure/tools.logging "1.0.0"]
                  [org.apache.logging.log4j/log4j-api "2.11.1"]
                  [org.apache.logging.log4j/log4j-core "2.11.1"]
                  [org.apache.logging.log4j/log4j-slf4j-impl "2.11.1"]
                  [org.clojure/data.xml "0.0.8"]
-                 [org.clojure/data.json "0.2.6"]
+                 [org.clojure/data.json "1.0.0"]
                  [environ "1.1.0"]
                  [software.amazon.awssdk/sqs "2.5.37"]
                  [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]]
@@ -27,19 +27,19 @@
                          ;; http server
                          [javax.servlet/javax.servlet-api "4.0.1"]
                          [metosin/compojure-api "2.0.0-alpha26"]
-                         [ring/ring-codec "1.1.1"]
-                         [ring/ring-core "1.7.1"]
-                         [ring/ring-jetty-adapter "1.7.1"]
-                         [ring/ring-servlet "1.7.1"]
+                         [ring/ring-codec "1.1.2"]
+                         [ring/ring-core "1.8.0"]
+                         [ring/ring-jetty-adapter "1.8.0"]
+                         [ring/ring-servlet "1.8.0"]
 
                          ;; http client
-                         [clj-http "3.9.1"]
+                         [clj-http "3.10.0"]
                          [org.apache.httpcomponents/httpasyncclient "4.1.4"]
-                         [org.apache.httpcomponents/httpclient "4.5.6"]
-                         [org.apache.httpcomponents/httpclient-cache "4.5.6"]
-                         [org.apache.httpcomponents/httpcore "4.4.10"]
-                         [org.apache.httpcomponents/httpcore-nio "4.4.10"]
-                         [org.apache.httpcomponents/httpmime "4.5.6"]
+                         [org.apache.httpcomponents/httpclient "4.5.12"]
+                         [org.apache.httpcomponents/httpclient-cache "4.5.12"]
+                         [org.apache.httpcomponents/httpcore "4.4.13"]
+                         [org.apache.httpcomponents/httpcore-nio "4.4.13"]
+                         [org.apache.httpcomponents/httpmime "4.5.12"]
 
                          ;; logging
                          [org.clojure/tools.logging "0.4.1"]
@@ -48,29 +48,29 @@
                          [org.apache.logging.log4j/log4j-slf4j-impl "2.11.1"]
 
                          ;; date, time
-                         [joda-time "2.10.1"]
-                         [clj-time "0.15.1"]
+                         [joda-time "2.10.5"]
+                         [clj-time "0.15.2"]
 
                          ;; json
-                         [com.fasterxml.jackson.core/jackson-annotations "2.9.8"]
-                         [com.fasterxml.jackson.core/jackson-core "2.9.8"]
-                         [com.fasterxml.jackson.core/jackson-databind "2.9.8"]
+                         [com.fasterxml.jackson.core/jackson-annotations "2.11.0.rc1"]
+                         [com.fasterxml.jackson.core/jackson-core "2.11.0.rc1"]
+                         [com.fasterxml.jackson.core/jackson-databind "2.11.0.rc1"]
                          [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.9.8"]
-                         [org.clojure/data.json "0.2.6"]
-                         [com.google.code.gson/gson "2.8.0"]
+                         [org.clojure/data.json "1.0.0"]
+                         [com.google.code.gson/gson "2.8.6"]
 
                          ;; XML
                          [org.clojure/data.xml "0.0.8"]
 
                          ;; postresql
-                         [com.layerware/hugsql "0.4.9"]
-                         [org.clojure/java.jdbc "0.7.9"]
-                         [org.flywaydb/flyway-core "5.2.4"]
-                         [org.postgresql/postgresql "42.2.5"]
+                         [com.layerware/hugsql "0.5.1"]
+                         [org.clojure/java.jdbc "0.7.11"]
+                         [org.flywaydb/flyway-core "6.3.3"]
+                         [org.postgresql/postgresql "42.2.12"]
 
                          ;; other
                          [org.clojure/core.async "0.4.490"]
-                         [commons-codec "1.11"]
+                         [commons-codec "1.14"]
                          [commons-fileupload "1.4"]
                          [commons-io "2.6"]
                          [hiccup "1.0.5"]
@@ -80,7 +80,7 @@
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.3.2"]
-                         [io.aviso/pretty "0.1.36"]
+                         [io.aviso/pretty "0.1.37"]
                          [instaparse "1.4.10"]]
   :plugins [[lein-cljfmt "0.6.0" :exclusions [org.clojure/tools.cli]]
             [lein-kibit "0.1.6"]
@@ -120,17 +120,17 @@
   :profiles {:test {:resource-paths ["resources/test"
                                      "resources/test/src"
                                      "resources/test/config"]
-                    :dependencies [[cheshire "5.8.1"]
-                                   [ring/ring-mock "0.3.2"]
-                                   [ring/ring-devel "1.7.1"
+                    :dependencies [[cheshire "5.10.0"]
+                                   [ring/ring-mock "0.4.0"]
+                                   [ring/ring-devel "1.8.0"
                                     :exclusions [ring/ring-core]]]
                     :env {:config "oph-configuration/test.edn"}}
              :dev {:main oph.ehoks.dev-server
-                   :dependencies [[cheshire "5.8.1"]
-                                  [ring/ring-mock "0.3.2"]
-                                  [ring/ring-devel "1.7.1"
+                   :dependencies [[cheshire "5.10.0"]
+                                  [ring/ring-mock "0.4.0"]
+                                  [ring/ring-devel "1.8.0"
                                    :exclusions [ring/ring-core]]
-                                  [camel-snake-kebab "0.4.0"]]
+                                  [camel-snake-kebab "0.4.1"]]
                    :resource-paths ["resources/dev"
                                     "resources/test/src"
                                     "resources/dev/src"
