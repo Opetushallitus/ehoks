@@ -261,6 +261,55 @@
           (response/no-content)
           (response/not-found {:error "OTO not found with given OTO ID"}))))))
 
+(defn- check-oids-match [hoks]
+  (if-not
+   (oppijaindex/oppija-opiskeluoikeus-match?
+     (:oppija-oid hoks) (:opiskeluoikeus-oid hoks))
+    (assoc
+      (response/bad-request!
+        {:error "Opiskeluoikeus does not match any held by oppija"})
+      :audit-data {:new hoks})))
+
+(defn- add-oppija-to-index [hoks]
+  (try
+    (oppijaindex/add-oppija! (:oppija-oid hoks))
+    (catch Exception e
+      (if (= (:status (ex-data e)) 404)
+        (response/bad-request!
+          {:error "Oppija not found in Oppijanumerorekisteri"})
+        (throw e)))))
+
+(defn- add-opiskeluoikeus-to-index [hoks]
+  (try
+    (oppijaindex/add-opiskeluoikeus!
+      (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
+    (catch Exception e
+      (cond
+        (= (:status (ex-data e)) 404)
+        (response/bad-request!
+          {:error "Opiskeluoikeus not found in Koski"})
+        (= (:error (ex-data e)) :hankintakoulutus)
+        (response/bad-request!
+          {:error (ex-message e)})
+        :else (throw e)))))
+
+(defn- save-hoks [hoks request]
+  (try
+    (let [hoks-db (h/save-hoks! hoks)]
+      (assoc
+        (rest/rest-ok {:uri
+                       (format "%s/%d" (:uri request) (:id hoks-db))}
+                      :id (:id hoks-db))
+        :audit-data {:new hoks}))
+    (catch Exception e
+      (if (= (:error (ex-data e)) :duplicate)
+        (assoc
+          (response/bad-request!
+            {:error
+             "HOKS with the same opiskeluoikeus-oid already exists"})
+          :audit-data {:new hoks})
+        (throw e)))))
+
 (def routes
   (c-api/context "/hoks" []
     :tags ["hoks"]
@@ -274,44 +323,11 @@
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
-        (if-not
-         (oppijaindex/oppija-opiskeluoikeus-match?
-           (:oppija-oid hoks) (:opiskeluoikeus-oid hoks))
-          (assoc
-            (response/bad-request!
-              {:error "Opiskeluoikeus does not match any held by oppija"})
-            :audit-data {:new hoks}))
-        (try
-          (oppijaindex/add-oppija! (:oppija-oid hoks))
-          (catch Exception e
-            (if (= (:status (ex-data e)) 404)
-              (response/bad-request!
-                {:error "Oppija not found in Oppijanumerorekisteri"})
-              (throw e))))
-        (try
-          (oppijaindex/add-opiskeluoikeus!
-            (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
-          (catch Exception e
-            (if (= (:status (ex-data e)) 404)
-              (response/bad-request!
-                {:error "Opiskeluoikeus not found in Koski"})
-              (throw e))))
+        (check-oids-match hoks)
+        (add-oppija-to-index hoks)
+        (add-opiskeluoikeus-to-index hoks)
         (m/check-hoks-access! hoks request)
-        (try
-          (let [hoks-db (h/save-hoks! hoks)]
-            (assoc
-              (rest/rest-ok {:uri
-                             (format "%s/%d" (:uri request) (:id hoks-db))}
-                            :id (:id hoks-db))
-              :audit-data {:new hoks}))
-          (catch Exception e
-            (if (= (:error (ex-data e)) :duplicate)
-              (assoc
-                (response/bad-request!
-                  {:error
-                   "HOKS with the same opiskeluoikeus-oid already exists"})
-                :audit-data {:new hoks})
-              (throw e)))))
+        (save-hoks hoks request))
 
       (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
