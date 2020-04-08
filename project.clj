@@ -2,7 +2,7 @@
   :description "OPH eHOKS Backend"
   :min-lein-version "2.8.1"
   :pedantic? :abort
-  :dependencies [[org.clojure/clojure "1.10.0"]
+  :dependencies [[org.clojure/clojure "1.10.1"]
                  [clj-http "3.10.0"]
                  [com.layerware/hugsql "0.5.1"]
                  [com.taoensso/carmine "2.19.1"]
@@ -22,7 +22,7 @@
                  [environ "1.1.0"]
                  [software.amazon.awssdk/sqs "2.5.37"]
                  [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]]
-  :managed-dependencies [[org.clojure/clojure "1.10.0"]
+  :managed-dependencies [[org.clojure/clojure "1.10.1"]
 
                          ;; http server
                          [javax.servlet/javax.servlet-api "4.0.1"]
