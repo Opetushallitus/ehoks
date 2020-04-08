@@ -31,7 +31,7 @@ script:
   - lein uberjar
   - mv target/ehoks-standalone.jar $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar
   - cp -vr oph-configuration $DOCKER_BUILD_DIR/config/
-  - export BASE_IMAGE="baseimage-fatjar:jdk11"
+  - export BASE_IMAGE="baseimage-fatjar:master"
   - ./ci-tools/common/pull-image.sh
   - ./ci-tools/build/build-fatjar.sh ehoks-oppija
   - mv $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar $DOCKER_BUILD_DIR/artifact/ehoks-virkailija.jar
