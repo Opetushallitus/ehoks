@@ -69,4 +69,5 @@
               :arvo-password s/Str
               :arvo-username s/Str
               :arvo-url s/Str
-              :enforce-opiskeluoikeus-match s/Bool})
+              :enforce-opiskeluoikeus-match s/Bool
+              (s/optional-key :piwik-site-id) s/Str})
