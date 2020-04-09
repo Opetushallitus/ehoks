@@ -7,7 +7,7 @@
                  [com.layerware/hugsql "0.5.1"]
                  [com.taoensso/carmine "2.19.1"]
                  [metosin/compojure-api "2.0.0-alpha28"]
-                 [org.flywaydb/flyway-core "5.2.4"]
+                 [org.flywaydb/flyway-core "6.3.3"]
                  [org.clojure/java.jdbc "0.7.11"]
                  [org.postgresql/postgresql "42.2.12"]
                  [ring/ring-jetty-adapter "1.7.1"]
@@ -65,12 +65,12 @@
                          ;; postresql
                          [com.layerware/hugsql "0.5.1"]
                          [org.clojure/java.jdbc "0.7.11"]
-                         [org.flywaydb/flyway-core "5.2.4"]
+                         [org.flywaydb/flyway-core "6.3.3"]
                          [org.postgresql/postgresql "42.2.12"]
 
                          ;; other
                          [org.clojure/core.async "0.4.490"]
-                         [commons-codec "1.11"]
+                         [commons-codec "1.14"]
                          [commons-fileupload "1.4"]
                          [commons-io "2.6"]
                          [hiccup "1.0.5"]
@@ -130,7 +130,7 @@
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.1"
                                    :exclusions [ring/ring-core]]
-                                  [camel-snake-kebab "0.4.0"]]
+                                  [camel-snake-kebab "0.4.1"]]
                    :resource-paths ["resources/dev"
                                     "resources/test/src"
                                     "resources/dev/src"
