@@ -8,8 +8,8 @@
                  [com.taoensso/carmine "2.19.1"]
                  [metosin/compojure-api "2.0.0-alpha28"]
                  [org.flywaydb/flyway-core "5.2.4"]
-                 [org.clojure/java.jdbc "0.7.9"]
-                 [org.postgresql/postgresql "42.2.5"]
+                 [org.clojure/java.jdbc "0.7.11"]
+                 [org.postgresql/postgresql "42.2.12"]
                  [ring/ring-jetty-adapter "1.7.1"]
                  [clj-time "0.15.1"]
                  [org.clojure/core.async "0.4.490"]
@@ -64,9 +64,9 @@
 
                          ;; postresql
                          [com.layerware/hugsql "0.4.9"]
-                         [org.clojure/java.jdbc "0.7.9"]
+                         [org.clojure/java.jdbc "0.7.11"]
                          [org.flywaydb/flyway-core "5.2.4"]
-                         [org.postgresql/postgresql "42.2.5"]
+                         [org.postgresql/postgresql "42.2.12"]
 
                          ;; other
                          [org.clojure/core.async "0.4.490"]
