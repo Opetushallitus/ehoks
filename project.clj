@@ -4,7 +4,7 @@
   :pedantic? :abort
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [clj-http "3.9.1"]
-                 [com.layerware/hugsql "0.4.9"]
+                 [com.layerware/hugsql "0.5.1"]
                  [com.taoensso/carmine "2.19.1"]
                  [metosin/compojure-api "2.0.0-alpha28"]
                  [org.flywaydb/flyway-core "5.2.4"]
@@ -63,7 +63,7 @@
                          [org.clojure/data.xml "0.0.8"]
 
                          ;; postresql
-                         [com.layerware/hugsql "0.4.9"]
+                         [com.layerware/hugsql "0.5.1"]
                          [org.clojure/java.jdbc "0.7.11"]
                          [org.flywaydb/flyway-core "5.2.4"]
                          [org.postgresql/postgresql "42.2.12"]
