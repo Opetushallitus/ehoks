@@ -3,15 +3,15 @@
   :min-lein-version "2.8.1"
   :pedantic? :abort
   :dependencies [[org.clojure/clojure "1.10.1"]
-                 [clj-http "3.9.1"]
-                 [com.layerware/hugsql "0.4.9"]
+                 [clj-http "3.10.0"]
+                 [com.layerware/hugsql "0.5.1"]
                  [com.taoensso/carmine "2.19.1"]
                  [metosin/compojure-api "2.0.0-alpha28"]
-                 [org.flywaydb/flyway-core "5.2.4"]
+                 [org.flywaydb/flyway-core "6.3.3"]
                  [org.clojure/java.jdbc "0.7.11"]
                  [org.postgresql/postgresql "42.2.12"]
                  [ring/ring-jetty-adapter "1.7.1"]
-                 [clj-time "0.15.1"]
+                 [clj-time "0.15.2"]
                  [org.clojure/core.async "0.4.490"]
                  [org.clojure/tools.logging "0.4.1"]
                  [org.apache.logging.log4j/log4j-api "2.11.1"]
@@ -33,7 +33,7 @@
                          [ring/ring-servlet "1.7.1"]
 
                          ;; http client
-                         [clj-http "3.9.1"]
+                         [clj-http "3.10.0"]
                          [org.apache.httpcomponents/httpasyncclient "4.1.4"]
                          [org.apache.httpcomponents/httpclient "4.5.6"]
                          [org.apache.httpcomponents/httpclient-cache "4.5.6"]
@@ -48,8 +48,8 @@
                          [org.apache.logging.log4j/log4j-slf4j-impl "2.11.1"]
 
                          ;; date, time
-                         [joda-time "2.10.1"]
-                         [clj-time "0.15.1"]
+                         [joda-time "2.10.5"]
+                         [clj-time "0.15.2"]
 
                          ;; json
                          [com.fasterxml.jackson.core/jackson-annotations "2.9.8"]
@@ -63,9 +63,9 @@
                          [org.clojure/data.xml "0.0.8"]
 
                          ;; postresql
-                         [com.layerware/hugsql "0.4.9"]
+                         [com.layerware/hugsql "0.5.1"]
                          [org.clojure/java.jdbc "0.7.11"]
-                         [org.flywaydb/flyway-core "5.2.4"]
+                         [org.flywaydb/flyway-core "6.3.3"]
                          [org.postgresql/postgresql "42.2.12"]
 
                          ;; other
@@ -130,7 +130,7 @@
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.1"
                                    :exclusions [ring/ring-core]]
-                                  [camel-snake-kebab "0.4.0"]]
+                                  [camel-snake-kebab "0.4.1"]]
                    :resource-paths ["resources/dev"
                                     "resources/test/src"
                                     "resources/dev/src"
