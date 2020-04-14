@@ -5,7 +5,7 @@ sudo: required
 language: clojure
 
 jdk:
-  - openjdk8
+  - openjdk11
 
 env:
   global:
