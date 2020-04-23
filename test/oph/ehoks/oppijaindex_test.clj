@@ -261,23 +261,23 @@
   (with-redefs [oph.ehoks.config/config {:enforce-opiskeluoikeus-match true}]
     (let [opiskeluoikeudet [{:oid "1.2.246.562.15.55003456345"
                              :oppilaitos {:oid "1.2.246.562.10.12000000000"
-                                    :nimi {:fi "TestiFi"
-                                           :sv "TestiSv"
-                                           :en "TestiEn"}}
+                                          :nimi {:fi "TestiFi"
+                                                 :sv "TestiSv"
+                                                 :en "TestiEn"}}
                              :alkamispäivä "2020-03-12"}]]
 
       (t/testing "Opintooikeus belonging to oppija return true"
-      (t/is
-        (sut/oppija-opiskeluoikeus-match?
-          opiskeluoikeudet
-          "1.2.246.562.15.55003456345")))
-
-    (t/testing "Opintooikeus not belonging to oppija return false"
-      (t/is
-        (not
+        (t/is
           (sut/oppija-opiskeluoikeus-match?
             opiskeluoikeudet
-            "1.2.246.562.15.55003456347")))))))
+            "1.2.246.562.15.55003456345")))
+
+      (t/testing "Opintooikeus not belonging to oppija return false"
+        (t/is
+          (not
+            (sut/oppija-opiskeluoikeus-match?
+              opiskeluoikeudet
+              "1.2.246.562.15.55003456347")))))))
 
 (t/deftest hankintakoulutus-opiskeluoikeus-test
   (t/testing "Save opiskeluoikeus with sisältyyOpiskeluoikeuteen information"

@@ -140,12 +140,12 @@
           {:status 200
            :body [{:henkilö {:oid "1.2.246.562.24.44000000001"}
                    :opiskeluoikeudet
-                            [{:oid "1.2.246.562.15.76000000001"
-                              :oppilaitos {:oid "1.2.246.562.10.12000000000"
-                                           :nimi {:fi "TestiFi"
-                                                  :sv "TestiSv"
-                                                  :en "TestiEn"}}
-                              :alkamispäivä "2020-03-12"}]}]})))
+                   [{:oid "1.2.246.562.15.76000000001"
+                     :oppilaitos {:oid "1.2.246.562.10.12000000000"
+                                  :nimi {:fi "TestiFi"
+                                         :sv "TestiSv"
+                                         :en "TestiEn"}}
+                     :alkamispäivä "2020-03-12"}]}]})))
     (client/set-get!
       (fn [url options]
         (cond (.endsWith url "/serviceValidate")
