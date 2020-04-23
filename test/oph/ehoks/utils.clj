@@ -250,12 +250,12 @@
        (do ~@body)
        (m/clean!)))
 
-(defn dissoc-uuids [data]
+(defn dissoc-share-ids [data]
   (if (coll? data)
     (if (map? data)
       (reduce (fn [res val]
-                (conj res [(first val) (dissoc-uuids (second val))]))
+                (conj res [(first val) (dissoc-share-ids (second val))]))
               {}
               (dissoc data :uuid))
-      (map #(dissoc-uuids %) data))
+      (map #(dissoc-share-ids %) data))
     data))

@@ -317,7 +317,7 @@
         (:id hoks)
         ahato-data)
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-share-ids
           (ah/get-aiemmin-hankitut-ammat-tutkinnon-osat
             (:id hoks)))
         ahato-data))))
@@ -328,7 +328,7 @@
       (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
         (:id hoks) ahpto-data)
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-share-ids
           (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks)))
         ahpto-data))))
 
@@ -337,7 +337,7 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ha/save-hankittavat-ammat-tutkinnon-osat! (:id hoks) hao-data)
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-share-ids
           (ha/get-hankittavat-ammat-tutkinnon-osat (:id hoks)))
         hao-data))))
 
@@ -346,7 +346,7 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ot/save-opiskeluvalmiuksia-tukevat-opinnot! (:id hoks) oto-data)
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-share-ids
           (ot/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks)))
         oto-data))))
 
@@ -355,7 +355,7 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! (:id hoks) ahyto-data)
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-share-ids
           (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks)))
         ahyto-data))))
 
@@ -366,7 +366,7 @@
           (ha/save-hankittavat-paikalliset-tutkinnon-osat!
             (:id hoks) hpto-data)]
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-share-ids
           (ha/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks)))
         hpto-data))))
 
@@ -375,7 +375,7 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ha/save-hankittavat-yhteiset-tutkinnon-osat! (:id hoks) hyto-data)
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-share-ids
           (ha/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks)))
         hyto-data))))
 
@@ -383,7 +383,7 @@
   (testing "Save and get full HOKS"
     (let [hoks (h/save-hoks! hoks-data)]
       (eq
-        (utils/dissoc-uuids (h/get-hoks-by-id (:id hoks)))
+        (utils/dissoc-share-ids (h/get-hoks-by-id (:id hoks)))
         (assoc
           hoks-data
           :id 1
@@ -412,7 +412,7 @@
                   {:hoks-id (:id hoks)})
           data {}
           tta (ah/save-tarkentavat-tiedot-osaamisen-arvioija! data)]
-      (eq (utils/dissoc-uuids
+      (eq (utils/dissoc-share-ids
             (ah/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta)))
           (assoc data :aiemmin-hankitun-osaamisen-arvioijat [])))))
 

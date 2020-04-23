@@ -797,7 +797,7 @@
                [{:oid "1.2.246.562.10.1200000000010"
                  :privileges #{:write :read :update :delete}}]})]
         (let [body (utils/parse-body (:body get-response))]
-          (utils/eq (utils/dissoc-uuids
+          (utils/eq (utils/dissoc-share-ids
                       (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
                     hato-data))
         (t/is (= (:status put-response) 204))))))
