@@ -1,6 +1,5 @@
 (ns oph.ehoks.virkailija.handler-test
   (:require [oph.ehoks.virkailija.handler :as handler]
-            [oph.ehoks.virkailija.system-handler :as system-handler]
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
