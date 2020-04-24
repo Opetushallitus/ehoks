@@ -256,6 +256,6 @@
       (reduce (fn [res val]
                 (conj res [(first val) (dissoc-share-ids (second val))]))
               {}
-              (dissoc data :uuid))
+              (dissoc data :share-id))
       (map #(dissoc-share-ids %) data))
     data))
