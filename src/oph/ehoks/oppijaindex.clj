@@ -284,9 +284,7 @@
   "Check that opiskeluoikeus belongs to oppija"
   [opiskeluoikeudet opiskeluoikeus-oid]
   (if (:enforce-opiskeluoikeus-match config)
-    (boolean
-      (seq
-        (filter #(= opiskeluoikeus-oid (:oid %)) opiskeluoikeudet)))
+    (some #(= opiskeluoikeus-oid (:oid %)) opiskeluoikeudet)
     true))
 
 (defn filter-hankintakoulutukset
