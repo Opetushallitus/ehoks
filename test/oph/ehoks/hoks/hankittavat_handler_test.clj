@@ -28,7 +28,7 @@
                          (hoks-utils/get-hoks-url
                            hoks (format "%s/1" hpto-path)))]
           (eq
-            (utils/dissoc-share-ids (:data (utils/parse-body (:body ppto-new))))
+            (utils/dissoc-module-ids (:data (utils/parse-body (:body ppto-new))))
             (assoc
               test-data/hpto-data
               :id 1)))))))
@@ -63,7 +63,7 @@
                              hoks-utils/get-authenticated
                              :data)]
         (is (= (:status patch-response) 204))
-        (eq (utils/dissoc-share-ids get-response)
+        (eq (utils/dissoc-module-ids get-response)
             (assoc test-data/hpto-data
                    :id 1
                    :nimi "2223"))))))
@@ -78,7 +78,7 @@
             (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)]
         (hoks-utils/assert-post-response-is-ok hyto-path post-response)
         (is (= (:status get-response) 200))
-        (eq (utils/dissoc-share-ids
+        (eq (utils/dissoc-module-ids
               (utils/parse-body
                 (:body get-response)))
             {:meta {} :data (assoc test-data/hyto-data :id 1)})))))
@@ -119,7 +119,7 @@
             (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
-        (eq (utils/dissoc-share-ids (:osa-alueet get-response-data))
+        (eq (utils/dissoc-module-ids (:osa-alueet get-response-data))
             (:osa-alueet test-data/multiple-hyto-values-patched))))))
 
 (def hyto-sub-entity-patched
@@ -137,7 +137,7 @@
             (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
-        (eq (utils/dissoc-share-ids (:osa-alueet get-response-data))
+        (eq (utils/dissoc-module-ids (:osa-alueet get-response-data))
             (:osa-alueet hyto-sub-entity-patched))))))
 
 (deftest post-and-get-hankittava-ammatillinen-osaaminen
@@ -159,7 +159,7 @@
                 "%s/1/hankittava-ammat-tutkinnon-osa/1"
                 hoks-utils/base-url)}})
         (is (= (:status get-response) 200))
-        (eq (utils/dissoc-share-ids
+        (eq (utils/dissoc-module-ids
               (utils/parse-body
                 (:body get-response)))
             {:meta {} :data (assoc test-data/hao-data :id 1)})))))
@@ -177,7 +177,7 @@
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status patch-response) 204))
-        (eq (utils/dissoc-share-ids
+        (eq (utils/dissoc-module-ids
               (utils/parse-body
                 (:body get-response)))
             {:meta {} :data  (assoc test-data/patch-all-hao-data :id 1)})))))

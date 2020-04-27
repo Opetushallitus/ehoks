@@ -370,7 +370,7 @@
       (is (= (:status put-response) 204))
       (is (= (:status get-response) 200))
       (eq (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data)
-          (utils/dissoc-share-ids (:opiskeluvalmiuksia-tukevat-opinnot
+          (utils/dissoc-module-ids (:opiskeluvalmiuksia-tukevat-opinnot
                                 get-response-data))))))
 
 (deftest prevent-updating-opiskeluoikeus

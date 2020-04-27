@@ -148,7 +148,8 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
-    (s/optional-key :share-id) UUID "Ulkoinen tunniste tiedon jakamista varten"
+    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
+                                          "esimerkiksi tiedon jakamista varten")
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
     :osaamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
@@ -222,13 +223,15 @@
     [KoulutuksenJarjestajaArvioija]
     "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
 
+
 (s/defschema
   OsaamisenOsoittaminen
   (describe
     "Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
     sisältyvä osaamisen osoittaminen: näyttö tai muu osaamisen osoittaminen."
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :share-id) UUID "Ulkoinen tunniste tiedon jakamista varten"
+    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
+                                          "esimerkiksi tiedon jakamista varten")
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
     (s/optional-key :osa-alueet) [KoodistoKoodi]
