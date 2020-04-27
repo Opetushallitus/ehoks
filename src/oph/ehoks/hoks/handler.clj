@@ -293,7 +293,7 @@
           {:error (ex-message e)})
         :else (throw e)))))
 
-(defn- add-hankintakoulutukset [hoks opiskeluoikeudet]
+(defn- add-hankintakoulutukset-to-index [hoks opiskeluoikeudet]
   (oppijaindex/add-oppija-hankintakoulutukset opiskeluoikeudet
                                               (:opiskeluoikeus-oid hoks)
                                               (:oppija-oid hoks)))
@@ -333,7 +333,7 @@
           (check-opiskeluoikeus-match hoks opiskeluoikeudet)
           (add-oppija-to-index hoks)
           (add-opiskeluoikeus-to-index hoks)
-          (add-hankintakoulutukset hoks opiskeluoikeudet))
+          (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))
         (m/check-hoks-access! hoks request)
         (save-hoks hoks request))
 
