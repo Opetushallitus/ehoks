@@ -371,7 +371,7 @@
       (is (= (:status get-response) 200))
       (eq (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data)
           (utils/dissoc-module-ids (:opiskeluvalmiuksia-tukevat-opinnot
-                                get-response-data))))))
+                                     get-response-data))))))
 
 (deftest prevent-updating-opiskeluoikeus
   (testing "Prevent PUT HOKS with existing opiskeluoikeus"

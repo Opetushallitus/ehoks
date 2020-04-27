@@ -223,7 +223,6 @@
     [KoulutuksenJarjestajaArvioija]
     "Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot."))
 
-
 (s/defschema
   OsaamisenOsoittaminen
   (describe
