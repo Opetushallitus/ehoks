@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 18.03.2020 06.10
+Generoitu 27.04.2020 09.04
 
 ### MuuOppimisymparisto  
 
@@ -103,6 +103,7 @@ Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
 | alku | Päivämäärä | Näytön tai osaamisen osoittamisen alkupäivämäärä muodossa<br>    YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa<br>    YYYY-MM-DD | Kyllä |
 | yksilolliset-kriteerit | [Merkkijono] | Ammattitaitovaatimus tai osaamistavoite, johon yksilölliset<br>    arviointikriteerit kohdistuvat ja yksilölliset arviointikriteerit kyseiseen<br>    ammattitaitovaatimukseen tai osaamistavoitteeseen. | Ei |
+| module-id | Uuid | Tietorakenteen yksilöivä tunnisteesimerkiksi tiedon jakamista varten | Ei |
 
 ### AiemminHankitunAmmatillisenTutkinnonOsanLuonti  
 
@@ -427,6 +428,7 @@ Osaamisen hankkimisen tapa
 | tyopaikalla-jarjestettava-koulutus | [TyopaikallaJarjestettavaKoulutus](#TyopaikallaJarjestettavaKoulutus) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai koulutussopimus. | Ei |
 | alku | Päivämäärä | Alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
+| module-id | Uuid | Tietorakenteen yksilöivä tunnisteesimerkiksi tiedon jakamista varten | Ei |
 
 ### Nayttoymparisto  
 

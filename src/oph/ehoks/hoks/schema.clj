@@ -2,7 +2,8 @@
   (:require [schema.core :as s]
             [oph.ehoks.schema-tools :refer [describe modify]]
             [oph.ehoks.schema.generator :as g])
-  (:import (java.time LocalDate)))
+  (:import (java.time LocalDate)
+           (java.util UUID)))
 
 (def TutkinnonOsaKoodiUri
   "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosat)."
@@ -147,6 +148,8 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
+    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
+                                          "esimerkiksi tiedon jakamista varten")
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
     :osaamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
@@ -226,6 +229,8 @@
     "Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
     sisältyvä osaamisen osoittaminen: näyttö tai muu osaamisen osoittaminen."
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
+                                          "esimerkiksi tiedon jakamista varten")
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
     (s/optional-key :osa-alueet) [KoodistoKoodi]

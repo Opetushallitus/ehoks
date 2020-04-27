@@ -370,8 +370,8 @@
       (is (= (:status put-response) 204))
       (is (= (:status get-response) 200))
       (eq (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data)
-          (utils/dissoc-uuids (:opiskeluvalmiuksia-tukevat-opinnot
-                                get-response-data))))))
+          (utils/dissoc-module-ids (:opiskeluvalmiuksia-tukevat-opinnot
+                                     get-response-data))))))
 
 (deftest prevent-updating-opiskeluoikeus
   (testing "Prevent PUT HOKS with existing opiskeluoikeus"
