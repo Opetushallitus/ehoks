@@ -17,6 +17,7 @@
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [schema.core :as s]
             [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [cheshire.core :as cheshire]))
@@ -328,7 +329,7 @@
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
-        (let [opiskeluoikeudet (oppijaindex/fetch-opiskeluoikeudet-by-oppija-id
+        (let [opiskeluoikeudet (koski/fetch-opiskeluoikeudet-by-oppija-id
                                  (:oppija-oid hoks))]
           (check-opiskeluoikeus-match hoks opiskeluoikeudet)
           (add-oppija-to-index hoks)

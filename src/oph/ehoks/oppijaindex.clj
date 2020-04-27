@@ -275,11 +275,6 @@
 (defn set-opiskeluoikeus-paattynyt! [oid timestamp]
   (db-opiskeluoikeus/update-opiskeluoikeus! oid {:paattynyt timestamp}))
 
-(defn fetch-opiskeluoikeudet-by-oppija-id
-  "Fetches list of opiskeluoikeudet from Koski for oppija"
-  [oppija-oid]
-  (k/get-oppija-opiskeluoikeudet oppija-oid))
-
 (defn oppija-opiskeluoikeus-match?
   "Check that opiskeluoikeus belongs to oppija"
   [opiskeluoikeudet opiskeluoikeus-oid]

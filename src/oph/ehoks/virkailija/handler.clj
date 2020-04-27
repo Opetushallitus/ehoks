@@ -174,7 +174,7 @@
 
 (defn- post-oppija [hoks request]
   (let [opiskeluoikeudet
-        (op/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
+        (koski/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
     (check-opiskeluoikeus-match hoks opiskeluoikeudet)
     (add-oppija hoks)
     (add-opiskeluoikeus hoks)
