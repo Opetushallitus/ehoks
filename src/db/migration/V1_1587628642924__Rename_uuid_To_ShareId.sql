@@ -39,3 +39,17 @@ ALTER TABLE osaamisen_osoittamiset
 
 ALTER TABLE osaamisen_hankkimistavat
     RENAME COLUMN uuid TO module_id;
+
+ALTER TABLE aiemmin_hankitun_yto_osa_alueen_naytto
+    ADD COLUMN module_id UUID UNIQUE DEFAULT gen_random_uuid();
+
+ALTER TABLE yhteisen_tutkinnon_osan_osa_alueet
+    ADD COLUMN module_id UUID UNIQUE DEFAULT gen_random_uuid();
+
+ALTER TABLE yhteisen_tutkinnon_osan_osa_alueen_naytot
+    ADD COLUMN module_id UUID UNIQUE DEFAULT gen_random_uuid();
+
+ALTER TABLE yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
+    ADD COLUMN module_id UUID UNIQUE DEFAULT gen_random_uuid();
+
+
