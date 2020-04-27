@@ -28,7 +28,8 @@
                          (hoks-utils/get-hoks-url
                            hoks (format "%s/1" hpto-path)))]
           (eq
-            (utils/dissoc-module-ids (:data (utils/parse-body (:body ppto-new))))
+            (utils/dissoc-module-ids
+              (:data (utils/parse-body (:body ppto-new))))
             (assoc
               test-data/hpto-data
               :id 1)))))))
