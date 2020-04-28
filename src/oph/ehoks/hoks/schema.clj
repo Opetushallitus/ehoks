@@ -434,27 +434,6 @@
        annetaan myös arvioijan lisätiedot")}))
 
 (s/defschema
-  AiemminHankitunPaikallisenTutkinnonOsanLuonti
-  (modify
-    AiemminHankittuPaikallinenTutkinnonOsa
-    (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot uutta "
-         "merkintää luotaessa (POST")
-    {:removed [:id]}))
-
-(s/defschema
-  AiemminHankitunPaikallisenTutkinnonOsanPaivitys
-  (modify
-    AiemminHankittuPaikallinenTutkinnonOsa
-    (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot "
-         "kenttää tai kenttiä päivitettäessä (PATCH)")
-    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
-                 :valittu-todentamisen-prosessi-koodi-uri
-                 :koulutuksen-jarjestaja-oid
-                 :kuvaus
-                 :laajuus
-                 :nimi]}))
-
-(s/defschema
   HankittavanPaikallisenTutkinnonOsanLuonti
   (modify
     HankittavaPaikallinenTutkinnonOsa

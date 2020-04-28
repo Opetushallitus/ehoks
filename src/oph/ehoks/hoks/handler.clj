@@ -173,7 +173,7 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo olemassa olevan paikallisen tutkinnon osan HOKSiin"
-      :body [oopto hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanLuonti]
+      :body [oopto partial-hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [oopto-from-db (ah/save-aiemmin-hankittu-paikallinen-tutkinnon-osa!
                             (get-in request [:hoks :id]) oopto)]
@@ -185,7 +185,7 @@
       :summary (str "Päivittää HOKSin aiemmin hankitun paikallisen tutkinnon "
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
-      :body [values hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanPaivitys]
+      :body [values partial-hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanPaivitys]
       (if-let [oopto-from-db
                (pdb-ah/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id
                  id)]
