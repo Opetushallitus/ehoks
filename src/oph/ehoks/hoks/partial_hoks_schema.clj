@@ -40,3 +40,20 @@
     {:optionals
      [:osa-alueet :koulutuksen-jarjestaja-oid :tutkinnon-osa-koodi-uri
       :tutkinnon-osa-koodi-versio]}))
+
+(s/defschema
+  OpiskeluvalmiuksiaTukevatOpinnotLuonti
+  (modify
+    hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot
+    (str "Opiskeluvalmiuksia tukevien opintojen tiedot uutta merkintää "
+         "luotaessa (POST)")
+    {:removed [:id]}))
+
+(s/defschema
+  OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys
+  (modify
+    hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot
+    (str "Opiskeluvalmiuksia tukevien opintojen tiedot kenttää tai kenttiä "
+         "päivittäessä (PATCH)")
+    {:optionals
+     [:nimi :kuvaus :kesto :alku :loppu]}))

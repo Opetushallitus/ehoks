@@ -361,23 +361,6 @@
     :loppu LocalDate "Opintojen loppupäivämäärä muodossa YYYY-MM-DD"))
 
 (s/defschema
-  OpiskeluvalmiuksiaTukevatOpinnotLuonti
-  (modify
-    OpiskeluvalmiuksiaTukevatOpinnot
-    (str "Opiskeluvalmiuksia tukevien opintojen tiedot uutta merkintää "
-         "luotaessa (POST)")
-    {:removed [:id]}))
-
-(s/defschema
-  OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys
-  (modify
-    OpiskeluvalmiuksiaTukevatOpinnot
-    (str "Opiskeluvalmiuksia tukevien opintojen tiedot kenttää tai kenttiä "
-         "päivittäessä (PATCH)")
-    {:optionals
-     [:nimi :kuvaus :kesto :alku :loppu]}))
-
-(s/defschema
   HankittavaAmmatillinenTutkinnonOsa
   (describe
     "Hankittavan ammatillisen osaamisen tiedot (GET)"
