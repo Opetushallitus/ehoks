@@ -434,28 +434,6 @@
        annetaan myös arvioijan lisätiedot")}))
 
 (s/defschema
-  HankittavanPaikallisenTutkinnonOsanLuonti
-  (modify
-    HankittavaPaikallinenTutkinnonOsa
-    (str "Hankittavan paikallisen tutkinnon osan tiedot uutta merkintää "
-         "luotaessa (POST)")
-    {:removed [:id]}))
-
-(s/defschema
-  HankittavaPaikallinenTutkinnonOsaKentanPaivitys
-  (modify
-    HankittavaPaikallinenTutkinnonOsa
-    (str "Hankittavan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
-         "päivittäessä (PATCH)")
-    {:optionals
-     [:osaamisen-hankkimistavat
-      :koulutuksen-jarjestaja-oid
-      :osaamisen-osoittaminen
-      :kuvaus
-      :laajuus
-      :nimi]}))
-
-(s/defschema
   AiemminHankittuYhteinenTutkinnonOsa
   (modify
     YhteinenTutkinnonOsa

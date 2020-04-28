@@ -78,3 +78,25 @@
                  :kuvaus
                  :laajuus
                  :nimi]}))
+
+(s/defschema
+  HankittavanPaikallisenTutkinnonOsanLuonti
+  (modify
+    hoks-schema/HankittavaPaikallinenTutkinnonOsa
+    (str "Hankittavan paikallisen tutkinnon osan tiedot uutta merkintää "
+         "luotaessa (POST)")
+    {:removed [:id]}))
+
+(s/defschema
+  HankittavaPaikallinenTutkinnonOsaPaivitys
+  (modify
+    hoks-schema/HankittavaPaikallinenTutkinnonOsa
+    (str "Hankittavan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
+         "päivittäessä (PATCH)")
+    {:optionals
+     [:osaamisen-hankkimistavat
+      :koulutuksen-jarjestaja-oid
+      :osaamisen-osoittaminen
+      :kuvaus
+      :laajuus
+      :nimi]}))

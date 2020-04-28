@@ -41,7 +41,7 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo hankittavan paikallisen tutkinnon osan"
-      :body [ppto hoks-schema/HankittavanPaikallisenTutkinnonOsanLuonti]
+      :body [ppto partial-hoks-schema/HankittavanPaikallisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ppto-db (ha/save-hankittava-paikallinen-tutkinnon-osa!
                       hoks-id ppto)]
@@ -54,7 +54,7 @@
       "Päivittää HOKSin hankittavan paikallisen tutkinnon osan arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body
-      [values hoks-schema/HankittavaPaikallinenTutkinnonOsaKentanPaivitys]
+      [values partial-hoks-schema/HankittavaPaikallinenTutkinnonOsaPaivitys]
       (let [ppto-db (pdb-ha/select-hankittava-paikallinen-tutkinnon-osa-by-id
                       id)]
         (if (some? ppto-db)
