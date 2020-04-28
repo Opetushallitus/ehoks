@@ -632,7 +632,8 @@
 (def ^:private hato-part-of-hoks
   {:methods {:any :optional
              :patch :excluded}
-   :types {:any [HankittavaAmmatillinenTutkinnonOsa]}
+   :types {:any [HankittavaAmmatillinenTutkinnonOsa]
+           :post [HankittavaAmmatillinenTutkinnonOsaLuonti]}
    :description
    "Hankittavan ammatillisen osaamisen hankkimisen tiedot"})
 
