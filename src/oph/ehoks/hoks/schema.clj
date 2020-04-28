@@ -456,26 +456,6 @@
        annetaan myös arvioijan lisätiedot")}))
 
 (s/defschema
-  AiemminHankitunYhteisenTutkinnonOsanLuonti
-  (modify
-    AiemminHankittuYhteinenTutkinnonOsa
-    (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot uutta "
-         "merkintää luotaessa (POST)")
-    {:removed [:id]}))
-
-(s/defschema
-  AiemminHankitunYhteisenTutkinnonOsanPaivitys
-  (modify
-    AiemminHankittuYhteinenTutkinnonOsa
-    (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot "
-         "kenttää tai kenttiä päivitettäessä (PATCH)")
-    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
-                 :valittu-todentamisen-prosessi-koodi-uri
-                 :tutkinnon-osa-koodi-versio
-                 :tutkinnon-osa-koodi-uri
-                 :osa-alueet]}))
-
-(s/defschema
   AiemminHankittuAmmatillinenTutkinnonOsa
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
