@@ -120,3 +120,22 @@
                  :tutkinnon-osa-koodi-versio
                  :tutkinnon-osa-koodi-uri
                  :osa-alueet]}))
+
+(s/defschema
+  AiemminHankitunAmmatillisenTutkinnonOsanLuonti
+  (modify
+    hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsa
+    (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot uutta "
+         "merkintää luotaessa (POST)")
+    {:removed [:id]}))
+
+(s/defschema
+  AiemminHankitunAmmatillisenTutkinnonOsanPaivitys
+  (modify
+    hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsa
+    (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot "
+         "kenttää tai kenttiä päivittäessä (PATCH)")
+    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+                 :valittu-todentamisen-prosessi-koodi-uri
+                 :tutkinnon-osa-koodi-versio
+                 :tutkinnon-osa-koodi-uri]}))

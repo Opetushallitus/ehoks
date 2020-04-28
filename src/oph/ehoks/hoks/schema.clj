@@ -469,25 +469,6 @@
     järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
     liittyvän osaamisen hankkimisessa tai osoittamisessa."))}))
 
-(s/defschema
-  AiemminHankitunAmmatillisenTutkinnonOsanLuonti
-  (modify
-    AiemminHankittuAmmatillinenTutkinnonOsa
-    (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot uutta "
-         "merkintää luotaessa (POST)")
-    {:removed [:id]}))
-
-(s/defschema
-  AiemminHankitunAmmatillisenTutkinnonOsanPaivitys
-  (modify
-    AiemminHankittuAmmatillinenTutkinnonOsa
-    (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot "
-         "kenttää tai kenttiä päivittäessä (PATCH)")
-    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
-                 :valittu-todentamisen-prosessi-koodi-uri
-                 :tutkinnon-osa-koodi-versio
-                 :tutkinnon-osa-koodi-uri]}))
-
 (def ^:private ahato-part-of-hoks
   {:methods {:any :optional
              :patch :excluded}

@@ -138,7 +138,7 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo aiemmin hankitun ammat tutkinnon osan HOKSiin"
-      :body [ooato hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanLuonti]
+      :body [ooato partial-hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ooato-from-db (ah/save-aiemmin-hankittu-ammat-tutkinnon-osa!
                             (get-in request [:hoks :id]) ooato)]
@@ -151,7 +151,7 @@
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
       :body
-      [values hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanPaivitys]
+      [values partial-hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanPaivitys]
       (if-let [ooato-from-db
                (pdb-ah/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id
                  id)]
