@@ -138,13 +138,13 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo aiemmin hankitun ammat tutkinnon osan HOKSiin"
-      :body [ooato partial-hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanLuonti]
+      :body [ahato partial-hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ooato-from-db (ah/save-aiemmin-hankittu-ammat-tutkinnon-osa!
-                            (get-in request [:hoks :id]) ooato)]
+      (let [ahato-from-db (ah/save-aiemmin-hankittu-ammat-tutkinnon-osa!
+                            (get-in request [:hoks :id]) ahato)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id ooato-from-db))}
-          :id (:id ooato-from-db))))
+          {:uri (format "%s/%d" (:uri request) (:id ahato-from-db))}
+          :id (:id ahato-from-db))))
 
     (c-api/PATCH "/:id" []
       :summary (str "Päivittää HOKSin aiemmin hankitun ammatillisen tutkinnon "
@@ -152,12 +152,12 @@
       :path-params [id :- s/Int]
       :body
       [values partial-hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanPaivitys]
-      (if-let [ooato-from-db
+      (if-let [ahato-from-db
                (pdb-ah/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id
                  id)]
         (do
           (ah/update-aiemmin-hankittu-ammat-tutkinnon-osa!
-            ooato-from-db values)
+            ahato-from-db values)
           (response/no-content))
         (response/not-found
           {:error "Olemassa oleva ammatillinen tutkinnon osa not found"})))))
