@@ -5,6 +5,7 @@
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
+            [oph.ehoks.hoks.partial-hoks-schema :as partial-hoks-schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as pdb-ah]
             [oph.ehoks.db.postgresql.hankittavat :as pdb-ha]
@@ -74,22 +75,22 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo hankittavan ammatillisen osaamisen HOKSiin"
-      :body [pao hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuonti]
+      :body [hato partial-hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [pao-db (ha/save-hankittava-ammat-tutkinnon-osa!
-                     hoks-id pao)]
+      (let [hato-db (ha/save-hankittava-ammat-tutkinnon-osa!
+                     hoks-id hato)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id pao-db))}
-          :id (:id pao-db))))
+          {:uri (format "%s/%d" (:uri request) (:id hato-db))}
+          :id (:id hato-db))))
 
     (c-api/PATCH "/:id" [:as request]
       :summary
       "Päivittää HOKSin hankittavan ammatillisen tutkinnon osan arvoa ja arvoja"
       :path-params [id :- s/Int]
       :body
-      [values hoks-schema/HankittavaAmmatillinenTutkinnonOsaKentanPaivitys]
-      (if-let [hao-db (ha/get-hankittava-ammat-tutkinnon-osa id)]
-        (do (ha/update-hankittava-ammat-tutkinnon-osa! hao-db values)
+      [values partial-hoks-schema/HankittavaAmmatillinenTutkinnonOsaPaivitys]
+      (if-let [hato-db (ha/get-hankittava-ammat-tutkinnon-osa id)]
+        (do (ha/update-hankittava-ammat-tutkinnon-osa! hato-db values)
             (response/no-content))
         (response/not-found
           {:error "Hankittava ammatillinen tutkinnon osa not found"})))))

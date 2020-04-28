@@ -404,25 +404,6 @@
    liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
 
 (s/defschema
-  HankittavaAmmatillinenTutkinnonOsaLuonti
-  (modify
-    HankittavaAmmatillinenTutkinnonOsa
-    "Hankittavan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)"
-    {:removed [:id]}))
-
-(s/defschema
-  HankittavaAmmatillinenTutkinnonOsaKentanPaivitys
-  (modify
-    HankittavaAmmatillinenTutkinnonOsa
-    (str "Hankittavan ammatillisen osaamisen tiedot kenttää tai kenttiä "
-         "päivittäessä (PATCH)")
-    {:optionals
-     [:tutkinnon-osa-koodi-uri
-      :tutkinnon-osa-koodi-versio
-      :osaamisen-hankkimistavat
-      :koulutuksen-jarjestaja-oid]}))
-
-(s/defschema
   HankittavaYTOLuonti
   (modify
     HankittavaYTO
