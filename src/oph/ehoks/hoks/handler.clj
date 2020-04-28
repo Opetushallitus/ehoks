@@ -107,7 +107,7 @@
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) hankittavan yhteisen tutkinnon osat HOKSiin"
-      :body [hyto hoks-schema/HankittavaYTOLuonti]
+      :body [hyto partial-hoks-schema/HankittavaYTOLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [hyto-response (ha/save-hankittava-yhteinen-tutkinnon-osa!
                             (get-in request [:hoks :id]) hyto)]
@@ -119,7 +119,7 @@
       :summary
       "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/HankittavaYTOKentanPaivitys]
+      :body [values partial-hoks-schema/HankittavaYTOKentanPaivitys]
       (if (not-empty (pdb-ha/select-hankittava-yhteinen-tutkinnon-osa-by-id id))
         (do
           (ha/update-hankittava-yhteinen-tutkinnon-osa! id values)

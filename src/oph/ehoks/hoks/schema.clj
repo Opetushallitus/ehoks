@@ -404,24 +404,6 @@
    liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
 
 (s/defschema
-  HankittavaYTOLuonti
-  (modify
-    HankittavaYTO
-    (str "Hankittavan yhteinen tutkinnon osan tiedot uutta merkintää "
-         "luotaessa (POST)")
-    {:removed [:id]}))
-
-(s/defschema
-  HankittavaYTOKentanPaivitys
-  (modify
-    HankittavaYTO
-    (str "Hankittavan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
-         "päivittäessä (PATCH)")
-    {:optionals
-     [:osa-alueet :koulutuksen-jarjestaja-oid :tutkinnon-osa-koodi-uri
-      :tutkinnon-osa-koodi-versio]}))
-
-(s/defschema
   HankittavaPaikallinenTutkinnonOsa
   (describe
     "Hankittava paikallinen tutkinnon osa"
