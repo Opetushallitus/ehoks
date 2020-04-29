@@ -416,14 +416,15 @@
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen")
-       )}))
+            "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsa
   (describe
     "Hankittava paikallinen tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
+                                          "esimerkiksi tiedon jakamista varten")
     (s/optional-key :amosaa-tunniste) s/Str
     "Tunniste ePerusteet AMOSAA -palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi"
@@ -445,6 +446,22 @@
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
     järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
     liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
+
+(s/defschema
+  HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus
+  (modify
+    HankittavaPaikallinenTutkinnonOsa
+    "Hankittavan paikallisen osaamisen tiedot (POST, PUT)"
+    {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
+     :added
+     (describe
+       ""
+       (s/optional-key :osaamisen-hankkimistavat)
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
+       (s/optional-key :osaamisen-osoittaminen)
+       [OsaamisenOsoittaminenLuontiJaMuokkaus]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
   AiemminHankittuPaikallinenTutkinnonOsa
@@ -544,7 +561,9 @@
 (def ^:private hpto-part-of-hoks
   {:methods {:any :optional
              :patch :excluded}
-   :types {:any [HankittavaPaikallinenTutkinnonOsa]}
+   :types {:any [HankittavaPaikallinenTutkinnonOsa]
+           :post [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]
+           :put [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
    :description "Hankittavat paikallisen tutkinnon osat"})
 
 (def HOKSModel
