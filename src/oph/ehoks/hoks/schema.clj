@@ -407,11 +407,17 @@
   (modify
     HankittavaAmmatillinenTutkinnonOsa
     "Hankittavan ammatillisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :osaamisen-hankkimistavat]
+    {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
      :added
      (describe
-       (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapaLuontiJaMuokkaus]
-              "Osaamisen hankkimistavat")}))
+       ""
+       (s/optional-key :osaamisen-hankkimistavat)
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
+       (s/optional-key :osaamisen-osoittaminen)
+       [OsaamisenOsoittaminenLuontiJaMuokkaus]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen")
+       )}))
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsa
