@@ -173,6 +173,13 @@
          "liittyvät tiedot")))
 
 (s/defschema
+  OsaamisenHankkimistapaLuontiJaMuokkaus
+  (modify
+    OsaamisenHankkimistapa
+    "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
+    {:removed [:module-id]}))
+
+(s/defschema
   NaytonJarjestaja
   (describe
     "Näytön tai osaamisen osoittamisen järjestäjä"
