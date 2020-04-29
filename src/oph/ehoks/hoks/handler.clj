@@ -119,7 +119,7 @@
       :summary
       "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values partial-hoks-schema/HankittavaYTOKentanPaivitys]
+      :body [values partial-hoks-schema/HankittavaYTOPaivitys]
       (if (not-empty (pdb-ha/select-hankittava-yhteinen-tutkinnon-osa-by-id id))
         (do
           (ha/update-hankittava-yhteinen-tutkinnon-osa! id values)
@@ -253,7 +253,7 @@
       :summary
       "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values partial-hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
+      :body [values partial-hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
       (let [count-of-updated-rows
             (first
               (pdb-ot/update-opiskeluvalmiuksia-tukevat-opinnot-by-id!

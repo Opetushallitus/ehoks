@@ -32,7 +32,7 @@
     {:removed [:id]}))
 
 (s/defschema
-  HankittavaYTOKentanPaivitys
+  HankittavaYTOPaivitys
   (modify
     hoks-schema/HankittavaYTO
     (str "Hankittavan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
@@ -50,7 +50,7 @@
     {:removed [:id]}))
 
 (s/defschema
-  OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys
+  OpiskeluvalmiuksiaTukevatOpinnotPaivitys
   (modify
     hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot
     (str "Opiskeluvalmiuksia tukevien opintojen tiedot kenttää tai kenttiä "
