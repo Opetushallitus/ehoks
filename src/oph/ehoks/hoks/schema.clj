@@ -274,6 +274,13 @@
     ammattitaitovaatimukseen tai osaamistavoitteeseen.")))
 
 (s/defschema
+  OsaamisenOsoittaminenLuontiJaMuokkaus
+  (modify
+    OsaamisenOsoittaminen
+    "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
+    {:removed [:module-id]}))
+
+(s/defschema
   YhteisenTutkinnonOsanOsaAlue
   (describe
     "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
