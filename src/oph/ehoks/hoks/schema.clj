@@ -372,6 +372,8 @@
   (describe
     "Hankittavan ammatillisen osaamisen tiedot (GET)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
+                                          "esimerkiksi tiedon jakamista varten")
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)"
     :tutkinnon-osa-koodi-versio s/Int
@@ -392,6 +394,17 @@
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
    järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
    liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
+
+(s/defschema
+  HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus
+  (modify
+    HankittavaAmmatillinenTutkinnonOsa
+    "Hankittavan ammatillisen osaamisen tiedot (POST, PUT)"
+    {:removed [:module-id :osaamisen-hankkimistavat]
+     :added
+     (describe
+       (s/optional-key :osaamisen-hankkimistavat) [OsaamisenHankkimistapaLuontiJaMuokkaus]
+              "Osaamisen hankkimistavat")}))
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsa
@@ -503,7 +516,9 @@
 (def ^:private hato-part-of-hoks
   {:methods {:any :optional
              :patch :excluded}
-   :types {:any [HankittavaAmmatillinenTutkinnonOsa]}
+   :types {:any [HankittavaAmmatillinenTutkinnonOsa]
+           :post [HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
+           :put [HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]}
    :description
    "Hankittavan ammatillisen osaamisen hankkimisen tiedot"})
 
