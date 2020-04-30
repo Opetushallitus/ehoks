@@ -502,6 +502,20 @@
        annetaan myös arvioijan lisätiedot")}))
 
 (s/defschema
+  AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus
+  (modify
+    AiemminHankittuPaikallinenTutkinnonOsa
+    "Aiemmin hankitun paikallisen osaamisen tiedot (POST, PUT)"
+    {:removed [:module-id :tarkentavat-tiedot-naytto]
+     :added
+     (describe
+       ""
+       (s/optional-key :tarkentavat-tiedot-naytto)
+       [OsaamisenOsoittaminenLuontiJaMuokkaus]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
+
+(s/defschema
   AiemminHankittuYhteinenTutkinnonOsa
   (modify
     YhteinenTutkinnonOsa
@@ -552,7 +566,9 @@
 (def ^:private ahpto-part-of-hoks
   {:methods {:any :optional
              :patch :excluded}
-   :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]}
+   :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]
+           :post [AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]
+           :put [AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
    :description "Aiemmin hankittu paikallinen tutkinnon osa"})
 
 (def ^:private oto-part-of-hoks
