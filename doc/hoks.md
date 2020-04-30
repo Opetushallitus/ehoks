@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 30.04.2020 07.27
+Generoitu 30.04.2020 07.32
 
 ### HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus  
 
@@ -133,7 +133,7 @@ HOKS-dokumentin ylikirjoitus (PUT)
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
 | hankittavat-ammat-tutkinnon-osat | [[HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus](#HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus)] | Hankittavan ammatillisen osaamisen hankkimisen tiedot | Ei |
 | aiemmin-hankitut-paikalliset-tutkinnon-osat | [[AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus](#AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus)] | Aiemmin hankittu paikallinen tutkinnon osa | Ei |
-| aiemmin-hankitut-yhteiset-tutkinnon-osat | [[AiemminHankittuYhteinenTutkinnonOsa](#AiemminHankittuYhteinenTutkinnonOsa)] | Aiemmin hankitut yhteiset tutkinnon osat (YTO) | Ei |
+| aiemmin-hankitut-yhteiset-tutkinnon-osat | [[AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus](#AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus)] | Aiemmin hankitut yhteiset tutkinnon osat (YTO) | Ei |
 | urasuunnitelma-koodi-uri | Merkkijono, urasuunnitelman koodistokoodi uri, esim. urasuunnitelma_0001 | Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto<br>    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.<br>    urasuunnitelma_0001 | Ei |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | hankittavat-yhteiset-tutkinnon-osat | [[HankittavaYTOLuontiJaMuokkaus](#HankittavaYTOLuontiJaMuokkaus)] | Hankittavan yhteisen tutkinnon osan hankkimisen tiedot | Ei |
@@ -174,7 +174,7 @@ HOKS-dokumentin arvot uutta merkintää luotaessa (POST)
 | sahkoposti | Merkkijono | Oppijan sähköposti, merkkijono. | Ei |
 | hankittavat-ammat-tutkinnon-osat | [[HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus](#HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus)] | Hankittavan ammatillisen osaamisen hankkimisen tiedot | Ei |
 | aiemmin-hankitut-paikalliset-tutkinnon-osat | [[AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus](#AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus)] | Aiemmin hankittu paikallinen tutkinnon osa | Ei |
-| aiemmin-hankitut-yhteiset-tutkinnon-osat | [[AiemminHankittuYhteinenTutkinnonOsa](#AiemminHankittuYhteinenTutkinnonOsa)] | Aiemmin hankitut yhteiset tutkinnon osat (YTO) | Ei |
+| aiemmin-hankitut-yhteiset-tutkinnon-osat | [[AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus](#AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus)] | Aiemmin hankitut yhteiset tutkinnon osat (YTO) | Ei |
 | urasuunnitelma-koodi-uri | Merkkijono, urasuunnitelman koodistokoodi uri, esim. urasuunnitelma_0001 | Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto<br>    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.<br>    urasuunnitelma_0001 | Ei |
 | hyvaksytty | Aikaleima | HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | opiskeluoikeus-oid | #"^1\.2\.246\.562\.15\.\d+$" | Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa<br>                  '1.2.246.562.15.00000000001'. | Kyllä |
@@ -209,6 +209,21 @@ Aiemmin hankittu yhteinen tutkinnon osa
 | tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
 | module-id | Uuid | Tietorakenteen yksilöivä tunnisteesimerkiksi tiedon jakamista varten | Ei |
 | tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminen](#OsaamisenOsoittaminen)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
+
+### AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus  
+
+Aiemmin hankitun yhteisen osaamisen tiedot (POST, PUT)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| tutkinnon-osa-koodi-versio | Kokonaisluku | Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa<br>     (tutkinnonosat) | Kyllä |
+| valittu-todentamisen-prosessi-koodi-versio | Kokonaisluku | Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio<br>       (Osaamisen todentamisen prosessi) | Ei |
+| tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa<br>    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.<br>    tutkinnonosat_100002 | Kyllä |
+| valittu-todentamisen-prosessi-koodi-uri | Merkkijono, muotoa osaamisentodentamisenprosessi_0003 | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Ei |
+| osa-alueet | [[AiemminHankitunYTOOsaAlue](#AiemminHankitunYTOOsaAlue)] | YTO osa-alueet | Kyllä |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
+| tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 
 ###   
 
