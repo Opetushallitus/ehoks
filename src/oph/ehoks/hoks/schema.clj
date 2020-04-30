@@ -344,6 +344,8 @@
   (describe
     "Yhteinen Tutkinnon osa (YTO)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
+                                          "esimerkiksi tiedon jakamista varten")
     :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa
@@ -363,6 +365,22 @@
     YhteinenTutkinnonOsa
     "Hankittavan yhteinen tutkinnon osan (YTO) tiedot"
     {:removed [:vaatimuksista-tai-tavoitteista-poikkeaminen]}))
+
+(s/defschema
+  HankittavaYTOLuontiJaMuokkaus
+  (modify
+    HankittavaYTO
+    "Hankittavan yhteisen tutkinnnon osan (POST, PUT)"
+    {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
+     :added
+     (describe
+       ""
+       (s/optional-key :osaamisen-hankkimistavat)
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
+       (s/optional-key :osaamisen-osoittaminen)
+       [OsaamisenOsoittaminenLuontiJaMuokkaus]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
   OpiskeluvalmiuksiaTukevatOpinnot
@@ -555,7 +573,9 @@
 (def ^:private hyto-part-of-hoks
   {:methods {:any :optional
              :patch :excluded}
-   :types {:any [HankittavaYTO]}
+   :types {:any [HankittavaYTO]
+           :post [HankittavaYTOLuontiJaMuokkaus]
+           :put [HankittavaYTOLuontiJaMuokkaus]}
    :description "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot"})
 
 (def ^:private hpto-part-of-hoks
