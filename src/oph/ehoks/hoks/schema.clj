@@ -565,10 +565,26 @@
     järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
     liittyvän osaamisen hankkimisessa tai osoittamisessa."))}))
 
+(s/defschema
+  AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus
+  (modify
+    AiemminHankittuAmmatillinenTutkinnonOsa
+    "Aiemmin hankitun ammatillisen osaamisen tiedot (POST, PUT)"
+    {:removed [:module-id :tarkentavat-tiedot-naytto]
+     :added
+     (describe
+       ""
+       (s/optional-key :tarkentavat-tiedot-naytto)
+       [OsaamisenOsoittaminenLuontiJaMuokkaus]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
+
 (def ^:private ahato-part-of-hoks
   {:methods {:any :optional
              :patch :excluded}
-   :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]}
+   :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]
+           :post [AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
+           :put [AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]}
    :description "Aiemmin hankittu ammatillinen osaaminen"})
 
 (def ^:private ahyto-part-of-hoks
