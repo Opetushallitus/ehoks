@@ -78,7 +78,7 @@
       :body [hato partial-hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [hato-db (ha/save-hankittava-ammat-tutkinnon-osa!
-                     hoks-id hato)]
+                      hoks-id hato)]
         (rest/rest-ok
           {:uri (format "%s/%d" (:uri request) (:id hato-db))}
           :id (:id hato-db))))
