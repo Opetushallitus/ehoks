@@ -401,8 +401,8 @@
   (describe
     "Hankittavan ammatillisen osaamisen tiedot (GET)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
-                                          "esimerkiksi tiedon jakamista varten")
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste"
+                         "esimerkiksi tiedon jakamista varten")
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)"
     :tutkinnon-osa-koodi-versio s/Int
