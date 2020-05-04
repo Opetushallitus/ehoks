@@ -17,7 +17,8 @@
     hoks-schema/HankittavaAmmatillinenTutkinnonOsa
     (str "Hankittavan ammatillisen osaamisen tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
-    {:optionals
+    {:removed [:module-id]
+     :optionals
      [:tutkinnon-osa-koodi-uri
       :tutkinnon-osa-koodi-versio
       :osaamisen-hankkimistavat
@@ -37,7 +38,8 @@
     hoks-schema/HankittavaYTO
     (str "Hankittavan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
-    {:optionals
+    {:removed [:module-id]
+     :optionals
      [:osa-alueet :koulutuksen-jarjestaja-oid :tutkinnon-osa-koodi-uri
       :tutkinnon-osa-koodi-versio]}))
 
@@ -72,7 +74,8 @@
     hoks-schema/AiemminHankittuPaikallinenTutkinnonOsa
     (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot "
          "kenttää tai kenttiä päivitettäessä (PATCH)")
-    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+    {:removed [:module-id]
+     :optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri
                  :koulutuksen-jarjestaja-oid
                  :kuvaus
@@ -93,7 +96,8 @@
     hoks-schema/HankittavaPaikallinenTutkinnonOsa
     (str "Hankittavan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
-    {:optionals
+    {:removed [:module-id]
+     :optionals
      [:osaamisen-hankkimistavat
       :koulutuksen-jarjestaja-oid
       :osaamisen-osoittaminen
@@ -115,7 +119,8 @@
     hoks-schema/AiemminHankittuYhteinenTutkinnonOsa
     (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot "
          "kenttää tai kenttiä päivitettäessä (PATCH)")
-    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+    {:removed [:module-id]
+     :optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri
                  :tutkinnon-osa-koodi-versio
                  :tutkinnon-osa-koodi-uri
@@ -135,7 +140,8 @@
     hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsa
     (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot "
          "kenttää tai kenttiä päivittäessä (PATCH)")
-    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+    {:removed [:module-id]
+     :optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri
                  :tutkinnon-osa-koodi-versio
                  :tutkinnon-osa-koodi-uri]}))
