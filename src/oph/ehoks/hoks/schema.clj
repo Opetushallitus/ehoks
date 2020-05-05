@@ -309,6 +309,22 @@
     osoittamisessa.")))
 
 (s/defschema
+  YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus
+  (modify
+    YhteisenTutkinnonOsanOsaAlue
+    "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot (POST, PUT)"
+    {:removed [:module-id :osaamisen-osoittaminen :osaamisen-hankkimistavat]
+     :added
+     (describe
+       ""
+       (s/optional-key :osaamisen-hankkimistavat)
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
+       (s/optional-key :osaamisen-osoittaminen)
+       [OsaamisenOsoittaminenLuontiJaMuokkaus]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
+
+(s/defschema
   AiemminHankitunYTOOsaAlue
   (describe
     "AiemminHankitun YTOn osa-alueen tiedot"
@@ -342,6 +358,20 @@
     (s/optional-key :tarkentavat-tiedot-osaamisen-arvioija)
     TodennettuArviointiLisatiedot
     "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"))
+
+(s/defschema
+  AiemminHankitunYTOOsaAlueLuontiJaMuokkaus
+  (modify
+    AiemminHankitunYTOOsaAlue
+    "AiemminHankitun YTOn osa-alueen tiedot (POST, PUT)"
+    {:removed [:module-id :tarkentavat-tiedot-naytto]
+     :added
+     (describe
+       ""
+       (s/optional-key :tarkentavat-tiedot-naytto)
+       [OsaamisenOsoittaminenLuontiJaMuokkaus]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
   YhteinenTutkinnonOsa
