@@ -7,33 +7,34 @@
             [ring.util.http-response :as response]))
 
 (def routes
-  (c-api/context "/share" []
-    :tags ["share"]
+  (c-api/context "/" []
+    :tags ["jaot"]
 
-    (c-api/context "/:koodi-uri" []
-      :path-params [koodi-uri :- String]
-
-      (c-api/GET "/" request
-        :return (rest/response [oppija-schema/Jakolinkki])
-        :summary "Tutkinnon osan jakolinkkien listaus"
+    (c-api/POST "/jakolinkit" request
+      :body [values oppija-schema/JakolinkkiLuonti]
+      :return (rest/response schema/POSTResponse :uuid java.util.UUID)
+      :summary "Luo uuden jakolinkin"
+      (let [jakolinkki (db/insert-shared-module! values)]
         (rest/rest-ok
-          (db/select-hoks-tutkinnon-osa-shares
-            (get-in request [:hoks :id]) koodi-uri)))
+          {:uri (format "%s/%s" (:uri request) (:share-id jakolinkki))}
+          :uuid (:uuid jakolinkki))))
 
-      (c-api/DELETE "/:uuid" request
-        :path-params [uuid :- String]
+    (c-api/GET "/jakolinkit/:uuid" request
+      :return (rest/response [oppija-schema/Jakolinkki])
+      :summary "Jakolinkkiin liitettyjen tietojen haku"
+      :path-params [uuid :- String]
+      (rest/rest-ok
+        (db/select-shared-module uuid)))
 
-        (db/delete-tutkinnon-osa-share!
-          uuid (get-in request [:hoks :id]))
-        (response/ok))
+    (c-api/DELETE "/jakolinkit/:uuid" request
+      :summary "Poistaa jakolinkin"
+      :path-params [uuid :- String]
+      (db/delete-shared-module! uuid)
+      (response/ok))
 
-      (c-api/POST "/" request
-        :body [values oppija-schema/JakolinkkiLuonti]
-        :return (rest/response schema/POSTResponse :uuid java.util.UUID)
-        (let [jakolinkki (db/insert-tutkinnon-osa-share!
-                           (assoc values
-                                  :hoks-id (get-in request [:hoks :id])
-                                  :koodisto-koodi koodi-uri))]
-          (rest/rest-ok
-            {:uri (format "%s/%s" (:uri request) (:uuid jakolinkki))}
-            :uuid (:uuid jakolinkki)))))))
+    (c-api/GET "/moduulit/:uuid" request
+      :return (rest/response [oppija-schema/ModuuliLinkit])
+      :summary "Jaettuun moduuliin liitettyjen jakolinkkien haku"
+      :path-params [uuid :- String]
+      (rest/rest-ok
+        (db/select-shared-module-links uuid)))))

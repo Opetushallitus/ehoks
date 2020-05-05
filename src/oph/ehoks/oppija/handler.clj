@@ -121,13 +121,11 @@
                       (catch Exception e
                         (print e)
                         (throw e)))))))
-
-            (c-api/context "/hoksit" []
-              :tags ["hoksit"]
-              (c-api/context "/:eid" []
-                (route-middleware
-                  [wrap-authorize m/wrap-hoks-access]
-                  share-handler/routes)))))))
+            (c-api/context "/jaot" []
+              :tags ["jaot"]
+              (route-middleware
+                [wrap-authorize m/wrap-hoks-access]
+                share-handler/routes))))))
 
     (c-api/undocumented
       (GET "/buildversion.txt" []

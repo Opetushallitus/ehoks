@@ -26,9 +26,9 @@
   (str "ERROR: duplicate key value violates unique constraint "
        "\"tutkinnon_osa_shares_pkey\""))
 
-(defn- try-insert-tutkinnon-osa-share! [values]
+(defn- try-insert-shared-module! [values]
   (try
-    (db-ops/insert-one! :tutkinnon_osa_shares (db-ops/to-sql values))
+    (db-ops/insert-one! :shared_modules (db-ops/to-sql values))
     (catch PSQLException e
       (if-not (.startsWith (.getMessage e) psql-duplicate-error)
         (throw e)
@@ -37,18 +37,21 @@
               (:uuid values))
             nil)))))
 
-(defn insert-tutkinnon-osa-share! [values]
+(defn insert-shared-module! [values]
   (loop [uuid (java.util.UUID/randomUUID)]
-    (if-let [result (try-insert-tutkinnon-osa-share! (assoc values :uuid uuid))]
+    (if-let [result (try-insert-shared-module! (assoc values :id uuid))]
       result
       (recur (java.util.UUID/randomUUID)))))
 
-(defn select-hoks-tutkinnon-osa-shares [hoks-id koodi-uri]
+(defn select-shared-module [uuid]
   (db-ops/query
-    [queries/select-hoks-tutkinnon-osa-shares hoks-id koodi-uri]
-    {:row-fn share-from-sql}))
+    [queries/select-shared-module-by-uuid uuid]))
 
-(defn delete-tutkinnon-osa-share! [uuid hoks-id]
+(defn select-shared-module-links [uuid]
+  (db-ops/query
+    [queries/select-shared-module-links-by-module-uuid uuid]))
+
+(defn delete-shared-module! [uuid]
   (db-ops/delete!
-    :tutkinnon_osa_shares
-    ["uuid = ? AND hoks_id = ?" (java.util.UUID/fromString uuid) hoks-id]))
+    :shared_modules
+    ["uuid = ?" (java.util.UUID/fromString uuid)]))
