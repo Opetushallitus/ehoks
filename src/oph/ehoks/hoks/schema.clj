@@ -405,10 +405,12 @@
   (modify
     HankittavaYTO
     "Hankittavan yhteisen tutkinnnon osan (POST, PUT)"
-    {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
+    {:removed
+     [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen :osa-alueet]
      :added
      (describe
        ""
+       :osa-alueet [YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus] "YTO osa-alueet"
        (s/optional-key :osaamisen-hankkimistavat)
        [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
@@ -576,14 +578,16 @@
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
     "Aiemmin hankitun yhteisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto]
+    {:removed [:module-id :tarkentavat-tiedot-naytto :osa-alueet]
      :added
      (describe
        ""
        (s/optional-key :tarkentavat-tiedot-naytto)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
+            "Näyttö tai muu osaamisen osoittaminen")
+       :osa-alueet [AiemminHankitunYTOOsaAlueLuontiJaMuokkaus]
+       "YTO osa-alueet")}))
 
 (s/defschema
   AiemminHankittuAmmatillinenTutkinnonOsa
