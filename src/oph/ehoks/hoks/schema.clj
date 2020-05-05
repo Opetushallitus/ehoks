@@ -148,7 +148,7 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
-    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste"
                                           "esimerkiksi tiedon jakamista varten")
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
