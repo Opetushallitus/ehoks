@@ -1,7 +1,7 @@
 # HOKS API doc
 Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
-Generoitu 30.04.2020 09.49
+Generoitu 05.05.2020 08.29
 
 ### HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus  
 
@@ -220,7 +220,7 @@ Aiemmin hankitun yhteisen osaamisen tiedot (POST, PUT)
 | valittu-todentamisen-prosessi-koodi-versio | Kokonaisluku | Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio<br>       (Osaamisen todentamisen prosessi) | Ei |
 | tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa<br>    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.<br>    tutkinnonosat_100002 | Kyllä |
 | valittu-todentamisen-prosessi-koodi-uri | Merkkijono, muotoa osaamisentodentamisenprosessi_0003 | Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö) | Ei |
-| osa-alueet | [[AiemminHankitunYTOOsaAlue](#AiemminHankitunYTOOsaAlue)] | YTO osa-alueet | Kyllä |
+| osa-alueet | [[AiemminHankitunYTOOsaAlueLuontiJaMuokkaus](#AiemminHankitunYTOOsaAlueLuontiJaMuokkaus)] | YTO osa-alueet | Kyllä |
 | koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
 | tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
@@ -324,6 +324,7 @@ AiemminHankitun YTOn osa-alueen tiedot
 | valittu-todentamisen-prosessi-koodi-uri | Merkkijono, muotoa osaamisentodentamisenprosessi_0003 | Todentamisen prosessin kuvauksen (suoraan/arvioijien kautta/näyttö)<br>    koodi-uri. Koodisto Osaamisen todentamisen prosessi, eli muotoa<br>    osaamisentodentamisenprosessi_xxxx | Kyllä |
 | koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | osa-alue-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
+| module-id | Uuid | Tietorakenteen yksilöivä tunnisteesimerkiksi tiedon jakamista varten | Kyllä |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 | osa-alue-koodi-versio | Kokonaisluku | Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet) | Kyllä |
 | tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot | Ei |
@@ -444,6 +445,22 @@ Työelämän toimijan organisaatio, jossa näyttö tai osaamisen osoittaminen
 | nimi | Merkkijono | Organisaation nimi | Kyllä |
 | y-tunnus | Merkkijono | Mikäli organisaatiolla on y-tunnus,<br>    organisaation y-tunnus | Ei |
 
+### AiemminHankitunYTOOsaAlueLuontiJaMuokkaus  
+
+AiemminHankitun YTOn osa-alueen tiedot (POST, PUT)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| valittu-todentamisen-prosessi-koodi-versio | Kokonaisluku | Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio<br>    (Osaamisen todentamisen prosessi) | Kyllä |
+| olennainen-seikka | Totuusarvo | Tieto sellaisen seikan<br>    olemassaolosta, jonka koulutuksen järjestäjä katsoo oleelliseksi tutkinnon<br>    osaan tai osa-alueeseen liittyvän osaamisen hankkimisessa tai<br>    osoittamisessa. | Ei |
+| valittu-todentamisen-prosessi-koodi-uri | Merkkijono, muotoa osaamisentodentamisenprosessi_0003 | Todentamisen prosessin kuvauksen (suoraan/arvioijien kautta/näyttö)<br>    koodi-uri. Koodisto Osaamisen todentamisen prosessi, eli muotoa<br>    osaamisentodentamisenprosessi_xxxx | Kyllä |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| osa-alue-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
+| vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
+| osa-alue-koodi-versio | Kokonaisluku | Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet) | Kyllä |
+| tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot | Ei |
+| tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
+
 ### HankittavaYTO  
 
 Hankittavan yhteinen tutkinnon osan (YTO) tiedot
@@ -477,8 +494,8 @@ Hankittavan ammatillisen osaamisen tiedot (GET)
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
 | osaamisen-osoittaminen | [[OsaamisenOsoittaminen](#OsaamisenOsoittaminen)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 | koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| module-id | Uuid | Tietorakenteen yksilöivä tunnisteesimerkiksi tiedon jakamista varten | Kyllä |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tekstimuotoinen selite ammattitaitovaatimuksista tai osaamistavoitteista poikkeamiseen | Ei |
-| module-id | Uuid | Tietorakenteen yksilöivä tunnisteesimerkiksi tiedon jakamista varten | Ei |
 
 ### VastuullinenTyopaikkaOhjaaja  
 
@@ -516,13 +533,14 @@ Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| osa-alue-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
-| osa-alue-koodi-versio | Kokonaisluku | Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet) | Kyllä |
+| olennainen-seikka | Totuusarvo | Tieto sellaisen seikan<br>    olemassaolosta, jonka koulutuksen järjestäjä katsoo oleelliseksi tutkinnon<br>    osaan tai osa-alueeseen liittyvän osaamisen hankkimisessa tai<br>    osoittamisessa. | Ei |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
-| vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 | osaamisen-osoittaminen | [[OsaamisenOsoittaminen](#OsaamisenOsoittaminen)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 | koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
-| olennainen-seikka | Totuusarvo | Tieto sellaisen seikan<br>    olemassaolosta, jonka koulutuksen järjestäjä katsoo oleelliseksi tutkinnon<br>    osaan tai osa-alueeseen liittyvän osaamisen hankkimisessa tai<br>    osoittamisessa. | Ei |
+| osa-alue-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
+| vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
+| osa-alue-koodi-versio | Kokonaisluku | Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet) | Kyllä |
+| module-id | Uuid | Tietorakenteen yksilöivä tunnisteesimerkiksi tiedon jakamista varten | Ei |
 
 ### NaytonJarjestaja  
 
@@ -531,6 +549,20 @@ Näytön tai osaamisen osoittamisen järjestäjä
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | oppilaitos-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+
+### YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus  
+
+Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot (POST, PUT)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| olennainen-seikka | Totuusarvo | Tieto sellaisen seikan<br>    olemassaolosta, jonka koulutuksen järjestäjä katsoo oleelliseksi tutkinnon<br>    osaan tai osa-alueeseen liittyvän osaamisen hankkimisessa tai<br>    osoittamisessa. | Ei |
+| koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| osa-alue-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
+| vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
+| osa-alue-koodi-versio | Kokonaisluku | Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet) | Kyllä |
+| osaamisen-hankkimistavat | [[OsaamisenHankkimistapaLuontiJaMuokkaus](#OsaamisenHankkimistapaLuontiJaMuokkaus)] | Osaamisen hankkimistavat | Ei |
+| osaamisen-osoittaminen | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 
 ### AiemminHankittuAmmatillinenTutkinnonOsa  
 
@@ -578,10 +610,10 @@ Hankittavan yhteisen tutkinnnon osan (POST, PUT)
 
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
-| osa-alueet | [[YhteisenTutkinnonOsanOsaAlue](#YhteisenTutkinnonOsanOsaAlue)] | YTO osa-alueet | Kyllä |
 | tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa<br>    (tutkinnonosat) eli muotoa  tutkinnonosat_xxxxxx eli esim.<br>    tutkinnonosat_100002 | Kyllä |
 | tutkinnon-osa-koodi-versio | Kokonaisluku | Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa<br>     (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
+| osa-alueet | [[YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus](#YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus)] | YTO osa-alueet | Kyllä |
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapaLuontiJaMuokkaus](#OsaamisenHankkimistapaLuontiJaMuokkaus)] | Osaamisen hankkimistavat | Ei |
 | osaamisen-osoittaminen | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 

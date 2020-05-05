@@ -108,15 +108,15 @@
 (s/defschema
   AiemminHankitunYhteisenTutkinnonOsanLuonti
   (modify
-    hoks-schema/AiemminHankittuYhteinenTutkinnonOsa
+    hoks-schema/AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus
     (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST)")
-    {:removed [:id :module-id]}))
+    {:removed [:id]}))
 
 (s/defschema
   AiemminHankitunYhteisenTutkinnonOsanPaivitys
   (modify
-    hoks-schema/AiemminHankittuYhteinenTutkinnonOsa
+    hoks-schema/AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus
     (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot "
          "kenttää tai kenttiä päivitettäessä (PATCH)")
     {:removed [:module-id]
