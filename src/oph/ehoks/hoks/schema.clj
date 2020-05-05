@@ -378,8 +378,8 @@
   (describe
     "Yhteinen Tutkinnon osa (YTO)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
-                                          "esimerkiksi tiedon jakamista varten")
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste"
+                         "esimerkiksi tiedon jakamista varten")
     :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa
@@ -410,7 +410,8 @@
      :added
      (describe
        ""
-       :osa-alueet [YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus] "YTO osa-alueet"
+       :osa-alueet [YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus]
+       "YTO osa-alueet"
        (s/optional-key :osaamisen-hankkimistavat)
        [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
