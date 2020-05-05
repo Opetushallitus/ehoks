@@ -27,7 +27,7 @@
 (s/defschema
   HankittavaYTOLuonti
   (modify
-    hoks-schema/HankittavaYTO
+    hoks-schema/HankittavaYTOLuontiJaMuokkaus
     (str "Hankittavan yhteinen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
     {:removed [:id :module-id]}))
@@ -35,7 +35,7 @@
 (s/defschema
   HankittavaYTOPaivitys
   (modify
-    hoks-schema/HankittavaYTO
+    hoks-schema/HankittavaYTOLuontiJaMuokkaus
     (str "Hankittavan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:removed [:module-id]

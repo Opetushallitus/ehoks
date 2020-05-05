@@ -285,8 +285,8 @@
   (describe
     "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
-                                          "esimerkiksi tiedon jakamista varten")
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste"
+                         "esimerkiksi tiedon jakamista varten")
     :osa-alue-koodi-uri OsaAlueKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
     :osa-alue-koodi-versio s/Int
