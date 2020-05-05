@@ -478,8 +478,8 @@
   (describe
     "Hankittava paikallinen tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
-                                          "esimerkiksi tiedon jakamista varten")
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste"
+                         "esimerkiksi tiedon jakamista varten")
     (s/optional-key :amosaa-tunniste) s/Str
     "Tunniste ePerusteet AMOSAA -palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi"
