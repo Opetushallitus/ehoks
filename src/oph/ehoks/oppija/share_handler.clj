@@ -43,8 +43,10 @@
             (response/not-found)))))
 
     (c-api/GET "/moduulit/:uuid" []
-      :return (rest/response [oppija-schema/ModuuliLinkit])
+      :return (rest/response [oppija-schema/Jakolinkki])
       :summary "Jaettuun moduuliin liitettyjen jakolinkkien haku"
       :path-params [uuid :- String]
-      (rest/rest-ok
-        (db/select-shared-module-links uuid)))))
+      (let [jakolinkit (db/select-shared-module-links uuid)]
+        (if (> (count jakolinkit) 0)
+          (rest/rest-ok jakolinkit)
+          (response/not-found))))))

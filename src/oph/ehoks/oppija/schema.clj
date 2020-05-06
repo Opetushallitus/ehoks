@@ -31,8 +31,3 @@
    :shared-module-tyyppi s/Str
    :voimassaolo-alku LocalDate
    :voimassaolo-loppu LocalDate})
-
-(s/defschema
-  ModuuliLinkit
-  "Moduuliin liittyvät jakolinkit"
-  [Jakolinkki])
