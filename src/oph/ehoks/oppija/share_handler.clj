@@ -30,7 +30,9 @@
         :summary "Jakolinkkiin liitettyjen tietojen haku"
         :path-params [uuid :- String]
         (let [jakolinkki (db/select-shared-module uuid)]
-          (rest/rest-ok jakolinkki)))
+          (if (> (count jakolinkki) 0)
+            (rest/rest-ok jakolinkki)
+            (response/not-found))))
 
       (c-api/DELETE "/:uuid" []
         :summary "Poistaa jakolinkin"
