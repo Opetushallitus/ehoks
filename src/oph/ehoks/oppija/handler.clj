@@ -121,10 +121,11 @@
                       (catch Exception e
                         (print e)
                         (throw e)))))))
+
             (c-api/context "/jaot" []
               :tags ["jaot"]
               (route-middleware
-                [wrap-authorize m/wrap-hoks-access]
+                [wrap-authorize]
                 share-handler/routes))))))
 
     (c-api/undocumented
