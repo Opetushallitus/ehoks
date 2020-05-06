@@ -26,8 +26,8 @@
         :return (rest/response [oppija-schema/Jakolinkki])
         :summary "Jakolinkkiin liitettyjen tietojen haku"
         :path-params [uuid :- String]
-        (rest/rest-ok
-          (db/select-shared-module uuid)))
+        (let [jakolinkki (db/select-shared-module uuid)]
+          (rest/rest-ok jakolinkki)))
 
       (c-api/DELETE "/:uuid" []
         :summary "Poistaa jakolinkin"
