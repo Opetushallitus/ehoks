@@ -37,8 +37,10 @@
       (c-api/DELETE "/:uuid" []
         :summary "Poistaa jakolinkin"
         :path-params [uuid :- String]
-        (db/delete-shared-module! uuid)
-        (response/ok)))
+        (let [deleted (db/delete-shared-module! uuid)]
+          (if (> (first deleted) 0)
+            (response/ok)
+            (response/not-found)))))
 
     (c-api/GET "/moduulit/:uuid" []
       :return (rest/response [oppija-schema/ModuuliLinkit])
