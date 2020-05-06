@@ -1,11 +1,9 @@
 (ns oph.ehoks.db.db-operations.oppija
   (:require [oph.ehoks.db.queries :as queries]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
-            [clojure.tools.logging :as log])
-  (:import [org.postgresql.util PSQLException]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
 (defn- share-from-sql [v]
-  (db-ops/from-sql v {:removals [:hoks_id]}))
+  (db-ops/from-sql v {:removals [:id]}))
 
 (defn select-oppija-by-oid [oppija-oid]
   (first
@@ -22,34 +20,26 @@
 (defn insert-oppija! [oppija]
   (db-ops/insert-one! :oppijat (db-ops/to-sql oppija)))
 
-(def psql-duplicate-error
-  (str "ERROR: duplicate key value violates unique constraint "
-       "\"tutkinnon_osa_shares_pkey\""))
-
-(defn- try-insert-shared-module! [values]
-  (try
-    (db-ops/insert-one! :shared_modules (db-ops/to-sql values))
-    (catch PSQLException e
-      (if-not (.startsWith (.getMessage e) psql-duplicate-error)
-        (throw e)
-        (do (log/warnf
-              "Duplicate uuid %s in tutkinnon osa shares. Will retry."
-              (:uuid values))
-            nil)))))
-
 (defn insert-shared-module! [values]
-  (loop [uuid (java.util.UUID/randomUUID)]
-    (if-let [result (try-insert-shared-module! (assoc values :id uuid))]
-      result
-      (recur (java.util.UUID/randomUUID)))))
+  (let [vals
+        (assoc values
+               :to-module-uuid
+               (java.util.UUID/fromString (:to-module-uuid values))
+               :shared-module-uuid
+               (java.util.UUID/fromString (:shared-module-uuid values)))]
+    (db-ops/insert-one! :shared_modules (db-ops/to-sql vals))))
 
 (defn select-shared-module [uuid]
-  (db-ops/query
-    [queries/select-shared-module-by-uuid uuid]))
+  (let [share-id (java.util.UUID/fromString uuid)]
+    (db-ops/query
+      [queries/select-shared-module-by-uuid share-id]
+      {:row-fn share-from-sql})))
 
 (defn select-shared-module-links [uuid]
-  (db-ops/query
-    [queries/select-shared-module-links-by-module-uuid uuid]))
+  (let [module-id (java.util.UUID/fromString uuid)]
+    (db-ops/query
+      [queries/select-shared-module-links-by-module-uuid module-id]
+      {:row-fn share-from-sql})))
 
 (defn delete-shared-module! [uuid]
   (db-ops/delete!
