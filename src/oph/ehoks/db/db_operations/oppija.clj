@@ -55,4 +55,4 @@
 (defn delete-shared-module! [uuid]
   (db-ops/delete!
     :shared_modules
-    ["uuid = ?" (UUID/fromString uuid)]))
+    ["share_id = ?" (UUID/fromString uuid)]))
