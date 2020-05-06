@@ -25,9 +25,9 @@
 (s/defschema
   JakolinkkiLuonti
   "Tutkinnon osan jakolinkin luonti"
-  {:to-module-uuid java.util.UUID
+  {:to-module-uuid s/Str
    :to-tyyppi s/Str
-   :shared-module-uuid java.util.UUID
+   :shared-module-uuid s/Str
    :shared-module-tyyppi s/Str
    :voimassaolo-alku LocalDate
    :voimassaolo-loppu LocalDate})
