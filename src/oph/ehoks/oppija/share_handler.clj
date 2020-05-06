@@ -16,11 +16,14 @@
         :body [values oppija-schema/JakolinkkiLuonti]
         :return (rest/response schema/POSTResponse :uuid String)
         :summary "Luo uuden jakolinkin"
-        (let [jakolinkki (db/insert-shared-module! values)
-              share-id (str (:share_id jakolinkki))]
-          (rest/rest-ok
-            {:uri (format "%s/%s" (:uri request) share-id)}
-            :uuid share-id)))
+        (try
+          (let [jakolinkki (db/insert-shared-module! values)
+                share-id (str (:share_id jakolinkki))]
+            (rest/rest-ok
+              {:uri (format "%s/%s" (:uri request) share-id)}
+              :uuid share-id))
+          (catch Exception e
+            (response/bad-request! {:error (ex-message e)}))))
 
       (c-api/GET "/:uuid" []
         :return (rest/response [oppija-schema/Jakolinkki])
