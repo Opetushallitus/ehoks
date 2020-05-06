@@ -8,7 +8,7 @@
   (mapv
     #(dissoc
        (c/set-osaamisen-osoittaminen-values %)
-       :id :module-id)
+       :id)
     (db/select-tarkentavat-tiedot-naytto-by-ahato-id id)))
 
 (defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
@@ -34,18 +34,18 @@
 (defn get-aiemmin-hankittu-ammat-tutkinnon-osa [id]
   (when-let [ahato-from-db
              (db/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id id)]
-    (dissoc (set-ahato-values ahato-from-db) :module-id)))
+    (set-ahato-values ahato-from-db)))
 
 (defn get-aiemmin-hankitut-ammat-tutkinnon-osat [hoks-id]
   (mapv
-    #(dissoc (set-ahato-values %) :id :module-id)
+    #(dissoc (set-ahato-values %) :id)
     (db/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn- get-ahpto-tarkentavat-tiedot-naytto [ahpto-id]
   (mapv
     #(dissoc
        (c/set-osaamisen-osoittaminen-values %)
-       :id :module-id)
+       :id)
     (db/select-tarkentavat-tiedot-naytto-by-ahpto-id ahpto-id)))
 
 (defn- set-ahpto-values [ahpto]
@@ -62,16 +62,16 @@
 (defn get-aiemmin-hankittu-paikallinen-tutkinnon-osa [id]
   (when-let [ahpto-from-db
              (db/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id id)]
-    (dissoc (set-ahpto-values ahpto-from-db) :module-id)))
+    (set-ahpto-values ahpto-from-db)))
 
 (defn get-aiemmin-hankitut-paikalliset-tutkinnon-osat [hoks-id]
   (mapv
-    #(dissoc (set-ahpto-values %) :id :module-id)
+    #(dissoc (set-ahpto-values %) :id)
     (db/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-ahyto-osa-alue-tarkentavat-tiedot [id]
   (mapv
-    #(dissoc (c/set-osaamisen-osoittaminen-values %) :id :module-id)
+    #(dissoc (c/set-osaamisen-osoittaminen-values %) :id)
     (db/select-tarkentavat-tiedot-naytto-by-ahyto-osa-alue-id id)))
 
 (defn get-ahyto-osa-alueet [ahyto-id]
@@ -85,7 +85,6 @@
          (get-tarkentavat-tiedot-osaamisen-arvioija
            (:tarkentavat-tiedot-osaamisen-arvioija-id %)))
        :id
-       :module-id
        :tarkentavat-tiedot-osaamisen-arvioija-id)
     (db/select-osa-alueet-by-ahyto-id ahyto-id)))
 
@@ -93,7 +92,7 @@
   (mapv
     #(dissoc
        (c/set-osaamisen-osoittaminen-values %)
-       :id :module-id)
+       :id)
     (db/select-tarkentavat-tiedot-naytto-by-ahyto-id ahyto-id)))
 
 (defn- set-ahyto-values [ahyto]
@@ -112,11 +111,11 @@
 (defn get-aiemmin-hankittu-yhteinen-tutkinnon-osa [id]
   (when-let [ahyto-from-db
              (db/select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id id)]
-    (dissoc (set-ahyto-values ahyto-from-db) :module-id)))
+    (set-ahyto-values ahyto-from-db)))
 
 (defn get-aiemmin-hankitut-yhteiset-tutkinnon-osat [hoks-id]
   (mapv
-    #(dissoc (set-ahyto-values %) :id :module-id)
+    #(dissoc (set-ahyto-values %) :id)
     (db/select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn save-ahpto-tarkentavat-tiedot-naytto!

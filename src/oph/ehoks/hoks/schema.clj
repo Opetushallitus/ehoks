@@ -148,8 +148,8 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
-    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
-                                          "esimerkiksi tiedon jakamista varten")
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste "
+                         "esimerkiksi tiedon jakamista varten")
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
     :osaamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
@@ -236,8 +236,8 @@
     "Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
     sisältyvä osaamisen osoittaminen: näyttö tai muu osaamisen osoittaminen."
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
-                                          "esimerkiksi tiedon jakamista varten")
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste "
+                         "esimerkiksi tiedon jakamista varten")
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
     (s/optional-key :osa-alueet) [KoodistoKoodi]
@@ -285,6 +285,8 @@
   (describe
     "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste "
+                         "esimerkiksi tiedon jakamista varten")
     :osa-alue-koodi-uri OsaAlueKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
     :osa-alue-koodi-versio s/Int
@@ -307,10 +309,28 @@
     osoittamisessa.")))
 
 (s/defschema
+  YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus
+  (modify
+    YhteisenTutkinnonOsanOsaAlue
+    "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot (POST, PUT)"
+    {:removed [:module-id :osaamisen-osoittaminen :osaamisen-hankkimistavat]
+     :added
+     (describe
+       ""
+       (s/optional-key :osaamisen-hankkimistavat)
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
+       (s/optional-key :osaamisen-osoittaminen)
+       [OsaamisenOsoittaminenLuontiJaMuokkaus]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
+
+(s/defschema
   AiemminHankitunYTOOsaAlue
   (describe
     "AiemminHankitun YTOn osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste "
+                         "esimerkiksi tiedon jakamista varten")
     :osa-alue-koodi-uri OsaAlueKoodiUri
     "Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet)"
     :osa-alue-koodi-versio s/Int
@@ -340,12 +360,26 @@
     "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"))
 
 (s/defschema
+  AiemminHankitunYTOOsaAlueLuontiJaMuokkaus
+  (modify
+    AiemminHankitunYTOOsaAlue
+    "AiemminHankitun YTOn osa-alueen tiedot (POST, PUT)"
+    {:removed [:module-id :tarkentavat-tiedot-naytto]
+     :added
+     (describe
+       ""
+       (s/optional-key :tarkentavat-tiedot-naytto)
+       [OsaamisenOsoittaminenLuontiJaMuokkaus]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
+
+(s/defschema
   YhteinenTutkinnonOsa
   (describe
     "Yhteinen Tutkinnon osa (YTO)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
-                                          "esimerkiksi tiedon jakamista varten")
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste "
+                         "esimerkiksi tiedon jakamista varten")
     :osa-alueet [YhteisenTutkinnonOsanOsaAlue] "YTO osa-alueet"
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa
@@ -371,10 +405,13 @@
   (modify
     HankittavaYTO
     "Hankittavan yhteisen tutkinnnon osan (POST, PUT)"
-    {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
+    {:removed
+     [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen :osa-alueet]
      :added
      (describe
        ""
+       :osa-alueet [YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus]
+       "YTO osa-alueet"
        (s/optional-key :osaamisen-hankkimistavat)
        [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
@@ -397,8 +434,8 @@
   (describe
     "Hankittavan ammatillisen osaamisen tiedot (GET)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
-                                          "esimerkiksi tiedon jakamista varten")
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste "
+                         "esimerkiksi tiedon jakamista varten")
     :tutkinnon-osa-koodi-uri TutkinnonOsaKoodiUri
     "Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat)"
     :tutkinnon-osa-koodi-versio s/Int
@@ -441,8 +478,8 @@
   (describe
     "Hankittava paikallinen tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
-                                          "esimerkiksi tiedon jakamista varten")
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste "
+                         "esimerkiksi tiedon jakamista varten")
     (s/optional-key :amosaa-tunniste) s/Str
     "Tunniste ePerusteet AMOSAA -palvelussa"
     (s/optional-key :nimi) s/Str "Tutkinnon osan nimi"
@@ -542,14 +579,16 @@
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
     "Aiemmin hankitun yhteisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto]
+    {:removed [:module-id :tarkentavat-tiedot-naytto :osa-alueet]
      :added
      (describe
        ""
        (s/optional-key :tarkentavat-tiedot-naytto)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
+            "Näyttö tai muu osaamisen osoittaminen")
+       :osa-alueet [AiemminHankitunYTOOsaAlueLuontiJaMuokkaus]
+       "YTO osa-alueet")}))
 
 (s/defschema
   AiemminHankittuAmmatillinenTutkinnonOsa

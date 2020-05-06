@@ -7,17 +7,18 @@
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsaLuonti
   (modify
-    hoks-schema/HankittavaAmmatillinenTutkinnonOsa
+    hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus
     "Hankittavan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)"
-    {:removed [:id]}))
+    {:removed [:id :module-id]}))
 
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsaPaivitys
   (modify
-    hoks-schema/HankittavaAmmatillinenTutkinnonOsa
+    hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus
     (str "Hankittavan ammatillisen osaamisen tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
-    {:optionals
+    {:removed [:module-id]
+     :optionals
      [:tutkinnon-osa-koodi-uri
       :tutkinnon-osa-koodi-versio
       :osaamisen-hankkimistavat
@@ -26,18 +27,19 @@
 (s/defschema
   HankittavaYTOLuonti
   (modify
-    hoks-schema/HankittavaYTO
+    hoks-schema/HankittavaYTOLuontiJaMuokkaus
     (str "Hankittavan yhteinen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
-    {:removed [:id]}))
+    {:removed [:id :module-id]}))
 
 (s/defschema
   HankittavaYTOPaivitys
   (modify
-    hoks-schema/HankittavaYTO
+    hoks-schema/HankittavaYTOLuontiJaMuokkaus
     (str "Hankittavan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
-    {:optionals
+    {:removed [:module-id]
+     :optionals
      [:osa-alueet :koulutuksen-jarjestaja-oid :tutkinnon-osa-koodi-uri
       :tutkinnon-osa-koodi-versio]}))
 
@@ -61,18 +63,19 @@
 (s/defschema
   AiemminHankitunPaikallisenTutkinnonOsanLuonti
   (modify
-    hoks-schema/AiemminHankittuPaikallinenTutkinnonOsa
+    hoks-schema/AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus
     (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST")
-    {:removed [:id]}))
+    {:removed [:id :module-id]}))
 
 (s/defschema
   AiemminHankitunPaikallisenTutkinnonOsanPaivitys
   (modify
-    hoks-schema/AiemminHankittuPaikallinenTutkinnonOsa
+    hoks-schema/AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus
     (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot "
          "kenttää tai kenttiä päivitettäessä (PATCH)")
-    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+    {:removed [:module-id]
+     :optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri
                  :koulutuksen-jarjestaja-oid
                  :kuvaus
@@ -82,18 +85,19 @@
 (s/defschema
   HankittavanPaikallisenTutkinnonOsanLuonti
   (modify
-    hoks-schema/HankittavaPaikallinenTutkinnonOsa
+    hoks-schema/HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus
     (str "Hankittavan paikallisen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
-    {:removed [:id]}))
+    {:removed [:id :module-id]}))
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaPaivitys
   (modify
-    hoks-schema/HankittavaPaikallinenTutkinnonOsa
+    hoks-schema/HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus
     (str "Hankittavan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
-    {:optionals
+    {:removed [:module-id]
+     :optionals
      [:osaamisen-hankkimistavat
       :koulutuksen-jarjestaja-oid
       :osaamisen-osoittaminen
@@ -104,7 +108,7 @@
 (s/defschema
   AiemminHankitunYhteisenTutkinnonOsanLuonti
   (modify
-    hoks-schema/AiemminHankittuYhteinenTutkinnonOsa
+    hoks-schema/AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus
     (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST)")
     {:removed [:id]}))
@@ -112,10 +116,11 @@
 (s/defschema
   AiemminHankitunYhteisenTutkinnonOsanPaivitys
   (modify
-    hoks-schema/AiemminHankittuYhteinenTutkinnonOsa
+    hoks-schema/AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus
     (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot "
          "kenttää tai kenttiä päivitettäessä (PATCH)")
-    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+    {:removed [:module-id]
+     :optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri
                  :tutkinnon-osa-koodi-versio
                  :tutkinnon-osa-koodi-uri
@@ -124,18 +129,19 @@
 (s/defschema
   AiemminHankitunAmmatillisenTutkinnonOsanLuonti
   (modify
-    hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsa
+    hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus
     (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot uutta "
          "merkintää luotaessa (POST)")
-    {:removed [:id]}))
+    {:removed [:id :module-id]}))
 
 (s/defschema
   AiemminHankitunAmmatillisenTutkinnonOsanPaivitys
   (modify
-    hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsa
+    hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus
     (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot "
          "kenttää tai kenttiä päivittäessä (PATCH)")
-    {:optionals [:valittu-todentamisen-prosessi-koodi-versio
+    {:removed [:module-id]
+     :optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri
                  :tutkinnon-osa-koodi-versio
                  :tutkinnon-osa-koodi-uri]}))
