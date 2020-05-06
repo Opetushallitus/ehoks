@@ -236,8 +236,8 @@
     "Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
     sisältyvä osaamisen osoittaminen: näyttö tai muu osaamisen osoittaminen."
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :module-id) UUID (str "Tietorakenteen yksilöivä tunniste"
-                                          "esimerkiksi tiedon jakamista varten")
+    :module-id UUID (str "Tietorakenteen yksilöivä tunniste"
+                         "esimerkiksi tiedon jakamista varten")
     (s/optional-key :jarjestaja) NaytonJarjestaja
     "Näytön tai osaamisen osoittamisen järjestäjä"
     (s/optional-key :osa-alueet) [KoodistoKoodi]
