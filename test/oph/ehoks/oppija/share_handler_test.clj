@@ -140,3 +140,42 @@
                                  "jakolinkit"
                                  "00000000-0000-0000-0000-000000000000")))]
       (t/is (= 404 (:status response))))))
+
+(t/deftest get-shared-modules
+  (t/testing "Multiple shared links for a single module can be fetched"
+    (let [share1 (opdb/insert-shared-module! jakolinkki-data)
+          share2 (opdb/insert-shared-module!
+                   (assoc jakolinkki-data
+                     :to-module-uuid
+                     "5b92f3f4-ABBA-4ce0-8ec7-64d2cf96b47c"))
+          _ (opdb/insert-shared-module!
+                   (assoc jakolinkki-data
+                     :shared-module-uuid
+                     "00000000-0000-0000-0000-000000000000"))
+          response (mock-authenticated
+                     (mock/request
+                       :get
+                       (format "%s/%s/%s"
+                               share-base-url
+                               "moduulit"
+                               (:shared-module-uuid jakolinkki-data))))
+          body (utils/parse-body (:body response))]
+      (t/is (= 200 (:status response)))
+      (t/is (= 2 (count (:data body))))
+
+      (t/is (some?
+              (filter
+                #(= (or
+                      (:to-module-uuid share1)
+                      (:to-module-uuid share2))
+                    (:to-module-uuid %)) (:data body))))))
+
+  (t/testing "Trying to fetch links for a module with none returns not found"
+    (let [response (mock-authenticated
+                     (mock/request
+                       :get
+                       (format "%s/%s/%s"
+                               share-base-url
+                               "moduulit"
+                               "10000000-1000-1000-1000-100000000000")))]
+      (t/is (= 404 (:status response))))))
