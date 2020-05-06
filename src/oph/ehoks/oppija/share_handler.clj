@@ -30,7 +30,7 @@
         :summary "Jakolinkkiin liitettyjen tietojen haku"
         :path-params [uuid :- String]
         (let [jakolinkki (db/select-shared-module uuid)]
-          (if (> (count jakolinkki) 0)
+          (if (pos? (count jakolinkki))
             (rest/rest-ok jakolinkki)
             (response/not-found))))
 
@@ -38,7 +38,7 @@
         :summary "Poistaa jakolinkin"
         :path-params [uuid :- String]
         (let [deleted (db/delete-shared-module! uuid)]
-          (if (> (first deleted) 0)
+          (if (pos? (first deleted))
             (response/ok)
             (response/not-found)))))
 
@@ -47,6 +47,6 @@
       :summary "Jaettuun moduuliin liitettyjen jakolinkkien haku"
       :path-params [uuid :- String]
       (let [jakolinkit (db/select-shared-module-links uuid)]
-        (if (> (count jakolinkit) 0)
+        (if (pos? (count jakolinkit))
           (rest/rest-ok jakolinkit)
           (response/not-found))))))

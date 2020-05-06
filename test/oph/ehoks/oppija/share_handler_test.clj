@@ -39,7 +39,7 @@
                          (format "%s/%s" share-base-url "jakolinkit"))
                        jakolinkki-data))
           body (utils/parse-body (:body response))]
-      (t/is 200 (:status response))
+      (t/is (= 200 (:status response)))
       (t/is (:meta body))
       (t/is (get-in body [:data :uri]))))
 
@@ -73,9 +73,10 @@
                      (mock/request
                        :post
                        (format "%s/%s" share-base-url "jakolinkit"))
-                     (assoc jakolinkki-data
-                            :voimassaolo-alku (.plusMonths (LocalDate/now) 2)
-                            :voimassaolo-loppu (.plusMonths (LocalDate/now) 1))))
+                     (assoc
+                       jakolinkki-data
+                       :voimassaolo-alku (.plusMonths (LocalDate/now) 2)
+                       :voimassaolo-loppu (.plusMonths (LocalDate/now) 1))))
         body (utils/parse-body (:body response))]
     (t/is (= 400 (:status response)))
     (t/is (= "Shared link end date cannot be before the start date"
@@ -115,30 +116,30 @@
     (let [share (opdb/insert-shared-module! jakolinkki-data)
           share-id (:share_id share)
           delete-res (mock-authenticated
-                     (mock/request
-                       :delete
-                       (format "%s/%s/%s"
-                               share-base-url
-                               "jakolinkit"
-                               share-id)))
-          fetch-res (mock-authenticated
-                     (mock/request
-                       :get
-                       (format "%s/%s/%s"
-                               share-base-url
-                               "jakolinkit"
-                               share-id)))]
-      (t/is (= 200 (:status delete-res)))
-      (t/is (= 404 (:status fetch-res)))))
-
-  (t/testing "Nonexisting shared link deletion returns not found"
-    (let [response (mock-authenticated
                        (mock/request
                          :delete
                          (format "%s/%s/%s"
                                  share-base-url
                                  "jakolinkit"
-                                 "00000000-0000-0000-0000-000000000000")))]
+                                 share-id)))
+          fetch-res (mock-authenticated
+                      (mock/request
+                        :get
+                        (format "%s/%s/%s"
+                                share-base-url
+                                "jakolinkit"
+                                share-id)))]
+      (t/is (= 200 (:status delete-res)))
+      (t/is (= 404 (:status fetch-res)))))
+
+  (t/testing "Nonexisting shared link deletion returns not found"
+    (let [response (mock-authenticated
+                     (mock/request
+                       :delete
+                       (format "%s/%s/%s"
+                               share-base-url
+                               "jakolinkit"
+                               "00000000-0000-0000-0000-000000000000")))]
       (t/is (= 404 (:status response))))))
 
 (t/deftest get-shared-modules
@@ -146,10 +147,10 @@
     (let [share1 (opdb/insert-shared-module! jakolinkki-data)
           share2 (opdb/insert-shared-module!
                    (assoc jakolinkki-data
-                     :to-module-uuid
-                     "5b92f3f4-ABBA-4ce0-8ec7-64d2cf96b47c"))
+                          :to-module-uuid
+                          "5b92f3f4-ABBA-4ce0-8ec7-64d2cf96b47c"))
           _ (opdb/insert-shared-module!
-                   (assoc jakolinkki-data
+              (assoc jakolinkki-data
                      :shared-module-uuid
                      "00000000-0000-0000-0000-000000000000"))
           response (mock-authenticated
