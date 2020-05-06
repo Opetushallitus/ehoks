@@ -10,29 +10,32 @@
   (c-api/context "/" []
     :tags ["jaot"]
 
-    (c-api/POST "/jakolinkit" request
-      :body [values oppija-schema/JakolinkkiLuonti]
-      :return (rest/response schema/POSTResponse :uuid java.util.UUID)
-      :summary "Luo uuden jakolinkin"
-      (let [jakolinkki (db/insert-shared-module! values)]
+    (c-api/context "/jakolinkit" []
+
+      (c-api/POST "/" [:as request]
+        :body [values oppija-schema/JakolinkkiLuonti]
+        :return (rest/response schema/POSTResponse :uuid String)
+        :summary "Luo uuden jakolinkin"
+        (let [jakolinkki (db/insert-shared-module! values)
+              share-id (str (:share_id jakolinkki))]
+          (rest/rest-ok
+            {:uri (format "%s/%s" (:uri request) share-id)}
+            :uuid share-id)))
+
+      (c-api/GET "/:uuid" []
+        :return (rest/response [oppija-schema/Jakolinkki])
+        :summary "Jakolinkkiin liitettyjen tietojen haku"
+        :path-params [uuid :- String]
         (rest/rest-ok
-          {:uri (format "%s/%s" (:uri request) (:share-id jakolinkki))}
-          :uuid (:uuid jakolinkki))))
+          (db/select-shared-module uuid)))
 
-    (c-api/GET "/jakolinkit/:uuid" request
-      :return (rest/response [oppija-schema/Jakolinkki])
-      :summary "Jakolinkkiin liitettyjen tietojen haku"
-      :path-params [uuid :- String]
-      (rest/rest-ok
-        (db/select-shared-module uuid)))
+      (c-api/DELETE "/:uuid" []
+        :summary "Poistaa jakolinkin"
+        :path-params [uuid :- String]
+        (db/delete-shared-module! uuid)
+        (response/ok)))
 
-    (c-api/DELETE "/jakolinkit/:uuid" request
-      :summary "Poistaa jakolinkin"
-      :path-params [uuid :- String]
-      (db/delete-shared-module! uuid)
-      (response/ok))
-
-    (c-api/GET "/moduulit/:uuid" request
+    (c-api/GET "/moduulit/:uuid" []
       :return (rest/response [oppija-schema/ModuuliLinkit])
       :summary "Jaettuun moduuliin liitettyjen jakolinkkien haku"
       :path-params [uuid :- String]
