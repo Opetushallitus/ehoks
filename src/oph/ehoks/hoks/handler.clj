@@ -18,6 +18,7 @@
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [schema.core :as s]
             [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [cheshire.core :as cheshire]))
@@ -270,10 +271,10 @@
           (response/no-content)
           (response/not-found {:error "OTO not found with given OTO ID"}))))))
 
-(defn- check-oids-match [hoks]
+(defn- check-opiskeluoikeus-match [hoks opiskeluoikeudet]
   (if-not
    (oppijaindex/oppija-opiskeluoikeus-match?
-     (:oppija-oid hoks) (:opiskeluoikeus-oid hoks))
+     opiskeluoikeudet (:opiskeluoikeus-oid hoks))
     (assoc
       (response/bad-request!
         {:error "Opiskeluoikeus does not match any held by oppija"})
@@ -301,6 +302,11 @@
         (response/bad-request!
           {:error (ex-message e)})
         :else (throw e)))))
+
+(defn- add-hankintakoulutukset-to-index [hoks opiskeluoikeudet]
+  (oppijaindex/add-oppija-hankintakoulutukset opiskeluoikeudet
+                                              (:opiskeluoikeus-oid hoks)
+                                              (:oppija-oid hoks)))
 
 (defn- save-hoks [hoks request]
   (try
@@ -332,9 +338,12 @@
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
-        (check-oids-match hoks)
-        (add-oppija-to-index hoks)
-        (add-opiskeluoikeus-to-index hoks)
+        (let [opiskeluoikeudet (koski/fetch-opiskeluoikeudet-by-oppija-id
+                                 (:oppija-oid hoks))]
+          (check-opiskeluoikeus-match hoks opiskeluoikeudet)
+          (add-oppija-to-index hoks)
+          (add-opiskeluoikeus-to-index hoks)
+          (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))
         (m/check-hoks-access! hoks request)
         (save-hoks hoks request))
 
