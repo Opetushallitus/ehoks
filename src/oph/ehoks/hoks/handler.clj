@@ -5,6 +5,7 @@
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
+            [oph.ehoks.hoks.partial-hoks-schema :as partial-hoks-schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as pdb-ah]
             [oph.ehoks.db.postgresql.hankittavat :as pdb-ha]
@@ -41,7 +42,7 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo hankittavan paikallisen tutkinnon osan"
-      :body [ppto hoks-schema/HankittavanPaikallisenTutkinnonOsanLuonti]
+      :body [ppto partial-hoks-schema/HankittavanPaikallisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ppto-db (ha/save-hankittava-paikallinen-tutkinnon-osa!
                       hoks-id ppto)]
@@ -54,7 +55,7 @@
       "Päivittää HOKSin hankittavan paikallisen tutkinnon osan arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body
-      [values hoks-schema/HankittavaPaikallinenTutkinnonOsaKentanPaivitys]
+      [values partial-hoks-schema/HankittavaPaikallinenTutkinnonOsaPaivitys]
       (let [ppto-db (pdb-ha/select-hankittava-paikallinen-tutkinnon-osa-by-id
                       id)]
         (if (some? ppto-db)
@@ -75,22 +76,22 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo hankittavan ammatillisen osaamisen HOKSiin"
-      :body [pao hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuonti]
+      :body [hato partial-hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [pao-db (ha/save-hankittava-ammat-tutkinnon-osa!
-                     hoks-id pao)]
+      (let [hato-db (ha/save-hankittava-ammat-tutkinnon-osa!
+                      hoks-id hato)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id pao-db))}
-          :id (:id pao-db))))
+          {:uri (format "%s/%d" (:uri request) (:id hato-db))}
+          :id (:id hato-db))))
 
     (c-api/PATCH "/:id" [:as request]
       :summary
       "Päivittää HOKSin hankittavan ammatillisen tutkinnon osan arvoa ja arvoja"
       :path-params [id :- s/Int]
       :body
-      [values hoks-schema/HankittavaAmmatillinenTutkinnonOsaKentanPaivitys]
-      (if-let [hao-db (ha/get-hankittava-ammat-tutkinnon-osa id)]
-        (do (ha/update-hankittava-ammat-tutkinnon-osa! hao-db values)
+      [values partial-hoks-schema/HankittavaAmmatillinenTutkinnonOsaPaivitys]
+      (if-let [hato-db (ha/get-hankittava-ammat-tutkinnon-osa id)]
+        (do (ha/update-hankittava-ammat-tutkinnon-osa! hato-db values)
             (response/no-content))
         (response/not-found
           {:error "Hankittava ammatillinen tutkinnon osa not found"})))))
@@ -107,7 +108,7 @@
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) hankittavan yhteisen tutkinnon osat HOKSiin"
-      :body [hyto hoks-schema/HankittavaYTOLuonti]
+      :body [hyto partial-hoks-schema/HankittavaYTOLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [hyto-response (ha/save-hankittava-yhteinen-tutkinnon-osa!
                             (get-in request [:hoks :id]) hyto)]
@@ -119,7 +120,7 @@
       :summary
       "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/HankittavaYTOKentanPaivitys]
+      :body [values partial-hoks-schema/HankittavaYTOPaivitys]
       (if (not-empty (pdb-ha/select-hankittava-yhteinen-tutkinnon-osa-by-id id))
         (do
           (ha/update-hankittava-yhteinen-tutkinnon-osa! id values)
@@ -138,26 +139,28 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo aiemmin hankitun ammat tutkinnon osan HOKSiin"
-      :body [ooato hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanLuonti]
+      :body
+      [ahato partial-hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ooato-from-db (ah/save-aiemmin-hankittu-ammat-tutkinnon-osa!
-                            (get-in request [:hoks :id]) ooato)]
+      (let [ahato-from-db (ah/save-aiemmin-hankittu-ammat-tutkinnon-osa!
+                            (get-in request [:hoks :id]) ahato)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id ooato-from-db))}
-          :id (:id ooato-from-db))))
+          {:uri (format "%s/%d" (:uri request) (:id ahato-from-db))}
+          :id (:id ahato-from-db))))
 
     (c-api/PATCH "/:id" []
       :summary (str "Päivittää HOKSin aiemmin hankitun ammatillisen tutkinnon "
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
       :body
-      [values hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanPaivitys]
-      (if-let [ooato-from-db
+      [values
+       partial-hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanPaivitys]
+      (if-let [ahato-from-db
                (pdb-ah/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id
                  id)]
         (do
           (ah/update-aiemmin-hankittu-ammat-tutkinnon-osa!
-            ooato-from-db values)
+            ahato-from-db values)
           (response/no-content))
         (response/not-found
           {:error "Olemassa oleva ammatillinen tutkinnon osa not found"})))))
@@ -173,7 +176,8 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo olemassa olevan paikallisen tutkinnon osan HOKSiin"
-      :body [oopto hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanLuonti]
+      :body [oopto
+             partial-hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [oopto-from-db (ah/save-aiemmin-hankittu-paikallinen-tutkinnon-osa!
                             (get-in request [:hoks :id]) oopto)]
@@ -185,7 +189,9 @@
       :summary (str "Päivittää HOKSin aiemmin hankitun paikallisen tutkinnon "
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
-      :body [values hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanPaivitys]
+      :body
+      [values
+       partial-hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanPaivitys]
       (if-let [oopto-from-db
                (pdb-ah/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id
                  id)]
@@ -207,7 +213,8 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo aiemmin hankitun yhteisen tutkinnon osan HOKSiin"
-      :body [ooyto hoks-schema/AiemminHankitunYhteisenTutkinnonOsanLuonti]
+      :body [ooyto
+             partial-hoks-schema/AiemminHankitunYhteisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ooyto-from-db (ah/save-aiemmin-hankittu-yhteinen-tutkinnon-osa!
                             (get-in request [:hoks :id]) ooyto)]
@@ -219,7 +226,8 @@
       :summary (str "Päivittää HOKSin aiemmin hankitun yhteisen tutkinnon "
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
-      :body [values hoks-schema/AiemminHankitunYhteisenTutkinnonOsanPaivitys]
+      :body [values
+             partial-hoks-schema/AiemminHankitunYhteisenTutkinnonOsanPaivitys]
       (if-let [ahyto-from-db
                (pdb-ah/select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id id)]
         (do
@@ -241,7 +249,7 @@
     (c-api/POST "/"  [:as request]
       :summary
       "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin"
-      :body [oto hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
+      :body [oto partial-hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [oto-response (ot/save-opiskeluvalmiuksia-tukeva-opinto!
                            (get-in request [:hoks :id]) oto)]
@@ -253,7 +261,8 @@
       :summary
       "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
+      :body [values
+             partial-hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
       (let [count-of-updated-rows
             (first
               (pdb-ot/update-opiskeluvalmiuksia-tukevat-opinnot-by-id!

@@ -22,19 +22,19 @@
         :muut-oppimisymparistot
         (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
           (:id m)))
-      :id :uuid :tyopaikalla-jarjestettava-koulutus-id)
+      :id :tyopaikalla-jarjestettava-koulutus-id)
     (dissoc
       (assoc
         m
         :muut-oppimisymparistot
         (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
           (:id m)))
-      :id :uuid)))
+      :id)))
 
 (defn get-osaamisen-osoittaminen [id]
   (let [naytot (db/select-osaamisen-osoittamiset-by-ppto-id id)]
     (mapv
-      #(dissoc (c/set-osaamisen-osoittaminen-values %) :id :uuid)
+      #(dissoc (c/set-osaamisen-osoittaminen-values %) :id)
       naytot)))
 
 (defn get-osaamisen-hankkimistavat [id]
@@ -44,13 +44,12 @@
       hankkimistavat)))
 
 (defn get-hankittava-paikallinen-tutkinnon-osa [id]
-  (dissoc (assoc
-            (db/select-hankittava-paikallinen-tutkinnon-osa-by-id id)
-            :osaamisen-osoittaminen
-            (get-osaamisen-osoittaminen id)
-            :osaamisen-hankkimistavat
-            (get-osaamisen-hankkimistavat id))
-          :uuid))
+  (assoc
+    (db/select-hankittava-paikallinen-tutkinnon-osa-by-id id)
+    :osaamisen-osoittaminen
+    (get-osaamisen-osoittaminen id)
+    :osaamisen-hankkimistavat
+    (get-osaamisen-hankkimistavat id)))
 
 (defn get-hankittavat-paikalliset-tutkinnon-osat [hoks-id]
   (mapv
@@ -61,7 +60,7 @@
          (get-osaamisen-osoittaminen (:id %))
          :osaamisen-hankkimistavat
          (get-osaamisen-hankkimistavat (:id %)))
-       :id :uuid)
+       :id)
     (db/select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-hato-osaamisen-hankkimistavat [id]
@@ -73,7 +72,7 @@
   (mapv
     #(dissoc
        (c/set-osaamisen-osoittaminen-values %)
-       :id :uuid)
+       :id)
     (db/select-osaamisen-osoittamiset-by-hato-id id)))
 
 (defn get-yto-osa-alue-osaamisen-hankkimistavat [id]
@@ -83,7 +82,7 @@
 
 (defn get-yto-osa-alueen-osaamisen-osoittamiset [id]
   (mapv
-    #(dissoc (c/set-osaamisen-osoittaminen-values %) :id :uuid)
+    #(dissoc (c/set-osaamisen-osoittaminen-values %) :id)
     (db/select-osaamisen-osoittamiset-by-yto-osa-alue-id id)))
 
 (defn get-yto-osa-alueet [hyto-id]
@@ -95,18 +94,17 @@
          (get-yto-osa-alue-osaamisen-hankkimistavat (:id %))
          :osaamisen-osoittaminen
          (get-yto-osa-alueen-osaamisen-osoittamiset (:id %)))
-       :id :uuid :yhteinen-tutkinnon-osa-id)
+       :id :yhteinen-tutkinnon-osa-id)
     (db/select-yto-osa-alueet-by-yto-id hyto-id)))
 
 (defn get-hankittava-ammat-tutkinnon-osa [id]
   (when-let [hato-db (db/select-hankittava-ammat-tutkinnon-osa-by-id id)]
-    (dissoc (assoc
-              hato-db
-              :osaamisen-osoittaminen
-              (get-hato-osaamisen-osoittaminen id)
-              :osaamisen-hankkimistavat
-              (get-hato-osaamisen-hankkimistavat id))
-            :uuid)))
+    (assoc
+      hato-db
+      :osaamisen-osoittaminen
+      (get-hato-osaamisen-osoittaminen id)
+      :osaamisen-hankkimistavat
+      (get-hato-osaamisen-hankkimistavat id))))
 
 (defn get-hankittavat-ammat-tutkinnon-osat [hoks-id]
   (mapv
@@ -117,20 +115,19 @@
          (get-hato-osaamisen-osoittaminen (:id %))
          :osaamisen-hankkimistavat
          (get-hato-osaamisen-hankkimistavat (:id %)))
-       :id :uuid)
+       :id)
     (db/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-hankittava-yhteinen-tutkinnon-osa [hyto-id]
   (when-let [hato-db
              (db/select-hankittava-yhteinen-tutkinnon-osa-by-id hyto-id)]
-    (dissoc (assoc hato-db :osa-alueet (get-yto-osa-alueet hyto-id))
-            :uuid)))
+    (assoc hato-db :osa-alueet (get-yto-osa-alueet hyto-id))))
 
 (defn get-hankittavat-yhteiset-tutkinnon-osat [hoks-id]
   (mapv
     #(dissoc
        (assoc % :osa-alueet (get-yto-osa-alueet (:id %)))
-       :id :uuid)
+       :id)
     (db/select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn save-osaamisen-hankkimistapa!

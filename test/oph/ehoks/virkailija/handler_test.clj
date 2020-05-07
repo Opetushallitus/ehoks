@@ -1,6 +1,5 @@
 (ns oph.ehoks.virkailija.handler-test
   (:require [oph.ehoks.virkailija.handler :as handler]
-            [oph.ehoks.virkailija.system-handler :as system-handler]
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
@@ -810,7 +809,7 @@
                [{:oid "1.2.246.562.10.1200000000010"
                  :privileges #{:write :read :update :delete}}]})]
         (let [body (utils/parse-body (:body get-response))]
-          (utils/eq (utils/dissoc-uuids
+          (utils/eq (utils/dissoc-module-ids
                       (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
                     hato-data))
         (t/is (= (:status put-response) 204))))))

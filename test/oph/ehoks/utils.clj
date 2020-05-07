@@ -246,12 +246,12 @@
        (do ~@body)
        (m/clean!)))
 
-(defn dissoc-uuids [data]
+(defn dissoc-module-ids [data]
   (if (coll? data)
     (if (map? data)
       (reduce (fn [res val]
-                (conj res [(first val) (dissoc-uuids (second val))]))
+                (conj res [(first val) (dissoc-module-ids (second val))]))
               {}
-              (dissoc data :uuid))
-      (map #(dissoc-uuids %) data))
+              (dissoc data :module-id))
+      (map #(dissoc-module-ids %) data))
     data))
