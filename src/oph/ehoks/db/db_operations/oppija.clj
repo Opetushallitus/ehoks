@@ -33,8 +33,8 @@
 
 (defn insert-shared-module! [values]
   (let [vals (assoc values
-                    :to-module-uuid
-                    (UUID/fromString (:to-module-uuid values))
+                    :tutkinnonosa-module-uuid
+                    (UUID/fromString (:tutkinnonosa-module-uuid values))
                     :shared-module-uuid
                     (UUID/fromString (:shared-module-uuid values)))]
     (validate-share-dates values)

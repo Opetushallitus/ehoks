@@ -15,8 +15,8 @@
   Jakolinkki
   "Tutkinnon osan jakolinkki"
   {:share-id java.util.UUID
-   :to-module-uuid java.util.UUID
-   :to-tyyppi s/Str
+   :tutkinnonosa-module-uuid java.util.UUID
+   :tutkinnonosa-tyyppi s/Str
    :shared-module-uuid java.util.UUID
    :shared-module-tyyppi s/Str
    :voimassaolo-alku LocalDate
@@ -25,8 +25,8 @@
 (s/defschema
   JakolinkkiLuonti
   "Tutkinnon osan jakolinkin luonti"
-  {:to-module-uuid s/Str
-   :to-tyyppi s/Str
+  {:tutkinnonosa-module-uuid s/Str
+   :tutkinnonosa-tyyppi s/Str
    :shared-module-uuid s/Str
    :shared-module-tyyppi s/Str
    :voimassaolo-alku LocalDate

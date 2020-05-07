@@ -13,8 +13,8 @@
 (def share-base-url "/ehoks-oppija-backend/api/v1/oppija/jaot")
 
 (def jakolinkki-data
-  {:to-module-uuid "5b92f3f4-dc73-4ce0-8ec7-64d2cf96b47c"
-   :to-tyyppi "to-tyyppi"
+  {:tutkinnonosa-module-uuid "5b92f3f4-dc73-4ce0-8ec7-64d2cf96b47c"
+   :tutkinnonosa-tyyppi "tutkinnonosa-tyyppi"
    :shared-module-uuid "992fe41a-c8e6-43e2-a305-2fc5f393a462"
    :shared-module-tyyppi "shared-tyyppi"
    :voimassaolo-alku (LocalDate/now)
@@ -96,8 +96,8 @@
           body (utils/parse-body (:body response))]
       (t/is (= 200 (:status response)))
       (t/is (get-in body [:data 0 :share-id]))
-      (t/is (= (:to-module-uuid jakolinkki-data)
-               (get-in body [:data 0 :to-module-uuid])))
+      (t/is (= (:tutkinnonosa-module-uuid jakolinkki-data)
+               (get-in body [:data 0 :tutkinnonosa-module-uuid])))
       (t/is (= (:shared-module-uuid jakolinkki-data)
                (get-in body [:data 0 :shared-module-uuid])))))
 
@@ -147,7 +147,7 @@
     (let [share1 (opdb/insert-shared-module! jakolinkki-data)
           share2 (opdb/insert-shared-module!
                    (assoc jakolinkki-data
-                          :to-module-uuid
+                          :tutkinnonosa-module-uuid
                           "5b92f3f4-ABBA-4ce0-8ec7-64d2cf96b47c"))
           _ (opdb/insert-shared-module!
               (assoc jakolinkki-data
@@ -167,9 +167,9 @@
       (t/is (some?
               (filter
                 #(= (or
-                      (:to-module-uuid share1)
-                      (:to-module-uuid share2))
-                    (:to-module-uuid %)) (:data body))))))
+                      (:tutkinnonosa-module-uuid share1)
+                      (:tutkinnonosa-module-uuid share2))
+                    (:tutkinnonosa-module-uuid %)) (:data body))))))
 
   (t/testing "Trying to fetch links for a module with none returns not found"
     (let [response (mock-authenticated
