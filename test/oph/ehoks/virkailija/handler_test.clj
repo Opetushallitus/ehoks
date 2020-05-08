@@ -77,7 +77,20 @@
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.000000000020")
            {:status 200
-            :body {:oppilaitos {:oid "1.2.246.562.10.1200000000200"}}}))]
+            :body {:oppilaitos {:oid "1.2.246.562.10.1200000000200"}}}))
+       (fn [url options]
+         (cond
+           (.endsWith
+             url "/koski/api/sure/oids")
+           {:status 200
+            :body [{:henkilö {:oid "1.2.246.562.24.44000000001"}
+                    :opiskeluoikeudet
+                    [{:oid "1.2.246.562.15.76000000001"
+                      :oppilaitos {:oid "1.2.246.562.10.12000000000"
+                                   :nimi {:fi "TestiFi"
+                                          :sv "TestiSv"
+                                          :en "TestiEn"}}
+                      :alkamispäivä "2020-03-12"}]}]}))]
       (let [session "12345678-1234-1234-1234-1234567890ab"
             cookie (str "ring-session=" session)
             store (atom

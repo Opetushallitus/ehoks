@@ -259,28 +259,25 @@
 
 (t/deftest oppija-opiskeluoikeus-match-test
   (with-redefs [oph.ehoks.config/config {:enforce-opiskeluoikeus-match true}]
-    (t/testing "Opintooikeus belonging to oppija return true"
-      (utils/match-oppija-and-opintooikeus
-        "1.2.246.562.24.48727587473"
-        "1.2.246.562.15.55003456345")
-      (t/is
-        (sut/oppija-opiskeluoikeus-match?
-          "1.2.246.562.24.48727587473"
-          "1.2.246.562.15.55003456345"))
-      (utils/reset-client-mocks))))
+    (let [opiskeluoikeudet [{:oid "1.2.246.562.15.55003456345"
+                             :oppilaitos {:oid "1.2.246.562.10.12000000000"
+                                          :nimi {:fi "TestiFi"
+                                                 :sv "TestiSv"
+                                                 :en "TestiEn"}}
+                             :alkamispäivä "2020-03-12"}]]
 
-(t/deftest oppija-opiskeluoikeus-mismatch-test
-  (with-redefs [oph.ehoks.config/config {:enforce-opiskeluoikeus-match true}]
-    (t/testing "Opintooikeus not belonging to oppija return false"
-      (utils/match-oppija-and-opintooikeus
-        "1.2.246.562.24.48727587473"
-        "1.2.246.562.15.55003456345")
-      (t/is
-        (not
+      (t/testing "Opintooikeus belonging to oppija return true"
+        (t/is
           (sut/oppija-opiskeluoikeus-match?
-            "1.2.246.562.24.48727587473"
-            "1.2.246.562.15.55003456347")))
-      (utils/reset-client-mocks))))
+            opiskeluoikeudet
+            "1.2.246.562.15.55003456345")))
+
+      (t/testing "Opintooikeus not belonging to oppija return false"
+        (t/is
+          (not
+            (sut/oppija-opiskeluoikeus-match?
+              opiskeluoikeudet
+              "1.2.246.562.15.55003456347")))))))
 
 (t/deftest hankintakoulutus-opiskeluoikeus-test
   (t/testing "Save opiskeluoikeus with sisältyyOpiskeluoikeuteen information"
@@ -315,3 +312,23 @@
             "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")))
       (t/is
         (nil? (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001"))))))
+
+(t/deftest hankintakoulutus-filter-test
+  (t/testing "Existing hankintakoulutus is filtered from opiskeluoikeudet"
+    (let [opiskeluoikeudet (assoc
+                             opiskeluoikeus-data
+                             :sisältyyOpiskeluoikeuteen
+                             {:oppilaitos {:oppilaitosnumero
+                                           {:koodiarvo "10076"}
+                                           :nimi
+                                           {:fi "Testi-yliopisto"
+                                            :sv "Testi-universitetet"
+                                            :en "Testi University"}}
+                              :oid "1.2.246.562.15.99999123"})]
+      (t/is
+        (= (count (sut/filter-hankintakoulutukset opiskeluoikeudet)) 1))))
+
+  (t/testing "Empty list returned if no hankintakoulutus in opiskeluoikeudet"
+    (let [opiskeluoikeudet opiskeluoikeus-data]
+      (t/is
+        (= (count (sut/filter-hankintakoulutukset opiskeluoikeudet)) 0)))))

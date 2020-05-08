@@ -75,3 +75,8 @@
   (get-in
     (get-opiskeluoikeus-info opiskeluoikeus-oid)
     [:oppilaitos :oid]))
+
+(defn fetch-opiskeluoikeudet-by-oppija-id
+  "Fetches list of opiskeluoikeudet from Koski for oppija"
+  [oppija-oid]
+  (get-oppija-opiskeluoikeudet oppija-oid))

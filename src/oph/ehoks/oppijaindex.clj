@@ -149,6 +149,22 @@
   (db-opiskeluoikeus/insert-opiskeluoikeus!
     (get-opiskeluoikeus-info oid oppija-oid)))
 
+(defn- insert-hankintakoulutus-opiskeluoikeus!
+  [opiskeluoikeus-oid oppija-oid opiskeluoikeus]
+  (let [jarjestaja_oid (get-in opiskeluoikeus
+                               [:sisältyyOpiskeluoikeuteen :oppilaitos :oid])
+        opiskeluoikeus_oid (get-in opiskeluoikeus
+                                   [:sisältyyOpiskeluoikeuteen :oid])]
+    (try
+      (db-opiskeluoikeus/insert-opiskeluoikeus!
+        (assoc
+          (get-opiskeluoikeus-info opiskeluoikeus-oid oppija-oid)
+          :hankintakoulutus_jarjestaja_oid jarjestaja_oid
+          :hankintakoulutus_opiskeluoikeus_oid opiskeluoikeus_oid))
+      (catch Exception e
+        (log-opiskeluoikeus-insert-error! opiskeluoikeus-oid oppija-oid e)
+        (throw e)))))
+
 (defn- insert-new-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
   (try
     (insert-opiskeluoikeus oid oppija-oid)
@@ -261,10 +277,22 @@
 
 (defn oppija-opiskeluoikeus-match?
   "Check that opiskeluoikeus belongs to oppija"
-  [oppija-oid opiskeluoikeus-oid]
+  [opiskeluoikeudet opiskeluoikeus-oid]
   (if (:enforce-opiskeluoikeus-match config)
-    (let [opiskeluoikeudet (k/get-oppija-opiskeluoikeudet oppija-oid)]
-      (boolean
-        (seq
-          (filter #(= opiskeluoikeus-oid (:oid %)) opiskeluoikeudet))))
+    (some #(= opiskeluoikeus-oid (:oid %)) opiskeluoikeudet)
     true))
+
+(defn filter-hankintakoulutukset
+  "Filters hankintakoulutukset from opiskeluoikeudet"
+  [opiskeluoikeudet]
+  (if (seq? opiskeluoikeudet)
+    (filter :sisältyyOpiskeluoikeuteen opiskeluoikeudet)
+    (filter :sisältyyOpiskeluoikeuteen (list opiskeluoikeudet))))
+
+(defn add-oppija-hankintakoulutukset
+  "Adds all hankintakoulutukset for oppija"
+  [opiskeluoikeudet opiskeluoikeus-oid oppija-oid]
+  (let [hankintakoulutukset (filter-hankintakoulutukset opiskeluoikeudet)]
+    (doseq [hankintakoulutus hankintakoulutukset]
+      (insert-hankintakoulutus-opiskeluoikeus!
+        opiskeluoikeus-oid oppija-oid hankintakoulutus))))
