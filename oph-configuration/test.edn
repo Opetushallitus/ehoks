@@ -2,5 +2,4 @@
  :ext-cache-lifetime-minutes 30
  :opintopolku-host "localhost:3001"
  :audit? false
- :db-name "ehoks_test"
- :enforce-opiskeluoikeus-match false}
+ :db-name "ehoks_test"}

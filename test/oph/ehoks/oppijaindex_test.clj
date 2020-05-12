@@ -258,7 +258,7 @@
            0)))))
 
 (t/deftest oppija-opiskeluoikeus-match-test
-  (with-redefs [oph.ehoks.config/config {:enforce-opiskeluoikeus-match true}]
+  (with-redefs [oph.ehoks.config/config {:enforce-opiskeluoikeus-match? true}]
     (let [opiskeluoikeudet [{:oid "1.2.246.562.15.55003456345"
                              :oppilaitos {:oid "1.2.246.562.10.12000000000"
                                           :nimi {:fi "TestiFi"
