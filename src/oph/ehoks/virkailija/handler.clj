@@ -87,6 +87,15 @@
           oppijat
           :total-count (op/get-count search-params))))))
 
+(defn- check-opiskeluoikeus-match [hoks opiskeluoikeudet]
+  (if-not
+   (op/oppija-opiskeluoikeus-match?
+     opiskeluoikeudet (:opiskeluoikeus-oid hoks))
+    (assoc
+      (response/bad-request!
+        {:error "Opiskeluoikeus does not match any held by oppija"})
+      :audit-data {:new hoks})))
+
 (defn- add-oppija [hoks]
   (try
     (op/add-oppija! (:oppija-oid hoks))
@@ -107,14 +116,23 @@
     (op/add-opiskeluoikeus!
       (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
     (catch Exception e
-      (if (= (:status (ex-data e)) 404)
+      (cond
+        (= (:status (ex-data e)) 404)
         (do
           (log/warn "Opiskeluoikeus with oid "
                     (:opiskeluoikeus-oid hoks)
                     " not found in Koski")
           (response/bad-request!
             {:error "Opiskeluoikeus not found in Koski"}))
-        (throw e)))))
+        (= (:error (ex-data e)) :hankintakoulutus)
+        (response/bad-request!
+          {:error (ex-message e)})
+        :else (throw e)))))
+
+(defn- add-hankintakoulutukset-to-index [hoks opiskeluoikeudet]
+  (op/add-oppija-hankintakoulutukset opiskeluoikeudet
+                                     (:opiskeluoikeus-oid hoks)
+                                     (:oppija-oid hoks)))
 
 (defn- check-virkailija-privileges [hoks request]
   (let [virkailija-user
@@ -155,15 +173,12 @@
         (throw e)))))
 
 (defn- post-oppija [hoks request]
-  (if-not
-   (op/oppija-opiskeluoikeus-match?
-     (:oppija-oid hoks) (:opiskeluoikeus-oid hoks))
-    (assoc
-      (response/bad-request!
-        {:error "Opiskeluoikeus does not match any held by oppija"})
-      :audit-data {:new hoks}))
-  (add-oppija hoks)
-  (add-opiskeluoikeus hoks)
+  (let [opiskeluoikeudet
+        (koski/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
+    (check-opiskeluoikeus-match hoks opiskeluoikeudet)
+    (add-oppija hoks)
+    (add-opiskeluoikeus hoks)
+    (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))
   (check-virkailija-privileges hoks request)
   (save-hoks hoks request))
 

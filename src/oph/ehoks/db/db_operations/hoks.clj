@@ -255,26 +255,29 @@
       (recur (str (java.util.UUID/randomUUID)))
       eid)))
 
-(defn insert-hoks! [hoks]
-  (jdbc/with-db-transaction
-    [conn (db-ops/get-db-connection)]
-    (when
-     (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
-                            (:opiskeluoikeus-oid hoks)]))
-      (throw (ex-info
-               "HOKS with given opiskeluoikeus already exists"
-               {:error :duplicate})))
-    (let [eid (generate-unique-eid)]
-      (first
-        (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid)))))))
+(defn insert-hoks!
+  ([hoks]
+    (insert-hoks! hoks (db-ops/get-db-connection)))
+  ([hoks db-conn]
+    (jdbc/with-db-transaction
+      [conn db-conn]
+      (when
+       (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
+                              (:opiskeluoikeus-oid hoks)]))
+        (throw (ex-info
+                 "HOKS with given opiskeluoikeus already exists"
+                 {:error :duplicate})))
+      (let [eid (generate-unique-eid)]
+        (first
+          (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid))))))))
 
 (defn update-hoks-by-id!
   ([id hoks]
     (db-ops/update! :hoksit (hoks-to-sql hoks)
                     ["id = ? AND deleted_at IS NULL" id]))
-  ([id hoks db]
+  ([id hoks db-conn]
     (db-ops/update! :hoksit (hoks-to-sql hoks)
-                    ["id = ? AND deleted_at IS NULL" id] db)))
+                    ["id = ? AND deleted_at IS NULL" id] db-conn)))
 
 (defn select-hoks-oppijat-without-index []
   (db-ops/query

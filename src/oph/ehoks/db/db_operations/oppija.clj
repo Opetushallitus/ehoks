@@ -1,11 +1,11 @@
 (ns oph.ehoks.db.db-operations.oppija
   (:require [oph.ehoks.db.queries :as queries]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
-            [clojure.tools.logging :as log])
-  (:import [org.postgresql.util PSQLException]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops])
+  (:import [java.time LocalDate]
+           [java.util UUID]))
 
 (defn- share-from-sql [v]
-  (db-ops/from-sql v {:removals [:hoks_id]}))
+  (db-ops/from-sql v {:removals [:id]}))
 
 (defn select-oppija-by-oid [oppija-oid]
   (first
@@ -22,33 +22,37 @@
 (defn insert-oppija! [oppija]
   (db-ops/insert-one! :oppijat (db-ops/to-sql oppija)))
 
-(def psql-duplicate-error
-  (str "ERROR: duplicate key value violates unique constraint "
-       "\"tutkinnon_osa_shares_pkey\""))
+(defn- validate-share-dates [values]
+  (cond
+    (.isBefore (:voimassaolo-loppu values) (LocalDate/now))
+    (throw
+      (Exception. "Shared link end date cannot be in the past"))
+    (.isBefore (:voimassaolo-loppu values) (:voimassaolo-alku values))
+    (throw
+      (Exception. "Shared link end date cannot be before the start date"))))
 
-(defn- try-insert-tutkinnon-osa-share! [values]
-  (try
-    (db-ops/insert-one! :tutkinnon_osa_shares (db-ops/to-sql values))
-    (catch PSQLException e
-      (if-not (.startsWith (.getMessage e) psql-duplicate-error)
-        (throw e)
-        (do (log/warnf
-              "Duplicate uuid %s in tutkinnon osa shares. Will retry."
-              (:uuid values))
-            nil)))))
+(defn insert-shared-module! [values]
+  (let [vals (assoc values
+                    :tutkinnonosa-module-uuid
+                    (UUID/fromString (:tutkinnonosa-module-uuid values))
+                    :shared-module-uuid
+                    (UUID/fromString (:shared-module-uuid values)))]
+    (validate-share-dates values)
+    (db-ops/insert-one! :shared_modules (db-ops/to-sql vals))))
 
-(defn insert-tutkinnon-osa-share! [values]
-  (loop [uuid (java.util.UUID/randomUUID)]
-    (if-let [result (try-insert-tutkinnon-osa-share! (assoc values :uuid uuid))]
-      result
-      (recur (java.util.UUID/randomUUID)))))
+(defn select-shared-module [uuid]
+  (let [share-id (UUID/fromString uuid)]
+    (db-ops/query
+      [queries/select-shared-module-by-uuid share-id]
+      {:row-fn share-from-sql})))
 
-(defn select-hoks-tutkinnon-osa-shares [hoks-id koodi-uri]
-  (db-ops/query
-    [queries/select-hoks-tutkinnon-osa-shares hoks-id koodi-uri]
-    {:row-fn share-from-sql}))
+(defn select-shared-module-links [uuid]
+  (let [module-id (UUID/fromString uuid)]
+    (db-ops/query
+      [queries/select-shared-module-links-by-module-uuid module-id]
+      {:row-fn share-from-sql})))
 
-(defn delete-tutkinnon-osa-share! [uuid hoks-id]
+(defn delete-shared-module! [uuid]
   (db-ops/delete!
-    :tutkinnon_osa_shares
-    ["uuid = ? AND hoks_id = ?" (java.util.UUID/fromString uuid) hoks-id]))
+    :shared_modules
+    ["share_id = ?" (UUID/fromString uuid)]))

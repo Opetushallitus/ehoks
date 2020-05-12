@@ -1,5 +1,5 @@
 (ns oph.ehoks.hoks.hoks-test
-  (:require [clojure.test :refer [deftest testing is use-fixtures]]
+  (:require [clojure.test :refer :all]
             [oph.ehoks.utils :as utils :refer [eq with-database]]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.hoks.hoks :as h]
@@ -298,7 +298,7 @@
                 :oppija-oid "1.2.246.562.24.12312312312"
                 :ensikertainen-hyvaksyminen
                 (java.time.LocalDate/of 2019 3 18)
-                :osaamisen-hankkimisen-tarve false
+                :osaamisen-hankkimisen-tarve true
                 :sahkoposti "erkki.esimerkki@esimerkki.com"
                 :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-data
                 :hankittavat-paikalliset-tutkinnon-osat hpto-data
@@ -317,7 +317,7 @@
         (:id hoks)
         ahato-data)
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-module-ids
           (ah/get-aiemmin-hankitut-ammat-tutkinnon-osat
             (:id hoks)))
         ahato-data))))
@@ -328,7 +328,7 @@
       (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
         (:id hoks) ahpto-data)
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-module-ids
           (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks)))
         ahpto-data))))
 
@@ -337,7 +337,7 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ha/save-hankittavat-ammat-tutkinnon-osat! (:id hoks) hao-data)
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-module-ids
           (ha/get-hankittavat-ammat-tutkinnon-osat (:id hoks)))
         hao-data))))
 
@@ -346,7 +346,7 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ot/save-opiskeluvalmiuksia-tukevat-opinnot! (:id hoks) oto-data)
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-module-ids
           (ot/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks)))
         oto-data))))
 
@@ -355,7 +355,7 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! (:id hoks) ahyto-data)
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-module-ids
           (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks)))
         ahyto-data))))
 
@@ -366,7 +366,7 @@
           (ha/save-hankittavat-paikalliset-tutkinnon-osat!
             (:id hoks) hpto-data)]
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-module-ids
           (ha/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks)))
         hpto-data))))
 
@@ -375,7 +375,7 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ha/save-hankittavat-yhteiset-tutkinnon-osat! (:id hoks) hyto-data)
       (eq
-        (utils/dissoc-uuids
+        (utils/dissoc-module-ids
           (ha/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks)))
         hyto-data))))
 
@@ -383,7 +383,7 @@
   (testing "Save and get full HOKS"
     (let [hoks (h/save-hoks! hoks-data)]
       (eq
-        (utils/dissoc-uuids (h/get-hoks-by-id (:id hoks)))
+        (utils/dissoc-module-ids (h/get-hoks-by-id (:id hoks)))
         (assoc
           hoks-data
           :id 1
@@ -412,6 +412,20 @@
                   {:hoks-id (:id hoks)})
           data {}
           tta (ah/save-tarkentavat-tiedot-osaamisen-arvioija! data)]
-      (eq (utils/dissoc-uuids
+      (eq (utils/dissoc-module-ids
             (ah/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta)))
           (assoc data :aiemmin-hankitun-osaamisen-arvioijat [])))))
+
+(deftest get-hoks-test-send-mg-fail
+  (testing
+   "Save HOKS but fail in sending msg, test that HOKS saving is rolled back"
+    (with-redefs [oph.ehoks.external.aws-sqs/send-message
+                  #(throw (Exception. "fail"))]
+      (is (thrown? Exception (h/save-hoks! hoks-data)))
+      (eq (h/get-hoks-by-id 1) {:aiemmin-hankitut-ammat-tutkinnon-osat []
+                                :aiemmin-hankitut-paikalliset-tutkinnon-osat []
+                                :hankittavat-paikalliset-tutkinnon-osat []
+                                :aiemmin-hankitut-yhteiset-tutkinnon-osat []
+                                :hankittavat-ammat-tutkinnon-osat []
+                                :opiskeluvalmiuksia-tukevat-opinnot []
+                                :hankittavat-yhteiset-tutkinnon-osat []}))))

@@ -134,7 +134,18 @@
            :headers {"location" "http://test.ticket/1234"}}
           (= url "http://test.ticket/1234")
           {:status 200
-           :body "ST-1234-testi"})))
+           :body "ST-1234-testi"}
+          (.endsWith
+            url "/koski/api/sure/oids")
+          {:status 200
+           :body [{:henkilö {:oid "1.2.246.562.24.44000000001"}
+                   :opiskeluoikeudet
+                   [{:oid "1.2.246.562.15.76000000001"
+                     :oppilaitos {:oid "1.2.246.562.10.12000000000"
+                                  :nimi {:fi "TestiFi"
+                                         :sv "TestiSv"
+                                         :en "TestiEn"}}
+                     :alkamispäivä "2020-03-12"}]}]})))
     (client/set-get!
       (fn [url options]
         (cond (.endsWith url "/serviceValidate")
@@ -198,21 +209,6 @@
   ([app request]
     (with-service-ticket app request nil)))
 
-(defn match-oppija-and-opintooikeus [oppija-oid opiskeluoikeus-oid]
-  (client/set-post!
-    (fn [url options]
-      (cond
-        (.endsWith url "/koski/api/sure/oids")
-        {:status 200
-         :body [{:henkilö {:oid oppija-oid}
-                 :opiskeluoikeudet
-                 [{:oid opiskeluoikeus-oid
-                   :oppilaitos
-                   {:oid "1.2.246.562.10.12944436166"}}]}]}))))
-
-(defn reset-client-mocks []
-  (client/reset-functions!))
-
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
 
@@ -250,12 +246,12 @@
        (do ~@body)
        (m/clean!)))
 
-(defn dissoc-uuids [data]
+(defn dissoc-module-ids [data]
   (if (coll? data)
     (if (map? data)
       (reduce (fn [res val]
-                (conj res [(first val) (dissoc-uuids (second val))]))
+                (conj res [(first val) (dissoc-module-ids (second val))]))
               {}
-              (dissoc data :uuid))
-      (map #(dissoc-uuids %) data))
+              (dissoc data :module-id))
+      (map #(dissoc-module-ids %) data))
     data))

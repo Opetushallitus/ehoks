@@ -14,9 +14,118 @@
       "tutkinnon-osa-koodi-versio": 2,
       "valittu-todentamisen-prosessi-koodi-uri": "osaamisentodentamisenprosessi_0001",
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_100703",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
+      "olennainen-seikka": true,
       "tarkentavat-tiedot-naytto": [],
       "tarkentavat-tiedot-osaamisen-arvioija": {
-        "aiemmin-hankitun-osaamisen-arvioijat": []
+        "lahetetty-arvioitavaksi": "2020-04-01",
+        "aiemmin-hankitun-osaamisen-arvioijat": [
+          {
+            "nimi": "Antti Aiemmanarvioija",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54424444"
+            }
+          },
+          {
+            "nimi": "Taisto Toisen Aiemmanarvioija",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54424444"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "valittu-todentamisen-prosessi-koodi-versio": 1,
+      "tutkinnon-osa-koodi-versio": 2,
+      "valittu-todentamisen-prosessi-koodi-uri": "osaamisentodentamisenprosessi_0002",
+      "tutkinnon-osa-koodi-uri": "tutkinnonosat_100703",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
+      "olennainen-seikka": true,
+      "tarkentavat-tiedot-naytto": [],
+      "tarkentavat-tiedot-osaamisen-arvioija": {
+        "lahetetty-arvioitavaksi": "2020-04-01",
+        "aiemmin-hankitun-osaamisen-arvioijat": [
+          {
+            "nimi": "Antti Aiemmanarvioija",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54424444"
+            }
+          },
+          {
+            "nimi": "Taisto Toisen Aiemmanarvioija",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54424444"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "valittu-todentamisen-prosessi-koodi-versio": 1,
+      "tutkinnon-osa-koodi-versio": 2,
+      "valittu-todentamisen-prosessi-koodi-uri": "osaamisentodentamisenprosessi_0003",
+      "tutkinnon-osa-koodi-uri": "tutkinnonosat_100703",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
+      "olennainen-seikka": true,
+      "tarkentavat-tiedot-naytto": [
+        {
+          "alku": "2019-10-25",
+          "loppu": "2023-10-26",
+          "sisallon-kuvaus": [
+            "Eka kuvaus sisällöstä",
+            "toinen kuvaus"
+          ],
+          "yksilolliset-kriteerit": [
+            "perehtyy ohjattuna puhtaus- ja kiinteistöpalvelualan asiakaskohteen palvelusopimuksiin liittyviin palvelu- ja laatukuvauksiin",
+            "perehtyy ohjattuna asiakkaan tilanteeseen ja toteuttaa hänelle palvelusopimuksiin liittyviä ratkaisuja yrityksessä sovitulla tavalla",
+            "käyttää tuettuna puhtaus- ja kiinteistöpalvelualan käsitteitä johdonmukaisesti",
+            "tietää tuettuna asiakaskohteen likaantumiseen vaikuttavia tekijöitä"
+          ],
+          "vaatimuksista-tai-tavoitteista-poikkeaminen": "Opiskelija ei hanki osaamista ammattitaitovaatimukseen \"pukeutua työtehtävään\".",
+          "jarjestaja": {
+            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+          },
+          "nayttoymparisto": {
+            "nimi": "Jokin näyttöympäristö",
+            "y-tunnus": "1234567-8",
+            "kuvaus": "Tässä kuvataan näyttöympäristö"
+          },
+          "koulutuksen-jarjestaja-osaamisen-arvioijat": [
+            {
+              "nimi": "Testi, Seppo",
+              "organisaatio": {
+                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              }
+            }
+          ],
+          "tyoelama-osaamisen-arvioijat": [
+            {
+              "nimi": "Tyoelama, Arvi",
+              "organisaatio": {
+                "nimi": "Talvivaara",
+                "y-tunnus": "1234567-8"
+              }
+            }
+          ]
+        }
+      ],
+      "tarkentavat-tiedot-osaamisen-arvioija": {
+        "lahetetty-arvioitavaksi": "2020-04-01",
+        "aiemmin-hankitun-osaamisen-arvioijat": [
+          {
+            "nimi": "Antti Aiemmanarvioija",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54424444"
+            }
+          },
+          {
+            "nimi": "Taisto Toisen Aiemmanarvioija",
+            "organisaatio": {
+              "oppilaitos-oid": "1.2.246.562.10.54424444"
+            }
+          }
+        ]
       }
     }
   ],
@@ -33,6 +142,7 @@
           "valittu-todentamisen-prosessi-koodi-versio": 1,
           "valittu-todentamisen-prosessi-koodi-uri": "osaamisentodentamisenprosessi_0001",
           "tarkentavat-tiedot-naytto": [],
+          "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
           "osa-alue-koodi-uri": "ammatillisenoppiaineet_yttt",
           "osa-alue-koodi-versio": 1
         }

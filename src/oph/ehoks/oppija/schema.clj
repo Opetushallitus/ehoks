@@ -14,15 +14,20 @@
 (s/defschema
   Jakolinkki
   "Tutkinnon osan jakolinkki"
-  {:uuid java.util.UUID
-   :tyyppi s/Str
+  {:share-id java.util.UUID
+   :tutkinnonosa-module-uuid java.util.UUID
+   :tutkinnonosa-tyyppi s/Str
+   :shared-module-uuid java.util.UUID
+   :shared-module-tyyppi s/Str
    :voimassaolo-alku LocalDate
-   :voimassaolo-loppu LocalDate
-   :koodisto-koodi s/Str})
+   :voimassaolo-loppu LocalDate})
 
 (s/defschema
   JakolinkkiLuonti
   "Tutkinnon osan jakolinkin luonti"
-  {:voimassaolo-alku LocalDate
-   :voimassaolo-loppu LocalDate
-   :tyyppi s/Str})
+  {:tutkinnonosa-module-uuid s/Str
+   :tutkinnonosa-tyyppi s/Str
+   :shared-module-uuid s/Str
+   :shared-module-tyyppi s/Str
+   :voimassaolo-alku LocalDate
+   :voimassaolo-loppu LocalDate})
