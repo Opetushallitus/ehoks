@@ -294,6 +294,7 @@
             :koodistoUri "opiskeluoikeudentyyppi"
             :koodistoVersio 1}
            :alkamispäivä "2018-11-15"})))
+
     (POST "/koski/api/sure/oids" []
       (json-response-file
         "dev-routes/koski_api_sure_oids_1.2.246.562.24.44651722625.json"))
