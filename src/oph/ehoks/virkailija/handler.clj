@@ -134,6 +134,12 @@
                                      (:opiskeluoikeus-oid hoks)
                                      (:oppija-oid hoks)))
 
+(defn- check-opiskeluoikeus-validity
+  ([hoks-values]
+   (op/opiskeluoikeus-still-active? (:opiskeluoikeus-oid hoks-values)))
+  ([hoks opiskeluoikeudet]
+   (op/opiskeluoikeus-still-active? hoks opiskeluoikeudet)))
+
 (defn- check-virkailija-privileges [hoks request]
   (let [virkailija-user
         (get-in request [:session :virkailija-user])]
@@ -176,6 +182,7 @@
   (let [opiskeluoikeudet
         (koski/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
     (check-opiskeluoikeus-match hoks opiskeluoikeudet)
+    (check-opiskeluoikeus-validity hoks opiskeluoikeudet)
     (add-oppija hoks)
     (add-opiskeluoikeus hoks)
     (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))
@@ -209,6 +216,7 @@
 
 (defn- put-hoks [hoks-values hoks-id]
   (try
+    (check-opiskeluoikeus-validity hoks-values)
     (let [hoks-db
           (h/replace-hoks! hoks-id hoks-values)]
       (assoc
@@ -226,6 +234,7 @@
 
 (defn- patch-hoks [hoks-values hoks-id]
   (try
+    (check-opiskeluoikeus-validity hoks-values)
     (let [hoks-db
           (h/update-hoks! hoks-id hoks-values)]
       (assoc
