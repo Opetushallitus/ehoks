@@ -82,6 +82,9 @@
 (defn get-opiskeluoikeus-by-oid [oid]
   (db-opiskeluoikeus/select-opiskeluoikeus-by-oid oid))
 
+(defn get-hankintakoulutus-oids-by-master-oid [oid]
+  (db-opiskeluoikeus/select-hankintakoulutus-oids-by-master-oid oid))
+
 (defn get-oppilaitos-oids []
   (filter some? (db/select-oppilaitos-oids)))
 

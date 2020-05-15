@@ -77,6 +77,10 @@
       [queries/select-opiskeluoikeudet-by-oid oid]
       {:row-fn db-ops/from-sql})))
 
+(defn select-hankintakoulutus-oids-by-master-oid [oid]
+  (db-ops/query
+    [queries/select-hankintakoulutus-oids-by-master-oid oid]))
+
 (defn insert-opiskeluoikeus! [opiskeluoikeus]
   (db-ops/insert-one! :opiskeluoikeudet (db-ops/to-sql opiskeluoikeus)))
 
