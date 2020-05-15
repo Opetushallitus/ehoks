@@ -136,9 +136,21 @@
 
 (defn- check-opiskeluoikeus-validity
   ([hoks-values]
-   (op/opiskeluoikeus-still-active? (:opiskeluoikeus-oid hoks-values)))
+    (if-not
+     (op/opiskeluoikeus-still-active? (:opiskeluoikeus-oid hoks-values))
+      (assoc
+        (response/bad-request!
+          {:error (format "Opiskeluoikeus %s is no longer active"
+                          (:opiskeluoikeus-oid hoks-values))})
+        :audit-data {:new hoks-values})))
   ([hoks opiskeluoikeudet]
-   (op/opiskeluoikeus-still-active? hoks opiskeluoikeudet)))
+    (if-not
+     (op/opiskeluoikeus-still-active? hoks opiskeluoikeudet)
+      (assoc
+        (response/bad-request!
+          {:error (format "Opiskeluoikeus %s is no longer active"
+                          (:opiskeluoikeus-oid hoks))})
+        :audit-data {:new hoks}))))
 
 (defn- check-virkailija-privileges [hoks request]
   (let [virkailija-user
