@@ -69,15 +69,18 @@
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
            {:status 200
-            :body {:oppilaitos {:oid "1.2.246.562.10.12944436166"}}}
+            :body {:oid "1.2.246.562.15.00000000001"
+                   :oppilaitos {:oid "1.2.246.562.10.12944436166"}}}
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.760000000010")
            {:status 200
-            :body {:oppilaitos {:oid "1.2.246.562.10.1200000000010"}}}
+            :body {:oid "1.2.246.562.15.760000000010"
+                   :oppilaitos {:oid "1.2.246.562.10.1200000000010"}}}
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.000000000020")
            {:status 200
-            :body {:oppilaitos {:oid "1.2.246.562.10.1200000000200"}}}))
+            :body {:oid "1.2.246.562.15.000000000020"
+                   :oppilaitos {:oid "1.2.246.562.10.1200000000200"}}}))
        (fn [url options]
          (cond
            (.endsWith

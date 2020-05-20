@@ -161,7 +161,9 @@
                    :sukunimi "Testaaja"}}
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
-            :body opiskeluoikeus-data}))]
+            :body (assoc
+                    opiskeluoikeus-data
+                    :oid "1.2.246.562.15.00000000001")}))]
       (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
@@ -194,7 +196,9 @@
                    :sukunimi "Testaaja"}}
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
-            :body opiskeluoikeus-data}))]
+            :body (assoc
+                    opiskeluoikeus-data
+                    :oid "1.2.246.562.15.00000000001")}))]
       (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
