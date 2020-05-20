@@ -315,20 +315,20 @@
 
 (t/deftest hankintakoulutus-filter-test
   (t/testing "Existing hankintakoulutus is filtered from opiskeluoikeudet"
-    (let [opiskeluoikeudet (assoc
-                             opiskeluoikeus-data
-                             :sisältyyOpiskeluoikeuteen
-                             {:oppilaitos {:oppilaitosnumero
-                                           {:koodiarvo "10076"}
-                                           :nimi
-                                           {:fi "Testi-yliopisto"
-                                            :sv "Testi-universitetet"
-                                            :en "Testi University"}}
-                              :oid "1.2.246.562.15.99999123"})]
+    (let [opiskeluoikeudet [(assoc
+                              opiskeluoikeus-data
+                              :sisältyyOpiskeluoikeuteen
+                              {:oppilaitos {:oppilaitosnumero
+                                            {:koodiarvo "10076"}
+                                            :nimi
+                                            {:fi "Testi-yliopisto"
+                                             :sv "Testi-universitetet"
+                                             :en "Testi University"}}
+                               :oid "1.2.246.562.15.99999123"})]]
       (t/is
         (= (count (sut/filter-hankintakoulutukset opiskeluoikeudet)) 1))))
 
   (t/testing "Empty list returned if no hankintakoulutus in opiskeluoikeudet"
-    (let [opiskeluoikeudet opiskeluoikeus-data]
+    (let [opiskeluoikeudet [opiskeluoikeus-data]]
       (t/is
         (= (count (sut/filter-hankintakoulutukset opiskeluoikeudet)) 0)))))
