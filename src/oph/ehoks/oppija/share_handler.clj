@@ -29,7 +29,7 @@
         :return (rest/response [oppija-schema/Jakolinkki])
         :summary "Jakolinkkiin liitettyjen tietojen haku"
         :path-params [uuid :- String]
-        (let [jakolinkki (db/select-shared-module uuid)]
+        (let [jakolinkki (db/select-shared-link uuid)]
           (if (pos? (count jakolinkki))
             (rest/rest-ok jakolinkki)
             (response/not-found))))
