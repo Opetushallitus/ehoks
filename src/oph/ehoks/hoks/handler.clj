@@ -422,7 +422,7 @@
             :summary "Palauttaa hoksin hankintakoulutus opiskeluoikeus-oidit"
             (let [oids (oppijaindex/get-hankintakoulutus-oids-by-master-oid
                          (get-in request [:hoks :opiskeluoikeus-oid]))]
-              (response/ok oids)))
+              (response/ok (map :oid oids))))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
