@@ -49,4 +49,4 @@
       (let [jakolinkit (db/select-shared-module-links uuid)]
         (if (pos? (count jakolinkit))
           (rest/rest-ok jakolinkit)
-          (response/not-found))))))
+          (rest/rest-ok '()))))))
