@@ -288,6 +288,7 @@
 (defn filter-hankintakoulutukset
   "Filters hankintakoulutukset from opiskeluoikeudet"
   [opiskeluoikeudet]
+  (log/info opiskeluoikeudet)
   (if (seq? opiskeluoikeudet)
     (filter :sisältyyOpiskeluoikeuteen opiskeluoikeudet)
     (filter :sisältyyOpiskeluoikeuteen (list opiskeluoikeudet))))
@@ -296,6 +297,7 @@
   "Adds all hankintakoulutukset for oppija"
   [opiskeluoikeudet opiskeluoikeus-oid oppija-oid]
   (let [hankintakoulutukset (filter-hankintakoulutukset opiskeluoikeudet)]
+    (log/info hankintakoulutukset)
     (doseq [hankintakoulutus hankintakoulutukset]
       (insert-hankintakoulutus-opiskeluoikeus!
         opiskeluoikeus-oid oppija-oid hankintakoulutus))))
