@@ -217,7 +217,7 @@
       "sessions/select_by_session_key.sql")
 (defq select-user-settings-by-user-oid
       "settings/select_by_user_oid.sql")
-(defq select-shared-module-by-uuid
+(defq select-shared-link-by-uuid
       "shared_modules/select_by_share_id.sql")
 (defq select-shared-module-links-by-module-uuid
       "shared_modules/select_by_module_id.sql")

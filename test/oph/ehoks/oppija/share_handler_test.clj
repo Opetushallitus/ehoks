@@ -171,7 +171,7 @@
                       (:tutkinnonosa-module-uuid share2))
                     (:tutkinnonosa-module-uuid %)) (:data body))))))
 
-  (t/testing "Trying to fetch links for a module with none returns not found"
+  (t/testing "Trying to fetch links for a module with none returns empty list"
     (let [response (mock-authenticated
                      (mock/request
                        :get
@@ -179,4 +179,5 @@
                                share-base-url
                                "moduulit"
                                "10000000-1000-1000-1000-100000000000")))]
-      (t/is (= 404 (:status response))))))
+      (t/is (= 200 (:status response)))
+      (t/is (empty? (:data (utils/parse-body (:body response))))))))

@@ -40,10 +40,10 @@
     (validate-share-dates values)
     (db-ops/insert-one! :shared_modules (db-ops/to-sql vals))))
 
-(defn select-shared-module [uuid]
+(defn select-shared-link [uuid]
   (let [share-id (UUID/fromString uuid)]
     (db-ops/query
-      [queries/select-shared-module-by-uuid share-id]
+      [queries/select-shared-link-by-uuid share-id]
       {:row-fn share-from-sql})))
 
 (defn select-shared-module-links [uuid]
