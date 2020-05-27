@@ -69,4 +69,5 @@
               :arvo-password s/Str
               :arvo-username s/Str
               :arvo-url s/Str
-              :enforce-opiskeluoikeus-match? s/Bool})
+              :enforce-opiskeluoikeus-match? s/Bool
+              :prevent-finished-opiskeluoikeus-updates? s/Bool})

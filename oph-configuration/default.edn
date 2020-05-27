@@ -30,4 +30,5 @@
  :arvo-username "ehoks"
  :arvo-password ""
  :arvo-url "http://localhost:3000/api/vastauslinkki/v1"
- :enforce-opiskeluoikeus-match? false}
+ :enforce-opiskeluoikeus-match? false
+ :prevent-finished-opiskeluoikeus-updates? false}
