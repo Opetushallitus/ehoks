@@ -83,6 +83,9 @@
 (defn get-opiskeluoikeus-by-oid [oid]
   (db-opiskeluoikeus/select-opiskeluoikeus-by-oid oid))
 
+(defn get-hankintakoulutus-oids-by-master-oid [oid]
+  (db-opiskeluoikeus/select-hankintakoulutus-oids-by-master-oid oid))
+
 (defn get-oppilaitos-oids []
   (filter some? (db/select-oppilaitos-oids)))
 
@@ -107,6 +110,16 @@
       [:suoritukset 0 :osaamisala 0 :osaamisala :nimi])
     {:fi "" :sv ""}))
 
+(defn- opiskeluoikeus-to-sql [opiskeluoikeus oppija-oid]
+  (let [tutkinto (get-tutkinto-nimi opiskeluoikeus)
+        osaamisala (get-osaamisala-nimi opiskeluoikeus)]
+    {:oid (:oid opiskeluoikeus)
+     :oppija_oid oppija-oid
+     :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
+     :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
+     :tutkinto_nimi tutkinto
+     :osaamisala_nimi osaamisala}))
+
 (defn- get-opiskeluoikeus-info [oid oppija-oid]
   (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
     (when (:sisältyyOpiskeluoikeuteen opiskeluoikeus)
@@ -121,14 +134,7 @@
     (when (> (count (get-in opiskeluoikeus [:suoritukset 0 :osaamisala])) 1)
       (log/warnf
         "Opiskeluoikeus %s has multiple osaamisala. First one is used." oid))
-    (let [tutkinto (get-tutkinto-nimi opiskeluoikeus)
-          osaamisala (get-osaamisala-nimi opiskeluoikeus)]
-      {:oid oid
-       :oppija_oid oppija-oid
-       :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
-       :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
-       :tutkinto_nimi tutkinto
-       :osaamisala_nimi osaamisala})))
+    (opiskeluoikeus-to-sql opiskeluoikeus oppija-oid)))
 
 (defn- log-opiskeluoikeus-insert-error!
   ([oid oppija-oid exception]
@@ -152,16 +158,14 @@
 
 (defn- insert-hankintakoulutus-opiskeluoikeus!
   [opiskeluoikeus-oid oppija-oid opiskeluoikeus]
-  (let [jarjestaja_oid (get-in opiskeluoikeus
-                               [:sisältyyOpiskeluoikeuteen :oppilaitos :oid])
-        opiskeluoikeus_oid (get-in opiskeluoikeus
-                                   [:sisältyyOpiskeluoikeuteen :oid])]
+  (let [jarjestaja-oid (get-in opiskeluoikeus
+                               [:sisältyyOpiskeluoikeuteen :oppilaitos :oid])]
     (try
       (db-opiskeluoikeus/insert-opiskeluoikeus!
         (assoc
-          (get-opiskeluoikeus-info opiskeluoikeus-oid oppija-oid)
-          :hankintakoulutus_jarjestaja_oid jarjestaja_oid
-          :hankintakoulutus_opiskeluoikeus_oid opiskeluoikeus_oid))
+          (opiskeluoikeus-to-sql opiskeluoikeus oppija-oid)
+          :hankintakoulutus_jarjestaja_oid jarjestaja-oid
+          :hankintakoulutus_opiskeluoikeus_oid opiskeluoikeus-oid))
       (catch Exception e
         (log-opiskeluoikeus-insert-error! opiskeluoikeus-oid oppija-oid e)
         (throw e)))))
@@ -286,9 +290,7 @@
 (defn filter-hankintakoulutukset
   "Filters hankintakoulutukset from opiskeluoikeudet"
   [opiskeluoikeudet]
-  (if (seq? opiskeluoikeudet)
-    (filter :sisältyyOpiskeluoikeuteen opiskeluoikeudet)
-    (filter :sisältyyOpiskeluoikeuteen (list opiskeluoikeudet))))
+  (filter :sisältyyOpiskeluoikeuteen opiskeluoikeudet))
 
 (defn add-oppija-hankintakoulutukset
   "Adds all hankintakoulutukset for oppija"

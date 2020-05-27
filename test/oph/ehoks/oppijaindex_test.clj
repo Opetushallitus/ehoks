@@ -182,7 +182,9 @@
            onr-data
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
-            :body opiskeluoikeus-data}))]
+            :body (assoc
+                    opiskeluoikeus-data
+                    :oid "1.2.246.562.15.00000000001")}))]
       (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
@@ -210,7 +212,9 @@
            onr-data
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
-            :body opiskeluoikeus-data}))]
+            :body (assoc
+                    opiskeluoikeus-data
+                    :oid "1.2.246.562.15.00000000001")}))]
       (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
@@ -326,21 +330,21 @@
 
 (t/deftest hankintakoulutus-filter-test
   (t/testing "Existing hankintakoulutus is filtered from opiskeluoikeudet"
-    (let [opiskeluoikeudet (assoc
-                             opiskeluoikeus-data
-                             :sisältyyOpiskeluoikeuteen
-                             {:oppilaitos {:oppilaitosnumero
-                                           {:koodiarvo "10076"}
-                                           :nimi
-                                           {:fi "Testi-yliopisto"
-                                            :sv "Testi-universitetet"
-                                            :en "Testi University"}}
-                              :oid "1.2.246.562.15.99999123"})]
+    (let [opiskeluoikeudet [(assoc
+                              opiskeluoikeus-data
+                              :sisältyyOpiskeluoikeuteen
+                              {:oppilaitos {:oppilaitosnumero
+                                            {:koodiarvo "10076"}
+                                            :nimi
+                                            {:fi "Testi-yliopisto"
+                                             :sv "Testi-universitetet"
+                                             :en "Testi University"}}
+                               :oid "1.2.246.562.15.99999123"})]]
       (t/is
         (= (count (sut/filter-hankintakoulutukset opiskeluoikeudet)) 1))))
 
   (t/testing "Empty list returned if no hankintakoulutus in opiskeluoikeudet"
-    (let [opiskeluoikeudet opiskeluoikeus-data]
+    (let [opiskeluoikeudet [opiskeluoikeus-data]]
       (t/is
         (= (count (sut/filter-hankintakoulutukset opiskeluoikeudet)) 0)))))
 

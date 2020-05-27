@@ -229,3 +229,5 @@
       "heratepalvelu/select_paattyneet_tyoelamajaksot_hpto.sql")
 (defq select-paattyneet-tyoelamajaksot-hyto
       "heratepalvelu/select_paattyneet_tyoelamajaksot_hyto.sql")
+(defq select-hankintakoulutus-oids-by-master-oid
+      "opiskeluoikeudet/select-hankintakoulutus-oids-by-master-oid.sql")

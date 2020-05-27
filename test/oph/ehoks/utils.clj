@@ -164,12 +164,14 @@
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
               {:status 200
-               :body {:oppilaitos {:oid (or oppilaitos-oid
+               :body {:oid "1.2.246.562.15.00000000001"
+                      :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.10.12944436166")}}}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000002")
               {:status 200
-               :body {:oppilaitos {:oid (or oppilaitos-oid
+               :body {:oid "1.2.246.562.15.00000000002"
+                      :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.24.47861388608")}}}
               (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
               {:status 200
