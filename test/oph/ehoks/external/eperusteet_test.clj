@@ -2,7 +2,10 @@
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [oph.ehoks.external.eperusteet :as ep]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.external.cache :as c]))
+            [oph.ehoks.external.cache :as c]
+            [clojure.java.io :as io]
+            [cheshire.core :as cheshire]
+            [com.rpl.specter :as spc :refer [ALL]]))
 
 (defn with-clear-cache [t]
   (c/clear-cache!)
@@ -10,6 +13,11 @@
   (c/clear-cache!))
 
 (use-fixtures :each with-clear-cache)
+
+(defn get-mock-eperusteet-value [file]
+  (-> (io/resource file)
+      slurp
+      (cheshire/parse-string true)))
 
 (deftest test-map-perusteet
   (testing "Mapping perusteet"
@@ -89,3 +97,53 @@
                            {:status 404 :body {:syy "Tilaa ei asetettu"
                                                :koodi "404"}})))]
       (is (thrown? clojure.lang.ExceptionInfo (ep/get-suoritustavat 100000))))))
+
+(deftest transform-arviointikriteerit
+  (testing "Osaamistasot for arviointiAsteikko 3 are transformed and
+            empty kriteerit are dropped"
+    (client/with-mock-responses
+      [(fn [_ __] {:status 200
+                   :body {:data (get-mock-eperusteet-value
+                                  "mock/eperusteet-tutkinnonosa-asteikko3.json")
+                          :sivuja 0
+                          :kokonaismäärä 0
+                          :sivukoko 25
+                          :sivu 0}})]
+      (let [response (ep/find-tutkinnon-osat "tutkinnonosat_asteikko3")
+            adjusted (ep/adjust-tutkinnonosa-arviointi response)
+            osaamistasot (spc/select [ALL :arviointi :arvioinninKohdealueet
+                                      ALL :arvioinninKohteet ALL
+                                      :osaamistasonKriteerit ALL
+                                      :_osaamistaso]
+                                     adjusted)
+            kriteerit (spc/select [ALL :arviointi :arvioinninKohdealueet
+                                   ALL :arvioinninKohteet ALL
+                                   :osaamistasonKriteerit ALL :kriteerit]
+                                  adjusted)]
+        (is (not (some #(= 7 %) osaamistasot)))
+        (is (not (some #(= 9 %) osaamistasot)))
+        (is (not (some #(empty? %) kriteerit))))))
+
+  (testing "Osaamistason kriteerit for arviointiAsteikko 2 are transformed and
+            empty cells are dropped"
+    (client/with-mock-responses
+      [(fn [_ __] {:status 200
+                   :body {:data (get-mock-eperusteet-value
+                                  "mock/eperusteet-tutkinnonosa-asteikko2.json")
+                          :sivuja 0
+                          :kokonaismäärä 0
+                          :sivukoko 25
+                          :sivu 0}})]
+      (let [response (ep/find-tutkinnon-osat "tutkinnonosat_asteikko2")
+            adjusted (ep/adjust-tutkinnonosa-arviointi response)
+            osaamistasot (spc/select [ALL :arviointi :arvioinninKohdealueet
+                                      ALL :arvioinninKohteet ALL
+                                      :osaamistasonKriteerit ALL]
+                                     adjusted)
+            kriteerit (spc/select [ALL :arviointi :arvioinninKohdealueet
+                                   ALL :arvioinninKohteet ALL
+                                   :osaamistasonKriteerit ALL]
+                                  adjusted)]
+        (is (not (some #(= 2 %) osaamistasot)))
+        (is (not (some #(= 4 %) osaamistasot)))
+        (is (not (some #(empty? %) kriteerit)))))))
