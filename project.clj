@@ -21,7 +21,8 @@
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.1.0"]
                  [software.amazon.awssdk/sqs "2.5.37"]
-                 [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]]
+                 [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]
+                 [com.rpl/specter "1.1.3"]]
   :managed-dependencies [[org.clojure/clojure "1.10.1"]
 
                          ;; http server
