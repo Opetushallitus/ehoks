@@ -17,8 +17,8 @@
     values))
 
 (def asteikkomuunnos
-  {:2 {:2 1 :3 3 :4 5}
-   :3 {:5 1 :7 3 :9 5}})
+  {:2 {:2 "1" :3 "3" :4 "5"}
+   :3 {:5 "1" :7 "3" :9 "5"}})
 
 (defn- adjust-osaamistaso [asteikko osaamistaso]
   (get-in asteikkomuunnos [(keyword asteikko) (keyword osaamistaso)]))
