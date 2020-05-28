@@ -113,8 +113,7 @@
             adjusted (ep/adjust-tutkinnonosa-arviointi response)
             osaamistasot (spc/select [ALL :arviointi :arvioinninKohdealueet
                                       ALL :arvioinninKohteet ALL
-                                      :osaamistasonKriteerit ALL
-                                      :_osaamistaso]
+                                      :osaamistasonKriteerit ALL :_osaamistaso]
                                      adjusted)
             kriteerit (spc/select [ALL :arviointi :arvioinninKohdealueet
                                    ALL :arvioinninKohteet ALL
@@ -138,12 +137,35 @@
             adjusted (ep/adjust-tutkinnonosa-arviointi response)
             osaamistasot (spc/select [ALL :arviointi :arvioinninKohdealueet
                                       ALL :arvioinninKohteet ALL
-                                      :osaamistasonKriteerit ALL]
+                                      :osaamistasonKriteerit ALL :_osaamistaso]
                                      adjusted)
             kriteerit (spc/select [ALL :arviointi :arvioinninKohdealueet
                                    ALL :arvioinninKohteet ALL
-                                   :osaamistasonKriteerit ALL]
+                                   :osaamistasonKriteerit ALL :kriteerit]
                                   adjusted)]
         (is (not (some #(= 2 %) osaamistasot)))
         (is (not (some #(= 4 %) osaamistasot)))
+        (is (not (some #(empty? %) kriteerit))))))
+
+  (testing "Osaamistason kriteerit for arviointiAsteikko 1 are transformed and
+            empty cells are dropped"
+    (client/with-mock-responses
+      [(fn [_ __] {:status 200
+                   :body {:data (get-mock-eperusteet-value
+                                  "mock/eperusteet-tutkinnonosa-asteikko1.json")
+                          :sivuja 0
+                          :kokonaismäärä 0
+                          :sivukoko 25
+                          :sivu 0}})]
+      (let [response (ep/find-tutkinnon-osat "tutkinnonosat_asteikko1")
+            adjusted (ep/adjust-tutkinnonosa-arviointi response)
+            osaamistasot (spc/select [ALL :arviointi :arvioinninKohdealueet
+                                      ALL :arvioinninKohteet ALL
+                                      :osaamistasonKriteerit ALL :_osaamistaso]
+                                     adjusted)
+            kriteerit (spc/select [ALL :arviointi :arvioinninKohdealueet
+                                   ALL :arvioinninKohteet ALL
+                                   :osaamistasonKriteerit ALL :kriteerit]
+                                  adjusted)]
+        (is (not (some #(not (clojure.string/blank? %)) osaamistasot)))
         (is (not (some #(empty? %) kriteerit)))))))
