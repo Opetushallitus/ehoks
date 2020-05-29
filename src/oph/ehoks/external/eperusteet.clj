@@ -24,6 +24,18 @@
 (defn- adjust-osaamistaso [asteikko osaamistaso]
   (get-in asteikkomuunnos [(keyword asteikko) (keyword osaamistaso)]))
 
+(defn- remove-empty-kriteerit [values]
+  (spc/setval [ALL :arviointi :arvioinninKohdealueet ALL
+               :arvioinninKohteet ALL :osaamistasonKriteerit ALL
+               #(empty? (:kriteerit %))]
+              NONE values))
+
+(defn- adjust-osaamistaso-based-on-asteikko [asteikko values]
+  (spc/transform [ALL :arviointi :arvioinninKohdealueet ALL
+                  :arvioinninKohteet ALL :osaamistasonKriteerit
+                  ALL :_osaamistaso]
+                 #(adjust-osaamistaso asteikko %) values))
+
 (defn adjust-tutkinnonosa-arviointi
   "Adjusts osaamistasonKriteerit based on the osaamistaso of the tutkinnonosa"
   [values]
@@ -31,14 +43,8 @@
                    [ALL :arviointi :arvioinninKohdealueet ALL
                     :arvioinninKohteet FIRST :_arviointiAsteikko] values)]
     (->> values
-         (spc/setval [ALL :arviointi :arvioinninKohdealueet ALL
-                      :arvioinninKohteet ALL :osaamistasonKriteerit ALL
-                      #(empty? (:kriteerit %))]
-                     NONE)
-         (spc/transform [ALL :arviointi :arvioinninKohdealueet ALL
-                         :arvioinninKohteet ALL :osaamistasonKriteerit
-                         ALL :_osaamistaso]
-                        #(adjust-osaamistaso asteikko %)))))
+         (remove-empty-kriteerit)
+         (adjust-osaamistaso-based-on-asteikko asteikko))))
 
 (defn search-perusteet-info [nimi]
   (get-in
