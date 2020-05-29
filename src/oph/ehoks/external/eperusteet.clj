@@ -39,6 +39,8 @@
 (defn adjust-tutkinnonosa-arviointi
   "Adjusts osaamistasonKriteerit based on the osaamistaso of the tutkinnonosa"
   [values]
+  ; Every tutkinnonosa should currently have the same arviointiAsteikko
+  ; for all of its arvioinninKohteet
   (let [asteikko (spc/select-first
                    [ALL :arviointi :arvioinninKohdealueet ALL
                     :arvioinninKohteet FIRST :_arviointiAsteikko] values)]
