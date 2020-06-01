@@ -1,0 +1,765 @@
+[
+  {
+    "id": 52824,
+    "luotu": 1416411530770,
+    "muokattu": 1426084737700,
+    "muokkaaja": "1.2.246.562.24.77925329174",
+    "nimi": {
+      "fi": "Elintarviketuotannossa toimiminen",
+      "sv": "Arbete inom livsmedelsproduktion",
+      "_id": "396084"
+    },
+    "tila": "valmis",
+    "valmis": false,
+    "kaannettava": false,
+    "tavoitteet": null,
+    "arviointi": {
+      "id": 395215,
+      "lisatiedot": null,
+      "arvioinninKohdealueet": [
+        {
+          "otsikko": {
+            "fi": "1.Työprosessin hallinta",
+            "sv": "Behärskande av arbetsprocessen",
+            "_id": "396087"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": {
+                "fi": "Omavalvonta- ja hygieniavaatimusten mukaisesti toimiminen omassa työtehtävässä",
+                "sv": "Arbete enligt egenkontroll- och hygienkraven i den egna arbetsuppgiften",
+                "_id": "396088"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "huolehtii henkilökohtaisesta hygieniastaan ja pukeutuu työkohteen vaatimusten mukaisesti,noudattaa tuotteiden valmistuksessa omavalvontaa ja hygieniamääräyksiä",
+                      "sv": "sköter sin personliga hygien och\nklär sig enligt arbetets krav, följer\negenkontrollen och föreskrifterna\nom hygien vid tillverkning av\nprodukter",
+                      "_id": "396100"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "huolehtii henkilökohtaisesta hygieniastaan ja pukeutuu työkohteen vaatimusten mukaisesti, noudattaa tuotteiden valmistuksessa omavalvontaa ja hygieniamääräyksiä",
+                      "sv": "sköter sin personliga hygien och\nklär sig enligt arbetets krav, följer\negenkontrollen och föreskrifterna\nom hygien vid tillverkning av\nprodukter",
+                      "_id": "396089"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "huolehtii henkilökohtaisesta hygieniastaan ja pukeutuu työkohteen vaatimusten mukaisesti, noudattaa tuotteiden valmistuksessa omavalvontaa ja hygieniamääräyksiä",
+                      "sv": "sköter sin personliga hygien och\nklär sig enligt arbetets krav, följer\negenkontrollen och föreskrifterna\nom hygien vid tillverkning av\nprodukter",
+                      "_id": "396101"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Elintarvikkeen valmistusprosessin kokonaisuuden hallinta ja vastuullinen tekeminen",
+                "sv": "Behärskande av livsmedelsproduktionen som helhet samt ansvarsfullt arbete",
+                "_id": "396102"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii omatoimisesti ja suoriutuu tehtävästä joustavasti ja huolellisesti sekä tekee muitakin kuin annettuja työtehtäviä omalla vastuualueellaan",
+                      "sv": "arbetar självständigt och klarar av\nsin uppgift obehindrat och omsorgsfullt\nsamt gör även andra\nuppgifter inom det egna ansvarsområdet\nän de som han/hon blivit\ntilldelad",
+                      "_id": "396105"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii työtehtävässään tarviten ajoittain ohjausta ja noudattaa työaikoja sekä sopii poikkeamista",
+                      "sv": "utför sina arbetsuppgifter, men\nbehöver emellanåt handledning,\noch håller arbetstiderna samt\nkommer överens om undantag",
+                      "_id": "396104"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii omatoimisesti työtehtävässään ja vastaa omasta työosuudestaan",
+                      "sv": "utför sina arbetsuppgifter självständigt\noch tar ansvar för den\negna arbetsandelen",
+                      "_id": "396103"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Oman työsuorituksen arviointi tuotteen valmistuksessa",
+                "sv": "Utvärdering av den egna arbetsprestationen vid tillverkning av en produkt",
+                "_id": "396106"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "arvioi omaa työskentelyään ja löytää omasta toiminnastaan mahdollisia kehittämiskohteita sekä osaa esittää korjausehdotuksia.",
+                      "sv": "utvärderar sitt arbete och finner\ndå sådant som eventuellt behöver\nutvecklas samt kan komma med\nkorrigeringsförslag",
+                      "_id": "396108"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "arvioi omaa työskentelyään ja löytää omasta toiminnastaan mahdollisia kehittämiskohteita",
+                      "sv": "utvärderar sitt arbete och finner\ndå sådant som eventuellt behöver\nutvecklas",
+                      "_id": "396107"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "arvioi omaa työskentelyään ohjatusti.",
+                      "sv": "utvärderar sitt arbete under handledning",
+                      "_id": "396109"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "koodi": null
+        },
+        {
+          "otsikko": {
+            "fi": "2. Työmenetelmien, -välineiden ja materiaalin hallinta",
+            "sv": "Behärskande av arbetsmetoder, arbetsredskap och material",
+            "_id": "396120"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": {
+                "fi": "Raaka-aineiden valinta, käsittely ja käyttö sekä niiden ja valmiiden tuotteiden aistinvarainen arviointi",
+                "sv": "Val, hantering och användning av råvaror samt sensorisk bedömning av råvaror och färdiga produkter",
+                "_id": "396121"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "valitsee tuotteen valmistukseen kuuluvat raaka-aineet ja käyttää niitä oikein pääosin omatoimisesti",
+                      "sv": "väljer i huvudsak självständigt de\nråvaror som används i tillverkningen\nav produkten och använder dem rätt",
+                      "_id": "396122"
+                    },
+                    {
+                      "fi": "erottaa virheellisen raaka-aineen ja virheellisen valmiin tuotteen ja toimii tilanteen mukaisesti",
+                      "sv": "urskiljer en felaktig råvara eller\nfärdig produkt och handlar enligt\nsituationens krav",
+                      "_id": "396123"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "valitsee tuotteen valmistukseen kuuluvia raaka-aineita ja käyttää niitä oikein tarviten ajoittain ohjausta",
+                      "sv": "väljer de råvaror som används i\ntillverkningen av produkten och\nanvänder dem rätt, men behöver emellanåt handledning",
+                      "_id": "396124"
+                    },
+                    {
+                      "fi": "erottaa virheellisen raaka-aineen ja virheellisen valmiin tuotteen ja tiedottaa asiasta viipymättä",
+                      "sv": "urskiljer en felaktig råvara eller\nfärdig produkt och informerar\nomedelbart om saken",
+                      "_id": "396125"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "valitsee omatoimisesti tuotteen valmistukseen kuuluvat raaka-aineet ja käyttää niitä oikein",
+                      "sv": "väljer självständigt de råvaror\nsom används i tillverkningen av\nprodukten och använder dem rätt",
+                      "_id": "396126"
+                    },
+                    {
+                      "fi": "erottaa virheellisen raaka-aineen ja virheellisen valmiin tuotteen ja osaa tehdä tarvittavia jatkotoimenpiteitä tilanteen vaatimalla tavalla omatoimisesti",
+                      "sv": "urskiljer en felaktig råvara eller\nfärdig produkt och kan självständigt\nvidta de nödvändiga fortsatta\nåtgärderna enligt situationens\nkrav",
+                      "_id": "396127"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Työvälineiden, koneiden ja/tai laitteiden käyttö",
+                "sv": "Användning av arbetsredskap, maskiner och/eller apparater",
+                "_id": "396128"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "käyttää tuotteen valmistukseen kuuluvia työvälineitä, koneita ja laitteita turvallisesti pääosin omatoimisesti",
+                      "sv": "använder i huvudsak självständigt\npå ett säkert sätt de arbetsredskap,\nmaskiner och apparater som\nska användas i tillverkningen av\nprodukten",
+                      "_id": "396129"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "valitsee tuotteen valmistukseen kuuluvia työvälineitä ja laitteita ja käyttää niitä omatoimisesti huomioiden työturvallisuuden ja osaten organisoida järkevästi ne työprosessiin",
+                      "sv": "väljer de arbetsredskap och apparater\nsom ska användas i tillverkningen\nav produkten och använder\ndem självständigt med beaktande\nav arbetssäkerheten och\nkan organisera dem förnuftigt i\narbetsprocessen",
+                      "_id": "396141"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "käyttää tuotteen valmistukseen kuuluvia työvälineitä, koneita ja laitteita turvallisesti tarviten ajoittain ohjausta",
+                      "sv": "använder på ett säkert sätt de\narbetsredskap, maskiner och\napparater som ska användas i\ntillverkningen av produkten, men\nbehöver emellanåt handledning",
+                      "_id": "396140"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Tuotteen pakkaaminen",
+                "sv": "Förpackning av produkter",
+                "_id": "396142"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "pakkaa tuotteita ohjeiden mukaan ja seuraa tuotteen ja pakkauksen laatua",
+                      "sv": "förpackar produkter enligt anvisningar\noch övervakar produktens\noch förpackningens kvalitet",
+                      "_id": "396145"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "pakkaa tuotteita ja erottaa virheelliset tuotteet tarviten ajoittain ohjausta",
+                      "sv": "förpackar produkter och kan\nsortera bort felaktiga produkter,\nmen behöver emellanåt handledning",
+                      "_id": "396143"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "pakkaa tuotteita omatoimisesti ohjeiden mukaan ja seuraa tuotteen ja pakkauksen laatua sekä pakkausmerkintöjä",
+                      "sv": "förpackar produkter självständigt\nenligt anvisningar och övervakar\nproduktens och förpackningens\nkvalitet samt förpackningspåskrifterna",
+                      "_id": "396144"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Tuotteen valmistukseen kuuluvien puhdistustoimenpiteiden toteuttaminen",
+                "sv": "Utförande av rengöringsåtgärder som hör till produkttillverkningen",
+                "_id": "396146"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "osaa organisoida puhdistustoimenpiteet osana tuotteen valmistusprosessia.",
+                      "sv": "kan organisera rengöringsåtgärderna\nsom en del av tillverkningsprocessen",
+                      "_id": "396149"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "huolehtii työympäristön puhtaudesta ja järjestyksestä sekä pesee ja puhdistaa tiloja, koneita ja laitteita tarviten ajoittain ohjausta.",
+                      "sv": "sörjer för renligheten och ordningen\ni arbetsmiljön samt tvättar\noch rengör lokaler, maskiner och\napparater, men behöver emellanåt\nhandledning",
+                      "_id": "396148"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "huolehtii työympäristön puhtaudesta ja järjestyksestä sekä pesee ja puhdistaa ohjeiden mukaan tilat, koneet ja laitteet.",
+                      "sv": "sörjer för renligheten och ordningen\ni arbetsmiljön samt tvättar\noch rengör lokaler, maskiner och\napparater enligt anvisningar",
+                      "_id": "396147"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "koodi": null
+        },
+        {
+          "otsikko": {
+            "fi": "3. Työn perustana olevan tiedon hallinta",
+            "sv": "Behärskande av den kunskap som ligger till grund för arbetet",
+            "_id": "396160"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": {
+                "fi": "Elintarviketuotannossa toimiminen",
+                "sv": "Arbete inom livsmedelstillverkning",
+                "_id": "396161"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "hankkii tietoa elintarvikealan toimialoista ja tärkeimmistä yrityksiä ja niiden kansallista ja kansainvälistä merkitystä",
+                      "sv": "skaffar information om de olika\nsektorerna av livsmedelsbranschen\noch de viktigaste företagen\noch deras nationella och\ninternationella betydelse",
+                      "_id": "396164"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "hankkii tietoa elintarvikealan toimialoista ja alueensa tärkeimmistä yrityksiä, joihin voi työllistyä",
+                      "sv": "skaffar information om de sektorer\nav livsmedelsbranschen och\nsitt områdes viktigaste företag\ndär det är möjligt att få arbete",
+                      "_id": "396163"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "hankkii tietoa niistä elintarvikealan toimialoista, joihin on mahdollista mennä työskentelemään",
+                      "sv": "skaffar information om de sektorer\nav livsmedelsbranschen där\ndet är möjligt att få arbete",
+                      "_id": "396162"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Raaka-aineiden valinnassa tarvittavan raaka-aineiden ja tuotteiden ravitsemuksellisten ominaisuuksien huomioon ottaminen",
+                "sv": "Beaktande av de näringsmässiga egenskaperna hos råvaror och produkter på det sätt som behövs vid valet av råvaror",
+                "_id": "396165"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "valitsee virheettömät raakaaineet osittain ohjattuna tuntemalla omassa työtehtävässään käytettävät tavallisimmat raaka-aineet ja niiden ominaisuuksien sekä valmiiden tuotteiden ravitsemuksellisten ominaisuuksien joitakin pääpiirteitä",
+                      "sv": "väljer felfria råvaror delvis under\nhandledning genom att han/hon\nkänner till de vanligaste råvarorna\nsom används i sitt arbete\noch deras egenskaper samt några\nhuvudsakliga näringsmässiga\negenskaper hos de färdiga produkterna",
+                      "_id": "396167"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "valitsee virheettömät raaka-aineet omatoimisesti tuntemalla omassa työtehtävässään käytettävät raakaaineet ja niiden sekä valmiiden tuotteiden ravitsemuksellisten ominaisuudet",
+                      "sv": "väljer självständigt felfria råvaror\ngenom att han/hon känner till de\nråvaror som används i sitt arbete\nsamt deras och de färdiga produkternas\nnäringsmässiga egenskaper",
+                      "_id": "396166"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "valitsee virheettömät raakaaineet tuntemalla omassa työtehtävässään käytettävät raaka-aineet ja niiden ominaisuuksien sekä valmiiden tuotteiden ravitsemuksellisten ominaisuuksien pääpiirteet",
+                      "sv": "väljer felfria råvaror genom att\nhan/hon känner till de råvaror\nsom används i sitt arbete och\nderas egenskaper samt de huvudsakliga\nnäringsmässiga egenskaperna\nhos de färdiga produkterna",
+                      "_id": "396168"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Elintarvikkeiden käsittelyssä, säilytyksessä sekä valmistuksessa tarvittavien fysikaalisten ja kemiallisten tekijöiden sekä mikrobitoiminnan tuntemisen soveltaminen",
+                "sv": "Tillämpning av kunskapen om de fysikaliska och kemiska faktorer som behövs vid hantering, förvaring och tillverkning av livsmedel samt kunskapen om mikrobaktiviteten",
+                "_id": "396169"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "käsittelee sekä säilyttää raaka-aineita ja valmistaa tuotteita omatoimisesti ohjeiden mukaan ottaen huomioon valmistusprosessin aikana tapahtuvat kemialliset, mikrobiologiset ja fysikaaliset tekijät",
+                      "sv": "hanterar samt förvarar råvaror\noch tillverkar produkter självständigt\nenligt anvisningar och\nbeaktar då de kemiska, mikrobiologiska\noch fysikaliska faktorer som inverkar under tillverkningsprocessen",
+                      "_id": "396182"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "käsittelee sekä säilyttää raaka-aineita ja valmistaa tuotteita ohjeiden mukaan, mutta tarvitsee ajoittain ohjausta valmistusprosessin aikana tapahtuvien kemiallisten, mikrobiologisten ja fysikaalisten tekijöiden huomioon ottamisessa",
+                      "sv": "hanterar samt förvarar råvaror\noch tillverkar produkter enligt\nanvisningar, men behöver emellanåt\nhandledning vid beaktandet\nav de kemiska, mikrobiologiska och fysikaliska faktorer som\ninverkar under tillverkningsprocessen",
+                      "_id": "396181"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "käsittelee sekä säilyttää raaka-aineita ja valmistaa tuotteita ohjeiden mukaan ottaen huomioon valmistusprosessin aikana tapahtuvat kemialliset, mikrobiologiset ja fysikaaliset tekijät",
+                      "sv": "hanterar samt förvarar råvaror\noch tillverkar produkter enligt\nanvisningar och beaktar då de\nkemiska, mikrobiologiska och\nfysikaliska faktorer som inverkar under tillverkningsprocessen",
+                      "_id": "396180"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Laatuvaatimusten soveltaminen",
+                "sv": "Tillämpning av kvalitetskrav",
+                "_id": "396183"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "työskentelee ohjeiden mukaan toiminnalle asetettujen laatuvaatimusten mukaisesti",
+                      "sv": "arbetar enligt anvisningar och de\nkvalitetskrav som ställs på arbetet",
+                      "_id": "396185"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "työskentelee omatoimisesti toiminnalle ja tuotteille asetettujen laatuvaatimusten mukaisesti",
+                      "sv": "arbetar självständigt enligt de\nkvalitetskrav som ställs på arbetet\noch produkterna",
+                      "_id": "396186"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "työskentelee laatuvaatimusten mukaisesti tarviten ajoittain ohjausta",
+                      "sv": "arbetar enligt kvalitetskraven,\nmen behöver emellanåt handledning",
+                      "_id": "396184"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Elintarvikealaa koskevan lainsäädännön ja hygieeniseen työskentelyyn liittyvän mikrobiologian soveltaminen",
+                "sv": "Tillämpning av den lagstiftning som gäller livsmedelsbranschen och den mikrobiologi som ska beaktas vid hygieniskt arbete",
+                "_id": "396187"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii säädösten mukaisesti ja työskentelee hygieenisesti tarviten ajoittain ohjausta.",
+                      "sv": "följer lagstiftningen och arbetar\nhygieniskt, men behöver emellanåt\nhandledning",
+                      "_id": "396189"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii omatoimisesti säädösten mukaisesti ja työskentelee hygieenisesti sekä kehittää omaa toimintaansa aktiivisesti elintarvikelainsäädännön muutosten mukaisesti.",
+                      "sv": "följer självständigt lagstiftningen\noch arbetar hygieniskt samt utvecklar\naktivt sitt arbete enligt\nändringar i livsmedelslagstiftningen",
+                      "_id": "396200"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii säädösten mukaisesti ja työskentelee hygieenisesti.",
+                      "sv": "följer lagstiftningen och arbetar\nhygieniskt",
+                      "_id": "396188"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "koodi": null
+        },
+        {
+          "otsikko": {
+            "fi": "4. Elinikäisen oppimisen avaintaidot",
+            "sv": "Nyckelkompetenser för livslångt lärande",
+            "_id": "396201"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": {
+                "fi": "Oppiminen ja ongelmanratkaisu",
+                "sv": "Lärande och problemlösning",
+                "_id": "396202"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "ottaa vastaan palautetta ja toimii palautteen mukaan",
+                      "sv": "tar emot respons och rättar sig\nefter den",
+                      "_id": "396203"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "ottaa vastaan palautetta ja toimii palautteen mukaan",
+                      "sv": "tar emot respons och rättar sig\nefter den",
+                      "_id": "396205"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "kehittää toimintaansa saamansa palautteen pohjalta",
+                      "sv": "utvecklar sitt handlande utifrån\nden erhållna responsen",
+                      "_id": "396204"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Ammattietiikka",
+                "sv": "Yrkesetik",
+                "_id": "396206"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii hyvien käyttäytymistapojen mukaan ja noudattaa elintarvikealan ammattieettisiä toimintatapoja",
+                      "sv": "uppför sig väl och följer de yrkesetiska\nförfaringssätten inom\nlivsmedelsbranschen",
+                      "_id": "396209"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "käyttäytyy asiallisesti ja noudattaa elintarvikealan ammattieettisiä toimintatapoja (kuten omavalvonta ja hygieniavaatimukset)",
+                      "sv": "uppför sig sakligt och följer de\nyrkesetiska förfaringssätten inom\nlivsmedelsbranschen (såsom\negenkontrollen och hygienkraven)",
+                      "_id": "396208"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii hyvien käyttäytymistapojen ja muuttuvien tilanteiden vaatimusten mukaisesti, sekä noudattaa elintarvikealan ammattieettisiä toimintatapoja",
+                      "sv": "uppför sig väl och anpassar sig\ntill de krav som föränderliga\nsituationer ställer, samt följer de\nyrkesetiska förfaringssätten inom\nlivsmedelsbranschen",
+                      "_id": "396207"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Vuorovaikutus ja yhteistyö",
+                "sv": "Interaktion och samarbete",
+                "_id": "396220"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii sujuvasti erilaisten ihmisten kanssa työyhteisössä",
+                      "sv": "interagerar obehindrat med olika\nmänniskor i arbetslaget",
+                      "_id": "396223"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii erilaisten ihmisten kanssa ja pyytää tarvittaessa apua muilta",
+                      "sv": "interagerar med olika människor\noch ber vid behov om hjälp av\nandra",
+                      "_id": "396221"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "työskentelee vastuullisesti, tukee ja auttaa muita sekä ottaa huomioon edeltävän ja seuraavan työvaiheen ja työntekijän",
+                      "sv": "arbetar ansvarsfullt, stöder och\nhjälper andra samt beaktar föregående\noch följande arbetsmoment\nsamt tar hänsyn till arbetstagaren",
+                      "_id": "396222"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Terveys, turvallisuus ja toimintakyky",
+                "sv": "Hälsa, säkerhet och funktionsförmåga",
+                "_id": "396224"
+              },
+              "selite": null,
+              "_arviointiAsteikko": "2",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "4",
+                  "kriteerit": [
+                    {
+                      "fi": "työskentelee ergonomisesti työympäristönsä työturvallisuusohjeiden mukaisesti ja ottaa omatoimisesti huomioon työympäristön riskitekijät.",
+                      "sv": "arbetar ergonomiskt i enlighet\nmed arbetarskyddsanvisningarna\ni sin arbetsmiljö och beaktar\nsjälvständigt riskfaktorerna i\narbetsmiljön",
+                      "_id": "396225"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "3",
+                  "kriteerit": [
+                    {
+                      "fi": "työskentelee ergonomisesti työympäristönsä työturvallisuusohjeiden mukaisesti.",
+                      "sv": "arbetar ergonomiskt i enlighet\nmed arbetarskyddsanvisningarna\ni sin arbetsmiljö",
+                      "_id": "396226"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "2",
+                  "kriteerit": [
+                    {
+                      "fi": "työskentelee työympäristönsä työturvallisuusohjeiden mukaisesti",
+                      "sv": "beaktar arbetarskyddsanvisningarna\ni sin arbetsmiljö",
+                      "_id": "396227"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "koodi": null
+        }
+      ]
+    },
+    "ammattitaitovaatimuksetLista": [],
+    "ammattitaitovaatimukset": {
+      "fi": "<p>Opiskelija tai tutkinnon suorittaja</p>\n\n<ul>\n\t<li>huolehtii henkilökohtaisesta hygieniastaan ja omavalvonnasta</li>\n\t<li>pukeutuu työkohteen vaatimusten mukaisesti toimiessaan elintarvikealan tuotteiden valmistuksessa</li>\n\t<li>tekee työprosessin ennakoivat työt, käsittelee raaka-aineita, valmistaa tuotteita, vie säilytykseen ja lopettaa oman työvaiheensa</li>\n\t<li>valitsee ja käsittelee tuotteiden raaka-aineita valmistuksen eri vaiheissa</li>\n\t<li>huolehtii raaka-aineiden ja tuotteiden laadun säilymisestä</li>\n\t<li>arvioi raaka-aineiden ja valmiiden tuotteiden laatua</li>\n\t<li>käyttää valmistusprosessin koneita ja/tai laitteita</li>\n\t<li>työskentelee pitäen yllä toimintakykyään ja noudattaen työturvallisuusohjeita sekä tuotteiden valmistukseen liittyviä laatumääräyksiä</li>\n\t<li>pakkaa tuotteita varastointia, kuljetusta ja myyntiä varten</li>\n\t<li>noudattaa työaikoja ja muita työhön liittyviä toimintaohjeita.</li>\n</ul>",
+      "sv": "<p>Den studerande eller examinanden&nbsp;</p>\n\n<ul>\n\t<li>sköter sin personliga hygien och utför egenkontroll&nbsp;</li>\n\t<li>klär sig enligt arbetets krav i tillverkningen av livsmedelsbranschens produkter&nbsp;</li>\n\t<li>utför i arbetsprocessen de förberedande arbetena, hanterar råvaror, tillverkar produkter, transporterar produkter för lagring och slutför det egna arbetsmomentet</li>\n\t<li>väljer och hanterar produkternas råvaror i olika tillverkningsfaser&nbsp;</li>\n\t<li>sörjer för råvarornas och produkternas kvalitet&nbsp;</li>\n\t<li>bedömer kvaliteten på råvarorna och de färdiga produkterna</li>\n\t<li>använder de maskiner och apparater som ska användas i tillverkningsprocessen</li>\n\t<li>arbetar så att funktionsförmågan bibehålls och följer arbetarskyddsanvisningarna samt de kvalitetsföreskrifter som gäller tillverkningen av produkter</li>\n\t<li>förpackar produkter inför lagring, transport och försäljning</li>\n\t<li>håller arbetstiderna och följer andra arbetsinstruktioner.</li>\n</ul>",
+      "_id": "396086"
+    },
+    "ammattitaidonOsoittamistavat": {
+      "fi": "<p>Opiskelija tai tutkinnon suorittaja osoittaa osaamisensa ammattiosaamisen näytössä tai tutkintotilaisuudessa toimimalla elintarvikealan yrityksessä tai muussa mahdollisimman hyvin elintarvikeyrityksen oloja vastaavassa paikassa joko pienimuotoisessa tuotannossa yhden tuotteen kaikissa työvaiheissa tai teollisuusprosessissa yhden tuotteen yhdessä työvaiheessa (esim. ennakoivat työt, tuotteen valmistus tai pakkaaminen<em>)</em>.</p>\n\n<p>Työtä tehdään siinä laajuudessa, että osoitettava osaaminen vastaa kattavasti tutkinnon perusteissa määrättyjä ammattitaitovaatimuksia, arvioinnin kohteita ja kriteereitä.</p>\n\n<p>Ammattiosaamisen näyttöä tai tutkintotilaisuutta voidaan jatkaa toisessa työpaikassa/työkohteessa tai ammatillisessa peruskoulutuksessa koulutuksen järjestäjän osoittamassa muussa paikassa niin, että osaamisen osoittamisen kattavuus varmistuu.</p>\n\n<p>Siltä osin kuin tutkinnon osassa vaadittavaa osaamista ei voida työtä tekemällä ammattiosaamisen näytössä tai tutkintotilaisuudessa kattavasti osoittaa, sitä täydennetään muulla osaamisen arvioinnilla.</p>",
+      "sv": "<p>Den studerande eller examinanden påvisar sitt kunnande i ett yrkesprov eller vid ett examenstillfälle genom att&nbsp; arbeta i ett företag inom livsmedelsbranschen eller på en annan plats där förhållandena så väl som möjligt motsvarar förhållandena i ett livsmedelsföretag antingen i småskalig produktion i alla arbetsmoment som ingår i tillverkningen av en produkt eller i ett arbetsmoment av tillverkningen av en produkt i en industriprocess (t.ex. förberedande arbeten, tillverkning eller förpackning av produkten).</p>\n\n<p>Omfattningen av arbetet är tillräcklig för att det kunnande som påvisas ska täcka de i examensgrunderna angivna kraven på yrkesskicklighet, föremålen för bedömning och bedömningskriterierna.</p>\n\n<p>Yrkesprovet eller examenstillfället kan fortsättas på en annan arbetsplats/i ett annat arbetsobjekt eller inom den grundläggande yrkesutbildningen på en av utbildningsanordnaren anvisad annan plats så att påvisandet av kunnandet blir heltäckande.&nbsp;</p>\n\n<p>Till de delar som det kunnande som krävs i examensdelen inte heltäckande kan påvisas i ett yrkesprov eller vid ett examenstillfälle genom arbete, kompletteras den genom annan bedömning av kunnandet.</p>",
+      "_id": "396085"
+    },
+    "kuvaus": null,
+    "koodi": {
+      "nimi": {
+        "fi": "Elintarviketuotannossa toimiminen",
+        "sv": "Arbete inom livsmedelsproduktion"
+      },
+      "arvo": "100054",
+      "uri": "tutkinnonosat_100054",
+      "koodisto": "tutkinnonosat",
+      "versio": null
+    },
+    "koodiUri": "tutkinnonosat_100054",
+    "koodiArvo": "100054",
+    "osaAlueet": [],
+    "vapaatTekstit": [],
+    "tyyppi": "normaali",
+    "valmaTelmaSisalto": null,
+    "ammattitaitovaatimukset2019": null,
+    "_geneerinenArviointiasteikko": null,
+    "osanTyyppi": "tutkinnonosa"
+  }
+]

@@ -1,7 +1,8 @@
 (ns oph.ehoks.external.eperusteet
   (:require [oph.ehoks.external.connection :as c]
             [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.external.oph-url :as u]))
+            [oph.ehoks.external.oph-url :as u]
+            [com.rpl.specter :as spc :refer [ALL NONE FIRST]]))
 
 (defn map-perusteet
   "Map perusteet values"
@@ -14,6 +15,38 @@
           (update :tutkintonimikkeet
                   (fn [x] (map #(select-keys % [:nimi]) x)))))
     values))
+
+(def asteikkomuunnos
+  {:1 {:1 ""}
+   :2 {:2 "1" :3 "3" :4 "5"}
+   :3 {:5 "1" :7 "3" :9 "5"}})
+
+(defn- adjust-osaamistaso [asteikko osaamistaso]
+  (get-in asteikkomuunnos [(keyword asteikko) (keyword osaamistaso)]))
+
+(defn- remove-empty-kriteerit [values]
+  (spc/setval [ALL :arviointi :arvioinninKohdealueet ALL
+               :arvioinninKohteet ALL :osaamistasonKriteerit ALL
+               #(empty? (:kriteerit %))]
+              NONE values))
+
+(defn- adjust-osaamistaso-based-on-asteikko [asteikko values]
+  (spc/transform [ALL :arviointi :arvioinninKohdealueet ALL
+                  :arvioinninKohteet ALL :osaamistasonKriteerit
+                  ALL :_osaamistaso]
+                 #(adjust-osaamistaso asteikko %) values))
+
+(defn adjust-tutkinnonosa-arviointi
+  "Adjusts osaamistasonKriteerit based on the osaamistaso of the tutkinnonosa"
+  [values]
+  ; Every tutkinnonosa should currently have the same arviointiAsteikko
+  ; for all of its arvioinninKohteet
+  (let [asteikko (spc/select-first
+                   [ALL :arviointi :arvioinninKohdealueet ALL
+                    :arvioinninKohteet FIRST :_arviointiAsteikko] values)]
+    (->> values
+         (remove-empty-kriteerit)
+         (adjust-osaamistaso-based-on-asteikko asteikko))))
 
 (defn search-perusteet-info [nimi]
   (get-in

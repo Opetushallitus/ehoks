@@ -1,0 +1,536 @@
+[
+  {
+    "id": 3435790,
+    "luotu": 1509100739573,
+    "muokattu": 1553512271579,
+    "muokkaaja": "1.2.246.562.24.57305084062",
+    "nimi": {
+      "_tunniste": "ef27e921-3257-435d-a31b-9c207199a118",
+      "fi": "Proaktiivinen kehittäminen",
+      "sv": "Proaktiv utveckling",
+      "en": "Proactive development",
+      "_id": "6413385"
+    },
+    "tila": "valmis",
+    "valmis": false,
+    "kaannettava": false,
+    "tavoitteet": null,
+    "arviointi": {
+      "id": 3430039,
+      "lisatiedot": null,
+      "arvioinninKohdealueet": [
+        {
+          "otsikko": {
+            "_tunniste": "cfcb1e15-3c9f-4a30-a255-1a440b889069",
+            "fi": "Opiskelija toimii proaktiivisesti valmistellessaan tuotekehitystyötä.",
+            "sv": "Den studerande arbetar proaktivt vid planering av ett produktutvecklingsarbete.",
+            "en": "Students act proactively when preparing product development.",
+            "_id": "6414254"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": null,
+              "selite": {
+                "_tunniste": "475c5ed1-da05-4a87-abef-6a993a933ecd",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3832789"
+              },
+              "_arviointiAsteikko": "1",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "1",
+                  "kriteerit": [
+                    {
+                      "_tunniste": "9ff146a4-023b-40d9-b436-69012ec5436d",
+                      "fi": "kartoittaa tulevaisuuden muutoksia ja trendejä hyödyntäen sidosryhmiä",
+                      "sv": "kartlägger framtida förändringar och trender och drar nytta av intressenter vid kartläggningen",
+                      "en": "survey future changes and trends, also with the help of stakeholders",
+                      "_id": "6414255"
+                    },
+                    {
+                      "_tunniste": "b300f4bf-9f0b-414c-a289-be409d971b70",
+                      "fi": "hyödyntää käyttäjä-, kilpailija- ja markkinatietoa oman työn valmistelussa",
+                      "sv": "drar nytta av användar-, konkurrent- och marknadsinformation vid planering av sitt arbete",
+                      "en": "take advantage of the information on users, competitors and markets in the preparation of their work",
+                      "_id": "6414256"
+                    },
+                    {
+                      "_tunniste": "783b3e9d-f26c-4c12-927d-e2549c8f2cbb",
+                      "fi": "ideoi ja tekee nopeita kokeiluja ja testauksia omassa tai toimeksiantajan toimintaympäristössä tai organisaatiossa",
+                      "sv": "tar fram idéer och gör snabba experiment och tester i sin egen eller en uppdragsgivares verksamhetsmiljö eller organisation",
+                      "en": "generate ideas for fast experiments and tests and carry them out in their own or the sponsor's operating environment or organisation",
+                      "_id": "6414257"
+                    },
+                    {
+                      "_tunniste": "46b2d51c-0aa5-4963-ba13-8f4466b8cdcf",
+                      "fi": "seuraa aktiivisesti uuden teknologian ja työn tekemisen muotojen kehittymistä ja tunnistaa niiden potentiaalin",
+                      "sv": "följer aktivt med hur den nya tekniken och de nya formerna för arbete utvecklas och identifierar deras potential",
+                      "en": "actively follow the development of new technologies and forms of work and recognise their potential",
+                      "_id": "6414258"
+                    },
+                    {
+                      "_tunniste": "a51a1363-6f79-4ae8-8478-23a4ce9f811c",
+                      "fi": "tunnistaa ympärillään mahdollisuuksia luoda uusia innovaatioita",
+                      "sv": "identifierar de möjligheter att skapa nya innovationer som finns i omgivningen",
+                      "en": "recognise opportunities to create new innovations around them",
+                      "_id": "6414259"
+                    },
+                    {
+                      "_tunniste": "f48fcb55-3b1f-41a2-bcfa-d1a771300fed",
+                      "fi": "käyttää oman tuotekehitystyönsä kannalta tarpeellisia tietolähteitä",
+                      "sv": "använder informationskällor som behövs i det egna produktutvecklingsarbetet",
+                      "en": "use information sources that are necessary in terms of their product development work",
+                      "_id": "6414330"
+                    },
+                    {
+                      "_tunniste": "7ed1ed7d-f0f6-470b-948b-a2540eaa04e2",
+                      "fi": "arvioi tuotekehitystyön vaatimat selvitystarpeet ja ratkaisee, kuinka ne toteutetaan.",
+                      "sv": "bedömer vilka behov av utredningar som produktutvecklingsarbetet kräver och bestämmer hur de ska utföras.",
+                      "en": "assess what investigations are required for the product development work and decide how they will be carried out",
+                      "_id": "6414331"
+                    },
+                    {
+                      "_tunniste": "07ff22f8-4d00-445d-a25f-fc77e56b781d",
+                      "fi": "suunnittelee tuotekehitystyölle budjetin ja tarvittavan rahoituksen.",
+                      "sv": "upprättar en budget för produktutvecklingsarbetet och planerar finansieringen.",
+                      "en": "plan a budget and the required financing for the product development work.",
+                      "_id": "6414332"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "koodi": {
+            "nimi": null,
+            "arvo": null,
+            "uri": "ammattitaitovaatimukset_5658",
+            "koodisto": "ammattitaitovaatimukset",
+            "versio": null
+          }
+        },
+        {
+          "otsikko": {
+            "_tunniste": "36a9b9f0-9032-4b89-b965-227fe6296173",
+            "fi": "Opiskelija tuottaa lisäarvoa asiakkaalle.",
+            "sv": "Den studerande skapar mervärde för kunden.",
+            "en": "Students provide added value to the customer.",
+            "_id": "6414583"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": null,
+              "selite": {
+                "_tunniste": "acfa661b-e87c-4af6-8b70-110fcc467f85",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3833211"
+              },
+              "_arviointiAsteikko": "1",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "1",
+                  "kriteerit": [
+                    {
+                      "_tunniste": "fdacd252-32d7-4cfb-9ab6-91d2427878a8",
+                      "fi": "tekee yksin tai yhdessä tiimin kanssa asiakasprofiloinnin",
+                      "sv": "gör ensam eller tillsammans med ett team en kundprofilering",
+                      "en": "carry out customer profiling alone or together with the team",
+                      "_id": "6414584"
+                    },
+                    {
+                      "_tunniste": "d1d6f0c5-3627-4245-b14b-028c921ecdd1",
+                      "fi": "ottaa ideoinnin lähtökohdaksi asiakkaan tai markkinoiden potentiaalin hyödyntäen asiakkaat innovaation lähteinä",
+                      "sv": "utgår från en kund eller från marknadspotential vid framtagning av idéer och använder kunderna som innovationskällor",
+                      "en": "use the potential of the customer or the markets as the starting point, using customers as a source of inspiration",
+                      "_id": "6414585"
+                    },
+                    {
+                      "_tunniste": "72e249f7-40f2-49cd-a857-f43a4cce5673",
+                      "fi": "kehittää uusia ratkaisuja yhdessä asiakkaiden ja tuotteen loppukäyttäjien kanssa asiakashyötyä tuottaen.",
+                      "sv": "tar fram nya lösningar tillsammans med kunderna och produktens slutanvändare för att skapa kundnytta.",
+                      "en": "develop new solutions together with the customers and end-users of the product, providing benefits to customers.",
+                      "_id": "6414586"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "koodi": {
+            "nimi": null,
+            "arvo": null,
+            "uri": "ammattitaitovaatimukset_5659",
+            "koodisto": "ammattitaitovaatimukset",
+            "versio": null
+          }
+        },
+        {
+          "otsikko": {
+            "_tunniste": "1513ebb3-853d-4bb6-936f-7d084f3b177c",
+            "fi": "Opiskelija toimii markkinoilla.",
+            "sv": "Den studerande är verksam inom marknaderna",
+            "en": "Students act in the market.",
+            "_id": "6414817"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": null,
+              "selite": {
+                "_tunniste": "fac37694-e40b-4336-ac45-ad8c29c39864",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3833213"
+              },
+              "_arviointiAsteikko": "1",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "1",
+                  "kriteerit": [
+                    {
+                      "_tunniste": "aafef12d-5c4b-4b48-8614-bf553c402b06",
+                      "fi": "käyttää globaalia markkinatietoa tuotekehitystyössään",
+                      "sv": "använder global marknadsinformationen i sitt produktutvecklingsarbete",
+                      "en": "use global market information in their product development work",
+                      "_id": "6414818"
+                    },
+                    {
+                      "_tunniste": "4d727d27-36f6-4b11-9f86-ee5ea8a5db58",
+                      "fi": "käyttää monipuolisesti jakelukanavien mahdollisuuksia",
+                      "sv": "använder möjligheterna i distributionskanalerna på ett mångsidigt sätt",
+                      "en": "diversely use the opportunities provided by the distribution channels",
+                      "_id": "6414819"
+                    },
+                    {
+                      "_tunniste": "359e768c-b571-476e-9597-5720768de85a",
+                      "fi": "luo uusia verkostoja- ja viestintäkanavia ja toimii niissä.",
+                      "sv": "skapar nya nätverks- och kommunikationskanaler och är aktiv i dem.",
+                      "en": "create new networks and communication channels and act in them.",
+                      "_id": "6414920"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "koodi": {
+            "nimi": null,
+            "arvo": null,
+            "uri": "ammattitaitovaatimukset_5660",
+            "koodisto": "ammattitaitovaatimukset",
+            "versio": null
+          }
+        },
+        {
+          "otsikko": {
+            "_tunniste": "f6b6006c-5582-4f6d-b995-d402fca84c6b",
+            "fi": "Opiskelija varautuu yllätyksiin.",
+            "sv": "Den studerande förbereder sig för överraskningar.",
+            "en": "Students prepare for surprises.",
+            "_id": "6414922"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": null,
+              "selite": {
+                "_tunniste": "b7aa6938-cfff-4b9b-8450-af99aa6974b7",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "4230513"
+              },
+              "_arviointiAsteikko": "1",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "1",
+                  "kriteerit": [
+                    {
+                      "_tunniste": "8120cba4-1c1a-409e-8437-5ce8693b2d04",
+                      "fi": "ennakoi tapahtumia ja niiden vaikutuksia organisaatioon",
+                      "sv": "förutser händelser och deras inverkan på organisationen",
+                      "en": "anticipate events and their effects on the organisation",
+                      "_id": "6414923"
+                    },
+                    {
+                      "_tunniste": "2c6a2243-581a-4a28-ae48-04693d29c0dc",
+                      "fi": "huomioi riskit ja käyttää menetelmiä riskien hallintaan vastuullisuuden, ekologisuuden, eettisyyden ja taloudellisuuden näkökulmasta",
+                      "sv": "tar hänsyn till riskerna och använder metoder för riskhantering ur  ansvars, miljö, etik och ekonomi synvinkel",
+                      "en": "pay attention to risks and use risk management methods from responsible, ecological, ethical and economical points of view",
+                      "_id": "6414924"
+                    },
+                    {
+                      "_tunniste": "2691e9f5-8336-4910-83a2-ce6434dc7986",
+                      "fi": "tuntee tuotesuojauksen muodot oman työnsä kannalta ja tekee päätöksen, kuinka tulee toimimaan tuotesuojauksen osalta",
+                      "sv": "känner till de olika formerna av produktskydd som är aktuella i det egna arbetet och fattar beslut om hur produktskyddet ska ordnas",
+                      "en": "know the forms of product protection from the point of view of their own work and decide what their actions will be regarding product protection",
+                      "_id": "6414925"
+                    },
+                    {
+                      "_tunniste": "dcc22d00-8074-4caf-a54f-560c7153748a",
+                      "fi": "yhdistää tuotekehitystyön prosessin organisaation muihin toimintoihin huomioiden heti alussa mahdolliset ongelmat ja tarvittavat toimenpiteet",
+                      "sv": "kopplar samman produktutvecklingsprocessen med organisationens övriga aktiviteter och beaktar då genast eventuella problem och nödvändiga åtgärder",
+                      "en": "link the product development process to the other activities in the organisation, paying attention to possible problems and the required measures from the very beginning",
+                      "_id": "6414926"
+                    },
+                    {
+                      "_tunniste": "436bb0aa-93a1-4238-8f8f-690713dde474",
+                      "fi": "seuraa oman alansa säädösmuutoksia ja arvioi niiden vaikutuksia tuotekehitystyöhön",
+                      "sv": "håller sig uppdaterad om ändringar i den lagstiftningen som gäller den egna branschen och bedömer vilka konsekvenser de har för produktutvecklingsarbetet",
+                      "en": "keep an eye on changes in the legislation of their field and assess the effect of the changes on the product development work",
+                      "_id": "6414927"
+                    },
+                    {
+                      "_tunniste": "219435e0-4649-4be8-8233-4d89d3289303",
+                      "fi": "varmistaa, että innovointi jatkuu muuttuvissa olosuhteissa.",
+                      "sv": "ser till att innovationsarbetet fortsätter när det sker förändringar i förhållandena.",
+                      "en": "ensure that innovation continues in changing circumstances.",
+                      "_id": "6414928"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "koodi": {
+            "nimi": null,
+            "arvo": null,
+            "uri": "ammattitaitovaatimukset_5661",
+            "koodisto": "ammattitaitovaatimukset",
+            "versio": null
+          }
+        },
+        {
+          "otsikko": {
+            "_tunniste": "54479671-3321-4a34-8035-4e81de2cc1e3",
+            "fi": "Opiskelija toimii verkostoissa.",
+            "sv": "Den studerande är aktiv i nätverk.",
+            "en": "Students act in networks.",
+            "_id": "6414929"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": null,
+              "selite": {
+                "_tunniste": "67c9f7ce-713b-4e51-8980-216415bfaf8c",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "4230514"
+              },
+              "_arviointiAsteikko": "1",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "1",
+                  "kriteerit": [
+                    {
+                      "_tunniste": "a2b20b1e-f2f6-48f5-bff3-cb3b2fb024e7",
+                      "fi": "käyttää perustellusti asiantuntijoita ja verkostoja parantamaan saavutuksia ja tarvittaessa jakamaan riskejä",
+                      "sv": "använder välmotiverat experter och nätverk för att förbättra prestationerna och vid behov för att fördela riskerna",
+                      "en": "use experts and networks justifiably to improve achievements and, as necessary, to share risks",
+                      "_id": "6415090"
+                    },
+                    {
+                      "_tunniste": "b5d494bf-dfee-4642-8365-eeeb11a9638a",
+                      "fi": "osallistaa organisaation henkilöstöä tai sidosryhmiä tuotekehitystyöhön ja kehittäjäkulttuurin luomiseen",
+                      "sv": "involverar organisationens personal eller intressenter i produktutvecklingsarbetet och skapandet av en kultur som inspirerar till utvecklingsarbete",
+                      "en": "engage the organisation's personnel or stakeholders in the product development work and in the creation of a developer culture",
+                      "_id": "6415091"
+                    },
+                    {
+                      "_tunniste": "8dc520ca-a44c-4a8b-bf0d-4ede00a2a2c2",
+                      "fi": "kehittää vuorovaikutus- ja verkostoitumismahdollisuuksia.",
+                      "sv": "förbättrar möjligheterna till interaktion och nätverkande.",
+                      "en": "create opportunities to interact and network.",
+                      "_id": "6415092"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "koodi": {
+            "nimi": null,
+            "arvo": null,
+            "uri": "ammattitaitovaatimukset_5662",
+            "koodisto": "ammattitaitovaatimukset",
+            "versio": null
+          }
+        },
+        {
+          "otsikko": {
+            "_tunniste": "dd06f1df-92f0-4715-8163-a4cae877c69c",
+            "fi": "Opiskelija toteuttaa organisaation strategiaa.",
+            "sv": "Den studerande genomför en organisations strategi.",
+            "en": "Students implement the organisation's strategy.",
+            "_id": "6415093"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": null,
+              "selite": {
+                "_tunniste": "c1f516f5-8ea3-46d3-aa44-45ed38322819",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3833219"
+              },
+              "_arviointiAsteikko": "1",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "1",
+                  "kriteerit": [
+                    {
+                      "_tunniste": "62739972-5e84-4346-9cec-7c6ad588cb24",
+                      "fi": "huolehtii siitä, että kehittämistyö on organisaation strategian mukaista",
+                      "sv": "ser till att utvecklingsarbetet är i linje med organisationens strategi",
+                      "en": "make sure that the development work complies with the organisation's strategy",
+                      "_id": "6415094"
+                    },
+                    {
+                      "_tunniste": "34a5e46c-266c-4518-8700-3c0e8b325742",
+                      "fi": "luo strategian mukaisen liiketoimintamallin, jossa kuvaa tavoiteltavan lopputuotteen ansaintalogiikan, asiakkuudet, jakelukanavat ja kumppanit.",
+                      "sv": "skapar en affärsmodell som baserar sig på strategin och som beskriver intäktsmodellen, kundrelationerna, distributionskanalerna och partnerna för den slutprodukt som eftersträvas.",
+                      "en": "create a business model that is in accordance with the strategy and in which they describe the earnings logic, customer relationships, distribution channels and partners.",
+                      "_id": "6415095"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "koodi": {
+            "nimi": null,
+            "arvo": null,
+            "uri": "ammattitaitovaatimukset_5663",
+            "koodisto": "ammattitaitovaatimukset",
+            "versio": null
+          }
+        },
+        {
+          "otsikko": {
+            "_tunniste": "291237c2-6bd0-49e0-b306-10d9dd184a25",
+            "fi": "Opiskelija läpivie tuotekehitystyön prosessin.",
+            "sv": "Den studerande genomför en produktutvecklingsprocess.",
+            "en": "Students follow through a product development process.",
+            "_id": "6415224"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": null,
+              "selite": {
+                "_tunniste": "e693febc-ff65-4ef3-87ff-c91c06a822cd",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3833231"
+              },
+              "_arviointiAsteikko": "1",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "1",
+                  "kriteerit": [
+                    {
+                      "_tunniste": "a1b9c874-ab8a-40d1-a5ab-691aa9c6e62d",
+                      "fi": "käynnistää valitsemallaan tavalla tehokkaan, vaiheistetun prosessin, joka mahdollistaa tuotekehityksen nopean käyttöönoton",
+                      "sv": "startar en effektiv, stegvis process som gör det möjligt att snabbt ta i bruk produktutvecklingsresultat, och gör detta på ett sätt som hen själv valt",
+                      "en": "choose the method and launch an efficient, phased process to enable the swift implementation of product development",
+                      "_id": "6415225"
+                    },
+                    {
+                      "_tunniste": "e3b0a470-73fa-492c-8585-8eecea1193a5",
+                      "fi": "kokoaa toimijat, jotka osallistuvat prosessin läpivientiin",
+                      "sv": "samlar ihop ett lag av aktörer som deltar i genomförandet av processen",
+                      "en": "gather together actors that participate in following through the process",
+                      "_id": "6415226"
+                    },
+                    {
+                      "_tunniste": "e3c930fa-8a04-4e77-be02-e43deaf35cb5",
+                      "fi": "arvioi ja parantaa prosessia jatkuvasti ja samalla ylläpitää valmiutta toteuttaa peräkkäisiä tai limittäisiä tuotekehitystöitä",
+                      "sv": "utvärderar och förbättrar processen kontinuerligt och ser samtidigt till att det hela tiden finns beredskap att utföra flera produktutvecklingsarbeten efter varandra eller samtidigt",
+                      "en": "constantly assess and improve the process, at the same time maintaining the readiness to implement consecutive or overlapping product development assignments",
+                      "_id": "6415227"
+                    },
+                    {
+                      "_tunniste": "e35c0c92-2d6d-4286-a981-fcda78f2ec0b",
+                      "fi": "vastaa prosessin etenemisestä",
+                      "sv": "ansvarar för att processen framskrider",
+                      "en": "are responsible for the progress of the process",
+                      "_id": "6415228"
+                    },
+                    {
+                      "_tunniste": "df0628e4-7885-48cc-8fab-1e2ebfd0c461",
+                      "fi": "kuvaa lopputuloksen tuotekehitystyön tilaajalle",
+                      "sv": "beskriver slutresultatet för den som beställt produktutvecklingsarbetet",
+                      "en": "describe the final result to the commissioner of the product development work",
+                      "_id": "6415229"
+                    },
+                    {
+                      "_tunniste": "682cabc1-5bda-45ad-85b6-4ebfc0f592a7",
+                      "fi": "tarvittaessa keskeyttää perustellusti tuotekehitystyön ja arvioi jo syntyneen tuloksen hyödyntämisen",
+                      "sv": "avbryter vid behov ett produktutvecklingsarbete om det är motiverat, och bedömer hur det resultat som hittills uppnåtts kunde användas",
+                      "en": "if necessary, justifiably discontinue the product development and assess how the already achieved result can be used",
+                      "_id": "6415280"
+                    },
+                    {
+                      "_tunniste": "f9b3235f-4e43-4881-bcba-a5c44559bd52",
+                      "fi": "seuraa tuotekehitystyön budjetin toteutumista",
+                      "sv": "följer budgetutfallet för produktutvecklingsarbetet",
+                      "en": "follow the realisation of the budget set for the product development work",
+                      "_id": "6415281"
+                    },
+                    {
+                      "_tunniste": "21038ed2-9524-4eca-8cea-5faaa911a680",
+                      "fi": "tekee yhteenvedon tuotekehitystyön prosessista ja sen tuloksista.",
+                      "sv": "gör ett sammandrag av produktutvecklingsprocessen och dess resultat.",
+                      "en": "draw up a summary of the product development process and its results.",
+                      "_id": "6415282"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "koodi": {
+            "nimi": null,
+            "arvo": null,
+            "uri": "ammattitaitovaatimukset_5664",
+            "koodisto": "ammattitaitovaatimukset",
+            "versio": null
+          }
+        }
+      ]
+    },
+    "ammattitaitovaatimuksetLista": [],
+    "ammattitaitovaatimukset": {
+      "_tunniste": "9ec58d71-1641-40a8-b4e5-c8e2e14ee686",
+      "fi": "<p><strong>Opiskelija osaa</strong></p>\n\n<ul>\n\t<li>toimia proaktiivisesti valmistellessaan tuotekehitystyötä</li>\n\t<li>tuottaa lisäarvoa asiakkaalle</li>\n\t<li>toimia markkinoilla</li>\n\t<li>varautua yllätyksiin</li>\n\t<li>toimia verkostoissa</li>\n\t<li>toteuttaa organisaation strategiaa</li>\n\t<li>läpiviedä tuotekehitystyön prosessin.</li>\n</ul>",
+      "sv": "<p>Den studerande kan</p>\n\n<ul>\n\t<li>arbeta proaktivt vid planering av ett produktutvecklingsarbete</li>\n\t<li>skapa mervärde för kunden</li>\n\t<li>vara verksam inom marknaderna</li>\n\t<li>förbereda sig på överraskningar</li>\n\t<li>vara aktiv i nätverk</li>\n\t<li>genomföra strategin i en organisation</li>\n\t<li>genomföra en produktutvecklingsprocess.</li>\n</ul>",
+      "en": "<p><strong>Students are able to</strong></p>\n\n<ul>\n\t<li>act proactively when preparing product development</li>\n\t<li>provide added value to the customer</li>\n\t<li>act in the market</li>\n\t<li>prepare for surprises</li>\n\t<li>act in networks</li>\n\t<li>implement the organisation's strategy</li>\n\t<li>follow through a product development process.</li>\n</ul>",
+      "_id": "6413387"
+    },
+    "ammattitaidonOsoittamistavat": {
+      "_tunniste": "4f4aa6a6-530c-4b1b-876e-79c91618f645",
+      "fi": "<p>Opiskelija osoittaa ammattitaitonsa näytössä käytännön työtehtävissä, joissa hänellä on mahdollisuus tehdä omaan tai toimeksiantajan organisaatioon tuotteen, palvelun tai toimintamallien kehittämiseen liittyviä tuotekehitystöitä. Tuotekehitystöissään hän toteuttaa organisaation strategiaa, toimii verkostoissa, testaa ideoitaan käytännössä ja parantaa jatkuvasti niiden laatua. Ammattitaito arvioidaan työn suunnittelusta ja käytännön työtehtävistä. Siltä osin kuin tutkinnon osassa vaadittua ammattitaitoa ei voida arvioida näytön perusteella, ammattitaidon osoittamista täydennetään yksilöllisesti muilla tavoin.</p>",
+      "sv": "<p>Den studerande visar sin yrkesskicklighet i ett yrkesprov genom att utföra praktiska arbetsuppgifter där hen har möjlighet att för den egna eller en uppdragsgivares organisation utföra produktutvecklingsarbete som går ut på att utveckla en produkt, en tjänst eller en verksamhetsmodell. I sitt produktutvecklingsarbete beaktar den studerande organisationens strategi, är aktiv i nätverk, testar sina idéer i praktiken och förbättrar kontinuerligt kvaliteten på dem. Yrkesskickligheten bedöms på basis av planeringen av arbetet och de praktiska arbetsuppgifterna.</p>\n\n<p>Till de delar som den yrkesskicklighet som krävs i examensdelen inte kan bedömas genom ett yrkesprov kompletteras visandet av yrkesskickligheten individuellt på andra sätt.</p>",
+      "en": "<p>Students demonstrate their vocational competence in a demonstration by performing practical work tasks, in which they have the opportunity to carry out product development work related to the development of a product, service or operating model of the students' own or the sponsor's organisation. In their product development work, students implement the organisation's strategy, act in networks, test their ideas in practice and constantly improve the quality of their ideas. Students’ vocational competence is assessed as they plan the work and perform practical tasks. To the extent that the vocational competence required in the module cannot be assessed on the basis of the demonstration, the demonstration of competence is to be supplemented in other ways on an individual basis.</p>",
+      "_id": "6415283"
+    },
+    "kuvaus": null,
+    "koodi": {
+      "nimi": {
+        "sv": "Proaktiv utveckling  ",
+        "fi": "Proaktiivinen kehittäminen "
+      },
+      "arvo": "300186",
+      "uri": "tutkinnonosat_300186",
+      "koodisto": "tutkinnonosat",
+      "versio": null
+    },
+    "koodiUri": "tutkinnonosat_300186",
+    "koodiArvo": "300186",
+    "osaAlueet": [],
+    "vapaatTekstit": [],
+    "tyyppi": "normaali",
+    "valmaTelmaSisalto": null,
+    "ammattitaitovaatimukset2019": null,
+    "_geneerinenArviointiasteikko": null,
+    "osanTyyppi": "tutkinnonosa"
+  }
+]
