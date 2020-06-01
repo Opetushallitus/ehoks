@@ -5,12 +5,15 @@
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.db.db-operations.oppija :as opdb]
             [ring.mock.request :as mock]
-            [oph.ehoks.session-store :refer [test-session-store]])
+            [oph.ehoks.session-store :refer [test-session-store]]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks])
   (:import [java.time LocalDate]))
 
 (t/use-fixtures :each utils/with-database)
 
 (def share-base-url "/ehoks-oppija-backend/api/v1/oppija/jaot")
+
+(def min-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"})
 
 (def jakolinkki-data
   {:tutkinnonosa-module-uuid "5b92f3f4-dc73-4ce0-8ec7-64d2cf96b47c"
@@ -32,12 +35,13 @@
 
 (t/deftest create-shared-link
   (t/testing "Shared link with valid data can be created"
-    (let [response (mock-authenticated
+    (let [hoks (db-hoks/insert-hoks! min-hoks-data)
+          response (mock-authenticated
                      (mock/json-body
                        (mock/request
                          :post
                          (format "%s/%s" share-base-url "jakolinkit"))
-                       jakolinkki-data))
+                       (assoc jakolinkki-data :hoks-eid (:eid hoks))))
           body (utils/parse-body (:body response))]
       (t/is (= 200 (:status response)))
       (t/is (:meta body))
@@ -61,7 +65,8 @@
                          :post
                          (format "%s/%s" share-base-url "jakolinkit"))
                        (assoc jakolinkki-data
-                              :voimassaolo-loppu (LocalDate/of 1986 11 17))))
+                              :voimassaolo-loppu (LocalDate/of 1986 11 17)
+                              :hoks-eid "not relevant")))
           body (utils/parse-body (:body response))]
       (t/is (= 400 (:status response)))
       (t/is (= "Shared link end date cannot be in the past"
@@ -76,7 +81,8 @@
                      (assoc
                        jakolinkki-data
                        :voimassaolo-alku (.plusMonths (LocalDate/now) 2)
-                       :voimassaolo-loppu (.plusMonths (LocalDate/now) 1))))
+                       :voimassaolo-loppu (.plusMonths (LocalDate/now) 1)
+                       :hoks-eid "not relevant")))
         body (utils/parse-body (:body response))]
     (t/is (= 400 (:status response)))
     (t/is (= "Shared link end date cannot be before the start date"
@@ -84,7 +90,9 @@
 
 (t/deftest get-shared-link
   (t/testing "Existing shared link info can be retrieved"
-    (let [share (opdb/insert-shared-module! jakolinkki-data)
+    (let [hoks (db-hoks/insert-hoks! min-hoks-data)
+          share (opdb/insert-shared-module!
+                  (assoc jakolinkki-data :hoks-eid (:eid hoks)))
           share-id (:share_id share)
           response (mock-authenticated
                      (mock/request
@@ -113,7 +121,9 @@
 
 (t/deftest delete-shared-link
   (t/testing "Existing shared link can be deleted"
-    (let [share (opdb/insert-shared-module! jakolinkki-data)
+    (let [hoks (db-hoks/insert-hoks! min-hoks-data)
+          share (opdb/insert-shared-module!
+                  (assoc jakolinkki-data :hoks-eid (:eid hoks)))
           share-id (:share_id share)
           delete-res (mock-authenticated
                        (mock/request
@@ -144,15 +154,19 @@
 
 (t/deftest get-shared-modules
   (t/testing "Multiple shared links for a single module can be fetched"
-    (let [share1 (opdb/insert-shared-module! jakolinkki-data)
+    (let [hoks (db-hoks/insert-hoks! min-hoks-data)
+          share1 (opdb/insert-shared-module!
+                   (assoc jakolinkki-data :hoks-eid (:eid hoks)))
           share2 (opdb/insert-shared-module!
                    (assoc jakolinkki-data
                           :tutkinnonosa-module-uuid
-                          "5b92f3f4-ABBA-4ce0-8ec7-64d2cf96b47c"))
+                          "5b92f3f4-ABBA-4ce0-8ec7-64d2cf96b47c"
+                          :hoks-eid (:eid hoks)))
           _ (opdb/insert-shared-module!
               (assoc jakolinkki-data
                      :shared-module-uuid
-                     "00000000-0000-0000-0000-000000000000"))
+                     "00000000-0000-0000-0000-000000000000"
+                     :hoks-eid (:eid hoks)))
           response (mock-authenticated
                      (mock/request
                        :get
