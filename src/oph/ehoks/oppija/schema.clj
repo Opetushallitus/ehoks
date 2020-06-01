@@ -20,7 +20,8 @@
    :shared-module-uuid java.util.UUID
    :shared-module-tyyppi s/Str
    :voimassaolo-alku LocalDate
-   :voimassaolo-loppu LocalDate})
+   :voimassaolo-loppu LocalDate
+   :hoks-eid s/Str})
 
 (s/defschema
   JakolinkkiLuonti
@@ -30,4 +31,5 @@
    :shared-module-uuid s/Str
    :shared-module-tyyppi s/Str
    :voimassaolo-alku LocalDate
-   :voimassaolo-loppu LocalDate})
+   :voimassaolo-loppu LocalDate
+   :hoks-eid s/Str})
