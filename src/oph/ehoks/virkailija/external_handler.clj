@@ -105,7 +105,8 @@
                             Koodisto-Koodi-Urilla."
         :return (restful/response [s/Any])
         (restful/rest-ok
-          (eperusteet/find-tutkinnon-osat koodi-uri))))
+          (eperusteet/adjust-tutkinnonosa-arviointi
+            (eperusteet/find-tutkinnon-osat koodi-uri)))))
 
     (c-api/context "/eperusteet-amosaa" []
       (c-api/GET "/koodi/:koodi" []

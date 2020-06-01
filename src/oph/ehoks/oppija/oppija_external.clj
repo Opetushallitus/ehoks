@@ -50,7 +50,8 @@
         :summary "Tutkinnon osan perusteiden
                            haku Koodisto-Koodi-Urilla."
         :return (rest/response [s/Any])
-        (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))
+        (rest/rest-ok (eperusteet/adjust-tutkinnonosa-arviointi
+                        (eperusteet/find-tutkinnon-osat koodi-uri)))))
 
     (c-api/context "/eperusteet-amosaa" []
       (c-api/GET "/koodi/:koodi" []
