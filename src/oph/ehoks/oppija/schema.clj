@@ -1,7 +1,8 @@
 (ns oph.ehoks.oppija.schema
   (:require [schema.core :as s]
             [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.schema-tools :refer [describe modify]])
+            [oph.ehoks.schema-tools :refer [describe modify]]
+            [oph.ehoks.common.schema :refer [Translated]])
   (:import (java.time LocalDate)))
 
 (s/defschema
@@ -14,14 +15,16 @@
 (s/defschema
   Jakolinkki
   "Tutkinnon osan jakolinkki"
-  {:share-id java.util.UUID
-   :tutkinnonosa-module-uuid java.util.UUID
-   :tutkinnonosa-tyyppi s/Str
-   :shared-module-uuid java.util.UUID
-   :shared-module-tyyppi s/Str
-   :voimassaolo-alku LocalDate
+  {:oppija-nimi s/Str
+   :oppija-oid s/Str
+   :tutkinto-nimi Translated
+   :osaamisala-nimi Translated
+   :voimassaolo-alku LocalDate,
    :voimassaolo-loppu LocalDate
-   :hoks-eid s/Str})
+   :module-tyyppi s/Str
+   :module s/Any
+   :tutkinnonosa-tyyppi s/Str
+   :tutkinnonosa s/Any})
 
 (s/defschema
   JakolinkkiLuonti

@@ -1,5 +1,6 @@
 (ns oph.ehoks.db.db-operations.shared-modules
-  (:require [oph.ehoks.db.db-operations.db-helpers :as db-ops])
+  (:require [oph.ehoks.db.queries :as queries]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops])
   (:import (java.util UUID)
            (java.time LocalDate)))
 

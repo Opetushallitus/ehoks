@@ -3,7 +3,7 @@
             [oph.ehoks.utils :as utils]
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
-            [oph.ehoks.db.db-operations.oppija :as opdb]
+            [oph.ehoks.db.db-operations.shared-modules :as sdb]
             [ring.mock.request :as mock]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks])
@@ -91,7 +91,7 @@
 (t/deftest get-shared-link
   (t/testing "Existing shared link info can be retrieved"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)
-          share (opdb/insert-shared-module!
+          share (sdb/insert-shared-module!
                   (assoc jakolinkki-data :hoks-eid (:eid hoks)))
           share-id (:share_id share)
           response (mock-authenticated
@@ -122,7 +122,7 @@
 (t/deftest delete-shared-link
   (t/testing "Existing shared link can be deleted"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)
-          share (opdb/insert-shared-module!
+          share (sdb/insert-shared-module!
                   (assoc jakolinkki-data :hoks-eid (:eid hoks)))
           share-id (:share_id share)
           delete-res (mock-authenticated
@@ -155,14 +155,14 @@
 (t/deftest get-shared-modules
   (t/testing "Multiple shared links for a single module can be fetched"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)
-          share1 (opdb/insert-shared-module!
+          share1 (sdb/insert-shared-module!
                    (assoc jakolinkki-data :hoks-eid (:eid hoks)))
-          share2 (opdb/insert-shared-module!
+          share2 (sdb/insert-shared-module!
                    (assoc jakolinkki-data
                           :tutkinnonosa-module-uuid
                           "5b92f3f4-ABBA-4ce0-8ec7-64d2cf96b47c"
                           :hoks-eid (:eid hoks)))
-          _ (opdb/insert-shared-module!
+          _ (sdb/insert-shared-module!
               (assoc jakolinkki-data
                      :shared-module-uuid
                      "00000000-0000-0000-0000-000000000000"
