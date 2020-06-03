@@ -27,14 +27,6 @@
             (rest/rest-ok [(onr/convert-student-info user-info)])
             (throw (ex-info "External system error" user-info-response)))))
 
-      (c-api/POST "/update-user-info" [:as request]
-        :summary "Päivittää istunnon käyttäjän tiedot Oppijanumerorekisteristä.
-                  DEPRECATED"
-        :return (rest/response [schema/User])
-        (rest/rest-ok
-          [(select-keys (get-in request [:session :user])
-                        [:oid :first-name :common-name :surname])]))
-
       (c-api/GET "/" [:as request]
         :summary "Käyttäjän istunto"
         :return (rest/response [schema/User])
