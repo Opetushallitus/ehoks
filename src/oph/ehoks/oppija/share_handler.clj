@@ -60,9 +60,8 @@
 (defn- fetch-shared-link-data
   "Queries and combines data associated with the shared link"
   [uuid]
-  (let [jakolinkki (db/select-shared-link uuid)
-        oppija (db/select-oppija-opiskeluoikeus-for-shared-link uuid)]
-    [(assoc oppija
+  (if-let [jakolinkki (db/select-shared-link uuid)]
+    [(assoc (db/select-oppija-opiskeluoikeus-for-shared-link uuid)
             :module (get-module-details
                       (:shared-module-tyyppi jakolinkki)
                       (:shared-module-uuid jakolinkki))
