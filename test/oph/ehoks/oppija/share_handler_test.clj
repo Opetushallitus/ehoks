@@ -103,7 +103,8 @@
           tuo-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
                                       :module_id]))
           module-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
-                                         :osaamisen-hankkimistavat 0 :module_id]))
+                                         :osaamisen-hankkimistavat 0
+                                         :module_id]))
           share (sdb/insert-shared-module!
                   (assoc jakolinkki-data
                          :hoks-eid (:eid hoks)

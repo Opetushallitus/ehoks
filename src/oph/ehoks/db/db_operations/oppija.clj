@@ -16,4 +16,3 @@
 
 (defn insert-oppija! [oppija]
   (db-ops/insert-one! :oppijat (db-ops/to-sql oppija)))
-

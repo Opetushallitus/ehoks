@@ -279,7 +279,8 @@
                            :nimi "Olli Oppija"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000003"
                            :oppilaitos-oid "1.2.246.562.10.12000000000"
-                           :tutkinto-nimi {:fi "Testitutkinto 3" :sv "Testskrivning 3"}
+                           :tutkinto-nimi {:fi "Testitutkinto 3"
+                                           :sv "Testskrivning 3"}
                            :osaamisala-nimi {:fi "Osaamisala Kolme"}
                            :koulutustoimija-oid ""})
       (let [body (get-search {:order-by-column "tutkinto"

@@ -8,13 +8,13 @@
             [oph.ehoks.db.postgresql.hankittavat :as hdb]
             [ring.util.http-response :as response]))
 
-(defn- get-tutkinnonosa-details [type uuid]
+(defn- get-tutkinnonosa-details [tyyppi uuid]
   (cond
-    (= type "hato")
+    (= tyyppi "hato")
     (db/select-hankittavat-ammat-tutkinnon-osat-by-module-id uuid)
-    (= type "hyto")
+    (= tyyppi "hyto")
     (db/select-hankittavat-yhteiset-tutkinnon-osat-by-module-id uuid)
-    (= type "hpto")
+    (= tyyppi "hpto")
     (db/select-hankittavat-paikalliset-tutkinnon-osat-by-module-id uuid)))
 
 (defn- combine-osaamisen-hankkiminen [uuid]
@@ -50,11 +50,11 @@
       (cdb/select-osaamisen-osoittamisen-kriteerit-by-osaamisen-osoittaminen-id
         (:id module)))))
 
-(defn- get-module-details [type uuid]
+(defn- get-module-details [tyyppi uuid]
   (cond
-    (= type "osaamisenhankkiminen")
+    (= tyyppi "osaamisenhankkiminen")
     (combine-osaamisen-hankkiminen uuid)
-    (= type "osaamisenosoittaminen")
+    (= tyyppi "osaamisenosoittaminen")
     (combine-osaamisen-osoittaminen uuid)))
 
 (defn- fetch-shared-link-data
