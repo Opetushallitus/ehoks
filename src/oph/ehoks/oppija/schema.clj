@@ -15,16 +15,18 @@
 (s/defschema
   Jakolinkki
   "Tutkinnon osan jakolinkki"
-  {:oppija-nimi s/Str
-   :oppija-oid s/Str
-   :tutkinto-nimi Translated
-   :osaamisala-nimi Translated
-   :voimassaolo-alku LocalDate,
-   :voimassaolo-loppu LocalDate
-   :module-tyyppi s/Str
-   :module s/Any
-   :tutkinnonosa-tyyppi s/Str
-   :tutkinnonosa s/Any})
+  (s/->Either
+    [{:oppija-nimi s/Str
+      :oppija-oid s/Str
+      :tutkinto-nimi Translated
+      :osaamisala-nimi Translated
+      :voimassaolo-alku LocalDate,
+      :voimassaolo-loppu LocalDate
+      :module-tyyppi s/Str
+      :module s/Any
+      :tutkinnonosa-tyyppi s/Str
+      :tutkinnonosa s/Any}
+     []]))
 
 (s/defschema
   JakolinkkiLuonti
