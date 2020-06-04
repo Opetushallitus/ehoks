@@ -73,10 +73,7 @@
   "Queries and combines all link data associated with the module uuid"
   [uuid]
   (if-let [uuids (db/select-shared-module-links uuid)]
-    (reduce
-      (fn [_ i] (fetch-shared-link-data (:share-id i)))
-      []
-      uuids)))
+    (for [x uuids] (first (fetch-shared-link-data (str (:share-id x)))))))
 
 (def routes
   (c-api/context "/" []
@@ -121,4 +118,4 @@
       (let [jakolinkit (fetch-shared-module-data uuid)]
         (if (pos? (count jakolinkit))
           (rest/rest-ok jakolinkit)
-          (rest/rest-ok '()))))))
+          (rest/rest-ok []))))))
