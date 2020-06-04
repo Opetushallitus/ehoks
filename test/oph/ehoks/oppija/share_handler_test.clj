@@ -192,6 +192,6 @@
                        (format "%s/%s/%s"
                                share-base-url
                                "moduulit"
-                               "10000000-1000-1000-1000-100000000000")))]
+                               "100000im-fake-uuid-1000-100000000000")))]
       (t/is (= 200 (:status response)))
       (t/is (empty? (:data (utils/parse-body (:body response))))))))
