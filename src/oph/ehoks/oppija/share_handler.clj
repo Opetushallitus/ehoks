@@ -71,8 +71,8 @@
 
 (defn- fetch-shared-module-data
   "Queries and combines all link data associated with the module uuid"
-  [uuid]
-  (if-let [uuids (db/select-shared-module-links uuid)]
+  [module-uuid]
+  (if-let [uuids (db/select-shared-module-links module-uuid)]
     (for [x uuids] (first (fetch-shared-link-data (str (:share-id x)))))))
 
 (def routes
@@ -111,11 +111,11 @@
             (response/ok)
             (response/not-found)))))
 
-    (c-api/GET "/moduulit/:uuid" []
+    (c-api/GET "/moduulit/:module-uuid" []
       :return (rest/response [oppija-schema/Jakolinkki])
       :summary "Jaettuun moduuliin liitettyjen jakolinkkien haku"
-      :path-params [uuid :- String]
-      (let [jakolinkit (fetch-shared-module-data uuid)]
+      :path-params [module-uuid :- String]
+      (let [jakolinkit (fetch-shared-module-data module-uuid)]
         (if (pos? (count jakolinkit))
           (rest/rest-ok jakolinkit)
           (rest/rest-ok []))))))
