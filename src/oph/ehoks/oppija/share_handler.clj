@@ -10,11 +10,11 @@
 
 (defn- get-tutkinnonosa-details [tyyppi uuid]
   (cond
-    (= tyyppi "hato")
+    (= tyyppi "HankittavaAmmatillinenTutkinnonOsa")
     (db/select-hankittavat-ammat-tutkinnon-osat-by-module-id uuid)
-    (= tyyppi "hyto")
+    (= tyyppi "HankittavaYTOOsaAlue")
     (db/select-hankittavat-yhteiset-tutkinnon-osat-by-module-id uuid)
-    (= tyyppi "hpto")
+    (= tyyppi "HankittavaPaikallinenTutkinnonOsa")
     (db/select-hankittavat-paikalliset-tutkinnon-osat-by-module-id uuid)))
 
 (defn- combine-osaamisen-hankkiminen [uuid]
@@ -62,12 +62,12 @@
   [uuid]
   (if-let [jakolinkki (db/select-shared-link uuid)]
     (assoc (db/select-oppija-opiskeluoikeus-for-shared-link uuid)
-            :module (get-module-details
-                      (:shared-module-tyyppi jakolinkki)
-                      (:shared-module-uuid jakolinkki))
-            :tutkinnonosa (get-tutkinnonosa-details
-                            (:tutkinnonosa-tyyppi jakolinkki)
-                            (:tutkinnonosa-module-uuid jakolinkki)))))
+           :module (get-module-details
+                     (:shared-module-tyyppi jakolinkki)
+                     (:shared-module-uuid jakolinkki))
+           :tutkinnonosa (get-tutkinnonosa-details
+                           (:tutkinnonosa-tyyppi jakolinkki)
+                           (:tutkinnonosa-module-uuid jakolinkki)))))
 
 (def routes
   (c-api/context "/" []

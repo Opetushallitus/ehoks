@@ -25,7 +25,7 @@
 
 (def jakolinkki-data
   {:tutkinnonosa-module-uuid "5b92f3f4-dc73-4ce0-8ec7-64d2cf96b47c"
-   :tutkinnonosa-tyyppi "hato"
+   :tutkinnonosa-tyyppi "HankittavaAmmatillinenTutkinnonOsa"
    :shared-module-uuid "992fe41a-c8e6-43e2-a305-2fc5f393a462"
    :shared-module-tyyppi "osaamisenosoittaminen"
    :voimassaolo-alku (LocalDate/now)
