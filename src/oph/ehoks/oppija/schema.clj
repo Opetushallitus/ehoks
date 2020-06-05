@@ -3,7 +3,8 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.schema-tools :refer [describe modify]]
             [oph.ehoks.common.schema :refer [Translated]])
-  (:import (java.time LocalDate)))
+  (:import (java.time LocalDate)
+           (java.util UUID)))
 
 (s/defschema
   OppijaHOKS
@@ -15,18 +16,16 @@
 (s/defschema
   Jakolinkki
   "Tutkinnon osan jakolinkki"
-  (s/->Either
-    [{:oppija-nimi s/Str
-      :oppija-oid s/Str
-      :tutkinto-nimi Translated
-      :osaamisala-nimi Translated
-      :voimassaolo-alku LocalDate,
-      :voimassaolo-loppu LocalDate
-      :module-tyyppi s/Str
-      :module s/Any
-      :tutkinnonosa-tyyppi s/Str
-      :tutkinnonosa s/Any}
-     []]))
+  {:oppija-nimi s/Str
+   :oppija-oid s/Str
+   :tutkinto-nimi Translated
+   :osaamisala-nimi Translated
+   :voimassaolo-alku LocalDate,
+   :voimassaolo-loppu LocalDate
+   :module-tyyppi s/Str
+   :module s/Any
+   :tutkinnonosa-tyyppi s/Str
+   :tutkinnonosa s/Any})
 
 (s/defschema
   JakolinkkiLuonti
@@ -38,3 +37,10 @@
    :voimassaolo-alku LocalDate
    :voimassaolo-loppu LocalDate
    :hoks-eid s/Str})
+
+(s/defschema
+  JakolinkkiListaus
+  "Yhden moduulin jakolinkkien tiedot"
+  {:voimassaolo-alku  LocalDate,
+   :voimassaolo-loppu LocalDate,
+   :share-id UUID})

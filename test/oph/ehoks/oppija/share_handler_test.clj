@@ -206,23 +206,23 @@
                                           :module_id]))
           tuo2-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 1
                                        :module_id]))
-          share1 (sdb/insert-shared-module!
-                   (assoc jakolinkki-data
-                          :hoks-eid (:eid hoks)
-                          :tutkinnonosa-module-uuid tuo1-uuid
-                          :shared-module-uuid module1-uuid
-                          :shared-module-tyyppi "osaamisenhankkiminen"))
-          share2 (sdb/insert-shared-module!
-                   (assoc jakolinkki-data
-                          :hoks-eid (:eid hoks)
-                          :tutkinnonosa-module-uuid tuo2-uuid
-                          :shared-module-uuid module1-uuid
-                          :shared-module-tyyppi "osaamisenhankkiminen"))
           _ (sdb/insert-shared-module!
               (assoc jakolinkki-data
-                     :shared-module-uuid
-                     "00000000-0000-0000-0000-000000000000"
-                     :hoks-eid (:eid hoks)))
+                     :hoks-eid (:eid hoks)
+                     :tutkinnonosa-module-uuid tuo1-uuid
+                     :shared-module-uuid module1-uuid
+                     :shared-module-tyyppi "osaamisenhankkiminen"))
+          _ (sdb/insert-shared-module!
+              (assoc jakolinkki-data
+                     :hoks-eid (:eid hoks)
+                     :tutkinnonosa-module-uuid tuo2-uuid
+                     :shared-module-uuid module1-uuid
+                     :shared-module-tyyppi "osaamisenhankkiminen"))
+          wrong-share (sdb/insert-shared-module!
+                        (assoc jakolinkki-data
+                               :shared-module-uuid
+                               "00000000-0000-0000-0000-000000000000"
+                               :hoks-eid (:eid hoks)))
           response (mock-authenticated
                      (mock/request
                        :get
@@ -232,7 +232,8 @@
                                module1-uuid)))
           data (:data (utils/parse-body (:body response)))]
       (t/is (= 200 (:status response)))
-      (t/is (= 2 (count data)))))
+      (t/is (= 2 (count data)))
+      (t/is (empty? (filter #(= (:share-id wrong-share) (:share-id %)) data)))))
 
   (t/testing "Trying to fetch links for a module with none returns empty list"
     (let [response (mock-authenticated

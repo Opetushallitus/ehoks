@@ -69,12 +69,6 @@
                             (:tutkinnonosa-tyyppi jakolinkki)
                             (:tutkinnonosa-module-uuid jakolinkki)))]))
 
-(defn- fetch-shared-module-data
-  "Queries and combines all link data associated with the module uuid"
-  [module-uuid]
-  (if-let [uuids (db/select-shared-module-links module-uuid)]
-    (for [x uuids] (first (fetch-shared-link-data (str (:share-id x)))))))
-
 (def routes
   (c-api/context "/" []
     :tags ["jaot"]
@@ -112,10 +106,10 @@
             (response/not-found)))))
 
     (c-api/GET "/moduulit/:module-uuid" []
-      :return (rest/response [oppija-schema/Jakolinkki])
+      :return (rest/response [oppija-schema/JakolinkkiListaus])
       :summary "Jaettuun moduuliin liitettyjen jakolinkkien haku"
       :path-params [module-uuid :- String]
-      (let [jakolinkit (fetch-shared-module-data module-uuid)]
+      (let [jakolinkit (db/select-shared-module-links module-uuid)]
         (if (pos? (count jakolinkit))
           (rest/rest-ok jakolinkit)
           (rest/rest-ok []))))))
