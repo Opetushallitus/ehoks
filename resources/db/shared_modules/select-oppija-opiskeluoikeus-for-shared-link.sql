@@ -14,6 +14,4 @@ FROM shared_modules sm
     ON (h.oppija_oid = o.oid)
   LEFT OUTER JOIN opiskeluoikeudet AS opo
     ON (h.opiskeluoikeus_oid = opo.oid)
-  LEFT OUTER JOIN hankittavat_ammat_tutkinnon_osat AS tuo
-    ON (sm.tutkinnonosa_module_uuid = tuo.module_id)
 WHERE sm.share_id = ?;
