@@ -61,13 +61,13 @@
   "Queries and combines data associated with the shared link"
   [uuid]
   (if-let [jakolinkki (db/select-shared-link uuid)]
-    [(assoc (db/select-oppija-opiskeluoikeus-for-shared-link uuid)
+    (assoc (db/select-oppija-opiskeluoikeus-for-shared-link uuid)
             :module (get-module-details
                       (:shared-module-tyyppi jakolinkki)
                       (:shared-module-uuid jakolinkki))
             :tutkinnonosa (get-tutkinnonosa-details
                             (:tutkinnonosa-tyyppi jakolinkki)
-                            (:tutkinnonosa-module-uuid jakolinkki)))]))
+                            (:tutkinnonosa-module-uuid jakolinkki)))))
 
 (def routes
   (c-api/context "/" []
@@ -89,7 +89,7 @@
             (response/bad-request! {:error (ex-message e)}))))
 
       (c-api/GET "/:uuid" []
-        :return (rest/response [oppija-schema/Jakolinkki])
+        :return (rest/response oppija-schema/Jakolinkki)
         :summary "Jakolinkkiin liitettyjen tietojen haku"
         :path-params [uuid :- String]
         (let [jakolinkki (fetch-shared-link-data uuid)]

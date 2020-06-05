@@ -119,7 +119,7 @@
                                share-base-url
                                "jakolinkit"
                                share-id)))
-          data (get-in (utils/parse-body (:body response)) [:data 0])]
+          data (:data (utils/parse-body (:body response)))]
       (t/is (= 200 (:status response)))
       (t/is (= (get-in data [:module :module-id]) module-uuid))
       (t/is (= (get-in data [:tutkinnonosa :module-id]) tuo-uuid)))))
@@ -146,7 +146,7 @@
                                share-base-url
                                "jakolinkit"
                                share-id)))
-          data (get-in (utils/parse-body (:body response)) [:data 0])]
+          data (:data (utils/parse-body (:body response)))]
       (t/is (= 200 (:status response)))
       (t/is (= (get-in data [:module :module-id]) module-uuid))
       (t/is (= (get-in data [:tutkinnonosa :module-id]) tuo-uuid)))))
