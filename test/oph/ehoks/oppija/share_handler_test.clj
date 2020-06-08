@@ -166,11 +166,12 @@
                                     :osaamisen-osoittaminen 0 :module_id]))
           share (sdb/insert-shared-module!
                   (assoc jakolinkki-data
-                    :hoks-eid (:eid hoks)
-                    :tutkinnonosa-tyyppi "HankittavaPaikallinenTutkinnonOsa"
-                    :tutkinnonosa-module-uuid tuo-uuid
-                    :shared-module-uuid module-uuid
-                    :shared-module-tyyppi "osaamisenosoittaminen"))
+                         :hoks-eid (:eid hoks)
+                         :tutkinnonosa-tyyppi
+                         "HankittavaPaikallinenTutkinnonOsa"
+                         :tutkinnonosa-module-uuid tuo-uuid
+                         :shared-module-uuid module-uuid
+                         :shared-module-tyyppi "osaamisenosoittaminen"))
           share-id (:share_id share)
           response (mock-authenticated
                      (mock/request
@@ -198,11 +199,11 @@
                                     :module_id]))
           share (sdb/insert-shared-module!
                   (assoc jakolinkki-data
-                    :hoks-eid (:eid hoks)
-                    :tutkinnonosa-tyyppi "HankittavaYTOOsaAlue"
-                    :tutkinnonosa-module-uuid tuo-uuid
-                    :shared-module-uuid module-uuid
-                    :shared-module-tyyppi "osaamisenhankkiminen"))
+                         :hoks-eid (:eid hoks)
+                         :tutkinnonosa-tyyppi "HankittavaYTOOsaAlue"
+                         :tutkinnonosa-module-uuid tuo-uuid
+                         :shared-module-uuid module-uuid
+                         :shared-module-tyyppi "osaamisenhankkiminen"))
           share-id (:share_id share)
           response (mock-authenticated
                      (mock/request
