@@ -33,9 +33,12 @@
   JakolinkkiLuonti
   "Tutkinnon osan jakolinkin luonti"
   {:tutkinnonosa-module-uuid s/Str
-   :tutkinnonosa-tyyppi s/Str
+   :tutkinnonosa-tyyppi (s/enum "HankittavaAmmatillinenTutkinnonOsa"
+                                "HankittavaYTOOsaAlue"
+                                "HankittavaPaikallinenTutkinnonOsa")
    :shared-module-uuid s/Str
-   :shared-module-tyyppi s/Str
+   :shared-module-tyyppi (s/enum "osaamisenhankkiminen"
+                                 "osaamisenosoittaminen")
    :voimassaolo-alku LocalDate
    :voimassaolo-loppu LocalDate
    :hoks-eid s/Str})
