@@ -59,7 +59,7 @@
 
       (c-api/GET "/:uuid" []
         :return (rest/response oppija-schema/Jakolinkki)
-        :summary "Jakolinkkiin liitettyjen tietojen haku"
+        :summary "Yksittäisen jakolinkin katselunäkymän tietojen haku"
         :path-params [uuid :- String]
         (let [jakolinkki (fetch-shared-link-data uuid)]
           (if (pos? (count jakolinkki))
@@ -76,7 +76,7 @@
 
     (c-api/GET "/moduulit/:module-uuid" []
       :return (rest/response [oppija-schema/JakolinkkiListaus])
-      :summary "Jaettuun moduuliin liitettyjen jakolinkkien haku"
+      :summary "Jakolinkkien listausnäkymän tietojen haku"
       :path-params [module-uuid :- String]
       (let [jakolinkit (db/select-shared-module-links module-uuid)]
         (if (pos? (count jakolinkit))
