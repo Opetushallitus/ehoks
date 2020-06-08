@@ -3,7 +3,6 @@ SELECT
   o.oid AS oppija_oid,
   opo.tutkinto_nimi,
   opo.osaamisala_nimi,
-  sm.shared_module_tyyppi AS module_tyyppi,
   sm.tutkinnonosa_tyyppi AS tutkinnonosa_tyyppi,
   sm.voimassaolo_alku,
   sm.voimassaolo_loppu

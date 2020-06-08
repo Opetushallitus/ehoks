@@ -70,19 +70,3 @@
     (db-ops/query
       [queries/select-hankittavat-yhteiset-tutkinnon-osat-by-module-id uuid]
       {:row-fn tutkinnonosa-from-sql})))
-
-(defn select-osaamisen-osoittamiset-by-module-id [uuid]
-  (first
-    (db-ops/query [queries/select-osaamisen-osoittamiset-by-module-id uuid]
-                  {:row-fn share-from-sql})))
-
-(defn select-osaamisen-hankkimistavat-by-module-id [uuid]
-  (first
-    (db-ops/query [queries/select-osaamisen-hankkimistavat-by-module-id uuid]
-                  {:row-fn share-from-sql})))
-
-(defn select-nayttoymparisto-by-osaamisen-osoittaminen-id [id]
-  (first
-    (db-ops/query
-      [queries/select-nayttoymparistot-by-id id]
-      {:row-fn share-from-sql})))

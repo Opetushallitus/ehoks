@@ -2,7 +2,9 @@
   (:require [schema.core :as s]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.schema-tools :refer [describe modify]]
-            [oph.ehoks.common.schema :refer [Translated]])
+            [oph.ehoks.common.schema :refer [Translated]]
+            [oph.ehoks.hoks.schema :refer [OsaamisenOsoittaminen
+                                           OsaamisenHankkimistapa]])
   (:import (java.time LocalDate)
            (java.util UUID)))
 
@@ -20,10 +22,10 @@
    :oppija-oid s/Str
    :tutkinto-nimi Translated
    :osaamisala-nimi Translated
-   :voimassaolo-alku LocalDate,
+   :voimassaolo-alku LocalDate
    :voimassaolo-loppu LocalDate
-   :module-tyyppi s/Str
-   :module s/Any
+   :osaamisen-osoittaminen (s/maybe [OsaamisenOsoittaminen])
+   :osaamisen-hankkimistapa (s/maybe [OsaamisenHankkimistapa])
    :tutkinnonosa-tyyppi s/Str
    :tutkinnonosa s/Any})
 
@@ -41,6 +43,6 @@
 (s/defschema
   JakolinkkiListaus
   "Yhden moduulin jakolinkkien tiedot"
-  {:voimassaolo-alku  LocalDate,
-   :voimassaolo-loppu LocalDate,
+  {:voimassaolo-alku  LocalDate
+   :voimassaolo-loppu LocalDate
    :share-id UUID})
