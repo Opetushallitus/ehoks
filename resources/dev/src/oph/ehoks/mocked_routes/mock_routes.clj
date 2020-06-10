@@ -140,6 +140,10 @@
               [{:yhteystietoArvo "kayttaja@domain.local"
                 :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})})))
 
+    (GET "/lokalisointi/cxf/rest/v1/localisation" []
+      (json-response-file
+        "dev-routes/lokalisointi_cxf_rest_v1_localisation.json"))
+
     koodisto-mocks/routes
     eperusteet-mocks/routes
 
@@ -154,10 +158,6 @@
     (GET "/koski/api/opiskeluoikeus/1.2.246.562.15.60063016194" []
       (json-response-file
         "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.60063016194.json"))
-
-    (GET "/lokalisointi/cxf/rest/v1/localisation" []
-      (json-response-file
-        "dev-routes/lokalisointi_cxf_rest_v1_localisation.json"))
 
     (GET "/koski/api/opiskeluoikeus/:oid" request
       (let [opiskeluoikeus-oid (get-in request [:params :oid])
