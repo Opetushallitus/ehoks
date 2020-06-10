@@ -63,6 +63,18 @@
        :id)
     (db/select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
+(defn get-osaamisen-hankkimistavat-by-module-id [uuid]
+  (mapv
+    set-osaamisen-hankkimistapa-values
+    (db/select-osaamisen-hankkimistavat-by-module-id uuid)))
+
+(defn get-osaamisen-osoittaminen-by-module-id [uuid]
+  (mapv
+    #(dissoc
+       (c/set-osaamisen-osoittaminen-values %)
+       :id)
+    (db/select-osaamisen-osoittamiset-by-module-id uuid)))
+
 (defn get-hato-osaamisen-hankkimistavat [id]
   (mapv
     set-osaamisen-hankkimistapa-values
@@ -84,6 +96,13 @@
   (mapv
     #(dissoc (c/set-osaamisen-osoittaminen-values %) :id)
     (db/select-osaamisen-osoittamiset-by-yto-osa-alue-id id)))
+
+(defn get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki [jakolinkki]
+  (cond
+    (= (:shared-module-tyyppi jakolinkki) "osaamisenhankkiminen")
+    (get-osaamisen-hankkimistavat-by-module-id (:shared-module-uuid jakolinkki))
+    (= (:shared-module-tyyppi jakolinkki) "osaamisenosoittaminen")
+    (get-osaamisen-osoittaminen-by-module-id (:shared-module-uuid jakolinkki))))
 
 (defn get-yto-osa-alueet [hyto-id]
   (mapv

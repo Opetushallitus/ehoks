@@ -3,8 +3,40 @@
             [oph.ehoks.restful :as rest]
             [oph.ehoks.oppija.schema :as oppija-schema]
             [oph.ehoks.schema :as schema]
-            [oph.ehoks.db.db-operations.oppija :as db]
-            [ring.util.http-response :as response]))
+            [oph.ehoks.db.db-operations.shared-modules :as db]
+            [ring.util.http-response :as response]
+            [oph.ehoks.hoks.hankittavat :as h]))
+
+(defn- get-tutkinnonosa-details [tyyppi uuid]
+  (cond
+    (= tyyppi "HankittavaAmmatillinenTutkinnonOsa")
+    (db/select-hankittavat-ammat-tutkinnon-osat-by-module-id uuid)
+    (= tyyppi "HankittavaYTOOsaAlue")
+    (db/select-hankittavat-yhteiset-tutkinnon-osat-by-module-id uuid)
+    (= tyyppi "HankittavaPaikallinenTutkinnonOsa")
+    (db/select-hankittavat-paikalliset-tutkinnon-osat-by-module-id uuid)))
+
+(defn- fetch-shared-link-data
+  "Queries and combines data associated with the shared link"
+  [uuid]
+  (if-let [jakolinkki (db/select-shared-link uuid)]
+    (let [oppija (db/select-oppija-opiskeluoikeus-for-shared-link uuid)
+          tutkinnonosa (get-tutkinnonosa-details
+                         (:tutkinnonosa-tyyppi jakolinkki)
+                         (:tutkinnonosa-module-uuid jakolinkki))
+          module (h/get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki
+                   jakolinkki)]
+      (cond
+        (= (:shared-module-tyyppi jakolinkki) "osaamisenhankkiminen")
+        (assoc oppija
+               :tutkinnonosa tutkinnonosa
+               :osaamisen-osoittaminen nil
+               :osaamisen-hankkimistapa module)
+        (= (:shared-module-tyyppi jakolinkki) "osaamisenosoittaminen")
+        (assoc oppija
+               :tutkinnonosa tutkinnonosa
+               :osaamisen-osoittaminen module
+               :osaamisen-hankkimistapa nil)))))
 
 (def routes
   (c-api/context "/" []
@@ -26,10 +58,10 @@
             (response/bad-request! {:error (ex-message e)}))))
 
       (c-api/GET "/:uuid" []
-        :return (rest/response [oppija-schema/Jakolinkki])
-        :summary "Jakolinkkiin liitettyjen tietojen haku"
+        :return (rest/response oppija-schema/Jakolinkki)
+        :summary "Yksittäisen jakolinkin katselunäkymän tietojen haku"
         :path-params [uuid :- String]
-        (let [jakolinkki (db/select-shared-link uuid)]
+        (let [jakolinkki (fetch-shared-link-data uuid)]
           (if (pos? (count jakolinkki))
             (rest/rest-ok jakolinkki)
             (response/not-found))))
@@ -42,11 +74,11 @@
             (response/ok)
             (response/not-found)))))
 
-    (c-api/GET "/moduulit/:uuid" []
-      :return (rest/response [oppija-schema/Jakolinkki])
-      :summary "Jaettuun moduuliin liitettyjen jakolinkkien haku"
-      :path-params [uuid :- String]
-      (let [jakolinkit (db/select-shared-module-links uuid)]
+    (c-api/GET "/moduulit/:module-uuid" []
+      :return (rest/response [oppija-schema/JakolinkkiListaus])
+      :summary "Jakolinkkien listausnäkymän tietojen haku"
+      :path-params [module-uuid :- String]
+      (let [jakolinkit (db/select-shared-module-links module-uuid)]
         (if (pos? (count jakolinkit))
           (rest/rest-ok jakolinkit)
-          (rest/rest-ok '()))))))
+          (rest/rest-ok []))))))

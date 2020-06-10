@@ -62,11 +62,25 @@
     [queries/select-osaamisen-hankkmistavat-by-hato-id id]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
+(defn select-osaamisen-hankkimistavat-by-module-id
+  "Hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat"
+  [uuid]
+  (db-ops/query
+    [queries/select-osaamisen-hankkimistavat-by-module-id uuid]
+    {:row-fn h/osaamisen-hankkimistapa-from-sql}))
+
 (defn select-osaamisen-osoittamiset-by-hato-id
   "Hankittavan ammatillisen tutkinnon osan osaamisen näytöt"
   [id]
   (db-ops/query
     [queries/select-osaamisen-osoittamiset-by-hato-id id]
+    {:row-fn h/osaamisen-osoittaminen-from-sql}))
+
+(defn select-osaamisen-osoittamiset-by-module-id
+  "Hankittavan ammatillisen tutkinnon osan osaamisen näytöt"
+  [uuid]
+  (db-ops/query
+    [queries/select-osaamisen-osoittamiset-by-module-id uuid]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
 
 (defn select-osaamisen-hankkimistavat-by-hyto-osa-alue-id

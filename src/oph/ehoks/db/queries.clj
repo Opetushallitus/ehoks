@@ -221,6 +221,13 @@
       "shared_modules/select_by_share_id.sql")
 (defq select-shared-module-links-by-module-uuid
       "shared_modules/select_by_module_id.sql")
+(defq select-oppija-opiskeluoikeus-for-shared-link
+      "shared_modules/select-oppija-opiskeluoikeus-for-shared-link.sql")
+(defq select-hankittavat-paikalliset-tutkinnon-osat-by-module-id)
+(defq select-hankittavat-ammat-tutkinnon-osat-by-module-id)
+(defq select-hankittavat-yhteiset-tutkinnon-osat-by-module-id)
+(defq select-osaamisen-osoittamiset-by-module-id)
+(defq select-osaamisen-hankkimistavat-by-module-id)
 (defq select-kyselylinkit-by-oppija-oid
       "hoksit/select_kyselylinkit_by_oppija_oid.sql")
 (defq select-paattyneet-tyoelamajaksot-hato
