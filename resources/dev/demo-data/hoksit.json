@@ -200,7 +200,13 @@
             }
           ],
           "alku": "2020-02-10",
-          "loppu": "2020-02-10"
+          "loppu": "2020-02-10",
+          "osa-alueet": [
+            {
+              "koodi-uri": "ammatillisenoppiaineet_fk",
+              "koodi-versio": 1
+            }
+          ]
         }
       ],
       "osaamisen-hankkimistavat": [
@@ -576,7 +582,7 @@
       "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osa-alueet": [
         {
-          "osa-alue-koodi-uri": "ammatillisenoppiaineet_fk",
+          "osa-alue-koodi-uri": "ammatillisenoppiaineet_vvtk",
           "osa-alue-koodi-versio": 1
         }
       ]
