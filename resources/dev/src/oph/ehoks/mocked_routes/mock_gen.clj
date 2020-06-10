@@ -1,5 +1,21 @@
 (ns oph.ehoks.mocked-routes.mock-gen
-  (:require [clojure.string :as cs]))
+  (:require [clojure.string :as cs]
+            [cheshire.core :as cheshire]
+            [clojure.java.io :as io]
+            [ring.util.http-response :as response]))
+
+(defn json-response [value]
+  (assoc-in
+    (response/ok
+      (cheshire/generate-string
+        value))
+    [:headers "Content-Type"] "application/json"))
+
+(defn json-response-file [f]
+  (-> (io/resource f)
+      slurp
+      (cheshire/parse-string true)
+      json-response))
 
 (defn generate-hetu []
   (format "%02d%02d%02d-%04d"

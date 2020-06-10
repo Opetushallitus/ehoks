@@ -2,7 +2,7 @@
   (:require [oph.ehoks.ehoks-app :as ehoks-app]
             [oph.ehoks.db.migrations :as m]
             [oph.ehoks.config :refer [config] :as c]
-            [oph.ehoks.mock-routes :as mock]
+            [oph.ehoks.mocked-routes.mock-routes :as mock]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [compojure.core :refer [GET defroutes routes]]
             [ring.util.http-response :refer [ok not-found]]
