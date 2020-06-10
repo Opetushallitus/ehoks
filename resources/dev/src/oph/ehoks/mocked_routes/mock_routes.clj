@@ -6,7 +6,8 @@
             [cheshire.core :as cheshire]
             [clj-http.client :as client]
             [oph.ehoks.mock-gen :as mock-gen]
-            [clj-time.core :as time]))
+            [clj-time.core :as time]
+            [oph.ehoks.mocked-routes.mock-koodisto-routes :as koodisto-mocks]))
 
 (defn- json-response [value]
   (assoc-in
@@ -20,32 +21,6 @@
       slurp
       (cheshire/parse-string true)
       json-response))
-
-(def koodisto-routes
-  (GET "/koodisto-service/rest/codeelement/tutkinnonosat_100031" []
-    (json-response-file
-      "dev-routes/koodisto-service_rest_codeelement_tutkinnonosat__100031.json"))
-
-  (GET "/koodisto-service/rest/codeelement/*/oppimisymparistot_0002" []
-    (json-response
-      {:metadata [{:nimi "Verkko- ja virtuaaliympäristö",
-                   :kieli "FI"}]}))
-
-  (GET "/koodisto-service/rest/codeelement/*/oppimisymparistot_0003" []
-    (json-response
-      {:metadata [{:nimi "Lukio",
-                   :kieli "FI"}]}))
-
-  (GET "/koodisto-service/rest/codeelement/*/*" []
-    (json-response-file
-      "dev-routes/rest_codeelement_ravintolakokinatjarjestys__4_2.json"))
-
-  (GET "/koodisto-service/rest/json/urasuunnitelma/koodi" []
-    (json-response-file
-      "dev-routes/koodisto-service_rest_json_urasuunnitelma_koodi.json"))
-
-  (GET "/koodisto-service/rest/json/*/koodi" []
-    (json-response [])))
 
 (defroutes mock-routes
   (routes
@@ -164,7 +139,7 @@
               [{:yhteystietoArvo "kayttaja@domain.local"
                 :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})})))
 
-    koodisto-routes
+    koodisto-mocks/routes
 
     (GET "/eperusteet-service/api/perusteet" request..0
       (json-response-file
