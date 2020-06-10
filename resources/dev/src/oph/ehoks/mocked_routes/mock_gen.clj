@@ -1,4 +1,4 @@
-(ns oph.ehoks.mock-gen
+(ns oph.ehoks.mocked-routes.mock-gen
   (:require [clojure.string :as cs]))
 
 (defn generate-hetu []
