@@ -230,6 +230,26 @@
                                "00000000-0000-0000-0000-000000000000")))]
       (t/is (= 404 (:status response))))))
 
+(t/deftest get-expired-shared-link
+  (with-redefs [sdb/validate-share-dates (fn [_])]
+    (t/testing "Expired shared link returns gone"
+      (let [hoks (db-hoks/insert-hoks! min-hoks-data)
+            share (sdb/insert-shared-module!
+                    (assoc jakolinkki-data
+                           :hoks-eid (:eid hoks)
+                           :voimassaolo-loppu (LocalDate/parse "1902-01-01")))
+            share-id (:share_id share)
+            response (mock-authenticated
+                       (mock/request
+                         :get
+                         (format "%s/%s/%s"
+                                 share-base-url
+                                 "jakolinkit"
+                                 share-id)))
+            body (utils/parse-body (:body response))]
+        (t/is (= 410 (:status response)))
+        (t/is (= "Shared link is expired" (:message body)))))))
+
 (t/deftest delete-shared-link
   (t/testing "Existing shared link can be deleted"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)
