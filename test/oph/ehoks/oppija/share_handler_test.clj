@@ -256,8 +256,8 @@
       (let [hoks (db-hoks/insert-hoks! min-hoks-data)
             share (sdb/insert-shared-module!
                     (assoc jakolinkki-data
-                      :hoks-eid (:eid hoks)
-                      :voimassaolo-alku (.plusMonths (LocalDate/now) 1)))
+                           :hoks-eid (:eid hoks)
+                           :voimassaolo-alku (.plusMonths (LocalDate/now) 1)))
             share-id (:share_id share)
             response (mock-authenticated
                        (mock/request
