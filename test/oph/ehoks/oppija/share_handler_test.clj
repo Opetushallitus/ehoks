@@ -250,6 +250,26 @@
         (t/is (= 410 (:status response)))
         (t/is (= "Shared link is expired" (:message body)))))))
 
+(t/deftest get-not-yet-active-shared-link
+  (with-redefs [sdb/validate-share-dates (fn [_])]
+    (t/testing "Not yet active shared link returns locked"
+      (let [hoks (db-hoks/insert-hoks! min-hoks-data)
+            share (sdb/insert-shared-module!
+                    (assoc jakolinkki-data
+                      :hoks-eid (:eid hoks)
+                      :voimassaolo-alku (.plusMonths (LocalDate/now) 1)))
+            share-id (:share_id share)
+            response (mock-authenticated
+                       (mock/request
+                         :get
+                         (format "%s/%s/%s"
+                                 share-base-url
+                                 "jakolinkit"
+                                 share-id)))
+            body (utils/parse-body (:body response))]
+        (t/is (= 423 (:status response)))
+        (t/is (= "Shared link not yet active" (:message body)))))))
+
 (t/deftest delete-shared-link
   (t/testing "Existing shared link can be deleted"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)

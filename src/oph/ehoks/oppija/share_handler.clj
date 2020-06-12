@@ -7,7 +7,8 @@
             [ring.util.http-response :as response]
             [oph.ehoks.hoks.hankittavat :as h]
             [clj-time.core :as t])
-  (:import (java.time DateTimeException LocalDate)))
+  (:import (java.time LocalDate)
+           (clojure.lang ExceptionInfo)))
 
 (defn- get-tutkinnonosa-details [tyyppi uuid]
   (cond
@@ -19,9 +20,11 @@
     (db/select-hankittavat-paikalliset-tutkinnon-osat-by-module-id uuid)))
 
 (defn- jakolinkki-still-valid? [jakolinkki]
-  (if (.isBefore (:voimassaolo-loppu jakolinkki) (LocalDate/now))
-    (throw (DateTimeException. "Shared link is expired"))
-    true))
+  (cond
+    (.isAfter (:voimassaolo-alku jakolinkki) (LocalDate/now))
+    (throw (ex-info "Shared link not yet active" {:cause :inactive}))
+    (.isBefore (:voimassaolo-loppu jakolinkki) (LocalDate/now))
+    (throw (ex-info "Shared link is expired" {:cause :expired}))))
 
 (defn- fetch-shared-link-data
   "Queries and combines data associated with the shared link"
@@ -73,8 +76,12 @@
           (if-let [jakolinkki (fetch-shared-link-data uuid)]
             (rest/rest-ok jakolinkki)
             (response/not-found))
-          (catch DateTimeException dex
-            (response/gone! {:message (ex-message dex)}))
+          (catch ExceptionInfo ei
+            (cond
+              (= :expired (-> ei ex-data :cause))
+              (response/gone! {:message (ex-message ei)})
+              (= :inactive (-> ei ex-data :cause))
+              (response/locked! {:message (ex-message ei)})))
           (catch Exception e
             (response/bad-request! {:error (ex-message e)}))))
 
