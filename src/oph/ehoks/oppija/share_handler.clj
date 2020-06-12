@@ -5,8 +5,7 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.db.db-operations.shared-modules :as db]
             [ring.util.http-response :as response]
-            [oph.ehoks.hoks.hankittavat :as h]
-            [clj-time.core :as t])
+            [oph.ehoks.hoks.hankittavat :as h])
   (:import (java.time LocalDate)
            (clojure.lang ExceptionInfo)))
 
