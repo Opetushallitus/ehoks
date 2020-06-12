@@ -5,7 +5,9 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.db.db-operations.shared-modules :as db]
             [ring.util.http-response :as response]
-            [oph.ehoks.hoks.hankittavat :as h]))
+            [oph.ehoks.hoks.hankittavat :as h])
+  (:import (java.time LocalDate)
+           (clojure.lang ExceptionInfo)))
 
 (defn- get-tutkinnonosa-details [tyyppi uuid]
   (cond
@@ -16,10 +18,18 @@
     (= tyyppi "HankittavaPaikallinenTutkinnonOsa")
     (db/select-hankittavat-paikalliset-tutkinnon-osat-by-module-id uuid)))
 
+(defn- jakolinkki-still-valid? [jakolinkki]
+  (cond
+    (.isAfter (:voimassaolo-alku jakolinkki) (LocalDate/now))
+    (throw (ex-info "Shared link not yet active" {:cause :inactive}))
+    (.isBefore (:voimassaolo-loppu jakolinkki) (LocalDate/now))
+    (throw (ex-info "Shared link is expired" {:cause :expired}))))
+
 (defn- fetch-shared-link-data
   "Queries and combines data associated with the shared link"
   [uuid]
-  (if-let [jakolinkki (db/select-shared-link uuid)]
+  (when-let [jakolinkki (db/select-shared-link uuid)]
+    (jakolinkki-still-valid? jakolinkki)
     (let [oppija (db/select-oppija-opiskeluoikeus-for-shared-link uuid)
           tutkinnonosa (get-tutkinnonosa-details
                          (:tutkinnonosa-tyyppi jakolinkki)
@@ -61,10 +71,18 @@
         :return (rest/response oppija-schema/Jakolinkki)
         :summary "Yksittäisen jakolinkin katselunäkymän tietojen haku"
         :path-params [uuid :- String]
-        (let [jakolinkki (fetch-shared-link-data uuid)]
-          (if (pos? (count jakolinkki))
+        (try
+          (if-let [jakolinkki (fetch-shared-link-data uuid)]
             (rest/rest-ok jakolinkki)
-            (response/not-found))))
+            (response/not-found))
+          (catch ExceptionInfo ei
+            (cond
+              (= :expired (-> ei ex-data :cause))
+              (response/gone! {:message (ex-message ei)})
+              (= :inactive (-> ei ex-data :cause))
+              (response/locked! {:message (ex-message ei)})))
+          (catch Exception e
+            (response/bad-request! {:error (ex-message e)}))))
 
       (c-api/DELETE "/:uuid" []
         :summary "Poistaa jakolinkin"
