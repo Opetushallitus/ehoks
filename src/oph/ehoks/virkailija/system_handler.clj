@@ -61,7 +61,7 @@
             (response/not-found
               {:error "No HOKS found with given opiskeluoikeus"})))))
 
-    (c-api/GET "/opiskeluoikeus/:hoks-id" request
+    (c-api/GET "/hoks/:hoks-id" request
       :summary "Palauttaa HOKSin hoks-id:llä"
       :path-params [hoks-id :- s/Int]
       :return (restful/response {:opiskeluoikeus-oid s/Str
