@@ -383,6 +383,15 @@
               (response/not-found
                 {:error "No HOKS found with given opiskeluoikeus"})))))
 
+      (route-middleware
+        [m/wrap-require-oph-privileges]
+
+        (c-api/PATCH "/kyselylinkki" request
+          :summary "Lisää lähetystietoja kyselylinkille"
+          :body [data hoks-schema/kyselylinkki-lahetys]
+          (h/update-kyselylinkki! data)
+          (response/no-content)))
+
       (c-api/context "/:hoks-id" []
 
         (route-middleware

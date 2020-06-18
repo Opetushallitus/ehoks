@@ -20,6 +20,7 @@
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.oppijaindex :as op]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.validation.handler :as validation-handler]
             [clojure.core.async :as a]
             [clojure.tools.logging :as log]
@@ -324,6 +325,23 @@
                         :summary "Hoksin tiedot.
                                 Vaatii manuaalisyöttäjän oikeudet"
                         (get-hoks hoks-id request))
+
+                      (c-api/POST "/:hoks-id/resend-palaute" request
+                        :summary "Lähettää herätepalveluun pyynnön palautelinkin
+                                  uudelleen lähetykselle"
+                        :path-params [hoks-id :- s/Int]
+                        :body [data hoks-schema/palaute-resend]
+                        (let [hoks (get-hoks hoks-id request)
+                              opiskeluoikeus (op/get-opiskeluoikeus-by-oid
+                                               (:opiskeluoikeus-oid hoks))]
+                          (sqs/send-palaute-resend-message
+                            {:koulutustoimija (:koulutustoimija opiskeluoikeus)
+                             :oppija-oid (:oppija-oid hoks)
+                             :kyselytyyppi (:tyyppi data)
+                             :alkupvm (:alkupvm data)
+                             :sahkoposti (:sahkoposti hoks)})
+                          (restful/rest-ok
+                            {:sahkoposti (:sahkoposti hoks)})))
 
                       (route-middleware
                         [m/wrap-virkailija-write-access]
