@@ -35,7 +35,7 @@
   (get-queue-url (:heratepalvelu-tyoelamapalaute-queue config)))
 
 (def ^:private resend-queue-url
-  (get-queue-url (:resend-queue config)))
+  (get-queue-url (:heratepalvelu-resend-queue config)))
 
 (defn build-hoks-hyvaksytty-msg [id hoks]
   {:ehoks-id id
