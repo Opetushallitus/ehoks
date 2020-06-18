@@ -42,8 +42,9 @@
     [conn (db-ops/get-db-connection)]
     (let [saved-hoks (db-hoks/insert-hoks! h conn)]
       (when (:osaamisen-hankkimisen-tarve h)
-        (sqs/send-message (sqs/build-hoks-hyvaksytty-msg
-                            (:id saved-hoks) h)))
+        (sqs/send-amis-palaute-message
+          (sqs/build-hoks-hyvaksytty-msg
+            (:id saved-hoks) h)))
       (assoc
         saved-hoks
         :aiemmin-hankitut-ammat-tutkinnon-osat
@@ -218,6 +219,12 @@
   (db-ops/insert-one!
     :kyselylinkit
     (db-ops/to-sql m)))
+
+(defn update-kyselylinkki! [m]
+  (db-ops/update!
+    :kyselylinkit
+    (dissoc m :kyselylinkki)
+    ["kyselylinkki = ?" (:kyselylinkki m)]))
 
 (defn get-kyselylinkit-by-oppija-oid [oid]
   (db-hoks/select-kyselylinkit-by-oppija-oid oid))

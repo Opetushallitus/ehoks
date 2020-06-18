@@ -416,10 +416,10 @@
             (ah/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta)))
           (assoc data :aiemmin-hankitun-osaamisen-arvioijat [])))))
 
-(deftest get-hoks-test-send-mg-fail
+(deftest get-hoks-test-send-msg-fail
   (testing
    "Save HOKS but fail in sending msg, test that HOKS saving is rolled back"
-    (with-redefs [oph.ehoks.external.aws-sqs/send-message
+    (with-redefs [oph.ehoks.external.aws-sqs/send-amis-palaute-message
                   #(throw (Exception. "fail"))]
       (is (thrown? Exception (h/save-hoks! hoks-data)))
       (eq (h/get-hoks-by-id 1) {:aiemmin-hankitut-ammat-tutkinnon-osat []
