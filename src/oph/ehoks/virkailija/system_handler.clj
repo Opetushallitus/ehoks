@@ -59,4 +59,20 @@
             (log/warn "No HOKS found with given opiskeluoikeus "
                       opiskeluoikeus-oid)
             (response/not-found
-              {:error "No HOKS found with given opiskeluoikeus"})))))))
+              {:error "No HOKS found with given opiskeluoikeus"})))))
+
+    (c-api/GET "/hoks/:hoks-id" request
+      :summary "Palauttaa HOKSin hoks-id:llä"
+      :path-params [hoks-id :- s/Int]
+      :return (restful/response {:opiskeluoikeus-oid s/Str
+                                 :oppija-oid s/Str})
+      (let [hoks (db-hoks/select-hoks-by-id
+                   hoks-id)]
+        (if hoks
+          (restful/rest-ok {:opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+                            :oppija-oid (:oppija-oid hoks)})
+          (do
+            (log/warn "No HOKS found with given hoks-id "
+                      hoks-id)
+            (response/not-found
+              {:error "No HOKS found with given hoks-id"})))))))
