@@ -724,6 +724,11 @@
                 :types {:any s/Inst}
                 :description (str "HOKS-dokumentin viimeisin päivitysaika "
                                   "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
+   :osaamisen-saavuttamisen-pvm {:methods {:any :optional}
+                                 :types {:any LocalDate}
+                                 :description
+                                 (str "HOKSin osaamisen saavuttamisen "
+                                      "ajankohta muodossa YYYY-MM-DD")}
    :osaamisen-hankkimisen-tarve {:methods {:any :required
                                            :patch :optional
                                            :get :optional}

@@ -285,6 +285,31 @@
              (:kuvaus one-value-of-hoks-patched))
           "Value should stay unchanged"))))
 
+(def osaaminen-saavutettu-patch
+  {:id 1
+   :osaamisen-saavuttamisen-pvm "2020-01-01"})
+
+(deftest patch-hoks-as-osaaminen-saavutettu
+  (testing "PATCH updates value of created HOKS"
+    (let [app (hoks-utils/create-app nil)
+          post-response
+          (hoks-utils/create-mock-post-request "" test-data/hoks-data app)
+          patch-response (hoks-utils/create-mock-hoks-patch-request
+                           1 osaaminen-saavutettu-patch app)
+          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      ; TODO: Marking hoks with osaaminen-saavuttaminen-pvm triggers sending
+      ; a message to herätepalvelu that should be tested also when it's done
+      (is (= (:status post-response) 200))
+      (is (= (:status patch-response) 204))
+      (is (= (:status get-response) 200))
+      (is (= (:osaamisen-saavuttamisen-pvm get-response-data)
+             (:osaamisen-saavuttamisen-pvm osaaminen-saavutettu-patch))
+          "Patched value should change.")
+      (is (= (:kuvaus get-response-data)
+             (:kuvaus osaaminen-saavutettu-patch))
+          "Value should stay unchanged"))))
+
 (def main-level-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
