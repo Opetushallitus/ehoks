@@ -315,3 +315,9 @@
 (defn select-count-all-hoks []
   (db-ops/query
     [queries/select-count-all-hoks]))
+
+(defn delete-hoks-by-hoks-id
+  "Poistaa HOKSin id:n perusteella"
+  [hoks-id]
+  (db-ops/shallow-delete!
+    :hoksit ["id = ?" hoks-id]))
