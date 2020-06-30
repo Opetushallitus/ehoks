@@ -28,14 +28,22 @@
                               queue-name))
                        (.build)))))))
 
+(defn- get-queue-url-with-error-handling [queue-name]
+  (try
+    (get-queue-url queue-name)
+    (catch QueueDoesNotExistException e
+      (log/error (str queue-name " does not exist")))))
+
 (def ^:private herate-queue-url
   (get-queue-url (:heratepalvelu-queue config)))
 
 (def ^:private tyoelamapalaute-queue-url
-  (get-queue-url (:heratepalvelu-tyoelamapalaute-queue config)))
+  (get-queue-url-with-error-handling
+    (:heratepalvelu-tyoelamapalaute-queue config)))
 
 (def ^:private resend-queue-url
-  (get-queue-url (:heratepalvelu-resend-queue config)))
+  (get-queue-url-with-error-handling
+    (:heratepalvelu-resend-queue config)))
 
 (defn build-hoks-hyvaksytty-msg [id hoks]
   {:ehoks-id id
