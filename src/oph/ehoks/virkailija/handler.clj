@@ -331,7 +331,7 @@
                                   uudelleen lähetykselle"
                         :path-params [hoks-id :- s/Int]
                         :body [data hoks-schema/palaute-resend]
-                        (let [hoks (get-hoks hoks-id request)
+                        (let [hoks (db-hoks/select-hoks-by-id hoks-id)
                               opiskeluoikeus (op/get-opiskeluoikeus-by-oid
                                                (:opiskeluoikeus-oid hoks))]
                           (sqs/send-palaute-resend-message
