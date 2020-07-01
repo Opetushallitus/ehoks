@@ -1,5 +1,6 @@
 (ns oph.ehoks.virkailija.schema
-  (:require [schema.core :as s]))
+  (:require [schema.core :as s]
+            [oph.ehoks.external.schema :as exs]))
 
 (s/defschema
   OrganisationPrivilege
@@ -28,5 +29,7 @@
   DeleteConfirmInfo
   {:nimi s/Str
    :hoksId s/Int
+   :oppilaitosNimi exs/Nimi
+   :tutkinnonNimi exs/Nimi
    :opiskeluoikeusOid s/Str
    :oppilaitosOid s/Str})
