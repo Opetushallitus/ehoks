@@ -77,10 +77,18 @@
             (response/not-found
               {:error "No HOKS found with given hoks-id"})))))
 
+    (c-api/GET "/hoks/:hoks-id/deletion-info" request
+      :summary "Palauttaa poistettava HOKSin varmistustietoja hoks-id:llä"
+      :path-params [hoks-id :- s/Int]
+      :return (restful/response virkailija-schema/DeleteConfirmInfo)
+      (if-let [info (db-hoks/select-hoks-delete-confirm-info hoks-id)]
+        (restful/rest-ok info)
+        (response/not-found {:error "No HOKS found with given hoks-id"})))
+
     (c-api/DELETE "/hoks/:hoks-id" request
       :summary "Poistaa HOKSin hoks-id:llä"
       :path-params [hoks-id :- s/Int]
       :return (restful/response {})
-      (if-let [hoks (db-hoks/delete-hoks-by-hoks-id hoks-id)]
+      (if-let [_ (db-hoks/delete-hoks-by-hoks-id hoks-id)]
         (restful/rest-ok {})
         (response/not-found {:error "No HOKS found with given hoks-id"})))))

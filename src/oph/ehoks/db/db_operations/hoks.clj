@@ -1,6 +1,8 @@
 (ns oph.ehoks.db.db-operations.hoks
   (:require [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as oo]
+            [oph.ehoks.db.db-operations.oppija :as op]
             [clojure.java.jdbc :as jdbc]))
 
 (defn oppilaitos-oid-from-sql [m]
@@ -316,8 +318,20 @@
   (db-ops/query
     [queries/select-count-all-hoks]))
 
-(defn delete-hoks-by-hoks-id
-  "Poistaa HOKSin id:n perusteella"
+(defn select-hoks-delete-confirm-info
+  "Hakee HOKSiin liittyviä tietoja poistamisen varmistusdialogia varten"
   [hoks-id]
-  (db-ops/shallow-delete!
-    :hoksit ["id = ?" hoks-id]))
+  (let [hoks (select-hoks-by-id hoks-id)
+        oppija (op/select-oppija-by-oid (:oppija-oid hoks))
+        oo (oo/select-opiskeluoikeus-by-oid (:opiskeluoikeus-oid hoks))]
+    {:nimi (:nimi oppija)
+     :hoksId (:id hoks)
+     :opiskeluoikeusOid (:opiskeluoikeus-oid hoks)
+     :oppilaitosOid (:oppilaitos-oid oo)}))
+
+(defn delete-hoks-by-hoks-id
+  "Poistaa HOKSin id:n perusteella pysyvästi"
+  [hoks-id]
+  (let [hoks (select-hoks-by-id hoks-id)]
+    (db-ops/delete! :hoksit ["id = ?" hoks-id])
+    (db-ops/delete! :opiskeluoikeudet ["oid = ?" (:opiskeluoikeus-oid hoks)])))
