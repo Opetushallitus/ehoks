@@ -334,7 +334,7 @@
      :oppilaitosOid (:oppilaitos-oid oo)}))
 
 (defn delete-hoks-by-hoks-id
-  "Poistaa HOKSin id:n perusteella pysyvästi"
+  "Poistaa HOKSin pysyvästi id:n perusteella"
   [hoks-id]
   (let [hoks (select-hoks-by-id hoks-id)]
     (db-ops/delete! :hoksit ["id = ?" hoks-id])
