@@ -23,3 +23,10 @@
                  :unindexedOpiskeluoikeudet Long
                  :unindexedTutkinnot Long}
    :hoksit {:amount s/Any}})
+
+(s/defschema
+  DeleteConfirmInfo
+  {:nimi s/Str
+   :hoksId s/Int
+   :opiskeluoikeusOid s/Str
+   :oppilaitosOid s/Str})
