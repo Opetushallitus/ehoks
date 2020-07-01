@@ -338,7 +338,7 @@
                             {:koulutustoimija (:koulutustoimija opiskeluoikeus)
                              :oppija-oid (:oppija-oid hoks)
                              :kyselytyyppi (:tyyppi data)
-                             :alkupvm (:alkupvm data)
+                             :alkupvm (str (:alkupvm data))
                              :sahkoposti (:sahkoposti hoks)})
                           (restful/rest-ok
                             {:sahkoposti (:sahkoposti hoks)})))
