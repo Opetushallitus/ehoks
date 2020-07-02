@@ -778,13 +778,15 @@
   kyselylinkki
   {:kyselylinkki s/Str
    :alkupvm LocalDate
-   :tyyppi s/Str})
+   :tyyppi s/Str
+   :lahetystila s/Str})
 
 (s/defschema
   kyselylinkki-lahetys
   {:kyselylinkki s/Str
    :lahetyspvm LocalDate
-   :sahkoposti s/Str})
+   :sahkoposti s/Str
+   :lahetystila s/Str})
 
 (s/defschema
   palaute-resend

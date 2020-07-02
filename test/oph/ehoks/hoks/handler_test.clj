@@ -641,7 +641,8 @@
               (str base-url "/1/kyselylinkki"))
         data {:kyselylinkki "https://palaute.fi/abc123"
               :alkupvm (str (t/today))
-              :tyyppi "aloittaneet"}]
+              :tyyppi "aloittaneet"
+              :lahetystila "ei_lahetetty"}]
 
     (utils/with-service-ticket
       app
@@ -668,10 +669,12 @@
                (str base-url "/kyselylinkki"))
         data-post {:kyselylinkki "https://palaute.fi/abc123"
                    :alkupvm (str (t/today))
-                   :tyyppi "aloittaneet"}
+                   :tyyppi "aloittaneet"
+                   :lahetystila "ei_lahetetty"}
         data-patch {:kyselylinkki "https://palaute.fi/abc123"
                     :lahetyspvm (str (t/today))
-                    :sahkoposti "testi@testi.fi"}]
+                    :sahkoposti "testi@testi.fi"
+                    :lahetystila "viestintapalvelussa"}]
 
     (utils/with-service-ticket
       app
@@ -688,4 +691,7 @@
 
     (is (= "testi@testi.fi"
            (:sahkoposti (first (h/get-kyselylinkit-by-oppija-oid
-                                 "1.2.246.562.24.12312312312")))))))
+                                 "1.2.246.562.24.12312312312")))))
+    (is (= "viestintapalvelussa"
+           (:lahetystila (first (h/get-kyselylinkit-by-oppija-oid
+                                  "1.2.246.562.24.12312312312")))))))
