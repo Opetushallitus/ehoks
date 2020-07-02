@@ -335,7 +335,8 @@
                               opiskeluoikeus (op/get-opiskeluoikeus-by-oid
                                                (:opiskeluoikeus-oid hoks))]
                           (sqs/send-palaute-resend-message
-                            {:koulutustoimija (:koulutustoimija-oid opiskeluoikeus)
+                            {:koulutustoimija (:koulutustoimija-oid
+                                                opiskeluoikeus)
                              :oppija-oid (:oppija-oid hoks)
                              :kyselytyyppi (:tyyppi data)
                              :alkupvm (str (:alkupvm data))
