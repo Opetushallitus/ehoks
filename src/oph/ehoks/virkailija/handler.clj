@@ -20,6 +20,7 @@
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.oppijaindex :as op]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.validation.handler :as validation-handler]
             [clojure.core.async :as a]
             [clojure.tools.logging :as log]
@@ -27,7 +28,8 @@
             [oph.ehoks.virkailija.system-handler :as system-handler]
             [oph.ehoks.virkailija.external-handler :as external-handler]
             [oph.ehoks.virkailija.cas-handler :as cas-handler]
-            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]))
+            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
+            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]))
 
 (def get-oppijat-route
   (c-api/GET "/" request
@@ -324,6 +326,42 @@
                         :summary "Hoksin tiedot.
                                 Vaatii manuaalisyöttäjän oikeudet"
                         (get-hoks hoks-id request))
+
+                      (c-api/POST "/:hoks-id/resend-palaute" request
+                        :summary "Lähettää herätepalveluun pyynnön palautelinkin
+                                  uudelleen lähetykselle"
+                        :path-params [hoks-id :- s/Int]
+                        :body [data hoks-schema/palaute-resend]
+                        (let [hoks (db-hoks/select-hoks-by-id hoks-id)
+                              opiskeluoikeus (op/get-opiskeluoikeus-by-oid
+                                               (:opiskeluoikeus-oid hoks))]
+                          (sqs/send-palaute-resend-message
+                            {:koulutustoimija (:koulutustoimija-oid
+                                                opiskeluoikeus)
+                             :oppija-oid (:oppija-oid hoks)
+                             :kyselytyyppi (:tyyppi data)
+                             :alkupvm (str (:alkupvm data))
+                             :sahkoposti (:sahkoposti hoks)})
+                          (restful/rest-ok
+                            {:sahkoposti (:sahkoposti hoks)})))
+
+                      (c-api/GET "/:hoks-id/kyselylinkit" request
+                        :summary "Palauttaa tietoja oppijan aktiivisista
+                                  kyselylinkeistä (ilman kyselytunnuksia)"
+                        :path-params [hoks-id :- s/Int]
+                        (let [kyselylinkit
+                              (heratepalvelu/get-oppija-kyselylinkit
+                                oppija-oid)
+                              lahetysdata
+                              (map
+                                #(dissoc %1 :kyselylinkki)
+                                (filter
+                                  #(and
+                                     (= (:hoks-id %1) hoks-id)
+                                     (not (nil? (:lahetystila %1)))
+                                     (not= (:lahetystila %1) "ei_lahetetty"))
+                                  kyselylinkit))]
+                          (restful/rest-ok lahetysdata)))
 
                       (route-middleware
                         [m/wrap-virkailija-write-access]

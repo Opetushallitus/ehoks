@@ -19,6 +19,7 @@
  :opintopolku-host "localhost:3000"
  :heratepalvelu-queue "services-heratepalvelu-eHOKSHerateQueue"
  :heratepalvelu-tyoelamapalaute-queue "services-heratepalvelu-tep-TPOHerateQueue"
+ :heratepalvelu-resend-queue "services-heratepalvelu-eHOKSAmisResendQueue"
  :send-herate-messages? false
  :audit? true
  :db-type "postgresql"

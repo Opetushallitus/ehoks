@@ -641,7 +641,8 @@
               (str base-url "/1/kyselylinkki"))
         data {:kyselylinkki "https://palaute.fi/abc123"
               :alkupvm (str (t/today))
-              :tyyppi "aloittaneet"}]
+              :tyyppi "aloittaneet"
+              :lahetystila "ei_lahetetty"}]
 
     (utils/with-service-ticket
       app
@@ -651,3 +652,46 @@
     (is (= "https://palaute.fi/abc123"
            (:kyselylinkki (first (h/get-kyselylinkit-by-oppija-oid
                                    "1.2.246.562.24.12312312312")))))))
+
+(deftest put-kyselylinkki-lahetysdata
+  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                   :oppija-oid "1.2.246.562.24.12312312312"
+                   :osaamisen-hankkimisen-tarve true
+                   :ensikertainen-hyvaksyminen "2018-12-15"}
+        app (hoks-utils/create-app nil)
+        hoks-resp (hoks-utils/mock-st-post
+                    app base-url hoks-data)
+        req1 (mock/request
+               :post
+               (str base-url "/1/kyselylinkki"))
+        req2 (mock/request
+               :patch
+               (str base-url "/kyselylinkki"))
+        data-post {:kyselylinkki "https://palaute.fi/abc123"
+                   :alkupvm (str (t/today))
+                   :tyyppi "aloittaneet"
+                   :lahetystila "ei_lahetetty"}
+        data-patch {:kyselylinkki "https://palaute.fi/abc123"
+                    :lahetyspvm (str (t/today))
+                    :sahkoposti "testi@testi.fi"
+                    :lahetystila "viestintapalvelussa"}]
+
+    (utils/with-service-ticket
+      app
+      (mock/json-body req1 data-post)
+      "1.2.246.562.10.00000000001")
+
+    (is (nil? (:sahkoposti (first (h/get-kyselylinkit-by-oppija-oid
+                                    "1.2.246.562.24.12312312312")))))
+
+    (utils/with-service-ticket
+      app
+      (mock/json-body req2 data-patch)
+      "1.2.246.562.10.00000000001")
+
+    (is (= "testi@testi.fi"
+           (:sahkoposti (first (h/get-kyselylinkit-by-oppija-oid
+                                 "1.2.246.562.24.12312312312")))))
+    (is (= "viestintapalvelussa"
+           (:lahetystila (first (h/get-kyselylinkit-by-oppija-oid
+                                  "1.2.246.562.24.12312312312")))))))
