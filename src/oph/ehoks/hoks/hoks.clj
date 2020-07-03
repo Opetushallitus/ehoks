@@ -222,8 +222,7 @@
 
 (defn update-kyselylinkki! [m]
   (db-ops/update!
-    :kyselylinkit
-    (dissoc m :kyselylinkki)
+    :kyselylinkit m
     ["kyselylinkki = ?" (:kyselylinkki m)]))
 
 (defn get-kyselylinkit-by-oppija-oid [oid]

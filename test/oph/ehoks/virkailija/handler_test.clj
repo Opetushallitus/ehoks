@@ -7,6 +7,8 @@
             [oph.ehoks.utils :as utils]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.hoks.hoks :refer [insert-kyselylinkki!
+                                         update-kyselylinkki!]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]))
@@ -935,3 +937,89 @@
             amount-body (utils/parse-body (:body amount-response))]
         (t/is (= (:status amount-response) 200))
         (t/is (= (:hoksit (:data amount-body)) {:amount 1}))))))
+
+(t/deftest test-get-kyselylinkit
+  (t/testing "Test getting kyselylinkit"
+    (let [alkupvm (java.time.LocalDate/now)
+          loppupvm (.plusMonths (java.time.LocalDateTime/now) 1)]
+      (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status
+                    (fn [_]
+                      {:vastattu false
+                       :voimassa_loppupvm (str loppupvm "Z")})]
+        (utils/with-db
+          (v-utils/add-oppija
+            {:oid "1.2.246.562.24.44000000001"
+             :nimi "Teuvo Testaaja"
+             :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+             :oppilaitos-oid "1.2.246.562.10.1200000000010"
+             :koulutustoimija-oid "1.2.246.562.10.1200000000011"
+             :tutkinto-nimi {:fi "Testitutkinto 1"}
+             :osaamisala-nimi {:fi "Testiosaamisala numero 1"}})
+          (db-hoks/insert-hoks!
+            {:opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+             :oppija-oid "1.2.246.562.24.44000000001"
+             :osaamisen-hankkimisen-tarve false
+             :ensikertainen-hyvaksyminen
+             (java.time.LocalDate/of 2018 12 15)})
+          (insert-kyselylinkki!
+            {:kyselylinkki "https://kysely.linkki/ABC123"
+             :hoks-id 1
+             :tyyppi "aloittaneet"
+             :oppija-oid "1.2.246.562.24.44000000001"
+             :alkupvm alkupvm
+             :lahetystila "ei_lahetetty"})
+          (insert-kyselylinkki!
+            {:kyselylinkki "https://kysely.linkki/DEF456"
+             :hoks-id 1
+             :tyyppi "tutkinnonsuorittaneet"
+             :oppija-oid "1.2.246.562.24.44000000001"
+             :alkupvm alkupvm})
+          (let [resp (with-test-virkailija
+                       (mock/request
+                         :get
+                         (str
+                           base-url
+                           "/virkailija/oppijat/1.2.246.562.24.44000000001"
+                           "/hoksit/1/kyselylinkit"))
+                       {:name "Testivirkailija"
+                        :kayttajaTyyppi "VIRKAILIJA"
+                        :organisation-privileges
+                        [{:oid "1.2.246.562.10.1200000000010"
+                          :privileges #{:write :read :update :delete}
+                          :oikeus "OPHPAAKAYTTAJA"
+                          :palvelu "EHOKS"
+                          :roles {:oph-super-user true}}]})
+                body (utils/parse-body (:body resp))]
+            (t/is (= 200 (:status resp)))
+            (t/is (empty? (:data body))))
+          (update-kyselylinkki!
+            {:kyselylinkki "https://kysely.linkki/ABC123"
+             :lahetyspvm alkupvm
+             :sahkoposti "testi@testi.fi"
+             :lahetystila "viestintapalvelussa"})
+          (let [resp (with-test-virkailija
+                       (mock/request
+                         :get
+                         (str
+                           base-url
+                           "/virkailija/oppijat/1.2.246.562.24.44000000001"
+                           "/hoksit/1/kyselylinkit"))
+                       {:name "Testivirkailija"
+                        :kayttajaTyyppi "VIRKAILIJA"
+                        :organisation-privileges
+                        [{:oid "1.2.246.562.10.1200000000010"
+                          :privileges #{:write :read :update :delete}
+                          :oikeus "OPHPAAKAYTTAJA"
+                          :palvelu "EHOKS"
+                          :roles {:oph-super-user true}}]})
+                body (utils/parse-body (:body resp))]
+            (t/is (= 200 (:status resp)))
+            (t/is (= (first (:data body))
+                     {:hoks-id 1
+                      :tyyppi "aloittaneet"
+                      :oppija-oid "1.2.246.562.24.44000000001"
+                      :alkupvm (str alkupvm)
+                      :lahetyspvm (str alkupvm)
+                      :sahkoposti "testi@testi.fi"
+                      :lahetystila "viestintapalvelussa"
+                      :voimassa-loppupvm (str loppupvm "Z")}))))))))

@@ -11,7 +11,7 @@
             [oph.ehoks.oppija.schema :as oppija-schema]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.external.arvo :as arvo]
+            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.oppija.auth-handler :as auth-handler]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
@@ -21,10 +21,7 @@
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppija.share-handler :as share-handler]
-            [oph.ehoks.oppija.middleware :as m]
-            [oph.ehoks.oppija.oppija-external :as oppija-external]
-            [clj-time.format :as f]
-            [clj-time.core :as t]))
+            [oph.ehoks.oppija.oppija-external :as oppija-external]))
 
 (defn wrap-match-user [handler]
   (fn
@@ -102,21 +99,9 @@
                     :return (rest/response [s/Any])
                     (try
                       (let [kyselylinkit
-                            (reduce
-                              (fn [linkit linkki]
-                                (let [status (arvo/get-kyselylinkki-status
-                                               (:kyselylinkki linkki))
-                                      voimassa (f/parse
-                                                 (:date-time f/formatters)
-                                                 (:voimassa_loppupvm status))]
-                                  (if (or (:vastattu status)
-                                          (t/after? (t/now) voimassa))
-                                    (do (h/delete-kyselylinkki!
-                                          (:kyselylinkki linkki))
-                                        linkit)
-                                    (conj linkit (:kyselylinkki linkki)))))
-                              []
-                              (h/get-kyselylinkit-by-oppija-oid oid))]
+                            (map
+                              :kyselylinkki
+                              (heratepalvelu/get-oppija-kyselylinkit oid))]
                         (rest/rest-ok kyselylinkit))
                       (catch Exception e
                         (print e)

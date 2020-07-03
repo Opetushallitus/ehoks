@@ -28,7 +28,8 @@
             [oph.ehoks.virkailija.system-handler :as system-handler]
             [oph.ehoks.virkailija.external-handler :as external-handler]
             [oph.ehoks.virkailija.cas-handler :as cas-handler]
-            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]))
+            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
+            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]))
 
 (def get-oppijat-route
   (c-api/GET "/" request
@@ -343,6 +344,24 @@
                              :sahkoposti (:sahkoposti hoks)})
                           (restful/rest-ok
                             {:sahkoposti (:sahkoposti hoks)})))
+
+                      (c-api/GET "/:hoks-id/kyselylinkit" request
+                        :summary "Palauttaa tietoja oppijan aktiivisista
+                                  kyselylinkeistä (ilman kyselytunnuksia)"
+                        :path-params [hoks-id :- s/Int]
+                        (let [kyselylinkit
+                              (heratepalvelu/get-oppija-kyselylinkit
+                                oppija-oid)
+                              lahetysdata
+                              (map
+                                #(dissoc %1 :kyselylinkki)
+                                (filter
+                                  #(and
+                                     (= (:hoks-id %1) hoks-id)
+                                     (not (nil? (:lahetystila %1)))
+                                     (not= (:lahetystila %1) "ei_lahetetty"))
+                                  kyselylinkit))]
+                          (restful/rest-ok lahetysdata)))
 
                       (route-middleware
                         [m/wrap-virkailija-write-access]
