@@ -980,7 +980,7 @@
                          (str
                            base-url
                            "/virkailija/oppijat/1.2.246.562.24.44000000001"
-                           "/hoksit/1/kyselylinkit"))
+                           "/hoksit/1/opiskelijapalaute"))
                        {:name "Testivirkailija"
                         :kayttajaTyyppi "VIRKAILIJA"
                         :organisation-privileges
@@ -1003,7 +1003,7 @@
                          (str
                            base-url
                            "/virkailija/oppijat/1.2.246.562.24.44000000001"
-                           "/hoksit/1/kyselylinkit"))
+                           "/hoksit/1/opiskelijapalaute"))
                        {:name "Testivirkailija"
                         :kayttajaTyyppi "VIRKAILIJA"
                         :organisation-privileges
