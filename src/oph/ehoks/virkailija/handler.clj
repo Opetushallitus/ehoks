@@ -338,14 +338,14 @@
                           (sqs/send-palaute-resend-message
                             {:koulutustoimija (:koulutustoimija-oid
                                                 opiskeluoikeus)
-                             :oppija-oid (:oppija-oid hoks)
+                             :oppija-oid oppija-oid
                              :kyselytyyppi (:tyyppi data)
                              :alkupvm (str (:alkupvm data))
                              :sahkoposti (:sahkoposti hoks)})
                           (restful/rest-ok
                             {:sahkoposti (:sahkoposti hoks)})))
 
-                      (c-api/GET "/:hoks-id/kyselylinkit" request
+                      (c-api/GET "/:hoks-id/opiskelijapalaute" request
                         :summary "Palauttaa tietoja oppijan aktiivisista
                                   kyselylinkeistä (ilman kyselytunnuksia)"
                         :path-params [hoks-id :- s/Int]
