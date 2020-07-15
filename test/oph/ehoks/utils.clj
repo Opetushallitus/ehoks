@@ -238,7 +238,7 @@
            (eq-check v# e#)
            (is (= v# e#))))))
 
-(defn- clear-db []
+(defn clear-db []
   (jdbc/execute!
     (db-ops/get-db-connection)
     (slurp (clojure.java.io/resource "oph/ehoks/empty_database.sql"))))
@@ -257,6 +257,10 @@
        (m/migrate!)
        (do ~@body)
        (m/clean!)))
+
+(defmacro with-db2 [& body]
+  `(do (do ~@body)
+       (clear-db)))
 
 (defn dissoc-module-ids [data]
   (if (coll? data)
