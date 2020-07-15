@@ -13,6 +13,8 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]))
 
+(t/use-fixtures :once utils/migrate-database)
+
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
 (t/deftest buildversion
@@ -123,7 +125,7 @@
 
 (t/deftest test-list-oppijat-with-empty-index
   (t/testing "GET empty oppijat list"
-    (utils/with-db
+    (utils/with-db2
       (let [response (with-test-virkailija
                        (mock/request
                          :get
@@ -133,7 +135,7 @@
 
 (t/deftest test-virkailija-privileges
   (t/testing "Prevent getting other organisation oppijat"
-    (utils/with-db
+    (utils/with-db2
       (let [response (with-test-virkailija
                        (mock/request
                          :get
@@ -197,7 +199,7 @@
 
 (t/deftest get-oppijat-without-filtering
   (t/testing "GET virkailija oppijat without any search filters"
-    (utils/with-db
+    (utils/with-db2
       (add-oppijat)
       (let [body (get-search {})]
         (t/is (= (count (:data body)) 3))
@@ -211,7 +213,7 @@
 
 (t/deftest get-oppijat-with-name-filter
   (t/testing "GET virkailija oppijat with name filtered"
-    (utils/with-db
+    (utils/with-db2
       (add-oppijat)
       (let [body (get-search {:nimi "teu"})]
         (t/is (= (count (:data body)) 1))
@@ -221,7 +223,7 @@
 
 (t/deftest get-oppijat-with-name-filter-and-order-desc
   (t/testing "GET virkailija oppijat ordered descending and filtered with name"
-    (utils/with-db
+    (utils/with-db2
       (add-oppijat)
       (let [body (get-search {:nimi "oppi"
                               :order-by-column :nimi
@@ -235,7 +237,7 @@
 
 (t/deftest get-oppijat-with-name-filter-and-order-asc
   (t/testing "GET virkailija oppijat ordered ascending and filtered with name"
-    (utils/with-db
+    (utils/with-db2
       (add-oppijat)
       (let [body (get-search {:nimi "oppi"
                               :order-by-column :nimi})]
@@ -248,7 +250,7 @@
 
 (t/deftest get-oppijat-filtered-with-tutkinto-and-osaamisala
   (t/testing "GET virkailija oppijat filtered with tutkinto and osaamisala"
-    (utils/with-db
+    (utils/with-db2
       (add-oppijat)
       (let [body (get-search {:tutkinto "testitutkinto"
                               :osaamisala "kolme"})]
@@ -259,7 +261,7 @@
 
 (t/deftest get-oppijat-filtered-with-swedish-locale
   (t/testing "GET virkailija oppijat filtered with swedish locale"
-    (utils/with-db
+    (utils/with-db2
       (add-oppijat)
       (let [body (get-search {:tutkinto "testskrivning"
                               :osaamisala "kunnande"
@@ -276,7 +278,7 @@
 (t/deftest get-oppijat-with-swedish-locale-without-translation
   (t/testing
    "Doesn't have swedish translation and no search filters, shouldn't filter"
-    (utils/with-db
+    (utils/with-db2
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000003"
                            :nimi "Olli Oppija"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000003"
@@ -295,7 +297,7 @@
 
 (t/deftest test-list-virkailija-oppija-with-multi-opiskeluoikeus
   (t/testing "GET virkailija oppijat"
-    (utils/with-db
+    (utils/with-db2
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
@@ -336,7 +338,7 @@
 
 (t/deftest test-virkailija-with-no-read
   (t/testing "Prevent GET virkailija oppijat without read privilege"
-    (utils/with-db
+    (utils/with-db2
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
                            :nimi "Testi 1"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
@@ -356,7 +358,7 @@
 
 (t/deftest test-virkailija-has-access
   (t/testing "Virkailija has oppija access"
-    (utils/with-db
+    (utils/with-db2
       (client/with-mock-responses
         [(fn [url options]
            (cond
@@ -393,7 +395,7 @@
 
 (t/deftest test-virkailija-hoks-write-forbidden
   (t/testing "Virkailija HOKS write is forbidden"
-    (utils/with-db
+    (utils/with-db2
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
@@ -458,7 +460,7 @@
 
 (t/deftest test-virkailija-hoks-forbidden
   (t/testing "Virkailija HOKS forbidden"
-    (utils/with-db
+    (utils/with-db2
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
@@ -505,7 +507,7 @@
 
 (t/deftest test-virkailija-create-hoks
   (t/testing "POST hoks virkailija"
-    (utils/with-db
+    (utils/with-db2
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
       (let [post-response
             (post-new-hoks
@@ -520,7 +522,7 @@
 
 (t/deftest test-hoks-create-when-opiskeluoikeus-fetch-fails
   (t/testing "Error thrown from koski is propagated to handler"
-    (utils/with-db
+    (utils/with-db2
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
       (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info-raw
                     mocked-get-opiskeluoikeus-info-raw]
@@ -536,7 +538,7 @@
 
 (t/deftest test-hoks-create-when-oppijanumerorekisteri-fails
   (t/testing "Error thrown from oppijanumerorekisteri is propagated to handler"
-    (utils/with-db
+    (utils/with-db2
       (with-redefs [oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
                     mocked-find-student-by-oid]
         (let [post-response
@@ -548,7 +550,7 @@
 
 (t/deftest test-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
-    (utils/with-db
+    (utils/with-db2
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
       (let [post-response
             (post-new-hoks
@@ -584,7 +586,7 @@
 
 (t/deftest test-prevent-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
-    (utils/with-db
+    (utils/with-db2
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
@@ -636,7 +638,7 @@
 
 (t/deftest prevent-patch-hoks-with-updated-opiskeluoikeus
   (t/testing "PATCH hoks virkailija"
-    (utils/with-db
+    (utils/with-db2
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
       (let [post-response
             (post-new-hoks
@@ -663,7 +665,7 @@
 
 (t/deftest prevent-patch-hoks-with-updated-oppija-oid
   (t/testing "PATCH hoks virkailija"
-    (utils/with-db
+    (utils/with-db2
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
       (let [post-response
             (post-new-hoks
@@ -750,7 +752,7 @@
 
 (t/deftest test-virkailija-put-hoks
   (t/testing "PUT hoks virkailija"
-    (utils/with-db
+    (utils/with-db2
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
@@ -808,7 +810,7 @@
 
 (t/deftest test-put-prevent-updating-opiskeluoikeus
   (t/testing "PUT hoks virkailija"
-    (utils/with-db
+    (utils/with-db2
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
@@ -856,7 +858,7 @@
 
 (t/deftest test-put-prevent-updating-oppija-oid
   (t/testing "PUT hoks virkailija"
-    (utils/with-db
+    (utils/with-db2
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
@@ -905,7 +907,7 @@
 
 (t/deftest test-get-amount
   (t/testing "Test getting the amount of hokses"
-    (utils/with-db
+    (utils/with-db2
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
@@ -946,7 +948,7 @@
                     (fn [_]
                       {:vastattu false
                        :voimassa_loppupvm (str loppupvm "Z")})]
-        (utils/with-db
+        (utils/with-db2
           (v-utils/add-oppija
             {:oid "1.2.246.562.24.44000000001"
              :nimi "Teuvo Testaaja"
