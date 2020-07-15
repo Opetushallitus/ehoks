@@ -1,6 +1,6 @@
 (ns oph.ehoks.user-test
-  (:require [clojure.test :refer [deftest testing is]]
-            [oph.ehoks.utils :refer [eq with-db]]
+  (:require [clojure.test :as t :refer [deftest testing is]]
+            [oph.ehoks.utils :as utils :refer [eq with-db2]]
             [oph.ehoks.user :as user]
             [oph.ehoks.external.http-client :as client]
             [clj-time.coerce :as c]
@@ -8,9 +8,11 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]))
 
+(t/use-fixtures :once utils/migrate-database)
+
 (deftest get-auth-info-test
   (testing "Mapping kayttooikeus-service data to eHOKS privileges"
-    (with-db
+    (with-db2
       (eq (user/get-auth-info
             {:organisaatiot [{:organisaatioOid "1.2.246.562.10.00000000002"
                               :kayttooikeudet [{:palvelu "EHOKS"
