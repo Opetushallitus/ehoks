@@ -4,7 +4,8 @@
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.hoks.test-data :as test-data]))
 
-(use-fixtures :each utils/with-database)
+(use-fixtures :once utils/migrate-database)
+(use-fixtures :each utils/empty-database-after-test)
 
 (def oto-path "opiskeluvalmiuksia-tukevat-opinnot")
 

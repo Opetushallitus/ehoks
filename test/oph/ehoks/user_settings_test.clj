@@ -3,7 +3,8 @@
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]))
 
-(t/use-fixtures :each utils/with-database)
+(t/use-fixtures :once utils/migrate-database)
+(t/use-fixtures :each utils/empty-database-after-test)
 
 (t/deftest save-settings-new-test
   (t/testing "Save new settings"

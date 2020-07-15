@@ -12,7 +12,8 @@
             [oph.ehoks.virkailija.virkailija-test-utils :as v-utils])
   (:import [java.time LocalDate]))
 
-(t/use-fixtures :each utils/with-database)
+(t/use-fixtures :once utils/migrate-database)
+(t/use-fixtures :each utils/empty-database-after-test)
 
 (def share-base-url "/ehoks-oppija-backend/api/v1/oppija/jaot")
 
