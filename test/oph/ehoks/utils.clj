@@ -252,12 +252,6 @@
   (f)
   (clear-db))
 
-(defn with-database [f]
-  (m/clean!)
-  (m/migrate!)
-  (f)
-  (m/clean!))
-
 (defmacro with-db [& body]
   `(do (m/clean!)
        (m/migrate!)
