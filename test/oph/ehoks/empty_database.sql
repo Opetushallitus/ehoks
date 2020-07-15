@@ -27,6 +27,7 @@ DELETE FROM muut_oppimisymparistot;
 DELETE FROM nayttoymparistot;
 DELETE FROM opiskeluoikeudet;
 DELETE FROM opiskeluvalmiuksia_tukevat_opinnot;
+ALTER SEQUENCE opiskeluvalmiuksia_tukevat_opinnot_id_seq RESTART WITH 1;
 DELETE FROM oppijat;
 DELETE FROM osaamisen_hankkimistavat;
 DELETE FROM osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija;
