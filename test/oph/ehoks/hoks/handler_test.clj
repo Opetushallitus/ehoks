@@ -8,7 +8,8 @@
             [oph.ehoks.hoks.test-data :as test-data]
             [clj-time.core :as t]))
 
-(use-fixtures :each utils/with-database)
+(use-fixtures :once utils/migrate-database)
+(use-fixtures :each utils/empty-database-after-test)
 
 (defn add-empty-hoks-values [hoks]
   (assoc

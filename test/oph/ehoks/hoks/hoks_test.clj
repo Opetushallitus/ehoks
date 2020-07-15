@@ -1,6 +1,7 @@
 (ns oph.ehoks.hoks.hoks-test
   (:require [clojure.test :refer :all]
-            [oph.ehoks.utils :as utils :refer [eq with-database]]
+            [oph.ehoks.utils :as utils :refer [eq empty-database-after-test
+                                               migrate-database]]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hankittavat :as ha]
@@ -8,7 +9,8 @@
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
-(use-fixtures :each with-database)
+(use-fixtures :once migrate-database)
+(use-fixtures :each empty-database-after-test)
 
 (def ahato-data
   [{:valittu-todentamisen-prosessi-koodi-versio 1

@@ -3,7 +3,8 @@
             [clojure.test :as t]
             [oph.ehoks.utils :as u]))
 
-(t/use-fixtures :each u/with-database)
+(t/use-fixtures :once u/migrate-database)
+(t/use-fixtures :each u/empty-database-after-test)
 
 (t/deftest get-no-session
   (t/testing "Get no session"
