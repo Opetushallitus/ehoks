@@ -7,7 +7,8 @@
             [oph.ehoks.db.db-operations.oppija :as db-oppija])
   (:import (clojure.lang ExceptionInfo)))
 
-(t/use-fixtures :each utils/with-database)
+(t/use-fixtures :once utils/migrate-database)
+(t/use-fixtures :each utils/empty-database-after-test)
 
 (def opiskeluoikeus-data
   {:oppilaitos {:oid "1.2.246.562.10.222222222222"}
