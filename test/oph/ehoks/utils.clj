@@ -252,7 +252,7 @@
   (f)
   (clear-db))
 
-(defmacro with-db2 [& body]
+(defmacro with-db [& body]
   `(do (do ~@body)
        (clear-db)))
 

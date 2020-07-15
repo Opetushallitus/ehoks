@@ -4,7 +4,7 @@
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.virkailija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
-            [oph.ehoks.utils :as utils :refer [parse-body with-db2]]
+            [oph.ehoks.utils :as utils :refer [parse-body with-db]]
             [ring.mock.request :as mock]
             [oph.ehoks.db.session-store :as store]))
 
@@ -86,7 +86,7 @@
 
 (t/deftest cas-logout-session-test
   (t/testing "Removing session with service ticket (CAS endpoint)"
-    (with-db2
+    (with-db
       (let [responses
             (with-ticket-session-multi
               (create-app (store/db-store))
