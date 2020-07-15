@@ -5,7 +5,9 @@
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.virkailija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
-            [oph.ehoks.utils :refer [parse-body with-db]]))
+            [oph.ehoks.utils :as utils :refer [parse-body with-db2]]))
+
+(t/use-fixtures :once utils/migrate-database)
 
 (def session-url "/ehoks-virkailija-backend/api/v1/virkailija/session")
 
@@ -116,7 +118,7 @@
 
 (t/deftest get-session-test
   (t/testing "Get virkailija session"
-    (with-db
+    (with-db2
       (let [response (with-ticket-session
                        (create-app (test-session-store (atom {})))
                        (mock/request :get session-url)
@@ -135,7 +137,7 @@
 
 (t/deftest delete-session-test
   (t/testing "Delete virkailija session"
-    (with-db
+    (with-db2
       (let [responses (with-ticket-session-multi
                         (create-app (test-session-store (atom {})))
                         [(mock/request :get session-url)
