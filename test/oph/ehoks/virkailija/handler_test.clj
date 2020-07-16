@@ -13,6 +13,8 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]))
 
+(t/use-fixtures :once utils/migrate-database)
+
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
 (t/deftest buildversion
