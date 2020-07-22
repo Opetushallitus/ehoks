@@ -478,4 +478,3 @@
       (utils/eq
         (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
         nil))))
-
