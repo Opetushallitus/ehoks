@@ -10,7 +10,8 @@
             [ring.util.http-response :as response]
             [clojure.tools.logging :as log]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]))
 
 (def routes
   (route-middleware
@@ -60,6 +61,35 @@
                       opiskeluoikeus-oid)
             (response/not-found
               {:error "No HOKS found with given opiskeluoikeus"})))))
+
+    (c-api/DELETE "/opiskeluoikeus/:opiskeluoikeus-oid" request
+      :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin"
+      :path-params [oid :- s/Str]
+      (if-let [_ (db-opiskeluoikeus/delete-opiskeluoikeus-from-index! oid)]
+        (a/go
+          (op/update-oppijat-without-index!)
+          (response/ok))))
+
+    (c-api/DELETE "/opiskeluoikeudet/:koulutustoimija-oid" request
+      :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin
+      koulutustoimijan perusteella"
+      :path-params [koulutustoimija-oid :- s/Str]
+      (if-let [_ (db-opiskeluoikeus/delete-from-index-by-koulutustoimija!
+                   koulutustoimija-oid)]
+        (a/go
+          (op/update-oppijat-without-index!)
+          (response/ok))))
+
+    (c-api/GET "/opiskeluoikeudet/:koulutustoimija-oid/deletion-info" request
+      :summary "Palauttaa opiskeluoikeuksien määrän poistamisen varmistusta
+      varten"
+      :path-params [koulutustoimija-oid :- s/Str]
+      :return (restful/response s/Int)
+      (if-let [info (db-opiskeluoikeus/select-opiskeluoikeus-delete-confirm-info
+                      koulutustoimija-oid)]
+        (restful/rest-ok info)
+        (response/not-found {:error "No opiskeluoikeus found
+                                     with given koulutustoimija-id"})))
 
     (c-api/GET "/hoks/:hoks-id" request
       :summary "Palauttaa HOKSin hoks-id:llä"
