@@ -123,6 +123,6 @@
       :summary "Poistaa HOKSin hoks-id:llä"
       :path-params [hoks-id :- s/Int]
       :return (restful/response {})
-      (if-let [_ (db-hoks/delete-hoks-by-hoks-id hoks-id)]
+      (when (pos? (first (db-hoks/delete-hoks-by-hoks-id hoks-id)))
         (restful/rest-ok {})
         (response/not-found {:error "No HOKS found with given hoks-id"})))))
