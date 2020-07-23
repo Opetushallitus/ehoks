@@ -65,7 +65,8 @@
     (c-api/DELETE "/opiskeluoikeus/:opiskeluoikeus-oid" request
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin"
       :path-params [oid :- s/Str]
-      (if-let [_ (db-opiskeluoikeus/delete-opiskeluoikeus-from-index! oid)]
+      (when
+       (pos? (first (db-opiskeluoikeus/delete-opiskeluoikeus-from-index! oid)))
         (a/go
           (op/update-oppijat-without-index!)
           (response/ok))))
@@ -74,8 +75,9 @@
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin
       koulutustoimijan perusteella"
       :path-params [koulutustoimija-oid :- s/Str]
-      (if-let [_ (db-opiskeluoikeus/delete-from-index-by-koulutustoimija!
-                   koulutustoimija-oid)]
+      (when (pos? (first
+                    (db-opiskeluoikeus/delete-from-index-by-koulutustoimija!
+                      koulutustoimija-oid)))
         (a/go
           (op/update-oppijat-without-index!)
           (response/ok))))

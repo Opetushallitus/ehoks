@@ -100,8 +100,7 @@
   (->
     (select-count-opiskeluoikeudet-by-koulutustoimija koulutustoimija-oid)
     (first)
-    (:count)
-    (int)))
+    (:count)))
 
 (defn delete-opiskeluoikeus-from-index! [oid]
   (db-ops/delete! :opiskeluoikeudet

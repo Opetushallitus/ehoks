@@ -1,1 +1,1 @@
-SELECT COUNT(DISTINCT oid) FROM opiskeluoikeudet WHERE koulutustoimija_oid = ?
+SELECT COUNT(oid) FROM opiskeluoikeudet WHERE koulutustoimija_oid = ?
