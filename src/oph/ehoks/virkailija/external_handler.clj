@@ -72,7 +72,7 @@
 
       (c-api/GET "/tutkinnonosat/:id/osaalueet" []
         :path-params [id :- Long]
-        :summary "Tutkinnon osan osa-alueet."
+        :summary "Yhteisen tutkinnon osan osa-alueet."
         :return (restful/response [s/Any])
         (try
           (restful/rest-ok
