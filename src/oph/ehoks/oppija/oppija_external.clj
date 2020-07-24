@@ -3,6 +3,7 @@
             [compojure.api.core :refer [route-middleware]]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.restful :as rest]
+            [ring.util.http-response :as response]
             [schema.core :as s]
             [compojure.api.sweet :as c-api]
             [oph.ehoks.external.amosaa :as amosaa]
@@ -25,6 +26,19 @@
         :summary "Tutkinnon osan viitteet."
         :return (rest/response [s/Any])
         (rest/rest-ok (eperusteet/get-tutkinnon-osa-viitteet id)))
+
+      (c-api/GET "/tutkinnonosat/:id/osaalueet" []
+        :path-params [id :- Long]
+        :summary "Tutkinnon osan osa-alueet."
+        :return (rest/response [s/Any])
+        (try
+          (rest/rest-ok
+            (eperusteet/get-tutkinnon-osan-osa-alueet id))
+          (catch Exception e
+            (if (= (:status (ex-data e)) 400)
+              (response/not-found
+                {:message "Tutkinnon osan osa-alue not found"})
+              (throw e)))))
 
       (c-api/GET "/tutkinnot" []
         :query-params [diaarinumero :- String]
