@@ -88,6 +88,15 @@
        :options {:as :json}})
     :body))
 
+(defn get-tutkinnon-osan-osa-alueet [^Long id]
+  (get
+    (cache/with-cache!
+      {:method :get
+       :service (u/get-url "eperusteet-service-url")
+       :url (u/get-url "eperusteet-service.get-tutkinnonosa-osa-alueet" id)
+       :options {:as :json}})
+    :body))
+
 (defn find-tutkinto [^String diaarinumero]
   (get
     (cache/with-cache!

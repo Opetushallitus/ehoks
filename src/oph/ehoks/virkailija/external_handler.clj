@@ -70,6 +70,19 @@
                 {:message "Tutkinnon osa not found"})
               (throw e)))))
 
+      (c-api/GET "/tutkinnonosat/:id/osaalueet" []
+        :path-params [id :- Long]
+        :summary "Tutkinnon osan osa-alueet."
+        :return (restful/response [s/Any])
+        (try
+          (restful/rest-ok
+            (eperusteet/get-tutkinnon-osan-osa-alueet id))
+          (catch Exception e
+            (if (= (:status (ex-data e)) 400)
+              (response/not-found
+                {:message "Tutkinnon osan osa-alue not found"})
+              (throw e)))))
+
       (c-api/GET "/tutkinnot" []
         :query-params [diaarinumero :- String]
         :summary "Tutkinnon haku diaarinumeron perusteella."
