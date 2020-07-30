@@ -66,7 +66,8 @@
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin"
       :path-params [opiskeluoikeus-oid :- s/Str]
       (when
-       (pos? (first (db-opiskeluoikeus/delete-opiskeluoikeus-from-index! opiskeluoikeus-oid)))
+       (pos? (first (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
+                      opiskeluoikeus-oid)))
         (a/go
           (op/update-opiskeluoikeudet-without-index!)
           (response/ok))))
