@@ -65,23 +65,25 @@
     (c-api/DELETE "/opiskeluoikeus/:opiskeluoikeus-oid" request
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin"
       :path-params [opiskeluoikeus-oid :- s/Str]
-      (when
+      (if
        (pos? (first (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
                       opiskeluoikeus-oid)))
         (a/go
           (op/update-opiskeluoikeudet-without-index!)
-          (response/ok))))
+          (response/ok))
+        (response/not-found {:error "No opiskeluoikeus found with given oid"})))
 
     (c-api/DELETE "/opiskeluoikeudet/:koulutustoimija-oid" request
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin
       koulutustoimijan perusteella"
       :path-params [koulutustoimija-oid :- s/Str]
-      (when (pos? (first
+      (if (pos? (first
                     (db-opiskeluoikeus/delete-from-index-by-koulutustoimija!
                       koulutustoimija-oid)))
         (a/go
           (op/update-opiskeluoikeudet-without-index!)
-          (response/ok))))
+          (response/ok))
+        (response/not-found {:error "No opiskeluoikeus found with given oid"})))
 
     (c-api/GET "/opiskeluoikeudet/:koulutustoimija-oid/deletion-info" request
       :summary "Palauttaa opiskeluoikeuksien määrän poistamisen varmistusta
@@ -93,6 +95,7 @@
         (restful/rest-ok info)
         (response/not-found {:error "No opiskeluoikeus found
                                      with given koulutustoimija-id"})))
+
 
     (c-api/GET "/hoks/:hoks-id" request
       :summary "Palauttaa HOKSin hoks-id:llä"
@@ -124,6 +127,7 @@
       :summary "Poistaa HOKSin hoks-id:llä"
       :path-params [hoks-id :- s/Int]
       :return (restful/response {})
-      (when (pos? (first (db-hoks/delete-hoks-by-hoks-id hoks-id)))
+      (if (pos? (first (db-hoks/delete-hoks-by-hoks-id hoks-id)))
         (restful/rest-ok {})
         (response/not-found {:error "No HOKS found with given hoks-id"})))))
+
