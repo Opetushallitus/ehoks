@@ -78,8 +78,8 @@
       koulutustoimijan perusteella"
       :path-params [koulutustoimija-oid :- s/Str]
       (if (pos? (first
-                    (db-opiskeluoikeus/delete-from-index-by-koulutustoimija!
-                      koulutustoimija-oid)))
+                  (db-opiskeluoikeus/delete-from-index-by-koulutustoimija!
+                    koulutustoimija-oid)))
         (a/go
           (op/update-opiskeluoikeudet-without-index!)
           (response/ok))
@@ -95,7 +95,6 @@
         (restful/rest-ok info)
         (response/not-found {:error "No opiskeluoikeus found
                                      with given koulutustoimija-id"})))
-
 
     (c-api/GET "/hoks/:hoks-id" request
       :summary "Palauttaa HOKSin hoks-id:llä"
