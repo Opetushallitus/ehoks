@@ -11,7 +11,8 @@
             [clojure.tools.logging :as log]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [schema.core :as s]
-            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]))
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.db.db-operations.oppija :as db-oppija]))
 
 (def routes
   (route-middleware
@@ -47,6 +48,18 @@
       :summary "Välimuistin tyhjennys"
       (c/clear-cache!)
       (response/ok))
+
+    (c-api/POST "/oppija/:oppija-oid" request
+      :summary "Päivittää oppijan tiedot oppija-indeksiin"
+      :path-params [oppija-oid :- s/Str]
+      (if (empty? (db-hoks/select-hoks-by-oppija-oid oppija-oid))
+        (response/not-found {:error "Tällä oppija-oidilla ei löydy hoksia
+        ehoks-järjestelmästä"})
+        (do
+          (if (some? (db-oppija/select-oppija-by-oid oppija-oid))
+            (op/update-oppija! oppija-oid)
+            (op/update-oppijat-without-index!))
+          (response/ok))))
 
     (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
       :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
