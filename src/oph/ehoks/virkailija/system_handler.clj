@@ -51,13 +51,14 @@
 
     (c-api/PUT "/oppija/update" request
       :summary "Päivittää oppijan tiedot oppija-indeksiin"
-      :body [oppija-oid :- s/Str]
-      (if (empty? (db-hoks/select-hoks-by-oppija-oid oppija-oid))
+      :body [data virkailija-schema/UpdateOppija]
+      (log/info data)
+      (if (empty? (db-hoks/select-hoks-by-oppija-oid (:oppija-oid data)))
         (response/not-found {:error "Tällä oppija-oidilla ei löydy hoksia
         ehoks-järjestelmästä"})
         (do
-          (if (some? (db-oppija/select-oppija-by-oid oppija-oid))
-            (op/update-oppija! oppija-oid)
+          (if (some? (db-oppija/select-oppija-by-oid (:oppija-oid data)))
+            (op/update-oppija! (:oppija-oid data))
             (op/update-oppijat-without-index!))
           (response/no-content))))
 
