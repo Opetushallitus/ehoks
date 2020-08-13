@@ -49,9 +49,9 @@
       (c/clear-cache!)
       (response/ok))
 
-    (c-api/POST "/oppija/:oppija-oid" request
+    (c-api/PUT "/oppija/update" request
       :summary "Päivittää oppijan tiedot oppija-indeksiin"
-      :path-params [oppija-oid :- s/Str]
+      :body [oppija-oid :- s/Str]
       (if (empty? (db-hoks/select-hoks-by-oppija-oid oppija-oid))
         (response/not-found {:error "Tällä oppija-oidilla ei löydy hoksia
         ehoks-järjestelmästä"})
@@ -59,7 +59,7 @@
           (if (some? (db-oppija/select-oppija-by-oid oppija-oid))
             (op/update-oppija! oppija-oid)
             (op/update-oppijat-without-index!))
-          (response/ok))))
+          (response/no-content))))
 
     (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
       :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
