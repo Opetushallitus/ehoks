@@ -59,7 +59,7 @@
         (do
           (if (some? (db-oppija/select-oppija-by-oid (:oppija-oid data)))
             (op/update-oppija! (:oppija-oid data))
-            (op/update-oppijat-without-index!))
+            (op/add-oppija-without-error-forwarding! (:oppija-oid data)))
           (response/no-content))))
 
     (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
