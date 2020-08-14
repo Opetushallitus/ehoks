@@ -76,27 +76,28 @@
             (response/not-found
               {:error "No HOKS found with given opiskeluoikeus"})))))
 
-    (c-api/DELETE "/opiskeluoikeus/:opiskeluoikeus-oid" request
+    (c-api/PUT "/opiskeluoikeus/update" request
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin"
       :path-params [opiskeluoikeus-oid :- s/Str]
+      :body [data virkailija-schema/UpdateOpiskeluoikeus]
       (if
        (pos? (first (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
-                      opiskeluoikeus-oid)))
+                      (:opiskeluoikeus-oid data))))
         (a/go
           (op/update-opiskeluoikeudet-without-index!)
-          (response/ok))
+          (response/no-content))
         (response/not-found {:error "No opiskeluoikeus found with given oid"})))
 
-    (c-api/DELETE "/opiskeluoikeudet/:koulutustoimija-oid" request
+    (c-api/PUT "/opiskeluoikeudet/update" request
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin
       koulutustoimijan perusteella"
-      :path-params [koulutustoimija-oid :- s/Str]
+      :body [data virkailija-schema/UpdateOpiskeluoikeudet]
       (if (pos? (first
                   (db-opiskeluoikeus/delete-from-index-by-koulutustoimija!
-                    koulutustoimija-oid)))
+                    (:koulutustoimija-oid data))))
         (a/go
           (op/update-opiskeluoikeudet-without-index!)
-          (response/ok))
+          (response/no-content))
         (response/not-found {:error "No opiskeluoikeus found with given oid"})))
 
     (c-api/GET "/opiskeluoikeudet/:koulutustoimija-oid/deletion-info" request
