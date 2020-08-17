@@ -52,14 +52,13 @@
     (c-api/PUT "/oppija/update" request
       :summary "Päivittää oppijan tiedot oppija-indeksiin"
       :body [data virkailija-schema/UpdateOppija]
-      (log/info data)
       (if (empty? (db-hoks/select-hoks-by-oppija-oid (:oppija-oid data)))
         (response/not-found {:error "Tällä oppija-oidilla ei löydy hoksia
         ehoks-järjestelmästä"})
         (do
           (if (some? (db-oppija/select-oppija-by-oid (:oppija-oid data)))
             (op/update-oppija! (:oppija-oid data))
-            (op/update-oppijat-without-index!))
+            (op/add-oppija-without-error-forwarding! (:oppija-oid data)))
           (response/no-content))))
 
     (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
@@ -76,27 +75,30 @@
             (response/not-found
               {:error "No HOKS found with given opiskeluoikeus"})))))
 
-    (c-api/DELETE "/opiskeluoikeus/:opiskeluoikeus-oid" request
+    (c-api/PUT "/opiskeluoikeus/update" request
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin"
-      :path-params [opiskeluoikeus-oid :- s/Str]
-      (if
-       (pos? (first (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
-                      opiskeluoikeus-oid)))
-        (a/go
-          (op/update-opiskeluoikeudet-without-index!)
-          (response/ok))
-        (response/not-found {:error "No opiskeluoikeus found with given oid"})))
+      :body [data virkailija-schema/UpdateOpiskeluoikeus]
+      (if (empty? (db-hoks/select-hoksit-by-opiskeluoikeus-oid
+                    (:opiskeluoikeus-oid data)))
+        (response/not-found {:error "Tällä opiskeluoikeudella ei löydy hoksia
+        ehoks-järjestelmästä"})
+        (do
+          (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
+            (:opiskeluoikeus-oid data))
+          (a/go
+            (op/update-opiskeluoikeudet-without-index!)
+            (response/no-content)))))
 
-    (c-api/DELETE "/opiskeluoikeudet/:koulutustoimija-oid" request
+    (c-api/PUT "/opiskeluoikeudet/update" request
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin
       koulutustoimijan perusteella"
-      :path-params [koulutustoimija-oid :- s/Str]
+      :body [data virkailija-schema/UpdateOpiskeluoikeudet]
       (if (pos? (first
                   (db-opiskeluoikeus/delete-from-index-by-koulutustoimija!
-                    koulutustoimija-oid)))
+                    (:koulutustoimija-oid data))))
         (a/go
           (op/update-opiskeluoikeudet-without-index!)
-          (response/ok))
+          (response/no-content))
         (response/not-found {:error "No opiskeluoikeus found with given oid"})))
 
     (c-api/GET "/opiskeluoikeudet/:koulutustoimija-oid/deletion-info" request
