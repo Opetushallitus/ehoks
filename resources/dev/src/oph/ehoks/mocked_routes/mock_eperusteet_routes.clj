@@ -19,6 +19,10 @@
          (mock-gen/json-response-file
            "dev-routes/eperusteet-service_api_tutkinnonosat_52824_viitteet.json"))
 
+    (GET "/eperusteet-service/api/perusteenosat/52824/osaalueet" []
+      (mock-gen/json-response-file
+        "dev-routes/eperusteet-service_api_perusteenosat_52824_osaalueet.json"))
+
     (GET "/eperusteet-service/api/perusteet/diaari" []
          (mock-gen/json-response-file
            "dev-routes/eperusteet-service_api_perusteet_diaari.json"))

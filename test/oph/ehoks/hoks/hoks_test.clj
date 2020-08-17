@@ -1,6 +1,7 @@
 (ns oph.ehoks.hoks.hoks-test
   (:require [clojure.test :refer :all]
-            [oph.ehoks.utils :as utils :refer [eq with-database]]
+            [oph.ehoks.utils :as utils :refer [eq empty-database-after-test
+                                               migrate-database]]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hankittavat :as ha]
@@ -8,7 +9,8 @@
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
-(use-fixtures :each with-database)
+(use-fixtures :once migrate-database)
+(use-fixtures :each empty-database-after-test)
 
 (def ahato-data
   [{:valittu-todentamisen-prosessi-koodi-versio 1
@@ -416,10 +418,10 @@
             (ah/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta)))
           (assoc data :aiemmin-hankitun-osaamisen-arvioijat [])))))
 
-(deftest get-hoks-test-send-mg-fail
+(deftest get-hoks-test-send-msg-fail
   (testing
    "Save HOKS but fail in sending msg, test that HOKS saving is rolled back"
-    (with-redefs [oph.ehoks.external.aws-sqs/send-message
+    (with-redefs [oph.ehoks.external.aws-sqs/send-amis-palaute-message
                   #(throw (Exception. "fail"))]
       (is (thrown? Exception (h/save-hoks! hoks-data)))
       (eq (h/get-hoks-by-id 1) {:aiemmin-hankitut-ammat-tutkinnon-osat []

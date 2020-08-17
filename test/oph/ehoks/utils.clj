@@ -6,7 +6,9 @@
             [clojure.pprint :as p]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.db.migrations :as m]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.migrations :as m]
+            [clojure.java.jdbc :as jdbc]))
 
 (def base-url "/ehoks-oppija-backend/api/v1/oppija/session")
 
@@ -236,17 +238,23 @@
            (eq-check v# e#)
            (is (= v# e#))))))
 
-(defn with-database [f]
+(defn clear-db []
+  (jdbc/execute!
+    (db-ops/get-db-connection)
+    (slurp (clojure.java.io/resource "oph/ehoks/empty_database.sql"))))
+
+(defn migrate-database [f]
   (m/clean!)
   (m/migrate!)
+  (f))
+
+(defn empty-database-after-test [f]
   (f)
-  (m/clean!))
+  (clear-db))
 
 (defmacro with-db [& body]
-  `(do (m/clean!)
-       (m/migrate!)
-       (do ~@body)
-       (m/clean!)))
+  `(do (do ~@body)
+       (clear-db)))
 
 (defn dissoc-module-ids [data]
   (if (coll? data)

@@ -16,7 +16,7 @@
         (.region (Region/EU_WEST_1))
         (.build))))
 
-(def ^:private queue-url
+(defn- get-queue-url [queue-name]
   (when (some? sqs-client)
     (if (nil? (:env-stage env))
       (log/warn "Stage missing from env variables")
@@ -25,23 +25,25 @@
                    (-> (GetQueueUrlRequest/builder)
                        (.queueName
                          (str (:env-stage env) "-"
-                              (:heratepalvelu-queue config)))
+                              queue-name))
                        (.build)))))))
 
+(defn- get-queue-url-with-error-handling [queue-name]
+  (try
+    (get-queue-url queue-name)
+    (catch QueueDoesNotExistException e
+      (log/error (str queue-name " does not exist")))))
+
+(def ^:private herate-queue-url
+  (get-queue-url (:heratepalvelu-queue config)))
+
 (def ^:private tyoelamapalaute-queue-url
-  (when (some? sqs-client)
-    (if (nil? (:env-stage env))
-      (log/warn "Stage missing from env variables")
-      (try
-        (.queueUrl (.getQueueUrl
-                     sqs-client
-                     (-> (GetQueueUrlRequest/builder)
-                         (.queueName
-                           (str (:env-stage env) "-"
-                                (:heratepalvelu-tyoelamapalaute-queue config)))
-                         (.build))))
-        (catch QueueDoesNotExistException e
-          (log/error "Työelämäpalaute queue url not found!"))))))
+  (get-queue-url-with-error-handling
+    (:heratepalvelu-tyoelamapalaute-queue config)))
+
+(def ^:private resend-queue-url
+  (get-queue-url-with-error-handling
+    (:heratepalvelu-resend-queue config)))
 
 (defn build-hoks-hyvaksytty-msg [id hoks]
   {:ehoks-id id
@@ -66,18 +68,23 @@
    :tyopaikkaohjaaja-email (:tyopaikkaohjaaja_email msg)
    :tyopaikkaohjaaja-nimi (:tyopaikkaohjaaja_nimi msg)})
 
-(defn send-message [msg]
-  (if (some? queue-url)
-    (.sendMessage sqs-client (-> (SendMessageRequest/builder)
-                                 (.queueUrl queue-url)
-                                 (.messageBody (json/write-str msg))
-                                 (.build)))
+(defn send-message [msg queue-url]
+  (.sendMessage sqs-client (-> (SendMessageRequest/builder)
+                               (.queueUrl queue-url)
+                               (.messageBody (json/write-str msg))
+                               (.build))))
+
+(defn send-amis-palaute-message [msg]
+  (if (some? herate-queue-url)
+    (send-message msg herate-queue-url)
     (log/error "No AMIS-palaute queue!")))
 
 (defn send-tyoelamapalaute-message [msg]
   (if (some? tyoelamapalaute-queue-url)
-    (.sendMessage sqs-client (-> (SendMessageRequest/builder)
-                                 (.queueUrl tyoelamapalaute-queue-url)
-                                 (.messageBody (json/write-str msg))
-                                 (.build)))
+    (send-message msg tyoelamapalaute-queue-url)
     (log/error "No työelämäpalaute queue!")))
+
+(defn send-palaute-resend-message [msg]
+  (if (some? resend-queue-url)
+    (send-message msg resend-queue-url)
+    (log/error "No resend queue!")))

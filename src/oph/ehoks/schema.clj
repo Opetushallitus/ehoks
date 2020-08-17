@@ -70,4 +70,5 @@
               :arvo-username s/Str
               :arvo-url s/Str
               :enforce-opiskeluoikeus-match? s/Bool
-              :prevent-finished-opiskeluoikeus-updates? s/Bool})
+              :prevent-finished-opiskeluoikeus-updates? s/Bool
+              :heratepalvelu-resend-queue s/Str})

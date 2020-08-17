@@ -14,7 +14,8 @@
 
 (def url "/ehoks-oppija-backend/api/v1/oppija/oppijat")
 
-(use-fixtures :each utils/with-database)
+(use-fixtures :once utils/migrate-database)
+(use-fixtures :each utils/empty-database-after-test)
 
 (def dates #{:alku :loppu :lahetetty-arvioitavaksi :ensikertainen-hyvaksyminen})
 
