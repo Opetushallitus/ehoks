@@ -6,6 +6,11 @@
 (defn get-like [v]
   (format "%%%s%%" (or v "")))
 
+(defn get-fuzzy-like [v]
+  (if v
+    (format "'%s' %% ANY(STRING_TO_ARRAY(o.nimi,' '))" v)
+    "o.nimi ILIKE '%%'"))
+
 (def translated-oppija-columns
   {:tutkinto "tutkinto_nimi->>" :osaamisala "osaamisala_nimi->>"})
 
@@ -35,6 +40,8 @@
 
 (defn set-oppijat-query [params]
   (-> queries/select-oppilaitos-oppijat
+      (cs/replace ":name-filter"
+                  (get-fuzzy-like (:nimi params)))
       (cs/replace ":order-by-column"
                   (get-oppija-order-by-column params))
       (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))
