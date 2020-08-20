@@ -18,6 +18,7 @@
     [(db-opiskeluoikeus/set-oppijat-query params)
      (:oppilaitos-oid params)
      (:koulutustoimija-oid params)
+     (db-opiskeluoikeus/get-like (:nimi params))
      (:item-count params)
      (:offset params)]
     {:row-fn db-ops/from-sql}))
