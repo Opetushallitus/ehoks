@@ -10,7 +10,7 @@ FROM oppijat AS o
                        ON (o.oid = oo.oppija_oid)
 WHERE ((oo.oppilaitos_oid IS NOT NULL AND oo.oppilaitos_oid LIKE ?) OR
        (oo.koulutustoimija_oid IS NOT NULL AND oo.koulutustoimija_oid LIKE ?))
-  AND :name-filter
+  AND o.nimi ILIKE ?
       :tutkinto-filter
       :osaamisala-filter
 ORDER BY :order-by-column :desc

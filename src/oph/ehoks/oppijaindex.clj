@@ -3,7 +3,6 @@
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [clojure.tools.logging :as log]
-            [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
@@ -18,6 +17,7 @@
     [(db-opiskeluoikeus/set-oppijat-query params)
      (:oppilaitos-oid params)
      (:koulutustoimija-oid params)
+     (db-opiskeluoikeus/get-like (:nimi params))
      (:item-count params)
      (:offset params)]
     {:row-fn db-ops/from-sql}))
