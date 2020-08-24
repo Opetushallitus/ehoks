@@ -47,5 +47,7 @@
                  :ryhmaAlkuperaTieto "testiservice"
                  :ryhmaKuvaus "testiryhmä"
                  :yhteystieto
-                 [{:yhteystietoArvo "kayttaja@domain.local"
-                   :yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"}]})})))))
+                 [{:yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"
+                   :yhteystietoArvo "kayttaja@domain.local"}
+                  {:yhteystietoTyyppi "YHTEYSTIETO_KATUOSOITE"
+                   :yhteystietoArvo "kayttaja@domain.local"}]})})))))
