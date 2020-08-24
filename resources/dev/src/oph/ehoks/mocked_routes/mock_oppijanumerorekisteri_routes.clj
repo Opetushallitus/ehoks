@@ -48,6 +48,14 @@
                  :ryhmaKuvaus "testiryhmä"
                  :yhteystieto
                  [{:yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"
-                   :yhteystietoArvo "kayttaja@domain.local"}
+                   :yhteystietoArvo "testikayttaja@testi.fi"}
                   {:yhteystietoTyyppi "YHTEYSTIETO_KATUOSOITE"
-                   :yhteystietoArvo "kayttaja@domain.local"}]})})))))
+                   :yhteystietoArvo "Mannerheimintie 12 b 3"}
+                  {:yhteystietoTyyppi "YHTEYSTIETO_POSTINUMERO"
+                   :yhteystietoArvo "00100"}
+                  {:yhteystietoTyyppi "YHTEYSTIETO_KUNTA"
+                   :yhteystietoArvo "Helsinki"}
+                  {:yhteystietoTyyppi "YHTEYSTIETO_MATKAPUHELINNUMERO"
+                   :yhteystietoArvo "033-444455751"}
+                  {:yhteystietoTyyppi "YHTEYSTIETO_PUHELINNUMERO"
+                   :yhteystietoArvo "033-444455751"}]})})))))
