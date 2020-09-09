@@ -34,7 +34,8 @@
           tutkinnonosa (get-tutkinnonosa-details
                          (:tutkinnonosa-tyyppi jakolinkki)
                          (:tutkinnonosa-module-uuid jakolinkki))
-          module (first (h/get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki
+          module (first
+                   (h/get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki
                    jakolinkki))]
       (cond
         (= (:shared-module-tyyppi jakolinkki) "osaamisenhankkiminen")
