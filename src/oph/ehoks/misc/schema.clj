@@ -9,4 +9,5 @@
               :opintopolku-logout-url-fi s/Str
               :opintopolku-logout-url-sv s/Str
               :virkailija-login-url s/Str
+              :cas-oppija-login-url s/Str
               :raamit-url s/Str})
