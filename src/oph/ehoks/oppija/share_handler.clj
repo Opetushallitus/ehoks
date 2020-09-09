@@ -36,7 +36,7 @@
                          (:tutkinnonosa-module-uuid jakolinkki))
           module (first
                    (h/get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki
-                   jakolinkki))]
+                     jakolinkki))]
       (cond
         (= (:shared-module-tyyppi jakolinkki) "osaamisenhankkiminen")
         (assoc oppija
