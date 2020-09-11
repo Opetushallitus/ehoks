@@ -122,8 +122,7 @@
                                share-id)))
           data (:data (utils/parse-body (:body response)))]
       (t/is (= 200 (:status response)))
-      (t/is (= (get-in data [:osaamisen-hankkimistapa 0
-                             :module-id]) module-uuid))
+      (t/is (= (:module-id (:osaamisen-hankkimistapa data)) module-uuid))
       (t/is (nil? (:osaamisen-osoittaminen data)))
       (t/is (= (get-in data [:tutkinnonosa :module-id]) tuo-uuid)))))
 
@@ -151,8 +150,7 @@
                                share-id)))
           data (:data (utils/parse-body (:body response)))]
       (t/is (= 200 (:status response)))
-      (t/is (= (get-in data [:osaamisen-osoittaminen 0
-                             :module-id]) module-uuid))
+      (t/is (= (:module-id (:osaamisen-osoittaminen data)) module-uuid))
       (t/is (nil? (:osaamisen-hankkimistapa data)))
       (t/is (= (get-in data [:tutkinnonosa :module-id]) tuo-uuid)))))
 
@@ -183,8 +181,7 @@
                                share-id)))
           data (:data (utils/parse-body (:body response)))]
       (t/is (= 200 (:status response)))
-      (t/is (= (get-in data [:osaamisen-osoittaminen 0
-                             :module-id]) module-uuid))
+      (t/is (= (:module-id (:osaamisen-osoittaminen data)) module-uuid))
       (t/is (nil? (:osaamisen-hankkimistapa data)))
       (t/is (= (get-in data [:tutkinnonosa :module-id]) tuo-uuid)))))
 
@@ -215,8 +212,7 @@
                                share-id)))
           data (:data (utils/parse-body (:body response)))]
       (t/is (= 200 (:status response)))
-      (t/is (= (get-in data [:osaamisen-hankkimistapa 0
-                             :module-id]) module-uuid))
+      (t/is (= (:module-id (:osaamisen-hankkimistapa data)) module-uuid))
       (t/is (nil? (:osaamisen-osoittaminen data)))
       (t/is (= (get-in data [:tutkinnonosa :module-id]) tuo-uuid)))))
 
