@@ -107,5 +107,4 @@
       ;    (do (log/warnf "Ticket validation failed: %s"
       ;                   (:error validation-data))
       ;        (response/unauthorized {:error "Invalid ticket"}))))
-      )
-    ))
+)))
