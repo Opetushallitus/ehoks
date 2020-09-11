@@ -1,0 +1,143 @@
+{
+  "opiskeluoikeus-oid": "1.2.246.562.15.76811932025",
+  "oppija-oid": "1.2.246.562.24.44651722625",
+  "ensikertainen-hyvaksyminen": "2017-10-25",
+  "sahkoposti": "testikayttaja@testi.fi",
+  "hyvaksytty": "2017-10-25T21:00:00.000Z",
+  "paivitetty": "2017-10-25T21:00:00.000Z",
+  "versio": 0,
+  "urasuunnitelma-koodi-uri": "urasuunnitelma_0001",
+  "urasuunnitelma-koodi-versio": 1,
+  "osaamisen-hankkimisen-tarve": true,
+  "aiemmin-hankitut-ammat-tutkinnon-osat": [],
+  "aiemmin-hankitut-paikalliset-tutkinnon-osat": [],
+  "aiemmin-hankitut-yhteiset-tutkinnon-osat": [],
+  "opiskeluvalmiuksia-tukevat-opinnot": [],
+  "hankittavat-ammat-tutkinnon-osat": [
+    {
+      "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
+      "tutkinnon-osa-koodi-versio": 1,
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
+      "olennainen-seikka": true,
+      "osaamisen-osoittaminen": [
+        {
+          "alku": "2016-07-25",
+          "loppu": "2022-11-04",
+          "sisallon-kuvaus": [
+            "Jotain kuvausta sisällöstä",
+            "toinen kuvaus",
+            "kolmatta kuvausta"
+          ],
+          "yksilolliset-kriteerit": [
+            "joku kriteeri",
+            "perehtyy ohjattuna puhtaus- ja kiinteistöpalvelualan asiakaskohteen palvelusopimuksiin liittyviin palvelu- ja laatukuvauksiin",
+            "perehtyy ohjattuna asiakkaan tilanteeseen ja toteuttaa hänelle palvelusopimuksiin liittyviä ratkaisuja yrityksessä sovitulla tavalla",
+            "käyttää tuettuna puhtaus- ja kiinteistöpalvelualan käsitteitä johdonmukaisesti",
+            "tietää tuettuna asiakaskohteen likaantumiseen vaikuttavia tekijöitä"
+          ],
+          "vaatimuksista-tai-tavoitteista-poikkeaminen": "Opiskelija ei hanki osaamista ammattitaitovaatimukseen \"pukeutua työtehtävään\". Toinen poikkeaminen",
+          "jarjestaja": {
+            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+          },
+          "nayttoymparisto": {
+            "nimi": "Jokin näyttöympäristö2",
+            "y-tunnus": "1234567-8",
+            "kuvaus": "Tässä kuvataan näyttöympäristö2"
+          },
+          "koulutuksen-jarjestaja-osaamisen-arvioijat": [
+            {
+              "nimi": "Testii, Seppo",
+              "organisaatio": {
+                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              }
+            }
+          ],
+          "tyoelama-osaamisen-arvioijat": [
+            {
+              "nimi": "Tyoelama, Arvii",
+              "organisaatio": {
+                "nimi": "Talvivaara",
+                "y-tunnus": "1234567-8"
+              }
+            }
+          ]
+        },
+        {
+          "alku": "2015-01-01",
+          "loppu": "2022-01-01",
+          "sisallon-kuvaus": [
+            "Jotain kuvausta sisällöstä",
+            "toinen kuvaus",
+            "kolmatta"
+          ],
+          "yksilolliset-kriteerit": [
+            "tähän kriteeri",
+            "perehtyy ohjattuna puhtaus- ja kiinteistöpalvelualan asiakaskohteen palvelusopimuksiin liittyviin palvelu- ja laatukuvauksiin",
+            "perehtyy ohjattuna asiakkaan tilanteeseen ja toteuttaa hänelle palvelusopimuksiin liittyviä ratkaisuja yrityksessä sovitulla tavalla",
+            "käyttää tuettuna puhtaus- ja kiinteistöpalvelualan käsitteitä johdonmukaisesti",
+            "tietää tuettuna asiakaskohteen likaantumiseen vaikuttavia tekijöitä"
+          ],
+          "vaatimuksista-tai-tavoitteista-poikkeaminen": "Opiskelija ei hanki osaamista ammattitaitovaatimukseen \"pukeutua työtehtävään\". Muu poikkeaminen",
+          "jarjestaja": {
+            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+          },
+          "nayttoymparisto": {
+            "nimi": "Jokin näyttöympäristö3",
+            "y-tunnus": "1234567-8",
+            "kuvaus": "Tässä kuvataan näyttöympäristö3"
+          },
+          "koulutuksen-jarjestaja-osaamisen-arvioijat": [
+            {
+              "nimi": "Testi, Jooku",
+              "organisaatio": {
+                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              }
+            }
+          ],
+          "tyoelama-osaamisen-arvioijat": [
+            {
+              "nimi": "Tyo, Arvo",
+              "organisaatio": {
+                "nimi": "Kesko",
+                "y-tunnus": "1234567-8"
+              }
+            }
+          ]
+        }
+      ],
+      "osaamisen-hankkimistavat": [
+        {
+          "tyopaikalla-jarjestettava-koulutus": {
+            "vastuullinen-tyopaikka-ohjaaja": {
+              "nimi": "Vastuussa, Veera",
+              "sahkoposti": "testimail@testi.com"
+            },
+            "tyopaikan-nimi": "Terraframe",
+            "tyopaikan-y-tunnus": "123456-7",
+            "keskeiset-tyotehtavat": [
+              "Perustyötehtävät",
+              "Vaativat työtehtävät",
+              "Sekalaiset työtehtävät"
+            ]
+          },
+          "osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_koulutussopimus",
+          "osaamisen-hankkimistapa-koodi-versio": 1,
+          "hankkijan-edustaja": {
+            "nimi": "Heppu, Hemmo",
+            "rooli": "Edustushankkija",
+            "oppilaitos-oid": "1.2.246.562.10.54453921329"
+          },
+          "jarjestajan-edustaja": {
+            "nimi": "Tyyppi, Joku",
+            "rooli": "Järjestysedustaja",
+            "oppilaitos-oid": "1.2.246.562.10.54425555"
+          },
+          "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
+          "alku": "2018-05-02",
+          "loppu": "2023-08-11"
+        }
+      ]
+    }
+  ],
+  "hankittavat-yhteiset-tutkinnon-osat": [],
+  "hankittavat-paikalliset-tutkinnon-osat": []}

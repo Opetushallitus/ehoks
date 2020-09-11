@@ -6,7 +6,9 @@
             [clojure.pprint :as p]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.db.migrations :as m]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.migrations :as m]
+            [clojure.java.jdbc :as jdbc]))
 
 (def base-url "/ehoks-oppija-backend/api/v1/oppija/session")
 
@@ -134,7 +136,18 @@
            :headers {"location" "http://test.ticket/1234"}}
           (= url "http://test.ticket/1234")
           {:status 200
-           :body "ST-1234-testi"})))
+           :body "ST-1234-testi"}
+          (.endsWith
+            url "/koski/api/sure/oids")
+          {:status 200
+           :body [{:henkilö {:oid "1.2.246.562.24.44000000001"}
+                   :opiskeluoikeudet
+                   [{:oid "1.2.246.562.15.76000000001"
+                     :oppilaitos {:oid "1.2.246.562.10.12000000000"
+                                  :nimi {:fi "TestiFi"
+                                         :sv "TestiSv"
+                                         :en "TestiEn"}}
+                     :alkamispäivä "2020-03-12"}]}]})))
     (client/set-get!
       (fn [url options]
         (cond (.endsWith url "/serviceValidate")
@@ -153,12 +166,14 @@
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
               {:status 200
-               :body {:oppilaitos {:oid (or oppilaitos-oid
+               :body {:oid "1.2.246.562.15.00000000001"
+                      :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.10.12944436166")}}}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000002")
               {:status 200
-               :body {:oppilaitos {:oid (or oppilaitos-oid
+               :body {:oid "1.2.246.562.15.00000000002"
+                      :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.24.47861388608")}}}
               (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
               {:status 200
@@ -175,6 +190,11 @@
               {:status 200
                :body {:parentOidPath
                       "|"}}
+              (.endsWith
+                url "/rest/organisaatio/v4/1.2.246.562.10.12944436166")
+              {:status 200
+               :body {:parentOidPath
+                      "|1.2.246.562.10.00000000001|"}}
               (> (.indexOf url "oppijanumerorekisteri-service/henkilo") -1)
               (let [oid (last (.split url "/"))]
                 (if (= oid "1.2.246.562.24.40404040404")
@@ -218,14 +238,30 @@
            (eq-check v# e#)
            (is (= v# e#))))))
 
-(defn with-database [f]
+(defn clear-db []
+  (jdbc/execute!
+    (db-ops/get-db-connection)
+    (slurp (clojure.java.io/resource "oph/ehoks/empty_database.sql"))))
+
+(defn migrate-database [f]
   (m/clean!)
   (m/migrate!)
+  (f))
+
+(defn empty-database-after-test [f]
   (f)
-  (m/clean!))
+  (clear-db))
 
 (defmacro with-db [& body]
-  `(do (m/clean!)
-       (m/migrate!)
-       (do ~@body)
-       (m/clean!)))
+  `(do (do ~@body)
+       (clear-db)))
+
+(defn dissoc-module-ids [data]
+  (if (coll? data)
+    (if (map? data)
+      (reduce (fn [res val]
+                (conj res [(first val) (dissoc-module-ids (second val))]))
+              {}
+              (dissoc data :module-id))
+      (map #(dissoc-module-ids %) data))
+    data))

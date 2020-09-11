@@ -30,13 +30,16 @@
 (def operation-read (create-operation "read"))
 (def operation-new (create-operation "create"))
 (def operation-modify (create-operation "update"))
+(def operation-overwrite (create-operation "overwrite"))
 (def operation-delete (create-operation "delete"))
 
 (defn- get-user-oid [request]
   (when-let [user (or (:service-ticket-user request)
                       (get-in request [:session :virkailija-user])
-                      (:virkailija-user request))]
-    (:oidHenkilo user)))
+                      (:virkailija-user request)
+                      (get-in request [:session :user]))]
+    (or (:oidHenkilo user)
+        (:oid user))))
 
 (defn- get-client-ip [request]
   (if-let [ips (get-in request [:headers "x-forwarded-for"])]
@@ -50,8 +53,10 @@
     (if-let [ip (get-client-ip request)]
       (InetAddress/getByName ip)
       (InetAddress/getLocalHost))
-    (or (get-session request) "no session")
-    (or (:user-agent (:headers request)) "no user agent")))
+    (or (get-session request)
+        (get-in request [:headers "ticket"])
+        "no session")
+    (or (get-in request [:headers "user-agent"]) "no user agent")))
 
 (defn- build-changes [response]
   (let [new (get-in response [:audit-data :new])
@@ -88,6 +93,7 @@
                         :post operation-new
                         :patch operation-modify
                         :delete operation-delete
+                        :put operation-overwrite
                         operation-read))
           changes (build-changes response)]
       (.log audit

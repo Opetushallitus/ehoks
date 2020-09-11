@@ -70,6 +70,19 @@
                 {:message "Tutkinnon osa not found"})
               (throw e)))))
 
+      (c-api/GET "/tutkinnonosat/:id/osaalueet" []
+        :path-params [id :- Long]
+        :summary "Yhteisen tutkinnon osan osa-alueet."
+        :return (restful/response [s/Any])
+        (try
+          (restful/rest-ok
+            (eperusteet/get-tutkinnon-osan-osa-alueet id))
+          (catch Exception e
+            (if (= (:status (ex-data e)) 400)
+              (response/not-found
+                {:message "Tutkinnon osan osa-alue not found"})
+              (throw e)))))
+
       (c-api/GET "/tutkinnot" []
         :query-params [diaarinumero :- String]
         :summary "Tutkinnon haku diaarinumeron perusteella."
@@ -105,7 +118,8 @@
                             Koodisto-Koodi-Urilla."
         :return (restful/response [s/Any])
         (restful/rest-ok
-          (eperusteet/find-tutkinnon-osat koodi-uri))))
+          (eperusteet/adjust-tutkinnonosa-arviointi
+            (eperusteet/find-tutkinnon-osat koodi-uri)))))
 
     (c-api/context "/eperusteet-amosaa" []
       (c-api/GET "/koodi/:koodi" []

@@ -4,7 +4,8 @@
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.hoks.test-data :as test-data]))
 
-(use-fixtures :each utils/with-database)
+(use-fixtures :once utils/migrate-database)
+(use-fixtures :each utils/empty-database-after-test)
 
 (def ahyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
 (def ahato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
@@ -64,7 +65,7 @@
     updated-data test-data/multiple-ahyto-values-patched first)
   (hoks-utils/compare-tarkentavat-tiedot-naytto-values
     updated-data test-data/multiple-ahyto-values-patched second)
-  (eq (:osa-alueet updated-data)
+  (eq (utils/dissoc-module-ids (:osa-alueet updated-data))
       (:osa-alueet test-data/multiple-ahyto-values-patched)))
 
 (deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa
@@ -74,6 +75,28 @@
       test-data/ahyto-data
       test-data/multiple-ahyto-values-patched
       assert-ahyto-is-patched-correctly)))
+
+(defn- get-arvioija [model]
+  (-> model
+      :aiemmin-hankitut-yhteiset-tutkinnon-osat
+      first
+      :osa-alueet
+      first
+      :tarkentavat-tiedot-osaamisen-arvioija))
+
+(deftest ahyto-osa-alue-has-arvioija
+  (testing "tarkentavat-tiedot-osaamisen-arvioija was addded to ahyto osa-alue
+            according to EH-806"
+    (let [app (hoks-utils/create-app nil)
+          post-response
+          (hoks-utils/create-mock-post-request "" test-data/hoks-data app)
+          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status get-response) 200))
+      (let [output-arvioija (get-arvioija get-response-data)
+            input-arvioija (get-arvioija test-data/hoks-data)]
+        (eq output-arvioija input-arvioija)))))
 
 (deftest post-and-get-aiemmin-hankitut-ammatilliset-tutkinnon-osat
   (testing "POST ahato and then get the created ahato"
@@ -109,7 +132,8 @@
   (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
       (:tarkentavat-tiedot-osaamisen-arvioija
         test-data/multiple-ahpto-values-patched))
-  (eq (first (:tarkentavat-tiedot-naytto updated-data))
+  (eq (utils/dissoc-module-ids
+        (first (:tarkentavat-tiedot-naytto updated-data)))
       (first (:tarkentavat-tiedot-naytto
                test-data/multiple-ahpto-values-patched)))
   (hoks-utils/compare-tarkentavat-tiedot-naytto-values

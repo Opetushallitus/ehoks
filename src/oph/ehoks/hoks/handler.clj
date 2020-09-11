@@ -5,6 +5,7 @@
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
+            [oph.ehoks.hoks.partial-hoks-schema :as partial-hoks-schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as pdb-ah]
             [oph.ehoks.db.postgresql.hankittavat :as pdb-ha]
@@ -14,10 +15,20 @@
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.middleware :refer [wrap-user-details]]
+            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [schema.core :as s]
             [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.middleware :as m]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [cheshire.core :as cheshire]))
+
+(defn- json-response [value]
+  (assoc-in
+    (response/ok
+      (cheshire/generate-string
+        value))
+    [:headers "Content-Type"] "application/json"))
 
 (def ^:private hankittava-paikallinen-tutkinnon-osa
   (c-api/context "/hankittava-paikallinen-tutkinnon-osa" []
@@ -31,7 +42,7 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo hankittavan paikallisen tutkinnon osan"
-      :body [ppto hoks-schema/HankittavanPaikallisenTutkinnonOsanLuonti]
+      :body [ppto partial-hoks-schema/HankittavanPaikallisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ppto-db (ha/save-hankittava-paikallinen-tutkinnon-osa!
                       hoks-id ppto)]
@@ -44,7 +55,7 @@
       "Päivittää HOKSin hankittavan paikallisen tutkinnon osan arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body
-      [values hoks-schema/HankittavaPaikallinenTutkinnonOsaKentanPaivitys]
+      [values partial-hoks-schema/HankittavaPaikallinenTutkinnonOsaPaivitys]
       (let [ppto-db (pdb-ha/select-hankittava-paikallinen-tutkinnon-osa-by-id
                       id)]
         (if (some? ppto-db)
@@ -65,22 +76,22 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo hankittavan ammatillisen osaamisen HOKSiin"
-      :body [pao hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuonti]
+      :body [hato partial-hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [pao-db (ha/save-hankittava-ammat-tutkinnon-osa!
-                     hoks-id pao)]
+      (let [hato-db (ha/save-hankittava-ammat-tutkinnon-osa!
+                      hoks-id hato)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id pao-db))}
-          :id (:id pao-db))))
+          {:uri (format "%s/%d" (:uri request) (:id hato-db))}
+          :id (:id hato-db))))
 
     (c-api/PATCH "/:id" [:as request]
       :summary
       "Päivittää HOKSin hankittavan ammatillisen tutkinnon osan arvoa ja arvoja"
       :path-params [id :- s/Int]
       :body
-      [values hoks-schema/HankittavaAmmatillinenTutkinnonOsaKentanPaivitys]
-      (if-let [hao-db (ha/get-hankittava-ammat-tutkinnon-osa id)]
-        (do (ha/update-hankittava-ammat-tutkinnon-osa! hao-db values)
+      [values partial-hoks-schema/HankittavaAmmatillinenTutkinnonOsaPaivitys]
+      (if-let [hato-db (ha/get-hankittava-ammat-tutkinnon-osa id)]
+        (do (ha/update-hankittava-ammat-tutkinnon-osa! hato-db values)
             (response/no-content))
         (response/not-found
           {:error "Hankittava ammatillinen tutkinnon osa not found"})))))
@@ -97,7 +108,7 @@
     (c-api/POST "/" [:as request]
       :summary
       "Luo (tai korvaa vanhan) hankittavan yhteisen tutkinnon osat HOKSiin"
-      :body [hyto hoks-schema/HankittavaYTOLuonti]
+      :body [hyto partial-hoks-schema/HankittavaYTOLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [hyto-response (ha/save-hankittava-yhteinen-tutkinnon-osa!
                             (get-in request [:hoks :id]) hyto)]
@@ -109,7 +120,7 @@
       :summary
       "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/HankittavaYTOKentanPaivitys]
+      :body [values partial-hoks-schema/HankittavaYTOPaivitys]
       (if (not-empty (pdb-ha/select-hankittava-yhteinen-tutkinnon-osa-by-id id))
         (do
           (ha/update-hankittava-yhteinen-tutkinnon-osa! id values)
@@ -128,26 +139,28 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo aiemmin hankitun ammat tutkinnon osan HOKSiin"
-      :body [ooato hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanLuonti]
+      :body
+      [ahato partial-hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
-      (let [ooato-from-db (ah/save-aiemmin-hankittu-ammat-tutkinnon-osa!
-                            (get-in request [:hoks :id]) ooato)]
+      (let [ahato-from-db (ah/save-aiemmin-hankittu-ammat-tutkinnon-osa!
+                            (get-in request [:hoks :id]) ahato)]
         (rest/rest-ok
-          {:uri (format "%s/%d" (:uri request) (:id ooato-from-db))}
-          :id (:id ooato-from-db))))
+          {:uri (format "%s/%d" (:uri request) (:id ahato-from-db))}
+          :id (:id ahato-from-db))))
 
     (c-api/PATCH "/:id" []
       :summary (str "Päivittää HOKSin aiemmin hankitun ammatillisen tutkinnon "
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
       :body
-      [values hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanPaivitys]
-      (if-let [ooato-from-db
+      [values
+       partial-hoks-schema/AiemminHankitunAmmatillisenTutkinnonOsanPaivitys]
+      (if-let [ahato-from-db
                (pdb-ah/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id
                  id)]
         (do
           (ah/update-aiemmin-hankittu-ammat-tutkinnon-osa!
-            ooato-from-db values)
+            ahato-from-db values)
           (response/no-content))
         (response/not-found
           {:error "Olemassa oleva ammatillinen tutkinnon osa not found"})))))
@@ -163,7 +176,8 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo olemassa olevan paikallisen tutkinnon osan HOKSiin"
-      :body [oopto hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanLuonti]
+      :body [oopto
+             partial-hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [oopto-from-db (ah/save-aiemmin-hankittu-paikallinen-tutkinnon-osa!
                             (get-in request [:hoks :id]) oopto)]
@@ -175,7 +189,9 @@
       :summary (str "Päivittää HOKSin aiemmin hankitun paikallisen tutkinnon "
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
-      :body [values hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanPaivitys]
+      :body
+      [values
+       partial-hoks-schema/AiemminHankitunPaikallisenTutkinnonOsanPaivitys]
       (if-let [oopto-from-db
                (pdb-ah/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id
                  id)]
@@ -197,7 +213,8 @@
 
     (c-api/POST "/" [:as request]
       :summary "Luo aiemmin hankitun yhteisen tutkinnon osan HOKSiin"
-      :body [ooyto hoks-schema/AiemminHankitunYhteisenTutkinnonOsanLuonti]
+      :body [ooyto
+             partial-hoks-schema/AiemminHankitunYhteisenTutkinnonOsanLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [ooyto-from-db (ah/save-aiemmin-hankittu-yhteinen-tutkinnon-osa!
                             (get-in request [:hoks :id]) ooyto)]
@@ -209,7 +226,8 @@
       :summary (str "Päivittää HOKSin aiemmin hankitun yhteisen tutkinnon "
                     "osan arvoa tai arvoja")
       :path-params [id :- s/Int]
-      :body [values hoks-schema/AiemminHankitunYhteisenTutkinnonOsanPaivitys]
+      :body [values
+             partial-hoks-schema/AiemminHankitunYhteisenTutkinnonOsanPaivitys]
       (if-let [ahyto-from-db
                (pdb-ah/select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id id)]
         (do
@@ -231,7 +249,7 @@
     (c-api/POST "/"  [:as request]
       :summary
       "Luo (tai korvaa vanhan) opiskeluvalmiuksia tukevat opinnot HOKSiin"
-      :body [oto hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
+      :body [oto partial-hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotLuonti]
       :return (rest/response schema/POSTResponse :id s/Int)
       (let [oto-response (ot/save-opiskeluvalmiuksia-tukeva-opinto!
                            (get-in request [:hoks :id]) oto)]
@@ -243,7 +261,8 @@
       :summary
       "Päivittää HOKSin opiskeluvalmiuksia tukevat opintojen arvoa tai arvoja"
       :path-params [id :- s/Int]
-      :body [values hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotKentanPaivitys]
+      :body [values
+             partial-hoks-schema/OpiskeluvalmiuksiaTukevatOpinnotPaivitys]
       (let [count-of-updated-rows
             (first
               (pdb-ot/update-opiskeluvalmiuksia-tukevat-opinnot-by-id!
@@ -252,6 +271,79 @@
           (response/no-content)
           (response/not-found {:error "OTO not found with given OTO ID"}))))))
 
+(defn- check-opiskeluoikeus-match [hoks opiskeluoikeudet]
+  (if-not
+   (oppijaindex/oppija-opiskeluoikeus-match?
+     opiskeluoikeudet (:opiskeluoikeus-oid hoks))
+    (assoc
+      (response/bad-request!
+        {:error "Opiskeluoikeus does not match any held by oppija"})
+      :audit-data {:new hoks})))
+
+(defn- add-oppija-to-index [hoks]
+  (try
+    (oppijaindex/add-oppija! (:oppija-oid hoks))
+    (catch Exception e
+      (if (= (:status (ex-data e)) 404)
+        (response/bad-request!
+          {:error "Oppija not found in Oppijanumerorekisteri"})
+        (throw e)))))
+
+(defn- add-opiskeluoikeus-to-index [hoks]
+  (try
+    (oppijaindex/add-opiskeluoikeus!
+      (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
+    (catch Exception e
+      (cond
+        (= (:status (ex-data e)) 404)
+        (response/bad-request!
+          {:error "Opiskeluoikeus not found in Koski"})
+        (= (:error (ex-data e)) :hankintakoulutus)
+        (response/bad-request!
+          {:error (ex-message e)})
+        :else (throw e)))))
+
+(defn- add-hankintakoulutukset-to-index [hoks opiskeluoikeudet]
+  (oppijaindex/add-oppija-hankintakoulutukset opiskeluoikeudet
+                                              (:opiskeluoikeus-oid hoks)
+                                              (:oppija-oid hoks)))
+
+(defn- check-opiskeluoikeus-validity
+  ([hoks-values]
+    (if-not
+     (oppijaindex/opiskeluoikeus-still-active?
+       (:opiskeluoikeus-oid hoks-values))
+      (assoc
+        (response/bad-request!
+          {:error (format "Opiskeluoikeus %s is no longer active"
+                          (:opiskeluoikeus-oid hoks-values))})
+        :audit-data {:new hoks-values})))
+  ([hoks opiskeluoikeudet]
+    (if-not
+     (oppijaindex/opiskeluoikeus-still-active? hoks opiskeluoikeudet)
+      (assoc
+        (response/bad-request!
+          {:error (format "Opiskeluoikeus %s is no longer active"
+                          (:opiskeluoikeus-oid hoks))})
+        :audit-data {:new hoks}))))
+
+(defn- save-hoks [hoks request]
+  (try
+    (let [hoks-db (h/save-hoks! hoks)]
+      (assoc
+        (rest/rest-ok {:uri
+                       (format "%s/%d" (:uri request) (:id hoks-db))}
+                      :id (:id hoks-db))
+        :audit-data {:new hoks}))
+    (catch Exception e
+      (if (= (:error (ex-data e)) :duplicate)
+        (assoc
+          (response/bad-request!
+            {:error
+             "HOKS with the same opiskeluoikeus-oid already exists"})
+          :audit-data {:new hoks})
+        (throw e)))))
+
 (def routes
   (c-api/context "/hoks" []
     :tags ["hoks"]
@@ -259,43 +351,21 @@
                     caller-id :- s/Str]
 
     (route-middleware
-      [wrap-user-details m/wrap-require-service-user]
+      [wrap-user-details m/wrap-require-service-user wrap-audit-logger]
 
       (c-api/POST "/" [:as request]
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
-        (try
-          (oppijaindex/add-oppija! (:oppija-oid hoks))
-          (catch Exception e
-            (if (= (:status (ex-data e)) 404)
-              (response/bad-request!
-                {:error "Oppija not found in Oppijanumerorekisteri"})
-              (throw e))))
-        (try
-          (oppijaindex/add-opiskeluoikeus!
-            (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
-          (catch Exception e
-            (if (= (:status (ex-data e)) 404)
-              (response/bad-request!
-                {:error "Opiskeluoikeus not found in Koski"})
-              (throw e))))
+        (let [opiskeluoikeudet (koski/fetch-opiskeluoikeudet-by-oppija-id
+                                 (:oppija-oid hoks))]
+          (check-opiskeluoikeus-match hoks opiskeluoikeudet)
+          (check-opiskeluoikeus-validity hoks opiskeluoikeudet)
+          (add-oppija-to-index hoks)
+          (add-opiskeluoikeus-to-index hoks)
+          (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))
         (m/check-hoks-access! hoks request)
-        (try
-          (let [hoks-db (h/save-hoks! hoks)]
-            (assoc
-              (rest/rest-ok {:uri
-                             (format "%s/%d" (:uri request) (:id hoks-db))}
-                            :id (:id hoks-db))
-              :audit-data {:new hoks}))
-          (catch Exception e
-            (if (= (:error (ex-data e)) :duplicate)
-              (assoc
-                (response/bad-request!
-                  {:error
-                   "HOKS with the same opiskeluoikeus-oid already exists"})
-                :audit-data {:new hoks})
-              (throw e)))))
+        (save-hoks hoks request))
 
       (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
@@ -313,6 +383,15 @@
               (response/not-found
                 {:error "No HOKS found with given opiskeluoikeus"})))))
 
+      (route-middleware
+        [m/wrap-require-oph-privileges]
+
+        (c-api/PATCH "/kyselylinkki" request
+          :summary "Lisää lähetystietoja kyselylinkille"
+          :body [data hoks-schema/kyselylinkki-lahetys]
+          (h/update-kyselylinkki! data)
+          (response/no-content)))
+
       (c-api/context "/:hoks-id" []
 
         (route-middleware
@@ -326,26 +405,55 @@
           (c-api/PATCH "/" request
             :summary
             "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
-            :body [values hoks-schema/HOKSPaivitys]
+            :body [hoks-values hoks-schema/HOKSPaivitys]
             (if (not-empty (:hoks request))
-              (do
-                (h/update-hoks! (get-in request [:hoks :id])
-                                (dissoc values :oppija-oid :opiskeluoikeus-oid))
-                (response/no-content))
+              (try
+                (check-opiskeluoikeus-validity hoks-values)
+                (let [hoks-db (h/update-hoks!
+                                (get-in request [:hoks :id]) hoks-values)]
+                  (assoc
+                    (response/no-content)
+                    :audit-data
+                    {:new  hoks-values}))
+                (catch Exception e
+                  (if (= (:error (ex-data e)) :disallowed-update)
+                    (assoc
+                      (response/bad-request!
+                        {:error
+                         (.getMessage e)})
+                      :audit-data {:new hoks-values})
+                    (throw e))))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
 
           (c-api/PUT "/" request
             :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
-            :body [values hoks-schema/HOKSKorvaus]
+            :body [hoks-values hoks-schema/HOKSKorvaus]
             (if (not-empty (:hoks request))
-              (do
-                (h/replace-hoks!
-                  (get-in request [:hoks :id])
-                  (dissoc values :oppija-oid :opiskeluoikeus-oid))
-                (response/no-content))
+              (try
+                (check-opiskeluoikeus-validity hoks-values)
+                (let [hoks-db (h/replace-hoks!
+                                (get-in request [:hoks :id]) hoks-values)]
+                  (assoc
+                    (response/no-content)
+                    :audit-data
+                    {:new  hoks-values}))
+                (catch Exception e
+                  (if (= (:error (ex-data e)) :disallowed-update)
+                    (assoc
+                      (response/bad-request!
+                        {:error
+                         (.getMessage e)})
+                      :audit-data {:new hoks-values})
+                    (throw e))))
               (response/not-found
                 {:error "HOKS not found with given HOKS ID"})))
+
+          (c-api/GET "/hankintakoulutukset" request
+            :summary "Palauttaa hoksin hankintakoulutus opiskeluoikeus-oidit"
+            (let [oids (oppijaindex/get-hankintakoulutus-oids-by-master-oid
+                         (get-in request [:hoks :opiskeluoikeus-oid]))]
+              (response/ok (map :oid oids))))
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
@@ -353,4 +461,21 @@
           hankittava-ammat-tutkinnon-osa
           hankittava-paikallinen-tutkinnon-osa
           hankittava-yhteinen-tutkinnon-osa
-          opiskeluvalmiuksia-tukevat-opinnot)))))
+          opiskeluvalmiuksia-tukevat-opinnot
+
+          (route-middleware
+            [m/wrap-require-oph-privileges]
+
+            (c-api/POST "/kyselylinkki" request
+              :summary "Lisää kyselylinkin hoksille"
+              :body [data hoks-schema/kyselylinkki]
+              (if (not-empty (:hoks request))
+                (do
+                  (h/insert-kyselylinkki!
+                    (assoc
+                      data
+                      :oppija-oid (get-in request [:hoks :oppija-oid])
+                      :hoks-id (get-in request [:hoks :id])))
+                  (response/no-content))
+                (response/not-found
+                  {:error "HOKS not found with given HOKS ID"})))))))))

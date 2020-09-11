@@ -10,10 +10,8 @@
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.oppija.schema :as oppija-schema]
             [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.external.eperusteet :as eperusteet]
-            [oph.ehoks.external.amosaa :as amosaa]
+            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.oppija.auth-handler :as auth-handler]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]
@@ -23,8 +21,7 @@
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppija.share-handler :as share-handler]
-            [oph.ehoks.oppija.middleware :as m]
-            [oph.ehoks.external.organisaatio :as organisaatio]))
+            [oph.ehoks.oppija.oppija-external :as oppija-external]))
 
 (defn wrap-match-user [handler]
   (fn
@@ -52,110 +49,68 @@
         misc-handler/routes
 
         (c-api/undocumented lokalisointi-handler/routes)
-        (c-api/undocumented auth-handler/routes)
 
-        (c-api/context "/oppija" []
-          :tags ["oppija"]
+        (route-middleware
+          [wrap-audit-logger]
 
-          auth-handler/routes
+          (c-api/undocumented auth-handler/routes)
 
-          (c-api/context "/external" []
-            :tags ["oppija-external"]
+          (c-api/context "/oppija" []
+            :tags ["oppija"]
 
-            lokalisointi-handler/routes
+            auth-handler/routes
 
-            (route-middleware
-              [wrap-authorize]
-              (c-api/context "/koodisto" []
-                (c-api/GET "/:koodi-uri" [koodi-uri]
-                  :path-params [koodi-uri :- s/Str]
-                  :summary "Koodiston haku Koodisto-Koodi-Urilla."
-                  :return (rest/response s/Any)
-                  (rest/rest-ok (koodisto/get-koodi koodi-uri))))
+            (c-api/context "/external" []
+              :tags ["oppija-external"]
 
-              (c-api/context "/eperusteet" []
-                (c-api/GET "/tutkinnonosat/:id/viitteet" [id]
-                  :path-params [id :- Long]
-                  :summary "Tutkinnon osan viitteet."
-                  :return (rest/response [s/Any])
-                  (rest/rest-ok (eperusteet/get-tutkinnon-osa-viitteet id)))
+              lokalisointi-handler/routes
+              oppija-external/routes)
 
-                (c-api/GET "/tutkinnot" []
-                  :query-params [diaarinumero :- String]
-                  :summary "Tutkinnon haku diaarinumeron perusteella."
-                  :return (rest/response s/Any)
-                  (rest/rest-ok (eperusteet/find-tutkinto diaarinumero)))
+            (c-api/context "/oppijat" []
+              :tags ["oppijat"]
 
-                (c-api/GET "/tutkinnot/:id/suoritustavat/reformi/rakenne" [id]
-                  :path-params [id :- Long]
-                  :summary "Tutkinnon rakenne."
-                  :return (rest/response s/Any)
-                  (rest/rest-ok (eperusteet/get-suoritustavat id)))
+              (c-api/context "/:oid" [oid]
 
-                (c-api/GET "/tutkinnot/:id/suoritustavat/ops/tutkinnonosat" []
-                  :path-params [id :- Long]
-                  :summary "Tutkinnon ops suoritustavat"
-                  :return (rest/response s/Any)
-                  (rest/with-not-found-handling
-                    (eperusteet/get-ops-suoritustavat id)))
+                (route-middleware
+                  [wrap-authorize wrap-match-user]
+                  (c-api/GET "/" []
+                    :summary "Oppijan perustiedot"
+                    :return (rest/response common-schema/Oppija)
+                    (if-let [oppija (oppijaindex/get-oppija-by-oid oid)]
+                      (rest/rest-ok oppija)
+                      (response/not-found)))
 
-                (c-api/GET "/:koodi-uri" [koodi-uri]
-                  :path-params [koodi-uri :- s/Str]
-                  :summary "Tutkinnon osan perusteiden
-                           haku Koodisto-Koodi-Urilla."
-                  :return (rest/response [s/Any])
-                  (rest/rest-ok (eperusteet/find-tutkinnon-osat koodi-uri))))
+                  (c-api/GET "/opiskeluoikeudet" [:as request]
+                    :summary "Oppijan opiskeluoikeudet"
+                    :return (rest/response [s/Any])
+                    (rest/rest-ok
+                      (koski/get-oppija-opiskeluoikeudet oid)))
 
-              (c-api/context "/eperusteet-amosaa" []
-                (c-api/GET "/koodi/:koodi" []
-                  :path-params [koodi :- String]
-                  :summary "Amosaa tutkinnon osan hakeminen koodin perusteella.
-                 Koodiin täydennetään automaattisesti
-                 'paikallinen_tutkinnonosa'"
-                  :return (rest/response [s/Any])
-                  (rest/rest-ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))
+                  (c-api/GET "/hoks" [:as request]
+                    :summary "Oppijan HOKSit kokonaisuudessaan"
+                    :return (rest/response [oppija-schema/OppijaHOKS])
+                    (let [hokses (h/get-hokses-by-oppija oid)]
+                      (if (empty? hokses)
+                        (response/not-found {:message "No HOKSes found"})
+                        (rest/rest-ok (map #(dissoc % :id) hokses)))))
 
-              (c-api/context "/organisaatio" []
-                (c-api/GET "/:oid" []
-                  :path-params [oid :- s/Str]
-                  :summary "Organisaation tiedot oidin perusteella"
-                  :return (rest/response s/Any)
-                  (rest/with-not-found-handling
-                    (organisaatio/get-organisaatio-info oid))))))
+                  (c-api/GET "/kyselylinkit" []
+                    :summary "Palauttaa oppijan aktiiviset kyselylinkit"
+                    :return (rest/response [s/Any])
+                    (try
+                      (let [kyselylinkit
+                            (map
+                              :kyselylinkki
+                              (heratepalvelu/get-oppija-kyselylinkit oid))]
+                        (rest/rest-ok kyselylinkit))
+                      (catch Exception e
+                        (print e)
+                        (throw e)))))))
 
-          (c-api/context "/oppijat" []
-            :tags ["oppijat"]
-
-            (c-api/context "/:oid" [oid]
-
+            (c-api/context "/jaot" []
+              :tags ["jaot"]
               (route-middleware
-                [wrap-authorize wrap-match-user]
-                (c-api/GET "/" []
-                  :summary "Oppijan perustiedot"
-                  :return (rest/response common-schema/Oppija)
-                  (if-let [oppija (oppijaindex/get-oppija-by-oid oid)]
-                    (rest/rest-ok oppija)
-                    (response/not-found)))
-
-                (c-api/GET "/opiskeluoikeudet" [:as request]
-                  :summary "Oppijan opiskeluoikeudet"
-                  :return (rest/response [s/Any])
-                  (rest/rest-ok
-                    (koski/get-oppija-opiskeluoikeudet oid)))
-
-                (c-api/GET "/hoks" [:as request]
-                  :summary "Oppijan HOKSit kokonaisuudessaan"
-                  :return (rest/response [oppija-schema/OppijaHOKS])
-                  (let [hokses (h/get-hokses-by-oppija oid)]
-                    (if (empty? hokses)
-                      (response/not-found {:message "No HOKSes found"})
-                      (rest/rest-ok (map #(dissoc % :id) hokses))))))))
-
-          (c-api/context "/hoksit" []
-            :tags ["hoksit"]
-            (c-api/context "/:eid" []
-              (route-middleware
-                [wrap-authorize m/wrap-hoks-access]
+                [wrap-authorize]
                 share-handler/routes))))))
 
     (c-api/undocumented
@@ -174,9 +129,7 @@
      :exceptions
      {:handlers common-api/handlers}}
 
-    (route-middleware
-      [wrap-audit-logger]
-      routes
-      (c-api/undocumented
-        (compojure-route/not-found
-          (response/not-found {:reason "Route not found"}))))))
+    routes
+    (c-api/undocumented
+      (compojure-route/not-found
+        (response/not-found {:reason "Route not found"})))))

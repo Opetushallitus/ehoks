@@ -4,9 +4,11 @@
             [oph.ehoks.utils :as utils]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
-            [oph.ehoks.db.db-operations.oppija :as db-oppija]))
+            [oph.ehoks.db.db-operations.oppija :as db-oppija])
+  (:import (clojure.lang ExceptionInfo)))
 
-(t/use-fixtures :each utils/with-database)
+(t/use-fixtures :once utils/migrate-database)
+(t/use-fixtures :each utils/empty-database-after-test)
 
 (def opiskeluoikeus-data
   {:oppilaitos {:oid "1.2.246.562.10.222222222222"}
@@ -17,6 +19,32 @@
        :nimi {:fi "Testialan perustutkinto"
               :sv "Grundexamen inom testsbranschen"
               :en "Testing"}}}}]})
+
+(def onr-data
+  {:status 200
+   :body {:oidHenkilo "1.2.246.562.24.111111111111"
+          :hetu "250103-5360"
+          :etunimet "Tero"
+          :kutsumanimi "Tero"
+          :sukunimi "Testaaja"}})
+
+(def tila-data
+  {:opiskeluoikeusjaksot
+   [{:alku "2018-01-01"
+     :tila {:koodiarvo "eronnut"
+            :nimi {:fi "Eronnut"}
+            :koodistoUri "koskiopiskeluoikeudentila"
+            :koodistoVersio 1}}
+    {:alku "2019-01-01"
+     :tila {:koodiarvo "lasna"
+            :nimi {:fi "Läsnä"}
+            :koodistoUri "koskiopiskeluoikeudentila"
+            :koodistoVersio 1}}
+    {:alku "2020-01-01"
+     :tila {:koodiarvo "lasna"
+            :nimi {:fi "Läsnä"}
+            :koodistoUri "koskiopiskeluoikeudentila"
+            :koodistoVersio 1}}]})
 
 (t/deftest get-oppijat-without-index
   (t/testing "Get oppijat without index"
@@ -152,15 +180,12 @@
        (fn [_ url __]
          (cond
            (> (.indexOf url "oppijanumerorekisteri-service") -1)
-           {:status 200
-            :body {:oidHenkilo "1.2.246.562.24.111111111111"
-                   :hetu "250103-5360"
-                   :etunimet "Tero"
-                   :kutsumanimi "Tero"
-                   :sukunimi "Testaaja"}}
+           onr-data
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
-            :body opiskeluoikeus-data}))]
+            :body (assoc
+                    opiskeluoikeus-data
+                    :oid "1.2.246.562.15.00000000001")}))]
       (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
@@ -185,15 +210,12 @@
        (fn [_ url __]
          (cond
            (> (.indexOf url "oppijanumerorekisteri-service") -1)
-           {:status 200
-            :body {:oidHenkilo "1.2.246.562.24.111111111111"
-                   :hetu "250103-5360"
-                   :etunimet "Tero"
-                   :kutsumanimi "Tero"
-                   :sukunimi "Testaaja"}}
+           onr-data
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
-            :body opiskeluoikeus-data}))]
+            :body (assoc
+                    opiskeluoikeus-data
+                    :oid "1.2.246.562.15.00000000001")}))]
       (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
@@ -226,7 +248,7 @@
            {:status 200
             :body {:oppilaitos {:oid "1.2.246.562.10.222222222223"}}}))]
       (sut/update-oppija! "1.2.246.562.24.111111111111")
-      (sut/update-opiskeluoikeus!
+      (sut/update-opiskeluoikeus-without-error-forwarding!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
       (utils/eq
         (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
@@ -255,3 +277,204 @@
                (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.22222222223")
                :paattynyt))
            0)))))
+
+(t/deftest oppija-opiskeluoikeus-match-test
+  (with-redefs [oph.ehoks.config/config {:enforce-opiskeluoikeus-match? true}]
+    (let [opiskeluoikeudet [{:oid "1.2.246.562.15.55003456345"
+                             :oppilaitos {:oid "1.2.246.562.10.12000000000"
+                                          :nimi {:fi "TestiFi"
+                                                 :sv "TestiSv"
+                                                 :en "TestiEn"}}
+                             :alkamispäivä "2020-03-12"}]]
+
+      (t/testing "Opintooikeus belonging to oppija return true"
+        (t/is
+          (sut/oppija-opiskeluoikeus-match?
+            opiskeluoikeudet
+            "1.2.246.562.15.55003456345")))
+
+      (t/testing "Opintooikeus not belonging to oppija return false"
+        (t/is
+          (not
+            (sut/oppija-opiskeluoikeus-match?
+              opiskeluoikeudet
+              "1.2.246.562.15.55003456347")))))))
+
+(t/deftest hankintakoulutus-opiskeluoikeus-test
+  (t/testing "Save opiskeluoikeus with sisältyyOpiskeluoikeuteen information"
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ url __]
+         (cond
+           (> (.indexOf url "oppijanumerorekisteri-service") -1)
+           onr-data
+           (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
+           {:status 200
+            :body (assoc
+                    opiskeluoikeus-data
+                    :sisältyyOpiskeluoikeuteen
+                    {:oppilaitos {:oppilaitosnumero
+                                  {:koodiarvo "10076"}
+                                  :nimi
+                                  {:fi "Testi-yliopisto"
+                                   :sv "Testi-universitetet"
+                                   :en "Testi University"}}
+                     :oid "1.2.246.562.15.99999123"})}))]
+      (t/is
+        (thrown-with-msg?
+          ExceptionInfo
+          #"Opiskeluoikeus sisältyy toiseen opiskeluoikeuteen"
+          (sut/add-opiskeluoikeus!
+            "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")))
+      (t/is
+        (nil? (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001"))))))
+
+(t/deftest hankintakoulutus-filter-test
+  (t/testing "Existing hankintakoulutus is filtered from opiskeluoikeudet"
+    (let [opiskeluoikeudet [(assoc
+                              opiskeluoikeus-data
+                              :sisältyyOpiskeluoikeuteen
+                              {:oppilaitos {:oppilaitosnumero
+                                            {:koodiarvo "10076"}
+                                            :nimi
+                                            {:fi "Testi-yliopisto"
+                                             :sv "Testi-universitetet"
+                                             :en "Testi University"}}
+                               :oid "1.2.246.562.15.99999123"})]]
+      (t/is
+        (= (count (sut/filter-hankintakoulutukset opiskeluoikeudet)) 1))))
+
+  (t/testing "Empty list returned if no hankintakoulutus in opiskeluoikeudet"
+    (let [opiskeluoikeudet [opiskeluoikeus-data]]
+      (t/is
+        (= (count (sut/filter-hankintakoulutukset opiskeluoikeudet)) 0)))))
+
+(t/deftest validate-opiskeluoikeus-status-test
+  (with-redefs [oph.ehoks.config/config
+                {:prevent-finished-opiskeluoikeus-updates? true}]
+
+    (t/testing "Active opiskeluoikeus returns true"
+      (utils/with-ticket-auth
+        ["1.2.246.562.10.222222222222"
+         (fn [_ url __]
+           (cond
+             (> (.indexOf url "oppijanumerorekisteri-service") -1)
+             onr-data
+             (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
+             {:status 200
+              :body (assoc
+                      opiskeluoikeus-data
+                      :oid "1.2.246.562.15.55003456344"
+                      :tila {:opiskeluoikeusjaksot
+                             [{:alku "2018-01-01"
+                               :tila {:koodiarvo "lasna"
+                                      :nimi {:fi "Läsnä"}
+                                      :koodistoUri "koskiopiskeluoikeudentila"
+                                      :koodistoVersio 1}}]})}))]
+
+        (t/is (sut/opiskeluoikeus-still-active? "1.2.246.562.15.55003456344"))))
+
+    (t/testing "Finished opiskeluoikeus returns false"
+      (utils/with-ticket-auth
+        ["1.2.246.562.10.222222222222"
+         (fn [_ url __]
+           (cond
+             (> (.indexOf url "oppijanumerorekisteri-service") -1)
+             onr-data
+             (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
+             {:status 200
+              :body (assoc
+                      opiskeluoikeus-data
+                      :oid "1.2.246.562.15.55003456345"
+                      :tila {:opiskeluoikeusjaksot
+                             [{:alku "2018-01-01"
+                               :tila {:koodiarvo "eronnut"
+                                      :nimi {:fi "Eronnut"}
+                                      :koodistoUri "koskiopiskeluoikeudentila"
+                                      :koodistoVersio 1}}]})}))]
+
+        (t/is
+          (not
+            (sut/opiskeluoikeus-still-active? "1.2.246.562.15.55003456345")))))
+
+    (t/testing "Active opiskeluoikeus matching hoks is filtered from multiple"
+      (utils/with-ticket-auth
+        ["1.2.246.562.10.222222222222"
+         (fn [_ url __]
+           (cond
+             (> (.indexOf url "oppijanumerorekisteri-service") -1)
+             onr-data
+             (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
+             {:status 200
+              :body (assoc
+                      opiskeluoikeus-data
+                      :oid "1.2.246.562.15.55003456346"
+                      :tila tila-data)}))]
+
+        (t/is
+          (sut/opiskeluoikeus-still-active? "1.2.246.562.15.55003456346"))))
+
+    (t/testing "Active opiskeluoikeus is parsed from hoks and opiskeluoikeudet"
+      (utils/with-ticket-auth
+        ["1.2.246.562.10.222222222222"
+         (fn [_ url __]
+           (cond
+             (> (.indexOf url "oppijanumerorekisteri-service") -1)
+             onr-data
+             (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
+             {:status 200
+              :body (assoc
+                      opiskeluoikeus-data
+                      :oid "1.2.246.562.15.55003456346"
+                      :tila tila-data)}))]
+
+        (t/is
+          (sut/opiskeluoikeus-still-active?
+            {:id 1234
+             :opiskeluoikeus-oid "1.2.246.562.15.55003456346"}
+            (list
+              (assoc
+                opiskeluoikeus-data
+                :oid "1.2.246.562.15.55003456346"
+                :tila tila-data)))))))
+
+  (t/testing "Without feature flag enabled always returns true"
+    (t/is (sut/opiskeluoikeus-still-active? "not an opiskeluoikeus-oid"))
+    (t/is (sut/opiskeluoikeus-still-active? "not a hoks"
+                                            "not a list of opiskeluoikeus"))))
+
+(t/deftest delete-opiskeluoikeus-from-index
+  (t/testing "Delete opiskeluoikeus from index"
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ url __]
+         (cond
+           (> (.indexOf url "oppijanumerorekisteri-service") -1)
+           onr-data
+           (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
+           {:status 200
+            :body (assoc
+                    opiskeluoikeus-data
+                    :oid "1.2.246.562.15.00000000001")}))]
+      (sut/add-oppija! "1.2.246.562.24.111111111111")
+      (sut/add-opiskeluoikeus!
+        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
+        {:oid "1.2.246.562.24.111111111111"
+         :nimi "Tero Testaaja"})
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        {:oid "1.2.246.562.15.00000000001"
+         :oppija-oid "1.2.246.562.24.111111111111"
+         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
+         :osaamisala-nimi {:fi "" :sv ""}})
+
+      (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
+        "1.2.246.562.15.00000000001")
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        nil))))

@@ -172,6 +172,13 @@
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453945322"
    :vaatimuksista-tai-tavoitteista-poikkeaminen "Ei poikkeamaa."})
 
+(def tarkentavat-tiedot-osaamisen-arvioija
+  {:lahetetty-arvioitavaksi "2020-01-24"
+   :aiemmin-hankitun-osaamisen-arvioijat
+   [{:nimi "Uusi Ominaisuus"
+     :organisaatio {:oppilaitos-oid
+                    "1.2.246.562.10.54453931322"}}]})
+
 (def ahyto-data
   {:valittu-todentamisen-prosessi-koodi-uri
    "osaamisentodentamisenprosessi_0001"
@@ -194,6 +201,8 @@
      :valittu-todentamisen-prosessi-koodi-uri
      "osaamisentodentamisenprosessi_0003"
      :valittu-todentamisen-prosessi-koodi-versio 4
+     :tarkentavat-tiedot-osaamisen-arvioija
+     tarkentavat-tiedot-osaamisen-arvioija
      :tarkentavat-tiedot-naytto
      [{:sisallon-kuvaus ["kuvaus1"]
        :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
@@ -257,6 +266,7 @@
 (def ahyto-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve true
    :aiemmin-hankitut-yhteiset-tutkinnon-osat
    [{:valittu-todentamisen-prosessi-koodi-uri
      "osaamisentodentamisenprosessi_0002"
@@ -280,6 +290,8 @@
        :valittu-todentamisen-prosessi-koodi-uri
        "osaamisentodentamisenprosessi_0004"
        :valittu-todentamisen-prosessi-koodi-versio 4
+       :tarkentavat-tiedot-osaamisen-arvioija
+       tarkentavat-tiedot-osaamisen-arvioija
        :tarkentavat-tiedot-naytto
        [{:sisallon-kuvaus ["kuvaus1" "kuvaus2"]
          :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ai"
@@ -325,6 +337,7 @@
 (def ahpto-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
    :aiemmin-hankitut-paikalliset-tutkinnon-osat
    [{:valittu-todentamisen-prosessi-koodi-versio 3
      :laajuus 40
@@ -366,6 +379,7 @@
 (def ahato-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve true
    :aiemmin-hankitut-ammat-tutkinnon-osat
    [{:valittu-todentamisen-prosessi-koodi-versio 5
      :tutkinnon-osa-koodi-versio 100033
@@ -418,6 +432,8 @@
      :valittu-todentamisen-prosessi-koodi-uri
      "osaamisentodentamisenprosessi_0003"
      :valittu-todentamisen-prosessi-koodi-versio 4
+     :tarkentavat-tiedot-osaamisen-arvioija
+     tarkentavat-tiedot-osaamisen-arvioija
      :tarkentavat-tiedot-naytto
      [{:sisallon-kuvaus ["kuvaus1"]
        :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
@@ -591,6 +607,7 @@
 (def hato-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve true
    :hankittavat-ammat-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_300222"
      :tutkinnon-osa-koodi-versio 2
@@ -636,6 +653,7 @@
 (def hpto-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve true
    :hankittavat-paikalliset-tutkinnon-osat
    [{:nimi "testinimi"
      :koulutuksen-jarjestaja-oid
@@ -679,6 +697,7 @@
 (def hyto-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
    :hankittavat-yhteiset-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_3002690"
      :tutkinnon-osa-koodi-versio 3

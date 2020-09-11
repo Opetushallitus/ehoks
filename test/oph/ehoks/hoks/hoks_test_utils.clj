@@ -98,7 +98,8 @@
     (is (= (:status post-response) 200))
     (is (= (:status put-response) 204))
     (is (= (:status get-response) 200))
-    (eq (hoks-part get-response-data)
+    (eq (utils/dissoc-module-ids
+          (hoks-part get-response-data))
         (hoks-part updated-hoks))))
 
 (defn assert-post-response-is-ok [post-path post-response]
@@ -118,8 +119,10 @@
           get-response (create-mock-hoks-osa-get-request osa-path app hoks)]
       (assert-post-response-is-ok osa-path post-response)
       (is (= (:status get-response) 200))
-      (eq (utils/parse-body
-            (:body get-response))
+      (eq (update
+            (utils/parse-body
+              (:body get-response))
+            :data utils/dissoc-module-ids)
           {:meta {} :data (assoc osa-data :id 1)}))))
 
 (defn compare-tarkentavat-tiedot-naytto-values
@@ -129,4 +132,4 @@
         ttn-patch-values
         (assoc (selector-function (:tarkentavat-tiedot-naytto original))
                :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
-    (eq ttn-after-update ttn-patch-values)))
+    (eq (utils/dissoc-module-ids ttn-after-update) ttn-patch-values)))

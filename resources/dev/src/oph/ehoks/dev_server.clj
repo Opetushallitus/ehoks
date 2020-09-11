@@ -2,7 +2,7 @@
   (:require [oph.ehoks.ehoks-app :as ehoks-app]
             [oph.ehoks.db.migrations :as m]
             [oph.ehoks.config :refer [config] :as c]
-            [oph.ehoks.mock-routes :as mock]
+            [oph.ehoks.mocked-routes.mock-routes :as mock]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [compojure.core :refer [GET defroutes routes]]
             [ring.util.http-response :refer [ok not-found]]
@@ -110,6 +110,18 @@
   (when (some? (System/setProperty "name" app-name))
     (require 'oph.ehoks.ehoks-app :reload))
   (start-app-server! dev-reload-app app-name config-file))
+
+(defn start-virkailija []
+  (start-server "ehoks-virkailja" nil))
+
+(defn start-oppija []
+  (start-server "ehoks-oppija" nil))
+
+(defn switch-to-oppija []
+  (System/setProperty "name" "ehoks-oppija"))
+
+(defn switch-to-virkailija []
+  (System/setProperty "name" "ehoks-virkailija"))
 
 (defn start [app-name config-file]
   (log/infof "Starting %s with config %s" app-name config-file)

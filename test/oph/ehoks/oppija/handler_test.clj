@@ -9,11 +9,13 @@
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hoks-test :refer [hoks-data]]
             [clojure.walk :as w]
-            [oph.ehoks.external.http-client :as client]))
+            [oph.ehoks.external.http-client :as client])
+  (:import [java.time LocalDate]))
 
 (def url "/ehoks-oppija-backend/api/v1/oppija/oppijat")
 
-(use-fixtures :each utils/with-database)
+(use-fixtures :once utils/migrate-database)
+(use-fixtures :each utils/empty-database-after-test)
 
 (def dates #{:alku :loppu :lahetetty-arvioitavaksi :ensikertainen-hyvaksyminen})
 
@@ -47,7 +49,7 @@
           body (utils/parse-body (:body response))]
       (is (= (:status response) 200))
       (eq
-        (:data body)
+        (utils/dissoc-module-ids (:data body))
         [(dates-to-str
            (assoc hoks-data
                   :eid (get-in body [:data 0 :eid])
@@ -129,3 +131,177 @@
           body (parse-body (:body response))]
       (is (= (:status response) 200))
       (is (= body {})))))
+
+(deftest kyselylinkit
+  (testing "GET kyselylinkit"
+    (let [oppija-oid (:oppija-oid hoks-data)
+          store (atom {})
+          app (common-api/create-app
+                handler/app-routes (test-session-store store))]
+      (h/save-hoks! hoks-data)
+      (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/abc123"
+                               :alkupvm (LocalDate/now)
+                               :tyyppi "aloittaneet"
+                               :oppija-oid oppija-oid
+                               :hoks-id 1})
+      (client/set-get!
+        (fn [url options]
+          (cond
+            (.endsWith
+              url "/status/abc123")
+            {:status 200
+             :body {:tunnus "abc123",
+                    :voimassa_loppupvm  (str
+                                          (.plusMonths (LocalDate/now) 1)
+                                          "T00:00:00.000Z"),
+                    :vastattu false}})))
+      (let [response
+            (utils/with-authenticated-oid
+              store
+              oppija-oid
+              app
+              (mock/request
+                :get
+                (format "%s/%s/kyselylinkit" url oppija-oid)))
+            body (utils/parse-body (:body response))]
+        (is (= (:status response) 200))
+        (eq
+          (:data body)
+          ["https://palaute.fi/abc123"])))))
+
+(deftest kyselylinkit-vastattu
+  (testing "GET kyselylinkit vastattu linkki"
+    (let [oppija-oid (:oppija-oid hoks-data)
+          store (atom {})
+          app (common-api/create-app
+                handler/app-routes (test-session-store store))]
+      (h/save-hoks! hoks-data)
+      (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/abc123"
+                               :alkupvm (LocalDate/now)
+                               :tyyppi "aloittaneet"
+                               :oppija-oid oppija-oid
+                               :hoks-id 1})
+      (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/vastattu"
+                               :alkupvm (LocalDate/now)
+                               :tyyppi "aloittaneet"
+                               :oppija-oid (:oppija-oid hoks-data)
+                               :hoks-id 1})
+      (client/set-get!
+        (fn [url options]
+          (cond
+            (.endsWith
+              url "/status/abc123")
+            {:status 200
+             :body {:tunnus "abc123",
+                    :voimassa_loppupvm  (str
+                                          (.plusMonths (LocalDate/now) 1)
+                                          "T00:00:00.000Z"),
+                    :vastattu false}}
+            (.endsWith
+              url "/status/vastattu")
+            {:status 200
+             :body {:tunnus "abc123",
+                    :voimassa_loppupvm  (str
+                                          (.plusMonths (LocalDate/now) 1)
+                                          "T00:00:00.000Z"),
+                    :vastattu true}})))
+      (let [response
+            (utils/with-authenticated-oid
+              store
+              oppija-oid
+              app
+              (mock/request
+                :get
+                (format "%s/%s/kyselylinkit" url oppija-oid)))
+            body (utils/parse-body (:body response))]
+        (is (= (:status response) 200))
+        (eq
+          (:data body)
+          ["https://palaute.fi/abc123"])))))
+
+(deftest kyselylinkit-vanhentunut-linkki
+  (testing "GET kyselylinkit vanhentunut linkki"
+    (let [oppija-oid (:oppija-oid hoks-data)
+          store (atom {})
+          app (common-api/create-app
+                handler/app-routes (test-session-store store))]
+      (h/save-hoks! hoks-data)
+      (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/abc123"
+                               :alkupvm (LocalDate/now)
+                               :tyyppi "aloittaneet"
+                               :oppija-oid oppija-oid
+                               :hoks-id 1})
+      (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/vanha"
+                               :alkupvm (LocalDate/now)
+                               :tyyppi "aloittaneet"
+                               :oppija-oid (:oppija-oid hoks-data)
+                               :hoks-id 1})
+      (client/set-get!
+        (fn [url options]
+          (cond
+            (.endsWith
+              url "/status/abc123")
+            {:status 200
+             :body {:tunnus "abc123",
+                    :voimassa_loppupvm  (str
+                                          (.plusMonths (LocalDate/now) 1)
+                                          "T00:00:00.000Z"),
+                    :vastattu false}}
+            (.endsWith
+              url "/status/vanha")
+            {:status 200
+             :body {:tunnus "abc123",
+                    :voimassa_loppupvm  (str
+                                          (.minusDays (LocalDate/now) 1)
+                                          "T00:00:00.000Z"),
+                    :vastattu false}})))
+      (let [response
+            (utils/with-authenticated-oid
+              store
+              oppija-oid
+              app
+              (mock/request
+                :get
+                (format "%s/%s/kyselylinkit" url oppija-oid)))
+            body (utils/parse-body (:body response))]
+        (is (= (:status response) 200))
+        (eq
+          (:data body)
+          ["https://palaute.fi/abc123"])))))
+
+(deftest kyselylinkit-vastausaika-ei-alkanut
+  (testing "GET kyselylinkit vanhentunut linkki"
+    (let [oppija-oid (:oppija-oid hoks-data)
+          store (atom {})
+          app (common-api/create-app
+                handler/app-routes (test-session-store store))]
+      (h/save-hoks! hoks-data)
+      (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/abc123"
+                               :alkupvm (.plusDays (LocalDate/now) 1)
+                               :tyyppi "aloittaneet"
+                               :oppija-oid oppija-oid
+                               :hoks-id 1})
+      (client/set-get!
+        (fn [url options]
+          (cond
+            (.endsWith
+              url "/status/abc123")
+            {:status 200
+             :body {:tunnus "abc123",
+                    :voimassa_loppupvm  (str
+                                          (.plusMonths (LocalDate/now) 1)
+                                          "T00:00:00.000Z"),
+                    :vastattu false}})))
+      (let [response
+            (utils/with-authenticated-oid
+              store
+              oppija-oid
+              app
+              (mock/request
+                :get
+                (format "%s/%s/kyselylinkit" url oppija-oid)))
+            body (utils/parse-body (:body response))]
+        (is (= (:status response) 200))
+        (eq
+          (:data body)
+          [])))))

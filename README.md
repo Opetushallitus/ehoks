@@ -35,7 +35,7 @@ rajapintojen polut on jaettu palveluittain.
 #### RESTful API
 Backend pyrkii seuraamaan
 [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer)
-periaatteita. Kaikki vataukset (paitsi no content) sisältävät meta- ja
+periaatteita. Kaikki vastaukset (paitsi no content) sisältävät meta- ja
 dataobjektit.
 
 Avaimet seuraavat Clojuren notaatiota.
@@ -134,6 +134,20 @@ Tai omalla konfiguraatiolla:
 user> (use 'oph.ehoks.dev-server)
 user> (def server (start-server "ehoks-virkailija" "config/custom.edn"))
 ```
+
+Ajossa olevat kokonaisuudet näkee replissä
+
+``` repl
+user> (System/getProperty “name”)
+```
+
+Tämän voi vaihtaa ajamalla replissä
+
+``` repl
+user> (System/setProperty “name” “ehoks-virkailija”)
+```
+
+ja lataamalla tiedoston [ehoks_app.clj](src/oph/ehoks/ehoks_app.clj) uudelleen replissä.
 
 Ja ohjelman sammuttaminen:
 

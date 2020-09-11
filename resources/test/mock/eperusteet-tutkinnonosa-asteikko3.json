@@ -1,0 +1,828 @@
+[
+  {
+    "id": 3314254,
+    "luotu": 1508491302850,
+    "muokattu": 1518520230377,
+    "muokkaaja": "1.2.246.562.24.81055904918",
+    "nimi": {
+      "fi": "Hautausmaiden viheralueista huolehtiminen",
+      "sv": "Underhåll av grönområden vid begravningsplatser",
+      "_id": "611996"
+    },
+    "tila": "valmis",
+    "valmis": false,
+    "kaannettava": false,
+    "tavoitteet": null,
+    "arviointi": {
+      "id": 3314323,
+      "lisatiedot": null,
+      "arvioinninKohdealueet": [
+        {
+          "otsikko": {
+            "fi": "1. Työprosessin hallinta",
+            "sv": "1. Behärskande av arbetsprocessen",
+            "_id": "611999"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": {
+                "fi": "Hautausmaan viheralueiden rakentamisen ja ylläpitotöiden suunnitteleminen",
+                "sv": "Planering av anläggande och underhåll av grönområden på en begravningsplats",
+                "_id": "612020"
+              },
+              "selite": {
+                "_tunniste": "28d612a8-9ec1-4c15-8e82-3d493cb8cb08",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3325546"
+              },
+              "_arviointiAsteikko": "3",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "9",
+                  "kriteerit": [
+                    {
+                      "fi": "suunnittelee työtään, selviytyy muuttuvissa tilanteissa ja kehittää työtapojaan",
+                      "sv": "planerar sitt arbete, klarar av varierande situationer och utvecklar sitt arbetssätt",
+                      "_id": "612021"
+                    },
+                    {
+                      "fi": "arvioi työnsä onnistumista ja perustelee arviotaan",
+                      "sv": "utvärderar hur arbetet har lyckats och motiverar utvärderingen",
+                      "_id": "612022"
+                    },
+                    {
+                      "fi": "tekee suunnitelmien mukaisia rakentamis- ja ylläpitotöitä tehokkaasti ja järjestelmällisesti ja tekee myös muita kuin annettuja työtehtäviä",
+                      "sv": "utför planenliga anläggnings- och underhållsarbeten effektivt och systematiskt samt utför också andra än de arbetsuppgifter som han/hon har tilldelats",
+                      "_id": "612023"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "6",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "5",
+                  "kriteerit": [
+                    {
+                      "fi": "suunnittelee työtään tutuissa tilanteissa",
+                      "sv": "planerar sitt arbete i bekanta arbetssituationer",
+                      "_id": "612024"
+                    },
+                    {
+                      "fi": "arvioi työnsä onnistumista ohjattuna",
+                      "sv": "utvärderar hur arbetet har lyckats",
+                      "_id": "612025"
+                    },
+                    {
+                      "fi": "tekee suunnitelmien mukaisia rakentamis- ja ylläpitotöitä tarviten ajoittain ohjausta",
+                      "sv": "utför planenliga anläggnings- och underhållsarbeten, men behöver tidvis handledning",
+                      "_id": "612026"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "7",
+                  "kriteerit": [
+                    {
+                      "fi": "suunnittelee työtään ja selviytyy muuttuvissa tilanteissa",
+                      "sv": "planerar sitt arbete och klarar av varierande situationer",
+                      "_id": "612027"
+                    },
+                    {
+                      "fi": "arvioi työnsä onnistumista",
+                      "sv": "utvärderar hur arbetet har lyckats",
+                      "_id": "612028"
+                    },
+                    {
+                      "fi": "tekee suunnitelmien mukaisia rakentamis- ja ylläpitotöitä tutuissa työtilanteissa",
+                      "sv": "utför planenliga anläggnings- och underhållsarbeten i bekanta arbetssituationer",
+                      "_id": "612029"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "8",
+                  "kriteerit": []
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Kestävällä tavalla toimiminen hautausmaan työtehtävissä",
+                "sv": "Hållbar utveckling inom arbetsuppgifterna på en begravningsplats",
+                "_id": "612040"
+              },
+              "selite": {
+                "_tunniste": "12cf8edb-503f-424e-9f67-008f76fc6b0b",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3325547"
+              },
+              "_arviointiAsteikko": "3",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "5",
+                  "kriteerit": [
+                    {
+                      "fi": "käyttää ohjauksen jälkeen vähän ympäristöä kuormittavia koneita ja laitteita",
+                      "sv": "använder efter handledning maskiner och anordningar med liten miljöbelastning",
+                      "_id": "612041"
+                    },
+                    {
+                      "fi": "lajittelee, kompostoi ja kierrättää ohjeiden mukaan syntyviä jätteitä sekä ottaa huomioon valinnoissaan materiaalien, koneiden, välineiden ja menetelmien ympäristöystävällisyyden.",
+                      "sv": "sorterar, komposterar och återanvänder avfall enligt instruktionerna samt beaktar materialens, maskinernas, anordningarnas och metodernas miljövänlighet.",
+                      "_id": "612042"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "7",
+                  "kriteerit": [
+                    {
+                      "fi": "käyttää vähän ympäristöä kuormittavia koneita ja laitteita",
+                      "sv": "använder maskiner och anordningar med liten miljöbelastning",
+                      "_id": "612045"
+                    },
+                    {
+                      "fi": "lajittelee, kompostoi ja kierrättää syntyviä jätteitä sekä ottaa huomioon valinnoissaan materiaalien, koneiden, välineiden ja menetelmien ympäristöystävällisyyden.",
+                      "sv": "sorterar, komposterar och återanvänder avfall samt beaktar materialens, maskinernas, anordningarnas och metodernas miljövänlighet.",
+                      "_id": "612046"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "9",
+                  "kriteerit": [
+                    {
+                      "fi": "valitsee ja käyttää vähän ympäristöä kuormittavia koneita ja laitteita",
+                      "sv": "väljer och använder maskiner och anordningar med liten miljöbelastning",
+                      "_id": "612043"
+                    },
+                    {
+                      "fi": "lajittelee, kompostoi ja kierrättää syntyviä jätteitä sekä ottaa huomioon valinnoissaan materiaalien, koneiden, välineiden ja menetelmien ympäristöystävällisyyden ja kehittää toimintaa kestävämpään suuntaan.",
+                      "sv": "sorterar, komposterar och återanvänder avfall samt beaktar materialens, maskinernas, anordningarnas och metodernas miljövänlighet och utvecklar sin verksamhet i en hållbarare riktning.",
+                      "_id": "612044"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "8",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "6",
+                  "kriteerit": []
+                }
+              ]
+            }
+          ],
+          "koodi": {
+            "nimi": null,
+            "arvo": null,
+            "uri": "ammattitaitovaatimukset_12132",
+            "koodisto": "ammattitaitovaatimukset",
+            "versio": null
+          }
+        },
+        {
+          "otsikko": {
+            "fi": "2. Työmenetelmien, välineiden ja materiaalin hallinta",
+            "sv": "2. Behärskande av arbetsmetoder, -redskap och material",
+            "_id": "612047"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": {
+                "fi": "Kasvillisuusalueiden rakentaminen hautausmaalle",
+                "sv": "Anläggande av vegetationsområden på en begravningsplats",
+                "_id": "612048"
+              },
+              "selite": {
+                "_tunniste": "9e09ea5f-023e-46da-b349-42455005bc68",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3325548"
+              },
+              "_arviointiAsteikko": "3",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "5",
+                  "kriteerit": [
+                    {
+                      "fi": "rakentaa nurmikon ja istuttaa kasveja tarviten ajoittain ohjausta",
+                      "sv": "anlägger en gräsmatta och planterar växter men behöver tidvis handledning",
+                      "_id": "612049"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "8",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "9",
+                  "kriteerit": [
+                    {
+                      "fi": "rakentaa nurmialueita ja istuttaa kasveja",
+                      "sv": "anlägger gräsmattsområden och planterar växter",
+                      "_id": "612050"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "6",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "7",
+                  "kriteerit": [
+                    {
+                      "fi": "rakentaa nurmikon ja istuttaa kasveja",
+                      "sv": "anlägger en gräsmatta och planterar växter",
+                      "_id": "612051"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Hautausmaan kasvillisuusalueiden hoitaminen",
+                "sv": "Skötsel av vegetationsområden på en begravningsplats",
+                "_id": "612052"
+              },
+              "selite": {
+                "_tunniste": "059eddf8-5515-495d-a8b1-6f23b80205ac",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3325549"
+              },
+              "_arviointiAsteikko": "3",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "9",
+                  "kriteerit": [
+                    {
+                      "fi": "hoitaa kasvillisuutta vaihtelevissa työtilanteissa",
+                      "sv": "sköter växtlighet i varierande arbetssituationer",
+                      "_id": "612055"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "5",
+                  "kriteerit": [
+                    {
+                      "fi": "hoitaa kasvillisuutta tutuissa työtilanteissa, tarviten ajoittain ohjausta",
+                      "sv": "sköter växtlighet i bekanta arbetssituationer, men behöver tidvis handledning",
+                      "_id": "612054"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "6",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "7",
+                  "kriteerit": [
+                    {
+                      "fi": "hoitaa kasvillisuutta tutuissa työtilanteissa",
+                      "sv": "sköter växtlighet i bekanta arbetssituationer",
+                      "_id": "612053"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "8",
+                  "kriteerit": []
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Hautausmaan kalusteiden ja kulkuväylien ylläpitäminen",
+                "sv": "Underhåll av möbler och gångar på en begravningsplats",
+                "_id": "612056"
+              },
+              "selite": {
+                "_tunniste": "47c15cc2-d9ab-4a39-9996-d91c6d439047",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3325610"
+              },
+              "_arviointiAsteikko": "3",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "5",
+                  "kriteerit": [
+                    {
+                      "fi": "ylläpitää hautausmaan kalusteita ja kulkuväyliä tutuissa työtilanteissa, tarviten ajoittain ohjausta",
+                      "sv": "underhåller möbler och gångar på en begravningsplats i bekanta arbetssituationer, men behöver tidvis handledning",
+                      "_id": "612059"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "9",
+                  "kriteerit": [
+                    {
+                      "fi": "ylläpitää hautausmaan kalusteita ja kulkuväyliä vaihtelevissa työtilanteissa",
+                      "sv": "underhåller möbler och gångar på en begravningsplats i varierande arbetssituationer",
+                      "_id": "612058"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "8",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "6",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "7",
+                  "kriteerit": [
+                    {
+                      "fi": "ylläpitää hautausmaan kalusteita ja kulkuväyliä tutuissa työtilanteissa",
+                      "sv": "underhåller möbler och gångar på en begravningsplats i bekanta arbetssituationer",
+                      "_id": "612057"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Hautausmaan koneiden ja työvälineiden käyttäminen",
+                "sv": "Användning av maskiner och arbetsredskap på en begravningsplats",
+                "_id": "612070"
+              },
+              "selite": {
+                "_tunniste": "9ae003a3-a642-4063-8d72-b50139b3a80f",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3325611"
+              },
+              "_arviointiAsteikko": "3",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "5",
+                  "kriteerit": [
+                    {
+                      "fi": "käyttää koneita ja työvälineitä tutuissa työtilanteissa tarviten ajoittain ohjausta.",
+                      "sv": "använder maskiner och arbetsredskap i bekanta arbetssituationer, men behöver tidvis handledning.",
+                      "_id": "612072"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "9",
+                  "kriteerit": [
+                    {
+                      "fi": "valitsee työhön tarkoituksenmukaiset koneet ja työvälineet ja käyttää niitä vaihtelevissa työtilanteissa.",
+                      "sv": "väljer för arbetet ändamålsenliga maskiner och arbetsredskap och använder dem i varierande arbetssituationer.",
+                      "_id": "612073"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "7",
+                  "kriteerit": [
+                    {
+                      "fi": "käyttää koneita ja työvälineitä tutuissa työtilanteissa.",
+                      "sv": "använder maskiner och arbetsredskap i bekanta arbetssituationer.",
+                      "_id": "612071"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "6",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "8",
+                  "kriteerit": []
+                }
+              ]
+            }
+          ],
+          "koodi": {
+            "nimi": null,
+            "arvo": null,
+            "uri": "ammattitaitovaatimukset_12133",
+            "koodisto": "ammattitaitovaatimukset",
+            "versio": null
+          }
+        },
+        {
+          "otsikko": {
+            "fi": "3. Työn perustana olevan tiedon hallinta",
+            "sv": "3. Behärskande av den kunskap som ligger till grund för arbetet",
+            "_id": "612074"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": {
+                "fi": "Hautausmaan kasvillisuuden tunnistaminen",
+                "sv": "Identifiering av växter på en begravningsplats",
+                "_id": "612075"
+              },
+              "selite": {
+                "_tunniste": "302ff2e3-a562-444d-9008-022d398dce36",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3325612"
+              },
+              "_arviointiAsteikko": "3",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "7",
+                  "kriteerit": [
+                    {
+                      "fi": "tunnistaa hautausmaan kasvit",
+                      "sv": "känner igen växterna på en begravningsplats",
+                      "_id": "612076"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "5",
+                  "kriteerit": [
+                    {
+                      "fi": "tunnistaa yleisimmät hautausmaan kasvit",
+                      "sv": "känner igen de vanligaste växterna på en begravningsplats",
+                      "_id": "612077"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "8",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "9",
+                  "kriteerit": [
+                    {
+                      "fi": "tunnistaa hautausmaan kasvit ja tietää niiden kasvupaikkavaatimukset",
+                      "sv": "känner igen växterna på en begravningsplats och känner till deras krav på växtplats",
+                      "_id": "612078"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "6",
+                  "kriteerit": []
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Hautausmaan jätehuoltosuunnitelman mukainen toiminta",
+                "sv": "Hänsyn till begravningsplatsens avfallshanteringsplan",
+                "_id": "612079"
+              },
+              "selite": {
+                "_tunniste": "a47f88a2-4060-4786-9014-020426d198f1",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3325613"
+              },
+              "_arviointiAsteikko": "3",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "7",
+                  "kriteerit": [
+                    {
+                      "fi": "lajittelee jätteet ja hoitaa kompostia.",
+                      "sv": "sorterar avfallet och sköter komposten.",
+                      "_id": "612102"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "9",
+                  "kriteerit": [
+                    {
+                      "fi": "lajittelee jätteet ja hoitaa kompostia sekä tuntee hautausmaatoiminnan ympäristövaikutukset.",
+                      "sv": "sorterar avfallet och sköter komposten samt känner till begravningsverksamhetens inverkan på miljön.",
+                      "_id": "612101"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "8",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "5",
+                  "kriteerit": [
+                    {
+                      "fi": "lajittelee jätteet.",
+                      "sv": "sorterar avfallet.",
+                      "_id": "612100"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "6",
+                  "kriteerit": []
+                }
+              ]
+            }
+          ],
+          "koodi": {
+            "nimi": null,
+            "arvo": null,
+            "uri": "ammattitaitovaatimukset_12134",
+            "koodisto": "ammattitaitovaatimukset",
+            "versio": null
+          }
+        },
+        {
+          "otsikko": {
+            "fi": "4. Elinikäisen oppimisen avaintaidot",
+            "sv": "4. Nyckelkompetenser för livslångt lärande",
+            "_id": "612103"
+          },
+          "arvioinninKohteet": [
+            {
+              "otsikko": {
+                "fi": "Oppiminen ja ongelmanratkaisu",
+                "sv": "Lärande och problemlösning",
+                "_id": "612104"
+              },
+              "selite": {
+                "_tunniste": "2d28807c-2cc3-40e1-bb06-6a5f643701b9",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3325614"
+              },
+              "_arviointiAsteikko": "3",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "5",
+                  "kriteerit": [
+                    {
+                      "fi": "tunnistaa työtilanteeseen liittyvän ongelman",
+                      "sv": "känner igen de problem som hänför sig till en arbetssituation",
+                      "_id": "612105"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "9",
+                  "kriteerit": [
+                    {
+                      "fi": "tunnistaa työtilanteeseen liittyvän ongelman ja ratkaisee sen",
+                      "sv": "känner igen problem som hänför sig till en arbetssituation och löser problemet",
+                      "_id": "612107"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "6",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "7",
+                  "kriteerit": [
+                    {
+                      "fi": "tunnistaa työtilanteeseen liittyvän ongelman ja pyytää tarvittaessa apua sen ratkaisemiseksi",
+                      "sv": "känner igen problem som hänför sig till en arbetssituation och begär vid behov hjälp för att lösa det",
+                      "_id": "612106"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "8",
+                  "kriteerit": []
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Vuorovaikutus ja yhteistyö",
+                "sv": "Interaktion och samarbete",
+                "_id": "612108"
+              },
+              "selite": {
+                "_tunniste": "cb3253c7-8e19-4278-969c-f95367ae96e7",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3325615"
+              },
+              "_arviointiAsteikko": "3",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "8",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "6",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "5",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii tutuissa vuorovaikutustilanteissa annettujen ohjeiden mukaan",
+                      "sv": "verkar i bekanta interaktionssituationer enligt instruktionerna",
+                      "_id": "612110"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "7",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii erilaisissa vuorovaikutustilanteissa tilanteen vaatimalla tavalla",
+                      "sv": "verkar i olika interaktionssituationer så som situationen kräver",
+                      "_id": "612109"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "9",
+                  "kriteerit": [
+                    {
+                      "fi": "toimii erilaisissa vuorovaikutustilanteissa tilanteen vaatimalla tavalla ja tuo esille oman näkökantansa",
+                      "sv": "verkar i olika interaktionssituationer så som situationen kräver och för fram sin egen åsikt",
+                      "_id": "612111"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Ammattietiikka",
+                "sv": "Yrkesetik",
+                "_id": "612112"
+              },
+              "selite": {
+                "_tunniste": "22500df4-e98a-4e92-abeb-77355852f123",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3325616"
+              },
+              "_arviointiAsteikko": "3",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "7",
+                  "kriteerit": [
+                    {
+                      "fi": "ottaa pukeutumisessaan ja käyttäytymisessään huomioon alueen erikoisluonteen",
+                      "sv": "beaktar områdets särdrag i sin klädsel och i sitt uppförande",
+                      "_id": "612117"
+                    },
+                    {
+                      "fi": "noudattaa työaikoja ja työohjeita",
+                      "sv": "följer arbetstider och arbetsinstruktioner",
+                      "_id": "612118"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "9",
+                  "kriteerit": [
+                    {
+                      "fi": "ottaa pukeutumisessaan ja käyttäytymisessään huomioon alueen erikoisluonteen",
+                      "sv": "beaktar områdets särdrag i sin klädsel och i sitt uppförande",
+                      "_id": "612113"
+                    },
+                    {
+                      "fi": "noudattaa työaikoja ja työohjeita",
+                      "sv": "följer arbetstider och arbetsinstruktioner",
+                      "_id": "612114"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "8",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "5",
+                  "kriteerit": [
+                    {
+                      "fi": "ottaa pukeutumisessaan ja käyttäytymisessään huomioon alueen erikoisluonteen",
+                      "sv": "beaktar områdets särdrag i sin klädsel och i sitt uppförande",
+                      "_id": "612115"
+                    },
+                    {
+                      "fi": "noudattaa työaikoja ja työohjeita",
+                      "sv": "följer arbetstider och arbetsinstruktioner",
+                      "_id": "612116"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "6",
+                  "kriteerit": []
+                }
+              ]
+            },
+            {
+              "otsikko": {
+                "fi": "Terveys, turvallisuus ja toimintakyky",
+                "sv": "Hälsa, säkerhet och funktionsförmåga",
+                "_id": "612119"
+              },
+              "selite": {
+                "_tunniste": "3de97d9b-4413-4fb3-adda-53fabfc908a6",
+                "fi": "Opiskelija",
+                "sv": "Den studerande",
+                "_id": "3325617"
+              },
+              "_arviointiAsteikko": "3",
+              "osaamistasonKriteerit": [
+                {
+                  "_osaamistaso": "6",
+                  "kriteerit": []
+                },
+                {
+                  "_osaamistaso": "9",
+                  "kriteerit": [
+                    {
+                      "fi": "noudattaa työstä annettuja työsuojeluohjeita ja huomioi työympäristön turvallisuuden sekä tiedottaa havaitsemistaan vaaroista.",
+                      "sv": "följer arbetarskyddsanvisningarna och beaktar säkerheten i arbetsmiljön samt rapporterar om faror som han/hon har observerat.",
+                      "_id": "612130"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "5",
+                  "kriteerit": [
+                    {
+                      "fi": "noudattaa työstä annettuja työsuojeluohjeita.",
+                      "sv": "följer arbetarskyddsanvisningarna.",
+                      "_id": "612132"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "7",
+                  "kriteerit": [
+                    {
+                      "fi": "noudattaa työstä annettuja työsuojeluohjeita ja huomioi työympäristön turvallisuuden.",
+                      "sv": "följer arbetarskyddsanvisningarna och beaktar säkerheten i arbetsmiljön.",
+                      "_id": "612131"
+                    }
+                  ]
+                },
+                {
+                  "_osaamistaso": "8",
+                  "kriteerit": []
+                }
+              ]
+            }
+          ],
+          "koodi": {
+            "nimi": null,
+            "arvo": null,
+            "uri": "ammattitaitovaatimukset_12135",
+            "koodisto": "ammattitaitovaatimukset",
+            "versio": null
+          }
+        }
+      ]
+    },
+    "ammattitaitovaatimuksetLista": [],
+    "ammattitaitovaatimukset": {
+      "_tunniste": "7239a53c-d1c8-4c5c-96fd-d1592a0486d1",
+      "fi": "<p>Opiskelija osaa</p>\n\n<ul>\n\t<li>rakentaa ja ylläpitää hautausmaiden viheralueita</li>\n\t<li>ylläpitää hautausmaiden kalusteita ja laitteita</li>\n\t<li>käyttää hautausmaiden viheralueilla tarvittavia koneita ja työvälineitä</li>\n\t<li>toimia työssään alueen erityispiirteiden vaatimalla tavalla</li>\n\t<li>ottaa työssään huomioon toiminnan turvallisuuden ja vastuullisuuden</li>\n\t<li>käyttää henkilökohtaisia suojaimia ja ylläpitää työkykyä</li>\n\t<li>edistää kestävän kehityksen toimintatapoja.</li>\n</ul>",
+      "sv": "<p>Den studerande kan</p>\n\n<ul>\n\t<li>bygga eller underhålla begravningsplatsers grönområden</li>\n\t<li>underhålla utemöbler och anordningar på begravningsplatser</li>\n\t<li>använda de maskiner och anordningar som behövs på en begravningsplats</li>\n\t<li>verka i sitt arbete på ett sätt som är lämpligt med tanke på arbetsområdets speciella karaktär</li>\n\t<li>beakta säkerhet och ansvar i sitt arbete</li>\n\t<li>använda personlig skyddsutrustning i sitt arbete och upprätthålla sin arbetsförmåga</li>\n\t<li>främja verksamhetsmetoder för en hållbar utveckling.</li>\n</ul>",
+      "_id": "3846455"
+    },
+    "ammattitaidonOsoittamistavat": {
+      "_tunniste": "2dbb8313-c4b2-46f0-a6b6-cea6cb1f741f",
+      "fi": "<p>Opiskelija osoittaa ammattitaitonsa näytössä tekemällä hautausmaan rakentamiseen tai ylläpitoon liittyviä töitä. Siltä osin kuin tutkinnon osassa vaadittua ammattitaitoa ei voida arvioida näytön perusteella, ammattitaidon osoittamista täydennetään yksilöllisesti muilla tavoin.</p>",
+      "sv": "<p>Den studerande visar sin yrkesskicklighet i ett yrkesprov genom att utföra arbeten som hänför sig till anläggning eller underhåll av begravningsplatser. Till de delar som den yrkesskicklighet som krävs i examensdelen inte kan bedömas genom ett yrkesprov kompletteras visandet av yrkesskickligheten individuellt på andra sätt.</p>",
+      "_id": "4049618"
+    },
+    "kuvaus": null,
+    "koodi": {
+      "nimi": {
+        "sv": "Underhåll av grönområden vid begravningsplatser",
+        "fi": "Hautausmaiden viheralueista huolehtiminen"
+      },
+      "arvo": "106003",
+      "uri": "tutkinnonosat_106003",
+      "koodisto": "tutkinnonosat",
+      "versio": null
+    },
+    "koodiUri": "tutkinnonosat_106003",
+    "koodiArvo": "106003",
+    "osaAlueet": [],
+    "vapaatTekstit": [],
+    "tyyppi": "normaali",
+    "valmaTelmaSisalto": null,
+    "ammattitaitovaatimukset2019": null,
+    "_geneerinenArviointiasteikko": null,
+    "osanTyyppi": "tutkinnonosa"
+  }
+]

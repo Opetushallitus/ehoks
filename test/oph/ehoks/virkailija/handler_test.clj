@@ -7,9 +7,13 @@
             [oph.ehoks.utils :as utils]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.hoks.hoks :refer [insert-kyselylinkki!
+                                         update-kyselylinkki!]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
-            [oph.ehoks.db.db-operations.oppija :as db-oppija]))
+            [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]))
+
+(t/use-fixtures :once utils/migrate-database)
 
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
@@ -53,7 +57,8 @@
         (t/is (some? (:opintopolku-logout-url-fi data)))
         (t/is (some? (:opintopolku-logout-url-sv data)))
         (t/is (some? (:eperusteet-peruste-url data)))
-        (t/is (some? (:virkailija-login-url data)))))))
+        (t/is (some? (:virkailija-login-url data)))
+        (t/is (some? (:raamit-url data)))))))
 
 (defn with-test-virkailija
   ([request virkailija]
@@ -67,15 +72,31 @@
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
            {:status 200
-            :body {:oppilaitos {:oid "1.2.246.562.10.12944436166"}}}
+            :body {:oid "1.2.246.562.15.00000000001"
+                   :oppilaitos {:oid "1.2.246.562.10.12944436166"}}}
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.760000000010")
            {:status 200
-            :body {:oppilaitos {:oid "1.2.246.562.10.1200000000010"}}}
+            :body {:oid "1.2.246.562.15.760000000010"
+                   :oppilaitos {:oid "1.2.246.562.10.1200000000010"}}}
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.000000000020")
            {:status 200
-            :body {:oppilaitos {:oid "1.2.246.562.10.1200000000200"}}}))]
+            :body {:oid "1.2.246.562.15.000000000020"
+                   :oppilaitos {:oid "1.2.246.562.10.1200000000200"}}}))
+       (fn [url options]
+         (cond
+           (.endsWith
+             url "/koski/api/sure/oids")
+           {:status 200
+            :body [{:henkilö {:oid "1.2.246.562.24.44000000001"}
+                    :opiskeluoikeudet
+                    [{:oid "1.2.246.562.15.76000000001"
+                      :oppilaitos {:oid "1.2.246.562.10.12000000000"
+                                   :nimi {:fi "TestiFi"
+                                          :sv "TestiSv"
+                                          :en "TestiEn"}}
+                      :alkamispäivä "2020-03-12"}]}]}))]
       (let [session "12345678-1234-1234-1234-1234567890ab"
             cookie (str "ring-session=" session)
             store (atom
@@ -122,23 +143,6 @@
                          {:oppilaitos-oid "1.2.246.562.10.12000000001"}))]
         (t/is (= (:status response) 403))))))
 
-(defn- add-oppija [oppija]
-  (db-oppija/insert-oppija!
-    {:oid (:oid oppija)
-     :nimi (:nimi oppija)})
-  (db-opiskeluoikeus/insert-opiskeluoikeus!
-    {:oid (:opiskeluoikeus-oid oppija)
-     :oppija_oid (:oid oppija)
-     :oppilaitos_oid (:oppilaitos-oid oppija)
-     :koulutustoimija_oid (:koulutustoimija-oid oppija)
-     :tutkinto-nimi (:tutkinto-nimi oppija
-                                    {:fi "Testialan perustutkinto"
-                                     :sv "Grundexamen inom testsbranschen"
-                                     :en "Testing"})
-     :osaamisala-nimi (:osaamisala-nimi oppija
-                                        {:fi "Osaamisala suomeksi"
-                                         :sv "På svenska"})}))
-
 (defn- get-search
   ([params virkailija]
     (let [response
@@ -159,35 +163,39 @@
   ([params] (get-search params nil)))
 
 (defn- add-oppijat []
-  (add-oppija {:oid "1.2.246.562.24.44000000001"
-               :nimi "Teuvo Testaaja"
-               :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
-               :oppilaitos-oid "1.2.246.562.10.12000000000"
-               :tutkinto-nimi {:fi "Testitutkinto 1" :sv "Testskrivning 1"}
-               :osaamisala-nimi
-               {:fi "Testiosaamisala numero 1" :sv "Kunnande 1"}
-               :koulutustoimija-oid ""})
-  (add-oppija {:oid "1.2.246.562.24.44000000002"
-               :nimi "Tellervo Testi"
-               :opiskeluoikeus-oid "1.2.246.562.15.76000000002"
-               :oppilaitos-oid "1.2.246.562.10.12000000001"
-               :tutkinto-nimi {:fi "Testitutkinto 2" :sv "Testskrivning 2"}
-               :osaamisala-nimi
-               {:fi "Testiosaamisala numero 2" :sv "Kunnande 2"}
-               :koulutustoimija-oid ""})
-  (add-oppija {:oid "1.2.246.562.24.44000000003"
-               :nimi "Olli Oppija"
-               :opiskeluoikeus-oid "1.2.246.562.15.76000000003"
-               :oppilaitos-oid "1.2.246.562.10.12000000000"
-               :tutkinto-nimi {:fi "Testitutkinto 3" :sv "Testskrivning 3"}
-               :osaamisala-nimi {:fi "Osaamisala Kolme" :sv "Kunnande 3"}
-               :koulutustoimija-oid ""})
-  (add-oppija {:oid "1.2.246.562.24.44000000004"
-               :nimi "Oiva Oppivainen"
-               :opiskeluoikeus-oid "1.2.246.562.15.76000000004"
-               :oppilaitos-oid "1.2.246.562.10.12000000000"
-               :tutkinto-nimi {:fi "Tutkinto 4"}
-               :koulutustoimija-oid ""}))
+  (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                       :nimi "Teuvo Testaaja"
+                       :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
+                       :oppilaitos-oid "1.2.246.562.10.12000000000"
+                       :tutkinto-nimi {:fi "Testitutkinto 1"
+                                       :sv "Testskrivning 1"}
+                       :osaamisala-nimi
+                       {:fi "Testiosaamisala numero 1" :sv "Kunnande 1"}
+                       :koulutustoimija-oid ""})
+  (v-utils/add-oppija {:oid "1.2.246.562.24.44000000002"
+                       :nimi "Tellervo Testi"
+                       :opiskeluoikeus-oid "1.2.246.562.15.76000000002"
+                       :oppilaitos-oid "1.2.246.562.10.12000000001"
+                       :tutkinto-nimi {:fi "Testitutkinto 2"
+                                       :sv "Testskrivning 2"}
+                       :osaamisala-nimi
+                       {:fi "Testiosaamisala numero 2" :sv "Kunnande 2"}
+                       :koulutustoimija-oid ""})
+  (v-utils/add-oppija {:oid "1.2.246.562.24.44000000003"
+                       :nimi "Olli Oppija"
+                       :opiskeluoikeus-oid "1.2.246.562.15.76000000003"
+                       :oppilaitos-oid "1.2.246.562.10.12000000000"
+                       :tutkinto-nimi {:fi "Testitutkinto 3"
+                                       :sv "Testskrivning 3"}
+                       :osaamisala-nimi {:fi "Osaamisala Kolme"
+                                         :sv "Kunnande 3"}
+                       :koulutustoimija-oid ""})
+  (v-utils/add-oppija {:oid "1.2.246.562.24.44000000004"
+                       :nimi "Oiva Oppivainen"
+                       :opiskeluoikeus-oid "1.2.246.562.15.76000000004"
+                       :oppilaitos-oid "1.2.246.562.10.12000000000"
+                       :tutkinto-nimi {:fi "Tutkinto 4"}
+                       :koulutustoimija-oid ""}))
 
 (t/deftest get-oppijat-without-filtering
   (t/testing "GET virkailija oppijat without any search filters"
@@ -271,13 +279,14 @@
   (t/testing
    "Doesn't have swedish translation and no search filters, shouldn't filter"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000003"
-                   :nimi "Olli Oppija"
-                   :opiskeluoikeus-oid "1.2.246.562.15.76000000003"
-                   :oppilaitos-oid "1.2.246.562.10.12000000000"
-                   :tutkinto-nimi {:fi "Testitutkinto 3" :sv "Testskrivning 3"}
-                   :osaamisala-nimi {:fi "Osaamisala Kolme"}
-                   :koulutustoimija-oid ""})
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000003"
+                           :nimi "Olli Oppija"
+                           :opiskeluoikeus-oid "1.2.246.562.15.76000000003"
+                           :oppilaitos-oid "1.2.246.562.10.12000000000"
+                           :tutkinto-nimi {:fi "Testitutkinto 3"
+                                           :sv "Testskrivning 3"}
+                           :osaamisala-nimi {:fi "Osaamisala Kolme"}
+                           :koulutustoimija-oid ""})
       (let [body (get-search {:order-by-column "tutkinto"
                               :desc true
                               :locale "sv"})]
@@ -289,13 +298,13 @@
 (t/deftest test-list-virkailija-oppija-with-multi-opiskeluoikeus
   (t/testing "GET virkailija oppijat"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Teuvo Testaaja"
-                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
-                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                   :tutkinto-nimi {:fi "Testitutkinto 1"}
-                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
-                   :koulutustoimija-oid ""})
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                           :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
       (db-opiskeluoikeus/insert-opiskeluoikeus!
         {:oid "1.2.246.562.15.760000000020"
          :oppija_oid "1.2.246.562.24.44000000001"
@@ -330,11 +339,11 @@
 (t/deftest test-virkailija-with-no-read
   (t/testing "Prevent GET virkailija oppijat without read privilege"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Testi 1"
-                   :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
-                   :oppilaitos-oid "1.2.246.562.10.12000000000"
-                   :koulutustoimija-oid ""})
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                           :nimi "Testi 1"
+                           :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
+                           :oppilaitos-oid "1.2.246.562.10.12000000000"
+                           :koulutustoimija-oid ""})
       (let [response (with-test-virkailija
                        (mock/request
                          :get
@@ -358,11 +367,11 @@
              {:status 200
               :body {:parentOidPath "|"}}))]
 
-        (add-oppija {:oid "1.2.246.562.24.44000000001"
-                     :nimi "Testi 1"
-                     :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
-                     :oppilaitos-oid "1.2.246.562.10.12000000000"
-                     :koulutustoimija-oid ""})
+        (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                             :nimi "Testi 1"
+                             :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
+                             :oppilaitos-oid "1.2.246.562.10.12000000000"
+                             :koulutustoimija-oid ""})
         (t/is
           (not
             (m/virkailija-has-access?
@@ -387,13 +396,13 @@
 (t/deftest test-virkailija-hoks-write-forbidden
   (t/testing "Virkailija HOKS write is forbidden"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Teuvo Testaaja"
-                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
-                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                   :tutkinto-nimi {:fi "Testitutkinto 1"}
-                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
-                   :koulutustoimija-oid ""})
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                           :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
       (db-opiskeluoikeus/insert-opiskeluoikeus!
         {:oid "1.2.246.562.15.760000000020"
          :oppija_oid "1.2.246.562.24.44000000001"
@@ -421,33 +430,47 @@
                  :privileges #{:read}}]})]
         (t/is (= (:status response) 403))))))
 
+(defn- create-oppija-for-hoks-post [oppilaitos-oid]
+  (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                       :nimi "Teuvo Testaaja"
+                       :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
+                       :oppilaitos-oid oppilaitos-oid
+                       :tutkinto-nimi {:fi "Testitutkinto 1"}
+                       :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                       :koulutustoimija-oid ""}))
+
+(defn- post-new-hoks [opiskeluoikeus-oid organisaatio-oid]
+  (with-test-virkailija
+    (mock/json-body
+      (mock/request
+        :post
+        (str
+          base-url
+          "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
+      {:opiskeluoikeus-oid opiskeluoikeus-oid
+       :oppija-oid "1.2.246.562.24.44000000001"
+       :ensikertainen-hyvaksyminen "2018-12-15"
+       :osaamisen-hankkimisen-tarve false})
+    {:name "Testivirkailija"
+     :kayttajaTyyppi "VIRKAILIJA"
+     :oidHenkilo "1.2.246.562.24.44000000333"
+     :organisation-privileges
+     [{:oid organisaatio-oid
+       :privileges #{:write :read :update :delete}}]}))
+
 (t/deftest test-virkailija-hoks-forbidden
   (t/testing "Virkailija HOKS forbidden"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Teuvo Testaaja"
-                   :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
-                   :oppilaitos-oid "1.2.246.562.10.12000000000"
-                   :tutkinto-nimi {:fi "Testitutkinto 1"}
-                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
-                   :koulutustoimija-oid ""})
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
+                           :oppilaitos-oid "1.2.246.562.10.12000000000"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
       (let [response
-            (with-test-virkailija
-              (mock/json-body
-                (mock/request
-                  :post
-                  (str
-                    base-url
-                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
-                {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                 :oppija-oid "1.2.246.562.24.44000000001"
-                 :ensikertainen-hyvaksyminen "2018-12-15"
-                 :osaamisen-hankkimisen-tarve false})
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.12000000001"
-                 :privileges #{:write :read :update :delete}}]})]
+            (post-new-hoks
+              "1.2.246.562.15.00000000001" "1.2.246.562.10.12000000001")]
         (t/is (= (:status response) 403)))
       (let [hoks-db (db-hoks/insert-hoks!
                       {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
@@ -470,77 +493,69 @@
                  :privileges #{:write :read :update :delete}}]})]
         (t/is (= (:status response) 403))))))
 
+(defn- get-created-hoks [post-response]
+  (with-test-virkailija
+    (mock/request
+      :get
+      (get-in (utils/parse-body (:body post-response)) [:data :uri]))
+    {:name "Testivirkailija"
+     :kayttajaTyyppi "VIRKAILIJA"
+     :oidHenkilo "1.2.246.562.24.44000000333"
+     :organisation-privileges
+     [{:oid "1.2.246.562.10.12000000001"
+       :privileges #{:write :read :update :delete}}]}))
+
 (t/deftest test-virkailija-create-hoks
   (t/testing "POST hoks virkailija"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Teuvo Testaaja"
-                   :opiskeluoikeus-oid "1.2.246.562.15.76000000001"
-                   :oppilaitos-oid "1.2.246.562.10.12000000001"
-                   :tutkinto-nimi {:fi "Testitutkinto 1"}
-                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
-                   :koulutustoimija-oid ""})
-      (let [response
-            (with-test-virkailija
-              (mock/json-body
-                (mock/request
-                  :post
-                  (str
-                    base-url
-                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
-                {:opiskeluoikeus-oid "1.2.246.562.15.76000000001"
-                 :oppija-oid "1.2.246.562.24.44000000001"
-                 :ensikertainen-hyvaksyminen "2018-12-15"
-                 :osaamisen-hankkimisen-tarve false})
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :oidHenkilo "1.2.246.562.24.44000000333"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.12000000001"
-                 :privileges #{:write :read :update :delete}}]})
-            get-response
-            (with-test-virkailija
-              (mock/request
-                :get
-                (get-in (utils/parse-body (:body response)) [:data :uri]))
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :oidHenkilo "1.2.246.562.24.44000000333"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.12000000001"
-                 :privileges #{:write :read :update :delete}}]})]
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (let [post-response
+            (post-new-hoks
+              "1.2.246.562.15.76000000001" "1.2.246.562.10.12000000001")
+            get-response (get-created-hoks post-response)]
         (t/is (get-in (utils/parse-body (:body get-response))
                       [:data :manuaalisyotto]))
-        (t/is (= (:status response) 200))))))
+        (t/is (= (:status post-response) 200))))))
+
+(defn mocked-get-opiskeluoikeus-info-raw [oid]
+  (throw (ex-info "Opiskeluoikeus fetch failed" {:status 404})))
+
+(t/deftest test-hoks-create-when-opiskeluoikeus-fetch-fails
+  (t/testing "Error thrown from koski is propagated to handler"
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info-raw
+                    mocked-get-opiskeluoikeus-info-raw]
+        (let [post-response
+              (post-new-hoks
+                "1.2.246.562.15.76000000002" "1.2.246.562.10.12000000001")]
+          (t/is (= (:status post-response) 400))
+          (t/is (= (utils/parse-body (:body post-response))
+                   {:error "Opiskeluoikeus not found in Koski"})))))))
+
+(defn mocked-find-student-by-oid [oid]
+  (throw (ex-info "Opiskelija fetch failed" {:status 404})))
+
+(t/deftest test-hoks-create-when-oppijanumerorekisteri-fails
+  (t/testing "Error thrown from oppijanumerorekisteri is propagated to handler"
+    (utils/with-db
+      (with-redefs [oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
+                    mocked-find-student-by-oid]
+        (let [post-response
+              (post-new-hoks
+                "1.2.246.562.15.76000000002" "1.2.246.562.10.12000000001")]
+          (t/is (= (:status post-response) 400))
+          (t/is (= (utils/parse-body (:body post-response))
+                   {:error "Oppija not found in Oppijanumerorekisteri"})))))))
 
 (t/deftest test-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Teuvo Testaaja"
-                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
-                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                   :tutkinto-nimi {:fi "Testitutkinto 1"}
-                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
-                   :koulutustoimija-oid ""})
-      (let [response
-            (with-test-virkailija
-              (mock/json-body
-                (mock/request
-                  :post
-                  (str
-                    base-url
-                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
-                {:opiskeluoikeus-oid "1.2.246.562.15.760000000010"
-                 :oppija-oid "1.2.246.562.24.44000000001"
-                 :ensikertainen-hyvaksyminen "2018-12-15"
-                 :osaamisen-hankkimisen-tarve false})
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.1200000000010"
-                 :privileges #{:write :read :update :delete}}]})
-            body (utils/parse-body (:body response))
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (let [post-response
+            (post-new-hoks
+              "1.2.246.562.15.760000000010" "1.2.246.562.10.1200000000010")
+            body (utils/parse-body (:body post-response))
             hoks-url (get-in body [:data :uri])
             patch-response
             (with-test-virkailija
@@ -572,13 +587,13 @@
 (t/deftest test-prevent-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Teuvo Testaaja"
-                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
-                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                   :tutkinto-nimi {:fi "Testitutkinto 1"}
-                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
-                   :koulutustoimija-oid ""})
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                           :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
       (db-opiskeluoikeus/insert-opiskeluoikeus!
         {:oid "1.2.246.562.15.760000000020"
          :oppija_oid "1.2.246.562.24.44000000001"
@@ -620,6 +635,60 @@
                 {:oid "1.2.246.562.10.1200000000010"
                  :privileges #{:read}}]})]
         (t/is (= (:status patch-response) 403))))))
+
+(t/deftest prevent-patch-hoks-with-updated-opiskeluoikeus
+  (t/testing "PATCH hoks virkailija"
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (let [post-response
+            (post-new-hoks
+              "1.2.246.562.15.760000000010" "1.2.246.562.10.1200000000010")
+            body (utils/parse-body (:body post-response))
+            hoks-url (get-in body [:data :uri])
+            patch-response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :patch
+                  hoks-url)
+                {:osaamisen-hankkimisen-tarve true
+                 :id (get-in body [:meta :id])
+                 :opiskeluoikeus-oid "1.2.246.562.15.760000000011"})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})]
+        (t/is (= (:status patch-response) 400))
+        (t/is (= (utils/parse-body (:body patch-response))
+                 {:error "Opiskeluoikeus update not allowed!"}))))))
+
+(t/deftest prevent-patch-hoks-with-updated-oppija-oid
+  (t/testing "PATCH hoks virkailija"
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (let [post-response
+            (post-new-hoks
+              "1.2.246.562.15.760000000010" "1.2.246.562.10.1200000000010")
+            body (utils/parse-body (:body post-response))
+            hoks-url (get-in body [:data :uri])
+            patch-response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :patch
+                  hoks-url)
+                {:osaamisen-hankkimisen-tarve true
+                 :id (get-in body [:meta :id])
+                 :oppija-oid "1.2.246.562.10.1200000000011"})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})]
+        (t/is (= (:status patch-response) 400))
+        (t/is (= (utils/parse-body (:body patch-response))
+                 {:error "Oppija-oid update not allowed!"}))))))
 
 (def hoks-data
   {:opiskeluoikeus-oid "1.2.246.562.15.760000000010"
@@ -684,13 +753,13 @@
 (t/deftest test-virkailija-put-hoks
   (t/testing "PUT hoks virkailija"
     (utils/with-db
-      (add-oppija {:oid "1.2.246.562.24.44000000001"
-                   :nimi "Teuvo Testaaja"
-                   :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
-                   :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                   :tutkinto-nimi {:fi "Testitutkinto 1"}
-                   :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
-                   :koulutustoimija-oid ""})
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                           :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
       (let [response
             (with-test-virkailija
               (mock/json-body
@@ -734,7 +803,225 @@
                [{:oid "1.2.246.562.10.1200000000010"
                  :privileges #{:write :read :update :delete}}]})]
         (let [body (utils/parse-body (:body get-response))]
-          (utils/eq (get-in body
-                            [:data :hankittavat-ammat-tutkinnon-osat])
+          (utils/eq (utils/dissoc-module-ids
+                      (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
                     hato-data))
         (t/is (= (:status put-response) 204))))))
+
+(t/deftest test-put-prevent-updating-opiskeluoikeus
+  (t/testing "PUT hoks virkailija"
+    (utils/with-db
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                           :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
+      (let [response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :post
+                  (str
+                    base-url
+                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
+                hoks-data)
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})
+            body (utils/parse-body (:body response))
+            hoks-url (get-in body [:data :uri])
+            put-response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :put
+                  hoks-url)
+                {:id (get-in body [:meta :id])
+                 :osaamisen-hankkimisen-tarve true
+                 :ensikertainen-hyvaksyminen "2018-12-15"
+                 :opiskeluoikeus-oid "1.2.246.562.15.760000000011"
+                 :hankittavat-ammat-tutkinnon-osat
+                 hato-data})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})
+            put-body (utils/parse-body (:body put-response))]
+        (t/is (= (:status put-response) 400))
+        (t/is (= put-body
+                 {:error "Opiskeluoikeus update not allowed!"}))))))
+
+(t/deftest test-put-prevent-updating-oppija-oid
+  (t/testing "PUT hoks virkailija"
+    (utils/with-db
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                           :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
+      (let [response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :post
+                  (str
+                    base-url
+                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
+                hoks-data)
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})
+            body (utils/parse-body (:body response))
+            hoks-url (get-in body [:data :uri])
+            put-response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :put
+                  hoks-url)
+                {:id (get-in body [:meta :id])
+                 :osaamisen-hankkimisen-tarve true
+                 :ensikertainen-hyvaksyminen "2018-12-15"
+                 :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                 :oppija-oid "1.2.246.562.24.44000000002"
+                 :hankittavat-ammat-tutkinnon-osat
+                 hato-data})
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}}]})
+            put-body (utils/parse-body (:body put-response))]
+        (t/is (= (:status put-response) 400))
+        (t/is (= put-body
+                 {:error "Oppija-oid update not allowed!"}))))))
+
+(t/deftest test-get-amount
+  (t/testing "Test getting the amount of hokses"
+    (utils/with-db
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                           :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
+      (db-hoks/insert-hoks!
+        {:opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+         :oppija-oid "1.2.246.562.24.44000000001"
+         :osaamisen-hankkimisen-tarve false
+         :ensikertainen-hyvaksyminen
+         (java.time.LocalDate/of 2018 12 15)})
+      (let [amount-response
+            (with-test-virkailija
+              (mock/request
+                :get
+                (str
+                  base-url
+                  "/virkailija/system-info"))
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.1200000000010"
+                 :privileges #{:write :read :update :delete}
+                 :oikeus "OPHPAAKAYTTAJA"
+                 :palvelu "EHOKS"
+                 :roles {:oph-super-user true}}]})
+            amount-body (utils/parse-body (:body amount-response))]
+        (t/is (= (:status amount-response) 200))
+        (t/is (= (:hoksit (:data amount-body)) {:amount 1}))))))
+
+(t/deftest test-get-kyselylinkit
+  (t/testing "Test getting kyselylinkit"
+    (let [alkupvm (java.time.LocalDate/now)
+          loppupvm (.plusMonths (java.time.LocalDateTime/now) 1)]
+      (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status
+                    (fn [_]
+                      {:vastattu false
+                       :voimassa_loppupvm (str loppupvm "Z")})]
+        (utils/with-db
+          (v-utils/add-oppija
+            {:oid "1.2.246.562.24.44000000001"
+             :nimi "Teuvo Testaaja"
+             :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+             :oppilaitos-oid "1.2.246.562.10.1200000000010"
+             :koulutustoimija-oid "1.2.246.562.10.1200000000011"
+             :tutkinto-nimi {:fi "Testitutkinto 1"}
+             :osaamisala-nimi {:fi "Testiosaamisala numero 1"}})
+          (db-hoks/insert-hoks!
+            {:opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+             :oppija-oid "1.2.246.562.24.44000000001"
+             :osaamisen-hankkimisen-tarve false
+             :ensikertainen-hyvaksyminen
+             (java.time.LocalDate/of 2018 12 15)})
+          (insert-kyselylinkki!
+            {:kyselylinkki "https://kysely.linkki/ABC123"
+             :hoks-id 1
+             :tyyppi "aloittaneet"
+             :oppija-oid "1.2.246.562.24.44000000001"
+             :alkupvm alkupvm
+             :lahetystila "ei_lahetetty"})
+          (insert-kyselylinkki!
+            {:kyselylinkki "https://kysely.linkki/DEF456"
+             :hoks-id 1
+             :tyyppi "tutkinnonsuorittaneet"
+             :oppija-oid "1.2.246.562.24.44000000001"
+             :alkupvm alkupvm})
+          (let [resp (with-test-virkailija
+                       (mock/request
+                         :get
+                         (str
+                           base-url
+                           "/virkailija/oppijat/1.2.246.562.24.44000000001"
+                           "/hoksit/1/opiskelijapalaute"))
+                       {:name "Testivirkailija"
+                        :kayttajaTyyppi "VIRKAILIJA"
+                        :organisation-privileges
+                        [{:oid "1.2.246.562.10.1200000000010"
+                          :privileges #{:write :read :update :delete}
+                          :oikeus "OPHPAAKAYTTAJA"
+                          :palvelu "EHOKS"
+                          :roles {:oph-super-user true}}]})
+                body (utils/parse-body (:body resp))]
+            (t/is (= 200 (:status resp)))
+            (t/is (empty? (:data body))))
+          (update-kyselylinkki!
+            {:kyselylinkki "https://kysely.linkki/ABC123"
+             :lahetyspvm alkupvm
+             :sahkoposti "testi@testi.fi"
+             :lahetystila "viestintapalvelussa"})
+          (let [resp (with-test-virkailija
+                       (mock/request
+                         :get
+                         (str
+                           base-url
+                           "/virkailija/oppijat/1.2.246.562.24.44000000001"
+                           "/hoksit/1/opiskelijapalaute"))
+                       {:name "Testivirkailija"
+                        :kayttajaTyyppi "VIRKAILIJA"
+                        :organisation-privileges
+                        [{:oid "1.2.246.562.10.1200000000010"
+                          :privileges #{:write :read :update :delete}
+                          :oikeus "OPHPAAKAYTTAJA"
+                          :palvelu "EHOKS"
+                          :roles {:oph-super-user true}}]})
+                body (utils/parse-body (:body resp))]
+            (t/is (= 200 (:status resp)))
+            (t/is (= (first (:data body))
+                     {:hoks-id 1
+                      :tyyppi "aloittaneet"
+                      :oppija-oid "1.2.246.562.24.44000000001"
+                      :alkupvm (str alkupvm)
+                      :lahetyspvm (str alkupvm)
+                      :sahkoposti "testi@testi.fi"
+                      :lahetystila "viestintapalvelussa"
+                      :voimassa-loppupvm (str loppupvm "Z")}))))))))

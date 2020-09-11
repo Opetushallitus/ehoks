@@ -47,6 +47,7 @@
                       (generate-select-by (parse-sql (str (quote ~query-name))))
                       (read-sql-file (cstr/join (quote ~filename))))))
 
+(defq select-count-all-hoks "hoksit/select_count_all_hoksit.sql")
 (defq select-hoksit "hoksit/select.sql")
 (defq select-hoksit-by-oppija-oid)
 (defq select-hoksit-by-id)
@@ -74,6 +75,8 @@
 (defq select-oppijat-by-oid "oppijat/select_oppijat_by_oid.sql")
 (defq select-opiskeluoikeudet-by-oid
       "oppijat/select_opiskeluoikeudet_by_oid" .sql)
+(defq select-count-by-koulutustoimija
+      "opiskeluoikeudet/select_count_by_koulutustoimija.sql")
 (defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id)
 (def select-osaamisen-osoittamiset-by-ahato-id
@@ -216,5 +219,24 @@
       "sessions/select_by_session_key.sql")
 (defq select-user-settings-by-user-oid
       "settings/select_by_user_oid.sql")
-(defq select-hoks-tutkinnon-osa-shares
-      "tutkinnon_osa_shares/select_by_hoks_and_tutkinnon_osa.sql")
+(defq select-shared-link-by-uuid
+      "shared_modules/select_by_share_id.sql")
+(defq select-shared-module-links-by-module-uuid
+      "shared_modules/select_by_module_id.sql")
+(defq select-oppija-opiskeluoikeus-for-shared-link
+      "shared_modules/select-oppija-opiskeluoikeus-for-shared-link.sql")
+(defq select-hankittavat-paikalliset-tutkinnon-osat-by-module-id)
+(defq select-hankittavat-ammat-tutkinnon-osat-by-module-id)
+(defq select-hankittavat-yhteiset-tutkinnon-osat-by-module-id)
+(defq select-osaamisen-osoittamiset-by-module-id)
+(defq select-osaamisen-hankkimistavat-by-module-id)
+(defq select-kyselylinkit-by-oppija-oid
+      "hoksit/select_kyselylinkit_by_oppija_oid.sql")
+(defq select-paattyneet-tyoelamajaksot-hato
+      "heratepalvelu/select_paattyneet_tyoelamajaksot_hato.sql")
+(defq select-paattyneet-tyoelamajaksot-hpto
+      "heratepalvelu/select_paattyneet_tyoelamajaksot_hpto.sql")
+(defq select-paattyneet-tyoelamajaksot-hyto
+      "heratepalvelu/select_paattyneet_tyoelamajaksot_hyto.sql")
+(defq select-hankintakoulutus-oids-by-master-oid
+      "opiskeluoikeudet/select-hankintakoulutus-oids-by-master-oid.sql")

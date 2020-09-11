@@ -991,7 +991,7 @@
     "force": false,
     "locale": "fi",
     "key": "kirjautunut.opiskelusuunnitelmaniTitle",
-    "value": "Opiskelu­suunnitelmani"
+    "value": "Osaamisen hankkiminen"
   },
   {
     "accesscount": 0,
@@ -1005,7 +1005,7 @@
     "force": false,
     "locale": "fi",
     "key": "kirjautunut.title",
-    "value": "Omien opintojen suunnittelu"
+    "value": "Osaamisen kehittämissuunnitelmani"
   },
   {
     "accesscount": 0,
@@ -1439,7 +1439,7 @@
     "force": false,
     "locale": "fi",
     "key": "opiskelusuunnitelma.tavoitteetTitle",
-    "value": "Tavoitteeni ja opintojen eteneminen"
+    "value": "Opintojen eteneminen"
   },
   {
     "accesscount": 0,
@@ -1453,7 +1453,7 @@
     "force": false,
     "locale": "fi",
     "key": "opiskelusuunnitelma.title",
-    "value": "Opiskelusuunnitelmani"
+    "value": "Osaamisen hankkiminen"
   },
   {
     "accesscount": 0,

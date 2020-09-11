@@ -1,6 +1,9 @@
 (ns oph.ehoks.db.db-operations.hoks
   (:require [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as oo]
+            [oph.ehoks.db.db-operations.oppija :as op]
+            [oph.ehoks.external.organisaatio :as org]
             [clojure.java.jdbc :as jdbc]))
 
 (defn oppilaitos-oid-from-sql [m]
@@ -169,7 +172,8 @@
   (db-ops/from-sql m {:removals [:aiemmin_hankittu_yhteinen_tutkinnon_osa_id]}))
 
 (defn aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-to-sql [m]
-  (db-ops/to-sql m {:removals [:tarkentavat-tiedot-naytto]}))
+  (db-ops/to-sql m {:removals [:tarkentavat-tiedot-naytto
+                               :tarkentavat-tiedot-osaamisen-arvioija]}))
 
 (defn aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql [m]
   (db-ops/to-sql m {:removals [:osa-alueet
@@ -254,26 +258,29 @@
       (recur (str (java.util.UUID/randomUUID)))
       eid)))
 
-(defn insert-hoks! [hoks]
-  (jdbc/with-db-transaction
-    [conn (db-ops/get-db-connection)]
-    (when
-     (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
-                            (:opiskeluoikeus-oid hoks)]))
-      (throw (ex-info
-               "HOKS with given opiskeluoikeus already exists"
-               {:error :duplicate})))
-    (let [eid (generate-unique-eid)]
-      (first
-        (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid)))))))
+(defn insert-hoks!
+  ([hoks]
+    (insert-hoks! hoks (db-ops/get-db-connection)))
+  ([hoks db-conn]
+    (jdbc/with-db-transaction
+      [conn db-conn]
+      (when
+       (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
+                              (:opiskeluoikeus-oid hoks)]))
+        (throw (ex-info
+                 "HOKS with given opiskeluoikeus already exists"
+                 {:error :duplicate})))
+      (let [eid (generate-unique-eid)]
+        (first
+          (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid))))))))
 
 (defn update-hoks-by-id!
   ([id hoks]
     (db-ops/update! :hoksit (hoks-to-sql hoks)
                     ["id = ? AND deleted_at IS NULL" id]))
-  ([id hoks db]
+  ([id hoks db-conn]
     (db-ops/update! :hoksit (hoks-to-sql hoks)
-                    ["id = ? AND deleted_at IS NULL" id] db)))
+                    ["id = ? AND deleted_at IS NULL" id] db-conn)))
 
 (defn select-hoks-oppijat-without-index []
   (db-ops/query
@@ -290,3 +297,45 @@
 (defn select-hoks-opiskeluoikeudet-without-index-count []
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-index-count]))
+
+(defn select-kyselylinkit-by-oppija-oid [oid]
+  (db-ops/query
+    [queries/select-kyselylinkit-by-oppija-oid oid]
+    {:row-fn db-ops/from-sql}))
+
+(defn select-paattyneet-tyoelamajaksot [osa start end]
+  (case osa
+    "hpto" (map #(assoc % :tyyppi "hpto")
+                (db-ops/query
+                  [queries/select-paattyneet-tyoelamajaksot-hpto start end]))
+    "hato" (map #(assoc % :tyyppi "hato")
+                (db-ops/query
+                  [queries/select-paattyneet-tyoelamajaksot-hato start end]))
+    "hyto" (map #(assoc % :tyyppi "hyto")
+                (db-ops/query
+                  [queries/select-paattyneet-tyoelamajaksot-hyto start end]))))
+
+(defn select-count-all-hoks []
+  (db-ops/query
+    [queries/select-count-all-hoks]))
+
+(defn select-hoks-delete-confirm-info
+  "Hakee HOKSiin liittyviä tietoja poistamisen varmistusdialogia varten"
+  [hoks-id]
+  (let [hoks (select-hoks-by-id hoks-id)
+        oppija (op/select-oppija-by-oid (:oppija-oid hoks))
+        oo (oo/select-opiskeluoikeus-by-oid (:opiskeluoikeus-oid hoks))
+        organisaatio (org/get-organisaatio-info (:oppilaitos-oid oo))]
+    {:nimi (:nimi oppija)
+     :hoksId (:id hoks)
+     :oppilaitosNimi (get-in organisaatio [:nimi] {:fi "" :sv ""})
+     :tutkinnonNimi (get-in oo [:tutkinto-nimi] {:fi "" :sv ""})
+     :opiskeluoikeusOid (:opiskeluoikeus-oid hoks)
+     :oppilaitosOid (:oppilaitos-oid oo)}))
+
+(defn delete-hoks-by-hoks-id
+  "Poistaa HOKSin pysyvästi id:n perusteella"
+  [hoks-id]
+  (let [hoks (select-hoks-by-id hoks-id)]
+    (db-ops/delete! :hoksit ["id = ?" hoks-id])
+    (db-ops/delete! :opiskeluoikeudet ["oid = ?" (:opiskeluoikeus-oid hoks)])))

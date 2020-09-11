@@ -31,13 +31,32 @@
          :yhteystietoTyyppi :type}))
     contact-item))
 
-(defn- convert-contacts [group]
+(defn- has-value [contact]
+  (some? (:value contact)))
+
+(defn- remove-empty-contact-values [contact-item]
+  (filter has-value contact-item))
+
+(defn- convert-contacts [contact-groups]
   (map
     #(-> %
          (select-keys [:id :yhteystieto])
          (rename-keys {:yhteystieto :contact})
-         (update :contact convert-contact-values))
-    group))
+         (update :contact convert-contact-values)
+         (update :contact remove-empty-contact-values))
+    contact-groups))
+
+(defn- has-contact-info [contact-group]
+  (not-empty (:contact contact-group)))
+
+(defn- remove-empty-contact-groups [contact-groups]
+  (filter has-contact-info contact-groups))
+
+(defn- update-contacts [student-info]
+  (let [converted-student-info
+        (update student-info :contact-values-group convert-contacts)]
+    (update converted-student-info
+            :contact-values-group remove-empty-contact-groups)))
 
 (defn convert-student-info
   "Convert student info to snake case"
@@ -52,5 +71,5 @@
                           :kutsumanimi :common-name
                           :yhteystiedotRyhma :contact-values-group}))]
     (if (seq (:contact-values-group converted-values))
-      (update converted-values :contact-values-group convert-contacts)
+      (update-contacts converted-values)
       converted-values)))

@@ -123,3 +123,32 @@
       (handler (add-hoks request) respond raise))
     ([request]
       (handler (add-hoks request)))))
+
+(defn oph-authorized? [request]
+  (let [user (:service-ticket-user request)
+        method (get method-privileges (:request-method request))]
+    (some?
+      (get
+        (:privileges
+          (first
+            (filter
+              #(= (:oid %) "1.2.246.562.10.00000000001")
+              (:organisation-privileges user))))
+        method))))
+
+(defn wrap-require-oph-privileges
+  "Require oph org"
+  [handler]
+  (fn
+    ([request respond raise]
+      (if (oph-authorized? request)
+        (handler request respond raise)
+        (response/unauthorized
+          {:error (str "No access is allowed. Check Opintopolku "
+                       "privileges and 'opiskeluoikeus'")})))
+    ([request]
+      (if (oph-authorized? request)
+        (handler request)
+        (response/unauthorized
+          {:error (str "No access is allowed. Check Opintopolku "
+                       "privileges and 'opiskeluoikeus'")})))))

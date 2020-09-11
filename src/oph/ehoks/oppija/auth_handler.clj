@@ -6,6 +6,8 @@
             [oph.ehoks.restful :as rest]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.oppija.opintopolku :as opintopolku]
+            [oph.ehoks.external.oph-url :as u]
+            [schema.core :as s]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.oppija.settings-handler :as settings-handler]
@@ -26,14 +28,6 @@
                    (seq user-info))
             (rest/rest-ok [(onr/convert-student-info user-info)])
             (throw (ex-info "External system error" user-info-response)))))
-
-      (c-api/POST "/update-user-info" [:as request]
-        :summary "Päivittää istunnon käyttäjän tiedot Oppijanumerorekisteristä.
-                  DEPRECATED"
-        :return (rest/response [schema/User])
-        (rest/rest-ok
-          [(select-keys (get-in request [:session :user])
-                        [:oid :first-name :common-name :surname])]))
 
       (c-api/GET "/" [:as request]
         :summary "Käyttäjän istunto"
@@ -81,4 +75,36 @@
                             (:frontend-url-path config)
                             (str locale)))
                   [:session :user] (assoc user :oid oid))
-                (throw (ex-info "No user found" user-info-response))))))))))
+                (throw (ex-info "No user found" user-info-response))))))))
+
+    (c-api/GET "/opintopolku2/" []
+      :summary "Oppijan Opintopolku-kirjautumisen endpoint (CAS)"
+      :query-params [ticket :- s/Str]
+      (throw (Exception. "Route not in use!"))
+      ;(println "tultiin oppijan kirjautumisen endpointtiin!!!!---------------")
+      ;(println ticket)
+      ;(println
+      ; "siina oli oppijan kirjautumisen ticket------------------------")
+      ;(assoc-in
+      ;  (response/see-other (u/get-url "ehoks-oppija-frontend-after-login"))
+      ;  [:session :ticket]
+      ;  ticket)
+      ;(let [validation-data (cas/validate-ticket
+      ;                        (u/get-url "ehoks.oppija-login-return")
+      ;                        ticket)]
+      ;
+      ;  (if (:success? validation-data)
+      ;    (let [ticket-user (kayttooikeus/get-user-details
+      ;                        (:user validation-data))]
+      ;      (assoc-in
+      ;        (assoc-in
+      ;          (response/see-other (u/get-url
+      ;               "ehoks-oppija-frontend-after-login"))
+      ;          [:session :oppija-user]
+      ;          (merge ticket-user (user/get-auth-info ticket-user)))
+      ;        [:session :ticket]
+      ;        ticket))
+      ;    (do (log/warnf "Ticket validation failed: %s"
+      ;                   (:error validation-data))
+      ;        (response/unauthorized {:error "Invalid ticket"}))))
+)))

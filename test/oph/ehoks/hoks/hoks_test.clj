@@ -1,6 +1,7 @@
 (ns oph.ehoks.hoks.hoks-test
-  (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [oph.ehoks.utils :as utils :refer [eq with-database]]
+  (:require [clojure.test :refer :all]
+            [oph.ehoks.utils :as utils :refer [eq empty-database-after-test
+                                               migrate-database]]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hankittavat :as ha]
@@ -8,7 +9,8 @@
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
-(use-fixtures :each with-database)
+(use-fixtures :once migrate-database)
+(use-fixtures :each empty-database-after-test)
 
 (def ahato-data
   [{:valittu-todentamisen-prosessi-koodi-versio 1
@@ -166,6 +168,12 @@
       :valittu-todentamisen-prosessi-koodi-uri
       "osaamisentodentamisenprosessi_0003"
       :valittu-todentamisen-prosessi-koodi-versio 4
+      :tarkentavat-tiedot-osaamisen-arvioija
+      {:lahetetty-arvioitavaksi (java.time.LocalDate/of 2020 5 25)
+       :aiemmin-hankitun-osaamisen-arvioijat
+       [{:nimi "Tama tyyppi"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.54453931444"}}]}
       :tarkentavat-tiedot-naytto
       [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_bi"
                       :koodi-versio 3}]
@@ -292,7 +300,7 @@
                 :oppija-oid "1.2.246.562.24.12312312312"
                 :ensikertainen-hyvaksyminen
                 (java.time.LocalDate/of 2019 3 18)
-                :osaamisen-hankkimisen-tarve false
+                :osaamisen-hankkimisen-tarve true
                 :sahkoposti "erkki.esimerkki@esimerkki.com"
                 :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-data
                 :hankittavat-paikalliset-tutkinnon-osat hpto-data
@@ -310,9 +318,11 @@
       (ah/save-aiemmin-hankitut-ammat-tutkinnon-osat!
         (:id hoks)
         ahato-data)
-      (eq (ah/get-aiemmin-hankitut-ammat-tutkinnon-osat
-            (:id hoks))
-          ahato-data))))
+      (eq
+        (utils/dissoc-module-ids
+          (ah/get-aiemmin-hankitut-ammat-tutkinnon-osat
+            (:id hoks)))
+        ahato-data))))
 
 (deftest get-aiemmin-hankitut-paikalliset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut paikalliset tutkinnon osat"
@@ -320,7 +330,8 @@
       (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
         (:id hoks) ahpto-data)
       (eq
-        (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks))
+        (utils/dissoc-module-ids
+          (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks)))
         ahpto-data))))
 
 (deftest get-hankittava-ammat-tutkinnon-osa-test
@@ -328,7 +339,8 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ha/save-hankittavat-ammat-tutkinnon-osat! (:id hoks) hao-data)
       (eq
-        (ha/get-hankittavat-ammat-tutkinnon-osat (:id hoks))
+        (utils/dissoc-module-ids
+          (ha/get-hankittavat-ammat-tutkinnon-osat (:id hoks)))
         hao-data))))
 
 (deftest get-opiskeluvalmiuksia-tukevat-opinnot-test
@@ -336,7 +348,8 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ot/save-opiskeluvalmiuksia-tukevat-opinnot! (:id hoks) oto-data)
       (eq
-        (ot/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks))
+        (utils/dissoc-module-ids
+          (ot/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks)))
         oto-data))))
 
 (deftest get-aiemmin-hankitut-yhteiset-tutkinnon-osat-test
@@ -344,7 +357,8 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! (:id hoks) ahyto-data)
       (eq
-        (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks))
+        (utils/dissoc-module-ids
+          (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks)))
         ahyto-data))))
 
 (deftest get-hankittavat-paikalliset-tutkinnon-osat-test
@@ -354,7 +368,8 @@
           (ha/save-hankittavat-paikalliset-tutkinnon-osat!
             (:id hoks) hpto-data)]
       (eq
-        (ha/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks))
+        (utils/dissoc-module-ids
+          (ha/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks)))
         hpto-data))))
 
 (deftest get-hankittavat-yhteiset-tutkinnon-osat-test
@@ -362,19 +377,35 @@
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ha/save-hankittavat-yhteiset-tutkinnon-osat! (:id hoks) hyto-data)
       (eq
-        (ha/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks))
+        (utils/dissoc-module-ids
+          (ha/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks)))
         hyto-data))))
 
 (deftest get-hoks-test
   (testing "Save and get full HOKS"
     (let [hoks (h/save-hoks! hoks-data)]
       (eq
-        (h/get-hoks-by-id (:id hoks))
+        (utils/dissoc-module-ids (h/get-hoks-by-id (:id hoks)))
         (assoc
           hoks-data
           :id 1
           :eid (:eid hoks)
           :manuaalisyotto false)))))
+
+(deftest tarkentavat-tiedot-osaamisen-arvioija-save
+  (testing "If tarkentavat-tiedot-osaamisen-arvioija is missing
+  lahetetty-arvioitavaksi, save should still succeed"
+    (let [arvioija-without-lahetetty-date {:aiemmin-hankitun-osaamisen-arvioijat
+                                           [{:nimi "Paulanen Testi",
+                                             :organisaatio
+                                             {:oppilaitos-oid
+                                              "1.2.246.562.10.63885480000"}}]}
+          tta (ah/save-tarkentavat-tiedot-osaamisen-arvioija!
+                arvioija-without-lahetetty-date)
+          stored-arvioija (ah/get-tarkentavat-tiedot-osaamisen-arvioija
+                            (:id tta))]
+      (eq stored-arvioija
+          arvioija-without-lahetetty-date))))
 
 (deftest empty-values-test
   (testing "DB handling of empty values"
@@ -383,5 +414,20 @@
                   {:hoks-id (:id hoks)})
           data {}
           tta (ah/save-tarkentavat-tiedot-osaamisen-arvioija! data)]
-      (eq (ah/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta))
+      (eq (utils/dissoc-module-ids
+            (ah/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta)))
           (assoc data :aiemmin-hankitun-osaamisen-arvioijat [])))))
+
+(deftest get-hoks-test-send-msg-fail
+  (testing
+   "Save HOKS but fail in sending msg, test that HOKS saving is rolled back"
+    (with-redefs [oph.ehoks.external.aws-sqs/send-amis-palaute-message
+                  #(throw (Exception. "fail"))]
+      (is (thrown? Exception (h/save-hoks! hoks-data)))
+      (eq (h/get-hoks-by-id 1) {:aiemmin-hankitut-ammat-tutkinnon-osat []
+                                :aiemmin-hankitut-paikalliset-tutkinnon-osat []
+                                :hankittavat-paikalliset-tutkinnon-osat []
+                                :aiemmin-hankitut-yhteiset-tutkinnon-osat []
+                                :hankittavat-ammat-tutkinnon-osat []
+                                :opiskeluvalmiuksia-tukevat-opinnot []
+                                :hankittavat-yhteiset-tutkinnon-osat []}))))

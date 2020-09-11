@@ -30,8 +30,18 @@ sn | :surname | Surname | Yes
 
 ### API rajapintakuvaukset
 
-Markdown [hoks.md](hoks.md) generoidaan Leiningenin taskilla. 
+Markdown [hoks.md](hoks.md) generoidaan Leiningenin taskilla.
 
 ``` shell
 lein gendoc
 ```
+
+### Herätepalvelun lähetystilat kyselylinkeille
+
+Tila | Merkitys |
+-----|----------|
+ei_lahetetty | Kyselylinkki on luotu, mutta ei vielä lähetetty viestintäpalveluun
+viestintapalvelussa | Kyselylinkki on lähetetty viestintäpalveluun
+success | Viestintäpalvelu onnistunut sähköpostin lähetyksessä oppilaalle (ei vielä käytössä)
+failed | Viestintäpalvelu epäonnistunut sähköpostin lähetyksessä oppilaalle (ei vielä käytössä)
+bounced | Viesti bouncennut viestintäpalvelun yrittäessä lähettää sähköpostin oppilaalle (ei vielä käytössä)

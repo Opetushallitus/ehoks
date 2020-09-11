@@ -77,6 +77,10 @@
       [queries/select-opiskeluoikeudet-by-oid oid]
       {:row-fn db-ops/from-sql})))
 
+(defn select-hankintakoulutus-oids-by-master-oid [oid]
+  (db-ops/query
+    [queries/select-hankintakoulutus-oids-by-master-oid oid]))
+
 (defn insert-opiskeluoikeus! [opiskeluoikeus]
   (db-ops/insert-one! :opiskeluoikeudet (db-ops/to-sql opiskeluoikeus)))
 
@@ -85,3 +89,24 @@
     :opiskeluoikeudet
     (db-ops/to-sql opiskeluoikeus)
     ["oid = ?" oid]))
+
+(defn select-count-opiskeluoikeudet-by-koulutustoimija [oid]
+  (db-ops/query
+    [queries/select-count-by-koulutustoimija oid]))
+
+(defn select-opiskeluoikeus-delete-confirm-info
+  "Hakee HOKSiin liittyviä tietoja poistamisen varmistusdialogia varten"
+  [koulutustoimija-oid]
+  (->
+    (select-count-opiskeluoikeudet-by-koulutustoimija koulutustoimija-oid)
+    (first)
+    (:count)))
+
+(defn delete-opiskeluoikeus-from-index! [oid]
+  (db-ops/delete! :opiskeluoikeudet
+                  ["oid = ?" oid]))
+
+(defn delete-from-index-by-koulutustoimija!
+  [koulutustoimija-oid]
+  (db-ops/delete! :opiskeluoikeudet
+                  ["koulutustoimija_oid = ?" koulutustoimija-oid]))

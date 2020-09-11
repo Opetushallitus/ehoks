@@ -2,14 +2,14 @@
   :description "OPH eHOKS Backend"
   :min-lein-version "2.8.1"
   :pedantic? :abort
-  :dependencies [[org.clojure/clojure "1.10.0"]
+  :dependencies [[org.clojure/clojure "1.10.1"]
                  [clj-http "3.9.1"]
-                 [com.layerware/hugsql "0.4.9"]
+                 [com.layerware/hugsql "0.5.1"]
                  [com.taoensso/carmine "2.19.1"]
                  [metosin/compojure-api "2.0.0-alpha28"]
-                 [org.flywaydb/flyway-core "5.2.4"]
-                 [org.clojure/java.jdbc "0.7.9"]
-                 [org.postgresql/postgresql "42.2.5"]
+                 [org.flywaydb/flyway-core "6.3.3"]
+                 [org.clojure/java.jdbc "0.7.11"]
+                 [org.postgresql/postgresql "42.2.12"]
                  [ring/ring-jetty-adapter "1.7.1"]
                  [clj-time "0.15.1"]
                  [org.clojure/core.async "0.4.490"]
@@ -21,8 +21,9 @@
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.1.0"]
                  [software.amazon.awssdk/sqs "2.5.37"]
-                 [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]]
-  :managed-dependencies [[org.clojure/clojure "1.10.0"]
+                 [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]
+                 [com.rpl/specter "1.1.3"]]
+  :managed-dependencies [[org.clojure/clojure "1.10.1"]
 
                          ;; http server
                          [javax.servlet/javax.servlet-api "4.0.1"]
@@ -63,14 +64,14 @@
                          [org.clojure/data.xml "0.0.8"]
 
                          ;; postresql
-                         [com.layerware/hugsql "0.4.9"]
-                         [org.clojure/java.jdbc "0.7.9"]
-                         [org.flywaydb/flyway-core "5.2.4"]
-                         [org.postgresql/postgresql "42.2.5"]
+                         [com.layerware/hugsql "0.5.1"]
+                         [org.clojure/java.jdbc "0.7.11"]
+                         [org.flywaydb/flyway-core "6.3.3"]
+                         [org.postgresql/postgresql "42.2.12"]
 
                          ;; other
                          [org.clojure/core.async "0.4.490"]
-                         [commons-codec "1.11"]
+                         [commons-codec "1.14"]
                          [commons-fileupload "1.4"]
                          [commons-io "2.6"]
                          [hiccup "1.0.5"]
@@ -130,7 +131,7 @@
                                   [ring/ring-mock "0.3.2"]
                                   [ring/ring-devel "1.7.1"
                                    :exclusions [ring/ring-core]]
-                                  [camel-snake-kebab "0.4.0"]]
+                                  [camel-snake-kebab "0.4.1"]]
                    :resource-paths ["resources/dev"
                                     "resources/test/src"
                                     "resources/dev/src"
