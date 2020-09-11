@@ -1,5 +1,6 @@
 (ns oph.ehoks.oppija.auth-handler-test
   (:require [clojure.test :refer [deftest testing is]]
+            [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
@@ -21,6 +22,21 @@
     (let [response (authenticate
                      (common-api/create-app handler/app-routes nil))]
       (is (= (:status response) 303)))))
+
+;TODO work in progress, uncomment when oppija cas authentication is done
+;(deftest succesful-cas-authentication
+;  (testing "POST authenticate"
+;    (let [session-store (atom {})
+;          app (common-api/create-app handler/app-routes
+;                                     (test-session-store session-store))
+;          urli (format
+;                 "%s/opintopolku2/?ticket=%s"
+;                 base-url
+;                 "ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")
+;          response (app (mock/request
+;                             :get
+;                             urli))]
+;      (is (= (:status response) 303)))))
 
 (deftest prevent-malformed-authentication
   (testing "Prevents malformed authentication"
