@@ -79,5 +79,5 @@
     (GET "/cas-oppija/login" request
       (response/see-other
         (format
-          "%s?ticket=ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac"
+          "%s/?ticket=ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac"
           (get-in request [:query-params "service"]))))))
