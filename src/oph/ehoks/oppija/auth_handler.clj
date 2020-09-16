@@ -83,10 +83,10 @@
       :query-params [ticket :- s/Str]
       (throw (Exception. "Route not in use!"))
       ;(let [cas-ticket-validation-result (cas/validate-oppija-ticket ticket)]
-      ;  (assoc-in
-      ;    (response/see-other (u/get-url "ehoks-oppija-frontend-after-login"))
-      ;    [:session :ticket]
-      ;    ticket))
+      ;   (assoc-in
+      ;     (response/see-other (u/get-url "ehoks-oppija-frontend-after-login"))
+      ;     [:session :ticket]
+      ;     ticket))
 
       ;(let [validation-data (cas/validate-ticket
       ;                        (u/get-url "ehoks.oppija-login-return")
