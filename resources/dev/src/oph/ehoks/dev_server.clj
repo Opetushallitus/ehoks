@@ -112,7 +112,7 @@
   (start-app-server! dev-reload-app app-name config-file))
 
 (defn start-virkailija []
-  (start-server "ehoks-virkailja" nil))
+  (start-server "ehoks-virkailija" nil))
 
 (defn start-oppija []
   (start-server "ehoks-oppija" nil))

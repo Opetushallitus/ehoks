@@ -4,7 +4,8 @@
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
-            [oph.ehoks.utils :refer [parse-body authenticate]]))
+            [oph.ehoks.utils :refer [parse-body authenticate]]
+            [oph.ehoks.external.http-client :as client]))
 
 (def base-url "/ehoks-oppija-backend/api/v1/oppija/session")
 
@@ -24,19 +25,59 @@
       (is (= (:status response) 303)))))
 
 ;TODO work in progress, uncomment when oppija cas authentication is done
-;(deftest succesful-cas-authentication
-;  (testing "POST authenticate"
-;    (let [session-store (atom {})
-;          app (common-api/create-app handler/app-routes
-;                                     (test-session-store session-store))
-;          urli (format
-;                 "%s/opintopolku2/?ticket=%s"
-;                 base-url
-;                 "ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")
-;          response (app (mock/request
-;                             :get
-;                             urli))]
-;      (is (= (:status response) 303)))))
+;(defn- cas-ticket-validation-response [url options]
+;  (if (.endsWith url "/cas-oppija/serviceValidate")
+;    {:status 200
+;     :body
+;     (str "<cas:serviceResponse xmlns:cas=\"http://www.yale.edu/tp/cas\">"
+;          "<cas:authenticationSuccess>"
+;          "<cas:user>suomi.fi#070770-905D</cas:user>"
+;          "<cas:attributes>"
+;          "<cas:isFromNewLogin>true</cas:isFromNewLogin>"
+;          "<cas:mail>antero.asiakas@suomi.fi</cas:mail>"
+;          "<cas:authenticationDate>2020-08-18T11:35:38.453760Z[UTC]"
+;          "</cas:authenticationDate>"
+;          "<cas:clientName>suomi.fi</cas:clientName>"
+;          "<cas:displayName>Antero Asiakas</cas:displayName>"
+;          "<cas:givenName>Antero</cas:givenName>"
+;          "<cas:VakinainenKotimainenLahiosoiteS>Sepänkatu 111 A 50"
+;          "</cas:VakinainenKotimainenLahiosoiteS>"
+;          "<cas:VakinainenKotimainenLahiosoitePostitoimipaikkaS>KUOPIO"
+;          "</cas:VakinainenKotimainenLahiosoitePostitoimipaikkaS>"
+;          "<cas:cn>Asiakas Antero OP</cas:cn>"
+;          "<cas:notBefore>2020-08-18T11:35:35.788Z</cas:notBefore>"
+;          "<cas:personOid>1.2.246.562.24.44651722625</cas:personOid>"
+;          "<cas:personName>Asiakas Antero OP</cas:personName>"
+;          "<cas:firstName>Antero OP</cas:firstName>"
+;          "<cas:VakinainenKotimainenLahiosoitePostinumero>70100"
+;          "</cas:VakinainenKotimainenLahiosoitePostinumero>"
+;          "<cas:KotikuntaKuntanumero>297</cas:KotikuntaKuntanumero>"
+;          "<cas:KotikuntaKuntaS>Kuopio</cas:KotikuntaKuntaS>"
+;          "<cas:notOnOrAfter>2020-08-18T11:40:35.788Z</cas:notOnOrAfter>"
+;          "<cas:longTermAuthenticationRequestTokenUsed>false"
+;          "</cas:longTermAuthenticationRequestTokenUsed>"
+;          "<cas:sn>Asiakas</cas:sn>"
+;          "<cas:nationalIdentificationNumber>070770-905D"
+;          "</cas:nationalIdentificationNumber>"
+;          "</cas:attributes>"
+;          "</cas:authenticationSuccess>"
+;          "</cas:serviceResponse>")}))
+
+;TODO work in progress, uncomment when oppija cas authentication is done
+;(deftest successful-cas-authentication
+;  (testing "Successful oppija authentication"
+;    (client/with-mock-responses [cas-ticket-validation-response]
+;     (let [session-store (atom {})
+;           app (common-api/create-app handler/app-routes
+;                                      (test-session-store session-store))
+;           login-url (format
+;                  "%s/opintopolku2/?ticket=%s"
+;                  base-url
+;                  "ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac")
+;           response (app (mock/request
+;                           :get
+;                           login-url))]
+;       (is (= (:status response) 303))))))
 
 (deftest prevent-malformed-authentication
   (testing "Prevents malformed authentication"
