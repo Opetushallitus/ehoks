@@ -113,7 +113,7 @@
      :error (when-not success
               (first (find-value response
                                  [:serviceResponse :authenticationFailure])))
-     :user (first
+     :user-oid (first
              (find-value
                response
                [:serviceResponse :authenticationSuccess
