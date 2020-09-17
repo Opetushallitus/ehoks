@@ -790,5 +790,4 @@
 
 (s/defschema
   palaute-resend
-  {:alkupvm LocalDate
-   :tyyppi s/Str})
+  {:tyyppi s/Str})

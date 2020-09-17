@@ -332,15 +332,18 @@
                                   uudelleen lähetykselle"
                         :path-params [hoks-id :- s/Int]
                         :body [data hoks-schema/palaute-resend]
-                        (let [hoks (db-hoks/select-hoks-by-id hoks-id)
-                              opiskeluoikeus (op/get-opiskeluoikeus-by-oid
-                                               (:opiskeluoikeus-oid hoks))]
+                        (let [kyselylinkit
+                              (heratepalvelu/get-oppija-kyselylinkit
+                                oppija-oid)
+                              kyselylinkki (first
+                                             (filter
+                                               #(and (= (:hoks-id %1) hoks-id)
+                                                     (= (:tyyppi %1)
+                                                        (:tyyppi data)))
+                                               kyselylinkit))
+                              hoks (db-hoks/select-hoks-by-id hoks-id)]
                           (sqs/send-palaute-resend-message
-                            {:koulutustoimija (:koulutustoimija-oid
-                                                opiskeluoikeus)
-                             :oppija-oid oppija-oid
-                             :kyselytyyppi (:tyyppi data)
-                             :alkupvm (str (:alkupvm data))
+                            {:kyselylinkki kyselylinkki
                              :sahkoposti (:sahkoposti hoks)})
                           (restful/rest-ok
                             {:sahkoposti (:sahkoposti hoks)})))
