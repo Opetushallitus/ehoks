@@ -111,13 +111,15 @@
                               [:serviceResponse :authenticationSuccess]))]
     {:success? success
      :error (when-not success
-              (first (find-value response
-                                 [:serviceResponse :authenticationFailure])))
+              (first
+                (find-value
+                  response
+                  [:serviceResponse :authenticationFailure])))
      :user-oid (first
-             (find-value
-               response
-               [:serviceResponse :authenticationSuccess
-                :attributes :personOid]))}))
+                 (find-value
+                   response
+                   [:serviceResponse :authenticationSuccess
+                    :attributes :personOid]))}))
 
 (defn validate-ticket
   "Validate service ticket"
