@@ -335,12 +335,13 @@
                         (let [kyselylinkit
                               (heratepalvelu/get-oppija-kyselylinkit
                                 oppija-oid)
-                              kyselylinkki (first
-                                             (filter
-                                               #(and (= (:hoks-id %1) hoks-id)
-                                                     (= (:tyyppi %1)
-                                                        (:tyyppi data)))
-                                               kyselylinkit))
+                              kyselylinkki (:kyselylinkki
+                                             (first
+                                               (filter
+                                                 #(and (= (:hoks-id %1) hoks-id)
+                                                       (= (:tyyppi %1)
+                                                          (:tyyppi data)))
+                                                 kyselylinkit)))
                               hoks (db-hoks/select-hoks-by-id hoks-id)]
                           (sqs/send-palaute-resend-message
                             {:kyselylinkki kyselylinkki
