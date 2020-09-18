@@ -90,6 +90,7 @@
     (log/error "No työelämäpalaute queue!")))
 
 (defn send-palaute-resend-message [msg]
+  (log/info msg)
   (if (some? resend-queue-url)
     (send-message msg resend-queue-url)
     (log/error "No resend queue!")))
