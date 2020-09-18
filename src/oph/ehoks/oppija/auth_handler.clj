@@ -14,6 +14,13 @@
             [clojure.tools.logging :as log]
             [oph.ehoks.external.cas :as cas]))
 
+(defn- get-user-info-from-onr [oid]
+  (let [response (onr/find-student-by-oid oid)
+        user-info (:body response)]
+    (-> user-info
+        (select-keys [:oidHenkilo :hetu :etunimet :sukunimi :kutsumanimi])
+        (clojure.set/rename-keys {:oidHenkilo :oid}))))
+
 (def routes
   (c-api/context "/session" []
 
@@ -82,11 +89,16 @@
       :summary "Oppijan Opintopolku-kirjautumisen endpoint (CAS)"
       :query-params [ticket :- s/Str]
       (throw (Exception. "Route not in use!"))
-      ;(let [cas-ticket-validation-result (cas/validate-oppija-ticket ticket)]
-      ;   (assoc-in
-      ;     (response/see-other (u/get-url "ehoks-oppija-frontend-after-login"))
-      ;     [:session :ticket]
-      ;     ticket))
+      ;(let [cas-ticket-validation-result (cas/validate-oppija-ticket ticket)
+      ;      user-info (get-user-info-from-onr
+      ;                  (:user-oid cas-ticket-validation-result))]
+      ;  (assoc-in
+      ;    (assoc-in
+      ;      (response/see-other
+      ;        (u/get-url "ehoks-oppija-frontend-after-login"))
+      ;      [:session :user] user-info)
+      ;    [:session :ticket]
+      ;    ticket))
 
       ;(let [validation-data (cas/validate-ticket
       ;                        (u/get-url "ehoks.oppija-login-return")
