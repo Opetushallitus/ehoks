@@ -88,34 +88,17 @@
     (c-api/GET "/opintopolku2/" []
       :summary "Oppijan Opintopolku-kirjautumisen endpoint (CAS)"
       :query-params [ticket :- s/Str]
-      (throw (Exception. "Route not in use!"))
-      ;(let [cas-ticket-validation-result (cas/validate-oppija-ticket ticket)
-      ;      user-info (get-user-info-from-onr
-      ;                  (:user-oid cas-ticket-validation-result))]
-      ;  (assoc-in
-      ;    (assoc-in
-      ;      (response/see-other
-      ;        (u/get-url "ehoks-oppija-frontend-after-login"))
-      ;      [:session :user] user-info)
-      ;    [:session :ticket]
-      ;    ticket))
-
-      ;(let [validation-data (cas/validate-ticket
-      ;                        (u/get-url "ehoks.oppija-login-return")
-      ;                        ticket)]
-      ;
-      ;  (if (:success? validation-data)
-      ;    (let [ticket-user (kayttooikeus/get-user-details
-      ;                        (:user validation-data))]
-      ;      (assoc-in
-      ;        (assoc-in
-      ;          (response/see-other (u/get-url
-      ;               "ehoks-oppija-frontend-after-login"))
-      ;          [:session :oppija-user]
-      ;          (merge ticket-user (user/get-auth-info ticket-user)))
-      ;        [:session :ticket]
-      ;        ticket))
-      ;    (do (log/warnf "Ticket validation failed: %s"
-      ;                   (:error validation-data))
-      ;        (response/unauthorized {:error "Invalid ticket"}))))
-)))
+      (let [cas-ticket-validation-result (cas/validate-oppija-ticket ticket)
+            user-info (get-user-info-from-onr
+                        (:user-oid cas-ticket-validation-result))]
+        (if (:success? cas-ticket-validation-result)
+          (assoc-in
+            (assoc-in
+              (response/see-other
+                (u/get-url "ehoks-oppija-frontend-after-login"))
+              [:session :user] user-info)
+            [:session :ticket]
+            ticket)
+          (do (log/warnf "Ticket validation failed: %s"
+                         (:error cas-ticket-validation-result))
+              (response/unauthorized {:error "Invalid ticket"})))))))
