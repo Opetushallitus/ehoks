@@ -11,7 +11,28 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.oppija.settings-handler :as settings-handler]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [oph.ehoks.external.cas :as cas]))
+
+(defn- get-user-info-from-onr [oid]
+  (let [response (onr/find-student-by-oid oid)
+        user-info (:body response)]
+    (-> user-info
+        (select-keys [:oidHenkilo :hetu :etunimet :sukunimi :kutsumanimi])
+        (clojure.set/rename-keys {:oidHenkilo :oid}))))
+
+(defn- respond-with-successful-authentication
+  "Adds user-info and ticket to response to store them to session-store"
+  [user-info ticket]
+  (-> (response/see-other
+        (u/get-url "ehoks-oppija-frontend-after-login"))
+      (assoc-in [:session :user] user-info)
+      (assoc-in [:session :ticket] ticket)))
+
+(defn- respond-with-failed-authentication [cas-ticket-validation-result]
+  (do (log/warnf "Ticket validation failed: %s"
+                 (:error cas-ticket-validation-result))
+      (response/unauthorized {:error "Invalid ticket"})))
 
 (def routes
   (c-api/context "/session" []
@@ -80,31 +101,9 @@
     (c-api/GET "/opintopolku2/" []
       :summary "Oppijan Opintopolku-kirjautumisen endpoint (CAS)"
       :query-params [ticket :- s/Str]
-      (throw (Exception. "Route not in use!"))
-      ;(println "tultiin oppijan kirjautumisen endpointtiin!!!!---------------")
-      ;(println ticket)
-      ;(println
-      ; "siina oli oppijan kirjautumisen ticket------------------------")
-      ;(assoc-in
-      ;  (response/see-other (u/get-url "ehoks-oppija-frontend-after-login"))
-      ;  [:session :ticket]
-      ;  ticket)
-      ;(let [validation-data (cas/validate-ticket
-      ;                        (u/get-url "ehoks.oppija-login-return")
-      ;                        ticket)]
-      ;
-      ;  (if (:success? validation-data)
-      ;    (let [ticket-user (kayttooikeus/get-user-details
-      ;                        (:user validation-data))]
-      ;      (assoc-in
-      ;        (assoc-in
-      ;          (response/see-other (u/get-url
-      ;               "ehoks-oppija-frontend-after-login"))
-      ;          [:session :oppija-user]
-      ;          (merge ticket-user (user/get-auth-info ticket-user)))
-      ;        [:session :ticket]
-      ;        ticket))
-      ;    (do (log/warnf "Ticket validation failed: %s"
-      ;                   (:error validation-data))
-      ;        (response/unauthorized {:error "Invalid ticket"}))))
-)))
+      (let [cas-ticket-validation-result (cas/validate-oppija-ticket ticket)
+            user-info (get-user-info-from-onr
+                        (:user-oid cas-ticket-validation-result))]
+        (if (:success? cas-ticket-validation-result)
+          (respond-with-successful-authentication user-info ticket)
+          (respond-with-failed-authentication cas-ticket-validation-result))))))
