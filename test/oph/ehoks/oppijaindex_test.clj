@@ -442,3 +442,39 @@
     (t/is (sut/opiskeluoikeus-still-active? "not an opiskeluoikeus-oid"))
     (t/is (sut/opiskeluoikeus-still-active? "not a hoks"
                                             "not a list of opiskeluoikeus"))))
+
+(t/deftest delete-opiskeluoikeus-from-index
+  (t/testing "Delete opiskeluoikeus from index"
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ url __]
+         (cond
+           (> (.indexOf url "oppijanumerorekisteri-service") -1)
+           onr-data
+           (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
+           {:status 200
+            :body (assoc
+                    opiskeluoikeus-data
+                    :oid "1.2.246.562.15.00000000001")}))]
+      (sut/add-oppija! "1.2.246.562.24.111111111111")
+      (sut/add-opiskeluoikeus!
+        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
+        {:oid "1.2.246.562.24.111111111111"
+         :nimi "Tero Testaaja"})
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        {:oid "1.2.246.562.15.00000000001"
+         :oppija-oid "1.2.246.562.24.111111111111"
+         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
+         :osaamisala-nimi {:fi "" :sv ""}})
+
+      (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
+        "1.2.246.562.15.00000000001")
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        nil))))

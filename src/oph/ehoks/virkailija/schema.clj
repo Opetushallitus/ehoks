@@ -33,3 +33,15 @@
    :tutkinnonNimi exs/Nimi
    :opiskeluoikeusOid s/Str
    :oppilaitosOid s/Str})
+
+(s/defschema
+  UpdateOppija
+  {:oppija-oid s/Str})
+
+(s/defschema
+  UpdateOpiskeluoikeus
+  {:opiskeluoikeus-oid s/Str})
+
+(s/defschema
+  UpdateOpiskeluoikeudet
+  {:koulutustoimija-oid s/Str})

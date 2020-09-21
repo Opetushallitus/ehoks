@@ -111,6 +111,18 @@
     (require 'oph.ehoks.ehoks-app :reload))
   (start-app-server! dev-reload-app app-name config-file))
 
+(defn start-virkailija []
+  (start-server "ehoks-virkailija" nil))
+
+(defn start-oppija []
+  (start-server "ehoks-oppija" nil))
+
+(defn switch-to-oppija []
+  (System/setProperty "name" "ehoks-oppija"))
+
+(defn switch-to-virkailija []
+  (System/setProperty "name" "ehoks-virkailija"))
+
 (defn start [app-name config-file]
   (log/infof "Starting %s with config %s" app-name config-file)
   (let [app (wrap-dev-cors

@@ -24,8 +24,8 @@
    :osaamisala-nimi Translated
    :voimassaolo-alku LocalDate
    :voimassaolo-loppu LocalDate
-   :osaamisen-osoittaminen (s/maybe [OsaamisenOsoittaminen])
-   :osaamisen-hankkimistapa (s/maybe [OsaamisenHankkimistapa])
+   :osaamisen-osoittaminen (s/maybe OsaamisenOsoittaminen)
+   :osaamisen-hankkimistapa (s/maybe OsaamisenHankkimistapa)
    :tutkinnonosa-tyyppi s/Str
    :tutkinnonosa s/Any})
 

@@ -1,9 +1,10 @@
 {
-  "ensikertainen-hyvaksyminen": "2017-10-25",
-  "hyvaksytty": "2017-10-25T21:00:00.000Z",
-  "paivitetty": "2017-10-25T21:00:00.000Z",
   "opiskeluoikeus-oid": "1.2.246.562.15.76811932025",
   "oppija-oid": "1.2.246.562.24.44651722625",
+  "ensikertainen-hyvaksyminen": "2017-10-25",
+  "sahkoposti": "testikayttaja@testi.fi",
+  "hyvaksytty": "2017-10-25T21:00:00.000Z",
+  "paivitetty": "2017-10-25T21:00:00.000Z",
   "versio": 0,
   "urasuunnitelma-koodi-uri": "urasuunnitelma_0001",
   "urasuunnitelma-koodi-versio": 1,
@@ -143,7 +144,7 @@
           "valittu-todentamisen-prosessi-koodi-uri": "osaamisentodentamisenprosessi_0001",
           "tarkentavat-tiedot-naytto": [],
           "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
-          "osa-alue-koodi-uri": "ammatillisenoppiaineet_yttt",
+          "osa-alue-koodi-uri": "ammatillisenoppiaineet_vvai3",
           "osa-alue-koodi-versio": 1
         }
       ],
@@ -582,7 +583,7 @@
       "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osa-alueet": [
         {
-          "osa-alue-koodi-uri": "ammatillisenoppiaineet_vvtk",
+          "osa-alue-koodi-uri": "ammatillisenoppiaineet_vvai",
           "osa-alue-koodi-versio": 1
         }
       ]
@@ -593,7 +594,7 @@
       "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
       "osa-alueet": [
         {
-          "osa-alue-koodi-uri": "ammatillisenoppiaineet_fk",
+          "osa-alue-koodi-uri": "ammatillisenoppiaineet_vvtd",
           "osa-alue-koodi-versio": 1,
           "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
           "osaamisen-hankkimistavat": [
@@ -634,7 +635,11 @@
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_101055",
       "tutkinnon-osa-koodi-versio": 1,
       "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
-      "osa-alueet": []
+      "osa-alueet": [        {
+        "osa-alue-koodi-uri": "ammatillisenoppiaineet_vvtl",
+        "osa-alue-koodi-versio": 1
+      }
+      ]
     }
   ],
   "hankittavat-paikalliset-tutkinnon-osat": [

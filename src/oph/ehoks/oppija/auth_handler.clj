@@ -6,10 +6,33 @@
             [oph.ehoks.restful :as rest]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.oppija.opintopolku :as opintopolku]
+            [oph.ehoks.external.oph-url :as u]
+            [schema.core :as s]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.oppija.settings-handler :as settings-handler]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [oph.ehoks.external.cas :as cas]))
+
+(defn- get-user-info-from-onr [oid]
+  (let [response (onr/find-student-by-oid oid)
+        user-info (:body response)]
+    (-> user-info
+        (select-keys [:oidHenkilo :hetu :etunimet :sukunimi :kutsumanimi])
+        (clojure.set/rename-keys {:oidHenkilo :oid}))))
+
+(defn- respond-with-successful-authentication
+  "Adds user-info and ticket to response to store them to session-store"
+  [user-info ticket]
+  (-> (response/see-other
+        (u/get-url "ehoks-oppija-frontend-after-login"))
+      (assoc-in [:session :user] user-info)
+      (assoc-in [:session :ticket] ticket)))
+
+(defn- respond-with-failed-authentication [cas-ticket-validation-result]
+  (do (log/warnf "Ticket validation failed: %s"
+                 (:error cas-ticket-validation-result))
+      (response/unauthorized {:error "Invalid ticket"})))
 
 (def routes
   (c-api/context "/session" []
@@ -73,4 +96,14 @@
                             (:frontend-url-path config)
                             (str locale)))
                   [:session :user] (assoc user :oid oid))
-                (throw (ex-info "No user found" user-info-response))))))))))
+                (throw (ex-info "No user found" user-info-response))))))))
+
+    (c-api/GET "/opintopolku2/" []
+      :summary "Oppijan Opintopolku-kirjautumisen endpoint (CAS)"
+      :query-params [ticket :- s/Str]
+      (let [cas-ticket-validation-result (cas/validate-oppija-ticket ticket)
+            user-info (get-user-info-from-onr
+                        (:user-oid cas-ticket-validation-result))]
+        (if (:success? cas-ticket-validation-result)
+          (respond-with-successful-authentication user-info ticket)
+          (respond-with-failed-authentication cas-ticket-validation-result))))))
