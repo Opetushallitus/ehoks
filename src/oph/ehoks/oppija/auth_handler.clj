@@ -21,8 +21,9 @@
         (select-keys [:oidHenkilo :hetu :etunimet :sukunimi :kutsumanimi])
         (clojure.set/rename-keys {:oidHenkilo :oid}))))
 
-(defn- "Adds user-info and ticket to response to store them to session-store"
-  respond-with-successful-authentication [user-info ticket]
+(defn- respond-with-successful-authentication
+  "Adds user-info and ticket to response to store them to session-store"
+  [user-info ticket]
   (-> (response/see-other
         (u/get-url "ehoks-oppija-frontend-after-login"))
       (assoc-in [:session :user] user-info)
