@@ -83,17 +83,17 @@
                   ticket-validation-mock-response
                   oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
                   mock-oppijanumerorekisteri-response]
-     (let [session-store (atom {})
-           app (common-api/create-app handler/app-routes
-                                      (test-session-store session-store))
-           login-url (format
-                  "%s/opintopolku2/?ticket=%s"
-                  base-url
-                  "ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac")
-           response (app (mock/request
-                           :get
-                           login-url))]
-       (is (= (:status response) 303))))))
+      (let [session-store (atom {})
+            app (common-api/create-app handler/app-routes
+                                       (test-session-store session-store))
+            login-url (format
+                        "%s/opintopolku2/?ticket=%s"
+                        base-url
+                        "ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac")
+            response (app (mock/request
+                            :get
+                            login-url))]
+        (is (= (:status response) 303))))))
 
 (defn ticket-validation-fail-mock-response [ticket]
   {:status 200
