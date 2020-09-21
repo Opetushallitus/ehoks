@@ -21,6 +21,17 @@
         (select-keys [:oidHenkilo :hetu :etunimet :sukunimi :kutsumanimi])
         (clojure.set/rename-keys {:oidHenkilo :oid}))))
 
+(defn- respond-with-successful-authentication [user-info ticket]
+  (-> (response/see-other
+        (u/get-url "ehoks-oppija-frontend-after-login"))
+      (assoc-in [:session :user] user-info)
+      (assoc-in [:session :ticket] ticket)))
+
+(defn- respond-with-failed-authentication [cas-ticket-validation-result]
+  (do (log/warnf "Ticket validation failed: %s"
+                 (:error cas-ticket-validation-result))
+      (response/unauthorized {:error "Invalid ticket"})))
+
 (def routes
   (c-api/context "/session" []
 
@@ -92,13 +103,5 @@
             user-info (get-user-info-from-onr
                         (:user-oid cas-ticket-validation-result))]
         (if (:success? cas-ticket-validation-result)
-          (assoc-in
-            (assoc-in
-              (response/see-other
-                (u/get-url "ehoks-oppija-frontend-after-login"))
-              [:session :user] user-info)
-            [:session :ticket]
-            ticket)
-          (do (log/warnf "Ticket validation failed: %s"
-                         (:error cas-ticket-validation-result))
-              (response/unauthorized {:error "Invalid ticket"})))))))
+          (respond-with-successful-authentication user-info ticket)
+          (respond-with-failed-authentication cas-ticket-validation-result))))))
