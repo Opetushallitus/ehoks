@@ -389,8 +389,11 @@
         (c-api/PATCH "/kyselylinkki" request
           :summary "Lisää lähetystietoja kyselylinkille"
           :body [data hoks-schema/kyselylinkki-lahetys]
-          (h/update-kyselylinkki! data)
-          (response/no-content)))
+          (let [updated-count (first (h/update-kyselylinkki! data))]
+            (if (pos? updated-count)
+              (response/no-content)
+              (response/not-found
+                {:error "No kyselylinkki found"})))))
 
       (c-api/context "/:hoks-id" []
 
