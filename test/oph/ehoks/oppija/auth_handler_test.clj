@@ -77,24 +77,51 @@
              [{:yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"
                :yhteystietoArvo "testikayttaja@testi.fi"}]})}})
 
-;TODO work in progress, uncomment when oppija cas authentication is done
-;(deftest successful-cas-authentication
-;  (testing "Successful oppija authentication"
-;    (with-redefs [oph.ehoks.external.cas/call-cas-oppija-ticket-validation
-;                  ticket-validation-mock-response
-;                  oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
-;                  mock-oppijanumerorekisteri-response]
-;     (let [session-store (atom {})
-;           app (common-api/create-app handler/app-routes
-;                                      (test-session-store session-store))
-;           login-url (format
-;                  "%s/opintopolku2/?ticket=%s"
-;                  base-url
-;                  "ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac")
-;           response (app (mock/request
-;                           :get
-;                           login-url))]
-;       (is (= (:status response) 303))))))
+(deftest successful-cas-authentication
+  (testing "Successful oppija authentication"
+    (with-redefs [oph.ehoks.external.cas/call-cas-oppija-ticket-validation
+                  ticket-validation-mock-response
+                  oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
+                  mock-oppijanumerorekisteri-response]
+      (let [session-store (atom {})
+            app (common-api/create-app handler/app-routes
+                                       (test-session-store session-store))
+            login-url (format
+                        "%s/opintopolku2/?ticket=%s"
+                        base-url
+                        "ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac")
+            response (app (mock/request
+                            :get
+                            login-url))]
+        (is (= (:status response) 303))))))
+
+(defn ticket-validation-fail-mock-response [ticket]
+  {:status 200
+   :body
+   (str
+     "<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>\n"
+     "<cas:authenticationFailure code=\"INVALID_TICKET\">"
+     "Ticket &#39;%s&#39; not recognized"
+     "</cas:authenticationFailure>\n"
+     "</cas:serviceResponse>\n")})
+
+(deftest failed-cas-authentication
+  (testing "Cas fails ticket validation"
+    (with-redefs [oph.ehoks.external.cas/call-cas-oppija-ticket-validation
+                  ticket-validation-fail-mock-response
+                  oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
+                  mock-oppijanumerorekisteri-response]
+      (let [session-store (atom {})
+            app (common-api/create-app handler/app-routes
+                                       (test-session-store session-store))
+            login-url (format
+                        "%s/opintopolku2/?ticket=%s"
+                        base-url
+                        "ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac")
+            response (app (mock/request
+                            :get
+                            login-url))]
+        (is (= (:status response) 401))))))
 
 (deftest prevent-malformed-authentication
   (testing "Prevents malformed authentication"
