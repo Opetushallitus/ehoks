@@ -19,11 +19,13 @@
                                    :put
                                    base-url)
                                  (mock/header :cookie session-cookie)
+                                 (mock/header "Caller-Id" "test")
                                  (mock/json-body {})))
           get-response (app (-> (mock/request
                                   :get
                                   base-url)
-                                (mock/header :cookie session-cookie)))
+                                (mock/header :cookie session-cookie)
+                                (mock/header "Caller-Id" "test")))
           body (utils/parse-body (:body get-response))]
       (t/is (= (:status post-response) 201))
       (t/is (= (:status get-response) 200))
