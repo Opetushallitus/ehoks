@@ -18,7 +18,7 @@
   (let [response (onr/find-student-by-oid oid)
         user-info (:body response)]
     (-> user-info
-        (select-keys [:oidHenkilo :hetu :etunimet :sukunimi :kutsumanimi])
+        (select-keys [:oidHenkilo :etunimet :sukunimi :kutsumanimi])
         (clojure.set/rename-keys {:oidHenkilo :oid
                                   :etunimet :first-name
                                   :sukunimi :surname
