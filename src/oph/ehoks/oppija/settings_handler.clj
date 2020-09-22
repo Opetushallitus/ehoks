@@ -3,10 +3,12 @@
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.restful :as rest]
-            [oph.ehoks.user-settings :as user-settings]))
+            [oph.ehoks.user-settings :as user-settings]
+            [schema.core :as s]))
 
 (def routes
   (c-api/context "/settings" []
+    :header-params [caller-id :- s/Str]
     (c-api/GET "/" request
       :summary "Istunnon käyttäjän asetukset"
       :return (rest/response schema/UserSettings)
