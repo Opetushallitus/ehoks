@@ -19,7 +19,10 @@
         user-info (:body response)]
     (-> user-info
         (select-keys [:oidHenkilo :hetu :etunimet :sukunimi :kutsumanimi])
-        (clojure.set/rename-keys {:oidHenkilo :oid}))))
+        (clojure.set/rename-keys {:oidHenkilo :oid
+                                  :etunimet :first-name
+                                  :sukunimi :surname
+                                  :kutsumanimi :common-name}))))
 
 (defn- respond-with-successful-authentication
   "Adds user-info and ticket to response to store them to session-store"
