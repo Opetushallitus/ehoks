@@ -147,7 +147,8 @@
           response (app (-> (mock/request
                               :get
                               base-url)
-                            (mock/header :cookie session-cookie)))
+                            (mock/header :cookie session-cookie)
+                            (mock/header "Caller-Id" "test")))
           body (parse-body (:body response))]
       (is (= (:status response) 200))
       (is (= (:data body) [{:oid "1.2.246.562.24.44651722625"
@@ -164,17 +165,20 @@
           (app (-> (mock/request
                      :get
                      base-url)
-                   (mock/header :cookie session-cookie)))
+                   (mock/header :cookie session-cookie)
+                   (mock/header "Caller-Id" "test")))
           authenticated-body (parse-body (:body authenticated-response))
           delete-response
           (app (-> (mock/request
                      :delete
                      base-url)
-                   (mock/header :cookie session-cookie)))
+                   (mock/header :cookie session-cookie)
+                   (mock/header "Caller-Id" "test")))
           response (app (-> (mock/request
                               :get
                               base-url)
-                            (mock/header :cookie session-cookie)))]
+                            (mock/header :cookie session-cookie)
+                            (mock/header "Caller-Id" "test")))]
       (is (= (:status authenticated-response) 200))
       (is (= (:data authenticated-body)
              [{:oid "1.2.246.562.24.44651722625"

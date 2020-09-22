@@ -20,6 +20,7 @@
 
     (c-api/GET "/system-info" []
       :summary "Järjestelmän tiedot"
+      :header-params [caller-id :- s/Str]
       :return (restful/response virkailija-schema/SystemInfo)
       (let [runtime (Runtime/getRuntime)]
         (restful/rest-ok
@@ -38,6 +39,7 @@
 
     (c-api/POST "/index" []
       :summary "Indeksoi oppijat ja opiskeluoikeudet"
+      :header-params [caller-id :- s/Str]
       (a/go
         (op/update-oppijat-without-index!)
         (op/update-opiskeluoikeudet-without-index!)
@@ -46,11 +48,13 @@
 
     (c-api/DELETE "/cache" []
       :summary "Välimuistin tyhjennys"
+      :header-params [caller-id :- s/Str]
       (c/clear-cache!)
       (response/ok))
 
     (c-api/PUT "/oppija/update" request
       :summary "Päivittää oppijan tiedot oppija-indeksiin"
+      :header-params [caller-id :- s/Str]
       :body [data virkailija-schema/UpdateOppija]
       (if (empty? (db-hoks/select-hoks-by-oppija-oid (:oppija-oid data)))
         (response/not-found {:error "Tällä oppija-oidilla ei löydy hoksia
@@ -63,6 +67,7 @@
 
     (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
       :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
+      :header-params [caller-id :- s/Str]
       :path-params [opiskeluoikeus-oid :- s/Str]
       :return (restful/response {:id s/Int})
       (let [hoks (first (db-hoks/select-hoksit-by-opiskeluoikeus-oid
@@ -77,6 +82,7 @@
 
     (c-api/PUT "/opiskeluoikeus/update" request
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin"
+      :header-params [caller-id :- s/Str]
       :body [data virkailija-schema/UpdateOpiskeluoikeus]
       (if (empty? (db-hoks/select-hoksit-by-opiskeluoikeus-oid
                     (:opiskeluoikeus-oid data)))
@@ -92,6 +98,7 @@
     (c-api/PUT "/opiskeluoikeudet/update" request
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin
       koulutustoimijan perusteella"
+      :header-params [caller-id :- s/Str]
       :body [data virkailija-schema/UpdateOpiskeluoikeudet]
       (if (pos? (first
                   (db-opiskeluoikeus/delete-from-index-by-koulutustoimija!
@@ -104,6 +111,7 @@
     (c-api/GET "/opiskeluoikeudet/:koulutustoimija-oid/deletion-info" request
       :summary "Palauttaa opiskeluoikeuksien määrän poistamisen varmistusta
       varten"
+      :header-params [caller-id :- s/Str]
       :path-params [koulutustoimija-oid :- s/Str]
       :return (restful/response s/Int)
       (if-let [info (db-opiskeluoikeus/select-opiskeluoikeus-delete-confirm-info
@@ -114,6 +122,7 @@
 
     (c-api/GET "/hoks/:hoks-id" request
       :summary "Palauttaa HOKSin hoks-id:llä"
+      :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
       :return (restful/response {:opiskeluoikeus-oid s/Str
                                  :oppija-oid s/Str})
@@ -131,6 +140,7 @@
     (c-api/GET "/hoks/:hoks-id/deletion-info" request
       :summary "Palauttaa tietoja HOKSista, opiskeluoikeudesta ja oppijasta
                 poistamisen varmistusta varten"
+      :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
       :return (restful/response virkailija-schema/DeleteConfirmInfo)
       (if-let [info (db-hoks/select-hoks-delete-confirm-info hoks-id)]
@@ -140,6 +150,7 @@
 
     (c-api/DELETE "/hoks/:hoks-id" request
       :summary "Poistaa HOKSin hoks-id:llä"
+      :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
       :return (restful/response {})
       (if (pos? (first (db-hoks/delete-hoks-by-hoks-id hoks-id)))

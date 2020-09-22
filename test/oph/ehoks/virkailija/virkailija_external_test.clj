@@ -29,7 +29,9 @@
                                           :privileges #{:read}}]}}})
             app (common-api/create-app
                   handler/app-routes (test-session-store store))]
-        (app (mock/header request :cookie cookie))))))
+        (app (-> request
+                 (mock/header :cookie cookie)
+                 (mock/header "Caller-Id" "test")))))))
 
 (t/deftest koodisto-response-handling-test
   (t/testing "Querying non-existing koodisto values returns not found"

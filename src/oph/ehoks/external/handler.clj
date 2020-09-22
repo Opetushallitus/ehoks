@@ -14,6 +14,7 @@
 
 (def routes
   (c-api/context "/external" []
+    :header-params [caller-id :- s/Str]
     :tags ["external"]
 
     (c-api/GET "/eperusteet/" [:as request]

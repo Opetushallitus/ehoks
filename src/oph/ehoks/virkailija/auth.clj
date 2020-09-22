@@ -3,7 +3,8 @@
             [ring.util.http-response :as response]
             [oph.ehoks.virkailija.schema :as schema]
             [oph.ehoks.restful :as restful]
-            [oph.ehoks.virkailija.cas-handler :as cas-handler]))
+            [oph.ehoks.virkailija.cas-handler :as cas-handler]
+            [schema.core :as s]))
 
 (def routes
   (c-api/context "/session" []
@@ -12,6 +13,7 @@
 
     (c-api/GET "/" request
       :summary "Virkailijan istunto"
+      :header-params [caller-id :- s/Str]
       :return (restful/response schema/VirkailijaSession)
       (if-let [virkailija-user (get-in request [:session :virkailija-user])]
         (restful/rest-ok
@@ -20,4 +22,5 @@
 
     (c-api/DELETE "/" []
       :summary "Virkailijan istunnon päättäminen"
+      :header-params [caller-id :- s/Str]
       (assoc (response/ok) :session nil))))

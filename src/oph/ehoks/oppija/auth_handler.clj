@@ -41,6 +41,7 @@
       [wrap-authorize]
       (c-api/GET "/user-info" [:as request]
         :summary "Palauttaa istunnon käyttäjän tiedot"
+        :header-params [caller-id :- s/Str]
         :return (rest/response [schema/UserInfo])
         (let [session-user (get-in request [:session :user])
               user-info-response (onr/find-student-by-oid (:oid session-user))
@@ -52,6 +53,7 @@
 
       (c-api/GET "/" [:as request]
         :summary "Käyttäjän istunto"
+        :header-params [caller-id :- s/Str]
         :return (rest/response [schema/User])
         (let [{{:keys [user]} :session} request]
           (rest/rest-ok

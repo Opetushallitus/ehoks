@@ -3,10 +3,12 @@
             [oph.ehoks.misc.schema :as schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.oph-url :as u]))
+            [oph.ehoks.external.oph-url :as u]
+            [schema.core :as s]))
 
 (def routes
   (c-api/context "/misc" []
+    :header-params [caller-id :- s/Str]
     :tags ["misc"]
 
     (c-api/GET "/environment" [:as request]

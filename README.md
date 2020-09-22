@@ -250,8 +250,9 @@ Paikallisessa kehityksessä on toteutettu mock-kirjautumiset, joihin pääset
 käsiksi environmentista löytyvillä linkeillä.
 
 [Sovelluksen environment](http://localhost:3000/ehoks-virkailija-backend/api/v1/misc/environment)
+
 [Rajapinta](http://localhost:3000/dev-tools/)
-Huom rajapinnan Swagger-dokumentaatio ei tällä hetkellä toimi. Koodissa kommentti.
+Huom dev-tools rajapinnan Swagger-dokumentaatio ei tällä hetkellä toimi. Koodissa kommentti.
 
 ## Dummy-datan tuonti tietokantaan
 

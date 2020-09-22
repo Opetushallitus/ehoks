@@ -295,6 +295,7 @@
               system-handler/routes
 
               (c-api/context "/oppijat" []
+                :header-params [caller-id :- s/Str]
                 get-oppijat-route
 
                 (c-api/context "/:oppija-oid" []

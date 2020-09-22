@@ -9,8 +9,10 @@
   (testing "GET environment info"
     (let [app (common-api/create-app handler/app-routes nil)
           response (app
-                     (mock/request
-                       :get "/ehoks-oppija-backend/api/v1/misc/environment"))]
+                     (mock/header
+                       (mock/request
+                         :get "/ehoks-oppija-backend/api/v1/misc/environment")
+                       "Caller-Id" "test"))]
       (is (= (:status response) 200))
       (let [data (-> response :body parse-body :data)]
         (is (some? (:opintopolku-login-url-fi data)))

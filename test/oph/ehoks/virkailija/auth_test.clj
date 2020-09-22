@@ -71,10 +71,11 @@
           (mapv
             (fn [request]
               (app
-                (mock/header
-                  request
-                  :cookie
-                  (first (get-in auth-response [:headers "Set-Cookie"])))))
+                (-> request
+                    (mock/header
+                      :cookie
+                      (first (get-in auth-response [:headers "Set-Cookie"])))
+                    (mock/header "Caller-Id" "test"))))
             requests)]
       (client/reset-functions!)
       responses)))

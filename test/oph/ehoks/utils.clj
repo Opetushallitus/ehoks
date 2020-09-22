@@ -70,7 +70,9 @@
     (swap! store assoc-in [(-> @store keys first) :user :oid] oid)
     (mapv
       (fn [request]
-        (app (mock/header request :cookie cookie)))
+        (app (-> request
+                 (mock/header :cookie cookie)
+                 (mock/header "Caller-Id" "test"))))
       requests)))
 
 (defn with-authenticated-oid [store oid app request]
