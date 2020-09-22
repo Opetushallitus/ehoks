@@ -61,12 +61,14 @@
             auth-handler/routes
 
             (c-api/context "/external" []
+              :header-params [caller-id :- s/Str]
               :tags ["oppija-external"]
 
               lokalisointi-handler/routes
               oppija-external/routes)
 
             (c-api/context "/oppijat" []
+              :header-params [caller-id :- s/Str]
               :tags ["oppijat"]
 
               (c-api/context "/:oid" [oid]
@@ -108,6 +110,7 @@
                         (throw e)))))))
 
             (c-api/context "/jaot" []
+              :header-params [caller-id :- s/Str]
               :tags ["jaot"]
               (route-middleware
                 [wrap-authorize]
