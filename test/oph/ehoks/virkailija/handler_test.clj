@@ -17,6 +17,9 @@
 
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
+(defn- add-caller-id [request]
+  (mock/header request "Caller-Id" "test"))
+
 (t/deftest buildversion
   (t/testing "GET /buildversion.txt"
     (let [app (common-api/create-app handler/app-routes)
@@ -48,8 +51,9 @@
   (t/testing "GET environment info"
     (let [app (common-api/create-app handler/app-routes nil)
           response (app
-                     (mock/request
-                       :get (str base-url "/misc/environment")))]
+                     (add-caller-id
+                       (mock/request
+                        :get (str base-url "/misc/environment"))))]
       (t/is (= (:status response) 200))
       (let [data (-> response :body utils/parse-body :data)]
         (t/is (some? (:opintopolku-login-url-fi data)))
@@ -104,7 +108,9 @@
                      {:virkailija-user virkailija}})
             app (common-api/create-app
                   handler/app-routes (test-session-store store))]
-        (app (mock/header request :cookie cookie)))))
+        (app (-> request
+                 (mock/header :cookie cookie)
+                 (mock/header "Caller-Id" "test"))))))
   ([request] (with-test-virkailija
                request
                {:name "Test"
