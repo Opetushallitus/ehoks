@@ -53,7 +53,7 @@
           response (app
                      (add-caller-id
                        (mock/request
-                        :get (str base-url "/misc/environment"))))]
+                         :get (str base-url "/misc/environment"))))]
       (t/is (= (:status response) 200))
       (let [data (-> response :body utils/parse-body :data)]
         (t/is (some? (:opintopolku-login-url-fi data)))
