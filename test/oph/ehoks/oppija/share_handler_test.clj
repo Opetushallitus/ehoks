@@ -40,7 +40,7 @@
       store
       "1.2.246.562.24.12312312312"
       app
-      (mock/header request "Caller-Id" "test"))))
+      request)))
 
 (t/deftest create-shared-link
   (t/testing "Shared link with valid data can be created"

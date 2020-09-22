@@ -17,7 +17,7 @@
       store
       "1.2.246.562.24.12312312312"
       app
-      (mock/header request "Caller-Id" "test"))))
+      request)))
 
 (t/deftest koodisto-response-handling-test
   (t/testing "Querying non-existing koodisto values returns not found"

@@ -63,7 +63,7 @@
       store
       "1.2.246.562.24.12312312312"
       app
-      request)))
+      (mock/header request "Caller-Id" "test"))))
 
 (deftest get-organisaatio
   (testing "GET organisaatio"
