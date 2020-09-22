@@ -11,25 +11,27 @@
 
 (defn with-test-virkailija
   ([request]
-    (client/with-mock-responses
-      [(fn [url _]
-         (cond
-           (.endsWith
-             url "/rest/codeelement/latest/ammatillisenoppiaineet_VVTL")
-           {:status 500
-            :body "error.codeelement.not.found"}))]
-      (let [session "12345678-1234-1234-1234-1234567890ab"
-            cookie (str "ring-session=" session)
-            store (atom
-                    {session
-                     {:virkailija-user {:name "Test"
-                                        :kayttajaTyyppi "VIRKAILIJA"
-                                        :organisation-privileges
-                                        [{:oid "1.2.246.562.10.12000000000"
-                                          :privileges #{:read}}]}}})
-            app (common-api/create-app
-                  handler/app-routes (test-session-store store))]
-        (app (mock/header request :cookie cookie))))))
+   (client/with-mock-responses
+     [(fn [url _]
+        (cond
+          (.endsWith
+            url "/rest/codeelement/latest/ammatillisenoppiaineet_VVTL")
+          {:status 500
+           :body "error.codeelement.not.found"}))]
+     (let [session "12345678-1234-1234-1234-1234567890ab"
+           cookie (str "ring-session=" session)
+           store (atom
+                   {session
+                    {:virkailija-user {:name "Test"
+                                       :kayttajaTyyppi "VIRKAILIJA"
+                                       :organisation-privileges
+                                       [{:oid "1.2.246.562.10.12000000000"
+                                         :privileges #{:read}}]}}})
+           app (common-api/create-app
+                 handler/app-routes (test-session-store store))]
+       (app (-> request
+                (mock/header :cookie cookie)
+                (mock/header "Caller-Id" "test")))))))
 
 (t/deftest koodisto-response-handling-test
   (t/testing "Querying non-existing koodisto values returns not found"
