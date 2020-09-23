@@ -84,7 +84,6 @@
           (get-in request [:query-params "service"]) cas-oppija-ticket)))
 
     (GET "/cas-oppija/serviceValidate" request
-      (println "tultiin mock service validointiin")
       (if (= (get-in request [:query-params "ticket"]) cas-oppija-ticket)
         (response/ok
           (format
