@@ -40,39 +40,6 @@
 (def routes
   (c-api/context "/session" []
 
-    (route-middleware
-      [wrap-authorize]
-      (c-api/GET "/user-info" [:as request]
-        :summary "Palauttaa istunnon käyttäjän tiedot"
-        :header-params [caller-id :- s/Str]
-        :return (rest/response [schema/UserInfo])
-        (let [session-user (get-in request [:session :user])
-              user-info-response (onr/find-student-by-oid (:oid session-user))
-              user-info (:body user-info-response)]
-          (if (and (= (:status user-info-response) 200)
-                   (seq user-info))
-            (rest/rest-ok [(onr/convert-student-info user-info)])
-            (throw (ex-info "External system error" user-info-response)))))
-
-      (c-api/GET "/" [:as request]
-        :summary "Käyttäjän istunto"
-        :header-params [caller-id :- s/Str]
-        :return (rest/response [schema/User])
-        (let [{{:keys [user]} :session} request]
-          (rest/rest-ok
-            [(select-keys user [:oid :first-name :common-name :surname])])))
-
-      (c-api/DELETE "/" []
-        :summary "Uloskirjautuminen."
-        (assoc
-          (response/ok)
-          :session nil))
-
-      settings-handler/routes)
-
-    (c-api/OPTIONS "/" []
-      (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, DELETE"))
-
     (c-api/GET "/opintopolku/" [:as request]
       :summary "Opintopolkutunnistautumisen päätepiste"
       :description "Opintopolkutunnistautumisen jälkeen päädytään tänne.
@@ -111,4 +78,37 @@
                         (:user-oid cas-ticket-validation-result))]
         (if (:success? cas-ticket-validation-result)
           (respond-with-successful-authentication user-info ticket)
-          (respond-with-failed-authentication cas-ticket-validation-result))))))
+          (respond-with-failed-authentication cas-ticket-validation-result))))
+
+    (c-api/OPTIONS "/" []
+      (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, DELETE"))
+
+    (route-middleware
+      [wrap-authorize]
+      (c-api/GET "/user-info" [:as request]
+        :summary "Palauttaa istunnon käyttäjän tiedot"
+        :header-params [caller-id :- s/Str]
+        :return (rest/response [schema/UserInfo])
+        (let [session-user (get-in request [:session :user])
+              user-info-response (onr/find-student-by-oid (:oid session-user))
+              user-info (:body user-info-response)]
+          (if (and (= (:status user-info-response) 200)
+                   (seq user-info))
+            (rest/rest-ok [(onr/convert-student-info user-info)])
+            (throw (ex-info "External system error" user-info-response)))))
+
+      (c-api/GET "/" [:as request]
+        :summary "Käyttäjän istunto"
+        :header-params [caller-id :- s/Str]
+        :return (rest/response [schema/User])
+        (let [{{:keys [user]} :session} request]
+          (rest/rest-ok
+            [(select-keys user [:oid :first-name :common-name :surname])])))
+
+      (c-api/DELETE "/" []
+        :summary "Uloskirjautuminen."
+        (assoc
+          (response/ok)
+          :session nil))
+
+      settings-handler/routes)))
