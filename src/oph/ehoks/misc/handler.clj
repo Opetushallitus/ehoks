@@ -26,6 +26,18 @@
              "%s?service=%s"
              (u/get-url "cas-oppija.login")
              (u/get-url "ehoks.oppija-login-return"))}
+          {:cas-oppija-logout-url-fi
+           (format
+             "%s?service=%s/%s?lang=fi"
+             (u/get-url "cas-oppija.logout")
+             (:frontend-url-fi config)
+             (:frontend-url-path config))}
+          {:cas-oppija-logout-url-sv
+           (format
+             "%s?service=%s/%s?lang=sv"
+             (u/get-url "cas-oppija.logout")
+             (:frontend-url-sv config)
+             (:frontend-url-path config))}
           {:raamit-url (u/get-url "virkailija-raamit-url")}
           (select-keys config [:opintopolku-login-url-fi
                                :opintopolku-login-url-sv
