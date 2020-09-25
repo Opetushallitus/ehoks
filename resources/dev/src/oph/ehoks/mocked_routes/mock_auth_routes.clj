@@ -83,6 +83,9 @@
           "%s/?ticket=%s"
           (get-in request [:query-params "service"]) cas-oppija-ticket)))
 
+    (GET "/cas-oppija/logout" request
+      (response/see-other (get-in request [:query-params "service"])))
+
     (GET "/cas-oppija/serviceValidate" request
       (if (= (get-in request [:query-params "ticket"]) cas-oppija-ticket)
         (response/ok
