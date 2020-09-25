@@ -27,8 +27,12 @@
 (defn- respond-with-successful-authentication
   "Adds user-info and ticket to response to store them to session-store"
   [user-info ticket]
+  (println "tullaaan autentikoinnin jalkeen redirectiin")
   (-> (response/see-other
-        (u/get-url "ehoks-oppija-frontend-after-login"))
+        (format
+          "%s/%s"
+          (:frontend-url-fi config)
+          (:frontend-url-path config)))
       (assoc-in [:session :user] user-info)
       (assoc-in [:session :ticket] ticket)))
 
