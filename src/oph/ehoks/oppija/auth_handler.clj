@@ -27,7 +27,14 @@
 (defn- respond-with-successful-authentication
   "Adds user-info and ticket to response to store them to session-store"
   [user-info ticket]
-  (println "tullaaan autentikoinnin jalkeen redirectiin")
+  ; There propably should be localized versions of /misc/environment route
+  ; return value for cas-oppija-login-url (same as logout urls). We could then
+  ; redirect here to the correct hostname based on locale.
+  ; Now when the student begins with www.studieinfo.fi/ehoks, after login
+  ; cas will call /api/v1/oppija/session/opintopolku which here below
+  ; redirects the student to www.opintopolku.fi/ehoks. However only the
+  ; hostname changes and user still has swedish ui as locale is
+  ; stored to cookie.
   (-> (response/see-other
         (format
           "%s/%s"
