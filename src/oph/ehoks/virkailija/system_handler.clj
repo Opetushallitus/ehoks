@@ -165,6 +165,7 @@
       (let [hoks (db-hoks/select-hoks-by-id hoks-id)]
         (if hoks
           (do
-            (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg hoks-id hoks))
+            (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg
+                                             hoks-id hoks))
             (response/no-content))
           (response/not-found {:error "No HOKS found with given hoks-id"}))))))
