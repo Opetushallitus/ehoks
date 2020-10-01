@@ -158,12 +158,11 @@
         (restful/rest-ok {})
         (response/not-found {:error "No HOKS found with given hoks-id"})))
 
-    (c-api/POST "hoks/:hoks-id/resend-aloitusherate" request
+    (c-api/POST "/hoks/:hoks-id/resend-aloitusherate" request
       :summary "Lähettää uuden aloituskyselyherätteen herätepalveluun"
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
       (let [hoks (db-hoks/select-hoks-by-id hoks-id)]
-        (log/info hoks)
         (if hoks
           (do
             (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg
