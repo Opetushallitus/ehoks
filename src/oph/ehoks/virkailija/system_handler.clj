@@ -164,10 +164,16 @@
       :path-params [hoks-id :- s/Int]
       (let [hoks (db-hoks/select-hoks-by-id hoks-id)]
         (if hoks
-          (do
-            (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg
-                                             hoks-id hoks))
-            (response/no-content))
+          (if (:osaamisen-hankkimisen-tarve hoks)
+            (do
+              (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg
+                                               hoks-id hoks))
+              (response/no-content))
+            (do
+              (log/warn "Osaamisen hankkimisen tarve false "
+                        hoks-id)
+              (response/bad-request
+                {:error "Osaamisen hankkimisen tarve false"})))
           (do
             (log/warn "No HOKS found with given hoks-id "
                       hoks-id)
