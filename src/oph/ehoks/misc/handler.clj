@@ -23,7 +23,7 @@
              (u/get-url "ehoks.virkailija-login-return"))}
           {:cas-oppija-login-url
            (format
-             "%s?service=%s/"
+             "%s?service=%s"
              (u/get-url "cas-oppija.login")
              (u/get-url "ehoks.oppija-login-return"))}
           {:cas-oppija-logout-url-fi
