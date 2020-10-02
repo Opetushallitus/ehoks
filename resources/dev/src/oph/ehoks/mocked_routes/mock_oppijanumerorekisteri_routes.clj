@@ -20,7 +20,7 @@
                  :ryhmaKuvaus "testiryhmä"
                  :yhteystieto
                  [{:yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"
-                   :yhteystietoArvo "testikayttaja@testi.fi"}
+                   :yhteystietoArvo "testikayttajaONR@testi.fi"}
                   {:yhteystietoTyyppi "YHTEYSTIETO_KATUOSOITE"
                    :yhteystietoArvo "Mannerheimintie 12 b 3"}
                   {:yhteystietoTyyppi "YHTEYSTIETO_POSTINUMERO"
@@ -46,7 +46,7 @@
                :ryhmaKuvaus "testiryhmä"
                :yhteystieto
                [{:yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"
-                 :yhteystietoArvo "testikayttaja@testi.fi"}
+                 :yhteystietoArvo "testikayttajaONR@testi.fi"}
                 {:yhteystietoTyyppi "YHTEYSTIETO_KATUOSOITE"
                  :yhteystietoArvo "Mannerheimintie 12 b 3"}
                 {:yhteystietoTyyppi "YHTEYSTIETO_POSTINUMERO"
@@ -76,7 +76,7 @@
                  :ryhmaKuvaus "testiryhmä"
                  :yhteystieto
                  [{:yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"
-                   :yhteystietoArvo "testikayttaja@testi.fi"}
+                   :yhteystietoArvo "testikayttajaONR@testi.fi"}
                   {:yhteystietoTyyppi "YHTEYSTIETO_KATUOSOITE"
                    :yhteystietoArvo "Mannerheimintie 12 b 3"}
                   {:yhteystietoTyyppi "YHTEYSTIETO_POSTINUMERO"

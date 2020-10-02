@@ -80,7 +80,7 @@
     (GET "/cas-oppija/login" request
       (response/see-other
         (format
-          "%s/?ticket=%s"
+          "%s?ticket=%s"
           (get-in request [:query-params "service"]) cas-oppija-ticket)))
 
     (GET "/cas-oppija/logout" request
