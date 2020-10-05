@@ -313,7 +313,9 @@
                                     "Vaatii manuaalisyöttäjän oikeudet")
                       :body [hoks hoks-schema/HOKSLuonti]
                       :return (restful/response schema/POSTResponse :id s/Int)
-                      (post-oppija hoks request))
+                      (throw (ex-info "Testipoikkeus" {:status 500}))
+                      (post-oppija hoks request)
+                      )
 
                     (route-middleware
                       [m/wrap-virkailija-oppija-access]
