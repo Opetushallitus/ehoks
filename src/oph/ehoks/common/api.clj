@@ -12,15 +12,15 @@
 (defn not-found-handler [_ __ ___]
   (response/not-found {:reason "Route not found"}))
 
-(defn log-exception [ex data]
-  (log/errorf
-    "Unhandled exception\n%s\n%s"
-    (str ex)
-    (cstr/join "\n" (.getStackTrace ex))))
+(defn log-exception [ex]
+  (let [ex-map (Throwable->map ex)]
+    (log/errorf
+      "Unhandled exception\n%s\n%s"
+      (str (:cause ex-map))
+      (str (:via ex-map)))))
 
 (defn exception-handler [^Exception ex & other]
-  (let [exception-data (if (map? (first other)) (first other) (ex-data ex))]
-    (log-exception ex exception-data))
+  (log-exception ex)
   (response/internal-server-error {:type "unknown-exception"}))
 
 (def handlers
