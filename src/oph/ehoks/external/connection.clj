@@ -54,11 +54,6 @@
                             (assoc :debug (:debug config false))
                             (assoc :cookie-policy :standard))))
     (catch Exception e
-      (let [ex-map (Throwable->map e)]
-        (log/errorf
-          "Testaan poikkeusta\n%s\n%s\n-----------Exception end---------------"
-          (str (:cause ex-map))
-          (str (:via ex-map))))
       (throw (ex-info (format "HTTP request error: %s" (.getMessage e))
                       (merge
                         (ex-data e)
