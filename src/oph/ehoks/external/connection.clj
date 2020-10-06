@@ -1,7 +1,6 @@
 (ns oph.ehoks.external.connection
   (:require [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.http-client :as client]
-            [clojure.tools.logging :as log]
             [clojure.string :as cstr])
   (:import [com.fasterxml.jackson.core JsonParseException]))
 
