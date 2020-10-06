@@ -54,7 +54,7 @@
                             (assoc :debug (:debug config false))
                             (assoc :cookie-policy :standard))))
     (catch Exception e
-      (let [ex-map (Throwable->map ex)]
+      (let [ex-map (Throwable->map e)]
         (log/errorf
           "Testaan poikkeusta\n%s\n%s\n-----------Exception end---------------"
           (str (:cause ex-map))
