@@ -1,0 +1,359 @@
+{
+  "data": [
+    {
+      "id": 3003003,
+      "luotu": 1505708959929,
+      "muokattu": 1519887988392,
+      "muokkaaja": "1.2.246.562.24.77925329174",
+      "nimi": {
+        "_tunniste": "bc8354a2-eedc-45c3-a60d-9279fd57bcc7",
+        "fi": "Ammatillisen toimintakyvyn vahvistaminen",
+        "sv": "Stärkande av den yrkesinriktade funktionsförmågan",
+        "_id": "4314844"
+      },
+      "tila": "valmis",
+      "valmis": false,
+      "kaannettava": false,
+      "tavoitteet": null,
+      "arviointi": null,
+      "ammattitaitovaatimuksetLista": [],
+      "ammattitaitovaatimukset": null,
+      "ammattitaidonOsoittamistavat": null,
+      "kuvaus": {
+        "_tunniste": "39731826-3ad2-4024-944d-5419a6c0903c",
+        "sv": "Mål för kunnandet",
+        "_id": "4314845"
+      },
+      "koodi": {
+        "nimi": {
+          "fi": "Ammatillisen toimintakyvyn vahvistaminen",
+          "sv": "Stärkande av den yrkesinriktade funktionsförmågan"
+        },
+        "arvo": "400005",
+        "uri": "tutkinnonosat_400005",
+        "koodisto": "tutkinnonosat",
+        "versio": null
+      },
+      "koodiUri": "tutkinnonosat_400005",
+      "koodiArvo": "400005",
+      "osaAlueet": [],
+      "vapaatTekstit": [],
+      "tyyppi": "normaali",
+      "valmaTelmaSisalto": {
+        "id": 4411022,
+        "osaamisenarviointi": null,
+        "osaamisenarviointiTekstina": null,
+        "osaamistavoite": [
+          {
+            "id": 4413150,
+            "kohde": {
+              "_tunniste": "ff412a12-d44c-442b-bfa3-1f663203682d",
+              "fi": "Opiskelija",
+              "sv": "Den studerande",
+              "_id": "4314046"
+            },
+            "nimi": {
+              "_tunniste": "f95005dc-7ae9-4578-ad7d-23ec5fbb97de",
+              "fi": "Liikunta, liikkuminen ja motoriset taidot",
+              "sv": "Motion samt motoriska aktiviteter och färdigheter",
+              "_id": "4314047"
+            },
+            "selite": {
+              "_tunniste": "4312026f-d23b-4175-8d73-d9a338add17c",
+              "fi": "Tavoitteena on, että opiskelija edistää liikunnan avulla aktiivista ja terveellistä elämäntapaa sekä ymmärtää liikunnan merkityksen toiminta- ja työkyvylle. Opiskelija selviytyy jokapäiväisistä karkea- ja hienomotorisista toiminnoista itselle soveltuvalla tavalla, ja hyödyntää tarpeellisia liikkumisessaan erilaisia apuvälineitä ja avustajapalveluita henkilökohtaisen tarpeen mukaan.",
+              "sv": "Målet är att de studerande med hjälp av motion främjar ett aktivt och sunt levnadssätt och förstår motionens betydelse för funktions- och arbetsförmågan. De studerande klarar av de dagliga grov- och finmotoriska aktiviteterna på ett sätt som är lämpligt för dem själva, och för motoriska aktiviteter använder de olika hjälpmedel och assistenttjänster enligt sitt behov.",
+              "_id": "4314048"
+            },
+            "tavoitteet": [
+              {
+                "_tunniste": "2bb01ded-a034-416f-b887-4ab9d775b76a",
+                "fi": "omaksuu liikunnan osaksi terveellisiä ja aktiivisia elämäntapojaan sekä ymmärtää liikunnan merkityksen toiminta- ja työkyvylle",
+                "sv": "börjar använda motion som ett av sina sunda och aktiva levnadssätt och förstår motionens betydelse för funktions- och arbetsförmågan",
+                "_id": "4314049"
+              },
+              {
+                "_tunniste": "76040c29-e557-4755-bcb8-c301aeb32d68",
+                "fi": "selviytyy jokapäiväisistä karkea- ja hienomotorisista toiminnoista",
+                "sv": "klarar av de dagliga grov- och finmotoriska aktiviteterna",
+                "_id": "4314840"
+              },
+              {
+                "_tunniste": "95b7c3f8-19bb-4eda-943f-1f74dcdd21f5",
+                "fi": "valitsee itselleen sopivia liikuntalajeja, joiden kautta saa elämyksiä ja myönteisiä onnistumisen kokemuksia",
+                "sv": "väljer lämpliga motionsformer som ger upplevelser och positiva erfarenheter av att lyckas",
+                "_id": "4314841"
+              },
+              {
+                "_tunniste": "8b6358e6-05bd-4aa4-a2ff-49e512e50185",
+                "fi": "hahmottaa kehonsa eri osat ja niiden toiminnan sekä hallitsee kehon osien toiminnot",
+                "sv": "uppfattar sina kroppsdelar och deras funktion samt behärskar deras funktion",
+                "_id": "4314842"
+              },
+              {
+                "_tunniste": "635bf467-34dd-4af4-8ff2-6a7ca511f654",
+                "fi": "ylläpitää tai kohottaa omaa fyysistä kuntoaan.",
+                "sv": "upprätthåller eller höjer sin fysiska kondition.",
+                "_id": "4314843"
+              }
+            ]
+          },
+          {
+            "id": 4413151,
+            "kohde": {
+              "_tunniste": "83b26bc4-7def-4f0c-9331-1486cad02b89",
+              "fi": "Opiskelija",
+              "sv": "Den studerande",
+              "_id": "4411040"
+            },
+            "nimi": {
+              "_tunniste": "46a2e4d1-0bf5-4271-a852-1cca2d491492",
+              "fi": "Itsetuntemus ja sosiaaliset taidot",
+              "sv": "Självkännedom och sociala färdigheter",
+              "_id": "4411041"
+            },
+            "selite": {
+              "_tunniste": "bd7301a4-7387-4cb2-8a0e-77c7a45d4b48",
+              "fi": "Tavoitteena on, että opiskelija ottaa vastuuta omaa elämäänsä koskevista ratkaisuista ja vaikuttaa omaan elämäänsä ja tulevaisuuteensa.  Opiskelija arvioi omien edellytystensä mukaisesti toimintakykyään ja elämäntilannettaan. Hän rakentaa realistista ja myönteistä minäkuvaansa sekä vahvistaa itsetuntoaan ikävaihe ja toimintakyky huomioiden.  Opiskelija toimii omien edellytystensä mukaisesti sosiaalisissa tilanteissa.",
+              "sv": "Målet är att de studerande tar ansvar för beslut om sitt eget liv och påverkar sitt liv och sin framtid.  De studerande bedömer enligt sina egna förutsättningar sin funktionsförmåga och sin livssituation. De bygger upp en realistisk och positiv jagbild och stärker sin självkänsla på ett sätt som är lämpligt med tanke på sin ålder och funktionsförmåga.  De agerar enligt egna förutsättningar i sociala situationer.",
+              "_id": "4411043"
+            },
+            "tavoitteet": [
+              {
+                "_tunniste": "ba7d20f0-847d-414b-a664-efef18d4aeea",
+                "fi": "arvioi omia kykyjään ja suorituksiaan itselleen sopivalla tavalla",
+                "sv": "bedömer sina förmågor och prestationer på ett sätt som är lämpligt för hen",
+                "_id": "4411042"
+              },
+              {
+                "_tunniste": "b8fd5f30-454c-4763-ad13-7360ab11bae4",
+                "fi": "tunnistaa omia vahvuuksiaan, voimavarojaan ja kehittämistarpeitaan",
+                "sv": "identifierar sina egna styrkor, resurser och utvecklingsbehov",
+                "_id": "4411044"
+              },
+              {
+                "_tunniste": "11a74dff-cfb4-4e71-a80d-31b0e9308c10",
+                "fi": "hahmottaa omaa erityisen tuen tarvettaan ja toimintakyvyn rajoituksiaan ja osaa hyödyntää tarvittaessa erilaisia palveluita ja tukea myös työelämän kannalta",
+                "sv": "uppfattar sitt eget behov av särskilt stöd och sina begränsningar i funktionsförmågan och kan dra nytta av olika tjänster och stöd om det behövs",
+                "_id": "4411045"
+              },
+              {
+                "_tunniste": "cd368479-4da8-47b9-9fa3-2ee892ece8ab",
+                "fi": "vahvistaa itsetuntoaan",
+                "sv": "stärker sin självkänsla",
+                "_id": "4411046"
+              },
+              {
+                "_tunniste": "4b3988ac-e4fa-4dd6-a290-5ae6e8afba5c",
+                "fi": "rakentaa realistista ja myönteistä minäkuvaansa ikävaihe ja toimintakyky huomioiden",
+                "sv": "bygger upp en realistisk och positiv jagbild på ett sätt som är lämpligt med tanke på sin ålder och funktionsförmåga",
+                "_id": "4411047"
+              },
+              {
+                "_tunniste": "f4b3160a-910d-4a26-8e65-303cfbc88366",
+                "fi": "toimii vuorovaikutteisesti erilaisissa sosiaalisissa tilanteissa",
+                "sv": "agerar interaktivt i olika sociala situationer",
+                "_id": "4411048"
+              },
+              {
+                "_tunniste": "45b1876c-95b2-4c48-b9d4-d6f019ae31cf",
+                "fi": "arvostaa itseään sekä muita tasavertaisina yhteiskunnan jäsenenä.",
+                "sv": "sätter värde på sig själv och andra som jämlika samhällsmedlemmar.",
+                "_id": "4411049"
+              }
+            ]
+          },
+          {
+            "id": 4413152,
+            "kohde": {
+              "_tunniste": "59a74320-813d-40f9-971d-b439ce6c31c4",
+              "fi": "Opiskelija",
+              "sv": "Den studerande",
+              "_id": "4411070"
+            },
+            "nimi": {
+              "_tunniste": "cba1e1a3-9989-41f0-ba33-1a31e8e73458",
+              "fi": "Arjen käytännön taidot",
+              "sv": "Färdigheter som behövs i vardagen",
+              "_id": "4411071"
+            },
+            "selite": {
+              "_tunniste": "3e9b6cb7-47c9-4a7b-b235-7be172c0b373",
+              "fi": "Tavoitteena on että, opiskelija selviytyy arkielämään ja asumiseen liittyvistä jokapäiväisistä toimistaan mahdollisimman itsenäisesti. Hän hyödyntää jokapäiväiseen toimintaan liittyviä palveluita ja tukea, apuvälineitä ja avustajapalveluita sekä kykenee ottamaan vastuuta omasta elämästään omien edellytystensä mukaisesti.",
+              "sv": "Målet är att de studerande klarar av de dagliga aktiviteterna i anknytning till vardagen och boendet så självständigt som möjligt. De utnyttjar tjänster och stöd, hjälpmedel och assistenttjänster för de dagliga aktiviteterna och kan ta ansvar för sitt eget liv i enlighet med sina förutsättningar.",
+              "_id": "4411072"
+            },
+            "tavoitteet": [
+              {
+                "_tunniste": "93f1c598-969c-4220-9cbd-217c07423b41",
+                "fi": "suunnittelee ja valmistaa kykyjensä mukaisesti terveellistä ruokaa sekä edistää omaa hyvinvointiaan oikeiden ruokailutottumusten avulla",
+                "sv": "planerar och tillreder hälsosam mat enligt sin förmåga och främjar sitt eget välbefinnande med hjälp av rätta matvanor",
+                "_id": "4411073"
+              },
+              {
+                "_tunniste": "5fa78d2d-00f5-4388-be8d-8abe55eab748",
+                "fi": "huolehtii \thenkilökohtaisesta \thygieniastaan, \tpukeutumisestaan \tja \tulkoisesta olemuksestaan",
+                "sv": "sköter sin personliga hygien, klär sig lämpligt och vårdar även på annat sätt sitt yttre",
+                "_id": "4411074"
+              },
+              {
+                "_tunniste": "ce6a4d98-57d1-48af-b46e-f9d1c949e881",
+                "fi": "pitää yllä vuorokausirytmiään, seuraa ajankäyttöään ja noudattaa aikatauluja",
+                "sv": "sörjer för sin dygnsrytm samt följer sin tidsanvändning och tidtabeller",
+                "_id": "4411075"
+              },
+              {
+                "_tunniste": "bf44b97d-0fac-4f6d-a4e6-33622e18fc1a",
+                "fi": "käyttää rahaa mahdollisimman itsenäisesti sekä tekee arkielämään ja itsenäiseen asumiseen liittyviä ostoksia",
+                "sv": "använder pengar så självständigt som möjligt och gör inköp som behövs i anknytning till det dagliga livet och självständigt boende",
+                "_id": "4411076"
+              },
+              {
+                "_tunniste": "b3c3959f-e020-4061-82b9-0e3acaf66659",
+                "fi": "tekee omaa arkielämää koskevia päätöksiä ja valintoja sekä pohtii ja suunnittelee omaa ammatillista tulevaisuutta",
+                "sv": "fattar beslut och gör val som gäller den egna vardagen",
+                "_id": "4411077"
+              },
+              {
+                "_tunniste": "948691b7-a2b7-4580-a41b-6cd73adc56df",
+                "fi": "hyödyntää jokapäiväisessä elämässään tarvitsemiaan palveluita ja tukea, apuvälineitä ja avustajapalveluita",
+                "sv": "utnyttjar de tjänster och stöd, hjälpmedel och assistenttjänster som behövs i det dagliga livet",
+                "_id": "4411078"
+              },
+              {
+                "_tunniste": "d241dc06-9641-468d-ac0c-4fae1a14ec58",
+                "fi": "löytää itselle soveltuvimman asumismuodon riittävine tuki- ja ohjauspalveluineen",
+                "sv": "hittar den boendeform som är lämpligast och där det finns tillräckligt med stöd- och handledningstjänster tillgängliga",
+                "_id": "4411079"
+              },
+              {
+                "_tunniste": "e894e9a1-2d3a-49fb-a7c9-2136b2dda1c4",
+                "fi": "luo itselleen viihtyisän ja turvallisen asuinympäristön ja pitää siitä huolta (siivous, tekstiilihuolto, pienet korjaustyöt)",
+                "sv": "skapar en trivsam och trygg boendemiljö åt sig själv och vårdar den (städning, textilvård, små reparationsarbeten)",
+                "_id": "4411080"
+              },
+              {
+                "_tunniste": "c4008762-8ef5-4454-b272-ee70ead6fdf6",
+                "fi": "käyttää liikennevälineitä ja liikkuu mahdollisimman itsenäisesti",
+                "sv": "använder kommunikationsmedel och rör sig så självständigt som möjligt",
+                "_id": "4411081"
+              },
+              {
+                "_tunniste": "506b905b-e570-4d01-ae05-db1723d0cae5",
+                "fi": "toimii aktiivisena ja sosiaalisena kansalaisena ja kuluttajana.",
+                "sv": "är en aktiv och social medborgare och konsument.",
+                "_id": "4411082"
+              }
+            ]
+          },
+          {
+            "id": 4413153,
+            "kohde": {
+              "_tunniste": "e1b8f5ac-814d-4445-a5c6-9eca8b731fea",
+              "fi": "Opiskelija",
+              "sv": "Den studerande",
+              "_id": "4411083"
+            },
+            "nimi": {
+              "_tunniste": "da74b1ce-0501-4afe-a43f-5866abf5847e",
+              "fi": "Vapaa-ajan toiminta",
+              "sv": "Fritidsaktiviteter",
+              "_id": "4411084"
+            },
+            "selite": {
+              "_tunniste": "ad1c15bb-c10b-4721-a401-742afac17cac",
+              "fi": "Tavoitteena on, että opiskelija tutustuu erilaisiin vapaa-ajanviettomahdollisuuksiin ja osaa viettää vapaa-aikaansa omaa hyvinvointiaan ja sosiaalisia suhteitaan edistävällä tavalla.",
+              "sv": "Målet är att de studerande bekantar sig med olika möjligheter till fritidsaktiviteter och kan använda sin fritid på ett sätt som främjar det egna välbefinnandet och de sociala relationerna.",
+              "_id": "4411085"
+            },
+            "tavoitteet": [
+              {
+                "_tunniste": "0e625e53-f469-40af-953b-f5a159e999de",
+                "fi": "hyödyntää harrastuksia ja vapaa-aikaansa oman hyvinvointinsa edistämiseksi ja sosiaalisten suhteiden luomiseksi",
+                "sv": "utnyttjar hobbyer och sin fritid för att främja sitt välbefinnande och skapa sociala relationer",
+                "_id": "4411086"
+              },
+              {
+                "_tunniste": "ec447a43-c2d2-4075-967e-c85db23b45d2",
+                "fi": "tutustuu erilaisiin vapaa-ajanviettomahdollisuuksiin",
+                "sv": "bekantar sig med olika möjligheter i fråga om fritidsaktiviteter",
+                "_id": "4411087"
+              },
+              {
+                "_tunniste": "d693f1b0-a436-45b4-b4b4-850196e0de0c",
+                "fi": "osaa valita itselleen sopivan harrastuksen",
+                "sv": "kan välja en hobby som är lämplig",
+                "_id": "4411088"
+              },
+              {
+                "_tunniste": "f835ce55-ad2d-455c-804b-26e621dae50b",
+                "fi": "ymmärtää vapaa-ajan merkityksen työn ja opiskelun vastapainona",
+                "sv": "förstår fritidens betydelse som motvikt till arbete och studier",
+                "_id": "4411089"
+              },
+              {
+                "_tunniste": "93b255ae-8480-4b1a-9528-5e5019356c89",
+                "fi": "tutustuu taide- ja kulttuuripalveluiden ja tapahtumien tarjontaan.",
+                "sv": "sätter sig in i utbudet av konst- och kulturtjänster och evenemang.",
+                "_id": "4411090"
+              }
+            ]
+          },
+          {
+            "id": 4413154,
+            "kohde": {
+              "_tunniste": "db488678-00cc-4aaa-8b1a-76dd3d845cc9",
+              "fi": "Opiskelija",
+              "sv": "Den studerande",
+              "_id": "4413058"
+            },
+            "nimi": {
+              "_tunniste": "926798fb-2879-4348-85d6-8fa0eec77c64",
+              "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+              "sv": "Samhällskunskap och medborgarfärdigheter",
+              "_id": "4413059"
+            },
+            "selite": {
+              "_tunniste": "5890dbaa-66c5-4521-8e13-c696ba1444a0",
+              "fi": "Tavoitteena on, että opiskelija tietää keskeisiä yhteiskunnan palveluita ja osaa hyödyntää niitä omassa elämässään henkilökohtaisen elämäntilanteen mukaisesti. Hän tietää omia oikeuksiaan ja velvollisuuksiaan ja toimii yhteiskunnan jäsenenä sekä osallistuu oman lähiyhteisönsä toimintaan.",
+              "sv": "Målet är att de studerande känner till centrala tjänster som samhället tillhandahåller och kan utnyttja dem i sitt eget liv i enlighet med sin personliga livssituation. De känner till sina rättigheter och skyldigheter, agerar som samhällsmedlemmar och deltar i närsamhällets verksamhet.",
+              "_id": "4413160"
+            },
+            "tavoitteet": [
+              {
+                "_tunniste": "d72bfc30-ec73-4814-a5c9-c346c805489a",
+                "fi": "käyttää yhteiskunnan palveluja oman elämäntilanteensa mukaisesti",
+                "sv": "använder samhällets tjänster i enlighet med sin livssituation",
+                "_id": "4413161"
+              },
+              {
+                "_tunniste": "bbf5d9c7-93c3-402e-96da-749ef317d6cf",
+                "fi": "asioi oman kotikuntansa viranomaisten ja muiden toimijoiden kanssa sekä suunnittelee omien tukipalvelujensa toteuttamista heidän kanssaan",
+                "sv": "sköter ärenden med den egna hemkommunens myndigheter och andra aktörer och planerar sina individuella stödtjänster tillsammans med dem",
+                "_id": "4413162"
+              },
+              {
+                "_tunniste": "f14954fc-0560-44ad-b06c-a53e00fd205d",
+                "fi": "toimii yhteiskunnan ja lähiyhteisönsä jäsenenä",
+                "sv": "agerar som samhällsmedlem och som medlem av närsamhället",
+                "_id": "4413163"
+              },
+              {
+                "_tunniste": "614c3d4f-1447-496e-9818-c1d78af5e4ea",
+                "fi": "toimii omien oikeuksiensa ja velvollisuuksiensa mukaisesti.",
+                "sv": "agerar i enlighet med sina rättigheter och skyldigheter.",
+                "_id": "4413164"
+              }
+            ]
+          }
+        ]
+      },
+      "ammattitaitovaatimukset2019": null,
+      "_geneerinenArviointiasteikko": null,
+      "osanTyyppi": "tutkinnonosa"
+    }
+  ],
+  "kokonaismäärä": 1,
+  "sivuja": 1,
+  "sivukoko": 25,
+  "sivu": 0
+}
