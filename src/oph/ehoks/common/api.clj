@@ -15,7 +15,7 @@
 (defn log-exception [ex]
   (let [ex-map (Throwable->map ex)]
     (log/errorf
-      "Unhandled exception\n%s\n%s"
+      "Unhandled exception\n%s\n%s\n---------------Exception end---------------"
       (str (:cause ex-map))
       (str (:via ex-map)))))
 
