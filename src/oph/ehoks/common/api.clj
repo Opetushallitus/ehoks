@@ -6,8 +6,7 @@
             [ring.middleware.session.memory :as mem]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.middleware :as middleware]
-            [oph.ehoks.logging.access :refer [wrap-access-logger]]
-            [clojure.string :as cstr]))
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]))
 
 (defn not-found-handler [_ __ ___]
   (response/not-found {:reason "Route not found"}))
