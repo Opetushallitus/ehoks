@@ -12,7 +12,8 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [schema.core :as s]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
-            [oph.ehoks.db.db-operations.oppija :as db-oppija]))
+            [oph.ehoks.db.db-operations.oppija :as db-oppija]
+            [oph.ehoks.external.aws-sqs :as sqs]))
 
 (def routes
   (route-middleware
@@ -155,4 +156,26 @@
       :return (restful/response {})
       (if (pos? (first (db-hoks/delete-hoks-by-hoks-id hoks-id)))
         (restful/rest-ok {})
-        (response/not-found {:error "No HOKS found with given hoks-id"})))))
+        (response/not-found {:error "No HOKS found with given hoks-id"})))
+
+    (c-api/POST "/hoks/:hoks-id/resend-aloitusherate" request
+      :summary "Lähettää uuden aloituskyselyherätteen herätepalveluun"
+      :header-params [caller-id :- s/Str]
+      :path-params [hoks-id :- s/Int]
+      (let [hoks (db-hoks/select-hoks-by-id hoks-id)]
+        (if hoks
+          (if (:osaamisen-hankkimisen-tarve hoks)
+            (do
+              (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg
+                                               hoks-id hoks))
+              (response/no-content))
+            (do
+              (log/warn "Osaamisen hankkimisen tarve false "
+                        hoks-id)
+              (response/bad-request
+                {:error "Osaamisen hankkimisen tarve false"})))
+          (do
+            (log/warn "No HOKS found with given hoks-id "
+                      hoks-id)
+            (response/not-found
+              {:error "No HOKS found with given hoks-id"})))))))
