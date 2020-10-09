@@ -15,9 +15,13 @@
              "dev-routes/eperusteet-amosaa-service_api_julkinen_koodi_paikallinen__tutkinnonosa__1.2.246.562.10.41253773158__1983.json")
            (mock-gen/json-response [])))
 
-    (GET "/eperusteet-service/api/tutkinnonosat/52824/viitteet" []
-         (mock-gen/json-response-file
-           "dev-routes/eperusteet-service_api_tutkinnonosat_52824_viitteet.json"))
+    (GET "/eperusteet-service/api/tutkinnonosat/:tutkinnon-osa-id/viitteet" request
+      (let [tutkinnon-osa-id (get-in request [:param :tutkinnon-osa-id])]
+        (if (= tutkinnon-osa-id "3003003")
+          (mock-gen/json-response-file
+            "dev-routes/eperusteet-service_api_tutkinnonosat_3003003_viitteet.json")
+          (mock-gen/json-response-file
+            "dev-routes/eperusteet-service_api_tutkinnonosat_52824_viitteet.json"))))
 
     (GET "/eperusteet-service/api/perusteenosat/52824/osaalueet" []
       (mock-gen/json-response-file
@@ -36,8 +40,13 @@
            "dev-routes/eperusteet-service_api_perusteet_1352660_suoritustavat_ops_rakenne.json"))
 
     (GET "/eperusteet-service/api/tutkinnonosat" request
-         (if (= (get-in request [:query-params "koodiUri"]) "tutkinnonosat_101056")
-           (mock-gen/json-response-file
-             "dev-routes/eperusteet-service_api_tutkinnonosat_not_found.json")
-           (mock-gen/json-response-file
-             "dev-routes/eperusteet-service_api_tutkinnonosat.json")))))
+      (let [koodi-uri (get-in request [:query-params "koodiUri"])]
+        (case koodi-uri
+          "tutkinnonosat_101056"
+          (mock-gen/json-response-file
+            "dev-routes/eperusteet-service_api_tutkinnonosat_not_found.json")
+          "tutkinnonosat_400005"
+          (mock-gen/json-response-file
+            "dev-routes/eperusteet-service_api_tutkinnonosat_telma.json")
+          (mock-gen/json-response-file
+            "dev-routes/eperusteet-service_api_tutkinnonosat.json"))))))
