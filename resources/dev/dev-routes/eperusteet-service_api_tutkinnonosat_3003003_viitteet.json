@@ -1,0 +1,43 @@
+[
+  {
+    "id": 2983198,
+    "laajuus": 0.00,
+    "laajuusMaksimi": 25.00,
+    "jarjestys": 1,
+    "muokattu": 1519887988392,
+    "nimi": {
+      "_tunniste": "bc8354a2-eedc-45c3-a60d-9279fd57bcc7",
+      "fi": "Ammatillisen toimintakyvyn vahvistaminen",
+      "sv": "Stärkande av den yrkesinriktade funktionsförmågan",
+      "_id": "4314844"
+    },
+    "tyyppi": "normaali",
+    "peruste": {
+      "id": 2910079,
+      "globalVersion": {
+        "aikaleima": 1549276346167
+      },
+      "nimi": {
+        "_tunniste": "6877d49d-38e6-482b-9d1b-e779af1efccc",
+        "fi": "Työhön ja itsenäiseen elämään valmentava koulutus (TELMA)",
+        "sv": "Utbildning som handleder för arbete och ett självständigt liv",
+        "_id": "4640434"
+      },
+      "diaarinumero": "OPH-2659-2017",
+      "voimassaoloLoppuu": null,
+      "voimassaoloAlkaa": 1514757600000,
+      "tila": "valmis",
+      "suoritustavat": [
+        {
+          "suoritustapakoodi": "reformi",
+          "laajuusYksikko": "OSAAMISPISTE"
+        }
+      ]
+    },
+    "suoritustapa": {
+      "suoritustapakoodi": "reformi",
+      "laajuusYksikko": "OSAAMISPISTE"
+    },
+    "_tutkinnonOsa": "3003003"
+  }
+]
