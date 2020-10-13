@@ -1,0 +1,2025 @@
+{
+  "data": [
+    {
+      "id": 3708884,
+      "luotu": 1510150150826,
+      "muokattu": 1549459387348,
+      "muokkaaja": "1.2.246.562.24.77925329174",
+      "nimi": {
+        "_tunniste": "f86d1b24-3dad-4255-ae90-de6ede1cb9b6",
+        "fi": "Yhteiskunta- ja työelämäosaaminen",
+        "sv": "Kunnande om samhälle och arbetsliv",
+        "en": "Citizenship and working life competence",
+        "_id": "6301578"
+      },
+      "tila": "valmis",
+      "tavoitteet": null,
+      "arviointi": null,
+      "ammattitaitovaatimuksetLista": [],
+      "ammattitaitovaatimukset": null,
+      "ammattitaidonOsoittamistavat": null,
+      "kuvaus": null,
+      "koodi": {
+        "nimi": {
+          "sv": "Kunnande om samhälle och arbetsliv",
+          "fi": "Yhteiskunta- ja työelämäosaaminen "
+        },
+        "arvo": "400014",
+        "uri": "tutkinnonosat_400014",
+        "koodisto": "tutkinnonosat",
+        "versio": null
+      },
+      "koodiUri": "tutkinnonosat_400014",
+      "koodiArvo": "400014",
+      "osaAlueet": [
+        {
+          "id": 3711500,
+          "nimi": {
+            "_tunniste": "d746db0d-5a25-47b8-af3b-0bb8c26425ed",
+            "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+            "sv": "Att verka i samhället och som medborgare",
+            "en": "Operating as a member of society and a citizen",
+            "_id": "5915920"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+              "sv": "Att verka i samhället och som medborgare"
+            },
+            "arvo": "YTYK",
+            "uri": "ammatillisenoppiaineet_ytyk",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytyk",
+          "koodiArvo": "YTYK",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 3770557,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+                  "sv": "Att verka i samhället och som medborgare"
+                },
+                "arvo": "YTYK",
+                "uri": "ammatillisenoppiaineet_ytyk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyk",
+              "koodiArvo": "YTYK",
+              "tavoitteet": null
+            },
+            {
+              "id": 3770558,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": {
+                "nimi": {
+                  "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+                  "sv": "Att verka i samhället och som medborgare"
+                },
+                "arvo": "YTYK",
+                "uri": "ammatillisenoppiaineet_ytyk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyk",
+              "koodiArvo": "YTYK",
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 3711501,
+          "nimi": {
+            "_tunniste": "8561caa2-751f-45a4-b1fb-3757ab4875a6",
+            "fi": "Työelämässä toimiminen",
+            "sv": "Att verka i arbetslivet",
+            "en": "Operating in the world of work",
+            "_id": "5916029"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Työelämässä toimiminen",
+              "sv": "Att verka i arbetslivet"
+            },
+            "arvo": "YTTT",
+            "uri": "ammatillisenoppiaineet_yttt",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_yttt",
+          "koodiArvo": "YTTT",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 3770559,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työelämässä toimiminen",
+                  "sv": "Att verka i arbetslivet"
+                },
+                "arvo": "YTTT",
+                "uri": "ammatillisenoppiaineet_yttt",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_yttt",
+              "koodiArvo": "YTTT",
+              "tavoitteet": null
+            },
+            {
+              "id": 3780030,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työelämässä toimiminen",
+                  "sv": "Att verka i arbetslivet"
+                },
+                "arvo": "YTTT",
+                "uri": "ammatillisenoppiaineet_yttt",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_yttt",
+              "koodiArvo": "YTTT",
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 3711502,
+          "nimi": {
+            "_tunniste": "40423918-463c-4e13-8a7f-59f0fa70ea41",
+            "fi": "Opiskelu- ja urasuunnitteluvalmiudet",
+            "sv": "Färdigheter i studie- och karriärplanering",
+            "en": "Study and career planning capabilities",
+            "_id": "5916431"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "sv": "Färdigheter i studie- och karriärplanering",
+              "fi": "Opiskelu- ja urasuunnitteluvalmiudet"
+            },
+            "arvo": "YTOU",
+            "uri": "ammatillisenoppiaineet_ytou",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytou",
+          "koodiArvo": "YTOU",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 3780031,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "sv": "Färdigheter i studie- och karriärplanering",
+                  "fi": "Opiskelu- ja urasuunnitteluvalmiudet"
+                },
+                "arvo": "YTOU",
+                "uri": "ammatillisenoppiaineet_ytou",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytou",
+              "koodiArvo": "YTOU",
+              "tavoitteet": null
+            },
+            {
+              "id": 3780032,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": null,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 3711503,
+          "nimi": {
+            "_tunniste": "088f5323-8000-4dcb-8273-b7affdc6aba0",
+            "fi": "Yrittäjyys ja yrittäjämäinen toiminta",
+            "sv": "Företagsamhet och företagarinriktad verksamhet",
+            "en": "Entrepreneurship and entrepreneurial activities",
+            "_id": "5916847"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "sv": "Företagsamhet och företagarinriktad verksamhet",
+              "fi": "Yrittäjyys ja yrittäjämäinen toiminta"
+            },
+            "arvo": "YTYY",
+            "uri": "ammatillisenoppiaineet_ytyy",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytyy",
+          "koodiArvo": "YTYY",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 3780033,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "sv": "Företagsamhet och företagarinriktad verksamhet",
+                  "fi": "Yrittäjyys ja yrittäjämäinen toiminta"
+                },
+                "arvo": "YTYY",
+                "uri": "ammatillisenoppiaineet_ytyy",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyy",
+              "koodiArvo": "YTYY",
+              "tavoitteet": null
+            },
+            {
+              "id": 3780034,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": null,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 3711504,
+          "nimi": {
+            "_tunniste": "a1a722bf-b2d5-46fa-9274-bbe2960c546b",
+            "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+            "sv": "Upprätthållande av arbetsförmågan och välbefinnandet",
+            "en": "Maintaining ability to work and wellbeing at work",
+            "_id": "5916907"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+              "sv": "Upprätthållande av arbetsförmågan och välbefinnandet"
+            },
+            "arvo": "YTTH",
+            "uri": "ammatillisenoppiaineet_ytth",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytth",
+          "koodiArvo": "YTTH",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 3780035,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+                  "sv": "Upprätthållande av arbetsförmågan och välbefinnandet"
+                },
+                "arvo": "YTTH",
+                "uri": "ammatillisenoppiaineet_ytth",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytth",
+              "koodiArvo": "YTTH",
+              "tavoitteet": null
+            },
+            {
+              "id": 3780036,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 3711505,
+          "nimi": {
+            "_tunniste": "7ecc152c-f804-44da-abfa-db02380bde83",
+            "fi": "Kestävän kehityksen edistäminen",
+            "sv": "Främjande av hållbar utveckling",
+            "en": "Promotion of sustainable development",
+            "_id": "5917028"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Kestävän kehityksen edistäminen",
+              "sv": "Främjande av hållbar utveckling"
+            },
+            "arvo": "YTKK",
+            "uri": "ammatillisenoppiaineet_ytkk",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytkk",
+          "koodiArvo": "YTKK",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 3780037,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "fi": "Kestävän kehityksen edistäminen",
+                  "sv": "Främjande av hållbar utveckling"
+                },
+                "arvo": "YTKK",
+                "uri": "ammatillisenoppiaineet_ytkk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytkk",
+              "koodiArvo": "YTKK",
+              "tavoitteet": null
+            },
+            {
+              "id": 3780038,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        }
+      ],
+      "vapaatTekstit": [],
+      "tyyppi": "reformi_tutke2",
+      "valmaTelmaSisalto": null,
+      "ammattitaitovaatimukset2019": null,
+      "_geneerinenArviointiasteikko": null,
+      "osanTyyppi": "tutkinnonosa"
+    },
+    {
+      "id": 4319732,
+      "luotu": 1514558976787,
+      "muokattu": 1583489258830,
+      "muokkaaja": "1.2.246.562.24.83767149263",
+      "nimi": {
+        "_tunniste": "f86d1b24-3dad-4255-ae90-de6ede1cb9b6",
+        "fi": "Yhteiskunta- ja työelämäosaaminen",
+        "sv": "Kunnande om samhälle och arbetsliv",
+        "en": "Citizenship and working life competence",
+        "_id": "7065744"
+      },
+      "tila": "valmis",
+      "tavoitteet": null,
+      "arviointi": null,
+      "ammattitaitovaatimuksetLista": [],
+      "ammattitaitovaatimukset": null,
+      "ammattitaidonOsoittamistavat": null,
+      "kuvaus": null,
+      "koodi": {
+        "nimi": {
+          "sv": "Kunnande om samhälle och arbetsliv",
+          "fi": "Yhteiskunta- ja työelämäosaaminen "
+        },
+        "arvo": "400014",
+        "uri": "tutkinnonosat_400014",
+        "koodisto": "tutkinnonosat",
+        "versio": null
+      },
+      "koodiUri": "tutkinnonosat_400014",
+      "koodiArvo": "400014",
+      "osaAlueet": [
+        {
+          "id": 4320224,
+          "nimi": {
+            "_tunniste": "d746db0d-5a25-47b8-af3b-0bb8c26425ed",
+            "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+            "sv": "Att verka i samhället och som medborgare",
+            "en": "Operating as a member of society and a citizen",
+            "_id": "7065772"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+              "sv": "Att verka i samhället och som medborgare"
+            },
+            "arvo": "YTYK",
+            "uri": "ammatillisenoppiaineet_ytyk",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytyk",
+          "koodiArvo": "YTYK",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 4320238,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+                  "sv": "Att verka i samhället och som medborgare"
+                },
+                "arvo": "YTYK",
+                "uri": "ammatillisenoppiaineet_ytyk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyk",
+              "koodiArvo": "YTYK",
+              "tavoitteet": null
+            },
+            {
+              "id": 4320239,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": {
+                "nimi": {
+                  "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+                  "sv": "Att verka i samhället och som medborgare"
+                },
+                "arvo": "YTYK",
+                "uri": "ammatillisenoppiaineet_ytyk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyk",
+              "koodiArvo": "YTYK",
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 4320225,
+          "nimi": {
+            "_tunniste": "8561caa2-751f-45a4-b1fb-3757ab4875a6",
+            "fi": "Työelämässä toimiminen",
+            "sv": "Att verka i arbetslivet",
+            "en": "Operating in the world of work",
+            "_id": "7066271"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Työelämässä toimiminen",
+              "sv": "Att verka i arbetslivet"
+            },
+            "arvo": "YTTT",
+            "uri": "ammatillisenoppiaineet_yttt",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_yttt",
+          "koodiArvo": "YTTT",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 4320500,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työelämässä toimiminen",
+                  "sv": "Att verka i arbetslivet"
+                },
+                "arvo": "YTTT",
+                "uri": "ammatillisenoppiaineet_yttt",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_yttt",
+              "koodiArvo": "YTTT",
+              "tavoitteet": null
+            },
+            {
+              "id": 4320501,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työelämässä toimiminen",
+                  "sv": "Att verka i arbetslivet"
+                },
+                "arvo": "YTTT",
+                "uri": "ammatillisenoppiaineet_yttt",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_yttt",
+              "koodiArvo": "YTTT",
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 4320226,
+          "nimi": {
+            "_tunniste": "40423918-463c-4e13-8a7f-59f0fa70ea41",
+            "fi": "Opiskelu- ja urasuunnitteluvalmiudet",
+            "sv": "Färdigheter i studie- och karriärplanering",
+            "en": "Study and career planning capabilities",
+            "_id": "7066615"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "sv": "Färdigheter i studie- och karriärplanering",
+              "fi": "Opiskelu- ja urasuunnitteluvalmiudet"
+            },
+            "arvo": "YTOU",
+            "uri": "ammatillisenoppiaineet_ytou",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytou",
+          "koodiArvo": "YTOU",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 4320502,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "sv": "Färdigheter i studie- och karriärplanering",
+                  "fi": "Opiskelu- ja urasuunnitteluvalmiudet"
+                },
+                "arvo": "YTOU",
+                "uri": "ammatillisenoppiaineet_ytou",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytou",
+              "koodiArvo": "YTOU",
+              "tavoitteet": null
+            },
+            {
+              "id": 4320503,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": null,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 4320227,
+          "nimi": {
+            "_tunniste": "088f5323-8000-4dcb-8273-b7affdc6aba0",
+            "fi": "Yrittäjyys ja yrittäjämäinen toiminta",
+            "sv": "Företagsamhet och företagarinriktad verksamhet",
+            "en": "Entrepreneurship and entrepreneurial activities",
+            "_id": "7066849"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "sv": "Företagsamhet och företagarinriktad verksamhet",
+              "fi": "Yrittäjyys ja yrittäjämäinen toiminta"
+            },
+            "arvo": "YTYY",
+            "uri": "ammatillisenoppiaineet_ytyy",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytyy",
+          "koodiArvo": "YTYY",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 4320504,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "sv": "Företagsamhet och företagarinriktad verksamhet",
+                  "fi": "Yrittäjyys ja yrittäjämäinen toiminta"
+                },
+                "arvo": "YTYY",
+                "uri": "ammatillisenoppiaineet_ytyy",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyy",
+              "koodiArvo": "YTYY",
+              "tavoitteet": null
+            },
+            {
+              "id": 4320505,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": null,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 4320228,
+          "nimi": {
+            "_tunniste": "a1a722bf-b2d5-46fa-9274-bbe2960c546b",
+            "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+            "sv": "Upprätthållande av arbetsförmågan och välbefinnandet",
+            "en": "Maintaining ability to work and wellbeing at work",
+            "_id": "7066939"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+              "sv": "Upprätthållande av arbetsförmågan och välbefinnandet"
+            },
+            "arvo": "YTTH",
+            "uri": "ammatillisenoppiaineet_ytth",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytth",
+          "koodiArvo": "YTTH",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 4320506,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+                  "sv": "Upprätthållande av arbetsförmågan och välbefinnandet"
+                },
+                "arvo": "YTTH",
+                "uri": "ammatillisenoppiaineet_ytth",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytth",
+              "koodiArvo": "YTTH",
+              "tavoitteet": null
+            },
+            {
+              "id": 4320507,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 4320229,
+          "nimi": {
+            "_tunniste": "7ecc152c-f804-44da-abfa-db02380bde83",
+            "fi": "Kestävän kehityksen edistäminen",
+            "sv": "Främjande av hållbar utveckling",
+            "en": "Promotion of sustainable development",
+            "_id": "7067272"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Kestävän kehityksen edistäminen",
+              "sv": "Främjande av hållbar utveckling"
+            },
+            "arvo": "YTKK",
+            "uri": "ammatillisenoppiaineet_ytkk",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytkk",
+          "koodiArvo": "YTKK",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 4320508,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "fi": "Kestävän kehityksen edistäminen",
+                  "sv": "Främjande av hållbar utveckling"
+                },
+                "arvo": "YTKK",
+                "uri": "ammatillisenoppiaineet_ytkk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytkk",
+              "koodiArvo": "YTKK",
+              "tavoitteet": null
+            },
+            {
+              "id": 4320509,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        }
+      ],
+      "vapaatTekstit": [],
+      "tyyppi": "reformi_tutke2",
+      "valmaTelmaSisalto": null,
+      "ammattitaitovaatimukset2019": null,
+      "_geneerinenArviointiasteikko": null,
+      "osanTyyppi": "tutkinnonosa"
+    },
+    {
+      "id": 4557564,
+      "luotu": 1520584602838,
+      "muokattu": 1524656636777,
+      "muokkaaja": "1.2.246.562.24.66008133120",
+      "nimi": {
+        "_tunniste": "f86d1b24-3dad-4255-ae90-de6ede1cb9b6",
+        "fi": "Yhteiskunta- ja työelämäosaaminen",
+        "_id": "3711513"
+      },
+      "tila": "valmis",
+      "tavoitteet": null,
+      "arviointi": null,
+      "ammattitaitovaatimuksetLista": [],
+      "ammattitaitovaatimukset": null,
+      "ammattitaidonOsoittamistavat": null,
+      "kuvaus": null,
+      "koodi": {
+        "nimi": {
+          "sv": "Kunnande om samhälle och arbetsliv",
+          "fi": "Yhteiskunta- ja työelämäosaaminen "
+        },
+        "arvo": "400014",
+        "uri": "tutkinnonosat_400014",
+        "koodisto": "tutkinnonosat",
+        "versio": null
+      },
+      "koodiUri": "tutkinnonosat_400014",
+      "koodiArvo": "400014",
+      "osaAlueet": [
+        {
+          "id": 4557860,
+          "nimi": {
+            "_tunniste": "d746db0d-5a25-47b8-af3b-0bb8c26425ed",
+            "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+            "_id": "3711417"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+              "sv": "Att verka i samhället och som medborgare"
+            },
+            "arvo": "YTYK",
+            "uri": "ammatillisenoppiaineet_ytyk",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytyk",
+          "koodiArvo": "YTYK",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 4557870,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+                  "sv": "Att verka i samhället och som medborgare"
+                },
+                "arvo": "YTYK",
+                "uri": "ammatillisenoppiaineet_ytyk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyk",
+              "koodiArvo": "YTYK",
+              "tavoitteet": null
+            },
+            {
+              "id": 4557871,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": {
+                "nimi": {
+                  "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+                  "sv": "Att verka i samhället och som medborgare"
+                },
+                "arvo": "YTYK",
+                "uri": "ammatillisenoppiaineet_ytyk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyk",
+              "koodiArvo": "YTYK",
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 4557861,
+          "nimi": {
+            "_tunniste": "8561caa2-751f-45a4-b1fb-3757ab4875a6",
+            "fi": "Työelämässä toimiminen",
+            "_id": "3711418"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Työelämässä toimiminen",
+              "sv": "Att verka i arbetslivet"
+            },
+            "arvo": "YTTT",
+            "uri": "ammatillisenoppiaineet_yttt",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_yttt",
+          "koodiArvo": "YTTT",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 4557872,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työelämässä toimiminen",
+                  "sv": "Att verka i arbetslivet"
+                },
+                "arvo": "YTTT",
+                "uri": "ammatillisenoppiaineet_yttt",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_yttt",
+              "koodiArvo": "YTTT",
+              "tavoitteet": null
+            },
+            {
+              "id": 4557873,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työelämässä toimiminen",
+                  "sv": "Att verka i arbetslivet"
+                },
+                "arvo": "YTTT",
+                "uri": "ammatillisenoppiaineet_yttt",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_yttt",
+              "koodiArvo": "YTTT",
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 4557862,
+          "nimi": {
+            "_tunniste": "40423918-463c-4e13-8a7f-59f0fa70ea41",
+            "fi": "Opiskelu- ja urasuunnitteluvalmiudet",
+            "_id": "3711419"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "sv": "Färdigheter i studie- och karriärplanering",
+              "fi": "Opiskelu- ja urasuunnitteluvalmiudet"
+            },
+            "arvo": "YTOU",
+            "uri": "ammatillisenoppiaineet_ytou",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytou",
+          "koodiArvo": "YTOU",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 4557874,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "sv": "Färdigheter i studie- och karriärplanering",
+                  "fi": "Opiskelu- ja urasuunnitteluvalmiudet"
+                },
+                "arvo": "YTOU",
+                "uri": "ammatillisenoppiaineet_ytou",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytou",
+              "koodiArvo": "YTOU",
+              "tavoitteet": null
+            },
+            {
+              "id": 4557875,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": null,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 4557863,
+          "nimi": {
+            "_tunniste": "088f5323-8000-4dcb-8273-b7affdc6aba0",
+            "fi": "Yrittäjyys ja yrittäjämäinen toiminta",
+            "_id": "3711510"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "sv": "Företagsamhet och företagarinriktad verksamhet",
+              "fi": "Yrittäjyys ja yrittäjämäinen toiminta"
+            },
+            "arvo": "YTYY",
+            "uri": "ammatillisenoppiaineet_ytyy",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytyy",
+          "koodiArvo": "YTYY",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 4557876,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "sv": "Företagsamhet och företagarinriktad verksamhet",
+                  "fi": "Yrittäjyys ja yrittäjämäinen toiminta"
+                },
+                "arvo": "YTYY",
+                "uri": "ammatillisenoppiaineet_ytyy",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyy",
+              "koodiArvo": "YTYY",
+              "tavoitteet": null
+            },
+            {
+              "id": 4557877,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": null,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 4557864,
+          "nimi": {
+            "_tunniste": "a1a722bf-b2d5-46fa-9274-bbe2960c546b",
+            "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+            "_id": "3711511"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+              "sv": "Upprätthållande av arbetsförmågan och välbefinnandet"
+            },
+            "arvo": "YTTH",
+            "uri": "ammatillisenoppiaineet_ytth",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytth",
+          "koodiArvo": "YTTH",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 4557878,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+                  "sv": "Upprätthållande av arbetsförmågan och välbefinnandet"
+                },
+                "arvo": "YTTH",
+                "uri": "ammatillisenoppiaineet_ytth",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytth",
+              "koodiArvo": "YTTH",
+              "tavoitteet": null
+            },
+            {
+              "id": 4557879,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 4557865,
+          "nimi": {
+            "_tunniste": "7ecc152c-f804-44da-abfa-db02380bde83",
+            "fi": "Kestävän kehityksen edistäminen",
+            "_id": "3711512"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Kestävän kehityksen edistäminen",
+              "sv": "Främjande av hållbar utveckling"
+            },
+            "arvo": "YTKK",
+            "uri": "ammatillisenoppiaineet_ytkk",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytkk",
+          "koodiArvo": "YTKK",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 4558040,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "fi": "Kestävän kehityksen edistäminen",
+                  "sv": "Främjande av hållbar utveckling"
+                },
+                "arvo": "YTKK",
+                "uri": "ammatillisenoppiaineet_ytkk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytkk",
+              "koodiArvo": "YTKK",
+              "tavoitteet": null
+            },
+            {
+              "id": 4558041,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        }
+      ],
+      "vapaatTekstit": [],
+      "tyyppi": "reformi_tutke2",
+      "valmaTelmaSisalto": null,
+      "ammattitaitovaatimukset2019": null,
+      "_geneerinenArviointiasteikko": null,
+      "osanTyyppi": "tutkinnonosa"
+    },
+    {
+      "id": 6603663,
+      "luotu": 1558434092965,
+      "muokattu": 1561706861118,
+      "muokkaaja": "1.2.246.562.24.12171520850",
+      "nimi": {
+        "_tunniste": "f86d1b24-3dad-4255-ae90-de6ede1cb9b6",
+        "fi": "Yhteiskunta- ja työelämäosaaminen",
+        "sv": "Kunnande om samhälle och arbetsliv",
+        "en": "Citizenship and working life competence",
+        "_id": "6301578"
+      },
+      "tila": "valmis",
+      "tavoitteet": null,
+      "arviointi": null,
+      "ammattitaitovaatimuksetLista": [],
+      "ammattitaitovaatimukset": null,
+      "ammattitaidonOsoittamistavat": null,
+      "kuvaus": null,
+      "koodi": {
+        "nimi": {
+          "sv": "Kunnande om samhälle och arbetsliv",
+          "fi": "Yhteiskunta- ja työelämäosaaminen "
+        },
+        "arvo": "400014",
+        "uri": "tutkinnonosat_400014",
+        "koodisto": "tutkinnonosat",
+        "versio": null
+      },
+      "koodiUri": "tutkinnonosat_400014",
+      "koodiArvo": "400014",
+      "osaAlueet": [
+        {
+          "id": 6604254,
+          "nimi": {
+            "_tunniste": "d746db0d-5a25-47b8-af3b-0bb8c26425ed",
+            "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+            "sv": "Att verka i samhället och som medborgare",
+            "en": "Operating as a member of society and a citizen",
+            "_id": "5915920"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+              "sv": "Att verka i samhället och som medborgare"
+            },
+            "arvo": "YTYK",
+            "uri": "ammatillisenoppiaineet_ytyk",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytyk",
+          "koodiArvo": "YTYK",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 6604268,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+                  "sv": "Att verka i samhället och som medborgare"
+                },
+                "arvo": "YTYK",
+                "uri": "ammatillisenoppiaineet_ytyk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyk",
+              "koodiArvo": "YTYK",
+              "tavoitteet": null
+            },
+            {
+              "id": 6604269,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": {
+                "nimi": {
+                  "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+                  "sv": "Att verka i samhället och som medborgare"
+                },
+                "arvo": "YTYK",
+                "uri": "ammatillisenoppiaineet_ytyk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyk",
+              "koodiArvo": "YTYK",
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 6604255,
+          "nimi": {
+            "_tunniste": "8561caa2-751f-45a4-b1fb-3757ab4875a6",
+            "fi": "Työelämässä toimiminen",
+            "sv": "Att verka i arbetslivet",
+            "en": "Operating in the world of work",
+            "_id": "5916029"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Työelämässä toimiminen",
+              "sv": "Att verka i arbetslivet"
+            },
+            "arvo": "YTTT",
+            "uri": "ammatillisenoppiaineet_yttt",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_yttt",
+          "koodiArvo": "YTTT",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 6604520,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työelämässä toimiminen",
+                  "sv": "Att verka i arbetslivet"
+                },
+                "arvo": "YTTT",
+                "uri": "ammatillisenoppiaineet_yttt",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_yttt",
+              "koodiArvo": "YTTT",
+              "tavoitteet": null
+            },
+            {
+              "id": 6604521,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työelämässä toimiminen",
+                  "sv": "Att verka i arbetslivet"
+                },
+                "arvo": "YTTT",
+                "uri": "ammatillisenoppiaineet_yttt",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_yttt",
+              "koodiArvo": "YTTT",
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 6604256,
+          "nimi": {
+            "_tunniste": "40423918-463c-4e13-8a7f-59f0fa70ea41",
+            "fi": "Opiskelu- ja urasuunnitteluvalmiudet",
+            "sv": "Färdigheter i studie- och karriärplanering",
+            "en": "Study and career planning capabilities",
+            "_id": "5916431"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "sv": "Färdigheter i studie- och karriärplanering",
+              "fi": "Opiskelu- ja urasuunnitteluvalmiudet"
+            },
+            "arvo": "YTOU",
+            "uri": "ammatillisenoppiaineet_ytou",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytou",
+          "koodiArvo": "YTOU",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 6604522,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "sv": "Färdigheter i studie- och karriärplanering",
+                  "fi": "Opiskelu- ja urasuunnitteluvalmiudet"
+                },
+                "arvo": "YTOU",
+                "uri": "ammatillisenoppiaineet_ytou",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytou",
+              "koodiArvo": "YTOU",
+              "tavoitteet": null
+            },
+            {
+              "id": 6604523,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": null,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 6604257,
+          "nimi": {
+            "_tunniste": "088f5323-8000-4dcb-8273-b7affdc6aba0",
+            "fi": "Yrittäjyys ja yrittäjämäinen toiminta",
+            "sv": "Företagsamhet och företagarinriktad verksamhet",
+            "en": "Entrepreneurship and entrepreneurial activities",
+            "_id": "5916847"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "sv": "Företagsamhet och företagarinriktad verksamhet",
+              "fi": "Yrittäjyys ja yrittäjämäinen toiminta"
+            },
+            "arvo": "YTYY",
+            "uri": "ammatillisenoppiaineet_ytyy",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytyy",
+          "koodiArvo": "YTYY",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 6604524,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "sv": "Företagsamhet och företagarinriktad verksamhet",
+                  "fi": "Yrittäjyys ja yrittäjämäinen toiminta"
+                },
+                "arvo": "YTYY",
+                "uri": "ammatillisenoppiaineet_ytyy",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyy",
+              "koodiArvo": "YTYY",
+              "tavoitteet": null
+            },
+            {
+              "id": 6604525,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": null,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 6604258,
+          "nimi": {
+            "_tunniste": "a1a722bf-b2d5-46fa-9274-bbe2960c546b",
+            "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+            "sv": "Upprätthållande av arbetsförmågan och välbefinnandet",
+            "en": "Maintaining ability to work and wellbeing at work",
+            "_id": "5916907"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+              "sv": "Upprätthållande av arbetsförmågan och välbefinnandet"
+            },
+            "arvo": "YTTH",
+            "uri": "ammatillisenoppiaineet_ytth",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytth",
+          "koodiArvo": "YTTH",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 6604526,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+                  "sv": "Upprätthållande av arbetsförmågan och välbefinnandet"
+                },
+                "arvo": "YTTH",
+                "uri": "ammatillisenoppiaineet_ytth",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytth",
+              "koodiArvo": "YTTH",
+              "tavoitteet": null
+            },
+            {
+              "id": 6604527,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 6604259,
+          "nimi": {
+            "_tunniste": "7ecc152c-f804-44da-abfa-db02380bde83",
+            "fi": "Kestävän kehityksen edistäminen",
+            "sv": "Främjande av hållbar utveckling",
+            "en": "Promotion of sustainable development",
+            "_id": "5917028"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Kestävän kehityksen edistäminen",
+              "sv": "Främjande av hållbar utveckling"
+            },
+            "arvo": "YTKK",
+            "uri": "ammatillisenoppiaineet_ytkk",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytkk",
+          "koodiArvo": "YTKK",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 6604528,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "fi": "Kestävän kehityksen edistäminen",
+                  "sv": "Främjande av hållbar utveckling"
+                },
+                "arvo": "YTKK",
+                "uri": "ammatillisenoppiaineet_ytkk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytkk",
+              "koodiArvo": "YTKK",
+              "tavoitteet": null
+            },
+            {
+              "id": 6604529,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        }
+      ],
+      "vapaatTekstit": [],
+      "tyyppi": "reformi_tutke2",
+      "valmaTelmaSisalto": null,
+      "ammattitaitovaatimukset2019": null,
+      "_geneerinenArviointiasteikko": null,
+      "osanTyyppi": "tutkinnonosa"
+    },
+    {
+      "id": 6734822,
+      "luotu": 1564050172874,
+      "muokattu": 1564555346809,
+      "muokkaaja": "1.2.246.562.24.83767149263",
+      "nimi": {
+        "_tunniste": "f86d1b24-3dad-4255-ae90-de6ede1cb9b6",
+        "fi": "Yhteiskunta- ja työelämäosaaminen",
+        "sv": "Kunnande om samhälle och arbetsliv",
+        "en": "Citizenship and working life competence",
+        "_id": "6301578"
+      },
+      "tila": "valmis",
+      "valmis": false,
+      "tavoitteet": null,
+      "arviointi": null,
+      "ammattitaitovaatimuksetLista": [],
+      "ammattitaitovaatimukset": null,
+      "ammattitaidonOsoittamistavat": null,
+      "kuvaus": null,
+      "koodi": {
+        "nimi": {
+          "sv": "Kunnande om samhälle och arbetsliv",
+          "fi": "Yhteiskunta- ja työelämäosaaminen "
+        },
+        "arvo": "400014",
+        "uri": "tutkinnonosat_400014",
+        "koodisto": "tutkinnonosat",
+        "versio": null
+      },
+      "koodiUri": "tutkinnonosat_400014",
+      "koodiArvo": "400014",
+      "osaAlueet": [
+        {
+          "id": 6735304,
+          "nimi": {
+            "_tunniste": "d746db0d-5a25-47b8-af3b-0bb8c26425ed",
+            "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+            "sv": "Att verka i samhället och som medborgare",
+            "en": "Operating as a member of society and a citizen",
+            "_id": "5915920"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+              "sv": "Att verka i samhället och som medborgare"
+            },
+            "arvo": "YTYK",
+            "uri": "ammatillisenoppiaineet_ytyk",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytyk",
+          "koodiArvo": "YTYK",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 6735318,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+                  "sv": "Att verka i samhället och som medborgare"
+                },
+                "arvo": "YTYK",
+                "uri": "ammatillisenoppiaineet_ytyk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyk",
+              "koodiArvo": "YTYK",
+              "tavoitteet": null
+            },
+            {
+              "id": 6735319,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": {
+                "nimi": {
+                  "fi": "Yhteiskunnassa ja kansalaisena toimiminen",
+                  "sv": "Att verka i samhället och som medborgare"
+                },
+                "arvo": "YTYK",
+                "uri": "ammatillisenoppiaineet_ytyk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyk",
+              "koodiArvo": "YTYK",
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 6735305,
+          "nimi": {
+            "_tunniste": "8561caa2-751f-45a4-b1fb-3757ab4875a6",
+            "fi": "Työelämässä toimiminen",
+            "sv": "Att verka i arbetslivet",
+            "en": "Operating in the world of work",
+            "_id": "5916029"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Työelämässä toimiminen",
+              "sv": "Att verka i arbetslivet"
+            },
+            "arvo": "YTTT",
+            "uri": "ammatillisenoppiaineet_yttt",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_yttt",
+          "koodiArvo": "YTTT",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 6735590,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työelämässä toimiminen",
+                  "sv": "Att verka i arbetslivet"
+                },
+                "arvo": "YTTT",
+                "uri": "ammatillisenoppiaineet_yttt",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_yttt",
+              "koodiArvo": "YTTT",
+              "tavoitteet": null
+            },
+            {
+              "id": 6735591,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työelämässä toimiminen",
+                  "sv": "Att verka i arbetslivet"
+                },
+                "arvo": "YTTT",
+                "uri": "ammatillisenoppiaineet_yttt",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_yttt",
+              "koodiArvo": "YTTT",
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 6735306,
+          "nimi": {
+            "_tunniste": "40423918-463c-4e13-8a7f-59f0fa70ea41",
+            "fi": "Opiskelu- ja urasuunnitteluvalmiudet",
+            "sv": "Färdigheter i studie- och karriärplanering",
+            "en": "Study and career planning capabilities",
+            "_id": "5916431"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "sv": "Färdigheter i studie- och karriärplanering",
+              "fi": "Opiskelu- ja urasuunnitteluvalmiudet"
+            },
+            "arvo": "YTOU",
+            "uri": "ammatillisenoppiaineet_ytou",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytou",
+          "koodiArvo": "YTOU",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 6735592,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "sv": "Färdigheter i studie- och karriärplanering",
+                  "fi": "Opiskelu- ja urasuunnitteluvalmiudet"
+                },
+                "arvo": "YTOU",
+                "uri": "ammatillisenoppiaineet_ytou",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytou",
+              "koodiArvo": "YTOU",
+              "tavoitteet": null
+            },
+            {
+              "id": 6735593,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": null,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 6735307,
+          "nimi": {
+            "_tunniste": "088f5323-8000-4dcb-8273-b7affdc6aba0",
+            "fi": "Yrittäjyys ja yrittäjämäinen toiminta",
+            "sv": "Företagsamhet och företagarinriktad verksamhet",
+            "en": "Entrepreneurship and entrepreneurial activities",
+            "_id": "5916847"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "sv": "Företagsamhet och företagarinriktad verksamhet",
+              "fi": "Yrittäjyys ja yrittäjämäinen toiminta"
+            },
+            "arvo": "YTYY",
+            "uri": "ammatillisenoppiaineet_ytyy",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytyy",
+          "koodiArvo": "YTYY",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 6735594,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "sv": "Företagsamhet och företagarinriktad verksamhet",
+                  "fi": "Yrittäjyys ja yrittäjämäinen toiminta"
+                },
+                "arvo": "YTYY",
+                "uri": "ammatillisenoppiaineet_ytyy",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytyy",
+              "koodiArvo": "YTYY",
+              "tavoitteet": null
+            },
+            {
+              "id": 6735595,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": null,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 6735308,
+          "nimi": {
+            "_tunniste": "a1a722bf-b2d5-46fa-9274-bbe2960c546b",
+            "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+            "sv": "Upprätthållande av arbetsförmågan och välbefinnandet",
+            "en": "Maintaining ability to work and wellbeing at work",
+            "_id": "5916907"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+              "sv": "Upprätthållande av arbetsförmågan och välbefinnandet"
+            },
+            "arvo": "YTTH",
+            "uri": "ammatillisenoppiaineet_ytth",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytth",
+          "koodiArvo": "YTTH",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 6735596,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 2,
+              "koodi": {
+                "nimi": {
+                  "fi": "Työkyvyn ja hyvinvoinnin ylläpitäminen",
+                  "sv": "Upprätthållande av arbetsförmågan och välbefinnandet"
+                },
+                "arvo": "YTTH",
+                "uri": "ammatillisenoppiaineet_ytth",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytth",
+              "koodiArvo": "YTTH",
+              "tavoitteet": null
+            },
+            {
+              "id": 6735597,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        },
+        {
+          "id": 6735309,
+          "nimi": {
+            "_tunniste": "7ecc152c-f804-44da-abfa-db02380bde83",
+            "fi": "Kestävän kehityksen edistäminen",
+            "sv": "Främjande av hållbar utveckling",
+            "en": "Promotion of sustainable development",
+            "_id": "5917028"
+          },
+          "kuvaus": null,
+          "tyyppi": "osaalue2014",
+          "koodi": {
+            "nimi": {
+              "fi": "Kestävän kehityksen edistäminen",
+              "sv": "Främjande av hållbar utveckling"
+            },
+            "arvo": "YTKK",
+            "uri": "ammatillisenoppiaineet_ytkk",
+            "koodisto": "ammatillisenoppiaineet",
+            "versio": null
+          },
+          "koodiUri": "ammatillisenoppiaineet_ytkk",
+          "koodiArvo": "YTKK",
+          "arviointi": null,
+          "pakollisetOsaamistavoitteet": null,
+          "valinnaisetOsaamistavoitteet": null,
+          "osaamistavoitteet": [
+            {
+              "id": 6735598,
+              "nimi": null,
+              "pakollinen": true,
+              "laajuus": 1,
+              "koodi": {
+                "nimi": {
+                  "fi": "Kestävän kehityksen edistäminen",
+                  "sv": "Främjande av hållbar utveckling"
+                },
+                "arvo": "YTKK",
+                "uri": "ammatillisenoppiaineet_ytkk",
+                "koodisto": "ammatillisenoppiaineet",
+                "versio": null
+              },
+              "koodiUri": "ammatillisenoppiaineet_ytkk",
+              "koodiArvo": "YTKK",
+              "tavoitteet": null
+            },
+            {
+              "id": 6735599,
+              "nimi": null,
+              "pakollinen": false,
+              "laajuus": 3,
+              "koodi": null,
+              "koodiUri": null,
+              "koodiArvo": null,
+              "tavoitteet": null
+            }
+          ]
+        }
+      ],
+      "vapaatTekstit": [],
+      "tyyppi": "reformi_tutke2",
+      "valmaTelmaSisalto": null,
+      "ammattitaitovaatimukset2019": null,
+      "_geneerinenArviointiasteikko": null,
+      "osanTyyppi": "tutkinnonosa"
+    }
+  ],
+  "kokonaismäärä": 5,
+  "sivuja": 1,
+  "sivukoko": 25,
+  "sivu": 0
+}
