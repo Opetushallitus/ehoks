@@ -16,7 +16,7 @@
            (mock-gen/json-response [])))
 
     (GET "/eperusteet-service/api/tutkinnonosat/:tutkinnon-osa-id/viitteet" request
-      (let [tutkinnon-osa-id (get-in request [:param :tutkinnon-osa-id])]
+      (let [tutkinnon-osa-id (get-in request [:params :tutkinnon-osa-id])]
         (if (= tutkinnon-osa-id "3003003")
           (mock-gen/json-response-file
             "dev-routes/eperusteet-service_api_tutkinnonosat_3003003_viitteet.json")
