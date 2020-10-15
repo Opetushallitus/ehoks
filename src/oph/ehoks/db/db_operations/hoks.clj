@@ -338,5 +338,5 @@
   "Poistaa HOKSin pysyvästi id:n perusteella"
   [hoks-id]
   (let [hoks (select-hoks-by-id hoks-id)]
-    (db-ops/delete! :hoksit ["id = ?" hoks-id])
-    (db-ops/delete! :opiskeluoikeudet ["oid = ?" (:opiskeluoikeus-oid hoks)])))
+    (db-ops/delete! :opiskeluoikeudet ["oid = ?" (:opiskeluoikeus-oid hoks)])
+    (db-ops/delete! :hoksit ["id = ?" hoks-id])))
