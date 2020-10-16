@@ -333,6 +333,13 @@
       "osaamisen-hankkimistavat": []
     },
     {
+      "tutkinnon-osa-koodi-uri": "tutkinnonosat_400005",
+      "tutkinnon-osa-koodi-versio": 1,
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
+      "osaamisen-osoittaminen": [],
+      "osaamisen-hankkimistavat": []
+    },
+    {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
       "tutkinnon-osa-koodi-versio": 1,
       "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
@@ -626,6 +633,173 @@
               "ajanjakson-tarkenne": "Tässä tarkempia tietoja ajanjaksoista",
               "alku": "2020-02-01",
               "loppu": "2022-02-01"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tutkinnon-osa-koodi-uri": "tutkinnonosat_400014",
+      "tutkinnon-osa-koodi-versio": 1,
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54453921329",
+      "osa-alueet": [
+        {
+          "osa-alue-koodi-uri": "ammatillisenoppiaineet_ytou",
+          "osa-alue-koodi-versio": 1,
+          "osaamisen-osoittaminen": [
+            {
+              "alku": "2017-10-25",
+              "loppu": "2022-10-26",
+              "sisallon-kuvaus": [
+                "Tämä on tutkinnon osan osa-alueen osaamisen osoittaminen",
+                "Jotain kuvausta sisällöstä",
+                "toinen kuvaus"
+              ],
+              "yksilolliset-kriteerit": [
+                "osa-alueen yksillölliset kriteerit",
+                "perehtyy ohjattuna puhtaus- ja kiinteistöpalvelualan asiakaskohteen palvelusopimuksiin liittyviin palvelu- ja laatukuvauksiin",
+                "perehtyy ohjattuna asiakkaan tilanteeseen ja toteuttaa hänelle palvelusopimuksiin liittyviä ratkaisuja yrityksessä sovitulla tavalla",
+                "käyttää tuettuna puhtaus- ja kiinteistöpalvelualan käsitteitä johdonmukaisesti",
+                "tietää tuettuna asiakaskohteen likaantumiseen vaikuttavia tekijöitä"
+              ],
+              "vaatimuksista-tai-tavoitteista-poikkeaminen": "Osa-alueen vaatimuksista poikkeaminen. Opiskelija ei hanki osaamista ammattitaitovaatimukseen \"pukeutua työtehtävään\".",
+              "jarjestaja": {
+                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              },
+              "nayttoymparisto": {
+                "nimi": "Osa-alueen näyttöympäristö",
+                "y-tunnus": "1234567-8",
+                "kuvaus": "Tässä kuvataan osa-alueen näyttöympäristö"
+              },
+              "koulutuksen-jarjestaja-osaamisen-arvioijat": [
+                {
+                  "nimi": "Testi, Seppo",
+                  "organisaatio": {
+                    "oppilaitos-oid": "1.2.246.562.10.54453921329"
+                  }
+                }
+              ],
+              "tyoelama-osaamisen-arvioijat": [
+                {
+                  "nimi": "Tyoelama, Arvi",
+                  "organisaatio": {
+                    "nimi": "Talvivaara",
+                    "y-tunnus": "1234567-8"
+                  }
+                }
+              ]
+            }
+          ],
+          "osaamisen-hankkimistavat": [
+            {
+              "tyopaikalla-jarjestettava-koulutus": {
+                "vastuullinen-tyopaikka-ohjaaja": {
+                  "nimi": "Vastuussa, Veera",
+                  "sahkoposti": "testimail@testi.com"
+                },
+                "tyopaikan-nimi": "Gofore Oyj",
+                "tyopaikan-y-tunnus": "123456-7",
+                "keskeiset-tyotehtavat": [
+                  "Perustyötehtävät",
+                  "Vaativat työtehtävät",
+                  "Sekalaiset työtehtävät"
+                ]
+              },
+              "osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_koulutussopimus",
+              "osaamisen-hankkimistapa-koodi-versio": 1,
+              "hankkijan-edustaja": {
+                "nimi": "Heppu, Hemmo",
+                "rooli": "Edustushankkija",
+                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              },
+              "jarjestajan-edustaja": {
+                "nimi": "Tyyppi, Joku",
+                "rooli": "Järjestysedustaja",
+                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              },
+              "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
+              "alku": "2018-11-01",
+              "loppu": "2021-12-13"
+            }
+          ]
+        },
+        {
+          "osa-alue-koodi-uri": "ammatillisenoppiaineet_ytyy",
+          "osa-alue-koodi-versio": 1,
+          "osaamisen-osoittaminen": [
+            {
+              "alku": "2017-07-27",
+              "loppu": "2024-09-28",
+              "sisallon-kuvaus": [
+                "Tämä on tutkinnon osan osa-alueen osaamisen osoittaminen",
+                "Jotain kuvausta sisällöstä",
+                "toinen kuvaus"
+              ],
+              "yksilolliset-kriteerit": [
+                "osa-alueen yksillölliset kriteerit",
+                "perehtyy ohjattuna puhtaus- ja kiinteistöpalvelualan asiakaskohteen palvelusopimuksiin liittyviin palvelu- ja laatukuvauksiin",
+                "perehtyy ohjattuna asiakkaan tilanteeseen ja toteuttaa hänelle palvelusopimuksiin liittyviä ratkaisuja yrityksessä sovitulla tavalla",
+                "käyttää tuettuna puhtaus- ja kiinteistöpalvelualan käsitteitä johdonmukaisesti",
+                "tietää tuettuna asiakaskohteen likaantumiseen vaikuttavia tekijöitä"
+              ],
+              "vaatimuksista-tai-tavoitteista-poikkeaminen": "Osa-alueen vaatimuksista poikkeaminen. Opiskelija ei hanki osaamista ammattitaitovaatimukseen \"pukeutua työtehtävään\".",
+              "jarjestaja": {
+                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              },
+              "nayttoymparisto": {
+                "nimi": "Osa-alueen näyttöympäristö",
+                "y-tunnus": "1234567-8",
+                "kuvaus": "Tässä kuvataan osa-alueen näyttöympäristö"
+              },
+              "koulutuksen-jarjestaja-osaamisen-arvioijat": [
+                {
+                  "nimi": "Testi, Seppo",
+                  "organisaatio": {
+                    "oppilaitos-oid": "1.2.246.562.10.54453921329"
+                  }
+                }
+              ],
+              "tyoelama-osaamisen-arvioijat": [
+                {
+                  "nimi": "Tyoelama, Arvi",
+                  "organisaatio": {
+                    "nimi": "Talvivaara",
+                    "y-tunnus": "1234567-8"
+                  }
+                }
+              ]
+            }
+          ],
+          "osaamisen-hankkimistavat": [
+            {
+              "tyopaikalla-jarjestettava-koulutus": {
+                "vastuullinen-tyopaikka-ohjaaja": {
+                  "nimi": "Vastuussa, Veera",
+                  "sahkoposti": "testimail@testi.com"
+                },
+                "tyopaikan-nimi": "Gofore Oyj",
+                "tyopaikan-y-tunnus": "123456-7",
+                "keskeiset-tyotehtavat": [
+                  "Perustyötehtävät",
+                  "Vaativat työtehtävät",
+                  "Sekalaiset työtehtävät"
+                ]
+              },
+              "osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_koulutussopimus",
+              "osaamisen-hankkimistapa-koodi-versio": 1,
+              "hankkijan-edustaja": {
+                "nimi": "Heppu, Hemmo",
+                "rooli": "Edustushankkija",
+                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              },
+              "jarjestajan-edustaja": {
+                "nimi": "Tyyppi, Joku",
+                "rooli": "Järjestysedustaja",
+                "oppilaitos-oid": "1.2.246.562.10.54453921329"
+              },
+              "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
+              "alku": "2018-11-01",
+              "loppu": "2021-12-13"
             }
           ]
         }

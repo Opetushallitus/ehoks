@@ -325,7 +325,8 @@
   (let [hoks (select-hoks-by-id hoks-id)
         oppija (op/select-oppija-by-oid (:oppija-oid hoks))
         oo (oo/select-opiskeluoikeus-by-oid (:opiskeluoikeus-oid hoks))
-        organisaatio (org/get-organisaatio-info (:oppilaitos-oid oo))]
+        organisaatio (if-let [oppilaitos-oid (:oppilaitos-oid oo)]
+                       (org/get-organisaatio-info oppilaitos-oid))]
     {:nimi (:nimi oppija)
      :hoksId (:id hoks)
      :oppilaitosNimi (get-in organisaatio [:nimi] {:fi "" :sv ""})
@@ -337,5 +338,5 @@
   "Poistaa HOKSin pysyvästi id:n perusteella"
   [hoks-id]
   (let [hoks (select-hoks-by-id hoks-id)]
-    (db-ops/delete! :hoksit ["id = ?" hoks-id])
-    (db-ops/delete! :opiskeluoikeudet ["oid = ?" (:opiskeluoikeus-oid hoks)])))
+    (db-ops/delete! :opiskeluoikeudet ["oid = ?" (:opiskeluoikeus-oid hoks)])
+    (db-ops/delete! :hoksit ["id = ?" hoks-id])))

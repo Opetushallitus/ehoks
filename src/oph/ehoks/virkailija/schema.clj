@@ -27,12 +27,12 @@
 
 (s/defschema
   DeleteConfirmInfo
-  {:nimi s/Str
+  {:nimi (s/maybe s/Str)
    :hoksId s/Int
    :oppilaitosNimi exs/Nimi
    :tutkinnonNimi exs/Nimi
    :opiskeluoikeusOid s/Str
-   :oppilaitosOid s/Str})
+   :oppilaitosOid (s/maybe s/Str)})
 
 (s/defschema
   UpdateOppija
