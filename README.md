@@ -198,7 +198,7 @@ docker volume create pgdata
 Kontin ajaminen:
 
 ``` shell
-docker run --rm --name ehoks-postgres -p 5432:5432 --volume pgdata:/data ehoks-postgres
+docker run --rm --name ehoks-postgres -p 5432:5432 --volume pgdata:/var/lib/postgresql/data ehoks-postgres
 ```
 
 ### Schemat
