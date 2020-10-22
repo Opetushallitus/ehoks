@@ -256,9 +256,17 @@ Huom dev-tools rajapinnan Swagger-dokumentaatio ei tällä hetkellä toimi. Kood
 
 ## Dummy-datan tuonti tietokantaan
 
-Demodatan (HOKSit) voi tuoda komennolla `lein import path/to/demo.json`. Tämä
-voi olla joko yksittäinen HOKS tai taulukko HOKSeja. ID:t tulee poistaa, koska
-ne luodaan tietokantakohtaisesti.
+Testidataa löytyy `resources/dev/demo-data` kansiosta. Näiden avulla pystyy hokseja luomaan
+joko swaggerilla (käyttämällä rajapintaa POST /ehoks-virkailija-backend/api/v1/virkailija/oppijat/{oppija-oid}/hoksit) 
+tai komennolla `lein import resources/dev/demo-data/hoksit.json`. 
+Swagger on suositeltavampi vaihtoehto koska `lein import` ohittaa skeemavalidoinnit
+ja siten sen avulla pystyy luomaan dataa jota järjestelmä ei oikeasti hyväksyisi.  
+
+## Swagger
+
+Virkailijan swagger http://localhost:3000/ehoks-virkailija-backend/doc
+
+Oppijan swagger http://localhost:3000/ehoks-oppija-backend/doc
 
 ## Konfigurointi
 
