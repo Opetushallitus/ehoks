@@ -90,6 +90,7 @@
                               :osaamisen-hankkimisen-tarve nil
                               :hyvaksytty nil
                               :urasuunnitelma-koodi-versio nil
+                              :osaamisen-saavuttamisen-pvm nil
                               :paivitetty nil}]
     (merge empty-top-level-hoks new-hoks-values)))
 
