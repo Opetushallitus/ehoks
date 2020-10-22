@@ -252,6 +252,7 @@
    :oppija-oid "1.2.246.562.24.12312312312"
    :ensikertainen-hyvaksyminen "2018-12-15"
    :osaamisen-hankkimisen-tarve false
+   :osaamisen-saavuttamisen-pvm "2020-10-22"
    :urasuunnitelma-koodi-uri "urasuunnitelma_0002"
    :versio 4
    :sahkoposti "testi@gmail.com"
