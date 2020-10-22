@@ -503,6 +503,7 @@
       (is (nil? (:versio get-response-data)))
       (is (nil? (:sahkoposti get-response-data)))
       (is (nil? (:urasuunnitelma-koodi-uri get-response-data)))
+      (is (nil? (:osaamisen-saavuttamisen-pvm get-response-data)))
       (is (nil? (:hyvaksytty get-response-data)))
       (is (nil? (:urasuunnitelma-koodi-versio get-response-data)))
       (is (nil? (:paivitetty get-response-data))))))
