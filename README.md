@@ -262,7 +262,7 @@ ne luodaan tietokantakohtaisesti.
 
 ## Konfigurointi
 
-Oletuskonfiguraatio on `config/default.edn`. Arvoja voi yliajaa luomalla oman
+Oletuskonfiguraatio on `oph-configuration/default.edn`. Arvoja voi yliajaa luomalla oman
 konfiguraatiotiedoston ja antamalla sen joko `CONFIG`-ympäristömuuttujassa,
 JVM system propertyssä `config` tai kehityspalvelimen parametrina.
 
