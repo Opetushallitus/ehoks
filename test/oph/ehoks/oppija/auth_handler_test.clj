@@ -1,6 +1,7 @@
 (ns oph.ehoks.oppija.auth-handler-test
   (:require [clojure.test :refer [deftest testing is]]
             [oph.ehoks.session-store :refer [test-session-store]]
+            [oph.ehoks.db.session-store :as db-session-store]
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
@@ -94,6 +95,56 @@
                             :get
                             login-url))]
         (is (= (:status response) 303))))))
+
+(deftest successful-cas-authentication-and-logout-after
+  (testing "Successful oppija authentication and logout after"
+    (with-redefs [oph.ehoks.external.cas/call-cas-oppija-ticket-validation
+                  ticket-validation-mock-response
+                  oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
+                  mock-oppijanumerorekisteri-response]
+      (let [session-store (db-session-store/db-store)
+            app (common-api/create-app handler/app-routes
+                                       session-store)
+            login-url (format
+                        "%s/opintopolku2/?ticket=%s"
+                        base-url
+                        "ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac")
+            login-response (app (mock/request
+                                  :get
+                                  login-url))
+            logout-with-no-session (app (mock/request
+                                          :post
+                                          (format "%s/opintopolku2/" base-url)
+                                          {:logoutRequest "
+                 <samlp:LogoutRequest
+                   xmlns:samlp= \"urn:oasis:names:tc:SAML:2.0:protocol\"
+                   xmlns:saml= \"urn:oasis:names:tc:SAML:2.0:assertion\"
+                   ID= \"some-id\"
+                   Version= \"2.0\"
+                   IssueInstant= \"2019-09-12\" >
+                   <samlp:SessionIndex>
+                     ST-1234-dEfDeFgHuiiLmN987654-cas.2314560987ep
+                   </samlp:SessionIndex>
+                 </samlp:LogoutRequest>
+                 "}))
+            logoit-with-session (app (mock/request
+                                       :post
+                                       (format "%s/opintopolku2/" base-url)
+                                       {:logoutRequest "
+                 <samlp:LogoutRequest
+                   xmlns:samlp= \"urn:oasis:names:tc:SAML:2.0:protocol\"
+                   xmlns:saml= \"urn:oasis:names:tc:SAML:2.0:assertion\"
+                   ID= \"some-id\"
+                   Version= \"2.0\"
+                   IssueInstant= \"2019-09-12\" >
+                   <samlp:SessionIndex>
+                     ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac
+                   </samlp:SessionIndex>
+                 </samlp:LogoutRequest>
+                 "}))]
+        (is (= (:status login-response) 303))
+        (is (= (:status logout-with-no-session) 404))
+        (is (= (:status logoit-with-session) 200))))))
 
 (defn ticket-validation-fail-mock-response [ticket]
   {:status 200
