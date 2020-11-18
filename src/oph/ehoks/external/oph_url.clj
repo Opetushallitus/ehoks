@@ -29,7 +29,7 @@
 (defn parse-line
   "Parse OPH service url line"
   [s]
-  (cstr/split (cstr/trim s) #"="))
+  (cstr/split (cstr/trim s) #"=" 2))
 
 (defn parse-urls
   "Parse service urls"
