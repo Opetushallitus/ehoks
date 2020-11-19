@@ -85,10 +85,11 @@
                   [:session :user] (assoc user :oid oid))
                 (throw (ex-info "No user found" user-info-response))))))))
 
-    (c-api/GET "/opintopolku2/" []
+    (c-api/GET "/opintopolku2/" [:as request]
       :summary "Oppijan Opintopolku-kirjautumisen endpoint (CAS)"
       :query-params [ticket :- s/Str]
-      (let [cas-ticket-validation-result (cas/validate-oppija-ticket ticket)
+      (let [cas-ticket-validation-result (cas/validate-oppija-ticket
+                                           ticket (:server-name request))
             user-info (get-user-info-from-onr
                         (:user-oid cas-ticket-validation-result))]
         (if (:success? cas-ticket-validation-result)
