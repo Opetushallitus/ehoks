@@ -8,7 +8,8 @@
             [oph.ehoks.utils :refer [parse-body authenticate]]
             [oph.ehoks.external.http-client :as client]))
 
-(def base-url "/ehoks-oppija-backend/api/v1/oppija/session")
+(def base-url
+  "http://testiopintopolku.fi/ehoks-oppija-backend/api/v1/oppija/session")
 
 (deftest session-without-authentication
   (testing "GET current session without authentication"
@@ -25,7 +26,7 @@
                      (common-api/create-app handler/app-routes nil))]
       (is (= (:status response) 303)))))
 
-(defn ticket-validation-mock-response [ticket]
+(defn ticket-validation-mock-response [ticket domain]
   {:status 200
    :body
    (str "<cas:serviceResponse xmlns:cas=\"http://www.yale.edu/tp/cas\">"
@@ -146,7 +147,7 @@
         (is (= (:status logout-with-no-session) 404))
         (is (= (:status logoit-with-session) 200))))))
 
-(defn ticket-validation-fail-mock-response [ticket]
+(defn ticket-validation-fail-mock-response [ticket domain]
   {:status 200
    :body
    (str
