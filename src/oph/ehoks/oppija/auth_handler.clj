@@ -88,6 +88,9 @@
     (c-api/GET "/opintopolku2/" [:as request]
       :summary "Oppijan Opintopolku-kirjautumisen endpoint (CAS)"
       :query-params [ticket :- s/Str]
+      (log/errorf "Oppijan Opintopolku-kirjautumisen endpoint (CAS) server-name"
+                  (:server-name request))
+      (log/errorf request)
       (let [cas-ticket-validation-result (cas/validate-oppija-ticket
                                            ticket (:server-name request))
             user-info (get-user-info-from-onr
