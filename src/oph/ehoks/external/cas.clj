@@ -3,7 +3,8 @@
             [oph.ehoks.config :refer [config]]
             [clojure.data.xml :as xml]
             [clj-time.core :as t]
-            [oph.ehoks.external.oph-url :as u]))
+            [oph.ehoks.external.oph-url :as u]
+            [clojure.tools.logging :as log]))
 
 (defonce grant-ticket
   ^:private
@@ -144,15 +145,17 @@
      {:query-params
       {:service (format
                   "%s%s"
-                  (if (.contains domain "opintopolku")
-                    (:frontend-url-fi config)
-                    (:frontend-url-sv config))
+                  (if (.contains domain "studieinfo")
+                    (:frontend-url-sv config)
+                    (:frontend-url-fi config))
                   (u/get-url "ehoks.oppija-login-return-path"))
        :ticket ticket}}}))
 
 (defn validate-oppija-ticket
   "Validate oppija cas service ticket"
   [ticket, domain]
+  (log/errorf
+    "Validate oppija cas service ticket domain:" domain)
   (let [response (call-cas-oppija-ticket-validation ticket domain)]
     (let [xml-data (xml/parse-str (:body response))]
       (convert-oppija-cas-response-data xml-data))))
