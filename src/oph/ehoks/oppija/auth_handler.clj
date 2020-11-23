@@ -30,7 +30,7 @@
 
 (defn- respond-with-successful-authentication
   "Adds user-info and ticket to response to store them to session-store"
-  [user-info ticket]
+  [user-info ticket domain]
   ; There propably should be localized versions of /misc/environment route
   ; return value for cas-oppija-login-url (same as logout urls). We could then
   ; redirect here to the correct hostname based on locale.
@@ -42,7 +42,9 @@
   (-> (response/see-other
         (format
           "%s/%s"
-          (:frontend-url-fi config)
+          (if (.contains domain "studieinfo")
+            (:frontend-url-sv config)
+            (:frontend-url-fi config))
           (:frontend-url-path config)))
       (assoc-in [:session :user] user-info)
       (assoc-in [:session :ticket] ticket)))
@@ -93,7 +95,8 @@
             user-info (get-user-info-from-onr
                         (:user-oid cas-ticket-validation-result))]
         (if (:success? cas-ticket-validation-result)
-          (respond-with-successful-authentication user-info ticket)
+          (respond-with-successful-authentication
+            user-info ticket (:server-name request))
           (respond-with-failed-authentication cas-ticket-validation-result))))
 
     (c-api/POST "/opintopolku2/" []
