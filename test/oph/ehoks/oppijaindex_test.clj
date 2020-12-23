@@ -262,6 +262,52 @@
          :tutkinto-nimi {:fi "" :sv ""}
          :osaamisala-nimi {:fi "" :sv ""}}))))
 
+(t/deftest update-oppija-opiskeluoikeus-with-hankintakoulutus
+  (t/testing "Update oppija and opiskeluoikeus with hankintakoulutus"
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ url __]
+         (cond
+           (> (.indexOf url "oppijanumerorekisteri-service") -1)
+           onr-data
+           (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
+           {:status 200
+            :body   (assoc
+                      opiskeluoikeus-data
+                      :oid "1.2.246.562.15.00000000001"
+                      )}))]
+      (sut/add-oppija! "1.2.246.562.24.111111111111")
+      (sut/add-opiskeluoikeus!
+        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111"))
+    (utils/with-ticket-auth ["1.2.246.562.10.222222222222"]
+                            (sut/insert-hankintakoulutus-opiskeluoikeus!
+                              "1.2.246.562.15.00000000001"
+                              "1.2.246.562.24.111111111111"
+                              (assoc
+                                opiskeluoikeus-data
+                                :oid "1.2.246.562.15.00000000001"
+                                :sisältyyOpiskeluoikeuteen
+                                {:oppilaitos {:oid "1.2.246.562.15.99999123"
+                                              :oppilaitosnumero
+                                                   {:koodiarvo "10076"}
+                                              :nimi
+                                                   {:fi "Testi-yliopisto"
+                                                    :sv "Testi-universitetet"
+                                                    :en "Testi University"}}
+                                 :oid        "1.2.246.562.15.99999123"}))
+                            (utils/eq
+                              (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+                              {:osaamisala-nimi                     {:fi "",
+                                                                     :sv ""},
+                               :oid                                 "1.2.246.562.15.00000000001",
+                               :hankintakoulutus-opiskeluoikeus-oid "1.2.246.562.15.00000000001",
+                               :oppilaitos-oid                      "1.2.246.562.10.222222222222",
+                               :tutkinto-nimi                       {:en "Testing",
+                                                                     :fi "Testialan perustutkinto",
+                                                                     :sv "Grundexamen inom testsbranschen"},
+                               :oppija-oid                          "1.2.246.562.24.111111111111",
+                               :hankintakoulutus-jarjestaja-oid     "1.2.246.562.15.99999123"}))))
+
 (t/deftest set-paattynyt-test
   (t/testing "Setting paattynyt timestamp"
     (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111112"})
