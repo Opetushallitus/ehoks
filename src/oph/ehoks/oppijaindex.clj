@@ -170,12 +170,16 @@
             (opiskeluoikeus-to-sql opiskeluoikeus oppija-oid)
             :hankintakoulutus_jarjestaja_oid jarjestaja-oid
             :hankintakoulutus_opiskeluoikeus_oid opiskeluoikeus-oid))
-        (db-opiskeluoikeus/update-opiskeluoikeus!
-          opiskeluoikeus-oid
-          (assoc
-            (opiskeluoikeus-to-sql opiskeluoikeus oppija-oid)
-            :hankintakoulutus_jarjestaja_oid jarjestaja-oid
-            :hankintakoulutus_opiskeluoikeus_oid opiskeluoikeus-oid)))
+        (do (log/infof
+              "Oppija %s already has hankintakoulutus with opiskeluoikeus %s.
+              Updating the existing opiskeluoikeus."
+              oppija-oid opiskeluoikeus-oid)
+            (db-opiskeluoikeus/update-opiskeluoikeus!
+              opiskeluoikeus-oid
+              (assoc
+                (opiskeluoikeus-to-sql opiskeluoikeus oppija-oid)
+                :hankintakoulutus_jarjestaja_oid jarjestaja-oid
+                :hankintakoulutus_opiskeluoikeus_oid opiskeluoikeus-oid))))
       (catch Exception e
         (log-opiskeluoikeus-insert-error! opiskeluoikeus-oid oppija-oid e)
         (throw e)))))
