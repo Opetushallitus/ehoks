@@ -155,16 +155,31 @@
   (db-opiskeluoikeus/insert-opiskeluoikeus!
     (get-opiskeluoikeus-info oid oppija-oid)))
 
-(defn- insert-hankintakoulutus-opiskeluoikeus!
+(defn- opiskeluoikeus-doesnt-exist [oid]
+  (empty? (get-opiskeluoikeus-by-oid oid)))
+
+(defn insert-hankintakoulutus-opiskeluoikeus!
+  "Insert hankintakoulutus opiskeluoikeus or update if already exists"
   [opiskeluoikeus-oid oppija-oid opiskeluoikeus]
   (let [jarjestaja-oid (get-in opiskeluoikeus
                                [:sisältyyOpiskeluoikeuteen :oppilaitos :oid])]
     (try
-      (db-opiskeluoikeus/insert-opiskeluoikeus!
-        (assoc
-          (opiskeluoikeus-to-sql opiskeluoikeus oppija-oid)
-          :hankintakoulutus_jarjestaja_oid jarjestaja-oid
-          :hankintakoulutus_opiskeluoikeus_oid opiskeluoikeus-oid))
+      (if (opiskeluoikeus-doesnt-exist opiskeluoikeus-oid)
+        (db-opiskeluoikeus/insert-opiskeluoikeus!
+          (assoc
+            (opiskeluoikeus-to-sql opiskeluoikeus oppija-oid)
+            :hankintakoulutus_jarjestaja_oid jarjestaja-oid
+            :hankintakoulutus_opiskeluoikeus_oid opiskeluoikeus-oid))
+        (do (log/infof
+              "Oppija %s already has hankintakoulutus with opiskeluoikeus %s.
+              Updating the existing opiskeluoikeus."
+              oppija-oid opiskeluoikeus-oid)
+            (db-opiskeluoikeus/update-opiskeluoikeus!
+              opiskeluoikeus-oid
+              (assoc
+                (opiskeluoikeus-to-sql opiskeluoikeus oppija-oid)
+                :hankintakoulutus_jarjestaja_oid jarjestaja-oid
+                :hankintakoulutus_opiskeluoikeus_oid opiskeluoikeus-oid))))
       (catch Exception e
         (log-opiskeluoikeus-insert-error! opiskeluoikeus-oid oppija-oid e)
         (throw e)))))
@@ -181,9 +196,6 @@
     (catch Exception e
       (log-opiskeluoikeus-insert-error! oid oppija-oid e)
       (throw e))))
-
-(defn- opiskeluoikeus-doesnt-exist [oid]
-  (empty? (get-opiskeluoikeus-by-oid oid)))
 
 (defn add-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
   (when (opiskeluoikeus-doesnt-exist oid)
