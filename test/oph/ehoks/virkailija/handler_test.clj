@@ -203,10 +203,21 @@
                        :tutkinto-nimi {:fi "Tutkinto 4"}
                        :koulutustoimija-oid ""}))
 
+(defn- add-hoksit []
+  (v-utils/add-hoks {:oid "1.2.246.562.24.44000000001"
+                     :opiskeluoikeus-oid "1.2.246.562.15.76000000001"})
+  (v-utils/add-hoks {:oid "1.2.246.562.24.44000000002"
+                     :opiskeluoikeus-oid "1.2.246.562.15.76000000002"})
+  (v-utils/add-hoks {:oid "1.2.246.562.24.44000000003"
+                     :opiskeluoikeus-oid "1.2.246.562.15.76000000003"})
+  (v-utils/add-hoks {:oid "1.2.246.562.24.44000000004"
+                     :opiskeluoikeus-oid "1.2.246.562.15.76000000004"}))
+
 (t/deftest get-oppijat-without-filtering
   (t/testing "GET virkailija oppijat without any search filters"
     (utils/with-db
       (add-oppijat)
+      (add-hoksit)
       (let [body (get-search {})]
         (t/is (= (count (:data body)) 3))
         (t/is (= (get-in body [:meta :total-count]) 3))
@@ -221,6 +232,7 @@
   (t/testing "GET virkailija oppijat with name filtered"
     (utils/with-db
       (add-oppijat)
+      (add-hoksit)
       (let [body (get-search {:nimi "teu"})]
         (t/is (= (count (:data body)) 1))
         (t/is (= (get-in body [:meta :total-count]) 1))
@@ -231,6 +243,7 @@
   (t/testing "GET virkailija oppijat ordered descending and filtered with name"
     (utils/with-db
       (add-oppijat)
+      (add-hoksit)
       (let [body (get-search {:nimi "oppi"
                               :order-by-column :nimi
                               :desc true})]
@@ -245,6 +258,7 @@
   (t/testing "GET virkailija oppijat ordered ascending and filtered with name"
     (utils/with-db
       (add-oppijat)
+      (add-hoksit)
       (let [body (get-search {:nimi "oppi"
                               :order-by-column :nimi})]
         (t/is (= (count (:data body)) 2))
@@ -258,6 +272,7 @@
   (t/testing "GET virkailija oppijat filtered with tutkinto and osaamisala"
     (utils/with-db
       (add-oppijat)
+      (add-hoksit)
       (let [body (get-search {:tutkinto "testitutkinto"
                               :osaamisala "kolme"})]
         (t/is (= (count (:data body)) 1))
@@ -269,6 +284,7 @@
   (t/testing "GET virkailija oppijat filtered with swedish locale"
     (utils/with-db
       (add-oppijat)
+      (add-hoksit)
       (let [body (get-search {:tutkinto "testskrivning"
                               :osaamisala "kunnande"
                               :order-by-column "tutkinto"
@@ -293,6 +309,8 @@
                                            :sv "Testskrivning 3"}
                            :osaamisala-nimi {:fi "Osaamisala Kolme"}
                            :koulutustoimija-oid ""})
+      (v-utils/add-hoks {:oid "1.2.246.562.24.44000000003"
+                         :opiskeluoikeus-oid "1.2.246.562.15.76000000003"})
       (let [body (get-search {:order-by-column "tutkinto"
                               :desc true
                               :locale "sv"})]
@@ -318,6 +336,10 @@
          :koulutustoimija_oid ""
          :tutkinto-nimi {:fi "Tutkinto 2"}
          :osaamisala-nimi {:fi "Osaamisala 2"}})
+      (v-utils/add-hoks {:oid "1.2.246.562.24.44000000001"
+                         :opiskeluoikeus-oid "1.2.246.562.15.760000000010"})
+      (v-utils/add-hoks {:oid "1.2.246.562.24.44000000001"
+                         :opiskeluoikeus-oid "1.2.246.562.15.760000000020"})
 
       (let [body (get-search
                    {:oppilaitos-oid "1.2.246.562.10.1200000000020"}
@@ -330,6 +352,49 @@
         (t/is (= (count (:data body)) 1))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000001")))
+      (let [body (get-search
+                   {:oppilaitos-oid "1.2.246.562.10.1200000000010"}
+                   {:name "Test"
+                    :kayttajaTyyppi "VIRKAILIJA"
+                    :oidHenkilo "1.2.246.562.24.220000000020"
+                    :organisation-privileges
+                    [{:oid "1.2.246.562.10.1200000000010"
+                      :privileges #{:read}}]})]
+        (t/is (= (count (:data body)) 1))
+        (t/is (= (get-in body [:data 0 :oid])
+                 "1.2.246.562.24.44000000001"))))))
+
+(t/deftest test-list-virkailija-oppija-with-multi-opiskeluoikeus-one-hoks
+  (t/testing "GET virkailija oppijat"
+    (utils/with-db
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                           :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
+      (db-opiskeluoikeus/insert-opiskeluoikeus!
+        {:oid "1.2.246.562.15.760000000020"
+         :oppija_oid "1.2.246.562.24.44000000001"
+         :oppilaitos_oid "1.2.246.562.10.1200000000020"
+         :koulutustoimija_oid ""
+         :tutkinto-nimi {:fi "Tutkinto 2"}
+         :osaamisala-nimi {:fi "Osaamisala 2"}})
+      (v-utils/add-hoks {:oid "1.2.246.562.24.44000000001"
+                         :opiskeluoikeus-oid "1.2.246.562.15.760000000010"})
+
+      (let [body (get-search
+                   {:oppilaitos-oid "1.2.246.562.10.1200000000020"}
+                   {:name "Test"
+                    :kayttajaTyyppi "VIRKAILIJA"
+                    :oidHenkilo "1.2.246.562.24.220000000030"
+                    :organisation-privileges
+                    [{:oid "1.2.246.562.10.1200000000020"
+                      :privileges #{:read}}]})]
+        (t/is (= (count (:data body)) 0))
+        (t/is (= (get-in body [:data 0 :oid])
+                 nil)))
       (let [body (get-search
                    {:oppilaitos-oid "1.2.246.562.10.1200000000010"}
                    {:name "Test"
