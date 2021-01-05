@@ -1,7 +1,8 @@
 (ns oph.ehoks.virkailija.virkailija-test-utils
   (:require [clojure.test :refer :all]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
-            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]))
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (def dummy-user {:oid "1.2.246.562.24.12312312312"
                  :nimi "Teuvo Testaaja"
@@ -28,3 +29,8 @@
      :osaamisala-nimi (:osaamisala-nimi oppija
                                         {:fi "Osaamisala suomeksi"
                                          :sv "På svenska"})}))
+
+(defn add-hoks [oppija]
+  (db-hoks/insert-hoks! {:oppija-oid (:oid oppija)
+                         :opiskeluoikeus-oid (:opiskeluoikeus-oid
+                                               oppija)}))
