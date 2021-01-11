@@ -304,7 +304,7 @@
     true))
 
 (defn filter-hankintakoulutukset-for-current-opiskeluoikeus
-  "Filters hankintakoulutukset from opiskeluoikeudet"
+  "Filters hankintakoulutukset from opiskeluoikeudet for current opiskeluoikeus"
   [opiskeluoikeudet opiskeluoikeus-oid]
   (filter #(= (get-in % [:sisältyyOpiskeluoikeuteen :oid])
               opiskeluoikeus-oid)
