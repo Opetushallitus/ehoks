@@ -160,24 +160,29 @@
 
 (defn insert-hankintakoulutus-opiskeluoikeus!
   "Insert hankintakoulutus opiskeluoikeus or update if already exists"
-  [opiskeluoikeus-oid oppija-oid opiskeluoikeus]
-  (let [jarjestaja-oid (get-in opiskeluoikeus
-                               [:sisältyyOpiskeluoikeuteen :oppilaitos :oid])]
+  [opiskeluoikeus-oid oppija-oid hankintakoulutus-opiskeluoikeus]
+  (let [jarjestaja-oid (get-in hankintakoulutus-opiskeluoikeus
+                               [:sisältyyOpiskeluoikeuteen :oppilaitos :oid])
+        hankintakoulutus-opiskeluoikeus-oid
+        (get hankintakoulutus-opiskeluoikeus :oid)]
     (try
-      (if (opiskeluoikeus-doesnt-exist opiskeluoikeus-oid)
+      (if (opiskeluoikeus-doesnt-exist hankintakoulutus-opiskeluoikeus-oid)
         (db-opiskeluoikeus/insert-opiskeluoikeus!
           (assoc
-            (opiskeluoikeus-to-sql opiskeluoikeus oppija-oid)
-            :hankintakoulutus_jarjestaja_oid jarjestaja-oid
-            :hankintakoulutus_opiskeluoikeus_oid opiskeluoikeus-oid))
+            (opiskeluoikeus-to-sql hankintakoulutus-opiskeluoikeus oppija-oid)
+            :hankintakoulutus_jarjestaja_oid
+            jarjestaja-oid
+            :hankintakoulutus_opiskeluoikeus_oid
+            opiskeluoikeus-oid))
         (do (log/infof
-              "Oppija %s already has hankintakoulutus with opiskeluoikeus %s.
-              Updating the existing opiskeluoikeus."
-              oppija-oid opiskeluoikeus-oid)
+              "Oppija %s already has hankintakoulutus opiskeluoikeus %s for
+              opiskeluoikeus %s. Updating the existing opiskeluoikeus."
+              oppija-oid hankintakoulutus-opiskeluoikeus-oid opiskeluoikeus-oid)
             (db-opiskeluoikeus/update-opiskeluoikeus!
-              opiskeluoikeus-oid
+              hankintakoulutus-opiskeluoikeus-oid
               (assoc
-                (opiskeluoikeus-to-sql opiskeluoikeus oppija-oid)
+                (opiskeluoikeus-to-sql hankintakoulutus-opiskeluoikeus
+                                       oppija-oid)
                 :hankintakoulutus_jarjestaja_oid jarjestaja-oid
                 :hankintakoulutus_opiskeluoikeus_oid opiskeluoikeus-oid))))
       (catch Exception e
@@ -298,15 +303,19 @@
     (some #(= opiskeluoikeus-oid (:oid %)) opiskeluoikeudet)
     true))
 
-(defn filter-hankintakoulutukset
+(defn filter-hankintakoulutukset-for-current-opiskeluoikeus
   "Filters hankintakoulutukset from opiskeluoikeudet"
-  [opiskeluoikeudet]
-  (filter :sisältyyOpiskeluoikeuteen opiskeluoikeudet))
+  [opiskeluoikeudet opiskeluoikeus-oid]
+  (filter #(= (get-in % [:sisältyyOpiskeluoikeuteen :oid])
+              opiskeluoikeus-oid)
+          opiskeluoikeudet))
 
 (defn add-oppija-hankintakoulutukset
   "Adds all hankintakoulutukset for oppija"
   [opiskeluoikeudet opiskeluoikeus-oid oppija-oid]
-  (let [hankintakoulutukset (filter-hankintakoulutukset opiskeluoikeudet)]
+  (let [hankintakoulutukset
+        (filter-hankintakoulutukset-for-current-opiskeluoikeus
+          opiskeluoikeudet opiskeluoikeus-oid)]
     (doseq [hankintakoulutus hankintakoulutukset]
       (insert-hankintakoulutus-opiskeluoikeus!
         opiskeluoikeus-oid oppija-oid hankintakoulutus))))
