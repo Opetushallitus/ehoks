@@ -262,8 +262,8 @@
          :tutkinto-nimi {:fi "" :sv ""}
          :osaamisala-nimi {:fi "" :sv ""}}))))
 
-(t/deftest update-oppija-opiskeluoikeus-with-hankintakoulutus
-  (t/testing "Update oppija and opiskeluoikeus with hankintakoulutus"
+(t/deftest insert-and-update-oppija-opiskeluoikeus-with-hankintakoulutus
+  (t/testing "Insert and update oppija and opiskeluoikeus with hankintakoulutus"
     (utils/with-ticket-auth
       ["1.2.246.562.10.222222222222"
        (fn [_ url __]
@@ -284,21 +284,21 @@
                               "1.2.246.562.24.111111111111"
                               (assoc
                                 opiskeluoikeus-data
-                                :oid "1.2.246.562.15.00000000001"
+                                :oid "1.2.246.562.15.00000000002"
                                 :sisältyyOpiskeluoikeuteen
                                 {:oppilaitos {:oid "1.2.246.562.15.99999123"
                                               :oppilaitosnumero
                                               {:koodiarvo "10076"}
                                               :nimi
                                               {:fi "Testi-yliopisto"
-                                               :sv "Testi-universitetet"
+                                               :sv "Testi-universitet"
                                                :en "Testi University"}}
-                                 :oid        "1.2.246.562.15.99999123"}))
+                                 :oid        "1.2.246.562.15.00000000001"}))
                             (utils/eq
                               (sut/get-opiskeluoikeus-by-oid
-                                "1.2.246.562.15.00000000001")
+                                "1.2.246.562.15.00000000002")
                               {:osaamisala-nimi {:fi "", :sv ""},
-                               :oid "1.2.246.562.15.00000000001",
+                               :oid "1.2.246.562.15.00000000002",
                                :hankintakoulutus-opiskeluoikeus-oid
                                "1.2.246.562.15.00000000001",
                                :oppilaitos-oid "1.2.246.562.10.222222222222",
@@ -308,7 +308,37 @@
                                 :sv "Grundexamen inom testsbranschen"},
                                :oppija-oid "1.2.246.562.24.111111111111",
                                :hankintakoulutus-jarjestaja-oid
-                               "1.2.246.562.15.99999123"}))))
+                               "1.2.246.562.15.99999123"})
+                            (sut/insert-hankintakoulutus-opiskeluoikeus!
+                              "1.2.246.562.15.00000000001"
+                              "1.2.246.562.24.111111111111"
+                              (assoc
+                                opiskeluoikeus-data
+                                :oid "1.2.246.562.15.00000000002"
+                                :sisältyyOpiskeluoikeuteen
+                                {:oppilaitos {:oid "1.2.246.562.15.99999125"
+                                              :oppilaitosnumero
+                                              {:koodiarvo "10076"}
+                                              :nimi
+                                              {:fi "Katujen-yliopisto"
+                                               :sv "Gatan-universitet"
+                                               :en "Street University"}}
+                                 :oid        "1.2.246.562.15.00000000001"}))
+                            (utils/eq
+                              (sut/get-opiskeluoikeus-by-oid
+                                "1.2.246.562.15.00000000002")
+                              {:osaamisala-nimi {:fi "", :sv ""},
+                               :oid "1.2.246.562.15.00000000002",
+                               :hankintakoulutus-opiskeluoikeus-oid
+                               "1.2.246.562.15.00000000001",
+                               :oppilaitos-oid "1.2.246.562.10.222222222222",
+                               :tutkinto-nimi
+                               {:en "Testing",
+                                :fi "Testialan perustutkinto",
+                                :sv "Grundexamen inom testsbranschen"},
+                               :oppija-oid "1.2.246.562.24.111111111111",
+                               :hankintakoulutus-jarjestaja-oid
+                               "1.2.246.562.15.99999125"}))))
 
 (t/deftest set-paattynyt-test
   (t/testing "Setting paattynyt timestamp"
@@ -390,12 +420,30 @@
                                              :en "Testi University"}}
                                :oid "1.2.246.562.15.99999123"})]]
       (t/is
-        (= (count (sut/filter-hankintakoulutukset opiskeluoikeudet)) 1))))
+        (= (count (sut/filter-hankintakoulutukset-for-current-opiskeluoikeus
+                    opiskeluoikeudet "1.2.246.562.15.99999123")) 1))))
+
+  (t/testing "Hankintakoulutus is filtered from opiskeluoikeudet
+              if does not match to opiskeluoikeus-oid"
+    (let [opiskeluoikeudet [(assoc
+                              opiskeluoikeus-data
+                              :sisältyyOpiskeluoikeuteen
+                              {:oppilaitos {:oppilaitosnumero
+                                            {:koodiarvo "10076"}
+                                            :nimi
+                                            {:fi "Testi-yliopisto"
+                                             :sv "Testi-universitetet"
+                                             :en "Testi University"}}
+                               :oid "1.2.246.562.15.99999123"})]]
+      (t/is
+        (= (count (sut/filter-hankintakoulutukset-for-current-opiskeluoikeus
+                    opiskeluoikeudet "1.2.246.562.15.99999124")) 0))))
 
   (t/testing "Empty list returned if no hankintakoulutus in opiskeluoikeudet"
     (let [opiskeluoikeudet [opiskeluoikeus-data]]
       (t/is
-        (= (count (sut/filter-hankintakoulutukset opiskeluoikeudet)) 0)))))
+        (= (count (sut/filter-hankintakoulutukset-for-current-opiskeluoikeus
+                    opiskeluoikeudet "1.2.246.562.15.99999123")) 0)))))
 
 (t/deftest validate-opiskeluoikeus-status-test
   (with-redefs [oph.ehoks.config/config
