@@ -257,10 +257,10 @@ Huom dev-tools rajapinnan Swagger-dokumentaatio ei tällä hetkellä toimi. Kood
 ## Dummy-datan tuonti tietokantaan
 
 Testidataa löytyy `resources/dev/demo-data` kansiosta. Näiden avulla pystyy hokseja luomaan
-joko swaggerilla (käyttämällä rajapintaa POST /ehoks-virkailija-backend/api/v1/virkailija/oppijat/{oppija-oid}/hoksit) 
-tai komennolla `lein import resources/dev/demo-data/hoksit.json`. 
+joko swaggerilla (käyttämällä rajapintaa POST /ehoks-virkailija-backend/api/v1/virkailija/oppijat/{oppija-oid}/hoksit)
+tai komennolla `lein import resources/dev/demo-data/hoksit.json`.
 Swagger on suositeltavampi vaihtoehto koska `lein import` ohittaa skeemavalidoinnit
-ja siten sen avulla pystyy luomaan dataa jota järjestelmä ei oikeasti hyväksyisi.  
+ja siten sen avulla pystyy luomaan dataa jota järjestelmä ei oikeasti hyväksyisi.
 
 ## Swagger
 
@@ -298,8 +298,8 @@ Rajapintaa kutsuttaessa pitää tuoda seuraavat headerit:
 
 | header | selite | Lisätietoa |
 | ------ | ------ | ---------- |
-| Caller-Id | OPH:n rajapintojen yhteinen tunniste | [Kutsujan tunnisteen (Caller-Id) lisääminen rajapintakutsuihin](https://confluence.csc.fi/pages/viewpage.action?pageId=50858064) |
-| ticket | Validi CAS service ticket | [CAS-tunnistautuminen rajapinnassa (eHOKS)](https://confluence.csc.fi/pages/viewpage.action?pageId=79084600) |
+| Caller-Id | OPH:n rajapintojen yhteinen tunniste | [Kutsujan tunnisteen (Caller-Id) lisääminen rajapintakutsuihin](https://wiki.eduuni.fi/x/NuBcCw) |
+| ticket | Validi CAS service ticket | [CAS-tunnistautuminen rajapinnassa (eHOKS)](https://wiki.eduuni.fi/x/24RcCw) |
 
 ## Ajettava jar
 
@@ -321,16 +321,16 @@ ajaa tietokantamigraatiot.
 ## Integraatiot
 
 - CAS
-- [ePerusteet](https://confluence.csc.fi/display/OPHPALV/ePerusteet)
-- [Käyttöoikeuspalvelu](https://confluence.csc.fi/pages/viewpage.action?pageId=68725146)
-- [Koodisto](https://confluence.csc.fi/display/OPHPALV/Koodistopalvelu)
-- [KOSKI](https://confluence.csc.fi/display/OPHPALV/Koski-palvelukortti)
-- [Lokalistointi](https://confluence.csc.fi/display/OPHPALV/Lokalisointipalvelu)
-- [Oppijanumerorekisteri](https://confluence.csc.fi/display/OPHPALV/Oppijanumerorekisteri)
+- [ePerusteet](https://wiki.eduuni.fi/x/MYpcCw)
+- [Käyttöoikeuspalvelu](https://wiki.eduuni.fi/x/5ohcCw)
+- [Koodisto](https://wiki.eduuni.fi/x/SYdcCw)
+- [KOSKI](https://wiki.eduuni.fi/x/sohcCw)
+- [Lokalisointi](https://wiki.eduuni.fi/x/VWJACg)
+- [Oppijanumerorekisteri](https://wiki.eduuni.fi/x/54hcCw)
 
 ![Integraatiot](doc/integrations.png "Integraatiot")
 
 
 ## Linkit
 
-+ [eHOKS Confluence](https://confluence.csc.fi/display/OPHPALV/eHOKS+-+hanke)
++ [eHOKS Confluence](https://wiki.eduuni.fi/x/LYZcCw)
