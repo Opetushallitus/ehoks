@@ -325,7 +325,7 @@ ajaa tietokantamigraatiot.
 - [Käyttöoikeuspalvelu](https://wiki.eduuni.fi/x/5ohcCw)
 - [Koodisto](https://wiki.eduuni.fi/x/SYdcCw)
 - [KOSKI](https://wiki.eduuni.fi/x/sohcCw)
-- [Lokalisointi](https://wiki.eduuni.fi/x/w4RcCw)
+- [Lokalisointi](https://wiki.eduuni.fi/x/VWJACg)
 - [Oppijanumerorekisteri](https://wiki.eduuni.fi/x/54hcCw)
 
 ![Integraatiot](doc/integrations.png "Integraatiot")
