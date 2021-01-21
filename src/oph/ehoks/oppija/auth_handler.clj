@@ -41,7 +41,8 @@
           (:frontend-url-fi config)
           (:frontend-url-path config)))
       (assoc-in [:session :user] user-info)
-      (assoc-in [:session :ticket] ticket)))
+      (assoc-in [:session :ticket] ticket)
+      (assoc-in [:session :using-valtuudet] (:using-valtuudet user-info))))
 
 (defn- respond-with-failed-authentication [cas-ticket-validation-result]
   (do (log/warnf "Ticket validation failed: %s"
@@ -85,10 +86,16 @@
       :summary "Oppijan Opintopolku-kirjautumisen endpoint (CAS)"
       :query-params [ticket :- s/Str]
       (let [cas-ticket-validation-result (cas/validate-oppija-ticket ticket)
-            user-info (get-user-info-from-onr
-                        (:user-oid cas-ticket-validation-result))]
+            user-info (assoc
+                        (get-user-info-from-onr
+                          (:user-oid cas-ticket-validation-result))
+                        :using-valtuudet
+                        (:using-valtuudet cas-ticket-validation-result))]
         (if (:success? cas-ticket-validation-result)
-          (respond-with-successful-authentication user-info ticket)
+          (if-not (:using-valtuudet cas-ticket-validation-result)
+            (respond-with-successful-authentication user-info ticket)
+            (respond-with-failed-authentication
+              (assoc cas-ticket-validation-result :debug-fail true)))
           (respond-with-failed-authentication cas-ticket-validation-result))))
 
     (c-api/OPTIONS "/" []
