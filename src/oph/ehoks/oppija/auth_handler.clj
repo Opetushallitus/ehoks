@@ -143,9 +143,11 @@
         :summary "Käyttäjän istunto"
         :header-params [caller-id :- s/Str]
         :return (rest/response [schema/User])
-        (let [{{:keys [user]} :session} request]
+        (let [{{:keys [user]} :session} request
+              using-valtuudet (:using-valtuudet (:session request))]
           (rest/rest-ok
-            [(select-keys user [:oid :first-name :common-name :surname])])))
+            [(assoc (select-keys user [:oid :first-name :common-name :surname])
+               :using-valtuudet using-valtuudet)])))
 
       (c-api/DELETE "/" []
         :summary "Uloskirjautuminen."
