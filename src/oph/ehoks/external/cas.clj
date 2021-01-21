@@ -104,11 +104,19 @@
      :user (first
              (find-value m [:serviceResponse :authenticationSuccess :user]))}))
 
+(defn- using-valtuudet? [attributes]
+  (or (some? (:impersonatorNationalIdentificationNumber attributes))
+      (some? (:impersonatorDisplayName attributes))))
+
 (defn- convert-oppija-cas-response-data [xml-data]
   (let [response (xml->map xml-data)
         success (some?
                   (find-value response
-                              [:serviceResponse :authenticationSuccess]))]
+                              [:serviceResponse :authenticationSuccess]))
+        attributes (find-value
+                     response
+                     [:serviceResponse :authenticationSuccess
+                      :attributes])]
     {:success? success
      :error (when-not success
               (first
@@ -119,7 +127,8 @@
                  (find-value
                    response
                    [:serviceResponse :authenticationSuccess
-                    :attributes :personOid]))}))
+                    :attributes :personOid]))
+     :using-valtuudet (using-valtuudet? attributes)}))
 
 (defn validate-ticket
   "Validate service ticket"
