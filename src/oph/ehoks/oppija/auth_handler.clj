@@ -55,6 +55,13 @@
                  (:error cas-ticket-validation-result))
       (response/unauthorized {:error "Invalid ticket"})))
 
+(defn- respond-with-failed-authentication-valtuudet
+  [cas-ticket-validation-result]
+  (do (log/warnf "Preventing login because of valtuudet: %s"
+                 cas-ticket-validation-result)
+      (response/unauthorized
+        {:error "You are using valtuudet. Please log out."})))
+
 (def routes
   (c-api/context "/session" []
 
@@ -100,10 +107,10 @@
                         (:using-valtuudet cas-ticket-validation-result))]
         (if (:success? cas-ticket-validation-result)
           (if-not (:using-valtuudet cas-ticket-validation-result)
-            (respond-with-successful-authentication user-info ticket
-                                                    (:server-name request))
-            (respond-with-failed-authentication
-              (assoc cas-ticket-validation-result :debug-fail true)))
+            (respond-with-successful-authentication
+              user-info ticket (:server-name request))
+            (respond-with-failed-authentication-valtuudet
+              cas-ticket-validation-result))
           (respond-with-failed-authentication cas-ticket-validation-result))))
 
     (c-api/POST "/opintopolku2/" []
@@ -143,11 +150,9 @@
         :summary "Käyttäjän istunto"
         :header-params [caller-id :- s/Str]
         :return (rest/response [schema/User])
-        (let [{{:keys [user]} :session} request
-              using-valtuudet (:using-valtuudet (:session request))]
+        (let [{{:keys [user]} :session} request]
           (rest/rest-ok
-            [(assoc (select-keys user [:oid :first-name :common-name :surname])
-               :using-valtuudet using-valtuudet)])))
+            [(select-keys user [:oid :first-name :common-name :surname])])))
 
       (c-api/DELETE "/" []
         :summary "Uloskirjautuminen."
