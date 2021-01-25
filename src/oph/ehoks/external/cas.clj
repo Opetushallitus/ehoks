@@ -3,7 +3,8 @@
             [oph.ehoks.config :refer [config]]
             [clojure.data.xml :as xml]
             [clj-time.core :as t]
-            [oph.ehoks.external.oph-url :as u]))
+            [oph.ehoks.external.oph-url :as u]
+            [clojure.tools.logging :as log]))
 
 (defonce grant-ticket
   ^:private
@@ -104,9 +105,15 @@
      :user (first
              (find-value m [:serviceResponse :authenticationSuccess :user]))}))
 
-(defn- using-valtuudet? [attributes]
-  (or (some? (:impersonatorNationalIdentificationNumber attributes))
-      (some? (:impersonatorDisplayName attributes))))
+(defn- using-valtuudet? [response]
+  (or (find-value
+        response
+        [:serviceResponse :authenticationSuccess
+         :attributes :impersonatorNationalIdentificationNumber])
+      (find-value
+        response
+        [:serviceResponse :authenticationSuccess
+         :attributes :impersonatorDisplayName])))
 
 (defn- convert-oppija-cas-response-data [xml-data]
   (let [response (xml->map xml-data)
@@ -116,7 +123,13 @@
         attributes (find-value
                      response
                      [:serviceResponse :authenticationSuccess
-                      :attributes])]
+                      :attributes])
+        using-valtuudet (using-valtuudet? response)]
+    (log/infof "Attributes: %s" (get-in response
+                                        [:serviceResponse
+                                         :authenticationSuccess
+                                         :attributes]))
+    (log/infof "Response: %s" response)
     {:success? success
      :error (when-not success
               (first
@@ -128,7 +141,7 @@
                    response
                    [:serviceResponse :authenticationSuccess
                     :attributes :personOid]))
-     :using-valtuudet (using-valtuudet? attributes)}))
+     :using-valtuudet using-valtuudet}))
 
 (defn validate-ticket
   "Validate service ticket"
