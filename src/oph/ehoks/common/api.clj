@@ -1,5 +1,6 @@
 (ns oph.ehoks.common.api
   (:require [ring.util.http-response :as response]
+            [clojure.string :as cstr]
             [clojure.tools.logging :as log]
             [compojure.api.exception :as c-ex]
             [ring.middleware.session :as session]
@@ -11,16 +12,16 @@
 (defn not-found-handler [_ __ ___]
   (response/not-found {:reason "Route not found"}))
 
-(defn log-exception [ex]
-  (let [ex-map (Throwable->map ex)]
-    (log/errorf
-      "Unhandled exception\n%s\n%s\n%s\n-------------Exception end-------------"
-      (str (:cause ex-map))
-      (str (:via ex-map))
-      (str (:trace ex-map)))))
+(defn log-exception [ex data]
+  (log/errorf
+    "Unhandled exception\n%s\n%s\n%s"
+    (str ex)
+    (str data)
+    (cstr/join "\n" (.getStackTrace ex))))
 
 (defn exception-handler [^Exception ex & other]
-  (log-exception ex)
+  (let [exception-data (if (map? (first other)) (first other) (ex-data ex))]
+    (log-exception ex exception-data))
   (response/internal-server-error {:type "unknown-exception"}))
 
 (def handlers
