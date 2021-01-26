@@ -56,11 +56,16 @@
       (response/unauthorized {:error "Invalid ticket"})))
 
 (defn- respond-with-failed-authentication-valtuudet
-  [cas-ticket-validation-result]
+  [cas-ticket-validation-result domain]
   (do (log/warnf "Preventing login because of valtuudet: %s"
                  cas-ticket-validation-result)
-      (response/unauthorized
-        {:error "You are using valtuudet. Please log out."})))
+      (response/see-other
+        (format
+          "%s/%s?error=valtuudet"
+          (if (.contains domain "studieinfo")
+            (:frontend-url-sv config)
+            (:frontend-url-fi config))
+          (:frontend-url-path config)))))
 
 (def routes
   (c-api/context "/session" []
@@ -110,7 +115,7 @@
             (respond-with-successful-authentication
               user-info ticket (:server-name request))
             (respond-with-failed-authentication-valtuudet
-              cas-ticket-validation-result))
+              cas-ticket-validation-result (:server-name request)))
           (respond-with-failed-authentication cas-ticket-validation-result))))
 
     (c-api/POST "/opintopolku2/" []
