@@ -15,9 +15,9 @@
 (s/defschema User
              "User"
              {(s/optional-key :oid) s/Str
-              :first-name s/Str
-              :common-name s/Str
-              :surname s/Str
+              (s/optional-key :first-name) s/Str
+              (s/optional-key :common-name) s/Str
+              (s/optional-key :surname) s/Str
               (s/optional-key :using-valtuudet) s/Bool})
 
 (s/defschema UserInfo

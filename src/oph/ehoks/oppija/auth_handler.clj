@@ -152,7 +152,7 @@
                        (seq user-info))
                 (rest/rest-ok [(onr/convert-student-info user-info)])
                 (throw (ex-info "External system error" user-info-response))))
-            (rest/rest-ok [{:using-valtuudet using-valtuudet}]))))
+            (rest/rest-ok [session-user]))))
 
       (c-api/GET "/" [:as request]
         :summary "Käyttäjän istunto"
