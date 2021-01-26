@@ -120,10 +120,6 @@
         success (some?
                   (find-value response
                               [:serviceResponse :authenticationSuccess]))
-        attributes (find-value
-                     response
-                     [:serviceResponse :authenticationSuccess
-                      :attributes])
         using-valtuudet (using-valtuudet? response)]
     (log/infof "Response: %s" response)
     {:success? success
@@ -132,11 +128,17 @@
                 (find-value
                   response
                   [:serviceResponse :authenticationFailure])))
-     :user-oid (first
-                 (find-value
-                   response
-                   [:serviceResponse :authenticationSuccess
-                    :attributes :personOid]))
+     :user-oid (if-not using-valtuudet
+                 (first
+                   (find-value
+                     response
+                     [:serviceResponse :authenticationSuccess
+                      :attributes :personOid]))
+                 (first
+                   (find-value
+                     response
+                     [:serviceResponse :authenticationSuccess
+                      :attributes :impersonatorPersonOid])))
      :using-valtuudet using-valtuudet}))
 
 (defn validate-ticket
