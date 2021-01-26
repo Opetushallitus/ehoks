@@ -64,7 +64,7 @@
   (let [converted-values
         (-> values
             (select-keys [:oidHenkilo :etunimet :sukunimi
-                          :kutsumanimi :oid :yhteystiedotRyhma])
+                          :kutsumanimi :oid :yhteystiedotRyhma :usingValtuudet])
             (rename-keys {:oidHenkilo :oid
                           :etunimet :first-name
                           :sukunimi :surname
