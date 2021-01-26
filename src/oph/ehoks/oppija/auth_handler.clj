@@ -39,16 +39,18 @@
   ; redirects the student to www.opintopolku.fi/ehoks. However only the
   ; hostname changes and user still has swedish ui as locale is
   ; stored to cookie.
-  (-> (response/see-other
-        (format
-          "%s/%s"
-          (if (.contains domain "studieinfo")
-            (:frontend-url-sv config)
-            (:frontend-url-fi config))
-          (:frontend-url-path config)))
-      (assoc-in [:session :user] user-info)
-      (assoc-in [:session :ticket] ticket)
-      (assoc-in [:session :using-valtuudet] (:using-valtuudet user-info))))
+  (let [user (if-not (:using-valtuudet user-info)
+               user-info
+               (dissoc user-info :oid))]
+    (-> (response/see-other
+          (format
+            "%s/%s"
+            (if (.contains domain "studieinfo")
+              (:frontend-url-sv config)
+              (:frontend-url-fi config))
+            (:frontend-url-path config)))
+        (assoc-in [:session :user] user)
+        (assoc-in [:session :ticket] ticket))))
 
 (defn- respond-with-failed-authentication [cas-ticket-validation-result]
   (do (log/warnf "Ticket validation failed: %s"
@@ -105,17 +107,14 @@
       :query-params [ticket :- s/Str]
       (let [cas-ticket-validation-result (cas/validate-oppija-ticket
                                            ticket (:server-name request))
+            using-valtuudet (:using-valtuudet cas-ticket-validation-result)
             user-info (assoc
                         (get-user-info-from-onr
                           (:user-oid cas-ticket-validation-result))
-                        :using-valtuudet
-                        (:using-valtuudet cas-ticket-validation-result))]
+                        :using-valtuudet using-valtuudet)]
         (if (:success? cas-ticket-validation-result)
-          (if-not (:using-valtuudet cas-ticket-validation-result)
-            (respond-with-successful-authentication
-              user-info ticket (:server-name request))
-            (respond-with-failed-authentication-valtuudet
-              cas-ticket-validation-result (:server-name request)))
+          (respond-with-successful-authentication
+            user-info ticket (:server-name request))
           (respond-with-failed-authentication cas-ticket-validation-result))))
 
     (c-api/POST "/opintopolku2/" []
@@ -144,12 +143,16 @@
         :header-params [caller-id :- s/Str]
         :return (rest/response [schema/UserInfo])
         (let [session-user (get-in request [:session :user])
-              user-info-response (onr/find-student-by-oid (:oid session-user))
-              user-info (:body user-info-response)]
-          (if (and (= (:status user-info-response) 200)
-                   (seq user-info))
-            (rest/rest-ok [(onr/convert-student-info user-info)])
-            (throw (ex-info "External system error" user-info-response)))))
+              using-valtuudet (:using-valtuudet session-user)]
+          (if-not using-valtuudet
+            (let [user-info-response (onr/find-student-by-oid
+                                       (:oid session-user))
+                  user-info (:body user-info-response)]
+              (if (and (= (:status user-info-response) 200)
+                       (seq user-info))
+                (rest/rest-ok [(onr/convert-student-info user-info)])
+                (throw (ex-info "External system error" user-info-response))))
+            (rest/rest-ok [{:using-valtuudet using-valtuudet}]))))
 
       (c-api/GET "/" [:as request]
         :summary "Käyttäjän istunto"
@@ -157,7 +160,8 @@
         :return (rest/response [schema/User])
         (let [{{:keys [user]} :session} request]
           (rest/rest-ok
-            [(select-keys user [:oid :first-name :common-name :surname])])))
+            [(select-keys user [:oid :first-name :common-name :surname
+                                :using-valtuudet])])))
 
       (c-api/DELETE "/" []
         :summary "Uloskirjautuminen."

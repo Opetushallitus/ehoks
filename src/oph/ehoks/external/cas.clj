@@ -106,14 +106,14 @@
              (find-value m [:serviceResponse :authenticationSuccess :user]))}))
 
 (defn- using-valtuudet? [response]
-  (or (find-value
-        response
-        [:serviceResponse :authenticationSuccess
-         :attributes :impersonatorNationalIdentificationNumber])
-      (find-value
-        response
-        [:serviceResponse :authenticationSuccess
-         :attributes :impersonatorDisplayName])))
+  (boolean (or (find-value
+                 response
+                 [:serviceResponse :authenticationSuccess
+                  :attributes :impersonatorNationalIdentificationNumber])
+               (find-value
+                 response
+                 [:serviceResponse :authenticationSuccess
+                  :attributes :impersonatorDisplayName]))))
 
 (defn- convert-oppija-cas-response-data [xml-data]
   (let [response (xml->map xml-data)
@@ -125,10 +125,6 @@
                      [:serviceResponse :authenticationSuccess
                       :attributes])
         using-valtuudet (using-valtuudet? response)]
-    (log/infof "Attributes: %s" (get-in response
-                                        [:serviceResponse
-                                         :authenticationSuccess
-                                         :attributes]))
     (log/infof "Response: %s" response)
     {:success? success
      :error (when-not success
