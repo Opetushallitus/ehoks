@@ -17,7 +17,8 @@
              {(s/optional-key :oid) s/Str
               :first-name s/Str
               :common-name s/Str
-              :surname s/Str})
+              :surname s/Str
+              (s/optional-key :using-valtuudet) s/Bool})
 
 (s/defschema UserInfo
              "Full user info"
