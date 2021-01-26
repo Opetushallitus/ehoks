@@ -139,7 +139,7 @@
                      response
                      [:serviceResponse :authenticationSuccess
                       :attributes :impersonatorPersonOid])))
-     :using-valtuudet using-valtuudet}))
+     :usingValtuudet using-valtuudet}))
 
 (defn validate-ticket
   "Validate service ticket"

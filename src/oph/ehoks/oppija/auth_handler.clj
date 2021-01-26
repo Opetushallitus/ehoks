@@ -39,7 +39,7 @@
   ; redirects the student to www.opintopolku.fi/ehoks. However only the
   ; hostname changes and user still has swedish ui as locale is
   ; stored to cookie.
-  (let [user (if-not (:using-valtuudet user-info)
+  (let [user (if-not (:usingValtuudet user-info)
                user-info
                (dissoc user-info :oid))]
     (-> (response/see-other
@@ -107,11 +107,11 @@
       :query-params [ticket :- s/Str]
       (let [cas-ticket-validation-result (cas/validate-oppija-ticket
                                            ticket (:server-name request))
-            using-valtuudet (:using-valtuudet cas-ticket-validation-result)
+            using-valtuudet (:usingValtuudet cas-ticket-validation-result)
             user-info (assoc
                         (get-user-info-from-onr
                           (:user-oid cas-ticket-validation-result))
-                        :using-valtuudet using-valtuudet)]
+                        :usingValtuudet using-valtuudet)]
         (if (:success? cas-ticket-validation-result)
           (respond-with-successful-authentication
             user-info ticket (:server-name request))
@@ -143,7 +143,7 @@
         :header-params [caller-id :- s/Str]
         :return (rest/response [schema/UserInfo])
         (let [session-user (get-in request [:session :user])
-              using-valtuudet (:using-valtuudet session-user)]
+              using-valtuudet (:usingValtuudet session-user)]
           (if-not using-valtuudet
             (let [user-info-response (onr/find-student-by-oid
                                        (:oid session-user))
@@ -161,7 +161,7 @@
         (let [{{:keys [user]} :session} request]
           (rest/rest-ok
             [(select-keys user [:oid :first-name :common-name :surname
-                                :using-valtuudet])])))
+                                :usingValtuudet])])))
 
       (c-api/DELETE "/" []
         :summary "Uloskirjautuminen."
