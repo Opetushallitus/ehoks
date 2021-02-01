@@ -3,7 +3,8 @@
             [oph.ehoks.config :refer [config]]
             [clojure.data.xml :as xml]
             [clj-time.core :as t]
-            [oph.ehoks.external.oph-url :as u]))
+            [oph.ehoks.external.oph-url :as u]
+            [clojure.tools.logging :as log]))
 
 (defonce grant-ticket
   ^:private
@@ -104,22 +105,41 @@
      :user (first
              (find-value m [:serviceResponse :authenticationSuccess :user]))}))
 
+(defn- using-valtuudet? [response]
+  (boolean (or (find-value
+                 response
+                 [:serviceResponse :authenticationSuccess
+                  :attributes :impersonatorNationalIdentificationNumber])
+               (find-value
+                 response
+                 [:serviceResponse :authenticationSuccess
+                  :attributes :impersonatorDisplayName]))))
+
 (defn- convert-oppija-cas-response-data [xml-data]
   (let [response (xml->map xml-data)
         success (some?
                   (find-value response
-                              [:serviceResponse :authenticationSuccess]))]
+                              [:serviceResponse :authenticationSuccess]))
+        using-valtuudet (using-valtuudet? response)]
+    (log/infof "Response: %s" response)
     {:success? success
      :error (when-not success
               (first
                 (find-value
                   response
                   [:serviceResponse :authenticationFailure])))
-     :user-oid (first
-                 (find-value
-                   response
-                   [:serviceResponse :authenticationSuccess
-                    :attributes :personOid]))}))
+     :user-oid (if-not using-valtuudet
+                 (first
+                   (find-value
+                     response
+                     [:serviceResponse :authenticationSuccess
+                      :attributes :personOid]))
+                 (first
+                   (find-value
+                     response
+                     [:serviceResponse :authenticationSuccess
+                      :attributes :impersonatorPersonOid])))
+     :usingValtuudet using-valtuudet}))
 
 (defn validate-ticket
   "Validate service ticket"
@@ -135,19 +155,24 @@
     (let [xml-data (xml/parse-str (:body response))]
       (convert-response-data xml-data))))
 
-(defn- call-cas-oppija-ticket-validation [ticket]
+(defn- call-cas-oppija-ticket-validation [ticket domain]
   (c/with-api-headers
     {:method :get
      :service (u/get-url "cas-oppija.validate-service")
      :url (u/get-url "cas-oppija.validate-service")
      :options
      {:query-params
-      {:service (u/get-url "ehoks.oppija-login-return")
+      {:service (format
+                  "%s%s"
+                  (if (.contains domain "studieinfo")
+                    (:frontend-url-sv config)
+                    (:frontend-url-fi config))
+                  (u/get-url "ehoks.oppija-login-return-path"))
        :ticket ticket}}}))
 
 (defn validate-oppija-ticket
   "Validate oppija cas service ticket"
-  [ticket]
-  (let [response (call-cas-oppija-ticket-validation ticket)]
+  [ticket, domain]
+  (let [response (call-cas-oppija-ticket-validation ticket domain)]
     (let [xml-data (xml/parse-str (:body response))]
       (convert-oppija-cas-response-data xml-data))))

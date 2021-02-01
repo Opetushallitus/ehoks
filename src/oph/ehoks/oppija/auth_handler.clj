@@ -12,7 +12,11 @@
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.oppija.settings-handler :as settings-handler]
             [clojure.tools.logging :as log]
-            [oph.ehoks.external.cas :as cas]))
+            [oph.ehoks.external.cas :as cas]
+            [ring.middleware.session.store :refer [delete-session]]
+            [oph.ehoks.db.db-operations.session :as db-session]
+            [clojure.string :as cstr]
+            [clojure.data.xml :as xml]))
 
 (defn- get-user-info-from-onr [oid]
   (let [response (onr/find-student-by-oid oid)
@@ -26,7 +30,7 @@
 
 (defn- respond-with-successful-authentication
   "Adds user-info and ticket to response to store them to session-store"
-  [user-info ticket]
+  [user-info ticket domain]
   ; There propably should be localized versions of /misc/environment route
   ; return value for cas-oppija-login-url (same as logout urls). We could then
   ; redirect here to the correct hostname based on locale.
@@ -35,18 +39,35 @@
   ; redirects the student to www.opintopolku.fi/ehoks. However only the
   ; hostname changes and user still has swedish ui as locale is
   ; stored to cookie.
-  (-> (response/see-other
-        (format
-          "%s/%s"
-          (:frontend-url-fi config)
-          (:frontend-url-path config)))
-      (assoc-in [:session :user] user-info)
-      (assoc-in [:session :ticket] ticket)))
+  (let [user (if-not (:usingValtuudet user-info)
+               user-info
+               (dissoc user-info :oid))]
+    (-> (response/see-other
+          (format
+            "%s/%s"
+            (if (.contains domain "studieinfo")
+              (:frontend-url-sv config)
+              (:frontend-url-fi config))
+            (:frontend-url-path config)))
+        (assoc-in [:session :user] user)
+        (assoc-in [:session :ticket] ticket))))
 
 (defn- respond-with-failed-authentication [cas-ticket-validation-result]
   (do (log/warnf "Ticket validation failed: %s"
                  (:error cas-ticket-validation-result))
       (response/unauthorized {:error "Invalid ticket"})))
+
+(defn- respond-with-failed-authentication-valtuudet
+  [cas-ticket-validation-result domain]
+  (do (log/warnf "Preventing login because of valtuudet: %s"
+                 cas-ticket-validation-result)
+      (response/see-other
+        (format
+          "%s/%s?error=valtuudet"
+          (if (.contains domain "studieinfo")
+            (:frontend-url-sv config)
+            (:frontend-url-fi config))
+          (:frontend-url-path config)))))
 
 (def routes
   (c-api/context "/session" []
@@ -81,15 +102,36 @@
                   [:session :user] (assoc user :oid oid))
                 (throw (ex-info "No user found" user-info-response))))))))
 
-    (c-api/GET "/opintopolku2/" []
+    (c-api/GET "/opintopolku2/" [:as request]
       :summary "Oppijan Opintopolku-kirjautumisen endpoint (CAS)"
       :query-params [ticket :- s/Str]
-      (let [cas-ticket-validation-result (cas/validate-oppija-ticket ticket)
-            user-info (get-user-info-from-onr
-                        (:user-oid cas-ticket-validation-result))]
+      (let [cas-ticket-validation-result (cas/validate-oppija-ticket
+                                           ticket (:server-name request))
+            using-valtuudet (:usingValtuudet cas-ticket-validation-result)
+            user-info (assoc
+                        (get-user-info-from-onr
+                          (:user-oid cas-ticket-validation-result))
+                        :usingValtuudet using-valtuudet)]
         (if (:success? cas-ticket-validation-result)
-          (respond-with-successful-authentication user-info ticket)
+          (respond-with-successful-authentication
+            user-info ticket (:server-name request))
           (respond-with-failed-authentication cas-ticket-validation-result))))
+
+    (c-api/POST "/opintopolku2/" []
+      :summary "Oppijan Opintopolku-uloskirjautumisen endpoint (CAS)"
+      :form-params [logoutRequest :- s/Str]
+      (if-let [ticket (some #(when (= (:tag %) :SessionIndex)
+                               (first (:content %)))
+                            (:content (xml/parse-str logoutRequest)))]
+        (let [res (first (db-session/delete-sessions-by-ticket!
+                           (cstr/trim ticket)))]
+          (if (zero? res)
+            (response/not-found res)
+            (response/ok res)))
+        (do
+          (log/error (str "Could not parse service ticket from logout request "
+                          logoutRequest))
+          (response/bad-request))))
 
     (c-api/OPTIONS "/" []
       (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, DELETE"))
@@ -101,12 +143,16 @@
         :header-params [caller-id :- s/Str]
         :return (rest/response [schema/UserInfo])
         (let [session-user (get-in request [:session :user])
-              user-info-response (onr/find-student-by-oid (:oid session-user))
-              user-info (:body user-info-response)]
-          (if (and (= (:status user-info-response) 200)
-                   (seq user-info))
-            (rest/rest-ok [(onr/convert-student-info user-info)])
-            (throw (ex-info "External system error" user-info-response)))))
+              using-valtuudet (:usingValtuudet session-user)]
+          (if-not using-valtuudet
+            (let [user-info-response (onr/find-student-by-oid
+                                       (:oid session-user))
+                  user-info (:body user-info-response)]
+              (if (and (= (:status user-info-response) 200)
+                       (seq user-info))
+                (rest/rest-ok [(onr/convert-student-info user-info)])
+                (throw (ex-info "External system error" user-info-response))))
+            (rest/rest-ok [session-user]))))
 
       (c-api/GET "/" [:as request]
         :summary "Käyttäjän istunto"
@@ -114,7 +160,8 @@
         :return (rest/response [schema/User])
         (let [{{:keys [user]} :session} request]
           (rest/rest-ok
-            [(select-keys user [:oid :first-name :common-name :surname])])))
+            [(select-keys user [:oid :first-name :common-name :surname
+                                :usingValtuudet])])))
 
       (c-api/DELETE "/" []
         :summary "Uloskirjautuminen."

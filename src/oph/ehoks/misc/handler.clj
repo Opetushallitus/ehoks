@@ -21,11 +21,18 @@
              "%s?service=%s"
              (u/get-url "cas.login")
              (u/get-url "ehoks.virkailija-login-return"))}
-          {:cas-oppija-login-url
+          {:cas-oppija-login-url-fi
            (format
-             "%s?service=%s"
-             (u/get-url "cas-oppija.login")
-             (u/get-url "ehoks.oppija-login-return"))}
+             "%s&service=%s%s"
+             (u/get-url "cas-oppija.login" "fi" "false")
+             (:frontend-url-fi config)
+             (u/get-url "ehoks.oppija-login-return-path"))}
+          {:cas-oppija-login-url-sv
+           (format
+             "%s&service=%s%s"
+             (u/get-url "cas-oppija.login" "sv" "false")
+             (:frontend-url-sv config)
+             (u/get-url "ehoks.oppija-login-return-path"))}
           {:cas-oppija-logout-url-fi
            (format
              "%s?service=%s/%s?lang=fi"
