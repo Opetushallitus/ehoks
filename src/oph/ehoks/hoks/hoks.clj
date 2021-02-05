@@ -174,7 +174,12 @@
                  {:error :disallowed-update}))
         :else
         (do
-          (replace-main-hoks! hoks-id new-values db-conn)
+          (replace-main-hoks! hoks-id
+                              (assoc
+                                new-values
+                                :updated_at
+                                (java.util.Date.))
+                              db-conn)
           (replace-oto! hoks-id (:opiskeluvalmiuksia-tukevat-opinnot new-values)
                         db-conn)
           (replace-hato! hoks-id (:hankittavat-ammat-tutkinnon-osat new-values)
@@ -214,7 +219,12 @@
                  "Oppija-oid update not allowed!"
                  {:error :disallowed-update}))
         :else
-        (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)))))
+        (db-hoks/update-hoks-by-id! hoks-id
+                                    (assoc
+                                      new-values
+                                      :updated_at
+                                      (java.util.Date.))
+                                    db-conn)))))
 
 (defn insert-kyselylinkki! [m]
   (db-ops/insert-one!
