@@ -276,10 +276,18 @@
 
 (defn update-hoks-by-id!
   ([id hoks]
-    (db-ops/update! :hoksit (hoks-to-sql hoks)
+    (db-ops/update! :hoksit
+                    (assoc
+                      (hoks-to-sql hoks)
+                      :updated_at
+                      (java.util.Date.))
                     ["id = ? AND deleted_at IS NULL" id]))
   ([id hoks db-conn]
-    (db-ops/update! :hoksit (hoks-to-sql hoks)
+    (db-ops/update! :hoksit
+                    (assoc
+                      (hoks-to-sql hoks)
+                      :updated_at
+                      (java.util.Date.))
                     ["id = ? AND deleted_at IS NULL" id] db-conn)))
 
 (defn select-hoks-oppijat-without-index []
