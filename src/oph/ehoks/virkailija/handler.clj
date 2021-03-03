@@ -12,6 +12,7 @@
             [oph.ehoks.user :as user]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as restful]
@@ -209,6 +210,17 @@
     (restful/rest-ok hoks)
     (response/not-found {:message "HOKS not found"})))
 
+(defn- hoks-has-active-opiskeluoikeus [hoks]
+  (some check-opiskeluoikeus-validity hoks))
+
+(defn- get-oppilaitos-oid-by-oo-oid [opiskeluoikeus-oid]
+  (let [opiskelu-oikeus
+           (db-oo/select-opiskeluoikeus-by-oid opiskeluoikeus-oid)]
+    (:oppilaitos-oid opiskelu-oikeus)))
+
+(defn- get-hoks-by-oppilaitos [oppilaitos-oid hoks]
+  (filter #(= oppilaitos-oid (get-oppilaitos-oid-by-oo-oid (:opiskeluoikeus-oid %))) (get-in hoks [:body :data])))
+
 (defn- get-hoks [hoks-id request]
   (let [hoks (db-hoks/select-hoks-by-id hoks-id)
         virkailija-user (get-in
@@ -321,6 +333,16 @@
                         :return (restful/response [hoks-schema/HOKS])
                         :summary "Oppijan hoksit (perustiedot)"
                         (get-hoks-perustiedot oppija-oid))
+
+                      (c-api/GET "/oppilaitos/:oppilaitos-oid" []
+                        :path-params [oppilaitos-oid :- s/Str]
+                        :return (restful/response [hoks-schema/HOKS])
+                        :summary "Oppijan hoksit (perustiedot, rajoitettu uusi versio)"
+                        (let [hoks (get-hoks-perustiedot oppija-oid)
+                              oppilaitos-hoks (get-hoks-by-oppilaitos oppilaitos-oid hoks)]
+                          (if (hoks-has-active-opiskeluoikeus oppilaitos-hoks)
+                            hoks
+                            (update-in hoks [:body] assoc :data oppilaitos-hoks))))
 
                       (c-api/GET "/:hoks-id" request
                         :path-params [hoks-id :- s/Int]
