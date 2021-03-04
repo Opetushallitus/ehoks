@@ -336,22 +336,40 @@
                         :summary "Oppijan hoksit (perustiedot)"
                         (get-hoks-perustiedot oppija-oid))
 
-                      (c-api/GET "/oppilaitos/:oppilaitos-oid" []
+                      (c-api/GET "/oppilaitos/:oppilaitos-oid" request
                         :path-params [oppilaitos-oid :- s/Str]
                         :return (restful/response [hoks-schema/HOKS])
                         :summary "Oppijan hoksit (perustiedot,
                                                   rajoitettu uusi versio)"
-                        (if-let [hoks (db-hoks/select-hoks-by-oppija-oid
-                                        oppija-oid)]
-                          (let [oppilaitos-hoks (get-hoks-by-oppilaitos
-                                                  oppilaitos-oid
-                                                  hoks)]
-                            (restful/rest-ok
-                              (if
-                                (hoks-has-active-opiskeluoikeus oppilaitos-hoks)
-                                hoks
-                                oppilaitos-hoks)))
-                          (response/not-found {:message "HOKS not found"})))
+                        (if (contains?
+                              (user/get-organisation-privileges
+                                (get-in
+                                  request
+                                  [:session :virkailija-user])
+                                oppilaitos-oid)
+                              :read)
+                          (if-let [hoks (db-hoks/select-hoks-by-oppija-oid
+                                          oppija-oid)]
+                            (let [oppilaitos-hoks (get-hoks-by-oppilaitos
+                                                    oppilaitos-oid hoks)]
+                              (restful/rest-ok
+                                (if
+                                 (hoks-has-active-opiskeluoikeus
+                                   oppilaitos-hoks)
+                                  hoks
+                                  oppilaitos-hoks)))
+                            (response/not-found {:message "HOKS not found"}))
+                          (do
+                            (log/warnf "User %s privileges
+                          don't match oppilaitos %s"
+                                       (get-in request
+                                               [:session
+                                                :virkailija-user :oidHenkilo])
+                                       (get-in request [:params
+                                                        :oppilaitos-oidd]))
+                            (response/forbidden
+                              {:error (str "User privileges does not match "
+                                           "organisation")}))))
 
                       (c-api/GET "/:hoks-id" request
                         :path-params [hoks-id :- s/Int]
