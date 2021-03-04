@@ -347,7 +347,8 @@
                                                   oppilaitos-oid
                                                   hoks)]
                             (restful/rest-ok
-                              (if (hoks-has-active-opiskeluoikeus oppilaitos-hoks)
+                              (if
+                                (hoks-has-active-opiskeluoikeus oppilaitos-hoks)
                                 hoks
                                 oppilaitos-hoks)))
                           (response/not-found {:message "HOKS not found"})))
