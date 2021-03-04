@@ -344,11 +344,10 @@
                         (if-let [hoks (db-hoks/select-hoks-by-oppija-oid
                                         oppija-oid)]
                           (let [oppilaitos-hoks (get-hoks-by-oppilaitos
-                                                  oppilaitos-oid
-                                                  hoks)]
+                                                  oppilaitos-oid hoks)]
                             (restful/rest-ok
                               (if
-                                (hoks-has-active-opiskeluoikeus oppilaitos-hoks)
+                               (hoks-has-active-opiskeluoikeus oppilaitos-hoks)
                                 hoks
                                 oppilaitos-hoks)))
                           (response/not-found {:message "HOKS not found"})))
