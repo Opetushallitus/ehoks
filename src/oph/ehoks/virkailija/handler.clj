@@ -211,7 +211,7 @@
     (response/not-found {:message "HOKS not found"})))
 
 (defn- hoks-has-active-opiskeluoikeus [hoks]
-  (some op/opiskeluoikeus-still-active? (map :opiskeluoikeus-oid hoks)))
+  (some op/opiskeluoikeus-active? (map :opiskeluoikeus-oid hoks)))
 
 (defn- get-oppilaitos-oid-by-oo-oid [opiskeluoikeus-oid]
   (let [opiskelu-oikeus
