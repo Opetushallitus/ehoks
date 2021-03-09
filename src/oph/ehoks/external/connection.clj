@@ -53,7 +53,8 @@
                             (assoc-in [:headers "CSRF"]
                                       (:client-sub-system-code config))
                             (assoc-in [:cookies "CSRF"]
-                                      (:client-sub-system-code config))
+                                      {:value (:client-sub-system-code config)
+                                       :path "/"})
                             (assoc :debug (:debug config false))
                             (assoc :cookie-policy :standard))))
     (catch Exception e
