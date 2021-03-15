@@ -20,9 +20,10 @@
                  [org.clojure/data.xml "0.0.8"]
                  [org.clojure/data.json "1.1.0"]
                  [environ "1.2.0"]
-                 [software.amazon.awssdk/sqs "2.16.17" :exclusions [org.reactivestreams/reactive-streams]]
+                 [software.amazon.awssdk/sqs "2.16.18" :exclusions [org.reactivestreams/reactive-streams]]
                  [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]
-                 [com.rpl/specter "1.1.3"]]
+                 [com.rpl/specter "1.1.3"]
+                 [cheshire "5.10.0"]]
   :managed-dependencies [[org.clojure/clojure "1.10.3"]
 
                          ;; http server
@@ -59,6 +60,7 @@
                          [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.9.8"]
                          [org.clojure/data.json "1.1.0"]
                          [com.google.code.gson/gson "2.8.6"]
+                         [cheshire "5.10.0"]
 
                          ;; XML
                          [org.clojure/data.xml "0.0.8"]
@@ -77,7 +79,7 @@
                          [hiccup "1.0.5"]
                          [org.clojure/tools.namespace "1.1.0"]
                          [environ "1.2.0"]
-                         [software.amazon.awssdk/sqs "2.16.17"]
+                         [software.amazon.awssdk/sqs "2.16.18"]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.3.5"]
