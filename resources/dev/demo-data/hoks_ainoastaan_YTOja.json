@@ -187,7 +187,8 @@
               },
               "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
               "alku": "2018-11-01",
-              "loppu": "2021-12-13"
+              "loppu": "2021-12-13",
+              "osa-aikaisuustieto": "50"
             }
           ]
         },
@@ -267,7 +268,8 @@
               },
               "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
               "alku": "2018-11-01",
-              "loppu": "2021-12-13"
+              "loppu": "2021-12-13",
+              "osa-aikaisuustieto": "25"
             }
           ]
         }

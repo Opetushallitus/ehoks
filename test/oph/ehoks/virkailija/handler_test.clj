@@ -818,7 +818,8 @@
        :rooli "Opettaja"
        :oppilaitos-oid "1.2.246.562.10.54452422420"}
       :alku "2019-01-11"
-      :loppu "2019-03-14"}]
+      :loppu "2019-03-14"
+      :osa-aikaisuustieto "25"}]
     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"}])
 
 (t/deftest test-virkailija-put-hoks

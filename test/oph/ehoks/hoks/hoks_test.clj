@@ -136,7 +136,8 @@
        :rooli "Opettaja"
        :oppilaitos-oid "1.2.246.562.10.54452422420"}
       :alku (java.time.LocalDate/of 2019 1 11)
-      :loppu (java.time.LocalDate/of 2019 3 14)}]
+      :loppu (java.time.LocalDate/of 2019 3 14)
+      :osa-aikaisuustieto "25"}]
     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"}])
 
 (def oto-data

@@ -553,7 +553,8 @@
         :rooli "Opettajan sijainen"
         :oppilaitos-oid "1.2.246.562.10.55552422420"}
        :alku "2019-01-12"
-       :loppu "2019-02-11"}]
+       :loppu "2019-02-11"
+       :osa_aikaisuustieto "25"}]
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000116"}))
 
 (def osa-alueet-of-hyto
@@ -567,6 +568,7 @@
       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_muutettu"
       :osaamisen-hankkimistapa-koodi-versio 3
       :ajanjakson-tarkenne "tarkenne"
+      :osa_aikaisuustieto "50"
       :muut-oppimisymparistot
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0222"
         :oppimisymparisto-koodi-versio 3
