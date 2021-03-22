@@ -13,6 +13,7 @@
                [{:alku "2018-12-12"
                  :loppu "2018-12-20"
                  :ajanjakson-tarkenne "Tarkenne tässä"
+                 :osa-aikaisuustieto 25
                  :osaamisen-hankkimistapa-koodi-uri
                  "osaamisenhankkimistapa_koulutussopimus"
                  :osaamisen-hankkimistapa-koodi-versio 1
@@ -553,8 +554,7 @@
         :rooli "Opettajan sijainen"
         :oppilaitos-oid "1.2.246.562.10.55552422420"}
        :alku "2019-01-12"
-       :loppu "2019-02-11"
-       :osa_aikaisuustieto "25"}]
+       :loppu "2019-02-11"}]
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000116"}))
 
 (def osa-alueet-of-hyto
@@ -568,7 +568,6 @@
       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_muutettu"
       :osaamisen-hankkimistapa-koodi-versio 3
       :ajanjakson-tarkenne "tarkenne"
-      :osa_aikaisuustieto "50"
       :muut-oppimisymparistot
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0222"
         :oppimisymparisto-koodi-versio 3
@@ -621,6 +620,7 @@
      [{:alku "2018-12-12"
        :loppu "2018-12-20"
        :ajanjakson-tarkenne "Tarkenne muuttunut"
+       :osa-aikaisuustieto 50
        :osaamisen-hankkimistapa-koodi-uri
        "osaamisenhankkimistapa_koulutussopimus"
        :osaamisen-hankkimistapa-koodi-versio 1
@@ -666,6 +666,7 @@
      [{:alku "2019-12-12"
        :loppu "2020-12-20"
        :ajanjakson-tarkenne "Tarkenne muuttunut"
+       :osa-aikaisuustieto 50
        :osaamisen-hankkimistapa-koodi-uri
        "osaamisenhankkimistapa_koulutussopimus"
        :osaamisen-hankkimistapa-koodi-versio 1
