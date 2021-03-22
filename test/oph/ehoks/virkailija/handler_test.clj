@@ -813,13 +813,13 @@
         :alku "2019-01-13"
         :loppu "2019-02-19"}]
       :ajanjakson-tarkenne "Ei tarkennettavia asioita"
+      :osa-aikaisuustieto 50
       :hankkijan-edustaja
       {:nimi "Heikki Hankkija"
        :rooli "Opettaja"
        :oppilaitos-oid "1.2.246.562.10.54452422420"}
       :alku "2019-01-11"
-      :loppu "2019-03-14"
-      :osa-aikaisuustieto "25"}]
+      :loppu "2019-03-14"}]
     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"}])
 
 (t/deftest test-virkailija-put-hoks
