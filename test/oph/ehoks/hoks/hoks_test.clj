@@ -131,13 +131,13 @@
         :alku (java.time.LocalDate/of 2019 1 13)
         :loppu (java.time.LocalDate/of 2019 2 19)}]
       :ajanjakson-tarkenne "Ei tarkennettavia asioita"
+      :osa-aikaisuustieto 50
       :hankkijan-edustaja
       {:nimi "Heikki Hankkija"
        :rooli "Opettaja"
        :oppilaitos-oid "1.2.246.562.10.54452422420"}
       :alku (java.time.LocalDate/of 2019 1 11)
-      :loppu (java.time.LocalDate/of 2019 3 14)
-      :osa-aikaisuustieto "25"}]
+      :loppu (java.time.LocalDate/of 2019 3 14)}]
     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"}])
 
 (def oto-data
