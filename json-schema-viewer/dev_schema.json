@@ -2553,7 +2553,7 @@
           "type": "string"
         },
         "osa-aikaisuustieto": {
-          "description": "Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä prosentteina.",
+          "description": "Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100).",
           "type": "integer",
           "format": "int64"
         },
