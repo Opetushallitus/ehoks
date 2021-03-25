@@ -173,7 +173,7 @@
          "liittyvät tiedot")
     (s/optional-key :osa-aikaisuustieto) s/Int
     (str "Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä "
-         "prosentteina.")))
+         "prosentteina (1-100).")))
 
 (s/defschema
   OsaamisenHankkimistapaLuontiJaMuokkaus
