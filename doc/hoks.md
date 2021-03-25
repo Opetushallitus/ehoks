@@ -340,7 +340,7 @@ Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)
 | muut-oppimisymparistot | [[MuuOppimisymparisto](#MuuOppimisymparisto)] | Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen liittyvät tiedot | Ei |
 | osaamisen-hankkimistapa-koodi-uri | Merkkijono, esim. osaamisenhankkimistapa_oppisopimus | Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)<br>    eli muotoa osaamisenhankkimistapa_xxx eli esim.<br>    osaamisenhankkimistapa_koulutussopimus | Kyllä |
 | ajanjakson-tarkenne | Merkkijono | Tarkentava teksti ajanjaksolle, jos useita aikavälillä. | Ei |
-| osa-aikaisuustieto | Kokonaisluku | Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä prosentteina. | Ei |
+| osa-aikaisuustieto | Kokonaisluku | Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). | Ei |
 | osaamisen-hankkimistapa-koodi-versio | Kokonaisluku | Koodisto-koodin versio, koodistolle osaamisenhankkimistapa | Kyllä |
 | hankkijan-edustaja | [Oppilaitoshenkilo](#Oppilaitoshenkilo) | Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja | Ei |
 | tyopaikalla-jarjestettava-koulutus | [TyopaikallaJarjestettavaKoulutus](#TyopaikallaJarjestettavaKoulutus) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai koulutussopimus. | Ei |
@@ -403,7 +403,7 @@ Osaamisen hankkimisen tapa
 | muut-oppimisymparistot | [[MuuOppimisymparisto](#MuuOppimisymparisto)] | Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen liittyvät tiedot | Ei |
 | osaamisen-hankkimistapa-koodi-uri | Merkkijono, esim. osaamisenhankkimistapa_oppisopimus | Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)<br>    eli muotoa osaamisenhankkimistapa_xxx eli esim.<br>    osaamisenhankkimistapa_koulutussopimus | Kyllä |
 | ajanjakson-tarkenne | Merkkijono | Tarkentava teksti ajanjaksolle, jos useita aikavälillä. | Ei |
-| osa-aikaisuustieto | Kokonaisluku | Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä prosentteina. | Ei |
+| osa-aikaisuustieto | Kokonaisluku | Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). | Ei |
 | osaamisen-hankkimistapa-koodi-versio | Kokonaisluku | Koodisto-koodin versio, koodistolle osaamisenhankkimistapa | Kyllä |
 | module-id | Uuid | Tietorakenteen yksilöivä tunniste esimerkiksi tiedon jakamista varten | Kyllä |
 | hankkijan-edustaja | [Oppilaitoshenkilo](#Oppilaitoshenkilo) | Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja | Ei |
