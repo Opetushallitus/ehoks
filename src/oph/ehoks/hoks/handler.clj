@@ -11,11 +11,13 @@
             [oph.ehoks.db.postgresql.hankittavat :as pdb-ha]
             [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as pdb-ot]
             [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.heratepalvelu.heratepalvelu :as herate]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.external.aws-sqs :as sqs]
             [schema.core :as s]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.external.koski :as koski]
@@ -412,8 +414,16 @@
             (if (not-empty (:hoks request))
               (try
                 (check-opiskeluoikeus-validity hoks-values)
-                (let [hoks-db (h/update-hoks!
+                (let [osp (:osaamisen-saavuttamisen-pvm
+                            (h/get-hoks-by-id (:id hoks-values)))
+                      hoks-db (h/update-hoks!
                                 (get-in request [:hoks :id]) hoks-values)]
+                  (if (and (get hoks-values :osaamisen-saavuttamisen-pvm)
+                           (nil? osp))
+                    (sqs/send-amis-palaute-message
+                      (sqs/build-hoks-osaaminen-saavutettu-msg
+                        (:id hoks-values)
+                        (h/get-hoks-by-id (:id hoks-values)))))
                   (assoc
                     (response/no-content)
                     :audit-data
