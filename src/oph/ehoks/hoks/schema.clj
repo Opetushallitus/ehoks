@@ -12,6 +12,9 @@
 (def OsaamisenHankkimistapaKoodiUri
   #"^osaamisenhankkimistapa_.+$")
 
+(def OppisopimuksenPerustaKoodiUri
+  #"^oppisopimuksenperusta_.+$")
+
 (def OsaAlueKoodiUri
   #"^ammatillisenoppiaineet_.+$")
 
@@ -170,7 +173,11 @@
     (s/optional-key :muut-oppimisymparistot)
     [MuuOppimisymparisto]
     (str "Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen "
-         "liittyvät tiedot")))
+         "liittyvät tiedot")
+    (s/optional-key :oppisopimuksen-perusta-uri) OppisopimuksenPerustaKoodiUri
+    "Oppisopimuksen perustan Koodisto-uri "
+    (s/optional-key :oppisopimuksen-perusta-versio) s/Int
+    "Oppisopimuksen perustan Koodisto-versio "))
 
 (s/defschema
   OsaamisenHankkimistapaLuontiJaMuokkaus
