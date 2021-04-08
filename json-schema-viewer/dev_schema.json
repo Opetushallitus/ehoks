@@ -2552,6 +2552,11 @@
           "description": "Tarkentava teksti ajanjaksolle, jos useita aikavälillä.",
           "type": "string"
         },
+        "osa-aikaisuustieto": {
+          "description": "Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100).",
+          "type": "integer",
+          "format": "int64"
+        },
         "alku": {
           "description": "Alkupäivämäärä muodossa YYYY-MM-DD",
           "type": "string",
