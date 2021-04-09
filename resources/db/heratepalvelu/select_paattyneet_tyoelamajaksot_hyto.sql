@@ -3,6 +3,7 @@ SELECT
   h.opiskeluoikeus_oid AS opiskeluoikeus_oid,
   h.oppija_oid AS oppija_oid,
   osa.id AS tutkinnonosa_id,
+  osa.tutkinnon_osa_koodi_uri AS tutkinnonosa_nimi,
   oh.id AS hankkimistapa_id,
   oh.osaamisen_hankkimistapa_koodi_uri AS hankkimistapa_tyyppi,
   oh.alku AS alkupvm,
@@ -27,3 +28,5 @@ WHERE
   oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_oppisopimus')
   AND oh.loppu >= ?
   AND oh.loppu <= ?
+  AND oh.tep_kasitelty = false
+LIMIT ?
