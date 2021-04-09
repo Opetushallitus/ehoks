@@ -131,6 +131,7 @@
         :alku (java.time.LocalDate/of 2019 1 13)
         :loppu (java.time.LocalDate/of 2019 2 19)}]
       :ajanjakson-tarkenne "Ei tarkennettavia asioita"
+      :osa-aikaisuustieto 50
       :hankkijan-edustaja
       {:nimi "Heikki Hankkija"
        :rooli "Opettaja"

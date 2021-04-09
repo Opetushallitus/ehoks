@@ -174,10 +174,14 @@
     [MuuOppimisymparisto]
     (str "Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen "
          "liittyvät tiedot")
+
     (s/optional-key :oppisopimuksen-perusta-uri) OppisopimuksenPerustaKoodiUri
     "Oppisopimuksen perustan Koodisto-uri "
     (s/optional-key :oppisopimuksen-perusta-versio) s/Int
-    "Oppisopimuksen perustan Koodisto-versio "))
+    "Oppisopimuksen perustan Koodisto-versio "
+    (s/optional-key :osa-aikaisuustieto) s/Int
+    (str "Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä "
+         "prosentteina (1-100).")))
 
 (s/defschema
   OsaamisenHankkimistapaLuontiJaMuokkaus
