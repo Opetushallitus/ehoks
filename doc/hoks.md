@@ -3,7 +3,7 @@ Automaattisesti generoitu dokumentaatiotiedosto HOKS-tietomallin esittämiseen.
 
 Generoitu 06.05.2020 06.08
 
-### HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus  
+### HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus
 
 Hankittavan ammatillisen osaamisen tiedot (POST, PUT)
 
@@ -17,7 +17,7 @@ Hankittavan ammatillisen osaamisen tiedot (POST, PUT)
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapaLuontiJaMuokkaus](#OsaamisenHankkimistapaLuontiJaMuokkaus)] | Osaamisen hankkimistavat | Ei |
 | osaamisen-osoittaminen | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 
-### MuuOppimisymparisto  
+### MuuOppimisymparisto
 
 Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu
 
@@ -28,11 +28,11 @@ Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu
 | alku | Päivämäärä | Muussa oppimisympäristössä tapahtuvan osaamisen hankkimisen<br>    aloituspäivämäärä. | Kyllä |
 | loppu | Päivämäärä | Muussa oppimisympäristössä tapahtuvan osaamisen hankkimisen<br>    päättymispäivämäärä. | Kyllä |
 
-###   
+###
 
 
 
-### YhteinenTutkinnonOsa  
+### YhteinenTutkinnonOsa
 
 Yhteinen Tutkinnon osa (YTO)
 
@@ -44,11 +44,11 @@ Yhteinen Tutkinnon osa (YTO)
 | tutkinnon-osa-koodi-versio | Kokonaisluku | Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa<br>     (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
-###   
+###
 
 
 
-### OsaamisenOsoittaminen  
+### OsaamisenOsoittaminen
 
 Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
     sisältyvä osaamisen osoittaminen: näyttö tai muu osaamisen osoittaminen.
@@ -67,7 +67,7 @@ Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa<br>    YYYY-MM-DD | Kyllä |
 | yksilolliset-kriteerit | [Merkkijono] | Ammattitaitovaatimus tai osaamistavoite, johon yksilölliset<br>    arviointikriteerit kohdistuvat ja yksilölliset arviointikriteerit kyseiseen<br>    ammattitaitovaatimukseen tai osaamistavoitteeseen. | Ei |
 
-### OsaamisenOsoittaminenLuontiJaMuokkaus  
+### OsaamisenOsoittaminenLuontiJaMuokkaus
 
 Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)
 
@@ -84,7 +84,7 @@ Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)
 | loppu | Päivämäärä | Näytön tai osaamisen osoittamisen loppupäivämäärä muodossa<br>    YYYY-MM-DD | Kyllä |
 | yksilolliset-kriteerit | [Merkkijono] | Ammattitaitovaatimus tai osaamistavoite, johon yksilölliset<br>    arviointikriteerit kohdistuvat ja yksilölliset arviointikriteerit kyseiseen<br>    ammattitaitovaatimukseen tai osaamistavoitteeseen. | Ei |
 
-### HOKSPaivitys  
+### HOKSPaivitys
 
 HOKS-dokumentin ylikirjoitus (PATCH)
 
@@ -101,11 +101,11 @@ HOKS-dokumentin ylikirjoitus (PATCH)
 | paivitetty | Aikaleima | HOKS-dokumentin viimeisin päivitysaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ | Ei |
 | oppija-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Oppijan tunniste Opintopolku-ympäristössä | Ei |
 
-###   
+###
 
 
 
-### Henkilo  
+### Henkilo
 
 Henkilö
 
@@ -115,11 +115,11 @@ Henkilö
 | nimi | Merkkijono | Henkilön nimi | Kyllä |
 | rooli | Merkkijono | Henkilön rooli | Ei |
 
-###   
+###
 
 
 
-### HOKSKorvaus  
+### HOKSKorvaus
 
 HOKS-dokumentin ylikirjoitus (PUT)
 
@@ -143,7 +143,7 @@ HOKS-dokumentin ylikirjoitus (PUT)
 | opiskeluvalmiuksia-tukevat-opinnot | [[OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot)] | Opiskeluvalmiuksia tukevat opinnot | Ei |
 | oppija-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Oppijan tunniste Opintopolku-ympäristössä | Ei |
 
-### AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus  
+### AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus
 
 Aiemmin hankitun paikallisen osaamisen tiedot (POST, PUT)
 
@@ -161,7 +161,7 @@ Aiemmin hankitun paikallisen osaamisen tiedot (POST, PUT)
 | tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
 | tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 
-### HOKSLuonti  
+### HOKSLuonti
 
 HOKS-dokumentin arvot uutta merkintää luotaessa (POST)
 
@@ -185,7 +185,7 @@ HOKS-dokumentin arvot uutta merkintää luotaessa (POST)
 | opiskeluvalmiuksia-tukevat-opinnot | [[OpiskeluvalmiuksiaTukevatOpinnot](#OpiskeluvalmiuksiaTukevatOpinnot)] | Opiskeluvalmiuksia tukevat opinnot | Ei |
 | oppija-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Oppijan tunniste Opintopolku-ympäristössä | Kyllä |
 
-### Arvioija  
+### Arvioija
 
 Arvioija
 
@@ -194,7 +194,7 @@ Arvioija
 | nimi | Merkkijono | Arvioijan nimi | Kyllä |
 | organisaatio | [Organisaatio](#Organisaatio) | Arvioijan organisaatio | Kyllä |
 
-### AiemminHankittuYhteinenTutkinnonOsa  
+### AiemminHankittuYhteinenTutkinnonOsa
 
 Aiemmin hankittu yhteinen tutkinnon osa
 
@@ -210,7 +210,7 @@ Aiemmin hankittu yhteinen tutkinnon osa
 | tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
 | tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminen](#OsaamisenOsoittaminen)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
 
-### AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus  
+### AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus
 
 Aiemmin hankitun yhteisen osaamisen tiedot (POST, PUT)
 
@@ -225,11 +225,11 @@ Aiemmin hankitun yhteisen osaamisen tiedot (POST, PUT)
 | tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
 | tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 
-###   
+###
 
 
 
-### AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus  
+### AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus
 
 Aiemmin hankitun ammatillisen osaamisen tiedot (POST, PUT)
 
@@ -244,7 +244,7 @@ Aiemmin hankitun ammatillisen osaamisen tiedot (POST, PUT)
 | tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
 | tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 
-### kyselylinkki  
+### kyselylinkki
 
 
 
@@ -254,7 +254,7 @@ Aiemmin hankitun ammatillisen osaamisen tiedot (POST, PUT)
 | alkupvm | Päivämäärä |  | Kyllä |
 | tyyppi | Merkkijono |  | Kyllä |
 
-### KoulutuksenJarjestajaOrganisaatio  
+### KoulutuksenJarjestajaOrganisaatio
 
 Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan
 
@@ -262,11 +262,11 @@ Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan
 | ---- | ------ | ------ | --------- |
 | oppilaitos-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Mikäli kyseessä oppilaitos, oppilaitoksen oid-tunniste<br>       Opintopolku-palvelussa. | Ei |
 
-###   
+###
 
 
 
-### HOKS  
+### HOKS
 
 Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
 
@@ -292,7 +292,7 @@ Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
 | eid | Merkkijono | HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä | Kyllä |
 | oppija-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Oppijan tunniste Opintopolku-ympäristössä | Ei |
 
-### HankittavaPaikallinenTutkinnonOsa  
+### HankittavaPaikallinenTutkinnonOsa
 
 Hankittava paikallinen tutkinnon osa
 
@@ -309,11 +309,11 @@ Hankittava paikallinen tutkinnon osa
 | module-id | Uuid | Tietorakenteen yksilöivä tunniste esimerkiksi tiedon jakamista varten | Kyllä |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 
-###   
+###
 
 
 
-### AiemminHankitunYTOOsaAlue  
+### AiemminHankitunYTOOsaAlue
 
 AiemminHankitun YTOn osa-alueen tiedot
 
@@ -330,7 +330,7 @@ AiemminHankitun YTOn osa-alueen tiedot
 | tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot | Ei |
 | tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminen](#OsaamisenOsoittaminen)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
 
-### OsaamisenHankkimistapaLuontiJaMuokkaus  
+### OsaamisenHankkimistapaLuontiJaMuokkaus
 
 Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)
 
@@ -345,8 +345,10 @@ Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)
 | tyopaikalla-jarjestettava-koulutus | [TyopaikallaJarjestettavaKoulutus](#TyopaikallaJarjestettavaKoulutus) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai koulutussopimus. | Ei |
 | alku | Päivämäärä | Alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
+| oppisopimuksen-perusta-uri | Merkkijono | Oppisopimuksen perustan Koodisto-uri | Ei |
+| oppisopimuksen-perusta-versio | Kokonaisluku | Oppisopimuksen perustan Koodisto-urin versio | Ei |
 
-### KoodistoKoodi  
+### KoodistoKoodi
 
 Koodisto Koodi
 
@@ -355,7 +357,7 @@ Koodisto Koodi
 | koodi-uri | Merkkijono | Koodisto-koodi URI | Kyllä |
 | koodi-versio | Kokonaisluku | Koodisto-koodin versio | Kyllä |
 
-### Organisaatio  
+### Organisaatio
 
 Organisaatio
 
@@ -364,7 +366,7 @@ Organisaatio
 | nimi | Merkkijono | Organisaation nimi | Kyllä |
 | y-tunnus | Merkkijono | Mikäli organisaatiolla on y-tunnus,<br>    organisaation y-tunnus | Ei |
 
-### AiemminHankittuPaikallinenTutkinnonOsa  
+### AiemminHankittuPaikallinenTutkinnonOsa
 
 Aiemmin hankittu yhteinen tutkinnon osa
 
@@ -383,7 +385,7 @@ Aiemmin hankittu yhteinen tutkinnon osa
 | tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
 | tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminen](#OsaamisenOsoittaminen)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
 
-### TodennettuArviointiLisatiedot  
+### TodennettuArviointiLisatiedot
 
 Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot
 
@@ -392,7 +394,7 @@ Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot
 | lahetetty-arvioitavaksi | Päivämäärä | Päivämäärä, jona<br>    lähetetty arvioitavaksi, muodossa YYYY-MM-DD | Ei |
 | aiemmin-hankitun-osaamisen-arvioijat | [[KoulutuksenJarjestajaArvioija](#KoulutuksenJarjestajaArvioija)] | Mikäli todennettu arvioijan kautta, annetaan arvioijien tiedot. | Ei |
 
-### OsaamisenHankkimistapa  
+### OsaamisenHankkimistapa
 
 Osaamisen hankkimisen tapa
 
@@ -408,8 +410,10 @@ Osaamisen hankkimisen tapa
 | tyopaikalla-jarjestettava-koulutus | [TyopaikallaJarjestettavaKoulutus](#TyopaikallaJarjestettavaKoulutus) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai koulutussopimus. | Ei |
 | alku | Päivämäärä | Alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
+| oppisopimuksen-perusta-uri | Merkkijono | Oppisopimuksen perustan Koodisto-uri | Ei |
+| oppisopimuksen-perusta-versio | Kokonaisluku | Oppisopimuksen perustan Koodisto-urin versio | Ei |
 
-### Nayttoymparisto  
+### Nayttoymparisto
 
 Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan
 
@@ -419,7 +423,7 @@ Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan
 | y-tunnus | Merkkijono | Mikäli organisaatiolla on y-tunnus,<br>    organisaation y-tunnus | Ei |
 | kuvaus | Merkkijono | Näyttöympäristön kuvaus. Tiivis selvitys siitä, millainen näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, simulaattori | Ei |
 
-### HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus  
+### HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus
 
 Hankittavan paikallisen osaamisen tiedot (POST, PUT)
 
@@ -435,7 +439,7 @@ Hankittavan paikallisen osaamisen tiedot (POST, PUT)
 | koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 
-### TyoelamaOrganisaatio  
+### TyoelamaOrganisaatio
 
 Työelämän toimijan organisaatio, jossa näyttö tai osaamisen osoittaminen
      annetaan
@@ -445,7 +449,7 @@ Työelämän toimijan organisaatio, jossa näyttö tai osaamisen osoittaminen
 | nimi | Merkkijono | Organisaation nimi | Kyllä |
 | y-tunnus | Merkkijono | Mikäli organisaatiolla on y-tunnus,<br>    organisaation y-tunnus | Ei |
 
-### AiemminHankitunYTOOsaAlueLuontiJaMuokkaus  
+### AiemminHankitunYTOOsaAlueLuontiJaMuokkaus
 
 AiemminHankitun YTOn osa-alueen tiedot (POST, PUT)
 
@@ -461,7 +465,7 @@ AiemminHankitun YTOn osa-alueen tiedot (POST, PUT)
 | tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot | Ei |
 | tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 
-### HankittavaYTO  
+### HankittavaYTO
 
 Hankittavan yhteinen tutkinnon osan (YTO) tiedot
 
@@ -473,7 +477,7 @@ Hankittavan yhteinen tutkinnon osan (YTO) tiedot
 | tutkinnon-osa-koodi-versio | Kokonaisluku | Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa<br>     (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
-### TyoelamaOsaamisenArvioija  
+### TyoelamaOsaamisenArvioija
 
 Työelämän arvioija
 
@@ -482,7 +486,7 @@ Työelämän arvioija
 | nimi | Merkkijono | Arvioijan nimi | Kyllä |
 | organisaatio | [TyoelamaOrganisaatio](#TyoelamaOrganisaatio) | Työelämän arvioijan organisaatio | Kyllä |
 
-### HankittavaAmmatillinenTutkinnonOsa  
+### HankittavaAmmatillinenTutkinnonOsa
 
 Hankittavan ammatillisen osaamisen tiedot (GET)
 
@@ -497,7 +501,7 @@ Hankittavan ammatillisen osaamisen tiedot (GET)
 | module-id | Uuid | Tietorakenteen yksilöivä tunniste esimerkiksi tiedon jakamista varten | Kyllä |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tekstimuotoinen selite ammattitaitovaatimuksista tai osaamistavoitteista poikkeamiseen | Ei |
 
-### VastuullinenTyopaikkaOhjaaja  
+### VastuullinenTyopaikkaOhjaaja
 
 Vastuullinen ohjaaja
 
@@ -506,7 +510,7 @@ Vastuullinen ohjaaja
 | nimi | Merkkijono | Henkilön nimi | Kyllä |
 | sahkoposti | Merkkijono | Vastuullisen ohjaajan sähköpostiosoite | Ei |
 
-### Oppilaitoshenkilo  
+### Oppilaitoshenkilo
 
 Oppilaitoksen edustaja
 
@@ -516,7 +520,7 @@ Oppilaitoksen edustaja
 | rooli | Merkkijono | Henkilön rooli | Ei |
 | oppilaitos-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Oppilaitoksen oid-tunniste Opintopolku-palvelussa. | Kyllä |
 
-### OpiskeluvalmiuksiaTukevatOpinnot  
+### OpiskeluvalmiuksiaTukevatOpinnot
 
 Opiskeluvalmiuksia tukevat opinnot
 
@@ -527,7 +531,7 @@ Opiskeluvalmiuksia tukevat opinnot
 | alku | Päivämäärä | Opintojen alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Opintojen loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 
-### YhteisenTutkinnonOsanOsaAlue  
+### YhteisenTutkinnonOsanOsaAlue
 
 Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot
 
@@ -542,7 +546,7 @@ Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 | osa-alue-koodi-versio | Kokonaisluku | Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet) | Kyllä |
 
-### NaytonJarjestaja  
+### NaytonJarjestaja
 
 Näytön tai osaamisen osoittamisen järjestäjä
 
@@ -550,7 +554,7 @@ Näytön tai osaamisen osoittamisen järjestäjä
 | ---- | ------ | ------ | --------- |
 | oppilaitos-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 
-### YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus  
+### YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus
 
 Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot (POST, PUT)
 
@@ -564,7 +568,7 @@ Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot (POST, PUT)
 | osaamisen-hankkimistavat | [[OsaamisenHankkimistapaLuontiJaMuokkaus](#OsaamisenHankkimistapaLuontiJaMuokkaus)] | Osaamisen hankkimistavat | Ei |
 | osaamisen-osoittaminen | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 
-### AiemminHankittuAmmatillinenTutkinnonOsa  
+### AiemminHankittuAmmatillinenTutkinnonOsa
 
 Aiemmin hankittu ammatillisen tutkinnon osa
 
@@ -580,7 +584,7 @@ Aiemmin hankittu ammatillisen tutkinnon osa
 | tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu,<br>       annetaan myös arvioijan lisätiedot | Ei |
 | tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminen](#OsaamisenOsoittaminen)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
 
-### TyopaikallaJarjestettavaKoulutus  
+### TyopaikallaJarjestettavaKoulutus
 
 Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot
 
@@ -591,11 +595,11 @@ Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot
 | tyopaikan-y-tunnus | Merkkijono | Työpaikan y-tunnus | Ei |
 | keskeiset-tyotehtavat | [Merkkijono] | Keskeiset työtehtävät | Kyllä |
 
-###   
+###
 
 
 
-### KoulutuksenJarjestajaArvioija  
+### KoulutuksenJarjestajaArvioija
 
 Koulutuksenjärjestäjän arvioija
 
@@ -604,7 +608,7 @@ Koulutuksenjärjestäjän arvioija
 | nimi | Merkkijono | Arvioijan nimi | Kyllä |
 | organisaatio | [KoulutuksenJarjestajaOrganisaatio](#KoulutuksenJarjestajaOrganisaatio) | Koulutuksenjärjestäjän arvioijan organisaatio | Kyllä |
 
-### HankittavaYTOLuontiJaMuokkaus  
+### HankittavaYTOLuontiJaMuokkaus
 
 Hankittavan yhteisen tutkinnnon osan (POST, PUT)
 
