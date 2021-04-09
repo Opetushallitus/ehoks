@@ -114,8 +114,8 @@
         (let [res (first (db-session/delete-sessions-by-ticket!
                            (cstr/trim ticket)))]
           (if (zero? res)
-            (response/not-found res)
-            (response/ok res)))
+            (response/not-found)
+            (response/ok)))
         (do
           (log/error (str "Could not parse service ticket from logout request "
                           logoutRequest))
