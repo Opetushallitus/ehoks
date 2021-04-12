@@ -63,6 +63,8 @@
    :hankkimistapa-id (:hankkimistapa_id msg)
    :hankkimistapa-tyyppi (:hankkimistapa_tyyppi msg)
    :tutkinnonosa-id (:tutkinnonosa_id msg)
+   :tutkinnonosa-koodi (:tutkinnonosa_koodi msg)
+   :tutkinnonosa-nimi (:tutkinnonosa_nimi msg)
    :tyopaikan-nimi (:tyopaikan_nimi msg)
    :tyopaikan-ytunnus (:tyopaikan_ytunnus msg)
    :tyopaikkaohjaaja-email (:tyopaikkaohjaaja_email msg)

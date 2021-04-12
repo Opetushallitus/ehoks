@@ -75,7 +75,8 @@
 (defn osaamisen-hankkimistapa-from-sql [m]
   (db-ops/from-sql
     m
-    {:replaces
+    {:removals [:tep_kasitelty]
+     :replaces
      {:jarjestajan_edustaja_nimi [:jarjestajan-edustaja :nimi]
       :jarjestajan_edustaja_rooli [:jarjestajan-edustaja :rooli]
       :jarjestajan_edustaja_oppilaitos_oid
@@ -311,17 +312,26 @@
     [queries/select-kyselylinkit-by-oppija-oid oid]
     {:row-fn db-ops/from-sql}))
 
-(defn select-paattyneet-tyoelamajaksot [osa start end]
+(defn select-paattyneet-tyoelamajaksot [osa start end limit]
   (case osa
     "hpto" (map #(assoc % :tyyppi "hpto")
                 (db-ops/query
-                  [queries/select-paattyneet-tyoelamajaksot-hpto start end]))
+                  [queries/select-paattyneet-tyoelamajaksot-hpto
+                   start end limit]))
     "hato" (map #(assoc % :tyyppi "hato")
                 (db-ops/query
-                  [queries/select-paattyneet-tyoelamajaksot-hato start end]))
+                  [queries/select-paattyneet-tyoelamajaksot-hato
+                   start end limit]))
     "hyto" (map #(assoc % :tyyppi "hyto")
                 (db-ops/query
-                  [queries/select-paattyneet-tyoelamajaksot-hyto start end]))))
+                  [queries/select-paattyneet-tyoelamajaksot-hyto
+                   start end limit]))))
+
+(defn update-osaamisen-hankkimistapa-tep-kasitelty [id to]
+  (db-ops/update!
+    :osaamisen_hankkimistavat
+    {:tep_kasitelty to}
+    ["id = ?" id]))
 
 (defn select-count-all-hoks []
   (db-ops/query
