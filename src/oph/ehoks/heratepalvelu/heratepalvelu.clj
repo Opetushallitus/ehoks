@@ -27,8 +27,8 @@
   end and sends them to a SQS queue"
   [start end limit]
   (let [periods (find-finished-workplace-periods start end limit)]
-    (log/info "Sending %d finished workplace periods between %s - %s"
-              (count periods) start end)
+    (log/infof "Sending %d  (limit %d) finished workplace periods between %s - %s"
+              (count periods) limit start end)
     (send-workplace-periods periods)
     periods))
 
