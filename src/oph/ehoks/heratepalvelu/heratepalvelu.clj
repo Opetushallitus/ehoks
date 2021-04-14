@@ -9,10 +9,10 @@
 
 (defn find-finished-workplace-periods
   "Queries for all finished workplace periods between start and end"
-  [start end]
-  (let [hytos (db-hoks/select-paattyneet-tyoelamajaksot "hyto" start end)
-        hptos (db-hoks/select-paattyneet-tyoelamajaksot "hpto" start end)
-        hatos (db-hoks/select-paattyneet-tyoelamajaksot "hato" start end)]
+  [start end limit]
+  (let [hytos (db-hoks/select-paattyneet-tyoelamajaksot "hyto" start end limit)
+        hptos (db-hoks/select-paattyneet-tyoelamajaksot "hpto" start end limit)
+        hatos (db-hoks/select-paattyneet-tyoelamajaksot "hato" start end limit)]
     (concat hytos hptos hatos)))
 
 (defn send-workplace-periods
@@ -25,10 +25,11 @@
 (defn process-finished-workplace-periods
   "Finds all finished workplace periods between dates start and
   end and sends them to a SQS queue"
-  [start end]
-  (let [periods (find-finished-workplace-periods start end)]
-    (log/info "Sending %d finished workplace periods between %s - %s"
-              (count periods) start end)
+  [start end limit]
+  (let [periods (find-finished-workplace-periods start end limit)]
+    (log/infof
+      "Sending %d  (limit %d) finished workplace periods between %s - %s"
+      (count periods) limit start end)
     (send-workplace-periods periods)
     periods))
 
@@ -57,3 +58,6 @@
           (throw e))))
     []
     (h/get-kyselylinkit-by-oppija-oid oppija-oid)))
+
+(defn set-tep-kasitelty [hankkimistapa-id to]
+  (db-hoks/update-osaamisen-hankkimistapa-tep-kasitelty hankkimistapa-id to))
