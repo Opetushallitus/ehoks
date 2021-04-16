@@ -346,10 +346,8 @@
   :prevent-finished-opiskeluoikeus-updates? is removed or changed to true."
   ([opiskeluoikeus-oid]
     (let [opiskeluoikeus (k/get-opiskeluoikeus-info opiskeluoikeus-oid)]
-      (if-not (opiskeluoikeus-tila-inactive?
-                (get-opiskeluoikeus-tila opiskeluoikeus))
-        true
-        false))))
+      (not (opiskeluoikeus-tila-inactive?
+             (get-opiskeluoikeus-tila opiskeluoikeus))))))
 
 (defn opiskeluoikeus-still-active?
   "Checks if the given opiskeluoikeus is still valid, ie. not valmistunut,
@@ -359,10 +357,8 @@
   ([opiskeluoikeus-oid]
     (if (:prevent-finished-opiskeluoikeus-updates? config)
       (let [opiskeluoikeus (k/get-opiskeluoikeus-info opiskeluoikeus-oid)]
-        (if-not (opiskeluoikeus-tila-inactive?
-                  (get-opiskeluoikeus-tila opiskeluoikeus))
-          true
-          false))
+        (not (opiskeluoikeus-tila-inactive?
+               (get-opiskeluoikeus-tila opiskeluoikeus))))
       true))
   ([hoks opiskeluoikeudet]
     (if (:prevent-finished-opiskeluoikeus-updates? config)
