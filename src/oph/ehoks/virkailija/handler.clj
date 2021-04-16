@@ -12,6 +12,7 @@
             [oph.ehoks.user :as user]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as restful]
@@ -209,6 +210,19 @@
     (restful/rest-ok hoks)
     (response/not-found {:message "HOKS not found"})))
 
+(defn- hoks-has-active-opiskeluoikeus [hoks]
+  (some op/opiskeluoikeus-active? (map :opiskeluoikeus-oid hoks)))
+
+(defn- get-oppilaitos-oid-by-oo-oid [opiskeluoikeus-oid]
+  (let [opiskeluoikeus
+        (db-oo/select-opiskeluoikeus-by-oid opiskeluoikeus-oid)]
+    (:oppilaitos-oid opiskeluoikeus)))
+
+(defn- get-hoks-by-oppilaitos [oppilaitos-oid hoks]
+  (filter
+    #(= oppilaitos-oid (get-oppilaitos-oid-by-oo-oid (:opiskeluoikeus-oid %)))
+    hoks))
+
 (defn- get-hoks [hoks-id request]
   (let [hoks (db-hoks/select-hoks-by-id hoks-id)
         virkailija-user (get-in
@@ -321,6 +335,44 @@
                         :return (restful/response [hoks-schema/HOKS])
                         :summary "Oppijan hoksit (perustiedot)"
                         (get-hoks-perustiedot oppija-oid))
+
+                      (c-api/GET "/oppilaitos/:oppilaitos-oid" request
+                        :path-params [oppilaitos-oid :- s/Str]
+                        :return (restful/response [hoks-schema/HOKS])
+                        :summary "Oppijan hoksit (perustiedot,
+                                                  rajoitettu uusi versio)"
+                        (if (contains?
+                              (user/get-organisation-privileges
+                                (get-in
+                                  request
+                                  [:session :virkailija-user])
+                                oppilaitos-oid)
+                              :read)
+                          (if-let [hoks (db-hoks/select-hoks-by-oppija-oid
+                                          oppija-oid)]
+                            (if-let [oppilaitos-hoks (get-hoks-by-oppilaitos
+                                                       oppilaitos-oid hoks)]
+                              (restful/rest-ok
+                                (if
+                                 (hoks-has-active-opiskeluoikeus
+                                   oppilaitos-hoks)
+                                  hoks
+                                  oppilaitos-hoks))
+                              (response/not-found
+                                {:message
+                                 "HOKS not found for oppilaitos"}))
+                            (response/not-found {:message "HOKS not found"}))
+                          (do
+                            (log/warnf "User %s privileges
+                          don't match oppilaitos %s"
+                                       (get-in request
+                                               [:session
+                                                :virkailija-user :oidHenkilo])
+                                       (get-in request [:params
+                                                        :oppilaitos-oidd]))
+                            (response/forbidden
+                              {:error (str "User privileges does not match "
+                                           "organisation")}))))
 
                       (c-api/GET "/:hoks-id" request
                         :path-params [hoks-id :- s/Int]
