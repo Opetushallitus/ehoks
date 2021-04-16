@@ -350,14 +350,17 @@
                               :read)
                           (if-let [hoks (db-hoks/select-hoks-by-oppija-oid
                                           oppija-oid)]
-                            (let [oppilaitos-hoks (get-hoks-by-oppilaitos
-                                                    oppilaitos-oid hoks)]
+                            (if-let [oppilaitos-hoks (get-hoks-by-oppilaitos
+                                                       oppilaitos-oid hoks)]
                               (restful/rest-ok
                                 (if
                                  (hoks-has-active-opiskeluoikeus
                                    oppilaitos-hoks)
                                   hoks
-                                  oppilaitos-hoks)))
+                                  oppilaitos-hoks))
+                              (response/not-found
+                                {:message
+                                 "HOKS not found for oppilaitos"}))
                             (response/not-found {:message "HOKS not found"}))
                           (do
                             (log/warnf "User %s privileges
