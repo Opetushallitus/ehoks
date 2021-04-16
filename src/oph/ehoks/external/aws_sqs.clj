@@ -2,7 +2,8 @@
   (:require [clojure.data.json :as json]
             [oph.ehoks.config :refer [config]]
             [environ.core :refer [env]]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [clojure.string :as str])
   (:import (software.amazon.awssdk.services.sqs SqsClient)
            (software.amazon.awssdk.regions Region)
            (software.amazon.awssdk.services.sqs.model
@@ -54,21 +55,27 @@
    :alkupvm (str (:ensikertainen-hyvaksyminen hoks))})
 
 (defn build-tyoelamapalaute-msg [msg]
-  {:tyyppi (:tyyppi msg)
-   :alkupvm (str (:alkupvm msg))
-   :loppupvm (str (:loppupvm msg))
-   :hoks-id (:hoks_id msg)
-   :opiskeluoikeus-oid (:opiskeluoikeus_oid msg)
-   :oppija-oid (:oppija_oid msg)
-   :hankkimistapa-id (:hankkimistapa_id msg)
-   :hankkimistapa-tyyppi (:hankkimistapa_tyyppi msg)
-   :tutkinnonosa-id (:tutkinnonosa_id msg)
-   :tutkinnonosa-koodi (:tutkinnonosa_koodi msg)
-   :tutkinnonosa-nimi (:tutkinnonosa_nimi msg)
-   :tyopaikan-nimi (:tyopaikan_nimi msg)
-   :tyopaikan-ytunnus (:tyopaikan_ytunnus msg)
+  {:tyyppi                 (:tyyppi msg)
+   :alkupvm                (str (:alkupvm msg))
+   :loppupvm               (str (:loppupvm msg))
+   :hoks-id                (:hoks_id msg)
+   :opiskeluoikeus-oid     (:opiskeluoikeus_oid msg)
+   :oppija-oid             (:oppija_oid msg)
+   :hankkimistapa-id       (:hankkimistapa_id msg)
+   :hankkimistapa-tyyppi   (last
+                             (str/split
+                               (:hankkimistapa_tyyppi msg)
+                               #"_"))
+   :tutkinnonosa-id        (:tutkinnonosa_id msg)
+   :tutkinnonosa-koodi     (last
+                             (str/split
+                               (:tutkinnonosa_koodi msg)
+                               #"_"))
+   :tutkinnonosa-nimi      (:tutkinnonosa_nimi msg)
+   :tyopaikan-nimi         (:tyopaikan_nimi msg)
+   :tyopaikan-ytunnus      (:tyopaikan_ytunnus msg)
    :tyopaikkaohjaaja-email (:tyopaikkaohjaaja_email msg)
-   :tyopaikkaohjaaja-nimi (:tyopaikkaohjaaja_nimi msg)})
+   :tyopaikkaohjaaja-nimi  (:tyopaikkaohjaaja_nimi msg)})
 
 (defn send-message [msg queue-url]
   (let [resp (.sendMessage sqs-client (-> (SendMessageRequest/builder)
