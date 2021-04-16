@@ -214,9 +214,9 @@
   (some op/opiskeluoikeus-active? (map :opiskeluoikeus-oid hoks)))
 
 (defn- get-oppilaitos-oid-by-oo-oid [opiskeluoikeus-oid]
-  (let [opiskelu-oikeus
+  (let [opiskeluoikeus
         (db-oo/select-opiskeluoikeus-by-oid opiskeluoikeus-oid)]
-    (:oppilaitos-oid opiskelu-oikeus)))
+    (:oppilaitos-oid opiskeluoikeus)))
 
 (defn- get-hoks-by-oppilaitos [oppilaitos-oid hoks]
   (filter
