@@ -170,7 +170,10 @@
     (s/optional-key :muut-oppimisymparistot)
     [MuuOppimisymparisto]
     (str "Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen "
-         "liittyvät tiedot")))
+         "liittyvät tiedot")
+    (s/optional-key :osa-aikaisuustieto) s/Int
+    (str "Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä "
+         "prosentteina (1-100).")))
 
 (s/defschema
   OsaamisenHankkimistapaLuontiJaMuokkaus

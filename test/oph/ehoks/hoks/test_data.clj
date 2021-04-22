@@ -13,6 +13,7 @@
                [{:alku "2018-12-12"
                  :loppu "2018-12-20"
                  :ajanjakson-tarkenne "Tarkenne tässä"
+                 :osa-aikaisuustieto 25
                  :osaamisen-hankkimistapa-koodi-uri
                  "osaamisenhankkimistapa_koulutussopimus"
                  :osaamisen-hankkimistapa-koodi-versio 1
@@ -619,6 +620,7 @@
      [{:alku "2018-12-12"
        :loppu "2018-12-20"
        :ajanjakson-tarkenne "Tarkenne muuttunut"
+       :osa-aikaisuustieto 50
        :osaamisen-hankkimistapa-koodi-uri
        "osaamisenhankkimistapa_koulutussopimus"
        :osaamisen-hankkimistapa-koodi-versio 1
@@ -664,6 +666,7 @@
      [{:alku "2019-12-12"
        :loppu "2020-12-20"
        :ajanjakson-tarkenne "Tarkenne muuttunut"
+       :osa-aikaisuustieto 50
        :osaamisen-hankkimistapa-koodi-uri
        "osaamisenhankkimistapa_koulutussopimus"
        :osaamisen-hankkimistapa-koodi-versio 1

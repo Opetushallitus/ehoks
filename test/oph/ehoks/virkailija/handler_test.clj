@@ -813,6 +813,7 @@
         :alku "2019-01-13"
         :loppu "2019-02-19"}]
       :ajanjakson-tarkenne "Ei tarkennettavia asioita"
+      :osa-aikaisuustieto 50
       :hankkijan-edustaja
       {:nimi "Heikki Hankkija"
        :rooli "Opettaja"
