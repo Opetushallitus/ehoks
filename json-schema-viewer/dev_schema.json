@@ -2571,6 +2571,16 @@
           "description": "Loppupäivämäärä muodossa YYYY-MM-DD",
           "type": "string",
           "format": "date"
+        },
+        "oppisopimuksen-perusta-koodi-uri": {
+          "description": "Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-uri",
+          "type": "string",
+          "pattern": "^oppisopimuksenperusta_.+$"
+        },
+        "oppisopimuksen-perusta-koodi-versio": {
+          "description": "Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-urin versio",
+          "type": "integer",
+          "format": "int64"
         }
       },
       "additionalProperties": false,
