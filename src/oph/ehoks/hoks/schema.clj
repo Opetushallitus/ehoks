@@ -177,7 +177,8 @@
     (s/optional-key :osa-aikaisuustieto) s/Int
     (str "Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä "
          "prosentteina (1-100).")
-    (s/optional-key :oppisopimuksen-perusta-koodi-uri) OppisopimuksenPerustaKoodiUri
+    (s/optional-key :oppisopimuksen-perusta-koodi-uri)
+    OppisopimuksenPerustaKoodiUri
     "Oppisopimuksen perustan Koodisto-uri "
     (s/optional-key :oppisopimuksen-perusta-koodi-versio) s/Int
     "Oppisopimuksen perustan Koodisto-versio "))
