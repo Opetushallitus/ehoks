@@ -12,6 +12,9 @@
 (def OsaamisenHankkimistapaKoodiUri
   #"^osaamisenhankkimistapa_.+$")
 
+(def OppisopimuksenPerustaKoodiUri
+  #"^oppisopimuksenperusta_.+$")
+
 (def OsaAlueKoodiUri
   #"^ammatillisenoppiaineet_.+$")
 
@@ -172,8 +175,13 @@
     (str "Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen "
          "liittyvät tiedot")
     (s/optional-key :osa-aikaisuustieto) s/Int
-    (str "Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä "
-         "prosentteina (1-100).")))
+    (str "Osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). "
+         "Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen.")
+    (s/optional-key :oppisopimuksen-perusta-koodi-uri)
+    OppisopimuksenPerustaKoodiUri
+    "Oppisopimuksen perustan Koodisto-uri "
+    (s/optional-key :oppisopimuksen-perusta-koodi-versio) s/Int
+    "Oppisopimuksen perustan Koodisto-versio "))
 
 (s/defschema
   OsaamisenHankkimistapaLuontiJaMuokkaus

@@ -340,12 +340,14 @@ Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)
 | muut-oppimisymparistot | [[MuuOppimisymparisto](#MuuOppimisymparisto)] | Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen liittyvät tiedot | Ei |
 | osaamisen-hankkimistapa-koodi-uri | Merkkijono, esim. osaamisenhankkimistapa_oppisopimus | Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)<br>    eli muotoa osaamisenhankkimistapa_xxx eli esim.<br>    osaamisenhankkimistapa_koulutussopimus | Kyllä |
 | ajanjakson-tarkenne | Merkkijono | Tarkentava teksti ajanjaksolle, jos useita aikavälillä. | Ei |
-| osa-aikaisuustieto | Kokonaisluku | Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). | Ei |
+| osa-aikaisuustieto | Kokonaisluku | Osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen. | Ei |
 | osaamisen-hankkimistapa-koodi-versio | Kokonaisluku | Koodisto-koodin versio, koodistolle osaamisenhankkimistapa | Kyllä |
 | hankkijan-edustaja | [Oppilaitoshenkilo](#Oppilaitoshenkilo) | Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja | Ei |
 | tyopaikalla-jarjestettava-koulutus | [TyopaikallaJarjestettavaKoulutus](#TyopaikallaJarjestettavaKoulutus) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai koulutussopimus. | Ei |
 | alku | Päivämäärä | Alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
+| oppisopimuksen-perusta-koodi-uri | Merkkijono | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-uri | Ei |
+| oppisopimuksen-perusta-koodi-versio | Kokonaisluku | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-urin versio | Ei |
 
 ### KoodistoKoodi
 
@@ -403,13 +405,15 @@ Osaamisen hankkimisen tapa
 | muut-oppimisymparistot | [[MuuOppimisymparisto](#MuuOppimisymparisto)] | Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen liittyvät tiedot | Ei |
 | osaamisen-hankkimistapa-koodi-uri | Merkkijono, esim. osaamisenhankkimistapa_oppisopimus | Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)<br>    eli muotoa osaamisenhankkimistapa_xxx eli esim.<br>    osaamisenhankkimistapa_koulutussopimus | Kyllä |
 | ajanjakson-tarkenne | Merkkijono | Tarkentava teksti ajanjaksolle, jos useita aikavälillä. | Ei |
-| osa-aikaisuustieto | Kokonaisluku | Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). | Ei |
+| osa-aikaisuustieto | Kokonaisluku | Osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen. | Ei |
 | osaamisen-hankkimistapa-koodi-versio | Kokonaisluku | Koodisto-koodin versio, koodistolle osaamisenhankkimistapa | Kyllä |
 | module-id | Uuid | Tietorakenteen yksilöivä tunniste esimerkiksi tiedon jakamista varten | Kyllä |
 | hankkijan-edustaja | [Oppilaitoshenkilo](#Oppilaitoshenkilo) | Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja | Ei |
 | tyopaikalla-jarjestettava-koulutus | [TyopaikallaJarjestettavaKoulutus](#TyopaikallaJarjestettavaKoulutus) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai koulutussopimus. | Ei |
 | alku | Päivämäärä | Alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | loppu | Päivämäärä | Loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
+| oppisopimuksen-perusta-koodi-uri | Merkkijono | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-uri | Ei |
+| oppisopimuksen-perusta-koodi-versio | Kokonaisluku | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-urin versio | Ei |
 
 ### Nayttoymparisto
 
