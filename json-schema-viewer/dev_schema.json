@@ -2553,7 +2553,7 @@
           "type": "string"
         },
         "osa-aikaisuustieto": {
-          "description": "Työpaikalla tapahtuvan osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100).",
+          "description": "Osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen. ",
           "type": "integer",
           "format": "int64"
         },
