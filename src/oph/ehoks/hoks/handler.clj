@@ -423,6 +423,7 @@
                     (sqs/send-amis-palaute-message
                       (sqs/build-hoks-osaaminen-saavutettu-msg
                         (:id hoks-values)
+                        (get hoks-values :osaamisen-saavuttamisen-pvm)
                         (h/get-hoks-by-id (:id hoks-values)))))
                   (assoc
                     (response/no-content)
