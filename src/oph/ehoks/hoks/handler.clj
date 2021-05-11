@@ -414,17 +414,8 @@
             (if (not-empty (:hoks request))
               (try
                 (check-opiskeluoikeus-validity hoks-values)
-                (let [osp (:osaamisen-saavuttamisen-pvm
-                            (h/get-hoks-by-id (:id hoks-values)))
-                      hoks-db (h/update-hoks!
+                (let [hoks-db (h/update-hoks!
                                 (get-in request [:hoks :id]) hoks-values)]
-                  (if (and (get hoks-values :osaamisen-saavuttamisen-pvm)
-                           (nil? osp))
-                    (sqs/send-amis-palaute-message
-                      (sqs/build-hoks-osaaminen-saavutettu-msg
-                        (:id hoks-values)
-                        (get hoks-values :osaamisen-saavuttamisen-pvm)
-                        (h/get-hoks-by-id (:id hoks-values)))))
                   (assoc
                     (response/no-content)
                     :audit-data
