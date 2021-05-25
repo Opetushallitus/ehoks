@@ -227,11 +227,11 @@
                  "Oppija-oid update not allowed!"
                  {:error :disallowed-update}))
         :else
-        (do
-          (if (and (some? new-osaamisen-saavuttamisen-pvm)
-                   (nil? old-osaamisen-saavuttamisen-pvm))
+        (let [h (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)]
+          (when (and (some? new-osaamisen-saavuttamisen-pvm)
+                     (nil? old-osaamisen-saavuttamisen-pvm))
             (send-paattokysely hoks-id new-osaamisen-saavuttamisen-pvm hoks))
-          (db-hoks/update-hoks-by-id! hoks-id new-values db-conn))))))
+          h)))))
 
 (defn insert-kyselylinkki! [m]
   (db-ops/insert-one!
