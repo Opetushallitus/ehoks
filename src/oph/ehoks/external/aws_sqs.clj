@@ -53,6 +53,14 @@
    :sahkoposti (:sahkoposti hoks)
    :alkupvm (str (:ensikertainen-hyvaksyminen hoks))})
 
+(defn build-hoks-osaaminen-saavutettu-msg [id saavuttamisen-pvm hoks]
+  {:ehoks-id id
+   :kyselytyyppi "tutkinnon_suorittaneet"
+   :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+   :oppija-oid (:oppija-oid hoks)
+   :sahkoposti (:sahkoposti hoks)
+   :alkupvm (str saavuttamisen-pvm)})
+
 (defn build-tyoelamapalaute-msg [msg]
   {:tyyppi (:tyyppi msg)
    :alkupvm (str (:alkupvm msg))

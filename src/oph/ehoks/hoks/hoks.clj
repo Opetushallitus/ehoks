@@ -8,7 +8,8 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
-            [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]))
+            [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
+            [clojure.tools.logging :as log]))
 
 (defn get-hoks-values [h]
   (let [id (:id h)]
@@ -195,14 +196,26 @@
                                     new-values)
                           db-conn))))))
 
+(defn- send-paattokysely [hoks-id os-saavut-pvm hoks]
+  (log/infof
+    (str "Sending päättökysely for hoks id %s. "
+         "Triggered by hoks update including osaamisen-saavuttamisen-pvm %s")
+    hoks-id os-saavut-pvm)
+  (sqs/send-amis-palaute-message
+    (sqs/build-hoks-osaaminen-saavutettu-msg hoks-id os-saavut-pvm hoks)))
+
 (defn update-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
     (let [hoks (get-hoks-by-id hoks-id)
           old-opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
           old-oppija-oid (:oppija-oid hoks)
+          old-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
+                                            hoks)
           new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
-          new-oppija-oid (:oppija-oid new-values)]
+          new-oppija-oid (:oppija-oid new-values)
+          new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
+                                            new-values)]
       (cond
         (and (some? new-opiskeluoikeus-oid)
              (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
@@ -214,7 +227,11 @@
                  "Oppija-oid update not allowed!"
                  {:error :disallowed-update}))
         :else
-        (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)))))
+        (let [h (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)]
+          (when (and (some? new-osaamisen-saavuttamisen-pvm)
+                     (nil? old-osaamisen-saavuttamisen-pvm))
+            (send-paattokysely hoks-id new-osaamisen-saavuttamisen-pvm hoks))
+          h)))))
 
 (defn insert-kyselylinkki! [m]
   (db-ops/insert-one!
