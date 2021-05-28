@@ -8,6 +8,8 @@ SELECT
   oh.osaamisen_hankkimistapa_koodi_uri AS hankkimistapa_tyyppi,
   oh.alku AS alkupvm,
   oh.loppu AS loppupvm,
+  oh.osa_aikaisuustieto AS osa_aikaisuus,
+  oh.oppisopimuksen_perusta_koodi_uri AS oppisopimuksen_perusta,
   tjk.tyopaikan_nimi AS tyopaikan_nimi,
   tjk.tyopaikan_y_tunnus AS tyopaikan_ytunnus,
   tjk.vastuullinen_tyopaikka_ohjaaja_nimi AS tyopaikkaohjaaja_nimi,

@@ -797,7 +797,7 @@
 (s/defschema
   kyselylinkki-lahetys
   {:kyselylinkki s/Str
-   :lahetyspvm LocalDate
+   (s/optional-key :lahetyspvm) LocalDate
    :sahkoposti s/Str
    (s/optional-key :lahetystila) s/Str})
 
