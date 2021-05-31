@@ -3822,6 +3822,11 @@
         "sahkoposti": {
           "description": "Vastuullisen ohjaajan sähköpostiosoite",
           "type": "string"
+        },
+        "puhelinnumero": {
+          "description": "Vastuullisen ohjaajan puhelinnumero",
+          "type": "string",
+          "pattern": "^[0-9+\\(\\)\\.\\s\\/-]+$"
         }
       },
       "additionalProperties": false,

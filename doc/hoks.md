@@ -511,6 +511,7 @@ Vastuullinen ohjaaja
 | ---- | ------ | ------ | --------- |
 | nimi | Merkkijono | Henkilön nimi | Kyllä |
 | sahkoposti | Merkkijono | Vastuullisen ohjaajan sähköpostiosoite | Ei |
+| puhelinnumero | Merkkijono | Vastuullisen ohjaajan puhelinnumero | Ei |
 
 ### Oppilaitoshenkilo
 
