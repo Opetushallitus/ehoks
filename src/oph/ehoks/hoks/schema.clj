@@ -28,9 +28,6 @@
 (def UrasuunnitelmaKoodiUri
   #"^urasuunnitelma_\d{4}$")
 
-(def puhelinnumero
-  #"^[0-9+\\(\\)\\.\\s\\/-]+$")
-
 (def Oid
   #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
 
@@ -106,7 +103,7 @@
        ""
        (s/optional-key :sahkoposti) s/Str
        "Vastuullisen ohjaajan sähköpostiosoite"
-       (s/optional-key :puhelinnumero) puhelinnumero
+       (s/optional-key :puhelinnumero) s/Str
        "Vastuullisen ohjaajan puhelinnumero")}))
 
 (s/defschema

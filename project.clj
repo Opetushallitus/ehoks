@@ -22,7 +22,8 @@
                  [environ "1.1.0"]
                  [software.amazon.awssdk/sqs "2.5.37"]
                  [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]
-                 [com.rpl/specter "1.1.3"]]
+                 [com.rpl/specter "1.1.3"]
+                 [com.googlecode.libphonenumber/libphonenumber "8.12.24"]]
   :managed-dependencies [[org.clojure/clojure "1.10.1"]
 
                          ;; http server
@@ -78,6 +79,7 @@
                          [org.clojure/tools.namespace "0.2.11"]
                          [environ "1.1.0"]
                          [software.amazon.awssdk/sqs "2.5.37"]
+                         [com.googlecode.libphonenumber/libphonenumber "8.12.24"]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.3.2"]
