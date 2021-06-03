@@ -3825,8 +3825,7 @@
         },
         "puhelinnumero": {
           "description": "Vastuullisen ohjaajan puhelinnumero",
-          "type": "string",
-          "pattern": "^[0-9+\\(\\)\\.\\s\\/-]+$"
+          "type": "string"
         }
       },
       "additionalProperties": false,
