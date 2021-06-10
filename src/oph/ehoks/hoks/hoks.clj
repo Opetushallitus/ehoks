@@ -156,7 +156,10 @@
       hoks-id new-ahyto-values db-conn)))
 
 (defn- new-osaamisen-saavuttamisen-pvm-added? [old-osp new-osp]
-  (and (some? new-osp)
+  ;; Returns false for now until paattokysely sending is requested to be enabled
+  ;; again.
+  (and false
+       (some? new-osp)
        (nil? old-osp)))
 
 (defn- send-paattokysely [hoks-id os-saavut-pvm hoks]
