@@ -155,33 +155,14 @@
     (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
       hoks-id new-ahyto-values db-conn)))
 
-(defn- new-osaamisen-saavuttamisen-pvm-added? [old-osp new-osp]
-  ;; Returns false for now until paattokysely sending is requested to be enabled
-  ;; again.
-  (and false
-       (some? new-osp)
-       (nil? old-osp)))
-
-(defn- send-paattokysely [hoks-id os-saavut-pvm hoks]
-  (log/infof
-    (str "Sending päättökysely for hoks id %s. "
-         "Triggered by hoks update including osaamisen-saavuttamisen-pvm %s")
-    hoks-id os-saavut-pvm)
-  (sqs/send-amis-palaute-message
-    (sqs/build-hoks-osaaminen-saavutettu-msg hoks-id os-saavut-pvm hoks)))
-
 (defn replace-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
     (let [hoks (get-hoks-by-id hoks-id)
           old-opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
           old-oppija-oid (:oppija-oid hoks)
-          old-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
-                                            hoks)
           new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
-          new-oppija-oid (:oppija-oid new-values)
-          new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
-                                            new-values)]
+          new-oppija-oid (:oppija-oid new-values)]
       (cond
         (and (some? new-opiskeluoikeus-oid)
              (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
@@ -213,12 +194,7 @@
                           db-conn)
           (replace-ahyto! hoks-id (:aiemmin-hankitut-yhteiset-tutkinnon-osat
                                     new-values)
-                          db-conn)
-          (when (new-osaamisen-saavuttamisen-pvm-added?
-                  old-osaamisen-saavuttamisen-pvm
-                  new-osaamisen-saavuttamisen-pvm)
-            (send-paattokysely hoks-id
-                               new-osaamisen-saavuttamisen-pvm hoks)))))))
+                          db-conn))))))
 
 (defn update-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
@@ -226,12 +202,8 @@
     (let [hoks (get-hoks-by-id hoks-id)
           old-opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
           old-oppija-oid (:oppija-oid hoks)
-          old-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
-                                            hoks)
           new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
-          new-oppija-oid (:oppija-oid new-values)
-          new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
-                                            new-values)]
+          new-oppija-oid (:oppija-oid new-values)]
       (cond
         (and (some? new-opiskeluoikeus-oid)
              (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
@@ -243,12 +215,7 @@
                  "Oppija-oid update not allowed!"
                  {:error :disallowed-update}))
         :else
-        (let [h (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)]
-          (when (new-osaamisen-saavuttamisen-pvm-added?
-                  old-osaamisen-saavuttamisen-pvm
-                  new-osaamisen-saavuttamisen-pvm)
-            (send-paattokysely hoks-id new-osaamisen-saavuttamisen-pvm hoks))
-          h)))))
+        (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)))))
 
 (defn insert-kyselylinkki! [m]
   (db-ops/insert-one!
