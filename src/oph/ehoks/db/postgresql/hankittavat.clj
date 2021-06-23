@@ -160,13 +160,9 @@
       db-conn)))
 
 (defn- valid-number? [number]
-  (let [util (PhoneNumberUtil/getInstance)]
+  (let [utilobj (PhoneNumberUtil/getInstance)]
     (try
-      (and
-        (not=
-          (str (.getNumberType util (.parse util number "FI")))
-          "FIXED_LINE")
-        (.isValidNumber util (.parse util number "FI")))
+      (.isValidNumber utilobj (.parse utilobj number "FI"))
       (catch NumberParseException e false))))
 
 (defn insert-tyopaikalla-jarjestettava-koulutus!
