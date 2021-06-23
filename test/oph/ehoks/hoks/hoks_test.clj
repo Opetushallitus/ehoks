@@ -432,3 +432,41 @@
                                 :hankittavat-ammat-tutkinnon-osat []
                                 :opiskeluvalmiuksia-tukevat-opinnot []
                                 :hankittavat-yhteiset-tutkinnon-osat []}))))
+
+(deftest set-tep-kasitelty-test
+  (testing
+   "If loppu is before today set tep_kasitelty to true"
+    (let [oh-data
+          {:jarjestajan-edustaja {:nimi "Ville Valvoja"
+                                  :rooli "Valvojan apulainen"
+                                  :oppilaitos-oid "1.2.246.562.10.54451211340"}
+           :osaamisen-hankkimistapa-koodi-uri
+           "osaamisenhankkimistapa_oppisopimus"
+           :osaamisen-hankkimistapa-koodi-versio 2
+           :tyopaikalla-jarjestettava-koulutus
+           {:vastuullinen-tyopaikka-ohjaaja
+            {:nimi "Aimo Ohjaaja"
+             :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
+            :tyopaikan-nimi "Ohjausyhtiö Oy"
+            :tyopaikan-y-tunnus "12345212-4"
+            :keskeiset-tyotehtavat ["Testitehtävä"]}
+           :ajanjakson-tarkenne "Ei tarkennettavia asioita"
+           :hankkijan-edustaja {:nimi "Heikki Hankkija"
+                                :rooli "Opettaja"
+                                :oppilaitos-oid "1.2.246.562.10.54452422420"}
+           :alku (java.time.LocalDate/of 2019 1 11)}
+          oh1 (ha/save-osaamisen-hankkimistapa!
+                (assoc
+                  oh-data
+                  :loppu (.plusDays (java.time.LocalDate/now) 1)))
+          oh2 (ha/save-osaamisen-hankkimistapa!
+                (assoc
+                  oh-data
+                  :loppu (.minusDays (java.time.LocalDate/now) 1)))
+          oh3 (ha/save-osaamisen-hankkimistapa!
+                (assoc
+                  oh-data
+                  :loppu (java.time.LocalDate/now)))]
+      (eq false (:tep_kasitelty oh1))
+      (eq true (:tep_kasitelty oh2))
+      (eq false (:tep_kasitelty oh3)))))

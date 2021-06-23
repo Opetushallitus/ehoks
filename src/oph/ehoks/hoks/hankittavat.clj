@@ -2,7 +2,10 @@
   (:require [oph.ehoks.db.postgresql.hankittavat :as db]
             [oph.ehoks.hoks.common :as c]
             [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [clj-time.core :as t]
+            [clojure.tools.logging :as log])
+  (:import (java.time LocalDate)))
 
 (defn- get-tyopaikalla-jarjestettava-koulutus [id]
   (let [o (db/select-tyopaikalla-jarjestettava-koulutus-by-id id)]
@@ -159,7 +162,9 @@
                   (:tyopaikalla-jarjestettava-koulutus oh) conn)
             o-db (db/insert-osaamisen-hankkimistapa!
                    (assoc
-                     oh
+                     (if (.isBefore (LocalDate/now) (:loppu oh))
+                       oh
+                       (assoc oh :tep_kasitelty true))
                      :tyopaikalla-jarjestettava-koulutus-id
                      (:id tho)) conn)]
         (db/insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
