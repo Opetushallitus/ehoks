@@ -467,6 +467,6 @@
                 (assoc
                   oh-data
                   :loppu (java.time.LocalDate/now)))]
-      (eq false (:tep_kasitelty oh1))
-      (eq true (:tep_kasitelty oh2))
-      (eq false (:tep_kasitelty oh3)))))
+      (is (= false (:tep_kasitelty oh1)))
+      (is (= true (:tep_kasitelty oh2)))
+      (is (= true (:tep_kasitelty oh3))))))
