@@ -3,9 +3,7 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [clojure.java.jdbc :as jdbc]
-            [clojure.tools.logging :as log])
-  (:import [com.google.i18n.phonenumbers PhoneNumberUtil]
-           [com.google.i18n.phonenumbers NumberParseException]))
+            [clojure.tools.logging :as log]))
 
 (defn select-tyopaikalla-jarjestettava-koulutus-by-id
   "Työpaikalla järjestettävä koulutus"
@@ -159,32 +157,11 @@
         c)
       db-conn)))
 
-(defn- valid-number? [number]
-  (let [utilobj (PhoneNumberUtil/getInstance)]
-    (try
-      (.isValidNumber utilobj (.parse utilobj number "FI"))
-      (catch NumberParseException e false))))
-
 (defn insert-tyopaikalla-jarjestettava-koulutus!
   "Lisää työpaikalla järjestettävä koulutus"
   ([o]
     (insert-tyopaikalla-jarjestettava-koulutus! o (db-ops/get-db-connection)))
   ([o db-conn]
-    (let [puhelinnumero (get-in o [:vastuullinen-tyopaikka-ohjaaja
-                                   :puhelinnumero])]
-      (when (some? puhelinnumero)
-        (when (not-empty (filter (fn [x] (Character/isLetter x)) puhelinnumero))
-          (log/error (str "Puhelinnumero " puhelinnumero " includes letters."))
-          (log/error o)
-          (throw (ex-info
-                   (str "Puhelinnumero " puhelinnumero " includes letters.")
-                   {:error :disallowed-update})))
-        (when-not (valid-number? puhelinnumero)
-          (log/error (str "Puhelinnumero " puhelinnumero " is not valid."))
-          (log/error o)
-          (throw (ex-info
-                   (str "Puhelinnumero " puhelinnumero " is not valid.")
-                   {:error :disallowed-update})))))
     (jdbc/with-db-transaction
       [conn db-conn]
       (when (some? o)
