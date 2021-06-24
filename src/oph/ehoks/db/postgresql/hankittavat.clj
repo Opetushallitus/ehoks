@@ -2,8 +2,7 @@
   (:require [oph.ehoks.db.db-operations.hoks :as h]
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
-            [clojure.java.jdbc :as jdbc]
-            [clojure.tools.logging :as log]))
+            [clojure.java.jdbc :as jdbc]))
 
 (defn select-tyopaikalla-jarjestettava-koulutus-by-id
   "Työpaikalla järjestettävä koulutus"
