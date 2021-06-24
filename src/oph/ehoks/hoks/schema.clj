@@ -102,7 +102,9 @@
      (describe
        ""
        (s/optional-key :sahkoposti) s/Str
-       "Vastuullisen ohjaajan sähköpostiosoite")}))
+       "Vastuullisen ohjaajan sähköpostiosoite"
+       (s/optional-key :puhelinnumero) s/Str
+       "Vastuullisen ohjaajan puhelinnumero")}))
 
 (s/defschema
   Oppilaitoshenkilo

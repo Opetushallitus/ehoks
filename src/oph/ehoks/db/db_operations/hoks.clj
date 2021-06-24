@@ -47,7 +47,9 @@
      {:vastuullinen_tyopaikka_ohjaaja_nimi
       [:vastuullinen-tyopaikka-ohjaaja :nimi]
       :vastuullinen_tyopaikka_ohjaaja_sahkoposti
-      [:vastuullinen-tyopaikka-ohjaaja :sahkoposti]}}))
+      [:vastuullinen-tyopaikka-ohjaaja :sahkoposti]
+      :vastuullinen_tyopaikka_ohjaaja_puhelinnumero
+      [:vastuullinen-tyopaikka-ohjaaja :puhelinnumero]}}))
 
 (defn tyopaikalla-jarjestettava-koulutus-to-sql [m]
   (db-ops/to-sql
@@ -57,7 +59,9 @@
      {[:vastuullinen-tyopaikka-ohjaaja :nimi]
       :vastuullinen-tyopaikka-ohjaaja-nimi
       [:vastuullinen-tyopaikka-ohjaaja :sahkoposti]
-      :vastuullinen-tyopaikka-ohjaaja-sahkoposti}}))
+      :vastuullinen-tyopaikka-ohjaaja-sahkoposti
+      [:vastuullinen-tyopaikka-ohjaaja :puhelinnumero]
+      :vastuullinen-tyopaikka-ohjaaja-puhelinnumero}}))
 
 (defn henkilo-from-sql [m]
   (db-ops/from-sql
