@@ -77,7 +77,9 @@
    :tyopaikan-ytunnus (:tyopaikan_ytunnus msg)
    :tyopaikkaohjaaja-email (:tyopaikkaohjaaja_email msg)
    :tyopaikkaohjaaja-puhelinnumero (:tyopaikkaohjaaja_puhelinnumero msg)
-   :tyopaikkaohjaaja-nimi (:tyopaikkaohjaaja_nimi msg)})
+   :tyopaikkaohjaaja-nimi (:tyopaikkaohjaaja_nimi msg)
+   :oppisopimuksen-perusta (:oppisopimuksen_perusta msg)
+   :osa-aikaisuus (:osa_aikaisuus msg)})
 
 (defn send-message [msg queue-url]
   (let [resp (.sendMessage sqs-client (-> (SendMessageRequest/builder)
