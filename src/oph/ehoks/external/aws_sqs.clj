@@ -76,6 +76,7 @@
    :tyopaikan-nimi (:tyopaikan_nimi msg)
    :tyopaikan-ytunnus (:tyopaikan_ytunnus msg)
    :tyopaikkaohjaaja-email (:tyopaikkaohjaaja_email msg)
+   :tyopaikkaohjaaja-puhelinnumero (:tyopaikkaohjaaja-puhelinnumero msg)
    :tyopaikkaohjaaja-nimi (:tyopaikkaohjaaja_nimi msg)})
 
 (defn send-message [msg queue-url]
