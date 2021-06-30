@@ -13,7 +13,8 @@ SELECT
   tjk.tyopaikan_nimi AS tyopaikan_nimi,
   tjk.tyopaikan_y_tunnus AS tyopaikan_ytunnus,
   tjk.vastuullinen_tyopaikka_ohjaaja_nimi AS tyopaikkaohjaaja_nimi,
-  tjk.vastuullinen_tyopaikka_ohjaaja_sahkoposti AS tyopaikkaohjaaja_email
+  tjk.vastuullinen_tyopaikka_ohjaaja_sahkoposti AS tyopaikkaohjaaja_email,
+  tjk.vastuullinen_tyopaikka_ohjaaja_puhelinnumero AS tyopaikkaohjaaja_puhelinnumero
 FROM hoksit h
   LEFT OUTER JOIN hankittavat_ammat_tutkinnon_osat AS osa
     ON (h.id = osa.hoks_id AND osa.deleted_at IS NULL)
