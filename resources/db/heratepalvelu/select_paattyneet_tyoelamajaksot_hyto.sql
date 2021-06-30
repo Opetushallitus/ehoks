@@ -18,7 +18,7 @@ FROM hoksit h
   LEFT OUTER JOIN hankittavat_yhteiset_tutkinnon_osat AS osat
     ON (h.id = osat.hoks_id AND osat.deleted_at IS NULL)
   LEFT OUTER JOIN yhteisen_tutkinnon_osan_osa_alueet AS osa
-    ON (osat.id = osa.yhteinen_tutkinnon_osa_id)
+    ON (osat.id = osa.yhteinen_tutkinnon_osa_id AND osa.deleted_at IS NULL)
   LEFT OUTER JOIN yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat AS ytooh
     ON (osa.id = ytooh.yhteisen_tutkinnon_osan_osa_alue_id)
   LEFT OUTER JOIN osaamisen_hankkimistavat AS oh
