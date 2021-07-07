@@ -13,7 +13,8 @@
             [schema.core :as s]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
-            [oph.ehoks.external.aws-sqs :as sqs]))
+            [oph.ehoks.external.aws-sqs :as sqs])
+  (:import (java.time LocalDate)))
 
 (def routes
   (route-middleware
@@ -178,4 +179,16 @@
             (log/warn "No HOKS found with given hoks-id "
                       hoks-id)
             (response/not-found
-              {:error "No HOKS found with given hoks-id"})))))))
+              {:error "No HOKS found with given hoks-id"})))))
+
+    (c-api/POST "/hoks/resend-aloitusherate" request
+      :summary "Lähettää uuden aloituskyselyherätteen herätepalveluun"
+      :header-params [caller-id :- s/Str]
+      :query-params [from :- LocalDate
+                     to :- LocalDate]
+      (let [hoksit (db-hoks/select-hoksit-created-between from to)]
+        (doseq [hoks hoksit]
+          (if (:osaamisen-hankkimisen-tarve hoks)
+            (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg
+                                             (:id hoks) hoks))))
+        (restful/rest-ok {:count (count hoksit)})))))

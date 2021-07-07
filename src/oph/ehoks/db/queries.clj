@@ -54,6 +54,7 @@
 (defq select-hoksit-by-eid)
 (defq select-hoksit-by-opiskeluoikeus-oid)
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")
+(defq select-hoksit-created-between "hoksit/select_hoksit_created_between.sql")
 (defq select-hoks-oppijat-without-index
       "hoksit/select_oppija_oids_without_info.sql")
 (defq select-hoks-oppijat-without-index-count
