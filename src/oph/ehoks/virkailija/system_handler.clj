@@ -6,6 +6,7 @@
             [oph.ehoks.virkailija.schema :as virkailija-schema]
             [oph.ehoks.external.cache :as c]
             [oph.ehoks.oppijaindex :as op]
+            [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
             [clojure.core.async :as a]
             [ring.util.http-response :as response]
             [clojure.tools.logging :as log]
@@ -182,13 +183,9 @@
               {:error "No HOKS found with given hoks-id"})))))
 
     (c-api/POST "/hoks/resend-aloitusherate" request
-      :summary "Lähettää uuden aloituskyselyherätteen herätepalveluun"
+      :summary "Lähettää uudet aloituskyselyherätteet herätepalveluun"
       :header-params [caller-id :- s/Str]
       :query-params [from :- LocalDate
                      to :- LocalDate]
-      (let [hoksit (db-hoks/select-hoksit-created-between from to)]
-        (doseq [hoks hoksit]
-          (if (:osaamisen-hankkimisen-tarve hoks)
-            (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg
-                                             (:id hoks) hoks))))
-        (restful/rest-ok {:count (count hoksit)})))))
+      (let [count (hp/resend-aloituskyselyherate-between from to)]
+        (restful/rest-ok {:count count})))))
