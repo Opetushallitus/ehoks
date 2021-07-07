@@ -65,17 +65,17 @@
 (defn resend-aloituskyselyherate-between [from to]
   (let [hoksit (db-hoks/select-hoksit-created-between from to)]
     (loop [hoks (first hoksit)
-           rest (rest hoksit)
+           r (rest hoksit)
            c 0]
       (if (:osaamisen-hankkimisen-tarve hoks)
         (do
           (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg
-                                         (:id hoks) hoks))
-          (recur (first rest)
-                 (rest rest)
+                                           (:id hoks) hoks))
+          (recur (first r)
+                 (rest r)
                  (inc c)))
-        (if (not-empty rest)
-          (recur (first rest)
-                 (rest rest)
+        (if (not-empty r)
+          (recur (first r)
+                 (rest r)
                  c)
           c)))))
