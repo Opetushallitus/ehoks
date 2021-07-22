@@ -1,10 +1,11 @@
 (ns oph.ehoks.db.db-operations.hoks
-  (:require [oph.ehoks.db.queries :as queries]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
-            [oph.ehoks.db.db-operations.opiskeluoikeus :as oo]
-            [oph.ehoks.db.db-operations.oppija :as op]
-            [oph.ehoks.external.organisaatio :as org]
-            [clojure.java.jdbc :as jdbc]))
+    (:require [oph.ehoks.db.queries :as queries]
+              [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+              [oph.ehoks.db.db-operations.opiskeluoikeus :as oo]
+              [oph.ehoks.db.db-operations.oppija :as op]
+              [oph.ehoks.external.organisaatio :as org]
+              [clojure.java.jdbc :as jdbc]
+              [clojure.tools.logging :as log]))
 
 (defn oppilaitos-oid-from-sql [m]
   (:oppilaitos_oid m))
@@ -241,6 +242,14 @@
     (db-ops/query
       [queries/select-hoksit-by-id id]
       {:row-fn hoks-from-sql})))
+
+;return up to n hokses, where id is greater than from-id.
+(defn select-hokses-greater-than-id [from-id amount]
+      (let [result (db-ops/query
+                  [queries/select-hoksit-by-id-paged from-id amount]
+                  {:row-fn hoks-from-sql})]
+           (log/info "select-hokses-greater-than-id result: " result)
+           result))
 
 (defn select-hoks-by-eid [eid]
   (first (db-ops/query

@@ -763,11 +763,92 @@
    :hankittavat-yhteiset-tutkinnon-osat hyto-part-of-hoks
    :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks})
 
+(def HOKSModelVipunen
+     ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
+       :restful true
+       :name "HOKSModel"}
+     {:id {:methods {:post :excluded}
+           :types {:any s/Int}
+           :description "Tunniste eHOKS-järjestelmässä"}
+      :eid {:methods {:any :excluded
+                      :get :required}
+            :types {:any s/Str}
+            :description "HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä"}
+      :oppija-oid {:methods {:any :optional
+                             :post :required}
+                   :types {:any Oid}
+                   :description "Oppijan tunniste Opintopolku-ympäristössä"}
+      :opiskeluoikeus-oid
+      {:methods {:any :optional
+                 :post :required}
+       :types {:any OpiskeluoikeusOid}
+       :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
+                  '1.2.246.562.15.00000000001'."}
+      :urasuunnitelma-koodi-uri
+      {:methods {:any :optional}
+       :types {:any UrasuunnitelmaKoodiUri}
+       :description "Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto
+    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.
+    urasuunnitelma_0001"}
+      :urasuunnitelma-koodi-versio
+      {:methods {:any :optional}
+       :types {:any s/Int}
+       :description "Opiskelijan tavoitteen Koodisto-koodin versio"}
+      :versio {:methods {:any :optional}
+               :types {:any s/Int}
+               :description "HOKS-dokumentin versio"}
+      :ensikertainen-hyvaksyminen {:methods {:patch :optional}
+                                   :types {:any LocalDate}
+                                   :description
+                                   "HOKS-dokumentin ensimmäinen hyväksymisaika
+                                   muodossa YYYY-MM-DD"}
+      :hyvaksytty
+      {:methods {:any :optional}
+       :types {:any s/Inst}
+       :description
+       "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
+      :paivitetty {:methods {:any :optional}
+                   :types {:any s/Inst}
+                   :description (str "HOKS-dokumentin viimeisin päivitysaika "
+                                     "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
+      :osaamisen-saavuttamisen-pvm {:methods {:any :optional}
+                                    :types {:any LocalDate}
+                                    :description
+                                    (str "HOKSin osaamisen saavuttamisen "
+                                         "ajankohta muodossa YYYY-MM-DD")}
+      :osaamisen-hankkimisen-tarve {:methods {:any :required
+                                              :patch :optional
+                                              :get :optional}
+                                    :types {:any s/Bool}
+                                    :description
+                                    "Tutkintokoulutuksen ja muun tarvittavan
+                                  ammattitaidon hankkimisen tarve; osaamisen
+                                  tunnistamis- ja tunnustamisprosessin
+                                  lopputulos."}
+      :manuaalisyotto {:methods {:any :excluded
+                                 :get :optional}
+                       :types {:any s/Bool}
+                       :description "Tieto, onko HOKS tuotu manuaalisyötön kautta"}
+      :aiemmin-hankitut-ammat-tutkinnon-osat ahato-part-of-hoks
+      :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-part-of-hoks
+      :aiemmin-hankitut-paikalliset-tutkinnon-osat ahpto-part-of-hoks
+      :opiskeluvalmiuksia-tukevat-opinnot oto-part-of-hoks
+      :hankittavat-ammat-tutkinnon-osat hato-part-of-hoks
+      :hankittavat-yhteiset-tutkinnon-osat hyto-part-of-hoks
+      :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks})
+
 (def HOKS
   (with-meta
     (g/generate HOKSModel :get)
     {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
      :name "HOKS"}))
+
+(def HOKSVipunen
+     (with-meta
+       (g/generate HOKSModelVipunen :get)
+       {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
+       Vipusen käyttöön, poistettu nimiä ja yhteystietoja"
+        :name "HOKS"}))
 
 (def HOKSPaivitys
   (with-meta

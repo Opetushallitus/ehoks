@@ -383,6 +383,25 @@
               (response/not-found
                 {:error "No HOKS found with given opiskeluoikeus"})))))
 
+      (c-api/GET "/paged" request
+                 :summary "Palauttaa halutun määrän annetusta id:stä seuraavia hokseja kasvavassa id-järjestyksessä.
+                 Seuraavan sivun saa antamalla from-id -parametriksi suurimman jo saadun hoksin id:n kunnes palautuu tyhjä tulosjoukko.
+                 Vähintään 1, enintään 1000, oletus 500 kerralla."
+                 :query-params [{amount :- s/Int 500}
+                                {from-id :- s/Int 0}]
+                 ;:path-params [hoks-id :- s/Int]
+                 :return (rest/response {:last-id s/Int
+                                         :result [hoks-schema/HOKS]})
+                 (do
+                   (let [limit (min (max 1 amount) 1000)]
+                        (let [result (h/get-hokses-from-id from-id limit)
+                              last-id (first (sort > (map :id result)))]
+                             ;(log/info "final result " result)
+                             (rest/rest-ok {:last-id last-id
+                                            :result result}))
+                        ))
+                 )
+
       (route-middleware
         [m/wrap-require-oph-privileges]
 
