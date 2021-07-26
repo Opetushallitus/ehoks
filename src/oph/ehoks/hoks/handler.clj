@@ -391,7 +391,7 @@
                                 {from-id :- s/Int 0}]
                  ;:path-params [hoks-id :- s/Int]
                  :return (rest/response {:last-id s/Int
-                                         :result [hoks-schema/HOKS]})
+                                         :result [hoks-schema/HOKSVipunen]})
                  (do
                    (let [limit (min (max 1 amount) 1000)]
                         (let [result (h/get-hokses-from-id from-id limit)

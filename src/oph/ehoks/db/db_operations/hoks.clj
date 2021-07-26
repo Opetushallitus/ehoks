@@ -243,13 +243,9 @@
       [queries/select-hoksit-by-id id]
       {:row-fn hoks-from-sql})))
 
-;return up to n hokses, where id is greater than from-id.
 (defn select-hokses-greater-than-id [from-id amount]
-      (let [result (db-ops/query
-                  [queries/select-hoksit-by-id-paged from-id amount]
-                  {:row-fn hoks-from-sql})]
-           (log/info "select-hokses-greater-than-id result: " result)
-           result))
+      (db-ops/query [queries/select-hoksit-by-id-paged from-id amount]
+                    {:row-fn hoks-from-sql}))
 
 (defn select-hoks-by-eid [eid]
   (first (db-ops/query

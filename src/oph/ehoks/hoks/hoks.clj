@@ -38,6 +38,17 @@
 (defn get-hoks-by-id [id]
   (get-hoks-values (db-hoks/select-hoks-by-id id)))
 
+(defn filter-for-vipunen [hoks]
+      (-> hoks
+          (dissoc :sahkoposti)))
+
+(defn enrich-and-filter [hoks]
+      (filter-for-vipunen (get-hoks-values hoks)))
+
+(defn get-hokses-from-id [id amount]
+      (let [hokses (db-hoks/select-hokses-greater-than-id (or id 0) amount)]
+           (map #(enrich-and-filter %) hokses)))
+
 (defn save-hoks! [h]
   (jdbc/with-db-transaction
     [conn (db-ops/get-db-connection)]
