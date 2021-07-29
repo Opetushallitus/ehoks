@@ -511,7 +511,13 @@
                           (c-api/PATCH "/" request
                             :body [hoks-values hoks-schema/HOKSPaivitys]
                             :summary "Oppijan hoksin päätason arvojen päivitys"
-                            (patch-hoks hoks-values hoks-id))))
+                            (patch-hoks hoks-values hoks-id))
+
+                          (c-api/PATCH "/shallow-delete" request
+                            :summary "Asettaa HOKSin
+                              poistetuksi(shallow delete) id:n perusteella."
+                            (db-hoks/shallow-delete-hoks-by-hoks-id
+                              hoks-id))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]

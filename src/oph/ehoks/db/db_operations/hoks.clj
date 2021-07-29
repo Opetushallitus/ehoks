@@ -387,6 +387,13 @@
      :opiskeluoikeusOid (:opiskeluoikeus-oid hoks)
      :oppilaitosOid (:oppilaitos-oid oo)}))
 
+(defn shallow-delete-hoks-by-hoks-id
+  "Asettaa HOKSin poistetuksi(shallow delete) id:n perusteella."
+  [hoks-id]
+  (db-ops/shallow-delete!
+    :hoksit
+    ["id = ?" hoks-id]))
+
 (defn delete-hoks-by-hoks-id
   "Poistaa HOKSin pysyvästi id:n perusteella"
   [hoks-id]
