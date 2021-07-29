@@ -31,34 +31,48 @@
       (ha/get-hankittavat-yhteiset-tutkinnon-osat id))))
 
 (defn trim-arvioijat [arvioijat]
-      (mapv (fn [arvioija] (dissoc arvioija :nimi)) arvioijat))
+  (mapv (fn [arvioija] (dissoc arvioija :nimi)) arvioijat))
 
 (defn trim-osa [osa]
-      (-> osa
-          (update-in [:tarkentavat-tiedot-osaamisen-arvioija :aiemmin-hankitun-osaamisen-arvioijat] trim-arvioijat)
-          (update :tarkentavat-tiedot-naytto (fn [ttn] (mapv #(-> %
-                                                                  (update :koulutuksen-jarjestaja-osaamisen-arvioijat trim-arvioijat)
-                                                                  (update :tyoelama-osaamisen-arvioijat trim-arvioijat)) ttn)))))
+  (-> osa
+      (update-in [:tarkentavat-tiedot-osaamisen-arvioija
+                  :aiemmin-hankitun-osaamisen-arvioijat] trim-arvioijat)
+      (update :tarkentavat-tiedot-naytto
+              (fn [ttn]
+                (mapv #(-> %
+                           (update
+                             :koulutuksen-jarjestaja-osaamisen-arvioijat
+                             trim-arvioijat)
+                           (update :tyoelama-osaamisen-arvioijat
+                                   trim-arvioijat)) ttn)))))
 
 (defn trim-osaamisen-osoittaminen [oo]
-      (-> oo
-          (update :koulutuksen-jarjestaja-osaamisen-arvioijat trim-arvioijat)
-          (update :tyoelama-osaamisen-arvioijat trim-arvioijat)))
+  (-> oo
+      (update :koulutuksen-jarjestaja-osaamisen-arvioijat trim-arvioijat)
+      (update :tyoelama-osaamisen-arvioijat trim-arvioijat)))
 
 (defn trim-osaamisen-hankkimistapa [oht]
-      (-> oht
-          (dissoc :jarjestajan-edustaja)
-          (dissoc :hankkijan-edustaja)
-          (update :tyopaikalla-jarjestettava-koulutus
-                  (fn [tjk] (update tjk :vastuullinen-tyopaikka-ohjaaja (fn [x] (boolean x)))))))
+  (-> oht
+      (dissoc :jarjestajan-edustaja)
+      (dissoc :hankkijan-edustaja)
+      (update :tyopaikalla-jarjestettava-koulutus
+              (fn [tjk]
+                (update tjk :vastuullinen-tyopaikka-ohjaaja boolean)))))
 
 (defn trim-hao [hao]
-      (-> hao
-          (update :osaamisen-hankkimistavat (fn [ohts] (mapv #(trim-osaamisen-hankkimistapa %) ohts)))
-          (update :osaamisen-osoittaminen (fn [oo] (mapv #(trim-osaamisen-osoittaminen %) oo)))))
+  (-> hao
+      (update :osaamisen-hankkimistavat
+              (fn [ohts] (mapv trim-osaamisen-hankkimistapa ohts)))
+      (update :osaamisen-osoittaminen
+              (fn [oo] (mapv trim-osaamisen-osoittaminen oo)))))
 
 (defn trim-hyto [hyto]
-      (update hyto :osa-alueet (fn [osa-alueet] (mapv trim-hao osa-alueet))))
+  (update hyto :osa-alueet (fn [osa-alueet] (mapv trim-hao osa-alueet))))
+
+(defn trim-ahyto [ahyto]
+  (update (trim-osa ahyto)
+          :osa-alueet
+          (fn [osa-alueet] (mapv trim-osa osa-alueet))))
 
 (defn get-hokses-by-oppija [oid]
   (mapv
@@ -69,21 +83,25 @@
   (get-hoks-values (db-hoks/select-hoks-by-id id)))
 
 (defn filter-for-vipunen [hoks]
-      (-> hoks
-          (dissoc :sahkoposti)
-          (update :aiemmin-hankitut-ammat-tutkinnon-osat (fn [ahato] (mapv #(trim-osa %) ahato)))
-          (update :aiemmin-hankitut-paikalliset-tutkinnon-osat (fn [ahpto] (mapv #(trim-osa %) ahpto)))
-          (update :aiemmin-hankitut-yhteiset-tutkinnon-osat (fn [ahyto] (mapv #(-> (trim-osa %)
-                                                                                   (update :osa-alueet (fn [osa-alueet] (mapv trim-osa osa-alueet)))) ahyto)))
-          (update :hankittavat-ammat-tutkinnon-osat (fn [hao] (mapv #(trim-hao %) hao)))
-          (update :hankittavat-yhteiset-tutkinnon-osat (fn [hyto] (mapv #(trim-hyto %) hyto)))))
+  (-> hoks
+      (dissoc :sahkoposti)
+      (update :aiemmin-hankitut-ammat-tutkinnon-osat
+              (fn [ahato] (mapv trim-osa ahato)))
+      (update :aiemmin-hankitut-paikalliset-tutkinnon-osat
+              (fn [ahpto] (mapv trim-osa ahpto)))
+      (update :aiemmin-hankitut-yhteiset-tutkinnon-osat
+              (fn [ahyto] (mapv trim-ahyto ahyto)))
+      (update :hankittavat-ammat-tutkinnon-osat
+              (fn [hao] (mapv trim-hao hao)))
+      (update :hankittavat-yhteiset-tutkinnon-osat
+              (fn [hyto] (mapv trim-hyto hyto)))))
 
 (defn enrich-and-filter [hoks]
-      (filter-for-vipunen (get-hoks-values hoks)))
+  (filter-for-vipunen (get-hoks-values hoks)))
 
 (defn get-hokses-from-id [id amount]
-      (let [hokses (db-hoks/select-hokses-greater-than-id (or id 0) amount)]
-           (map #(enrich-and-filter %) hokses)))
+  (let [hokses (db-hoks/select-hokses-greater-than-id (or id 0) amount)]
+    (map enrich-and-filter hokses)))
 
 (defn save-hoks! [h]
   (jdbc/with-db-transaction

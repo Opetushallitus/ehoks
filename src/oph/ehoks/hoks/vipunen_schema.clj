@@ -1,38 +1,38 @@
 (ns oph.ehoks.hoks.vipunen-schema
-    (:require [schema.core :as s]
-              [oph.ehoks.schema-tools :refer [describe modify]]
-              [oph.ehoks.schema.generator :as g])
-    (:import (java.time LocalDate)
-             (java.util UUID)))
+  (:require [schema.core :as s]
+            [oph.ehoks.schema-tools :refer [describe modify]]
+            [oph.ehoks.schema.generator :as g])
+  (:import (java.time LocalDate)
+           (java.util UUID)))
 
 (def TutkinnonOsaKoodiUri
-     "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosat)."
-     #"^tutkinnonosat_\d+$")
+  "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosat)."
+  #"^tutkinnonosat_\d+$")
 
 (def OsaamisenHankkimistapaKoodiUri
-     #"^osaamisenhankkimistapa_.+$")
+  #"^osaamisenhankkimistapa_.+$")
 
 (def OppisopimuksenPerustaKoodiUri
-     #"^oppisopimuksenperusta_.+$")
+  #"^oppisopimuksenperusta_.+$")
 
 (def OsaAlueKoodiUri
-     #"^ammatillisenoppiaineet_.+$")
+  #"^ammatillisenoppiaineet_.+$")
 
 (def OppimisymparistoKoodiUri
-     #"^oppimisymparistot_\d{4}$")
+  #"^oppimisymparistot_\d{4}$")
 
 (def TodentamisenProsessiKoodiUri
-     "Valitun todentamisen prosessin Koodisto-koodi-URI"
-     #"^osaamisentodentamisenprosessi_\d+$")
+  "Valitun todentamisen prosessin Koodisto-koodi-URI"
+  #"^osaamisentodentamisenprosessi_\d+$")
 
 (def UrasuunnitelmaKoodiUri
-     #"^urasuunnitelma_\d{4}$")
+  #"^urasuunnitelma_\d{4}$")
 
 (def Oid
-     #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
+  #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
 
 (def OpiskeluoikeusOid
-     #"^1\.2\.246\.562\.15\.\d+$")
+  #"^1\.2\.246\.562\.15\.\d+$")
 
 (s/defschema
   KoodistoKoodi
@@ -82,47 +82,6 @@
             "näyttöympäristö on kyseessä. Kuvataan ympäristön luonne lyhyesti, "
             "esim. kukkakauppa, varaosaliike, ammatillinen oppilaitos, "
             "simulaattori"))}))
-
-(s/defschema
-  Henkilo
-  (describe
-    "Henkilö"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :organisaatio Organisaatio "Henkilön organisaatio"
-    :nimi s/Str "Henkilön nimi"
-    (s/optional-key :rooli) s/Str "Henkilön rooli"))
-
-(s/defschema
-  HenkiloVipunen
-  (describe
-    "Henkilö"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :organisaatio Organisaatio "Henkilön organisaatio"
-    (s/optional-key :rooli) s/Str "Henkilön rooli"))
-
-(s/defschema
-  OppilaitoshenkiloVipunen
-  (modify
-    HenkiloVipunen
-    "Oppilaitoksen edustaja"
-    {:removed [:organisaatio]
-     :added
-     (describe
-       ""
-       :oppilaitos-oid Oid
-       "Oppilaitoksen oid-tunniste Opintopolku-palvelussa.")}))
-
-(s/defschema
-  OppilaitoshenkiloVipunen
-  (modify
-    HenkiloVipunen
-    "Oppilaitoksen edustaja"
-    {:removed [:organisaatio]
-     :added
-     (describe
-       ""
-       :oppilaitos-oid Oid
-       "Oppilaitoksen oid-tunniste Opintopolku-palvelussa.")}))
 
 (s/defschema
   TyopaikallaJarjestettavaKoulutusVipunen
@@ -269,7 +228,8 @@
     (s/optional-key :koulutuksen-jarjestaja-osaamisen-arvioijat)
     [KoulutuksenJarjestajaArvioijaVipunen] "Näytön tai osaamisen osoittamisen
     arvioijat"
-    (s/optional-key :tyoelama-osaamisen-arvioijat) [TyoelamaOsaamisenArvioijaVipunen]
+    (s/optional-key :tyoelama-osaamisen-arvioijat)
+    [TyoelamaOsaamisenArvioijaVipunen]
     "Näytön tai osaamisen osoittamisen arvioijat"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     (str "Tutkinnon osan tai osa-alueen perusteisiin sisältyvät
@@ -312,7 +272,8 @@
     (s/optional-key :koulutuksen-jarjestaja-osaamisen-arvioijat)
     [KoulutuksenJarjestajaArvioijaVipunen] "Näytön tai osaamisen osoittamisen
     arvioijat"
-    (s/optional-key :tyoelama-osaamisen-arvioijat) [TyoelamaOsaamisenArvioijaVipunen]
+    (s/optional-key :tyoelama-osaamisen-arvioijat)
+    [TyoelamaOsaamisenArvioijaVipunen]
     "Näytön tai osaamisen osoittamisen arvioijat"
     (s/optional-key :vaatimuksista-tai-tavoitteista-poikkeaminen) s/Str
     (str "Tutkinnon osan tai osa-alueen perusteisiin sisältyvät
@@ -684,41 +645,41 @@
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (def ^:private ahato-part-of-hoks
-     {:methods {:any :optional
-                :patch :excluded}
-      :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]
-              :post [AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
-              :put [AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]}
-      :description "Aiemmin hankittu ammatillinen osaaminen"})
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]
+           :post [AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
+           :put [AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]}
+   :description "Aiemmin hankittu ammatillinen osaaminen"})
 
 (def ^:private ahyto-part-of-hoks
-     {:methods {:any :optional
-                :patch :excluded}
-      :types {:any [AiemminHankittuYhteinenTutkinnonOsa]}
-      :description "Aiemmin hankitut yhteiset tutkinnon osat (YTO)"})
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [AiemminHankittuYhteinenTutkinnonOsa]}
+   :description "Aiemmin hankitut yhteiset tutkinnon osat (YTO)"})
 
 (def ^:private ahpto-part-of-hoks
-     {:methods {:any :optional
-                :patch :excluded}
-      :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]
-              :post [AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]
-              :put [AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
-      :description "Aiemmin hankittu paikallinen tutkinnon osa"})
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]
+           :post [AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]
+           :put [AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
+   :description "Aiemmin hankittu paikallinen tutkinnon osa"})
 
 (def ^:private oto-part-of-hoks
-     {:methods {:any :optional
-                :patch :excluded}
-      :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
-      :description "Opiskeluvalmiuksia tukevat opinnot"})
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
+   :description "Opiskeluvalmiuksia tukevat opinnot"})
 
 (def ^:private hato-part-of-hoks
-     {:methods {:any :optional
-                :patch :excluded}
-      :types {:any [HankittavaAmmatillinenTutkinnonOsa]
-              :post [HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
-              :put [HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]}
-      :description
-      "Hankittavan ammatillisen osaamisen hankkimisen tiedot"})
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [HankittavaAmmatillinenTutkinnonOsa]
+           :post [HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
+           :put [HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]}
+   :description
+   "Hankittavan ammatillisen osaamisen hankkimisen tiedot"})
 
 (s/defschema
   HankittavaYTO
@@ -728,100 +689,102 @@
     {:removed [:vaatimuksista-tai-tavoitteista-poikkeaminen]}))
 
 (def ^:private hyto-part-of-hoks
-     {:methods {:any :optional
-                :patch :excluded}
-      :types {:any [HankittavaYTO]}
-      :description "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot"})
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [HankittavaYTO]}
+   :description "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot"})
 
 (def ^:private hpto-part-of-hoks
-     {:methods {:any :optional
-                :patch :excluded}
-      :types {:any [HankittavaPaikallinenTutkinnonOsa]
-              :post [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]
-              :put [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
-      :description "Hankittavat paikallisen tutkinnon osat"})
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [HankittavaPaikallinenTutkinnonOsa]
+           :post [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]
+           :put [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
+   :description "Hankittavat paikallisen tutkinnon osat"})
 
 (def HOKSModelVipunen
-     ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti Vipusta varten,
-     ei sisällä henkilöiden nimiä tai sähköpostiosoitteita"
-       :restful true
-       :name "HOKSModelVipunen"}
-     {:id {:methods {:post :excluded}
-           :types {:any s/Int}
-           :description "Tunniste eHOKS-järjestelmässä"}
-      :eid {:methods {:any :excluded
-                      :get :required}
-            :types {:any s/Str}
-            :description "HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä"}
-      :oppija-oid {:methods {:any :optional
-                             :post :required}
-                   :types {:any Oid}
-                   :description "Oppijan tunniste Opintopolku-ympäristössä"}
-      :opiskeluoikeus-oid
-      {:methods {:any :optional
-                 :post :required}
-       :types {:any OpiskeluoikeusOid}
-       :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
+  ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti
+     Vipusta varten, ei sisällä henkilöiden nimiä tai sähköpostiosoitteita"
+    :restful true
+    :name "HOKSModelVipunen"}
+  {:id {:methods {:post :excluded}
+        :types {:any s/Int}
+        :description "Tunniste eHOKS-järjestelmässä"}
+   :eid {:methods {:any :excluded
+                   :get :required}
+         :types {:any s/Str}
+         :description "HOKSin generoitu ulkoinen tunniste
+            eHOKS-järjestelmässä"}
+   :oppija-oid {:methods {:any :optional
+                          :post :required}
+                :types {:any Oid}
+                :description "Oppijan tunniste Opintopolku-ympäristössä"}
+   :opiskeluoikeus-oid
+   {:methods {:any :optional
+              :post :required}
+    :types {:any OpiskeluoikeusOid}
+    :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
                   '1.2.246.562.15.00000000001'."}
-      :urasuunnitelma-koodi-uri
-      {:methods {:any :optional}
-       :types {:any UrasuunnitelmaKoodiUri}
-       :description "Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto
+   :urasuunnitelma-koodi-uri
+   {:methods {:any :optional}
+    :types {:any UrasuunnitelmaKoodiUri}
+    :description "Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto
     Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.
     urasuunnitelma_0001"}
-      :urasuunnitelma-koodi-versio
-      {:methods {:any :optional}
-       :types {:any s/Int}
-       :description "Opiskelijan tavoitteen Koodisto-koodin versio"}
-      :versio {:methods {:any :optional}
-               :types {:any s/Int}
-               :description "HOKS-dokumentin versio"}
-      :ensikertainen-hyvaksyminen {:methods {:patch :optional}
-                                   :types {:any LocalDate}
-                                   :description
-                                   "HOKS-dokumentin ensimmäinen hyväksymisaika
+   :urasuunnitelma-koodi-versio
+   {:methods {:any :optional}
+    :types {:any s/Int}
+    :description "Opiskelijan tavoitteen Koodisto-koodin versio"}
+   :versio {:methods {:any :optional}
+            :types {:any s/Int}
+            :description "HOKS-dokumentin versio"}
+   :ensikertainen-hyvaksyminen {:methods {:patch :optional}
+                                :types {:any LocalDate}
+                                :description
+                                "HOKS-dokumentin ensimmäinen hyväksymisaika
                                    muodossa YYYY-MM-DD"}
-      :hyvaksytty
-      {:methods {:any :optional}
-       :types {:any s/Inst}
-       :description
-       "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
-      :paivitetty {:methods {:any :optional}
-                   :types {:any s/Inst}
-                   :description (str "HOKS-dokumentin viimeisin päivitysaika "
-                                     "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
-      :osaamisen-saavuttamisen-pvm {:methods {:any :optional}
-                                    :types {:any LocalDate}
-                                    :description
-                                    (str "HOKSin osaamisen saavuttamisen "
-                                         "ajankohta muodossa YYYY-MM-DD")}
-      :osaamisen-hankkimisen-tarve {:methods {:any :required
-                                              :patch :optional
-                                              :get :optional}
-                                    :types {:any s/Bool}
-                                    :description
-                                    "Tutkintokoulutuksen ja muun tarvittavan
+   :hyvaksytty
+   {:methods {:any :optional}
+    :types {:any s/Inst}
+    :description
+    "HOKS-dokumentin hyväksymisaika muodossa YYYY-MM-DDTHH:mm:ss.sssZ"}
+   :paivitetty {:methods {:any :optional}
+                :types {:any s/Inst}
+                :description (str "HOKS-dokumentin viimeisin päivitysaika "
+                                  "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
+   :osaamisen-saavuttamisen-pvm {:methods {:any :optional}
+                                 :types {:any LocalDate}
+                                 :description
+                                 (str "HOKSin osaamisen saavuttamisen "
+                                      "ajankohta muodossa YYYY-MM-DD")}
+   :osaamisen-hankkimisen-tarve {:methods {:any :required
+                                           :patch :optional
+                                           :get :optional}
+                                 :types {:any s/Bool}
+                                 :description
+                                 "Tutkintokoulutuksen ja muun tarvittavan
                                   ammattitaidon hankkimisen tarve; osaamisen
                                   tunnistamis- ja tunnustamisprosessin
                                   lopputulos."}
-      :manuaalisyotto {:methods {:any :excluded
-                                 :get :optional}
-                       :types {:any s/Bool}
-                       :description "Tieto, onko HOKS tuotu manuaalisyötön kautta"}
-      :aiemmin-hankitut-ammat-tutkinnon-osat ahato-part-of-hoks
-      :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-part-of-hoks
-      :aiemmin-hankitut-paikalliset-tutkinnon-osat ahpto-part-of-hoks
-      :opiskeluvalmiuksia-tukevat-opinnot oto-part-of-hoks
-      :hankittavat-ammat-tutkinnon-osat hato-part-of-hoks
-      :hankittavat-yhteiset-tutkinnon-osat hyto-part-of-hoks
-      :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks})
+   :manuaalisyotto {:methods {:any :excluded
+                              :get :optional}
+                    :types {:any s/Bool}
+                    :description "Tieto, onko HOKS tuotu manuaalisyötön
+                       kautta"}
+   :aiemmin-hankitut-ammat-tutkinnon-osat ahato-part-of-hoks
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-part-of-hoks
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat ahpto-part-of-hoks
+   :opiskeluvalmiuksia-tukevat-opinnot oto-part-of-hoks
+   :hankittavat-ammat-tutkinnon-osat hato-part-of-hoks
+   :hankittavat-yhteiset-tutkinnon-osat hyto-part-of-hoks
+   :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks})
 
 (def HOKSVipunen
-     (with-meta
-       (g/generate HOKSModelVipunen :get)
-       {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
+  (with-meta
+    (g/generate HOKSModelVipunen :get)
+    {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
        Vipusen käyttöön, poistettu nimiä ja yhteystietoja"
-        :name "HOKS"}))
+     :name "HOKS"}))
 
 (s/defschema
   kyselylinkki
