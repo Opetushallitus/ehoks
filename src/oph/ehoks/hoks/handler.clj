@@ -5,6 +5,7 @@
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
+            [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
             [oph.ehoks.hoks.partial-hoks-schema :as partial-hoks-schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as pdb-ah]
@@ -391,12 +392,11 @@
                                 {from-id :- s/Int 0}]
                  ;:path-params [hoks-id :- s/Int]
                  :return (rest/response {:last-id s/Int
-                                         :result [hoks-schema/HOKSVipunen]})
+                                         :result [hoks-schema-vipunen/HOKSVipunen]})
                  (do
                    (let [limit (min (max 1 amount) 1000)]
                         (let [result (h/get-hokses-from-id from-id limit)
                               last-id (first (sort > (map :id result)))]
-                             ;(log/info "final result " result)
                              (rest/rest-ok {:last-id last-id
                                             :result result}))
                         ))
