@@ -392,7 +392,6 @@
                  Vähintään 1, enintään 1000, oletus 500 kerralla."
         :query-params [{amount :- s/Int 500}
                        {from-id :- s/Int 0}]
-                 ;:path-params [hoks-id :- s/Int]
         :return (rest/response {:last-id s/Int
                                 :result
                                 [hoks-schema-vipunen/HOKSVipunen]})
