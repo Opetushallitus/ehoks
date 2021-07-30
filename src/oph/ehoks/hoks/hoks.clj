@@ -51,13 +51,18 @@
       (update :koulutuksen-jarjestaja-osaamisen-arvioijat trim-arvioijat)
       (update :tyoelama-osaamisen-arvioijat trim-arvioijat)))
 
+(defn trim-ohjaaja-to-boolean [oht]
+  (if (:tyopaikalla-jarjestettava-koulutus oht)
+    (update oht :tyopaikalla-jarjestettava-koulutus
+            (fn [tjk] (update tjk
+                              :vastuullinen-tyopaikka-ohjaaja boolean)))
+    oht))
+
 (defn trim-osaamisen-hankkimistapa [oht]
   (-> oht
       (dissoc :jarjestajan-edustaja)
       (dissoc :hankkijan-edustaja)
-      (update :tyopaikalla-jarjestettava-koulutus
-              (fn [tjk]
-                (update tjk :vastuullinen-tyopaikka-ohjaaja boolean)))))
+      trim-ohjaaja-to-boolean))
 
 (defn trim-hao [hao]
   (-> hao
