@@ -413,7 +413,7 @@
           (when (not-empty failed-ids)
             (log/info "Failed ids for paged call:" failed-ids
                       "params" {:from-id from-id :amount amount}))
-          (rest/rest-ok {:last-id last-id
+          (rest/rest-ok {:last-id (or last-id from-id)
                          :failed-ids (sort failed-ids)
                          :result result-after-validation})))
 
