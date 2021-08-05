@@ -389,7 +389,11 @@
                  hokseja kasvavassa id-järjestyksessä.
                  Seuraavan sivun saa antamalla from-id -parametriksi suurimman
                  jo saadun hoksin id:n kunnes palautuu tyhjä tulosjoukko.
-                 Vähintään 1, enintään 1000, oletus 500 kerralla."
+                 Vähintään 1, enintään 1000, oletus 500 kerralla.
+                 Kaikki hoksit saa haettua aloittamalla from-id:llä 0
+                 ja kutsumalla rajapintaa toistuvasti edellisestä vastauksesta
+                 poimitulla last-id:llä kunnes sekä result- että
+                 failed-ids-kentät ovat tyhjiä."
         :query-params [{amount :- s/Int 500}
                        {from-id :- s/Int 0}]
         :return (rest/response {:last-id s/Int
