@@ -393,12 +393,25 @@
         :query-params [{amount :- s/Int 500}
                        {from-id :- s/Int 0}]
         :return (rest/response {:last-id s/Int
+                                :failed-ids [s/Int]
                                 :result
                                 [hoks-schema-vipunen/HOKSVipunen]})
         (let [limit (min (max 1 amount) 1000)
-              result (h/get-hokses-from-id from-id limit)
-              last-id (first (sort > (map :id result)))]
-          (rest/rest-ok {:result result, :last-id last-id})))
+              raw-result (h/get-hokses-from-id from-id limit)
+              last-id (first (sort > (map :id raw-result)))
+              schema-checker (s/checker hoks-schema-vipunen/HOKSVipunen)
+              result-after-validation (filter
+                                        (fn [hoks] (nil? (schema-checker hoks)))
+                                        raw-result)
+              failed-ids (seq (clojure.set/difference
+                                (set (map :id raw-result))
+                                (set (map :id result-after-validation))))]
+          (when (not-empty failed-ids)
+            (log/info "Failed ids for paged call:" failed-ids
+                      "params" {:from-id from-id :amount amount}))
+          (rest/rest-ok {:last-id last-id
+                         :failed-ids (sort failed-ids)
+                         :result result-after-validation})))
 
       (route-middleware
         [m/wrap-require-oph-privileges]
