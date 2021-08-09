@@ -126,7 +126,7 @@
     :vastuullinen-tyopaikka-ohjaaja VastuullinenTyopaikkaOhjaaja "Vastuullinen
     työpaikkaohjaaja"
     :tyopaikan-nimi s/Str "Työpaikan nimi"
-    :tyopaikan-y-tunnus s/Str "Työpaikan y-tunnus"
+    (s/optional-key :tyopaikan-y-tunnus) s/Str "Työpaikan y-tunnus"
     :keskeiset-tyotehtavat [s/Str] "Keskeiset työtehtävät"))
 
 (s/defschema

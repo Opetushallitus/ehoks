@@ -581,7 +581,6 @@
        :oppilaitos-oid "1.2.246.562.10.00000000321"}
       :tyopaikalla-jarjestettava-koulutus
       {:tyopaikan-nimi "joku nimi"
-       :tyopaikan-y-tunnus "12345222-4"
        :keskeiset-tyotehtavat ["tehtava" "toinen"]
        :vastuullinen-tyopaikka-ohjaaja
        {:nimi "ohjaaja o"}}}]
