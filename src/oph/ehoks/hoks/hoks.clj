@@ -191,18 +191,17 @@
       (log/info "hankkimistapa-new-or-ongoing check failed for:")
       (log/info oh))))
 
-(defn- check-for-missing-tyopaikan-y-tunnus [osaamisen-hankkimistavat]
-  (when osaamisen-hankkimistavat
-    (doseq [oh osaamisen-hankkimistavat]
-      (when (and
-              (hankkimistapa-new-or-ongoing oh)
-              (:tyopaikalla-jarjestettava-koulutus oh))
-        (when-not (get-in oh [:tyopaikalla-jarjestettava-koulutus
-                              :tyopaikan-y-tunnus])
-          (throw (ex-info
-                   (str "tyopaikan-y-tunnus missing for new or active "
-                        "osaamisen hankkimistapa: " oh)
-                   {:error :disallowed-update})))))))
+(defn- y-tunnus-missing? [oh]
+  (when (and
+          (hankkimistapa-new-or-ongoing oh)
+          (:tyopaikalla-jarjestettava-koulutus oh))
+    (when (nil? (get-in oh [:tyopaikalla-jarjestettava-koulutus
+                            :tyopaikan-y-tunnus]))
+      oh)))
+
+(defn- missing-tyopaikan-y-tunnus? [osaamisen-hankkimistavat]
+  (when (seq osaamisen-hankkimistavat)
+    (some y-tunnus-missing? osaamisen-hankkimistavat)))
 
 (defn replace-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
@@ -216,7 +215,9 @@
           new-oppija-oid (:oppija-oid new-values)
           new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
                                             new-values)
-          osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)]
+          osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
+          oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
+                                          osaamisen-hankkimistavat)]
       (cond
         (and (some? new-opiskeluoikeus-oid)
              (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
@@ -227,8 +228,11 @@
         (throw (ex-info
                  "Oppija-oid update not allowed!"
                  {:error :disallowed-update}))
-        (seq osaamisen-hankkimistavat)
-        (check-for-missing-tyopaikan-y-tunnus osaamisen-hankkimistavat)
+        (some? oh-missing-tyopaikan-y-tunnus)
+        (throw (ex-info
+                 (str "tyopaikan-y-tunnus missing for new or active "
+                      "osaamisen hankkimistapa: " oh-missing-tyopaikan-y-tunnus)
+                 {:error :disallowed-update}))
         :else
         (do
           (replace-main-hoks! hoks-id new-values db-conn)
@@ -269,7 +273,9 @@
           new-oppija-oid (:oppija-oid new-values)
           new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
                                             new-values)
-          osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)]
+          osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
+          oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
+                                          osaamisen-hankkimistavat)]
       (cond
         (and (some? new-opiskeluoikeus-oid)
              (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
@@ -280,8 +286,11 @@
         (throw (ex-info
                  "Oppija-oid update not allowed!"
                  {:error :disallowed-update}))
-        (seq osaamisen-hankkimistavat)
-        (check-for-missing-tyopaikan-y-tunnus osaamisen-hankkimistavat)
+        (some? oh-missing-tyopaikan-y-tunnus)
+        (throw (ex-info
+                 (str "tyopaikan-y-tunnus missing for new or active "
+                      "osaamisen hankkimistapa: " oh-missing-tyopaikan-y-tunnus)
+                 {:error :disallowed-update}))
         :else
         (let [h (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)]
           (when (new-osaamisen-saavuttamisen-pvm-added?
