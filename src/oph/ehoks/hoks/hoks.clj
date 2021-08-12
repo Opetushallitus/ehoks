@@ -168,7 +168,7 @@
   (sqs/send-amis-palaute-message
     (sqs/build-hoks-osaaminen-saavutettu-msg hoks-id os-saavut-pvm hoks)))
 
-(defn- get-osaamisen-hankkimistavat [hoks]
+(defn get-osaamisen-hankkimistavat [hoks]
   (concat
     (mapcat
       :osaamisen-hankkimistavat
@@ -182,24 +182,30 @@
 (defn- hankkimistapa-new-or-ongoing [oh]
   (try
     (or
-      (.isAfter (LocalDate/parse (:alku oh)) (LocalDate/now))
+      (.isAfter (:alku oh) (LocalDate/now))
       (and
-        (or (.isBefore (LocalDate/parse (:alku oh)) (LocalDate/now))
-            (.isEqual (LocalDate/parse (:alku oh)) (LocalDate/now)))
-        (.isAfter (LocalDate/parse (:loppu oh)) (LocalDate/now))))
+        (or (.isBefore (:alku oh) (LocalDate/now))
+            (.isEqual (:alku oh) (LocalDate/now)))
+        (.isAfter (:loppu oh) (LocalDate/now))))
     (catch Exception e
       (log/info "hankkimistapa-new-or-ongoing check failed for:")
-      (log/info oh))))
+      (log/info oh)
+      (log/info e))))
 
 (defn- y-tunnus-missing? [oh]
   (when (and
+          (or
+            (= (:osaamisen-hankkimistapa-koodi-uri oh)
+               "osaamisenhankkimistapa_koulutussopimus")
+            (= (:osaamisen-hankkimistapa-koodi-uri oh)
+               "osaamisenhankkimistapa_oppisopimus"))
           (hankkimistapa-new-or-ongoing oh)
           (:tyopaikalla-jarjestettava-koulutus oh))
     (when (nil? (get-in oh [:tyopaikalla-jarjestettava-koulutus
                             :tyopaikan-y-tunnus]))
       oh)))
 
-(defn- missing-tyopaikan-y-tunnus? [osaamisen-hankkimistavat]
+(defn missing-tyopaikan-y-tunnus? [osaamisen-hankkimistavat]
   (when (seq osaamisen-hankkimistavat)
     (some y-tunnus-missing? osaamisen-hankkimistavat)))
 
