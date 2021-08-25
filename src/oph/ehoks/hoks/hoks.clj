@@ -179,18 +179,19 @@
     (mapcat :osaamisen-hankkimistavat
             (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
 
-(defn- hankkimistapa-new-or-ongoing [oh]
-  (try
-    (or
-      (.isAfter (:alku oh) (LocalDate/now))
-      (and
-        (or (.isBefore (:alku oh) (LocalDate/now))
-            (.isEqual (:alku oh) (LocalDate/now)))
-        (.isAfter (:loppu oh) (LocalDate/now))))
-    (catch Exception e
-      (log/info "hankkimistapa-new-or-ongoing check failed for:")
-      (log/info oh)
-      (log/info e))))
+(defn- should-check-hankkimistapa-y-tunnus? [oh]
+  (let [kayttoonottopvm (LocalDate/parse "2021-08-25")]
+    (try
+      (or
+        (or (.isAfter (:alku oh) kayttoonottopvm)
+            (.isEqual (:alku oh) kayttoonottopvm))
+        (and
+          (.isBefore (:alku oh) kayttoonottopvm)
+          (.isAfter (:loppu oh) kayttoonottopvm)))
+      (catch Exception e
+        (log/info "should-check-hankkimistapa-y-tunnus? check failed for:")
+        (log/info oh)
+        (log/info e)))))
 
 (defn- y-tunnus-missing? [oh]
   (when (and
@@ -199,7 +200,7 @@
                "osaamisenhankkimistapa_koulutussopimus")
             (= (:osaamisen-hankkimistapa-koodi-uri oh)
                "osaamisenhankkimistapa_oppisopimus"))
-          (hankkimistapa-new-or-ongoing oh)
+          (should-check-hankkimistapa-y-tunnus? oh)
           (:tyopaikalla-jarjestettava-koulutus oh))
     (when (nil? (get-in oh [:tyopaikalla-jarjestettava-koulutus
                             :tyopaikan-y-tunnus]))
