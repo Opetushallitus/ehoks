@@ -5,6 +5,7 @@
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
+            [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
             [oph.ehoks.hoks.partial-hoks-schema :as partial-hoks-schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as pdb-ah]
@@ -395,6 +396,39 @@
                         opiskeluoikeus-oid)
               (response/not-found
                 {:error "No HOKS found with given opiskeluoikeus"})))))
+
+      (c-api/GET "/paged" request
+        :summary "Palauttaa halutun määrän annetusta id:stä seuraavia
+                 hokseja kasvavassa id-järjestyksessä.
+                 Seuraavan sivun saa antamalla from-id -parametriksi suurimman
+                 jo saadun hoksin id:n kunnes palautuu tyhjä tulosjoukko.
+                 Vähintään 1, enintään 1000, oletus 500 kerralla.
+                 Kaikki hoksit saa haettua aloittamalla from-id:llä 0
+                 ja kutsumalla rajapintaa toistuvasti edellisestä vastauksesta
+                 poimitulla last-id:llä kunnes sekä result- että
+                 failed-ids-kentät ovat tyhjiä."
+        :query-params [{amount :- s/Int 500}
+                       {from-id :- s/Int 0}]
+        :return (rest/response {:last-id s/Int
+                                :failed-ids [s/Int]
+                                :result
+                                [hoks-schema-vipunen/HOKSVipunen]})
+        (let [limit (min (max 1 amount) 1000)
+              raw-result (h/get-hokses-from-id from-id limit)
+              last-id (first (sort > (map :id raw-result)))
+              schema-checker (s/checker hoks-schema-vipunen/HOKSVipunen)
+              result-after-validation (filter
+                                        (fn [hoks] (nil? (schema-checker hoks)))
+                                        raw-result)
+              failed-ids (seq (clojure.set/difference
+                                (set (map :id raw-result))
+                                (set (map :id result-after-validation))))]
+          (when (not-empty failed-ids)
+            (log/info "Failed ids for paged call:" failed-ids
+                      "params" {:from-id from-id :amount amount}))
+          (rest/rest-ok {:last-id (or last-id from-id)
+                         :failed-ids (sort failed-ids)
+                         :result result-after-validation})))
 
       (route-middleware
         [m/wrap-require-oph-privileges]

@@ -4,7 +4,8 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as oo]
             [oph.ehoks.db.db-operations.oppija :as op]
             [oph.ehoks.external.organisaatio :as org]
-            [clojure.java.jdbc :as jdbc]))
+            [clojure.java.jdbc :as jdbc]
+            [clojure.tools.logging :as log]))
 
 (defn oppilaitos-oid-from-sql [m]
   (:oppilaitos_oid m))
@@ -241,6 +242,10 @@
     (db-ops/query
       [queries/select-hoksit-by-id id]
       {:row-fn hoks-from-sql})))
+
+(defn select-hokses-greater-than-id [from-id amount]
+  (db-ops/query [queries/select-hoksit-by-id-paged from-id amount]
+                {:row-fn hoks-from-sql}))
 
 (defn select-hoks-by-eid [eid]
   (first (db-ops/query
