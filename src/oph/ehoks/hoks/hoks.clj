@@ -237,7 +237,7 @@
                  {:error :disallowed-update}))
         (some? oh-missing-tyopaikan-y-tunnus)
         (throw (ex-info
-                 (str "tyopaikan-y-tunnus missing for new or active "
+                 (str "tyopaikan-y-tunnus missing for "
                       "osaamisen hankkimistapa: " oh-missing-tyopaikan-y-tunnus)
                  {:error :disallowed-update}))
         :else
@@ -295,7 +295,7 @@
                  {:error :disallowed-update}))
         (some? oh-missing-tyopaikan-y-tunnus)
         (throw (ex-info
-                 (str "tyopaikan-y-tunnus missing for new or active "
+                 (str "tyopaikan-y-tunnus missing for "
                       "osaamisen hankkimistapa: " oh-missing-tyopaikan-y-tunnus)
                  {:error :disallowed-update}))
         :else

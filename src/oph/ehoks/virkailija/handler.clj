@@ -177,7 +177,7 @@
     (when (some? oh-missing-tyopaikan-y-tunnus)
       (assoc
         (response/bad-request!
-          {:error (str "tyopaikan-y-tunnus missing for new or active "
+          {:error (str "tyopaikan-y-tunnus missing for "
                        "osaamisen hankkimistapa: "
                        oh-missing-tyopaikan-y-tunnus)})
         :audit-data {:new hoks}))))
