@@ -9,7 +9,8 @@
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log])
+  (:import (java.time LocalDate)))
 
 (defn get-hoks-values [h]
   (let [id (:id h)]
@@ -167,6 +168,48 @@
   (sqs/send-amis-palaute-message
     (sqs/build-hoks-osaaminen-saavutettu-msg hoks-id os-saavut-pvm hoks)))
 
+(defn get-osaamisen-hankkimistavat [hoks]
+  (concat
+    (mapcat
+      :osaamisen-hankkimistavat
+      (:hankittavat-ammat-tutkinnon-osat hoks))
+    (mapcat
+      :osaamisen-hankkimistavat
+      (:hankittavat-paikalliset-tutkinnon-osat hoks))
+    (mapcat :osaamisen-hankkimistavat
+            (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
+
+(defn- should-check-hankkimistapa-y-tunnus? [oh]
+  (let [kayttoonottopvm (LocalDate/parse "2021-08-25")]
+    (try
+      (or
+        (or (.isAfter (:alku oh) kayttoonottopvm)
+            (.isEqual (:alku oh) kayttoonottopvm))
+        (and
+          (.isBefore (:alku oh) kayttoonottopvm)
+          (.isAfter (:loppu oh) kayttoonottopvm)))
+      (catch Exception e
+        (log/info "should-check-hankkimistapa-y-tunnus? check failed for:")
+        (log/info oh)
+        (log/info e)))))
+
+(defn- y-tunnus-missing? [oh]
+  (when (and
+          (or
+            (= (:osaamisen-hankkimistapa-koodi-uri oh)
+               "osaamisenhankkimistapa_koulutussopimus")
+            (= (:osaamisen-hankkimistapa-koodi-uri oh)
+               "osaamisenhankkimistapa_oppisopimus"))
+          (should-check-hankkimistapa-y-tunnus? oh)
+          (:tyopaikalla-jarjestettava-koulutus oh))
+    (when (nil? (get-in oh [:tyopaikalla-jarjestettava-koulutus
+                            :tyopaikan-y-tunnus]))
+      oh)))
+
+(defn missing-tyopaikan-y-tunnus? [osaamisen-hankkimistavat]
+  (when (seq osaamisen-hankkimistavat)
+    (some y-tunnus-missing? osaamisen-hankkimistavat)))
+
 (defn replace-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
@@ -178,7 +221,10 @@
           new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
           new-oppija-oid (:oppija-oid new-values)
           new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
-                                            new-values)]
+                                            new-values)
+          osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
+          oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
+                                          osaamisen-hankkimistavat)]
       (cond
         (and (some? new-opiskeluoikeus-oid)
              (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
@@ -188,6 +234,11 @@
         (and (some? new-oppija-oid) (not= new-oppija-oid old-oppija-oid))
         (throw (ex-info
                  "Oppija-oid update not allowed!"
+                 {:error :disallowed-update}))
+        (some? oh-missing-tyopaikan-y-tunnus)
+        (throw (ex-info
+                 (str "tyopaikan-y-tunnus missing for "
+                      "osaamisen hankkimistapa: " oh-missing-tyopaikan-y-tunnus)
                  {:error :disallowed-update}))
         :else
         (do
@@ -228,7 +279,10 @@
           new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
           new-oppija-oid (:oppija-oid new-values)
           new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
-                                            new-values)]
+                                            new-values)
+          osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
+          oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
+                                          osaamisen-hankkimistavat)]
       (cond
         (and (some? new-opiskeluoikeus-oid)
              (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
@@ -238,6 +292,11 @@
         (and (some? new-oppija-oid) (not= new-oppija-oid old-oppija-oid))
         (throw (ex-info
                  "Oppija-oid update not allowed!"
+                 {:error :disallowed-update}))
+        (some? oh-missing-tyopaikan-y-tunnus)
+        (throw (ex-info
+                 (str "tyopaikan-y-tunnus missing for "
+                      "osaamisen hankkimistapa: " oh-missing-tyopaikan-y-tunnus)
                  {:error :disallowed-update}))
         :else
         (let [h (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)]
