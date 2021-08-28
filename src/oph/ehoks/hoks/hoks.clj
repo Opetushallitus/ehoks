@@ -9,6 +9,7 @@
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
+            [oph.ehoks.external.koski :as k]
             [clojure.tools.logging :as log])
   (:import (java.time LocalDate)))
 
@@ -230,13 +231,47 @@
   (and (some? new-osp)
        (nil? old-osp)))
 
+(defn check-suoritus-type? [suoritus]
+  (or (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkinto")
+      (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkintoosittainen")))
+
+(defn get-suoritus [opiskeluoikeus]
+  (reduce
+    (fn [_ suoritus]
+      (when (check-suoritus-type? suoritus)
+        (reduced suoritus)))
+    nil (:suoritukset opiskeluoikeus)))
+
+(defn get-kysely-type [opiskeluoikeus]
+  (let [tyyppi (get-in
+                 (get-suoritus opiskeluoikeus)
+                 [:tyyppi :koodiarvo])]
+    (cond
+      (= tyyppi "ammatillinentutkinto")
+      "tutkinnon_suorittaneet"
+      (= tyyppi "ammatillinentutkintoosittainen")
+      "tutkinnon_osia_suorittaneet")))
+
 (defn- send-paattokysely [hoks-id os-saavut-pvm hoks]
-  (log/infof
-    (str "Sending päättökysely for hoks id %s. "
-         "Triggered by hoks update including osaamisen-saavuttamisen-pvm %s")
-    hoks-id os-saavut-pvm)
-  (sqs/send-amis-palaute-message
-    (sqs/build-hoks-osaaminen-saavutettu-msg hoks-id os-saavut-pvm hoks)))
+  (try (let [opiskeluoikeus (k/get-opiskeluoikeus-info
+                              (:opiskeluoikeus-oid hoks))
+             kyselytyyppi (get-kysely-type opiskeluoikeus)]
+         (log/infof
+           (str "Sending päättökysely for hoks id %s."
+                "Triggered by hoks update including os-saavuttamisen-pvm %s. "
+                "Kyselyn tyyppi: %s")
+           hoks-id os-saavut-pvm kyselytyyppi)
+         (println (sqs/build-hoks-osaaminen-saavutettu-msg
+                    hoks-id os-saavut-pvm hoks kyselytyyppi))
+         (sqs/send-amis-palaute-message
+           (sqs/build-hoks-osaaminen-saavutettu-msg
+             hoks-id os-saavut-pvm hoks kyselytyyppi)))
+       (catch Exception e
+         (log/info e)
+         (log/infof (str "Error in sending päättökysely for hoks id %s. "
+                         "os-saavuttamisen-pvm %s. "
+                         "opiskeluoikeus-oid %s.")
+                    hoks-id os-saavut-pvm (:opiskeluoikeus-oid hoks)))))
 
 (defn get-osaamisen-hankkimistavat [hoks]
   (concat
