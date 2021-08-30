@@ -268,8 +268,8 @@
              (sqs/build-hoks-osaaminen-saavutettu-msg
                hoks-id os-saavut-pvm hoks kyselytyyppi))))
        (catch Exception e
-         (log/info e)
-         (log/infof (str "Error in sending päättökysely for hoks id %s. "
+         (log/warn e)
+         (log/warnf (str "Error in sending päättökysely for hoks id %s. "
                          "os-saavuttamisen-pvm %s. "
                          "opiskeluoikeus-oid %s.")
                     hoks-id os-saavut-pvm (:opiskeluoikeus-oid hoks)))))
