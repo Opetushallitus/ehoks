@@ -260,7 +260,7 @@
                  (some? opiskeluoikeus)
                  (some? kyselytyyppi))
            (log/infof
-             (str "Sending päättökysely for hoks id %s."
+             (str "Sending päättökysely for hoks id %s. "
                   "Triggered by hoks update including os-saavuttamisen-pvm %s. "
                   "Kyselyn tyyppi: %s")
              hoks-id os-saavut-pvm kyselytyyppi)
