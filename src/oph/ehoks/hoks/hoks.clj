@@ -256,14 +256,14 @@
   (try (let [opiskeluoikeus (k/get-opiskeluoikeus-info
                               (:opiskeluoikeus-oid hoks))
              kyselytyyppi (get-kysely-type opiskeluoikeus)]
-         (log/infof
-           (str "Sending päättökysely for hoks id %s."
-                "Triggered by hoks update including os-saavuttamisen-pvm %s. "
-                "Kyselyn tyyppi: %s")
-           hoks-id os-saavut-pvm kyselytyyppi)
          (when (and
                  (some? opiskeluoikeus)
                  (some? kyselytyyppi))
+           (log/infof
+             (str "Sending päättökysely for hoks id %s."
+                  "Triggered by hoks update including os-saavuttamisen-pvm %s. "
+                  "Kyselyn tyyppi: %s")
+             hoks-id os-saavut-pvm kyselytyyppi)
            (sqs/send-amis-palaute-message
              (sqs/build-hoks-osaaminen-saavutettu-msg
                hoks-id os-saavut-pvm hoks kyselytyyppi))))
