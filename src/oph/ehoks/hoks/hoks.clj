@@ -261,11 +261,12 @@
                 "Triggered by hoks update including os-saavuttamisen-pvm %s. "
                 "Kyselyn tyyppi: %s")
            hoks-id os-saavut-pvm kyselytyyppi)
-         (println (sqs/build-hoks-osaaminen-saavutettu-msg
-                    hoks-id os-saavut-pvm hoks kyselytyyppi))
-         (sqs/send-amis-palaute-message
-           (sqs/build-hoks-osaaminen-saavutettu-msg
-             hoks-id os-saavut-pvm hoks kyselytyyppi)))
+         (when (and
+                 (some? opiskeluoikeus)
+                 (some? kyselytyyppi))
+           (sqs/send-amis-palaute-message
+             (sqs/build-hoks-osaaminen-saavutettu-msg
+               hoks-id os-saavut-pvm hoks kyselytyyppi))))
        (catch Exception e
          (log/info e)
          (log/infof (str "Error in sending päättökysely for hoks id %s. "
