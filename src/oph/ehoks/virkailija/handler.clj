@@ -428,8 +428,7 @@
                                 (filter
                                   #(and
                                      (= (:hoks-id %1) hoks-id)
-                                     (not (nil? (:lahetystila %1)))
-                                     (not= (:lahetystila %1) "ei_lahetetty"))
+                                     (not (nil? (:lahetystila %1))))
                                   kyselylinkit))]
                           (restful/rest-ok lahetysdata)))
 

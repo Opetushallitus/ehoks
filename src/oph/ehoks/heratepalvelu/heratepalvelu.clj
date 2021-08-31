@@ -41,21 +41,15 @@
     (fn [linkit linkki]
       (try
         (let [status (arvo/get-kyselylinkki-status
-                       (:kyselylinkki linkki))
-              voimassa (f/parse
-                         (:date-time f/formatters)
-                         (:voimassa_loppupvm status))]
-          (if (or (:vastattu status)
-                  (t/after? (t/now) voimassa))
-            (do (h/delete-kyselylinkki!
-                  (:kyselylinkki linkki))
-                linkit)
-            (conj linkit (assoc
-                           linkki
-                           :voimassa-loppupvm
-                           (:voimassa_loppupvm status)))))
+                       (:kyselylinkki linkki))]
+          (conj linkit (assoc
+                         linkki
+                         :voimassa-loppupvm
+                         (:voimassa_loppupvm status)
+                         :vastattu
+                         (:vastattu status))))
         (catch Exception e
-          (print e)
+          (log/error e)
           (throw e))))
     []
     (h/get-kyselylinkit-by-oppija-oid oppija-oid)))

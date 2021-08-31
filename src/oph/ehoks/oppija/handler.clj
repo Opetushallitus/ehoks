@@ -21,7 +21,9 @@
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppija.share-handler :as share-handler]
-            [oph.ehoks.oppija.oppija-external :as oppija-external]))
+            [oph.ehoks.oppija.oppija-external :as oppija-external]
+            [clojure.string :as str])
+  (:import (java.time LocalDate)))
 
 (defn wrap-match-user [handler]
   (fn
@@ -101,8 +103,18 @@
                     :return (rest/response [s/Any])
                     (try
                       (let [kyselylinkit
-                            (map
-                              :kyselylinkki
+                            (reduce
+                              #(if (or (:vastattu %2)
+                                       (.isAfter
+                                         (LocalDate/now)
+                                         (LocalDate/parse
+                                           (first
+                                             (str/split
+                                               (:voimassa_loppupvm %2)
+                                               #"T")))))
+                                 %1
+                                 (conj %1 (:kyselylinkki %2)))
+                              []
                               (heratepalvelu/get-oppija-kyselylinkit oid))]
                         (rest/rest-ok kyselylinkit))
                       (catch Exception e
