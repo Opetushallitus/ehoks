@@ -166,6 +166,10 @@
         (sqs/send-amis-palaute-message
           (sqs/build-hoks-hyvaksytty-msg
             (:id saved-hoks) h)))
+      (when (:osaamisen-saavuttamisen-pvm h)
+        (send-paattokysely (:id saved-hoks)
+                           (:osaamisen-saavuttamisen-pvm h)
+                           h))
       (assoc
         saved-hoks
         :aiemmin-hankitut-ammat-tutkinnon-osat
