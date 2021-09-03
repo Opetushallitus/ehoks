@@ -329,9 +329,13 @@
           old-oppija-oid (:oppija-oid hoks)
           old-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
                                             hoks)
+          old-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
+                                            hoks)
           new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
           new-oppija-oid (:oppija-oid new-values)
           new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
+                                            new-values)
+          new-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
                                             new-values)
           osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
           oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
@@ -377,7 +381,12 @@
                   old-osaamisen-saavuttamisen-pvm
                   new-osaamisen-saavuttamisen-pvm)
             (send-paattokysely hoks-id
-                               new-osaamisen-saavuttamisen-pvm hoks)))))))
+                               new-osaamisen-saavuttamisen-pvm hoks))
+          (when (and
+                  (true? new-osaamisen-hankkimisen-tarve)
+                  (not (true? old-osaamisen-hankkimisen-tarve)))
+            (sqs/send-amis-palaute-message
+              (sqs/build-hoks-hyvaksytty-msg hoks-id hoks))))))))
 
 (defn update-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
@@ -387,9 +396,13 @@
           old-oppija-oid (:oppija-oid hoks)
           old-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
                                             hoks)
+          old-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
+                                            hoks)
           new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
           new-oppija-oid (:oppija-oid new-values)
           new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
+                                            new-values)
+          new-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
                                             new-values)
           osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
           oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
@@ -415,6 +428,11 @@
                   old-osaamisen-saavuttamisen-pvm
                   new-osaamisen-saavuttamisen-pvm)
             (send-paattokysely hoks-id new-osaamisen-saavuttamisen-pvm hoks))
+          (when (and
+                  (true? new-osaamisen-hankkimisen-tarve)
+                  (not (true? old-osaamisen-hankkimisen-tarve)))
+            (sqs/send-amis-palaute-message
+              (sqs/build-hoks-hyvaksytty-msg hoks-id hoks)))
           h)))))
 
 (defn insert-kyselylinkki! [m]
