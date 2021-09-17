@@ -1,11 +1,12 @@
 (ns oph.ehoks.heratepalvelu.heratepalvelu
-  (:require [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.external.aws-sqs :as sqs]
-            [clojure.tools.logging :as log]
-            [oph.ehoks.hoks.hoks :as h]
-            [clj-time.core :as t]
+  (:require [clj-time.core :as t]
             [clj-time.format :as f]
-            [oph.ehoks.external.arvo :as arvo]))
+            [clojure.tools.logging :as log]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.external.arvo :as arvo]
+            [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.external.koski :as k]
+            [oph.ehoks.hoks.hoks :as h]))
 
 (defn find-finished-workplace-periods
   "Queries for all finished workplace periods between start and end"
@@ -62,20 +63,35 @@
 (defn set-tep-kasitelty [hankkimistapa-id to]
   (db-hoks/update-osaamisen-hankkimistapa-tep-kasitelty hankkimistapa-id to))
 
+(defn- send-kyselyt-for-hoksit [hoksit build-msg]
+  (loop [hoks (first hoksit)
+         r (rest hoksit)
+         c 0]
+    (if (:osaamisen-hankkimisen-tarve hoks)
+      (do
+        (if-let [msg (build-msg hoks)]
+          (sqs/send-amis-palaute-message msg))
+        (recur (first r) (rest r) (inc c)))
+      (if (not-empty r)
+        (recur (first r) (rest r) c)
+        c))))
+
 (defn resend-aloituskyselyherate-between [from to]
-  (let [hoksit (db-hoks/select-hoksit-created-between from to)]
-    (loop [hoks (first hoksit)
-           r (rest hoksit)
-           c 0]
-      (if (:osaamisen-hankkimisen-tarve hoks)
-        (do
-          (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg
-                                           (:id hoks) hoks))
-          (recur (first r)
-                 (rest r)
-                 (inc c)))
-        (if (not-empty r)
-          (recur (first r)
-                 (rest r)
-                 c)
-          c)))))
+  (send-kyselyt-for-hoksit (db-hoks/select-hoksit-created-between from to)
+                           #(sqs/build-hoks-hyvaksytty-msg (:id %) %)))
+
+;; TODO still not entirely sure about this, but we have time to think
+(defn resend-paattokyselyherate-between [from to]
+  (send-kyselyt-for-hoksit
+    (db-hoks/select-hoksit-finished-between from to)
+    (fn [hoks]
+      (if-let [opiskeluoikeus (k/get-opiskeluoikeus-info
+                                (:opiskeluoikeus-oid hoks))]
+        (if-let [kyselytyyppi (h/get-kysely-type opiskeluoikeus)]
+          (sqs/build-hoks-osaaminen-saavutettu-msg
+            (:id hoks)
+            (:osaamisen-saavuttamisen-pvm hoks)
+            hoks
+            kyselytyyppi))))))
+
+

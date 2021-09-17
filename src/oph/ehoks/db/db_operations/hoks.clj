@@ -267,6 +267,11 @@
     [queries/select-hoksit-created-between from to]
     {:row-fn hoks-from-sql}))
 
+(defn select-hoksit-finished-between [from to]
+  (db-ops/query
+    [queries/select-hoksit-finished-between from to]
+    {:row-fn hoks-from-sql}))
+
 (defn- generate-unique-eid []
   (loop [eid nil]
     (if (or (nil? eid) (seq (select-hoksit-eid-by-eid eid)))

@@ -40,4 +40,12 @@
         :query-params [from :- LocalDate
                        to :- LocalDate]
         (let [count (hp/resend-aloituskyselyherate-between from to)]
+          (restful/rest-ok {:count count})))
+
+      (c-api/POST "/hoks/resend-paattoherate" request
+        :summary "Lähettää uudet päättökyselyherätteet herätepalveluun"
+        :header-params [caller-id :- s/Str]
+        :query-params [from :- LocalDate
+                       to :- LocalDate]
+        (let [count (hp/resend-paattokyselyherate-between from to)]
           (restful/rest-ok {:count count}))))))
