@@ -93,5 +93,3 @@
             (:osaamisen-saavuttamisen-pvm hoks)
             hoks
             kyselytyyppi))))))
-
-
