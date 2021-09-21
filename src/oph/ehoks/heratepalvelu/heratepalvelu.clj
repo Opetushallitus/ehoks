@@ -80,7 +80,6 @@
   (send-kyselyt-for-hoksit (db-hoks/select-hoksit-created-between from to)
                            #(sqs/build-hoks-hyvaksytty-msg (:id %) %)))
 
-;; TODO still not entirely sure about this, but we have time to think
 (defn resend-paattokyselyherate-between [from to]
   (send-kyselyt-for-hoksit
     (db-hoks/select-hoksit-finished-between from to)
