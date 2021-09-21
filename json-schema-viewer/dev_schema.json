@@ -1003,15 +1003,11 @@
     "Environment": {
       "type": "object",
       "properties": {
-        "opintopolku-login-url": { "type": "string" },
-        "eperusteet-peruste-url": { "type": "string" },
-        "opintopolku-logout-url": { "type": "string" }
+        "eperusteet-peruste-url": { "type": "string" }
       },
       "additionalProperties": false,
       "required": [
-        "opintopolku-login-url",
-        "eperusteet-peruste-url",
-        "opintopolku-logout-url"
+        "eperusteet-peruste-url"
       ]
     },
     "ExtendedKoodistoKoodi": {
@@ -3295,12 +3291,6 @@
       },
       "additionalProperties": false,
       "required": ["meta", "data"]
-    },
-    "Response36440Meta": {
-      "type": "object",
-      "properties": { "opintopolku-login-url": { "type": "string" } },
-      "additionalProperties": false,
-      "required": ["opintopolku-login-url"]
     },
     "Response36441": {
       "type": "object",

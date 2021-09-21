@@ -61,36 +61,6 @@
   (c-api/context "/session" []
 
     (c-api/GET "/opintopolku/" [:as request]
-      :summary "Opintopolkutunnistautumisen päätepiste"
-      :description "Opintopolkutunnistautumisen jälkeen päädytään tänne.
-                    Sovellus ottaa käyttäjän tunnistetiedot headereista ja
-                    huolimatta metodin tyypistä luodaan uusi istunto. Tämä
-                    ulkoisen järjestelmän vuoksi.
-                    Lopuksi käyttäjä ohjataan käyttöliittymän urliin."
-      (let [headers (:headers request)
-            locale (get-in request [:query-params "locale"])]
-        (if-let [result (opintopolku/validate headers)]
-          (do
-            (log/errorf "Invalid headers: %s" result)
-            (response/bad-request))
-          (let [user (opintopolku/parse headers)]
-            (let [user-info-response (onr/find-student-by-nat-id (:hetu user))
-                  user-info (first (get-in user-info-response [:body :results]))
-                  oid (:oidHenkilo user-info)]
-              (when-not (= (:status user-info-response) 200)
-                (throw (ex-info
-                         "External integration error" user-info-response)))
-              (if (seq user-info)
-                (assoc-in
-                  (response/see-other
-                    (format "%s/%s?lang=%s"
-                            ((keyword (str "frontend-url-" locale)) config)
-                            (:frontend-url-path config)
-                            (str locale)))
-                  [:session :user] (assoc user :oid oid))
-                (throw (ex-info "No user found" user-info-response))))))))
-
-    (c-api/GET "/opintopolku2/" [:as request]
       :summary "Oppijan Opintopolku-kirjautumisen endpoint (CAS)"
       :query-params [ticket :- s/Str]
       (let [cas-ticket-validation-result (cas/validate-oppija-ticket
@@ -105,7 +75,7 @@
             user-info ticket (:server-name request))
           (respond-with-failed-authentication cas-ticket-validation-result))))
 
-    (c-api/POST "/opintopolku2/" []
+    (c-api/POST "/opintopolku/" []
       :summary "Oppijan Opintopolku-uloskirjautumisen endpoint (CAS)"
       :form-params [logoutRequest :- s/Str]
       (if-let [ticket (some #(when (= (:tag %) :SessionIndex)

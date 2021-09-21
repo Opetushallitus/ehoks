@@ -5,11 +5,6 @@
  :cas-username "{{ehoks_cas_username}}"
  :cas-password "{{ehoks_cas_password}}"
  :client-sub-system-code "{{ehoks_client_sub_system_code}}"
- :opintopolku-login-url-fi "{{ehoks_opintopolku_login_url_fi}}"
- :opintopolku-login-url-sv "{{ehoks_opintopolku_login_url_sv}}"
- :opintopolku-logout-url-fi "{{ehoks_opintopolku_logout_url_fi}}"
- :opintopolku-logout-url-sv "{{ehoks_opintopolku_logout_url_sv}}"
- :opintopolku-return-url "{{ehoks_opintopolku_return_url}}"
  :opintopolku-host "{{ehoks_opintopolku_host}}"
  :db-server "{{ehoks_db_server}}"
  :db-port {{ehoks_db_port}}

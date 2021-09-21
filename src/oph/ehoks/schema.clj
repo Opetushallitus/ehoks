@@ -44,12 +44,6 @@
               :frontend-url-path s/Str
               :eperusteet-peruste-url s/Str
               :tyopaikan-toimija-frontend-path s/Str
-              :opintopolku-login-url-fi s/Str
-              :opintopolku-login-url-sv s/Str
-              :opintopolku-logout-url-fi s/Str
-              :opintopolku-logout-url-sv s/Str
-              :opintopolku-return-url s/Str
-              :opintopolku-tt-auth-url s/Str
               :cas-username s/Str
               :cas-password s/Str
               :client-sub-system-code s/Str
