@@ -22,7 +22,6 @@
 (defn send-workplace-periods
   "Formats and sends a list of periods to a SQS queue"
   [periods]
-  (log/info periods)
   (doseq [period periods]
     (sqs/send-tyoelamapalaute-message (sqs/build-tyoelamapalaute-msg period))))
 
