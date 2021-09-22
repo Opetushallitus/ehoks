@@ -22,7 +22,7 @@
         :summary "Hakee organisaatiot oidien perusteella"
         :return (restful/response [s/Any])
         (restful/rest-ok
-          (organisaatio/find-organisaatiot oids)))
+          (time (organisaatio/find-organisaatiot oids))))
 
       (c-api/GET "/:oid" []
         :path-params [oid :- s/Str]
