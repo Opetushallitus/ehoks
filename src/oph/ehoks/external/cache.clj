@@ -50,8 +50,8 @@
 (defn get-cached
   "Get response of url if one exists"
   [url]
-  (when-let [response (time (get @cache url))]
-    (when-not (time (expired? response))
+  (when-let [response (get @cache url)]
+    (when-not (expired? response)
       (log/debugf "Using cached version for %s" url)
       response)))
 
