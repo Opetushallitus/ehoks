@@ -35,23 +35,23 @@
     periods))
 
 (defn get-oppija-kyselylinkit
-  "Returns all active links and removes answered and outdated links from db"
+  "Returns all feedback links for oppija"
   [oppija-oid]
-  (reduce
-    (fn [linkit linkki]
-      (try
-        (let [status (arvo/get-kyselylinkki-status
-                       (:kyselylinkki linkki))]
-          (conj linkit (assoc
-                         linkki
-                         :voimassa-loppupvm
-                         (:voimassa_loppupvm status)
-                         :vastattu
-                         (:vastattu status))))
-        (catch Exception e
-          (log/error e)
-          (throw e))))
-    []
+  (map
+    #(try
+       (if (or (not (:vastattu %1))
+               (nil? (:voimassa_loppupvm %1)))
+         (let [status (arvo/get-kyselylinkki-status
+                        (:kyselylinkki %1))]
+           (h/update-kyselylinkki!
+             (assoc
+               %1
+               :voimassa_loppupvm (:voimassa_loppupvm status)
+               :vastattu (:vastattu status))))
+         %1)
+       (catch Exception e
+         (log/error e)
+         (throw e)))
     (h/get-kyselylinkit-by-oppija-oid oppija-oid)))
 
 (defn set-tep-kasitelty [hankkimistapa-id to]

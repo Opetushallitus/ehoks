@@ -103,18 +103,15 @@
                     :return (rest/response [s/Any])
                     (try
                       (let [kyselylinkit
-                            (reduce
-                              #(if (or (:vastattu %2)
-                                       (.isAfter
-                                         (LocalDate/now)
-                                         (LocalDate/parse
-                                           (first
-                                             (str/split
-                                               (:voimassa_loppupvm %2)
-                                               #"T")))))
-                                 %1
-                                 (conj %1 (:kyselylinkki %2)))
-                              []
+                            (filter
+                              #(and (not (:vastattu %1))
+                                    (not (.isAfter
+                                           (LocalDate/now)
+                                           (LocalDate/parse
+                                             (first
+                                               (str/split
+                                                 (:voimassa_loppupvm %1)
+                                                 #"T"))))))
                               (heratepalvelu/get-oppija-kyselylinkit oid))]
                         (rest/rest-ok kyselylinkit))
                       (catch Exception e
