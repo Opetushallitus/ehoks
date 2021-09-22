@@ -32,12 +32,4 @@
       (c-api/PATCH "/osaamisenhankkimistavat/:id/kasitelty" []
         :path-params [id :- s/Int]
         (hp/set-tep-kasitelty id true)
-        (response/no-content))
-
-      (c-api/POST "/hoks/resend-aloitusherate" request
-        :summary "Lähettää uudet aloituskyselyherätteet herätepalveluun"
-        :header-params [caller-id :- s/Str]
-        :query-params [from :- LocalDate
-                       to :- LocalDate]
-        (let [count (hp/resend-aloituskyselyherate-between from to)]
-          (restful/rest-ok {:count count}))))))
+        (response/no-content)))))
