@@ -50,10 +50,13 @@
 (defn get-cached
   "Get response of url if one exists"
   [url]
-  (when-let [response (get @cache url)]
-    (when-not (expired? response)
-      (log/debugf "Using cached version for %s" url)
-      response)))
+  (do
+    (println "get-cached function GET")
+    (when-let [response (time (get @cache url))]
+      (println "get-cached function expired")
+      (when-not (time (expired? response))
+        (log/debugf "Using cached version for %s" url)
+        response))))
 
 (defn add-cached-response!
   "Add response to cache"
@@ -73,14 +76,19 @@
   "Returns cached response if one exists. In other case performs request and
    stores response to cache."
   [{url :url options :options :as data}]
-  (or (get-cached (encode-url url (:query-params options)))
-      (let [response (if (:authenticate? data)
-                       (cas/with-service-ticket data)
-                       (c/with-api-headers data))]
-        (future (clean-cache!))
-        (add-cached-response!
-          (encode-url url (:query-params options)) response)
-        (assoc response :cached :MISS))))
+  (do
+    (println "with-cache! OR")
+    (or (get-cached (encode-url url (:query-params options)))
+        (let [response (if (:authenticate? data)
+                         (cas/with-service-ticket data)
+                         (c/with-api-headers data))]
+          (println "future")
+          (time (future (clean-cache!)))
+          (println "add-cached-response")
+          (time (add-cached-response!
+                  (encode-url url (:query-params options)) response))
+          (println "assoc")
+          (time (assoc response :cached :MISS))))))
 
 (defn clear-cache!
   "Removes all items in cache"
