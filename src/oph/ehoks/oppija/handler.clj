@@ -22,7 +22,8 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppija.share-handler :as share-handler]
             [oph.ehoks.oppija.oppija-external :as oppija-external]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [clojure.tools.logging :as log])
   (:import (java.time LocalDate)))
 
 (defn wrap-match-user [handler]
@@ -103,19 +104,17 @@
                     :return (rest/response [s/Any])
                     (try
                       (let [kyselylinkit
-                            (filter
-                              #(and (not (:vastattu %1))
-                                    (not (.isAfter
-                                           (LocalDate/now)
-                                           (LocalDate/parse
-                                             (first
-                                               (str/split
-                                                 (:voimassa_loppupvm %1)
-                                                 #"T"))))))
-                              (heratepalvelu/get-oppija-kyselylinkit oid))]
+                            (map
+                              :kyselylinkki
+                              (filter
+                                #(and (not (:vastattu %1))
+                                      (not (.isAfter
+                                             (LocalDate/now)
+                                             (:voimassa-loppupvm %1))))
+                                (heratepalvelu/get-oppija-kyselylinkit oid)))]
                         (rest/rest-ok kyselylinkit))
                       (catch Exception e
-                        (print e)
+                        (log/error e)
                         (throw e)))))))
 
             (c-api/context "/jaot" []

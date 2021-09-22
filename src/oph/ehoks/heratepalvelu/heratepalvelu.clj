@@ -6,7 +6,10 @@
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
-            [oph.ehoks.hoks.hoks :as h]))
+            [oph.ehoks.hoks.hoks :as h]
+            [clojure.string :as str])
+  (:import (java.time LocalDate)
+           (java.time.format DateTimeFormatter)))
 
 (defn find-finished-workplace-periods
   "Queries for all finished workplace periods between start and end"
@@ -39,15 +42,20 @@
   [oppija-oid]
   (map
     #(try
-       (if (or (not (:vastattu %1))
-               (nil? (:voimassa_loppupvm %1)))
+       (if-not (:vastattu %1)
          (let [status (arvo/get-kyselylinkki-status
-                        (:kyselylinkki %1))]
+                        (:kyselylinkki %1))
+               loppupvm (LocalDate/parse
+                          (first
+                            (str/split (:voimassa_loppupvm status) #"T")))]
            (h/update-kyselylinkki!
-             (assoc
-               %1
-               :voimassa_loppupvm (:voimassa_loppupvm status)
-               :vastattu (:vastattu status))))
+             {:kyselylinkki (:kyselylinkki %1)
+              :voimassa_loppupvm loppupvm
+              :vastattu (:vastattu status)})
+           (assoc
+             %1
+             :voimassa-loppupvm loppupvm
+             :vastattu (:vastattu status)))
          %1)
        (catch Exception e
          (log/error e)
