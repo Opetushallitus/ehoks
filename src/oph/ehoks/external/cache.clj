@@ -50,8 +50,8 @@
 (defn get-cached
   "Get response of url if one exists"
   [url]
-  (when-let [response (get @cache url)]
-    (when-not (expired? response)
+  (when-let [response (time (get @cache url))]
+    (when-not (time (expired? response))
       (log/debugf "Using cached version for %s" url)
       response)))
 
@@ -73,7 +73,7 @@
   "Returns cached response if one exists. In other case performs request and
    stores response to cache."
   [{url :url options :options :as data}]
-  (or (get-cached (encode-url url (:query-params options)))
+  (or (get-cached (time (encode-url url (:query-params options))))
       (let [response (if (:authenticate? data)
                        (cas/with-service-ticket data)
                        (c/with-api-headers data))]
