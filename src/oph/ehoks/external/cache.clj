@@ -73,7 +73,7 @@
   "Returns cached response if one exists. In other case performs request and
    stores response to cache."
   [{url :url options :options :as data}]
-  (or (get-cached (time (encode-url url (:query-params options))))
+  (or (get-cached (encode-url url (:query-params options)))
       (let [response (if (:authenticate? data)
                        (cas/with-service-ticket data)
                        (c/with-api-headers data))]

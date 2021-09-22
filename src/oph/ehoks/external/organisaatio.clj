@@ -29,14 +29,14 @@
     :body))
 
 (defn try-to-get-organisaatiot-from-cache! [oids]
-  (cache/with-cache!
-    {:method :post
-     :service (u/get-url "organisaatio-service-url")
-     :url (u/get-url "organisaatio-service.find-organisaatiot")
-     :options {:as :json
-               :body (json/write-str oids)
-               :query-params {:oids oids}
-               :content-type :json}}))
+  (time (cache/with-cache!
+          {:method :post
+           :service (u/get-url "organisaatio-service-url")
+           :url (u/get-url "organisaatio-service.find-organisaatiot")
+           :options {:as :json
+                     :body (json/write-str oids)
+                     :query-params {:oids oids}
+                     :content-type :json}})))
 
 (defn find-organisaatiot [oids]
   (:body (try-to-get-organisaatiot-from-cache! oids)))
