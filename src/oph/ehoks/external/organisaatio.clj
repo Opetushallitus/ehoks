@@ -3,7 +3,9 @@
             [oph.ehoks.external.oph-url :as u]
             [clojure.data.json :as json]
             [clj-http.client :refer [success?]]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [oph.ehoks.external.connection :as c]
+            [oph.ehoks.external.cas :as cas]))
 
 (defn get-organisaatio [oid]
   (let [resp
@@ -28,15 +30,42 @@
        :options {:as :json}})
     :body))
 
+;(defn try-to-get-organisaatiot-from-cache! [oids]
+;  (cache/with-cache!
+;    {:method :post
+;     :service (u/get-url "organisaatio-service-url")
+;     :url (u/get-url "organisaatio-service.find-organisaatiot")
+;     :options {:as :json
+;               :body (json/write-str oids)
+;               :query-params {:oids oids}
+;               :content-type :json}}))
+
 (defn try-to-get-organisaatiot-from-cache! [oids]
-  (cache/with-cache!
-    {:method :post
-     :service (u/get-url "organisaatio-service-url")
-     :url (u/get-url "organisaatio-service.find-organisaatiot")
-     :options {:as :json
-               :body (json/write-str oids)
-               :query-params {:oids oids}
-               :content-type :json}}))
+  (let [service (u/get-url "organisaatio-service-url")
+        url (u/get-url "organisaatio-service.find-organisaatiot")
+        req-options {:as :json
+                     :body (json/write-str oids)
+                     :query-params {:oids oids}
+                     :content-type :json}
+        req {:method :post
+             :service service
+             :url url
+             :options req-options}]
+    (or (cache/get-cached (cache/encode-url url (:query-params req-options)))
+        (let [response (c/with-api-headers req)
+              reduced-resp (assoc
+                             response
+                             :body
+                             (reduce (fn [body obj]
+                                       (into
+                                         body
+                                         [(select-keys obj [:oid :nimi])]))
+                                     ()
+                                     (:body response)))]
+          (future (cache/clean-cache!))
+          (cache/add-cached-response!
+            (cache/encode-url url (:query-params req-options)) reduced-resp)
+          (assoc reduced-resp :cached :MISS)))))
 
 (defn find-organisaatiot [oids]
   (:body (try-to-get-organisaatiot-from-cache! oids)))
