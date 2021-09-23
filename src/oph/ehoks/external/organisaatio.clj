@@ -44,14 +44,13 @@
   (let [service (u/get-url "organisaatio-service-url")
         url (u/get-url "organisaatio-service.find-organisaatiot")
         req-options {:as :json
-                     :body (json/write-str oids)
-                     :query-params {:oids oids}
+                     :body (time (json/write-str oids))
                      :content-type :json}
         req {:method :post
              :service service
              :url url
              :options req-options}]
-    (or (cache/get-cached (cache/encode-url url (:query-params req-options)))
+    (or (cache/get-cached (hash oids))
         (let [response (c/with-api-headers req)
               reduced-resp (assoc
                              response
@@ -64,7 +63,7 @@
                                      (:body response)))]
           (future (cache/clean-cache!))
           (cache/add-cached-response!
-            (cache/encode-url url (:query-params req-options)) reduced-resp)
+            (hash oids) reduced-resp)
           (assoc reduced-resp :cached :MISS)))))
 
 (defn find-organisaatiot [oids]
