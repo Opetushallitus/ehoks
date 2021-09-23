@@ -45,6 +45,7 @@
         url (u/get-url "organisaatio-service.find-organisaatiot")
         req-options {:as :json
                      :body (time (json/write-str oids))
+                     :query-params {:oids oids}
                      :content-type :json}
         req {:method :post
              :service service
