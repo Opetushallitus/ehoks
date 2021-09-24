@@ -8,8 +8,7 @@
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.hoks.hoks :as h]
             [clojure.string :as str])
-  (:import (java.time LocalDate)
-           (java.time.format DateTimeFormatter)))
+  (:import (java.time LocalDate)))
 
 (defn find-finished-workplace-periods
   "Queries for all finished workplace periods between start and end"
