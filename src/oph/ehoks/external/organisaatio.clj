@@ -50,21 +50,16 @@
              :service service
              :url url
              :options req-options}]
-    (or (cache/get-cached (hash oids))
-        (let [response (c/with-api-headers req)
-              reduced-resp (assoc
-                             response
-                             :body
-                             (reduce (fn [body obj]
-                                       (into
-                                         body
-                                         [(select-keys obj [:oid :nimi])]))
-                                     ()
-                                     (:body response)))]
-          (future (cache/clean-cache!))
-          (cache/add-cached-response!
-            (hash oids) reduced-resp)
-          (assoc reduced-resp :cached :MISS)))))
+    (let [response (c/with-api-headers req)]
+      (assoc
+        response
+        :body
+        (reduce (fn [body obj]
+                  (into
+                    body
+                    [(select-keys obj [:oid :nimi])]))
+                ()
+                (:body response))))))
 
 (defn find-organisaatiot [oids]
   (:body (try-to-get-organisaatiot-from-cache! oids)))
