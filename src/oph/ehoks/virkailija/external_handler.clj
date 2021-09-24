@@ -21,8 +21,8 @@
         :query-params [oids :- [s/Str]]
         :summary "Hakee organisaatiot oidien perusteella"
         :return (restful/response [s/Any])
-        (restful/rest-ok
-          (time (organisaatio/find-organisaatiot oids))))
+        (time (restful/rest-ok
+                (organisaatio/find-organisaatiot oids))))
 
       (c-api/GET "/:oid" []
         :path-params [oid :- s/Str]
