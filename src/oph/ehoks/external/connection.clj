@@ -46,17 +46,17 @@
   [{method :method options :options url :url}]
   (try
     (let [client-method-fn (get-client-fn method)]
-      (client-method-fn url
-                        (-> options
-                            (assoc-in [:headers "Caller-Id"]
-                                      (:client-sub-system-code config))
-                            (assoc-in [:headers "CSRF"]
-                                      (:client-sub-system-code config))
-                            (assoc-in [:cookies "CSRF"]
-                                      {:value (:client-sub-system-code config)
-                                       :path "/"})
-                            (assoc :debug (:debug config false))
-                            (assoc :cookie-policy :standard))))
+      (time (client-method-fn url
+                              (-> options
+                                  (assoc-in [:headers "Caller-Id"]
+                                            (:client-sub-system-code config))
+                                  (assoc-in [:headers "CSRF"]
+                                            (:client-sub-system-code config))
+                                  (assoc-in [:cookies "CSRF"]
+                                            {:value (:client-sub-system-code config)
+                                             :path "/"})
+                                  (assoc :debug (:debug config false))
+                                  (assoc :cookie-policy :standard)))))
     (catch Exception e
       (throw (ex-info (format "HTTP request error: %s" (.getMessage e))
                       (merge
