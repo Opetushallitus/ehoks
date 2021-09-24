@@ -17,11 +17,11 @@
     lokalisointi-handler/routes
 
     (c-api/context "/organisaatio" []
-      (c-api/GET "/find" []
-        :query-params [oids :- [s/Str]]
-        :summary "Hakee organisaatiot oidien perusteella"
-        :return (restful/response [s/Any])
-        (time (restful/rest-ok
+      (time (c-api/GET "/find" []
+              :query-params [oids :- [s/Str]]
+              :summary "Hakee organisaatiot oidien perusteella"
+              :return (restful/response [s/Any])
+              (restful/rest-ok
                 (organisaatio/find-organisaatiot oids))))
 
       (c-api/GET "/:oid" []

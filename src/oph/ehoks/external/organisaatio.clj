@@ -44,7 +44,7 @@
   (let [service (u/get-url "organisaatio-service-url")
         url (u/get-url "organisaatio-service.find-organisaatiot")
         req-options {:as :json
-                     :body (time (json/write-str oids))
+                     :body (json/write-str oids)
                      :content-type :json}
         req {:method :post
              :service service
