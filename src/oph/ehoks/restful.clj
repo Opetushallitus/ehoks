@@ -11,7 +11,7 @@
 (defn rest-ok
   "Create RESTful OK (200) response"
   [body & meta-data]
-  (ok (time (apply response body meta-data))))
+  (ok (apply response body meta-data)))
 
 (defmacro with-not-found-handling
   "Macro for handling automatically not found exception from external service.

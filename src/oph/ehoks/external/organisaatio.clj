@@ -50,7 +50,7 @@
              :service service
              :url url
              :options req-options}]
-    (let [response (c/with-api-headers req)]
+    (let [response (time (c/with-api-headers req))]
       (assoc
         response
         :body
