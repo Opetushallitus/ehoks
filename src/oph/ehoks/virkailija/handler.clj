@@ -401,17 +401,17 @@
                         (let [kyselylinkit
                               (heratepalvelu/get-oppija-kyselylinkit
                                 oppija-oid)
-                              kyselylinkki (:kyselylinkki
-                                             (first
-                                               (filter
-                                                 #(and (= (:hoks-id %1) hoks-id)
-                                                       (= (:tyyppi %1)
-                                                          (:tyyppi data)))
-                                                 kyselylinkit)))
+                              kyselylinkki (first
+                                             (filter
+                                               #(and (= (:hoks-id %1) hoks-id)
+                                                     (= (:tyyppi %1)
+                                                        (:tyyppi data)))
+                                               kyselylinkit))
                               hoks (db-hoks/select-hoks-by-id hoks-id)]
-                          (sqs/send-palaute-resend-message
-                            {:kyselylinkki kyselylinkki
-                             :sahkoposti (:sahkoposti hoks)})
+                          (if-not (:vastattu kyselylinkki)
+                            (sqs/send-palaute-resend-message
+                              {:kyselylinkki (:kyselylinkki kyselylinkki)
+                               :sahkoposti (:sahkoposti hoks)}))
                           (restful/rest-ok
                             {:sahkoposti (:sahkoposti hoks)})))
 
@@ -424,7 +424,7 @@
                                 oppija-oid)
                               lahetysdata
                               (map
-                                #(dissoc %1 :kyselylinkki)
+                                #(dissoc %1 :kyselylinkki :vastattu)
                                 (filter
                                   #(and
                                      (= (:hoks-id %1) hoks-id)
