@@ -1089,13 +1089,13 @@
                           :roles {:oph-super-user true}}]})
                 body (utils/parse-body (:body resp))]
             (t/is (= 200 (:status resp)))
-            (t/is (= (first (:data body))
-                     {:hoks-id           1
-                      :tyyppi            "aloittaneet"
-                      :oppija-oid        "1.2.246.562.24.44000000001"
-                      :alkupvm           (str alkupvm)
-                      :lahetyspvm        (str alkupvm)
-                      :sahkoposti        "testi@testi.fi"
-                      :lahetystila       "viestintapalvelussa"
-                      :voimassa-loppupvm (str (LocalDate/from loppupvm))
-                      :vastattu          false}))))))))
+            (t/is
+              (= (first (:data body))
+                 {:hoks-id           1
+                  :tyyppi            "aloittaneet"
+                  :oppija-oid        "1.2.246.562.24.44000000001"
+                  :alkupvm           (str alkupvm)
+                  :lahetyspvm        (str alkupvm)
+                  :sahkoposti        "testi@testi.fi"
+                  :lahetystila       "viestintapalvelussa"
+                  :voimassa-loppupvm (str (LocalDate/from loppupvm))}))))))))
