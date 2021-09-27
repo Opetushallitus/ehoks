@@ -6,7 +6,9 @@
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
-            [oph.ehoks.hoks.hoks :as h]))
+            [oph.ehoks.hoks.hoks :as h]
+            [clojure.string :as str])
+  (:import (java.time LocalDate)))
 
 (defn find-finished-workplace-periods
   "Queries for all finished workplace periods between start and end"
@@ -19,7 +21,6 @@
 (defn send-workplace-periods
   "Formats and sends a list of periods to a SQS queue"
   [periods]
-  (log/info periods)
   (doseq [period periods]
     (sqs/send-tyoelamapalaute-message (sqs/build-tyoelamapalaute-msg period))))
 
@@ -35,29 +36,28 @@
     periods))
 
 (defn get-oppija-kyselylinkit
-  "Returns all active links and removes answered and outdated links from db"
+  "Returns all feedback links for oppija"
   [oppija-oid]
-  (reduce
-    (fn [linkit linkki]
-      (try
-        (let [status (arvo/get-kyselylinkki-status
-                       (:kyselylinkki linkki))
-              voimassa (f/parse
-                         (:date-time f/formatters)
-                         (:voimassa_loppupvm status))]
-          (if (or (:vastattu status)
-                  (t/after? (t/now) voimassa))
-            (do (h/delete-kyselylinkki!
-                  (:kyselylinkki linkki))
-                linkit)
-            (conj linkit (assoc
-                           linkki
-                           :voimassa-loppupvm
-                           (:voimassa_loppupvm status)))))
-        (catch Exception e
-          (print e)
-          (throw e))))
-    []
+  (map
+    #(try
+       (if-not (:vastattu %1)
+         (let [status (arvo/get-kyselylinkki-status
+                        (:kyselylinkki %1))
+               loppupvm (LocalDate/parse
+                          (first
+                            (str/split (:voimassa_loppupvm status) #"T")))]
+           (h/update-kyselylinkki!
+             {:kyselylinkki (:kyselylinkki %1)
+              :voimassa_loppupvm loppupvm
+              :vastattu (:vastattu status)})
+           (assoc
+             %1
+             :voimassa-loppupvm loppupvm
+             :vastattu (:vastattu status)))
+         %1)
+       (catch Exception e
+         (log/error e)
+         (throw e)))
     (h/get-kyselylinkit-by-oppija-oid oppija-oid)))
 
 (defn set-tep-kasitelty [hankkimistapa-id to]

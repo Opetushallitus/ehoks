@@ -11,7 +11,8 @@
                                          update-kyselylinkki!]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
-            [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]))
+            [oph.ehoks.virkailija.virkailija-test-utils :as v-utils])
+  (:import (java.time LocalDate LocalDateTime)))
 
 (t/use-fixtures :once utils/migrate-database)
 
@@ -1014,8 +1015,8 @@
 
 (t/deftest test-get-kyselylinkit
   (t/testing "Test getting kyselylinkit"
-    (let [alkupvm (java.time.LocalDate/now)
-          loppupvm (.plusMonths (java.time.LocalDateTime/now) 1)]
+    (let [alkupvm (LocalDate/now)
+          loppupvm (.plusMonths (LocalDateTime/now) 1)]
       (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status
                     (fn [_]
                       {:vastattu false
@@ -1089,11 +1090,12 @@
                 body (utils/parse-body (:body resp))]
             (t/is (= 200 (:status resp)))
             (t/is (= (first (:data body))
-                     {:hoks-id 1
-                      :tyyppi "aloittaneet"
-                      :oppija-oid "1.2.246.562.24.44000000001"
-                      :alkupvm (str alkupvm)
-                      :lahetyspvm (str alkupvm)
-                      :sahkoposti "testi@testi.fi"
-                      :lahetystila "viestintapalvelussa"
-                      :voimassa-loppupvm (str loppupvm "Z")}))))))))
+                     {:hoks-id           1
+                      :tyyppi            "aloittaneet"
+                      :oppija-oid        "1.2.246.562.24.44000000001"
+                      :alkupvm           (str alkupvm)
+                      :lahetyspvm        (str alkupvm)
+                      :sahkoposti        "testi@testi.fi"
+                      :lahetystila       "viestintapalvelussa"
+                      :voimassa-loppupvm (str (LocalDate/from loppupvm))
+                      :vastattu          false}))))))))
