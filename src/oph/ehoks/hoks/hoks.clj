@@ -233,7 +233,7 @@
 
 (defn- replace-hato! [hoks-id new-hato-values db-conn]
   (db-ha/delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id
-    hoks-id db-conn)
+    hoks-id db-conn) ;; TODO this should preserve module_id
   (when
    new-hato-values
     (ha/save-hankittavat-ammat-tutkinnon-osat!

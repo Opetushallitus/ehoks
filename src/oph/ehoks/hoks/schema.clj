@@ -153,8 +153,8 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
-    :module-id UUID (str "Tietorakenteen yksilöivä tunniste "
-                         "esimerkiksi tiedon jakamista varten")
+    (s/optional-key :module-id) UUID
+    "Tietorakenteen yksilöivä tunniste esimerkiksi tiedon jakamista varten."
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
     :osaamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
@@ -184,13 +184,6 @@
     "Oppisopimuksen perustan Koodisto-uri "
     (s/optional-key :oppisopimuksen-perusta-koodi-versio) s/Int
     "Oppisopimuksen perustan Koodisto-versio "))
-
-(s/defschema
-  OsaamisenHankkimistapaLuontiJaMuokkaus
-  (modify
-    OsaamisenHankkimistapa
-    "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
-    {:removed [:module-id]}))
 
 (s/defschema
   NaytonJarjestaja
@@ -331,7 +324,7 @@
      (describe
        ""
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
+       [OsaamisenHankkimistapa] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
@@ -426,7 +419,7 @@
        :osa-alueet [YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus]
        "YTO osa-alueet"
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
+       [OsaamisenHankkimistapa] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
@@ -480,7 +473,7 @@
      (describe
        ""
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
+       [OsaamisenHankkimistapa] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
@@ -525,7 +518,7 @@
      (describe
        ""
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
+       [OsaamisenHankkimistapa] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
