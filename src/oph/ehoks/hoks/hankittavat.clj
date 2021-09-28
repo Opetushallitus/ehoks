@@ -177,7 +177,9 @@
                              (:id tho))
             o-db (if (empty? existing)
                    (db/insert-osaamisen-hankkimistapa! to-upsert conn)
-                   (db/update-osaamisen-hankkimistapa! to-upsert conn))]
+                   (do
+                     (db/update-osaamisen-hankkimistapa! to-upsert conn)
+                     {:id (:id (first existing))}))]
         (db/insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
           o-db (:muut-oppimisymparistot oh) conn)
         (db/insert-osaamisen-hankkimistavan-keskeytymisajanjaksot!
