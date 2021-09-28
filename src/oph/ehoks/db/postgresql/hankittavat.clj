@@ -26,12 +26,11 @@
     [queries/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id id]
     {:row-fn h/muu-oppimisymparisto-from-sql}))
 
-(defn select-tyopaikkajakson-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
+(defn select-tyopaikkajakson-keskeytymisajanjaksot-by-oh-id
   "Työpaikkajakson keskeytymisajanjaksot osaamisen hankkimistavalle"
   [id]
   (db-ops/query
-    [queries/select-tyopaikkajakson-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
-     id]
+    [queries/select-tyopaikkajakson-keskeytymisajanjaksot-by-oh-id id]
     {:row-fn h/tyopaikkajakson-keskeytymisajanjakso-from-sql}))
 
 (defn select-osaamisen-osoittamiset-by-ppto-id
@@ -216,23 +215,23 @@
         c)
       db-conn)))
 
-(defn insert-osaamisen-hankkimistavan-tyopaikkajakson-keskeytymisajanjaksot!
+(defn insert-oh-tyopaikkajakson-keskeytymisajanjaksot!
   "Lisää osaamisen hankkimistavan työpaikkajakson keskeytymisajanjaksot"
   ([oh c]
-   (db-ops/insert-multi!
-     :tyopaikkajakson_keskeytymisajanjaksot
-     (map
-       #(db-ops/to-sql
-          (assoc % :osaamisen-hankkimistapa-id (:id oh)))
-       c)))
+    (db-ops/insert-multi!
+      :tyopaikkajakson_keskeytymisajanjaksot
+      (map
+        #(db-ops/to-sql
+           (assoc % :osaamisen-hankkimistapa-id (:id oh)))
+        c)))
   ([oh c db-conn]
-   (db-ops/insert-multi!
-     :tyopaikkajakson_keskeytymisajanjaksot
-     (map
-       #(db-ops/to-sql
-          (assoc % :osaamisen-hankkimistapa-id (:id oh)))
-       c)
-     db-conn)))
+    (db-ops/insert-multi!
+      :tyopaikkajakson_keskeytymisajanjaksot
+      (map
+        #(db-ops/to-sql
+           (assoc % :osaamisen-hankkimistapa-id (:id oh)))
+        c)
+      db-conn)))
 
 (defn insert-hpto-osaamisen-hankkimistapa!
   "Lisää hankittavan paikallisen tutkinnon osan osaamisen hankkimistapa"

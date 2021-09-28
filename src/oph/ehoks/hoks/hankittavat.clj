@@ -26,8 +26,7 @@
         (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
           (:id m))
         :tyopaikkajakson-keskeytymisajanjaksot
-        (db/select-tyopaikkajakson-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
-          (:id m)))
+        (db/select-tyopaikkajakson-keskeytymisajanjaksot-by-oh-id (:id m)))
       :id :tyopaikalla-jarjestettava-koulutus-id)
     (dissoc
       (assoc
@@ -36,8 +35,7 @@
         (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
           (:id m))
         :tyopaikkajakson-keskeytymisajanjaksot
-        (db/select-tyopaikkajakson-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
-          (:id m)))
+        (db/select-tyopaikkajakson-keskeytymisajanjaksot-by-oh-id (:id m)))
       :id)))
 
 (defn get-osaamisen-osoittaminen [id]
@@ -181,7 +179,7 @@
                      (:id tho)) conn)]
         (db/insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
           o-db (:muut-oppimisymparistot oh) conn)
-        (db/insert-osaamisen-hankkimistavan-tyopaikkajakson-keskeytymisajanjaksot!
+        (db/insert-oh-tyopaikkajakson-keskeytymisajanjaksot!
           o-db (:tyopaikkajakson-keskeytymisajanjaksot oh) conn)
         o-db))))
 
