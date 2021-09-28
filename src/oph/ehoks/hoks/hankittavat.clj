@@ -24,6 +24,9 @@
           (:tyopaikalla-jarjestettava-koulutus-id m))
         :muut-oppimisymparistot
         (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
+          (:id m))
+        :tyopaikkajakson-keskeytymisajanjaksot
+        (db/select-tyopaikkajakson-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
           (:id m)))
       :id :tyopaikalla-jarjestettava-koulutus-id)
     (dissoc
@@ -31,6 +34,9 @@
         m
         :muut-oppimisymparistot
         (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
+          (:id m))
+        :tyopaikkajakson-keskeytymisajanjaksot
+        (db/select-tyopaikkajakson-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
           (:id m)))
       :id)))
 
@@ -175,6 +181,8 @@
                      (:id tho)) conn)]
         (db/insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
           o-db (:muut-oppimisymparistot oh) conn)
+        (db/insert-osaamisen-hankkimistavan-tyopaikkajakson-keskeytymisajanjaksot!
+          o-db (:tyopaikkajakson-keskeytymisajanjaksot oh) conn)
         o-db))))
 
 (defn save-hpto-osaamisen-hankkimistapa!

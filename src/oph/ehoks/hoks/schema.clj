@@ -147,6 +147,15 @@
     päättymispäivämäärä."))
 
 (s/defschema
+  TyopaikkajaksonKeskeytymisajanjakso
+  (describe
+    "Ajanjakso, jonka aikana osaamisen hankkimistapa on keskeytynyt"
+    :alku LocalDate
+    "Työpaikkajakson keskeytymisajanjakson aloituspäivämäärä."
+    :loppu LocalDate
+    "Työpaikkajakson keskeytymisajanjakson päättymispäivämäärä."))
+
+(s/defschema
   OsaamisenHankkimistapa
   (describe
     "Osaamisen hankkimisen tapa"
@@ -183,7 +192,11 @@
     OppisopimuksenPerustaKoodiUri
     "Oppisopimuksen perustan Koodisto-uri."
     (s/optional-key :oppisopimuksen-perusta-koodi-versio) s/Int
-    "Oppisopimuksen perustan Koodisto-versio."))
+    "Oppisopimuksen perustan Koodisto-versio."
+    (s/optional-key :tyopaikkajakson-keskeytymisajanjaksot)
+    [TyopaikkajaksonKeskeytymisajanjakso]
+    (str "Ajanjaksot, joiden aikana osaamisen hankkimistapa on keskeytynyt. "
+         "Nämä eivät saa mennä päällekkäin.")))
 
 (defn- oppisopimus-has-perusta? [oht]
   (or (not= (:osaamisen-hankkimistapa-koodi-uri oht)

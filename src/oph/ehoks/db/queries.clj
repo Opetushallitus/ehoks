@@ -151,6 +151,8 @@
     {:table "tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat"
      :column "tyopaikalla_jarjestettava_koulutus_id"}))
 (defq select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id)
+(defq
+  select-tyopaikkajakson-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id)
 (defq select-todennettu-arviointi-lisatiedot-by-id)
 (def select-arvioijat-by-todennettu-arviointi-id
   (generate-select-join

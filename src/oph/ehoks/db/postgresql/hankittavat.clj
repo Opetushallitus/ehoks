@@ -26,6 +26,14 @@
     [queries/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id id]
     {:row-fn h/muu-oppimisymparisto-from-sql}))
 
+(defn select-tyopaikkajakson-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
+  "Työpaikkajakson keskeytymisajanjaksot osaamisen hankkimistavalle"
+  [id]
+  (db-ops/query
+    [queries/select-tyopaikkajakson-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
+     id]
+    {:row-fn h/tyopaikkajakson-keskeytymisajanjakso-from-sql}))
+
 (defn select-osaamisen-osoittamiset-by-ppto-id
   "Hankittavan paikallisen tutkinnon osan hankitun osaamisen näytöt"
   [id]
@@ -207,6 +215,24 @@
            (assoc % :osaamisen-hankkimistapa-id (:id oh)))
         c)
       db-conn)))
+
+(defn insert-osaamisen-hankkimistavan-tyopaikkajakson-keskeytymisajanjaksot!
+  "Lisää osaamisen hankkimistavan työpaikkajakson keskeytymisajanjaksot"
+  ([oh c]
+   (db-ops/insert-multi!
+     :tyopaikkajakson_keskeytymisajanjaksot
+     (map
+       #(db-ops/to-sql
+          (assoc % :osaamisen-hankkimistapa-id (:id oh)))
+       c)))
+  ([oh c db-conn]
+   (db-ops/insert-multi!
+     :tyopaikkajakson_keskeytymisajanjaksot
+     (map
+       #(db-ops/to-sql
+          (assoc % :osaamisen-hankkimistapa-id (:id oh)))
+       c)
+     db-conn)))
 
 (defn insert-hpto-osaamisen-hankkimistapa!
   "Lisää hankittavan paikallisen tutkinnon osan osaamisen hankkimistapa"
