@@ -275,6 +275,20 @@
     :hankittavan_paikallisen_tutkinnon_osan_naytto
     ["hankittava_paikallinen_tutkinnon_osa_id = ?" id] db-conn))
 
+(defn update-osaamisen-hankkimistapa!
+  "Muokkaa osaamisen hankkimistapa"
+  ([oh]
+    (db-ops/update!
+      :osaamisen_hankkimistavat
+      (h/osaamisen-hankkimistapa-to-sql oh)
+      ["module_id = ?" (:module-id oh)]))
+  ([oh db-conn]
+    (db-ops/update!
+      :osaamisen_hankkimistavat
+      (h/osaamisen-hankkimistapa-to-sql oh)
+      ["module_id = ?" (:module-id oh)]
+      db-conn)))
+
 (defn update-hankittava-paikallinen-tutkinnon-osa-by-id!
   "Päivitä hankittavan paikallisen tutkinnon osa"
   [id m db-conn]
