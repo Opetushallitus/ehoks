@@ -160,13 +160,16 @@
       [conn db-conn]
       (let [tho (db/insert-tyopaikalla-jarjestettava-koulutus!
                   (:tyopaikalla-jarjestettava-koulutus oh) conn)
-            o-db (db/insert-osaamisen-hankkimistapa!
-                   (assoc
-                     (if (.isBefore (LocalDate/now) (:loppu oh))
-                       oh
-                       (assoc oh :tep_kasitelty true))
-                     :tyopaikalla-jarjestettava-koulutus-id
-                     (:id tho)) conn)]
+            existing (db/select-osaamisen-hankkimistavat-by-module-id
+                       (:module-id oh))
+            to-upsert (assoc (if (.isBefore (LocalDate/now) (:loppu oh))
+                               oh
+                               (assoc oh :tep_kasitelty true))
+                             :tyopaikalla-jarjestettava-koulutus-id
+                             (:id tho))
+            o-db (if (empty? existing)
+                   (db/insert-osaamisen-hankkimistapa! to-upsert conn)
+                   (db/update-osaamisen-hankkimistapa! to-upsert conn))]
         (db/insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
           o-db (:muut-oppimisymparistot oh) conn)
         o-db))))
