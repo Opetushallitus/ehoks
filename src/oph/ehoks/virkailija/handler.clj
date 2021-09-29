@@ -411,7 +411,11 @@
                           (if-not (:vastattu kyselylinkki)
                             (sqs/send-palaute-resend-message
                               {:kyselylinkki (:kyselylinkki kyselylinkki)
-                               :sahkoposti (:sahkoposti hoks)}))
+                               :sahkoposti (:sahkoposti hoks)})
+                            (log/info
+                              "Tried to resend email to"
+                              "answered feedback, hoks-id " hoks-id
+                              " type " (:tyyppi kyselylinkki)))
                           (restful/rest-ok
                             {:sahkoposti (:sahkoposti hoks)})))
 
