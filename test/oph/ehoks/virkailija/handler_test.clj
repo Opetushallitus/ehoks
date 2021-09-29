@@ -801,6 +801,9 @@
       :osaamisen-hankkimistapa-koodi-uri
       "osaamisenhankkimistapa_oppisopimus"
       :osaamisen-hankkimistapa-koodi-versio 2
+      :oppisopimuksen-perusta-koodi-uri
+      "oppisopimuksenperusta_01"
+      :oppisopimuksen-perusta-koodi-versio 1
       :tyopaikalla-jarjestettava-koulutus
       {:vastuullinen-tyopaikka-ohjaaja
        {:nimi "Aimo Ohjaaja"
