@@ -185,12 +185,19 @@
     (s/optional-key :oppisopimuksen-perusta-koodi-versio) s/Int
     "Oppisopimuksen perustan Koodisto-versio "))
 
+(defn- oppisopimus-has-perusta? [oht]
+  (or (not= (:osaamisen-hankkimistapa-koodi-uri oht)
+            "osaamisenhankkimistapa_oppisopimus")
+      (:oppisopimuksen-perusta-koodi-uri oht)))
+
 (s/defschema
   OsaamisenHankkimistapaLuontiJaMuokkaus
-  (modify
-    OsaamisenHankkimistapa
-    "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
-    {:removed [:module-id]}))
+  (s/constrained
+    (modify
+      OsaamisenHankkimistapa
+      "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
+      {:removed [:module-id]})
+    oppisopimus-has-perusta?))
 
 (s/defschema
   NaytonJarjestaja

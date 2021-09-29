@@ -80,6 +80,8 @@
        :loppu "2018-12-23"
        :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
        :osaamisen-hankkimistapa-koodi-versio 1
+       :oppisopimuksen-perusta-koodi-uri "oppisopimuksenperusta_01"
+       :oppisopimuksen-perusta-koodi-versio 1
        :muut-oppimisymparistot
        [{:oppimisymparisto-koodi-uri "oppimisymparistot_0222"
          :oppimisymparisto-koodi-versio 3
@@ -540,6 +542,9 @@
        :osaamisen-hankkimistapa-koodi-uri
        "osaamisenhankkimistapa_oppisopimus"
        :osaamisen-hankkimistapa-koodi-versio 2
+       :oppisopimuksen-perusta-koodi-uri
+       "oppisopimuksenperusta_01"
+       :oppisopimuksen-perusta-koodi-versio 1
        :tyopaikalla-jarjestettava-koulutus
        {:vastuullinen-tyopaikka-ohjaaja
         {:nimi "Oiva Ohjaaja"
