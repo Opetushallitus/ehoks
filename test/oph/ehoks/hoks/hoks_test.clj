@@ -132,7 +132,8 @@
         :loppu (java.time.LocalDate/of 2019 2 19)}]
       :tyopaikkajakson-keskeytymisajanjaksot
       [{:alku (java.time.LocalDate/of 2021 9 20)
-        :loppu (java.time.LocalDate/of 2021 9 28)}]
+        :loppu (java.time.LocalDate/of 2021 9 28)}
+       {:alku (java.time.LocalDate/of 2021 9 29)}]
       :ajanjakson-tarkenne "Ei tarkennettavia asioita"
       :osa-aikaisuustieto 50
       :hankkijan-edustaja
