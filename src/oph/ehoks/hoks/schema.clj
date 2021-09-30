@@ -363,7 +363,7 @@
      (describe
        ""
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapa] "Osaamisen hankkimistavat"
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
@@ -458,7 +458,7 @@
        :osa-alueet [YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus]
        "YTO osa-alueet"
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapa] "Osaamisen hankkimistavat"
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
@@ -512,7 +512,7 @@
      (describe
        ""
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapa] "Osaamisen hankkimistavat"
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
@@ -557,7 +557,7 @@
      (describe
        ""
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapa] "Osaamisen hankkimistavat"
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
