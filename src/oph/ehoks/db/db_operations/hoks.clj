@@ -96,7 +96,7 @@
     m
     {:removals [:muut-oppimisymparistot
                 :tyopaikalla-jarjestettava-koulutus
-                :tyopaikkajakson-keskeytymisajanjaksot]
+                :keskeytymisajanjaksot]
      :replaces
      {[:jarjestajan-edustaja :nimi] :jarjestajan-edustaja-nimi
       [:jarjestajan-edustaja :rooli] :jarjestajan-edustaja-rooli
@@ -110,7 +110,7 @@
 (defn muu-oppimisymparisto-from-sql [m]
   (db-ops/from-sql m {:removals [:id :osaamisen_hankkimistapa_id]}))
 
-(defn tyopaikkajakson-keskeytymisajanjakso-from-sql [m]
+(defn keskeytymisajanjakso-from-sql [m]
   (db-ops/from-sql m {:removals [:id :osaamisen_hankkimistapa_id]}))
 
 (defn osaamisen-osoittaminen-from-sql [m]

@@ -1,4 +1,4 @@
-CREATE TABLE tyopaikkajakson_keskeytymisajanjaksot(
+CREATE TABLE keskeytymisajanjaksot(
   id SERIAL PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),

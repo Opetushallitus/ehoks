@@ -22,7 +22,7 @@
                    :oppimisymparisto-koodi-versio 1
                    :alku "2019-03-10"
                    :loppu "2019-03-19"}]
-                 :tyopaikkajakson-keskeytymisajanjaksot []
+                 :keskeytymisajanjaksot []
                  :hankkijan-edustaja
                  {:nimi "Heikki Hankkija"
                   :rooli "Opettaja"
@@ -88,7 +88,7 @@
          :oppimisymparisto-koodi-versio 3
          :alku "2015-03-10"
          :loppu "2021-03-19"}]
-       :tyopaikkajakson-keskeytymisajanjaksot []}]
+       :keskeytymisajanjaksot []}]
      :osaamisen-osoittaminen
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
        :nayttoymparisto {:nimi "aaa"}
@@ -555,7 +555,7 @@
         :tyopaikan-y-tunnus "12345222-4"
         :keskeiset-tyotehtavat ["Testitehtävä2"]}
        :muut-oppimisymparistot []
-       :tyopaikkajakson-keskeytymisajanjaksot []
+       :keskeytymisajanjaksot []
        :ajanjakson-tarkenne "Ei ole"
        :hankkijan-edustaja
        {:nimi "Harri Hankkija"
@@ -581,7 +581,7 @@
         :oppimisymparisto-koodi-versio 3
         :alku "2016-03-12"
         :loppu "2025-06-19"}]
-      :tyopaikkajakson-keskeytymisajanjaksot
+      :keskeytymisajanjaksot
       [{:alku "2021-03-03"
         :loppu "2021-05-05"}]
       :jarjestajan-edustaja
@@ -640,7 +640,7 @@
          :oppimisymparisto-koodi-versio 1
          :alku "2019-03-10"
          :loppu "2019-03-19"}]
-       :tyopaikkajakson-keskeytymisajanjaksot
+       :keskeytymisajanjaksot
        [{:alku "2021-09-01"
          :loppu "2021-09-21"}]
        :hankkijan-edustaja
@@ -690,7 +690,7 @@
          :oppimisymparisto-koodi-versio 2
          :alku "2019-03-10"
          :loppu "2021-03-19"}]
-       :tyopaikkajakson-keskeytymisajanjaksot
+       :keskeytymisajanjaksot
        [{:alku "2021-09-01"
          :loppu "2021-09-21"}]
        :hankkijan-edustaja
@@ -738,7 +738,7 @@
            :oppimisymparisto-koodi-versio 3
            :alku "2016-03-10"
            :loppu "2021-03-19"}]
-         :tyopaikkajakson-keskeytymisajanjaksot
+         :keskeytymisajanjaksot
          [{:alku "2021-09-01"
            :loppu "2021-09-21"}]}]
        :osaamisen-osoittaminen

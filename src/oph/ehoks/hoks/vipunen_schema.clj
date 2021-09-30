@@ -112,13 +112,20 @@
     päättymispäivämäärä."))
 
 (s/defschema
-  TyopaikkajaksonKeskeytymisajanjaksoVipunen
+  KeskeytymisajanjaksoVipunen
   (describe
     "Ajanjakso, jonka aikana osaamisen hankkimistapa on keskeytynyt"
     :alku LocalDate
     "Työpaikkajakson keskeytymisajanjakson aloituspäivämäärä."
     :loppu LocalDate
     "Työpaikkajakson keskeytymisajanjakson päättymispäivämäärä."))
+
+(defn- not-overlapping? [jaksot]
+  (or (<= (count jaksot) 1)
+      (reduce #(if (and (:loppu %1) (.isBefore (:loppu %1) (:alku %2)))
+                 %2
+                 (reduced false))
+              (sort-by :alku (seq jaksot)))))
 
 (s/defschema
   OsaamisenHankkimistapaVipunen
@@ -154,8 +161,8 @@
     "Oppisopimuksen perustan Koodisto-uri "
     (s/optional-key :oppisopimuksen-perusta-koodi-versio) s/Int
     "Oppisopimuksen perustan Koodisto-versio "
-    (s/optional-key :tyopaikkajakson-keskeytymisajanjaksot)
-    [TyopaikkajaksonKeskeytymisajanjaksoVipunen]
+    (s/optional-key :keskeytymisajanjaksot)
+    (s/constrained [KeskeytymisajanjaksoVipunen] not-overlapping?)
     (str "Ajanjaksot, joiden aikana osaamisen hankkimistapa on keskeytynyt. "
          "Nämä eivät saa mennä päällekkäin.")))
 

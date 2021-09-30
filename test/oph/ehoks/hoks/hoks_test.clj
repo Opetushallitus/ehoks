@@ -130,7 +130,7 @@
         :oppimisymparisto-koodi-versio 1
         :alku (java.time.LocalDate/of 2019 1 13)
         :loppu (java.time.LocalDate/of 2019 2 19)}]
-      :tyopaikkajakson-keskeytymisajanjaksot
+      :keskeytymisajanjaksot
       [{:alku (java.time.LocalDate/of 2021 9 20)
         :loppu (java.time.LocalDate/of 2021 9 28)}
        {:alku (java.time.LocalDate/of 2021 9 29)}]
@@ -248,7 +248,7 @@
         :oppimisymparisto-koodi-versio 1
         :alku (java.time.LocalDate/of 2019 1 13)
         :loppu (java.time.LocalDate/of 2019 2 19)}]
-      :tyopaikkajakson-keskeytymisajanjaksot
+      :keskeytymisajanjaksot
       [{:alku (java.time.LocalDate/of 2021 9 20)
         :loppu (java.time.LocalDate/of 2021 9 28)}]
       :ajanjakson-tarkenne "Ei tarkennettavaa"
@@ -294,7 +294,7 @@
                                   :oppimisymparisto-koodi-versio 1
                                   :alku (java.time.LocalDate/of 2019 1 13)
                                   :loppu (java.time.LocalDate/of 2019 2 19)}]
-        :tyopaikkajakson-keskeytymisajanjaksot
+        :keskeytymisajanjaksot
         [{:alku (java.time.LocalDate/of 2021 9 20)
           :loppu (java.time.LocalDate/of 2021 9 28)}]}]
       :osaamisen-osoittaminen
