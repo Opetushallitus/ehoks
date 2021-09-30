@@ -14,7 +14,7 @@ Hankittavan ammatillisen osaamisen tiedot (POST, PUT)
 | tutkinnon-osa-koodi-uri | Merkkijono, esim. tutkinnonosat_123456 | Tutkinnon osan Koodisto-koodi-URI (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | Tekstimuotoinen selite ammattitaitovaatimuksista tai osaamistavoitteista poikkeamiseen | Ei |
-| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
+| osaamisen-hankkimistavat | [[OsaamisenHankkimistapaLuontiJaMuokkaus](#OsaamisenHankkimistapaLuontiJaMuokkaus)] | Osaamisen hankkimistavat | Ei |
 | osaamisen-osoittaminen | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 
 ### MuuOppimisymparisto
@@ -330,6 +330,26 @@ AiemminHankitun YTOn osa-alueen tiedot
 | tarkentavat-tiedot-osaamisen-arvioija | [TodennettuArviointiLisatiedot](#TodennettuArviointiLisatiedot) | Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot | Ei |
 | tarkentavat-tiedot-naytto | [[OsaamisenOsoittaminen](#OsaamisenOsoittaminen)] | Mikäli valittu näytön kautta, tuodaan myös näytön tiedot. | Ei |
 
+### OsaamisenHankkimistapaLuontiJaMuokkaus
+
+Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)
+
+| Nimi | Tyyppi | Selite | Vaaditaan |
+| ---- | ------ | ------ | --------- |
+| jarjestajan-edustaja | [Oppilaitoshenkilo](#Oppilaitoshenkilo) | Koulutuksen järjestäjän edustaja | Ei |
+| muut-oppimisymparistot | [[MuuOppimisymparisto](#MuuOppimisymparisto)] | Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen liittyvät tiedot | Ei |
+| osaamisen-hankkimistapa-koodi-uri | Merkkijono, esim. osaamisenhankkimistapa_oppisopimus | Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)<br>    eli muotoa osaamisenhankkimistapa_xxx eli esim.<br>    osaamisenhankkimistapa_koulutussopimus | Kyllä |
+| ajanjakson-tarkenne | Merkkijono | Tarkentava teksti ajanjaksolle, jos useita aikavälillä. | Ei |
+| osa-aikaisuustieto | Kokonaisluku | Osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen. | Ei |
+| osaamisen-hankkimistapa-koodi-versio | Kokonaisluku | Koodisto-koodin versio, koodistolle osaamisenhankkimistapa | Kyllä |
+| module-id | Uuid | Tietorakenteen yksilöivä tunniste esimerkiksi tiedon jakamista varten | Ei |
+| hankkijan-edustaja | [Oppilaitoshenkilo](#Oppilaitoshenkilo) | Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja | Ei |
+| tyopaikalla-jarjestettava-koulutus | [TyopaikallaJarjestettavaKoulutus](#TyopaikallaJarjestettavaKoulutus) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai koulutussopimus. | Ei |
+| alku | Päivämäärä | Alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
+| loppu | Päivämäärä | Loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
+| oppisopimuksen-perusta-koodi-uri | Merkkijono | Vain oppisopimus-tyyppisiin hankkimistapoihin (ja silloin se on pakollinen). Oppisopimuksen perustan Koodisto-uri | Ei |
+| oppisopimuksen-perusta-koodi-versio | Kokonaisluku | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-urin versio | Ei |
+
 ### KoodistoKoodi
 
 Koodisto Koodi
@@ -417,7 +437,7 @@ Hankittavan paikallisen osaamisen tiedot (POST, PUT)
 | nimi | Merkkijono | Tutkinnon osan nimi | Ei |
 | tavoitteet-ja-sisallot | Merkkijono | Paikallisen tutkinnon osan ammattitaitovaatimukset taiosaamistavoitteet | Ei |
 | amosaa-tunniste | Merkkijono | Tunniste ePerusteet AMOSAA -palvelussa | Ei |
-| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
+| osaamisen-hankkimistavat | [[OsaamisenHankkimistapaLuontiJaMuokkaus](#OsaamisenHankkimistapaLuontiJaMuokkaus)] | Osaamisen hankkimistavat | Ei |
 | osaamisen-osoittaminen | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 | koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
@@ -549,7 +569,7 @@ Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot (POST, PUT)
 | osa-alue-koodi-uri | Merkkijono, esim. ammatillisenoppiaineet_aa | Osa-alueen Koodisto-koodi-URI (ammatillisenoppiaineet) | Kyllä |
 | vaatimuksista-tai-tavoitteista-poikkeaminen | Merkkijono | vaatimuksista tai osaamistavoitteista poikkeaminen | Ei |
 | osa-alue-koodi-versio | Kokonaisluku | Osa-alueen Koodisto-koodi-URIn versio (ammatillisenoppiaineet) | Kyllä |
-| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
+| osaamisen-hankkimistavat | [[OsaamisenHankkimistapaLuontiJaMuokkaus](#OsaamisenHankkimistapaLuontiJaMuokkaus)] | Osaamisen hankkimistavat | Ei |
 | osaamisen-osoittaminen | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 
 ### AiemminHankittuAmmatillinenTutkinnonOsa
@@ -602,6 +622,6 @@ Hankittavan yhteisen tutkinnnon osan (POST, PUT)
 | tutkinnon-osa-koodi-versio | Kokonaisluku | Tutkinnon osan Koodisto-koodi-URIn versio ePerusteet-palvelussa<br>     (tutkinnonosat) | Kyllä |
 | koulutuksen-jarjestaja-oid | #"^1\.2\.246\.562\.[0-3]\d\.\d+$" | Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, koulutuksen järjestäjän oid. | Ei |
 | osa-alueet | [[YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus](#YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus)] | YTO osa-alueet | Kyllä |
-| osaamisen-hankkimistavat | [[OsaamisenHankkimistapa](#OsaamisenHankkimistapa)] | Osaamisen hankkimistavat | Ei |
+| osaamisen-hankkimistavat | [[OsaamisenHankkimistapaLuontiJaMuokkaus](#OsaamisenHankkimistapaLuontiJaMuokkaus)] | Osaamisen hankkimistavat | Ei |
 | osaamisen-osoittaminen | [[OsaamisenOsoittaminenLuontiJaMuokkaus](#OsaamisenOsoittaminenLuontiJaMuokkaus)] | Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen | Ei |
 

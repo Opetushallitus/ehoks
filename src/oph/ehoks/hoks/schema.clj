@@ -186,6 +186,12 @@
     "Oppisopimuksen perustan Koodisto-versio "))
 
 (s/defschema
+  OsaamisenHankkimistapaLuontiJaMuokkaus
+  (modify
+    OsaamisenHankkimistapa
+    "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"))
+
+(s/defschema
   NaytonJarjestaja
   (describe
     "Näytön tai osaamisen osoittamisen järjestäjä"
@@ -324,7 +330,7 @@
      (describe
        ""
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapa] "Osaamisen hankkimistavat"
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
@@ -419,7 +425,7 @@
        :osa-alueet [YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus]
        "YTO osa-alueet"
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapa] "Osaamisen hankkimistavat"
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
@@ -473,7 +479,7 @@
      (describe
        ""
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapa] "Osaamisen hankkimistavat"
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
@@ -518,7 +524,7 @@
      (describe
        ""
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapa] "Osaamisen hankkimistavat"
+       [OsaamisenHankkimistapaLuontiJaMuokkaus] "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
        [OsaamisenOsoittaminenLuontiJaMuokkaus]
        (str "Hankitun osaamisen osoittaminen: "
