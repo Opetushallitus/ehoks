@@ -517,7 +517,8 @@
                             :summary "Asettaa HOKSin
                               poistetuksi(shallow delete) id:n perusteella."
                             (db-hoks/shallow-delete-hoks-by-hoks-id
-                              hoks-id))))
+                              hoks-id)
+                            (response/no-content))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]
