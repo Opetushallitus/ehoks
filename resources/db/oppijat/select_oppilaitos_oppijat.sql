@@ -15,6 +15,7 @@ WHERE ((oo.oppilaitos_oid IS NOT NULL AND oo.oppilaitos_oid LIKE ?) OR
   AND o.nimi ILIKE ?
       :tutkinto-filter
       :osaamisala-filter
+  AND h.deleted_at IS NULL
 ORDER BY :order-by-column :desc
 LIMIT ?
 OFFSET ?
