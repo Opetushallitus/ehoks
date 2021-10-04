@@ -394,6 +394,12 @@
     :hoksit
     ["id = ?" hoks-id]))
 
+(defn undo-shallow-delete [hoks-id]
+  (db-ops/update!
+    :hoksit
+    {:deleted_at nil}
+    ["id = ?" hoks-id]))
+
 (defn delete-hoks-by-hoks-id
   "Poistaa HOKSin pysyvästi id:n perusteella"
   [hoks-id]
