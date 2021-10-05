@@ -435,7 +435,7 @@
 
         (c-api/GET "/osaamisen-hankkimistapa/:oht-id" request
           :summary "Palauttaa osaamisen hankkimistavan ID:llä"
-          :path-params [oht-id :- s/Str]
+          :path-params [oht-id :- s/Int]
           :return (rest/response hoks-schema/OsaamisenHankkimistapa)
           (let [oht (ha/get-osaamisen-hankkimistapa-by-id oht-id)]
             (if oht
