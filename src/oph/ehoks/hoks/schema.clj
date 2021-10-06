@@ -181,9 +181,9 @@
          "Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen.")
     (s/optional-key :oppisopimuksen-perusta-koodi-uri)
     OppisopimuksenPerustaKoodiUri
-    "Oppisopimuksen perustan Koodisto-uri "
+    "Oppisopimuksen perustan Koodisto-uri."
     (s/optional-key :oppisopimuksen-perusta-koodi-versio) s/Int
-    "Oppisopimuksen perustan Koodisto-versio "))
+    "Oppisopimuksen perustan Koodisto-versio."))
 
 (defn- oppisopimus-has-perusta? [oht]
   (or (not= (:osaamisen-hankkimistapa-koodi-uri oht)
