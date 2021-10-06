@@ -433,6 +433,18 @@
       (route-middleware
         [m/wrap-require-oph-privileges]
 
+        (c-api/GET "/osaamisen-hankkimistapa/:oht-id" request
+          :summary "Palauttaa osaamisen hankkimistavan ID:llä"
+          :path-params [oht-id :- s/Int]
+          :return (rest/response hoks-schema/OsaamisenHankkimistapa)
+          (let [oht (ha/get-osaamisen-hankkimistapa-by-id oht-id)]
+            (if oht
+              (rest/rest-ok oht)
+              (do
+                (log/warn "No osaamisen hankkimistapa found with ID: " oht-id)
+                (response/not-found
+                  {:error "No osaamisen hankkimistapa found with given ID"})))))
+
         (c-api/PATCH "/kyselylinkki" request
           :summary "Lisää lähetystietoja kyselylinkille"
           :body [data hoks-schema/kyselylinkki-lahetys]

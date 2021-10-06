@@ -71,6 +71,12 @@
     set-osaamisen-hankkimistapa-values
     (db/select-osaamisen-hankkimistavat-by-module-id uuid)))
 
+(defn get-osaamisen-hankkimistapa-by-id [id]
+  (first
+    (mapv
+      set-osaamisen-hankkimistapa-values
+      (db/select-osaamisen-hankkimistavat-by-id id))))
+
 (defn get-osaamisen-osoittaminen-by-module-id [uuid]
   (mapv
     #(dissoc

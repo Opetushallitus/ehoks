@@ -233,6 +233,7 @@
 (defq select-hankittavat-ammat-tutkinnon-osat-by-module-id)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-module-id)
 (defq select-osaamisen-osoittamiset-by-module-id)
+(defq select-osaamisen-hankkimistavat-by-id)
 (defq select-osaamisen-hankkimistavat-by-module-id)
 (defq select-kyselylinkit-by-oppija-oid
       "hoksit/select_kyselylinkit_by_oppija_oid.sql")
