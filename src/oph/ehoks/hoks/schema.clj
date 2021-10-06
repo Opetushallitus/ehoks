@@ -199,7 +199,7 @@
       "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
       {:removed [:module-id]})
     oppisopimus-has-perusta?
-    "Oppisopimuksella täytyy olla perusta, jos hankkimistapa on oppisopimus"))
+    "Tieto oppisopimuksen perustasta puuttuu."))
 
 (s/defschema
   NaytonJarjestaja
