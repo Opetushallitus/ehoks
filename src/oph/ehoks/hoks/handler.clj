@@ -441,7 +441,7 @@
             (if oht
               (rest/rest-ok oht)
               (do
-                (log/warn "No osaamisen hankkimistapa found with ID " oht-id)
+                (log/warn "No osaamisen hankkimistapa found with ID: " oht-id)
                 (response/not-found
                   {:error "No osaamisen hankkimistapa found with given ID"})))))
 
