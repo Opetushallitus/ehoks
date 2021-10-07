@@ -2584,11 +2584,32 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "osaamisen-hankkimistapa-koodi-uri",
-        "osaamisen-hankkimistapa-koodi-versio",
-        "alku",
-        "loppu"
+      "anyOf": [
+        {
+          "not": {
+            "properties": {
+              "osaamisen-hankkimistapa-koodi-uri": {
+                "const": "osaamisenhankkimistapa_oppisopimus"
+              }
+            },
+            "required": [
+              "osaamisen-hankkimistapa-koodi-uri",
+              "osaamisen-hankkimistapa-koodi-versio",
+              "alku",
+              "loppu"
+            ]
+          }
+        },
+        {
+          "required": [
+            "osaamisen-hankkimistapa-koodi-uri",
+            "osaamisen-hankkimistapa-koodi-versio",
+            "alku",
+            "loppu",
+            "oppisopimuksen-perusta-koodi-uri",
+            "oppisopimuksen-perusta-koodi-versio"
+          ]
+        }
       ]
     },
     "POSTResponse": {

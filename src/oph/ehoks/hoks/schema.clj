@@ -181,16 +181,25 @@
          "Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen.")
     (s/optional-key :oppisopimuksen-perusta-koodi-uri)
     OppisopimuksenPerustaKoodiUri
-    "Oppisopimuksen perustan Koodisto-uri "
+    "Oppisopimuksen perustan Koodisto-uri."
     (s/optional-key :oppisopimuksen-perusta-koodi-versio) s/Int
-    "Oppisopimuksen perustan Koodisto-versio "))
+    "Oppisopimuksen perustan Koodisto-versio."))
+
+(defn- oppisopimus-has-perusta? [oht]
+  (or (not= (:osaamisen-hankkimistapa-koodi-uri oht)
+            "osaamisenhankkimistapa_oppisopimus")
+      (.isBefore (:loppu oht) (LocalDate/of 2021 7 1))
+      (:oppisopimuksen-perusta-koodi-uri oht)))
 
 (s/defschema
   OsaamisenHankkimistapaLuontiJaMuokkaus
-  (modify
-    OsaamisenHankkimistapa
-    "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
-    {:removed [:module-id]}))
+  (s/constrained
+    (modify
+      OsaamisenHankkimistapa
+      "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
+      {:removed [:module-id]})
+    oppisopimus-has-perusta?
+    "Tieto oppisopimuksen perustasta puuttuu."))
 
 (s/defschema
   NaytonJarjestaja
