@@ -841,4 +841,4 @@
 
 (s/defschema
   shallow-delete-hoks
-  {:shallow-delete s/Bool})
+  {:oppilaitos-oid s/Str})
