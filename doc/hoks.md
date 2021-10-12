@@ -348,6 +348,7 @@ Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)
 | loppu | Päivämäärä | Loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | oppisopimuksen-perusta-koodi-uri | Merkkijono | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-uri | Ei |
 | oppisopimuksen-perusta-koodi-versio | Kokonaisluku | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-urin versio | Ei |
+| keskeytymisajanjaksot | [[Keskeytymisajanjakso](#Keskeytymisajanjakso)] | Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään työelämäpalautteessa tarvittavan työpaikkajakson keston laskemiseen. | Ei |
 
 ### KoodistoKoodi
 
@@ -402,7 +403,7 @@ Keskeytymisajanjakso
 | Nimi | Tyyppi | Selite | Vaaditaan |
 | ---- | ------ | ------ | --------- |
 | alku | Päivämäärä | Alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
-| loppu | Päivämäärä | Loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
+| loppu | Päivämäärä | Loppupäivämäärä muodossa YYYY-MM-DD | Ei |
 
 ### OsaamisenHankkimistapa
 
@@ -423,7 +424,7 @@ Osaamisen hankkimisen tapa
 | loppu | Päivämäärä | Loppupäivämäärä muodossa YYYY-MM-DD | Kyllä |
 | oppisopimuksen-perusta-koodi-uri | Merkkijono | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-uri | Ei |
 | oppisopimuksen-perusta-koodi-versio | Kokonaisluku | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-urin versio | Ei |
-| keskeytymisajanjaksot | [[Keskeytymisajanjakso](#Keskeytymisajanjakso)] | Ajanjaksot, joiden aikana osaamisen hankkimistapa on keskeytynyt | Ei |
+| keskeytymisajanjaksot | [[Keskeytymisajanjakso](#Keskeytymisajanjakso)] | Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään työelämäpalautteessa tarvittavan työpaikkajakson keston laskemiseen. | Ei |
 
 ### Nayttoymparisto
 

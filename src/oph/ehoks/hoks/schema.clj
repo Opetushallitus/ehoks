@@ -150,9 +150,8 @@
   Keskeytymisajanjakso
   (describe
     (str "Ajanjakso, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä "
-         "työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään "
-         "työelämäpalautteessa tarvittavan työpaikkajakson keston laskemiseen.")
-    (s/optional-key :alku) LocalDate
+         "työpaikalla on ollut keskeytyneenä.")
+    :alku LocalDate
     "Keskeytymisajanjakson aloituspäivämäärä."
     (s/optional-key :loppu) LocalDate
     "Keskeytymisajanjakson päättymispäivämäärä."))

@@ -2601,7 +2601,7 @@
           "format": "int64"
         },
         "keskeytymisajanjaksot": {
-          "description": "Osaamisen hankkimistavan keskeytymisajanjaksot",
+          "description": "Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään työelämäpalautteessa tarvittavan työpaikkajakson keston laskemiseen.",
           "type": "array",
           "items": { "$ref": "#/definitions/Keskeytymisajanjakso" }
         }
