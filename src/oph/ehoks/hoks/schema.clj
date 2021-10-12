@@ -193,13 +193,14 @@
 
 (s/defschema
   OsaamisenHankkimistapaLuontiJaMuokkaus
-  (s/constrained
-    (modify
-      OsaamisenHankkimistapa
-      "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
-      {:removed [:module-id]})
-    oppisopimus-has-perusta?
-    "Tieto oppisopimuksen perustasta puuttuu."))
+ ; (s/constrained
+  (modify
+    OsaamisenHankkimistapa
+    "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
+    {:removed [:module-id]}))
+  ;  oppisopimus-has-perusta?
+   ; "Tieto oppisopimuksen perustasta puuttuu."))
+  ;; TODO contraint palautettaan, kun se ei enää estä mitään.
 
 (s/defschema
   NaytonJarjestaja
