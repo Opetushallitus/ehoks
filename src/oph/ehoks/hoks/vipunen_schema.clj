@@ -114,7 +114,9 @@
 (s/defschema
   KeskeytymisajanjaksoVipunen
   (describe
-    "Ajanjakso, jonka aikana osaamisen hankkimistapa on keskeytynyt"
+    (str "Ajanjakso, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä "
+         "työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään "
+         "työelämäpalautteessa tarvittavan työpaikkajakson keston laskemiseen.")
     :alku LocalDate
     "Työpaikkajakson keskeytymisajanjakson aloituspäivämäärä."
     :loppu LocalDate

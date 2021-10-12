@@ -149,7 +149,9 @@
 (s/defschema
   Keskeytymisajanjakso
   (describe
-    "Ajanjakso, jonka aikana osaamisen hankkimistapa on keskeytynyt"
+    (str "Ajanjakso, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä "
+         "työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään "
+         "työelämäpalautteessa tarvittavan työpaikkajakson keston laskemiseen.")
     (s/optional-key :alku) LocalDate
     "Keskeytymisajanjakson aloituspäivämäärä."
     (s/optional-key :loppu) LocalDate
