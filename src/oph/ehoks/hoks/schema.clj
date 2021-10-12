@@ -204,8 +204,10 @@
     "Oppisopimuksen perustan Koodisto-versio."
     (s/optional-key :keskeytymisajanjaksot)
     (s/constrained [Keskeytymisajanjakso] not-overlapping?)
-    (str "Ajanjaksot, joiden aikana osaamisen hankkimistapa on keskeytynyt. "
-         "Nämä eivät saa mennä päällekkäin.")))
+    (str "Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä "
+         "työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään "
+         "työelämäpalautteessa tarvittavan työpaikkajakson keston "
+         "laskemiseen.")))
 
 (defn- oppisopimus-has-perusta? [oht]
   (or (not= (:osaamisen-hankkimistapa-koodi-uri oht)
