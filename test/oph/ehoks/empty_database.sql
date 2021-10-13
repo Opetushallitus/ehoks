@@ -24,6 +24,7 @@ ALTER SEQUENCE puuttuvat_yhteiset_tutkinnon_osat_id_seq RESTART WITH 1;
 DELETE FROM koulutuksen_jarjestaja_osaamisen_arvioijat;
 DELETE FROM kyselylinkit;
 DELETE FROM muut_oppimisymparistot;
+DELETE FROM keskeytymisajanjaksot;
 DELETE FROM nayttoymparistot;
 DELETE FROM opiskeluoikeudet;
 DELETE FROM opiskeluvalmiuksia_tukevat_opinnot;

@@ -95,7 +95,8 @@
   (db-ops/to-sql
     m
     {:removals [:muut-oppimisymparistot
-                :tyopaikalla-jarjestettava-koulutus]
+                :tyopaikalla-jarjestettava-koulutus
+                :keskeytymisajanjaksot]
      :replaces
      {[:jarjestajan-edustaja :nimi] :jarjestajan-edustaja-nimi
       [:jarjestajan-edustaja :rooli] :jarjestajan-edustaja-rooli
@@ -107,6 +108,9 @@
       :hankkijan-edustaja-oppilaitos-oid}}))
 
 (defn muu-oppimisymparisto-from-sql [m]
+  (db-ops/from-sql m {:removals [:id :osaamisen_hankkimistapa_id]}))
+
+(defn keskeytymisajanjakso-from-sql [m]
   (db-ops/from-sql m {:removals [:id :osaamisen_hankkimistapa_id]}))
 
 (defn osaamisen-osoittaminen-from-sql [m]

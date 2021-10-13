@@ -147,6 +147,23 @@
     päättymispäivämäärä."))
 
 (s/defschema
+  Keskeytymisajanjakso
+  (describe
+    (str "Ajanjakso, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä "
+         "työpaikalla on ollut keskeytyneenä.")
+    :alku LocalDate
+    "Keskeytymisajanjakson aloituspäivämäärä."
+    (s/optional-key :loppu) LocalDate
+    "Keskeytymisajanjakson päättymispäivämäärä."))
+
+(defn- not-overlapping? [jaksot]
+  (or (<= (count jaksot) 1)
+      (reduce #(if (and (:loppu %1) (.isBefore (:loppu %1) (:alku %2)))
+                 %2
+                 (reduced false))
+              (sort-by :alku (seq jaksot)))))
+
+(s/defschema
   OsaamisenHankkimistapa
   (describe
     "Osaamisen hankkimisen tapa"
@@ -183,7 +200,13 @@
     OppisopimuksenPerustaKoodiUri
     "Oppisopimuksen perustan Koodisto-uri."
     (s/optional-key :oppisopimuksen-perusta-koodi-versio) s/Int
-    "Oppisopimuksen perustan Koodisto-versio."))
+    "Oppisopimuksen perustan Koodisto-versio."
+    (s/optional-key :keskeytymisajanjaksot)
+    (s/constrained [Keskeytymisajanjakso] not-overlapping?)
+    (str "Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä "
+         "työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään "
+         "työelämäpalautteessa tarvittavan työpaikkajakson keston "
+         "laskemiseen.")))
 
 (defn- oppisopimus-has-perusta? [oht]
   (or (not= (:osaamisen-hankkimistapa-koodi-uri oht)

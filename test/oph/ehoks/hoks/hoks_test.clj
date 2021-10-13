@@ -130,6 +130,10 @@
         :oppimisymparisto-koodi-versio 1
         :alku (java.time.LocalDate/of 2019 1 13)
         :loppu (java.time.LocalDate/of 2019 2 19)}]
+      :keskeytymisajanjaksot
+      [{:alku (java.time.LocalDate/of 2021 9 20)
+        :loppu (java.time.LocalDate/of 2021 9 28)}
+       {:alku (java.time.LocalDate/of 2021 9 29)}]
       :ajanjakson-tarkenne "Ei tarkennettavia asioita"
       :osa-aikaisuustieto 50
       :hankkijan-edustaja
@@ -244,6 +248,9 @@
         :oppimisymparisto-koodi-versio 1
         :alku (java.time.LocalDate/of 2019 1 13)
         :loppu (java.time.LocalDate/of 2019 2 19)}]
+      :keskeytymisajanjaksot
+      [{:alku (java.time.LocalDate/of 2021 9 20)
+        :loppu (java.time.LocalDate/of 2021 9 28)}]
       :ajanjakson-tarkenne "Ei tarkennettavaa"
       :hankkijan-edustaja
       {:nimi "Harri Hankkija"
@@ -286,7 +293,10 @@
                                   "oppimisymparistot_0001"
                                   :oppimisymparisto-koodi-versio 1
                                   :alku (java.time.LocalDate/of 2019 1 13)
-                                  :loppu (java.time.LocalDate/of 2019 2 19)}]}]
+                                  :loppu (java.time.LocalDate/of 2019 2 19)}]
+        :keskeytymisajanjaksot
+        [{:alku (java.time.LocalDate/of 2021 9 20)
+          :loppu (java.time.LocalDate/of 2021 9 28)}]}]
       :osaamisen-osoittaminen
       [{:nayttoymparisto {:nimi "Nimi"}
         :sisallon-kuvaus ["eka"]

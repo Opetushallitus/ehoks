@@ -1550,6 +1550,24 @@
       "additionalProperties": false,
       "required": ["nimi"]
     },
+    "Keskeytymisajanjakso": {
+      "description": "Osaamisen hankkimistavan keskeytymisajanjakso",
+      "type": "object",
+      "properties": {
+        "alku": {
+          "description": "Alkupäivämäärä muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        },
+        "loppu": {
+          "description": "Loppupäivämäärä muodossa YYYY-MM-DD",
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["alku"]
+    },
     "KoodiMetadata": {
       "type": "object",
       "properties": {
@@ -2581,6 +2599,11 @@
           "description": "Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-urin versio",
           "type": "integer",
           "format": "int64"
+        },
+        "keskeytymisajanjaksot": {
+          "description": "Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään työelämäpalautteessa tarvittavan työpaikkajakson keston laskemiseen.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/Keskeytymisajanjakso" }
         }
       },
       "additionalProperties": false,
