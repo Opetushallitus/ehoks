@@ -335,17 +335,29 @@
     [queries/select-kyselylinkit-by-oppija-oid oid]
     {:row-fn db-ops/from-sql}))
 
+(defn- select-keskeytymisajanjaksot [oht-id]
+  (db-ops/query
+    [queries/select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id oht-id]
+    {:row-fn db-ops/from-sql}))
+
+(defn- get-and-assoc-data [osa-type]
+  (fn [jakso]
+    (assoc jakso
+           :tyyppi osa-type
+           :keskeytymisajanjaksot
+           (select-keskeytymisajanjaksot (:hankkimistapa_id jakso)))))
+
 (defn select-paattyneet-tyoelamajaksot [osa start end limit]
   (case osa
-    "hpto" (map #(assoc % :tyyppi "hpto")
+    "hpto" (map (get-and-assoc-data "hpto")
                 (db-ops/query
                   [queries/select-paattyneet-tyoelamajaksot-hpto
                    start end limit]))
-    "hato" (map #(assoc % :tyyppi "hato")
+    "hato" (map (get-and-assoc-data "hato")
                 (db-ops/query
                   [queries/select-paattyneet-tyoelamajaksot-hato
                    start end limit]))
-    "hyto" (map #(assoc % :tyyppi "hyto")
+    "hyto" (map (get-and-assoc-data "hyto")
                 (db-ops/query
                   [queries/select-paattyneet-tyoelamajaksot-hyto
                    start end limit]))))
