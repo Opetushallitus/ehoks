@@ -7,8 +7,7 @@
             [oph.ehoks.restful :as restful]
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
             [schema.core :as s]
-            [ring.util.http-response :as response]
-            [clojure.core.memoize :as memo])
+            [ring.util.http-response :as response])
   (:import (java.time LocalDate)))
 
 (def routes
@@ -18,8 +17,7 @@
                     caller-id :- s/Str]
 
     (route-middleware
-      [(memo/ttl wrap-user-details {} :ttl/threshold 10000)
-       m/wrap-require-service-user
+      [wrap-user-details m/wrap-require-service-user
        wrap-audit-logger m/wrap-require-oph-privileges]
 
       (c-api/GET "/tyoelamajaksot" []
