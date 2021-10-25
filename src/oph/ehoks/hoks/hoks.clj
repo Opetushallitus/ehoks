@@ -356,11 +356,13 @@
                       "osaamisen hankkimistapa: " oh-missing-tyopaikan-y-tunnus)
                  {:error :disallowed-update}))
         :else
-        (do
+        (let [saved-hoks (replace-main-hoks! hoks-id new-values db-conn)]
           (replace-main-hoks! hoks-id new-values db-conn)
-          (replace-oto! hoks-id (:opiskeluvalmiuksia-tukevat-opinnot new-values)
+          (replace-oto! hoks-id
+                        (:opiskeluvalmiuksia-tukevat-opinnot new-values)
                         db-conn)
-          (replace-hato! hoks-id (:hankittavat-ammat-tutkinnon-osat new-values)
+          (replace-hato! hoks-id
+                         (:hankittavat-ammat-tutkinnon-osat new-values)
                          db-conn)
           (replace-hpto! hoks-id
                          (:hankittavat-paikalliset-tutkinnon-osat new-values)
@@ -371,22 +373,24 @@
           (replace-ahato! hoks-id
                           (:aiemmin-hankitut-ammat-tutkinnon-osat new-values)
                           db-conn)
-          (replace-ahpto! hoks-id (:aiemmin-hankitut-paikalliset-tutkinnon-osat
-                                    new-values)
+          (replace-ahpto! hoks-id
+                          (:aiemmin-hankitut-paikalliset-tutkinnon-osat
+                            new-values)
                           db-conn)
-          (replace-ahyto! hoks-id (:aiemmin-hankitut-yhteiset-tutkinnon-osat
-                                    new-values)
+          (replace-ahyto! hoks-id
+                          (:aiemmin-hankitut-yhteiset-tutkinnon-osat
+                            new-values)
                           db-conn)
           (when (new-osaamisen-saavuttamisen-pvm-added?
                   old-osaamisen-saavuttamisen-pvm
                   new-osaamisen-saavuttamisen-pvm)
             (send-paattokysely hoks-id
-                               new-osaamisen-saavuttamisen-pvm hoks))
+                               new-osaamisen-saavuttamisen-pvm saved-hoks))
           (when (and
                   (true? new-osaamisen-hankkimisen-tarve)
                   (not (true? old-osaamisen-hankkimisen-tarve)))
             (sqs/send-amis-palaute-message
-              (sqs/build-hoks-hyvaksytty-msg hoks-id hoks))))))))
+              (sqs/build-hoks-hyvaksytty-msg hoks-id saved-hoks))))))))
 
 (defn update-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
