@@ -1,8 +1,7 @@
 (ns oph.ehoks.user
   (:require [clojure.string :as str]
             [oph.ehoks.external.organisaatio :as o]
-            [oph.ehoks.oppijaindex :as op]
-            [clojure.core.memoize :as memo]))
+            [oph.ehoks.oppijaindex :as op]))
 
 (defn resolve-privilege
   "Resolves OPH privilege to keyword sets"
@@ -48,10 +47,7 @@
    :roles              (get-service-roles (:kayttooikeudet organisation))
    :child-organisations (if (= (:organisaatioOid organisation)
                                "1.2.246.562.10.00000000001")
-                          (memo/ttl
-                            op/get-oppilaitos-oids
-                            {}
-                            :ttl/threshold 10000)
+                          (op/get-oppilaitos-oids-cached)
                           (op/get-oppilaitos-oids-by-koulutustoimija-oid
                             (:organisaatioOid organisation)))})
 

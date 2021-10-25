@@ -7,7 +7,8 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.config :refer [config]])
+            [oph.ehoks.config :refer [config]]
+            [clojure.core.memoize :as memo])
   (:import [java.time LocalDate]))
 
 (defn search
@@ -87,6 +88,12 @@
 
 (defn get-oppilaitos-oids []
   (filter some? (db/select-oppilaitos-oids)))
+
+(def get-oppilaitos-oids-cached
+  (memo/ttl
+    get-oppilaitos-oids
+    {}
+    :ttl/threshold 10000))
 
 (defn get-oppilaitos-oids-by-koulutustoimija-oid [koulutustoimija-oid]
   (filter some?
