@@ -357,7 +357,6 @@
                  {:error :disallowed-update}))
         :else
         (let [saved-hoks (replace-main-hoks! hoks-id new-values db-conn)]
-          (replace-main-hoks! hoks-id new-values db-conn)
           (replace-oto! hoks-id
                         (:opiskeluvalmiuksia-tukevat-opinnot new-values)
                         db-conn)
