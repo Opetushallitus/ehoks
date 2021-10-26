@@ -13,6 +13,7 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
+            [oph.ehoks.db.postgresql.common :as pc]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as restful]
@@ -21,6 +22,7 @@
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.oppijaindex :as op]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.validation.handler :as validation-handler]
             [clojure.core.async :as a]
@@ -30,7 +32,8 @@
             [oph.ehoks.virkailija.external-handler :as external-handler]
             [oph.ehoks.virkailija.cas-handler :as cas-handler]
             [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
-            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]))
+            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu])
+  (:import (clojure.lang ExceptionInfo)))
 
 (def get-oppijat-route
   (c-api/GET "/" request
@@ -291,6 +294,21 @@
           :audit-data {:new hoks-values})
         (throw e)))))
 
+(defn- delete-vastaajatunnus [tunnus]
+  (try
+    (let [kyselylinkki (str "https://snaparvovastaus.csc.fi/v/" tunnus)]
+      (if (seq (pc/select-kyselylinkit-by-linkki kyselylinkki))
+        (do
+          (arvo/delete-kyselytunnus tunnus)
+          (pc/delete-kyselylinkki-by-linkki kyselylinkki)
+          (sqs/send-delete-tunnus-message kyselylinkki)
+          (response/ok))
+        (response/bad-request "Survey ID not found.")))
+    (catch ExceptionInfo e
+      (if (= 404 (:status (ex-data e)))
+        (response/bad-request "Survey has been answered.")
+        (throw e)))))
+
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
@@ -305,6 +323,12 @@
 
         hoks-handler/routes
         herate-handler/routes
+
+        (c-api/DELETE "/vastaajatunnus/:tunnus" []
+          :summary "Vastaajatunnuksen poisto"
+          :header-params [caller-id :- s/Str]
+          :path-params [tunnus :- s/Str]
+          (delete-vastaajatunnus tunnus))
 
         (route-middleware
           [wrap-audit-logger]

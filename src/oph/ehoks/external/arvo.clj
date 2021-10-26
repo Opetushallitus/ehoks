@@ -14,3 +14,11 @@
 
 (defn get-kyselylinkki-status [link]
   (get-kyselytunnus-status (last (str/split link #"/"))))
+
+(defn delete-kyselytunnus [tunnus]
+  (c/with-api-headers {:method :delete
+                       :service (:arvo-url config)
+                       :url (str (:arvo-url config) "/vastaajatunnus/" tunnus)
+                       :options {:basic-auth [(:arvo-username config)
+                                              (:arvo-password config)]
+                                 :as :json}}))

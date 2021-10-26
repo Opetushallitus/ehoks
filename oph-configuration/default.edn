@@ -17,6 +17,7 @@
  :opintopolku-tt-auth-url "http://localhost:3000/auth-dev/opintopolku-tt-login/"
  :ext-cache-lifetime-minutes 180
  :opintopolku-host "localhost:3000"
+ :heratepalvelu-delete-tunnus-queue "services-heratepalvelu-amisDeleteTunnusQueue"
  :heratepalvelu-queue "services-heratepalvelu-eHOKSHerateQueue"
  :heratepalvelu-tyoelamapalaute-queue "services-heratepalvelu-tep-HerateQueue"
  :heratepalvelu-resend-queue "services-heratepalvelu-eHOKSAmisResendQueue"

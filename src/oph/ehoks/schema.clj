@@ -57,6 +57,7 @@
               :service-timeout-ms s/Int
               :ext-cache-lifetime-minutes s/Int
               :opintopolku-host s/Str
+              :heratepalvelu-delete-tunnus-queue s/Str
               :heratepalvelu-queue s/Str
               :heratepalvelu-tyoelamapalaute-queue s/Str
               :send-herate-messages? s/Bool
