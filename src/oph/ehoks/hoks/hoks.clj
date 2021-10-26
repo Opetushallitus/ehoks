@@ -322,74 +322,90 @@
     (some y-tunnus-missing? osaamisen-hankkimistavat)))
 
 (defn replace-hoks! [hoks-id new-values]
-  (jdbc/with-db-transaction
-    [db-conn (db-ops/get-db-connection)]
-    (let [hoks (get-hoks-by-id hoks-id)
-          old-opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-          old-oppija-oid (:oppija-oid hoks)
-          old-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
-                                            hoks)
-          old-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
-                                            hoks)
-          new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
-          new-oppija-oid (:oppija-oid new-values)
-          new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
-                                            new-values)
-          new-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
-                                            new-values)
-          osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
-          oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
-                                          osaamisen-hankkimistavat)]
-      (cond
-        (and (some? new-opiskeluoikeus-oid)
-             (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
-        (throw (ex-info
-                 "Opiskeluoikeus update not allowed!"
-                 {:error :disallowed-update}))
-        (and (some? new-oppija-oid) (not= new-oppija-oid old-oppija-oid))
-        (throw (ex-info
-                 "Oppija-oid update not allowed!"
-                 {:error :disallowed-update}))
-        (some? oh-missing-tyopaikan-y-tunnus)
-        (throw (ex-info
-                 (str "tyopaikan-y-tunnus missing for "
-                      "osaamisen hankkimistapa: " oh-missing-tyopaikan-y-tunnus)
-                 {:error :disallowed-update}))
-        :else
-        (let [saved-hoks (replace-main-hoks! hoks-id new-values db-conn)]
-          (replace-oto! hoks-id
-                        (:opiskeluvalmiuksia-tukevat-opinnot new-values)
-                        db-conn)
-          (replace-hato! hoks-id
-                         (:hankittavat-ammat-tutkinnon-osat new-values)
-                         db-conn)
-          (replace-hpto! hoks-id
-                         (:hankittavat-paikalliset-tutkinnon-osat new-values)
-                         db-conn)
-          (replace-hyto! hoks-id
-                         (:hankittavat-yhteiset-tutkinnon-osat new-values)
-                         db-conn)
-          (replace-ahato! hoks-id
-                          (:aiemmin-hankitut-ammat-tutkinnon-osat new-values)
-                          db-conn)
-          (replace-ahpto! hoks-id
-                          (:aiemmin-hankitut-paikalliset-tutkinnon-osat
-                            new-values)
-                          db-conn)
-          (replace-ahyto! hoks-id
-                          (:aiemmin-hankitut-yhteiset-tutkinnon-osat
-                            new-values)
-                          db-conn)
-          (when (new-osaamisen-saavuttamisen-pvm-added?
-                  old-osaamisen-saavuttamisen-pvm
-                  new-osaamisen-saavuttamisen-pvm)
-            (send-paattokysely hoks-id
-                               new-osaamisen-saavuttamisen-pvm saved-hoks))
-          (when (and
-                  (true? new-osaamisen-hankkimisen-tarve)
-                  (not (true? old-osaamisen-hankkimisen-tarve)))
-            (sqs/send-amis-palaute-message
-              (sqs/build-hoks-hyvaksytty-msg hoks-id saved-hoks))))))))
+  (let [current-hoks (get-hoks-by-id hoks-id)
+        old-opiskeluoikeus-oid (:opiskeluoikeus-oid current-hoks)
+        old-oppija-oid (:oppija-oid current-hoks)
+        old-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
+                                          current-hoks)
+        old-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
+                                          current-hoks)
+        new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
+        new-oppija-oid (:oppija-oid new-values)
+        new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
+                                          new-values)
+        new-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
+                                          new-values)
+        osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
+        oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
+                                        osaamisen-hankkimistavat)
+        h (jdbc/with-db-transaction
+            [db-conn (db-ops/get-db-connection)]
+            (cond
+              (and (some? new-opiskeluoikeus-oid)
+                   (not= new-opiskeluoikeus-oid
+                         old-opiskeluoikeus-oid))
+              (throw (ex-info
+                       "Opiskeluoikeus update not allowed!"
+                       {:error :disallowed-update}))
+              (and (some? new-oppija-oid)
+                   (not= new-oppija-oid old-oppija-oid))
+              (throw (ex-info
+                       "Oppija-oid update not allowed!"
+                       {:error :disallowed-update}))
+              (some? oh-missing-tyopaikan-y-tunnus)
+              (throw (ex-info
+                       (str "tyopaikan-y-tunnus missing for "
+                            "osaamisen hankkimistapa: "
+                            oh-missing-tyopaikan-y-tunnus)
+                       {:error :disallowed-update}))
+              :else
+              (do
+                (replace-main-hoks! hoks-id new-values db-conn)
+                (replace-oto! hoks-id
+                              (:opiskeluvalmiuksia-tukevat-opinnot
+                                new-values)
+                              db-conn)
+                (replace-hato! hoks-id
+                               (:hankittavat-ammat-tutkinnon-osat
+                                 new-values)
+                               db-conn)
+                (replace-hpto!
+                  hoks-id
+                  (:hankittavat-paikalliset-tutkinnon-osat
+                    new-values)
+                  db-conn)
+                (replace-hyto! hoks-id
+                               (:hankittavat-yhteiset-tutkinnon-osat
+                                 new-values)
+                               db-conn)
+                (replace-ahato!
+                  hoks-id
+                  (:aiemmin-hankitut-ammat-tutkinnon-osat
+                    new-values)
+                  db-conn)
+                (replace-ahpto!
+                  hoks-id
+                  (:aiemmin-hankitut-paikalliset-tutkinnon-osat
+                    new-values)
+                  db-conn)
+                (replace-ahyto!
+                  hoks-id
+                  (:aiemmin-hankitut-yhteiset-tutkinnon-osat
+                    new-values)
+                  db-conn))))
+        updated-hoks (get-hoks-by-id hoks-id)]
+    (do
+      (when (new-osaamisen-saavuttamisen-pvm-added?
+              old-osaamisen-saavuttamisen-pvm
+              new-osaamisen-saavuttamisen-pvm)
+        (send-paattokysely hoks-id
+                           new-osaamisen-saavuttamisen-pvm updated-hoks))
+      (when (and
+              (true? new-osaamisen-hankkimisen-tarve)
+              (not (true? old-osaamisen-hankkimisen-tarve)))
+        (sqs/send-amis-palaute-message
+          (sqs/build-hoks-hyvaksytty-msg hoks-id updated-hoks))))
+    h))
 
 (defn update-hoks! [hoks-id new-values]
   (jdbc/with-db-transaction
