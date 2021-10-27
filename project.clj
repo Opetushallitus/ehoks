@@ -22,7 +22,8 @@
                  [environ "1.1.0"]
                  [software.amazon.awssdk/sqs "2.5.37"]
                  [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]
-                 [com.rpl/specter "1.1.3"]]
+                 [com.rpl/specter "1.1.3"]
+                 [org.clojure/core.memoize "1.0.250"]]
   :managed-dependencies [[org.clojure/clojure "1.10.1"]
 
                          ;; http server

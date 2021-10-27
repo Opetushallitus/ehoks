@@ -47,7 +47,7 @@
    :roles              (get-service-roles (:kayttooikeudet organisation))
    :child-organisations (if (= (:organisaatioOid organisation)
                                "1.2.246.562.10.00000000001")
-                          (op/get-oppilaitos-oids)
+                          (op/get-oppilaitos-oids-cached)
                           (op/get-oppilaitos-oids-by-koulutustoimija-oid
                             (:organisaatioOid organisation)))})
 
