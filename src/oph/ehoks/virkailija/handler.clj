@@ -303,10 +303,10 @@
           (pc/delete-kyselylinkki-by-linkki kyselylinkki)
           (sqs/send-delete-tunnus-message kyselylinkki)
           (response/ok))
-        (response/bad-request "Survey ID not found.")))
+        (response/bad-request {:error "Survey ID not found"})))
     (catch ExceptionInfo e
       (if (= 404 (:status (ex-data e)))
-        (response/bad-request "Survey has been answered.")
+        (response/bad-request {:error "Survey has been answered"})
         (throw e)))))
 
 (def routes
