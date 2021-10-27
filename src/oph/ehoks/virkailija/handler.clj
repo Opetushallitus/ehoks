@@ -324,12 +324,6 @@
         hoks-handler/routes
         herate-handler/routes
 
-        (c-api/DELETE "/vastaajatunnus/:tunnus" []
-          :summary "Vastaajatunnuksen poisto"
-          :header-params [caller-id :- s/Str]
-          :path-params [tunnus :- s/Str]
-          (delete-vastaajatunnus tunnus))
-
         (route-middleware
           [wrap-audit-logger]
 
@@ -344,6 +338,12 @@
 
               external-handler/routes
               system-handler/routes
+
+              (c-api/DELETE "/vastaajatunnus/:tunnus" []
+                :summary "Vastaajatunnuksen poisto"
+                :header-params [caller-id :- s/Str]
+                :path-params [tunnus :- s/Str]
+                (delete-vastaajatunnus tunnus))
 
               (c-api/context "/oppijat" []
                 :header-params [caller-id :- s/Str]
