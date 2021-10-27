@@ -18,7 +18,7 @@
 (defn delete-kyselytunnus [tunnus]
   (c/with-api-headers {:method :delete
                        :service (:arvo-url config)
-                       :url (str (:arvo-url config) "/vastaajatunnus/" tunnus)
+                       :url (str (:arvo-url config) "/" tunnus)
                        :options {:basic-auth [(:arvo-username config)
                                               (:arvo-password config)]
                                  :as :json}}))

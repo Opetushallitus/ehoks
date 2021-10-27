@@ -1,1 +1,1 @@
-SELECT COUNT(*) FROM kyselylinkit WHERE kyselylinkki = ?
+SELECT COUNT(*) FROM kyselylinkit WHERE kyselylinkki LIKE ?

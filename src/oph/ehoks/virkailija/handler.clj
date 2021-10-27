@@ -296,16 +296,18 @@
 
 (defn- delete-vastaajatunnus [tunnus]
   (try
-    (let [kyselylinkki (str "https://snaparvovastaus.csc.fi/v/" tunnus)]
-      (if (seq (pc/select-kyselylinkit-by-linkki kyselylinkki))
+    (let [linkit (pc/select-kyselylinkit-by-tunnus tunnus)
+          kyselylinkki (:kyselylinkki (first linkit))]
+      (if (seq linkit)
         (do
           (arvo/delete-kyselytunnus tunnus)
-          (pc/delete-kyselylinkki-by-linkki kyselylinkki)
+          (pc/delete-kyselylinkki-by-tunnus tunnus)
           (sqs/send-delete-tunnus-message kyselylinkki)
           (response/ok))
         (response/bad-request {:error "Survey ID not found"})))
     (catch ExceptionInfo e
-      (if (= 404 (:status (ex-data e)))
+      (if (and (= 404 (:status (ex-data e)))
+               (= "Tunnuksella on jo vastauksia" (:reason-phrase (ex-data e))))
         (response/bad-request {:error "Survey has been answered"
                                :data (str e)})
         (throw e)))))

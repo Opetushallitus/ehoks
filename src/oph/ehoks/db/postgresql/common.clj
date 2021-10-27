@@ -166,11 +166,11 @@
     [queries/select-oppilaitos-oids-by-koulutustoimija-oid oid]
     {:row-fn h/oppilaitos-oid-from-sql}))
 
-(defn select-kyselylinkit-by-linkki [linkki]
+(defn select-kyselylinkit-by-tunnus [tunnus]
   (db-ops/query
-    [queries/select-kyselylinkit-by-linkki linkki]
+    [queries/select-kyselylinkit-by-linkki (str "%" tunnus)]
     {:row-fn db-ops/from-sql}))
 
-(defn delete-kyselylinkki-by-linkki [linkki]
+(defn delete-kyselylinkki-by-tunnus [tunnus]
   (db-ops/query
-    [queries/delete-kyselylinkki-by-linkki linkki])) ;; TODO ???
+    [queries/delete-kyselylinkki-by-linkki (str "%" tunnus)]))

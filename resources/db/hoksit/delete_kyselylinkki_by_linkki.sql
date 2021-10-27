@@ -1,1 +1,1 @@
-DELETE FROM kyselylinkit where kyselylinkki = ?
+DELETE FROM kyselylinkit where kyselylinkki LIKE ?
