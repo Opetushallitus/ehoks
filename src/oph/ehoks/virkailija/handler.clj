@@ -307,7 +307,7 @@
     (catch ExceptionInfo e
       (if (= 404 (:status (ex-data e)))
         (response/bad-request {:error "Survey has been answered"
-                               :data (ex-data e)})
+                               :data (str e)})
         (throw e)))))
 
 (def routes
