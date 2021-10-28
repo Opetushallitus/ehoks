@@ -308,8 +308,7 @@
     (catch ExceptionInfo e
       (if (and (= 404 (:status (ex-data e)))
                (= "Tunnuksella on jo vastauksia" (:reason-phrase (ex-data e))))
-        (response/bad-request {:error "Survey has been answered"
-                               :data (str e)})
+        (response/bad-request {:error "Survey has been answered"})
         (throw e)))))
 
 (def routes
