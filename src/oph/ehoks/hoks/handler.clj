@@ -430,15 +430,6 @@
                          :failed-ids (sort failed-ids)
                          :result result-after-validation})))
 
-      (c-api/GET "/paattyneet-kyselylinkit-temp" request
-        :summary "Palauttaa päättyneiden kyselylinkkien hoks-id:t,
-         joiden alkupvm on 2021-07-01 jälkeen"
-        :return (rest/response {:hoks-ids [s/Int]})
-        (let [ids
-              (db-hoks/select-paattyneet-kyselylinkit-by-date-and-type-temp)]
-          (when (not-empty ids)
-            (rest/rest-ok {:hoks-ids (sort ids)}))))
-
       (route-middleware
         [m/wrap-require-oph-privileges]
 

@@ -407,6 +407,6 @@
     (db-ops/delete! :opiskeluoikeudet ["oid = ?" (:opiskeluoikeus-oid hoks)])
     (db-ops/delete! :hoksit ["id = ?" hoks-id])))
 
-(defn select-paattyneet-kyselylinkit-by-date-and-type-temp []
+(defn select-kyselylinkit-by-date-and-type-temp []
   (db-ops/query
     [queries/select-paattyneet-kyselylinkit-by-date-and-type-temp]))

@@ -380,6 +380,15 @@
                 :path-params [tunnus :- s/Str]
                 (delete-vastaajatunnus tunnus))
 
+              (c-api/GET "/paattyneet-kyselylinkit-temp" request
+                :summary "Palauttaa päättyneiden kyselylinkkien hoks-id:t,
+                          joiden alkupvm on 2021-07-01 jälkeen"
+                :return (restful/response {:hoks-ids [s/Int]})
+                (let [ids
+                      (db-hoks/select-kyselylinkit-by-date-and-type-temp)]
+                  (when (not-empty ids)
+                    (response/ok {:hoks-ids (sort ids)}))))
+
               (c-api/context "/oppijat" []
                 :header-params [caller-id :- s/Str]
                 get-oppijat-route
