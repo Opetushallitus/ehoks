@@ -138,12 +138,7 @@
 (defn- send-paattokysely [hoks-id os-saavut-pvm hoks]
   (try (let [opiskeluoikeus (k/get-opiskeluoikeus-info
                               (:opiskeluoikeus-oid hoks))
-             kyselytyyppi (get-kysely-type opiskeluoikeus)
-             updated-hoks (get-hoks-by-id hoks-id)]
-         (println "send-paattokysely")
-         (println updated-hoks)
-         (println (sqs/build-hoks-osaaminen-saavutettu-msg
-                    hoks-id os-saavut-pvm updated-hoks kyselytyyppi))
+             kyselytyyppi (get-kysely-type opiskeluoikeus)]
          (when (and
                  (some? opiskeluoikeus)
                  (some? kyselytyyppi))
@@ -399,7 +394,6 @@
                     new-values)
                   db-conn))))
         updated-hoks (get-hoks-by-id hoks-id)]
-    (println updated-hoks)
     (do
       (when (new-osaamisen-saavuttamisen-pvm-added?
               old-osaamisen-saavuttamisen-pvm
