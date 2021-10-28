@@ -368,6 +368,16 @@
     {:tep_kasitelty to}
     ["id = ?" id]))
 
+(defn select-hoksit-with-muodostamattomat-aloituskyselyt [start end limit]
+  (db-ops/query
+    [queries/select-hoksit-with-muodostamattomat-aloituskyselyt start end limit]
+    {:row-fn hoks-from-sql}))
+
+(defn select-hoksit-with-muodostamattomat-paattokyselyt [start end limit]
+  (db-ops/query
+    [queries/select-hoksit-with-muodostamattomat-paattokyselyt start end limit]
+    {:row-fn hoks-from-sql}))
+
 (defn select-count-all-hoks []
   (db-ops/query
     [queries/select-count-all-hoks]))
