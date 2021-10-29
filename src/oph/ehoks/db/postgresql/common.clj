@@ -172,4 +172,4 @@
     {:row-fn db-ops/from-sql}))
 
 (defn delete-kyselylinkki-by-tunnus [tunnus]
-  (db-ops/delete! :kyselylinkit ["kyselylinkkit LIKE ?" (str "%/" tunnus)]))
+  (db-ops/delete! :kyselylinkit ["kyselylinkki LIKE ?" (str "%/" tunnus)]))
