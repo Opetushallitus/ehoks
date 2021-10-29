@@ -383,9 +383,33 @@
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
                 :summary "Palauttaa päättyneiden kyselylinkkien hoks-id:t,
                           joiden alkupvm on 2021-07-01 jälkeen"
-                (response/ok
-                  {:hoks-ids
-                   (db-hoks/select-kyselylinkit-by-date-and-type-temp)}))
+                (let [hoks-infos
+                      (map
+                        (fn [{hoks-id :hoks_id}]
+                          (let [hoks (get-hoks hoks-id request)
+                                ospvm (:osaamisen-saavuttamisen-pvm hoks)
+                                opiskeluoikeus
+                                (koski/get-opiskeluoikeus-info
+                                  (:opiskeluoikeus-oid hoks))
+                                opiskeluoikeusjaksot
+                                (get-in opiskeluoikeus
+                                        [:tila :opiskeluoikeusjaksot])
+                                latest-jakso
+                                (reduce
+                                  (fn [latest jakso]
+                                    (if (.isAfter
+                                          (LocalDate/parse (:alku jakso))
+                                          (LocalDate/parse (:alku latest)))
+                                      jakso
+                                      latest))
+                                  opiskeluoikeusjaksot)
+                                oo-tila
+                                (get-in latest-jakso [:tila :koodiarvo])]
+                            {:id hoks-id
+                             :osaamisen-saavuttamisen-pvm ospvm
+                             :oo-tila oo-tila}))
+                        (db-hoks/select-kyselylinkit-by-date-and-type-temp))]
+                  (response/ok {:data hoks-infos})))
 
               (c-api/context "/oppijat" []
                 :header-params [caller-id :- s/Str]
