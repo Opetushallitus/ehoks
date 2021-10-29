@@ -180,6 +180,9 @@
                    (do
                      (db/update-osaamisen-hankkimistapa! to-upsert conn)
                      {:id (:id (first existing))}))]
+        (when (seq existing)
+          (db/delete-osaamisen-hankkimistavan-muut-oppimisymparistot o-db conn)
+          (db/delete-osaamisen-hankkimistavan-keskeytymisajanjaksot o-db conn))
         (db/insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
           o-db (:muut-oppimisymparistot oh) conn)
         (db/insert-osaamisen-hankkimistavan-keskeytymisajanjaksot!
