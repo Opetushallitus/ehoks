@@ -296,19 +296,20 @@
 
 (defn- delete-vastaajatunnus [tunnus]
   (try
-    (let [linkit (pc/select-kyselylinkit-by-tunnus tunnus)
-          kyselylinkki (:kyselylinkki (first linkit))]
+    (let [linkit (pc/select-kyselylinkit-by-tunnus tunnus)]
       (if (seq linkit)
-        (do
-          (arvo/delete-kyselytunnus tunnus)
-          (pc/delete-kyselylinkki-by-tunnus tunnus)
-          (sqs/send-delete-tunnus-message kyselylinkki)
-          (response/ok))
+        (if (:vastattu (first linkit))
+          (response/bad-request {:error "Survey has been answered"})
+          (do
+            (arvo/delete-kyselytunnus tunnus)
+            (pc/delete-kyselylinkki-by-tunnus tunnus)
+            (sqs/send-delete-tunnus-message (:kyselylinkki (first linkit)))
+            (response/ok)))
         (response/bad-request {:error "Survey ID not found"})))
     (catch ExceptionInfo e
       (if (and (= 404 (:status (ex-data e)))
-               (= "Tunnuksella on jo vastauksia" (:reason-phrase (ex-data e))))
-        (response/bad-request {:error "Survey has been answered"})
+               (= "Tunnus ei ole poistettavissa" (:body (ex-data e))))
+        (response/bad-request {:error "Survey ID cannot be removed"})
         (throw e)))))
 
 (def routes
