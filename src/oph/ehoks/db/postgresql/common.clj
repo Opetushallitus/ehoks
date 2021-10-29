@@ -168,8 +168,8 @@
 
 (defn select-kyselylinkit-by-tunnus [tunnus]
   (db-ops/query
-    [queries/select-kyselylinkit-by-linkki (str "%" tunnus)]
+    [queries/select-kyselylinkit-by-fuzzy-linkki (str "%/" tunnus)]
     {:row-fn db-ops/from-sql}))
 
 (defn delete-kyselylinkki-by-tunnus [tunnus]
-  (db-ops/delete! :kyselylinkit ["kyselylinkkit LIKE ?" (str "%" tunnus)]))
+  (db-ops/delete! :kyselylinkit ["kyselylinkkit LIKE ?" (str "%/" tunnus)]))

@@ -238,10 +238,8 @@
 (defq select-osaamisen-hankkimistavat-by-module-id)
 (defq select-kyselylinkit-by-oppija-oid
       "hoksit/select_kyselylinkit_by_oppija_oid.sql")
-(defq select-kyselylinkit-by-linkki
-      "hoksit/select_kyselylinkit_by_linkki.sql")
-(defq delete-kyselylinkki-by-linkki
-      "hoksit/delete_kyselylinkki_by_linkki.sql")
+(defq select-kyselylinkit-by-fuzzy-linkki
+      "hoksit/select_kyselylinkit_by_fuzzy_linkki.sql")
 (defq select-paattyneet-tyoelamajaksot-hato
       "heratepalvelu/select_paattyneet_tyoelamajaksot_hato.sql")
 (defq select-paattyneet-tyoelamajaksot-hpto
