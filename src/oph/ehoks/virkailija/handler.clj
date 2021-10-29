@@ -308,7 +308,7 @@
         (response/bad-request {:error "Survey ID not found"})))
     (catch ExceptionInfo e
       (if (and (= 404 (:status (ex-data e)))
-               (= "Tunnus ei ole poistettavissa" (:body (ex-data e))))
+               (.contains (:body (ex-data e)) "Tunnus ei ole poistettavissa"))
         (response/bad-request {:error "Survey ID cannot be removed"})
         (throw e)))))
 
