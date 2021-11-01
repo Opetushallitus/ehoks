@@ -33,7 +33,8 @@
             [oph.ehoks.virkailija.cas-handler :as cas-handler]
             [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
             [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu])
-  (:import (clojure.lang ExceptionInfo)))
+  (:import (clojure.lang ExceptionInfo)
+           (java.time LocalDate)))
 
 (def get-oppijat-route
   (c-api/GET "/" request
