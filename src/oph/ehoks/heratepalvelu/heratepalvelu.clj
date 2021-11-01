@@ -92,3 +92,18 @@
             (:osaamisen-saavuttamisen-pvm hoks)
             hoks
             kyselytyyppi))))))
+
+(defn process-hoksit-without-kyselylinkit
+  "Finds all HOKSit for which kyselylinkit haven't been created and sends them
+  to the SQS queue"
+  [start end limit]
+  (let [aloittaneet (db-hoks/select-hoksit-with-muodostamattomat-aloituskyselyt
+                      start end limit)
+        paattyneet (db-hoks/select-hoksit-with-muodostamattomat-paattokyselyt
+                     start end limit)
+        hoksit (concat aloittaneet paattyneet)]
+    (log/infof
+      "Sending %d (limit %d) hoksit between %s and %s"
+      (count hoksit) limit start end)
+    (send-kyselyt-for-hoksit hoksit)
+    hoksit))
