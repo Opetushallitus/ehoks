@@ -300,11 +300,23 @@
       (if (seq linkit)
         (if (:vastattu (first linkit))
           (response/bad-request {:error "Survey has been answered"})
-          (do
-            (arvo/delete-kyselytunnus tunnus)
-            (pc/delete-kyselylinkki-by-tunnus tunnus)
-            (sqs/send-delete-tunnus-message (:kyselylinkki (first linkit)))
-            (response/ok)))
+          (let [rivi (first linkit)
+                status (arvo/get-kyselytunnus-status tunnus)
+                loppupvm (LocalDate/parse
+                           (first
+                             (str/split (:voimassa_loppupvm status) #"T")))]
+            (if (:vastattu status)
+              (do
+                (h/update-kyselylinkki!
+                  {:kyselylinkki (:kyselylinkki rivi)
+                   :voimassa_loppupvm loppupvm
+                   :vastattu (:vastattu status)})
+                (response/bad-request {:error "Survey has been answered"}))
+              (do
+                (arvo/delete-kyselytunnus tunnus)
+                (pc/delete-kyselylinkki-by-tunnus tunnus)
+                (sqs/send-delete-tunnus-message (:kyselylinkki rivi))
+                (response/ok)))))
         (response/bad-request {:error "Survey ID not found"})))
     (catch ExceptionInfo e
       (if (and (= 404 (:status (ex-data e)))
