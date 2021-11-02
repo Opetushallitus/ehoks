@@ -312,14 +312,14 @@
                                :voimassa_loppupvm loppupvm
                                :vastattu (:vastattu status)})
                             (assoc (first linkit)
-                                   :voimassa_loppupvm loppupvm
+                                   :voimassa-loppupvm loppupvm
                                    :vastattu (:vastattu status))))
             opiskeluoikeus (koski/get-opiskeluoikeus-info
-                             (:opiskeluoikeus_oid linkki-info))
+                             (:opiskeluoikeus-oid linkki-info))
             linkki-info (assoc linkki-info
-                               :koulutustoimijan_oid
+                               :koulutustoimijan-oid
                                (:oid (:koulutustoimija opiskeluoikeus))
-                               :koulutustoimijan_nimi
+                               :koulutustoimijan-nimi
                                (:nimi (:koulutustoimija opiskeluoikeus)))]
         (restful/rest-ok linkki-info))
       (response/bad-request {:error "Survey ID not found"}))))
