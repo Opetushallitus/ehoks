@@ -13,6 +13,7 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
+            [oph.ehoks.db.postgresql.common :as pc]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as restful]
@@ -21,16 +22,20 @@
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.oppijaindex :as op]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.validation.handler :as validation-handler]
             [clojure.core.async :as a]
+            [clojure.string :as str]
             [clojure.tools.logging :as log]
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.virkailija.system-handler :as system-handler]
             [oph.ehoks.virkailija.external-handler :as external-handler]
             [oph.ehoks.virkailija.cas-handler :as cas-handler]
             [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
-            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]))
+            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu])
+  (:import (clojure.lang ExceptionInfo)
+           (java.time LocalDate)))
 
 (def get-oppijat-route
   (c-api/GET "/" request
@@ -291,6 +296,47 @@
           :audit-data {:new hoks-values})
         (throw e)))))
 
+(defn- get-vastaajatunnus-info [tunnus]
+  (let [linkit (pc/select-kyselylinkit-by-tunnus tunnus)]
+    (if (seq linkit)
+      (let [linkki-info (if (:vastattu (first linkit))
+                          (first linkit)
+                          (let [status (arvo/get-kyselytunnus-status tunnus)
+                                loppupvm (LocalDate/parse
+                                           (first
+                                             (str/split
+                                               (:voimassa_loppupvm status)
+                                               #"T")))]
+                            (h/update-kyselylinkki!
+                              {:kyselylinkki (:kyselylinkki (first linkit))
+                               :voimassa_loppupvm loppupvm
+                               :vastattu (:vastattu status)})
+                            (assoc (first linkit)
+                                   :voimassa-loppupvm loppupvm
+                                   :vastattu (:vastattu status))))
+            opiskeluoikeus (koski/get-opiskeluoikeus-info
+                             (:opiskeluoikeus-oid linkki-info))
+            linkki-info (assoc linkki-info
+                               :koulutustoimijan-oid
+                               (:oid (:koulutustoimija opiskeluoikeus))
+                               :koulutustoimijan-nimi
+                               (:nimi (:koulutustoimija opiskeluoikeus)))]
+        (restful/rest-ok linkki-info))
+      (response/bad-request {:error "Survey ID not found"}))))
+
+(defn- delete-vastaajatunnus [tunnus]
+  (try
+    (let [linkit (pc/select-kyselylinkit-by-tunnus tunnus)]
+      (arvo/delete-kyselytunnus tunnus)
+      (pc/delete-kyselylinkki-by-tunnus tunnus)
+      (sqs/send-delete-tunnus-message (:kyselylinkki (first linkit)))
+      (response/ok))
+    (catch ExceptionInfo e
+      (if (and (= 404 (:status (ex-data e)))
+               (.contains (:body (ex-data e)) "Tunnus ei ole poistettavissa"))
+        (response/bad-request {:error "Survey ID cannot be removed"})
+        (throw e)))))
+
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
@@ -320,6 +366,18 @@
 
               external-handler/routes
               system-handler/routes
+
+              (c-api/GET "/vastaajatunnus/:tunnus" []
+                :summary "Vastaajatunnuksen tiedot"
+                :header-params [caller-id :- s/Str]
+                :path-params [tunnus :- s/Str]
+                (get-vastaajatunnus-info tunnus))
+
+              (c-api/DELETE "/vastaajatunnus/:tunnus" []
+                :summary "Vastaajatunnuksen poisto"
+                :header-params [caller-id :- s/Str]
+                :path-params [tunnus :- s/Str]
+                (delete-vastaajatunnus tunnus))
 
               (c-api/context "/oppijat" []
                 :header-params [caller-id :- s/Str]

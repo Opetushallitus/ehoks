@@ -3,17 +3,25 @@
   (:require [clj-http.client :as client]))
 
 (def ^:private client-functions
-  (atom {:get client/get
+  (atom {:delete client/delete
+         :get client/get
          :post client/post}))
 
 (defn get-client-functions [] @client-functions)
 
 (defn reset-functions! []
-  (reset! client-functions {:get client/get
+  (reset! client-functions {:delete client/delete
+                            :get client/get
                             :post client/post}))
 
 (defn restore-functions! [fns]
   (reset! client-functions fns))
+
+(defn delete [url options]
+  (or ((:delete @client-functions) url options) (client/delete url options)))
+
+(defn set-delete! [f]
+  (swap! client-functions assoc :delete f))
 
 (defn get [url options]
   (or ((:get @client-functions) url options) (client/get url options)))

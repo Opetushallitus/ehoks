@@ -165,3 +165,11 @@
   (db-ops/query
     [queries/select-oppilaitos-oids-by-koulutustoimija-oid oid]
     {:row-fn h/oppilaitos-oid-from-sql}))
+
+(defn select-kyselylinkit-by-tunnus [tunnus]
+  (db-ops/query
+    [queries/select-kyselylinkit-by-fuzzy-linkki (str "%/" tunnus)]
+    {:row-fn db-ops/from-sql}))
+
+(defn delete-kyselylinkki-by-tunnus [tunnus]
+  (db-ops/delete! :kyselylinkit ["kyselylinkki LIKE ?" (str "%/" tunnus)]))

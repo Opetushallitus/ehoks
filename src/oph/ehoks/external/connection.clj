@@ -36,9 +36,11 @@
     options))
 
 (defn- get-client-fn [method]
-  (if (= method :post)
-    client/post
-    client/get))
+  (cond
+    (= method :delete) client/delete
+    (= method :get)    client/get
+    (= method :post)   client/post
+    :else              (throw (ex-info "Unsupported method" {:method method}))))
 
 (defn with-api-headers
   "Perform request with API headers (OPH Caller ID) and error handling with

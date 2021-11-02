@@ -37,6 +37,10 @@
 (def ^:private herate-queue-url
   (get-queue-url (:heratepalvelu-queue config)))
 
+(def ^:private delete-tunnus-queue-url
+  (get-queue-url-with-error-handling
+    (:heratepalvelu-delete-tunnus-queue config)))
+
 (def ^:private tyoelamapalaute-queue-url
   (get-queue-url-with-error-handling
     (:heratepalvelu-tyoelamapalaute-queue config)))
@@ -102,6 +106,11 @@
   (if (some? herate-queue-url)
     (send-message msg herate-queue-url)
     (log/error "No AMIS-palaute queue!")))
+
+(defn send-delete-tunnus-message [kyselylinkki]
+  (if (some? delete-tunnus-queue-url)
+    (send-message {:kyselylinkki kyselylinkki} delete-tunnus-queue-url)
+    (log/error "No AMIS delete tunnus queue!")))
 
 (defn send-tyoelamapalaute-message [msg]
   (if (some? tyoelamapalaute-queue-url)
