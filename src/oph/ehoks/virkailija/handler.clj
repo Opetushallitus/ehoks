@@ -337,7 +337,6 @@
         (response/bad-request {:error "Survey ID cannot be removed"})
         (throw e)))))
 
-
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
