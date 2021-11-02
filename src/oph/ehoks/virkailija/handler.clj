@@ -296,35 +296,47 @@
           :audit-data {:new hoks-values})
         (throw e)))))
 
+(defn- get-vastaajatunnus-info [tunnus]
+  (let [linkit (pc/select-kyselylinkit-by-tunnus tunnus)]
+    (if (seq linkit)
+      (let [linkki-info (if (:vastattu (first linkit))
+                          (first linkit)
+                          (let [status (arvo/get-kyselytunnus-status tunnus)
+                                loppupvm (LocalDate/parse
+                                           (first
+                                             (str/split
+                                               (:voimassa_loppupvm status)
+                                               #"T")))]
+                            (h/update-kyselylinkki!
+                              {:kyselylinkki (:kyselylinkki (first linkit))
+                               :voimassa_loppupvm loppupvm
+                               :vastattu (:vastattu status)})
+                            (assoc (first linkit)
+                                   :voimassa_loppupvm loppupvm
+                                   :vastattu (:vastattu status))))
+            opiskeluoikeus (koski/get-opiskeluoikeus-info
+                             (:opiskeluoikeus_oid linkki-info))
+            linkki-info (assoc linkki-info
+                               :koulutustoimija_oid
+                               (:oid (:koulutustoimija opiskeluoikeus))
+                               :koulutustoimija_nimi
+                               (:nimi (:koulutustoimija opiskeluoikeus)))]
+        (restful/rest-ok linkki-info))
+      (response/bad-request {:error "Survey ID not found"}))))
+
 (defn- delete-vastaajatunnus [tunnus]
   (try
     (let [linkit (pc/select-kyselylinkit-by-tunnus tunnus)]
-      (if (seq linkit)
-        (if (:vastattu (first linkit))
-          (response/bad-request {:error "Survey has been answered"})
-          (let [rivi (first linkit)
-                status (arvo/get-kyselytunnus-status tunnus)
-                loppupvm (LocalDate/parse
-                           (first
-                             (str/split (:voimassa_loppupvm status) #"T")))]
-            (if (:vastattu status)
-              (do
-                (h/update-kyselylinkki!
-                  {:kyselylinkki (:kyselylinkki rivi)
-                   :voimassa_loppupvm loppupvm
-                   :vastattu (:vastattu status)})
-                (response/bad-request {:error "Survey has been answered"}))
-              (do
-                (arvo/delete-kyselytunnus tunnus)
-                (pc/delete-kyselylinkki-by-tunnus tunnus)
-                (sqs/send-delete-tunnus-message (:kyselylinkki rivi))
-                (response/ok)))))
-        (response/bad-request {:error "Survey ID not found"})))
+      (arvo/delete-kyselytunnus tunnus)
+      (pc/delete-kyselylinkki-by-tunnus tunnus)
+      (sqs/send-delete-tunnus-message (:kyselylinkki (first linkit)))
+      (response/ok))
     (catch ExceptionInfo e
       (if (and (= 404 (:status (ex-data e)))
                (.contains (:body (ex-data e)) "Tunnus ei ole poistettavissa"))
         (response/bad-request {:error "Survey ID cannot be removed"})
         (throw e)))))
+
 
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
@@ -355,6 +367,12 @@
 
               external-handler/routes
               system-handler/routes
+
+              (c-api/GET "/vastaajatunnus/:tunnus" []
+                :summary "Vastaajatunnuksen tiedot"
+                :header-params [caller-id :- s/Str]
+                :path-params [tunnus :- s/Str]
+                (get-vastaajatunnus-info tunnus))
 
               (c-api/DELETE "/vastaajatunnus/:tunnus" []
                 :summary "Vastaajatunnuksen poisto"
