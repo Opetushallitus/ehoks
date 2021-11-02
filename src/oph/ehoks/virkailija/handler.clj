@@ -317,9 +317,9 @@
             opiskeluoikeus (koski/get-opiskeluoikeus-info
                              (:opiskeluoikeus_oid linkki-info))
             linkki-info (assoc linkki-info
-                               :koulutustoimija_oid
+                               :koulutustoimijan_oid
                                (:oid (:koulutustoimija opiskeluoikeus))
-                               :koulutustoimija_nimi
+                               :koulutustoimijan_nimi
                                (:nimi (:koulutustoimija opiskeluoikeus)))]
         (restful/rest-ok linkki-info))
       (response/bad-request {:error "Survey ID not found"}))))
