@@ -357,6 +357,175 @@
           :audit-data {:new hoks})
         (throw e)))))
 
+(def route-post-luo-hoks
+  (c-api/POST "/" [:as request]
+    :summary "Luo uuden HOKSin"
+    :body [hoks hoks-schema/HOKSLuonti]
+    :return (rest/response schema/POSTResponse :id s/Int)
+    (let [opiskeluoikeudet (koski/fetch-opiskeluoikeudet-by-oppija-id
+                             (:oppija-oid hoks))]
+      (check-opiskeluoikeus-match hoks opiskeluoikeudet)
+      (check-opiskeluoikeus-validity hoks opiskeluoikeudet)
+      (check-for-missing-tyopaikan-y-tunnus hoks)
+      (add-oppija-to-index hoks)
+      (add-opiskeluoikeus-to-index hoks)
+      (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))
+    (m/check-hoks-access! hoks request)
+    (save-hoks hoks request)))
+
+(def route-get-hoks-by-opiskeluoikeus
+  (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
+    :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
+    :path-params [opiskeluoikeus-oid :- s/Str]
+    :return (rest/response hoks-schema/HOKS)
+    (let [hoks (first (db-hoks/select-hoksit-by-opiskeluoikeus-oid
+                        opiskeluoikeus-oid))]
+      (if hoks
+        (do
+          (m/check-hoks-access! hoks request)
+          (rest/rest-ok hoks))
+        (do
+          (log/warn "No HOKS found with given opiskeluoikeus "
+                    opiskeluoikeus-oid)
+          (response/not-found
+            {:error "No HOKS found with given opiskeluoikeus"}))))))
+
+(def route-get-paged
+  (c-api/GET "/paged" request
+    :summary "Palauttaa halutun määrän annetusta id:stä seuraavia
+             hokseja kasvavassa id-järjestyksessä.
+             Seuraavan sivun saa antamalla from-id -parametriksi suurimman
+             jo saadun hoksin id:n kunnes palautuu tyhjä tulosjoukko.
+             Vähintään 1, enintään 1000, oletus 500 kerralla.
+             Kaikki hoksit saa haettua aloittamalla from-id:llä 0
+             ja kutsumalla rajapintaa toistuvasti edellisestä vastauksesta
+             poimitulla last-id:llä kunnes sekä result- että
+             failed-ids-kentät ovat tyhjiä."
+    :query-params [{amount :- s/Int 500}
+                   {from-id :- s/Int 0}]
+    :return (rest/response {:last-id s/Int
+                            :failed-ids [s/Int]
+                            :result
+                            [hoks-schema-vipunen/HOKSVipunen]})
+    (let [limit (min (max 1 amount) 1000)
+          raw-result (h/get-hokses-from-id from-id limit)
+          last-id (first (sort > (map :id raw-result)))
+          schema-checker (s/checker hoks-schema-vipunen/HOKSVipunen)
+          result-after-validation (filter
+                                    (fn [hoks] (nil? (schema-checker hoks)))
+                                    raw-result)
+          failed-ids (seq (clojure.set/difference
+                            (set (map :id raw-result))
+                            (set (map :id result-after-validation))))]
+      (when (not-empty failed-ids)
+        (log/info "Failed ids for paged call:" failed-ids
+                  "params" {:from-id from-id :amount amount}))
+      (rest/rest-ok {:last-id (or last-id from-id)
+                     :failed-ids (sort failed-ids)
+                     :result result-after-validation}))))
+
+(def route-oht-kyselylinkki-reitit
+  (route-middleware
+    [m/wrap-require-oph-privileges]
+
+    (c-api/GET "/osaamisen-hankkimistapa/:oht-id" request
+      :summary "Palauttaa osaamisen hankkimistavan ID:llä"
+      :path-params [oht-id :- s/Int]
+      :return (rest/response hoks-schema/OsaamisenHankkimistapa)
+      (let [oht (ha/get-osaamisen-hankkimistapa-by-id oht-id)]
+        (if oht
+          (rest/rest-ok oht)
+          (do
+            (log/warn "No osaamisen hankkimistapa found with ID: " oht-id)
+            (response/not-found
+              {:error "No osaamisen hankkimistapa found with given ID"})))))
+
+    (c-api/PATCH "/kyselylinkki" request
+      :summary "Lisää lähetystietoja kyselylinkille"
+      :body [data hoks-schema/kyselylinkki-lahetys]
+      (let [updated-count (first (h/update-kyselylinkki! data))]
+        (if (pos? updated-count)
+          (response/no-content)
+          (response/not-found
+            {:error "No kyselylinkki found"}))))))
+
+(def route-get-hoks
+  (c-api/GET "/" request
+    :summary "Palauttaa HOKSin"
+    :return (rest/response hoks-schema/HOKS)
+    (rest/rest-ok (h/get-hoks-values (:hoks request)))))
+
+(def route-patch-hoks
+  (c-api/PATCH "/" request
+    :summary
+    "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
+    :body [hoks-values hoks-schema/HOKSPaivitys]
+    (if (not-empty (:hoks request))
+      (try
+        (check-opiskeluoikeus-validity hoks-values)
+        (let [hoks-db (h/update-hoks!
+                        (get-in request [:hoks :id]) hoks-values)]
+          (assoc
+            (response/no-content)
+            :audit-data
+            {:new  hoks-values}))
+        (catch Exception e
+          (if (= (:error (ex-data e)) :disallowed-update)
+            (assoc
+              (response/bad-request!
+                {:error
+                 (.getMessage e)})
+              :audit-data {:new hoks-values})
+            (throw e))))
+      (response/not-found
+        {:error "HOKS not found with given HOKS ID"}))))
+
+(def route-put-hoks
+  (c-api/PUT "/" request
+    :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
+    :body [hoks-values hoks-schema/HOKSKorvaus]
+    (if (not-empty (:hoks request))
+      (try
+        (check-opiskeluoikeus-validity hoks-values)
+        (let [hoks-db (h/replace-hoks!
+                        (get-in request [:hoks :id]) hoks-values)]
+          (assoc
+            (response/no-content)
+            :audit-data
+            {:new  hoks-values}))
+        (catch Exception e
+          (if (= (:error (ex-data e)) :disallowed-update)
+            (assoc
+              (response/bad-request!
+                {:error
+                 (.getMessage e)})
+              :audit-data {:new hoks-values})
+            (throw e))))
+      (response/not-found
+        {:error "HOKS not found with given HOKS ID"}))))
+
+(def route-get-hankintakoulutukset
+  (c-api/GET "/hankintakoulutukset" request
+    :summary "Palauttaa hoksin hankintakoulutus opiskeluoikeus-oidit"
+    (let [oids (oppijaindex/get-hankintakoulutus-oids-by-master-oid
+                 (get-in request [:hoks :opiskeluoikeus-oid]))]
+      (response/ok (map :oid oids)))))
+
+(def route-post-kyselylinkki
+  (c-api/POST "/kyselylinkki" request
+    :summary "Lisää kyselylinkin hoksille"
+    :body [data hoks-schema/kyselylinkki]
+    (if (not-empty (:hoks request))
+      (do
+        (h/insert-kyselylinkki!
+          (assoc
+            data
+            :oppija-oid (get-in request [:hoks :oppija-oid])
+            :hoks-id (get-in request [:hoks :id])))
+        (response/no-content))
+      (response/not-found
+        {:error "HOKS not found with given HOKS ID"}))))
+
 (def routes
   (c-api/context "/hoks" []
     :tags ["hoks"]
@@ -366,156 +535,21 @@
     (route-middleware
       [wrap-user-details m/wrap-require-service-user wrap-audit-logger]
 
-      (c-api/POST "/" [:as request]
-        :summary "Luo uuden HOKSin"
-        :body [hoks hoks-schema/HOKSLuonti]
-        :return (rest/response schema/POSTResponse :id s/Int)
-        (let [opiskeluoikeudet (koski/fetch-opiskeluoikeudet-by-oppija-id
-                                 (:oppija-oid hoks))]
-          (check-opiskeluoikeus-match hoks opiskeluoikeudet)
-          (check-opiskeluoikeus-validity hoks opiskeluoikeudet)
-          (check-for-missing-tyopaikan-y-tunnus hoks)
-          (add-oppija-to-index hoks)
-          (add-opiskeluoikeus-to-index hoks)
-          (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))
-        (m/check-hoks-access! hoks request)
-        (save-hoks hoks request))
-
-      (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
-        :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
-        :path-params [opiskeluoikeus-oid :- s/Str]
-        :return (rest/response hoks-schema/HOKS)
-        (let [hoks (first (db-hoks/select-hoksit-by-opiskeluoikeus-oid
-                            opiskeluoikeus-oid))]
-          (if hoks
-            (do
-              (m/check-hoks-access! hoks request)
-              (rest/rest-ok hoks))
-            (do
-              (log/warn "No HOKS found with given opiskeluoikeus "
-                        opiskeluoikeus-oid)
-              (response/not-found
-                {:error "No HOKS found with given opiskeluoikeus"})))))
-
-      (c-api/GET "/paged" request
-        :summary "Palauttaa halutun määrän annetusta id:stä seuraavia
-                 hokseja kasvavassa id-järjestyksessä.
-                 Seuraavan sivun saa antamalla from-id -parametriksi suurimman
-                 jo saadun hoksin id:n kunnes palautuu tyhjä tulosjoukko.
-                 Vähintään 1, enintään 1000, oletus 500 kerralla.
-                 Kaikki hoksit saa haettua aloittamalla from-id:llä 0
-                 ja kutsumalla rajapintaa toistuvasti edellisestä vastauksesta
-                 poimitulla last-id:llä kunnes sekä result- että
-                 failed-ids-kentät ovat tyhjiä."
-        :query-params [{amount :- s/Int 500}
-                       {from-id :- s/Int 0}]
-        :return (rest/response {:last-id s/Int
-                                :failed-ids [s/Int]
-                                :result
-                                [hoks-schema-vipunen/HOKSVipunen]})
-        (let [limit (min (max 1 amount) 1000)
-              raw-result (h/get-hokses-from-id from-id limit)
-              last-id (first (sort > (map :id raw-result)))
-              schema-checker (s/checker hoks-schema-vipunen/HOKSVipunen)
-              result-after-validation (filter
-                                        (fn [hoks] (nil? (schema-checker hoks)))
-                                        raw-result)
-              failed-ids (seq (clojure.set/difference
-                                (set (map :id raw-result))
-                                (set (map :id result-after-validation))))]
-          (when (not-empty failed-ids)
-            (log/info "Failed ids for paged call:" failed-ids
-                      "params" {:from-id from-id :amount amount}))
-          (rest/rest-ok {:last-id (or last-id from-id)
-                         :failed-ids (sort failed-ids)
-                         :result result-after-validation})))
-
-      (route-middleware
-        [m/wrap-require-oph-privileges]
-
-        (c-api/GET "/osaamisen-hankkimistapa/:oht-id" request
-          :summary "Palauttaa osaamisen hankkimistavan ID:llä"
-          :path-params [oht-id :- s/Int]
-          :return (rest/response hoks-schema/OsaamisenHankkimistapa)
-          (let [oht (ha/get-osaamisen-hankkimistapa-by-id oht-id)]
-            (if oht
-              (rest/rest-ok oht)
-              (do
-                (log/warn "No osaamisen hankkimistapa found with ID: " oht-id)
-                (response/not-found
-                  {:error "No osaamisen hankkimistapa found with given ID"})))))
-
-        (c-api/PATCH "/kyselylinkki" request
-          :summary "Lisää lähetystietoja kyselylinkille"
-          :body [data hoks-schema/kyselylinkki-lahetys]
-          (let [updated-count (first (h/update-kyselylinkki! data))]
-            (if (pos? updated-count)
-              (response/no-content)
-              (response/not-found
-                {:error "No kyselylinkki found"})))))
+      route-post-luo-hoks
+      route-get-hoks-by-opiskeluoikeus
+      route-get-paged
+      route-oht-kyselylinkki-reitit
 
       (c-api/context "/:hoks-id" []
 
         (route-middleware
           [m/wrap-hoks m/wrap-hoks-access]
 
-          (c-api/GET "/" request
-            :summary "Palauttaa HOKSin"
-            :return (rest/response hoks-schema/HOKS)
-            (rest/rest-ok (h/get-hoks-values (:hoks request))))
+          route-get-hoks
+          route-patch-hoks
+          route-put-hoks
 
-          (c-api/PATCH "/" request
-            :summary
-            "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
-            :body [hoks-values hoks-schema/HOKSPaivitys]
-            (if (not-empty (:hoks request))
-              (try
-                (check-opiskeluoikeus-validity hoks-values)
-                (let [hoks-db (h/update-hoks!
-                                (get-in request [:hoks :id]) hoks-values)]
-                  (assoc
-                    (response/no-content)
-                    :audit-data
-                    {:new  hoks-values}))
-                (catch Exception e
-                  (if (= (:error (ex-data e)) :disallowed-update)
-                    (assoc
-                      (response/bad-request!
-                        {:error
-                         (.getMessage e)})
-                      :audit-data {:new hoks-values})
-                    (throw e))))
-              (response/not-found
-                {:error "HOKS not found with given HOKS ID"})))
-
-          (c-api/PUT "/" request
-            :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
-            :body [hoks-values hoks-schema/HOKSKorvaus]
-            (if (not-empty (:hoks request))
-              (try
-                (check-opiskeluoikeus-validity hoks-values)
-                (let [hoks-db (h/replace-hoks!
-                                (get-in request [:hoks :id]) hoks-values)]
-                  (assoc
-                    (response/no-content)
-                    :audit-data
-                    {:new  hoks-values}))
-                (catch Exception e
-                  (if (= (:error (ex-data e)) :disallowed-update)
-                    (assoc
-                      (response/bad-request!
-                        {:error
-                         (.getMessage e)})
-                      :audit-data {:new hoks-values})
-                    (throw e))))
-              (response/not-found
-                {:error "HOKS not found with given HOKS ID"})))
-
-          (c-api/GET "/hankintakoulutukset" request
-            :summary "Palauttaa hoksin hankintakoulutus opiskeluoikeus-oidit"
-            (let [oids (oppijaindex/get-hankintakoulutus-oids-by-master-oid
-                         (get-in request [:hoks :opiskeluoikeus-oid]))]
-              (response/ok (map :oid oids))))
+          route-get-hankintakoulutukset
 
           aiemmin-hankittu-ammat-tutkinnon-osa
           aiemmin-hankittu-paikallinen-tutkinnon-osa
@@ -528,16 +562,4 @@
           (route-middleware
             [m/wrap-require-oph-privileges]
 
-            (c-api/POST "/kyselylinkki" request
-              :summary "Lisää kyselylinkin hoksille"
-              :body [data hoks-schema/kyselylinkki]
-              (if (not-empty (:hoks request))
-                (do
-                  (h/insert-kyselylinkki!
-                    (assoc
-                      data
-                      :oppija-oid (get-in request [:hoks :oppija-oid])
-                      :hoks-id (get-in request [:hoks :id])))
-                  (response/no-content))
-                (response/not-found
-                  {:error "HOKS not found with given HOKS ID"})))))))))
+            route-post-kyselylinkki))))))
