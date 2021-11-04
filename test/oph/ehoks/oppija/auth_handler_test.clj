@@ -204,9 +204,10 @@
           body (parse-body (:body response))]
       (is (= (:status response) 200))
       (is (= (:data body) [{:oid "1.2.246.562.24.44651722625"
-                            :first-name "Teuvo Testi"
-                            :common-name "Teuvo"
-                            :surname "Testaaja"}])))))
+                            :first-name "Aarto Maurits"
+                            :common-name "Aarto"
+                            :surname "Väisänen-perftest"
+                            :usingValtuudet false}])))))
 
 (deftest session-delete-authenticated
   (testing "DELETE authenticated session"
@@ -234,9 +235,10 @@
       (is (= (:status authenticated-response) 200))
       (is (= (:data authenticated-body)
              [{:oid "1.2.246.562.24.44651722625"
-               :first-name "Teuvo Testi"
-               :common-name "Teuvo"
-               :surname "Testaaja"}]))
+               :first-name "Aarto Maurits"
+               :common-name "Aarto"
+               :surname "Väisänen-perftest"
+               :usingValtuudet false}]))
       (is (= (:status response) 401))
       (is (= (:status delete-response) 200))
       (is (= (:status delete-response) 200)))))
