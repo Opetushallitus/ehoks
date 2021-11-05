@@ -5,7 +5,6 @@
             [oph.ehoks.schema :as schema]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.oph-url :as u]
             [schema.core :as s]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.middleware :refer [wrap-authorize]]
