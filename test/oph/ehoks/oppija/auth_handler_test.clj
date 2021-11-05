@@ -89,7 +89,7 @@
             app (common-api/create-app handler/app-routes
                                        (test-session-store session-store))
             login-url (format
-                        "%s/opintopolku2/?ticket=%s"
+                        "%s/opintopolku/?ticket=%s"
                         base-url
                         "ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac")
             response (app (mock/request
@@ -107,7 +107,7 @@
             app (common-api/create-app handler/app-routes
                                        session-store)
             login-url (format
-                        "%s/opintopolku2/?ticket=%s"
+                        "%s/opintopolku/?ticket=%s"
                         base-url
                         "ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac")
             login-response (app (mock/request
@@ -115,7 +115,7 @@
                                   login-url))
             logout-with-no-session (app (mock/request
                                           :post
-                                          (format "%s/opintopolku2/" base-url)
+                                          (format "%s/opintopolku/" base-url)
                                           {:logoutRequest "
                  <samlp:LogoutRequest
                    xmlns:samlp= \"urn:oasis:names:tc:SAML:2.0:protocol\"
@@ -130,7 +130,7 @@
                  "}))
             logoit-with-session (app (mock/request
                                        :post
-                                       (format "%s/opintopolku2/" base-url)
+                                       (format "%s/opintopolku/" base-url)
                                        {:logoutRequest "
                  <samlp:LogoutRequest
                    xmlns:samlp= \"urn:oasis:names:tc:SAML:2.0:protocol\"
@@ -167,7 +167,7 @@
             app (common-api/create-app handler/app-routes
                                        (test-session-store session-store))
             login-url (format
-                        "%s/opintopolku2/?ticket=%s"
+                        "%s/opintopolku/?ticket=%s"
                         base-url
                         "ST-6778-aBcDeFgHiJkLmN123456-cas.1234567890ac")
             response (app (mock/request
@@ -204,9 +204,10 @@
           body (parse-body (:body response))]
       (is (= (:status response) 200))
       (is (= (:data body) [{:oid "1.2.246.562.24.44651722625"
-                            :first-name "Teuvo Testi"
-                            :common-name "Teuvo"
-                            :surname "Testaaja"}])))))
+                            :first-name "Aarto Maurits"
+                            :common-name "Aarto"
+                            :surname "Väisänen-perftest"
+                            :usingValtuudet false}])))))
 
 (deftest session-delete-authenticated
   (testing "DELETE authenticated session"
@@ -234,9 +235,10 @@
       (is (= (:status authenticated-response) 200))
       (is (= (:data authenticated-body)
              [{:oid "1.2.246.562.24.44651722625"
-               :first-name "Teuvo Testi"
-               :common-name "Teuvo"
-               :surname "Testaaja"}]))
+               :first-name "Aarto Maurits"
+               :common-name "Aarto"
+               :surname "Väisänen-perftest"
+               :usingValtuudet false}]))
       (is (= (:status response) 401))
       (is (= (:status delete-response) 200))
       (is (= (:status delete-response) 200)))))

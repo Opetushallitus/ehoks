@@ -32,12 +32,11 @@
                  "</cas:authenticationSuccess></cas:serviceResponse>")}
            (.contains url "oppijanumerorekisteri-service")
            {:status 200
-            :body {:results
-                   [{:oidHenkilo (or oppija-oid "1.2.246.562.24.44651722625")
-                     :hetu "250103-5360"
-                     :etunimet "Aarto Maurits"
-                     :kutsumanimi "Aarto"
-                     :sukunimi "Väisänen-perftest"}]}}))
+            :body {:oidHenkilo (or oppija-oid "1.2.246.562.24.44651722625")
+                   :hetu "250103-5360"
+                   :etunimet "Aarto Maurits"
+                   :kutsumanimi "Aarto"
+                   :sukunimi "Väisänen-perftest"}}))
        (fn [url options]
          (cond
            (.endsWith url "/v1/tickets")
@@ -47,11 +46,7 @@
            {:status 200
             :body "ST-1234-testi"}))]
       (app (-> (mock/request :get (str base-url "/opintopolku/"))
-               (mock/header "FirstName" "Teuvo Testi")
-               (mock/header "cn" "Teuvo")
-               (mock/header "givenname" "Teuvo")
-               (mock/header "hetu" "190384-9245")
-               (mock/header "sn" "Testaaja")))))
+               (mock/query-string {:ticket "ST-1234-testi"})))))
   ([app] (authenticate app nil)))
 
 (defn get-auth-cookie

@@ -46,8 +46,4 @@
              (:frontend-url-sv config)
              (:frontend-url-path config))}
           {:raamit-url (u/get-url "virkailija-raamit-url")}
-          (select-keys config [:opintopolku-login-url-fi
-                               :opintopolku-login-url-sv
-                               :eperusteet-peruste-url
-                               :opintopolku-logout-url-fi
-                               :opintopolku-logout-url-sv]))))))
+          (select-keys config [:eperusteet-peruste-url]))))))
