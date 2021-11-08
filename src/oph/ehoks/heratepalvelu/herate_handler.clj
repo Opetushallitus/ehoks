@@ -37,7 +37,7 @@
                        tyopaikan-nimi :- s/Str
                        tyopaikan-y-tunnus :- s/Str]
         (restful/rest-ok (hp/get-paivitetyt-tyoelamajaksot opiskeluoikeus
-                                                           ojaajan-nimi
+                                                           ohjaajan-nimi
                                                            tyopaikan-nimi
                                                            tyopaikan-y-tunnus)))
 

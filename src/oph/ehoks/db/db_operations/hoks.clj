@@ -398,8 +398,9 @@
   "Hakee oppisopimuksen perusta päivitetyistä TEP-jaksoista"
   [opiskeluoikeus ohjaajan-nimi tyopaikan-nimi tyopaikan-y-tunnus]
   (db-ops/query
-    [queries/select-paivitetyt-tyoelamajaksot opiskeluoikeus
-                                              ohjaajan-nimi
-                                              tyopaikan-nimi
-                                              tyopaikan-y-tunnus]
+    [queries/select-paivitetyt-tyoelamajaksot
+     opiskeluoikeus
+     ohjaajan-nimi
+     tyopaikan-nimi
+     tyopaikan-y-tunnus]
     {:row-fn db-ops/from-sql}))

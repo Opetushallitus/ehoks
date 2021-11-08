@@ -61,13 +61,13 @@
     (h/get-kyselylinkit-by-oppija-oid oppija-oid)))
 
 (defn get-paivitetyt-tyoelamajaksot
-  (str "Returns necessary työelämäjakso info (currently just oppisopimuksen"
-       "perusta) to retroactively update jakso in herätepalvelu")
+  "Returns necessary työelämäjakso info (currently just oppisopimuksen perusta)
+  to retroactively update jakso in herätepalvelu"
   [opiskeluoikeus ohjaajan-nimi tyopaikan-nimi tyopaikan-y-tunnus]
-    (db-hoks/select-paivitetyt-tyoelamajaksot opiskeluoikeus
-                                              ohjaajan-nimi
-                                              tyopaikan-nimi
-                                              tyopaikan-y-tunnus))
+  (db-hoks/select-paivitetyt-tyoelamajaksot opiskeluoikeus
+                                            ohjaajan-nimi
+                                            tyopaikan-nimi
+                                            tyopaikan-y-tunnus))
 
 (defn set-tep-kasitelty [hankkimistapa-id to]
   (db-hoks/update-osaamisen-hankkimistapa-tep-kasitelty hankkimistapa-id to))
