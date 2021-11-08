@@ -35,11 +35,13 @@
         :query-params [opiskeluoikeus :- s/Str
                        ohjaajan-nimi :- s/Str
                        tyopaikan-nimi :- s/Str
-                       tyopaikan-y-tunnus :- s/Str]
+                       tyopaikan-y-tunnus :- s/Str
+                       tutkinnonosa-id :- s/Int]
         (restful/rest-ok (hp/get-paivitetyt-tyoelamajaksot opiskeluoikeus
                                                            ohjaajan-nimi
                                                            tyopaikan-nimi
-                                                           tyopaikan-y-tunnus)))
+                                                           tyopaikan-y-tunnus
+                                                           tutkinnonosa-id)))
 
       (c-api/PATCH "/osaamisenhankkimistavat/:id/kasitelty" []
         :path-params [id :- s/Int]

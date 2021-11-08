@@ -14,4 +14,5 @@ WHERE
   AND tjk.vastuullinen_tyopaikka_ohjaaja_nimi = ?
   AND tjk.tyopaikan_nimi = ?
   AND tjk.tyopaikan_y_tunnus = ?
+  AND osa.id = ?
 ORDER BY oh.created_at DESC

@@ -396,11 +396,16 @@
 
 (defn select-paivitetyt-tyoelamajaksot
   "Hakee oppisopimuksen perusta päivitetyistä TEP-jaksoista"
-  [opiskeluoikeus ohjaajan-nimi tyopaikan-nimi tyopaikan-y-tunnus]
+  [opiskeluoikeus
+   ohjaajan-nimi
+   tyopaikan-nimi
+   tyopaikan-y-tunnus
+   tutkinnonosa-id]
   (db-ops/query
     [queries/select-paivitetyt-tyoelamajaksot
      opiskeluoikeus
      ohjaajan-nimi
      tyopaikan-nimi
-     tyopaikan-y-tunnus]
+     tyopaikan-y-tunnus
+     tutkinnonosa-id]
     {:row-fn db-ops/from-sql}))
