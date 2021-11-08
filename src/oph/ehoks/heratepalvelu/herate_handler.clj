@@ -29,6 +29,18 @@
               periods (hp/process-finished-workplace-periods start end limit)]
           (restful/rest-ok (count periods))))
 
+      (c-api/GET "paivitetyt-tyoelamajaksot" []
+        :summary (str "Päivitetyt työelämäjaksot opiskeluoikeuden ja"
+                      "työpaikkatietojen perusteella")
+        :query-params [opiskeluoikeus :- s/Str
+                       ohjaajan-nimi :- s/Str
+                       tyopaikan-nimi :- s/Str
+                       tyopaikan-y-tunnus :- s/Str]
+        (restful/rest-ok (hp/get-paivitetyt-tyoelamajaksot opiskeluoikeus
+                                                           ojaajan-nimi
+                                                           tyopaikan-nimi
+                                                           tyopaikan-y-tunnus)))
+
       (c-api/PATCH "/osaamisenhankkimistavat/:id/kasitelty" []
         :path-params [id :- s/Int]
         (hp/set-tep-kasitelty id true)

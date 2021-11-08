@@ -393,3 +393,13 @@
   (let [hoks (select-hoks-by-id hoks-id)]
     (db-ops/delete! :opiskeluoikeudet ["oid = ?" (:opiskeluoikeus-oid hoks)])
     (db-ops/delete! :hoksit ["id = ?" hoks-id])))
+
+(defn select-paivitetyt-tyoelamajaksot
+  "Hakee oppisopimuksen perusta päivitetyistä TEP-jaksoista"
+  [opiskeluoikeus ohjaajan-nimi tyopaikan-nimi tyopaikan-y-tunnus]
+  (db-ops/query
+    [queries/select-paivitetyt-tyoelamajaksot opiskeluoikeus
+                                              ohjaajan-nimi
+                                              tyopaikan-nimi
+                                              tyopaikan-y-tunnus]
+    {:row-fn db-ops/from-sql}))
