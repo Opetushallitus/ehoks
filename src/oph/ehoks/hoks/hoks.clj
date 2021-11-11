@@ -329,12 +329,14 @@
                                           current-hoks)
         old-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
                                           current-hoks)
+        old-sahkoposti (:sahkoposti current-hoks)
         new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
         new-oppija-oid (:oppija-oid new-values)
         new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
                                           new-values)
         new-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
                                           new-values)
+        new-sahkoposti (:sahkoposti new-values)
         osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
         oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
                                         osaamisen-hankkimistavat)
@@ -400,9 +402,12 @@
               new-osaamisen-saavuttamisen-pvm)
         (send-paattokysely hoks-id
                            new-osaamisen-saavuttamisen-pvm updated-hoks))
-      (when (and
-              (true? new-osaamisen-hankkimisen-tarve)
-              (not (true? old-osaamisen-hankkimisen-tarve)))
+      (when (or (and
+                  (true? new-osaamisen-hankkimisen-tarve)
+                  (not (true? old-osaamisen-hankkimisen-tarve)))
+                (and
+                  (some? new-sahkoposti)
+                  (not (some? old-sahkoposti))))
         (sqs/send-amis-palaute-message
           (sqs/build-hoks-hyvaksytty-msg hoks-id updated-hoks))))
     h))
