@@ -517,20 +517,22 @@
                             :summary "Asettaa HOKSin
                               poistetuksi(shallow delete) id:n perusteella."
                             :body [data hoks-schema/shallow-delete-hoks]
-                            (if (contains?
-                                  (user/get-organisation-privileges
-                                    (get-in
-                                      request
-                                      [:session :virkailija-user])
-                                    (:oppilaitos-oid data))
-                                  :hoks_delete)
-                              (do
-                                (db-hoks/shallow-delete-hoks-by-hoks-id
-                                  hoks-id)
-                                (response/no-content))
-                              (response/forbidden
-                                {:error (str "User privileges does not match "
-                                             "organisation")})))))
+                            (let [hoks (get-hoks hoks-id request)]
+                              (check-opiskeluoikeus-validity hoks)
+                              (if (contains?
+                                    (user/get-organisation-privileges
+                                      (get-in
+                                        request
+                                        [:session :virkailija-user])
+                                      (:oppilaitos-oid data))
+                                    :hoks_delete)
+                                (do
+                                  (db-hoks/shallow-delete-hoks-by-hoks-id
+                                    hoks-id)
+                                  (response/no-content))
+                                (response/forbidden
+                                  {:error (str "User privileges does not match "
+                                               "organisation")}))))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]
