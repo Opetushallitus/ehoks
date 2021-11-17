@@ -1,2 +1,6 @@
-ALTER TABLE hoksit ADD COLUMN aloitusherate_kasitelty BOOLEAN DEFAULT false;
-ALTER TABLE hoksit ADD COLUMN paattoherate_kasitelty BOOLEAN DEFAULT false;
+CREATE TABLE amisherate_kasittelytilat (
+  id SERIAL PRIMARY KEY,
+  hoks_id SERIAL REFERENCES hoksit(id) ON DELETE CASCADE,
+  aloitusherate_kasitelty BOOLEAN DEFAULT false,
+  paattoherate_kasitelty BOOLEAN DEFAULT false
+);
