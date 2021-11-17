@@ -529,7 +529,9 @@
                                 (do
                                   (db-hoks/shallow-delete-hoks-by-hoks-id
                                     hoks-id)
-                                  (response/no-content))
+                                  (assoc
+                                    (response/no-content)
+                                    :audit-data {:shallow-deleted hoks}))
                                 (response/forbidden
                                   {:error (str "User privileges does not match "
                                                "organisation")}))))))
