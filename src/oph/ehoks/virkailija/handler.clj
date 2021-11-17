@@ -527,6 +527,10 @@
                                       (:oppilaitos-oid data))
                                     :hoks_delete)
                                 (do
+                                  (println "old")
+                                  (println hoks)
+                                  (println "new")
+                                  (println (h/get-hoks-by-id hoks-id))
                                   (db-hoks/shallow-delete-hoks-by-hoks-id
                                     hoks-id)
                                   (assoc
