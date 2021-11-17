@@ -531,9 +531,8 @@
                                     hoks-id)
                                   (assoc
                                     (response/no-content)
-                                    :audit-data {:old hoks
-                                                 :new (get-hoks
-                                                        hoks-id request)}))
+                                    :audit-data { :new (h/get-hoks-by-id
+                                                        hoks-id)}))
                                 (response/forbidden
                                   {:error (str "User privileges does not match "
                                                "organisation")}))))))
