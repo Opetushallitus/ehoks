@@ -518,7 +518,7 @@
                               poistetuksi(shallow delete) id:n perusteella."
                             :body [data hoks-schema/shallow-delete-hoks]
                             (let [hoks (h/get-hoks-by-id hoks-id)]
-                              (println "testi")
+                              (println "testi testi")
                               (println
                                 (op/opiskeluoikeus-still-active?
                                   (:opiskeluoikeus-oid hoks)))
