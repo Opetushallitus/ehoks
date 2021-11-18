@@ -520,26 +520,42 @@
                             (let [hoks (h/get-hoks-by-id hoks-id)]
                               (println "testi testi")
                               (println
-                                (op/opiskeluoikeus-still-active?
+                                (op/opiskeluoikeus-active?
                                   (:opiskeluoikeus-oid hoks)))
                               (check-opiskeluoikeus-validity hoks)
-                              (if (contains?
-                                    (user/get-organisation-privileges
-                                      (get-in
-                                        request
-                                        [:session :virkailija-user])
-                                      (:oppilaitos-oid data))
-                                    :hoks_delete)
+                              (if (op/opiskeluoikeus-active?
+                                    (:opiskeluoikeus-oid hoks))
+                                (if (contains?
+                                      (user/get-organisation-privileges
+                                        (get-in
+                                          request
+                                          [:session :virkailija-user])
+                                        (:oppilaitos-oid data))
+                                      :hoks_delete)
+                                  ((try
+                                     (db-hoks/shallow-delete-hoks-by-hoks-id
+                                       hoks-id)
+                                     (assoc
+                                       (response/no-content)
+                                       :audit-data {:old hoks
+                                                    :new (assoc
+                                                           hoks
+                                                           :deleted_at
+                                                           "*ADDED*")})
+                                     (catch Exception e
+                                       (response/bad-request!
+                                         {:error (ex-message e)}))))
+                                  (response/forbidden
+                                    {:error
+                                     (str "User privileges does not match "
+                                          "organisation")}))
                                 (assoc
-                                  (response/no-content)
-                                  :audit-data {:old hoks
-                                               :new (assoc
-                                                      hoks
-                                                      :deleted_at
-                                                      "*ADDED*")})
-                                (response/forbidden
-                                  {:error (str "User privileges does not match "
-                                               "organisation")}))))))
+                                  (response/bad-request!
+                                    {:error
+                                     (format
+                                       "Opiskeluoikeus %s is no longer active"
+                                       (:opiskeluoikeus-oid hoks))})
+                                  :audit-data {:new hoks}))))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]
