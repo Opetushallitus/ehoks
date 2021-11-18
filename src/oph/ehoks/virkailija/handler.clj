@@ -531,13 +531,16 @@
                                   (println hoks)
                                   (println "new")
                                   (println (h/get-hoks-by-id hoks-id))
-                                  (db-hoks/shallow-delete-hoks-by-hoks-id
-                                    hoks-id)
-                                  (assoc
-                                    (response/no-content)
-                                    :audit-data {:new (:deleted_at
-                                                        (h/get-hoks-by-id
-                                                          hoks-id))}))
+                                  (let [deleted-hoks
+                                        (db-hoks/shallow-delete-hoks-by-hoks-id
+                                          hoks-id)]
+                                    (println "deleted")
+                                    (println deleted-hoks)
+                                    (assoc
+                                      (response/no-content)
+                                      :audit-data {:new (:deleted_at
+                                                          (h/get-hoks-by-id
+                                                            hoks-id))})))
                                 (response/forbidden
                                   {:error (str "User privileges does not match "
                                                "organisation")}))))))
