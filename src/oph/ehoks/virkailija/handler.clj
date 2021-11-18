@@ -517,7 +517,7 @@
                             :summary "Asettaa HOKSin
                               poistetuksi(shallow delete) id:n perusteella."
                             :body [data hoks-schema/shallow-delete-hoks]
-                            (let [hoks (get-hoks hoks-id request)]
+                            (let [hoks (h/get-hoks-by-id hoks-id)]
                               (check-opiskeluoikeus-validity hoks)
                               (if (contains?
                                     (user/get-organisation-privileges
@@ -526,21 +526,13 @@
                                         [:session :virkailija-user])
                                       (:oppilaitos-oid data))
                                     :hoks_delete)
-                                (do
-                                  (println "old")
-                                  (println hoks)
-                                  (println "new")
-                                  (println (h/get-hoks-by-id hoks-id))
-                                  (let [deleted-hoks
-                                        (db-hoks/shallow-delete-hoks-by-hoks-id
-                                          hoks-id)]
-                                    (println "deleted")
-                                    (println deleted-hoks)
-                                    (assoc
-                                      (response/no-content)
-                                      :audit-data {:new (:deleted_at
-                                                          (h/get-hoks-by-id
-                                                            hoks-id))})))
+                                (assoc
+                                  (response/no-content)
+                                  :audit-data {:old hoks
+                                               :new (assoc
+                                                      hoks
+                                                      :deleted_at
+                                                      (LocalDate/now))})
                                 (response/forbidden
                                   {:error (str "User privileges does not match "
                                                "organisation")}))))))
