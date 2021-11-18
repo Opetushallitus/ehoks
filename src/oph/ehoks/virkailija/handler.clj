@@ -532,7 +532,7 @@
                                                :new (assoc
                                                       hoks
                                                       :deleted_at
-                                                     "*ADDED*")})
+                                                      "*ADDED*")})
                                 (response/forbidden
                                   {:error (str "User privileges does not match "
                                                "organisation")}))))))
