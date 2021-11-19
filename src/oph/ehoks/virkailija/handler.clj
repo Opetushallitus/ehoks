@@ -531,7 +531,7 @@
                                     (db-hoks/shallow-delete-hoks-by-hoks-id
                                       hoks-id)
                                     (assoc
-                                      (response/ok)
+                                      (response/ok {:success hoks-id})
                                       :audit-data {:old hoks
                                                    :new (assoc
                                                           hoks
