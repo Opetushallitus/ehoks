@@ -1,5 +1,6 @@
 (ns oph.ehoks.virkailija.handler
-  (:require [compojure.api.sweet :as c-api]
+  (:require [clj-time.core :as t]
+            [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [compojure.route :as compojure-route]
             [schema.core :as s]
@@ -470,10 +471,11 @@
                             (sqs/send-palaute-resend-message
                               {:kyselylinkki (:kyselylinkki kyselylinkki)
                                :sahkoposti (:sahkoposti hoks)})
-                            (log/info
-                              "Tried to resend email to"
-                              "answered feedback, hoks-id " hoks-id
-                              " type " (:tyyppi kyselylinkki)))
+                            (h/update-kyselylinkki!
+                              {:kyselylinkki (:kyselylinkki kyselylinkki)
+                               :sahkoposti (:sahkoposti hoks)
+                               :lahetyspvm (str (t/today))
+                               :lahetystila "lahetetty"}))
                           (restful/rest-ok
                             {:sahkoposti (:sahkoposti hoks)})))
 
