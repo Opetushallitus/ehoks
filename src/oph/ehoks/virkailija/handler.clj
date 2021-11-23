@@ -544,13 +544,11 @@
                                     {:error
                                      (str "User privileges does not match "
                                           "organisation")}))
-                                (assoc
-                                  (response/bad-request!
-                                    {:error
-                                     (format
-                                       "Opiskeluoikeus %s is no longer active"
-                                       (:opiskeluoikeus-oid hoks))})
-                                  :audit-data {:new hoks}))))))
+                                (response/bad-request!
+                                  {:error
+                                   (format
+                                     "Opiskeluoikeus %s is no longer active"
+                                     (:opiskeluoikeus-oid hoks))}))))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]
