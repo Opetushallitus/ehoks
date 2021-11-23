@@ -474,7 +474,7 @@
                             (h/update-kyselylinkki!
                               {:kyselylinkki (:kyselylinkki kyselylinkki)
                                :sahkoposti (:sahkoposti hoks)
-                               :lahetyspvm (str (t/today))
+                               :lahetyspvm (t/today)
                                :lahetystila "lahetetty"}))
                           (restful/rest-ok
                             {:sahkoposti (:sahkoposti hoks)})))
