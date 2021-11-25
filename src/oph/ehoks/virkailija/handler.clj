@@ -542,7 +542,7 @@
                                         {:error (ex-message e)})))
                                   (response/forbidden
                                     {:error
-                                     (str "User privileges does not match "
+                                     (str "User privileges do not match "
                                           "organisation")}))
                                 (response/bad-request!
                                   {:error
