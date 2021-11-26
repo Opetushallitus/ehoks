@@ -104,6 +104,6 @@
         hoksit (concat aloittaneet paattyneet)]
     (log/infof
       "Sending %d (limit %d) hoksit between %s and %s"
-      (count hoksit) limit start end)
+      (count hoksit) (* 2 limit) start end)
     (send-kyselyt-for-hoksit hoksit)
     hoksit))
