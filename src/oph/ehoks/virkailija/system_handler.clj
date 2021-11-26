@@ -160,6 +160,16 @@
         (restful/rest-ok {})
         (response/not-found {:error "No HOKS found with given hoks-id"})))
 
+    (c-api/PATCH "/hoks/:hoks-id/undo-shallow-delete" request
+      :summary "Poistaa deleted_at arvon hoksilta, joka on asetettu
+      käyttöliittymän poista-ominaisuudella."
+      :header-params [caller-id :- s/Str]
+      :path-params [hoks-id :- s/Int]
+      :return (restful/response {})
+      (if (pos? (first (db-hoks/undo-shallow-delete hoks-id)))
+        (restful/rest-ok {})
+        (response/not-found {:error "No HOKS found with given hoks-id"})))
+
     (c-api/POST "/hoks/:hoks-id/resend-aloitusherate" request
       :summary "Lähettää uuden aloituskyselyherätteen herätepalveluun"
       :header-params [caller-id :- s/Str]

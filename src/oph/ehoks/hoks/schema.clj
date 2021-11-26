@@ -838,3 +838,7 @@
 (s/defschema
   palaute-resend
   {:tyyppi s/Str})
+
+(s/defschema
+  shallow-delete-hoks
+  {:oppilaitos-oid s/Str})

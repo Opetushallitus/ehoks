@@ -11,6 +11,7 @@
       "CRUD" #{:read :write :delete :update}
       "OPHPAAKAYTTAJA" #{:read :write :delete :update}
       "READ" #{:read}
+      "HOKS_DELETE" #{:hoks_delete}
       #{})))
 
 (defn get-service-privileges
