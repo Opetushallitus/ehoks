@@ -99,10 +99,14 @@
   "Finds all HOKSit for which kyselylinkit haven't been created and sends them
   to the SQS queue"
   [start end limit]
-  (let [aloittaneet (db-hoks/select-hoksit-with-muodostamattomat-aloituskyselyt
-                      start end limit)
-        paattyneet (db-hoks/select-hoksit-with-muodostamattomat-paattokyselyt
-                     start end limit)
+  (let [aloittaneet
+        (db-hoks/select-hoksit-with-kasittelemattomat-aloitusheratteet start
+                                                                       end
+                                                                       limit)
+        paattyneet
+        (db-hoks/select-hoksit-with-kasittelemattomat-paattoheratteet start
+                                                                      end
+                                                                      limit)
         hoksit (concat aloittaneet paattyneet)]
     (log/infof
       "Sending %d (limit %d) hoksit between %s and %s"
@@ -111,3 +115,9 @@
                              #(sqs/build-hoks-hyvaksytty-msg (:id %) %))
     (send-kyselyt-for-hoksit paattyneet paatto-build-msg)
     hoksit))
+
+(defn set-aloitusherate-kasitelty [hoks-id to]
+  (db-hoks/update-amisherate-kasittelytilat-aloitusherate-kasitelty hoks-id to))
+
+(defn set-paattoherate-kasitelty [hoks-id to]
+  (db-hoks/update-amisherate-kasittelytilat-paattoherate-kasitelty hoks-id to))
