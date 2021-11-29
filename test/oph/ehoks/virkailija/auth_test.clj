@@ -129,6 +129,7 @@
                  {:meta {}
                   :data
                   {:oidHenkilo "1.2.246.562.24.11474338833"
+                   :isSuperuser false
                    :organisation-privileges
                    [{:oid "1.2.246.562.10.12944436166"
                      :privileges

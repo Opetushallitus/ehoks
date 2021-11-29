@@ -12,7 +12,8 @@
 (s/defschema
   VirkailijaSession
   {:oidHenkilo s/Str
-   :organisation-privileges [OrganisationPrivilege]})
+   :organisation-privileges [OrganisationPrivilege]
+   :isSuperuser s/Bool})
 
 (s/defschema
   SystemInfo

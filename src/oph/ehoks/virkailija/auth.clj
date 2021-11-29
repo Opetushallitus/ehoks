@@ -4,7 +4,8 @@
             [oph.ehoks.virkailija.schema :as schema]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.virkailija.cas-handler :as cas-handler]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [oph.ehoks.user :as user]))
 
 (def routes
   (c-api/context "/session" []
@@ -17,7 +18,10 @@
       :return (restful/response schema/VirkailijaSession)
       (if-let [virkailija-user (get-in request [:session :virkailija-user])]
         (restful/rest-ok
-          (select-keys virkailija-user [:oidHenkilo :organisation-privileges]))
+          (assoc (select-keys virkailija-user
+                              [:oidHenkilo :organisation-privileges])
+                 :isSuperuser (boolean (user/oph-super-user?
+                                         virkailija-user))))
         (response/unauthorized {:info "User is not authorized"})))
 
     (c-api/DELETE "/" []
