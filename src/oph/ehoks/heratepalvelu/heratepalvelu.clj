@@ -80,18 +80,20 @@
   (send-kyselyt-for-hoksit (db-hoks/select-hoksit-created-between from to)
                            #(sqs/build-hoks-hyvaksytty-msg (:id %) %)))
 
+(defn paatto-build-msg [hoks]
+  (if-let [opiskeluoikeus (k/get-opiskeluoikeus-info
+                            (:opiskeluoikeus-oid hoks))]
+    (if-let [kyselytyyppi (h/get-kysely-type opiskeluoikeus)]
+      (sqs/build-hoks-osaaminen-saavutettu-msg
+        (:id hoks)
+        (:osaamisen-saavuttamisen-pvm hoks)
+        hoks
+        kyselytyyppi))))
+
 (defn resend-paattokyselyherate-between [from to]
   (send-kyselyt-for-hoksit
     (db-hoks/select-hoksit-finished-between from to)
-    (fn [hoks]
-      (if-let [opiskeluoikeus (k/get-opiskeluoikeus-info
-                                (:opiskeluoikeus-oid hoks))]
-        (if-let [kyselytyyppi (h/get-kysely-type opiskeluoikeus)]
-          (sqs/build-hoks-osaaminen-saavutettu-msg
-            (:id hoks)
-            (:osaamisen-saavuttamisen-pvm hoks)
-            hoks
-            kyselytyyppi))))))
+    paatto-build-msg))
 
 (defn process-hoksit-without-kyselylinkit
   "Finds all HOKSit for which kyselylinkit haven't been created and sends them
@@ -105,5 +107,7 @@
     (log/infof
       "Sending %d (limit %d) hoksit between %s and %s"
       (count hoksit) (* 2 limit) start end)
-    (send-kyselyt-for-hoksit hoksit)
+    (send-kyselyt-for-hoksit aloittaneet
+                             #(sqs/build-hoks-hyvaksytty-msg (:id %) %))
+    (send-kyselyt-for-hoksit paattyneet paatto-build-msg)
     hoksit))
