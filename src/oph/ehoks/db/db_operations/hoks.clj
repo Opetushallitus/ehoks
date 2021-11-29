@@ -368,14 +368,28 @@
     {:tep_kasitelty to}
     ["id = ?" id]))
 
-(defn select-hoksit-with-muodostamattomat-aloituskyselyt [start end limit]
+(defn update-amisherate-kasittelytilat-aloitusherate-kasitelty [hoks-id to]
+  (db-ops/update!
+    :amisherate_kasittelytilat
+    {:aloitusherate_kasitelty to}
+    ["hoks_id = ?" hoks-id]))
+
+(defn update-amisherate-kasittelytilat-paattoherate-kasitelty [hoks-id to]
+  (db-ops/update!
+    :amisherate_kasittelytilat
+    {:paattoherate_kasitelty to}
+    ["hoks_id = ?" hoks-id]))
+
+(defn select-hoksit-with-kasittelemattomat-aloitusheratteet [start end limit]
   (db-ops/query
-    [queries/select-hoksit-with-muodostamattomat-aloituskyselyt start end limit]
+    [queries/select-hoksit-with-kasittelemattomat-aloitusheratteet
+     start end limit]
     {:row-fn hoks-from-sql}))
 
-(defn select-hoksit-with-muodostamattomat-paattokyselyt [start end limit]
+(defn select-hoksit-with-kasittelemattomat-paattoheratteet [start end limit]
   (db-ops/query
-    [queries/select-hoksit-with-muodostamattomat-paattokyselyt start end limit]
+    [queries/select-hoksit-with-kasittelemattomat-paattoheratteet
+     start end limit]
     {:row-fn hoks-from-sql}))
 
 (defn select-count-all-hoks []

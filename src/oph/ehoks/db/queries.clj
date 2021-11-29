@@ -246,10 +246,10 @@
       "heratepalvelu/select_paattyneet_tyoelamajaksot_hpto.sql")
 (defq select-paattyneet-tyoelamajaksot-hyto
       "heratepalvelu/select_paattyneet_tyoelamajaksot_hyto.sql")
-(defq select-hoksit-with-muodostamattomat-aloituskyselyt
-      "heratepalvelu/select_hoksit_with_muodostamattomat_aloituskyselyt.sql")
-(defq select-hoksit-with-muodostamattomat-paattokyselyt
-      "heratepalvelu/select_hoksit_with_muodostamattomat_paattokyselyt.sql")
+(defq select-hoksit-with-kasittelemattomat-aloitusheratteet
+      "heratepalvelu/select_hoksit_with_kasittelemattomat_aloitusheratteet.sql")
+(defq select-hoksit-with-kasittelemattomat-paattoheratteet
+      "heratepalvelu/select_hoksit_with_kasittelemattomat_paattoheratteet.sql")
 (defq select-hankintakoulutus-oids-by-master-oid
       "opiskeluoikeudet/select-hankintakoulutus-oids-by-master-oid.sql")
 (defq select-paattyneet-kyselylinkit-by-date-and-type-temp

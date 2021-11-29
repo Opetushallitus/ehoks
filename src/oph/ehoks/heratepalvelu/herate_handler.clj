@@ -45,10 +45,10 @@
 
       (c-api/PATCH "/hoksit/:id/aloitusherate-kasitelty" []
         :path-params [id :- s/Int]
-        ;; TODO do what we need to do
+        (hp/set-aloitusherate-kasitelty id true)
         (response/no-content))
 
       (c-api/PATCH "/hoksit/:id/paattoherate-kasitelty" []
         :path-params [id :- s/Int]
-        ;; TODO do whatever we need to do
+        (hp/set-paattoherate-kasitelty id true)
         (response/no-content)))))
