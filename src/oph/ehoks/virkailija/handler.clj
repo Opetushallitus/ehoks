@@ -382,7 +382,7 @@
 
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
                 :summary "Palauttaa päättyneiden kyselylinkkien hoks-id:t,
-                          joiden alkupvm on 2021-07-01 jälkeen"
+                          joiden alkupvm on 2021-09-01 jälkeen"
                 (let [hoks-infos
                       (map
                         (fn [{hoks-id :hoks_id}]
