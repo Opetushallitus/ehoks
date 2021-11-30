@@ -407,7 +407,7 @@
     (db-ops/delete! :opiskeluoikeudet ["oid = ?" (:opiskeluoikeus-oid hoks)])
     (db-ops/delete! :hoksit ["id = ?" hoks-id])))
 
-(defn select-kyselylinkit-by-date-and-type-temp [last-id limit]
+(defn select-kyselylinkit-by-date-and-type-temp [alkupvm last-id limit]
   (db-ops/query
     [queries/select-paattyneet-kyselylinkit-by-date-and-type-temp
      last-id limit]))

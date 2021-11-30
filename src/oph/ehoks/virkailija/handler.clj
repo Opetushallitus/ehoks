@@ -398,7 +398,8 @@
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
                 :summary "Palauttaa tietoja kyselylinkkeihin liittyvistä
             hokseista."
-                :path-params [last-id :- s/Num
+                :path-params [alkupvm :- s/Str
+                              last-id :- s/Num
                               limit :- s/Str]
                 (try
                   (let [hoks-infos
@@ -414,7 +415,7 @@
                               {:osaamisen-saavuttamisen-pvm ospvm
                                :vahvistus-pvm vahvistus-pvm}))
                           (db-hoks/select-kyselylinkit-by-date-and-type-temp
-                            last-id limit))]
+                            alkupvm last-id limit))]
                     (response/ok {:paattokysely-total-count (count hoks-infos)
                                   :o-s-pvm-ilman-vahvistuspvm-count
                                   (count (filter
