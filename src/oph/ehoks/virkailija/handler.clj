@@ -434,7 +434,31 @@
                                :oo-tila oo-tila
                                :vahvistus-pvm vahvistus-pvm}))
                           (db-hoks/select-kyselylinkit-by-date-and-type-temp))]
-                    (response/ok {:data hoks-infos}))
+                    (response/ok {:paattokysely-total-count (count hoks-infos)
+                                  :o-s-pvm-ilman-vahvistuspvm-count
+                                  (count (filter
+                                           #(and
+                                              (some?
+                                                (:osaamisen-saavuttamisen-pvm
+                                                  %))
+                                              (nil? (:vahvistus-pvm %)))
+                                           hoks-infos))
+                                  :vahvistuspvm-ilman-o-s-pvm-count
+                                  (count (filter
+                                           #(and
+                                              (some? (:vahvistus-pvm %))
+                                              (nil?
+                                                (:osaamisen-saavuttamisen-pvm
+                                                  %)))
+                                           hoks-infos))
+                                  :vahvistuspvm-ja-o-s-pvm
+                                  (count (filter
+                                           #(and
+                                              (some?
+                                                (:osaamisen-saavuttamisen-pvm
+                                                  %))
+                                              (some? (:vahvistus-pvm %)))
+                                           hoks-infos))}))
                   (catch Exception e
                     (response/bad-request {:error e}))))
 
