@@ -338,6 +338,21 @@
         (response/bad-request {:error "Survey ID cannot be removed"})
         (throw e)))))
 
+(defn check-suoritus-type? [suoritus]
+  (or (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkinto")
+      (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkintoosittainen")))
+
+(defn- get-vahvistus-pvm [opiskeluoikeus]
+  (if-let [vahvistus-pvm
+           (reduce
+             (fn [_ suoritus]
+               (when (check-suoritus-type? suoritus)
+                 (reduced (get-in suoritus [:vahvistus :päivä]))))
+             nil (:suoritukset opiskeluoikeus))]
+    vahvistus-pvm
+    (log/warn "Opiskeluoikeudessa" (:oid opiskeluoikeus)
+              "ei vahvistus päivämäärää")))
+
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
@@ -379,6 +394,53 @@
                 :header-params [caller-id :- s/Str]
                 :path-params [tunnus :- s/Str]
                 (delete-vastaajatunnus tunnus))
+
+              (c-api/GET "/paattyneet-kyselylinkit-temp" request
+                :summary "Palauttaa päättyneiden kyselylinkkien hoks-id:t,
+                          joiden alkupvm on 2021-09-01 jälkeen"
+                (try
+                  (let [hoks-infos
+                        (map
+                          (fn [{hoks-id :hoks_id}]
+                            (let [hoks (h/get-hoks-by-id hoks-id)
+                                  ospvm (:osaamisen-saavuttamisen-pvm hoks)
+                                  oo-id (:opiskeluoikeus-oid hoks)
+                                  opiskeluoikeus
+                                  (when oo-id
+                                    (koski/get-opiskeluoikeus-info oo-id))
+                                  vahvistus-pvm
+                                  (when opiskeluoikeus
+                                    (get-vahvistus-pvm opiskeluoikeus))]
+                              {:osaamisen-saavuttamisen-pvm ospvm
+                               :vahvistus-pvm vahvistus-pvm}))
+                          (db-hoks/select-kyselylinkit-by-date-and-type-temp))]
+                    (response/ok {:paattokysely-total-count (count hoks-infos)
+                                  :o-s-pvm-ilman-vahvistuspvm-count
+                                  (count (filter
+                                           #(and
+                                              (some?
+                                                (:osaamisen-saavuttamisen-pvm
+                                                  %))
+                                              (nil? (:vahvistus-pvm %)))
+                                           hoks-infos))
+                                  :vahvistuspvm-ilman-o-s-pvm-count
+                                  (count (filter
+                                           #(and
+                                              (some? (:vahvistus-pvm %))
+                                              (nil?
+                                                (:osaamisen-saavuttamisen-pvm
+                                                  %)))
+                                           hoks-infos))
+                                  :vahvistuspvm-ja-o-s-pvm
+                                  (count (filter
+                                           #(and
+                                              (some?
+                                                (:osaamisen-saavuttamisen-pvm
+                                                  %))
+                                              (some? (:vahvistus-pvm %)))
+                                           hoks-infos))}))
+                  (catch Exception e
+                    (response/bad-request {:error e}))))
 
               (c-api/context "/oppijat" []
                 :header-params [caller-id :- s/Str]
