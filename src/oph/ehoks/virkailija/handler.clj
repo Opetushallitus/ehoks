@@ -410,28 +410,8 @@
                                     (koski/get-opiskeluoikeus-info oo-id))
                                   vahvistus-pvm
                                   (when opiskeluoikeus
-                                    (get-vahvistus-pvm opiskeluoikeus))
-                                  opiskeluoikeusjaksot
-                                  (when opiskeluoikeus
-                                    (get-in opiskeluoikeus
-                                            [:tila :opiskeluoikeusjaksot]))
-                                  latest-jakso
-                                  (when opiskeluoikeusjaksot
-                                    (reduce
-                                      (fn [latest jakso]
-                                        (if (.isAfter
-                                              (LocalDate/parse (:alku jakso))
-                                              (LocalDate/parse (:alku latest)))
-                                          jakso
-                                          latest))
-                                      opiskeluoikeusjaksot))
-                                  oo-tila
-                                  (when latest-jakso
-                                    (get-in latest-jakso [:tila :koodiarvo]))]
-                              {:hoks-id hoks-id
-                               :osaamisen-saavuttamisen-pvm ospvm
-                               :oo-id oo-id
-                               :oo-tila oo-tila
+                                    (get-vahvistus-pvm opiskeluoikeus))]
+                              {:osaamisen-saavuttamisen-pvm ospvm
                                :vahvistus-pvm vahvistus-pvm}))
                           (db-hoks/select-kyselylinkit-by-date-and-type-temp))]
                     (response/ok {:paattokysely-total-count (count hoks-infos)
