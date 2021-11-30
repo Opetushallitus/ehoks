@@ -349,9 +349,7 @@
                (when (check-suoritus-type? suoritus)
                  (reduced (get-in suoritus [:vahvistus :päivä]))))
              nil (:suoritukset opiskeluoikeus))]
-    vahvistus-pvm
-    (log/warn "Opiskeluoikeudessa" (:oid opiskeluoikeus)
-              "ei vahvistus päivämäärää")))
+    vahvistus-pvm))
 
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
@@ -396,16 +394,16 @@
                 (delete-vastaajatunnus tunnus))
 
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
-                :summary "Palauttaa päättyneiden kyselylinkkien hoks-id:t,
-                          joiden alkupvm on 2021-09-01 jälkeen"
+                :summary "Palauttaa tietoja kyselylinkkeihin liittyvistä
+                          hokseista."
+                :path-params [last-id :- s/Num
+                              limit :- s/Str]
                 (try
                   (let [hoks-infos
                         (map
-                          (fn [{hoks-id :hoks_id}]
-                            (let [hoks (h/get-hoks-by-id hoks-id)
-                                  ospvm (:osaamisen-saavuttamisen-pvm hoks)
-                                  oo-id (:opiskeluoikeus-oid hoks)
-                                  opiskeluoikeus
+                          (fn [{ospvm :osaamisen-saavuttamisen-pvm
+                                oo-id :opiskeluoikeus-oid}]
+                            (let [opiskeluoikeus
                                   (when oo-id
                                     (koski/get-opiskeluoikeus-info oo-id))
                                   vahvistus-pvm
@@ -413,7 +411,8 @@
                                     (get-vahvistus-pvm opiskeluoikeus))]
                               {:osaamisen-saavuttamisen-pvm ospvm
                                :vahvistus-pvm vahvistus-pvm}))
-                          (db-hoks/select-kyselylinkit-by-date-and-type-temp))]
+                          (db-hoks/select-kyselylinkit-by-date-and-type-temp
+                            last-id limit))]
                     (response/ok {:paattokysely-total-count (count hoks-infos)
                                   :o-s-pvm-ilman-vahvistuspvm-count
                                   (count (filter
