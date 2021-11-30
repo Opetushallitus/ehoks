@@ -338,6 +338,21 @@
         (response/bad-request {:error "Survey ID cannot be removed"})
         (throw e)))))
 
+(defn check-suoritus-type? [suoritus]
+  (or (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkinto")
+      (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkintoosittainen")))
+
+(defn- get-vahvistus-pvm [opiskeluoikeus]
+  (if-let [vahvistus-pvm
+           (reduce
+             (fn [_ suoritus]
+               (when (check-suoritus-type? suoritus)
+                 (reduced (get-in suoritus [:vahvistus :päivä]))))
+             nil (:suoritukset opiskeluoikeus))]
+    vahvistus-pvm
+    (log/warn "Opiskeluoikeudessa" (:oid opiskeluoikeus)
+              "ei vahvistus päivämäärää")))
+
 (def routes
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
@@ -383,33 +398,45 @@
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
                 :summary "Palauttaa päättyneiden kyselylinkkien hoks-id:t,
                           joiden alkupvm on 2021-09-01 jälkeen"
-                (let [hoks-infos
-                      (map
-                        (fn [{hoks-id :hoks_id}]
-                          (let [hoks (get-hoks hoks-id request)
-                                ospvm (:osaamisen-saavuttamisen-pvm hoks)
-                                opiskeluoikeus
-                                (koski/get-opiskeluoikeus-info
-                                  (:opiskeluoikeus-oid hoks))
-                                opiskeluoikeusjaksot
-                                (get-in opiskeluoikeus
-                                        [:tila :opiskeluoikeusjaksot])
-                                latest-jakso
-                                (reduce
-                                  (fn [latest jakso]
-                                    (if (.isAfter
-                                          (LocalDate/parse (:alku jakso))
-                                          (LocalDate/parse (:alku latest)))
-                                      jakso
-                                      latest))
-                                  opiskeluoikeusjaksot)
-                                oo-tila
-                                (get-in latest-jakso [:tila :koodiarvo])]
-                            {:id hoks-id
-                             :osaamisen-saavuttamisen-pvm ospvm
-                             :oo-tila oo-tila}))
-                        (db-hoks/select-kyselylinkit-by-date-and-type-temp))]
-                  (response/ok {:data hoks-infos})))
+                (try
+                  (let [hoks-infos
+                        (map
+                          (fn [{hoks-id :hoks_id}]
+                            (let [hoks (h/get-hoks-by-id hoks-id)
+                                  ospvm (:osaamisen-saavuttamisen-pvm hoks)
+                                  oo-id (:opiskeluoikeus-oid hoks)
+                                  opiskeluoikeus
+                                  (when oo-id
+                                    (koski/get-opiskeluoikeus-info oo-id))
+                                  vahvistus-pvm
+                                  (when opiskeluoikeus
+                                    (get-vahvistus-pvm opiskeluoikeus))
+                                  opiskeluoikeusjaksot
+                                  (when opiskeluoikeus
+                                    (get-in opiskeluoikeus
+                                            [:tila :opiskeluoikeusjaksot]))
+                                  latest-jakso
+                                  (when opiskeluoikeusjaksot
+                                    (reduce
+                                      (fn [latest jakso]
+                                        (if (.isAfter
+                                              (LocalDate/parse (:alku jakso))
+                                              (LocalDate/parse (:alku latest)))
+                                          jakso
+                                          latest))
+                                      opiskeluoikeusjaksot))
+                                  oo-tila
+                                  (when latest-jakso
+                                    (get-in latest-jakso [:tila :koodiarvo]))]
+                              {:hoks-id hoks-id
+                               :osaamisen-saavuttamisen-pvm ospvm
+                               :oo-id oo-id
+                               :oo-tila oo-tila
+                               :vahvistus-pvm vahvistus-pvm}))
+                          (db-hoks/select-kyselylinkit-by-date-and-type-temp))]
+                    (response/ok {:data hoks-infos}))
+                  (catch Exception e
+                    (response/bad-request {:error e}))))
 
               (c-api/context "/oppijat" []
                 :header-params [caller-id :- s/Str]
