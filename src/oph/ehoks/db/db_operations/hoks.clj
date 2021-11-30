@@ -384,6 +384,22 @@
     {:paattoherate_kasitelty to}
     ["hoks_id = ?" hoks-id]))
 
+(defn insert-amisherate-kasittelytilat!
+  ([hoks-id]
+    (insert-amisherate-kasittelytilat! hoks-id (db-ops/get-db-connection)))
+  ([hoks-id db-conn]
+    (first (jdbc/insert! db-conn
+                         :amisherate_kasittelytilat
+                         (db-ops/to-sql {:hoks-id hoks-id})))))
+
+(defn update-amisherate-kasittelytilat!
+  ([tilat]
+    (update-amisherate-kasittelytilat! tilat (db-ops/get-db-connection)))
+  ([tilat db-conn]
+    (db-ops/update! :amisherate_kasittelytilat
+                    (db-ops/to-sql tilat)
+                    ["id = ?" (:id tilat)] db-conn)))
+
 (defn select-hoksit-with-kasittelemattomat-aloitusheratteet [start end limit]
   (db-ops/query
     [queries/select-hoksit-with-kasittelemattomat-aloitusheratteet
@@ -395,6 +411,15 @@
     [queries/select-hoksit-with-kasittelemattomat-paattoheratteet
      start end limit]
     {:row-fn hoks-from-sql}))
+
+(defn get-or-create-amisherate-kasittelytila-by-hoks-id! [hoks-id]
+  (let [tila (first
+               (db-ops/query
+                 [queries/select-amisherate-kasittelytilat-by-hoks-id hoks-id]
+                 {:row-fn db-ops/from-sql}))]
+    (if (some? tila)
+      tila
+      (insert-amisherate-kasittelytilat! hoks-id))))
 
 (defn select-count-all-hoks []
   (db-ops/query

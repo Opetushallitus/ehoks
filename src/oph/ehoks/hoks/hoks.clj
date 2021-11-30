@@ -165,6 +165,7 @@
   (jdbc/with-db-transaction
     [conn (db-ops/get-db-connection)]
     (let [saved-hoks (db-hoks/insert-hoks! h conn)]
+      (db-hoks/insert-amisherate-kasittelytilat! (:id saved-hoks) conn)
       (when (:osaamisen-hankkimisen-tarve h)
         (sqs/send-amis-palaute-message
           (sqs/build-hoks-hyvaksytty-msg
@@ -343,6 +344,8 @@
         osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
         oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
                                         osaamisen-hankkimistavat)
+        amisherate-kasittelytila
+        (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id! hoks-id)
         h (jdbc/with-db-transaction
             [db-conn (db-ops/get-db-connection)]
             (cond
@@ -403,14 +406,21 @@
       (when (new-osaamisen-saavuttamisen-pvm-added?
               old-osaamisen-saavuttamisen-pvm
               new-osaamisen-saavuttamisen-pvm)
+        (db-hoks/update-amisherate-kasittelytilat!
+          {:id (:id amisherate-kasittelytila)
+           :paattoherate_kasitelty false})
         (send-paattokysely hoks-id
-                           new-osaamisen-saavuttamisen-pvm updated-hoks))
+                           new-osaamisen-saavuttamisen-pvm
+                           updated-hoks))
       (when (or (and
                   (true? new-osaamisen-hankkimisen-tarve)
                   (not (true? old-osaamisen-hankkimisen-tarve)))
                 (and
                   (some? new-sahkoposti)
                   (not (some? old-sahkoposti))))
+        (db-hoks/update-amisherate-kasittelytilat!
+          {:id (:id amisherate-kasittelytila)
+           :aloitusherate_kasitelty false})
         (sqs/send-amis-palaute-message
           (sqs/build-hoks-hyvaksytty-msg hoks-id updated-hoks))))
     h))
@@ -435,7 +445,9 @@
           new-sahkoposti (:sahkoposti new-values)
           osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
           oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
-                                          osaamisen-hankkimistavat)]
+                                          osaamisen-hankkimistavat)
+          amisherate-kasittelytila
+          (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id! hoks-id)]
       (cond
         (and (some? new-opiskeluoikeus-oid)
              (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
@@ -456,6 +468,9 @@
           (when (new-osaamisen-saavuttamisen-pvm-added?
                   old-osaamisen-saavuttamisen-pvm
                   new-osaamisen-saavuttamisen-pvm)
+            (db-hoks/update-amisherate-kasittelytilat!
+              {:id (:id amisherate-kasittelytila)
+               :paattoherate_kasitelty false})
             (send-paattokysely hoks-id new-osaamisen-saavuttamisen-pvm hoks))
           (when (or (and
                       (true? new-osaamisen-hankkimisen-tarve)
@@ -463,6 +478,9 @@
                     (and
                       (some? new-sahkoposti)
                       (not (some? old-sahkoposti))))
+            (db-hoks/update-amisherate-kasittelytilat!
+              {:id (:id amisherate-kasittelytila)
+               :aloitusherate_kasitelty false})
             (sqs/send-amis-palaute-message
               (sqs/build-hoks-hyvaksytty-msg hoks-id hoks)))
           h)))))
