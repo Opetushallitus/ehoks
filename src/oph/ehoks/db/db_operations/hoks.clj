@@ -411,4 +411,5 @@
   [alkupvm alkupvm-loppu last-id limit]
   (db-ops/query
     [queries/select-paattyneet-kyselylinkit-by-date-and-type-temp
-     alkupvm alkupvm-loppu last-id limit]))
+     alkupvm alkupvm-loppu last-id limit]
+    {:row-fn db-ops/from-sql}))

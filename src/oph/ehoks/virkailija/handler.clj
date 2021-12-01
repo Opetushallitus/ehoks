@@ -405,7 +405,7 @@
                                {from-id :- s/Int 0}]
                 (let [data (db-hoks/select-kyselylinkit-by-date-and-type-temp
                              alkupvm alkupvm-loppu from-id limit)
-                      last-id (:hoks_id (last data))]
+                      last-id (:hoks-id (last data))]
                   (try
                     (let [hoks-infos
                           (map
