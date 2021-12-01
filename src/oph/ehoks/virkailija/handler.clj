@@ -400,10 +400,11 @@
                           hokseista."
                 :query-params [{alkupvm :- LocalDate (LocalDate/parse
                                                        "2021-09-01")}
-                               {limit :- s/Int 500}
+                               {alkupvm-loppu :- LocalDate (LocalDate/now)}
+                               {limit :- s/Int 2000}
                                {from-id :- s/Int 0}]
                 (let [data (db-hoks/select-kyselylinkit-by-date-and-type-temp
-                             alkupvm from-id limit)
+                             alkupvm alkupvm-loppu from-id limit)
                       last-id (:hoks_id (last data))]
                   (try
                     (let [hoks-infos
