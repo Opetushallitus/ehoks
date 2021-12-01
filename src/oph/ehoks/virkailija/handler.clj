@@ -398,7 +398,8 @@
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
                 :summary "Palauttaa tietoja kyselylinkkeihin liittyvistä
                           hokseista."
-                :query-params [{alkupvm :- s/Str "2021-09-01"}
+                :query-params [{alkupvm :- LocalDate (LocalDate/parse
+                                                       "2021-09-01")}
                                {limit :- s/Int 500}
                                {from-id :- s/Int 0}]
                 (let [data (db-hoks/select-kyselylinkit-by-date-and-type-temp
