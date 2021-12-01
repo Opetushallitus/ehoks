@@ -397,52 +397,55 @@
 
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
                 :summary "Palauttaa tietoja kyselylinkkeihin liittyvistä
-            hokseista."
-                :path-params [alkupvm :- s/Str
-                              last-id :- s/Num
-                              limit :- s/Str]
-                (try
-                  (let [hoks-infos
-                        (map
-                          (fn [{ospvm :osaamisen-saavuttamisen-pvm
-                                oo-id :opiskeluoikeus-oid}]
-                            (let [opiskeluoikeus
-                                  (when oo-id
-                                    (koski/get-opiskeluoikeus-info oo-id))
-                                  vahvistus-pvm
-                                  (when opiskeluoikeus
-                                    (get-vahvistus-pvm opiskeluoikeus))]
-                              {:osaamisen-saavuttamisen-pvm ospvm
-                               :vahvistus-pvm vahvistus-pvm}))
-                          (db-hoks/select-kyselylinkit-by-date-and-type-temp
-                            alkupvm last-id limit))]
-                    (response/ok {:paattokysely-total-count (count hoks-infos)
-                                  :o-s-pvm-ilman-vahvistuspvm-count
-                                  (count (filter
-                                           #(and
-                                              (some?
-                                                (:osaamisen-saavuttamisen-pvm
-                                                  %))
-                                              (nil? (:vahvistus-pvm %)))
-                                           hoks-infos))
-                                  :vahvistuspvm-ilman-o-s-pvm-count
-                                  (count (filter
-                                           #(and
-                                              (some? (:vahvistus-pvm %))
-                                              (nil?
-                                                (:osaamisen-saavuttamisen-pvm
-                                                  %)))
-                                           hoks-infos))
-                                  :vahvistuspvm-ja-o-s-pvm
-                                  (count (filter
-                                           #(and
-                                              (some?
-                                                (:osaamisen-saavuttamisen-pvm
-                                                  %))
-                                              (some? (:vahvistus-pvm %)))
-                                           hoks-infos))}))
-                  (catch Exception e
-                    (response/bad-request {:error e}))))
+                          hokseista."
+                :query-params [{alkupvm :- s/Str "2021-09-01"}
+                               {limit :- s/Int 500}
+                               {from-id :- s/Int 0}]
+                (let [data (db-hoks/select-kyselylinkit-by-date-and-type-temp
+                             alkupvm from-id limit)
+                      last-id (:hoks_id (last data))]
+                  (try
+                    (let [hoks-infos
+                          (map
+                            (fn [{ospvm :osaamisen-saavuttamisen-pvm
+                                  oo-id :opiskeluoikeus-oid}]
+                              (let [opiskeluoikeus
+                                    (when oo-id
+                                      (koski/get-opiskeluoikeus-info oo-id))
+                                    vahvistus-pvm
+                                    (when opiskeluoikeus
+                                      (get-vahvistus-pvm opiskeluoikeus))]
+                                {:osaamisen-saavuttamisen-pvm ospvm
+                                 :vahvistus-pvm vahvistus-pvm}))
+                            data)]
+                      (response/ok {:last-id last-id
+                                    :paattokysely-total-count (count hoks-infos)
+                                    :o-s-pvm-ilman-vahvistuspvm-count
+                                    (count (filter
+                                             #(and
+                                                (some?
+                                                  (:osaamisen-saavuttamisen-pvm
+                                                    %))
+                                                (nil? (:vahvistus-pvm %)))
+                                             hoks-infos))
+                                    :vahvistuspvm-ilman-o-s-pvm-count
+                                    (count (filter
+                                             #(and
+                                                (some? (:vahvistus-pvm %))
+                                                (nil?
+                                                  (:osaamisen-saavuttamisen-pvm
+                                                    %)))
+                                             hoks-infos))
+                                    :vahvistuspvm-ja-o-s-pvm
+                                    (count (filter
+                                             #(and
+                                                (some?
+                                                  (:osaamisen-saavuttamisen-pvm
+                                                    %))
+                                                (some? (:vahvistus-pvm %)))
+                                             hoks-infos))}))
+                    (catch Exception e
+                      (response/bad-request {:error e})))))
 
               (c-api/context "/oppijat" []
                 :header-params [caller-id :- s/Str]

@@ -410,4 +410,4 @@
 (defn select-kyselylinkit-by-date-and-type-temp [alkupvm last-id limit]
   (db-ops/query
     [queries/select-paattyneet-kyselylinkit-by-date-and-type-temp
-     last-id limit]))
+     alkupvm last-id limit]))
