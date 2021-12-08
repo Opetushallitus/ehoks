@@ -598,40 +598,56 @@
                           :summary "Asettaa HOKSin
                               poistetuksi(shallow delete) id:n perusteella."
                           :body [data hoks-schema/shallow-delete-hoks]
-                          (let [hoks (h/get-hoks-by-id hoks-id)]
+                          (let [hoks (h/get-hoks-by-id hoks-id)
+                                oppilaitos-oid (if (seq (:oppilaitos-oid data))
+                                                 (:oppilaitos-oid data)
+                                                 (:oppilaitos-oid
+                                                   (op/get-opiskeluoikeus-by-oid
+                                                     (:opiskeluoikeus-oid
+                                                       hoks))))]
+                            (println "oppilaitos oid indeksistä")
+                            (println (:oppilaitos-oid
+                                       (op/get-opiskeluoikeus-by-oid
+                                         (:opiskeluoikeus-oid
+                                           hoks))))
+                            (println "oppilaitos oid letistä")
+                            (println oppilaitos-oid)
                             (if (opiskeluoikeus-void-or-active?
                                   (:opiskeluoikeus-oid hoks))
-                              (if (or
-                                    (empty? (:oppilaitos-oid data))
-                                    (contains?
+                              (if (seq oppilaitos-oid)
+                                (if (contains?
                                       (user/get-organisation-privileges
                                         (get-in
-                                          request
-                                          [:session :virkailija-user])
-                                        (:oppilaitos-oid data))
-                                      :hoks_delete))
-                                (try
-                                  (db-hoks/shallow-delete-hoks-by-hoks-id
-                                    hoks-id)
-                                  (assoc
-                                    (response/ok {:success hoks-id})
-                                    :audit-data {:old hoks
-                                                 :new (assoc
-                                                        hoks
-                                                        :deleted_at
-                                                        "*ADDED*")})
-                                  (catch Exception e
-                                    (response/bad-request!
-                                      {:error (ex-message e)})))
+                                          request [:session :virkailija-user])
+                                        oppilaitos-oid)
+                                      :hoks_delete)
+                                  (try
+                                    (db-hoks/shallow-delete-hoks-by-hoks-id
+                                      hoks-id)
+                                    (assoc
+                                      (response/ok {:success hoks-id})
+                                      :audit-data {:old hoks
+                                                   :new (assoc
+                                                          hoks
+                                                          :deleted_at
+                                                          "*ADDED*")})
+                                    (catch Exception e
+                                      (response/bad-request!
+                                        {:error (ex-message e)})))
+                                  (response/forbidden
+                                    {:error
+                                     (str "User privileges do not match "
+                                          "organisation")}))
                                 (response/forbidden
                                   {:error
-                                   (str "User privileges do not match "
-                                        "organisation")}))
-                              (response/bad-request!
-                                {:error
-                                 (format
-                                   "Opiskeluoikeus %s is no longer active"
-                                   (:opiskeluoikeus-oid hoks))})))))
+                                   (str "Oppilaitos-oid not found. Contact "
+                                        "eHOKS support for more "
+                                        "information.")})))
+                            (response/forbidden
+                              {:error
+                               (format
+                                 "Opiskeluoikeus %s is no longer active"
+                                 (:opiskeluoikeus-oid hoks))}))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]
