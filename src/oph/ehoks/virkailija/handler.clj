@@ -603,7 +603,7 @@
                             (if (opiskeluoikeus-void-or-active?
                                   (:opiskeluoikeus-oid hoks))
                               (if (or
-                                    (nil? (:oppilaitos-oid data))
+                                    (empty? (:oppilaitos-oid data))
                                     (contains?
                                       (user/get-organisation-privileges
                                         (get-in
