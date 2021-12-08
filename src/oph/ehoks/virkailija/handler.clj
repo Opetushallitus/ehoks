@@ -648,12 +648,12 @@
                                   {:error
                                    (str "Oppilaitos-oid not found. Contact "
                                         "eHOKS support for more "
-                                        "information.")})))
-                            (response/forbidden
-                              {:error
-                               (format
-                                 "Opiskeluoikeus %s is no longer active"
-                                 (:opiskeluoikeus-oid hoks))}))))
+                                        "information.")}))
+                              (response/forbidden
+                                {:error
+                                 (format
+                                   "Opiskeluoikeus %s is no longer active"
+                                   (:opiskeluoikeus-oid hoks))})))))
 
                       (route-middleware
                         [m/wrap-oph-super-user]
