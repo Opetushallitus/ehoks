@@ -188,6 +188,14 @@
                        oh-missing-tyopaikan-y-tunnus)})
         :audit-data {:new hoks}))))
 
+(defn opiskeluoikeus-void-or-active? [opiskeluoikeus-oid]
+  (let [opiskeluoikeus (koski/get-opiskeluoikeus-info opiskeluoikeus-oid)]
+    (println opiskeluoikeus)
+    (or
+      (nil? opiskeluoikeus)
+      (not (op/opiskeluoikeus-tila-inactive?
+             (op/get-opiskeluoikeus-tila opiskeluoikeus))))))
+
 (defn- save-hoks [hoks request]
   (try
     (let [hoks-db (h/save-hoks!
@@ -592,7 +600,7 @@
                               poistetuksi(shallow delete) id:n perusteella."
                           :body [data hoks-schema/shallow-delete-hoks]
                           (let [hoks (h/get-hoks-by-id hoks-id)]
-                            (if (op/opiskeluoikeus-active?
+                            (if (opiskeluoikeus-void-or-active?
                                   (:opiskeluoikeus-oid hoks))
                               (if (contains?
                                     (user/get-organisation-privileges

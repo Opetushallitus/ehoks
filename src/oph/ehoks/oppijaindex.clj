@@ -327,7 +327,7 @@
       (insert-hankintakoulutus-opiskeluoikeus!
         opiskeluoikeus-oid oppija-oid hankintakoulutus))))
 
-(defn- get-opiskeluoikeus-tila [opiskeluoikeus]
+(defn get-opiskeluoikeus-tila [opiskeluoikeus]
   (let [opiskeluoikeusjaksot (get-in opiskeluoikeus
                                      [:tila :opiskeluoikeusjaksot])
         latest-jakso (reduce
@@ -340,7 +340,7 @@
                        opiskeluoikeusjaksot)]
     (get-in latest-jakso [:tila :koodiarvo])))
 
-(defn- opiskeluoikeus-tila-inactive? [tila]
+(defn opiskeluoikeus-tila-inactive? [tila]
   (some #(= tila %) ["valmistunut"
                      "eronnut"
                      "katsotaaneronneeksi"
