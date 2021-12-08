@@ -605,13 +605,6 @@
                                                    (op/get-opiskeluoikeus-by-oid
                                                      (:opiskeluoikeus-oid
                                                        hoks))))]
-                            (println "oppilaitos oid indeksistä")
-                            (println (:oppilaitos-oid
-                                       (op/get-opiskeluoikeus-by-oid
-                                         (:opiskeluoikeus-oid
-                                           hoks))))
-                            (println "oppilaitos oid letistä")
-                            (println oppilaitos-oid)
                             (if (opiskeluoikeus-void-or-active?
                                   (:opiskeluoikeus-oid hoks))
                               (if (seq oppilaitos-oid)
