@@ -190,12 +190,6 @@
 
 (defn opiskeluoikeus-void-or-active? [opiskeluoikeus-oid]
   (let [opiskeluoikeus (koski/get-opiskeluoikeus-info opiskeluoikeus-oid)]
-    (println "koski oo")
-    (println opiskeluoikeus)
-    (println (nil? opiskeluoikeus))
-    (println (op/get-opiskeluoikeus-tila opiskeluoikeus))
-    (println (not (op/opiskeluoikeus-tila-inactive?
-                    (op/get-opiskeluoikeus-tila opiskeluoikeus))))
     (or
       (nil? opiskeluoikeus)
       (not (op/opiskeluoikeus-tila-inactive?
