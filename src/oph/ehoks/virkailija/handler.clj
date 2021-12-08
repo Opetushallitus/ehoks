@@ -602,13 +602,15 @@
                           (let [hoks (h/get-hoks-by-id hoks-id)]
                             (if (opiskeluoikeus-void-or-active?
                                   (:opiskeluoikeus-oid hoks))
-                              (if (contains?
-                                    (user/get-organisation-privileges
-                                      (get-in
-                                        request
-                                        [:session :virkailija-user])
-                                      (:oppilaitos-oid data))
-                                    :hoks_delete)
+                              (if (or
+                                    (nil? (:oppilaitos-oid data))
+                                    (contains?
+                                      (user/get-organisation-privileges
+                                        (get-in
+                                          request
+                                          [:session :virkailija-user])
+                                        (:oppilaitos-oid data))
+                                      :hoks_delete))
                                 (try
                                   (db-hoks/shallow-delete-hoks-by-hoks-id
                                     hoks-id)
