@@ -599,7 +599,7 @@
                               poistetuksi(shallow delete) id:n perusteella."
                           :body [data hoks-schema/shallow-delete-hoks]
                           (let [hoks (h/get-hoks-by-id hoks-id)
-                                oppilaitos-oid (or
+                                oppilaitos-oid (if (seq (:oppilaitos-oid data))
                                                  (:oppilaitos-oid data)
                                                  (:oppilaitos-oid
                                                    (op/get-opiskeluoikeus-by-oid
