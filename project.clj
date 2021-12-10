@@ -13,10 +13,10 @@
                  [ring/ring-jetty-adapter "1.7.1"]
                  [clj-time "0.15.1"]
                  [org.clojure/core.async "0.4.490"]
-                 [org.clojure/tools.logging "0.4.1"]
-                 [org.apache.logging.log4j/log4j-api "2.11.1"]
-                 [org.apache.logging.log4j/log4j-core "2.11.1"]
-                 [org.apache.logging.log4j/log4j-slf4j-impl "2.11.1"]
+                 [org.clojure/tools.logging "1.1.0"]
+                 [org.apache.logging.log4j/log4j-api "2.15.0"]
+                 [org.apache.logging.log4j/log4j-core "2.15.0"]
+                 [org.apache.logging.log4j/log4j-slf4j-impl "2.15.0"]
                  [org.clojure/data.xml "0.0.8"]
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.1.0"]
@@ -44,10 +44,10 @@
                          [org.apache.httpcomponents/httpmime "4.5.6"]
 
                          ;; logging
-                         [org.clojure/tools.logging "0.4.1"]
-                         [org.apache.logging.log4j/log4j-api "2.11.1"]
-                         [org.apache.logging.log4j/log4j-core "2.11.1"]
-                         [org.apache.logging.log4j/log4j-slf4j-impl "2.11.1"]
+                         [org.clojure/tools.logging "1.1.0"]
+                         [org.apache.logging.log4j/log4j-api "2.15.0"]
+                         [org.apache.logging.log4j/log4j-core "2.15.0"]
+                         [org.apache.logging.log4j/log4j-slf4j-impl "2.15.0"]
 
                          ;; date, time
                          [joda-time "2.10.1"]
