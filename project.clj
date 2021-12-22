@@ -14,9 +14,9 @@
                  [clj-time "0.15.1"]
                  [org.clojure/core.async "0.4.490"]
                  [org.clojure/tools.logging "1.1.0"]
-                 [org.apache.logging.log4j/log4j-api "2.16.0"]
-                 [org.apache.logging.log4j/log4j-core "2.16.0"]
-                 [org.apache.logging.log4j/log4j-slf4j-impl "2.16.0"]
+                 [org.apache.logging.log4j/log4j-api "2.17.0"]
+                 [org.apache.logging.log4j/log4j-core "2.17.0"]
+                 [org.apache.logging.log4j/log4j-slf4j-impl "2.17.0"]
                  [org.clojure/data.xml "0.0.8"]
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.1.0"]
@@ -45,9 +45,9 @@
 
                          ;; logging
                          [org.clojure/tools.logging "1.1.0"]
-                         [org.apache.logging.log4j/log4j-api "2.16.0"]
-                         [org.apache.logging.log4j/log4j-core "2.16.0"]
-                         [org.apache.logging.log4j/log4j-slf4j-impl "2.16.0"]
+                         [org.apache.logging.log4j/log4j-api "2.17.0"]
+                         [org.apache.logging.log4j/log4j-core "2.17.0"]
+                         [org.apache.logging.log4j/log4j-slf4j-impl "2.17.0"]
 
                          ;; date, time
                          [joda-time "2.10.1"]
