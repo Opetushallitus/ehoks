@@ -468,15 +468,18 @@
           oh1 (ha/save-osaamisen-hankkimistapa!
                 (assoc
                   oh-data
-                  :loppu (.plusDays (java.time.LocalDate/now) 1)))
+                  :loppu (.plusDays (java.time.LocalDate/now) 1))
+                12345)
           oh2 (ha/save-osaamisen-hankkimistapa!
                 (assoc
                   oh-data
-                  :loppu (.minusDays (java.time.LocalDate/now) 1)))
+                  :loppu (.minusDays (java.time.LocalDate/now) 1))
+                12345)
           oh3 (ha/save-osaamisen-hankkimistapa!
                 (assoc
                   oh-data
-                  :loppu (java.time.LocalDate/now)))]
+                  :loppu (java.time.LocalDate/now))
+                12345)]
       (is (= false (:tep_kasitelty oh1)))
       (is (= true (:tep_kasitelty oh2)))
       (is (= true (:tep_kasitelty oh3))))))

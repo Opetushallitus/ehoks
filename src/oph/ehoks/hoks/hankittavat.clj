@@ -65,7 +65,8 @@
          (get-osaamisen-osoittaminen (:id %))
          :osaamisen-hankkimistavat
          (get-osaamisen-hankkimistavat (:id %)))
-       :id)
+       :id
+       :hoks-id)
     (db/select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-osaamisen-hankkimistavat-by-module-id [uuid]
@@ -145,7 +146,8 @@
          (get-hato-osaamisen-osoittaminen (:id %))
          :osaamisen-hankkimistavat
          (get-hato-osaamisen-hankkimistavat (:id %)))
-       :id)
+       :id
+       :hoks-id)
     (db/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-hankittava-yhteinen-tutkinnon-osa [hyto-id]
@@ -157,19 +159,21 @@
   (mapv
     #(dissoc
        (assoc % :osa-alueet (get-yto-osa-alueet (:id %)))
-       :id)
+       :id
+       :hoks-id)
     (db/select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn save-osaamisen-hankkimistapa!
-  ([oh]
-    (save-osaamisen-hankkimistapa! oh (db-ops/get-db-connection)))
-  ([oh db-conn]
+  ([oh hoks-id]
+    (save-osaamisen-hankkimistapa! oh hoks-id (db-ops/get-db-connection)))
+  ([oh hoks-id db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
       (let [tho (db/insert-tyopaikalla-jarjestettava-koulutus!
                   (:tyopaikalla-jarjestettava-koulutus oh) conn)
-            existing (db/select-osaamisen-hankkimistavat-by-module-id
-                       (:module-id oh))
+            existing (db/select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
+                       hoks-id
+                       (:yksiloiva-tunniste oh))
             to-upsert (assoc (if (.isBefore (LocalDate/now) (:loppu oh))
                                oh
                                (assoc oh :tep_kasitelty true))
@@ -195,7 +199,7 @@
   ([hpto oh db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
-      (let [o-db (save-osaamisen-hankkimistapa! oh conn)]
+      (let [o-db (save-osaamisen-hankkimistapa! oh (:hoks-id hpto) conn)]
         (db/insert-hpto-osaamisen-hankkimistapa!
           hpto o-db conn)
         o-db))))
@@ -263,7 +267,7 @@
                          (:id yto) (:id naytto) conn)]
         yto-naytto))))
 
-(defn save-hankittava-paikallinen-tutkinnon-osa!
+(defn save-hankittava-paikallinen-tutkinnon-osa!            ;TODO
   ([hoks-id hpto]
     (save-hankittava-paikallinen-tutkinnon-osa!
       hoks-id hpto (db-ops/get-db-connection)))
@@ -296,7 +300,7 @@
   ([hato oh db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
-      (let [o-db (save-osaamisen-hankkimistapa! oh conn)]
+      (let [o-db (save-osaamisen-hankkimistapa! oh (:hoks-id hato) conn)]
         (db/insert-hankittavan-ammat-tutkinnon-osan-osaamisen-hankkimistapa!
           (:id hato) (:id o-db) conn)
         o-db))))
@@ -339,7 +343,7 @@
             (:osaamisen-osoittaminen hato))
           :osaamisen-hankkimistavat
           (mapv
-            #(save-hato-osaamisen-hankkimistapa! hato-db % conn)
+            #(save-hato-osaamisen-hankkimistapa! hato-db %  conn)
             (:osaamisen-hankkimistavat hato)))))))
 
 (defn save-hankittavat-ammat-tutkinnon-osat!
@@ -375,21 +379,22 @@
                hato-db (:osaamisen-osoittaminen values) db-conn)))))
 
 (defn save-hyto-osa-alue-osaamisen-hankkimistapa!
-  ([hyto-osa-alue oh]
+  ([hoks-id hyto-osa-alue oh]
     (save-hyto-osa-alue-osaamisen-hankkimistapa!
-      hyto-osa-alue oh (db-ops/get-db-connection)))
-  ([hyto-osa-alue oh db-conn]
+      hoks-id hyto-osa-alue oh (db-ops/get-db-connection)))
+  ([hoks-id hyto-osa-alue oh db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
-      (let [o-db (save-osaamisen-hankkimistapa! oh conn)]
+      (let [o-db (save-osaamisen-hankkimistapa! oh hoks-id conn)]
         (db/insert-hyto-osa-alueen-osaamisen-hankkimistapa!
           (:id hyto-osa-alue) (:id o-db) conn)
         o-db))))
 
 (defn save-hyto-osa-alueet!
-  ([hyto-id osa-alueet]
-    (save-hyto-osa-alueet! hyto-id osa-alueet (db-ops/get-db-connection)))
-  ([hyto-id osa-alueet db-conn]
+  ([hoks-id hyto-id osa-alueet]
+    (save-hyto-osa-alueet!
+      hoks-id hyto-id osa-alueet (db-ops/get-db-connection)))
+  ([hoks-id hyto-id osa-alueet db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
       (mapv
@@ -401,7 +406,7 @@
              (mapv
                (fn [oht]
                  (save-hyto-osa-alue-osaamisen-hankkimistapa!
-                   osa-alue-db oht conn))
+                   hoks-id osa-alue-db oht conn))
                (:osaamisen-hankkimistavat %))
              :osaamisen-osoittaminen
              (mapv
@@ -424,7 +429,7 @@
           hyto-db
           :osa-alueet
           (save-hyto-osa-alueet!
-            (:id hyto-db) (:osa-alueet hyto) conn))))))
+            (:id hyto-db) (:osa-alueet hyto) (:hoks-id hyto) conn))))))
 
 (defn save-hankittavat-yhteiset-tutkinnon-osat!
   ([hoks-id c]
@@ -437,11 +442,11 @@
         #(save-hankittava-yhteinen-tutkinnon-osa! hoks-id % conn)
         c))))
 
-(defn- replace-hyto-osa-alueet! [hyto-id new-oa-values db-conn]
+(defn- replace-hyto-osa-alueet! [hoks-id hyto-id new-oa-values db-conn]
   (db/delete-hyto-osa-alueet! hyto-id db-conn)
-  (save-hyto-osa-alueet! hyto-id new-oa-values db-conn))
+  (save-hyto-osa-alueet! hoks-id hyto-id new-oa-values db-conn))
 
-(defn update-hankittava-yhteinen-tutkinnon-osa! [hyto-id new-values]
+(defn update-hankittava-yhteinen-tutkinnon-osa! [hoks-id hyto-id new-values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
     (let [bare-hyto (dissoc new-values :osa-alueet)]
@@ -449,4 +454,4 @@
         (db/update-hankittava-yhteinen-tutkinnon-osa-by-id!
           hyto-id new-values db-conn)))
     (when-let [oa (:osa-alueet new-values)]
-      (replace-hyto-osa-alueet! hyto-id oa db-conn))))
+      (replace-hyto-osa-alueet! hoks-id hyto-id oa db-conn))))
