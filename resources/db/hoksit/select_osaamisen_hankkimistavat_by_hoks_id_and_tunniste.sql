@@ -18,4 +18,4 @@ FROM osaamisen_hankkimistavat oh
 WHERE ? IN(hptoosat.hoks_id,
            hatoosat.hoks_id,
            ytoosat.hoks_id)
-  AND oh.tunniste = ?;
+  AND oh.yksiloiva_tunniste = ?;
