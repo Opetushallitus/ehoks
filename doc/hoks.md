@@ -342,7 +342,6 @@ Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)
 | ajanjakson-tarkenne | Merkkijono | Tarkentava teksti ajanjaksolle, jos useita aikavälillä. | Ei |
 | osa-aikaisuustieto | Kokonaisluku | Osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen. | Ei |
 | osaamisen-hankkimistapa-koodi-versio | Kokonaisluku | Koodisto-koodin versio, koodistolle osaamisenhankkimistapa | Kyllä |
-| module-id | Uuid | Tietorakenteen yksilöivä tunniste esimerkiksi tiedon jakamista varten | Ei |
 | hankkijan-edustaja | [Oppilaitoshenkilo](#Oppilaitoshenkilo) | Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja | Ei |
 | tyopaikalla-jarjestettava-koulutus | [TyopaikallaJarjestettavaKoulutus](#TyopaikallaJarjestettavaKoulutus) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai koulutussopimus. | Ei |
 | alku | Päivämäärä | Alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
@@ -350,6 +349,7 @@ Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)
 | oppisopimuksen-perusta-koodi-uri | Merkkijono | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-uri | Ei |
 | oppisopimuksen-perusta-koodi-versio | Kokonaisluku | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-urin versio | Ei |
 | keskeytymisajanjaksot | [[Keskeytymisajanjakso](#Keskeytymisajanjakso)] | Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään työelämäpalautteessa tarvittavan työpaikkajakson keston laskemiseen. | Ei |
+| yksiloiva-tunniste | Merkkijono | Osaamisen hankkimistavan yksilöivä tunniste | Ei |
 
 ### KoodistoKoodi
 
@@ -418,7 +418,7 @@ Osaamisen hankkimisen tapa
 | ajanjakson-tarkenne | Merkkijono | Tarkentava teksti ajanjaksolle, jos useita aikavälillä. | Ei |
 | osa-aikaisuustieto | Kokonaisluku | Osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen. | Ei |
 | osaamisen-hankkimistapa-koodi-versio | Kokonaisluku | Koodisto-koodin versio, koodistolle osaamisenhankkimistapa | Kyllä |
-| module-id | Uuid | Tietorakenteen yksilöivä tunniste esimerkiksi tiedon jakamista varten | Ei |
+| module-id | Uuid | Tietorakenteen yksilöivä tunniste esimerkiksi tiedon jakamista varten | Kyllä |
 | hankkijan-edustaja | [Oppilaitoshenkilo](#Oppilaitoshenkilo) | Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja | Ei |
 | tyopaikalla-jarjestettava-koulutus | [TyopaikallaJarjestettavaKoulutus](#TyopaikallaJarjestettavaKoulutus) | Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai koulutussopimus. | Ei |
 | alku | Päivämäärä | Alkupäivämäärä muodossa YYYY-MM-DD | Kyllä |
@@ -426,6 +426,7 @@ Osaamisen hankkimisen tapa
 | oppisopimuksen-perusta-koodi-uri | Merkkijono | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-uri | Ei |
 | oppisopimuksen-perusta-koodi-versio | Kokonaisluku | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-urin versio | Ei |
 | keskeytymisajanjaksot | [[Keskeytymisajanjakso](#Keskeytymisajanjakso)] | Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään työelämäpalautteessa tarvittavan työpaikkajakson keston laskemiseen. | Ei |
+| yksiloiva-tunniste | Merkkijono | Osaamisen hankkimistavan yksilöivä tunniste | Ei |
 
 ### Nayttoymparisto
 

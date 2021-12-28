@@ -172,6 +172,8 @@
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
     (s/optional-key :module-id) UUID
     "Tietorakenteen yksilöivä tunniste esimerkiksi tiedon jakamista varten."
+    (s/optional-key :tunniste-temp) s/Str
+    "Tietorakenteen yksilöivä tunniste yhden Hoksin kontekstissa."
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
     :osaamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
@@ -220,7 +222,7 @@
     (modify
       OsaamisenHankkimistapa
       "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
-      {})
+      {:removed [:module-id]})
     oppisopimus-has-perusta?
     "Tieto oppisopimuksen perustasta puuttuu."))
 

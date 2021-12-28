@@ -83,6 +83,13 @@
     [queries/select-osaamisen-hankkimistavat-by-module-id uuid]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
+(defn select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
+  "Hoksin osaamistapa tunnisteella"
+  [hoks-id tunniste]
+  (db-ops/query
+    [queries/select-osaamisen-hankkimistavat-by-module-id hoks-id tunniste]
+    {:row-fn h/osaamisen-hankkimistapa-from-sql}))
+
 (defn select-osaamisen-osoittamiset-by-hato-id
   "Hankittavan ammatillisen tutkinnon osan osaamisen näytöt"
   [id]
@@ -281,12 +288,12 @@
     (db-ops/update!
       :osaamisen_hankkimistavat
       (h/osaamisen-hankkimistapa-to-sql oh)
-      ["module_id = ?" (:module-id oh)]))
+      ["yksiloiva_tunnus = ?" (:module-id oh)]))
   ([oh db-conn]
     (db-ops/update!
       :osaamisen_hankkimistavat
       (h/osaamisen-hankkimistapa-to-sql oh)
-      ["module_id = ?" (:module-id oh)]
+      ["yksiloiva_tunnus = ?" (:module-id oh)]
       db-conn)))
 
 (defn update-hankittava-paikallinen-tutkinnon-osa-by-id!
