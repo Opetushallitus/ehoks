@@ -87,7 +87,8 @@
   "Hoksin osaamistapa tunnisteella"
   [hoks-id tunniste]
   (db-ops/query
-    [queries/select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste hoks-id tunniste]
+    [queries/select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
+     hoks-id tunniste]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
 (defn select-osaamisen-osoittamiset-by-hato-id
