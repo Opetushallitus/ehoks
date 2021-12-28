@@ -267,7 +267,7 @@
                          (:id yto) (:id naytto) conn)]
         yto-naytto))))
 
-(defn save-hankittava-paikallinen-tutkinnon-osa!            ;TODO
+(defn save-hankittava-paikallinen-tutkinnon-osa!
   ([hoks-id hpto]
     (save-hankittava-paikallinen-tutkinnon-osa!
       hoks-id hpto (db-ops/get-db-connection)))
@@ -429,7 +429,7 @@
           hyto-db
           :osa-alueet
           (save-hyto-osa-alueet!
-            (:id hyto-db) (:osa-alueet hyto) (:hoks-id hyto) conn))))))
+            (:hoks-id hyto-db) (:id hyto-db) (:osa-alueet hyto) conn))))))
 
 (defn save-hankittavat-yhteiset-tutkinnon-osat!
   ([hoks-id c]
