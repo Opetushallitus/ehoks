@@ -339,6 +339,8 @@
       [conn db-conn]
       (let [hato-db (db/insert-hankittava-ammat-tutkinnon-osa!
                       (assoc hato :hoks-id hoks-id) conn)]
+        (println "save-hankittava-ammat-tutkinnon-osa! hato-db")
+        (println hato-db)
         (assoc
           hato-db
           :osaamisen-osoittaminen
