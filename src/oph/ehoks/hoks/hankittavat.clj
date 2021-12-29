@@ -184,6 +184,8 @@
                    (do
                      (db/update-osaamisen-hankkimistapa! to-upsert conn)
                      {:id (:id (first existing))}))]
+        (println existing)
+        (println (empty? existing))
         (when (seq existing)
           (db/delete-osaamisen-hankkimistavan-muut-oppimisymparistot o-db conn)
           (db/delete-osaamisen-hankkimistavan-keskeytymisajanjaksot o-db conn))
