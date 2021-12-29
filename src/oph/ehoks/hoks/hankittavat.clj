@@ -186,6 +186,8 @@
                      {:id (:id (first existing))}))]
         (println existing)
         (println (empty? existing))
+        (println hoks-id)
+        (println (:yksiloiva-tunniste oh))
         (when (seq existing)
           (db/delete-osaamisen-hankkimistavan-muut-oppimisymparistot o-db conn)
           (db/delete-osaamisen-hankkimistavan-keskeytymisajanjaksot o-db conn))
