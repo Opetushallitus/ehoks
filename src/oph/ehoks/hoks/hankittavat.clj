@@ -304,7 +304,7 @@
   ([hato oh db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
-      (let [o-db (save-osaamisen-hankkimistapa! oh (:hoks-id hato) conn)]
+      (let [o-db (save-osaamisen-hankkimistapa! oh (:hoks_id hato) conn)]
         (db/insert-hankittavan-ammat-tutkinnon-osan-osaamisen-hankkimistapa!
           (:id hato) (:id o-db) conn)
         o-db))))
@@ -341,6 +341,7 @@
                       (assoc hato :hoks-id hoks-id) conn)]
         (println "save-hankittava-ammat-tutkinnon-osa! hato-db")
         (println hato-db)
+        (println (:hoks_id hato-db))
         (assoc
           hato-db
           :osaamisen-osoittaminen
