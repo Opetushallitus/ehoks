@@ -186,7 +186,7 @@
                      {:id (:id (first existing))}))]
         (println "o-db")
         (println o-db)
-        (:id o-db)
+        (println (:id o-db))
         (when (seq existing)
           (db/delete-osaamisen-hankkimistavan-muut-oppimisymparistot o-db conn)
           (db/delete-osaamisen-hankkimistavan-keskeytymisajanjaksot o-db conn))

@@ -472,11 +472,11 @@
   [oht-id db-conn]
   (db-ops/shallow-delete!
     :muut_oppimisymparistot
-    ["osaamisen_hankkimistapa_id = ?" oht-id] db-conn))
+    ["osaamisen_hankkimistapa_id = ?" (:id oht-id)] db-conn))
 
 (defn delete-osaamisen-hankkimistavan-keskeytymisajanjaksot
   "Poista osaamisen hankkimistavan keskeytymisajanjaksot"
   [oht-id db-conn]
   (db-ops/shallow-delete!
     :keskeytymisajanjaksot
-    ["osaamisen_hankkimistapa_id = ?" oht-id] db-conn))
+    ["osaamisen_hankkimistapa_id = ?" (:id oht-id)] db-conn))
