@@ -6,7 +6,7 @@ FROM osaamisen_hankkimistavat oh
        LEFT OUTER JOIN hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat AS hatoosajoin
                        ON (oh.id = hatoosajoin.osaamisen_hankkimistapa_id)
        LEFT OUTER JOIN yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat AS ytoohjoin
-                       ON (oh.id = ytoohjoin.yhteisen_tutkinnon_osan_osa_alue_id)
+                       ON (oh.id = ytoohjoin.osaamisen_hankkimistapa_id)
        LEFT OUTER JOIN yhteisen_tutkinnon_osan_osa_alueet AS ytoosa
                        ON (ytoohjoin.yhteisen_tutkinnon_osan_osa_alue_id = ytoosa.id AND ytoosa.deleted_at IS NULL)
        LEFT OUTER JOIN hankittavat_paikalliset_tutkinnon_osat AS hptoosat
