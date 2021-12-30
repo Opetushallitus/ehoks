@@ -343,7 +343,7 @@
             (:osaamisen-osoittaminen hato))
           :osaamisen-hankkimistavat
           (mapv
-            #(save-hato-osaamisen-hankkimistapa! hato-db %  conn)
+            #(save-hato-osaamisen-hankkimistapa! hato-db % conn)
             (:osaamisen-hankkimistavat hato)))))))
 
 (defn save-hankittavat-ammat-tutkinnon-osat!
