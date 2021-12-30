@@ -184,9 +184,6 @@
                    (do
                      (db/update-osaamisen-hankkimistapa! to-upsert conn)
                      {:id (:id (first existing))}))]
-        (println "o-db")
-        (println o-db)
-        (println (:id o-db))
         (when (seq existing)
           (db/delete-osaamisen-hankkimistavan-muut-oppimisymparistot o-db conn)
           (db/delete-osaamisen-hankkimistavan-keskeytymisajanjaksot o-db conn))
@@ -202,7 +199,7 @@
   ([hpto oh db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
-      (let [o-db (save-osaamisen-hankkimistapa! oh (:hoks-id hpto) conn)]
+      (let [o-db (save-osaamisen-hankkimistapa! oh (:hoks_id hpto) conn)]
         (db/insert-hpto-osaamisen-hankkimistapa!
           hpto o-db conn)
         o-db))))
@@ -432,7 +429,7 @@
           hyto-db
           :osa-alueet
           (save-hyto-osa-alueet!
-            (:hoks-id hyto-db) (:id hyto-db) (:osa-alueet hyto) conn))))))
+            hoks-id (:id hyto-db) (:osa-alueet hyto) conn))))))
 
 (defn save-hankittavat-yhteiset-tutkinnon-osat!
   ([hoks-id c]
