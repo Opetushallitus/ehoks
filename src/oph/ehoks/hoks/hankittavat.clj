@@ -184,10 +184,9 @@
                    (do
                      (db/update-osaamisen-hankkimistapa! to-upsert conn)
                      {:id (:id (first existing))}))]
-        (println existing)
-        (println (empty? existing))
-        (println hoks-id)
-        (println (:yksiloiva-tunniste oh))
+        (println "o-db")
+        (println o-db)
+        (:id o-db)
         (when (seq existing)
           (db/delete-osaamisen-hankkimistavan-muut-oppimisymparistot o-db conn)
           (db/delete-osaamisen-hankkimistavan-keskeytymisajanjaksot o-db conn))
@@ -339,9 +338,6 @@
       [conn db-conn]
       (let [hato-db (db/insert-hankittava-ammat-tutkinnon-osa!
                       (assoc hato :hoks-id hoks-id) conn)]
-        (println "save-hankittava-ammat-tutkinnon-osa! hato-db")
-        (println hato-db)
-        (println (:hoks_id hato-db))
         (assoc
           hato-db
           :osaamisen-osoittaminen
