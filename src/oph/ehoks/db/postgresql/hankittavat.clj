@@ -289,12 +289,12 @@
     (db-ops/update!
       :osaamisen_hankkimistavat
       (h/osaamisen-hankkimistapa-to-sql oh)
-      ["yksiloiva_tunniste = ?" (:module-id oh)]))
+      ["yksiloiva_tunniste = ?" (:yksiloiva-tunniste oh)]))
   ([oh db-conn]
     (db-ops/update!
       :osaamisen_hankkimistavat
       (h/osaamisen-hankkimistapa-to-sql oh)
-      ["yksiloiva_tunniste = ?" (:module-id oh)]
+      ["yksiloiva_tunniste = ?" (:yksiloiva-tunniste oh)]
       db-conn)))
 
 (defn update-hankittava-paikallinen-tutkinnon-osa-by-id!
