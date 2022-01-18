@@ -369,16 +369,34 @@
     ["id = ?" id]))
 
 (defn update-amisherate-kasittelytilat-aloitusherate-kasitelty [hoks-id to]
-  (db-ops/update!
-    :amisherate_kasittelytilat
-    {:aloitusherate_kasitelty to}
-    ["hoks_id = ?" hoks-id]))
+  (let [tila (first
+               (db-ops/query
+                 [queries/select-amisherate-kasittelytilat-by-hoks-id hoks-id]
+                 {:row-fn db-ops/from-sql}))]
+    (if (some? tila)
+      (db-ops/update!
+        :amisherate_kasittelytilat
+        {:aloitusherate_kasitelty to}
+        ["hoks_id = ?" hoks-id])
+      (first (jdbc/insert! (db-ops/get-db-connection)
+                           :amisherate_kasittelytilat
+                           (db-ops/to-sql {:hoks-id hoks-id
+                                           :aloitusherate_kasitelty to}))))))
 
 (defn update-amisherate-kasittelytilat-paattoherate-kasitelty [hoks-id to]
-  (db-ops/update!
-    :amisherate_kasittelytilat
-    {:paattoherate_kasitelty to}
-    ["hoks_id = ?" hoks-id]))
+  (let [tila (first
+               (db-ops/query
+                 [queries/select-amisherate-kasittelytilat-by-hoks-id hoks-id]
+                 {:row-fn db-ops/from-sql}))]
+    (if (some? tila)
+      (db-ops/update!
+        :amisherate_kasittelytilat
+        {:paattoherate_kasitelty to}
+        ["hoks_id = ?" hoks-id])
+      (first (jdbc/insert! (db-ops/get-db-connection)
+                           :amisherate_kasittelytilat
+                           (db-ops/to-sql {:hoks-id hoks-id
+                                           :paattoherate_kasitelty to}))))))
 
 (defn insert-amisherate-kasittelytilat!
   ([hoks-id]
@@ -393,7 +411,7 @@
     (update-amisherate-kasittelytilat! tilat (db-ops/get-db-connection)))
   ([tilat db-conn]
     (db-ops/update! :amisherate_kasittelytilat
-                    (db-ops/to-sql tilat)
+                    (db-ops/to-sql (dissoc tilat :id))
                     ["id = ?" (:id tilat)] db-conn)))
 
 (defn select-hoksit-with-kasittelemattomat-aloitusheratteet [start end limit]
