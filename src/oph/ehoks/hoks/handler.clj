@@ -408,13 +408,16 @@
                  poimitulla last-id:llä kunnes sekä result- että
                  failed-ids-kentät ovat tyhjiä."
         :query-params [{amount :- s/Int 500}
-                       {from-id :- s/Int 0}]
+                       {from-id :- s/Int 0}
+                       {updated-after :- s/Inst nil}]
         :return (rest/response {:last-id s/Int
                                 :failed-ids [s/Int]
                                 :result
                                 [hoks-schema-vipunen/HOKSVipunen]})
         (let [limit (min (max 1 amount) 1000)
-              raw-result (h/get-hokses-from-id from-id limit)
+              raw-result (h/get-hokses-from-id
+                           from-id limit
+                           updated-after)
               last-id (first (sort > (map :id raw-result)))
               schema-checker (s/checker hoks-schema-vipunen/HOKSVipunen)
               result-after-validation (filter

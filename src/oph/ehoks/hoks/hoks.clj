@@ -106,8 +106,11 @@
 (defn enrich-and-filter [hoks]
   (filter-for-vipunen (get-hoks-values hoks)))
 
-(defn get-hokses-from-id [id amount]
-  (let [hokses (db-hoks/select-hokses-greater-than-id (or id 0) amount)]
+(defn get-hokses-from-id [id amount updated-after]
+  (let [hokses (db-hoks/select-hokses-greater-than-id
+                 (or id 0)
+                 amount
+                 updated-after)]
     (map enrich-and-filter hokses)))
 
 (defn- new-osaamisen-saavuttamisen-pvm-added? [old-osp new-osp]

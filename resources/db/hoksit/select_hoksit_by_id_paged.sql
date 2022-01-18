@@ -1,4 +1,4 @@
 SELECT * FROM hoksit
-where id > ?
+where id > ? AND (? IS NULL OR ? < updated_at)
 order by id
 limit ?

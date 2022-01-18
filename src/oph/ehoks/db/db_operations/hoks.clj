@@ -247,8 +247,12 @@
       [queries/select-hoksit-by-id id]
       {:row-fn hoks-from-sql})))
 
-(defn select-hokses-greater-than-id [from-id amount]
-  (db-ops/query [queries/select-hoksit-by-id-paged from-id amount]
+(defn select-hokses-greater-than-id [from-id amount updated-after]
+  (db-ops/query [queries/select-hoksit-by-id-paged
+                 from-id
+                 updated-after
+                 updated-after
+                 amount]
                 {:row-fn hoks-from-sql}))
 
 (defn select-hoks-by-eid [eid]
