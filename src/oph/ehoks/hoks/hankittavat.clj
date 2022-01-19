@@ -179,11 +179,14 @@
                                (assoc oh :tep_kasitelty true))
                              :tyopaikalla-jarjestettava-koulutus-id
                              (:id tho))
+            existing-id (:id (first existing))
             o-db (if (empty? existing)
                    (db/insert-osaamisen-hankkimistapa! to-upsert conn)
                    (do
-                     (db/update-osaamisen-hankkimistapa! to-upsert conn)
-                     {:id (:id (first existing))}))]
+                     (db/update-osaamisen-hankkimistapa! existing-id
+                                                         to-upsert
+                                                         conn)
+                     {:id existing-id}))]
         (when (seq existing)
           (db/delete-osaamisen-hankkimistavan-muut-oppimisymparistot o-db conn)
           (db/delete-osaamisen-hankkimistavan-keskeytymisajanjaksot o-db conn))
