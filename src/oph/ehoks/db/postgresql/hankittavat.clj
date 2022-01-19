@@ -285,16 +285,16 @@
 
 (defn update-osaamisen-hankkimistapa!
   "Muokkaa osaamisen hankkimistapa"
-  ([oh]
+  ([id oh]
     (db-ops/update!
       :osaamisen_hankkimistavat
       (h/osaamisen-hankkimistapa-to-sql oh)
-      ["id = ?" (:id oh)]))
-  ([oh db-conn]
+      ["id = ?" id]))
+  ([id oh db-conn]
     (db-ops/update!
       :osaamisen_hankkimistavat
       (h/osaamisen-hankkimistapa-to-sql oh)
-      ["id = ?" (:id oh)]
+      ["id = ?" id]
       db-conn)))
 
 (defn update-hankittava-paikallinen-tutkinnon-osa-by-id!
