@@ -1,4 +1,4 @@
 SELECT * FROM hoksit
-WHERE id > 500 AND ((CAST('2022-01-20T10:32:15' AS DATE) IS NULL) OR '2022-01-20T10:32:15' < updated_at)
+WHERE id > ? AND ((CAST(? AS DATE) IS NULL) OR ? < updated_at)
 ORDER BY id
 LIMIT ?
