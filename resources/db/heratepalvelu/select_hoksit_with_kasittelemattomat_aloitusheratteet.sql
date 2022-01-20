@@ -1,5 +1,5 @@
 SELECT
-  hoksit.*
+  h.*
 FROM hoksit h
   LEFT OUTER JOIN amisherate_kasittelytilat AS a
     ON h.id = a.hoks_id
