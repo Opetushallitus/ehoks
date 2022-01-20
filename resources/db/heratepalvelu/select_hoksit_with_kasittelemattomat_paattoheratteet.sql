@@ -5,6 +5,7 @@ FROM hoksit h
     ON h.id = a.hoks_id
 WHERE
   h.deleted_at IS NULL
+  AND h.osaamisen_saavuttamisen_pvm IS NOT NULL
   AND h.osaamisen_hankkimisen_tarve = true
   AND h.created_at >= ?
   AND h.created_at <= ?
