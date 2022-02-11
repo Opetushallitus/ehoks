@@ -12,6 +12,7 @@
                :osaamisen-hankkimistavat
                [{:alku "2018-12-12"
                  :loppu "2018-12-20"
+                 :yksiloiva-tunniste "asdfasdf"
                  :ajanjakson-tarkenne "Tarkenne tässä"
                  :osa-aikaisuustieto 25
                  :osaamisen-hankkimistapa-koodi-uri
@@ -79,6 +80,7 @@
      :osaamisen-hankkimistavat
      [{:alku "2018-12-15"
        :loppu "2018-12-23"
+       :yksiloiva-tunniste "qiuewyroqiwuer"
        :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
        :osaamisen-hankkimistapa-koodi-versio 1
        :oppisopimuksen-perusta-koodi-uri "oppisopimuksenperusta_01"
@@ -562,7 +564,8 @@
         :rooli "Opettajan sijainen"
         :oppilaitos-oid "1.2.246.562.10.55552422420"}
        :alku "2019-01-12"
-       :loppu "2019-02-11"}]
+       :loppu "2019-02-11"
+       :yksiloiva-tunniste "jk;l"}]
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000116"}))
 
 (def osa-alueet-of-hyto
@@ -573,6 +576,7 @@
     :osaamisen-hankkimistavat
     [{:alku "2019-01-15"
       :loppu "2020-02-23"
+      :yksiloiva-tunniste "09807987"
       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_muutettu"
       :osaamisen-hankkimistapa-koodi-versio 3
       :ajanjakson-tarkenne "tarkenne"
@@ -630,6 +634,7 @@
      :osaamisen-hankkimistavat
      [{:alku "2018-12-12"
        :loppu "2018-12-20"
+       :yksiloiva-tunniste "Täysin randomi string"
        :ajanjakson-tarkenne "Tarkenne muuttunut"
        :osa-aikaisuustieto 50
        :osaamisen-hankkimistapa-koodi-uri
@@ -679,6 +684,7 @@
      :osaamisen-hankkimistavat
      [{:alku "2019-12-12"
        :loppu "2020-12-20"
+       :yksiloiva-tunniste "hjhkjgh"
        :ajanjakson-tarkenne "Tarkenne muuttunut"
        :osa-aikaisuustieto 50
        :osaamisen-hankkimistapa-koodi-uri
@@ -731,6 +737,7 @@
        :osaamisen-hankkimistavat
        [{:alku "2018-12-15"
          :loppu "2018-12-23"
+         :yksiloiva-tunniste "1.2.3.4.5.6.7.8"
          :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_joku"
          :osaamisen-hankkimistapa-koodi-versio 3
          :muut-oppimisymparistot

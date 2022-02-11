@@ -349,6 +349,7 @@ Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)
 | oppisopimuksen-perusta-koodi-uri | Merkkijono | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-uri | Ei |
 | oppisopimuksen-perusta-koodi-versio | Kokonaisluku | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-urin versio | Ei |
 | keskeytymisajanjaksot | [[Keskeytymisajanjakso](#Keskeytymisajanjakso)] | Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään työelämäpalautteessa tarvittavan työpaikkajakson keston laskemiseen. | Ei |
+| yksiloiva-tunniste | Merkkijono | Osaamisen hankkimistavan yksilöivä tunniste | Ei |
 
 ### KoodistoKoodi
 
@@ -425,6 +426,7 @@ Osaamisen hankkimisen tapa
 | oppisopimuksen-perusta-koodi-uri | Merkkijono | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-uri | Ei |
 | oppisopimuksen-perusta-koodi-versio | Kokonaisluku | Vain oppisopimus-tyyppisiin hankkimistapoihin. Oppisopimuksen perustan Koodisto-urin versio | Ei |
 | keskeytymisajanjaksot | [[Keskeytymisajanjakso](#Keskeytymisajanjakso)] | Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään työelämäpalautteessa tarvittavan työpaikkajakson keston laskemiseen. | Ei |
+| yksiloiva-tunniste | Merkkijono | Osaamisen hankkimistavan yksilöivä tunniste | Ei |
 
 ### Nayttoymparisto
 

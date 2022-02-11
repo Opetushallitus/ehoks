@@ -141,7 +141,8 @@
        :rooli "Opettaja"
        :oppilaitos-oid "1.2.246.562.10.54452422420"}
       :alku (java.time.LocalDate/of 2019 1 11)
-      :loppu (java.time.LocalDate/of 2019 3 14)}]
+      :loppu (java.time.LocalDate/of 2019 3 14)
+      :yksiloiva-tunniste "1234567890"}]
     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"}])
 
 (def oto-data
@@ -257,7 +258,8 @@
        :rooli "Opettaja"
        :oppilaitos-oid "1.2.246.562.10.54453921350"}
       :alku (java.time.LocalDate/of 2019 2 10)
-      :loppu (java.time.LocalDate/of 2019 2 15)}]
+      :loppu (java.time.LocalDate/of 2019 2 15)
+      :yksiloiva-tunniste "abcd"}]
     :osaamisen-osoittaminen
     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921330"}
       :nayttoymparisto {:nimi "Testiympäristö"
@@ -287,6 +289,7 @@
       :osaamisen-hankkimistavat
       [{:osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
         :osaamisen-hankkimistapa-koodi-versio 2
+        :yksiloiva-tunniste "1"
         :alku (java.time.LocalDate/of 2019 1 13)
         :loppu (java.time.LocalDate/of 2019 2 19)
         :muut-oppimisymparistot [{:oppimisymparisto-koodi-uri
@@ -468,15 +471,18 @@
           oh1 (ha/save-osaamisen-hankkimistapa!
                 (assoc
                   oh-data
-                  :loppu (.plusDays (java.time.LocalDate/now) 1)))
+                  :loppu (.plusDays (java.time.LocalDate/now) 1))
+                12345)
           oh2 (ha/save-osaamisen-hankkimistapa!
                 (assoc
                   oh-data
-                  :loppu (.minusDays (java.time.LocalDate/now) 1)))
+                  :loppu (.minusDays (java.time.LocalDate/now) 1))
+                12345)
           oh3 (ha/save-osaamisen-hankkimistapa!
                 (assoc
                   oh-data
-                  :loppu (java.time.LocalDate/now)))]
+                  :loppu (java.time.LocalDate/now))
+                12345)]
       (is (= false (:tep_kasitelty oh1)))
       (is (= true (:tep_kasitelty oh2)))
       (is (= true (:tep_kasitelty oh3))))))

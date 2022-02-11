@@ -172,6 +172,8 @@
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
     :module-id UUID (str "Tietorakenteen yksilöivä tunniste "
                          "esimerkiksi tiedon jakamista varten")
+    (s/optional-key :yksiloiva-tunniste) (s/constrained s/Str not-empty)
+    "Tietorakenteen yksilöivä tunniste yhden Hoksin kontekstissa."
     (s/optional-key :ajanjakson-tarkenne) s/Str
     "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
     :osaamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
