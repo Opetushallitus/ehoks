@@ -206,7 +206,7 @@
                         (:id hoks-db))}
           :id (:id hoks-db))
         :audit-data {:new hoks}))
-    (catch SQLException e
+    (catch java.sql.SQLException e
       (println "getMesssage")
       (println (.getMessage e))
       (println ":error ex-data")
