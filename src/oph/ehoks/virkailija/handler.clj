@@ -211,6 +211,8 @@
       (println (.getMessage e))
       (println "getCause")
       (println (.getCause e))
+      (println "getErrorCode")
+      (println (.getErrorCode e))
       (throw e))
     (catch Exception e
       (if (= (:error (ex-data e)) :duplicate)
