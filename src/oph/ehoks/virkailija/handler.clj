@@ -207,8 +207,8 @@
           :id (:id hoks-db))
         :audit-data {:new hoks}))
     (catch Exception e
-      (println "ex-data")
-      (println (ex-data e))
+      (println "e")
+      (println e)
       (println ":error ex-data")
       (println (:error (ex-data e)))
       (if (= (:error (ex-data e)) :duplicate)
