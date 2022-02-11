@@ -209,8 +209,8 @@
     (catch java.sql.SQLException e
       (println "getMesssage")
       (println (.getMessage e))
-      (println ":error ex-data")
-      (println (:error (ex-data e)))
+      (println "getCause")
+      (println (.getCause e))
       (throw e))
     (catch Exception e
       (if (= (:error (ex-data e)) :duplicate)
