@@ -206,11 +206,13 @@
                         (:id hoks-db))}
           :id (:id hoks-db))
         :audit-data {:new hoks}))
-    (catch Exception e
-      (println "e")
-      (println e)
+    (catch SQLException e
+      (println "getMesssage")
+      (println (.getMessage e))
       (println ":error ex-data")
       (println (:error (ex-data e)))
+      (throw e))
+    (catch Exception e
       (if (= (:error (ex-data e)) :duplicate)
         (do
           (log/warnf
