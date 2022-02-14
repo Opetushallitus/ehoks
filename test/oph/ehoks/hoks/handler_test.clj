@@ -78,7 +78,7 @@
                {:error
                 (str "Shallow-deleted HOKS with the same "
                      "opiskeluoikeus-oid already exists. "
-                     "Contact eHOKS support for help.")}))))))
+                     "Contact eHOKS support for more information.")}))))))
 
 (deftest prevent-creating-hoks-with-non-existing-oppija
   (testing "Prevent POST HOKS with non-existing oppija"
