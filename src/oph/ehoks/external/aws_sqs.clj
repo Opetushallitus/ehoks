@@ -57,7 +57,9 @@
    :sahkoposti (:sahkoposti hoks)
    :alkupvm (str (:ensikertainen-hyvaksyminen hoks))})
 
-(defn build-hoks-osaaminen-saavutettu-msg [id saavuttamisen-pvm hoks
+(defn build-hoks-osaaminen-saavutettu-msg [id
+                                           saavuttamisen-pvm
+                                           hoks
                                            kyselytyyppi]
   {:ehoks-id id
    :kyselytyyppi kyselytyyppi
