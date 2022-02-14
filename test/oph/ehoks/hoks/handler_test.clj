@@ -60,7 +60,8 @@
                 "HOKS with the same opiskeluoikeus-oid already exists"}))))))
 
 (deftest prevent-creating-hoks-with-existing-shallow-deleted-opiskeluoikeus
-  (testing "Prevent POST HOKS with existing shallow deleted opiskeluoikeus"
+  (testing (str "Prevent creation and show correct error message when "
+                "shallow-deleted HOKS with same opiskeluoikeus is found")
     (let [app (hoks-utils/create-app nil)
           hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
@@ -76,9 +77,9 @@
         (is (= (:status post-response) 400))
         (is (= (utils/parse-body (:body post-response))
                {:error
-                (str "Shallow-deleted HOKS with the same "
-                     "opiskeluoikeus-oid already exists. "
-                     "Contact eHOKS support for more information.")}))))))
+                (str "Archived HOKS with given opiskeluoikeus "
+                     "oid found. Contact eHOKS support for more "
+                     "information.")}))))))
 
 (deftest prevent-creating-hoks-with-non-existing-oppija
   (testing "Prevent POST HOKS with non-existing oppija"

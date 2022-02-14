@@ -265,6 +265,11 @@
     [queries/select-hoksit-by-opiskeluoikeus-oid oid]
     {:row-fn hoks-from-sql}))
 
+(defn select-hoksit-by-opiskeluoikeus-oid-deleted-at-included [oid]
+  (db-ops/query
+    [queries/select-hoksit-by-opiskeluoikeus-oid-deleted-at-included oid]
+    {:row-fn hoks-from-sql}))
+
 (defn- select-hoksit-eid-by-eid [eid]
   (db-ops/query
     [queries/select-hoksit-eid-by-eid eid]
@@ -292,12 +297,20 @@
   ([hoks db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
-      (when
-       (seq (jdbc/query conn [queries/select-hoksit-by-opiskeluoikeus-oid
-                              (:opiskeluoikeus-oid hoks)]))
-        (throw (ex-info
-                 "HOKS with given opiskeluoikeus already exists"
-                 {:error :duplicate})))
+      (let [hoks-by-oo
+            (first
+              (jdbc/query
+                conn
+                [queries/select-hoksit-by-opiskeluoikeus-oid-deleted-at-included
+                 (:opiskeluoikeus-oid hoks)]))]
+        (when hoks-by-oo
+          (let [error-info (if (some? (:deleted_at hoks-by-oo))
+                             (str "Archived HOKS with given opiskeluoikeus "
+                                  "oid found. Contact eHOKS support for more "
+                                  "information.")
+                             (str "HOKS with the same opiskeluoikeus-oid "
+                                  "already exists"))]
+            (throw (ex-info error-info {:error :duplicate})))))
       (let [eid (generate-unique-eid)]
         (first
           (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid))))))))
