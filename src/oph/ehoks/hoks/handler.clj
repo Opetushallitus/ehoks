@@ -353,6 +353,21 @@
                        (format "%s/%d" (:uri request) (:id hoks-db))}
                       :id (:id hoks-db))
         :audit-data {:new hoks}))
+    (catch java.sql.SQLException e
+      (if (and (.contains (.getMessage e) "duplicate key")
+               (.contains (.getMessage e) "hoksit_opiskeluoikeus_oid_key"))
+        (do
+          (log/warnf
+            "Shallow deleted HOKS with opiskeluoikeus-oid %s already exists"
+            (:opiskeluoikeus-oid hoks))
+          (assoc
+            (response/bad-request!
+              {:error
+               (str "Shallow-deleted HOKS with the same "
+                    "opiskeluoikeus-oid already exists. "
+                    "Contact eHOKS support for more information.")})
+            :audit-data {:new hoks}))
+        (throw e)))
     (catch Exception e
       (if (= (:error (ex-data e)) :duplicate)
         (assoc

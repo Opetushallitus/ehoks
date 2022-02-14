@@ -213,13 +213,14 @@
           (log/warnf
             "Shallow deleted HOKS with opiskeluoikeus-oid %s already exists"
             (:opiskeluoikeus-oid hoks))
-          (response/bad-request!
-            {:error
-             (str "Shallow-deleted HOKS with the same "
-                  "opiskeluoikeus-oid already exists. "
-                  "Contant eHOKS support for help.")}))
-        (throw e))
-      (throw e))
+          (assoc
+            (response/bad-request!
+              {:error
+               (str "Shallow-deleted HOKS with the same "
+                    "opiskeluoikeus-oid already exists. "
+                    "Contact eHOKS support for more information.")})
+            :audit-data {:new hoks}))
+        (throw e)))
     (catch Exception e
       (if (= (:error (ex-data e)) :duplicate)
         (do

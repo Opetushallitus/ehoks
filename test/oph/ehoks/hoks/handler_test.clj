@@ -6,6 +6,7 @@
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.hoks.test-data :as test-data]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [clj-time.core :as t]))
 
 (use-fixtures :once utils/migrate-database)
@@ -57,6 +58,27 @@
         (is (= (utils/parse-body (:body response))
                {:error
                 "HOKS with the same opiskeluoikeus-oid already exists"}))))))
+
+(deftest prevent-creating-hoks-with-existing-shallow-deleted-opiskeluoikeus
+  (testing "Prevent POST HOKS with existing shallow deleted opiskeluoikeus"
+    (let [app (hoks-utils/create-app nil)
+          hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false}
+          new-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                         :oppija-oid "1.2.246.562.24.12312312313"
+                         :ensikertainen-hyvaksyminen "2018-12-15"
+                         :osaamisen-hankkimisen-tarve false}]
+      (hoks-utils/mock-st-post app base-url hoks-data)
+      (db-hoks/shallow-delete-hoks-by-hoks-id 1)
+      (let [post-response (hoks-utils/mock-st-post app base-url new-hoks-data)]
+        (is (= (:status post-response) 400))
+        (is (= (utils/parse-body (:body post-response))
+               {:error
+                (str "Shallow-deleted HOKS with the same "
+                     "opiskeluoikeus-oid already exists. "
+                     "Contact eHOKS support for help.")}))))))
 
 (deftest prevent-creating-hoks-with-non-existing-oppija
   (testing "Prevent POST HOKS with non-existing oppija"
