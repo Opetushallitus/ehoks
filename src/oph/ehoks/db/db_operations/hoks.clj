@@ -35,7 +35,7 @@
                 :tarkentavat-tiedot-osaamisen-arvioija]}))
 
 (defn hankittava-paikallinen-tutkinnon-osa-from-sql [m]
-  (db-ops/from-sql m))
+  (db-ops/from-sql m {:removals [:hoks_id]}))
 
 (defn hankittava-paikallinen-tutkinnon-osa-to-sql [m]
   (db-ops/to-sql
@@ -211,13 +211,13 @@
                                :osaamisen-hankkimistavat]}))
 
 (defn hankittava-ammat-tutkinnon-osa-from-sql [m]
-  (db-ops/from-sql m))
+  (db-ops/from-sql m {:removals [:hoks_id]}))
 
 (defn opiskeluvalmiuksia-tukevat-opinnot-from-sql [m]
   (db-ops/from-sql m {:removals [:hoks_id]}))
 
 (defn hankittava-yhteinen-tutkinnon-osa-from-sql [m]
-  (db-ops/from-sql m {:removals [:osa-alueet]}))
+  (db-ops/from-sql m {:removals [:hoks_id :osa-alueet]}))
 
 (defn hankittava-yhteinen-tutkinnon-osa-to-sql [m]
   (db-ops/to-sql m {:removals [:osa-alueet]}))
