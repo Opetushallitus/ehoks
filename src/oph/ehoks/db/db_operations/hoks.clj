@@ -265,11 +265,6 @@
     [queries/select-hoksit-by-opiskeluoikeus-oid oid]
     {:row-fn hoks-from-sql}))
 
-(defn select-hoksit-by-opiskeluoikeus-oid-deleted-at-included [oid]
-  (db-ops/query
-    [queries/select-hoksit-by-opiskeluoikeus-oid-deleted-at-included oid]
-    {:row-fn hoks-from-sql}))
-
 (defn- select-hoksit-eid-by-eid [eid]
   (db-ops/query
     [queries/select-hoksit-eid-by-eid eid]
