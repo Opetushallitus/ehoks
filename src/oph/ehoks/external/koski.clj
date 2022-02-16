@@ -4,7 +4,8 @@
             [ring.util.http-status :as status]
             [clojure.data.json :as json]
             [oph.ehoks.external.oph-url :as u]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log])
+  (:import (clojure.lang ExceptionInfo)))
 
 (defn filter-oppija [values]
   (update values :henkilö select-keys
@@ -58,12 +59,12 @@
 (defn get-opiskeluoikeus-info [oid]
   (try
     (get-opiskeluoikeus-info-raw oid)
-    (catch clojure.lang.ExceptionInfo e
+    (catch ExceptionInfo e
       (let [e-data (ex-data e)
             body (if (some? (:body e-data))
                    (json/read-str (:body e-data) :key-fn keyword)
                    {})]
-        (log/warn "Error getting opiskeluoikeus " oid ", " e-data)
+        ;;(log/warn "Error getting opiskeluoikeus " oid ", " e-data)
         (when-not (and (= (:status e-data) status/not-found)
                        (= (get-in body [0 :key])
                           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
