@@ -52,6 +52,8 @@
 (defq select-hoksit-by-oppija-oid)
 (defq select-hoksit-by-id)
 (defq select-hoksit-by-id-paged "hoksit/select_hoksit_by_id_paged.sql")
+(defq select-hoksit-by-opiskeluoikeus-oid-deleted-at-included
+      "hoksit/select_hoksit_by_opiskeluoikeus_oid_deleted_at_included.sql")
 (defq select-hoksit-by-eid)
 (defq select-hoksit-by-opiskeluoikeus-oid)
 (defq select-hoksit-eid-by-eid "hoksit/select_eid.sql")

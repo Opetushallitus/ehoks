@@ -212,10 +212,7 @@
           (log/warnf
             "HOKS with opiskeluoikeus-oid %s already exists"
             (:opiskeluoikeus-oid hoks))
-          (response/bad-request!
-            {:error
-             (str "HOKS with the same "
-                  "opiskeluoikeus-oid already exists")}))
+          (response/bad-request! {:error (.getMessage e)}))
         (throw e)))))
 
 (defn- post-oppija [hoks request]

@@ -351,9 +351,7 @@
     (catch Exception e
       (if (= (:error (ex-data e)) :duplicate)
         (assoc
-          (response/bad-request!
-            {:error
-             "HOKS with the same opiskeluoikeus-oid already exists"})
+          (response/bad-request! {:error (.getMessage e)})
           :audit-data {:new hoks})
         (throw e)))))
 
