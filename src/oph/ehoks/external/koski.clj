@@ -64,7 +64,6 @@
             body (if (some? (:body e-data))
                    (json/read-str (:body e-data) :key-fn keyword)
                    {})]
-        ;;(log/warn "Error getting opiskeluoikeus " oid ", " e-data)
         (when-not (and (= (:status e-data) status/not-found)
                        (= (get-in body [0 :key])
                           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
