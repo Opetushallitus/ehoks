@@ -152,8 +152,10 @@
   (generate-select-by
     {:table "tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat"
      :column "tyopaikalla_jarjestettava_koulutus_id"}))
-(defq select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id)
-(defq select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id)
+(defq select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
+      "hoksit/select_muut_oppimisymparistot_by_osaamisen_hankkimistapa_id.sql")
+(defq select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
+      "hoksit/select_keskeytymisajanjaksot_by_osaamisen_hankkimistapa_id.sql")
 (defq select-todennettu-arviointi-lisatiedot-by-id)
 (def select-arvioijat-by-todennettu-arviointi-id
   (generate-select-join
@@ -238,6 +240,8 @@
 (defq select-osaamisen-osoittamiset-by-module-id)
 (defq select-osaamisen-hankkimistavat-by-id)
 (defq select-osaamisen-hankkimistavat-by-module-id)
+(defq select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
+      "hoksit/select_osaamisen_hankkimistavat_by_hoks_id_and_tunniste.sql")
 (defq select-kyselylinkit-by-oppija-oid
       "hoksit/select_kyselylinkit_by_oppija_oid.sql")
 (defq select-kyselylinkit-by-fuzzy-linkki

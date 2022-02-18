@@ -83,6 +83,14 @@
     [queries/select-osaamisen-hankkimistavat-by-module-id uuid]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
+(defn select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
+  "Hoksin osaamistapa tunnisteella"
+  [hoks-id tunniste]
+  (db-ops/query
+    [queries/select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
+     hoks-id tunniste]
+    {:row-fn h/osaamisen-hankkimistapa-from-sql}))
+
 (defn select-osaamisen-osoittamiset-by-hato-id
   "Hankittavan ammatillisen tutkinnon osan osaamisen näytöt"
   [id]
@@ -275,6 +283,20 @@
     :hankittavan_paikallisen_tutkinnon_osan_naytto
     ["hankittava_paikallinen_tutkinnon_osa_id = ?" id] db-conn))
 
+(defn update-osaamisen-hankkimistapa!
+  "Muokkaa osaamisen hankkimistapa"
+  ([id oh]
+    (db-ops/update!
+      :osaamisen_hankkimistavat
+      (h/osaamisen-hankkimistapa-to-sql oh)
+      ["id = ?" id]))
+  ([id oh db-conn]
+    (db-ops/update!
+      :osaamisen_hankkimistavat
+      (h/osaamisen-hankkimistapa-to-sql oh)
+      ["id = ?" id]
+      db-conn)))
+
 (defn update-hankittava-paikallinen-tutkinnon-osa-by-id!
   "Päivitä hankittavan paikallisen tutkinnon osa"
   [id m db-conn]
@@ -444,3 +466,17 @@
   (db-ops/shallow-delete!
     :hankittavat_yhteiset_tutkinnon_osat
     ["hoks_id = ?" hoks-id] db-conn))
+
+(defn delete-osaamisen-hankkimistavan-muut-oppimisymparistot
+  "Poista osaamisen hankkimistavan muut oppimisympäristöt"
+  [oht-id db-conn]
+  (db-ops/shallow-delete!
+    :muut_oppimisymparistot
+    ["osaamisen_hankkimistapa_id = ?" (:id oht-id)] db-conn))
+
+(defn delete-osaamisen-hankkimistavan-keskeytymisajanjaksot
+  "Poista osaamisen hankkimistavan keskeytymisajanjaksot"
+  [oht-id db-conn]
+  (db-ops/shallow-delete!
+    :keskeytymisajanjaksot
+    ["osaamisen_hankkimistapa_id = ?" (:id oht-id)] db-conn))

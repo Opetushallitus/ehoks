@@ -39,7 +39,8 @@
       :summary "Palauttaa HOKSin hankittavan paikallisen tutkinnon osan"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/HankittavaPaikallinenTutkinnonOsa)
-      (rest/rest-ok (ha/get-hankittava-paikallinen-tutkinnon-osa id)))
+      (rest/rest-ok
+        (dissoc (ha/get-hankittava-paikallinen-tutkinnon-osa id) :hoks-id)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo hankittavan paikallisen tutkinnon osan"
@@ -73,7 +74,8 @@
       :summary "Palauttaa HOKSin hankittavan ammatillisen tutkinnon osan"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/HankittavaAmmatillinenTutkinnonOsa)
-      (rest/rest-ok (ha/get-hankittava-ammat-tutkinnon-osa id)))
+      (rest/rest-ok
+        (dissoc (ha/get-hankittava-ammat-tutkinnon-osa id) :hoks-id)))
 
     (c-api/POST "/" [:as request]
       :summary "Luo hankittavan ammatillisen osaamisen HOKSiin"
@@ -104,7 +106,8 @@
       :summary "Palauttaa HOKSin hankittavan yhteisen tutkinnon osan"
       :path-params [id :- s/Int]
       :return (rest/response hoks-schema/HankittavaYTO)
-      (rest/rest-ok (ha/get-hankittava-yhteinen-tutkinnon-osa id)))
+      (rest/rest-ok
+        (dissoc (ha/get-hankittava-yhteinen-tutkinnon-osa id) :hoks-id)))
 
     (c-api/POST "/" [:as request]
       :summary
@@ -122,11 +125,13 @@
       "Päivittää HOKSin hankittavan yhteisen tutkinnon osat arvoa tai arvoja"
       :path-params [id :- s/Int]
       :body [values partial-hoks-schema/HankittavaYTOPaivitys]
-      (if (not-empty (pdb-ha/select-hankittava-yhteinen-tutkinnon-osa-by-id id))
-        (do
-          (ha/update-hankittava-yhteinen-tutkinnon-osa! id values)
-          (response/no-content))
-        (response/not-found {:error "HYTO not found with given HYTO ID"})))))
+      (let [hyto (pdb-ha/select-hankittava-yhteinen-tutkinnon-osa-by-id id)]
+        (if (not-empty hyto)
+          (do
+            (ha/update-hankittava-yhteinen-tutkinnon-osa!
+              (:hoks-id hyto) id values)
+            (response/no-content))
+          (response/not-found {:error "HYTO not found with given HYTO ID"}))))))
 
 (def ^:private aiemmin-hankittu-ammat-tutkinnon-osa
   (c-api/context "/aiemmin-hankittu-ammat-tutkinnon-osa" []

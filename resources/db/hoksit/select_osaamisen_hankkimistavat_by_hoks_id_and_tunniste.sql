@@ -18,4 +18,5 @@ FROM osaamisen_hankkimistavat oh
 WHERE ? IN(hptoosat.hoks_id,
            hatoosat.hoks_id,
            ytoosat.hoks_id)
+  AND oh.deleted_at IS NULL
   AND oh.yksiloiva_tunniste = ?;
