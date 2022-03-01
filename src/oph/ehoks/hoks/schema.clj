@@ -222,7 +222,7 @@
     (modify
       OsaamisenHankkimistapa
       "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
-      {:removed [:module-id]})
+      {:removed [:module-id :id]})
     oppisopimus-has-perusta?
     "Tieto oppisopimuksen perustasta puuttuu."))
 
@@ -325,7 +325,7 @@
   (modify
     OsaamisenOsoittaminen
     "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
-    {:removed [:module-id]}))
+    {:removed [:module-id :id]}))
 
 (s/defschema
   YhteisenTutkinnonOsanOsaAlue
@@ -360,7 +360,7 @@
   (modify
     YhteisenTutkinnonOsanOsaAlue
     "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot (POST, PUT)"
-    {:removed [:module-id :osaamisen-osoittaminen :osaamisen-hankkimistavat]
+    {:removed [:module-id :osaamisen-osoittaminen :osaamisen-hankkimistavat :id]
      :added
      (describe
        ""
@@ -411,7 +411,7 @@
   (modify
     AiemminHankitunYTOOsaAlue
     "AiemminHankitun YTOn osa-alueen tiedot (POST, PUT)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto]
+    {:removed [:module-id :tarkentavat-tiedot-naytto :id]
      :added
      (describe
        ""
@@ -453,7 +453,11 @@
     HankittavaYTO
     "Hankittavan yhteisen tutkinnnon osan (POST, PUT)"
     {:removed
-     [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen :osa-alueet]
+     [:module-id
+      :osaamisen-hankkimistavat
+      :osaamisen-osoittaminen
+      :osa-alueet
+      :id]
      :added
      (describe
        ""
@@ -509,7 +513,7 @@
   (modify
     HankittavaAmmatillinenTutkinnonOsa
     "Hankittavan ammatillisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
+    {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen :id]
      :added
      (describe
        ""
@@ -554,7 +558,7 @@
   (modify
     HankittavaPaikallinenTutkinnonOsa
     "Hankittavan paikallisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
+    {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen :id]
      :added
      (describe
        ""
@@ -590,7 +594,7 @@
   (modify
     AiemminHankittuPaikallinenTutkinnonOsa
     "Aiemmin hankitun paikallisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto]
+    {:removed [:module-id :tarkentavat-tiedot-naytto :id]
      :added
      (describe
        ""
@@ -626,7 +630,7 @@
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
     "Aiemmin hankitun yhteisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto :osa-alueet]
+    {:removed [:module-id :tarkentavat-tiedot-naytto :osa-alueet :id]
      :added
      (describe
        ""
@@ -656,7 +660,7 @@
   (modify
     AiemminHankittuAmmatillinenTutkinnonOsa
     "Aiemmin hankitun ammatillisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto]
+    {:removed [:module-id :tarkentavat-tiedot-naytto :id]
      :added
      (describe
        ""
