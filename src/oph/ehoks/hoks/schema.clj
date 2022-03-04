@@ -210,7 +210,7 @@
          "työelämäpalautteessa tarvittavan työpaikkajakson keston "
          "laskemiseen.")))
 
-(defn- oppisopimus-has-perusta? [oht]
+(defn oppisopimus-has-perusta? [oht]
   (or (not= (:osaamisen-hankkimistapa-koodi-uri oht)
             "osaamisenhankkimistapa_oppisopimus")
       (.isBefore (:loppu oht) (LocalDate/of 2021 7 1))
