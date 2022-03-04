@@ -458,7 +458,7 @@
   AiemminHankitunYTOOsaAlueLuontiJaMuokkausPatch
   (modify
     AiemminHankitunYTOOsaAlue
-    "AiemminHankitun YTOn osa-alueen tiedot (POST, PUT)"
+    "AiemminHankitun YTOn osa-alueen tiedot (PATCH)"
     {:removed [:module-id :tarkentavat-tiedot-naytto]
      :added
      (describe
@@ -522,7 +522,7 @@
   HankittavaYTOLuontiJaMuokkausPatch
   (modify
     HankittavaYTO
-    "Hankittavan yhteisen tutkinnnon osan (POST, PUT)"
+    "Hankittavan yhteisen tutkinnnon osan (PATCH)"
     {:removed
      [:module-id
       :osaamisen-hankkimistavat
@@ -599,7 +599,7 @@
   HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkausPatch
   (modify
     HankittavaAmmatillinenTutkinnonOsa
-    "Hankittavan ammatillisen osaamisen tiedot (POST, PUT)"
+    "Hankittavan ammatillisen osaamisen tiedot (PATCH)"
     {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
      :added
      (describe
@@ -661,7 +661,7 @@
   HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkausPatch
   (modify
     HankittavaPaikallinenTutkinnonOsa
-    "Hankittavan paikallisen osaamisen tiedot (POST, PUT)"
+    "Hankittavan paikallisen osaamisen tiedot (PATCH)"
     {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
      :added
      (describe
@@ -712,7 +712,7 @@
   AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkausPatch
   (modify
     AiemminHankittuPaikallinenTutkinnonOsa
-    "Aiemmin hankitun paikallisen osaamisen tiedot (POST, PUT)"
+    "Aiemmin hankitun paikallisen osaamisen tiedot (PATCH)"
     {:removed [:module-id :tarkentavat-tiedot-naytto]
      :added
      (describe
@@ -764,7 +764,7 @@
   AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkausPatch
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
-    "Aiemmin hankitun yhteisen osaamisen tiedot (POST, PUT)"
+    "Aiemmin hankitun yhteisen osaamisen tiedot (PATCH)"
     {:removed [:module-id :tarkentavat-tiedot-naytto :osa-alueet]
      :added
      (describe
