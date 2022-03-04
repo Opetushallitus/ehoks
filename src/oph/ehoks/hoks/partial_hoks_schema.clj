@@ -1,7 +1,7 @@
 (ns oph.ehoks.hoks.partial-hoks-schema
   "Schemas for updating parts of hoks (tutkinnon osa)"
   (:require [schema.core :as s]
-            [oph.ehoks.schema-tools :refer [describe modify]]
+            [oph.ehoks.schema-tools :refer [modify]]
             [oph.ehoks.hoks.schema :as hoks-schema]))
 
 (s/defschema
@@ -12,109 +12,36 @@
     {:removed [:id :module-id]}))
 
 (s/defschema
-  OsaamisenHankkimistapaPaivitys
-  (s/constrained
-    (modify
-      hoks-schema/OsaamisenHankkimistapa
-      "Osaamisen hankkimisen tavan päivitys (PATCH)"
-      {:removed [:module-id]})
-    hoks-schema/oppisopimus-has-perusta?
-    "Tieto oppisopimuksen perustasta puuttuu."))
-
-(s/defschema
-  OsaamisenOsoittaminenPaivitys
-  (modify
-    hoks-schema/OsaamisenOsoittaminen
-    "Osaamisen hankkimisen osoittamisen päivitys (PATCH)"
-    {:removed [:module-id]}))
-
-(s/defschema
   HankittavaAmmatillinenTutkinnonOsaPaivitys
   (modify
-    hoks-schema/HankittavaAmmatillinenTutkinnonOsa
+    hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkausPatch
     (str "Hankittavan ammatillisen osaamisen tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
-    {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
+    {:removed [:module-id]
      :optionals
      [:tutkinnon-osa-koodi-uri
       :tutkinnon-osa-koodi-versio
       :osaamisen-hankkimistavat
-      :koulutuksen-jarjestaja-oid]
-     :added
-     (describe
-       ""
-       (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaPaivitys] "Osaamisen hankkimistavat"
-       (s/optional-key :osaamisen-osoittaminen)
-       [OsaamisenOsoittaminenPaivitys]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
-
-(s/defschema
-  YhteisenTutkinnonOsanOsaAluePaivitys
-  (modify
-    hoks-schema/YhteisenTutkinnonOsanOsaAlue
-    "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen paivitys (PATCH)"
-    {:removed [:module-id :osaamisen-osoittaminen :osaamisen-hankkimistavat :id]
-     :added
-     (describe
-       ""
-       (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaPaivitys] "Osaamisen hankkimistavat"
-       (s/optional-key :osaamisen-osoittaminen)
-       [OsaamisenOsoittaminenPaivitys]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
+      :koulutuksen-jarjestaja-oid]}))
 
 (s/defschema
   HankittavaYTOLuonti
   (modify
-    hoks-schema/HankittavaYTO
-    "Hankittavan yhteisen tutkinnnon osan (POST, PUT)"
-    {:removed
-     [:module-id
-      :osaamisen-hankkimistavat
-      :osaamisen-osoittaminen
-      :osa-alueet
-      :id]
-     :added
-     (describe
-       ""
-       :osa-alueet [YhteisenTutkinnonOsanOsaAluePaivitys]
-       "YTO osa-alueet"
-       (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaPaivitys] "Osaamisen hankkimistavat"
-       (s/optional-key :osaamisen-osoittaminen)
-       [OsaamisenOsoittaminenPaivitys]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
+    hoks-schema/HankittavaYTOLuontiJaMuokkaus
+    (str "Hankittavan yhteinen tutkinnon osan tiedot uutta merkintää "
+         "luotaessa (POST)")
+    {:removed [:id :module-id]}))
 
 (s/defschema
   HankittavaYTOPaivitys
   (modify
-    hoks-schema/HankittavaYTO
+    hoks-schema/HankittavaYTOLuontiJaMuokkausPatch
     (str "Hankittavan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
-    {:removed
-     [:module-id
-      :osaamisen-hankkimistavat
-      :osaamisen-osoittaminen
-      :osa-alueet]
+    {:removed [:module-id]
      :optionals
      [:osa-alueet :koulutuksen-jarjestaja-oid :tutkinnon-osa-koodi-uri
-      :tutkinnon-osa-koodi-versio]
-     :added
-     (describe
-       ""
-       (s/optional-key :osa-alueet)
-       [YhteisenTutkinnonOsanOsaAluePaivitys]
-       "YTO osa-alueet"
-       (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaPaivitys] "Osaamisen hankkimistavat"
-       (s/optional-key :osaamisen-osoittaminen)
-       [OsaamisenOsoittaminenPaivitys]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
+      :tutkinnon-osa-koodi-versio]}))
 
 (s/defschema
   OpiskeluvalmiuksiaTukevatOpinnotLuonti
@@ -144,22 +71,16 @@
 (s/defschema
   AiemminHankitunPaikallisenTutkinnonOsanPaivitys
   (modify
-    hoks-schema/AiemminHankittuPaikallinenTutkinnonOsa
-    "Aiemmin hankitun paikallisen osaamisen päivitys (PATCH)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto]
+    hoks-schema/AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkausPatch
+    (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot "
+         "kenttää tai kenttiä päivitettäessä (PATCH)")
+    {:removed [:module-id]
      :optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri
                  :koulutuksen-jarjestaja-oid
                  :kuvaus
                  :laajuus
-                 :nimi]
-     :added
-     (describe
-       ""
-       (s/optional-key :tarkentavat-tiedot-naytto)
-       [OsaamisenOsoittaminenPaivitys]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
+                 :nimi]}))
 
 (s/defschema
   HankittavanPaikallisenTutkinnonOsanLuonti
@@ -172,25 +93,17 @@
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaPaivitys
   (modify
-    hoks-schema/HankittavaPaikallinenTutkinnonOsa
-    "Hankittavan paikallisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
+    hoks-schema/HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkausPatch
+    (str "Hankittavan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
+         "päivittäessä (PATCH)")
+    {:removed [:module-id]
      :optionals
      [:osaamisen-hankkimistavat
       :koulutuksen-jarjestaja-oid
       :osaamisen-osoittaminen
       :kuvaus
       :laajuus
-      :nimi]
-     :added
-     (describe
-       ""
-       (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaPaivitys] "Osaamisen hankkimistavat"
-       (s/optional-key :osaamisen-osoittaminen)
-       [OsaamisenOsoittaminenPaivitys]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
+      :nimi]}))
 
 (s/defschema
   AiemminHankitunYhteisenTutkinnonOsanLuonti
@@ -201,39 +114,17 @@
     {:removed [:id]}))
 
 (s/defschema
-  AiemminHankitunYTOOsaAluePaivitys
-  (modify
-    hoks-schema/AiemminHankitunYTOOsaAlue
-    "AiemminHankitun YTOn osa-alueen tiedot (POST, PUT)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto]
-     :added
-     (describe
-       ""
-       (s/optional-key :tarkentavat-tiedot-naytto)
-       [hoks-schema/OsaamisenOsoittaminenLuontiJaMuokkaus]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
-
-(s/defschema
   AiemminHankitunYhteisenTutkinnonOsanPaivitys
   (modify
-    hoks-schema/AiemminHankittuYhteinenTutkinnonOsa
-    "Aiemmin hankitun yhteisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto :osa-alueet]
+    hoks-schema/AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkausPatch
+    (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot "
+         "kenttää tai kenttiä päivitettäessä (PATCH)")
+    {:removed [:module-id]
      :optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri
                  :tutkinnon-osa-koodi-versio
                  :tutkinnon-osa-koodi-uri
-                 :osa-alueet]
-     :added
-     (describe
-       ""
-       (s/optional-key :tarkentavat-tiedot-naytto)
-       [OsaamisenOsoittaminenPaivitys]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen")
-       :osa-alueet [AiemminHankitunYTOOsaAluePaivitys]
-       "YTO osa-alueet")}))
+                 :osa-alueet]}))
 
 (s/defschema
   AiemminHankitunAmmatillisenTutkinnonOsanLuonti
@@ -246,17 +137,11 @@
 (s/defschema
   AiemminHankitunAmmatillisenTutkinnonOsanPaivitys
   (modify
-    hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsa
-    "Aiemmin hankitun ammatillisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto]
+    hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkausPatch
+    (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot "
+         "kenttää tai kenttiä päivittäessä (PATCH)")
+    {:removed [:module-id]
      :optionals [:valittu-todentamisen-prosessi-koodi-versio
                  :valittu-todentamisen-prosessi-koodi-uri
                  :tutkinnon-osa-koodi-versio
-                 :tutkinnon-osa-koodi-uri]
-     :added
-     (describe
-       ""
-       (s/optional-key :tarkentavat-tiedot-naytto)
-       [hoks-schema/OsaamisenOsoittaminenLuontiJaMuokkaus]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
+                 :tutkinnon-osa-koodi-uri]}))
