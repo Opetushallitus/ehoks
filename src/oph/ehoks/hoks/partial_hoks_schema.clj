@@ -36,19 +36,19 @@
          "päivittäessä (PATCH)")
     {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
      :optionals
-              [:tutkinnon-osa-koodi-uri
-               :tutkinnon-osa-koodi-versio
-               :osaamisen-hankkimistavat
-               :koulutuksen-jarjestaja-oid]
+     [:tutkinnon-osa-koodi-uri
+      :tutkinnon-osa-koodi-versio
+      :osaamisen-hankkimistavat
+      :koulutuksen-jarjestaja-oid]
      :added
-      (describe
-        ""
-        (s/optional-key :osaamisen-hankkimistavat)
-        [OsaamisenHankkimistapaPaivitys] "Osaamisen hankkimistavat"
-        (s/optional-key :osaamisen-osoittaminen)
-        [OsaamisenOsoittaminenPaivitys]
-        (str "Hankitun osaamisen osoittaminen: "
-             "Näyttö tai muu osaamisen osoittaminen"))}))
+     (describe
+       ""
+       (s/optional-key :osaamisen-hankkimistavat)
+       [OsaamisenHankkimistapaPaivitys] "Osaamisen hankkimistavat"
+       (s/optional-key :osaamisen-osoittaminen)
+       [OsaamisenOsoittaminenPaivitys]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
   YhteisenTutkinnonOsanOsaAluePaivitys
@@ -57,14 +57,14 @@
     "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen paivitys (PATCH)"
     {:removed [:module-id :osaamisen-osoittaminen :osaamisen-hankkimistavat :id]
      :added
-              (describe
-                ""
-                (s/optional-key :osaamisen-hankkimistavat)
-                [OsaamisenHankkimistapaPaivitys] "Osaamisen hankkimistavat"
-                (s/optional-key :osaamisen-osoittaminen)
-                [OsaamisenOsoittaminenPaivitys]
-                (str "Hankitun osaamisen osoittaminen: "
-                     "Näyttö tai muu osaamisen osoittaminen"))}))
+     (describe
+       ""
+       (s/optional-key :osaamisen-hankkimistavat)
+       [OsaamisenHankkimistapaPaivitys] "Osaamisen hankkimistavat"
+       (s/optional-key :osaamisen-osoittaminen)
+       [OsaamisenOsoittaminenPaivitys]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
   HankittavaYTOLuonti
@@ -154,12 +154,12 @@
                  :laajuus
                  :nimi]
      :added
-              (describe
-                ""
-                (s/optional-key :tarkentavat-tiedot-naytto)
-                [OsaamisenOsoittaminenPaivitys]
-                (str "Hankitun osaamisen osoittaminen: "
-                     "Näyttö tai muu osaamisen osoittaminen"))}))
+     (describe
+       ""
+       (s/optional-key :tarkentavat-tiedot-naytto)
+       [OsaamisenOsoittaminenPaivitys]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
   HankittavanPaikallisenTutkinnonOsanLuonti
@@ -176,21 +176,21 @@
     "Hankittavan paikallisen osaamisen tiedot (POST, PUT)"
     {:removed [:module-id :osaamisen-hankkimistavat :osaamisen-osoittaminen]
      :optionals
-              [:osaamisen-hankkimistavat
-               :koulutuksen-jarjestaja-oid
-               :osaamisen-osoittaminen
-               :kuvaus
-               :laajuus
-               :nimi]
+     [:osaamisen-hankkimistavat
+      :koulutuksen-jarjestaja-oid
+      :osaamisen-osoittaminen
+      :kuvaus
+      :laajuus
+      :nimi]
      :added
-              (describe
-                ""
-                (s/optional-key :osaamisen-hankkimistavat)
-                [OsaamisenHankkimistapaPaivitys] "Osaamisen hankkimistavat"
-                (s/optional-key :osaamisen-osoittaminen)
-                [OsaamisenOsoittaminenPaivitys]
-                (str "Hankitun osaamisen osoittaminen: "
-                     "Näyttö tai muu osaamisen osoittaminen"))}))
+     (describe
+       ""
+       (s/optional-key :osaamisen-hankkimistavat)
+       [OsaamisenHankkimistapaPaivitys] "Osaamisen hankkimistavat"
+       (s/optional-key :osaamisen-osoittaminen)
+       [OsaamisenOsoittaminenPaivitys]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
   AiemminHankitunYhteisenTutkinnonOsanLuonti
@@ -207,12 +207,12 @@
     "AiemminHankitun YTOn osa-alueen tiedot (POST, PUT)"
     {:removed [:module-id :tarkentavat-tiedot-naytto]
      :added
-              (describe
-                ""
-                (s/optional-key :tarkentavat-tiedot-naytto)
-                [hoks-schema/OsaamisenOsoittaminenLuontiJaMuokkaus]
-                (str "Hankitun osaamisen osoittaminen: "
-                     "Näyttö tai muu osaamisen osoittaminen"))}))
+     (describe
+       ""
+       (s/optional-key :tarkentavat-tiedot-naytto)
+       [hoks-schema/OsaamisenOsoittaminenLuontiJaMuokkaus]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
   AiemminHankitunYhteisenTutkinnonOsanPaivitys
@@ -226,14 +226,14 @@
                  :tutkinnon-osa-koodi-uri
                  :osa-alueet]
      :added
-              (describe
-                ""
-                (s/optional-key :tarkentavat-tiedot-naytto)
-                [OsaamisenOsoittaminenPaivitys]
-                (str "Hankitun osaamisen osoittaminen: "
-                     "Näyttö tai muu osaamisen osoittaminen")
-                :osa-alueet [AiemminHankitunYTOOsaAluePaivitys]
-                "YTO osa-alueet")}))
+     (describe
+       ""
+       (s/optional-key :tarkentavat-tiedot-naytto)
+       [OsaamisenOsoittaminenPaivitys]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen")
+       :osa-alueet [AiemminHankitunYTOOsaAluePaivitys]
+       "YTO osa-alueet")}))
 
 (s/defschema
   AiemminHankitunAmmatillisenTutkinnonOsanLuonti
@@ -254,9 +254,9 @@
                  :tutkinnon-osa-koodi-versio
                  :tutkinnon-osa-koodi-uri]
      :added
-              (describe
-                ""
-                (s/optional-key :tarkentavat-tiedot-naytto)
-                [hoks-schema/OsaamisenOsoittaminenLuontiJaMuokkaus]
-                (str "Hankitun osaamisen osoittaminen: "
-                     "Näyttö tai muu osaamisen osoittaminen"))}))
+     (describe
+       ""
+       (s/optional-key :tarkentavat-tiedot-naytto)
+       [hoks-schema/OsaamisenOsoittaminenLuontiJaMuokkaus]
+       (str "Hankitun osaamisen osoittaminen: "
+            "Näyttö tai muu osaamisen osoittaminen"))}))
