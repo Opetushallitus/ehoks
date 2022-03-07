@@ -453,6 +453,31 @@
                     (catch Exception e
                       (response/bad-request {:error e})))))
 
+              (c-api/GET "/puuttuvat-opiskeluoikeudet" request
+                :summary "Palauttaa listan hoks-id:sta, joiden opiskeluoikeutta
+                ei löydy."
+                :query-params [{amount :- s/Int 10}
+                               {from-id :- s/Int 0}]
+                (loop [hoksit (db-hoks/select-hokses-greater-than-id
+                                0
+                                amount
+                                nil)
+                       result []]
+                  (if (seq hoksit)
+                    (let [hokses-without-oo
+                          (filter #(nil? (koski/get-opiskeluoikeus-info
+                                           (:opiskeluoikeus-oid %))) hoksit)
+                          last-id (:id (last hoksit))]
+                      (recur (db-hoks/select-hokses-greater-than-id
+                               last-id
+                               amount
+                               nil)
+                             (conj result
+                                   (map
+                                     :id
+                                     hokses-without-oo))))
+                    (println result))))
+
               (c-api/context "/oppijat" []
                 :header-params [caller-id :- s/Str]
                 get-oppijat-route
