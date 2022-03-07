@@ -227,7 +227,7 @@
     "Tieto oppisopimuksen perustasta puuttuu."))
 
 (s/defschema
-  OsaamisenHankkimistapaLuontiJaMuokkausPatch
+  OsaamisenHankkimistapaPatch
   (s/constrained
     (modify
       OsaamisenHankkimistapa
@@ -338,7 +338,7 @@
     {:removed [:module-id :id]}))
 
 (s/defschema
-  OsaamisenOsoittaminenLuontiJaMuokkausPatch
+  OsaamisenOsoittaminenPatch
   (modify
     OsaamisenOsoittaminen
     "Osaamisen hankkimisen tavan luonti muokkaus (PATCH)"
@@ -389,7 +389,7 @@
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
-  YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkausPatch
+  YhteisenTutkinnonOsanOsaAluePatch
   (modify
     YhteisenTutkinnonOsanOsaAlue
     "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot (PATCH)"
@@ -398,10 +398,10 @@
      (describe
        ""
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaLuontiJaMuokkausPatch]
+       [OsaamisenHankkimistapaPatch]
        "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
-       [OsaamisenOsoittaminenLuontiJaMuokkausPatch]
+       [OsaamisenOsoittaminenPatch]
        (str "Hankitun osaamisen osoittaminen: "
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
@@ -455,7 +455,7 @@
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
-  AiemminHankitunYTOOsaAlueLuontiJaMuokkausPatch
+  AiemminHankitunYTOOsaAluePatch
   (modify
     AiemminHankitunYTOOsaAlue
     "AiemminHankitun YTOn osa-alueen tiedot (PATCH)"
@@ -464,7 +464,7 @@
      (describe
        ""
        (s/optional-key :tarkentavat-tiedot-naytto)
-       [OsaamisenOsoittaminenLuontiJaMuokkausPatch]
+       [OsaamisenOsoittaminenPatch]
        (str "Hankitun osaamisen osoittaminen: "
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
@@ -519,7 +519,7 @@
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
-  HankittavaYTOLuontiJaMuokkausPatch
+  HankittavaYTOPatch
   (modify
     HankittavaYTO
     "Hankittavan yhteisen tutkinnnon osan (PATCH)"
@@ -531,13 +531,13 @@
      :added
      (describe
        ""
-       :osa-alueet [YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkausPatch]
+       :osa-alueet [YhteisenTutkinnonOsanOsaAluePatch]
        "YTO osa-alueet"
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaLuontiJaMuokkausPatch]
+       [OsaamisenHankkimistapaPatch]
        "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
-       [OsaamisenOsoittaminenLuontiJaMuokkausPatch]
+       [OsaamisenOsoittaminenPatch]
        (str "Hankitun osaamisen osoittaminen: "
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
@@ -596,7 +596,7 @@
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
-  HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkausPatch
+  HankittavaAmmatillinenTutkinnonOsaPatch
   (modify
     HankittavaAmmatillinenTutkinnonOsa
     "Hankittavan ammatillisen osaamisen tiedot (PATCH)"
@@ -605,10 +605,10 @@
      (describe
        ""
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaLuontiJaMuokkausPatch]
+       [OsaamisenHankkimistapaPatch]
        "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
-       [OsaamisenOsoittaminenLuontiJaMuokkausPatch]
+       [OsaamisenOsoittaminenPatch]
        (str "Hankitun osaamisen osoittaminen: "
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
@@ -658,7 +658,7 @@
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
-  HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkausPatch
+  HankittavaPaikallinenTutkinnonOsaPatch
   (modify
     HankittavaPaikallinenTutkinnonOsa
     "Hankittavan paikallisen osaamisen tiedot (PATCH)"
@@ -667,10 +667,10 @@
      (describe
        ""
        (s/optional-key :osaamisen-hankkimistavat)
-       [OsaamisenHankkimistapaLuontiJaMuokkausPatch]
+       [OsaamisenHankkimistapaPatch]
        "Osaamisen hankkimistavat"
        (s/optional-key :osaamisen-osoittaminen)
-       [OsaamisenOsoittaminenLuontiJaMuokkausPatch]
+       [OsaamisenOsoittaminenPatch]
        (str "Hankitun osaamisen osoittaminen: "
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
@@ -709,7 +709,7 @@
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
-  AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkausPatch
+  AiemminHankittuPaikallinenTutkinnonOsaPatch
   (modify
     AiemminHankittuPaikallinenTutkinnonOsa
     "Aiemmin hankitun paikallisen osaamisen tiedot (PATCH)"
@@ -718,7 +718,7 @@
      (describe
        ""
        (s/optional-key :tarkentavat-tiedot-naytto)
-       [OsaamisenOsoittaminenLuontiJaMuokkausPatch]
+       [OsaamisenOsoittaminenPatch]
        (str "Hankitun osaamisen osoittaminen: "
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
@@ -761,7 +761,7 @@
        "YTO osa-alueet")}))
 
 (s/defschema
-  AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkausPatch
+  AiemminHankittuYhteinenTutkinnonOsaPatch
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
     "Aiemmin hankitun yhteisen osaamisen tiedot (PATCH)"
@@ -770,10 +770,10 @@
      (describe
        ""
        (s/optional-key :tarkentavat-tiedot-naytto)
-       [OsaamisenOsoittaminenLuontiJaMuokkausPatch]
+       [OsaamisenOsoittaminenPatch]
        (str "Hankitun osaamisen osoittaminen: "
             "Näyttö tai muu osaamisen osoittaminen")
-       :osa-alueet [AiemminHankitunYTOOsaAlueLuontiJaMuokkausPatch]
+       :osa-alueet [AiemminHankitunYTOOsaAluePatch]
        "YTO osa-alueet")}))
 
 (s/defschema
@@ -805,7 +805,7 @@
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (s/defschema
-  AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkausPatch
+  AiemminHankittuAmmatillinenTutkinnonOsaPatch
   (modify
     AiemminHankittuAmmatillinenTutkinnonOsa
     "Aiemmin hankitun ammatillisen osaamisen tiedot (PATCH)"
@@ -814,7 +814,7 @@
      (describe
        ""
        (s/optional-key :tarkentavat-tiedot-naytto)
-       [OsaamisenOsoittaminenLuontiJaMuokkausPatch]
+       [OsaamisenOsoittaminenPatch]
        (str "Hankitun osaamisen osoittaminen: "
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
