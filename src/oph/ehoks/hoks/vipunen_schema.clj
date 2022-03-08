@@ -162,6 +162,8 @@
     "Oppisopimuksen perustan Koodisto-uri "
     (s/optional-key :oppisopimuksen-perusta-koodi-versio) s/Int
     "Oppisopimuksen perustan Koodisto-versio "
+    (s/optional-key :yksiloiva-tunniste) s/Str
+    "Tietorakenteen yksilöivä tunniste yhden Hoksin kontekstissa."
     (s/optional-key :keskeytymisajanjaksot)
     (s/constrained [KeskeytymisajanjaksoVipunen] not-overlapping?)
     (str "Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä "
