@@ -486,7 +486,7 @@
                                from-id
                                limit
                                nil)
-                      last-id (:hoks-id (last hoksit))]
+                      last-id (:id (last hoksit))]
                   (try
                     (let [hokses-without-oo
                           (filter
