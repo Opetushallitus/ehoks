@@ -477,6 +477,29 @@
                                (apply conj (map :id hokses-without-oo) result)))
                       (println result)))))
 
+              (c-api/GET "/puuttuvat-opiskeluoikeudet-temp" request
+                :summary "Palauttaa listan hoks-id:sta, joiden opiskeluoikeutta
+                ei löydyy."
+                :query-params [{limit :- s/Int 2000}
+                               {from-id :- s/Int 0}]
+                (let [hoksit (db-hoks/select-hokses-greater-than-id
+                               from-id
+                               limit
+                               nil)
+                      last-id (:hoks-id (last hoksit))]
+                  (try
+                    (let [hokses-without-oo
+                          (filter
+                            #(nil? (koski/get-opiskeluoikeus-info
+                                     (:opiskeluoikeus-oid %)))
+                            hoksit)
+                          result (map :id hokses-without-oo)]
+                      (response/ok {:count (count result)
+                                    :ids result
+                                    :last-id last-id}))
+                    (catch Exception e
+                      (response/bad-request {:error e})))))
+
               (c-api/context "/oppijat" []
                 :header-params [caller-id :- s/Str]
                 get-oppijat-route
