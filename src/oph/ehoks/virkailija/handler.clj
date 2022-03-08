@@ -458,6 +458,7 @@
                 ei löydy."
                 :query-params [{amount :- s/Int 10}
                                {from-id :- s/Int 0}]
+                (println "Starting hoks loop")
                 (loop [hoksit (db-hoks/select-hokses-greater-than-id
                                 0
                                 amount
@@ -468,6 +469,7 @@
                           (filter #(nil? (koski/get-opiskeluoikeus-info
                                            (:opiskeluoikeus-oid %))) hoksit)
                           last-id (:id (last hoksit))]
+                      (response/ok)
                       (recur (db-hoks/select-hokses-greater-than-id
                                last-id
                                amount
