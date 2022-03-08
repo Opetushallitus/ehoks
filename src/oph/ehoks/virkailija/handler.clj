@@ -490,9 +490,12 @@
                   (try
                     (let [hokses-without-oo
                           (filter
-                            #(nil? (koski/get-opiskeluoikeus-info
-                                     (:opiskeluoikeus-oid %)))
-                            hoksit)
+                            some?
+                            (pmap
+                              (fn [x]
+                                (when (nil?
+                                        (koski/get-opiskeluoikeus-info
+                                          (:opiskeluoikeus-oid x))) x)) hoksit))
                           result (map :id hokses-without-oo)]
                       (response/ok {:count (count result)
                                     :ids result
