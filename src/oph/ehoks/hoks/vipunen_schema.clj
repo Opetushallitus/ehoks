@@ -163,6 +163,8 @@
     (s/optional-key :oppisopimuksen-perusta-koodi-versio) s/Int
     "Oppisopimuksen perustan Koodisto-versio "
     (s/optional-key :keskeytymisajanjaksot)
+    (s/optional-key :yksiloiva-tunniste) s/Str
+    "Tietorakenteen yksilöivä tunniste yhden Hoksin kontekstissa."
     (s/constrained [KeskeytymisajanjaksoVipunen] not-overlapping?)
     (str "Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä "
          "työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään "
