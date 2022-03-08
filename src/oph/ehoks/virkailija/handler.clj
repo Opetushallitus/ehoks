@@ -456,29 +456,26 @@
               (c-api/GET "/puuttuvat-opiskeluoikeudet" request
                 :summary "Palauttaa listan hoks-id:sta, joiden opiskeluoikeutta
                 ei löydy."
-                :query-params [{amount :- s/Int 10}
-                               {from-id :- s/Int 0}]
-                (println "Starting hoks loop")
-                (loop [hoksit (db-hoks/select-hokses-greater-than-id
-                                0
-                                amount
-                                nil)
-                       result []]
-                  (if (seq hoksit)
-                    (let [hokses-without-oo
-                          (filter #(nil? (koski/get-opiskeluoikeus-info
-                                           (:opiskeluoikeus-oid %))) hoksit)
-                          last-id (:id (last hoksit))]
-                      (response/ok)
-                      (recur (db-hoks/select-hokses-greater-than-id
-                               last-id
-                               amount
-                               nil)
-                             (conj result
-                                   (map
-                                     :id
-                                     hokses-without-oo))))
-                    (println result))))
+                :query-params [{amount :- s/Int 10}]
+                (do
+                  (println "Starting hoks loop")
+                  (loop [hoksit (db-hoks/select-hokses-greater-than-id
+                                  0
+                                  amount
+                                  nil)
+                         result []]
+                    (if (seq hoksit)
+                      (let [hokses-without-oo
+                            (filter #(nil? (koski/get-opiskeluoikeus-info
+                                             (:opiskeluoikeus-oid %))) hoksit)
+                            last-id (:id (last hoksit))]
+                        (println "Current last-id: " last-id)
+                        (recur (db-hoks/select-hokses-greater-than-id
+                                 last-id
+                                 amount
+                                 nil)
+                               (apply conj (map :id hokses-without-oo) result)))
+                      (println result)))))
 
               (c-api/context "/oppijat" []
                 :header-params [caller-id :- s/Str]
