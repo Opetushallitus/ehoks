@@ -38,27 +38,29 @@
 (defn get-oppija-kyselylinkit
   "Returns all feedback links for oppija"
   [oppija-oid]
-  (map
-    #(try
-       (if-not (:vastattu %1)
-         (let [status (arvo/get-kyselylinkki-status
-                        (:kyselylinkki %1))
-               loppupvm (LocalDate/parse
-                          (first
-                            (str/split (:voimassa_loppupvm status) #"T")))]
-           (h/update-kyselylinkki!
-             {:kyselylinkki (:kyselylinkki %1)
-              :voimassa_loppupvm loppupvm
-              :vastattu (:vastattu status)})
-           (assoc
-             %1
-             :voimassa-loppupvm loppupvm
-             :vastattu (:vastattu status)))
-         %1)
-       (catch Exception e
-         (log/error e)
-         (throw e)))
-    (h/get-kyselylinkit-by-oppija-oid oppija-oid)))
+  (filter
+    some?
+    (map
+      #(try
+         (if-not (:vastattu %1)
+           (when-let [status (arvo/get-kyselylinkki-status-catch-404
+                               (:kyselylinkki %1))]
+             (let [loppupvm (LocalDate/parse
+                              (first
+                                (str/split (:voimassa_loppupvm status) #"T")))]
+               (h/update-kyselylinkki!
+                 {:kyselylinkki (:kyselylinkki %1)
+                  :voimassa_loppupvm loppupvm
+                  :vastattu (:vastattu status)})
+               (assoc
+                 %1
+                 :voimassa-loppupvm loppupvm
+                 :vastattu (:vastattu status))))
+           %1)
+         (catch Exception e
+           (log/error e)
+           (throw e)))
+      (h/get-kyselylinkit-by-oppija-oid oppija-oid))))
 
 (defn set-tep-kasitelty [hankkimistapa-id to]
   (db-hoks/update-osaamisen-hankkimistapa-tep-kasitelty hankkimistapa-id to))
