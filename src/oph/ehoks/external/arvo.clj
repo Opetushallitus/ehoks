@@ -1,7 +1,8 @@
 (ns oph.ehoks.external.arvo
   (:require [oph.ehoks.external.connection :as c]
             [oph.ehoks.config :refer [config]]
-            [clojure.string :as str]))
+            [clojure.string :as str])
+  (:import (clojure.lang ExceptionInfo)))
 
 (defn get-kyselytunnus-status [tunnus]
   (:body (c/with-api-headers {:method :get
@@ -14,6 +15,14 @@
 
 (defn get-kyselylinkki-status [link]
   (get-kyselytunnus-status (last (str/split link #"/"))))
+
+(defn get-kyselylinkki-status-catch-404 [link]
+  (try
+    (get-kyselylinkki-status link)
+    (catch ExceptionInfo e
+      (when-not (and (:status (ex-data e))
+                     (= 404 (:status (ex-data e))))
+        (throw e)))))
 
 (defn delete-kyselytunnus [tunnus]
   (c/with-api-headers {:method :delete
