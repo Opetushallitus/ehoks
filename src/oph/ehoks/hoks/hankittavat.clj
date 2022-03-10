@@ -3,6 +3,7 @@
             [oph.ehoks.hoks.common :as c]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [clj-time.core :as t]
             [clojure.tools.logging :as log])
   (:import (java.time LocalDate)))
@@ -92,6 +93,89 @@
     set-osaamisen-hankkimistapa-values
     (db/select-osaamisen-hankkimistavat-by-hato-id id)))
 
+(defn extract-and-set-osaamisen-hankkimistapa-values [oht rows]
+  (let [this-oht-rows (filter #(= (:oh.id %) (:id oht)) rows)
+        kjs (db-hoks/extract-from-joined-rows :kj.id
+                                              {:kj.alku  :alku
+                                               :kj.loppu :loppu}
+                                              this-oht-rows)
+        moys (db-hoks/extract-from-joined-rows
+               :moy.id
+               {:moy.alku                       :alku
+                :moy.loppu                      :loppu
+                :moy.oppimisymparisto_koodi_uri :oppimisymparisto-koodi-uri
+                :moy.oppimisymparisto_koodi_versio
+                :oppimisymparisto-koodi-versio}
+               this-oht-rows)
+        oht-final (assoc oht :keskeytymisajanjaksot  kjs
+                             :muut-oppimisymparistot moys)]
+    (if (some? (:tyopaikalla-jarjestettava-koulutus-id oht))
+      (assoc oht-final 
+             :tyopaikalla-jarjestettava-koulutus
+             (assoc (first (db-hoks/extract-from-joined-rows :tjk.id
+                                                             ; TODO
+                                                             ))
+                    :keskeiset-tyotehtavat
+                    (db-hoks/extract-from-joined-rows ;; TODO
+                             :tjkt.id
+                             {:tyotehtava :tyotehtava}
+                             this-oht-rows)))
+      ;; TODO
+
+      oht-final)))
+
+(def oht-fields
+  {:osa.id                                 :hato-id
+   :oh.id                                  :id
+   :oh.jarjestajan_edustaja_nimi           :jarjestaja_edustaja_nimi
+   :oh.jarjestajan_edustaja_rooli          :jarjestaja_edustaja_rooli
+   :oh.ajanjakso_tarkenne                  :ajanjakson_tarkenne
+   :oh.hankkijan_edustaja_nimi             :hankkijan_edustaja_nimi
+   :oh.hankkijan_edustaja_rooli            :hankkijan_edustaja_rooli
+   :oh.hankkijan_edustaja_oppilaitos_oid   :hankkijan_edustaja_oppilaitos_oid
+   :oh.alku                                :alku
+   :oh.loppu                               :loppu
+   :oh.module_id                           :module_id
+   :oh.osa_aikaisuustieto                  :osa_aikaisuustieto
+   :oh.oppisopimuksen_perusta_koodi_uri    :oppisopimuksen_perusta_koodi_uri
+   :oh.oppisopimuksen_perusta_koodi_versio :oppisopimuksen_perusta_koodi_versio
+   :oh.yksiloiva_tunniste                  :yksiloiva_tunniste
+   :oh.osaamisen_hankkimistapa_koodi_versio
+   :osaamisen_hankkimistapa_koodi_versio
+   :oh.tyopaikalla_jarjestettava_koulutus_id
+   :tyopaikalla_jarjestettava_koulutus_id})
+
+(defn extract-hato-osaamisen-hankkimistavat [rows]
+  (map #(db-hoks/osaamisen-hankkimistapa-from-sql ;; TODO toimiiko tämä tässä järjestyksessä?
+          (extract-and-set-osaamisen-hankkimistapa-values % rows))
+       (db-hoks/extract-from-joined-rows :oh.id oht-fields rows)))
+
+(defn extract-and-send-osaamisen-osoittaminen-values [oo rows]
+  (let [this-oo-rows (filter #(= (:oo.id %) (:id oo)) rows)
+
+
+        ]
+
+    )
+  ;; TODO
+  )
+
+(def oo-fields
+  {:oo.id                        :id
+   :oo.jarjestaja_oppilaitos_oid :jarjestaja_oppilaitos_oid
+   :oo.nayttoymparisto_id        :nayttoymparisto_id
+   :oo.alku                      :alku
+   :oo.loppu                     :loppu
+   :oo.module_id                 :module_id
+   :oo.vaatimuksista_tai_tavoitteista_poikkeaminen
+   :vaatimuksista_tai_tavoitteista_poikkeaminen})
+
+;; TODO täytyy tehdä sama myös osaamisen osoittamisille
+(defn extract-hato-osaamisen-osoittamiset [rows]
+  (map #(db-hoks/osaamisen-osoittaminen-from-sql
+          (extract-and-set-osaamisen-osoittaminen-values % rows))
+       (db-hoks/extract-from-joined-rows :oo.id oo-fields rows)))
+
 (defn get-hato-osaamisen-osoittaminen [id]
   (mapv
     #(dissoc
@@ -138,17 +222,37 @@
       (get-hato-osaamisen-hankkimistavat id))))
 
 (defn get-hankittavat-ammat-tutkinnon-osat [hoks-id]
-  (mapv
-    #(dissoc
-       (assoc
-         %
-         :osaamisen-osoittaminen
-         (get-hato-osaamisen-osoittaminen (:id %))
-         :osaamisen-hankkimistavat
-         (get-hato-osaamisen-hankkimistavat (:id %)))
-       :id
-       :hoks-id)
-    (db/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id hoks-id)))
+  (let [rows (db/select-whole-hato hoks-id) ;; TODO not sure about this
+        ohts (extract-hato-osaamisen-hankkimistavat rows)
+
+        ;; TODO osaamisen osoittamiset
+
+        ;; TODO hato objs
+
+
+        ]
+    (map
+      (fn [hato]
+        (assoc hato
+               :osaamisen-osoittaminen
+               ; ;TODO filter here too
+               :osaamisen-hankkimistavat
+               (filter #(= (:hato-id %) (:id hato)) ohts))
+      ); TODO there are a few fields we need to remove too
+      hato-objs)))
+
+  ;; TODO old from here down
+;  (mapv
+;    #(dissoc
+;       (assoc
+;         %
+;         :osaamisen-osoittaminen
+;         (get-hato-osaamisen-osoittaminen (:id %))
+;         :osaamisen-hankkimistavat
+;         (get-hato-osaamisen-hankkimistavat (:id %)))
+;       :id
+;       :hoks-id)
+;    (db/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id hoks-id)))
 
 (defn get-hankittava-yhteinen-tutkinnon-osa [hyto-id]
   (when-let [hato-db

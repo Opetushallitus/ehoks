@@ -497,3 +497,7 @@
   (db-ops/query
     [queries/select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot]
     {:row-fn db-ops/from-sql}))
+
+(defn extract-from-joined-rows [unique-on fields rows]
+  (map (fn [row] (reduce-kv fields #(assoc %1 %3 (get row %2))))
+       (vals (reduce #(assoc %1 (get %2 unique-on) %2) {} rows))))

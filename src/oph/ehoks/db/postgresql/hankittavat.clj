@@ -158,6 +158,11 @@
     [queries/select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/hankittava-yhteinen-tutkinnon-osa-from-sql}))
 
+(defn select-whole-hato
+  "Hankittavat ammatillisen tutkinnon osat"
+  [id]
+  (db-ops/query [queries/select-whole-hato id]))
+
 (defn insert-tho-tyotehtavat!
   "Lisää työpaikalla hankittavan osaamisen keskeiset työtehtävät"
   ([tho c]
