@@ -477,7 +477,12 @@
             :body [hoks-values hoks-schema/HOKSPaivitys]
             (if (not-empty (:hoks request))
               (try
-                (check-opiskeluoikeus-validity hoks-values)
+                (let [hoks (:hoks request)
+                      opiskeluoikeudet
+                      (koski/fetch-opiskeluoikeudet-by-oppija-id
+                        (:oppija-oid hoks))]
+                  (check-opiskeluoikeus-validity hoks-values)
+                  (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))
                 (let [hoks-db (h/update-hoks!
                                 (get-in request [:hoks :id]) hoks-values)]
                   (assoc

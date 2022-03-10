@@ -267,7 +267,11 @@
 
 (defn- put-hoks [hoks-values hoks-id]
   (try
-    (check-opiskeluoikeus-validity hoks-values)
+    (let [opiskeluoikeudet
+          (koski/fetch-opiskeluoikeudet-by-oppija-id
+            (:oppija-oid hoks-values))]
+      (check-opiskeluoikeus-validity hoks-values)
+      (add-hankintakoulutukset-to-index hoks-values opiskeluoikeudet))
     (let [hoks-db
           (h/replace-hoks! hoks-id hoks-values)]
       (assoc
