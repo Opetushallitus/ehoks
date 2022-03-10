@@ -14,7 +14,7 @@
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsaPaivitys
   (modify
-    hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus
+    hoks-schema/HankittavaAmmatillinenTutkinnonOsaPatch
     (str "Hankittavan ammatillisen osaamisen tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:removed [:module-id]
@@ -35,7 +35,7 @@
 (s/defschema
   HankittavaYTOPaivitys
   (modify
-    hoks-schema/HankittavaYTOLuontiJaMuokkaus
+    hoks-schema/HankittavaYTOPatch
     (str "Hankittavan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:removed [:module-id]
@@ -71,7 +71,7 @@
 (s/defschema
   AiemminHankitunPaikallisenTutkinnonOsanPaivitys
   (modify
-    hoks-schema/AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus
+    hoks-schema/AiemminHankittuPaikallinenTutkinnonOsaPatch
     (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot "
          "kenttää tai kenttiä päivitettäessä (PATCH)")
     {:removed [:module-id]
@@ -93,7 +93,7 @@
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaPaivitys
   (modify
-    hoks-schema/HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus
+    hoks-schema/HankittavaPaikallinenTutkinnonOsaPatch
     (str "Hankittavan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:removed [:module-id]
@@ -116,7 +116,7 @@
 (s/defschema
   AiemminHankitunYhteisenTutkinnonOsanPaivitys
   (modify
-    hoks-schema/AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus
+    hoks-schema/AiemminHankittuYhteinenTutkinnonOsaPatch
     (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot "
          "kenttää tai kenttiä päivitettäessä (PATCH)")
     {:removed [:module-id]
@@ -137,7 +137,7 @@
 (s/defschema
   AiemminHankitunAmmatillisenTutkinnonOsanPaivitys
   (modify
-    hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus
+    hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsaPatch
     (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot "
          "kenttää tai kenttiä päivittäessä (PATCH)")
     {:removed [:module-id]
