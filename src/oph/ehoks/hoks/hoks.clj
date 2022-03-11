@@ -161,6 +161,9 @@
                          "opiskeluoikeus-oid %s.")
                     hoks-id os-saavut-pvm (:opiskeluoikeus-oid hoks)))))
 
+(defn error-log-hoks-id [id]
+  (log/errorf "Error caused by hoks-id: %s" id))
+
 (defn save-hoks! [h]
   (jdbc/with-db-transaction
     [conn (db-ops/get-db-connection)]
