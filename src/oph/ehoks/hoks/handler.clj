@@ -485,6 +485,7 @@
                     :audit-data
                     {:new  hoks-values}))
                 (catch Exception e
+                  (h/error-log-hoks-id (get-in request [:hoks :id]))
                   (if (= (:error (ex-data e)) :disallowed-update)
                     (assoc
                       (response/bad-request!
@@ -508,6 +509,7 @@
                     :audit-data
                     {:new  hoks-values}))
                 (catch Exception e
+                  (h/error-log-hoks-id (get-in request [:hoks :id]))
                   (if (= (:error (ex-data e)) :disallowed-update)
                     (assoc
                       (response/bad-request!
