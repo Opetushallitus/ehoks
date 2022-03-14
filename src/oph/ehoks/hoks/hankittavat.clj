@@ -114,14 +114,11 @@
              :tyopaikalla-jarjestettava-koulutus
              (assoc (first (db-hoks/extract-from-joined-rows :tjk.id
                                                              ; TODO
-                                                             ))
+                                                             this-oht-rows))
                     :keskeiset-tyotehtavat
-                    (db-hoks/extract-from-joined-rows ;; TODO
-                             :tjkt.id
-                             {:tyotehtava :tyotehtava}
-                             this-oht-rows)))
-      ;; TODO
-
+                    (db-hoks/extract-from-joined-rows :tjkt.id
+                                                      {:tyotehtava :tyotehtava}
+                                                      this-oht-rows)))
       oht-final)))
 
 (def oht-fields
@@ -150,20 +147,65 @@
           (extract-and-set-osaamisen-hankkimistapa-values % rows))
        (db-hoks/extract-from-joined-rows :oh.id oht-fields rows)))
 
+(def kj-arvioijat-fields
+  {
+  ;; TODO
+
+   })
+
+(def te-arvioijat-fields
+  {
+  ;; TODO
+   })
+
+(def nayttoymparisto-fields {:ny.nimi     :nimi
+                             :ny.y_tunnus :y-tunnus
+                             :ny.kuvaus   :kuvaus})
+
+(def sisallot-fields {:oos.sisallon_kuvaus :sisallon_kuvaus})
+
+(def osa-alueet-fields
+  {:oooa.osaamisen_osoittaminen_id :osaamisen-osoittaminen-id
+   :oooa.koodista_koodi_id         :koodisto-koodi-id
+   ;; TODO
+
+   })
+
+(def kriteerit-fields {:ooyk.yksilollinen_kriteeri :kriteeri})
+
 (defn extract-and-set-osaamisen-osoittaminen-values [oo rows]
   (let [this-oo-rows (filter #(= (:oo.id %) (:id oo)) rows)
-
-
-        ]
-
-    )
-  ;; TODO
-  )
+        kj-arvioijat (db-hoks/extract-from-joined-rows :kjoa.id
+                                                       kj-arvioijat-fields
+                                                       this-oo-rows)
+        te-arvioijat (db-hoks/extract-from-joined-rows :toa.id
+                                                       te-arvioijat-fields
+                                                       this-oo-rows)
+        nayttoymparisto (first (db-hoks/extract-from-joined-rows
+                                 :ny.id
+                                 nayttoymparisto-fields
+                                 this-oo-rows))
+        sisallon-kuvaus (map :sisallon_kuvaus
+                             (db-hoks/extract-from-joined-rows :oos.id
+                                                               sisallot-fields
+                                                               this-oo-rows))
+        osa-alueet (db-hoks/extract-from-joined-rows :oooa.id
+                                                     osa-alueet-fields
+                                                     this-oo-rows)
+        kriteerit (map :kriteeri
+                       (db-hoks/extract-from-joined-rows :ooyk.id
+                                                         kriteerit-fields
+                                                         this-oo-rows))]
+    (assoc oo :koulutuksen-jarjestaja-osaamisen-arvioijat kj-arvioijat
+              :tyoelama-osaamisen-arvioijat               te-arvioijat
+              :nayttoymparisto                            nayttoympariso
+              :sisallon-kuvaus                            sisallon-kuvaus
+              :osa-alueet                                 osa-alueet
+              :yksilolliset-kriteerit                     kriteerit)))
 
 (def oo-fields
   {:oo.id                        :id
    :oo.jarjestaja_oppilaitos_oid :jarjestaja_oppilaitos_oid
-   :oo.nayttoymparisto_id        :nayttoymparisto_id
    :oo.alku                      :alku
    :oo.loppu                     :loppu
    :oo.module_id                 :module_id
