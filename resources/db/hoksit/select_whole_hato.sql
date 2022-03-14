@@ -1,4 +1,24 @@
-SELECT * FROM hankittavat_ammat_tutkinnon_osat osa
+SELECT
+  osa.*,
+  osajoin.*,
+  oh.*,
+  tjk.*,
+  tjkt.*,
+  kj.*,
+  moy.*,
+  naytto.*,
+  oo.*,
+  ookja.*,
+  kjoa.*,
+  oota.*,
+  toa.*,
+  ny.*,
+  oos.*,
+  oooa.*,
+  kk.*,
+  ooyk.*
+  -- TODO uskon, että täytyy mainita jokainen nimi erikseen tässä :(:(:(
+FROM hankittavat_ammat_tutkinnon_osat osa
   LEFT OUTER JOIN hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat AS osajoin
     ON (osa.id = hatojoin.hankittava_ammat_tutkinnon_osa_id)
   LEFT OUTER JOIN osaamisen_hankkimistavat AS oh
