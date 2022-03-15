@@ -1,1 +1,0 @@
-CREATE INDEX IF NOT EXISTS opiskeluvalmiuksia_tukevat_opinnot_hoks_id_idx ON opiskeluvalmiuksia_tukevat_opinnot (hoks_id);

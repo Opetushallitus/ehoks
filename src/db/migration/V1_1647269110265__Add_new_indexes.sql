@@ -1,0 +1,13 @@
+CREATE INDEX IF NOT EXISTS opiskeluvalmiuksia_tukevat_opinnot_hoks_id_idx ON opiskeluvalmiuksia_tukevat_opinnot (hoks_id);
+
+CREATE INDEX aiemmin_hankitut_ammat_tutkinnon_osat_hoks_id_idx ON aiemmin_hankitut_ammat_tutkinnon_osat (hoks_id);
+
+CREATE INDEX aiemmin_hankitut_paikalliset_tutkinnon_osat_hoks_id_idx ON aiemmin_hankitut_paikalliset_tutkinnon_osat (hoks_id);
+
+CREATE INDEX aiemmin_hankitut_yhteiset_tutkinnon_osat_hoks_id_idx ON aiemmin_hankitut_yhteiset_tutkinnon_osat (hoks_id);
+
+CREATE INDEX amisherate_kasittelytilat_hoks_id_idx ON amisherate_kasittelytilat (hoks_id);
+
+CREATE INDEX muut_oppimisymparistot_osaamisen_hankkimistapa_id_idx ON muut_oppimisymparistot (osaamisen_hankkimistapa_id);
+
+CREATE INDEX keskeytymisajanjaksot_osaamisen_hankkimistapa_id_idx ON keskeytymisajanjaksot (osaamisen_hankkimistapa_id);
