@@ -4,6 +4,7 @@
   :pedantic? :abort
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [clj-http "3.9.1"]
+                 [com.googlecode.libphonenumber/libphonenumber "8.12.35"]
                  [com.layerware/hugsql "0.5.1"]
                  [com.taoensso/carmine "2.19.1"]
                  [metosin/compojure-api "2.0.0-alpha28"]
@@ -64,7 +65,7 @@
                          ;; XML
                          [org.clojure/data.xml "0.0.8"]
 
-                         ;; postresql
+                         ;; postgresql
                          [com.layerware/hugsql "0.5.1"]
                          [org.clojure/java.jdbc "0.7.11"]
                          [org.flywaydb/flyway-core "6.3.3"]
