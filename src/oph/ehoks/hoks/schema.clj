@@ -2,7 +2,8 @@
   (:require [schema.core :as s]
             [oph.ehoks.schema-tools :refer [describe modify]]
             [oph.ehoks.schema.generator :as g])
-  (:import (java.time LocalDate)
+  (:import (com.google.i18n.phonenumbers PhoneNumberUtil NumberParseException)
+           (java.time LocalDate)
            (java.util UUID)))
 
 (def TutkinnonOsaKoodiUri
@@ -92,6 +93,22 @@
     :nimi s/Str "Henkilön nimi"
     (s/optional-key :rooli) s/Str "Henkilön rooli"))
 
+(defn valid-phone-number?
+  "Sallii vain numeroita, jotka kirjasto luokittelee mobiilinumeroiksi tai
+  mahdollisiksi mobiilinumeroiksi (FIXED_LINE_OR_MOBILE). Jos funktio ei hyväksy
+  numeroa, jonka tiedät olevan validi, tarkista, miten kirjasto luokittelee sen:
+  https://libphonenumber.appspot.com/."
+  [number]
+  (try
+    (let [utilobj (PhoneNumberUtil/getInstance)
+          numberobj (.parse utilobj number "FI")]
+      (and (empty? (filter (fn [x] (Character/isLetter x)) number))
+           (.isValidNumber utilobj numberobj)
+           (let [numtype (str (.getNumberType utilobj numberobj))]
+             (or (= numtype "FIXED_LINE_OR_MOBILE") (= numtype "MOBILE")))))
+    (catch NumberParseException e
+      false)))
+
 (s/defschema
   VastuullinenTyopaikkaOhjaaja
   (modify
@@ -103,7 +120,8 @@
        ""
        (s/optional-key :sahkoposti) s/Str
        "Vastuullisen ohjaajan sähköpostiosoite"
-       (s/optional-key :puhelinnumero) (s/constrained s/Str #(<= (count %) 256))
+       (s/optional-key :puhelinnumero)
+       (s/constrained s/Str valid-phone-number? "Puhelinnumero virheellinen.")
        "Vastuullisen ohjaajan puhelinnumero")}))
 
 (s/defschema
