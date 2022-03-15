@@ -1,0 +1,1 @@
+CREATE INDEX osaamisen_hankkimistavat_yksiloiva_tunniste_idx ON osaamisen_hankkimistavat(yksiloiva_tunniste);
