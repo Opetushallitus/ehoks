@@ -422,7 +422,8 @@
                                      get-response-data))))))
 
 (deftest hoks-put-updates-oht-using-yksiloiva-tunniste
-  (testing "If matching oht yksiloiva-tunniste is found. Update oht."
+  (testing (str "If matching oht yksiloiva-tunniste is found, update oht."
+                "If not found, add new oht.")
     (let [app (hoks-utils/create-app nil)
           post-response (hoks-utils/create-mock-post-request
                           "" test-data/hoks-data app)
@@ -454,7 +455,28 @@
       (is (= (:status put-response) 204))
       (is (= (:status get-response) 200))
       (is (= (count hao-hankkimistavat) 1))
-      (is (= (count hyto-hankkimistavat) 2)))))
+      (is (= (count hyto-hankkimistavat) 2))
+      (eq (:hankkijan-edustaja (first hao-hankkimistavat))
+          (:hankkijan-edustaja
+            (first
+              (:osaamisen-hankkimistavat
+                (first
+                  test-data/hao-data-oht-matching-tunniste)))))
+      (eq (:loppu (some
+                    #(= "qiuewyroqiwuer" (:yksiloiva-tunniste %))
+                    hyto-hankkimistavat))
+          (:loppu
+            (some
+              #(= "qiuewyroqiwuer" (:yksiloiva-tunniste %))
+              (:osaamisen-hankkimistavat
+                (first
+                  (:osa-alueet
+                    (first
+                      test-data/hyto-data-oht-matching-and-new-tunniste)))))))
+      (is (some?
+            (some
+              #(= "uusi-tunniste" (:yksiloiva-tunniste %))
+              hyto-hankkimistavat))))))
 
 (deftest prevent-updating-opiskeluoikeus
   (testing "Prevent PUT HOKS with existing opiskeluoikeus"
