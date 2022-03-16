@@ -69,11 +69,13 @@ SELECT
   ny.kuvaus AS ny__kuvaus,
   oos.id AS oos__id,
   oos.sisallon_kuvaus AS oos__sisallon_kuvaus,
+  oooa.osaamisen_osoittaminen_id AS oooa__osaamisen_osoittaminen_id,
+  oooa.koodisto_koodi_id AS oooa__koodisto_koodi_id,
   kk.id AS kk__id,
   kk.koodi_uri AS kk__koodi_uri,
   kk.koodi_versio AS kk__koodi_versio,
   ooyk.id AS ooyk__id,
-  ooyk.yksilollinen_kriteeri AS ooyk__yksilollinen_kriteeri -- TODO need oooa back perhaps
+  ooyk.yksilollinen_kriteeri AS ooyk__yksilollinen_kriteeri
 FROM hankittavat_ammat_tutkinnon_osat osa
   LEFT OUTER JOIN hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat AS osajoin
     ON (osa.id = hatojoin.hankittava_ammat_tutkinnon_osa_id)
