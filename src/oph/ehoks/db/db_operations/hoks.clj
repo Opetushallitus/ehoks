@@ -499,5 +499,5 @@
     (get coll k)))
 
 (defn extract-from-joined-rows [unique-on fields rows]
-  (map (fn [row] (reduce-kv fields #(assoc %1 %3 (get row %2))))
+  (map (fn [row] (reduce-kv #(assoc %1 %3 (get row %2)) {} fields))
        (vals (reduce #(assoc %1 (get-map %2 unique-on) %2) {} rows))))
