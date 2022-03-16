@@ -493,6 +493,11 @@
      alkupvm alkupvm-loppu last-id limit]
     {:row-fn db-ops/from-sql}))
 
+(defn get-map [coll k]
+  (if (sequential? k)
+    (vec (map #(get coll %) k))
+    (get coll k)))
+
 (defn extract-from-joined-rows [unique-on fields rows]
   (map (fn [row] (reduce-kv fields #(assoc %1 %3 (get row %2))))
-       (vals (reduce #(assoc %1 (get %2 unique-on) %2) {} rows))))
+       (vals (reduce #(assoc %1 (get-map %2 unique-on) %2) {} rows))))

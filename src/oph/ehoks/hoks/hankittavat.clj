@@ -93,6 +93,17 @@
     set-osaamisen-hankkimistapa-values
     (db/select-osaamisen-hankkimistavat-by-hato-id id)))
 
+(def tjk-fields
+  {:tjk__id                            :id
+   :tjk__tyopaikan_nimi                :tyopaikan_nimi
+   :tjk__tyopaikan_y_tunnus            :tyopaikan_y_tunnus
+   :tjk__vastuullinen_tyopaikka_ohjaaja_nimi
+   :vastuullinen_tyopaikka_ohjaaja_nimi
+   :tjk__vastuullinen_tyopaikka_ohjaaja_sahkoposti
+   :vastuullinen_tyopaikka_ohjaaja_sahkoposti
+   :tjk__vastuullinen_tyopaikka_ohjaaja_puhelinnumero
+   :vastuullinen_tyopaikka_ohjaaja_puhelinnumero})
+
 (defn extract-and-set-osaamisen-hankkimistapa-values [oht rows]
   (let [this-oht-rows (filter #(= (:oh__id %) (:id oht)) rows)
         kjs (db-hoks/extract-from-joined-rows :kj__id
@@ -110,10 +121,10 @@
         oht-final (assoc oht :keskeytymisajanjaksot  kjs
                              :muut-oppimisymparistot moys)]
     (if (some? (:tyopaikalla-jarjestettava-koulutus-id oht))
-      (assoc oht-final 
-             :tyopaikalla-jarjestettava-koulutus
+      (assoc oht-final
+             :tyopaikalla-jarjestettava-koulutus ;; TODO other manipulating?
              (assoc (first (db-hoks/extract-from-joined-rows :tjk__id
-                                                             ; TODO
+                                                             tjk-fields
                                                              this-oht-rows))
                     :keskeiset-tyotehtavat
                     (db-hoks/extract-from-joined-rows :tjkt__id
@@ -147,16 +158,14 @@
           (extract-and-set-osaamisen-hankkimistapa-values % rows))
        (db-hoks/extract-from-joined-rows :oh.id oht-fields rows)))
 
-(def kj-arvioijat-fields
-  {
-  ;; TODO
-
-   })
+(def kj-arvioijat-fields {:kjoa__id   :id
+                          :kjoa__nimi :nimi})
 
 (def te-arvioijat-fields
-  {
-  ;; TODO
-   })
+  {:toa__id                    :id
+   :toa__nimi                  :nimi
+   :toa__organisaatio_nimi     :organisaatio_nimi
+   :toa__organisaatio_y_tunnus :organisaatio_y_tunnus})
 
 (def nayttoymparisto-fields {:ny__nimi     :nimi
                              :ny__y_tunnus :y-tunnus
@@ -164,12 +173,11 @@
 
 (def sisallot-fields {:oos__sisallon_kuvaus :sisallon_kuvaus})
 
-(def osa-alueet-fields; TODO 
+(def osa-alueet-fields
   {:oooa__osaamisen_osoittaminen_id :osaamisen-osoittaminen-id
-   :oooa__koodista_koodi_id         :koodisto-koodi-id
-   ;; TODO
-
-   })
+   :oooa__koodisto_koodi_id         :koodisto-koodi-id
+   :kk__koodi_uri                   :koodi-uri
+   :kk__koodi_versio                :koodi-versio})
 
 (def kriteerit-fields {:ooyk__yksilollinen_kriteeri :kriteeri})
 
@@ -189,16 +197,17 @@
                              (db-hoks/extract-from-joined-rows :oos__id
                                                                sisallot-fields
                                                                this-oo-rows))
-        osa-alueet (db-hoks/extract-from-joined-rows :oooa__id
-                                                     osa-alueet-fields
-                                                     this-oo-rows)
+        osa-alueet (db-hoks/extract-from-joined-rows
+                     [:oooa__osaamisen_osoittaminen_id :oooa__kooisto_koodi_id]
+                     osa-alueet-fields
+                     this-oo-rows)
         kriteerit (map :kriteeri
                        (db-hoks/extract-from-joined-rows :ooyk__id
                                                          kriteerit-fields
                                                          this-oo-rows))]
     (assoc oo :koulutuksen-jarjestaja-osaamisen-arvioijat kj-arvioijat
               :tyoelama-osaamisen-arvioijat               te-arvioijat
-              :nayttoymparisto                            nayttoympariso
+              :nayttoymparisto                            nayttoymparisto
               :sisallon-kuvaus                            sisallon-kuvaus
               :osa-alueet                                 osa-alueet
               :yksilolliset-kriteerit                     kriteerit)))
@@ -276,7 +285,7 @@
   (let [rows (db/select-whole-hato hoks-id)
         ohts (extract-hato-osaamisen-hankkimistavat rows)
         oos (extract-hato-osaamisen-osoittamiset rows)
-        hato-objs (extract-from-joined-rows :osa__id hato-fields rows)]
+        hato-objs (db-hoks/extract-from-joined-rows :osa__id hato-fields rows)]
     (map
       #(dissoc % :id)
       (map
