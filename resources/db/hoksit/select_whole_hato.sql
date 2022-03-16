@@ -78,7 +78,7 @@ SELECT
   ooyk.yksilollinen_kriteeri AS ooyk__yksilollinen_kriteeri
 FROM hankittavat_ammat_tutkinnon_osat osa
   LEFT OUTER JOIN hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat AS osajoin
-    ON (osa.id = hatojoin.hankittava_ammat_tutkinnon_osa_id)
+    ON (osa.id = osajoin.hankittava_ammat_tutkinnon_osa_id)
   LEFT OUTER JOIN osaamisen_hankkimistavat AS oh
     ON (osajoin.osaamisen_hankkimistapa_id = oh.id)
   LEFT OUTER JOIN tyopaikalla_jarjestettavat_koulutukset AS tjk
@@ -97,10 +97,10 @@ FROM hankittavat_ammat_tutkinnon_osat osa
     ON (ookja.osaamisen_osoittaminen_id = oo.id)
   LEFT OUTER JOIN koulutuksen_jarjestaja_osaamisen_arvioijat AS kjoa
     ON (kjoa.id = ookja.koulutuksen_jarjestaja_osaamisen_arvioija_id)
-  LEFT OUTER JOIN osaamisen_osoittaminen_tyoelama_arvioija AS oota
+  LEFT OUTER JOIN osaamisen_osoittamisen_tyoelama_arvioija AS oota
     ON (oota.osaamisen_osoittaminen_id = oo.id)
   LEFT OUTER JOIN tyoelama_osaamisen_arvioijat AS toa
-    ON (toa.id oota.osaamisen_osoittamisen_tyoelama_arvioija)
+    ON (oota.tyoelama_arvioija_id = toa.id)
   LEFT OUTER JOIN nayttoymparistot AS ny
     ON (ny.id = oo.nayttoymparisto_id)
   LEFT OUTER JOIN osaamisen_osoittamisen_sisallot AS oos
