@@ -421,6 +421,41 @@
           (utils/dissoc-module-ids (:opiskeluvalmiuksia-tukevat-opinnot
                                      get-response-data))))))
 
+(deftest hoks-put-updates-oht-using-yksiloiva-tunniste
+  (testing "If matching oht yksiloiva-tunniste is found. Update oht."
+    (let [app (hoks-utils/create-app nil)
+          post-response (hoks-utils/create-mock-post-request
+                          "" test-data/hoks-data app)
+          put-response
+          (hoks-utils/create-mock-hoks-put-request
+            1
+            (-> test-data/hoks-data
+                (assoc :id 1)
+                (dissoc :hankittavat-ammat-tutkinnon-osat)
+                (dissoc :hankittavat-yhteiset-tutkinnon-osat)
+                (assoc
+                  :hankittavat-ammat-tutkinnon-osat
+                  test-data/hao-data-oht-matching-tunniste)
+                (assoc
+                  :hankittavat-yhteiset-tutkinnon-osat
+                  test-data/hyto-data-oht-matching-and-new-tunniste))
+            app)
+          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))
+          hao-hankkimistavat (:osaamisen-hankkimistavat
+                               (first (:hankittavat-ammat-tutkinnon-osat
+                                        get-response-data)))
+          hyto-hankkimistavat
+          (:osaamisen-hankkimistavat
+            (first (:osa-alueet
+                     (first (:hankittavat-yhteiset-tutkinnon-osat
+                              get-response-data)))))]
+      (is (= (:status post-response) 200))
+      (is (= (:status put-response) 204))
+      (is (= (:status get-response) 200))
+      (is (= (count hao-hankkimistavat) 1))
+      (is (= (count hyto-hankkimistavat) 2)))))
+
 (deftest prevent-updating-opiskeluoikeus
   (testing "Prevent PUT HOKS with existing opiskeluoikeus"
     (let [app (hoks-utils/create-app nil)
