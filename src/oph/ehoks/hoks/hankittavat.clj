@@ -117,8 +117,9 @@
                 :moy__oppimisymparisto_koodi_versio
                 :oppimisymparisto-koodi-versio}
                this-oht-rows)
-        oht-final (assoc oht :keskeytymisajanjaksot  kjs
-                             :muut-oppimisymparistot moys)]
+        oht-final (dissoc (assoc oht :keskeytymisajanjaksot  kjs
+                                     :muut-oppimisymparistot moys)
+                          :tyopaikalla_jarjestettava_koulutus_id)]
     (if (some? (:tyopaikalla_jarjestettava_koulutus_id oht))
       (assoc oht-final
              :tyopaikalla-jarjestettava-koulutus ;; TODO other manipulating?
@@ -162,8 +163,9 @@
            (extract-and-set-osaamisen-hankkimistapa-values % rows))
         (db-hoks/extract-from-joined-rows :oh__id oht-fields rows)))
 
-(def kj-arvioijat-fields {:kjoa__id   :id
-                          :kjoa__nimi :nimi})
+(def kj-arvioijat-fields {:kjoa__id             :id
+                          :kjoa__nimi           :nimi
+                          :kjoa__oppilaitos_oid :oppilaitos_oid})
 
 (def te-arvioijat-fields
   {:toa__id                    :id
@@ -178,21 +180,25 @@
 (def sisallot-fields {:oos__sisallon_kuvaus :sisallon_kuvaus})
 
 (def osa-alueet-fields
-  {:oooa__osaamisen_osoittaminen_id :osaamisen-osoittaminen-id
-   :oooa__koodisto_koodi_id         :koodisto-koodi-id
+  {;:oooa__osaamisen_osoittaminen_id :osaamisen-osoittaminen-id
+   ;:oooa__koodisto_koodi_id         :koodisto-koodi-id
    :kk__koodi_uri                   :koodi-uri
    :kk__koodi_versio                :koodi-versio})
 
 (def kriteerit-fields {:ooyk__yksilollinen_kriteeri :kriteeri})
 
 (defn extract-and-set-osaamisen-osoittaminen-values [oo rows]
-  (let [this-oo-rows (filterv #(= (:oo.id %) (:id oo)) rows)
-        kj-arvioijat (db-hoks/extract-from-joined-rows :kjoa__id
-                                                       kj-arvioijat-fields
-                                                       this-oo-rows)
-        te-arvioijat (db-hoks/extract-from-joined-rows :toa__id
-                                                       te-arvioijat-fields
-                                                       this-oo-rows)
+  (let [this-oo-rows (filterv #(= (:oo__id %) (:id oo)) rows)
+        kj-arvioijat
+        (mapv db-hoks/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql
+              (db-hoks/extract-from-joined-rows :kjoa__id
+                                                kj-arvioijat-fields
+                                                this-oo-rows))
+        te-arvioijat (mapv db-hoks/tyoelama-arvioija-from-sql
+                           (db-hoks/extract-from-joined-rows
+                             :toa__id
+                             te-arvioijat-fields
+                             this-oo-rows))
         nayttoymparisto (first (db-hoks/extract-from-joined-rows
                                  :ny__id
                                  nayttoymparisto-fields
@@ -217,7 +223,8 @@
               :yksilolliset-kriteerit                     kriteerit)))
 
 (def oo-fields
-  {:oo__id                        :id
+  {:osa__id                       :hato-id
+   :oo__id                        :id
    :oo__jarjestaja_oppilaitos_oid :jarjestaja_oppilaitos_oid
    :oo__alku                      :alku
    :oo__loppu                     :loppu
@@ -277,13 +284,13 @@
 
 (def hato-fields
   {:osa__id                         :id
-   :osa__tutkinnon_osa_koodi_uri    :tutkinnon-osa-koodi-uri
-   :osa__tutkinnon_osa_koodi_versio :tutkinnon-osa-koodi-versio
-   :osa__koulutuksen_jarjestaja_oid :koulutuksen-jarjestaja-oid
-   :osa__olennainen_seikka          :olennainen-seikka
-   :osa__module_id                  :module-id
+   :osa__tutkinnon_osa_koodi_uri    :tutkinnon_osa_koodi_uri
+   :osa__tutkinnon_osa_koodi_versio :tutkinnon_osa_koodi_versio
+   :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
+   :osa__olennainen_seikka          :olennainen_seikka
+   :osa__module_id                  :module_id
    :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
-   :vaatimuksista-tai-tavoitteista-poikkeaminen})
+   :vaatimuksista_tai_tavoitteista_poikkeaminen})
 
 (defn get-hankittavat-ammat-tutkinnon-osat [hoks-id]
   (let [rows (db/select-whole-hato hoks-id)
@@ -301,7 +308,7 @@
                  :osaamisen-hankkimistavat
                  (mapv #(dissoc % :hato-id :id)
                        (filterv #(= (:hato-id %) (:id hato)) ohts))))
-        hato-objs))))
+        (mapv db-hoks/hankittava-ammat-tutkinnon-osa-from-sql hato-objs)))))
 
 (defn get-hankittava-yhteinen-tutkinnon-osa [hyto-id]
   (when-let [hato-db
