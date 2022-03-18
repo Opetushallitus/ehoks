@@ -105,10 +105,11 @@
 
 (defn extract-and-set-osaamisen-hankkimistapa-values [oht rows]
   (let [this-oht-rows (filterv #(= (:oh__id %) (:id oht)) rows)
-        kjs (db-hoks/extract-from-joined-rows :kj__id
-                                              {:kj__alku  :alku
-                                               :kj__loppu :loppu}
-                                              this-oht-rows)
+        kjs (mapv db-hoks/keskeytymisajanjakso-from-sql
+                  (db-hoks/extract-from-joined-rows :kj__id
+                                                    {:kj__alku  :alku
+                                                     :kj__loppu :loppu}
+                                                    this-oht-rows))
         moys (db-hoks/extract-from-joined-rows
                :moy__id
                {:moy__alku                       :alku
