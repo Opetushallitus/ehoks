@@ -114,5 +114,5 @@ FROM hankittavat_ammat_tutkinnon_osat osa
   LEFT OUTER JOIN osaamisen_osoittamisen_yksilolliset_kriteerit AS ooyk
     ON (ooyk.osaamisen_osoittaminen_id = oo.id)
 WHERE
-  osa.id = ?
+  osa.hoks_id = ?
   AND osa.deleted_at IS NULL
