@@ -64,7 +64,7 @@
                          ;; XML
                          [org.clojure/data.xml "0.0.8"]
 
-                         ;; postresql
+                         ;; postgresql
                          [com.layerware/hugsql "0.5.1"]
                          [org.clojure/java.jdbc "0.7.11"]
                          [org.flywaydb/flyway-core "6.3.3"]

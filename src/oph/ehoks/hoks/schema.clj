@@ -103,7 +103,10 @@
        ""
        (s/optional-key :sahkoposti) s/Str
        "Vastuullisen ohjaajan sähköpostiosoite"
-       (s/optional-key :puhelinnumero) s/Str
+       (s/optional-key :puhelinnumero)
+       (s/constrained s/Str
+                      #(<= (count %) 256)
+                      "Puhelinnumero yli 256 merkkiä.")
        "Vastuullisen ohjaajan puhelinnumero")}))
 
 (s/defschema
