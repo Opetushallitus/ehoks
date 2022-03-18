@@ -118,8 +118,9 @@
                 :moy__oppimisymparisto_koodi_versio
                 :oppimisymparisto-koodi-versio}
                this-oht-rows)
-        oht-final (dissoc (assoc oht :keskeytymisajanjaksot  kjs
-                                     :muut-oppimisymparistot moys)
+        oht-final (dissoc (assoc oht
+                                 :keskeytymisajanjaksot  kjs
+                                 :muut-oppimisymparistot moys)
                           :tyopaikalla_jarjestettava_koulutus_id)]
     (if (some? (:tyopaikalla_jarjestettava_koulutus_id oht))
       (assoc oht-final
@@ -214,12 +215,13 @@
                         (db-hoks/extract-from-joined-rows :ooyk__id
                                                           kriteerit-fields
                                                           this-oo-rows))]
-    (assoc oo :koulutuksen-jarjestaja-osaamisen-arvioijat kj-arvioijat
-              :tyoelama-osaamisen-arvioijat               te-arvioijat
-              :nayttoymparisto                            nayttoymparisto
-              :sisallon-kuvaus                            sisallon-kuvaus
-              :osa-alueet                                 osa-alueet
-              :yksilolliset-kriteerit                     kriteerit)))
+    (assoc oo
+           :koulutuksen-jarjestaja-osaamisen-arvioijat kj-arvioijat
+           :tyoelama-osaamisen-arvioijat               te-arvioijat
+           :nayttoymparisto                            nayttoymparisto
+           :sisallon-kuvaus                            sisallon-kuvaus
+           :osa-alueet                                 osa-alueet
+           :yksilolliset-kriteerit                     kriteerit)))
 
 (def oo-fields
   {:osa__id                       :hato-id
