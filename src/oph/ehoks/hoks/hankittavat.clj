@@ -122,7 +122,7 @@
                           :tyopaikalla_jarjestettava_koulutus_id)]
     (if (some? (:tyopaikalla_jarjestettava_koulutus_id oht))
       (assoc oht-final
-             :tyopaikalla-jarjestettava-koulutus ;; TODO other manipulating?
+             :tyopaikalla-jarjestettava-koulutus
              (assoc (db-hoks/tyopaikalla-jarjestettava-koulutus-from-sql
                       (first (db-hoks/extract-from-joined-rows :tjk__id
                                                                tjk-fields
@@ -159,7 +159,7 @@
    :tyopaikalla_jarjestettava_koulutus_id})
 
 (defn extract-hato-osaamisen-hankkimistavat [rows]
-  (mapv #(db-hoks/osaamisen-hankkimistapa-from-sql ;; TODO toimiiko tämä tässä järjestyksessä?
+  (mapv #(db-hoks/osaamisen-hankkimistapa-from-sql
            (extract-and-set-osaamisen-hankkimistapa-values % rows))
         (db-hoks/extract-from-joined-rows :oh__id oht-fields rows)))
 
@@ -180,9 +180,7 @@
 (def sisallot-fields {:oos__sisallon_kuvaus :sisallon_kuvaus})
 
 (def osa-alueet-fields
-  {;:oooa__osaamisen_osoittaminen_id :osaamisen-osoittaminen-id
-   ;:oooa__koodisto_koodi_id         :koodisto-koodi-id
-   :kk__koodi_uri                   :koodi-uri
+  {:kk__koodi_uri                   :koodi-uri
    :kk__koodi_versio                :koodi-versio})
 
 (def kriteerit-fields {:ooyk__yksilollinen_kriteeri :kriteeri})
