@@ -461,7 +461,7 @@
               (response/not-found
                 {:error "No kyselylinkki found"}))))
 
-        (c-api/PUT "opiskeluoikeus-update" []
+        (c-api/PUT "/opiskeluoikeus-update" []
           :summary "Päivittää aktiivisten hoksien opiskeluoikeudet Koskesta"
           (future (h/refresh-opiskeluoikeus-hankintakoulutukset))
           (response/no-content)))
