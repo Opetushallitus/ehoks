@@ -264,3 +264,4 @@
 (defq select-paattyneet-kyselylinkit-by-date-and-type-temp
       "heratepalvelu/select_paattyneet_kyselylinkit_by_date_and_type_temp.sql")
 (defq select-whole-hato "hoksit/select_whole_hato.sql")
+(defq select-whole-hpto "hoksit/select_whole_hpto.sql")
