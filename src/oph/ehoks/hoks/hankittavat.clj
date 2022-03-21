@@ -168,9 +168,8 @@
 
 (def sisallot-fields {:oos__sisallon_kuvaus :sisallon_kuvaus})
 
-(def osa-alueet-fields
-  {:kk__koodi_uri                   :koodi-uri
-   :kk__koodi_versio                :koodi-versio})
+(def osa-alueet-fields {:kk__koodi_uri    :koodi-uri
+                        :kk__koodi_versio :koodi-versio})
 
 (def kriteerit-fields {:ooyk__yksilollinen_kriteeri :kriteeri})
 
