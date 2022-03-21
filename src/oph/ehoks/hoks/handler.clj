@@ -459,12 +459,7 @@
             (if (pos? updated-count)
               (response/no-content)
               (response/not-found
-                {:error "No kyselylinkki found"}))))
-
-        (c-api/PUT "/opiskeluoikeus-update" []
-          :summary "Päivittää aktiivisten hoksien opiskeluoikeudet Koskesta"
-          (future (h/refresh-opiskeluoikeus-hankintakoulutukset))
-          (response/no-content)))
+                {:error "No kyselylinkki found"})))))
 
       (c-api/context "/:hoks-id" []
 
