@@ -506,3 +506,8 @@
   (db-ops/delete!
     :kyselylinkit
     ["kyselylinkki = ?" kyselylinkki]))
+
+(defn refresh-opiskeluoikeus-hankintakoulutukset []
+  (let [hoksit
+        (db-hoks/select-hoksit-by_ensikert-hyvaks-and-saavutettu-tiedot)]
+    (println (count hoksit))))

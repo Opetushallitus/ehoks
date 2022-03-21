@@ -492,3 +492,7 @@
     [queries/select-paattyneet-kyselylinkit-by-date-and-type-temp
      alkupvm alkupvm-loppu last-id limit]
     {:row-fn db-ops/from-sql}))
+
+(defn select-hoksit-by_ensikert-hyvaks-and-saavutettu-tiedot []
+  (db-ops/query
+    [queries/select-hoksit-by_ensikert-hyvaks-and-saavutettu-tiedot]))
