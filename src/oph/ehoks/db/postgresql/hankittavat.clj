@@ -163,6 +163,11 @@
   [id]
   (db-ops/query [queries/select-whole-hato id]))
 
+(defn select-whole-hpto
+  "Hankittavat paikallisen tutkinnon osat"
+  [id]
+  (db-ops/query [queries/select-whole-hpto id]))
+
 (defn insert-tho-tyotehtavat!
   "Lisää työpaikalla hankittavan osaamisen keskeiset työtehtävät"
   ([tho c]
