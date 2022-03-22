@@ -232,34 +232,12 @@
        :id)
     (db/select-osaamisen-osoittamiset-by-hato-id id)))
 
-(defn get-yto-osa-alue-osaamisen-hankkimistavat [id]
-  (mapv
-    set-osaamisen-hankkimistapa-values
-    (db/select-osaamisen-hankkimistavat-by-hyto-osa-alue-id id)))
-
-(defn get-yto-osa-alueen-osaamisen-osoittamiset [id]
-  (mapv
-    #(dissoc (c/set-osaamisen-osoittaminen-values %) :id)
-    (db/select-osaamisen-osoittamiset-by-yto-osa-alue-id id)))
-
 (defn get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki [jakolinkki]
   (cond
     (= (:shared-module-tyyppi jakolinkki) "osaamisenhankkiminen")
     (get-osaamisen-hankkimistavat-by-module-id (:shared-module-uuid jakolinkki))
     (= (:shared-module-tyyppi jakolinkki) "osaamisenosoittaminen")
     (get-osaamisen-osoittaminen-by-module-id (:shared-module-uuid jakolinkki))))
-
-(defn get-yto-osa-alueet [hyto-id]
-  (mapv
-    #(dissoc
-       (assoc
-         %
-         :osaamisen-hankkimistavat
-         (get-yto-osa-alue-osaamisen-hankkimistavat (:id %))
-         :osaamisen-osoittaminen
-         (get-yto-osa-alueen-osaamisen-osoittamiset (:id %)))
-       :id :yhteinen-tutkinnon-osa-id)
-    (db/select-yto-osa-alueet-by-yto-id hyto-id)))
 
 (defn get-hankittava-ammat-tutkinnon-osa [id]
   (when-let [hato-db (db/select-hankittava-ammat-tutkinnon-osa-by-id id)]
@@ -328,6 +306,37 @@
                        (filterv #(= (:osa-id %) (:id hpto)) ohts))))
         (mapv db-hoks/hankittava-paikallinen-tutkinnon-osa-from-sql
               hpto-objs)))))
+
+(def yto-osa-alue-fields
+  {:osa__id                         :id
+   :osa__osa_alue_koodi_uri         :osa_alue_koodi_uri
+   :osa__osa_alue_koodi_versio      :osa_alue_koodi_versio
+   :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
+   :osa__olennainen_seikka          :olennainen_seikka
+   :osa__module_id                  :module_id
+   :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
+   :vaatimuksista_tai_tavoitteista_poikkeaminen})
+
+(defn get-yto-osa-alueet [hyto-id]
+  (let [rows (db/select-whole-yto-osa-alueet hyto-id)
+        ohts (extract-osaamisen-hankkimistavat rows)
+        oos (extract-osaamisen-osoittamiset rows)
+        yto-osa-alue-objs (db-hoks/extract-from-joined-rows :osa__id
+                                                            yto-osa-alue-fields
+                                                            rows)]
+    (mapv
+      #(dissoc % :id)
+      (mapv
+        (fn [osa-alue]
+          (assoc osa-alue
+                 :osaamisen-osoittaminen
+                 (mapv #(dissoc % :osa-id :id)
+                       (filterv #(= (:osa-id %) (:id osa-alue)) oos))
+                 :osaamisen-hankkimistavat
+                 (mapv #(dissoc % :osa-id :id)
+                       (filterv #(= (:osa-id %) (:id osa-alue)) ohts))))
+        (mapv db-hoks/yhteisen-tutkinnon-osan-osa-alue-from-sql
+              yto-osa-alue-objs)))))
 
 (defn get-hankittava-yhteinen-tutkinnon-osa [hyto-id]
   (when-let [hato-db
