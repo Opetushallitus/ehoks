@@ -209,7 +209,7 @@
       (let [count (hp/resend-paattokyselyherate-between from to)]
         (restful/rest-ok {:count count})))
 
-    (c-api/POST "/hoks/opiskeluoikeus-update" [] request
+    (c-api/POST "/hoks/opiskeluoikeus-update" request
       :summary "Päivittää aktiivisten hoksien opiskeluoikeudet Koskesta"
       :header-params [caller-id :- s/Str]
       (future (h/refresh-opiskeluoikeus-hankintakoulutukset))
