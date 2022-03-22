@@ -209,7 +209,7 @@
       (let [count (hp/resend-paattokyselyherate-between from to)]
         (restful/rest-ok {:count count})))
 
-    (c-api/POST "/opiskeluoikeus-update" []
+    (c-api/POST "/hoks/opiskeluoikeus-update" []
       :summary "Päivittää aktiivisten hoksien opiskeluoikeudet Koskesta"
       (future (h/refresh-opiskeluoikeus-hankintakoulutukset))
       (response/no-content))))
