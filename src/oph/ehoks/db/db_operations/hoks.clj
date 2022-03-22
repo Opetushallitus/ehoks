@@ -503,4 +503,5 @@
         (sort #(compare (get-map %1 unique-on) (get-map %2 unique-on))
               (vals
                 (dissoc (reduce #(assoc %1 (get-map %2 unique-on) %2) {} rows)
-                        nil)))))
+                        nil
+                        [nil nil])))))

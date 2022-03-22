@@ -163,7 +163,7 @@
    :toa__organisaatio_y_tunnus :organisaatio_y_tunnus})
 
 (def nayttoymparisto-fields {:ny__nimi     :nimi
-                             :ny__y_tunnus :y-tunnus
+                             :ny__y_tunnus :y_tunnus
                              :ny__kuvaus   :kuvaus})
 
 (def sisallot-fields {:oos__sisallon_kuvaus :sisallon_kuvaus})
@@ -185,10 +185,11 @@
                              :toa__id
                              te-arvioijat-fields
                              this-oo-rows))
-        nayttoymparisto (first (db-hoks/extract-from-joined-rows
-                                 :ny__id
-                                 nayttoymparisto-fields
-                                 this-oo-rows))
+        nayttoymparisto (db-hoks/nayttoymparisto-from-sql
+                          (first (db-hoks/extract-from-joined-rows
+                                   :ny__id
+                                   nayttoymparisto-fields
+                                   this-oo-rows)))
         sisallon-kuvaus (mapv :sisallon_kuvaus
                               (db-hoks/extract-from-joined-rows :oos__id
                                                                 sisallot-fields
