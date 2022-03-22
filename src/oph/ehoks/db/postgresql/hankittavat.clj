@@ -168,6 +168,11 @@
   [id]
   (db-ops/query [queries/select-whole-hpto id]))
 
+(defn select-whole-yto-osa-alueet
+  "Hankittavat yhteisen tutkinnon osan osa-alueet"
+  [id]
+  (db-ops/query [queries/select-whole-yto-osa-alueet id]))
+
 (defn insert-tho-tyotehtavat!
   "Lisää työpaikalla hankittavan osaamisen keskeiset työtehtävät"
   ([tho c]
