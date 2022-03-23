@@ -80,9 +80,10 @@ SELECT
   ooyk.yksilollinen_kriteeri AS ooyk__yksilollinen_kriteeri
 FROM hankittavat_ammat_tutkinnon_osat osa
   LEFT OUTER JOIN hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat AS osajoin
-    ON (osa.id = osajoin.hankittava_ammat_tutkinnon_osa_id)
+    ON (osa.id = osajoin.hankittava_ammat_tutkinnon_osa_id
+         AND osajoin.deleted_at IS NULL)
   LEFT OUTER JOIN osaamisen_hankkimistavat AS oh
-    ON (osajoin.osaamisen_hankkimistapa_id = oh.id)
+    ON (osajoin.osaamisen_hankkimistapa_id = oh.id AND oh.deleted_at IS NULL)
   LEFT OUTER JOIN tyopaikalla_jarjestettavat_koulutukset AS tjk
     ON (oh.tyopaikalla_jarjestettava_koulutus_id = tjk.id)
   LEFT OUTER JOIN tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat AS tjkt
