@@ -51,4 +51,20 @@
       (c-api/PATCH "/hoksit/:id/paattoherate-kasitelty" []
         :path-params [id :- s/Int]
         (hp/set-paattoherate-kasitelty id true)
-        (response/no-content)))))
+        (response/no-content))
+
+      (c-api/POST "/hoksit/resend-aloitusherate" request
+        :summary "Lähettää uudet aloituskyselyherätteet herätepalveluun"
+        :header-params [caller-id :- s/Str]
+        :query-params [from :- LocalDate
+                       to :- LocalDate]
+        (let [count (hp/resend-aloituskyselyherate-between from to)]
+          (restful/rest-ok {:count count})))
+
+      (c-api/POST "/hoksit/resend-paattoherate" request
+        :summary "Lähettää uudet päättökyselyherätteet herätepalveluun"
+        :header-params [caller-id :- s/Str]
+        :query-params [from :- LocalDate
+                       to :- LocalDate]
+        (let [count (hp/resend-paattokyselyherate-between from to)]
+          (restful/rest-ok {:count count}))))))
