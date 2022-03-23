@@ -8,7 +8,8 @@
             [oph.ehoks.restful :as restful]
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
             [schema.core :as s]
-            [ring.util.http-response :as response])
+            [ring.util.http-response :as response]
+            [oph.ehoks.hoks.hoks :as h])
   (:import (java.time LocalDate)))
 
 (def routes

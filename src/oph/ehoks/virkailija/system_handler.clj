@@ -14,8 +14,7 @@
             [schema.core :as s]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
-            [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.hoks.hoks :as h])
+            [oph.ehoks.external.aws-sqs :as sqs])
   (:import (java.time LocalDate)))
 
 (def routes
