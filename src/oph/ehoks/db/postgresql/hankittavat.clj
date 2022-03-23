@@ -163,6 +163,11 @@
   [id]
   (db-ops/query [queries/select-whole-hato id]))
 
+(defn select-one-hato
+  "Hankittava ammatillinen tutkinnon osa"
+  [id]
+  (db-ops/query [queries/select-one-hato id]))
+
 (defn select-whole-hpto
   "Hankittavat paikallisen tutkinnon osat"
   [id]
