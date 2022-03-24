@@ -2,7 +2,6 @@
   (:require [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [oph.ehoks.hoks.middleware :as m]
-            [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.restful :as restful]
