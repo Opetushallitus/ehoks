@@ -99,7 +99,6 @@
      :secondary-column "koodisto_koodi_id"
      :primary-column "id"
      :column "osaamisen_osoittaminen_id"}))
-(defq select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id)
 (defq select-hankittavat-paikalliset-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id)
@@ -182,7 +181,6 @@
   (generate-select-by
     {:table "aiemmin_hankitut_yto_osa_alueet"
      :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
-(defq select-hankittavat-ammat-tutkinnon-osat-by-hoks-id)
 (defq select-hankittavat-ammat-tutkinnon-osat-by-id)
 (def select-osaamisen-osoittamiset-by-hato-id
   (generate-select-join

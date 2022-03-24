@@ -55,13 +55,6 @@
       [queries/select-hankittavat-paikalliset-tutkinnon-osat-by-id id]
       {:row-fn h/hankittava-paikallinen-tutkinnon-osa-from-sql})))
 
-(defn select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id
-  "Hankittavat paikallisen tutkinnon osat"
-  [id]
-  (db-ops/query
-    [queries/select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id id]
-    {:row-fn h/hankittava-paikallinen-tutkinnon-osa-from-sql}))
-
 (defn select-osaamisen-hankkimistavat-by-id
   "Hankittavan ammatillisen tutkinnon osan osaamisen hankkimistapa"
   [id]
@@ -134,13 +127,6 @@
       [queries/select-hankittavat-ammat-tutkinnon-osat-by-id id])
     first
     h/hankittava-ammat-tutkinnon-osa-from-sql))
-
-(defn select-hankittavat-ammat-tutkinnon-osat-by-hoks-id
-  "Hankittavat ammatillisen tutkinnon osat"
-  [id]
-  (db-ops/query
-    [queries/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id id]
-    {:row-fn h/hankittava-ammat-tutkinnon-osa-from-sql}))
 
 (defn select-hankittava-yhteinen-tutkinnon-osa-by-id
   "Hankittava yhteisen tutkinnon osa"
