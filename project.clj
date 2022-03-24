@@ -4,7 +4,7 @@
   :pedantic? :abort
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [clj-http "3.9.1"]
-                 [com.googlecode.libphonenumber/libphonenumber "8.12.35"]
+                 [com.googlecode.libphonenumber/libphonenumber "8.12.45"]
                  [com.layerware/hugsql "0.5.1"]
                  [com.taoensso/carmine "2.19.1"]
                  [metosin/compojure-api "2.0.0-alpha28"]
