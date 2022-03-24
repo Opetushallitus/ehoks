@@ -4,49 +4,6 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [clojure.java.jdbc :as jdbc]))
 
-(defn select-tyopaikalla-jarjestettava-koulutus-by-id
-  "Työpaikalla järjestettävä koulutus"
-  [id]
-  (first
-    (db-ops/query
-      [queries/select-tyopaikalla-jarjestettavat-koulutukset-by-id id]
-      {:row-fn h/tyopaikalla-jarjestettava-koulutus-from-sql})))
-
-(defn select-tyotehtavat-by-tho-id
-  "Työpaikalla hankittavan osaamisen keskeiset työtehtävät"
-  [id]
-  (db-ops/query
-    [queries/select-tyotehtavat-by-tho-id id]
-    {:row-fn h/tyotehtava-from-sql}))
-
-(defn select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id
-  "Muut oppimisympäristöt osaamisen hankkimistavalle"
-  [id]
-  (db-ops/query
-    [queries/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id id]
-    {:row-fn h/muu-oppimisymparisto-from-sql}))
-
-(defn select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id
-  "Keskeytymisajanjaksot osaamisen hankkimistavalle"
-  [id]
-  (db-ops/query
-    [queries/select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id id]
-    {:row-fn h/keskeytymisajanjakso-from-sql}))
-
-(defn select-osaamisen-osoittamiset-by-ppto-id
-  "Hankittavan paikallisen tutkinnon osan hankitun osaamisen näytöt"
-  [id]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-ppto-id id]
-    {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
-(defn select-osaamisen-hankkimistavat-by-hpto-id
-  "Hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat"
-  [id]
-  (db-ops/query
-    [queries/select-osaamisen-hankkmistavat-by-ppto-id id]
-    {:row-fn h/osaamisen-hankkimistapa-from-sql}))
-
 (defn select-hankittava-paikallinen-tutkinnon-osa-by-id
   "Hankittava paikallisen tutkinnon osa"
   [id]
@@ -55,26 +12,16 @@
       [queries/select-hankittavat-paikalliset-tutkinnon-osat-by-id id]
       {:row-fn h/hankittava-paikallinen-tutkinnon-osa-from-sql})))
 
-(defn select-osaamisen-hankkimistavat-by-id
-  "Hankittavan ammatillisen tutkinnon osan osaamisen hankkimistapa"
+(defn select-osaamisen-hankkimistapa-by-id
+  "Osaamisen hankkimistapa"
   [id]
-  (db-ops/query
-    [queries/select-osaamisen-hankkimistavat-by-id id]
-    {:row-fn h/osaamisen-hankkimistapa-from-sql}))
-
-(defn select-osaamisen-hankkimistavat-by-hato-id
-  "Hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat"
-  [id]
-  (db-ops/query
-    [queries/select-osaamisen-hankkmistavat-by-hato-id id]
-    {:row-fn h/osaamisen-hankkimistapa-from-sql}))
+  (db-ops/query [queries/select-osaamisen-hankkimistapa-by-id id]))
 
 (defn select-osaamisen-hankkimistavat-by-module-id
-  "Hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat"
+  "Osaamisen hankkimistavat"
   [uuid]
   (db-ops/query
-    [queries/select-osaamisen-hankkimistavat-by-module-id uuid]
-    {:row-fn h/osaamisen-hankkimistapa-from-sql}))
+    [queries/select-osaamisen-hankkimistavat-by-module-id uuid]))
 
 (defn select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
   "Hoksin osaamistapa tunnisteella"
@@ -84,49 +31,12 @@
      hoks-id tunniste]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
-(defn select-osaamisen-osoittamiset-by-hato-id
-  "Hankittavan ammatillisen tutkinnon osan osaamisen näytöt"
-  [id]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-hato-id id]
-    {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
 (defn select-osaamisen-osoittamiset-by-module-id
   "Hankittavan ammatillisen tutkinnon osan osaamisen näytöt"
   [uuid]
   (db-ops/query
     [queries/select-osaamisen-osoittamiset-by-module-id uuid]
     {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
-(defn select-osaamisen-hankkimistavat-by-hyto-osa-alue-id
-  "Hankittavan yhteisen tutkinnon osan osa-alueen osaamisen hankkimistavat"
-  [id]
-  (db-ops/query
-    [queries/select-osaamisen-hankkimistavat-by-yto-osa-alue-id id]
-    {:row-fn h/osaamisen-hankkimistapa-from-sql}))
-
-(defn select-osaamisen-osoittamiset-by-yto-osa-alue-id
-  "Hankittavan yhteisen tutkinnon osan osa-alueen osaamisen näytöt"
-  [id]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-yto-osa-alue-id id]
-    {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
-(defn select-yto-osa-alueet-by-yto-id
-  "Yhteisen tutkinnon osan osa-alueet"
-  [id]
-  (db-ops/query
-    [queries/select-yto-osa-alueet-by-yto-id id]
-    {:row-fn h/yhteisen-tutkinnon-osan-osa-alue-from-sql}))
-
-(defn select-hankittava-ammat-tutkinnon-osa-by-id
-  "Hankittavan ammatillisen tutkinnon osa"
-  [id]
-  (->
-    (db-ops/query
-      [queries/select-hankittavat-ammat-tutkinnon-osat-by-id id])
-    first
-    h/hankittava-ammat-tutkinnon-osa-from-sql))
 
 (defn select-hankittava-yhteinen-tutkinnon-osa-by-id
   "Hankittava yhteisen tutkinnon osa"
