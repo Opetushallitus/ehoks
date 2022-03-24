@@ -8,58 +8,6 @@
             [clojure.tools.logging :as log])
   (:import (java.time LocalDate)))
 
-(defn- get-tyopaikalla-jarjestettava-koulutus [id]
-  (let [o (db/select-tyopaikalla-jarjestettava-koulutus-by-id id)]
-    (-> o
-        (dissoc :id)
-        (assoc :keskeiset-tyotehtavat
-               (db/select-tyotehtavat-by-tho-id (:id o))))))
-
-(defn set-osaamisen-hankkimistapa-values [m]
-  (if (some? (:tyopaikalla-jarjestettava-koulutus-id m))
-    (dissoc
-      (assoc
-        m
-        :tyopaikalla-jarjestettava-koulutus
-        (get-tyopaikalla-jarjestettava-koulutus
-          (:tyopaikalla-jarjestettava-koulutus-id m))
-        :muut-oppimisymparistot
-        (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id (:id m))
-        :keskeytymisajanjaksot
-        (db/select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id (:id m)))
-      :id :tyopaikalla-jarjestettava-koulutus-id)
-    (dissoc
-      (assoc
-        m
-        :muut-oppimisymparistot
-        (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id (:id m))
-        :keskeytymisajanjaksot
-        (db/select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id (:id m)))
-      :id)))
-
-(defn get-osaamisen-osoittaminen [id]
-  (let [naytot (db/select-osaamisen-osoittamiset-by-ppto-id id)]
-    (mapv
-      #(dissoc (c/set-osaamisen-osoittaminen-values %) :id)
-      naytot)))
-
-(defn get-osaamisen-hankkimistavat [id]
-  (let [hankkimistavat (db/select-osaamisen-hankkimistavat-by-hpto-id id)]
-    (mapv
-      set-osaamisen-hankkimistapa-values
-      hankkimistavat)))
-
-(defn get-osaamisen-hankkimistavat-by-module-id [uuid]
-  (mapv
-    set-osaamisen-hankkimistapa-values
-    (db/select-osaamisen-hankkimistavat-by-module-id uuid)))
-
-(defn get-osaamisen-hankkimistapa-by-id [id]
-  (first
-    (mapv
-      set-osaamisen-hankkimistapa-values
-      (db/select-osaamisen-hankkimistavat-by-id id))))
-
 (defn get-osaamisen-osoittaminen-by-module-id [uuid]
   (mapv
     #(dissoc
@@ -202,13 +150,6 @@
            (extract-and-set-osaamisen-osoittaminen-values % rows))
         (db-hoks/extract-from-joined-rows :oo__id oo-fields rows)))
 
-(defn get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki [jakolinkki]
-  (cond
-    (= (:shared-module-tyyppi jakolinkki) "osaamisenhankkiminen")
-    (get-osaamisen-hankkimistavat-by-module-id (:shared-module-uuid jakolinkki))
-    (= (:shared-module-tyyppi jakolinkki) "osaamisenosoittaminen")
-    (get-osaamisen-osoittaminen-by-module-id (:shared-module-uuid jakolinkki))))
-
 (defn process-subrows [osa rows]
   (mapv #(dissoc % :osa-id :id) (filterv #(= (:osa-id %) (:id osa)) rows)))
 
@@ -299,6 +240,21 @@
        :id
        :hoks-id)
     (db/select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
+
+(defn get-osaamisen-hankkimistapa-by-id [id]
+  (first (extract-osaamisen-hankkimistavat
+           (db/select-osaamisen-hankkimistapa-by-id id))))
+
+(defn get-osaamisen-hankkimistavat-by-module-id [uuid]
+  (extract-osaamisen-hankkimistavat
+    (db/select-osaamisen-hankkimistavat-by-module-id uuid)))
+
+(defn get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki [jakolinkki]
+  (cond
+    (= (:shared-module-tyyppi jakolinkki) "osaamisenhankkiminen")
+    (get-osaamisen-hankkimistavat-by-module-id (:shared-module-uuid jakolinkki))
+    (= (:shared-module-tyyppi jakolinkki) "osaamisenosoittaminen")
+    (get-osaamisen-osoittaminen-by-module-id (:shared-module-uuid jakolinkki))))
 
 (defn save-osaamisen-hankkimistapa!
   ([oh hoks-id]
