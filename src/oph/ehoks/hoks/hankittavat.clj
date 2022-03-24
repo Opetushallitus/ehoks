@@ -265,7 +265,7 @@
 (defn get-hankittavat-ammat-tutkinnon-osat [hoks-id]
   (mapv #(dissoc % :id)
         (extract-hankkimistavat-and-osoittamiset
-          (db/select-whole-hato hoks-id)
+          (db/select-all-hatos-for-hoks hoks-id)
           db-hoks/hankittava-ammat-tutkinnon-osa-from-sql
           hato-fields)))
 
@@ -290,7 +290,7 @@
 (defn get-hankittavat-paikalliset-tutkinnon-osat [hoks-id]
   (mapv #(dissoc % :id)
         (extract-hankkimistavat-and-osoittamiset
-          (db/select-whole-hpto hoks-id)
+          (db/select-all-hptos-for-hoks hoks-id)
           db-hoks/hankittava-paikallinen-tutkinnon-osa-from-sql
           hpto-fields)))
 
@@ -307,7 +307,7 @@
 (defn get-yto-osa-alueet [hyto-id]
   (mapv #(dissoc % :id)
         (extract-hankkimistavat-and-osoittamiset
-          (db/select-whole-yto-osa-alueet hyto-id)
+          (db/select-all-osa-alueet-for-yto hyto-id)
           db-hoks/yhteisen-tutkinnon-osan-osa-alue-from-sql
           yto-osa-alue-fields)))
 

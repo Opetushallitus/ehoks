@@ -263,7 +263,7 @@
       "opiskeluoikeudet/select-hankintakoulutus-oids-by-master-oid.sql")
 (defq select-paattyneet-kyselylinkit-by-date-and-type-temp
       "heratepalvelu/select_paattyneet_kyselylinkit_by_date_and_type_temp.sql")
-(defq select-whole-hato "hoksit/select_whole_hato.sql")
+(defq select-all-hatos-for-hoks "hoksit/select_all_hatos_for_hoks.sql")
 (defq select-one-hato "hoksit/select_one_hato.sql")
-(defq select-whole-hpto "hoksit/select_whole_hpto.sql")
-(defq select-whole-yto-osa-alueet "hoksit/select_whole_yto_osa_alueet.sql")
+(defq select-all-hptos-for-hoks "hoksit/select_all_hptos_for_hoks.sql")
+(defq select-all-osa-alueet-for-yto "hoksit/select_all_osa_alueet_for_yto.sql")
