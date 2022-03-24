@@ -49,14 +49,6 @@
       set-osaamisen-hankkimistapa-values
       hankkimistavat)))
 
-(defn get-hankittava-paikallinen-tutkinnon-osa [id]
-  (assoc
-    (db/select-hankittava-paikallinen-tutkinnon-osa-by-id id)
-    :osaamisen-osoittaminen
-    (get-osaamisen-osoittaminen id)
-    :osaamisen-hankkimistavat
-    (get-osaamisen-hankkimistavat id)))
-
 (defn get-osaamisen-hankkimistavat-by-module-id [uuid]
   (mapv
     set-osaamisen-hankkimistapa-values
@@ -293,6 +285,12 @@
           (db/select-all-hptos-for-hoks hoks-id)
           db-hoks/hankittava-paikallinen-tutkinnon-osa-from-sql
           hpto-fields)))
+
+(defn get-hankittava-paikallinen-tutkinnon-osa [id]
+  (first (extract-hankkimistavat-and-osoittamiset
+           (db/select-one-hpto id)
+           db-hoks/hankittava-paikallinen-tutkinnon-osa-from-sql
+           hpto-fields)))
 
 (def yto-osa-alue-fields
   {:osa__id                         :id

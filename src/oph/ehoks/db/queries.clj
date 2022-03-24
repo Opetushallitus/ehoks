@@ -266,4 +266,5 @@
 (defq select-all-hatos-for-hoks "hoksit/select_all_hatos_for_hoks.sql")
 (defq select-one-hato "hoksit/select_one_hato.sql")
 (defq select-all-hptos-for-hoks "hoksit/select_all_hptos_for_hoks.sql")
+(defq select-one-hpto "hoksit/select_one_hpto.sql")
 (defq select-all-osa-alueet-for-yto "hoksit/select_all_osa_alueet_for_yto.sql")
