@@ -173,6 +173,11 @@
   [id]
   (db-ops/query [queries/select-all-hptos-for-hoks id]))
 
+(defn select-one-hpto
+  "hankittava paikallinen tutkinnon osa"
+  [id]
+  (db-ops/query [queries/select-one-hpto id]))
+
 (defn select-all-osa-alueet-for-yto
   "Hankittavat yhteisen tutkinnon osan osa-alueet"
   [id]
