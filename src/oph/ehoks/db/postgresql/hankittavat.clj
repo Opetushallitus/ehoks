@@ -32,11 +32,9 @@
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
 (defn select-osaamisen-osoittamiset-by-module-id
-  "Hankittavan ammatillisen tutkinnon osan osaamisen näytöt"
+  "Hankittavan ammatillisen tutkinnon osan osaamisen osoittamiset"
   [uuid]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-module-id uuid]
-    {:row-fn h/osaamisen-osoittaminen-from-sql}))
+  (db-ops/query [queries/select-osaamisen-osoittamiset-by-module-id uuid]))
 
 (defn select-hankittava-yhteinen-tutkinnon-osa-by-id
   "Hankittava yhteisen tutkinnon osa"
