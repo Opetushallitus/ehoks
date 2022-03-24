@@ -288,12 +288,16 @@
   ([id oh]
     (db-ops/update!
       :osaamisen_hankkimistavat
-      (h/osaamisen-hankkimistapa-to-sql oh)
+      (h/osaamisen-hankkimistapa-to-sql (assoc oh
+                                               :updated_at
+                                               (java.util.Date.)))
       ["id = ?" id]))
   ([id oh db-conn]
     (db-ops/update!
       :osaamisen_hankkimistavat
-      (h/osaamisen-hankkimistapa-to-sql oh)
+      (h/osaamisen-hankkimistapa-to-sql (assoc oh
+                                               :updated_at
+                                               (java.util.Date.)))
       ["id = ?" id]
       db-conn)))
 
