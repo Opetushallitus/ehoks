@@ -8,13 +8,6 @@
             [clojure.tools.logging :as log])
   (:import (java.time LocalDate)))
 
-(defn get-osaamisen-osoittaminen-by-module-id [uuid]
-  (mapv
-    #(dissoc
-       (c/set-osaamisen-osoittaminen-values %)
-       :id)
-    (db/select-osaamisen-osoittamiset-by-module-id uuid)))
-
 (defn extract-and-set-osaamisen-hankkimistapa-values [oht rows]
   (let [this-oht-rows (filterv #(= (:oh__id %) (:id oht)) rows)
         kjs (mapv db-hoks/keskeytymisajanjakso-from-sql
@@ -245,16 +238,16 @@
   (first (extract-osaamisen-hankkimistavat
            (db/select-osaamisen-hankkimistapa-by-id id))))
 
-(defn get-osaamisen-hankkimistavat-by-module-id [uuid]
-  (extract-osaamisen-hankkimistavat
-    (db/select-osaamisen-hankkimistavat-by-module-id uuid)))
-
 (defn get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki [jakolinkki]
   (cond
     (= (:shared-module-tyyppi jakolinkki) "osaamisenhankkiminen")
-    (get-osaamisen-hankkimistavat-by-module-id (:shared-module-uuid jakolinkki))
+    (extract-osaamisen-hankkimistavat
+      (db/select-osaamisen-hankkimistavat-by-module-id
+        (:shared-module-uuid jakolinkki)))
     (= (:shared-module-tyyppi jakolinkki) "osaamisenosoittaminen")
-    (get-osaamisen-osoittaminen-by-module-id (:shared-module-uuid jakolinkki))))
+    (extract-osaamisen-osoittamiset
+      (db/select-osaamisen-osoittamiset-by-module-id
+        (:shared-module-uuid jakolinkki)))))
 
 (defn save-osaamisen-hankkimistapa!
   ([oh hoks-id]

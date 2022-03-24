@@ -181,7 +181,6 @@
 (defq select-hankittavat-paikalliset-tutkinnon-osat-by-module-id)
 (defq select-hankittavat-ammat-tutkinnon-osat-by-module-id)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-module-id)
-(defq select-osaamisen-osoittamiset-by-module-id)
 (defq select-osaamisen-hankkimistavat-by-id)
 (defq select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
       "hoksit/select_osaamisen_hankkimistavat_by_hoks_id_and_tunniste.sql")
@@ -215,3 +214,5 @@
       "hoksit/select_osaamisen_hankkimistapa_by_id.sql")
 (defq select-osaamisen-hankkimistavat-by-module-id
       "hoksit/select_osaamisen_hankkimistavat_by_module_id.sql")
+(defq select-osaamisen-osoittamiset-by-module-id
+      "hoksit/select_osaamisen_osoittamiset_by_module_id.sql")
