@@ -495,4 +495,5 @@
 
 (defn select-hoksit-by_ensikert-hyvaks-and-saavutettu-tiedot []
   (db-ops/query
-    [queries/select-hoksit-by_ensikert-hyvaks-and-saavutettu-tiedot]))
+    [queries/select-hoksit-by_ensikert-hyvaks-and-saavutettu-tiedot]
+    {:row-fn db-ops/from-sql}))

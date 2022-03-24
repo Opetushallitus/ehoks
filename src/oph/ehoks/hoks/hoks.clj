@@ -510,4 +510,17 @@
 (defn refresh-opiskeluoikeus-hankintakoulutukset []
   (let [hoksit
         (db-hoks/select-hoksit-by_ensikert-hyvaks-and-saavutettu-tiedot)]
-    (println (count hoksit))))
+    (log/infof "Päivitetään %s hoksin opiskeluoikeus-hankintakoulutukset"
+               (count hoksit))
+    (doseq [hoks hoksit]
+      (try
+        (let [oppija-oid (:oppija-oid hoks)
+              hoks-opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+              opiskeluoikeudet (k/fetch-opiskeluoikeudet-by-oppija-id
+                                 oppija-oid)]
+          (oppijaindex/add-oppija-hankintakoulutukset opiskeluoikeudet
+                                                      hoks-opiskeluoikeus-oid
+                                                      oppija-oid))
+        (catch Exception e
+          (log/errorf "Hankintakoulutukset-päivitys epäonnistui hoksille %s"
+                      (:id hoks)))))))

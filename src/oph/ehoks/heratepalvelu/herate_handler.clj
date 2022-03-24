@@ -2,6 +2,7 @@
   (:require [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [oph.ehoks.hoks.middleware :as m]
+            [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.restful :as restful]
@@ -67,4 +68,10 @@
         :query-params [from :- LocalDate
                        to :- LocalDate]
         (let [count (hp/resend-paattokyselyherate-between from to)]
-          (restful/rest-ok {:count count}))))))
+          (restful/rest-ok {:count count})))
+
+      (c-api/POST "/opiskeluoikeus-update" request
+        :summary "Päivittää aktiivisten hoksien opiskeluoikeudet Koskesta"
+        :header-params [caller-id :- s/Str]
+        (future (h/refresh-opiskeluoikeus-hankintakoulutukset))
+        (response/no-content)))))
