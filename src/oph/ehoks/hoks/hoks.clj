@@ -4,6 +4,7 @@
             [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as db-ot]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
