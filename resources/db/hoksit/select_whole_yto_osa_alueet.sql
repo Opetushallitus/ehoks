@@ -81,39 +81,45 @@ SELECT
 FROM yhteisen_tutkinnon_osan_osa_alueet osa
   LEFT OUTER JOIN yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
       AS osajoin
-    ON (osa.id = osajoin.yhteisen_tutkinnon_osan_osa_alue_id)
+    ON (osa.id = osajoin.yhteisen_tutkinnon_osan_osa_alue_id
+         AND osajoin.deleted_at IS NULL)
   LEFT OUTER JOIN osaamisen_hankkimistavat AS oh
-    ON (osajoin.osaamisen_hankkimistapa_id = oh.id)
+    ON (osajoin.osaamisen_hankkimistapa_id = oh.id AND oh.deleted_at IS NULL)
   LEFT OUTER JOIN tyopaikalla_jarjestettavat_koulutukset AS tjk
-    ON (oh.tyopaikalla_jarjestettava_koulutus_id = tjk.id)
+    ON (oh.tyopaikalla_jarjestettava_koulutus_id = tjk.id
+         AND tjk.deleted_at IS NULL)
   LEFT OUTER JOIN tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat AS tjkt
-    ON (tjkt.tyopaikalla_jarjestettava_koulutus_id = tjk.id)
+    ON (tjkt.tyopaikalla_jarjestettava_koulutus_id = tjk.id
+         AND tjkt.deleted_at IS NULL)
   LEFT OUTER JOIN keskeytymisajanjaksot AS kj
     ON (oh.id = kj.osaamisen_hankkimistapa_id AND kj.deleted_at IS NULL)
   LEFT OUTER JOIN muut_oppimisymparistot AS moy
     ON (moy.osaamisen_hankkimistapa_id = oh.id AND moy.deleted_at IS NULL)
   LEFT OUTER JOIN yhteisen_tutkinnon_osan_osa_alueen_naytot AS naytto
-    ON (osa.id = naytto.yhteisen_tutkinnon_osan_osa_alue_id)
+    ON (osa.id = naytto.yhteisen_tutkinnon_osan_osa_alue_id
+         AND naytto.deleted_at IS NULL)
   LEFT OUTER JOIN osaamisen_osoittamiset AS oo
-    ON (naytto.osaamisen_osoittaminen_id = oo.id)
-  LEFT OUTER JOIN osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija AS ookja
-    ON (ookja.osaamisen_osoittaminen_id = oo.id)
+    ON (naytto.osaamisen_osoittaminen_id = oo.id AND oo.deleted_at IS NULL)
+  LEFT OUTER JOIN osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija
+      AS ookja
+    ON (ookja.osaamisen_osoittaminen_id = oo.id AND ookja.deleted_at IS NULL)
   LEFT OUTER JOIN koulutuksen_jarjestaja_osaamisen_arvioijat AS kjoa
-    ON (kjoa.id = ookja.koulutuksen_jarjestaja_osaamisen_arvioija_id)
+    ON (kjoa.id = ookja.koulutuksen_jarjestaja_osaamisen_arvioija_id
+         AND kjoa.deleted_at IS NULL)
   LEFT OUTER JOIN osaamisen_osoittamisen_tyoelama_arvioija AS oota
-    ON (oota.osaamisen_osoittaminen_id = oo.id)
+    ON (oota.osaamisen_osoittaminen_id = oo.id AND oota.deleted_at IS NULL)
   LEFT OUTER JOIN tyoelama_osaamisen_arvioijat AS toa
-    ON (oota.tyoelama_arvioija_id = toa.id)
+    ON (oota.tyoelama_arvioija_id = toa.id AND toa.deleted_at IS NULL)
   LEFT OUTER JOIN nayttoymparistot AS ny
-    ON (ny.id = oo.nayttoymparisto_id)
+    ON (ny.id = oo.nayttoymparisto_id AND ny.deleted_at IS NULL)
   LEFT OUTER JOIN osaamisen_osoittamisen_sisallot AS oos
-    ON (oos.osaamisen_osoittaminen_id = oo.id)
+    ON (oos.osaamisen_osoittaminen_id = oo.id AND oos.deleted_at IS NULL)
   LEFT OUTER JOIN osaamisen_osoittamisen_osa_alueet AS oooa
-    ON (oooa.osaamisen_osoittaminen_id = oo.id)
+    ON (oooa.osaamisen_osoittaminen_id = oo.id AND oooa.deleted_at IS NULL)
   LEFT OUTER JOIN koodisto_koodit AS kk
-    ON (kk.id = oooa.koodisto_koodi_id)
+    ON (kk.id = oooa.koodisto_koodi_id AND kk.deleted_at IS NULL)
   LEFT OUTER JOIN osaamisen_osoittamisen_yksilolliset_kriteerit AS ooyk
-    ON (ooyk.osaamisen_osoittaminen_id = oo.id)
+    ON (ooyk.osaamisen_osoittaminen_id = oo.id AND ooyk.deleted_at IS NULL)
 WHERE
   osa.yhteinen_tutkinnon_osa_id = ?
   AND osa.deleted_at IS NULL
