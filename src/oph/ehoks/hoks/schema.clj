@@ -100,12 +100,11 @@
   https://libphonenumber.appspot.com/."
   [number]
   (try
-    (let [utilobj (PhoneNumberUtil/getInstance)
-          numberobj (.parse utilobj number "FI")]
-      (and (empty? (filter (fn [x] (Character/isLetter x)) number))
-           (.isValidNumber utilobj numberobj)
-           (let [numtype (str (.getNumberType utilobj numberobj))]
-             (or (= numtype "FIXED_LINE_OR_MOBILE") (= numtype "MOBILE")))))
+    (or (empty? number)
+        (let [utilobj (PhoneNumberUtil/getInstance)
+              numberobj (.parse utilobj number "FI")]
+          (and (empty? (filter (fn [x] (Character/isLetter x)) number))
+               (.isValidNumber utilobj numberobj))))
     (catch NumberParseException e
       false)))
 
