@@ -3,6 +3,11 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
+(defn select-all-ahatos-for-hoks
+  "Aiemmin hankittojen ammatillisten tutkintojen osat"
+  [id]
+  (db-ops/query [queries/select-all-ahatos-for-hoks id]))
+
 (defn select-tarkentavat-tiedot-naytto-by-ahato-id
   "Aiemmin hankitun ammatillisen tutkinnon osan näytön tarkentavat tiedot
    (hankitun osaamisen näytöt)"

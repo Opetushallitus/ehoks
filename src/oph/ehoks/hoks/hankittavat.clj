@@ -11,11 +11,11 @@
 (defn extract-and-set-osaamisen-hankkimistapa-values [oht rows]
   (let [this-oht-rows (filterv #(= (:oh__id %) (:id oht)) rows)
         kjs (mapv db-hoks/keskeytymisajanjakso-from-sql
-                  (db-hoks/extract-from-joined-rows :kj__id
-                                                    {:kj__alku  :alku
-                                                     :kj__loppu :loppu}
-                                                    this-oht-rows))
-        moys (db-hoks/extract-from-joined-rows
+                  (c/extract-from-joined-rows :kj__id
+                                              {:kj__alku  :alku
+                                               :kj__loppu :loppu}
+                                              this-oht-rows))
+        moys (c/extract-from-joined-rows
                :moy__id
                {:moy__alku                       :alku
                 :moy__loppu                      :loppu
@@ -32,7 +32,7 @@
              :tyopaikalla-jarjestettava-koulutus
              (assoc (db-hoks/tyopaikalla-jarjestettava-koulutus-from-sql
                       (first
-                        (db-hoks/extract-from-joined-rows
+                        (c/extract-from-joined-rows
                           :tjk__id
                           {:tjk__tyopaikan_nimi     :tyopaikan_nimi
                            :tjk__tyopaikan_y_tunnus :tyopaikan_y_tunnus
@@ -45,7 +45,7 @@
                           this-oht-rows)))
                     :keskeiset-tyotehtavat
                     (mapv :tyotehtava
-                          (db-hoks/extract-from-joined-rows
+                          (c/extract-from-joined-rows
                             :tjkt__id
                             {:tjkt__tyotehtava :tyotehtava}
                             this-oht-rows))))
@@ -77,83 +77,16 @@
 (defn extract-osaamisen-hankkimistavat [rows]
   (mapv #(db-hoks/osaamisen-hankkimistapa-from-sql
            (extract-and-set-osaamisen-hankkimistapa-values % rows))
-        (db-hoks/extract-from-joined-rows :oh__id oht-fields rows)))
-
-(defn extract-and-set-osaamisen-osoittaminen-values [oo rows]
-  (let [this-oo-rows (filterv #(= (:oo__id %) (:id oo)) rows)
-        kj-arvioijat
-        (mapv db-hoks/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql
-              (db-hoks/extract-from-joined-rows
-                :kjoa__id
-                {:kjoa__id             :id
-                 :kjoa__nimi           :nimi
-                 :kjoa__oppilaitos_oid :oppilaitos_oid}
-                this-oo-rows))
-        te-arvioijat (mapv
-                       db-hoks/tyoelama-arvioija-from-sql
-                       (db-hoks/extract-from-joined-rows
-                         :toa__id
-                         {:toa__id                    :id
-                          :toa__nimi                  :nimi
-                          :toa__organisaatio_nimi     :organisaatio_nimi
-                          :toa__organisaatio_y_tunnus :organisaatio_y_tunnus}
-                         this-oo-rows))
-        nayttoymparisto (db-hoks/nayttoymparisto-from-sql
-                          (first (db-hoks/extract-from-joined-rows
-                                   :ny__id
-                                   {:ny__nimi     :nimi
-                                    :ny__y_tunnus :y_tunnus
-                                    :ny__kuvaus   :kuvaus}
-                                   this-oo-rows)))
-        sisallon-kuvaus (mapv :sisallon_kuvaus
-                              (db-hoks/extract-from-joined-rows
-                                :oos__id
-                                {:oos__sisallon_kuvaus :sisallon_kuvaus}
-                                this-oo-rows))
-        osa-alueet (db-hoks/extract-from-joined-rows
-                     [:oooa__osaamisen_osoittaminen_id :oooa__kooisto_koodi_id]
-                     {:kk__koodi_uri    :koodi-uri
-                      :kk__koodi_versio :koodi-versio}
-                     this-oo-rows)
-        kriteerit (mapv :kriteeri
-                        (db-hoks/extract-from-joined-rows
-                          :ooyk__id
-                          {:ooyk__yksilollinen_kriteeri :kriteeri}
-                          this-oo-rows))]
-    (assoc oo
-           :koulutuksen-jarjestaja-osaamisen-arvioijat kj-arvioijat
-           :tyoelama-osaamisen-arvioijat               te-arvioijat
-           :nayttoymparisto                            nayttoymparisto
-           :sisallon-kuvaus                            sisallon-kuvaus
-           :osa-alueet                                 osa-alueet
-           :yksilolliset-kriteerit                     kriteerit)))
-
-(def oo-fields
-  {:osa__id                       :osa-id
-   :oo__id                        :id
-   :oo__jarjestaja_oppilaitos_oid :jarjestaja_oppilaitos_oid
-   :oo__alku                      :alku
-   :oo__loppu                     :loppu
-   :oo__module_id                 :module_id
-   :oo__vaatimuksista_tai_tavoitteista_poikkeaminen
-   :vaatimuksista_tai_tavoitteista_poikkeaminen})
-
-(defn extract-osaamisen-osoittamiset [rows]
-  (mapv #(db-hoks/osaamisen-osoittaminen-from-sql
-           (extract-and-set-osaamisen-osoittaminen-values % rows))
-        (db-hoks/extract-from-joined-rows :oo__id oo-fields rows)))
-
-(defn process-subrows [osa rows]
-  (mapv #(dissoc % :osa-id :id) (filterv #(= (:osa-id %) (:id osa)) rows)))
+        (c/extract-from-joined-rows :oh__id oht-fields rows)))
 
 (defn extract-hankkimistavat-and-osoittamiset [rows from-sql-func fields]
   (let [ohts (extract-osaamisen-hankkimistavat rows)
-        oos (extract-osaamisen-osoittamiset rows)
-        osa-objs (db-hoks/extract-from-joined-rows :osa__id fields rows)]
+        oos (c/extract-osaamisen-osoittamiset rows)
+        osa-objs (c/extract-from-joined-rows :osa__id fields rows)]
     (mapv (fn [osa]
             (assoc osa
-                   :osaamisen-osoittaminen (process-subrows osa oos)
-                   :osaamisen-hankkimistavat (process-subrows osa ohts)))
+                   :osaamisen-osoittaminen (c/process-subitems osa oos)
+                   :osaamisen-hankkimistavat (c/process-subitems osa ohts)))
           (mapv from-sql-func osa-objs))))
 
 (def hato-fields
@@ -245,7 +178,7 @@
       (db/select-osaamisen-hankkimistavat-by-module-id
         (:shared-module-uuid jakolinkki)))
     (= (:shared-module-tyyppi jakolinkki) "osaamisenosoittaminen")
-    (extract-osaamisen-osoittamiset
+    (c/extract-osaamisen-osoittamiset
       (db/select-osaamisen-osoittamiset-by-module-id
         (:shared-module-uuid jakolinkki)))))
 

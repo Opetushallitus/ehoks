@@ -497,16 +497,3 @@
   (db-ops/query
     [queries/select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot]
     {:row-fn db-ops/from-sql}))
-
-(defn get-map [coll k]
-  (if (sequential? k)
-    (vec (map #(get coll %) k))
-    (get coll k)))
-
-(defn extract-from-joined-rows [unique-on fields rows]
-  (mapv (fn [row] (reduce-kv #(assoc %1 %3 (get row %2)) {} fields))
-        (sort #(compare (get-map %1 unique-on) (get-map %2 unique-on))
-              (vals
-                (dissoc (reduce #(assoc %1 (get-map %2 unique-on) %2) {} rows)
-                        nil
-                        [nil nil])))))
