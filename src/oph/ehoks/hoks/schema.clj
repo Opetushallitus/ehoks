@@ -1,7 +1,9 @@
 (ns oph.ehoks.hoks.schema
-  (:require [schema.core :as s]
+  (:require [clojure.tools.logging :as log]
+            [environ.core :refer [env]]
+            [oph.ehoks.schema.generator :as g]
             [oph.ehoks.schema-tools :refer [describe modify]]
-            [oph.ehoks.schema.generator :as g])
+            [schema.core :as s])
   (:import (com.google.i18n.phonenumbers PhoneNumberUtil NumberParseException)
            (java.time LocalDate)
            (java.util UUID)))
@@ -94,20 +96,24 @@
     (s/optional-key :rooli) s/Str "Henkilön rooli"))
 
 (defn valid-number?
-  "Sallii vain numeroita, jotka kirjasto luokittelee mobiilinumeroiksi tai
-  mahdollisiksi mobiilinumeroiksi (FIXED_LINE_OR_MOBILE). Jos funktio ei hyväksy
-  numeroa, jonka tiedät olevan validi, tarkista, miten kirjasto luokittelee sen:
-  https://libphonenumber.appspot.com/."
+  "Sallii vain valideja puhelinnumeroita. Jos funktio ei hyväksy numeroa, jonka
+  tiedät olevan validi, tarkista, miten kirjasto luokittelee sen:
+  https://libphonenumber.appspot.com/. Testiympäristöissä palauttaa aina true,
+  mutta logittaa virheviestin, jos numero ei ole validi. Tämä sallii täysin
+  feikkien numeroiden käyttöä testiympärisöissä."
   [number]
-  (try
-    (let [utilobj (PhoneNumberUtil/getInstance)
-          numberobj (.parse utilobj number "FI")]
-      (and (empty? (filter (fn [x] (Character/isLetter x)) number))
-           (.isValidNumber utilobj numberobj)
-           (let [numtype (str (.getNumberType utilobj numberobj))]
-             (or (= numtype "FIXED_LINE_OR_MOBILE") (= numtype "MOBILE")))))
-    (catch NumberParseException e
-      false)))
+  (or (try
+        (or (empty? number)
+            (let [utilobj (PhoneNumberUtil/getInstance)
+                  numberobj (.parse utilobj number "FI")]
+              (and (empty? (filter (fn [x] (Character/isLetter x)) number))
+                   (.isValidNumber utilobj numberobj))))
+        (catch NumberParseException e
+          false))
+      (when (not= (:env-stage env) "sade")
+        (log/warn "Puhelinnumero virheellinen, mutta sallittu testiympäristössä"
+                  (:env-stage env))
+        true)))
 
 (s/defschema
   VastuullinenTyopaikkaOhjaaja
