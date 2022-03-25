@@ -493,7 +493,7 @@
      alkupvm alkupvm-loppu last-id limit]
     {:row-fn db-ops/from-sql}))
 
-(defn select-hoksit-by_ensikert-hyvaks-and-saavutettu-tiedot []
+(defn select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot []
   (db-ops/query
-    [queries/select-hoksit-by_ensikert-hyvaks-and-saavutettu-tiedot]
+    [queries/select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot]
     {:row-fn db-ops/from-sql}))

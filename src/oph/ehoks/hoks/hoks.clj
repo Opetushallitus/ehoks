@@ -510,7 +510,7 @@
 
 (defn refresh-opiskeluoikeus-hankintakoulutukset []
   (let [hoksit
-        (db-hoks/select-hoksit-by_ensikert-hyvaks-and-saavutettu-tiedot)]
+        (db-hoks/select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot)]
     (log/infof "Päivitetään %s hoksin opiskeluoikeus-hankintakoulutukset"
                (count hoksit))
     (doseq [hoks hoksit]
