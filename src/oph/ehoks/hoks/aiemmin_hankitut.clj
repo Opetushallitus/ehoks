@@ -5,6 +5,7 @@
             [oph.ehoks.hoks.common :as c]
             [clojure.java.jdbc :as jdbc]))
 
+; Tätä funktiota käytetään vielä testeissä, eikä pidä poistaa vielä
 (defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
   (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]
     (dissoc
