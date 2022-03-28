@@ -1,6 +1,7 @@
 (ns oph.ehoks.hoks.aiemmin-hankitut
   (:require [oph.ehoks.db.postgresql.aiemmin-hankitut :as db]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.common :as c]
             [clojure.java.jdbc :as jdbc]))
 
@@ -37,22 +38,31 @@
     (set-ahato-values ahato-from-db)))
 
 (defn extract-tarkentavat-tiedot-osaamisen-arvioija [rows]
-  (let [tta (c/extract-from-joined-rows :)]
-
-    )
-  ;; TODO
-  )
+  (let [tta (mapv db-hoks/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql
+                  (c/extract-from-joined-rows
+                    :talkjoa__id
+                    {:talkjoa__nimi           :nimi
+                     :talkjoa__oppilaitos_oid :oppilaitos_oid}
+                    rows))]
+    (assoc
+      (db-hoks/todennettu-arviointi-lisatiedot-from-sql
+        (first (c/extract-from-joined-rows :tal__id
+                                           {:tal__lahetetty_arvioitavaksi
+                                            :lahetetty_arvioitavaksi}
+                                           rows)))
+      :aiemmin-hankitun-osaamisen-arvioijat
+      tta)))
 
 (defn extract-arvioijat-and-osoittamiset [rows from-sql-func fields]
-  (let [ttoa (extract-tarkentavat-tiedot-osaamisen-arvioija rows)
-        oos (c/extract-osaamisen-osoittamiset rows)
+  (let [oos (c/extract-osaamisen-osoittamiset rows)
         osa-objs (c/extract-from-joined-rows :osa__id fields rows)]
     (mapv (fn [osa]
             (assoc osa
                    :tarkentavat-tiedot-naytto
                    (c/process-subitems osa oos)
                    :tarkentavat-tiedot-osaamisen-arvioija
-                   (c/process-subitems osa ttoa)))
+                   (extract-tarkentavat-tiedot-osaamisen-arvioija
+                     (filterv #(= (:osa__id %) (:id osa)) rows))))
           (mapv from-sql-func osa-objs))))
 
 (def ahato-fields
@@ -69,7 +79,7 @@
 
 (defn get-aiemmin-hankitut-ammat-tutkinnon-osat [hoks-id]
   (mapv #(dissoc % :id)
-        (extract-arvioija-and-osoittamiset
+        (extract-arvioijat-and-osoittamiset
           (db/select-all-ahatos-for-hoks hoks-id)
           db-hoks/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql
           ahato-fields)))
