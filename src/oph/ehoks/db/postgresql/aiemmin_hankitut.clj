@@ -28,6 +28,16 @@
   [id]
   (db-ops/query [queries/select-all-osa-alueet-for-ahyto id]))
 
+(defn select-all-ahytos-for-hoks
+  "Aiemmin hankittujen yhteisten tutkintojen osat"
+  [id]
+  (db-ops/query [queries/select-all-ahytos-for-hoks id]))
+
+(defn select-one-ahyto
+  "Aiemmin hankittu yhteinen tutkinnon osa"
+  [id]
+  (db-ops/query [queries/select-one-ahyto id]))
+
 (defn select-tarkentavat-tiedot-naytto-by-ahato-id
   "Aiemmin hankitun ammatillisen tutkinnon osan näytön tarkentavat tiedot
    (hankitun osaamisen näytöt)"

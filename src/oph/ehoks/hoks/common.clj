@@ -53,27 +53,6 @@
           naytto (:osa-alueet n) conn)
         naytto))))
 
-(defn set-osaamisen-osoittaminen-values [naytto]
-  (dissoc
-    (assoc
-      naytto
-      :koulutuksen-jarjestaja-osaamisen-arvioijat
-      (db/select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id
-        (:id naytto))
-      :tyoelama-osaamisen-arvioijat
-      (db/select-tyoelama-osaamisen-arvioijat-by-hon-id (:id naytto))
-      :nayttoymparisto
-      (db/select-nayttoymparisto-by-id (:nayttoymparisto-id naytto))
-      :sisallon-kuvaus
-      (db/select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id
-        (:id naytto))
-      :osa-alueet
-      (db/select-osa-alueet-by-osaamisen-osoittaminen (:id naytto))
-      :yksilolliset-kriteerit
-      (db/select-osaamisen-osoittamisen-kriteerit-by-osaamisen-osoittaminen-id
-        (:id naytto)))
-    :nayttoymparisto-id))
-
 (defn get-map [coll k]
   (if (sequential? k)
     (vec (map #(get coll %) k))

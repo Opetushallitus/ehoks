@@ -222,3 +222,5 @@
 (defq select-one-ahpto "hoksit/select_one_ahpto.sql")
 (defq select-all-osa-alueet-for-ahyto
       "hoksit/select_all_osa_alueet_for_ahyto.sql")
+(defq select-all-ahytos-for-hoks "hoksit/select_all_ahytos_for_hoks.sql")
+(defq select-one-ahyto "hoksit/select_one_ahyto.sql")
