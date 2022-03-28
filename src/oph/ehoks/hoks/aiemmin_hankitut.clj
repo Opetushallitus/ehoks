@@ -5,13 +5,6 @@
             [oph.ehoks.hoks.common :as c]
             [clojure.java.jdbc :as jdbc]))
 
-(defn get-ahato-tarkentavat-tiedot-naytto [id]
-  (mapv
-    #(dissoc
-       (c/set-osaamisen-osoittaminen-values %)
-       :id)
-    (db/select-tarkentavat-tiedot-naytto-by-ahato-id id)))
-
 (defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
   (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]
     (dissoc
@@ -20,17 +13,6 @@
         :aiemmin-hankitun-osaamisen-arvioijat
         (db/select-arvioijat-by-todennettu-arviointi-id ttoa-id))
       :id)))
-
-(defn- set-ahato-values [ahato]
-  (dissoc
-    (assoc
-      ahato
-      :tarkentavat-tiedot-osaamisen-arvioija
-      (get-tarkentavat-tiedot-osaamisen-arvioija
-        (:tarkentavat-tiedot-osaamisen-arvioija-id ahato))
-      :tarkentavat-tiedot-naytto
-      (get-ahato-tarkentavat-tiedot-naytto (:id ahato)))
-    :tarkentavat-tiedot-osaamisen-arvioija-id))
 
 (defn extract-tarkentavat-tiedot-osaamisen-arvioija [rows]
   (let [tta (mapv db-hoks/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql
