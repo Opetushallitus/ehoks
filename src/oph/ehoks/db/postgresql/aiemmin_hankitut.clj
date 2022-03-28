@@ -8,6 +8,11 @@
   [id]
   (db-ops/query [queries/select-all-ahatos-for-hoks id]))
 
+(defn select-one-ahato
+  "Aiemmin hankittu ammatillisen tutkinnon osa"
+  [id]
+  (db-ops/query [queries/select-one-ahato id]))
+
 (defn select-tarkentavat-tiedot-naytto-by-ahato-id
   "Aiemmin hankitun ammatillisen tutkinnon osan näytön tarkentavat tiedot
    (hankitun osaamisen näytöt)"

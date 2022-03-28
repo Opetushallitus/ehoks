@@ -32,11 +32,6 @@
       (get-ahato-tarkentavat-tiedot-naytto (:id ahato)))
     :tarkentavat-tiedot-osaamisen-arvioija-id))
 
-(defn get-aiemmin-hankittu-ammat-tutkinnon-osa [id]
-  (when-let [ahato-from-db
-             (db/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id id)]
-    (set-ahato-values ahato-from-db)))
-
 (defn extract-tarkentavat-tiedot-osaamisen-arvioija [rows]
   (let [tta (mapv db-hoks/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql
                   (c/extract-from-joined-rows
@@ -83,6 +78,12 @@
           (db/select-all-ahatos-for-hoks hoks-id)
           db-hoks/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql
           ahato-fields)))
+
+(defn get-aiemmin-hankittu-ammat-tutkinnon-osa [id]
+  (first (extract-arvioijat-and-osoittamiset
+           (db/select-one-ahato id)
+           db-hoks/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql
+           ahato-fields)))
 
 (defn- get-ahpto-tarkentavat-tiedot-naytto [ahpto-id]
   (mapv
