@@ -84,14 +84,6 @@
 (defq select-count-by-koulutustoimija
       "opiskeluoikeudet/select_count_by_koulutustoimija.sql")
 (defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id)
-(defq select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id)
-(def select-osaamisen-osoittamiset-by-ahato-id
-  (generate-select-join
-    {:table "osaamisen_osoittamiset"
-     :join "aiemmin_hankitun_ammat_tutkinnon_osan_naytto"
-     :secondary-column "osaamisen_osoittaminen_id"
-     :primary-column "id"
-     :column "aiemmin_hankittu_ammat_tutkinnon_osa_id"}))
 (def select-osa-alueet-by-osaamisen-osoittaminen
   (generate-select-join
     {:table "koodisto_koodit"
@@ -101,16 +93,7 @@
      :column "osaamisen_osoittaminen_id"}))
 (defq select-hankittavat-paikalliset-tutkinnon-osat-by-id)
 (defq select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id)
-(defq select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id)
-(def select-osaamisen-osoittamiset-by-ahpto-id
-  (generate-select-join
-    {:table "osaamisen_osoittamiset"
-     :join "aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto"
-     :secondary-column "osaamisen_osoittaminen_id"
-     :primary-column "id"
-     :column "aiemmin_hankittu_paikallinen_tutkinnon_osa_id"}))
 (defq select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-id)
-(defq select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id)
 (def select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id
   (generate-select-join
     {:table "koulutuksen_jarjestaja_osaamisen_arvioijat"
@@ -142,24 +125,6 @@
      :secondary-column "koulutuksen_jarjestaja_osaamisen_arvioija_id"
      :primary-column "id"
      :column "todennettu_arviointi_lisatiedot_id"}))
-(def select-osaamisen-osoittamiset-by-ahyto-id
-  (generate-select-join
-    {:table "osaamisen_osoittamiset"
-     :join "aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto"
-     :secondary-column "osaamisen_osoittaminen_id"
-     :primary-column "id"
-     :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
-(def select-osaamisen-osoittamiset-by-ahyto-osa-alue-id
-  (generate-select-join
-    {:table "osaamisen_osoittamiset"
-     :join "aiemmin_hankitun_yto_osa_alueen_naytto"
-     :secondary-column "osaamisen_osoittaminen_id"
-     :primary-column "id"
-     :column "aiemmin_hankittu_yto_osa_alue_id"}))
-(def select-osa-alueet-by-ahyto-id
-  (generate-select-by
-    {:table "aiemmin_hankitut_yto_osa_alueet"
-     :column "aiemmin_hankittu_yhteinen_tutkinnon_osa_id"}))
 (defq select-opiskeluvalmiuksia-tukevat-opinnot-by-id)
 (defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-id)
@@ -181,7 +146,6 @@
 (defq select-hankittavat-paikalliset-tutkinnon-osat-by-module-id)
 (defq select-hankittavat-ammat-tutkinnon-osat-by-module-id)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-module-id)
-(defq select-osaamisen-hankkimistavat-by-id)
 (defq select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
       "hoksit/select_osaamisen_hankkimistavat_by_hoks_id_and_tunniste.sql")
 (defq select-kyselylinkit-by-oppija-oid
