@@ -4,7 +4,7 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
 (defn select-all-ahatos-for-hoks
-  "Aiemmin hankittojen ammatillisten tutkintojen osat"
+  "Aiemmin hankittujen ammatillisten tutkintojen osat"
   [id]
   (db-ops/query [queries/select-all-ahatos-for-hoks id]))
 
@@ -12,6 +12,16 @@
   "Aiemmin hankittu ammatillisen tutkinnon osa"
   [id]
   (db-ops/query [queries/select-one-ahato id]))
+
+(defn select-all-ahptos-for-hoks
+  "Aiemmin hankittujen paikallisten tutkintojen osat"
+  [id]
+  (db-ops/query [queries/select-all-ahptos-for-hoks id]))
+
+(defn select-one-ahpto
+  "Aiemmin hankittu paikallinen tutkinnon osa"
+  [id]
+  (db-ops/query [queries/select-one-ahpto id]))
 
 (defn select-tarkentavat-tiedot-naytto-by-ahato-id
   "Aiemmin hankitun ammatillisen tutkinnon osan näytön tarkentavat tiedot

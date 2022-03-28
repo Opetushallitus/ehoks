@@ -67,33 +67,35 @@
            db-hoks/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql
            ahato-fields)))
 
-(defn- get-ahpto-tarkentavat-tiedot-naytto [ahpto-id]
-  (mapv
-    #(dissoc
-       (c/set-osaamisen-osoittaminen-values %)
-       :id)
-    (db/select-tarkentavat-tiedot-naytto-by-ahpto-id ahpto-id)))
-
-(defn- set-ahpto-values [ahpto]
-  (dissoc
-    (assoc
-      ahpto
-      :tarkentavat-tiedot-osaamisen-arvioija
-      (get-tarkentavat-tiedot-osaamisen-arvioija
-        (:tarkentavat-tiedot-osaamisen-arvioija-id ahpto))
-      :tarkentavat-tiedot-naytto
-      (get-ahpto-tarkentavat-tiedot-naytto (:id ahpto)))
-    :tarkentavat-tiedot-osaamisen-arvioija-id))
-
-(defn get-aiemmin-hankittu-paikallinen-tutkinnon-osa [id]
-  (when-let [ahpto-from-db
-             (db/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id id)]
-    (set-ahpto-values ahpto-from-db)))
+(def ahpto-fields
+  {:osa__id                         :id
+   :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
+   :osa__olennainen_seikka          :olennainen_seikka
+   :osa__module_id                  :module_id
+   :osa__laajuus                    :laajuus
+   :osa__nimi                       :nimi
+   :osa__tavoitteet_ja_sisallot     :tavoitteet_ja_sisallot
+   :osa__amosaa_tunniste            :amosaa_tunniste
+   :osa__lahetetty_arvioitavaksi    :lahetetty_arvioitavaksi
+   :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
+   :vaatimuksista_tai_tavoitteista_poikkeaminen
+   :osa__valittu_todentamisen_prosessi_koodi_uri
+   :valittu_todentamisen_prosessi_koodi_uri
+   :osa__valittu_todentamisen_prosessi_koodi_versio
+   :valittu_todentamisen_prosessi_koodi_versio})
 
 (defn get-aiemmin-hankitut-paikalliset-tutkinnon-osat [hoks-id]
-  (mapv
-    #(dissoc (set-ahpto-values %) :id)
-    (db/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
+  (mapv #(dissoc % :id)
+        (extract-arvioijat-and-osoittamiset
+          (db/select-all-ahptos-for-hoks hoks-id)
+          db-hoks/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql
+          ahpto-fields)))
+
+(defn get-aiemmin-hankittu-paikallinen-tutkinnon-osa [id]
+  (first (extract-arvioijat-and-osoittamiset
+           (db/select-one-ahpto id)
+           db-hoks/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql
+           ahpto-fields)))
 
 (defn get-ahyto-osa-alue-tarkentavat-tiedot [id]
   (mapv

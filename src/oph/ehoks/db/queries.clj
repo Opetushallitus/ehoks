@@ -218,3 +218,5 @@
       "hoksit/select_osaamisen_osoittamiset_by_module_id.sql")
 (defq select-all-ahatos-for-hoks "hoksit/select_all_ahatos_for_hoks.sql")
 (defq select-one-ahato "hoksit/select_one_ahato.sql")
+(defq select-all-ahptos-for-hoks "hoksit/select_all_ahptos_for_hoks.sql")
+(defq select-one-ahpto "hoksit/select_one_ahpto.sql")
