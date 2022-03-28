@@ -246,6 +246,8 @@
       "hoksit/select_kyselylinkit_by_oppija_oid.sql")
 (defq select-kyselylinkit-by-fuzzy-linkki
       "hoksit/select_kyselylinkit_by_fuzzy_linkki.sql")
+(defq select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot
+      "hoksit/select_hoksit_by_ensikert_hyvaks_and_saavutettu_tiedot.sql")
 (defq select-paattyneet-tyoelamajaksot-hato
       "heratepalvelu/select_paattyneet_tyoelamajaksot_hato.sql")
 (defq select-paattyneet-tyoelamajaksot-hpto

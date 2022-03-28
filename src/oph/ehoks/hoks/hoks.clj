@@ -4,6 +4,7 @@
             [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as db-ot]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
@@ -506,3 +507,21 @@
   (db-ops/delete!
     :kyselylinkit
     ["kyselylinkki = ?" kyselylinkki]))
+
+(defn refresh-opiskeluoikeus-hankintakoulutukset []
+  (let [hoksit
+        (db-hoks/select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot)]
+    (log/infof "Päivitetään %s hoksin opiskeluoikeus-hankintakoulutukset"
+               (count hoksit))
+    (doseq [hoks hoksit]
+      (try
+        (let [oppija-oid (:oppija-oid hoks)
+              hoks-opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+              opiskeluoikeudet (k/fetch-opiskeluoikeudet-by-oppija-id
+                                 oppija-oid)]
+          (oppijaindex/add-oppija-hankintakoulutukset opiskeluoikeudet
+                                                      hoks-opiskeluoikeus-oid
+                                                      oppija-oid))
+        (catch Exception e
+          (log/errorf "Hankintakoulutukset-päivitys epäonnistui hoksille %s"
+                      (:id hoks)))))))

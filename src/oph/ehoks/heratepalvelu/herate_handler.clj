@@ -7,7 +7,8 @@
             [oph.ehoks.restful :as restful]
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
             [schema.core :as s]
-            [ring.util.http-response :as response])
+            [ring.util.http-response :as response]
+            [oph.ehoks.hoks.hoks :as h])
   (:import (java.time LocalDate)))
 
 (def routes
@@ -67,4 +68,10 @@
         :query-params [from :- LocalDate
                        to :- LocalDate]
         (let [count (hp/resend-paattokyselyherate-between from to)]
-          (restful/rest-ok {:count count}))))))
+          (restful/rest-ok {:count count})))
+
+      (c-api/POST "/opiskeluoikeus-update" request
+        :summary "Päivittää aktiivisten hoksien opiskeluoikeudet Koskesta"
+        :header-params [caller-id :- s/Str]
+        (future (h/refresh-opiskeluoikeus-hankintakoulutukset))
+        (response/no-content)))))
