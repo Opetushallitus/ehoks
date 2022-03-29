@@ -199,8 +199,19 @@
   [koulutustoimija-oid]
   (let [hoksit (db-hoks/select-hoksit-by-oo-koulutustoimija
                  koulutustoimija-oid)]
-    (restful/rest-ok {:count (count hoksit)
-                      :hoksit hoksit})))
+    (try
+      (let [hokses-without-oo
+            (filter
+              some?
+              (pmap
+                (fn [x]
+                  (when (nil?
+                          (koski/get-opiskeluoikeus-info
+                            (:opiskeluoikeus-oid x))) x)) hoksit))]
+        (response/ok {:count (count hokses-without-oo)
+                      :hoksit hokses-without-oo}))
+      (catch Exception e
+        (response/bad-request {:error e})))))
 
 (defn- save-hoks [hoks request]
   (try
