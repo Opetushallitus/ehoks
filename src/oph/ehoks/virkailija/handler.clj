@@ -195,6 +195,13 @@
       (not (op/opiskeluoikeus-tila-inactive?
              (op/get-opiskeluoikeus-tila opiskeluoikeus))))))
 
+(defn get-hoksit-without-opiskeluoikeus-in-koski-by-koulutuksenjarjestaja
+  [koulutustoimija-oid]
+  (let [hoksit (db-hoks/select-hoksit-by-oo-koulutustoimija
+                 koulutustoimija-oid)]
+    (restful/rest-ok {:count (count hoksit)
+                      :hoksit hoksit})))
+
 (defn- save-hoks [hoks request]
   (try
     (let [hoks-db (h/save-hoks!
