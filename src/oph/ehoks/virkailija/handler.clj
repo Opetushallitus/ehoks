@@ -195,7 +195,7 @@
       (not (op/opiskeluoikeus-tila-inactive?
              (op/get-opiskeluoikeus-tila opiskeluoikeus))))))
 
-(defn get-hoksit-without-opiskeluoikeus-in-koski-by-koulutuksenjarjestaja
+(defn get-hoksit-without-oo-in-koski-by-koulutuksenjarjestaja
   [koulutustoimija-oid]
   (let [hoksit (db-hoks/select-hoksit-by-oo-koulutustoimija
                  koulutustoimija-oid)]
@@ -405,6 +405,14 @@
                 :header-params [caller-id :- s/Str]
                 :path-params [tunnus :- s/Str]
                 (delete-vastaajatunnus tunnus))
+
+              (c-api/GET "/missing-oo-hoksit/:koulutustoimijaoid" []
+                :summary "Palauttaa listan hokseista, joiden
+                          opiskeluoikeus puuttuu"
+                :header-params [caller-id :- s/Str]
+                :path-params [koulutustoimijaoid :- s/Str]
+                (get-hoksit-without-oo-in-koski-by-koulutuksenjarjestaja
+                  koulutustoimijaoid))
 
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
                 :summary "Palauttaa tietoja kyselylinkkeihin liittyvistä
