@@ -540,8 +540,9 @@
                           (:opiskeluoikeus-oid x))) x))
               hoksit-created-in-7-days))
           oo-oids (map :opiskeluoikeus-oid hokses-without-oo)]
-      (log/infof "Päivitetään %s hoksin opiskeluoikeus-hankintakoulutukset"
-                 (count hoksit))
+      (log/infof "Päivitetään opiskeluoikeus-indeksiin koski404 tietoja.
+                  Löydettiin %s hoksia ilman opiskeluoikeutta Koskessa."
+                 (count oo-oids))
       (doseq [oo-oid oo-oids]
         (let [opiskeluoikeus (db-oo/select-opiskeluoikeus-by-oid oo-oid)]
           (when (some? opiskeluoikeus)

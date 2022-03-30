@@ -481,7 +481,8 @@
 
               (c-api/GET "/puuttuvat-opiskeluoikeudet-temp" request
                 :summary "Palauttaa listan hoks-id:sta, joiden opiskeluoikeutta
-                ei löydy."
+                ei löydy. Asettaa löydettyjen hoksien oo-indeksiin koski404 =
+                true."
                 :query-params [{limit :- s/Int 2000}
                                {from-id :- s/Int 0}]
                 (let [hoksit (db-hoks/select-hokses-greater-than-id
@@ -499,6 +500,12 @@
                                         (koski/get-opiskeluoikeus-info
                                           (:opiskeluoikeus-oid x))) x)) hoksit))
                           result (map :id hokses-without-oo)]
+                      (doseq [oo-oid (map :opiskeluoikeus-oid
+                                          hokses-without-oo)]
+                        (let [opiskeluoikeus
+                              (db-oo/select-opiskeluoikeus-by-oid oo-oid)]
+                          (when (some? opiskeluoikeus)
+                            (op/set-opiskeluoikeus-koski404 oo-oid))))
                       (response/ok {:count (count result)
                                     :ids result
                                     :last-id last-id}))
