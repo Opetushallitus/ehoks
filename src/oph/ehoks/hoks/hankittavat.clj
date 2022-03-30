@@ -3,152 +3,156 @@
             [oph.ehoks.hoks.common :as c]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [clj-time.core :as t]
             [clojure.tools.logging :as log])
   (:import (java.time LocalDate)))
 
-(defn- get-tyopaikalla-jarjestettava-koulutus [id]
-  (let [o (db/select-tyopaikalla-jarjestettava-koulutus-by-id id)]
-    (-> o
-        (dissoc :id)
-        (assoc :keskeiset-tyotehtavat
-               (db/select-tyotehtavat-by-tho-id (:id o))))))
+(defn extract-and-set-osaamisen-hankkimistapa-values [oht rows]
+  (let [this-oht-rows (filterv #(= (:oh__id %) (:id oht)) rows)
+        kjs (mapv db-hoks/keskeytymisajanjakso-from-sql
+                  (c/extract-from-joined-rows :kj__id
+                                              {:kj__alku  :alku
+                                               :kj__loppu :loppu}
+                                              this-oht-rows))
+        moys (c/extract-from-joined-rows
+               :moy__id
+               {:moy__alku                       :alku
+                :moy__loppu                      :loppu
+                :moy__oppimisymparisto_koodi_uri :oppimisymparisto-koodi-uri
+                :moy__oppimisymparisto_koodi_versio
+                :oppimisymparisto-koodi-versio}
+               this-oht-rows)
+        oht-final (dissoc (assoc oht
+                                 :keskeytymisajanjaksot  kjs
+                                 :muut-oppimisymparistot moys)
+                          :tyopaikalla_jarjestettava_koulutus_id)]
+    (if (some? (:tyopaikalla_jarjestettava_koulutus_id oht))
+      (assoc oht-final
+             :tyopaikalla-jarjestettava-koulutus
+             (assoc (db-hoks/tyopaikalla-jarjestettava-koulutus-from-sql
+                      (first
+                        (c/extract-from-joined-rows
+                          :tjk__id
+                          {:tjk__tyopaikan_nimi     :tyopaikan_nimi
+                           :tjk__tyopaikan_y_tunnus :tyopaikan_y_tunnus
+                           :tjk__vastuullinen_tyopaikka_ohjaaja_nimi
+                           :vastuullinen_tyopaikka_ohjaaja_nimi
+                           :tjk__vastuullinen_tyopaikka_ohjaaja_sahkoposti
+                           :vastuullinen_tyopaikka_ohjaaja_sahkoposti
+                           :tjk__vastuullinen_tyopaikka_ohjaaja_puhelinnumero
+                           :vastuullinen_tyopaikka_ohjaaja_puhelinnumero}
+                          this-oht-rows)))
+                    :keskeiset-tyotehtavat
+                    (mapv :tyotehtava
+                          (c/extract-from-joined-rows
+                            :tjkt__id
+                            {:tjkt__tyotehtava :tyotehtava}
+                            this-oht-rows))))
+      oht-final)))
 
-(defn set-osaamisen-hankkimistapa-values [m]
-  (if (some? (:tyopaikalla-jarjestettava-koulutus-id m))
-    (dissoc
-      (assoc
-        m
-        :tyopaikalla-jarjestettava-koulutus
-        (get-tyopaikalla-jarjestettava-koulutus
-          (:tyopaikalla-jarjestettava-koulutus-id m))
-        :muut-oppimisymparistot
-        (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id (:id m))
-        :keskeytymisajanjaksot
-        (db/select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id (:id m)))
-      :id :tyopaikalla-jarjestettava-koulutus-id)
-    (dissoc
-      (assoc
-        m
-        :muut-oppimisymparistot
-        (db/select-muut-oppimisymparistot-by-osaamisen-hankkimistapa-id (:id m))
-        :keskeytymisajanjaksot
-        (db/select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id (:id m)))
-      :id)))
+(def oht-fields
+  {:osa__id                                 :osa-id
+   :oh__id                                  :id
+   :oh__jarjestajan_edustaja_nimi           :jarjestajan_edustaja_nimi
+   :oh__jarjestajan_edustaja_rooli          :jarjestajan_edustaja_rooli
+   :oh__jarjestajan_edustaja_oppilaitos_oid :jarjestajan_edustaja_oppilaitos_oid
+   :oh__ajanjakson_tarkenne                 :ajanjakson_tarkenne
+   :oh__hankkijan_edustaja_nimi             :hankkijan_edustaja_nimi
+   :oh__hankkijan_edustaja_rooli            :hankkijan_edustaja_rooli
+   :oh__hankkijan_edustaja_oppilaitos_oid   :hankkijan_edustaja_oppilaitos_oid
+   :oh__alku                                :alku
+   :oh__loppu                               :loppu
+   :oh__module_id                           :module_id
+   :oh__osa_aikaisuustieto                  :osa_aikaisuustieto
+   :oh__oppisopimuksen_perusta_koodi_uri    :oppisopimuksen_perusta_koodi_uri
+   :oh__oppisopimuksen_perusta_koodi_versio :oppisopimuksen_perusta_koodi_versio
+   :oh__yksiloiva_tunniste                  :yksiloiva_tunniste
+   :oh__osaamisen_hankkimistapa_koodi_uri   :osaamisen_hankkimistapa_koodi_uri
+   :oh__osaamisen_hankkimistapa_koodi_versio
+   :osaamisen_hankkimistapa_koodi_versio
+   :oh__tyopaikalla_jarjestettava_koulutus_id
+   :tyopaikalla_jarjestettava_koulutus_id})
 
-(defn get-osaamisen-osoittaminen [id]
-  (let [naytot (db/select-osaamisen-osoittamiset-by-ppto-id id)]
-    (mapv
-      #(dissoc (c/set-osaamisen-osoittaminen-values %) :id)
-      naytot)))
+(defn extract-osaamisen-hankkimistavat [rows]
+  (mapv #(db-hoks/osaamisen-hankkimistapa-from-sql
+           (extract-and-set-osaamisen-hankkimistapa-values % rows))
+        (c/extract-from-joined-rows :oh__id oht-fields rows)))
 
-(defn get-osaamisen-hankkimistavat [id]
-  (let [hankkimistavat (db/select-osaamisen-hankkimistavat-by-hpto-id id)]
-    (mapv
-      set-osaamisen-hankkimistapa-values
-      hankkimistavat)))
+(defn extract-hankkimistavat-and-osoittamiset [rows from-sql-func fields]
+  (let [ohts (extract-osaamisen-hankkimistavat rows)
+        oos (c/extract-osaamisen-osoittamiset rows)
+        osa-objs (c/extract-from-joined-rows :osa__id fields rows)]
+    (mapv (fn [osa]
+            (assoc osa
+                   :osaamisen-osoittaminen (c/process-subitems osa oos)
+                   :osaamisen-hankkimistavat (c/process-subitems osa ohts)))
+          (mapv from-sql-func osa-objs))))
 
-(defn get-hankittava-paikallinen-tutkinnon-osa [id]
-  (assoc
-    (db/select-hankittava-paikallinen-tutkinnon-osa-by-id id)
-    :osaamisen-osoittaminen
-    (get-osaamisen-osoittaminen id)
-    :osaamisen-hankkimistavat
-    (get-osaamisen-hankkimistavat id)))
-
-(defn get-hankittavat-paikalliset-tutkinnon-osat [hoks-id]
-  (mapv
-    #(dissoc
-       (assoc
-         %
-         :osaamisen-osoittaminen
-         (get-osaamisen-osoittaminen (:id %))
-         :osaamisen-hankkimistavat
-         (get-osaamisen-hankkimistavat (:id %)))
-       :id
-       :hoks-id)
-    (db/select-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
-
-(defn get-osaamisen-hankkimistavat-by-module-id [uuid]
-  (mapv
-    set-osaamisen-hankkimistapa-values
-    (db/select-osaamisen-hankkimistavat-by-module-id uuid)))
-
-(defn get-osaamisen-hankkimistapa-by-id [id]
-  (first
-    (mapv
-      set-osaamisen-hankkimistapa-values
-      (db/select-osaamisen-hankkimistavat-by-id id))))
-
-(defn get-osaamisen-osoittaminen-by-module-id [uuid]
-  (mapv
-    #(dissoc
-       (c/set-osaamisen-osoittaminen-values %)
-       :id)
-    (db/select-osaamisen-osoittamiset-by-module-id uuid)))
-
-(defn get-hato-osaamisen-hankkimistavat [id]
-  (mapv
-    set-osaamisen-hankkimistapa-values
-    (db/select-osaamisen-hankkimistavat-by-hato-id id)))
-
-(defn get-hato-osaamisen-osoittaminen [id]
-  (mapv
-    #(dissoc
-       (c/set-osaamisen-osoittaminen-values %)
-       :id)
-    (db/select-osaamisen-osoittamiset-by-hato-id id)))
-
-(defn get-yto-osa-alue-osaamisen-hankkimistavat [id]
-  (mapv
-    set-osaamisen-hankkimistapa-values
-    (db/select-osaamisen-hankkimistavat-by-hyto-osa-alue-id id)))
-
-(defn get-yto-osa-alueen-osaamisen-osoittamiset [id]
-  (mapv
-    #(dissoc (c/set-osaamisen-osoittaminen-values %) :id)
-    (db/select-osaamisen-osoittamiset-by-yto-osa-alue-id id)))
-
-(defn get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki [jakolinkki]
-  (cond
-    (= (:shared-module-tyyppi jakolinkki) "osaamisenhankkiminen")
-    (get-osaamisen-hankkimistavat-by-module-id (:shared-module-uuid jakolinkki))
-    (= (:shared-module-tyyppi jakolinkki) "osaamisenosoittaminen")
-    (get-osaamisen-osoittaminen-by-module-id (:shared-module-uuid jakolinkki))))
-
-(defn get-yto-osa-alueet [hyto-id]
-  (mapv
-    #(dissoc
-       (assoc
-         %
-         :osaamisen-hankkimistavat
-         (get-yto-osa-alue-osaamisen-hankkimistavat (:id %))
-         :osaamisen-osoittaminen
-         (get-yto-osa-alueen-osaamisen-osoittamiset (:id %)))
-       :id :yhteinen-tutkinnon-osa-id)
-    (db/select-yto-osa-alueet-by-yto-id hyto-id)))
-
-(defn get-hankittava-ammat-tutkinnon-osa [id]
-  (when-let [hato-db (db/select-hankittava-ammat-tutkinnon-osa-by-id id)]
-    (assoc
-      hato-db
-      :osaamisen-osoittaminen
-      (get-hato-osaamisen-osoittaminen id)
-      :osaamisen-hankkimistavat
-      (get-hato-osaamisen-hankkimistavat id))))
+(def hato-fields
+  {:osa__id                         :id
+   :osa__tutkinnon_osa_koodi_uri    :tutkinnon_osa_koodi_uri
+   :osa__tutkinnon_osa_koodi_versio :tutkinnon_osa_koodi_versio
+   :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
+   :osa__olennainen_seikka          :olennainen_seikka
+   :osa__module_id                  :module_id
+   :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
+   :vaatimuksista_tai_tavoitteista_poikkeaminen})
 
 (defn get-hankittavat-ammat-tutkinnon-osat [hoks-id]
-  (mapv
-    #(dissoc
-       (assoc
-         %
-         :osaamisen-osoittaminen
-         (get-hato-osaamisen-osoittaminen (:id %))
-         :osaamisen-hankkimistavat
-         (get-hato-osaamisen-hankkimistavat (:id %)))
-       :id
-       :hoks-id)
-    (db/select-hankittavat-ammat-tutkinnon-osat-by-hoks-id hoks-id)))
+  (mapv #(dissoc % :id)
+        (extract-hankkimistavat-and-osoittamiset
+          (db/select-all-hatos-for-hoks hoks-id)
+          db-hoks/hankittava-ammat-tutkinnon-osa-from-sql
+          hato-fields)))
+
+(defn get-hankittava-ammat-tutkinnon-osa [id]
+  (first (extract-hankkimistavat-and-osoittamiset
+           (db/select-one-hato id)
+           db-hoks/hankittava-ammat-tutkinnon-osa-from-sql
+           hato-fields)))
+
+(def hpto-fields
+  {:osa__id                         :id
+   :osa__laajuus                    :laajuus
+   :osa__nimi                       :nimi
+   :osa__tavoitteet_ja_sisallot     :tavoitteet_ja_sisallot
+   :osa__amosaa_tunniste            :amosaa_tunniste
+   :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
+   :osa__olennainen_seikka          :olennainen_seikka
+   :osa__module_id                  :module_id
+   :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
+   :vaatimuksista_tai_tavoitteista_poikkeaminen})
+
+(defn get-hankittavat-paikalliset-tutkinnon-osat [hoks-id]
+  (mapv #(dissoc % :id)
+        (extract-hankkimistavat-and-osoittamiset
+          (db/select-all-hptos-for-hoks hoks-id)
+          db-hoks/hankittava-paikallinen-tutkinnon-osa-from-sql
+          hpto-fields)))
+
+(defn get-hankittava-paikallinen-tutkinnon-osa [id]
+  (first (extract-hankkimistavat-and-osoittamiset
+           (db/select-one-hpto id)
+           db-hoks/hankittava-paikallinen-tutkinnon-osa-from-sql
+           hpto-fields)))
+
+(def yto-osa-alue-fields
+  {:osa__id                         :id
+   :osa__osa_alue_koodi_uri         :osa_alue_koodi_uri
+   :osa__osa_alue_koodi_versio      :osa_alue_koodi_versio
+   :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
+   :osa__olennainen_seikka          :olennainen_seikka
+   :osa__module_id                  :module_id
+   :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
+   :vaatimuksista_tai_tavoitteista_poikkeaminen})
+
+(defn get-yto-osa-alueet [hyto-id]
+  (mapv #(dissoc % :id)
+        (extract-hankkimistavat-and-osoittamiset
+          (db/select-all-osa-alueet-for-yto hyto-id)
+          db-hoks/yhteisen-tutkinnon-osan-osa-alue-from-sql
+          yto-osa-alue-fields)))
 
 (defn get-hankittava-yhteinen-tutkinnon-osa [hyto-id]
   (when-let [hato-db
@@ -162,6 +166,21 @@
        :id
        :hoks-id)
     (db/select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
+
+(defn get-osaamisen-hankkimistapa-by-id [id]
+  (first (extract-osaamisen-hankkimistavat
+           (db/select-osaamisen-hankkimistapa-by-id id))))
+
+(defn get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki [jakolinkki]
+  (cond
+    (= (:shared-module-tyyppi jakolinkki) "osaamisenhankkiminen")
+    (extract-osaamisen-hankkimistavat
+      (db/select-osaamisen-hankkimistavat-by-module-id
+        (:shared-module-uuid jakolinkki)))
+    (= (:shared-module-tyyppi jakolinkki) "osaamisenosoittaminen")
+    (c/extract-osaamisen-osoittamiset
+      (db/select-osaamisen-osoittamiset-by-module-id
+        (:shared-module-uuid jakolinkki)))))
 
 (defn save-osaamisen-hankkimistapa!
   ([oh hoks-id]

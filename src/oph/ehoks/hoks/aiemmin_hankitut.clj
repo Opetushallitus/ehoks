@@ -1,16 +1,11 @@
 (ns oph.ehoks.hoks.aiemmin-hankitut
   (:require [oph.ehoks.db.postgresql.aiemmin-hankitut :as db]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.common :as c]
             [clojure.java.jdbc :as jdbc]))
 
-(defn get-ahato-tarkentavat-tiedot-naytto [id]
-  (mapv
-    #(dissoc
-       (c/set-osaamisen-osoittaminen-values %)
-       :id)
-    (db/select-tarkentavat-tiedot-naytto-by-ahato-id id)))
-
+; Tätä funktiota käytetään vielä testeissä, eikä pidä poistaa vielä
 (defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
   (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]
     (dissoc
@@ -20,103 +15,136 @@
         (db/select-arvioijat-by-todennettu-arviointi-id ttoa-id))
       :id)))
 
-(defn- set-ahato-values [ahato]
-  (dissoc
+(defn extract-tarkentavat-tiedot-osaamisen-arvioija [rows]
+  (let [tta (mapv db-hoks/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql
+                  (c/extract-from-joined-rows
+                    :talkjoa__id
+                    {:talkjoa__nimi           :nimi
+                     :talkjoa__oppilaitos_oid :oppilaitos_oid}
+                    rows))]
     (assoc
-      ahato
-      :tarkentavat-tiedot-osaamisen-arvioija
-      (get-tarkentavat-tiedot-osaamisen-arvioija
-        (:tarkentavat-tiedot-osaamisen-arvioija-id ahato))
-      :tarkentavat-tiedot-naytto
-      (get-ahato-tarkentavat-tiedot-naytto (:id ahato)))
-    :tarkentavat-tiedot-osaamisen-arvioija-id))
+      (db-hoks/todennettu-arviointi-lisatiedot-from-sql
+        (first (c/extract-from-joined-rows :tal__id
+                                           {:tal__lahetetty_arvioitavaksi
+                                            :lahetetty_arvioitavaksi}
+                                           rows)))
+      :aiemmin-hankitun-osaamisen-arvioijat
+      tta)))
 
-(defn get-aiemmin-hankittu-ammat-tutkinnon-osa [id]
-  (when-let [ahato-from-db
-             (db/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-id id)]
-    (set-ahato-values ahato-from-db)))
+(defn extract-arvioijat-and-osoittamiset [rows from-sql-func fields]
+  (let [oos (c/extract-osaamisen-osoittamiset rows)
+        osa-objs (c/extract-from-joined-rows :osa__id fields rows)]
+    (mapv (fn [osa]
+            (assoc osa
+                   :tarkentavat-tiedot-naytto
+                   (c/process-subitems osa oos)
+                   :tarkentavat-tiedot-osaamisen-arvioija
+                   (extract-tarkentavat-tiedot-osaamisen-arvioija
+                     (filterv #(= (:osa__id %) (:id osa)) rows))))
+          (mapv from-sql-func osa-objs))))
+
+(def ahato-fields
+  {:osa__id                         :id
+   :osa__tutkinnon_osa_koodi_uri    :tutkinnon_osa_koodi_uri
+   :osa__tutkinnon_osa_koodi_versio :tutkinnon_osa_koodi_versio
+   :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
+   :osa__olennainen_seikka          :olennainen_seikka
+   :osa__module_id                  :module_id
+   :osa__valittu_todentamisen_prosessi_koodi_uri
+   :valittu_todentamisen_prosessi_koodi_uri
+   :osa__valittu_todentamisen_prosessi_koodi_versio
+   :valittu_todentamisen_prosessi_koodi_versio})
 
 (defn get-aiemmin-hankitut-ammat-tutkinnon-osat [hoks-id]
-  (mapv
-    #(dissoc (set-ahato-values %) :id)
-    (db/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id hoks-id)))
+  (mapv #(dissoc % :id)
+        (extract-arvioijat-and-osoittamiset
+          (db/select-all-ahatos-for-hoks hoks-id)
+          db-hoks/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql
+          ahato-fields)))
 
-(defn- get-ahpto-tarkentavat-tiedot-naytto [ahpto-id]
-  (mapv
-    #(dissoc
-       (c/set-osaamisen-osoittaminen-values %)
-       :id)
-    (db/select-tarkentavat-tiedot-naytto-by-ahpto-id ahpto-id)))
+(defn get-aiemmin-hankittu-ammat-tutkinnon-osa [id]
+  (first (extract-arvioijat-and-osoittamiset
+           (db/select-one-ahato id)
+           db-hoks/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql
+           ahato-fields)))
 
-(defn- set-ahpto-values [ahpto]
-  (dissoc
-    (assoc
-      ahpto
-      :tarkentavat-tiedot-osaamisen-arvioija
-      (get-tarkentavat-tiedot-osaamisen-arvioija
-        (:tarkentavat-tiedot-osaamisen-arvioija-id ahpto))
-      :tarkentavat-tiedot-naytto
-      (get-ahpto-tarkentavat-tiedot-naytto (:id ahpto)))
-    :tarkentavat-tiedot-osaamisen-arvioija-id))
-
-(defn get-aiemmin-hankittu-paikallinen-tutkinnon-osa [id]
-  (when-let [ahpto-from-db
-             (db/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id id)]
-    (set-ahpto-values ahpto-from-db)))
+(def ahpto-fields
+  {:osa__id                         :id
+   :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
+   :osa__olennainen_seikka          :olennainen_seikka
+   :osa__module_id                  :module_id
+   :osa__laajuus                    :laajuus
+   :osa__nimi                       :nimi
+   :osa__tavoitteet_ja_sisallot     :tavoitteet_ja_sisallot
+   :osa__amosaa_tunniste            :amosaa_tunniste
+   :osa__lahetetty_arvioitavaksi    :lahetetty_arvioitavaksi
+   :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
+   :vaatimuksista_tai_tavoitteista_poikkeaminen
+   :osa__valittu_todentamisen_prosessi_koodi_uri
+   :valittu_todentamisen_prosessi_koodi_uri
+   :osa__valittu_todentamisen_prosessi_koodi_versio
+   :valittu_todentamisen_prosessi_koodi_versio})
 
 (defn get-aiemmin-hankitut-paikalliset-tutkinnon-osat [hoks-id]
-  (mapv
-    #(dissoc (set-ahpto-values %) :id)
-    (db/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id hoks-id)))
+  (mapv #(dissoc % :id)
+        (extract-arvioijat-and-osoittamiset
+          (db/select-all-ahptos-for-hoks hoks-id)
+          db-hoks/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql
+          ahpto-fields)))
 
-(defn get-ahyto-osa-alue-tarkentavat-tiedot [id]
-  (mapv
-    #(dissoc (c/set-osaamisen-osoittaminen-values %) :id)
-    (db/select-tarkentavat-tiedot-naytto-by-ahyto-osa-alue-id id)))
+(defn get-aiemmin-hankittu-paikallinen-tutkinnon-osa [id]
+  (first (extract-arvioijat-and-osoittamiset
+           (db/select-one-ahpto id)
+           db-hoks/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql
+           ahpto-fields)))
+
+(def ahyto-osa-alue-fields
+  {:osa__id                         :id
+   :osa__osa_alue_koodi_uri         :osa_alue_koodi_uri
+   :osa__osa_alue_koodi_versio      :osa_alue_koodi_versio
+   :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
+   :osa__olennainen_seikka          :olennainen_seikka
+   :osa__module_id                  :module_id
+   :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
+   :vaatimuksista_tai_tavoitteista_poikkeaminen
+   :osa__valittu_todentamisen_prosessi_koodi_uri
+   :valittu_todentamisen_prosessi_koodi_uri
+   :osa__valittu_todentamisen_prosessi_koodi_versio
+   :valittu_todentamisen_prosessi_koodi_versio})
 
 (defn get-ahyto-osa-alueet [ahyto-id]
-  (mapv
-    #(dissoc
-       (assoc
-         %
-         :tarkentavat-tiedot-naytto
-         (get-ahyto-osa-alue-tarkentavat-tiedot (:id %))
-         :tarkentavat-tiedot-osaamisen-arvioija
-         (get-tarkentavat-tiedot-osaamisen-arvioija
-           (:tarkentavat-tiedot-osaamisen-arvioija-id %)))
-       :id
-       :tarkentavat-tiedot-osaamisen-arvioija-id)
-    (db/select-osa-alueet-by-ahyto-id ahyto-id)))
+  (mapv #(dissoc % :id)
+        (extract-arvioijat-and-osoittamiset
+          (db/select-all-osa-alueet-for-ahyto ahyto-id)
+          db-hoks/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-from-sql
+          ahyto-osa-alue-fields)))
 
-(defn get-ahyto-tarkentavat-tiedot-naytto [ahyto-id]
-  (mapv
-    #(dissoc
-       (c/set-osaamisen-osoittaminen-values %)
-       :id)
-    (db/select-tarkentavat-tiedot-naytto-by-ahyto-id ahyto-id)))
-
-(defn- set-ahyto-values [ahyto]
-  (dissoc
-    (assoc
-      ahyto
-      :osa-alueet
-      (get-ahyto-osa-alueet (:id ahyto))
-      :tarkentavat-tiedot-osaamisen-arvioija
-      (get-tarkentavat-tiedot-osaamisen-arvioija
-        (:tarkentavat-tiedot-osaamisen-arvioija-id ahyto))
-      :tarkentavat-tiedot-naytto
-      (get-ahyto-tarkentavat-tiedot-naytto (:id ahyto)))
-    :tarkentavat-tiedot-osaamisen-arvioija-id))
-
-(defn get-aiemmin-hankittu-yhteinen-tutkinnon-osa [id]
-  (when-let [ahyto-from-db
-             (db/select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id id)]
-    (set-ahyto-values ahyto-from-db)))
+(def ahyto-fields
+  {:osa__id                         :id
+   :osa__tutkinnon_osa_koodi_uri    :tutkinnon_osa_koodi_uri
+   :osa__tutkinnon_osa_koodi_versio :tutkinnon_osa_koodi_versio
+   :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
+   :osa__lahetetty_arvioitavaksi    :lahetetty_arvioitavaksi
+   :osa__module_id                  :module_id
+   :osa__valittu_todentamisen_prosessi_koodi_uri
+   :valittu_todentamisen_prosessi_koodi_uri
+   :osa__valittu_todentamisen_prosessi_koodi_versio
+   :valittu_todentamisen_prosessi_koodi_versio})
 
 (defn get-aiemmin-hankitut-yhteiset-tutkinnon-osat [hoks-id]
-  (mapv
-    #(dissoc (set-ahyto-values %) :id)
-    (db/select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
+  (mapv #(dissoc (assoc % :osa-alueet (get-ahyto-osa-alueet (:id %))) :id)
+        (extract-arvioijat-and-osoittamiset
+          (db/select-all-ahytos-for-hoks hoks-id)
+          db-hoks/aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql
+          ahyto-fields)))
+
+(defn get-aiemmin-hankittu-yhteinen-tutkinnon-osa [id]
+  (assoc (first (extract-arvioijat-and-osoittamiset
+                  (db/select-one-ahyto id)
+                  db-hoks/aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql
+                  ahyto-fields))
+         :osa-alueet
+         (get-ahyto-osa-alueet id)))
 
 (defn save-ahpto-tarkentavat-tiedot-naytto!
   ([ahpto-id c]

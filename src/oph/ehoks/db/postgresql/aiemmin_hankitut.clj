@@ -3,13 +3,40 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
-(defn select-tarkentavat-tiedot-naytto-by-ahato-id
-  "Aiemmin hankitun ammatillisen tutkinnon osan näytön tarkentavat tiedot
-   (hankitun osaamisen näytöt)"
+(defn select-all-ahatos-for-hoks
+  "Aiemmin hankittujen ammatillisten tutkintojen osat"
   [id]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-ahato-id id]
-    {:row-fn h/osaamisen-osoittaminen-from-sql}))
+  (db-ops/query [queries/select-all-ahatos-for-hoks id]))
+
+(defn select-one-ahato
+  "Aiemmin hankittu ammatillisen tutkinnon osa"
+  [id]
+  (db-ops/query [queries/select-one-ahato id]))
+
+(defn select-all-ahptos-for-hoks
+  "Aiemmin hankittujen paikallisten tutkintojen osat"
+  [id]
+  (db-ops/query [queries/select-all-ahptos-for-hoks id]))
+
+(defn select-one-ahpto
+  "Aiemmin hankittu paikallinen tutkinnon osa"
+  [id]
+  (db-ops/query [queries/select-one-ahpto id]))
+
+(defn select-all-osa-alueet-for-ahyto
+  "Aiemmin hankitun yhteisen tutkinnon osan osa-alueet"
+  [id]
+  (db-ops/query [queries/select-all-osa-alueet-for-ahyto id]))
+
+(defn select-all-ahytos-for-hoks
+  "Aiemmin hankittujen yhteisten tutkintojen osat"
+  [id]
+  (db-ops/query [queries/select-all-ahytos-for-hoks id]))
+
+(defn select-one-ahyto
+  "Aiemmin hankittu yhteinen tutkinnon osa"
+  [id]
+  (db-ops/query [queries/select-one-ahyto id]))
 
 (defn select-todennettu-arviointi-lisatiedot-by-id
   "Todennetun arvioinnin lisätiedot"
@@ -35,19 +62,6 @@
     first
     h/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql))
 
-(defn select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id
-  "Aiemmin hankittujen ammatillisten tutkintojen osat"
-  [id]
-  (db-ops/query
-    [queries/select-aiemmin-hankitut-ammat-tutkinnon-osat-by-hoks-id id]
-    {:row-fn h/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql}))
-
-(defn select-tarkentavat-tiedot-naytto-by-ahpto-id
-  "Aiemmin hankitun paikallisen tutkinnon osan tarkentavien tietojen näyttö"
-  [ahpto-id]
-  (db-ops/query [queries/select-osaamisen-osoittamiset-by-ahpto-id ahpto-id]
-                {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
 (defn select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-id
   "Aiemmin hankitut paikalliset tutkinnon osat"
   [id]
@@ -57,35 +71,6 @@
     first
     h/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql))
 
-(defn select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
-  "Aiemmin hankitut paikalliset tutkinnon osat"
-  [id]
-  (db-ops/query
-    [queries/select-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id id]
-    {:row-fn h/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql}))
-
-(defn select-tarkentavat-tiedot-naytto-by-ahyto-osa-alue-id
-  "Aiemmin hankitun yhteisen tutkinnon osan tarkentavien tietojen näyttö"
-  [id]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-ahyto-osa-alue-id id]
-    {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
-(defn select-osa-alueet-by-ahyto-id
-  "Aiemmin hankitun yhteisen tutkinnon osan osa-alueet"
-  [id]
-  (db-ops/query
-    [queries/select-osa-alueet-by-ahyto-id id]
-    {:row-fn h/aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-from-sql}))
-
-(defn select-tarkentavat-tiedot-naytto-by-ahyto-id
-  "Aiemmin hankitun yhteisen tutkinnon osan näytön tarkentavat tiedot
-   (hankitun osaamisen näytöt)"
-  [id]
-  (db-ops/query
-    [queries/select-osaamisen-osoittamiset-by-ahyto-id id]
-    {:row-fn h/osaamisen-osoittaminen-from-sql}))
-
 (defn select-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id
   "Aiemmin hankitun yhteisen tutkinnon osa"
   [id]
@@ -94,13 +79,6 @@
                    id])
     first
     h/aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql))
-
-(defn select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id
-  "Aiemmin hankitun yhteisen tutkinnon osat"
-  [id]
-  (db-ops/query
-    [queries/select-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id id]
-    {:row-fn h/aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql}))
 
 (defn insert-ahpto-osaamisen-osoittaminen!
   "Lisää aiemmin hankitun paikallisen tutkinnon osan osaamisen osoittaminen"
