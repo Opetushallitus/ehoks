@@ -7,6 +7,7 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
@@ -508,9 +509,13 @@
     :kyselylinkit
     ["kyselylinkki = ?" kyselylinkki]))
 
-(defn refresh-opiskeluoikeus-hankintakoulutukset []
+(defn update-opiskeluoikeudet []
   (let [hoksit
-        (db-hoks/select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot)]
+        (db-hoks/select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot)
+        hoksit-created-in-7-days
+        (db-hoks/select-hoksit-created-between
+          (.minusDays (LocalDate/now) 7)
+          (LocalDate/now))]
     (log/infof "Päivitetään %s hoksin opiskeluoikeus-hankintakoulutukset"
                (count hoksit))
     (doseq [hoks hoksit]
@@ -524,4 +529,20 @@
                                                       oppija-oid))
         (catch Exception e
           (log/errorf "Hankintakoulutukset-päivitys epäonnistui hoksille %s"
-                      (:id hoks)))))))
+                      (:id hoks)))))
+    (let [hokses-without-oo
+          (filter
+            some?
+            (pmap
+              (fn [x]
+                (when (nil?
+                        (k/get-opiskeluoikeus-info
+                          (:opiskeluoikeus-oid x))) x))
+              hoksit-created-in-7-days))
+          oo-oids (map :opiskeluoikeus-oid hokses-without-oo)]
+      (log/infof "Päivitetään %s hoksin opiskeluoikeus-hankintakoulutukset"
+                 (count hoksit))
+      (doseq [oo-oid oo-oids]
+        (let [opiskeluoikeus (db-oo/select-opiskeluoikeus-by-oid oo-oid)]
+          (when (some? opiskeluoikeus)
+            (oppijaindex/set-opiskeluoikeus-koski404 oo-oid)))))))

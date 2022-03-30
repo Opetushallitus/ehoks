@@ -73,5 +73,5 @@
       (c-api/POST "/opiskeluoikeus-update" request
         :summary "Päivittää aktiivisten hoksien opiskeluoikeudet Koskesta"
         :header-params [caller-id :- s/Str]
-        (future (h/refresh-opiskeluoikeus-hankintakoulutukset))
+        (future (h/update-opiskeluoikeudet))
         (response/no-content)))))

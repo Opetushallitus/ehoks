@@ -303,6 +303,9 @@
 (defn set-opiskeluoikeus-paattynyt! [oid timestamp]
   (db-opiskeluoikeus/update-opiskeluoikeus! oid {:paattynyt timestamp}))
 
+(defn set-opiskeluoikeus-koski404 [oid]
+  (db-opiskeluoikeus/update-opiskeluoikeus! oid {:koski404 true}))
+
 (defn oppija-opiskeluoikeus-match?
   "Check that opiskeluoikeus belongs to oppija"
   [opiskeluoikeudet opiskeluoikeus-oid]
