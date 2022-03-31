@@ -498,7 +498,8 @@
     [queries/select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot]
     {:row-fn db-ops/from-sql}))
 
-(defn select-hoksit-by-oo-koulutustoimija [koulutustoimija-oid]
+(defn select-hoksit-by-oo-koulutustoimija-and-koski404 [koulutustoimija-oid]
   (db-ops/query
-    [queries/select-hoksit-by-oo-koulutustoimija koulutustoimija-oid]
+    [queries/select-hoksit-by-oo-koulutustoimija-and-koski404
+     koulutustoimija-oid]
     {:row-fn db-ops/from-sql}))
