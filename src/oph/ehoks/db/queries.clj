@@ -188,3 +188,5 @@
       "hoksit/select_all_osa_alueet_for_ahyto.sql")
 (defq select-all-ahytos-for-hoks "hoksit/select_all_ahytos_for_hoks.sql")
 (defq select-one-ahyto "hoksit/select_one_ahyto.sql")
+(defq select-hoksit-by-oo-koulutustoimija-and-koski404
+      "hoksit/select_hoksit_by_oo_koulutustoimija_and_koski404.sql")
