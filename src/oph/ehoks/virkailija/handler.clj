@@ -454,9 +454,9 @@
                 :summary "Palauttaa listan hokseista, joiden
                           opiskeluoikeus puuttuu"
                 :header-params [caller-id :- s/Str]
-                :path-params [koulutustoimijaoid :- s/Str]
+                :path-params [oppilaitosoid :- s/Str]
                 (get-hoksit-without-oo-in-koski-by-oppilaitosoid
-                  koulutustoimijaoid))
+                  oppilaitosoid))
 
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
                 :summary "Palauttaa tietoja kyselylinkkeihin liittyvistä
