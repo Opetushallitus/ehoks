@@ -8,6 +8,8 @@ SELECT
   osa.koulutuksen_jarjestaja_oid AS osa__koulutuksen_jarjestaja_oid,
   osa.olennainen_seikka AS osa__olennainen_seikka,
   osa.module_id AS osa__module_id,
+  osa.opetuksen_maara AS osa__opetuksen_maara,
+  osa.ohjauksen_maara AS osa__ohjauksen_maara,
   oh.id AS oh__id,
   oh.jarjestajan_edustaja_nimi AS oh__jarjestajan_edustaja_nimi,
   oh.jarjestajan_edustaja_rooli AS oh__jarjestajan_edustaja_rooli,
