@@ -423,9 +423,9 @@
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
-    (s/optional-key :opetuksen-maara) s/Int
+    (s/optional-key :opetuksen-maara) s/Num
     "Tarvittava opetuksen määrä (tunnit)"
-    (s/optional-key :ohjauksen-maara) s/Int
+    (s/optional-key :ohjauksen-maara) s/Num
     "Tarvittava ohjauksen määrä (tunnit)"))
 
 (s/defschema
@@ -648,9 +648,9 @@
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
-    (s/optional-key :opetuksen-maara) s/Int
+    (s/optional-key :opetuksen-maara) s/Num
     "Tarvittava opetuksen määrä (tunnit)"
-    (s/optional-key :ohjauksen-maara) s/Int
+    (s/optional-key :ohjauksen-maara) s/Num
     "Tarvittava ohjauksen määrä (tunnit)"))
 
 (s/defschema
@@ -717,9 +717,9 @@
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
-    (s/optional-key :opetuksen-maara) s/Int
+    (s/optional-key :opetuksen-maara) s/Num
     "Tarvittava opetuksen määrä (tunnit)"
-    (s/optional-key :ohjauksen-maara) s/Int
+    (s/optional-key :ohjauksen-maara) s/Num
     "Tarvittava ohjauksen määrä (tunnit)"))
 
 (s/defschema

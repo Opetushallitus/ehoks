@@ -9,8 +9,8 @@
                :tutkinnon-osa-koodi-versio 1
                :vaatimuksista-tai-tavoitteista-poikkeaminen
                "Ei poikkeamia."
-               :opetuksen-maara 10
-               :ohjauksen-maara 16
+               :opetuksen-maara 10.1
+               :ohjauksen-maara 16.7
                :osaamisen-hankkimistavat
                [{:alku "2018-12-12"
                  :loppu "2018-12-20"
@@ -100,8 +100,8 @@
                 :osaamisen-hankkimistavat []
                 :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
                 :olennainen-seikka true
-                :opetuksen-maara 10
-                :ohjauksen-maara 16
+                :opetuksen-maara 10.0
+                :ohjauksen-maara 16.0
                 :osaamisen-osoittaminen
                 [{:jarjestaja {:oppilaitos-oid
                                "1.2.246.562.10.00000000002"}
@@ -126,8 +126,8 @@
      :osa-alue-koodi-versio 1
      :vaatimuksista-tai-tavoitteista-poikkeaminen "joku poikkeaminen"
      :olennainen-seikka false
-     :opetuksen-maara 10
-     :ohjauksen-maara 16
+     :opetuksen-maara 10.0
+     :ohjauksen-maara 16.0
      :osaamisen-hankkimistavat
      [{:alku "2018-12-15"
        :loppu "2018-12-23"
