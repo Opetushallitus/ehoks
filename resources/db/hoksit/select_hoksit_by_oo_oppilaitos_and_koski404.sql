@@ -1,5 +1,6 @@
 SELECT h.id AS hoksId,
        h.oppija_oid AS oppijaoid,
+       h.eid AS hokseid,
        oo.oid AS opiskeluoikeusoid,
        oo.oppilaitos_oid AS oppilaitosoid
 FROM hoksit h
