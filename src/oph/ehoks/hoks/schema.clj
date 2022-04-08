@@ -110,8 +110,8 @@
                    (.isValidNumber utilobj numberobj))))
         (catch NumberParseException e
           false))
-      (when (not= (:env-stage env) "sade")
-        (log/warn "Puhelinnumero virheellinen, mutta sallittu testiympäristössä"
+      (do ;when (not= (:env-stage env) "sade")
+        (log/warn "Puhelinnumero virheellinen, mutta sallittu ympäristössä"
                   (:env-stage env))
         true)))
 
