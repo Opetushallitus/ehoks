@@ -95,26 +95,6 @@
     :nimi s/Str "Henkilön nimi"
     (s/optional-key :rooli) s/Str "Henkilön rooli"))
 
-(defn valid-number?
-  "Sallii vain valideja puhelinnumeroita. Jos funktio ei hyväksy numeroa, jonka
-  tiedät olevan validi, tarkista, miten kirjasto luokittelee sen:
-  https://libphonenumber.appspot.com/. Testiympäristöissä palauttaa aina true,
-  mutta logittaa virheviestin, jos numero ei ole validi. Tämä sallii täysin
-  feikkien numeroiden käyttöä testiympärisöissä."
-  [number]
-  (or (try
-        (or (empty? number)
-            (let [utilobj (PhoneNumberUtil/getInstance)
-                  numberobj (.parse utilobj number "FI")]
-              (and (empty? (filter (fn [x] (Character/isLetter x)) number))
-                   (.isValidNumber utilobj numberobj))))
-        (catch NumberParseException e
-          false))
-      (do ;when (not= (:env-stage env) "sade")
-        (log/warn "Puhelinnumero virheellinen, mutta sallittu ympäristössä"
-                  (:env-stage env))
-        true)))
-
 (s/defschema
   VastuullinenTyopaikkaOhjaaja
   (modify
@@ -128,7 +108,7 @@
        "Vastuullisen ohjaajan sähköpostiosoite"
        (s/optional-key :puhelinnumero)
        (s/constrained s/Str
-                      valid-number?
+                      #(and (<= (count %) 256) (re-matches #"[-+0-9() ]*" %))
                       "Puhelinnumero virheellinen.")
        "Vastuullisen ohjaajan puhelinnumero")}))
 
