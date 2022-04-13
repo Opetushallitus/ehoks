@@ -15,7 +15,9 @@
             [clojure.tools.logging :as log])
   (:import (java.time LocalDate)))
 
-(defn get-hoks-values [h]
+(defn get-hoks-values
+  "Hakee annetun HOKSin tutkinnon osat ja tukevat opinnot tietokannasta."
+  [h]
   (let [id (:id h)]
     (assoc
       h
@@ -34,10 +36,14 @@
       :hankittavat-yhteiset-tutkinnon-osat
       (ha/get-hankittavat-yhteiset-tutkinnon-osat id))))
 
-(defn trim-arvioijat [arvioijat]
+(defn trim-arvioijat
+  "Poistaa nimi-kentän jokaisesta arvioija-objektista."
+  [arvioijat]
   (mapv (fn [arvioija] (dissoc arvioija :nimi)) arvioijat))
 
-(defn trim-osa [osa]
+(defn trim-osa
+  "Poistaa nimi-kenttiä tutkinnon osan useista sisälletyistä objekteista."
+  [osa]
   (-> osa
       (update-in [:tarkentavat-tiedot-osaamisen-arvioija
                   :aiemmin-hankitun-osaamisen-arvioijat] trim-arvioijat)
@@ -50,48 +56,70 @@
                            (update :tyoelama-osaamisen-arvioijat
                                    trim-arvioijat)) ttn)))))
 
-(defn trim-osaamisen-osoittaminen [oo]
+(defn trim-osaamisen-osoittaminen
+  "Poistaa nimi-kenttiä joistakin objekteista osaamisen osoittamisen sisällä."
+  [oo]
   (-> oo
       (update :koulutuksen-jarjestaja-osaamisen-arvioijat trim-arvioijat)
       (update :tyoelama-osaamisen-arvioijat trim-arvioijat)))
 
-(defn trim-ohjaaja-to-boolean [oht]
+(defn trim-ohjaaja-to-boolean
+  "Korvaa työpaikalla järjestettävän koulutuksen vastuullisen työpaikkaohjaajan
+  booleanarvolla, joka on totta, jos työpaikkaohjaajan tiedot ovat olemassa."
+  [oht]
   (if (:tyopaikalla-jarjestettava-koulutus oht)
     (update oht :tyopaikalla-jarjestettava-koulutus
             (fn [tjk] (update tjk
                               :vastuullinen-tyopaikka-ohjaaja boolean)))
     oht))
 
-(defn trim-osaamisen-hankkimistapa [oht]
+(defn trim-osaamisen-hankkimistapa
+  "Poistaa järjestäjän edustajan ja hankkijan edustajan osaamisen
+  hankkimistavasta, ja trimmaa myös vastuullisen työpaikkaohjaajan booleaniksi."
+  [oht]
   (-> oht
       (dissoc :jarjestajan-edustaja)
       (dissoc :hankkijan-edustaja)
       trim-ohjaaja-to-boolean))
 
-(defn trim-hao [hao]
+(defn trim-hao
+  "Trimmaa hankittavan tutkinnon osan osaamisen hankkimistavat ja osaamisen
+  osoittamiset."
+  [hao]
   (-> hao
       (update :osaamisen-hankkimistavat
               (fn [ohts] (mapv trim-osaamisen-hankkimistapa ohts)))
       (update :osaamisen-osoittaminen
               (fn [oo] (mapv trim-osaamisen-osoittaminen oo)))))
 
-(defn trim-hyto [hyto]
+(defn trim-hyto
+  "Trimmaa hankittavan yhteisen tutkinnon osan osa-alueet."
+  [hyto]
   (update hyto :osa-alueet (fn [osa-alueet] (mapv trim-hao osa-alueet))))
 
-(defn trim-ahyto [ahyto]
+(defn trim-ahyto
+  "Trimmaa aiemmin hankitun yhteisen tutkinnon osan osa-alueet."
+  [ahyto]
   (update (trim-osa ahyto)
           :osa-alueet
           (fn [osa-alueet] (mapv trim-osa osa-alueet))))
 
-(defn get-hokses-by-oppija [oid]
+(defn get-hokses-by-oppija
+  "Hakee HOKSeja oppijan OID:n perusteella."
+  [oid]
   (mapv
     get-hoks-values
     (db-hoks/select-hoks-by-oppija-oid oid)))
 
-(defn get-hoks-by-id [id]
+(defn get-hoks-by-id
+  "Hakee yhden HOKSin ID:n perusteella."
+  [id]
   (get-hoks-values (db-hoks/select-hoks-by-id id)))
 
-(defn filter-for-vipunen [hoks]
+(defn filter-for-vipunen
+  "Trimmaa kaikki HOKSin tutkinnon osat paitsi hankittavat paikalliset tutkinnon
+  osat vipusta varten."
+  [hoks]
   (-> hoks
       (dissoc :sahkoposti)
       (update :aiemmin-hankitut-ammat-tutkinnon-osat
@@ -105,32 +133,49 @@
       (update :hankittavat-yhteiset-tutkinnon-osat
               (fn [hyto] (mapv trim-hyto hyto)))))
 
-(defn enrich-and-filter [hoks]
+(defn enrich-and-filter
+  "Hakee HOKSin tutkinnon osat tietokannasta ja suodattaa ne vipusta varten."
+  [hoks]
   (filter-for-vipunen (get-hoks-values hoks)))
 
-(defn get-hokses-from-id [id amount updated-after]
+(defn get-hokses-from-id
+  "Hakee tietyn määrän HOKSeja, jotka on päivitetty tietyn ajankohdan jälkeen ja
+  joiden ID:t ovat tiettyä arvoa isompia."
+  [id amount updated-after]
   (let [hokses (db-hoks/select-hokses-greater-than-id
                  (or id 0)
                  amount
                  updated-after)]
     (map enrich-and-filter hokses)))
 
-(defn- new-osaamisen-saavuttamisen-pvm-added? [old-osp new-osp]
+(defn- new-osaamisen-saavuttamisen-pvm-added?
+  "Tarkistaa, onko uusi osaamisen saavuttamisen päivämäärä lisätty kun vanhaa ei
+  ollut."
+  [old-osp new-osp]
   (and (some? new-osp)
        (nil? old-osp)))
 
-(defn check-suoritus-type? [suoritus]
+(defn check-suoritus-type?
+  "Tarkistaa, onko suorituksen tyyppi ammatillinen suoritus tai osittainen
+  ammatillinen suoritus."
+  [suoritus]
   (or (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkinto")
       (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkintoosittainen")))
 
-(defn get-suoritus [opiskeluoikeus]
+(defn get-suoritus
+  "Hakee opiskeluoikeudesta ensimmäisen suorituksen, jonka tyyppi on
+  ammatillinen suoritus tai osittainen ammatillinen suoritus."
+  [opiskeluoikeus]
   (reduce
     (fn [_ suoritus]
       (when (check-suoritus-type? suoritus)
         (reduced suoritus)))
     nil (:suoritukset opiskeluoikeus)))
 
-(defn get-kysely-type [opiskeluoikeus]
+(defn get-kysely-type
+  "Muuttaa opiskeluoikeuden suorituksen tyypin sellaiseksi, minkä herätepalvelu
+  voi hyväksyä."
+  [opiskeluoikeus]
   (let [tyyppi (get-in
                  (get-suoritus opiskeluoikeus)
                  [:tyyppi :koodiarvo])]
@@ -140,7 +185,9 @@
       (= tyyppi "ammatillinentutkintoosittainen")
       "tutkinnon_osia_suorittaneet")))
 
-(defn- send-paattokysely [hoks-id os-saavut-pvm hoks]
+(defn- send-paattokysely
+  "Lähettää AMIS päättöpalautekyselyn herätepalveluun."
+  [hoks-id os-saavut-pvm hoks]
   (try (let [opiskeluoikeus (k/get-opiskeluoikeus-info
                               (:opiskeluoikeus-oid hoks))
              kyselytyyppi (get-kysely-type opiskeluoikeus)]
@@ -163,10 +210,14 @@
                          "opiskeluoikeus-oid %s.")
                     hoks-id os-saavut-pvm (:opiskeluoikeus-oid hoks)))))
 
-(defn error-log-hoks-id [id]
+(defn error-log-hoks-id
+  "Logittaa HOKSin ID:n virheenä."
+  [id]
   (log/errorf "Error caused by hoks-id: %s" id))
 
-(defn save-hoks! [h]
+(defn save-hoks!
+  "Tallentaa yhden HOKSin arvot tietokantaan."
+  [h]
   (jdbc/with-db-transaction
     [conn (db-ops/get-db-connection)]
     (let [saved-hoks (db-hoks/insert-hoks! h conn)]
@@ -217,7 +268,10 @@
           (:hankittavat-yhteiset-tutkinnon-osat h)
           conn)))))
 
-(defn- merge-not-given-hoks-values [new-hoks-values]
+(defn- merge-not-given-hoks-values
+  "Varmistaa, että tietyt kentät ovat olemassa HOKSissa, vaikka niissä olisi
+  nulleja."
+  [new-hoks-values]
   (let [empty-top-level-hoks {:versio nil
                               :sahkoposti nil
                               :urasuunnitelma-koodi-uri nil
@@ -228,11 +282,15 @@
                               :paivitetty nil}]
     (merge empty-top-level-hoks new-hoks-values)))
 
-(defn- replace-main-hoks! [hoks-id new-values db-conn]
+(defn- replace-main-hoks!
+  "Korvaa HOKSin ydinsisällön annetuilla arvoilla. Ei tallenna tutkinnon osia."
+  [hoks-id new-values db-conn]
   (db-hoks/update-hoks-by-id!
     hoks-id (merge-not-given-hoks-values new-values) db-conn))
 
-(defn- replace-oto! [hoks-id new-oto-values db-conn]
+(defn- replace-oto!
+  "Korvaa vanhat opiskeluvalmiuksia tukevat opinnot annetuilla arviolla."
+  [hoks-id new-oto-values db-conn]
   (db-ot/delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id
     hoks-id db-conn)
   (when
@@ -240,7 +298,9 @@
     (ot/save-opiskeluvalmiuksia-tukevat-opinnot!
       hoks-id new-oto-values db-conn)))
 
-(defn- replace-hato! [hoks-id new-hato-values db-conn]
+(defn- replace-hato!
+  "Korvaa vanhat hankittavat ammatilliset tutkinnon osat annetuilla arvoilla."
+  [hoks-id new-hato-values db-conn]
   (db-ha/delete-hankittavat-ammatilliset-tutkinnon-osat-by-hoks-id
     hoks-id db-conn)
   (when
@@ -248,7 +308,9 @@
     (ha/save-hankittavat-ammat-tutkinnon-osat!
       hoks-id new-hato-values db-conn)))
 
-(defn- replace-hpto! [hoks-id new-hpto-values db-conn]
+(defn- replace-hpto!
+  "Korvaa vanhat hankittavat paikalliset tutkinnon osat annetuilla arvoilla."
+  [hoks-id new-hpto-values db-conn]
   (db-ha/delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id
     hoks-id db-conn)
   (when
@@ -256,7 +318,9 @@
     (ha/save-hankittavat-paikalliset-tutkinnon-osat!
       hoks-id new-hpto-values db-conn)))
 
-(defn- replace-hyto! [hoks-id new-hyto-values db-conn]
+(defn- replace-hyto!
+  "Korvaa vanhat hankittavat yhteiset tutkinnon osat annetuilla arvoilla."
+  [hoks-id new-hyto-values db-conn]
   (db-ha/delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id
     hoks-id db-conn)
   (when
@@ -264,7 +328,10 @@
     (ha/save-hankittavat-yhteiset-tutkinnon-osat!
       hoks-id new-hyto-values db-conn)))
 
-(defn- replace-ahato! [hoks-id new-ahato-values db-conn]
+(defn- replace-ahato!
+  "Korvaa vanhat aiemmin hankitut ammatilliset tutkinnon osat annetuilla
+  arvoilla."
+  [hoks-id new-ahato-values db-conn]
   (db-ah/delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id
     hoks-id db-conn)
   (when
@@ -272,7 +339,10 @@
     (ah/save-aiemmin-hankitut-ammat-tutkinnon-osat!
       hoks-id new-ahato-values db-conn)))
 
-(defn- replace-ahpto! [hoks-id new-ahpto-values db-conn]
+(defn- replace-ahpto!
+  "Korvaa vanhat aiemmin hankitut paikalliset tutkinnon osat annetuilla
+  arvoilla."
+  [hoks-id new-ahpto-values db-conn]
   (db-ah/delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
     hoks-id db-conn)
   (when
@@ -280,7 +350,9 @@
     (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
       hoks-id new-ahpto-values db-conn)))
 
-(defn- replace-ahyto! [hoks-id new-ahyto-values db-conn]
+(defn- replace-ahyto!
+  "Korvaa vanhat aiemmin hankitut yhteiset tutkinnon osat annetuilla arvoilla."
+  [hoks-id new-ahyto-values db-conn]
   (db-ah/delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id
     hoks-id db-conn)
   (when
@@ -288,7 +360,9 @@
     (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
       hoks-id new-ahyto-values db-conn)))
 
-(defn get-osaamisen-hankkimistavat [hoks]
+(defn get-osaamisen-hankkimistavat
+  "Hakee kaikki osaamisen hankkimistavat HOKSista."
+  [hoks]
   (concat
     (mapcat
       :osaamisen-hankkimistavat
@@ -299,7 +373,9 @@
     (mapcat :osaamisen-hankkimistavat
             (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
 
-(defn- should-check-hankkimistapa-y-tunnus? [oh]
+(defn- should-check-hankkimistapa-y-tunnus?
+  "Tarkistaa, loppuuko osaamisen hankkimistapa käyttöönottopäivämäärän jälkeen."
+  [oh]
   (let [kayttoonottopvm (LocalDate/parse "2021-08-25")]
     (try
       (or
@@ -313,7 +389,10 @@
         (log/info oh)
         (log/info e)))))
 
-(defn- y-tunnus-missing? [oh]
+(defn- y-tunnus-missing?
+  "Palauttaa osaamisen hankkimistavan, jos siinä pitäisi tarkistaa Y-tunnus
+  mutta se puuttuu."
+  [oh]
   (when (and
           (or
             (= (:osaamisen-hankkimistapa-koodi-uri oh)
@@ -326,11 +405,16 @@
                             :tyopaikan-y-tunnus]))
       oh)))
 
-(defn missing-tyopaikan-y-tunnus? [osaamisen-hankkimistavat]
+(defn missing-tyopaikan-y-tunnus?
+  "Tarkistaa, onko osaamisen hankkimistapojen joukossa yksi tai useampi, josta
+  Y-tunnus puuttuu (ja joka loppuu käyttöönottopäivämäärän jälkeen)."
+  [osaamisen-hankkimistavat]
   (when (seq osaamisen-hankkimistavat)
     (some y-tunnus-missing? osaamisen-hankkimistavat)))
 
-(defn replace-hoks! [hoks-id new-values]
+(defn replace-hoks!
+  "Korvaa kokonaisen HOKSin (ml. tutkinnon osat) annetuilla arvoilla."
+  [hoks-id new-values]
   (let [current-hoks (get-hoks-by-id hoks-id)
         old-opiskeluoikeus-oid (:opiskeluoikeus-oid current-hoks)
         old-oppija-oid (:oppija-oid current-hoks)
@@ -430,7 +514,9 @@
           (sqs/build-hoks-hyvaksytty-msg hoks-id updated-hoks))))
     h))
 
-(defn update-hoks! [hoks-id new-values]
+(defn update-hoks!
+  "Päivittää annetut arvot HOKSiin."
+  [hoks-id new-values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
     (let [hoks (get-hoks-by-id hoks-id)
@@ -490,26 +576,36 @@
               (sqs/build-hoks-hyvaksytty-msg hoks-id hoks)))
           h)))))
 
-(defn insert-kyselylinkki! [m]
+(defn insert-kyselylinkki!
+  "Lisää yhden kyselylinkin tietokantatauluun."
+  [m]
   (db-ops/insert-one!
     :kyselylinkit
     (db-ops/to-sql m)))
 
-(defn update-kyselylinkki! [m]
+(defn update-kyselylinkki!
+  "Päivittää yhden kyselylinkin tietokantarivin."
+  [m]
   (db-ops/update!
     :kyselylinkit
     (db-ops/to-sql m)
     ["kyselylinkki = ?" (:kyselylinkki m)]))
 
-(defn get-kyselylinkit-by-oppija-oid [oid]
+(defn get-kyselylinkit-by-oppija-oid
+  "Hakee kyselylinkkejä tietokannasta oppijan OID:n perusteella."
+  [oid]
   (db-hoks/select-kyselylinkit-by-oppija-oid oid))
 
-(defn delete-kyselylinkki! [kyselylinkki]
+(defn delete-kyselylinkki!
+  "Poistaa kyselylinkin tietokannasta."
+  [kyselylinkki]
   (db-ops/delete!
     :kyselylinkit
     ["kyselylinkki = ?" kyselylinkki]))
 
-(defn update-opiskeluoikeudet []
+(defn update-opiskeluoikeudet
+  "Päivittää opiskeluoikeustiedot Koskesta tietokantaan."
+  []
   (let [hoksit
         (db-hoks/select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot)
         hoksit-created-in-7-days
