@@ -62,10 +62,14 @@
            (throw e)))
       (h/get-kyselylinkit-by-oppija-oid oppija-oid))))
 
-(defn set-tep-kasitelty [hankkimistapa-id to]
+(defn set-tep-kasitelty
+  "Marks an osaamisen hankkimistapa as handled (käsitelty)."
+  [hankkimistapa-id to]
   (db-hoks/update-osaamisen-hankkimistapa-tep-kasitelty hankkimistapa-id to))
 
-(defn- send-kyselyt-for-hoksit [hoksit build-msg]
+(defn- send-kyselyt-for-hoksit
+  "Send questionaires for the given set of HOKSes."
+  [hoksit build-msg]
   (loop [hoks (first hoksit)
          r (rest hoksit)
          c 0]
@@ -78,11 +82,15 @@
         (recur (first r) (rest r) c)
         c))))
 
-(defn resend-aloituskyselyherate-between [from to]
+(defn resend-aloituskyselyherate-between
+  "Resend aloituskyselyt for given time period."
+  [from to]
   (send-kyselyt-for-hoksit (db-hoks/select-hoksit-created-between from to)
                            #(sqs/build-hoks-hyvaksytty-msg (:id %) %)))
 
-(defn paatto-build-msg [hoks]
+(defn paatto-build-msg
+  "Build päättökysely message."
+  [hoks]
   (if-let [opiskeluoikeus (k/get-opiskeluoikeus-info
                             (:opiskeluoikeus-oid hoks))]
     (if-let [kyselytyyppi (h/get-kysely-type opiskeluoikeus)]
@@ -92,7 +100,9 @@
         hoks
         kyselytyyppi))))
 
-(defn resend-paattokyselyherate-between [from to]
+(defn resend-paattokyselyherate-between
+  "Resend päättökyselyt for given time period."
+  [from to]
   (send-kyselyt-for-hoksit
     (db-hoks/select-hoksit-finished-between from to)
     paatto-build-msg))
@@ -118,8 +128,12 @@
     (send-kyselyt-for-hoksit paattyneet paatto-build-msg)
     hoksit))
 
-(defn set-aloitusherate-kasitelty [hoks-id to]
+(defn set-aloitusherate-kasitelty
+  "Marks aloitusheräte handled (käsitelty) for a given HOKS."
+  [hoks-id to]
   (db-hoks/update-amisherate-kasittelytilat-aloitusherate-kasitelty hoks-id to))
 
-(defn set-paattoherate-kasitelty [hoks-id to]
+(defn set-paattoherate-kasitelty
+  "Marks päättöheräte handled (käsitelty) for a given HOKS."
+  [hoks-id to]
   (db-hoks/update-amisherate-kasittelytilat-paattoherate-kasitelty hoks-id to))
