@@ -8,7 +8,9 @@
             [clojure.tools.logging :as log])
   (:import (java.time LocalDate)))
 
-(defn extract-and-set-osaamisen-hankkimistapa-values [oht rows]
+(defn extract-and-set-osaamisen-hankkimistapa-values
+  "Irrottaa annetun osaamisen hankkimistavan sisällön yhdistetyistä riveistä."
+  [oht rows]
   (let [this-oht-rows (filterv #(= (:oh__id %) (:id oht)) rows)
         kjs (mapv db-hoks/keskeytymisajanjakso-from-sql
                   (c/extract-from-joined-rows :kj__id
@@ -74,12 +76,18 @@
    :oh__tyopaikalla_jarjestettava_koulutus_id
    :tyopaikalla_jarjestettava_koulutus_id})
 
-(defn extract-osaamisen-hankkimistavat [rows]
+(defn extract-osaamisen-hankkimistavat
+  "Irrottaa kaikki osaamisen hankkimistavat sekvenssistä yhdistetyistä
+  riveistä."
+  [rows]
   (mapv #(db-hoks/osaamisen-hankkimistapa-from-sql
            (extract-and-set-osaamisen-hankkimistapa-values % rows))
         (c/extract-from-joined-rows :oh__id oht-fields rows)))
 
-(defn extract-hankkimistavat-and-osoittamiset [rows from-sql-func fields]
+(defn extract-hankkimistavat-and-osoittamiset
+  "Lisää tietyn tutkinnon osan osaamisen hankkimistavat ja osaamisen
+  osoittamiset siihen osaan."
+  [rows from-sql-func fields]
   (let [ohts (extract-osaamisen-hankkimistavat rows)
         oos (c/extract-osaamisen-osoittamiset rows)
         osa-objs (c/extract-from-joined-rows :osa__id fields rows)]
@@ -99,14 +107,18 @@
    :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
    :vaatimuksista_tai_tavoitteista_poikkeaminen})
 
-(defn get-hankittavat-ammat-tutkinnon-osat [hoks-id]
+(defn get-hankittavat-ammat-tutkinnon-osat
+  "Hakee yhden HOKSin hankittavat ammatilliset tutkinnon osat tietokannasta."
+  [hoks-id]
   (mapv #(dissoc % :id)
         (extract-hankkimistavat-and-osoittamiset
           (db/select-all-hatos-for-hoks hoks-id)
           db-hoks/hankittava-ammat-tutkinnon-osa-from-sql
           hato-fields)))
 
-(defn get-hankittava-ammat-tutkinnon-osa [id]
+(defn get-hankittava-ammat-tutkinnon-osa
+  "Hakee yhden hankittavan ammatillisen tutkinnon osan tietokannasta."
+  [id]
   (first (extract-hankkimistavat-and-osoittamiset
            (db/select-one-hato id)
            db-hoks/hankittava-ammat-tutkinnon-osa-from-sql
@@ -124,14 +136,18 @@
    :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
    :vaatimuksista_tai_tavoitteista_poikkeaminen})
 
-(defn get-hankittavat-paikalliset-tutkinnon-osat [hoks-id]
+(defn get-hankittavat-paikalliset-tutkinnon-osat
+  "Hakee yhden HOKSin hankittavat paikalliset tutkinnon osat tietokannasta."
+  [hoks-id]
   (mapv #(dissoc % :id)
         (extract-hankkimistavat-and-osoittamiset
           (db/select-all-hptos-for-hoks hoks-id)
           db-hoks/hankittava-paikallinen-tutkinnon-osa-from-sql
           hpto-fields)))
 
-(defn get-hankittava-paikallinen-tutkinnon-osa [id]
+(defn get-hankittava-paikallinen-tutkinnon-osa
+  "Hakee yhden hankittavan paikallisen tutkinnon osan tietokannasta."
+  [id]
   (first (extract-hankkimistavat-and-osoittamiset
            (db/select-one-hpto id)
            db-hoks/hankittava-paikallinen-tutkinnon-osa-from-sql
@@ -147,19 +163,25 @@
    :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
    :vaatimuksista_tai_tavoitteista_poikkeaminen})
 
-(defn get-yto-osa-alueet [hyto-id]
+(defn get-yto-osa-alueet
+  "Hakee hankittavan yhteisen tutkinnon osan osa-alueet tietokannasta."
+  [hyto-id]
   (mapv #(dissoc % :id)
         (extract-hankkimistavat-and-osoittamiset
           (db/select-all-osa-alueet-for-yto hyto-id)
           db-hoks/yhteisen-tutkinnon-osan-osa-alue-from-sql
           yto-osa-alue-fields)))
 
-(defn get-hankittava-yhteinen-tutkinnon-osa [hyto-id]
+(defn get-hankittava-yhteinen-tutkinnon-osa
+  "Hakee yhden hankittavan yhteisen tutkinnon osan tietokannasta."
+  [hyto-id]
   (when-let [hato-db
              (db/select-hankittava-yhteinen-tutkinnon-osa-by-id hyto-id)]
     (assoc hato-db :osa-alueet (get-yto-osa-alueet hyto-id))))
 
-(defn get-hankittavat-yhteiset-tutkinnon-osat [hoks-id]
+(defn get-hankittavat-yhteiset-tutkinnon-osat
+  "Hakee hankittavat yhteiset tutkinnon osat tietokannasta."
+  [hoks-id]
   (mapv
     #(dissoc
        (assoc % :osa-alueet (get-yto-osa-alueet (:id %)))
@@ -167,11 +189,16 @@
        :hoks-id)
     (db/select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
 
-(defn get-osaamisen-hankkimistapa-by-id [id]
+(defn get-osaamisen-hankkimistapa-by-id
+  "Hakee yhden osaamisen hankkimistavan tietokannasta ID:n perusteella."
+  [id]
   (first (extract-osaamisen-hankkimistavat
            (db/select-osaamisen-hankkimistapa-by-id id))))
 
-(defn get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki [jakolinkki]
+(defn get-osaamisenosoittaminen-or-hankkimistapa-of-jakolinkki
+  "Hakee osaamisen hankkimistavan tai osaamisen osoittamisen tietokannasta
+  jakolinkin perusteella."
+  [jakolinkki]
   (cond
     (= (:shared-module-tyyppi jakolinkki) "osaamisenhankkiminen")
     (extract-osaamisen-hankkimistavat
@@ -183,6 +210,9 @@
         (:shared-module-uuid jakolinkki)))))
 
 (defn save-osaamisen-hankkimistapa!
+  "Tallentaa yhden osaamisen hankkimistavan tietokantaan HOKSin ID:n ja
+  yksilöivän tunnisteen perusteella. Korvaa olemassaolevan osaamisen
+  hankkimistavan uudella tiedolla."
   ([oh hoks-id]
     (save-osaamisen-hankkimistapa! oh hoks-id (db-ops/get-db-connection)))
   ([oh hoks-id db-conn]
@@ -216,6 +246,8 @@
         o-db))))
 
 (defn save-hpto-osaamisen-hankkimistapa!
+  "Tallentaa yhden hankittavan paikallisen tutkinnon osan osaamisen
+  hankkimistavan tietokantaan."
   ([hpto oh]
     (save-hpto-osaamisen-hankkimistapa! hpto oh (db-ops/get-db-connection)))
   ([hpto oh db-conn]
@@ -227,6 +259,8 @@
         o-db))))
 
 (defn save-hpto-osaamisen-hankkimistavat!
+  "Tallentaa hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat
+  tietokantaan."
   ([hpto c]
     (save-hpto-osaamisen-hankkimistavat! hpto c (db-ops/get-db-connection)))
   ([hpto c db-conn]
@@ -234,11 +268,16 @@
       [conn db-conn]
       (mapv #(save-hpto-osaamisen-hankkimistapa! hpto % conn) c))))
 
-(defn- replace-hpto-osaamisen-hankkimistavat! [hpto c db-conn]
+(defn- replace-hpto-osaamisen-hankkimistavat!
+  "Poistaa hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat
+  tietokannasta ja tallentaa ne uudelleen."
+  [hpto c db-conn]
   (db/delete-osaamisen-hankkimistavat-by-hpto-id! (:id hpto) db-conn)
   (save-hpto-osaamisen-hankkimistavat! hpto c db-conn))
 
 (defn save-hpto-osaamisen-osoittaminen!
+  "Tallentaa yhden hankittavan paikallisen tutkinnon osan osaamisen osoittamisen
+  hankkimistavan tietokantaan."
   ([hpto n]
     (save-hpto-osaamisen-osoittaminen! hpto n (db-ops/get-db-connection)))
   ([hpto n db-conn]
@@ -249,6 +288,8 @@
         naytto))))
 
 (defn save-hpto-osaamisen-osoittamiset!
+  "Tallentaa hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat
+  tietokantaan."
   ([ppto c]
     (save-hpto-osaamisen-osoittamiset! ppto c (db-ops/get-db-connection)))
   ([ppto c db-conn]
@@ -258,11 +299,16 @@
         #(save-hpto-osaamisen-osoittaminen! ppto % conn)
         c))))
 
-(defn- replace-hpto-osaamisen-osoittamiset! [hpto c db-conn]
+(defn- replace-hpto-osaamisen-osoittamiset!
+  "Poistaa hankittavan paikallisen tutkinnon osan osaamisen hankkimistavat
+  tietokannasta ja tallentaa ne uudelleen."
+  [hpto c db-conn]
   (db/delete-osaamisen-osoittamiset-by-ppto-id! (:id hpto) db-conn)
   (save-hpto-osaamisen-osoittamiset! hpto c db-conn))
 
-(defn update-hankittava-paikallinen-tutkinnon-osa! [hpto-db values]
+(defn update-hankittava-paikallinen-tutkinnon-osa!
+  "Päivittää hankittavan paikallisen tutkinnon osan tietokantaan."
+  [hpto-db values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
     (db/update-hankittava-paikallinen-tutkinnon-osa-by-id!
@@ -278,6 +324,8 @@
                hpto-db (:osaamisen-osoittaminen values) db-conn)))))
 
 (defn save-yto-osa-alueen-osaamisen-osoittaminen!
+  "Tallentaa yhden hankittavan yhteisen tutkinnon osan osaamisen osoittamisen
+  tietokantaan."
   ([yto n]
     (save-yto-osa-alueen-osaamisen-osoittaminen!
       yto n (db-ops/get-db-connection)))
@@ -290,6 +338,7 @@
         yto-naytto))))
 
 (defn save-hankittava-paikallinen-tutkinnon-osa!
+  "Tallentaa yhden hankittavan paikallisen tutkinnon osan tietokantaan."
   ([hoks-id hpto]
     (save-hankittava-paikallinen-tutkinnon-osa!
       hoks-id hpto (db-ops/get-db-connection)))
@@ -308,6 +357,7 @@
             hpto-db (:osaamisen-osoittaminen hpto) conn))))))
 
 (defn save-hankittavat-paikalliset-tutkinnon-osat!
+  "Tallentaa hankittavat paikalliset tutkinnon osat tietokantaan."
   ([hoks-id c]
     (save-hankittavat-paikalliset-tutkinnon-osat!
       hoks-id c (db-ops/get-db-connection)))
@@ -317,6 +367,8 @@
       (mapv #(save-hankittava-paikallinen-tutkinnon-osa! hoks-id % conn) c))))
 
 (defn save-hato-osaamisen-hankkimistapa!
+  "Tallentaa yhden hankittavan ammatillisen tutkinnon osan osaamisen
+  hankkimistavan tietokantaan."
   ([hato oh]
     (save-hato-osaamisen-hankkimistapa! hato oh (db-ops/get-db-connection)))
   ([hato oh db-conn]
@@ -327,12 +379,15 @@
           (:id hato) (:id o-db) conn)
         o-db))))
 
-(defn save-hato-osaamisen-hankkimistavat! [hato-db c db-conn]
-  (mapv
-    #(save-hato-osaamisen-hankkimistapa! hato-db % db-conn)
-    c))
+(defn save-hato-osaamisen-hankkimistavat!
+  "Tallentaa hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat
+  tietokantaan."
+  [hato-db c db-conn]
+  (mapv #(save-hato-osaamisen-hankkimistapa! hato-db % db-conn) c))
 
 (defn save-hato-osaamisen-osoittaminen!
+  "Tallentaa yhden hankittavan ammatillisen tutkinnon osan osaamisen
+  osoittamisen tietokantaan."
   ([hato n]
     (save-hato-osaamisen-osoittaminen!
       hato n (db-ops/get-db-connection)))
@@ -343,12 +398,14 @@
         (db/insert-hato-osaamisen-osoittaminen! (:id hato) (:id naytto) conn)
         naytto))))
 
-(defn- save-hato-osaamisen-osoittamiset! [hato-db c db-conn]
-  (mapv
-    #(save-hato-osaamisen-osoittaminen! hato-db % db-conn)
-    c))
+(defn- save-hato-osaamisen-osoittamiset!
+  "Tallentaa hankittavan ammatillisen tutkinnon osan osaamisen osoittamiset
+  tietokantaan."
+  [hato-db c db-conn]
+  (mapv #(save-hato-osaamisen-osoittaminen! hato-db % db-conn) c))
 
 (defn save-hankittava-ammat-tutkinnon-osa!
+  "Tallentaa yhden hankittavan ammatillisen tutkinnon osan tietokantaan."
   ([hoks-id hato]
     (save-hankittava-ammat-tutkinnon-osa!
       hoks-id hato (db-ops/get-db-connection)))
@@ -369,6 +426,7 @@
             (:osaamisen-hankkimistavat hato)))))))
 
 (defn save-hankittavat-ammat-tutkinnon-osat!
+  "Tallentaa hankittavat ammatilliset tutkinnon osat tietokantaan."
   ([hoks-id c]
     (save-hankittavat-ammat-tutkinnon-osat!
       hoks-id c (db-ops/get-db-connection)))
@@ -377,15 +435,23 @@
       [conn db-conn]
       (mapv #(save-hankittava-ammat-tutkinnon-osa! hoks-id % conn) c))))
 
-(defn- replace-hato-osaamisen-hankkimistavat! [hato c db-conn]
+(defn- replace-hato-osaamisen-hankkimistavat!
+  "Poistaa hankittavan ammatillisen tutkinnon osan osaamisen hankkimistavat
+  tietokannasta ja tallentaa ne uudelleen."
+  [hato c db-conn]
   (db/delete-osaamisen-hankkimistavat-by-hato-id! (:id hato) db-conn)
   (save-hato-osaamisen-hankkimistavat! hato c db-conn))
 
-(defn- replace-hato-osaamisen-osoittamiset! [hato c db-conn]
+(defn- replace-hato-osaamisen-osoittamiset!
+  "Poistaa hankittavan ammatillisen tutkinnon osan osaamisen osoittamiset
+  tietokannasta ja tallentaa ne uudelleen."
+  [hato c db-conn]
   (db/delete-osaamisen-osoittamiset-by-pato-id! (:id hato) db-conn)
   (save-hato-osaamisen-osoittamiset! hato c db-conn))
 
-(defn update-hankittava-ammat-tutkinnon-osa! [hato-db values]
+(defn update-hankittava-ammat-tutkinnon-osa!
+  "Päivittää hanittavan ammatillisen tutkinnon osan tietokantaan."
+  [hato-db values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
     (db/update-hankittava-ammat-tutkinnon-osa-by-id!
@@ -401,6 +467,8 @@
                hato-db (:osaamisen-osoittaminen values) db-conn)))))
 
 (defn save-hyto-osa-alue-osaamisen-hankkimistapa!
+  "Tallentaa yhden hankittavan yhteisen tutkinnon osan osa-alueen osaamisen
+  hankkimistavan tietokantaan."
   ([hoks-id hyto-osa-alue oh]
     (save-hyto-osa-alue-osaamisen-hankkimistapa!
       hoks-id hyto-osa-alue oh (db-ops/get-db-connection)))
@@ -413,6 +481,7 @@
         o-db))))
 
 (defn save-hyto-osa-alueet!
+  "Tallentaa hankittavan yhteisen tutkinnon osan osa-alueet tietokantaan."
   ([hoks-id hyto-id osa-alueet]
     (save-hyto-osa-alueet!
       hoks-id hyto-id osa-alueet (db-ops/get-db-connection)))
@@ -439,6 +508,7 @@
         osa-alueet))))
 
 (defn save-hankittava-yhteinen-tutkinnon-osa!
+  "Tallentaa yhden hankittavan yhteisen tutkinnon osan tietokantaan."
   ([hoks-id hyto]
     (save-hankittava-yhteinen-tutkinnon-osa!
       hoks-id hyto (db-ops/get-db-connection)))
@@ -454,6 +524,7 @@
             hoks-id (:id hyto-db) (:osa-alueet hyto) conn))))))
 
 (defn save-hankittavat-yhteiset-tutkinnon-osat!
+  "Tallentaa hankittavat yhteiset tutkinnon osat tietokantaan."
   ([hoks-id c]
     (save-hankittavat-yhteiset-tutkinnon-osat!
       hoks-id c (db-ops/get-db-connection)))
@@ -464,11 +535,15 @@
         #(save-hankittava-yhteinen-tutkinnon-osa! hoks-id % conn)
         c))))
 
-(defn- replace-hyto-osa-alueet! [hoks-id hyto-id new-oa-values db-conn]
+(defn- replace-hyto-osa-alueet!
+  "Korvaa hankittavan yhteisen tutkinnon osan osa-alueet annetuilla arvoilla."
+  [hoks-id hyto-id new-oa-values db-conn]
   (db/delete-hyto-osa-alueet! hyto-id db-conn)
   (save-hyto-osa-alueet! hoks-id hyto-id new-oa-values db-conn))
 
-(defn update-hankittava-yhteinen-tutkinnon-osa! [hoks-id hyto-id new-values]
+(defn update-hankittava-yhteinen-tutkinnon-osa!
+  "Päivittää hankittavan yhteisen tutkinnon osan tietokantaan."
+  [hoks-id hyto-id new-values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
     (let [bare-hyto (dissoc new-values :osa-alueet)]
