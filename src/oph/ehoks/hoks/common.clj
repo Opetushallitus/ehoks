@@ -5,6 +5,7 @@
             [clojure.java.jdbc :as jdbc]))
 
 (defn- save-osaamisen-osoittamisen-tyoelama-osaamisen-arvioijat!
+  "Tallentaa osaamisen osoittamisen työelämän osaamisen arvioijat tietokantaan."
   ([naytto arvioijat]
     (save-osaamisen-osoittamisen-tyoelama-osaamisen-arvioijat!
       naytto arvioijat (db-ops/get-db-connection)))
@@ -19,6 +20,7 @@
         arvioijat))))
 
 (defn- save-osaamisen-osoittamisen-osa-alueet!
+  "Tallentaa osaamisen osoittamisen osa-alueet tietokantaan."
   ([n c]
     (save-osaamisen-osoittamisen-osa-alueet! n c (db-ops/get-db-connection)))
   ([n c db-conn]
@@ -31,6 +33,7 @@
         c))))
 
 (defn save-osaamisen-osoittaminen!
+  "Tallentaa yhden osaamisen osoittamisen tietokantaan."
   ([n]
     (save-osaamisen-osoittaminen! n (db-ops/get-db-connection)))
   ([n db-conn]
@@ -53,12 +56,23 @@
           naytto (:osa-alueet n) conn)
         naytto))))
 
-(defn get-map [coll k]
+(defn get-map
+  "Get-funktion erikoisversio. Jos avain on sekvenssi, hakee sen jokaisen
+  jäsenen coll:ista ja laittaa ne uuteen vectoriin vastaavassa järjestyksessä.
+  Muuten hakee avaimen arvon coll:ista normaalilla tavalla."
+  [coll k]
   (if (sequential? k)
     (vec (map #(get coll %) k))
     (get coll k)))
 
-(defn extract-from-joined-rows [unique-on fields rows]
+(defn extract-from-joined-rows
+  "Hakee sekvenssistä yhdeistetyistä riveistä ne tietueet, jotka ovat uniikkeja
+  unique-on -argumentin perusteella, ottaen mukaan vain ne kentät, jotka on
+  annettu fields -argumentissa. Kenttien nimet on muokattu fields -argumentissa
+  olevien korrespondenssien perusteella, eli jos alkuperäisessä rivissä olevan
+  avain on fields -argumentissa avaimena, se korvataan vastaavalla arvolla;
+  muuten avain/arvo -paria ei oteta mukaan."
+  [unique-on fields rows]
   (mapv (fn [row] (reduce-kv #(assoc %1 %3 (get row %2)) {} fields))
         (sort #(compare (get-map %1 unique-on) (get-map %2 unique-on))
               (vals
@@ -66,7 +80,10 @@
                         nil
                         [nil nil])))))
 
-(defn extract-and-set-osaamisen-osoittaminen-values [oo rows]
+(defn extract-and-set-osaamisen-osoittaminen-values
+  "Irrottaa tietyn osaamisen osoittamisen arvot tietokannasta haetuista
+  riveistä."
+  [oo rows]
   (let [this-oo-rows (filterv #(= (:oo__id %) (:id oo)) rows)
         kj-arvioijat
         (mapv db-hoks/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql
@@ -125,10 +142,15 @@
    :oo__vaatimuksista_tai_tavoitteista_poikkeaminen
    :vaatimuksista_tai_tavoitteista_poikkeaminen})
 
-(defn extract-osaamisen-osoittamiset [rows]
+(defn extract-osaamisen-osoittamiset
+  "Hakee kaikki osaamisen osoittamiset yhdistetyistä riveistä."
+  [rows]
   (mapv #(db-hoks/osaamisen-osoittaminen-from-sql
            (extract-and-set-osaamisen-osoittaminen-values % rows))
         (extract-from-joined-rows :oo__id oo-fields rows)))
 
-(defn process-subitems [osa rows]
+(defn process-subitems
+  "Hakee ne osaamisen hankkimistavat tai osaamisen osoittamiset, jotka kuuluvat
+  annettuun tutkinnon osaan."
+  [osa rows]
   (mapv #(dissoc % :osa-id :id) (filterv #(= (:osa-id %) (:id osa)) rows)))

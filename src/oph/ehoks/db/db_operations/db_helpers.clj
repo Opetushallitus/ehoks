@@ -39,7 +39,9 @@
    :user (:db-username config)
    :password (:db-password config)})
 
-(defn- insert-empty! [t]
+(defn- insert-empty!
+  "Insert an empty row into the given table."
+  [t]
   (jdbc/execute!
     (get-db-connection)
     (format
@@ -74,12 +76,14 @@
     (jdbc/update! db-conn table values where-clause)))
 
 (defn shallow-delete!
+  "Set deleted_at field to current date and time, marking row as deleted."
   ([table where-clause]
     (update! table {:deleted_at (java.util.Date.)} where-clause))
   ([table where-clause db-conn]
     (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
 
 (defn delete!
+  "Actually delete row from database."
   ([table where-clause]
     (jdbc/delete! (get-db-connection) table where-clause))
   ([table where-clause db-conn]
@@ -93,7 +97,9 @@
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
 
-(defn convert-keys [f m]
+(defn convert-keys
+  "Apply a function to all keys in a map."
+  [f m]
   (rename-keys
     m
     (reduce
@@ -102,7 +108,10 @@
       {}
       (keys m))))
 
-(defn remove-db-columns [m & others]
+(defn remove-db-columns
+  "Remove keys corresponding to columns used for internal purposes, plus others
+  listed in argument others."
+  [m & others]
   (apply
     dissoc m
     :created_at
@@ -110,10 +119,14 @@
     :deleted_at
     others))
 
-(defn to-underscore-keys [m]
+(defn to-underscore-keys
+  "Convert dashes in keys to underscores."
+  [m]
   (convert-keys #(keyword (.replace (name %) \- \_)) m))
 
-(defn to-dash-keys [m]
+(defn to-dash-keys
+  "Convert underscores in keys to dashes."
+  [m]
   (convert-keys #(keyword (.replace (name %) \_ \-)) m))
 
 (defn replace-in [h sk tks]
@@ -143,7 +156,9 @@
     (replace-from m kss kst)
     (replace-in m kss kst)))
 
-(defn remove-nils [m]
+(defn remove-nils
+  "Remove all keys mapped to value nil."
+  [m]
   (apply dissoc m (filter #(nil? (get m %)) (keys m))))
 
 (defn convert-sql
@@ -158,6 +173,7 @@
     (apply dissoc x removals)))
 
 (defn from-sql
+  "Convert maps returned by database functions to format expected elsewhere."
   ([m operations]
     (-> (convert-sql m operations)
         remove-nils
@@ -166,6 +182,7 @@
   ([m] (from-sql m {})))
 
 (defn to-sql
+  "Convert maps used elsewhere to those expected by database functions."
   ([m operations]
     (to-underscore-keys (convert-sql m operations)))
   ([m] (to-sql m {})))
