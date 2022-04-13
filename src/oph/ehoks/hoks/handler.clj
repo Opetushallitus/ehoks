@@ -24,13 +24,6 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [cheshire.core :as cheshire]))
 
-(defn- json-response [value]
-  (assoc-in
-    (response/ok
-      (cheshire/generate-string
-        value))
-    [:headers "Content-Type"] "application/json"))
-
 (def ^:private hankittava-paikallinen-tutkinnon-osa
   (c-api/context "/hankittava-paikallinen-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
@@ -277,7 +270,10 @@
           (response/no-content)
           (response/not-found {:error "OTO not found with given OTO ID"}))))))
 
-(defn- check-opiskeluoikeus-match [hoks opiskeluoikeudet]
+(defn- check-opiskeluoikeus-match
+  "Varmstaa, että HOKSin opiskeluoikeus täsmää ainakin yhden opiskeluoikeuden
+  kanssa, joka löytyy oppijan opiskeluoikeuksien joukosta."
+  [hoks opiskeluoikeudet]
   (if-not
    (oppijaindex/oppija-opiskeluoikeus-match?
      opiskeluoikeudet (:opiskeluoikeus-oid hoks))
@@ -286,7 +282,9 @@
         {:error "Opiskeluoikeus does not match any held by oppija"})
       :audit-data {:new hoks})))
 
-(defn- add-oppija-to-index [hoks]
+(defn- add-oppija-to-index
+  "Lisää oppijan oppijaindeksiin."
+  [hoks]
   (try
     (oppijaindex/add-oppija! (:oppija-oid hoks))
     (catch Exception e
@@ -295,7 +293,9 @@
           {:error "Oppija not found in Oppijanumerorekisteri"})
         (throw e)))))
 
-(defn- add-opiskeluoikeus-to-index [hoks]
+(defn- add-opiskeluoikeus-to-index
+  "Lisää opiskeluoikeuden oppijan opiskeluoikeuksien joukkoon."
+  [hoks]
   (try
     (oppijaindex/add-opiskeluoikeus!
       (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
@@ -309,12 +309,15 @@
           {:error (ex-message e)})
         :else (throw e)))))
 
-(defn- add-hankintakoulutukset-to-index [hoks opiskeluoikeudet]
+(defn- add-hankintakoulutukset-to-index
+  "Lisää oppijan hankintakoulutukset indeksiin."
+  [hoks opiskeluoikeudet]
   (oppijaindex/add-oppija-hankintakoulutukset opiskeluoikeudet
                                               (:opiskeluoikeus-oid hoks)
                                               (:oppija-oid hoks)))
 
 (defn- check-opiskeluoikeus-validity
+  "Varmistaa, että opiskeluoikeus on vielä voimassa."
   ([hoks-values]
     (if-not
      (oppijaindex/opiskeluoikeus-still-active?
@@ -333,7 +336,9 @@
                           (:opiskeluoikeus-oid hoks))})
         :audit-data {:new hoks}))))
 
-(defn- check-for-missing-tyopaikan-y-tunnus [hoks]
+(defn- check-for-missing-tyopaikan-y-tunnus
+  "Tarkistaa, puuttuuko Y-tunnus jostakin osaamisen hankkimistavasta."
+  [hoks]
   (let [osaamisen-hankkimistavat (h/get-osaamisen-hankkimistavat hoks)
         oh-missing-tyopaikan-y-tunnus (h/missing-tyopaikan-y-tunnus?
                                         osaamisen-hankkimistavat)]
@@ -345,7 +350,9 @@
                        oh-missing-tyopaikan-y-tunnus)})
         :audit-data {:new hoks}))))
 
-(defn- save-hoks [hoks request]
+(defn- save-hoks
+  "Tallentaa HOKSin tietokantaan."
+  [hoks request]
   (try
     (let [hoks-db (h/save-hoks! hoks)]
       (assoc

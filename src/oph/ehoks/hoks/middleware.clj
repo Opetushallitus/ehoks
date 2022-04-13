@@ -110,7 +110,9 @@
         (response/forbidden
           {:error "User type 'PALVELU' is required"})))))
 
-(defn add-hoks [request]
+(defn add-hoks
+  "Add HOKS to request"
+  [request]
   (let [hoks-id (Integer/parseInt (get-in request [:route-params :hoks-id]))
         hoks (db-hoks/select-hoks-by-id hoks-id)]
     (assoc request :hoks hoks)))
@@ -124,7 +126,9 @@
     ([request]
       (handler (add-hoks request)))))
 
-(defn oph-authorized? [request]
+(defn oph-authorized?
+  "Does user have OPH privileges?"
+  [request]
   (let [user (:service-ticket-user request)
         method (get method-privileges (:request-method request))]
     (some?
