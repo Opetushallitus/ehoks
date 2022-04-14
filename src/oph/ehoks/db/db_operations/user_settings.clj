@@ -3,15 +3,21 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [clojure.java.jdbc :as jdbc]))
 
-(defn select-user-settings-by-user-oid [user-oid]
+(defn select-user-settings-by-user-oid
+  "Hakee käyttäjäasetukset käyttäjän OID:n perusteella."
+  [user-oid]
   (db-ops/query
     [queries/select-user-settings-by-user-oid user-oid]
     {:row-fn db-ops/from-sql}))
 
-(defn delete-user-settings! [user-oid]
+(defn delete-user-settings!
+  "Poistaa käyttäjäasetukset käyttäjän OID:n perusteella."
+  [user-oid]
   (db-ops/delete! :user_settings ["user_oid = ?" user-oid]))
 
-(defn insert-or-update-user-settings! [user-oid data]
+(defn insert-or-update-user-settings!
+  "Tallentaa tai päivittää käyttäjäasetukset tietokantaan."
+  [user-oid data]
   (jdbc/with-db-transaction
     [conn (db-ops/get-db-connection)]
     (if (seq (jdbc/query
