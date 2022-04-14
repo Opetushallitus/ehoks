@@ -7,14 +7,22 @@
             [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]))
 
-(defn oppilaitos-oid-from-sql [m]
+(defn oppilaitos-oid-from-sql
+  "Hakee oppilaitos OID:n tietokannasta haetusta objektista."
+  [m]
   (:oppilaitos_oid m))
 
-(defn hoks-from-sql [h]
+(defn hoks-from-sql
+  "Muuttaa tietokannasta haetun HOKSin siihen muotoon, joka voi palauttaa
+  käyttäjälle."
+  [h]
   (db-ops/from-sql
     h))
 
-(defn hoks-to-sql [h]
+(defn hoks-to-sql
+  "Muuttaa ehoksissa käytetyn HOKSin näin, että sen voi tallentaa hoksit
+  -tauluun."
+  [h]
   (db-ops/to-sql
     h
     {:removals [:aiemmin-hankitut-ammat-tutkinnon-osat
@@ -25,23 +33,38 @@
                 :opiskeluvalmiuksia-tukevat-opinnot
                 :hankittavat-paikalliset-tutkinnon-osat]}))
 
-(defn aiemmin-hankittu-ammat-tutkinnon-osa-from-sql [m]
+(defn aiemmin-hankittu-ammat-tutkinnon-osa-from-sql
+  "Muuttaa tietokannasta haetun aiemmin hankitun ammatillisen tutkinnon osan sen
+  mukaiseksi, mitä odotetaan palvelussa."
+  [m]
   (db-ops/from-sql m {:removals [:hoks_id]}))
 
-(defn aiemmin-hankittu-ammat-tutkinnon-osa-to-sql [m]
+(defn aiemmin-hankittu-ammat-tutkinnon-osa-to-sql
+  "Muuttaa palvelussa käytetyn aiemmin hankitun ammatillisen tutkinnon osan sen
+  mukaiseksi, minkä voi tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql
     m
     {:removals [:tarkentavat-tiedot-naytto
                 :tarkentavat-tiedot-osaamisen-arvioija]}))
 
-(defn hankittava-paikallinen-tutkinnon-osa-from-sql [m]
+(defn hankittava-paikallinen-tutkinnon-osa-from-sql
+  "Muuttaa tietokannasta haetun hankittavan paikallisen tutkinnon osan sen
+  mukaiseksi, mitä odotetaan palvelussa."
+  [m]
   (db-ops/from-sql m))
 
-(defn hankittava-paikallinen-tutkinnon-osa-to-sql [m]
+(defn hankittava-paikallinen-tutkinnon-osa-to-sql
+  "Muuttaa palvelussa käytetyn hankittavan paikallisen tutkinnon osan sen
+  mukaiseksi, minkä voi tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql
     m {:removals [:osaamisen-osoittaminen :osaamisen-hankkimistavat]}))
 
-(defn tyopaikalla-jarjestettava-koulutus-from-sql [m]
+(defn tyopaikalla-jarjestettava-koulutus-from-sql
+  "Muuttaa tietokannasta haetun työpaikalla järjestettävän koulutuksen sen
+  mukaiseksi, mitä odotetaan palvelussa."
+  [m]
   (db-ops/from-sql
     m
     {:replaces
@@ -52,7 +75,10 @@
       :vastuullinen_tyopaikka_ohjaaja_puhelinnumero
       [:vastuullinen-tyopaikka-ohjaaja :puhelinnumero]}}))
 
-(defn tyopaikalla-jarjestettava-koulutus-to-sql [m]
+(defn tyopaikalla-jarjestettava-koulutus-to-sql
+  "Muuttaa palvelussa käytetyn työpaikalla järjestettävän koulutuksen sen
+  mukaiseksi, minkä voi tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql
     m
     {:removals [:keskeiset-tyotehtavat]
@@ -64,7 +90,10 @@
       [:vastuullinen-tyopaikka-ohjaaja :puhelinnumero]
       :vastuullinen-tyopaikka-ohjaaja-puhelinnumero}}))
 
-(defn henkilo-from-sql [m]
+(defn henkilo-from-sql
+  "Muuttaa tietokannasta haetun henkilön sen mukaiseksi, mitä odotetaan
+  palvelussa."
+  [m]
   (db-ops/from-sql
     m
     {:removals [:id :tyopaikalla_jarjestettava_koulutus_id]
@@ -72,12 +101,18 @@
      {:organisaatio_nimi [:organisaatio :nimi]
       :organisaatio_y_tunnus [:organisaatio :y-tunnus]}}))
 
-(defn henkilo-to-sql [m]
+(defn henkilo-to-sql
+  "Muuttaa palvelussa käytetyn henkilön sen mukaiseksi, minkä voi tallentaa
+  tietokantaan."
+  [m]
   (db-ops/to-sql
     m {:replaces {[:organisaatio :nimi] :organisaatio_nimi
                   [:organisaatio :y-tunnus] :organisaatio_y_tunnus}}))
 
-(defn osaamisen-hankkimistapa-from-sql [m]
+(defn osaamisen-hankkimistapa-from-sql
+  "Muuttaa tietokannasta haetun osaamisen hankkimistavan sen mukaiseksi, mitä
+  odotetaan palvelussa."
+  [m]
   (db-ops/from-sql
     m
     {:removals [:tep_kasitelty]
@@ -91,7 +126,10 @@
       :hankkijan_edustaja_oppilaitos_oid
       [:hankkijan-edustaja :oppilaitos-oid]}}))
 
-(defn osaamisen-hankkimistapa-to-sql [m]
+(defn osaamisen-hankkimistapa-to-sql
+  "Muuttaa palvelussa käytetyn osaamisen hankkimistavan sen mukaiseksi, minkä
+  voi tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql
     m
     {:removals [:muut-oppimisymparistot
@@ -107,18 +145,30 @@
       [:hankkijan-edustaja :oppilaitos-oid]
       :hankkijan-edustaja-oppilaitos-oid}}))
 
-(defn muu-oppimisymparisto-from-sql [m]
+(defn muu-oppimisymparisto-from-sql
+  "Muuttaa tietokannasta haetun muun oppimisympäristön sen mukaiseksi, mitä
+  odotetaan palvelussa."
+  [m]
   (db-ops/from-sql m {:removals [:id :osaamisen_hankkimistapa_id]}))
 
-(defn keskeytymisajanjakso-from-sql [m]
+(defn keskeytymisajanjakso-from-sql
+  "Muuttaa tietokannasta haetun keskeytymisajanjakson sen mukaiseksi, mitä
+  odotetaan palvelussa."
+  [m]
   (db-ops/from-sql m {:removals [:id :osaamisen_hankkimistapa_id]}))
 
-(defn osaamisen-osoittaminen-from-sql [m]
+(defn osaamisen-osoittaminen-from-sql
+  "Muuttaa tietokannasta haetun osaamisen osoittamisen sen mukaiseksi, mitä
+  odotetaan palvelussa."
+  [m]
   (db-ops/from-sql
     m
     {:replaces {:jarjestaja_oppilaitos_oid [:jarjestaja :oppilaitos-oid]}}))
 
-(defn osaamisen-osoittaminen-to-sql [m]
+(defn osaamisen-osoittaminen-to-sql
+  "Muuttaa palvelussa käytetyn osaamisen osoittamisen sen mukaiseksi, minkä voi
+  tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql
     m
     {:removals [:nayttoymparisto
@@ -129,63 +179,102 @@
                 :yksilolliset-kriteerit]
      :replaces {[:jarjestaja :oppilaitos-oid] :jarjestaja-oppilaitos-oid}}))
 
-(defn koodi-uri-from-sql [m]
+(defn koodi-uri-from-sql
+  "Muuttaa tietokannasta haetun koodi URI:n sen mukaiseksi, mitä odotetaan
+  palvelussa."
+  [m]
   (db-ops/from-sql m {:removals [:id]}))
 
-(defn koulutuksen-jarjestaja-osaamisen-arvioija-from-sql [m]
+(defn koulutuksen-jarjestaja-osaamisen-arvioija-from-sql
+  "Muuttaa tietokannasta haetun koulutuksen järjestäjän osaamisen arvioijan sen
+  mukaiseksi, mitä odotetaan palvelussa."
+  [m]
   (db-ops/from-sql
     m {:replaces {:oppilaitos_oid [:organisaatio :oppilaitos-oid]}
        :removals [:id]}))
 
-(defn koulutuksen-jarjestaja-osaamisen-arvioija-to-sql [m]
+(defn koulutuksen-jarjestaja-osaamisen-arvioija-to-sql
+  "Muuttaa palvelussa käytetyn koulutuksen järjestäjän osaamisen arvioijan sen
+  mukaiseksi, minkä voi tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql
     m {:replaces {[:organisaatio :oppilaitos-oid] :oppilaitos-oid}}))
 
-(defn tyoelama-arvioija-from-sql [m]
+(defn tyoelama-arvioija-from-sql
+  "Muuttaa tietokannasta haetun työelämän arvioijan sen mukaiseksi, mitä
+  odotetaan palvelussa."
+  [m]
   (db-ops/from-sql
     m {:replaces {:organisaatio_nimi [:organisaatio :nimi]
                   :organisaatio_y_tunnus [:organisaatio :y-tunnus]}
        :removals [:id]}))
 
-(defn tyoelama-arvioija-to-sql [m]
+(defn tyoelama-arvioija-to-sql
+  "Muuttaa palvelussa käytetyn työelämän arvioijan sen mukaiseksi, minkä voi
+  tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql
     m {:replaces {[:organisaatio :nimi] :organisaatio-nimi
                   [:organisaatio :y-tunnus] :organisaatio-y-tunnus}}))
 
-(defn nayttoymparisto-from-sql [m]
+(defn nayttoymparisto-from-sql
+  "Muuttaa tietokannasta haetun näyttöympäristön sen mukaiseksi, mitä odotetaan
+  palvelussa."
+  [m]
   (db-ops/from-sql m {:removals [:id]}))
 
-(defn tyotehtava-from-sql [m]
+(defn tyotehtava-from-sql
+  "Hakee työtehtävän tietokannasta haetusta objektista."
+  [m]
   (get m :tyotehtava))
 
-(defn sisallon-kuvaus-from-sql [m]
+(defn sisallon-kuvaus-from-sql
+  "Hakee sisällön kuvauksen tietokannasta haetusta objektista."
+  [m]
   (get m :sisallon_kuvaus))
 
-(defn yksilolliset-kriteerit-from-sql [m]
+(defn yksilolliset-kriteerit-from-sql
+  "Hakee yksilöllisen kriteerin tietokannasta haetusta objektista."
+  [m]
   (get m :yksilollinen_kriteeri))
 
-(defn aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql [m]
+(defn aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql
+  "Muuttaa tietokannasta haetun aiemmin hankitun paikallisen tutkinnon osan sen
+  mukaiseksi, mitä odotetaan palvelussa."
+  [m]
   (db-ops/from-sql m {:removals [:hoks_id]
                       :replaces
                       {:lahetetty_arvioitavaksi
                        [:tarkentavat_tiedot_osaamisen_arvioija
                         :lahetetty-arvioitavaksi]}}))
 
-(defn aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql [m]
+(defn aiemmin-hankittu-paikallinen-tutkinnon-osa-to-sql
+  "Muuttaa palvelussa käytetyn aiemmin hankitun paikallisen tutkinnon osan sen
+  mukaiseksi, minkä voi tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql m {:removals [:tarkentavat-tiedot-naytto
                                :tarkentavat-tiedot-osaamisen-arvioija]
                     :replaces {[:tarkentavat-tiedot-osaamisen-arvioija
                                 :lahetetty-arvioitavaksi]
                                :lahetetty-arvioitavaksi}}))
 
-(defn aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
+(defn aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-from-sql
+  "Muuttaa tietokannasta haetun hankitun yhteisen tutkinnon osan osa-alueen sen
+  mukaiseksi, mitä odotetaan palvelussa."
+  [m]
   (db-ops/from-sql m {:removals [:aiemmin_hankittu_yhteinen_tutkinnon_osa_id]}))
 
-(defn aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-to-sql [m]
+(defn aiemmin-hankitun-yhteisen-tutkinnon-osan-osa-alue-to-sql
+  "Muuttaa palvelussa käytetyn hankitun yhteisen tutkinnon osan osa-alueen sen
+  mukaiseksi, minkä voi tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql m {:removals [:tarkentavat-tiedot-naytto
                                :tarkentavat-tiedot-osaamisen-arvioija]}))
 
-(defn aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql [m]
+(defn aiemmin-hankittu-yhteinen-tutkinnon-osa-to-sql
+  "Muuttaa palvelussa käytetyn aiemmin hankitun yhteisen tutkinnon osan sen
+  mukaiseksi, minkä voi tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql m {:removals [:osa-alueet
                                :tarkentavat-tiedot-naytto
                                :tarkentavat-tiedot-osaamisen-arvioija]
@@ -193,61 +282,103 @@
                                 :lahetetty-arvioitavaksi]
                                :lahetetty-arvioitavaksi}}))
 
-(defn aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql [m]
+(defn aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql
+  "Muuttaa tietokannasta haetun aiemmin hankitun yhteisen tutkinnon osan sen
+  mukaiseksi, mitä odotetaan palvelussa."
+  [m]
   (db-ops/from-sql m {:removals [:hoks_id]
                       :replaces
                       {:lahetetty_arvioitavaksi
                        [:tarkentavat_tiedot_osaamisen_arvioija
                         :lahetetty-arvioitavaksi]}}))
 
-(defn todennettu-arviointi-lisatiedot-to-sql [m]
+(defn todennettu-arviointi-lisatiedot-to-sql
+  "Muuttaa palvelussa käytetyt todennetun arvioinnin lisätiedot sen mukaisiksi,
+  mitkä voi tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql m {:removals [:aiemmin-hankitun-osaamisen-arvioijat]}))
 
-(defn todennettu-arviointi-lisatiedot-from-sql [m]
+(defn todennettu-arviointi-lisatiedot-from-sql
+  "Muuttaa tietokannasta haetut todennetun arvioinnin lisätiedot sen mukaisiksi,
+  mitä odotetaan palvelussa."
+  [m]
   (db-ops/from-sql m))
 
-(defn hankittava-ammat-tutkinnon-osa-to-sql [m]
+(defn hankittava-ammat-tutkinnon-osa-to-sql
+  "Muuttaa palvelussa käytetyn hankittavan ammatillisen tutkinnon osan sen
+  mukaiseksi, minkä voi tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql m {:removals [:osaamisen-osoittaminen
                                :osaamisen-hankkimistavat]}))
 
-(defn hankittava-ammat-tutkinnon-osa-from-sql [m]
+(defn hankittava-ammat-tutkinnon-osa-from-sql
+  "Muuttaa tietokannasta haetun hankittavan ammatillisen tutkinnon osan sen
+  mukaiseksi, mitä odotetaan palvelussa."
+  [m]
   (db-ops/from-sql m))
 
-(defn opiskeluvalmiuksia-tukevat-opinnot-from-sql [m]
+(defn opiskeluvalmiuksia-tukevat-opinnot-from-sql
+  "Muuttaa tietokannasta haetut opiskeluvalmiuksia tukevat opinnot sen
+  mukaisiksi, mitä odotetaan palvelussa."
+  [m]
   (db-ops/from-sql m {:removals [:hoks_id]}))
 
-(defn hankittava-yhteinen-tutkinnon-osa-from-sql [m]
+(defn hankittava-yhteinen-tutkinnon-osa-from-sql
+  "Muuttaa tietokannasta haetun hankittavan yhteisen tutkinnon osan sen
+  mukaiseksi, mitä odotetaan palvelussa."
+  [m]
   (db-ops/from-sql m {:removals [:osa-alueet]}))
 
-(defn hankittava-yhteinen-tutkinnon-osa-to-sql [m]
+(defn hankittava-yhteinen-tutkinnon-osa-to-sql
+  "Muuttaa palvelussa käytetyn hankittavan yhteisen tutkinnon osan sen
+  mukaiseksi, minkä voi tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql m {:removals [:osa-alueet]}))
 
-(defn yhteisen-tutkinnon-osan-osa-alue-to-sql [m]
+(defn yhteisen-tutkinnon-osan-osa-alue-to-sql
+  "Muuttaa palvelussa käytetyn hankittavan yhteisen tutkinnon osan osa-alueen
+  sen mukaiseksi, minkä voi tallentaa tietokantaan."
+  [m]
   (db-ops/to-sql m {:removals [:osaamisen-hankkimistavat
                                :osaamisen-osoittaminen]}))
 
-(defn yhteisen-tutkinnon-osan-osa-alue-from-sql [m]
+(defn yhteisen-tutkinnon-osan-osa-alue-from-sql
+  "Muuttaa tietokannasta haetun hankittavan yhteisen tutkinnon osan osa-alueen
+  sen mukaiseksi, mitä odotetaan palvelussa."
+  [m]
   (db-ops/from-sql m))
 
-(defn osaamistavoite-from-sql [m] (get m :osaamistavoite))
+(defn osaamistavoite-from-sql
+  "Hakee osaamistavoitteen tietokannasta haetusta objektista."
+  [m]
+  (get m :osaamistavoite))
 
-(defn select-hoksit []
+(defn select-hoksit
+  "hakee HOKSit tietokannasta."
+  []
   (db-ops/query
     [queries/select-hoksit]
     :row-fn hoks-from-sql))
 
-(defn select-hoks-by-oppija-oid [oid]
+(defn select-hoks-by-oppija-oid
+  "Hakee HOKSeja tietokannasta oppijan OID:n perusteella."
+  [oid]
   (db-ops/query
     [queries/select-hoksit-by-oppija-oid oid]
     :row-fn hoks-from-sql))
 
-(defn select-hoks-by-id [id]
+(defn select-hoks-by-id
+  "Hakee yhden HOKSin tietokannasta sen ID:n perusteella."
+  [id]
   (first
     (db-ops/query
       [queries/select-hoksit-by-id id]
       {:row-fn hoks-from-sql})))
 
-(defn select-hokses-greater-than-id [from-id amount updated-after]
+(defn select-hokses-greater-than-id
+  "Hakee tietokannasta tietyn määrän HOKSeja, joiden ID:t ovat annettu arvo tai
+  sitä isompia, ja jotka on muokattu tietyn ajankohdan jälkeen."
+  [from-id amount updated-after]
   (db-ops/query [queries/select-hoksit-by-id-paged
                  from-id
                  updated-after
@@ -255,12 +386,16 @@
                  amount]
                 {:row-fn hoks-from-sql}))
 
-(defn select-hoks-by-eid [eid]
+(defn select-hoks-by-eid
+  "Hakee HOKSin tietokannasta EID:n perustella."
+  [eid]
   (first (db-ops/query
            [queries/select-hoksit-by-eid eid]
            {:row-fn hoks-from-sql})))
 
-(defn select-hoksit-by-opiskeluoikeus-oid [oid]
+(defn select-hoksit-by-opiskeluoikeus-oid
+  "Hakee HOKSeja tietokannasta opiskeluoikeuden OID:n perusteella."
+  [oid]
   (db-ops/query
     [queries/select-hoksit-by-opiskeluoikeus-oid oid]
     {:row-fn hoks-from-sql}))

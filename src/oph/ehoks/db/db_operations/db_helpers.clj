@@ -48,6 +48,7 @@
       "INSERT INTO %s DEFAULT VALUES" (name t))))
 
 (defn- insert!
+  "Handle database insertion."
   ([t v]
     (if (seq v)
       (jdbc/insert! (get-db-connection) t v)
@@ -58,18 +59,21 @@
       (insert-empty! t))))
 
 (defn insert-one!
+  "Insert one row into the database."
   ([t v]
     (first (insert! t v)))
   ([t v db-conn]
     (first (insert! t v db-conn))))
 
 (defn insert-multi!
+  "Insert multiple rows into the database."
   ([t v]
     (jdbc/insert-multi! (get-db-connection) t v))
   ([t v db-conn]
     (jdbc/insert-multi! db-conn t v)))
 
 (defn update!
+  "Update a row or rows in database."
   ([table values where-clause]
     (jdbc/update! (get-db-connection) table values where-clause))
   ([table values where-clause db-conn]
@@ -129,12 +133,18 @@
   [m]
   (convert-keys #(keyword (.replace (name %) \_ \-)) m))
 
-(defn replace-in [h sk tks]
+(defn replace-in
+  "Associate the value associated with sk with the new key or sequence of nested
+  keys tks in h, and then dissociate sk."
+  [h sk tks]
   (if (some? (get h sk))
     (dissoc (assoc-in h tks (get h sk)) sk)
     h))
 
-(defn replace-from [h sks tk]
+(defn replace-from
+  "Functions similarly to replace-in, but can accept a sequence of nested keys
+  as the source and expects a keyword as the destination."
+  [h sks tk]
   (cond
     (get-in h sks)
     (if (= (count (get-in h (drop-last sks))) 1)
@@ -151,7 +161,9 @@
     (apply dissoc h (drop-last sks))
     :else h))
 
-(defn replace-with-in [m kss kst]
+(defn replace-with-in
+  "Handles replacing one (possibly nested) key with another in a map."
+  [m kss kst]
   (if (coll? kss)
     (replace-from m kss kst)
     (replace-in m kss kst)))
@@ -162,6 +174,7 @@
   (apply dissoc m (filter #(nil? (get m %)) (keys m))))
 
 (defn convert-sql
+  "Handle removals and replacements in maps."
   [m {removals :removals replaces :replaces
       :or {removals [] replaces {}}, :as operations}]
   (as-> m x
