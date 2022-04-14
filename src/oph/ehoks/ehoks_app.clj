@@ -39,7 +39,9 @@
       both-app)
     (session-store/db-store)))
 
-(defn get-app-name []
+(defn get-app-name
+  "Get the app name."
+  []
   (lower-case (:name env (or (System/getProperty "name") "both"))))
 
 (def app (create-app (get-app-name)))
