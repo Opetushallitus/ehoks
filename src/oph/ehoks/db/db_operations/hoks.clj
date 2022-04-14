@@ -400,28 +400,39 @@
     [queries/select-hoksit-by-opiskeluoikeus-oid oid]
     {:row-fn hoks-from-sql}))
 
-(defn- select-hoksit-eid-by-eid [eid]
+(defn- select-hoksit-eid-by-eid
+  "Hakee EID:t noista HOKSeista, joissa EID täsmää annetun EID:n kanssa."
+  [eid]
   (db-ops/query
     [queries/select-hoksit-eid-by-eid eid]
     {}))
 
-(defn select-hoksit-created-between [from to]
+(defn select-hoksit-created-between
+  "Hakee tietokannasta ne HOKSit, jotka on luotu annettujen ajankohtien
+  välillä."
+  [from to]
   (db-ops/query
     [queries/select-hoksit-created-between from to]
     {:row-fn hoks-from-sql}))
 
-(defn select-hoksit-finished-between [from to]
+(defn select-hoksit-finished-between
+  "Hakee tietokannasta ne HOKSit, jotka on merkattu valmiiksi annettujen
+  ajankohtien välilla."
+  [from to]
   (db-ops/query
     [queries/select-hoksit-finished-between from to]
     {:row-fn hoks-from-sql}))
 
-(defn- generate-unique-eid []
+(defn- generate-unique-eid
+  "Luo EID, jota ei ole vielä käytössä missään tietokannassa olevassa HOKSissa."
+  []
   (loop [eid nil]
     (if (or (nil? eid) (seq (select-hoksit-eid-by-eid eid)))
       (recur (str (java.util.UUID/randomUUID)))
       eid)))
 
 (defn insert-hoks!
+  "Tallentaa HOKSin tietokantaan."
   ([hoks]
     (insert-hoks! hoks (db-ops/get-db-connection)))
   ([hoks db-conn]
@@ -446,6 +457,7 @@
           (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid))))))))
 
 (defn update-hoks-by-id!
+  "Päivittää tietokannassa olevan HOKSin."
   ([id hoks]
     (db-ops/update! :hoksit
                     (assoc
@@ -461,40 +473,59 @@
                       (java.util.Date.))
                     ["id = ? AND deleted_at IS NULL" id] db-conn)))
 
-(defn select-hoks-oppijat-without-index []
+(defn select-hoks-oppijat-without-index
+  "Hakee tietokannasta HOKSien oppijan OID:t, joilla ei ole tietoja
+  tietokannassa."
+  []
   (db-ops/query
     [queries/select-hoks-oppijat-without-index]))
 
-(defn select-hoks-oppijat-without-index-count []
+(defn select-hoks-oppijat-without-index-count
+  "Hakee määrän oppijan OID:istä, joilla ei ole tietoja tietokannassa."
+  []
   (db-ops/query
     [queries/select-hoks-oppijat-without-index-count]))
 
-(defn select-hoks-opiskeluoikeudet-without-index []
+(defn select-hoks-opiskeluoikeudet-without-index
+  "Hakee tietokannasta opiskeluoikeus OID:t, joilla ei ole tietoja."
+  []
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-index]))
 
-(defn select-hoks-opiskeluoikeudet-without-index-count []
+(defn select-hoks-opiskeluoikeudet-without-index-count
+  "Hakee tietokannasta määrän opiskeluoikeus OID:istä, joilla ei ole tietoja."
+  []
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-index-count]))
 
-(defn select-kyselylinkit-by-oppija-oid [oid]
+(defn select-kyselylinkit-by-oppija-oid
+  "Hakee tietokannasta kyselylinkit oppijan OID:n perusteella."
+  [oid]
   (db-ops/query
     [queries/select-kyselylinkit-by-oppija-oid oid]
     {:row-fn db-ops/from-sql}))
 
-(defn- select-keskeytymisajanjaksot [oht-id]
+(defn- select-keskeytymisajanjaksot
+  "Hakee tietokannasta keskeytymisajanjaksot OHT:n ID:n perusteella."
+  [oht-id]
   (db-ops/query
     [queries/select-keskeytymisajanjaksot-by-osaamisen-hankkimistapa-id oht-id]
     {:row-fn db-ops/from-sql}))
 
-(defn- get-and-assoc-data [osa-type]
+(defn- get-and-assoc-data
+  "Apufunktio, joka hakee keskeytymisajanjaksot tietokannasta ja assosioi ne
+  työpaikkajakson kanssa."
+  [osa-type]
   (fn [jakso]
     (assoc jakso
            :tyyppi osa-type
            :keskeytymisajanjaksot
            (select-keskeytymisajanjaksot (:hankkimistapa_id jakso)))))
 
-(defn select-paattyneet-tyoelamajaksot [osa start end limit]
+(defn select-paattyneet-tyoelamajaksot
+  "Hakee tietokannasta työelämäjaksot, jotka päättyivät tietyn aikavälin
+  sisällä."
+  [osa start end limit]
   (case osa
     "hpto" (map (get-and-assoc-data "hpto")
                 (db-ops/query
@@ -509,13 +540,17 @@
                   [queries/select-paattyneet-tyoelamajaksot-hyto
                    start end limit]))))
 
-(defn update-osaamisen-hankkimistapa-tep-kasitelty [id to]
+(defn update-osaamisen-hankkimistapa-tep-kasitelty
+  "Merkitsee osaamisen hankkimistavan käsitellyksi tai ei käsitellyksi."
+  [id to]
   (db-ops/update!
     :osaamisen_hankkimistavat
     {:tep_kasitelty to}
     ["id = ?" id]))
 
-(defn update-amisherate-kasittelytilat-aloitusherate-kasitelty [hoks-id to]
+(defn update-amisherate-kasittelytilat-aloitusherate-kasitelty
+  "Merkitsee AMIS aloitusherätteen käsitellyksi."
+  [hoks-id to]
   (let [tila (first
                (db-ops/query
                  [queries/select-amisherate-kasittelytilat-by-hoks-id hoks-id]
@@ -530,7 +565,9 @@
                            (db-ops/to-sql {:hoks-id hoks-id
                                            :aloitusherate_kasitelty to}))))))
 
-(defn update-amisherate-kasittelytilat-paattoherate-kasitelty [hoks-id to]
+(defn update-amisherate-kasittelytilat-paattoherate-kasitelty
+  "Merkitsee AMIS päättöherätteen käsitellyksi."
+  [hoks-id to]
   (let [tila (first
                (db-ops/query
                  [queries/select-amisherate-kasittelytilat-by-hoks-id hoks-id]
@@ -546,6 +583,7 @@
                                            :paattoherate_kasitelty to}))))))
 
 (defn insert-amisherate-kasittelytilat!
+  "Luo uusi AMIS-heräterivin käsittelytilatauluun."
   ([hoks-id]
     (insert-amisherate-kasittelytilat! hoks-id (db-ops/get-db-connection)))
   ([hoks-id db-conn]
@@ -554,6 +592,7 @@
                          (db-ops/to-sql {:hoks-id hoks-id})))))
 
 (defn update-amisherate-kasittelytilat!
+  "Päivittää AMIS-herätteen käsittelytilat tietokantaan."
   ([tilat]
     (update-amisherate-kasittelytilat! tilat (db-ops/get-db-connection)))
   ([tilat db-conn]
@@ -561,19 +600,26 @@
                     (db-ops/to-sql (dissoc tilat :id))
                     ["id = ?" (:id tilat)] db-conn)))
 
-(defn select-hoksit-with-kasittelemattomat-aloitusheratteet [start end limit]
+(defn select-hoksit-with-kasittelemattomat-aloitusheratteet
+  "Hakee tietokannasta HOKSit, joissa on käsittelemättömiä aloitusherätteitä."
+  [start end limit]
   (db-ops/query
     [queries/select-hoksit-with-kasittelemattomat-aloitusheratteet
      start end limit]
     {:row-fn hoks-from-sql}))
 
-(defn select-hoksit-with-kasittelemattomat-paattoheratteet [start end limit]
+(defn select-hoksit-with-kasittelemattomat-paattoheratteet
+  "Hakee tietokannasta HOKSit, joissa on käsittelemättömiä päättöherätteitä."
+  [start end limit]
   (db-ops/query
     [queries/select-hoksit-with-kasittelemattomat-paattoheratteet
      start end limit]
     {:row-fn hoks-from-sql}))
 
-(defn get-or-create-amisherate-kasittelytila-by-hoks-id! [hoks-id]
+(defn get-or-create-amisherate-kasittelytila-by-hoks-id!
+  "Hakee tietokannasta AMIS-herätteen käsittelytilan, tai luo uuden, jos sitä
+  ei löydy."
+  [hoks-id]
   (let [tila (first
                (db-ops/query
                  [queries/select-amisherate-kasittelytilat-by-hoks-id hoks-id]
@@ -582,7 +628,9 @@
       tila
       (insert-amisherate-kasittelytilat! hoks-id))))
 
-(defn select-count-all-hoks []
+(defn select-count-all-hoks
+  "Hakee HOKSien määrän tietokannasta."
+  []
   (db-ops/query
     [queries/select-count-all-hoks]))
 
@@ -608,7 +656,9 @@
     :hoksit
     ["id = ?" hoks-id]))
 
-(defn undo-shallow-delete [hoks-id]
+(defn undo-shallow-delete
+  "Merkitsee HOKSin palautetuksi asettamalla nil:in sen deleted_at -kenttään."
+  [hoks-id]
   (db-ops/update!
     :hoksit
     {:deleted_at nil}
@@ -622,18 +672,26 @@
     (db-ops/delete! :hoksit ["id = ?" hoks-id])))
 
 (defn select-kyselylinkit-by-date-and-type-temp
+  "Hakee tietokannasta kyselylinkit, joiden alkupäivämäärät ovat annetun
+  aikavälin sisällä ja joiden HOKS ID:t ovat annettua arvoa isompia."
   [alkupvm alkupvm-loppu last-id limit]
   (db-ops/query
     [queries/select-paattyneet-kyselylinkit-by-date-and-type-temp
      alkupvm alkupvm-loppu last-id limit]
     {:row-fn db-ops/from-sql}))
 
-(defn select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot []
+(defn select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot
+  "Hakee ID, oppijan OID ja opiskeluoikeuden OID HOKSeista, jotka aloitettiin
+  viime kahden vuoden aikana ja jotka eivät ole päättyneet vielä."
+  []
   (db-ops/query
     [queries/select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot]
     {:row-fn db-ops/from-sql}))
 
-(defn select-hoksit-by-oo-koulutustoimija-and-koski404 [koulutustoimija-oid]
+(defn select-hoksit-by-oo-koulutustoimija-and-koski404
+  "Hakee tietokannasta koulutustoimijan perusteella HOKSit, joilla ei ole
+  opiskeluoikeustietoja Koskessa."
+  [koulutustoimija-oid]
   (db-ops/query
     [queries/select-hoksit-by-oo-koulutustoimija-and-koski404
      koulutustoimija-oid]
