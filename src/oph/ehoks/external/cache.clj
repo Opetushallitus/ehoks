@@ -64,7 +64,9 @@
                 :ehoks-cached true
                 :cached :HIT)))
 
-(defn encode-url [url params]
+(defn encode-url
+  "Encode base URL and params in URL-safe manner"
+  [url params]
   (if (empty? params)
     url
     (format "%s?%s" url (codec/form-encode params))))

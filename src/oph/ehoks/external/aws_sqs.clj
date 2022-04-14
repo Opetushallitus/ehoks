@@ -16,7 +16,9 @@
         (.region (Region/EU_WEST_1))
         (.build))))
 
-(defn- get-queue-url [queue-name]
+(defn- get-queue-url
+  "Hakee SQS-queuen URL:n sen nimen perusteella."
+  [queue-name]
   (when (some? sqs-client)
     (if (nil? (:env-stage env))
       (log/warn "Stage missing from env variables")
@@ -28,7 +30,9 @@
                               queue-name))
                        (.build)))))))
 
-(defn- get-queue-url-with-error-handling [queue-name]
+(defn- get-queue-url-with-error-handling
+  "Hakee SQS-queuen URL:n sen nimen perusteella, ja käsittelee virheitä."
+  [queue-name]
   (try
     (get-queue-url queue-name)
     (catch QueueDoesNotExistException e
@@ -49,7 +53,9 @@
   (get-queue-url-with-error-handling
     (:heratepalvelu-resend-queue config)))
 
-(defn build-hoks-hyvaksytty-msg [id hoks]
+(defn build-hoks-hyvaksytty-msg
+  "Luo HOKS hyväksytty -viestin."
+  [id hoks]
   {:ehoks-id id
    :kyselytyyppi "aloittaneet"
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
@@ -57,10 +63,9 @@
    :sahkoposti (:sahkoposti hoks)
    :alkupvm (str (:ensikertainen-hyvaksyminen hoks))})
 
-(defn build-hoks-osaaminen-saavutettu-msg [id
-                                           saavuttamisen-pvm
-                                           hoks
-                                           kyselytyyppi]
+(defn build-hoks-osaaminen-saavutettu-msg
+  "Luo HOKS osaamisen saavutettu -viestin."
+  [id saavuttamisen-pvm hoks kyselytyyppi]
   {:ehoks-id id
    :kyselytyyppi kyselytyyppi
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
@@ -68,7 +73,9 @@
    :sahkoposti (:sahkoposti hoks)
    :alkupvm (str saavuttamisen-pvm)})
 
-(defn build-tyoelamapalaute-msg [msg]
+(defn build-tyoelamapalaute-msg
+  "Luo työelämäpalauteviestin."
+  [msg]
   {:tyyppi (:tyyppi msg)
    :alkupvm (str (:alkupvm msg))
    :loppupvm (str (:loppupvm msg))
@@ -93,7 +100,9 @@
         (if (:loppu %) (assoc k :loppu (str (:loppu %))) k))
      (:keskeytymisajanjaksot msg))})
 
-(defn send-message [msg queue-url]
+(defn send-message
+  "Lähettää viestin SQS-queueen."
+  [msg queue-url]
   (let [resp (.sendMessage sqs-client (-> (SendMessageRequest/builder)
                                           (.queueUrl queue-url)
                                           (.messageBody (json/write-str msg))
@@ -104,22 +113,30 @@
                "Failed to send SQS message"
                {:error :sqs-error})))))
 
-(defn send-amis-palaute-message [msg]
+(defn send-amis-palaute-message
+  "Lähettää AMIS-palauteviestin."
+  [msg]
   (if (some? herate-queue-url)
     (send-message msg herate-queue-url)
     (log/error "No AMIS-palaute queue!")))
 
-(defn send-delete-tunnus-message [kyselylinkki]
+(defn send-delete-tunnus-message
+  "Lähettää tunnuksen poistoviestin."
+  [kyselylinkki]
   (if (some? delete-tunnus-queue-url)
     (send-message {:kyselylinkki kyselylinkki} delete-tunnus-queue-url)
     (log/error "No AMIS delete tunnus queue!")))
 
-(defn send-tyoelamapalaute-message [msg]
+(defn send-tyoelamapalaute-message
+  "Lähettää työelämäpalauteviestin."
+  [msg]
   (if (some? tyoelamapalaute-queue-url)
     (send-message msg tyoelamapalaute-queue-url)
     (log/error "No työelämäpalaute queue!")))
 
-(defn send-palaute-resend-message [msg]
+(defn send-palaute-resend-message
+  "Lähettää palautteen uudelleenlähetysviestin."
+  [msg]
   (if (some? resend-queue-url)
     (send-message msg resend-queue-url)
     (log/error "No resend queue!")))
