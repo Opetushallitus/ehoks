@@ -9,7 +9,9 @@
   (:import (java.time LocalDate)
            (clojure.lang ExceptionInfo)))
 
-(defn- get-tutkinnonosa-details [tyyppi uuid]
+(defn- get-tutkinnonosa-details
+  "Get hankittava tutkinnon osa details by module ID"
+  [tyyppi uuid]
   (cond
     (= tyyppi "HankittavaAmmatillinenTutkinnonOsa")
     (db/select-hankittavat-ammat-tutkinnon-osat-by-module-id uuid)
@@ -18,7 +20,9 @@
     (= tyyppi "HankittavaPaikallinenTutkinnonOsa")
     (db/select-hankittavat-paikalliset-tutkinnon-osat-by-module-id uuid)))
 
-(defn- jakolinkki-still-valid? [jakolinkki]
+(defn- jakolinkki-still-valid?
+  "Check whether jakolinkki is still valid"
+  [jakolinkki]
   (cond
     (.isAfter (:voimassaolo-alku jakolinkki) (LocalDate/now))
     (throw (ex-info "Shared link not yet active" {:cause :inactive}))
