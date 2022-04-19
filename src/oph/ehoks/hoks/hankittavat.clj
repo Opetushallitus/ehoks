@@ -108,8 +108,7 @@
    :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
    :osa__olennainen_seikka          :olennainen_seikka
    :osa__module_id                  :module_id
-   :osa__opetuksen_maara            :opetuksen_maara
-   :osa__ohjauksen_maara            :ohjauksen_maara
+   :osa__opetus_ja_ohjaus_maara     :opetus_ja_ohjaus_maara
    :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
    :vaatimuksista_tai_tavoitteista_poikkeaminen})
 
@@ -141,8 +140,7 @@
    :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
    :osa__olennainen_seikka          :olennainen_seikka
    :osa__module_id                  :module_id
-   :osa__opetuksen_maara            :opetuksen_maara
-   :osa__ohjauksen_maara            :ohjauksen_maara
+   :osa__opetus_ja_ohjaus_maara     :opetus_ja_ohjaus_maara
    :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
    :vaatimuksista_tai_tavoitteista_poikkeaminen})
 
@@ -172,8 +170,7 @@
    :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
    :osa__olennainen_seikka          :olennainen_seikka
    :osa__module_id                  :module_id
-   :osa__opetuksen_maara            :opetuksen_maara
-   :osa__ohjauksen_maara            :ohjauksen_maara
+   :osa__opetus_ja_ohjaus_maara     :opetus_ja_ohjaus_maara
    :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
    :vaatimuksista_tai_tavoitteista_poikkeaminen})
 
