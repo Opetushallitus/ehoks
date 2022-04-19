@@ -31,8 +31,12 @@
         true)
     false))
 
-(defn get-jobs []
+(defn get-jobs
+  "Get map of all scheduled jobs"
+  []
   @jobs)
 
-(defn get-job [id]
+(defn get-job
+  "Get one specific job by ID"
+  [id]
   (get @jobs id))

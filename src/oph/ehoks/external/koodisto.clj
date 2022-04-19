@@ -43,18 +43,26 @@
                    e)
           e)))))
 
-(defn get-koodi [uri]
+(defn get-koodi
+  "Get koodi by URI"
+  [uri]
   (with-koodisto-get (u/get-url "koodisto-service.get-latest-by-uri" uri)))
 
-(defn get-koodi-versiot [uri]
+(defn get-koodi-versiot
+  "Get koodi versiot by URI"
+  [uri]
   (with-koodisto-get
     (u/get-url "koodisto-service.get-versiot-by-uri" uri)))
 
-(defn get-koodi-versio [uri versio]
+(defn get-koodi-versio
+  "Get koodi versio by URI"
+  [uri versio]
   (with-koodisto-get
     (u/get-url "koodisto-service.get-versio-by-uri" uri versio)))
 
-(defn get-koodi-latest-versiot [uri]
+(defn get-koodi-latest-versiot
+  "Get latest versiot for koodi by URI"
+  [uri]
   (with-koodisto-get
     (u/get-url "koodisto-service.get-latest-versiot-by-uri" uri)))
 

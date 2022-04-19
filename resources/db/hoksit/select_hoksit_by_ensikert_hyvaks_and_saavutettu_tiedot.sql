@@ -1,6 +1,5 @@
 SELECT h.id, h.opiskeluoikeus_oid, h.oppija_oid
-FROM hoksit h
-       LEFT OUTER JOIN kyselylinkit kl ON (h.id = kl.hoks_id)
+FROM hoksit h LEFT OUTER JOIN kyselylinkit kl ON (h.id = kl.hoks_id)
 WHERE
   ((kl.tyyppi != 'tutkinnon_suorittaneet'
     AND kl.tyyppi != 'tutkinnon_osia_suorittaneet')

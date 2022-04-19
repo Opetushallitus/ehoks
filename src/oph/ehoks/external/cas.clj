@@ -73,7 +73,9 @@
   (c/with-api-headers
     (update data :options add-cas-ticket (:service data))))
 
-(defn xml->map [x]
+(defn xml->map
+  "Convert XML data to Clojure map"
+  [x]
   (hash-map
     (:tag x)
     (map
@@ -95,7 +97,9 @@
             (some #(get % k) c))
           (rest ks))))))
 
-(defn- convert-response-data [data]
+(defn- convert-response-data
+  "Extracts user and/or error info from response data"
+  [data]
   (let [m (xml->map data)
         success (some?
                   (find-value m [:serviceResponse :authenticationSuccess]))]
@@ -105,7 +109,9 @@
      :user (first
              (find-value m [:serviceResponse :authenticationSuccess :user]))}))
 
-(defn- using-valtuudet? [response]
+(defn- using-valtuudet?
+  "Check whether user is using valtuudet"
+  [response]
   (boolean (or (find-value
                  response
                  [:serviceResponse :authenticationSuccess
@@ -115,7 +121,9 @@
                  [:serviceResponse :authenticationSuccess
                   :attributes :impersonatorDisplayName]))))
 
-(defn- convert-oppija-cas-response-data [xml-data]
+(defn- convert-oppija-cas-response-data
+  "Extracts user OID and valtuudet info, or error, from CAS response data"
+  [xml-data]
   (let [response (xml->map xml-data)
         success (some?
                   (find-value response
@@ -155,7 +163,9 @@
     (let [xml-data (xml/parse-str (:body response))]
       (convert-response-data xml-data))))
 
-(defn- call-cas-oppija-ticket-validation [ticket domain]
+(defn- call-cas-oppija-ticket-validation
+  "Do CAS oppija ticket valiation"
+  [ticket domain]
   (c/with-api-headers
     {:method :get
      :service (u/get-url "cas-oppija.validate-service")

@@ -7,7 +7,9 @@
             [clojure.tools.logging :as log])
   (:import (clojure.lang ExceptionInfo)))
 
-(defn filter-oppija [values]
+(defn filter-oppija
+  "Poistaa ylimääräiset avaimet henkilö-alaobjektista."
+  [values]
   (update values :henkilö select-keys
           [:oid :hetu :syntymäaika :etunimet :kutsumanimi :sukunimi]))
 
@@ -56,7 +58,9 @@
        :options {:basic-auth [(:cas-username config) (:cas-password config)]
                  :as :json}})))
 
-(defn get-opiskeluoikeus-info [oid]
+(defn get-opiskeluoikeus-info
+  "Get opiskeluoikeus info with error handling"
+  [oid]
   (try
     (get-opiskeluoikeus-info-raw oid)
     (catch ExceptionInfo e

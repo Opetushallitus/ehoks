@@ -5,6 +5,7 @@
             [clojure.java.jdbc :as jdbc]))
 
 (defn insert-koodisto-koodi!
+  "Lisää koodistokoodin tietokantaan."
   ([m]
     (db-ops/insert-one!
       :koodisto_koodit
@@ -16,6 +17,7 @@
       conn)))
 
 (defn insert-osaamisen-osoittamisen-osa-alue!
+  "Lisää osaamisen osoittamisen osa-alueen tietokantaan."
   ([naytto-id koodi-id]
     (db-ops/insert-one!
       :osaamisen_osoittamisen_osa_alueet
@@ -28,12 +30,15 @@
        :koodisto_koodi_id koodi-id}
       conn)))
 
-(defn select-osa-alueet-by-osaamisen-osoittaminen [naytto-id]
+(defn select-osa-alueet-by-osaamisen-osoittaminen
+  "Hakee osa-alueet tietokannasta osaamisen osoittamisen ID:n perusteella."
+  [naytto-id]
   (db-ops/query
     [queries/select-osa-alueet-by-osaamisen-osoittaminen naytto-id]
     {:row-fn h/koodi-uri-from-sql}))
 
 (defn insert-osaamisen-osoittaminen!
+  "Lisää yhden osaamisen osoittamisen tietokantaan."
   ([m]
     (db-ops/insert-one!
       :osaamisen_osoittamiset
@@ -45,6 +50,8 @@
       conn)))
 
 (defn insert-oo-koulutuksen-jarjestaja-osaamisen-arvioija!
+  "Lisää yhden osaamisem osoittamisen koulutuksen järjestäjän osaamisen
+  arvioijan tietokantaan."
   ([hon c]
     (insert-oo-koulutuksen-jarjestaja-osaamisen-arvioija!
       hon c (db-ops/get-db-connection)))
@@ -65,13 +72,15 @@
         kja-col))))
 
 (defn select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id
-  "Hankitun osaamisen näytön koulutuksen järjestäjän arvioijat"
+  "Hakee hankitun osaamisen näytön koulutuksen järjestäjän arvioijat
+  tietokannasta."
   [id]
   (db-ops/query
     [queries/select-koulutuksen-jarjestaja-osaamisen-arvioijat-by-hon-id id]
     {:row-fn h/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql}))
 
 (defn insert-tyoelama-arvioija!
+  "Lisää yhden työelämän arvioijan tietokantaan."
   ([arvioija]
     (db-ops/insert-one!
       :tyoelama_osaamisen_arvioijat
@@ -83,6 +92,7 @@
       conn)))
 
 (defn insert-osaamisen-osoittamisen-tyoelama-arvioija!
+  "Lisää yhden osaamisen osoittamisen työelämän arvioijan tietokantaan."
   ([hon arvioija]
     (db-ops/insert-one!
       :osaamisen_osoittamisen_tyoelama_arvioija
@@ -96,13 +106,14 @@
       conn)))
 
 (defn select-tyoelama-osaamisen-arvioijat-by-hon-id
-  "Hankitun osaamisen näytön työelemän arvioijat"
+  "Hakee hankitun osaamisen näytön työelemän arvioijat tietokannasta."
   [id]
   (db-ops/query
     [queries/select-tyoelama-osaamisen-arvioijat-by-hon-id id]
     {:row-fn h/tyoelama-arvioija-from-sql}))
 
 (defn insert-osaamisen-osoittamisen-sisallot!
+  "Lisää osaamisen osoittamisen sisällöt tietokantaan."
   ([hon c]
     (db-ops/insert-multi!
       :osaamisen_osoittamisen_sisallot
@@ -115,13 +126,17 @@
            c)
       conn)))
 
-(defn select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id [id]
+(defn select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id
+  "Hakee osaamisen osoittamisen sisällöt tietokannasta osaamisen osoittamisen
+  ID:n perusteella."
+  [id]
   (db-ops/query
     [queries/select-osaamisen-osoittamisen-sisallot-by-osaamisen-osoittaminen-id
      id]
     {:row-fn h/sisallon-kuvaus-from-sql}))
 
 (defn insert-osaamisen-osoittamisen-yksilolliset-kriteerit!
+  "Lisää osaamisen osoittamisen yksilölliset kriteerit tietokantaan."
   ([hon c]
     (db-ops/insert-multi!
       :osaamisen_osoittamisen_yksilolliset_kriteerit
@@ -134,13 +149,17 @@
                       :yksilollinen_kriteeri %) c)
       conn)))
 
-(defn select-osaamisen-osoittamisen-kriteerit-by-osaamisen-osoittaminen-id [id]
+(defn select-osaamisen-osoittamisen-kriteerit-by-osaamisen-osoittaminen-id
+  "Hakee osaamisen osoittamisen yksilölliset kriteerit tietokannasta osaamisen
+  osoittamisen ID:n perusteella."
+  [id]
   (db-ops/query
     [queries/select-osaamisen-osoittamisen-kriteeri-by-osaamisen-osoittaminen-id
      id]
     {:row-fn h/yksilolliset-kriteerit-from-sql}))
 
 (defn insert-nayttoymparisto!
+  "Lisää yhden näyttöympäristön tietokantaan."
   ([m]
     (db-ops/insert-one!
       :nayttoymparistot
@@ -150,26 +169,36 @@
       :nayttoymparistot
       (db-ops/to-sql m) conn)))
 
-(defn select-nayttoymparisto-by-id [id]
+(defn select-nayttoymparisto-by-id
+  "Hakee näyttöympäristön tietokannasta ID:n perusteella."
+  [id]
   (first
     (db-ops/query
       [queries/select-nayttoymparistot-by-id id]
       {:row-fn h/nayttoymparisto-from-sql})))
 
-(defn select-oppilaitos-oids []
+(defn select-oppilaitos-oids
+  "Hakee oppilaitos OID:t tietokannasta."
+  []
   (db-ops/query
     [queries/select-oppilaitos-oids]
     {:row-fn h/oppilaitos-oid-from-sql}))
 
-(defn select-oppilaitos-oids-by-koulutustoimija-oid [oid]
+(defn select-oppilaitos-oids-by-koulutustoimija-oid
+  "Hakee oppilaitos OID:t tietokannasta koulutustoimijan OID:n perusteella."
+  [oid]
   (db-ops/query
     [queries/select-oppilaitos-oids-by-koulutustoimija-oid oid]
     {:row-fn h/oppilaitos-oid-from-sql}))
 
-(defn select-kyselylinkit-by-tunnus [tunnus]
+(defn select-kyselylinkit-by-tunnus
+  "Hakee kyselylinkit tietokannasta tunnuksen perusteella."
+  [tunnus]
   (db-ops/query
     [queries/select-kyselylinkit-by-fuzzy-linkki (str "%/" tunnus)]
     {:row-fn db-ops/from-sql}))
 
-(defn delete-kyselylinkki-by-tunnus [tunnus]
+(defn delete-kyselylinkki-by-tunnus
+  "Poistaa kyselylinkin tietokannasta tunnuksen perusteella."
+  [tunnus]
   (db-ops/delete! :kyselylinkit ["kyselylinkki LIKE ?" (str "%/" tunnus)]))

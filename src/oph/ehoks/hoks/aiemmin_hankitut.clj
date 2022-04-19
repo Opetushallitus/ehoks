@@ -6,7 +6,8 @@
             [clojure.java.jdbc :as jdbc]))
 
 ; Tätä funktiota käytetään vielä testeissä, eikä pidä poistaa vielä
-(defn get-tarkentavat-tiedot-osaamisen-arvioija [ttoa-id]
+(defn get-tarkentavat-tiedot-osaamisen-arvioija
+  [ttoa-id]
   (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]
     (dissoc
       (assoc
@@ -31,7 +32,10 @@
       :aiemmin-hankitun-osaamisen-arvioijat
       tta)))
 
-(defn extract-arvioijat-and-osoittamiset [rows from-sql-func fields]
+(defn extract-arvioijat-and-osoittamiset
+  "Irrottaa arvioijat ja osaamisen osoittamiset tietokannasta haetuista
+  riveistä."
+  [rows from-sql-func fields]
   (let [oos (c/extract-osaamisen-osoittamiset rows)
         osa-objs (c/extract-from-joined-rows :osa__id fields rows)]
     (mapv (fn [osa]
@@ -55,14 +59,19 @@
    :osa__valittu_todentamisen_prosessi_koodi_versio
    :valittu_todentamisen_prosessi_koodi_versio})
 
-(defn get-aiemmin-hankitut-ammat-tutkinnon-osat [hoks-id]
+(defn get-aiemmin-hankitut-ammat-tutkinnon-osat
+  "Hakee aiemmin hankitut ammatilliset tutkinnon osat tietokannasta HOKSin
+  perusteella."
+  [hoks-id]
   (mapv #(dissoc % :id)
         (extract-arvioijat-and-osoittamiset
           (db/select-all-ahatos-for-hoks hoks-id)
           db-hoks/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql
           ahato-fields)))
 
-(defn get-aiemmin-hankittu-ammat-tutkinnon-osa [id]
+(defn get-aiemmin-hankittu-ammat-tutkinnon-osa
+  "Hakee yhden aiemmin hankitun ammatillisen tutkinnon osan tietokannasta."
+  [id]
   (first (extract-arvioijat-and-osoittamiset
            (db/select-one-ahato id)
            db-hoks/aiemmin-hankittu-ammat-tutkinnon-osa-from-sql
@@ -85,14 +94,19 @@
    :osa__valittu_todentamisen_prosessi_koodi_versio
    :valittu_todentamisen_prosessi_koodi_versio})
 
-(defn get-aiemmin-hankitut-paikalliset-tutkinnon-osat [hoks-id]
+(defn get-aiemmin-hankitut-paikalliset-tutkinnon-osat
+  "Hakee aiemmin hankitut paikalliset tutkinnon osat tietokannasta HOKSin
+  perusteella."
+  [hoks-id]
   (mapv #(dissoc % :id)
         (extract-arvioijat-and-osoittamiset
           (db/select-all-ahptos-for-hoks hoks-id)
           db-hoks/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql
           ahpto-fields)))
 
-(defn get-aiemmin-hankittu-paikallinen-tutkinnon-osa [id]
+(defn get-aiemmin-hankittu-paikallinen-tutkinnon-osa
+  "Hakee yhden aiemmin hankitun paikallisen tutkinnon osan tietokannasta."
+  [id]
   (first (extract-arvioijat-and-osoittamiset
            (db/select-one-ahpto id)
            db-hoks/aiemmin-hankittu-paikallinen-tutkinnon-osa-from-sql
@@ -112,7 +126,9 @@
    :osa__valittu_todentamisen_prosessi_koodi_versio
    :valittu_todentamisen_prosessi_koodi_versio})
 
-(defn get-ahyto-osa-alueet [ahyto-id]
+(defn get-ahyto-osa-alueet
+  "Hakee aiemmin hankitun yhteisen tutkinnon osan osa-alueet tietokannasta."
+  [ahyto-id]
   (mapv #(dissoc % :id)
         (extract-arvioijat-and-osoittamiset
           (db/select-all-osa-alueet-for-ahyto ahyto-id)
@@ -131,14 +147,19 @@
    :osa__valittu_todentamisen_prosessi_koodi_versio
    :valittu_todentamisen_prosessi_koodi_versio})
 
-(defn get-aiemmin-hankitut-yhteiset-tutkinnon-osat [hoks-id]
+(defn get-aiemmin-hankitut-yhteiset-tutkinnon-osat
+  "Hakee aiemmin hankitut yhteiset tutkinnon osat tietokannasta HOKSin
+  perusteella."
+  [hoks-id]
   (mapv #(dissoc (assoc % :osa-alueet (get-ahyto-osa-alueet (:id %))) :id)
         (extract-arvioijat-and-osoittamiset
           (db/select-all-ahytos-for-hoks hoks-id)
           db-hoks/aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql
           ahyto-fields)))
 
-(defn get-aiemmin-hankittu-yhteinen-tutkinnon-osa [id]
+(defn get-aiemmin-hankittu-yhteinen-tutkinnon-osa
+  "Hakee yhden aiemmin hankitun yhteisen tutkinnon osan tietokannasta."
+  [id]
   (assoc (first (extract-arvioijat-and-osoittamiset
                   (db/select-one-ahyto id)
                   db-hoks/aiemmin-hankittu-yhteinen-tutkinnon-osa-from-sql
@@ -147,6 +168,8 @@
          (get-ahyto-osa-alueet id)))
 
 (defn save-ahpto-tarkentavat-tiedot-naytto!
+  "Tallentaa aiemmin hankitun paikallisen tutkinnon osan tarkentavat tiedot
+  tietokantaan."
   ([ahpto-id c]
     (save-ahpto-tarkentavat-tiedot-naytto!
       ahpto-id c (db-ops/get-db-connection)))
@@ -160,6 +183,7 @@
         c))))
 
 (defn save-tta-aiemmin-hankitun-osaamisen-arvioijat!
+  "Tallentaa aiemmin hankitun tutkinnon osan osaamisen arvioijat tietokantaan."
   ([tta-id new-arvioijat]
     (save-tta-aiemmin-hankitun-osaamisen-arvioijat!
       tta-id new-arvioijat (db-ops/get-db-connection)))

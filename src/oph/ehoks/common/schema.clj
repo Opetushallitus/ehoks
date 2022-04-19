@@ -56,6 +56,7 @@
 
 (s/defschema
   Opiskeluoikeus
+  "Opiskeluoikeus ehoksissa"
   {:oid s/Str
    :oppija-oid s/Str
    :oppilaitos-oid s/Str

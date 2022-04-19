@@ -3,7 +3,9 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [clojure.string :as cs]))
 
-(defn get-like [v]
+(defn get-like
+  "Luo LIKE-ekspression SQL:ää varten."
+  [v]
   (format "%%%s%%" (or v "")))
 
 (def translated-oppija-columns
@@ -11,13 +13,19 @@
 
 (def default-locale "fi")
 
-(defn- get-locale [params]
+(defn- get-locale
+  "Hakee nykyisen localen."
+  [params]
   (str "'" (get params :locale default-locale) "'"))
 
-(defn- get-translated-oppija-column [column params]
+(defn- get-translated-oppija-column
+  "Hakee sarakkeen nimen, joka sisältää myös localen nimen."
+  [column params]
   (str (get translated-oppija-columns column) (get-locale params)))
 
-(defn- get-oppija-order-by-column [params]
+(defn- get-oppija-order-by-column
+  "Hakee sarakkeen, jolla tiedot järjestetään."
+  [params]
   (let [column (:order-by-column params)]
     (case column
       :nimi "nimi"
@@ -25,7 +33,9 @@
       :osaamisala (get-translated-oppija-column column params)
       "nimi")))
 
-(defn- get-translated-column-filter [column params]
+(defn- get-translated-column-filter
+  "Luo osan SQL-queryn WHERE-lauseesta, jolla tiedot suodatetaan."
+  [column params]
   (str
     "AND oo."
     (get-translated-oppija-column column params)
@@ -33,7 +43,9 @@
     (get-like (column params))
     "'"))
 
-(defn set-oppijat-query [params]
+(defn set-oppijat-query
+  "Luo oppijat -queryn."
+  [params]
   (-> queries/select-oppilaitos-oppijat
       (cs/replace ":order-by-column"
                   (get-oppija-order-by-column params))
@@ -47,7 +59,9 @@
                     (get-translated-column-filter :osaamisala params)
                     ""))))
 
-(defn set-oppijat-count-query [params]
+(defn set-oppijat-count-query
+  "Luo oppijoiden määrä -queryn."
+  [params]
   (-> queries/select-oppilaitos-oppijat-search-count
       (cs/replace ":tutkinto-filter"
                   (if (:tutkinto params)
@@ -58,39 +72,57 @@
                     (get-translated-column-filter :osaamisala params)
                     ""))))
 
-(defn select-opiskeluoikeudet-without-tutkinto []
+(defn select-opiskeluoikeudet-without-tutkinto
+  "Hakee tietokannasta opiskeluoikeudet, joissa ei ole tutkintoa."
+  []
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-tutkinto]))
 
-(defn select-opiskeluoikeudet-without-tutkinto-count []
+(defn select-opiskeluoikeudet-without-tutkinto-count
+  "Hakee tietokannasta määrän opiskeluoikeuksista, joissa ei ole tutkintoa."
+  []
   (db-ops/query
     [queries/select-hoks-opiskeluoikeudet-without-tutkinto-count]))
 
-(defn select-opiskeluoikeudet-by-oppija-oid [oppija-oid]
+(defn select-opiskeluoikeudet-by-oppija-oid
+  "Hakee tietokannasta opiskeluoikeudet oppijan OID:n perusteella."
+  [oppija-oid]
   (db-ops/query
     [queries/select-opiskeluoikeudet-by-oppija-oid oppija-oid]
     {:row-fn db-ops/from-sql}))
 
-(defn select-opiskeluoikeus-by-oid [oid]
+(defn select-opiskeluoikeus-by-oid
+  "Hakee tietokannasta opiskeluoikeuden OID:n perusteella."
+  [oid]
   (first
     (db-ops/query
       [queries/select-opiskeluoikeudet-by-oid oid]
       {:row-fn db-ops/from-sql})))
 
-(defn select-hankintakoulutus-oids-by-master-oid [oid]
+(defn select-hankintakoulutus-oids-by-master-oid
+  "Hakee tietokannasta lista opiskeluoikeus OID:istä
+  hankintakoulutus-opiskeluoikeus-oid:n perusteella."
+  [oid]
   (db-ops/query
     [queries/select-hankintakoulutus-oids-by-master-oid oid]))
 
-(defn insert-opiskeluoikeus! [opiskeluoikeus]
+(defn insert-opiskeluoikeus!
+  "Lisää yhden opiskeluoikeuden tietokantaan."
+  [opiskeluoikeus]
   (db-ops/insert-one! :opiskeluoikeudet (db-ops/to-sql opiskeluoikeus)))
 
-(defn update-opiskeluoikeus! [oid opiskeluoikeus]
+(defn update-opiskeluoikeus!
+  "Päivittää yhden tietokannassa olevan opiskeluoikeuden."
+  [oid opiskeluoikeus]
   (db-ops/update!
     :opiskeluoikeudet
     (db-ops/to-sql opiskeluoikeus)
     ["oid = ?" oid]))
 
-(defn select-count-opiskeluoikeudet-by-koulutustoimija [oid]
+(defn select-count-opiskeluoikeudet-by-koulutustoimija
+  "Hakee tietokannasta määrän opiskeluoikeuksista, joilla on annettu
+  koulutustoimija."
+  [oid]
   (db-ops/query
     [queries/select-count-by-koulutustoimija oid]))
 
@@ -102,11 +134,14 @@
     (first)
     (:count)))
 
-(defn delete-opiskeluoikeus-from-index! [oid]
+(defn delete-opiskeluoikeus-from-index!
+  "Poistaa opiskeluoikeuden OID:n perusteella."
+  [oid]
   (db-ops/delete! :opiskeluoikeudet
                   ["oid = ?" oid]))
 
 (defn delete-from-index-by-koulutustoimija!
+  "Poistaa opiskeluoikeuden koulutustoimijan OID:n perusteella."
   [koulutustoimija-oid]
   (db-ops/delete! :opiskeluoikeudet
                   ["koulutustoimija_oid = ?" koulutustoimija-oid]))

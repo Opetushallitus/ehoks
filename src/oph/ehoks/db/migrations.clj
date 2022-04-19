@@ -18,8 +18,12 @@
           nil)
         (.load))))
 
-(defn migrate! []
+(defn migrate!
+  "Run migrations with flyway"
+  []
   (.migrate flyway))
 
-(defn clean! []
+(defn clean!
+  "Clean database"
+  []
   (.clean flyway))

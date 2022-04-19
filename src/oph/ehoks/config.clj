@@ -7,7 +7,9 @@
 
 (def ^:private default-file "oph-configuration/default.edn")
 
-(defn- load-config [file]
+(defn- load-config
+  "Lataa konfiguraatiotiedoston."
+  [file]
   (with-open [reader (io/reader file)]
     (edn/read (java.io.PushbackReader. reader))))
 
@@ -20,7 +22,9 @@
       schema/Config
       (merge default-config custom-config))))
 
-(defn get-config-file []
+(defn get-config-file
+  "Gets path to configuration file."
+  []
   (or (System/getenv "CONFIG")
       (System/getProperty "config")
       (:config env)))

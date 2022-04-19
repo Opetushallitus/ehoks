@@ -15,7 +15,9 @@
   [args s]
   (some? (some #(when (= (lower-case %) s) %) args)))
 
-(defn -main [& args]
+(defn -main
+  "Main entry point"
+  [& args]
   (cond
     (has-arg? args "--help")
     (do (println "eHOKS")

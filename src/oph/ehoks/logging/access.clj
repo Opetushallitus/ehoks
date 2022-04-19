@@ -9,10 +9,14 @@
 (def ^:private service-name
   (cstr/lower-case (:name env (or (System/getProperty "name") "both"))))
 
-(defn- get-header [request k]
+(defn- get-header
+  "Get header k from request headers"
+  [request k]
   (get-in request [:headers k]))
 
-(defn- request-to-str [method request]
+(defn- request-to-str
+  "Convert request to string"
+  [method request]
   (format "%s %s%s"
           method
           (:uri request)
@@ -20,13 +24,19 @@
             (str "?" (:query-string request))
             "")))
 
-(defn get-session [request]
+(defn get-session
+  "Get ring session from request cookies"
+  [request]
   (get-in request [:cookies "ring-session" :value]))
 
-(defn current-fin-time-str []
+(defn current-fin-time-str
+  "Get current time in Helsinki as string"
+  []
   (str (t/to-time-zone (t/now) (t/time-zone-for-id "Europe/Helsinki"))))
 
-(defn to-access-map [request response total-time]
+(defn to-access-map
+  "Convert request, response, and total time taken to access map"
+  [request response total-time]
   (let [method (-> request :request-method name cstr/upper-case)]
     {:timestamp (current-fin-time-str)
      :response-code (:status response)
@@ -44,10 +54,15 @@
      :content-length (get-header request "Content-Length")
      :referer (get-header request "referer")}))
 
-(defn- log-access-map [m]
+(defn- log-access-map
+  "Log access map at level INFO"
+  [m]
   (log/log "access" :info nil (json/write-str m)))
 
-(defn- spy-access [request respond]
+(defn- spy-access
+  "Wraps response in function that handles logging using log-access-map, with
+  the request's time computed from the point when that function is created"
+  [request respond]
   (let [current-ms (System/currentTimeMillis)]
     (fn [response]
       (log-access-map (to-access-map
@@ -55,7 +70,9 @@
                                             current-ms)))
       (respond response))))
 
-(defn- spy-access-sync [handler request]
+(defn- spy-access-sync
+  "Performs request, and logs request and respones before returning response"
+  [handler request]
   (let [current-ms (System/currentTimeMillis)
         response (handler request)]
     (log-access-map
@@ -63,7 +80,9 @@
         request response (- (System/currentTimeMillis) current-ms)))
     response))
 
-(defn wrap-access-logger [handler]
+(defn wrap-access-logger
+  "Wrapper handler in logging function"
+  [handler]
   (fn
     ([request respond raise]
       (try

@@ -80,13 +80,19 @@
   [oppija-oid]
   (db-oppija/select-oppija-by-oid oppija-oid))
 
-(defn get-opiskeluoikeus-by-oid [oid]
+(defn get-opiskeluoikeus-by-oid
+  "Get opiskeluoikeus by OID"
+  [oid]
   (db-opiskeluoikeus/select-opiskeluoikeus-by-oid oid))
 
-(defn get-hankintakoulutus-oids-by-master-oid [oid]
+(defn get-hankintakoulutus-oids-by-master-oid
+  "Get hankintakoulutus by master OID"
+  [oid]
   (db-opiskeluoikeus/select-hankintakoulutus-oids-by-master-oid oid))
 
-(defn get-oppilaitos-oids []
+(defn get-oppilaitos-oids
+  "Get oppilaitos OIDs, filtering out nils"
+  []
   (filter some? (db/select-oppilaitos-oids)))
 
 (def get-oppilaitos-oids-cached
@@ -95,18 +101,24 @@
     {}
     :ttl/threshold 10000))
 
-(defn get-oppilaitos-oids-by-koulutustoimija-oid [koulutustoimija-oid]
+(defn get-oppilaitos-oids-by-koulutustoimija-oid
+  "Get oppilaitos OIDs by koulutustoimija OID, filtering out nils"
+  [koulutustoimija-oid]
   (filter some?
           (db/select-oppilaitos-oids-by-koulutustoimija-oid
             koulutustoimija-oid)))
 
-(defn get-tutkinto-nimi [opiskeluoikeus]
+(defn get-tutkinto-nimi
+  "Extract tutkinto nimi from opiskeluoikeus"
+  [opiskeluoikeus]
   (get-in
     opiskeluoikeus
     [:suoritukset 0 :koulutusmoduuli :tunniste :nimi]
     {:fi "" :sv ""}))
 
-(defn get-osaamisala-nimi [opiskeluoikeus]
+(defn get-osaamisala-nimi
+  "Extract osaamisala nimi from opiskeluoikeus"
+  [opiskeluoikeus]
   (or
     (get-in
       opiskeluoikeus
@@ -116,7 +128,9 @@
       [:suoritukset 0 :osaamisala 0 :osaamisala :nimi])
     {:fi "" :sv ""}))
 
-(defn- opiskeluoikeus-to-sql [opiskeluoikeus oppija-oid]
+(defn- opiskeluoikeus-to-sql
+  "Convert opiskeluoikeus to an object format that can be saved to the database"
+  [opiskeluoikeus oppija-oid]
   (let [tutkinto (get-tutkinto-nimi opiskeluoikeus)
         osaamisala (get-osaamisala-nimi opiskeluoikeus)]
     {:oid (:oid opiskeluoikeus)
@@ -126,7 +140,9 @@
      :tutkinto_nimi tutkinto
      :osaamisala_nimi osaamisala}))
 
-(defn- get-opiskeluoikeus-info [oid oppija-oid]
+(defn- get-opiskeluoikeus-info
+  "Get opiskeluoikeus info from Koski and convert to SQL-compatible format"
+  [oid oppija-oid]
   (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
     (when (:sisältyyOpiskeluoikeuteen opiskeluoikeus)
       (log/warnf
@@ -143,6 +159,7 @@
     (opiskeluoikeus-to-sql opiskeluoikeus oppija-oid)))
 
 (defn- log-opiskeluoikeus-insert-error!
+  "Log errors that occur while inserting opiskeluoikeus for oppija"
   ([oid oppija-oid exception]
     (log/errorf
       "Error adding opiskeluoikeus %s of oppija %s: %s"
@@ -155,14 +172,21 @@
         "")
       oid oppija-oid (.getMessage exception))))
 
-(defn- log-opiskeluoikeus-insert-error-for-indexing! [oid oppija-oid exception]
+(defn- log-opiskeluoikeus-insert-error-for-indexing!
+  "Log errors that occur while inserting opiskeluoikeus for oppija during
+  indexing"
+  [oid oppija-oid exception]
   (log-opiskeluoikeus-insert-error! oid oppija-oid exception true))
 
-(defn- insert-opiskeluoikeus [oid oppija-oid]
+(defn- insert-opiskeluoikeus
+  "Insert opiskeluoikeus with given OID into database for oppija"
+  [oid oppija-oid]
   (db-opiskeluoikeus/insert-opiskeluoikeus!
     (get-opiskeluoikeus-info oid oppija-oid)))
 
-(defn- opiskeluoikeus-doesnt-exist [oid]
+(defn- opiskeluoikeus-doesnt-exist
+  "Check whether opiskeluoikeus is not present in database"
+  [oid]
   (empty? (get-opiskeluoikeus-by-oid oid)))
 
 (defn insert-hankintakoulutus-opiskeluoikeus!
@@ -196,28 +220,40 @@
         (log-opiskeluoikeus-insert-error! opiskeluoikeus-oid oppija-oid e)
         (throw e)))))
 
-(defn- insert-new-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
+(defn- insert-new-opiskeluoikeus-without-error-forwarding!
+  "Insert new opiskeluoikeus for oppija without passing errors up the call
+  stack"
+  [oid oppija-oid]
   (try
     (insert-opiskeluoikeus oid oppija-oid)
     (catch Exception e
       (log-opiskeluoikeus-insert-error-for-indexing! oid oppija-oid e))))
 
-(defn- insert-new-opiskeluoikeus! [oid oppija-oid]
+(defn- insert-new-opiskeluoikeus!
+  "Insert new opiskeluoikeus for oppija"
+  [oid oppija-oid]
   (try
     (insert-opiskeluoikeus oid oppija-oid)
     (catch Exception e
       (log-opiskeluoikeus-insert-error! oid oppija-oid e)
       (throw e))))
 
-(defn add-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
+(defn add-opiskeluoikeus-without-error-forwarding!
+  "Add opiskeluoikeus for oppija if it doesn't already exist, without passing
+  errors up the call stack"
+  [oid oppija-oid]
   (when (opiskeluoikeus-doesnt-exist oid)
     (insert-new-opiskeluoikeus-without-error-forwarding! oid oppija-oid)))
 
-(defn add-opiskeluoikeus! [oid oppija-oid]
+(defn add-opiskeluoikeus!
+  "Add opiskeluoikeus for oppija, if it doesn't already exist"
+  [oid oppija-oid]
   (when (opiskeluoikeus-doesnt-exist oid)
     (insert-new-opiskeluoikeus! oid oppija-oid)))
 
-(defn update-opiskeluoikeus-without-error-forwarding! [oid oppija-oid]
+(defn update-opiskeluoikeus-without-error-forwarding!
+  "Update opsikeluoikeus for oppija without passing errors up the call stack"
+  [oid oppija-oid]
   (try
     (db-opiskeluoikeus/update-opiskeluoikeus!
       oid
@@ -228,6 +264,7 @@
         oid oppija-oid (.getMessage e)))))
 
 (defn- log-opiskelija-insert-error!
+  "Log errors that occur when inserting a student"
   ([oid exception]
     (log/errorf "Error adding oppija %s: %s" oid (.getMessage exception)))
   ([oid exception skip-indexing]
@@ -237,40 +274,57 @@
                   "")
                 oid (.getMessage exception))))
 
-(defn- log-opiskelija-insert-error-for-indexing! [oid exception]
+(defn- log-opiskelija-insert-error-for-indexing!
+  "Log errors that occur when inserting a student during indexing"
+  [oid exception]
   (log-opiskelija-insert-error! oid exception true))
 
-(defn- insert-oppija! [oid]
+(defn- insert-oppija!
+  "Insert student into database"
+  [oid]
   (let [oppija (:body (onr/find-student-by-oid oid))]
     (db-oppija/insert-oppija!
       {:oid oid
        :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))})))
 
-(defn- insert-new-oppija-without-error-forwarding! [oid]
+(defn- insert-new-oppija-without-error-forwarding!
+  "Insert new student into database without passing errors up the call stack"
+  [oid]
   (try
     (insert-oppija! oid)
     (catch Exception e
       (log-opiskelija-insert-error-for-indexing! oid e))))
 
-(defn- insert-new-oppija! [oid]
+(defn- insert-new-oppija!
+  "Insert new student into database"
+  [oid]
   (try
     (insert-oppija! oid)
     (catch Exception e
       (log-opiskelija-insert-error! oid e)
       (throw e))))
 
-(defn- oppija-doesnt-exist [oid]
+(defn- oppija-doesnt-exist
+  "Check that student doesn't already exist in database"
+  [oid]
   (empty? (get-oppija-by-oid oid)))
 
-(defn add-oppija-without-error-forwarding! [oid]
+(defn add-oppija-without-error-forwarding!
+  "Add student if a student with the same ID doesn't already exist, without
+  passing errors up the call stack"
+  [oid]
   (when (oppija-doesnt-exist oid)
     (insert-new-oppija-without-error-forwarding! oid)))
 
-(defn add-oppija! [oid]
+(defn add-oppija!
+  "Add student if a student with the same ID doesn't already exist"
+  [oid]
   (when (oppija-doesnt-exist oid)
     (insert-new-oppija! oid)))
 
-(defn update-oppija! [oid]
+(defn update-oppija!
+  "Update existing student in database"
+  [oid]
   (try
     (let [oppija (:body (onr/find-student-by-oid oid))]
       (db-oppija/update-oppija!
@@ -280,30 +334,41 @@
       (log/errorf "Error updating oppija %s" oid)
       (throw e))))
 
-(defn update-oppijat-without-index! []
+(defn update-oppijat-without-index!
+  "Update students without indexes in database"
+  []
   (log/info "Start indexing oppijat")
   (doseq [{oid :oppija_oid} (get-oppijat-without-index)]
     (add-oppija-without-error-forwarding! oid))
   (log/info "Indexing oppijat finished"))
 
-(defn update-opiskeluoikeudet-without-index! []
+(defn update-opiskeluoikeudet-without-index!
+  "Update opiskeluoikeudet without indexes in database"
+  []
   (log/info "Start indexing opiskeluoikeudet")
   (doseq [{oid :opiskeluoikeus_oid oppija-oid :oppija_oid}
           (get-opiskeluoikeudet-without-index)]
     (add-opiskeluoikeus-without-error-forwarding! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))
 
-(defn update-opiskeluoikeudet-without-tutkinto! []
+(defn update-opiskeluoikeudet-without-tutkinto!
+  "Update opiskeluoikeudet without tutkinnot in database"
+  []
   (log/info "Start indexing opiskeluoikeudet without tutkinto")
   (doseq [{oid :oid oppija-oid :oppija_oid}
           (get-opiskeluoikeudet-without-tutkinto)]
     (update-opiskeluoikeus-without-error-forwarding! oid oppija-oid))
   (log/info "Indexing opiskeluoikeudet finished"))
 
-(defn set-opiskeluoikeus-paattynyt! [oid timestamp]
+(defn set-opiskeluoikeus-paattynyt!
+  "Set opiskeluoikeus as finished (päättynyt) as of a particular timestamp"
+  [oid timestamp]
   (db-opiskeluoikeus/update-opiskeluoikeus! oid {:paattynyt timestamp}))
 
-(defn set-opiskeluoikeus-koski404 [oid]
+(defn set-opiskeluoikeus-koski404
+  "Set koski404 field of opiskeluoikeus, indicating that trying to fetch that
+  opiskeluoikeus from Koski returns a 404 error"
+  [oid]
   (db-opiskeluoikeus/update-opiskeluoikeus! oid {:koski404 true}))
 
 (defn oppija-opiskeluoikeus-match?
@@ -330,7 +395,9 @@
       (insert-hankintakoulutus-opiskeluoikeus!
         opiskeluoikeus-oid oppija-oid hankintakoulutus))))
 
-(defn get-opiskeluoikeus-tila [opiskeluoikeus]
+(defn get-opiskeluoikeus-tila
+  "Extract tila from opiskeluoikeus"
+  [opiskeluoikeus]
   (let [opiskeluoikeusjaksot (get-in opiskeluoikeus
                                      [:tila :opiskeluoikeusjaksot])
         latest-jakso (reduce
@@ -343,7 +410,9 @@
                        opiskeluoikeusjaksot)]
     (get-in latest-jakso [:tila :koodiarvo])))
 
-(defn opiskeluoikeus-tila-inactive? [tila]
+(defn opiskeluoikeus-tila-inactive?
+  "Check whether opiskeluoikeus tila is inactive"
+  [tila]
   (some #(= tila %) ["valmistunut"
                      "eronnut"
                      "katsotaaneronneeksi"

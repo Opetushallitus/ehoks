@@ -9,17 +9,23 @@
             [oph.ehoks.middleware :as middleware]
             [oph.ehoks.logging.access :refer [wrap-access-logger]]))
 
-(defn not-found-handler [_ __ ___]
+(defn not-found-handler
+  "Käsittelee tapauksen, jossa reittiä ei löydy."
+  [_ __ ___]
   (response/not-found {:reason "Route not found"}))
 
-(defn log-exception [ex data]
+(defn log-exception
+  "Logittaa virheen."
+  [ex data]
   (log/errorf
     "Unhandled exception\n%s\n%s\n%s"
     (str ex)
     (str data)
     (cstr/join "\n" (.getStackTrace ex))))
 
-(defn exception-handler [^Exception ex & other]
+(defn exception-handler
+  "Käsittelee virhetilanteita."
+  [^Exception ex & other]
   (let [exception-data (if (map? (first other)) (first other) (ex-data ex))]
     (log-exception ex exception-data))
   (response/internal-server-error {:type "unknown-exception"}))
@@ -36,7 +42,7 @@
 
 (defn create-app
   "Creates application with given routes and session store.
-   If store is nil memory store is being used"
+   If store is nil memory store is being used."
   ([app-routes session-store]
     (-> app-routes
         (middleware/wrap-cache-control-no-cache)

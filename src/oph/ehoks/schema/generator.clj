@@ -2,10 +2,14 @@
   (:require [schema.core :as s]
             [ring.swagger.json-schema :as rsjs]))
 
-(defn get-access [v method]
+(defn get-access
+  "Get access type for method"
+  [v method]
   (or (get-in v [:methods method]) (get-in v [:methods :any]) :required))
 
-(defn get-type [v method]
+(defn get-type
+  "Get value type for method"
+  [v method]
   (or (get-in v [:types method]) (get-in v [:types :any])))
 
 (s/defschema
@@ -22,7 +26,9 @@
            (s/optional-key :patch) s/Any}
    :description s/Str})
 
-(defn generate [m method]
+(defn generate
+  "Generate schema for given HTTP method"
+  [m method]
   (reduce
     (fn [c [k v]]
       (s/validate ModelValue v)

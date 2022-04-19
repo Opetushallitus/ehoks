@@ -42,7 +42,9 @@
     #{}
     service-privileges))
 
-(defn resolve-privileges [organisation]
+(defn resolve-privileges
+  "Resolves organisation privileges"
+  [organisation]
   {:oid                (:organisaatioOid organisation)
    :privileges         (get-service-privileges (:kayttooikeudet organisation))
    :roles              (get-service-roles (:kayttooikeudet organisation))
@@ -66,7 +68,9 @@
     #(when (get (:roles %) :oph-super-user) true)
     (:organisation-privileges ticket-user)))
 
-(defn check-parent-oids [user-org target-org]
+(defn check-parent-oids
+  "Check whether user belongs to target organisation or its parent"
+  [user-org target-org]
   (or (= user-org target-org)
       (some
         #(= user-org %)

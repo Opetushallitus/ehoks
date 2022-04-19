@@ -4,7 +4,9 @@
             [clojure.string :as str])
   (:import (clojure.lang ExceptionInfo)))
 
-(defn get-kyselytunnus-status [tunnus]
+(defn get-kyselytunnus-status
+  "Hakee kyselytunnuksen tilan Arvosta."
+  [tunnus]
   (:body (c/with-api-headers {:method :get
                               :service (:arvo-url config)
                               :url (str (:arvo-url config) "/status/" tunnus)
@@ -13,10 +15,14 @@
                                          (:arvo-password config)]
                                         :as :json}})))
 
-(defn get-kyselylinkki-status [link]
+(defn get-kyselylinkki-status
+  "Hakee kyselylinkin tilan Arvosta."
+  [link]
   (get-kyselytunnus-status (last (str/split link #"/"))))
 
-(defn get-kyselylinkki-status-catch-404 [link]
+(defn get-kyselylinkki-status-catch-404
+  "Hakee kyselylinkin tilan Arvosta, ja käsittelee 404-virheitä."
+  [link]
   (try
     (get-kyselylinkki-status link)
     (catch ExceptionInfo e
@@ -24,7 +30,9 @@
                      (= 404 (:status (ex-data e))))
         (throw e)))))
 
-(defn delete-kyselytunnus [tunnus]
+(defn delete-kyselytunnus
+  "Poistaa kyselytunnuksen Arvosta."
+  [tunnus]
   (c/with-api-headers {:method :delete
                        :service (:arvo-url config)
                        :url (str (:arvo-url config) "/" tunnus)

@@ -96,7 +96,9 @@
           oppijat
           :total-count (op/get-count search-params))))))
 
-(defn- check-opiskeluoikeus-match [hoks opiskeluoikeudet]
+(defn- check-opiskeluoikeus-match
+  "Check that opiskeluoikeus OID from HOKS matches one held by student"
+  [hoks opiskeluoikeudet]
   (if-not
    (op/oppija-opiskeluoikeus-match?
      opiskeluoikeudet (:opiskeluoikeus-oid hoks))
@@ -105,7 +107,9 @@
         {:error "Opiskeluoikeus does not match any held by oppija"})
       :audit-data {:new hoks})))
 
-(defn- add-oppija [hoks]
+(defn- add-oppija
+  "Insert student whose ID is found in HOKS into database"
+  [hoks]
   (try
     (op/add-oppija! (:oppija-oid hoks))
     (catch Exception e
@@ -120,7 +124,9 @@
                   " Oppijanumerorekisteri")}))
         (throw e)))))
 
-(defn- add-opiskeluoikeus [hoks]
+(defn- add-opiskeluoikeus
+  "Add HOKS opiskeluoikeus to database for HOKS student"
+  [hoks]
   (try
     (op/add-opiskeluoikeus!
       (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
@@ -138,12 +144,15 @@
           {:error (ex-message e)})
         :else (throw e)))))
 
-(defn- add-hankintakoulutukset-to-index [hoks opiskeluoikeudet]
+(defn- add-hankintakoulutukset-to-index
+  "Add hankintakoulutukset to index for opiskeluoikeus and oppija in HOKS"
+  [hoks opiskeluoikeudet]
   (op/add-oppija-hankintakoulutukset opiskeluoikeudet
                                      (:opiskeluoikeus-oid hoks)
                                      (:oppija-oid hoks)))
 
 (defn- check-opiskeluoikeus-validity
+  "Check whether opiskeluoikeus is still valid"
   ([hoks-values]
     (if-not
      (op/opiskeluoikeus-still-active? (:opiskeluoikeus-oid hoks-values))
@@ -161,7 +170,9 @@
                           (:opiskeluoikeus-oid hoks))})
         :audit-data {:new hoks}))))
 
-(defn- check-virkailija-privileges [hoks request]
+(defn- check-virkailija-privileges
+  "Check whether virkailija user has write privileges in HOKS"
+  [hoks request]
   (let [virkailija-user
         (get-in request [:session :virkailija-user])]
     (when-not
@@ -176,7 +187,9 @@
         {:error
          (str "User has unsufficient privileges")}))))
 
-(defn- check-for-missing-tyopaikan-y-tunnus [hoks]
+(defn- check-for-missing-tyopaikan-y-tunnus
+  "Check whether any osaamisen hankkimistavat are missing työpaikan Y-tunnus"
+  [hoks]
   (let [osaamisen-hankkimistavat (h/get-osaamisen-hankkimistavat hoks)
         oh-missing-tyopaikan-y-tunnus (h/missing-tyopaikan-y-tunnus?
                                         osaamisen-hankkimistavat)]
@@ -188,14 +201,18 @@
                        oh-missing-tyopaikan-y-tunnus)})
         :audit-data {:new hoks}))))
 
-(defn opiskeluoikeus-void-or-active? [opiskeluoikeus-oid]
+(defn opiskeluoikeus-void-or-active?
+  "Check whether opiskeluoikeus is nil or active"
+  [opiskeluoikeus-oid]
   (let [opiskeluoikeus (koski/get-opiskeluoikeus-info opiskeluoikeus-oid)]
     (or
       (nil? opiskeluoikeus)
       (not (op/opiskeluoikeus-tila-inactive?
              (op/get-opiskeluoikeus-tila opiskeluoikeus))))))
 
-(defn- save-hoks [hoks request]
+(defn- save-hoks
+  "Save HOKS to database"
+  [hoks request]
   (try
     (let [hoks-db (h/save-hoks!
                     (assoc hoks :manuaalisyotto true))]
@@ -215,7 +232,9 @@
           (response/bad-request! {:error (.getMessage e)}))
         (throw e)))))
 
-(defn- post-oppija [hoks request]
+(defn- post-oppija
+  "Add new HOKS for oppija"
+  [hoks request]
   (let [opiskeluoikeudet
         (koski/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
     (check-opiskeluoikeus-match hoks opiskeluoikeudet)
@@ -227,26 +246,36 @@
   (check-virkailija-privileges hoks request)
   (save-hoks hoks request))
 
-(defn- get-hoks-perustiedot [oppija-oid]
+(defn- get-hoks-perustiedot
+  "Get basic information from HOKS"
+  [oppija-oid]
   (if-let [hoks
            (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
     (restful/rest-ok hoks)
     (response/not-found {:message "HOKS not found"})))
 
-(defn- hoks-has-active-opiskeluoikeus [hoks]
+(defn- hoks-has-active-opiskeluoikeus
+  "Check if HOKS has an active opiskeluoikeus"
+  [hoks]
   (some op/opiskeluoikeus-active? (map :opiskeluoikeus-oid hoks)))
 
-(defn- get-oppilaitos-oid-by-oo-oid [opiskeluoikeus-oid]
+(defn- get-oppilaitos-oid-by-oo-oid
+  "Get oppilaitos OID by opiskeluoikeus OID"
+  [opiskeluoikeus-oid]
   (let [opiskeluoikeus
         (db-oo/select-opiskeluoikeus-by-oid opiskeluoikeus-oid)]
     (:oppilaitos-oid opiskeluoikeus)))
 
-(defn- get-hoks-by-oppilaitos [oppilaitos-oid hoks]
+(defn- get-hoks-by-oppilaitos
+  "Filters for HOKSes associated with a particular oppilaitos"
+  [oppilaitos-oid hoksit]
   (filter
     #(= oppilaitos-oid (get-oppilaitos-oid-by-oo-oid (:opiskeluoikeus-oid %)))
-    hoks))
+    hoksit))
 
-(defn- get-hoks [hoks-id request]
+(defn- get-hoks
+  "Get HOKS by ID, if user has sufficient permissions"
+  [hoks-id request]
   (let [hoks (db-hoks/select-hoks-by-id hoks-id)
         virkailija-user (get-in
                           request
@@ -265,7 +294,9 @@
           {:error
            (str "User has insufficient privileges")})))))
 
-(defn- put-hoks [hoks-values hoks-id]
+(defn- put-hoks
+  "Replace HOKS with particular ID"
+  [hoks-values hoks-id]
   (try
     (check-opiskeluoikeus-validity hoks-values)
     (let [hoks-db
@@ -283,7 +314,9 @@
           :audit-data {:new hoks-values})
         (throw e)))))
 
-(defn- patch-hoks [hoks-values hoks-id]
+(defn- patch-hoks
+  "Patch HOKS with particular ID"
+  [hoks-values hoks-id]
   (try
     (check-opiskeluoikeus-validity hoks-values)
     (let [hoks-db
@@ -301,7 +334,9 @@
           :audit-data {:new hoks-values})
         (throw e)))))
 
-(defn- get-vastaajatunnus-info [tunnus]
+(defn- get-vastaajatunnus-info
+  "Get details of vastaajatunnus from database or Arvo"
+  [tunnus]
   (let [linkit (pc/select-kyselylinkit-by-tunnus tunnus)]
     (if (seq linkit)
       (let [linkki-info (if (:vastattu (first linkit))
@@ -329,7 +364,9 @@
         (restful/rest-ok linkki-info))
       (response/bad-request {:error "Survey ID not found"}))))
 
-(defn- delete-vastaajatunnus [tunnus]
+(defn- delete-vastaajatunnus
+  "Delete vastaajatunnus from Arvo, database, and Herätepalvelu"
+  [tunnus]
   (try
     (let [linkit (pc/select-kyselylinkit-by-tunnus tunnus)]
       (arvo/delete-kyselytunnus tunnus)
@@ -342,11 +379,16 @@
         (response/bad-request {:error "Survey ID cannot be removed"})
         (throw e)))))
 
-(defn check-suoritus-type? [suoritus]
+(defn check-suoritus-type?
+  "Check that suoritus is either ammatillinen tutkinto or ammatillinen
+  osittainen tutkinto"
+  [suoritus]
   (or (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkinto")
       (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkintoosittainen")))
 
-(defn- get-vahvistus-pvm [opiskeluoikeus]
+(defn- get-vahvistus-pvm
+  "Extract vahvistuspäivämäärä from opiskeluoikeus"
+  [opiskeluoikeus]
   (if-let [vahvistus-pvm
            (reduce
              (fn [_ suoritus]

@@ -3,14 +3,18 @@
             [oph.ehoks.external.oph-url :as u]
             [clojure.tools.logging :as log]))
 
-(defn- filter-non-ehoks-privileges [org]
+(defn- filter-non-ehoks-privileges
+  "Filter out all non-EHOKS privileges"
+  [org]
   (update org :kayttooikeudet
           (fn [privileges]
             (filter
               #(= (:palvelu %) "EHOKS")
               privileges))))
 
-(defn- remove-orgs-without-privileges [user]
+(defn- remove-orgs-without-privileges
+  "Remove organisations whose list of privileges is empty"
+  [user]
   (update user :organisaatiot
           (fn [orgs]
             (filter
@@ -18,6 +22,7 @@
               (map filter-non-ehoks-privileges orgs)))))
 
 (defn- fetch-user-privileges
+  "Get user privileges from CAS endpoint"
   [{:as data}]
   (cas/with-service-ticket data))
 

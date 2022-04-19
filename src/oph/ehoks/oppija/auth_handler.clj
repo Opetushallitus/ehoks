@@ -16,7 +16,9 @@
             [clojure.string :as cstr]
             [clojure.data.xml :as xml]))
 
-(defn- get-user-info-from-onr [oid]
+(defn- get-user-info-from-onr
+  "Get user information from oppijanumerorekisteri"
+  [oid]
   (let [response (onr/find-student-by-oid oid)
         user-info (:body response)]
     (-> user-info
@@ -50,7 +52,9 @@
         (assoc-in [:session :user] user)
         (assoc-in [:session :ticket] ticket))))
 
-(defn- respond-with-failed-authentication [cas-ticket-validation-result]
+(defn- respond-with-failed-authentication
+  "Send unauthorized response when authentication has failed"
+  [cas-ticket-validation-result]
   (do (log/warnf "Ticket validation failed: %s"
                  (:error cas-ticket-validation-result))
       (response/unauthorized {:error "Invalid ticket"})))

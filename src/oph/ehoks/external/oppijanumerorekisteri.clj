@@ -14,7 +14,9 @@
                :as :json}
      :authenticate? true}))
 
-(defn find-student-by-oid [oid]
+(defn find-student-by-oid
+  "Find student by OID"
+  [oid]
   (cache/with-cache!
     {:method :get
      :service (u/get-url "oppijanumerorekisteri-url")
@@ -22,7 +24,9 @@
      :options {:as :json}
      :authenticate? true}))
 
-(defn- convert-contact-values [contact-item]
+(defn- convert-contact-values
+  "Rename contact info keys to :value and :type"
+  [contact-item]
   (map
     (fn [c]
       (rename-keys
@@ -31,13 +35,19 @@
          :yhteystietoTyyppi :type}))
     contact-item))
 
-(defn- has-value [contact]
+(defn- has-value
+  "Check if contact info item has a value"
+  [contact]
   (some? (:value contact)))
 
-(defn- remove-empty-contact-values [contact-item]
+(defn- remove-empty-contact-values
+  "Remove all contact info items that don't contain a value"
+  [contact-item]
   (filter has-value contact-item))
 
-(defn- convert-contacts [contact-groups]
+(defn- convert-contacts
+  "Convert contacts to English-language keys"
+  [contact-groups]
   (map
     #(-> %
          (select-keys [:id :yhteystieto])
@@ -46,13 +56,19 @@
          (update :contact remove-empty-contact-values))
     contact-groups))
 
-(defn- has-contact-info [contact-group]
+(defn- has-contact-info
+  "Check that a given contact group contains at least one contact info item"
+  [contact-group]
   (not-empty (:contact contact-group)))
 
-(defn- remove-empty-contact-groups [contact-groups]
+(defn- remove-empty-contact-groups
+  "Remove contact groups that don't contain any contact info"
+  [contact-groups]
   (filter has-contact-info contact-groups))
 
-(defn- update-contacts [student-info]
+(defn- update-contacts
+  "Convert contacts and remove empty contact groups from student contacts"
+  [student-info]
   (let [converted-student-info
         (update student-info :contact-values-group convert-contacts)]
     (update converted-student-info

@@ -26,7 +26,9 @@
             [clojure.tools.logging :as log])
   (:import (java.time LocalDate)))
 
-(defn wrap-match-user [handler]
+(defn wrap-match-user
+  "Allow request to be handled if route params OID equals session user OID"
+  [handler]
   (fn
     ([request respond raise]
       (if (= (get-in request [:session :user :oid])
