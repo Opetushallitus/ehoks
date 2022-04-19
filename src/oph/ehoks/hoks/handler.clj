@@ -271,7 +271,7 @@
           (response/not-found {:error "OTO not found with given OTO ID"}))))))
 
 (defn- check-opiskeluoikeus-match
-  "Varmstaa, että HOKSin opiskeluoikeus täsmää ainakin yhden opiskeluoikeuden
+  "Varmistaa, että HOKSin opiskeluoikeus täsmää ainakin yhden opiskeluoikeuden
   kanssa, joka löytyy oppijan opiskeluoikeuksien joukosta."
   [hoks opiskeluoikeudet]
   (if-not

@@ -24,7 +24,7 @@
     (cstr/join "\n" (.getStackTrace ex))))
 
 (defn exception-handler
-  "käsittelee virhetilanteita."
+  "Käsittelee virhetilanteita."
   [^Exception ex & other]
   (let [exception-data (if (map? (first other)) (first other) (ex-data ex))]
     (log-exception ex exception-data))
