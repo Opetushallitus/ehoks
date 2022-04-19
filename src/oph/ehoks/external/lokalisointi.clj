@@ -2,7 +2,9 @@
   (:require [oph.ehoks.external.connection :as c]
             [oph.ehoks.external.oph-url :as u]))
 
-(defn get-localization-results  [& {:keys [category] :or {category "ehoks"}}]
+(defn get-localization-results
+  "Get localization results for given category"
+  [& {:keys [category] :or {category "ehoks"}}]
   (get
     (c/with-api-headers
       {:method :get

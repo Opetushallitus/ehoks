@@ -35,7 +35,9 @@
         (:query-params options)))
     options))
 
-(defn- get-client-fn [method]
+(defn- get-client-fn
+  "Get appropriate REST function for given keyword."
+  [method]
   (cond
     (= method :delete) client/delete
     (= method :get)    client/get

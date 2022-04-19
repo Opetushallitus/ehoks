@@ -43,11 +43,15 @@
     base
     lines))
 
-(defn read-lines [file]
+(defn read-lines
+  "Read lines from file"
+  [file]
   (with-open [r (io/reader file)]
     (doall (line-seq r))))
 
-(defn load-urls [file]
+(defn load-urls
+  "Load urls from file"
+  [file]
   (-> file
       read-lines
       (parse-urls base-urls)))

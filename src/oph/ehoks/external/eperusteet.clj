@@ -21,16 +21,22 @@
    :2 {:2 "1" :3 "3" :4 "5"}
    :3 {:5 "1" :7 "3" :9 "5"}})
 
-(defn- adjust-osaamistaso [asteikko osaamistaso]
+(defn- adjust-osaamistaso
+  "Convert osaamistaso according to values in asteikkomuunnos"
+  [asteikko osaamistaso]
   (get-in asteikkomuunnos [(keyword asteikko) (keyword osaamistaso)]))
 
-(defn- remove-empty-kriteerit [values]
+(defn- remove-empty-kriteerit
+  "Remove empty kriteerit from several subfields"
+  [values]
   (spc/setval [ALL :arviointi :arvioinninKohdealueet ALL
                :arvioinninKohteet ALL :osaamistasonKriteerit ALL
                #(empty? (:kriteerit %))]
               NONE values))
 
-(defn- adjust-osaamistaso-based-on-asteikko [asteikko values]
+(defn- adjust-osaamistaso-based-on-asteikko
+  "Adjusts the osaamistaso in each appropriate spot in object"
+  [asteikko values]
   (spc/transform [ALL :arviointi :arvioinninKohdealueet ALL
                   :arvioinninKohteet ALL :osaamistasonKriteerit
                   ALL :_osaamistaso]
@@ -48,7 +54,9 @@
          (remove-empty-kriteerit)
          (adjust-osaamistaso-based-on-asteikko asteikko))))
 
-(defn search-perusteet-info [nimi]
+(defn search-perusteet-info
+  "Search for perusteet that match a particular name"
+  [nimi]
   (get-in
     (c/with-api-headers
       {:method :get
@@ -61,7 +69,9 @@
                                 :osaamisalat true}}})
     [:body :data]))
 
-(defn get-perusteet [^Long id]
+(defn get-perusteet
+  "Get perusteet by ID"
+  [^Long id]
   (:body
     (c/with-api-headers
       {:method :get
@@ -69,7 +79,9 @@
        :url (u/get-url "eperusteet-service.get-perusteet" id)
        :options {:as :json}})))
 
-(defn find-tutkinnon-osat [^String koodi-uri]
+(defn find-tutkinnon-osat
+  "Find tutkinnon osat by koodi URL"
+  [^String koodi-uri]
   (get-in
     (cache/with-cache!
       {:method :get
@@ -79,7 +91,9 @@
                  :query-params {:koodiUri koodi-uri}}})
     [:body :data]))
 
-(defn get-tutkinnon-osa-viitteet [^Long id]
+(defn get-tutkinnon-osa-viitteet
+  "Get tutkinnon osa viitteet by ID"
+  [^Long id]
   (get
     (cache/with-cache!
       {:method :get
@@ -88,7 +102,9 @@
        :options {:as :json}})
     :body))
 
-(defn get-tutkinnon-osan-osa-alueet [^Long id]
+(defn get-tutkinnon-osan-osa-alueet
+  "Get tutkinnon osa-alueet by ID"
+  [^Long id]
   (get
     (cache/with-cache!
       {:method :get
@@ -97,7 +113,9 @@
        :options {:as :json}})
     :body))
 
-(defn find-tutkinto [^String diaarinumero]
+(defn find-tutkinto
+  "Get perusteet by diaari number"
+  [^String diaarinumero]
   (get
     (cache/with-cache!
       {:method :get
@@ -107,7 +125,9 @@
                  :query-params {:diaarinumero diaarinumero}}})
     :body))
 
-(defn get-suoritustavat [^Long id]
+(defn get-suoritustavat
+  "Get suoritustavat by ID"
+  [^Long id]
   (get
     (cache/with-cache!
       {:method :get
@@ -116,7 +136,9 @@
        :options {:as :json}})
     :body))
 
-(defn get-ops-suoritustavat [^Long id]
+(defn get-ops-suoritustavat
+  "Get OPS suoritustavat by ID"
+  [^Long id]
   (get
     (cache/with-cache!
       {:method :get
