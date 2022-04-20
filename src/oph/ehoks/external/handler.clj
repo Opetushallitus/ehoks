@@ -13,6 +13,7 @@
             [oph.ehoks.config :refer [config]]))
 
 (def routes
+  "External handlerin reitit"
   (c-api/context "/external" []
     :header-params [caller-id :- s/Str]
     :tags ["external"]

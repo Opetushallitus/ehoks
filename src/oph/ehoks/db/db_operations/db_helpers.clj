@@ -94,6 +94,7 @@
     (jdbc/delete! db-conn table where-clause)))
 
 (defn query
+  "Execute DB query."
   ([queries opts]
     (jdbc/query (get-db-connection) queries opts))
   ([queries]

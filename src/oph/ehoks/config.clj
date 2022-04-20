@@ -29,5 +29,6 @@
       (System/getProperty "config")
       (:config env)))
 
-(def config (when-not *compile-files*
-              (load-combined-config (get-config-file))))
+(def config
+  "Global configuration object"
+  (when-not *compile-files* (load-combined-config (get-config-file))))

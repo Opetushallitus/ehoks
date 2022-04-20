@@ -3,6 +3,7 @@
   (:import org.flywaydb.core.Flyway))
 
 (def flyway
+  "Flyway instance"
   (when-not *compile-files*
     (-> (Flyway/configure)
         (.dataSource

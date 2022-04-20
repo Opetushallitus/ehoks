@@ -133,6 +133,8 @@
            :yksilolliset-kriteerit                     kriteerit)))
 
 (def oo-fields
+  "Kentät, jotka irrotetaan tietokannasta haetuista riveistä osaamisen
+  osoittamisen perustiedoiksi."
   {:osa__id                       :osa-id
    :oo__id                        :id
    :oo__jarjestaja_oppilaitos_oid :jarjestaja_oppilaitos_oid

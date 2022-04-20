@@ -12,6 +12,7 @@
   (:import (java.time LocalDate)))
 
 (def routes
+  "Herätepalvelun reitit"
   (c-api/context "/heratepalvelu" []
     :tags ["heratepalvelu"]
     :header-params [ticket :- s/Str

@@ -9,6 +9,7 @@
   (format "%%%s%%" (or v "")))
 
 (def translated-oppija-columns
+  "Käännettyjen sarakkeiden pohjat."
   {:tutkinto "tutkinto_nimi->>" :osaamisala "osaamisala_nimi->>"})
 
 (def default-locale "fi")

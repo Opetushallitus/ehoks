@@ -17,6 +17,7 @@
     values))
 
 (def asteikkomuunnos
+  "Scale tranformations"
   {:1 {:1 ""}
    :2 {:2 "1" :3 "3" :4 "5"}
    :3 {:5 "1" :7 "3" :9 "5"}})
