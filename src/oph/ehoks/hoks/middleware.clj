@@ -5,11 +5,13 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
-(def method-privileges {:get :read
-                        :post :write
-                        :patch :update
-                        :put :update
-                        :delete :delete})
+(def method-privileges
+  "Privileges afforded to each REST method"
+  {:get :read
+   :post :write
+   :patch :update
+   :put :update
+   :delete :delete})
 
 (defn authorized?
   "Is user authorized"

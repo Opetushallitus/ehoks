@@ -54,6 +54,8 @@
       oht-final)))
 
 (def oht-fields
+  "Kentät, jotka irrotetaan tietokannasta haetuista riveistä osaamisen
+  hankkimistavaksi."
   {:osa__id                                 :osa-id
    :oh__id                                  :id
    :oh__jarjestajan_edustaja_nimi           :jarjestajan_edustaja_nimi
@@ -98,6 +100,8 @@
           (mapv from-sql-func osa-objs))))
 
 (def hato-fields
+  "Kentät, jotka irrotetaan tietokannasta haetuista riveistä hankittavan
+  ammatillisen tutkinnon osan perustiedoiksi."
   {:osa__id                         :id
    :osa__tutkinnon_osa_koodi_uri    :tutkinnon_osa_koodi_uri
    :osa__tutkinnon_osa_koodi_versio :tutkinnon_osa_koodi_versio
@@ -125,6 +129,8 @@
            hato-fields)))
 
 (def hpto-fields
+  "Kentät, jotka irrotetaan tietokannasta haetuista riveistä hankittavan
+  paikallisen tutkinnon osan perustiedoiksi."
   {:osa__id                         :id
    :osa__laajuus                    :laajuus
    :osa__nimi                       :nimi
@@ -154,6 +160,8 @@
            hpto-fields)))
 
 (def yto-osa-alue-fields
+  "Kentät, jotka irrotetaan tietokannasta haetuista riveistä hankittavan
+  yhteisen tutkinnon osan osa-alueen perustiedoiksi."
   {:osa__id                         :id
    :osa__osa_alue_koodi_uri         :osa_alue_koodi_uri
    :osa__osa_alue_koodi_versio      :osa_alue_koodi_versio

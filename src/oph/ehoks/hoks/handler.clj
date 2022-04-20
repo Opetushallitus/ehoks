@@ -25,6 +25,7 @@
             [cheshire.core :as cheshire]))
 
 (def ^:private hankittava-paikallinen-tutkinnon-osa
+  "Hankittavan paikallisen tutkinnon osan reitit."
   (c-api/context "/hankittava-paikallinen-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
 
@@ -60,6 +61,7 @@
             {:error "Hankittava paikallinen tutkinnon osa not found"}))))))
 
 (def ^:private hankittava-ammat-tutkinnon-osa
+  "Hankittavan ammatillisen tutkinnon osan reitit."
   (c-api/context "/hankittava-ammat-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
 
@@ -93,6 +95,7 @@
           {:error "Hankittava ammatillinen tutkinnon osa not found"})))))
 
 (def ^:private hankittava-yhteinen-tutkinnon-osa
+  "Hankittavan yhteisen tutkinnon osan reitit."
   (c-api/context "/hankittava-yhteinen-tutkinnon-osa" []
 
     (c-api/GET "/:id" []
@@ -127,6 +130,7 @@
           (response/not-found {:error "HYTO not found with given HYTO ID"}))))))
 
 (def ^:private aiemmin-hankittu-ammat-tutkinnon-osa
+  "Aiemmin hankitun ammatillisen tutkinnon osan reitit."
   (c-api/context "/aiemmin-hankittu-ammat-tutkinnon-osa" []
 
     (c-api/GET "/:id" []
@@ -165,6 +169,7 @@
           {:error "Olemassa oleva ammatillinen tutkinnon osa not found"})))))
 
 (def ^:private aiemmin-hankittu-paikallinen-tutkinnon-osa
+  "Aiemmin hankitun paikallisen tutkinnon osan reitit."
   (c-api/context "/aiemmin-hankittu-paikallinen-tutkinnon-osa" []
 
     (c-api/GET "/:id" []
@@ -202,6 +207,7 @@
           {:error "Aiemmin hankittu paikallinen tutkinnon osa not found"})))))
 
 (def ^:private aiemmin-hankittu-yhteinen-tutkinnon-osa
+  "Aiemmin hankitun yhteisen tutkinnon osan reitit."
   (c-api/context "/aiemmin-hankittu-yhteinen-tutkinnon-osa" []
 
     (c-api/GET "/:id" []
@@ -237,6 +243,7 @@
           {:error "Aiemmin hankitun yhteinen tutkinnon osa not found"})))))
 
 (def ^:private opiskeluvalmiuksia-tukevat-opinnot
+  "Opiskeluvalimuksia tukevien opintojen reitit."
   (c-api/context "/opiskeluvalmiuksia-tukevat-opinnot" []
 
     (c-api/GET "/:id" []
@@ -368,6 +375,7 @@
         (throw e)))))
 
 (def routes
+  "HOKS handlering reitit."
   (c-api/context "/hoks" []
     :tags ["hoks"]
     :header-params [ticket :- s/Str
