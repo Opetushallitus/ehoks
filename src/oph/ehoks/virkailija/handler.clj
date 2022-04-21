@@ -39,6 +39,7 @@
            (java.time LocalDate)))
 
 (def get-oppijat-route
+  "Oppijat GET route"
   (c-api/GET "/" request
     :return (restful/response
               [common-schema/OppijaSearchResult]
@@ -400,6 +401,7 @@
               "ei vahvistus päivämäärää")))
 
 (def routes
+  "Virkailija handler routes"
   (c-api/context "/ehoks-virkailija-backend" []
     :tags ["ehoks"]
 
@@ -748,6 +750,7 @@
       (resources/create-routes "/json-viewer" "json-viewer"))))
 
 (def app-routes
+  "Virkailija handler app routes"
   (c-api/api
     {:swagger
      {:ui "/ehoks-virkailija-backend/doc"
