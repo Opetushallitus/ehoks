@@ -31,6 +31,7 @@
   (response/internal-server-error {:type "unknown-exception"}))
 
 (def handlers
+  "Map of request handlers"
   {::c-ex/request-parsing (c-ex/with-logging
                             c-ex/request-parsing-handler :info)
    ::c-ex/request-validation (c-ex/with-logging

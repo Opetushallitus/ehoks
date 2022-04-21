@@ -5,11 +5,16 @@
             [environ.core :refer [env]]))
 
 (def base-urls
+  "Global base URLs object"
   {"opintopolku-host" (:opintopolku-host config)})
 
-(def re-comment #"^\s*#.*")
+(def re-comment
+  "Regular expression that matches comments"
+  #"^\s*#.*")
 
-(def re-line #"^.+=.+$")
+(def re-line
+  "Regular expression that matches configuration file lines"
+  #"^.+=.+$")
 
 (defn valid-line?
   "Is line valid OPH service url"
@@ -65,6 +70,7 @@
       (io/resource "ehoks-oph.properties")))
 
 (def oph-service-urls
+  "Global object containing service URLs"
   (when-not *compile-files*
     (load-urls (get-file))))
 

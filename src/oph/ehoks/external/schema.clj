@@ -1,8 +1,13 @@
 (ns oph.ehoks.external.schema
   (:require [schema.core :as s]))
 
-(def KoskiDate s/Str)
-(def KoskiTimestamp s/Str)
+(def KoskiDate
+  "Koskesta haettu päivämäärä"
+  s/Str)
+
+(def KoskiTimestamp
+  "Koskesta haettu aikaleima"
+  s/Str)
 
 (s/defschema Nimi
              "Nimitieto eri kielillä"

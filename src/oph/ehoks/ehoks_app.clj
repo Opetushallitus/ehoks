@@ -11,6 +11,7 @@
             [environ.core :refer [env]]))
 
 (def both-app
+  "App with both oppija and virkailija routes initialized."
   (c-api/api
     {:swagger
      {:ui "/ehoks-backend/doc"
@@ -44,4 +45,6 @@
   []
   (lower-case (:name env (or (System/getProperty "name") "both"))))
 
-(def app (create-app (get-app-name)))
+(def app
+  "Global app variable."
+  (create-app (get-app-name)))

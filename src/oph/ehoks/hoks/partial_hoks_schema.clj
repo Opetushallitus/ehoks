@@ -6,6 +6,7 @@
 
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsaLuonti
+  "Schema hankittavan ammatillisen tutkinnon osan luontikyselyyn."
   (modify
     hoks-schema/HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus
     "Hankittavan ammatillisen osaamisen tiedot uutta merkintää luotaessa (POST)"
@@ -13,6 +14,7 @@
 
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsaPaivitys
+  "Schema hankittavan ammatillisen tutkinnon osan päivityskyselyyn."
   (modify
     hoks-schema/HankittavaAmmatillinenTutkinnonOsaPatch
     (str "Hankittavan ammatillisen osaamisen tiedot kenttää tai kenttiä "
@@ -26,6 +28,7 @@
 
 (s/defschema
   HankittavaYTOLuonti
+  "Schema hankittavan yhteisen tutkinnon osan luontikyselyyn."
   (modify
     hoks-schema/HankittavaYTOLuontiJaMuokkaus
     (str "Hankittavan yhteinen tutkinnon osan tiedot uutta merkintää "
@@ -34,6 +37,7 @@
 
 (s/defschema
   HankittavaYTOPaivitys
+  "Schema hankittavan yhteisen tutkinnon osan päivityskyselyyn."
   (modify
     hoks-schema/HankittavaYTOPatch
     (str "Hankittavan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
@@ -45,6 +49,7 @@
 
 (s/defschema
   OpiskeluvalmiuksiaTukevatOpinnotLuonti
+  "Schema opiskeluvalmiuksia tukevien opintojen luontikyselyyn."
   (modify
     hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot
     (str "Opiskeluvalmiuksia tukevien opintojen tiedot uutta merkintää "
@@ -53,6 +58,7 @@
 
 (s/defschema
   OpiskeluvalmiuksiaTukevatOpinnotPaivitys
+  "Schema opiskeluvalmiuksia tukevien opintojen päivityskyselyyn."
   (modify
     hoks-schema/OpiskeluvalmiuksiaTukevatOpinnot
     (str "Opiskeluvalmiuksia tukevien opintojen tiedot kenttää tai kenttiä "
@@ -62,6 +68,7 @@
 
 (s/defschema
   AiemminHankitunPaikallisenTutkinnonOsanLuonti
+  "Schema aiemmin hankitun paikallisen tutkinnon osan luontikyselyyn."
   (modify
     hoks-schema/AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus
     (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot uutta "
@@ -70,6 +77,7 @@
 
 (s/defschema
   AiemminHankitunPaikallisenTutkinnonOsanPaivitys
+  "Schema aiemmin hankitun paikallisen tutkinnon osan päivityskyselyyn."
   (modify
     hoks-schema/AiemminHankittuPaikallinenTutkinnonOsaPatch
     (str "Aiemmin hankitun paikallisen tutkinnon osan tiedot "
@@ -84,6 +92,7 @@
 
 (s/defschema
   HankittavanPaikallisenTutkinnonOsanLuonti
+  "Schema hankittavan paikallisen tutkinnon osan luontikyselyyn."
   (modify
     hoks-schema/HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus
     (str "Hankittavan paikallisen tutkinnon osan tiedot uutta merkintää "
@@ -92,6 +101,7 @@
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaPaivitys
+  "Schema hankittavan paikallisen tutkinnon osan päivityskyselyyn."
   (modify
     hoks-schema/HankittavaPaikallinenTutkinnonOsaPatch
     (str "Hankittavan paikallisen tutkinnon osan tiedot kenttää tai kenttiä "
@@ -107,6 +117,7 @@
 
 (s/defschema
   AiemminHankitunYhteisenTutkinnonOsanLuonti
+  "Schema aiemmin hankitun yhteisen tutkinnon osan luontikyselyyn."
   (modify
     hoks-schema/AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus
     (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot uutta "
@@ -115,6 +126,7 @@
 
 (s/defschema
   AiemminHankitunYhteisenTutkinnonOsanPaivitys
+  "Schema aiemmin hankitun yhteisen tutkinnon osan päivityskyselyyn."
   (modify
     hoks-schema/AiemminHankittuYhteinenTutkinnonOsaPatch
     (str "Aiemmin hankitun yhteisen tutkinnon osan tiedot "
@@ -128,6 +140,7 @@
 
 (s/defschema
   AiemminHankitunAmmatillisenTutkinnonOsanLuonti
+  "Schema aiemmin hankitun ammatillisen tutkinnon osan luontikyselyyn."
   (modify
     hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus
     (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot uutta "
@@ -136,6 +149,7 @@
 
 (s/defschema
   AiemminHankitunAmmatillisenTutkinnonOsanPaivitys
+  "Schema aiemmin hankitun ammatillisen tutkinnon osan päivityskyselyyn."
   (modify
     hoks-schema/AiemminHankittuAmmatillinenTutkinnonOsaPatch
     (str "Aiemmin hankitun ammatillisen tutkinnon osan tiedot "

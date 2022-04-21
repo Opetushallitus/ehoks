@@ -96,6 +96,7 @@
   (filter some? (db/select-oppilaitos-oids)))
 
 (def get-oppilaitos-oids-cached
+  "Memoized get oppilaitos OIDs"
   (memo/ttl
     get-oppilaitos-oids
     {}

@@ -14,6 +14,7 @@
 
 (s/defschema
   ModelValue
+  "Model value schema"
   {:methods {(s/optional-key :any) s/Keyword
              (s/optional-key :get) s/Keyword
              (s/optional-key :post) s/Keyword

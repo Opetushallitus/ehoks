@@ -11,6 +11,7 @@
             [oph.ehoks.external.koodisto :as koodisto]))
 
 (def routes
+  "Oppija external routes"
   (route-middleware
     [wrap-authorize]
     (c-api/context "/koodisto" []

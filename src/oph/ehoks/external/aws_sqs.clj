@@ -11,6 +11,7 @@
              QueueDoesNotExistException)))
 
 (def ^:private sqs-client
+  "Globaali SQS-client."
   (when (:send-herate-messages? config)
     (-> (SqsClient/builder)
         (.region (Region/EU_WEST_1))
@@ -39,17 +40,21 @@
       (log/error (str queue-name " does not exist")))))
 
 (def ^:private herate-queue-url
+  "Globaali heräte queue -URL."
   (get-queue-url (:heratepalvelu-queue config)))
 
 (def ^:private delete-tunnus-queue-url
+  "Globaali tunnuksen poisto queue -URL."
   (get-queue-url-with-error-handling
     (:heratepalvelu-delete-tunnus-queue config)))
 
 (def ^:private tyoelamapalaute-queue-url
+  "Globaali työelämäpalaute queue -URL."
   (get-queue-url-with-error-handling
     (:heratepalvelu-tyoelamapalaute-queue config)))
 
 (def ^:private resend-queue-url
+  "Globaali uudelleenlähetys queue -URL."
   (get-queue-url-with-error-handling
     (:heratepalvelu-resend-queue config)))
 

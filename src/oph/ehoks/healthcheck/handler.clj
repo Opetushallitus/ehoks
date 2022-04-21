@@ -4,6 +4,7 @@
             [oph.ehoks.common.schema :as common-schema]))
 
 (def routes
+  "Healthcheck-handlerin reitit"
   (context "/healthcheck" []
     :tags ["healthcheck"]
     (GET "/" []

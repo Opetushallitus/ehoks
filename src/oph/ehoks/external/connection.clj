@@ -5,9 +5,11 @@
   (:import [com.fasterxml.jackson.core JsonParseException]))
 
 (def allowed-params
+  "Allowed parameters"
   #{:tutkintonimikkeet :tutkinnonosat :osaamisalat :category})
 
 (def oid-pattern
+  "Pattern that all OIDs must match"
   #"(\d+\.){5}\d+")
 
 (defn sanitaze-path

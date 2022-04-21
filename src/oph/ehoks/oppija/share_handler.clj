@@ -54,6 +54,7 @@
                :osaamisen-hankkimistapa nil)))))
 
 (def routes
+  "Oppija share handler routes"
   (c-api/context "/" []
     :tags ["jaot"]
 

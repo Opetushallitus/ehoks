@@ -161,7 +161,10 @@
        :osaamisen_osoittaminen_id naytto-id}
       db-conn)))
 
-(defn- ensure-lahetetty-arvioitavaksi-exists [tarkentavat-tiedot-arvioija]
+(defn- ensure-lahetetty-arvioitavaksi-exists
+  "Varmistaa, että :lahetetty-arvioitavaksi kenttä on olemassa, vaikka se on
+  nil"
+  [tarkentavat-tiedot-arvioija]
   (if (:lahetetty-arvioitavaksi tarkentavat-tiedot-arvioija)
     tarkentavat-tiedot-arvioija
     (assoc tarkentavat-tiedot-arvioija :lahetetty-arvioitavaksi nil)))

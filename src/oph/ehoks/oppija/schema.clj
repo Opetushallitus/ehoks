@@ -10,6 +10,7 @@
 
 (s/defschema
   OppijaHOKS
+  "Oppijan HOKSin schema"
   (modify
     hoks-schema/HOKS
     "Oppijan HOKS"

@@ -12,6 +12,7 @@
             [clojure.string :as cstr]))
 
 (def routes
+  "Virkailija CAS handler routes"
   (c-api/context "" []
     :tags ["cas"]
 

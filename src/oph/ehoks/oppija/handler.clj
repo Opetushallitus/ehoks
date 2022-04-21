@@ -42,6 +42,7 @@
         (response/forbidden)))))
 
 (def routes
+  "Oppija routes"
   (c-api/context "/ehoks-oppija-backend" []
     :tags ["ehoks"]
     (c-api/context "/api" []
@@ -132,6 +133,7 @@
           (response/resource-response "buildversion.txt") "text/plain")))))
 
 (def app-routes
+  "Oppija app routes"
   (c-api/api
     {:swagger
      {:ui "/ehoks-oppija-backend/doc"

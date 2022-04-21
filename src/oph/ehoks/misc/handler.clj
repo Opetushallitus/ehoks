@@ -7,6 +7,7 @@
             [schema.core :as s]))
 
 (def routes
+  "Eräitä handler-reittejä"
   (c-api/context "/misc" []
     :header-params [caller-id :- s/Str]
     :tags ["misc"]

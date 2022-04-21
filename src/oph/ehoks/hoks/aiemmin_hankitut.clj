@@ -7,6 +7,8 @@
 
 ; Tätä funktiota käytetään vielä testeissä, eikä pidä poistaa vielä
 (defn get-tarkentavat-tiedot-osaamisen-arvioija
+  "Hakee tarkentavien tietojen osaamisen arvioijan tietokannasta ID:n
+  perusteella."
   [ttoa-id]
   (let [tta (db/select-todennettu-arviointi-lisatiedot-by-id ttoa-id)]
     (dissoc
@@ -16,7 +18,10 @@
         (db/select-arvioijat-by-todennettu-arviointi-id ttoa-id))
       :id)))
 
-(defn extract-tarkentavat-tiedot-osaamisen-arvioija [rows]
+(defn extract-tarkentavat-tiedot-osaamisen-arvioija
+  "Irrottaa tarkentavien tietojen osaamisen arvioijan tietokannasta haetuista
+  riveistä."
+  [rows]
   (let [tta (mapv db-hoks/koulutuksen-jarjestaja-osaamisen-arvioija-from-sql
                   (c/extract-from-joined-rows
                     :talkjoa__id
@@ -48,6 +53,8 @@
           (mapv from-sql-func osa-objs))))
 
 (def ahato-fields
+  "Kentät, jotka irrotetaan aiemmin hankituksi ammatilliseksi tutkinnon osaksi
+  haetuista riveistä AHATO:n ydintiedoiksi."
   {:osa__id                         :id
    :osa__tutkinnon_osa_koodi_uri    :tutkinnon_osa_koodi_uri
    :osa__tutkinnon_osa_koodi_versio :tutkinnon_osa_koodi_versio
@@ -78,6 +85,8 @@
            ahato-fields)))
 
 (def ahpto-fields
+  "Kentät, jotka irrotetaan aiemmin hankituksi paikalliseksi tutkinnon osaksi
+  haetuista riveistä AHPTO:n ydintiedoiksi."
   {:osa__id                         :id
    :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
    :osa__olennainen_seikka          :olennainen_seikka
@@ -113,6 +122,8 @@
            ahpto-fields)))
 
 (def ahyto-osa-alue-fields
+  "Kentät, jotka irrotetaan aiemmin hankitun yhteisen tutkinnon osan
+  osa-alueeksi haetuista riveistä AHYTO:n osa-alueen ydintiedoiksi."
   {:osa__id                         :id
    :osa__osa_alue_koodi_uri         :osa_alue_koodi_uri
    :osa__osa_alue_koodi_versio      :osa_alue_koodi_versio
@@ -136,6 +147,8 @@
           ahyto-osa-alue-fields)))
 
 (def ahyto-fields
+  "Kentät, jotka irrotetaan aiemmin hankituksi yhteiseksi tutkinnon osaksi
+  haetuista riveistä AHYTO:n ydintiedoiksi."
   {:osa__id                         :id
    :osa__tutkinnon_osa_koodi_uri    :tutkinnon_osa_koodi_uri
    :osa__tutkinnon_osa_koodi_versio :tutkinnon_osa_koodi_versio
@@ -196,6 +209,8 @@
           new-arvioijat conn)))))
 
 (defn save-ahyto-tarkentavat-tiedot-naytto!
+  "Tallentaa aiemmin hankitun yhteisen tutkinnon osan tarkentavat tiedot
+  tietokantaan."
   ([ahyto-id new-values]
     (save-ahyto-tarkentavat-tiedot-naytto!
       ahyto-id new-values (db-ops/get-db-connection)))
@@ -209,6 +224,7 @@
         new-values))))
 
 (defn save-tarkentavat-tiedot-osaamisen-arvioija!
+  "Tallentaa tarkentavien tietojen osaamisen arvioijan tietokantaan."
   ([new-tta]
     (save-tarkentavat-tiedot-osaamisen-arvioija!
       new-tta (db-ops/get-db-connection)))
@@ -221,6 +237,8 @@
         tta-db))))
 
 (defn- save-ahyto-osa-alue!
+  "Tallentaa yhden aiemmin hankitun yhteisen tutkinnon osan osa-alueen
+  tietokantaan."
   ([ahyto-id osa-alue]
     (save-ahyto-osa-alue! ahyto-id osa-alue (db-ops/get-db-connection)))
   ([ahyto-id osa-alue db-conn]
@@ -244,6 +262,7 @@
           (:tarkentavat-tiedot-naytto osa-alue))))))
 
 (defn save-ahyto-osa-alueet!
+  "Tallentaa aiemmin hankitun yhteisen tutkinnon osan osa-alueet tietokantaan."
   ([ahyto-id osa-alueet]
     (save-ahyto-osa-alueet! ahyto-id osa-alueet (db-ops/get-db-connection)))
   ([ahyto-id osa-alueet db-conn]
@@ -254,6 +273,7 @@
         osa-alueet))))
 
 (defn save-aiemmin-hankittu-yhteinen-tutkinnon-osa!
+  "Tallentaa yhden aiemmin hankitun yhteisen tutkinnon osan tietokantaan."
   ([hoks-id ahyto]
     (save-aiemmin-hankittu-yhteinen-tutkinnon-osa!
       hoks-id ahyto (db-ops/get-db-connection)))
@@ -277,6 +297,7 @@
         yto))))
 
 (defn save-aiemmin-hankittu-paikallinen-tutkinnon-osa!
+  "Tallentaa yhden aiemmin hankitun paikallisen tutkinnon osan tietokantaan."
   ([hoks-id ahpto]
     (save-aiemmin-hankittu-paikallinen-tutkinnon-osa!
       hoks-id ahpto (db-ops/get-db-connection)))
@@ -299,6 +320,7 @@
             (:id ahpto-db) (:tarkentavat-tiedot-naytto ahpto) conn))))))
 
 (defn save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
+  "Tallentaa aiemmin hankitut paikalliset tutkinnon osat tietokantaan."
   ([hoks-id c]
     (save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
       hoks-id c (db-ops/get-db-connection)))
@@ -309,6 +331,7 @@
         #(save-aiemmin-hankittu-paikallinen-tutkinnon-osa! hoks-id % conn) c))))
 
 (defn save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
+  "Tallentaa aiemmin hankitut yhteiset tutkinnon osat tietokantaan."
   ([hoks-id c]
     (save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
       hoks-id c (db-ops/get-db-connection)))
@@ -320,6 +343,8 @@
         c))))
 
 (defn save-ahato-tarkentavat-tiedot-naytto!
+  "Tallentaa aiemmin hankitun ammatillisen tutkinnon osan tarkentavat tiedot
+  tietokantaan."
   ([ahato-id new-values]
     (save-ahato-tarkentavat-tiedot-naytto!
       ahato-id new-values (db-ops/get-db-connection)))
@@ -334,6 +359,7 @@
         new-values))))
 
 (defn save-aiemmin-hankittu-ammat-tutkinnon-osa!
+  "Tallentaa yhden aiemmin hankitun ammatillisen tutkinnon osan tietokantaan."
   ([hoks-id ahato]
     (save-aiemmin-hankittu-ammat-tutkinnon-osa!
       hoks-id ahato (db-ops/get-db-connection)))
@@ -356,6 +382,7 @@
             (:id ahato-db) (:tarkentavat-tiedot-naytto ahato) conn))))))
 
 (defn save-aiemmin-hankitut-ammat-tutkinnon-osat!
+  "Tallentaa aiemmin hankitut ammatilliset tutkinnon osat tietokantaan."
   ([hoks-id c]
     (save-aiemmin-hankitut-ammat-tutkinnon-osat!
       hoks-id c (db-ops/get-db-connection)))
@@ -364,17 +391,22 @@
       [conn db-conn]
       (mapv #(save-aiemmin-hankittu-ammat-tutkinnon-osa! hoks-id % conn) c))))
 
-(defn- replace-ahato-tarkentavat-tiedot-naytto! [ahato-id new-values db-conn]
+(defn- replace-ahato-tarkentavat-tiedot-naytto!
+  "Korvaa aiemmin hankitun ammatillisen tutkinnon osan tarkentavat tiedot
+  tietokannassa."
+  [ahato-id new-values db-conn]
   (db/delete-aiemmin-hankitun-ammat-tutkinnon-osan-naytto-by-id!
     ahato-id db-conn)
   (save-ahato-tarkentavat-tiedot-naytto! ahato-id new-values db-conn))
 
 (defn- replace-tta-aiemmin-hankitun-osaamisen-arvioijat!
+  "Korvaa tarkentavien tietojen arvioinnin osaamisen arvioijat tietokannassa."
   [tta-id new-values db-conn]
   (db/delete-todennettu-arviointi-arvioijat-by-tta-id! tta-id db-conn)
   (save-tta-aiemmin-hankitun-osaamisen-arvioijat! tta-id new-values db-conn))
 
 (defn- update-tarkentavat-tiedot-osaamisen-arvioija!
+  "Päivittää tarkentavien tietojen osaamisen arvioijat tietokantaan."
   [tta-id new-tta-values db-conn]
   (db/update-todennettu-arviointi-lisatiedot-by-id!
     tta-id new-tta-values db-conn)
@@ -383,13 +415,17 @@
     (replace-tta-aiemmin-hankitun-osaamisen-arvioijat!
       tta-id new-arvioijat db-conn)))
 
-(defn- replace-ahpto-tarkentavat-tiedot-naytto! [ahpto-id new-values db-conn]
+(defn- replace-ahpto-tarkentavat-tiedot-naytto!
+  "Korvaa aiemmin hankitun paikallisen tutkinnon osan tarkentavat tiedot
+  tietokannassa."
+  [ahpto-id new-values db-conn]
   (db/delete-aiemmin-hankitun-paikallisen-tutkinnon-osan-naytto-by-id!
     ahpto-id db-conn)
   (save-ahpto-tarkentavat-tiedot-naytto!
     ahpto-id new-values db-conn))
 
 (defn update-aiemmin-hankittu-paikallinen-tutkinnon-osa!
+  "Päivittää yhden aiemmin hankitun paikallisen tutkinnon osan tietokantaan."
   [ahpto-from-db new-values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
@@ -403,16 +439,23 @@
       (replace-ahpto-tarkentavat-tiedot-naytto!
         (:id ahpto-from-db) new-ttn db-conn))))
 
-(defn- replace-ahyto-tarkentavat-tiedot-naytto! [ahyto-id new-values db-conn]
+(defn- replace-ahyto-tarkentavat-tiedot-naytto!
+  "Korvaa aiemmin hankitun yhteisen tutkinnon osan tarkentavat tiedot
+  tietokannassa."
+  [ahyto-id new-values db-conn]
   (db/delete-aiemmin-hankitun-yhteisen-tutkinnon-osan-naytto-by-id!
     ahyto-id db-conn)
   (save-ahyto-tarkentavat-tiedot-naytto! ahyto-id new-values db-conn))
 
-(defn- replace-ahyto-osa-alueet! [ahyto-id new-values db-conn]
+(defn- replace-ahyto-osa-alueet!
+  "Korvaa aiemmin hankitun yhteisen tutkinnon osan osa-alueet tietokannassa."
+  [ahyto-id new-values db-conn]
   (db/delete-aiemmin-hankitut-yto-osa-alueet-by-id! ahyto-id db-conn)
   (save-ahyto-osa-alueet! ahyto-id new-values db-conn))
 
-(defn update-aiemmin-hankittu-yhteinen-tutkinnon-osa! [ahyto-from-db new-values]
+(defn update-aiemmin-hankittu-yhteinen-tutkinnon-osa!
+  "Päivittää yhden aiemmin hankitun yhteisen tutkinnon osan tietokantaan."
+  [ahyto-from-db new-values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
     (db/update-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id!
@@ -428,6 +471,7 @@
       (replace-ahyto-osa-alueet! (:id ahyto-from-db) new-oa db-conn))))
 
 (defn update-aiemmin-hankittu-ammat-tutkinnon-osa!
+  "Päivittää yhden aiemmin hankitun ammatillisen tutkinnon osan tietokantaan."
   [ahato-from-db new-values]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]

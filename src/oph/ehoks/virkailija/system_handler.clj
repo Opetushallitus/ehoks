@@ -18,6 +18,7 @@
   (:import (java.time LocalDate)))
 
 (def routes
+  "System handlerin reitit"
   (route-middleware
     [m/wrap-oph-super-user]
 

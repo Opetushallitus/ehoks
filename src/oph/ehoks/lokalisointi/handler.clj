@@ -6,6 +6,7 @@
             [clojure.core.async :as a]))
 
 (def routes
+  "Lokalisointireitit"
   (c-api/context "/lokalisointi" []
     (c-api/GET "/" [:as request]
       :summary "Hakee lokalisoinnin tulokset lokalisointipalvelusta"

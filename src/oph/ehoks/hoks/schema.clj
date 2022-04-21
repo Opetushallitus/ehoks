@@ -13,15 +13,19 @@
   #"^tutkinnonosat_\d+$")
 
 (def OsaamisenHankkimistapaKoodiUri
+  "Osaamisen hankkimistavan koodi-URI:n regex."
   #"^osaamisenhankkimistapa_.+$")
 
 (def OppisopimuksenPerustaKoodiUri
+  "Oppisopimuksen perustan koodi-URI:n regex."
   #"^oppisopimuksenperusta_.+$")
 
 (def OsaAlueKoodiUri
+  "Osa-alueen koodi-URI:n regex."
   #"^ammatillisenoppiaineet_.+$")
 
 (def OppimisymparistoKoodiUri
+  "Oppimisympäristön koodi-URI:n regex."
   #"^oppimisymparistot_\d{4}$")
 
 (def TodentamisenProsessiKoodiUri
@@ -29,16 +33,20 @@
   #"^osaamisentodentamisenprosessi_\d+$")
 
 (def UrasuunnitelmaKoodiUri
+  "Urasuunnitelman koodi-URI:n regex."
   #"^urasuunnitelma_\d{4}$")
 
 (def Oid
+  "OID:n regex."
   #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
 
 (def OpiskeluoikeusOid
+  "Opiskeluoikeuden OID:n regex."
   #"^1\.2\.246\.562\.15\.\d+$")
 
 (s/defschema
   KoodistoKoodi
+  "Koodistokoodin schema."
   (describe
     "Koodisto Koodi"
     :koodi-uri s/Str "Koodisto-koodi URI"
@@ -46,6 +54,7 @@
 
 (s/defschema
   Organisaatio
+  "Organisaation schema."
   (describe
     "Organisaatio"
     :nimi s/Str "Organisaation nimi"
@@ -54,6 +63,7 @@
 
 (s/defschema
   TyoelamaOrganisaatio
+  "Työelämäorganisaation schema."
   (modify
     Organisaatio
     "Työelämän toimijan organisaatio, jossa näyttö tai osaamisen osoittaminen
@@ -61,6 +71,7 @@
 
 (s/defschema
   KoulutuksenJarjestajaOrganisaatio
+  "Koulutuksen järjestäjä -organisaation schema."
   (modify
     Organisaatio
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
@@ -74,6 +85,7 @@
 
 (s/defschema
   Nayttoymparisto
+  "Näyttöympäristön schema."
   (modify
     Organisaatio
     "Organisaatio, jossa näyttö tai osaamisen osoittaminen annetaan"
@@ -88,6 +100,7 @@
 
 (s/defschema
   Henkilo
+  "Henkilön schema."
   (describe
     "Henkilö"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -97,6 +110,7 @@
 
 (s/defschema
   VastuullinenTyopaikkaOhjaaja
+  "Vastuullisen työpaikkaohjaajan schema."
   (modify
     Henkilo
     "Vastuullinen ohjaaja"
@@ -114,6 +128,7 @@
 
 (s/defschema
   Oppilaitoshenkilo
+  "Oppilaitoshenkilön schema."
   (modify
     Henkilo
     "Oppilaitoksen edustaja"
@@ -126,6 +141,7 @@
 
 (s/defschema
   TyopaikallaJarjestettavaKoulutus
+  "Työpaikalla järjestettävän koulutuksen schema."
   (describe
     "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -137,6 +153,7 @@
 
 (s/defschema
   MuuOppimisymparisto
+  "Muun oppimisympäristön schema."
   (describe
     "Muu oppimisympäristö, missä osaamisen hankkiminen tapahtuu"
     :oppimisymparisto-koodi-uri OppimisymparistoKoodiUri
@@ -154,6 +171,7 @@
 
 (s/defschema
   Keskeytymisajanjakso
+  "Keskeytymisajanjakson schema."
   (describe
     (str "Ajanjakso, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä "
          "työpaikalla on ollut keskeytyneenä.")
@@ -162,7 +180,9 @@
     (s/optional-key :loppu) LocalDate
     "Keskeytymisajanjakson päättymispäivämäärä."))
 
-(defn- not-overlapping? [jaksot]
+(defn- not-overlapping?
+  "Varmistaa, että keskeytymisajanjaksot eivät mene päällekkäin."
+  [jaksot]
   (or (<= (count jaksot) 1)
       (reduce #(if (and (:loppu %1) (.isBefore (:loppu %1) (:alku %2)))
                  %2
@@ -171,6 +191,7 @@
 
 (s/defschema
   OsaamisenHankkimistapa
+  "Osaamisen hankkimistavan schema."
   (describe
     "Osaamisen hankkimisen tapa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -216,7 +237,10 @@
          "työelämäpalautteessa tarvittavan työpaikkajakson keston "
          "laskemiseen.")))
 
-(defn- oppisopimus-has-perusta? [oht]
+(defn- oppisopimus-has-perusta?
+  "Varmistaa, että osaamisen hankkimistavassa on oppisopimuksen perusta, jos
+  osaamisen hankkimistapatyyppi on oppisopimus."
+  [oht]
   (or (not= (:osaamisen-hankkimistapa-koodi-uri oht)
             "osaamisenhankkimistapa_oppisopimus")
       (.isBefore (:loppu oht) (LocalDate/of 2021 7 1))
@@ -224,6 +248,7 @@
 
 (s/defschema
   OsaamisenHankkimistapaLuontiJaMuokkaus
+  "Schema osaamisen hankkimistavan luontiin ja muokkaukseen."
   (s/constrained
     (modify
       OsaamisenHankkimistapa
@@ -234,6 +259,7 @@
 
 (s/defschema
   OsaamisenHankkimistapaPatch
+  "Schema osaamisen hankkimistavan PATCH-päivitykseen."
   (s/constrained
     (modify
       OsaamisenHankkimistapa
@@ -244,6 +270,7 @@
 
 (s/defschema
   NaytonJarjestaja
+  "Näytön järjestäjän schema."
   (describe
     "Näytön tai osaamisen osoittamisen järjestäjä"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -254,6 +281,7 @@
 
 (s/defschema
   Arvioija
+  "Arvioijan schema."
   (describe
     "Arvioija"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -262,6 +290,7 @@
 
 (s/defschema
   TyoelamaOsaamisenArvioija
+  "Työelämäosaamisen arvioijan schema."
   (modify
     Arvioija
     "Työelämän arvioija"
@@ -273,6 +302,7 @@
 
 (s/defschema
   KoulutuksenJarjestajaArvioija
+  "Koulutuksen järjestäjän arvioijan schema."
   (modify
     Arvioija
     "Koulutuksenjärjestäjän arvioija"
@@ -285,6 +315,7 @@
 
 (s/defschema
   TodennettuArviointiLisatiedot
+  "Todennetun arvioinnin lisätietojen schema."
   (describe
     "Mikäli arvioijan kautta todennettu, annetaan myös arvioijan lisätiedot"
     (s/optional-key :lahetetty-arvioitavaksi) LocalDate "Päivämäärä, jona
@@ -295,6 +326,7 @@
 
 (s/defschema
   OsaamisenOsoittaminen
+  "Osaamisen osoittamisen schema."
   (describe
     "Hankittavaan tutkinnon osaan tai yhteisen tutkinnon osan osa-alueeseen
     sisältyvä osaamisen osoittaminen: näyttö tai muu osaamisen osoittaminen."
@@ -338,6 +370,7 @@
 
 (s/defschema
   OsaamisenOsoittaminenLuontiJaMuokkaus
+  "Schema osaamisen osoittamisen luontiin ja muokkaukseen."
   (modify
     OsaamisenOsoittaminen
     "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
@@ -345,6 +378,7 @@
 
 (s/defschema
   OsaamisenOsoittaminenPatch
+  "Schema osaamisen osoittamisen PATCH-päivitykseen."
   (modify
     OsaamisenOsoittaminen
     "Osaamisen hankkimisen tavan luonti muokkaus (PATCH)"
@@ -352,6 +386,7 @@
 
 (s/defschema
   YhteisenTutkinnonOsanOsaAlue
+  "Yhteisen tutkinnon osa osa-alueen schema."
   (describe
     "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -380,6 +415,8 @@
 
 (s/defschema
   YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus
+  "Schema hankittavan yhteisen tutkinnon osan osa-alueen luontiin ja
+  muokkaukseen."
   (modify
     YhteisenTutkinnonOsanOsaAlue
     "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot (POST, PUT)"
@@ -396,6 +433,7 @@
 
 (s/defschema
   YhteisenTutkinnonOsanOsaAluePatch
+  "Schema hankittavan yhteisen tutkinnon osan osa-alueen PATCH-päivitykseen."
   (modify
     YhteisenTutkinnonOsanOsaAlue
     "Hankittavan yhteinen tutkinnon osan (YTO) osa-alueen tiedot (PATCH)"
@@ -413,6 +451,7 @@
 
 (s/defschema
   AiemminHankitunYTOOsaAlue
+  "Aiemmin hankitun yhteisen tutkinnon osan osa-alueen schema."
   (describe
     "AiemminHankitun YTOn osa-alueen tiedot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -448,6 +487,8 @@
 
 (s/defschema
   AiemminHankitunYTOOsaAlueLuontiJaMuokkaus
+  "Schema aiemmin hankitun yhteisen tutkinnon osan osa-alueen luontiin ja
+  muokkaukseen."
   (modify
     AiemminHankitunYTOOsaAlue
     "AiemminHankitun YTOn osa-alueen tiedot (POST, PUT)"
@@ -462,6 +503,8 @@
 
 (s/defschema
   AiemminHankitunYTOOsaAluePatch
+  "Schema aiemmin hankitun yhteisen tutkinnon osan osa-alueen
+  PATCH-päivitykseen."
   (modify
     AiemminHankitunYTOOsaAlue
     "AiemminHankitun YTOn osa-alueen tiedot (PATCH)"
@@ -476,6 +519,7 @@
 
 (s/defschema
   YhteinenTutkinnonOsa
+  "Yhteisen tutkinnon osan schema."
   (describe
     "Yhteinen Tutkinnon osa (YTO)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -496,6 +540,7 @@
 
 (s/defschema
   HankittavaYTO
+  "Hankittavan yhteisen tutkinnon osan schema."
   (modify
     YhteinenTutkinnonOsa
     "Hankittavan yhteinen tutkinnon osan (YTO) tiedot"
@@ -503,6 +548,7 @@
 
 (s/defschema
   HankittavaYTOLuontiJaMuokkaus
+  "Schema hankittavan yhteisen tutkinnon osan luontiin ja muokkaukseen."
   (modify
     HankittavaYTO
     "Hankittavan yhteisen tutkinnnon osan (POST, PUT)"
@@ -526,6 +572,7 @@
 
 (s/defschema
   HankittavaYTOPatch
+  "Schema hankittavan yhteisen tutkinnon osan PATCH-päivitykseen."
   (modify
     HankittavaYTO
     "Hankittavan yhteisen tutkinnnon osan (PATCH)"
@@ -549,6 +596,7 @@
 
 (s/defschema
   OpiskeluvalmiuksiaTukevatOpinnot
+  "Opiskeluvalmiuksia tukevien opintojen schema."
   (describe
     "Opiskeluvalmiuksia tukevat opinnot"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -559,6 +607,7 @@
 
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsa
+  "Hankittavan ammatillisen tutkinnon osan schema."
   (describe
     "Hankittavan ammatillisen osaamisen tiedot (GET)"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -587,6 +636,7 @@
 
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus
+  "Schema hankittavan ammatillisen tutkinnon osan luontiin ja muokkaukseen."
   (modify
     HankittavaAmmatillinenTutkinnonOsa
     "Hankittavan ammatillisen osaamisen tiedot (POST, PUT)"
@@ -603,6 +653,7 @@
 
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsaPatch
+  "Schema hankittavan ammatillisen tutkinnon osan PATCH-päivitykseen."
   (modify
     HankittavaAmmatillinenTutkinnonOsa
     "Hankittavan ammatillisen osaamisen tiedot (PATCH)"
@@ -620,6 +671,7 @@
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsa
+  "Hankittavan paikallisen tutkinnon osan schema."
   (describe
     "Hankittava paikallinen tutkinnon osa"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
@@ -649,6 +701,7 @@
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus
+  "Schema hankittavan paikallisen tutkinnon osan luontiin ja muokkaukseen."
   (modify
     HankittavaPaikallinenTutkinnonOsa
     "Hankittavan paikallisen osaamisen tiedot (POST, PUT)"
@@ -665,6 +718,7 @@
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaPatch
+  "Schema hankittavan paikallisen tutkinnon osan PATCH-päivitykseen."
   (modify
     HankittavaPaikallinenTutkinnonOsa
     "Hankittavan paikallisen osaamisen tiedot (PATCH)"
@@ -682,6 +736,7 @@
 
 (s/defschema
   AiemminHankittuPaikallinenTutkinnonOsa
+  "Aiemmin hankitun paikallisen tutkinnon osan schema."
   (modify
     HankittavaPaikallinenTutkinnonOsa
     "Aiemmin hankittu yhteinen tutkinnon osa"
@@ -702,6 +757,7 @@
 
 (s/defschema
   AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus
+  "Schema aiemmin hankitun paikallisen tutkinnon osan luontiin ja muokkaukseen."
   (modify
     AiemminHankittuPaikallinenTutkinnonOsa
     "Aiemmin hankitun paikallisen osaamisen tiedot (POST, PUT)"
@@ -716,6 +772,7 @@
 
 (s/defschema
   AiemminHankittuPaikallinenTutkinnonOsaPatch
+  "Schema aiemmin hankitun paikallisen tutkinnon osan PATCH-päivitykseen."
   (modify
     AiemminHankittuPaikallinenTutkinnonOsa
     "Aiemmin hankitun paikallisen osaamisen tiedot (PATCH)"
@@ -730,6 +787,7 @@
 
 (s/defschema
   AiemminHankittuYhteinenTutkinnonOsa
+  "Aiemmin hankitun yhteisen tutkinnon osan schema."
   (modify
     YhteinenTutkinnonOsa
     "Aiemmin hankittu yhteinen tutkinnon osa"
@@ -752,6 +810,7 @@
 
 (s/defschema
   AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus
+  "Schema aiemmin hankitun yhteisen tutkinnon osan luontiin ja muokkaukseen."
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
     "Aiemmin hankitun yhteisen osaamisen tiedot (POST, PUT)"
@@ -768,6 +827,7 @@
 
 (s/defschema
   AiemminHankittuYhteinenTutkinnonOsaPatch
+  "Schema aiemmin hankitun yhteisen tutkinnon osan PATCH-päivitykseen."
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
     "Aiemmin hankitun yhteisen osaamisen tiedot (PATCH)"
@@ -784,6 +844,7 @@
 
 (s/defschema
   AiemminHankittuAmmatillinenTutkinnonOsa
+  "Aiemmin hankitun ammatillisen tutkinnon osan schema."
   (modify
     AiemminHankittuYhteinenTutkinnonOsa
     "Aiemmin hankittu ammatillisen tutkinnon osa"
@@ -798,6 +859,8 @@
 
 (s/defschema
   AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus
+  "Schema aiemmin hankitun ammatillisen tutkinnon osan luontiin ja
+  muokkaukseen."
   (modify
     AiemminHankittuAmmatillinenTutkinnonOsa
     "Aiemmin hankitun ammatillisen osaamisen tiedot (POST, PUT)"
@@ -812,6 +875,7 @@
 
 (s/defschema
   AiemminHankittuAmmatillinenTutkinnonOsaPatch
+  "Schema aiemmin hankitun ammatillisen tutkinnon osan PATCH-päivitykseen."
   (modify
     AiemminHankittuAmmatillinenTutkinnonOsa
     "Aiemmin hankitun ammatillisen osaamisen tiedot (PATCH)"
@@ -825,6 +889,7 @@
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (def ^:private ahato-part-of-hoks
+  "Aiemmin hankitun ammatillisen tutkinnon osan HOKS-osa schemana."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]
@@ -833,6 +898,7 @@
    :description "Aiemmin hankittu ammatillinen osaaminen"})
 
 (def ^:private ahyto-part-of-hoks
+  "Aiemmin hankitun yhteisen tutkinnon osan HOKS-osa schemana."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [AiemminHankittuYhteinenTutkinnonOsa]
@@ -841,6 +907,7 @@
    :description "Aiemmin hankitut yhteiset tutkinnon osat (YTO)"})
 
 (def ^:private ahpto-part-of-hoks
+  "Aiemmin hankitun paikallisen tutkinnon osan HOKS-osa schemana."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]
@@ -849,12 +916,14 @@
    :description "Aiemmin hankittu paikallinen tutkinnon osa"})
 
 (def ^:private oto-part-of-hoks
+  "Opiskeluvalmiuksia tukevien opintojen HOKS-osa schemana."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
    :description "Opiskeluvalmiuksia tukevat opinnot"})
 
 (def ^:private hato-part-of-hoks
+  "Hankittavan ammatillisen tutkinnon osan HOKS-osa schemana."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [HankittavaAmmatillinenTutkinnonOsa]
@@ -864,6 +933,7 @@
    "Hankittavan ammatillisen osaamisen hankkimisen tiedot"})
 
 (def ^:private hyto-part-of-hoks
+  "Hankittavan yhteisen tutkinnon osan HOKS-osa schemana."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [HankittavaYTO]
@@ -872,6 +942,7 @@
    :description "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot"})
 
 (def ^:private hpto-part-of-hoks
+  "Hankittavan paikallisen tutkinnon osan HOKS-osa schemana."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [HankittavaPaikallinenTutkinnonOsa]
@@ -880,6 +951,7 @@
    :description "Hankittavat paikallisen tutkinnon osat"})
 
 (def HOKSModel
+  "HOKS-schema."
   ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
     :restful true
     :name "HOKSModel"}
@@ -957,24 +1029,28 @@
    :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks})
 
 (def HOKS
+  "Generoitu HOKS-schema."
   (with-meta
     (g/generate HOKSModel :get)
     {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
      :name "HOKS"}))
 
 (def HOKSPaivitys
+  "Generoitu HOKSin päivitysschema."
   (with-meta
     (g/generate HOKSModel :patch)
     {:doc "HOKS-dokumentin ylikirjoitus (PATCH)"
      :name "HOKSPaivitys"}))
 
 (def HOKSKorvaus
+  "Generoitu HOKSin korvausschema."
   (with-meta
     (g/generate HOKSModel :put)
     {:doc "HOKS-dokumentin ylikirjoitus (PUT)"
      :name "HOKSKorvaus"}))
 
 (def HOKSLuonti
+  "Generoitu HOKSin luontischema."
   (with-meta
     (g/generate HOKSModel :post)
     {:doc "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
@@ -982,6 +1058,7 @@
 
 (s/defschema
   kyselylinkki
+  "Kyselylinkkischema."
   {:kyselylinkki s/Str
    :alkupvm LocalDate
    :tyyppi s/Str
@@ -991,6 +1068,7 @@
 
 (s/defschema
   kyselylinkki-lahetys
+  "Kyselylinkin lähetysschema."
   {:kyselylinkki s/Str
    :lahetyspvm LocalDate
    :sahkoposti s/Str
@@ -998,8 +1076,10 @@
 
 (s/defschema
   palaute-resend
+  "Palautteen uudelleenlähetysschema."
   {:tyyppi s/Str})
 
 (s/defschema
   shallow-delete-hoks
+  "Schema HOKSin poistoon oppilaitos-OID:n perusteella."
   {:oppilaitos-oid s/Str})
