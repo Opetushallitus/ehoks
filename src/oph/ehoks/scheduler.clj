@@ -1,7 +1,10 @@
 (ns oph.ehoks.scheduler
   (:require [clojure.core.async :as a]))
 
-(def jobs ^:private (atom {}))
+(def jobs
+  "Global (to this file) jobs list"
+  ^:private
+  (atom {}))
 
 (defn add-job
   "Schedule job"

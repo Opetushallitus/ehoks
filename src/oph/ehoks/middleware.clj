@@ -3,7 +3,9 @@
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
             [oph.ehoks.user :as user]))
 
-(defn- authenticated? [request]
+(defn- authenticated?
+  "Check whether request is authenticated"
+  [request]
   (some? (get-in request [:session :user])))
 
 (defn wrap-authorize
@@ -19,12 +21,16 @@
         (handler request)
         (unauthorized)))))
 
-(defn- cache-control-no-cache-response [response]
+(defn- cache-control-no-cache-response
+  "Add cache control no cache headers to response"
+  [response]
   (-> response
       (header "Expires" 0)
       (header "Cache-Control" "no-cache, max-age=0")))
 
-(defn wrap-cache-control-no-cache [handler]
+(defn wrap-cache-control-no-cache
+  "Add cache control no cache headers in given handler"
+  [handler]
   (fn
     ([request respond raise]
       (handler request

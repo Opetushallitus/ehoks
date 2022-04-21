@@ -60,6 +60,7 @@
       (response/unauthorized {:error "Invalid ticket"})))
 
 (def routes
+  "Oppija auth handler routes"
   (c-api/context "/session" []
 
     (c-api/GET "/opintopolku/" [:as request]

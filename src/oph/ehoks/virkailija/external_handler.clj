@@ -10,6 +10,7 @@
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]))
 
 (def routes
+  "Virkailija external handler routes"
   (c-api/context "/external" []
     :header-params [caller-id :- s/Str]
     :tags ["virkailija-external"]

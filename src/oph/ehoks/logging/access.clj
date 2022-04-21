@@ -7,6 +7,7 @@
             [clojure.data.json :as json]))
 
 (def ^:private service-name
+  "Global service name"
   (cstr/lower-case (:name env (or (System/getProperty "name") "both"))))
 
 (defn- get-header

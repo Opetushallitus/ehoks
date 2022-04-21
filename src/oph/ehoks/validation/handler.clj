@@ -5,6 +5,7 @@
             [schema.core :as s]))
 
 (def routes
+  "Validation routes"
   (c-api/context "/validointi" []
     :header-params [caller-id :- s/Str]
     :tags ["validointi"]

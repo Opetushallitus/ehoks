@@ -889,7 +889,7 @@
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
 (def ^:private ahato-part-of-hoks
-  "Aiemmin hankitun ammatillisen tutkinnon osan HOKS-osa schemena."
+  "Aiemmin hankitun ammatillisen tutkinnon osan HOKS-osa schemana."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]
@@ -898,7 +898,7 @@
    :description "Aiemmin hankittu ammatillinen osaaminen"})
 
 (def ^:private ahyto-part-of-hoks
-  "Aiemmin hankitun yhteisen tutkinnon osan HOKS-osa schemena."
+  "Aiemmin hankitun yhteisen tutkinnon osan HOKS-osa schemana."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [AiemminHankittuYhteinenTutkinnonOsa]
@@ -907,7 +907,7 @@
    :description "Aiemmin hankitut yhteiset tutkinnon osat (YTO)"})
 
 (def ^:private ahpto-part-of-hoks
-  "Aiemmin hankitun paikallisen tutkinnon osan HOKS-osa schemena."
+  "Aiemmin hankitun paikallisen tutkinnon osan HOKS-osa schemana."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]

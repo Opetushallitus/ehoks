@@ -8,6 +8,7 @@
             [oph.ehoks.user :as user]))
 
 (def routes
+  "Virkailija auth routes"
   (c-api/context "/session" []
     (c-api/context "/opintopolku" []
       cas-handler/routes)

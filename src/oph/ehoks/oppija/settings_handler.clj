@@ -7,6 +7,7 @@
             [schema.core :as s]))
 
 (def routes
+  "Oppija settings routes"
   (c-api/context "/settings" []
     :header-params [caller-id :- s/Str]
     (c-api/GET "/" request

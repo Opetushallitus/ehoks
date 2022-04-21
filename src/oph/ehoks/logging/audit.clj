@@ -16,24 +16,43 @@
            (org.ietf.jgss Oid)))
 
 (def  ^:private logger
+  "Global (to this file) logger"
   (proxy [Logger] [] (log [str]
                        (log/log "audit" :info nil str))))
 
 (def ^:private audit
+  "Global (to this file) audit logger"
   (when (:audit? config)
     (Audit. logger (or (:name env) "both") (ApplicationType/BACKEND))))
 
 (defn- create-operation
-  "Create instance of class Operation."
+  "Create instance of class Operation"
   [op]
   (proxy [Operation] [] (name [] op)))
 
-(def operation-failed (create-operation "failure"))
-(def operation-read (create-operation "read"))
-(def operation-new (create-operation "create"))
-(def operation-modify (create-operation "update"))
-(def operation-overwrite (create-operation "overwrite"))
-(def operation-delete (create-operation "delete"))
+(def operation-failed
+  "Global failed operation instance"
+  (create-operation "failure"))
+
+(def operation-read
+  "Global read operations instance"
+  (create-operation "read"))
+
+(def operation-new
+  "Global create operation instance"
+  (create-operation "create"))
+
+(def operation-modify
+  "Global update operation instance"
+  (create-operation "update"))
+
+(def operation-overwrite
+  "Global overwrite operation instance"
+  (create-operation "overwrite"))
+
+(def operation-delete
+  "Global delete operation instance"
+  (create-operation "delete"))
 
 (defn- get-user-oid
   "Get OID of user from request"
