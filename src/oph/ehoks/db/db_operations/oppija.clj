@@ -10,9 +10,10 @@
       [queries/select-oppijat-by-oid oppija-oid]
       {:row-fn db-ops/from-sql})))
 
-(defn select-oppija-with-opiskeluoikeus-oid-by-oid [oppija-oid]
+(defn select-oppija-with-opiskeluoikeus-oid-by-oid
   "Hakee yksittäisen oppijan oppija-oidin perusteella.
   Palauttaa mukana opiskeluoikeus-oidin."
+  [oppija-oid]
   (first
     (db-ops/query
       [queries/select-oppija-with-opiskeluoikeus-oid-by-oid oppija-oid]

@@ -219,8 +219,9 @@
     (response/ok {:count (count hoksit)
                   :hoksit hoksit})))
 
-(defn- save-hoks [hoks request]
+(defn- save-hoks
   "Save HOKS to database"
+  [hoks request]
   (try
     (let [hoks-db (h/save-hoks!
                     (assoc hoks :manuaalisyotto true))]

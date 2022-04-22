@@ -688,9 +688,10 @@
     [queries/select-hoksit-by-ensikert-hyvaks-and-saavutettu-tiedot]
     {:row-fn db-ops/from-sql}))
 
-(defn select-hoksit-by-oo-oppilaitos-and-koski404 [oppilaitos-oid]
+(defn select-hoksit-by-oo-oppilaitos-and-koski404
   "Hakee tietokannasta oppilaitoksen perusteella HOKSit, joilla ei ole
    opiskeluoikeustietoja Koskessa."
+  [oppilaitos-oid]
   (db-ops/query
     [queries/select-hoksit-by-oo-oppilaitos-and-koski404
      oppilaitos-oid]
