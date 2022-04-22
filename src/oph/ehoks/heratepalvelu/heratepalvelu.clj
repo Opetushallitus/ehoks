@@ -137,3 +137,12 @@
   "Marks päättöheräte handled (käsitelty) for a given HOKS."
   [hoks-id to]
   (db-hoks/update-amisherate-kasittelytilat-paattoherate-kasitelty hoks-id to))
+
+(defn select-tyoelamajaksot-active-between
+  "Finds all workplace periods active between start and end dates for student
+  oppija."
+  [oppija start end]
+  (concat
+    (db-hoks/select-tyoelamajaksot-active-between "hato" oppija start end)
+    (db-hoks/select-tyoelamajaksot-active-between "hpto" oppija start end)
+    (db-hoks/select-tyoelamajaksot-active-between "hyto" oppija start end)))
