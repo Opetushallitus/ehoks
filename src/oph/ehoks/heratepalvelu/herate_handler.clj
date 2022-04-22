@@ -75,4 +75,12 @@
         :summary "Päivittää aktiivisten hoksien opiskeluoikeudet Koskesta"
         :header-params [caller-id :- s/Str]
         (future (h/update-opiskeluoikeudet))
-        (response/no-content)))))
+        (response/no-content))
+
+      (c-api/GET "/tyoelamajaksot-active-between" []
+        :summary "Työelämäjaksot voimassa aikavälin sisällä tietyllä oppijalla"
+        :query-params [oppija :- s/Str
+                       start :- LocalDate
+                       end :- LocalDate]
+        (restful/rest-ok
+          (hp/select-tyoelamajaksot-active-between oppija start end))))))

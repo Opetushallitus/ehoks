@@ -167,6 +167,12 @@
       "heratepalvelu/select_hoksit_with_kasittelemattomat_aloitusheratteet.sql")
 (defq select-hoksit-with-kasittelemattomat-paattoheratteet
       "heratepalvelu/select_hoksit_with_kasittelemattomat_paattoheratteet.sql")
+(defq select-hato-tyoelamajaksot-active-between
+      "heratepalvelu/select_hato_tyoelamajaksot_active_between.sql")
+(defq select-hpto-tyoelamajaksot-active-between
+      "heratepalvelu/select_hpto_tyoelamajaksot_active_between.sql")
+(defq select-hyto-tyoelamajaksot-active-between
+      "heratepalvelu/select_hyto_tyoelamajaksot_active_between.sql")
 (defq select-hankintakoulutus-oids-by-master-oid
       "opiskeluoikeudet/select-hankintakoulutus-oids-by-master-oid.sql")
 (defq select-paattyneet-kyselylinkit-by-date-and-type-temp
