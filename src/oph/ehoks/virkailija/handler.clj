@@ -553,14 +553,6 @@
                 (c-api/context "/:oppija-oid" []
                   :path-params [oppija-oid :- s/Str]
 
-                  (c-api/GET "/" []
-                    :return (restful/response
-                              [common-schema/Oppija])
-                    (if-let [oppija (op/get-oppija-with-oo-oid-by-oid
-                                      oppija-oid)]
-                      (restful/rest-ok oppija)
-                      (response/not-found)))
-
                   (c-api/POST "/index" []
                     :summary
                     "Indeksoi oppijan tiedot, jos on tarpeen. DEPRECATED"
@@ -761,6 +753,14 @@
                       :return (restful/response common-schema/Oppija)
                       :summary "Oppijan tiedot"
                       (if-let [oppija (op/get-oppija-by-oid oppija-oid)]
+                        (restful/rest-ok oppija)
+                        (response/not-found)))
+
+                    (c-api/GET "/with-oo" []
+                      :return (restful/response
+                                [common-schema/Oppija])
+                      (if-let [oppija (op/get-oppija-with-oo-oid-by-oid
+                                        oppija-oid)]
                         (restful/rest-ok oppija)
                         (response/not-found)))))))))
 
