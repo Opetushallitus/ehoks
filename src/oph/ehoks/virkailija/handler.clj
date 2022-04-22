@@ -757,8 +757,7 @@
                         (response/not-found)))
 
                     (c-api/GET "/with-oo" []
-                      :return (restful/response
-                                [common-schema/Oppija])
+                      :return (restful/response common-schema/Oppija)
                       (if-let [oppija (op/get-oppija-with-oo-oid-by-oid
                                         oppija-oid)]
                         (restful/rest-ok oppija)
