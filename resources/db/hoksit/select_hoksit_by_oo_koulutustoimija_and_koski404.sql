@@ -1,4 +1,6 @@
-SELECT *
+SELECT h.id AS hoks_id,
+       oo.oid AS opiskeluoikeus_oid,
+       oo.koulutustoimija_oid
 FROM hoksit h
 LEFT OUTER JOIN opiskeluoikeudet oo
                 ON h.opiskeluoikeus_oid = oo.oid

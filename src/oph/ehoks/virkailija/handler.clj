@@ -211,9 +211,16 @@
       (not (op/opiskeluoikeus-tila-inactive?
              (op/get-opiskeluoikeus-tila opiskeluoikeus))))))
 
-(defn- save-hoks
+(defn get-hoksit-without-oo-in-koski-by-koulutuksenjarjestaja
+  "Get hoksit that have koski404 true by koulutuksenjärjestäjä."
+  [koulutustoimija-oid]
+  (let [hoksit (db-hoks/select-hoksit-by-oo-koulutustoimija-and-koski404
+                 koulutustoimija-oid)]
+    (response/ok {:count (count hoksit)
+                  :hoksit hoksit})))
+
+(defn- save-hoks [hoks request]
   "Save HOKS to database"
-  [hoks request]
   (try
     (let [hoks-db (h/save-hoks!
                     (assoc hoks :manuaalisyotto true))]
@@ -442,6 +449,14 @@
                 :header-params [caller-id :- s/Str]
                 :path-params [tunnus :- s/Str]
                 (delete-vastaajatunnus tunnus))
+
+              (c-api/GET "/missing-oo-hoksit/:koulutustoimijaoid" []
+                :summary "Palauttaa listan hokseista, joiden
+                          opiskeluoikeus puuttuu"
+                :header-params [caller-id :- s/Str]
+                :path-params [koulutustoimijaoid :- s/Str]
+                (get-hoksit-without-oo-in-koski-by-koulutuksenjarjestaja
+                  koulutustoimijaoid))
 
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
                 :summary "Palauttaa tietoja kyselylinkkeihin liittyvistä
