@@ -79,6 +79,8 @@
 (defq select-opiskeluoikeudet-by-oppija-oid
       "oppijat/select_opiskeluoikeudet_by_oppija_oid.sql")
 (defq select-oppijat-by-oid "oppijat/select_oppijat_by_oid.sql")
+(defq select-oppija-with-opiskeluoikeus-oid-by-oid
+      "oppijat/select_oppija_with_opiskeluoikeus_oid_by_oid.sql")
 (defq select-opiskeluoikeudet-by-oid
       "oppijat/select_opiskeluoikeudet_by_oid" .sql)
 (defq select-count-by-koulutustoimija

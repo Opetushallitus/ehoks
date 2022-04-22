@@ -52,7 +52,8 @@
   Oppija
   "Oppijan perustiedot"
   {:oid s/Str
-   :nimi s/Str})
+   :nimi s/Str
+   (s/optional-key :opiskeluoikeus-oid) (s/maybe s/Str)})
 
 (s/defschema
   Opiskeluoikeus
