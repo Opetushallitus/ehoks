@@ -758,6 +758,7 @@
 
                     (c-api/GET "/with-oo" []
                       :return (restful/response common-schema/Oppija)
+                      :summary "Oppijan tiedot. Opiskeluoikeus-oid lisättynä."
                       (if-let [oppija (op/get-oppija-with-oo-oid-by-oid
                                         oppija-oid)]
                         (restful/rest-ok oppija)
