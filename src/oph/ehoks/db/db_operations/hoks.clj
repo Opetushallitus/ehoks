@@ -551,8 +551,8 @@
             "hpto" queries/select-hpto-tyoelamajaksot-active-between
             "hyto" queries/select-hyto-tyoelamajaksot-active-between)
           oppija
-          start
-          end])))
+          end
+          start])))
 
 (defn update-osaamisen-hankkimistapa-tep-kasitelty
   "Merkitsee osaamisen hankkimistavan käsitellyksi tai ei käsitellyksi."
