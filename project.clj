@@ -22,6 +22,7 @@
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.1.0"]
                  [software.amazon.awssdk/sqs "2.5.37"]
+                 [com.amazonaws/aws-java-sdk-sns "1.12.207" :exclusions [com.fasterxml.jackson.dataformat/jackson-dataformat-cbor]]
                  [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]
                  [com.rpl/specter "1.1.3"]
                  [org.clojure/core.memoize "1.0.250"]]

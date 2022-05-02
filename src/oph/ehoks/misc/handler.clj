@@ -4,6 +4,7 @@
             [oph.ehoks.restful :as rest]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.oph-url :as u]
+            [oph.ehoks.external.aws-sns :as sns]
             [schema.core :as s]))
 
 (def routes
@@ -47,4 +48,9 @@
              (:frontend-url-sv config)
              (:frontend-url-path config))}
           {:raamit-url (u/get-url "virkailija-raamit-url")}
-          (select-keys config [:eperusteet-peruste-url]))))))
+          (select-keys config [:eperusteet-peruste-url]))))
+
+    (c-api/POST "/henkilomodified" [:as request]
+      :summary "ONR SNS topicin endpoint. Vastaanottaa
+                notifikaatioita henkilöiden muutoksista ONR:ssä."
+      (rest/rest-ok request))))
