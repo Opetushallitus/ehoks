@@ -981,6 +981,9 @@
    :sahkoposti {:methods {:any :optional}
                 :types {:any s/Str}
                 :description "Oppijan sähköposti, merkkijono."}
+   :puhelinnumero {:methods {:any :optional}
+                   :types {:any s/Str}
+                   :description "Oppija puhelinnumero, merkkijono."}
    :opiskeluoikeus-oid
    {:methods {:any :optional
               :post :required}
@@ -1076,15 +1079,21 @@
    :tyyppi s/Str
    (s/optional-key :lahetyspvm) LocalDate
    (s/optional-key :sahkoposti) s/Str
-   (s/optional-key :lahetystila) s/Str})
+   (s/optional-key :lahetystila) s/Str
+   (s/optional-key :sms-lahetyspvm) LocalDate
+   (s/optional-key :puhelinnumero) s/Str
+   (s/optional-key :sms-lahetystila) s/Str})
 
 (s/defschema
   kyselylinkki-lahetys
   "Kyselylinkin lähetysschema."
   {:kyselylinkki s/Str
-   :lahetyspvm LocalDate
-   :sahkoposti s/Str
-   (s/optional-key :lahetystila) s/Str})
+   (s/optional-key :lahetyspvm) LocalDate
+   (s/optional-key :sahkoposti) s/Str
+   (s/optional-key :lahetystila) s/Str
+   (s/optional-key :sms-lahetyspvm) LocalDate
+   (s/optional-key :puhelinnumero) s/Str
+   (s/optional-key :sms-lahetystila) s/Str})
 
 (s/defschema
   palaute-resend
