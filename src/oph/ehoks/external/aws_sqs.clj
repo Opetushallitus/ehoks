@@ -66,6 +66,7 @@
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
    :oppija-oid (:oppija-oid hoks)
    :sahkoposti (:sahkoposti hoks)
+   :puhelinnumero (:puhelinnumero hoks)
    :alkupvm (str (:ensikertainen-hyvaksyminen hoks))})
 
 (defn build-hoks-osaaminen-saavutettu-msg
@@ -76,6 +77,7 @@
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
    :oppija-oid (:oppija-oid hoks)
    :sahkoposti (:sahkoposti hoks)
+   :puhelinnumero (:puhelinnumero hoks)
    :alkupvm (str saavuttamisen-pvm)})
 
 (defn build-tyoelamapalaute-msg
