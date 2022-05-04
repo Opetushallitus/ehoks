@@ -1,4 +1,4 @@
-SELECT h.id AS hoksId,
+SELECT h.id AS hoksid,
        h.oppija_oid AS oppijaoid,
        h.eid AS hokseid,
        oo.oid AS opiskeluoikeusoid,
