@@ -77,6 +77,14 @@
         (future (h/update-opiskeluoikeudet))
         (response/no-content))
 
+      (c-api/POST "/onrmodify" request
+        :summary "Tarkastaa päivitetyn henkilön tiedot eHoksissa
+                  ja tekee tarvittaessa muutokset"
+        :header-params [caller-id :- s/Str]
+        :query-params [oppija :- s/Str]
+        (println (str "ornmodify kutsuttiin oidilla " oppija))
+        (response/no-content))
+
       (c-api/GET "/tyoelamajaksot-active-between" []
         :summary "Työelämäjaksot voimassa aikavälin sisällä tietyllä oppijalla"
         :query-params [oppija :- s/Str
