@@ -983,7 +983,8 @@
                 :description "Oppijan sähköposti, merkkijono."}
    :opiskelijan-puhelinnumero {:methods {:any :optional}
                                :types {:any s/Str}
-                               :description "Oppija puhelinnumero, merkkijono."}
+                               :description
+                               "Oppijan puhelinnumero, merkkijono."}
    :opiskeluoikeus-oid
    {:methods {:any :optional
               :post :required}
