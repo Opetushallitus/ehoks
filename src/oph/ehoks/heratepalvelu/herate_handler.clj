@@ -88,8 +88,8 @@
           (if oppija
             (op/update-oppija! oid)
             (do
-              (println (str "Ei oppijaa ehoksissa " oppija))
-              (println (onr/find-student-by-oid oppija))))
+              (println (str "Ei oppijaa ehoksissa " oid))
+              (println (:body (onr/find-student-by-oid-no-cache oid)))))
           (response/no-content)))
 
       (c-api/GET "/tyoelamajaksot-active-between" []

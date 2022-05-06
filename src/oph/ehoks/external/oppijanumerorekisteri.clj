@@ -1,7 +1,8 @@
 (ns oph.ehoks.external.oppijanumerorekisteri
   (:require [oph.ehoks.external.cache :as cache]
             [clojure.set :refer [rename-keys]]
-            [oph.ehoks.external.oph-url :as u]))
+            [oph.ehoks.external.oph-url :as u]
+            [oph.ehoks.external.cas :as cas]))
 
 (defn find-student-by-nat-id
   "Find oppija with given HETU"
@@ -23,6 +24,15 @@
      :url (u/get-url "oppijanumerorekisteri.get-henkilo-by-oid" oid)
      :options {:as :json}
      :authenticate? true}))
+
+(defn find-student-by-oid-no-cache
+  "Find student by OID without cache. Cas auth enabled without cache."
+  [oid]
+  (let [data {:method :get
+              :service (u/get-url "oppijanumerorekisteri-url")
+              :url (u/get-url "oppijanumerorekisteri.get-henkilo-by-oid" oid)
+              :options {:as :json}}]
+    (cas/with-service-ticket data)))
 
 (defn- convert-contact-values
   "Rename contact info keys to :value and :type"
