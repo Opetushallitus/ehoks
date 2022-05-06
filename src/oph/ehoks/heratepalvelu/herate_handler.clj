@@ -9,7 +9,8 @@
             [schema.core :as s]
             [ring.util.http-response :as response]
             [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.external.oppijanumerorekisteri :as onr])
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
+            [oph.ehoks.oppijaindex :as op])
   (:import (java.time LocalDate)))
 
 (def routes
@@ -82,10 +83,13 @@
         :summary "Tarkastaa päivitetyn henkilön tiedot eHoksissa
                   ja tekee tarvittaessa muutokset"
         :header-params [caller-id :- s/Str]
-        :query-params [oppija :- s/Str]
-        (do
-          (println (str "ornmodify kutsuttiin oidilla " oppija))
-          (println (onr/find-student-by-oid oppija))
+        :query-params [oid :- s/Str]
+        (let [oppija (op/get-oppija-by-oid oid)]
+          (if oppija
+            (op/update-oppija! oid)
+            (do
+              (println (str "Ei oppijaa ehoksissa " oppija))
+              (println (onr/find-student-by-oid oppija))))
           (response/no-content)))
 
       (c-api/GET "/tyoelamajaksot-active-between" []
