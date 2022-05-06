@@ -80,6 +80,11 @@
   [oppija-oid]
   (db-oppija/select-oppija-by-oid oppija-oid))
 
+(defn get-oppija-with-oo-oid-by-oid
+  "Get oppija by oppija-oid, opiskeluoikeus-oid included."
+  [oppija-oid]
+  (db-oppija/select-oppija-with-opiskeluoikeus-oid-by-oid oppija-oid))
+
 (defn get-opiskeluoikeus-by-oid
   "Get opiskeluoikeus by OID"
   [oid]

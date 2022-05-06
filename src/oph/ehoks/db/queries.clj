@@ -79,6 +79,8 @@
 (defq select-opiskeluoikeudet-by-oppija-oid
       "oppijat/select_opiskeluoikeudet_by_oppija_oid.sql")
 (defq select-oppijat-by-oid "oppijat/select_oppijat_by_oid.sql")
+(defq select-oppija-with-opiskeluoikeus-oid-by-oid
+      "oppijat/select_oppija_with_opiskeluoikeus_oid_by_oid.sql")
 (defq select-opiskeluoikeudet-by-oid
       "oppijat/select_opiskeluoikeudet_by_oid" .sql)
 (defq select-count-by-koulutustoimija
@@ -188,5 +190,5 @@
       "hoksit/select_all_osa_alueet_for_ahyto.sql")
 (defq select-all-ahytos-for-hoks "hoksit/select_all_ahytos_for_hoks.sql")
 (defq select-one-ahyto "hoksit/select_one_ahyto.sql")
-(defq select-hoksit-by-oo-koulutustoimija-and-koski404
-      "hoksit/select_hoksit_by_oo_koulutustoimija_and_koski404.sql")
+(defq select-hoksit-by-oo-oppilaitos-and-koski404
+      "hoksit/select_hoksit_by_oo_oppilaitos_and_koski404.sql")

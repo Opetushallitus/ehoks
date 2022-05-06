@@ -211,6 +211,14 @@
       (not (op/opiskeluoikeus-tila-inactive?
              (op/get-opiskeluoikeus-tila opiskeluoikeus))))))
 
+(defn get-hoksit-without-oo-in-koski-by-oppilaitosoid
+  "Get hoksit that have koski404 true by oppilaitos."
+  [oppilaitos-oid]
+  (let [hoksit (db-hoks/select-hoksit-by-oo-oppilaitos-and-koski404
+                 oppilaitos-oid)]
+    (response/ok {:count (count hoksit)
+                  :hoksit hoksit})))
+
 (defn- save-hoks
   "Save HOKS to database"
   [hoks request]
@@ -442,6 +450,14 @@
                 :header-params [caller-id :- s/Str]
                 :path-params [tunnus :- s/Str]
                 (delete-vastaajatunnus tunnus))
+
+              (c-api/GET "/missing-oo-hoksit/:oppilaitosoid" []
+                :summary "Palauttaa listan hokseista, joiden
+                          opiskeluoikeus puuttuu"
+                :header-params [caller-id :- s/Str]
+                :path-params [oppilaitosoid :- s/Str]
+                (get-hoksit-without-oo-in-koski-by-oppilaitosoid
+                  oppilaitosoid))
 
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
                 :summary "Palauttaa tietoja kyselylinkkeihin liittyvistä
@@ -737,6 +753,14 @@
                       :return (restful/response common-schema/Oppija)
                       :summary "Oppijan tiedot"
                       (if-let [oppija (op/get-oppija-by-oid oppija-oid)]
+                        (restful/rest-ok oppija)
+                        (response/not-found)))
+
+                    (c-api/GET "/with-oo" []
+                      :return (restful/response common-schema/Oppija)
+                      :summary "Oppijan tiedot. Opiskeluoikeus-oid lisättynä."
+                      (if-let [oppija (op/get-oppija-with-oo-oid-by-oid
+                                        oppija-oid)]
                         (restful/rest-ok oppija)
                         (response/not-found)))))))))
 
