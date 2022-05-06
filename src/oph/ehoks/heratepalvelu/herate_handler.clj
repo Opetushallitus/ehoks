@@ -8,7 +8,8 @@
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
             [schema.core :as s]
             [ring.util.http-response :as response]
-            [oph.ehoks.hoks.hoks :as h])
+            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.external.oppijanumerorekisteri :as onr])
   (:import (java.time LocalDate)))
 
 (def routes
@@ -82,8 +83,10 @@
                   ja tekee tarvittaessa muutokset"
         :header-params [caller-id :- s/Str]
         :query-params [oppija :- s/Str]
-        (println (str "ornmodify kutsuttiin oidilla " oppija))
-        (response/no-content))
+        (do
+          (println (str "ornmodify kutsuttiin oidilla " oppija))
+          (println (onr/find-student-by-oid oppija))
+          (response/no-content)))
 
       (c-api/GET "/tyoelamajaksot-active-between" []
         :summary "Työelämäjaksot voimassa aikavälin sisällä tietyllä oppijalla"
