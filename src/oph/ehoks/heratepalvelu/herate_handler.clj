@@ -84,13 +84,22 @@
                   ja tekee tarvittaessa muutokset"
         :header-params [caller-id :- s/Str]
         :query-params [oid :- s/Str]
-        (let [oppija (op/get-oppija-by-oid oid)]
-          (if oppija
-            (op/update-oppija! oid)
-            (do
-              (println (str "Ei oppijaa ehoksissa " oid))
-              (println (:body (onr/find-student-by-oid-no-cache oid)))))
-          (response/no-content)))
+        (if-let [oppija (op/get-oppija-by-oid oid)]
+          (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))
+                ehoks-oppija-nimi (:nimi oppija)
+                onr-oppija-nimi (format "%s %s"
+                                        (:etunimet onr-oppija)
+                                        (:sukunimi onr-oppija))]
+            (println (str "oppija löytyi" oid))
+            (println (str "ehoks nimi  " ehoks-oppija-nimi))
+            (println (str "onr nimi " onr-oppija-nimi))
+            (when (not= ehoks-oppija-nimi onr-oppija-nimi)
+              (op/update-oppija! oid)))
+          (do
+            (println (str "Ei oppijaa ehoksissa " oid))
+            (println (:body (onr/find-student-by-oid-no-cache oid)))
+            (println (onr/get-slaves-of-master-oppija-oid oid))))
+        (response/no-content))
 
       (c-api/GET "/tyoelamajaksot-active-between" []
         :summary "Työelämäjaksot voimassa aikavälin sisällä tietyllä oppijalla"
