@@ -80,6 +80,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
+          source ci-tools/common/setup-tools.sh
           export TRAVIS_BUILD_NUMBER="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
           ./ci-tools/build/upload-image.sh ehoks-oppija
           ./ci-tools/build/upload-image.sh ehoks-virkailija
