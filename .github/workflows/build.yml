@@ -35,7 +35,7 @@ jobs:
       - name: Build
         shell: bash
         env:
-          CONFIG="oph-configuration/test-travis.edn"
+          CONFIG: oph-configuration/test-travis.edn
         run: |
           mkdir -p resources/uberjar
           ARTIFACT_NAME=ehoks-oppija BUILD_ID="ci-$GITHUB_RUN_NUMBER/$GITHUB_RUN_ATTEMPT" ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
