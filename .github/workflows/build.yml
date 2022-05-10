@@ -33,12 +33,9 @@ jobs:
 
       - name: Pre-Build
         shell: bash
-        env:
-          ARTIFACT_NAME=ehoks-oppija
-          BUILD_ID="ci-$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
         run: |
           mkdir -p resources/uberjar
-          ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
+          ARTIFACT_NAME=ehoks-oppija BUILD_ID="ci-$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT" ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
 
       - name: Run Tests
         shell: bash
