@@ -10,7 +10,8 @@
             [ring.util.http-response :as response]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
-            [oph.ehoks.oppijaindex :as op])
+            [oph.ehoks.oppijaindex :as op]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks])
   (:import (java.time LocalDate)))
 
 (def routes
@@ -81,7 +82,7 @@
 
       (c-api/POST "/onrmodify" request
         :summary "Tarkastaa päivitetyn henkilön tiedot eHoksissa
-                  ja tekee tarvittaessa muutokset"
+            ja tekee tarvittaessa muutokset"
         :header-params [caller-id :- s/Str]
         :query-params [oid :- s/Str]
         (if-let [oppija (op/get-oppija-by-oid oid)]
@@ -90,15 +91,28 @@
                 onr-oppija-nimi (format "%s %s"
                                         (:etunimet onr-oppija)
                                         (:sukunimi onr-oppija))]
-            (println (str "oppija löytyi" oid))
-            (println (str "ehoks nimi  " ehoks-oppija-nimi))
+            (println (str "oppija löytyi " oid))
+            (println (str "ehoks nimi " ehoks-oppija-nimi))
             (println (str "onr nimi " onr-oppija-nimi))
             (when (not= ehoks-oppija-nimi onr-oppija-nimi)
               (op/update-oppija! oid)))
-          (do
-            (println (str "Ei oppijaa ehoksissa " oid))
-            (println (:body (onr/find-student-by-oid-no-cache oid)))
-            (println (onr/get-slaves-of-master-oppija-oid oid))))
+          (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))]
+            (when-not (:duplicate onr-oppija)
+              (let [slave-oids (map
+                                 :oidHenkilo
+                                 (:body (onr/get-slaves-of-master-oppija-oid
+                                          oid)))
+                    slave-oid-ids (map
+                                    (fn
+                                      [oid]
+                                      (map
+                                        :id
+                                        (db-hoks/select-hoks-by-oppija-oid
+                                          oid)))
+                                    slave-oids)]
+                (println (str "Ei oppijaa ehoksissa, eikä slave " oid))
+                (println slave-oids)
+                (println slave-oid-ids)))))
         (response/no-content))
 
       (c-api/GET "/tyoelamajaksot-active-between" []
