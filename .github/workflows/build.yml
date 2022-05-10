@@ -1,0 +1,65 @@
+name: ehoks
+
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Setup JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Install Dependencies
+        shell: bash
+        run: |
+          git clone https://github.com/Opetushallitus/ci-tools.git
+          source ci-tools/common/setup-tools.sh
+          lein deps
+
+      - name: Run Database
+        shell: bash
+        run: |
+          ./scripts/travis-scripts/run_postgres.sh
+
+      - name: Build
+        shell: bash
+        env:
+          CONFIG="oph-configuration/test-travis.edn"
+        run: |
+          mkdir -p resources/uberjar
+          ARTIFACT_NAME=ehoks-oppija BUILD_ID="ci-$GITHUB_RUN_NUMBER/$GITHUB_RUN_ATTEMPT" ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
+          lein checkall
+          lein test
+          lein uberjar
+          mv target/ehoks-standalone.jar $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar
+          cp -vr oph-configuration $DOCKER_BUILD_DIR/config/
+          export BASE_IMAGE="baseimage-fatjar-openjdk11:master"
+          ./ci-tools/build/build-fatjar.sh ehoks-oppija
+          mv $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar $DOCKER_BUILD_DIR/artifact/ehoks-virkailija.jar
+          ./ci-tools/build/build-fatjar.sh ehoks-virkailija
+
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Upload Package
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          ./ci-tools/build/upload-image.sh ehoks-oppija
+          ./ci-tools/build/upload-image.sh ehoks-virkailija
+          lein dbmigrate
