@@ -39,6 +39,8 @@ jobs:
 
       - name: Run Tests
         shell: bash
+        env:
+          CONFIG: oph-configuration/test-ci.edn
         run: |
           lein test
 
@@ -49,8 +51,6 @@ jobs:
 
       - name: Build
         shell: bash
-        env:
-          CONFIG: oph-configuration/test-ci.edn
         run: |
           source ci-tools/common/setup-tools.sh
           lein uberjar
