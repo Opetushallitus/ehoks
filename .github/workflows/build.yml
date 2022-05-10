@@ -69,6 +69,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Download CI Tools
+        shell: bash
+        run: |
+          git clone https://github.com/Opetushallitus/ci-tools.git
+
       - name: Upload Package
         shell: bash
         env:
