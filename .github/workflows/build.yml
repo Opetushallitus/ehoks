@@ -60,7 +60,6 @@ jobs:
           mv target/ehoks-standalone.jar $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar
           cp -vr oph-configuration $DOCKER_BUILD_DIR/config/
           export BASE_IMAGE="baseimage-fatjar-openjdk11:master"
-          ./ci-tools/common/pull-image.sh
           ./ci-tools/build/build-fatjar.sh ehoks-oppija
           mv $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar $DOCKER_BUILD_DIR/artifact/ehoks-virkailija.jar
           ./ci-tools/build/build-fatjar.sh ehoks-virkailija
@@ -83,6 +82,7 @@ jobs:
         run: |
           source ci-tools/common/setup-tools.sh
           export TRAVIS_BUILD_NUMBER="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
+          ./ci-tools/common/pull-image.sh
           ./ci-tools/build/upload-image.sh ehoks-oppija
           ./ci-tools/build/upload-image.sh ehoks-virkailija
           lein dbmigrate
