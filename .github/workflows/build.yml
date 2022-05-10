@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p resources/uberjar
-          ARTIFACT_NAME=ehoks-oppija BUILD_ID="ci-$GITHUB_RUN_NUMBER/$GITHUB_RUN_ATTEMPT" ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
+          ARTIFACT_NAME=ehoks-oppija BUILD_ID="ci-$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT" ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
 
       - name: Run Tests
         shell: bash
@@ -80,7 +80,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          export TRAVIS_BUILD_NUMBER="$GITHUB_RUN_NUMBER/$GITHUB_RUN_ATTEMPT"
+          export TRAVIS_BUILD_NUMBER="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
           ./ci-tools/build/upload-image.sh ehoks-oppija
           ./ci-tools/build/upload-image.sh ehoks-virkailija
           lein dbmigrate
