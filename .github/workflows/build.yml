@@ -60,6 +60,8 @@ jobs:
           mv target/ehoks-standalone.jar $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar
           cp -vr oph-configuration $DOCKER_BUILD_DIR/config/
           export BASE_IMAGE="baseimage-fatjar-openjdk11:master"
+          export TRAVIS_BUILD_NUMBER="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
+          ./ci-tools/common/pull-image.sh
           ./ci-tools/build/build-fatjar.sh ehoks-oppija
           mv $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar $DOCKER_BUILD_DIR/artifact/ehoks-virkailija.jar
           ./ci-tools/build/build-fatjar.sh ehoks-virkailija
@@ -81,6 +83,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           source ci-tools/common/setup-tools.sh
+          export BASE_IMAGE="baseimage-fatjar-openjdk11:master"
           export TRAVIS_BUILD_NUMBER="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
           ./ci-tools/common/pull-image.sh
           ./ci-tools/build/upload-image.sh ehoks-oppija
