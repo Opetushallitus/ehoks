@@ -24,23 +24,35 @@ jobs:
         shell: bash
         run: |
           git clone https://github.com/Opetushallitus/ci-tools.git
-          source ci-tools/common/setup-tools.sh
           lein deps
 
       - name: Run Database
         shell: bash
         run: |
-          ./scripts/travis-scripts/run_postgres.sh
+          ./scripts/ci-scripts/run_postgres.sh
+
+      - name: Pre-Build
+        shell: bash
+        run: |
+          mkdir -p resources/uberjar
+          ARTIFACT_NAME=ehoks-oppija BUILD_ID="ci-$GITHUB_RUN_NUMBER/$GITHUB_RUN_ATTEMPT" ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
+
+      - name: Run Tests
+        shell: bash
+        run: |
+          lein test
+
+      - name: Run Linter
+        shell: bash
+        run: |
+          lein checkall
 
       - name: Build
         shell: bash
         env:
-          CONFIG: oph-configuration/test-travis.edn
+          CONFIG: oph-configuration/test-ci.edn
         run: |
-          mkdir -p resources/uberjar
-          ARTIFACT_NAME=ehoks-oppija BUILD_ID="ci-$GITHUB_RUN_NUMBER/$GITHUB_RUN_ATTEMPT" ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
-          lein checkall
-          lein test
+          source ci-tools/common/setup-tools.sh
           lein uberjar
           mv target/ehoks-standalone.jar $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar
           cp -vr oph-configuration $DOCKER_BUILD_DIR/config/
