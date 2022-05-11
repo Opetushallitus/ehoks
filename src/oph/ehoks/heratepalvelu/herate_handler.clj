@@ -11,7 +11,9 @@
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.oppijaindex :as op]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks])
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [clojure.java.jdbc :as jdbc]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops])
   (:import (java.time LocalDate)))
 
 (def routes
@@ -98,22 +100,30 @@
               (op/update-oppija! oid)))
           (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))]
             (when-not (:duplicate onr-oppija)
-              (let [slave-oids (map
-                                 :oidHenkilo
-                                 (:body (onr/get-slaves-of-master-oppija-oid
-                                          oid)))
-                    slave-oid-ids (flatten
-                                    (map
-                                      (fn
-                                        [oid]
-                                        (map
-                                          :id
-                                          (db-hoks/select-hoks-by-oppija-oid
-                                            oid)))
-                                      slave-oids))]
+              (let [slave-oppija-oids
+                    (map
+                      :oidHenkilo
+                      (:body (onr/get-slaves-of-master-oppija-oid oid)))
+                    slave-oppija-hoks-ids
+                    (flatten
+                      (map
+                        (fn
+                          [oid]
+                          (map
+                            :id
+                            (db-hoks/select-hoks-by-oppija-oid
+                              oid)))
+                        slave-oppija-oids))]
                 (println (str "Ei oppijaa ehoksissa, eikä slave " oid))
-                (println slave-oids)
-                (println slave-oid-ids)))))
+                (println slave-oppija-oids)
+                (println slave-oppija-hoks-ids)
+                (when (seq slave-oppija-hoks-ids)
+                  (jdbc/with-db-transaction
+                    [db-conn (db-ops/get-db-connection)]
+                    (doseq [hoks-id slave-oppija-hoks-ids]
+                      (db-hoks/update-hoks-by-id! hoks-id
+                                                  {:oppija-oid oid}
+                                                  db-conn))))))))
         (response/no-content))
 
       (c-api/GET "/tyoelamajaksot-active-between" []
