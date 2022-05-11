@@ -1,0 +1,83 @@
+name: ehoks
+
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Setup JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Install Dependencies
+        shell: bash
+        run: |
+          git clone https://github.com/Opetushallitus/ci-tools.git
+          lein deps
+
+      - name: Run Database
+        shell: bash
+        run: |
+          ./scripts/ci-scripts/run_postgres.sh
+
+      - name: Pre-Build
+        shell: bash
+        run: |
+          mkdir -p resources/uberjar
+          ARTIFACT_NAME=ehoks-oppija BUILD_ID="ci-$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT" ./scripts/buildversion.sh > resources/uberjar/buildversion.txt
+
+      - name: Run Tests
+        shell: bash
+        env:
+          CONFIG: oph-configuration/test-ci.edn
+        run: |
+          lein test
+
+      - name: Run Linter
+        shell: bash
+        run: |
+          lein checkall
+
+      - name: Build
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          source ci-tools/common/setup-tools.sh
+          lein uberjar
+          mv target/ehoks-standalone.jar $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar
+          cp -vr oph-configuration $DOCKER_BUILD_DIR/config/
+          export BASE_IMAGE="baseimage-fatjar-openjdk11:master"
+          export TRAVIS_BUILD_NUMBER="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
+          ./ci-tools/common/pull-image.sh
+          ./ci-tools/build/build-fatjar.sh ehoks-oppija
+          mv $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar $DOCKER_BUILD_DIR/artifact/ehoks-virkailija.jar
+          ./ci-tools/build/build-fatjar.sh ehoks-virkailija
+
+      - name: Upload Package
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          CONFIG: oph-configuration/test-ci.edn
+        run: |
+          source ci-tools/common/setup-tools.sh
+          export BASE_IMAGE="baseimage-fatjar-openjdk11:master"
+          export TRAVIS_BUILD_NUMBER="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
+          export TRAVIS_BRANCH=${{ github.ref_name }}
+          export TRAVIS_COMMIT=${{ github.sha }}
+          ./ci-tools/build/upload-image.sh ehoks-oppija
+          ./ci-tools/build/upload-image.sh ehoks-virkailija
+          lein dbmigrate
