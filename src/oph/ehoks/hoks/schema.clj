@@ -424,7 +424,8 @@
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
     (s/optional-key :opetus-ja-ohjaus-maara) s/Num
-    "Tarvittava opetuksen ja ohjauksen määrä (tunnit)"))
+    (str "Tutkinnon osa-alueeseen suunnitellun opetuksen ja ohjauksen määrä "
+         "tunteina.")))
 
 (s/defschema
   YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus
@@ -647,7 +648,7 @@
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
     (s/optional-key :opetus-ja-ohjaus-maara) s/Num
-    "Tarvittava opetuksen ja ohjauksen määrä (tunnit)"))
+    "Tutkinnon osaan suunnitellun opetuksen ja ohjauksen määrä tunteina."))
 
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus
@@ -714,7 +715,7 @@
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
     (s/optional-key :opetus-ja-ohjaus-maara) s/Num
-    "Tarvittava opetuksen ja ohjauksen määrä (tunnit)"))
+    "Tutkinnon osaan suunnitellun opetuksen ja ohjauksen määrä tunteina."))
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus
