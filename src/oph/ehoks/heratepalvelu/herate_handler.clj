@@ -102,14 +102,15 @@
                                  :oidHenkilo
                                  (:body (onr/get-slaves-of-master-oppija-oid
                                           oid)))
-                    slave-oid-ids (map
-                                    (fn
-                                      [oid]
-                                      (map
-                                        :id
-                                        (db-hoks/select-hoks-by-oppija-oid
-                                          oid)))
-                                    slave-oids)]
+                    slave-oid-ids (flatten
+                                    (map
+                                      (fn
+                                        [oid]
+                                        (map
+                                          :id
+                                          (db-hoks/select-hoks-by-oppija-oid
+                                            oid)))
+                                      slave-oids))]
                 (println (str "Ei oppijaa ehoksissa, eikä slave " oid))
                 (println slave-oids)
                 (println slave-oid-ids)))))
