@@ -457,7 +457,7 @@
           (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid))))))))
 
 (defn update-hoks-by-id!
-  "Päivittää tietokannassa olevan HOKSin."
+  "Päivittää tietokannassa olevan HOKSin id:n perusteella."
   ([id hoks]
     (db-ops/update! :hoksit
                     (assoc
@@ -472,6 +472,24 @@
                       :updated_at
                       (java.util.Date.))
                     ["id = ? AND deleted_at IS NULL" id] db-conn)))
+
+(defn update-hoks-by-oppija-oid!
+  "Päivittää tietokannassa olevan HOKSin oppija_oidin perusteella."
+  ([oppija_oid hoks]
+    (db-ops/update! :hoksit
+                    (assoc
+                      (hoks-to-sql hoks)
+                      :updated_at
+                      (java.util.Date.))
+                    ["oppija_oid = ? AND deleted_at IS NULL" oppija_oid]))
+  ([oppija_oid hoks db-conn]
+    (db-ops/update! :hoksit
+                    (assoc
+                      (hoks-to-sql hoks)
+                      :updated_at
+                      (java.util.Date.))
+                    ["oppija_oid = ? AND deleted_at IS NULL" oppija_oid]
+                    db-conn)))
 
 (defn select-hoks-oppijat-without-index
   "Hakee tietokannasta HOKSien oppijan OID:t, joilla ei ole tietoja
