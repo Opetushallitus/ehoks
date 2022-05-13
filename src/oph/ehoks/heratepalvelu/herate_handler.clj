@@ -12,6 +12,7 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.oppijaindex :as op]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops])
   (:import (java.time LocalDate)))
@@ -104,26 +105,39 @@
                     (map
                       :oidHenkilo
                       (:body (onr/get-slaves-of-master-oppija-oid oid)))
-                    slave-oppija-hoks-ids
+                    oppijas-from-oppijaindex-by-slave-oids
                     (flatten
                       (map
                         (fn
                           [oid]
                           (map
-                            :id
-                            (db-hoks/select-hoks-by-oppija-oid
-                              oid)))
+                            :oid
+                            (op/get-oppija-by-oid oid)))
                         slave-oppija-oids))]
                 (println (str "Ei oppijaa ehoksissa, eikä slave " oid))
                 (println slave-oppija-oids)
-                (println slave-oppija-hoks-ids)
-                (when (seq slave-oppija-hoks-ids)
+                (println oppijas-from-oppijaindex-by-slave-oids)
+                (when (seq oppijas-from-oppijaindex-by-slave-oids)
                   (jdbc/with-db-transaction
                     [db-conn (db-ops/get-db-connection)]
-                    (doseq [hoks-id slave-oppija-hoks-ids]
-                      (db-hoks/update-hoks-by-id! hoks-id
-                                                  {:oppija-oid oid}
-                                                  db-conn))))))))
+                    (doseq [oppija-oid oppijas-from-oppijaindex-by-slave-oids]
+                      (println (str "päivitetään hoksit oidille "
+                                    oppija-oid
+                                    "oidiin "
+                                    oid))
+                      (db-hoks/update-hoks-by-oppija-oid! oppija-oid
+                                                          {:oppija-oid oid}
+                                                          db-conn)
+                      (println (str "päivitetään oppija oidille "
+                                    oppija-oid
+                                    "oidiin "
+                                    oid))
+                      (db-oppija/update-oppija!
+                        oppija-oid
+                        {:oid  oid
+                         :nimi (format "%s %s"
+                                       (:etunimet onr-oppija)
+                                       (:sukunimi onr-oppija))}))))))))
         (response/no-content))
 
       (c-api/GET "/tyoelamajaksot-active-between" []
