@@ -106,29 +106,28 @@
                       :oidHenkilo
                       (:body (onr/get-slaves-of-master-oppija-oid oid)))
                     oppijas-from-oppijaindex-by-slave-oids
-                    (flatten
-                      (map
-                        #(:oid (op/get-oppija-by-oid %))
-                        slave-oppija-oids))]
+                    (remove nil?
+                            (flatten
+                              (map
+                                #(:oid (op/get-oppija-by-oid %))
+                                slave-oppija-oids)))]
                 (println (str "Ei oppijaa ehoksissa, eikä slave " oid))
                 (println slave-oppija-oids)
                 (println oppijas-from-oppijaindex-by-slave-oids)
-                (println (seq (remove nil?
-                                      oppijas-from-oppijaindex-by-slave-oids)))
-                (when (seq (remove nil? oppijas-from-oppijaindex-by-slave-oids))
+                (when (seq oppijas-from-oppijaindex-by-slave-oids)
                   (jdbc/with-db-transaction
                     [db-conn (db-ops/get-db-connection)]
                     (doseq [oppija-oid oppijas-from-oppijaindex-by-slave-oids]
                       (println (str "päivitetään hoksit oidille "
                                     oppija-oid
-                                    "oidiin "
+                                    " oidiin "
                                     oid))
                       (db-hoks/update-hoks-by-oppija-oid! oppija-oid
                                                           {:oppija-oid oid}
                                                           db-conn)
                       (println (str "päivitetään oppija oidille "
                                     oppija-oid
-                                    "oidiin "
+                                    " oidiin "
                                     oid))
                       (db-oppija/update-oppija!
                         oppija-oid
