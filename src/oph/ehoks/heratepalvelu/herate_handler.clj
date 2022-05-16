@@ -98,7 +98,7 @@
             (println (str "ehoks nimi " ehoks-oppija-nimi))
             (println (str "onr nimi " onr-oppija-nimi))
             (when (not= ehoks-oppija-nimi onr-oppija-nimi)
-              (op/update-oppija! oid)))
+              (op/update-oppija! oid true)))
           (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))]
             (when-not (:duplicate onr-oppija)
               (let [slave-oppija-oids
