@@ -113,11 +113,17 @@
                           (map
                             :oid
                             (op/get-oppija-by-oid oid)))
+                        slave-oppija-oids))
+                    oppijas-from-oppijaindex-by-slave-oids2
+                    (flatten
+                      (map
+                        #(:oid (op/get-oppija-by-oid %))
                         slave-oppija-oids))]
                 (println (str "Ei oppijaa ehoksissa, eikä slave " oid))
                 (println slave-oppija-oids)
                 (println oppijas-from-oppijaindex-by-slave-oids)
-                (when (seq oppijas-from-oppijaindex-by-slave-oids)
+                (println oppijas-from-oppijaindex-by-slave-oids2)
+                (when (seq (remove nil? oppijas-from-oppijaindex-by-slave-oids))
                   (jdbc/with-db-transaction
                     [db-conn (db-ops/get-db-connection)]
                     (doseq [oppija-oid oppijas-from-oppijaindex-by-slave-oids]
