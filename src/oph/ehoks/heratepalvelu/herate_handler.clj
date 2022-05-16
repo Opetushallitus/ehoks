@@ -103,6 +103,8 @@
               (op/update-oppija! oid true)))
           ;; Jos oppijaa ei löydy päivitetyllä oidilla ehoksista,
           ;; niin ensin tarkastetaan, ettei kyseessä ole duplicate/slave oid.
+          ;; (tämä saattaa olla turha tarkastus, mutta ainakin se estää sen,
+          ;; että koskaan päivitettäisiin slave oideja ehoksin tauluihin.
           ;;
           ;; Sitten haetaan kyseisen master-oidin slavet ja niiden oideilla
           ;; oppijat ehoksin oppijat-taulusta.
