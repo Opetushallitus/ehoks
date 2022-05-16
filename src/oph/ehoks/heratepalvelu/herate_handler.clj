@@ -4,6 +4,7 @@
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [clojure.tools.logging :as log]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
             [schema.core :as s]
@@ -85,20 +86,30 @@
 
       (c-api/POST "/onrmodify" request
         :summary "Tarkastaa päivitetyn henkilön tiedot eHoksissa
-            ja tekee tarvittaessa muutokset"
+            ja tekee tarvittaessa muutokset.
+            Huom: Opiskeluoikeudet taulun oppija-oid päivittyy on update cascade
+            säännön kautta."
         :header-params [caller-id :- s/Str]
         :query-params [oid :- s/Str]
         (if-let [oppija (op/get-oppija-by-oid oid)]
+          ;; Jos päivitetyn oppijan oid löytyy ehoksista, niin tiedetään
+          ;; että kyseessä ei ole oid-tiedon päivitys ja voidaan vain tarkastaa,
+          ;; että nimi täsmää ONR:n tiedon kanssa.
           (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))
                 ehoks-oppija-nimi (:nimi oppija)
-                onr-oppija-nimi (format "%s %s"
-                                        (:etunimet onr-oppija)
-                                        (:sukunimi onr-oppija))]
-            (println (str "oppija löytyi " oid))
-            (println (str "ehoks nimi " ehoks-oppija-nimi))
-            (println (str "onr nimi " onr-oppija-nimi))
+                onr-oppija-nimi (op/format-oppija-name onr-oppija)]
             (when (not= ehoks-oppija-nimi onr-oppija-nimi)
+              (log/infof "Updating changed name for oppija %s" oid)
               (op/update-oppija! oid true)))
+          ;; Jos oppijaa ei löydy päivitetyllä oidilla ehoksista,
+          ;; niin ensin tarkastetaan, ettei kyseessä ole duplicate/slave oid.
+          ;;
+          ;; Sitten haetaan kyseisen master-oidin slavet ja niiden oideilla
+          ;; oppijat ehoksin oppijat-taulusta.
+          ;;
+          ;; Jos oppijoita löytyy slave oideilla, niin päivitetään niiden
+          ;; hokseihin, opiskeluoikeuksiin ja oppijat-taulun riviin uusi
+          ;; master-oid.
           (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))]
             (when-not (:duplicate onr-oppija)
               (let [slave-oppija-oids
@@ -111,30 +122,21 @@
                               (map
                                 #(:oid (op/get-oppija-by-oid %))
                                 slave-oppija-oids)))]
-                (println (str "Ei oppijaa ehoksissa, eikä slave " oid))
-                (println slave-oppija-oids)
-                (println oppijas-from-oppijaindex-by-slave-oids)
                 (when (seq oppijas-from-oppijaindex-by-slave-oids)
                   (jdbc/with-db-transaction
                     [db-conn (db-ops/get-db-connection)]
                     (doseq [oppija-oid oppijas-from-oppijaindex-by-slave-oids]
-                      (println (str "päivitetään hoksit oidille "
-                                    oppija-oid
-                                    " oidiin "
-                                    oid))
+                      (log/infof (str "Changing duplicate oppija-oid %s to %s "
+                                      "for tables hoksit, oppijat and "
+                                      "opiskeluoikeudet.")
+                                 oppija-oid oid)
                       (db-hoks/update-hoks-by-oppija-oid! oppija-oid
                                                           {:oppija-oid oid}
                                                           db-conn)
-                      (println (str "päivitetään oppija oidille "
-                                    oppija-oid
-                                    " oidiin "
-                                    oid))
                       (db-oppija/update-oppija!
                         oppija-oid
                         {:oid  oid
-                         :nimi (format "%s %s"
-                                       (:etunimet onr-oppija)
-                                       (:sukunimi onr-oppija))}))))))))
+                         :nimi (op/format-oppija-name onr-oppija)}))))))))
         (response/no-content))
 
       (c-api/GET "/tyoelamajaksot-active-between" []
