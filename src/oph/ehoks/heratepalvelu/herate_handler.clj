@@ -135,14 +135,13 @@
                       (db-hoks/update-hoks-by-oppija-oid! oppija-oid
                                                           {:oppija-oid oid}
                                                           db-conn)
-                      (let [oppija (op/get-oppija-by-oid oid)]
-                        (when (nil? oppija)
-                          (db-oppija/update-oppija!
-                            oppija-oid
-                            {:oid  oid
-                             :nimi (op/format-oppija-name onr-oppija)}))
+                      (if (some? (op/get-oppija-by-oid oid))
                         (db-ops/delete!
-                          :oppijat ["oid = ?" oppija-oid])))))))))
+                          :oppijat ["oid = ?" oppija-oid])
+                        (db-oppija/update-oppija!
+                          oppija-oid
+                          {:oid  oid
+                           :nimi (op/format-oppija-name onr-oppija)})))))))))
         (response/no-content))
 
       (c-api/GET "/tyoelamajaksot-active-between" []
