@@ -122,6 +122,15 @@
     (db-ops/to-sql opiskeluoikeus)
     ["oid = ?" oid]))
 
+(defn update-opiskeluoikeus-by-oppija-oid!
+  "Päivittää yhden tietokannassa olevan opiskeluoikeuden oppija-oidin
+  perusteella."
+  [oppija-oid opiskeluoikeus]
+  (db-ops/update!
+    :opiskeluoikeudet
+    (db-ops/to-sql opiskeluoikeus)
+    ["oppija_oid = ?" oppija-oid]))
+
 (defn select-count-opiskeluoikeudet-by-koulutustoimija
   "Hakee tietokannasta määrän opiskeluoikeuksista, joilla on annettu
   koulutustoimija."
