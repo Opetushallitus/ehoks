@@ -111,7 +111,7 @@
           ;;
           ;; Jos oppijoita löytyy slave oideilla, niin päivitetään niiden
           ;; hokseihin, opiskeluoikeuksiin ja oppijat-taulun riviin uusi
-          ;; master-oid.
+          ;; master-oid. Lopuksi poistetaan slave-oidit oppijat taulusta.
           (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))]
             (when-not (:duplicate onr-oppija)
               (let [slave-oppija-oids
@@ -135,10 +135,14 @@
                       (db-hoks/update-hoks-by-oppija-oid! oppija-oid
                                                           {:oppija-oid oid}
                                                           db-conn)
-                      (db-oppija/update-oppija!
-                        oppija-oid
-                        {:oid  oid
-                         :nimi (op/format-oppija-name onr-oppija)}))))))))
+                      (let [oppija (op/get-oppija-by-oid oid)]
+                        (when (nil? oppija)
+                          (db-oppija/update-oppija!
+                            oppija-oid
+                            {:oid  oid
+                             :nimi (op/format-oppija-name onr-oppija)}))
+                        (db-ops/delete!
+                          :oppijat ["oid = ?" oppija-oid])))))))))
         (response/no-content))
 
       (c-api/GET "/tyoelamajaksot-active-between" []
