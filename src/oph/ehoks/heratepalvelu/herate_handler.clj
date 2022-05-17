@@ -14,6 +14,7 @@
             [oph.ehoks.oppijaindex :as op]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
+            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops])
   (:import (java.time LocalDate)))
@@ -136,8 +137,11 @@
                                                           {:oppija-oid oid}
                                                           db-conn)
                       (if (some? (op/get-oppija-by-oid oid))
-                        (db-ops/delete!
-                          :oppijat ["oid = ?" oppija-oid])
+                        (do
+                          (db-oo/update-opiskeluoikeus-by-oppija-oid!
+                            oppija-oid {:oppija-oid oid})
+                          (db-ops/delete!
+                            :oppijat ["oid = ?" oppija-oid]))
                         (db-oppija/update-oppija!
                           oppija-oid
                           {:oid  oid
