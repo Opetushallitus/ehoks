@@ -424,8 +424,8 @@
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
     (s/optional-key :opetus-ja-ohjaus-maara) s/Num
-    (str "Tutkinnon osa-alueeseen suunnitellun opetuksen ja ohjauksen määrä "
-         "tunteina.")))
+    (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen ja ohjauksen "
+         "määrä tunteina.")))
 
 (s/defschema
   YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus
