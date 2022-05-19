@@ -423,7 +423,8 @@
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
-    (s/optional-key :opetus-ja-ohjaus-maara) s/Num
+    (s/optional-key :opetus-ja-ohjaus-maara)
+    (s/constrained s/Num #(not (neg? %)))
     (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen ja ohjauksen "
          "määrä tunteina.")))
 
@@ -647,7 +648,8 @@
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
-    (s/optional-key :opetus-ja-ohjaus-maara) s/Num
+    (s/optional-key :opetus-ja-ohjaus-maara)
+    (s/constrained s/Num #(not (neg? %)))
     "Tutkinnon osaan suunnitellun opetuksen ja ohjauksen määrä tunteina."))
 
 (s/defschema
@@ -714,7 +716,8 @@
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
-    (s/optional-key :opetus-ja-ohjaus-maara) s/Num
+    (s/optional-key :opetus-ja-ohjaus-maara)
+    (s/constrained s/Num #(not (neg? %)))
     "Tutkinnon osaan suunnitellun opetuksen ja ohjauksen määrä tunteina."))
 
 (s/defschema
