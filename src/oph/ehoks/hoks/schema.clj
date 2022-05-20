@@ -255,7 +255,7 @@
 (s/defschema
   OsaamisenHankkimistapaLuontiJaMuokkaus
   "Schema osaamisen hankkimistavan luontiin ja muokkaukseen."
-  (s/constrained
+  ;(s/constrained
     (s/constrained
       (modify
         OsaamisenHankkimistapa
@@ -263,13 +263,14 @@
         {:removed [:module-id :id]})
       oppisopimus-has-perusta?
       "Tieto oppisopimuksen perustasta puuttuu.")
-    #(not (.isBefore (:loppu %) (:alku %)))
-    "Osaamisen hankkimistavan loppupäivämäärä ennen alkupäivämäärää."))
+  ;  #(not (.isBefore (:loppu %) (:alku %)))
+  ;  "Osaamisen hankkimistavan loppupäivämäärä ennen alkupäivämäärää.")
+  )
 
 (s/defschema
   OsaamisenHankkimistapaPatch
   "Schema osaamisen hankkimistavan PATCH-päivitykseen."
-  (s/constrained
+;  (s/constrained
     (s/constrained
       (modify
         OsaamisenHankkimistapa
@@ -277,8 +278,9 @@
         {:removed [:module-id]})
       oppisopimus-has-perusta?
       "Tieto oppisopimuksen perustasta puuttuu.")
-    #(not (.isBefore (:loppu %) (:alku %)))
-    "Osaamisen hankkimistavan loppupäivämäärä ennen alkupäivämäärää."))
+  ;  #(not (.isBefore (:loppu %) (:alku %)))
+   ; "Osaamisen hankkimistavan loppupäivämäärä ennen alkupäivämäärää.")
+   )
 
 (s/defschema
   NaytonJarjestaja
