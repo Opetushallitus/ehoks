@@ -424,7 +424,9 @@
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
     (s/optional-key :opetus-ja-ohjaus-maara)
-    (s/constrained s/Num #(not (neg? %)))
+    (s/constrained s/Num
+                   #(not (neg? %))
+                   "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")
     (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen ja ohjauksen "
          "määrä tunteina.")))
 
@@ -649,7 +651,9 @@
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
     (s/optional-key :opetus-ja-ohjaus-maara)
-    (s/constrained s/Num #(not (neg? %)))
+    (s/constrained s/Num
+                   #(not (neg? %))
+                   "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")
     "Tutkinnon osaan suunnitellun opetuksen ja ohjauksen määrä tunteina."))
 
 (s/defschema
@@ -717,7 +721,9 @@
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
     (s/optional-key :opetus-ja-ohjaus-maara)
-    (s/constrained s/Num #(not (neg? %)))
+    (s/constrained s/Num
+                   #(not (neg? %))
+                   "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")
     "Tutkinnon osaan suunnitellun opetuksen ja ohjauksen määrä tunteina."))
 
 (s/defschema
