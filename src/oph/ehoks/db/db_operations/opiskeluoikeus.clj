@@ -46,8 +46,10 @@
 
 (defn set-oppijat-query
   "Luo oppijat -queryn."
-  [params]
+  [params nimi-filter-count]
   (-> queries/select-oppilaitos-oppijat
+      (cs/replace ":nimi-filter"
+                  (cs/join " AND " (repeat nimi-filter-count "o.nimi ILIKE ?")))
       (cs/replace ":order-by-column"
                   (get-oppija-order-by-column params))
       (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))
