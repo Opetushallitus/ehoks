@@ -12,7 +12,7 @@ FROM oppijat AS o
                        ON (oo.oid = h.opiskeluoikeus_oid)
 WHERE ((oo.oppilaitos_oid IS NOT NULL AND oo.oppilaitos_oid LIKE ?) OR
        (oo.koulutustoimija_oid IS NOT NULL AND oo.koulutustoimija_oid LIKE ?))
-  AND o.nimi ILIKE ?
+  AND :nimi-filter
       :tutkinto-filter
       :osaamisala-filter
   AND h.deleted_at IS NULL

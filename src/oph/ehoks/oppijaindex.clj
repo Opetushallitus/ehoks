@@ -1,27 +1,30 @@
 (ns oph.ehoks.oppijaindex
-  (:require [oph.ehoks.db.postgresql.common :as db]
-            [oph.ehoks.external.koski :as k]
-            [oph.ehoks.external.oppijanumerorekisteri :as onr]
+  (:require [clojure.core.memoize :as memo]
+            [clojure.string :as cs]
             [clojure.tools.logging :as log]
+            [oph.ehoks.config :refer [config]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.config :refer [config]]
-            [clojure.core.memoize :as memo])
+            [oph.ehoks.db.postgresql.common :as db]
+            [oph.ehoks.external.koski :as k]
+            [oph.ehoks.external.oppijanumerorekisteri :as onr])
   (:import [java.time LocalDate]))
 
 (defn search
   "Search oppijat with given params"
   [params]
-  (db-ops/query
-    [(db-opiskeluoikeus/set-oppijat-query params)
-     (:oppilaitos-oid params)
-     (:koulutustoimija-oid params)
-     (db-opiskeluoikeus/get-like (:nimi params))
-     (:item-count params)
-     (:offset params)]
-    {:row-fn db-ops/from-sql}))
+  (let [nimi-filters (cs/split (or (:nimi params) "") #"\s")]
+    (db-ops/query
+      (vec (concat [(db-opiskeluoikeus/set-oppijat-query params
+                                                         (count nimi-filters))
+                    (:oppilaitos-oid params)
+                    (:koulutustoimija-oid params)]
+                   (map db-opiskeluoikeus/get-like nimi-filters)
+                   [(:item-count params)
+                    (:offset params)]))
+      {:row-fn db-ops/from-sql})))
 
 (defn get-count
   "Get total count of results"
