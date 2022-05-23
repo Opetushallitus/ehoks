@@ -6,7 +6,7 @@
 (defn get-like
   "Luo LIKE-ekspression SQL:ää varten."
   [v]
-  (format "%%%s%%" (or v "")))
+  (format "%%%s%%" (cs/replace (or v "") #"\s" "%")))
 
 (def translated-oppija-columns
   "Käännettyjen sarakkeiden pohjat."
