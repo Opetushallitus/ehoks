@@ -446,11 +446,11 @@
                                oppilaitos :- s/Str
                                start :- LocalDate
                                end :- LocalDate]
+                (println tutkinto)
                 (if (contains? (user/get-organisation-privileges
                                  (get-in request [:session :virkailija-user])
                                  oppilaitos)
                                :read)
-                  (println tutkinto)
                   (response/ok
                     (pc/select-oht-by-tutkinto-and-oppilaitos-between tutkinto
                                                                       oppilaitos
