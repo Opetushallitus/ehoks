@@ -1,17 +1,17 @@
 SELECT
-  h.id AS hoksId,
-  h.opiskeluoikeus_oid AS opiskeluoikeusOid,
-  h.oppija_oid AS oppijaOid,
-  oh.osaamisen_hankkimistapa_koodi_uri AS hankkimistapaTyyppi,
+  h.id AS 'hoksId',
+  h.opiskeluoikeus_oid AS 'opiskeluoikeusOid',
+  h.oppija_oid AS 'oppijaOid',
+  oh.osaamisen_hankkimistapa_koodi_uri AS 'hankkimistapaTyyppi',
   oh.alku AS alkupvm,
   oh.loppu AS loppupvm,
-  oh.osa_aikaisuustieto AS osaAikaisuus,
-  oh.oppisopimuksen_perusta_koodi_uri AS oppisopimuksenPerusta,
-  tjk.tyopaikan_nimi AS tyopaikanNimi,
+  oh.osa_aikaisuustieto AS 'osaAikaisuus',
+  oh.oppisopimuksen_perusta_koodi_uri AS 'oppisopimuksenPerusta',
+  tjk.tyopaikan_nimi AS 'tyopaikanNimi',
   tjk.tyopaikan_y_tunnus AS ytunnus,
-  tjk.vastuullinen_tyopaikka_ohjaaja_nimi AS ohjaajaNimi,
-  tjk.vastuullinen_tyopaikka_ohjaaja_sahkoposti AS ohjaajaEmail,
-  tjk.vastuullinen_tyopaikka_ohjaaja_puhelinnumero AS ohjaajaPuhelinnumero
+  tjk.vastuullinen_tyopaikka_ohjaaja_nimi AS 'ohjaajaNimi',
+  tjk.vastuullinen_tyopaikka_ohjaaja_sahkoposti AS 'ohjaajaEmail',
+  tjk.vastuullinen_tyopaikka_ohjaaja_puhelinnumero AS 'ohjaajaPuhelinnumero'
 FROM hoksit h
   LEFT OUTER JOIN hankittavat_ammat_tutkinnon_osat AS osa
     ON (h.id = osa.hoks_id AND osa.deleted_at IS NULL)
