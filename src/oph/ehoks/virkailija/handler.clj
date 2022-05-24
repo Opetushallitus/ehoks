@@ -450,6 +450,7 @@
                                  (get-in request [:session :virkailija-user])
                                  oppilaitos)
                                :read)
+                  (println tutkinto)
                   (response/ok
                     (pc/select-oht-by-tutkinto-and-oppilaitos-between tutkinto
                                                                       oppilaitos
