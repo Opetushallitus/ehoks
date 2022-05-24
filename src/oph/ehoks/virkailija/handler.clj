@@ -460,9 +460,8 @@
                                  (get-in request [:session :virkailija-user])
                                  oppilaitosoid)
                                :read)
-                  (response/ok
-                    (get-hoksit-without-oo-in-koski-by-oppilaitosoid
-                      oppilaitosoid))
+                  (get-hoksit-without-oo-in-koski-by-oppilaitosoid
+                    oppilaitosoid)
                   (response/forbidden
                     {:error (str "User privileges does not match "
                                  "organisation")})))
