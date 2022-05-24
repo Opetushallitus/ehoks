@@ -439,7 +439,7 @@
               external-handler/routes
               system-handler/routes
 
-              (c-api/GET "tep-jakso-raportti" request
+              (c-api/GET "/tep-jakso-raportti" request
                 :summary "Työpaikkajaksojen raportti"
                 :header-params [caller-id :- s/Str]
                 :query-params [tutkinto :- s/Str
