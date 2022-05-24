@@ -451,7 +451,7 @@
                                  (get-in request [:session :virkailija-user])
                                  oppilaitos)
                                :read)
-                  (response/ok
+                  (restful/rest-ok
                     (pc/select-oht-by-tutkinto-and-oppilaitos-between tutkinto
                                                                       oppilaitos
                                                                       start
