@@ -27,7 +27,7 @@ WHERE
   (oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_koulutussopimus' or
   oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_oppisopimus')
   AND oh.osa_aikaisuustieto IS NULL
-  AND oo.tutkinto_nimi @> ?
+  AND oo.tutkinto_nimi @> ? ::jsonb
   AND oo.oppilaitos_oid = ?
   AND oh.loppu >= ?
   AND oh.loppu <= ?
