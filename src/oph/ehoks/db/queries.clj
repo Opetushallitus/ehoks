@@ -194,3 +194,5 @@
       "hoksit/select_hoksit_by_oo_oppilaitos_and_koski404.sql")
 (defq select-oht-by-tutkinto-and-oppilaitos-between
       "hoksit/select_oht_by_tutkinto_and_oppilaitos_between.sql")
+(defq select-oht-by-tutkinto-between
+      "hoksit/select_oht_by_tutkinto_between.sql")

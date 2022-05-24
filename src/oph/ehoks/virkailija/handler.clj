@@ -443,7 +443,7 @@
                 :summary "Työpaikkajaksojen raportti"
                 :header-params [caller-id :- s/Str]
                 :query-params [tutkinto :- s/Str
-                               oppilaitos :- s/Str
+                               oppilaitos :- (s/maybe s/Str)
                                start :- LocalDate
                                end :- LocalDate]
                 (println tutkinto)
@@ -452,10 +452,13 @@
                                  oppilaitos)
                                :read)
                   (restful/rest-ok
-                    (pc/select-oht-by-tutkinto-and-oppilaitos-between tutkinto
-                                                                      oppilaitos
-                                                                      start
-                                                                      end))
+                    (if oppilaitos
+                      (pc/select-oht-by-tutkinto-and-oppilaitos-between
+                        tutkinto
+                        oppilaitos
+                        start
+                        end)
+                      (pc/select-oht-by-tutkinto-between tutkinto start end)))
                   (do (log/warnf
                         "TEP jaksoraportti:"
                         "User %s privileges do not match oppilaitos %s"

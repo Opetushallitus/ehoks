@@ -213,4 +213,12 @@
      oppilaitos
      start
      end]
-    {:row-fn db-ops/from-sql}))
+    {:identifiers #(do %)
+     :row-fn      db-ops/from-sql}))
+
+(defn select-oht-by-tutkinto-between
+  "Hakee osaamisen hankkimistapoja tutkinnon perusteella tietylle aikavälille."
+  [tutkinto start end]
+  (db-ops/query [queries/select-oht-by-tutkinto-between tutkinto start end]
+                {:identifiers #(do %)
+                 :row-fn      db-ops/from-sql}))
