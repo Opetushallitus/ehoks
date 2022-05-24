@@ -451,13 +451,20 @@
                 :path-params [tunnus :- s/Str]
                 (delete-vastaajatunnus tunnus))
 
-              (c-api/GET "/missing-oo-hoksit/:oppilaitosoid" []
+              (c-api/GET "/missing-oo-hoksit/:oppilaitosoid" request
                 :summary "Palauttaa listan hokseista, joiden
                           opiskeluoikeus puuttuu"
                 :header-params [caller-id :- s/Str]
                 :path-params [oppilaitosoid :- s/Str]
-                (get-hoksit-without-oo-in-koski-by-oppilaitosoid
-                  oppilaitosoid))
+                (if (contains? (user/get-organisation-privileges
+                                 (get-in request [:session :virkailija-user])
+                                 oppilaitosoid)
+                               :read)
+                  (get-hoksit-without-oo-in-koski-by-oppilaitosoid
+                    oppilaitosoid)
+                  (response/forbidden
+                    {:error (str "User privileges does not match "
+                                 "organisation")})))
 
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
                 :summary "Palauttaa tietoja kyselylinkkeihin liittyvistä
