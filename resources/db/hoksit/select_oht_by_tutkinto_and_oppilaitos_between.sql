@@ -22,7 +22,7 @@ FROM hoksit h
   LEFT OUTER JOIN tyopaikalla_jarjestettavat_koulutukset AS tjk
     ON (oh.tyopaikalla_jarjestettava_koulutus_id = tjk.id AND oh.deleted_at IS NULL)
   LEFT OUTER JOIN opiskeluoikeudet AS oo
-    ON (oo.id = h.opiskeluoikeus_oid)
+    ON (oo.oid = h.opiskeluoikeus_oid)
 WHERE
   (oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_koulutussopimus' or
   oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_oppisopimus')
