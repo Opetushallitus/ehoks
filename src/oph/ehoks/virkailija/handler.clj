@@ -446,26 +446,32 @@
                                oppilaitos :- (s/maybe s/Str)
                                start :- LocalDate
                                end :- LocalDate]
-                (println tutkinto)
-                (if (contains? (user/get-organisation-privileges
-                                 (get-in request [:session :virkailija-user])
-                                 oppilaitos)
-                               :read)
-                  (restful/rest-ok
-                    (if oppilaitos
-                      (pc/select-oht-by-tutkinto-and-oppilaitos-between
-                        tutkinto
-                        oppilaitos
-                        start
-                        end)
-                      (pc/select-oht-by-tutkinto-between tutkinto start end)))
-                  (do (log/warnf
-                        "TEP jaksoraportti:"
-                        "User %s privileges do not match oppilaitos %s"
-                        (get-in request [:session :virkailija-user :oidHenkilo])
-                        oppilaitos)
-                      (response/forbidden
-                        {:error "User privileges do not match organisation"}))))
+                (cond (and oppilaitos
+                           (contains?
+                             (user/get-organisation-privileges
+                               (get-in request [:session :virkailija-user])
+                               oppilaitos)
+                             :read))
+                      (restful/rest-ok
+                        (pc/select-oht-by-tutkinto-and-oppilaitos-between
+                          tutkinto
+                          oppilaitos
+                          start
+                          end))
+                      (user/oph-super-user?
+                        (get-in request [:session :virkailija-user]))
+                      (restful/rest-ok
+                        (pc/select-oht-by-tutkinto-between tutkinto start end))
+                      :else
+                      (do (log/warnf
+                            "TEP jaksoraportti:"
+                            "User %s privileges do not match oppilaitos %s"
+                            (get-in request
+                                    [:session :virkailija-user :oidHenkilo])
+                            oppilaitos)
+                          (response/forbidden
+                            {:error
+                             "User privileges do not match organisation"}))))
 
               (c-api/GET "/vastaajatunnus/:tunnus" []
                 :summary "Vastaajatunnuksen tiedot"
