@@ -366,10 +366,11 @@
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
     (s/optional-key :olennainen-seikka) s/Bool
-    (str "Tieto sellaisen seikan
-    olemassaolosta, jonka koulutuksen järjestäjä katsoo oleelliseksi tutkinnon
-    osaan tai osa-alueeseen liittyvän osaamisen hankkimisessa tai
-    osoittamisessa.")))
+    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
+         "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
+         "osaamisen hankkimisessa tai osoittamisessa.")
+    (s/optional-key :opetus-ja-ohjaus-maara) s/Int
+    "Tarvittava opetuksen ja ohjauksen määrä (tunnit)"))
 
 (s/defschema
   YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus
@@ -533,9 +534,11 @@
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
     (s/optional-key :olennainen-seikka) s/Bool
-    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
-   järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
-   liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
+    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
+         "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
+         "osaamisen hankkimisessa tai osoittamisessa.")
+    (s/optional-key :opetus-ja-ohjaus-maara) s/Int
+    "Tarvittava opetuksen ja ohjauksen määrä (tunnit)"))
 
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus
@@ -580,9 +583,11 @@
     (s/optional-key :osaamisen-osoittaminen) [OsaamisenOsoittaminen]
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     (s/optional-key :olennainen-seikka) s/Bool
-    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
-    järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
-    liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
+    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
+         "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
+         "osaamisen hankkimisessa tai osoittamisessa.")
+    (s/optional-key :opetus-ja-ohjaus-maara) s/Int
+    "Tarvittava opetuksen ja ohjauksen määrä (tunnit)"))
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus

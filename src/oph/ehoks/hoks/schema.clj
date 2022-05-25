@@ -422,10 +422,15 @@
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
     (s/optional-key :olennainen-seikka) s/Bool
-    (str "Tieto sellaisen seikan
-    olemassaolosta, jonka koulutuksen järjestäjä katsoo oleelliseksi tutkinnon
-    osaan tai osa-alueeseen liittyvän osaamisen hankkimisessa tai
-    osoittamisessa.")))
+    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
+         "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
+         "osaamisen hankkimisessa tai osoittamisessa.")
+    (s/optional-key :opetus-ja-ohjaus-maara)
+    (s/constrained s/Num
+                   #(not (neg? %))
+                   "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")
+    (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen ja ohjauksen "
+         "määrä tunteina.")))
 
 (s/defschema
   YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus
@@ -644,9 +649,14 @@
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")
     (s/optional-key :olennainen-seikka) s/Bool
-    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
-   järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
-   liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
+    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
+         "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
+         "osaamisen hankkimisessa tai osoittamisessa.")
+    (s/optional-key :opetus-ja-ohjaus-maara)
+    (s/constrained s/Num
+                   #(not (neg? %))
+                   "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")
+    "Tutkinnon osaan suunnitellun opetuksen ja ohjauksen määrä tunteina."))
 
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus
@@ -709,9 +719,14 @@
     (s/optional-key :osaamisen-osoittaminen) [OsaamisenOsoittaminen]
     "Hankitun osaamisen osoittaminen: Näyttö tai muu osaamisen osoittaminen"
     (s/optional-key :olennainen-seikka) s/Bool
-    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
-    järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
-    liittyvän osaamisen hankkimisessa tai osoittamisessa.")))
+    (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
+         "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
+         "osaamisen hankkimisessa tai osoittamisessa.")
+    (s/optional-key :opetus-ja-ohjaus-maara)
+    (s/constrained s/Num
+                   #(not (neg? %))
+                   "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")
+    "Tutkinnon osaan suunnitellun opetuksen ja ohjauksen määrä tunteina."))
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus
