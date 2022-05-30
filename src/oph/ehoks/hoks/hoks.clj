@@ -423,6 +423,7 @@
         old-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
                                           current-hoks)
         old-sahkoposti (:sahkoposti current-hoks)
+        old-puhelinnumero (:puhelinnumero current-hoks)
         new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
         new-oppija-oid (:oppija-oid new-values)
         new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
@@ -430,6 +431,7 @@
         new-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
                                           new-values)
         new-sahkoposti (:sahkoposti new-values)
+        new-puhelinnumero (:puhelinnumero new-values)
         osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
         oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
                                         osaamisen-hankkimistavat)
@@ -506,7 +508,10 @@
                   (not (true? old-osaamisen-hankkimisen-tarve)))
                 (and
                   (some? new-sahkoposti)
-                  (not (some? old-sahkoposti))))
+                  (not (some? old-sahkoposti)))
+                (and
+                  (some? new-puhelinnumero)
+                  (not (some? old-puhelinnumero))))
         (db-hoks/update-amisherate-kasittelytilat!
           {:id (:id amisherate-kasittelytila)
            :aloitusherate_kasitelty false})
@@ -527,6 +532,7 @@
           old-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
                                             hoks)
           old-sahkoposti (:sahkoposti hoks)
+          old-puhelinnumero (:puhelinnumero hoks)
           new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-values)
           new-oppija-oid (:oppija-oid new-values)
           new-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
@@ -534,6 +540,7 @@
           new-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
                                             new-values)
           new-sahkoposti (:sahkoposti new-values)
+          new-puhelinnumero (:puhelinnumero new-values)
           osaamisen-hankkimistavat (get-osaamisen-hankkimistavat new-values)
           oh-missing-tyopaikan-y-tunnus (missing-tyopaikan-y-tunnus?
                                           osaamisen-hankkimistavat)
@@ -568,7 +575,10 @@
                       (not (true? old-osaamisen-hankkimisen-tarve)))
                     (and
                       (some? new-sahkoposti)
-                      (not (some? old-sahkoposti))))
+                      (not (some? old-sahkoposti)))
+                    (and
+                      (some? new-puhelinnumero)
+                      (not (some? old-puhelinnumero))))
             (db-hoks/update-amisherate-kasittelytilat!
               {:id (:id amisherate-kasittelytila)
                :aloitusherate_kasitelty false})
