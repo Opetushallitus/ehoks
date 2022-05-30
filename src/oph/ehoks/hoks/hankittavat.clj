@@ -248,6 +248,9 @@
                                                          conn)
                      {:id existing-id}))]
         (when (seq existing)
+          (db/delete-tyopaikalla-jarjestettava-koulutus
+            (:tyopaikalla-jarjestettava-koulutus-id (first existing))
+            conn)
           (db/delete-osaamisen-hankkimistavan-muut-oppimisymparistot o-db conn)
           (db/delete-osaamisen-hankkimistavan-keskeytymisajanjaksot o-db conn))
         (db/insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
