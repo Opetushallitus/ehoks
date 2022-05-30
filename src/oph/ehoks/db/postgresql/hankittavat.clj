@@ -403,3 +403,10 @@
   (db-ops/shallow-delete!
     :keskeytymisajanjaksot
     ["osaamisen_hankkimistapa_id = ?" (:id oht-id)] db-conn))
+
+(defn delete-tyopaikalla-jarjestettava-koulutus
+  "Poistaa työpaikalla järjestettävän koulutuksen tietokannasta."
+  [tjk-id db-conn]
+  (db-ops/shallow-delete! :tyopaikalla_jarjestettavat_koulutukset
+                          ["id = ?" tjk-id]
+                          db-conn))

@@ -81,7 +81,7 @@
   [m]
   (db-ops/to-sql
     m
-    {:removals [:keskeiset-tyotehtavat]
+    {:removals [:id :keskeiset-tyotehtavat]
      :replaces
      {[:vastuullinen-tyopaikka-ohjaaja :nimi]
       :vastuullinen-tyopaikka-ohjaaja-nimi
