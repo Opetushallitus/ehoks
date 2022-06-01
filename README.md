@@ -187,7 +187,7 @@ Tämän voi korjata seuraavalla tavalla:
 
 1. Yhdistä tietokantaan. [Ohje](https://github.com/Opetushallitus/cloud-base/blob/master/docs/developer-faq.md#kuinka-p%C3%A4%C3%A4sen-tietokantoihin-k%C3%A4siksi). Lisää apua saa Ylläpidon kehittäjiltä.
 2. Hae Flyway schema historia: ```SELECT * FROM flyway_schema_history; ```
-3. Poista kyseistä taulusta ongelmia aiheuttava(t) rivi(t) eli rivit, joita ei ole mukana haarassa jonka haluaisit asentaa: ```DELETE FROM flyway_schema_history WHERE installed_rank = <numero>;```
+3. Poista kyseisestä taulusta ongelmia aiheuttava(t) rivi(t) eli rivit, joita ei ole mukana haarassa jonka haluaisit asentaa: ```DELETE FROM flyway_schema_history WHERE installed_rank = <numero>;```
 4. Poista kannasta myös ne muutokset, joita kyseisissä migraatioissa olevat SQL-käskyt tekivät. Esim droppaa columnit joita luotiin: ```ALTER TABLE <taulu> DROP COLUMN <nimi>;```
 
 Tämän jälkeen haarasi pitäisi asentua normaalisti.
