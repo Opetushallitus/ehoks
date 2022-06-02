@@ -4,7 +4,8 @@
             [oph.ehoks.utils :as utils]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
-            [oph.ehoks.db.db-operations.oppija :as db-oppija])
+            [oph.ehoks.db.db-operations.oppija :as db-oppija]
+            [oph.ehoks.heratepalvelu.heratepalvelu :as hp])
   (:import (clojure.lang ExceptionInfo)))
 
 (t/use-fixtures :once utils/migrate-database)
@@ -27,6 +28,14 @@
           :etunimet "Tero"
           :kutsumanimi "Tero"
           :sukunimi "Testaaja"}})
+
+(def onr-data-name-changed
+  {:status 200
+   :body {:oidHenkilo "1.2.246.562.24.111111111111"
+          :hetu "250103-5360"
+          :etunimet "Tero"
+          :kutsumanimi "Tero"
+          :sukunimi "Testaaja-Paivitetty"}})
 
 (def tila-data
   {:opiskeluoikeusjaksot
@@ -545,7 +554,8 @@
       ["1.2.246.562.10.222222222222"
        (fn [_ url __]
          (cond
-           (> (.indexOf url "oppijanumerorekisteri-service") -1)
+           (> (.indexOf url (str "oppijanumerorekisteri-service/henkilo/"
+                                 "1.2.246.562.24.111111111111")) -1)
            onr-data
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
@@ -574,3 +584,28 @@
       (utils/eq
         (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
         nil))))
+
+(t/deftest onr-modify-name-change
+  (t/testing "onr-modified call has different name compared to oppijaindex"
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ url __]
+         (when
+          (> (.indexOf url "oppijanumerorekisteri-service") -1)
+           onr-data))]
+      (sut/add-oppija! "1.2.246.562.24.111111111111")
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
+        {:oid "1.2.246.562.24.111111111111"
+         :nimi "Tero Testaaja"}))
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ url __]
+         (when
+          (> (.indexOf url "oppijanumerorekisteri-service") -1)
+           onr-data-name-changed))]
+      (hp/handle-onrmodified "1.2.246.562.24.111111111111")
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
+        {:oid "1.2.246.562.24.111111111111"
+         :nimi "Tero Testaaja-Paivitetty"}))))
