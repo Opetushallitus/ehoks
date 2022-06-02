@@ -4,19 +4,11 @@
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
-            [clojure.tools.logging :as log]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
             [schema.core :as s]
             [ring.util.http-response :as response]
-            [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.external.oppijanumerorekisteri :as onr]
-            [oph.ehoks.oppijaindex :as op]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.db.db-operations.oppija :as db-oppija]
-            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
-            [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops])
+            [oph.ehoks.hoks.hoks :as h])
   (:import (java.time LocalDate)))
 
 (def routes
@@ -92,60 +84,7 @@
             säännön kautta."
         :header-params [caller-id :- s/Str]
         :query-params [oid :- s/Str]
-        (if-let [oppija (op/get-oppija-by-oid oid)]
-          ;; Jos päivitetyn oppijan oid löytyy ehoksista, niin tiedetään
-          ;; että kyseessä ei ole oid-tiedon päivitys ja voidaan vain tarkastaa,
-          ;; että nimi täsmää ONR:n tiedon kanssa.
-          (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))
-                ehoks-oppija-nimi (:nimi oppija)
-                onr-oppija-nimi (op/format-oppija-name onr-oppija)]
-            (when (not= ehoks-oppija-nimi onr-oppija-nimi)
-              (log/infof "Updating changed name for oppija %s" oid)
-              (op/update-oppija! oid true)))
-          ;; Jos oppijaa ei löydy päivitetyllä oidilla ehoksista,
-          ;; niin ensin tarkastetaan, ettei kyseessä ole duplicate/slave oid.
-          ;; (tämä saattaa olla turha tarkastus, mutta ainakin se estää sen,
-          ;; että koskaan päivitettäisiin slave oideja ehoksin tauluihin.
-          ;;
-          ;; Sitten haetaan kyseisen master-oidin slavet ja niiden oideilla
-          ;; oppijat ehoksin oppijat-taulusta.
-          ;;
-          ;; Jos oppijoita löytyy slave oideilla, niin päivitetään niiden
-          ;; hokseihin, opiskeluoikeuksiin ja oppijat-taulun riviin uusi
-          ;; master-oid. Lopuksi poistetaan slave-oidit oppijat taulusta.
-          (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))]
-            (when-not (:duplicate onr-oppija)
-              (let [slave-oppija-oids
-                    (map
-                      :oidHenkilo
-                      (:body (onr/get-slaves-of-master-oppija-oid oid)))
-                    oppijas-from-oppijaindex-by-slave-oids
-                    (remove nil?
-                            (flatten
-                              (map
-                                #(:oid (op/get-oppija-by-oid %))
-                                slave-oppija-oids)))]
-                (when (seq oppijas-from-oppijaindex-by-slave-oids)
-                  (jdbc/with-db-transaction
-                    [db-conn (db-ops/get-db-connection)]
-                    (doseq [oppija-oid oppijas-from-oppijaindex-by-slave-oids]
-                      (log/infof (str "Changing duplicate oppija-oid %s to %s "
-                                      "for tables hoksit, oppijat and "
-                                      "opiskeluoikeudet.")
-                                 oppija-oid oid)
-                      (db-hoks/update-hoks-by-oppija-oid! oppija-oid
-                                                          {:oppija-oid oid}
-                                                          db-conn)
-                      (if (some? (op/get-oppija-by-oid oid))
-                        (do
-                          (db-oo/update-opiskeluoikeus-by-oppija-oid!
-                            oppija-oid {:oppija-oid oid})
-                          (db-ops/delete!
-                            :oppijat ["oid = ?" oppija-oid]))
-                        (db-oppija/update-oppija!
-                          oppija-oid
-                          {:oid  oid
-                           :nimi (op/format-oppija-name onr-oppija)})))))))))
+        (hp/handle-onrmodified oid)
         (response/no-content))
 
       (c-api/GET "/tyoelamajaksot-active-between" []
