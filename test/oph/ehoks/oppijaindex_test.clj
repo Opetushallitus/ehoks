@@ -29,6 +29,139 @@
           :kutsumanimi "Tero"
           :sukunimi "Testaaja"}})
 
+(def onr-data-master
+  {:status 200
+   :body {:duplicate false
+          :oidHenkilo "1.2.246.562.24.111111111222"
+          :hetu "250103-5360"
+          :etunimet "Matti"
+          :kutsumanimi "Masterinho"
+          :sukunimi "Masteri"}})
+
+(def onr-data-slave1
+  {:status 200
+   :body {:oidHenkilo "1.2.246.562.24.30738063716"
+          :hetu "250103-5360"
+          :etunimet "Laura"
+          :kutsumanimi "L"
+          :sukunimi "Testaa"}})
+
+(def onr-data-slave2
+  {:status 200
+   :body {:oidHenkilo "1.2.246.562.24.20043052079"
+          :hetu "250103-5360"
+          :etunimet "Eero"
+          :kutsumanimi "E"
+          :sukunimi "Testaa"}})
+
+(def onr-data-slave3
+  {:status 200
+   :body {:oidHenkilo "1.2.246.562.24.46525423540"
+          :hetu "250103-5360"
+          :etunimet "Sami"
+          :kutsumanimi "S"
+          :sukunimi "Testaa"}})
+
+(def onr-slaves-data
+  {:status 200
+   :body [{:duplicate true,
+           :sukupuoli nil,
+           :yhteystiedotRyhma [],
+           :oppijanumero nil,
+           :etunimet "Laura",
+           :yksilointiYritetty false,
+           :turvakielto false,
+           :asiointiKieli nil,
+           :syntymaaika nil,
+           :kielisyys [],
+           :created 1557819277015,
+           :henkiloTyyppi "OPPIJA",
+           :modified 1652780439987,
+           :aidinkieli {:id 1, :kieliKoodi "fi", :kieliTyyppi "suomi"},
+           :sukunimi "Testaa",
+           :eiSuomalaistaHetua false,
+           :kasittelijaOid "1.2.246.562.24.87715614791",
+           :kuolinpaiva nil,
+           :yksiloity false,
+           :id 77449524,
+           :kansalaisuus [],
+           :hetu nil,
+           :oidHenkilo "1.2.246.562.24.30738063716",
+           :passivoitu true,
+           :kaikkiHetut [],
+           :kutsumanimi "Laura",
+           :kotikunta nil,
+           :vtjsynced nil,
+           :yksiloityVTJ false}
+          {:duplicate true,
+           :sukupuoli "2",
+           :yhteystiedotRyhma
+                      [{:id 742955,
+                        :ryhmaKuvaus "yhteystietotyyppi1",
+                        :ryhmaAlkuperaTieto "alkupera2",
+                        :readOnly false,
+                        :yhteystieto []}],
+           :oppijanumero nil,
+           :etunimet "Eero",
+           :yksilointiYritetty false,
+           :turvakielto false,
+           :asiointiKieli {:id 1, :kieliKoodi "fi", :kieliTyyppi "suomi"},
+           :syntymaaika "2015-01-01",
+           :kielisyys [],
+           :created 1421310786739,
+           :henkiloTyyppi "OPPIJA",
+           :modified 1652780439987,
+           :aidinkieli {:id 1, :kieliKoodi "fi", :kieliTyyppi "suomi"},
+           :sukunimi "Testaa",
+           :eiSuomalaistaHetua false,
+           :kasittelijaOid "1.2.246.562.24.87715614791",
+           :kuolinpaiva nil,
+           :yksiloity false,
+           :id 742943,
+           :kansalaisuus [{:id 1, :kansalaisuusKoodi "246"}],
+           :hetu nil,
+           :oidHenkilo "1.2.246.562.24.20043052079",
+           :passivoitu false,
+           :kaikkiHetut [],
+           :kutsumanimi "Laura",
+           :kotikunta nil,
+           :vtjsynced nil,
+           :yksiloityVTJ false}
+          {:duplicate true,
+           :sukupuoli "2",
+           :yhteystiedotRyhma
+                      [{:id 742961,
+                        :ryhmaKuvaus "yhteystietotyyppi2",
+                        :ryhmaAlkuperaTieto "alkupera2",
+                        :readOnly false,
+                        :yhteystieto []}],
+           :oppijanumero nil,
+           :etunimet "Sami",
+           :yksilointiYritetty false,
+           :turvakielto false,
+           :asiointiKieli {:id 1, :kieliKoodi "fi", :kieliTyyppi "suomi"},
+           :syntymaaika "2015-01-01",
+           :kielisyys [],
+           :created 1421310851143,
+           :henkiloTyyppi "OPPIJA",
+           :modified 1652780439987,
+           :aidinkieli {:id 1, :kieliKoodi "fi", :kieliTyyppi "suomi"},
+           :sukunimi "Testaa",
+           :eiSuomalaistaHetua false,
+           :kasittelijaOid "1.2.246.562.24.87715614791",
+           :kuolinpaiva nil,
+           :yksiloity false,
+           :id 742957,
+           :kansalaisuus [{:id 1, :kansalaisuusKoodi "246"}],
+           :hetu nil,
+           :oidHenkilo "1.2.246.562.24.46525423540",
+           :passivoitu true,
+           :kaikkiHetut [],
+           :kutsumanimi "Laura",
+           :kotikunta nil,
+           :vtjsynced nil,
+           :yksiloityVTJ false}]})
+
 (def onr-data-name-changed
   {:status 200
    :body {:oidHenkilo "1.2.246.562.24.111111111111"
@@ -609,3 +742,127 @@
         (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
         {:oid "1.2.246.562.24.111111111111"
          :nimi "Tero Testaaja-Paivitetty"}))))
+
+(t/deftest onr-modify-slaves-found
+  (t/testing "onr-modified call has different name compared to oppijaindex"
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ url __]
+         (cond
+           (> (.indexOf url (str "oppijanumerorekisteri-service/henkilo/"
+                                 "1.2.246.562.24.30738063716")) -1)
+           onr-data-slave1
+           (> (.indexOf url (str "oppijanumerorekisteri-service/henkilo/"
+                                 "1.2.246.562.24.20043052079")) -1)
+           onr-data-slave2
+           (> (.indexOf url (str "oppijanumerorekisteri-service/henkilo/"
+                                 "1.2.246.562.24.46525423540")) -1)
+           onr-data-slave3
+           (> (.indexOf url (str "/koski/api/opiskeluoikeus/"
+                                 "1.2.246.562.15.00000000001")) -1)
+           {:status 200
+            :body (assoc
+                    opiskeluoikeus-data
+                    :oid "1.2.246.562.15.00000000001")}
+           (> (.indexOf url (str "/koski/api/opiskeluoikeus/"
+                                 "1.2.246.562.15.00000000002")) -1)
+           {:status 200
+            :body (assoc
+                    opiskeluoikeus-data
+                    :oid "1.2.246.562.15.00000000002")}
+           (> (.indexOf url (str "/koski/api/opiskeluoikeus/"
+                                 "1.2.246.562.15.00000000003")) -1)
+           {:status 200
+            :body (assoc
+                    opiskeluoikeus-data
+                    :oid "1.2.246.562.15.00000000003")}))]
+      (sut/add-oppija! "1.2.246.562.24.30738063716")
+      (sut/add-oppija! "1.2.246.562.24.20043052079")
+      (sut/add-oppija! "1.2.246.562.24.46525423540")
+      (sut/add-opiskeluoikeus!
+        "1.2.246.562.15.00000000001" "1.2.246.562.24.30738063716")
+      (sut/add-opiskeluoikeus!
+        "1.2.246.562.15.00000000002" "1.2.246.562.24.20043052079")
+      (sut/add-opiskeluoikeus!
+        "1.2.246.562.15.00000000003" "1.2.246.562.24.46525423540")
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.30738063716")
+        {:oid "1.2.246.562.24.30738063716"
+         :nimi "Laura Testaa"})
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.20043052079")
+        {:oid "1.2.246.562.24.20043052079"
+         :nimi "Eero Testaa"})
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.46525423540")
+        {:oid "1.2.246.562.24.46525423540"
+         :nimi "Sami Testaa"})
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        {:oid "1.2.246.562.15.00000000001"
+         :oppija-oid "1.2.246.562.24.30738063716"
+         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
+         :osaamisala-nimi {:fi "" :sv ""}})
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000002")
+        {:oid "1.2.246.562.15.00000000002"
+         :oppija-oid "1.2.246.562.24.20043052079"
+         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
+         :osaamisala-nimi {:fi "" :sv ""}})
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000003")
+        {:oid "1.2.246.562.15.00000000003"
+         :oppija-oid "1.2.246.562.24.46525423540"
+         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
+         :osaamisala-nimi {:fi "" :sv ""}}))
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ url __]
+         (cond
+           (> (.indexOf url (str "oppijanumerorekisteri-service"
+                                 "/henkilo"
+                                 "/1.2.246.562.24.111111111222")) -1)
+           onr-data-master
+           (> (.indexOf url (str "slaves")) -1)
+           onr-slaves-data))]
+      (hp/handle-onrmodified "1.2.246.562.24.111111111222")
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.111111111222")
+        {:oid "1.2.246.562.24.111111111222"
+         :nimi "Matti Masteri"})
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        {:oid "1.2.246.562.15.00000000001"
+         :oppija-oid "1.2.246.562.24.111111111222"
+         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
+         :osaamisala-nimi {:fi "" :sv ""}})
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000002")
+        {:oid "1.2.246.562.15.00000000002"
+         :oppija-oid "1.2.246.562.24.111111111222"
+         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
+         :osaamisala-nimi {:fi "" :sv ""}})
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000003")
+        {:oid "1.2.246.562.15.00000000003"
+         :oppija-oid "1.2.246.562.24.111111111222"
+         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
+         :osaamisala-nimi {:fi "" :sv ""}}))))
