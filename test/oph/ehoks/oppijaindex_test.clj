@@ -96,11 +96,11 @@
           {:duplicate true,
            :sukupuoli "2",
            :yhteystiedotRyhma
-                      [{:id 742955,
-                        :ryhmaKuvaus "yhteystietotyyppi1",
-                        :ryhmaAlkuperaTieto "alkupera2",
-                        :readOnly false,
-                        :yhteystieto []}],
+           [{:id 742955,
+             :ryhmaKuvaus "yhteystietotyyppi1",
+             :ryhmaAlkuperaTieto "alkupera2",
+             :readOnly false,
+             :yhteystieto []}],
            :oppijanumero nil,
            :etunimet "Eero",
            :yksilointiYritetty false,
@@ -130,11 +130,11 @@
           {:duplicate true,
            :sukupuoli "2",
            :yhteystiedotRyhma
-                      [{:id 742961,
-                        :ryhmaKuvaus "yhteystietotyyppi2",
-                        :ryhmaAlkuperaTieto "alkupera2",
-                        :readOnly false,
-                        :yhteystieto []}],
+           [{:id 742961,
+             :ryhmaKuvaus "yhteystietotyyppi2",
+             :ryhmaAlkuperaTieto "alkupera2",
+             :readOnly false,
+             :yhteystieto []}],
            :oppijanumero nil,
            :etunimet "Sami",
            :yksilointiYritetty false,
@@ -744,7 +744,9 @@
          :nimi "Tero Testaaja-Paivitetty"}))))
 
 (t/deftest onr-modify-slaves-found
-  (t/testing "onr-modified call has different name compared to oppijaindex"
+  (t/testing "onr-modified call with master oid that is not found in
+  oppijat-table. /slaves call from ONR returns three oppijas and they all have
+  opiskeluoikeus and hoks."
     (utils/with-ticket-auth
       ["1.2.246.562.10.222222222222"
        (fn [_ url __]
@@ -785,6 +787,12 @@
         "1.2.246.562.15.00000000002" "1.2.246.562.24.20043052079")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000003" "1.2.246.562.24.46525423540")
+      (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.30738063716"
+                             :opiskeluoikeus-oid "1.2.246.562.15.00000000001"})
+      (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.20043052079"
+                             :opiskeluoikeus-oid "1.2.246.562.15.00000000002"})
+      (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.46525423540"
+                             :opiskeluoikeus-oid "1.2.246.562.15.00000000003"})
       (utils/eq
         (sut/get-oppija-by-oid "1.2.246.562.24.30738063716")
         {:oid "1.2.246.562.24.30738063716"
@@ -828,12 +836,12 @@
       ["1.2.246.562.10.222222222222"
        (fn [_ url __]
          (cond
+           (> (.indexOf url (str "slaves")) -1)
+           onr-slaves-data
            (> (.indexOf url (str "oppijanumerorekisteri-service"
                                  "/henkilo"
                                  "/1.2.246.562.24.111111111222")) -1)
-           onr-data-master
-           (> (.indexOf url (str "slaves")) -1)
-           onr-slaves-data))]
+           onr-data-master))]
       (hp/handle-onrmodified "1.2.246.562.24.111111111222")
       (utils/eq
         (sut/get-oppija-by-oid "1.2.246.562.24.111111111222")
@@ -865,4 +873,36 @@
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
-         :osaamisala-nimi {:fi "" :sv ""}}))))
+         :osaamisala-nimi {:fi "" :sv ""}})
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.30738063716")
+        nil)
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.20043052079")
+        nil)
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.46525423540")
+        nil)
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.111111111222")
+        {:oid "1.2.246.562.24.111111111222"
+         :nimi "Matti Masteri"})
+      (utils/eq
+        (empty?
+          (db-hoks/select-hoks-by-oppija-oid "1.2.246.562.24.30738063716"))
+        true)
+      (utils/eq
+        (empty?
+          (db-hoks/select-hoks-by-oppija-oid "1.2.246.562.24.20043052079"))
+        true)
+      (utils/eq
+        (empty?
+          (db-hoks/select-hoks-by-oppija-oid "1.2.246.562.24.46525423540"))
+        true)
+      (utils/eq
+        (sort-by :id (map #(select-keys % [:id :oppija-oid])
+                          (db-hoks/select-hoks-by-oppija-oid
+                            "1.2.246.562.24.111111111222")))
+        [{:id 1, :oppija-oid "1.2.246.562.24.111111111222"}
+         {:id 2, :oppija-oid "1.2.246.562.24.111111111222"}
+         {:id 3, :oppija-oid "1.2.246.562.24.111111111222"}]))))
