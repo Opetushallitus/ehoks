@@ -145,7 +145,8 @@
   (db-hoks/update-amisherate-kasittelytilat-paattoherate-kasitelty hoks-id to))
 
 (defn handle-onrmodified
-  "asd"
+  "Handles ONR-modified call from heratepalvelu which is triggered by
+  data change in ONR service."
   [oid]
   (if-let [oppija (op/get-oppija-by-oid oid)]
     ;; Jos päivitetyn oppijan oid löytyy ehoksista, niin tiedetään
