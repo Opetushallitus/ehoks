@@ -193,6 +193,23 @@
             (response/not-found
               {:error "No HOKS found with given hoks-id"})))))
 
+    (c-api/POST "/hoks/:hoks-id/resend-paattoherate" request
+      :summary "Lähettää uuden päättökyselyherätteen herätepalveluun"
+      :header-params [caller-id :- s/Str]
+      :path-params [hoks-id :- s/Int]
+      (let [hoks (db-hoks/select-hoks-by-id hoks-id)]
+        (if hoks
+          (if (:osaamisen-saavuttamisen-pvm hoks)
+            (do
+              (sqs/send-amis-palaute-message (hp/paatto-build-msg hoks))
+              (response/no-content))
+            (do
+              (log/warn "No osaamisen saavuttamisen pvm for hoks-id:" hoks-id)
+              (response/bad-request {:error "No osaamisen saavuttamisen pvm"})))
+          (do
+            (log/warn "No HOKS found with given hoks-id:" hoks-id)
+            (response/not-found {:error "No HOKS found with given hoks-id"})))))
+
     (c-api/POST "/hoks/resend-aloitusherate" request
       :summary "Lähettää uudet aloituskyselyherätteet herätepalveluun"
       :header-params [caller-id :- s/Str]
