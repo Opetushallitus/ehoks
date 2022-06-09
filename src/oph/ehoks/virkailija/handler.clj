@@ -439,6 +439,40 @@
               external-handler/routes
               system-handler/routes
 
+              (c-api/GET "/tep-jakso-raportti" request
+                :summary "Työpaikkajaksojen raportti"
+                :header-params [caller-id :- s/Str]
+                :query-params [tutkinto :- s/Str
+                               oppilaitos :- (s/maybe s/Str)
+                               start :- LocalDate
+                               end :- LocalDate]
+                (cond (and oppilaitos
+                           (contains?
+                             (user/get-organisation-privileges
+                               (get-in request [:session :virkailija-user])
+                               oppilaitos)
+                             :read))
+                      (restful/rest-ok
+                        (pc/select-oht-by-tutkinto-and-oppilaitos-between
+                          tutkinto
+                          oppilaitos
+                          start
+                          end))
+                      (user/oph-super-user?
+                        (get-in request [:session :virkailija-user]))
+                      (restful/rest-ok
+                        (pc/select-oht-by-tutkinto-between tutkinto start end))
+                      :else
+                      (do (log/warnf
+                            "TEP jaksoraportti:"
+                            "User %s privileges do not match oppilaitos %s"
+                            (get-in request
+                                    [:session :virkailija-user :oidHenkilo])
+                            oppilaitos)
+                          (response/forbidden
+                            {:error
+                             "User privileges do not match organisation"}))))
+
               (c-api/GET "/vastaajatunnus/:tunnus" []
                 :summary "Vastaajatunnuksen tiedot"
                 :header-params [caller-id :- s/Str]

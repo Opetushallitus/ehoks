@@ -202,3 +202,23 @@
   "Poistaa kyselylinkin tietokannasta tunnuksen perusteella."
   [tunnus]
   (db-ops/delete! :kyselylinkit ["kyselylinkki LIKE ?" (str "%/" tunnus)]))
+
+(defn select-oht-by-tutkinto-and-oppilaitos-between
+  "Hakee osaamisen hankkimistapoja tutkinnon ja koulutuksen järjestäjän
+  perusteella tietylle aikavälille."
+  [tutkinto oppilaitos start end]
+  (db-ops/query
+    [queries/select-oht-by-tutkinto-and-oppilaitos-between
+     tutkinto
+     oppilaitos
+     start
+     end]
+    {:identifiers #(do %)
+     :row-fn      db-ops/from-sql}))
+
+(defn select-oht-by-tutkinto-between
+  "Hakee osaamisen hankkimistapoja tutkinnon perusteella tietylle aikavälille."
+  [tutkinto start end]
+  (db-ops/query [queries/select-oht-by-tutkinto-between tutkinto start end]
+                {:identifiers #(do %)
+                 :row-fn      db-ops/from-sql}))
