@@ -36,3 +36,4 @@ WHERE
   AND oh.loppu <= ?
   AND oh.id > ?
 ORDER BY oh.id
+LIMIT ?

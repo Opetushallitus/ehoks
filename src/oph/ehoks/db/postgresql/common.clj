@@ -206,13 +206,15 @@
 (defn select-oht-by-tutkinto-and-oppilaitos-between
   "Hakee osaamisen hankkimistapoja tutkinnon ja koulutuksen järjestäjän
   perusteella tietylle aikavälille."
-  [tutkinto oppilaitos start end amount last-id]
+  [tutkinto oppilaitos start end limit from-id]
   (db-ops/query
     [queries/select-oht-by-tutkinto-and-oppilaitos-between
      tutkinto
      oppilaitos
      start
-     end]
+     end
+     limit
+     from-id]
     {:identifiers #(do %)
      :row-fn      db-ops/from-sql}))
 
