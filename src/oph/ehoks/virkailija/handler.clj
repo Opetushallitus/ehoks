@@ -445,19 +445,27 @@
                 :query-params [tutkinto :- s/Str
                                oppilaitos :- (s/maybe s/Str)
                                start :- LocalDate
-                               end :- LocalDate]
+                               end :- LocalDate
+                               {limit :- s/Int 50}
+                               {from-id :- s/Int 0}]
                 (cond (and oppilaitos
                            (contains?
                              (user/get-organisation-privileges
                                (get-in request [:session :virkailija-user])
                                oppilaitos)
                              :read))
-                      (restful/rest-ok
-                        (pc/select-oht-by-tutkinto-and-oppilaitos-between
-                          tutkinto
-                          oppilaitos
-                          start
-                          end))
+                      (let [result
+                            (pc/select-oht-by-tutkinto-and-oppilaitos-between
+                              tutkinto
+                              oppilaitos
+                              start
+                              end
+                              limit
+                              from-id)
+                            last-id (first (sort > (map :ohId result)))]
+                        (restful/rest-ok
+                          {:lastId (or last-id from-id)
+                           :result result}))
                       (user/oph-super-user?
                         (get-in request [:session :virkailija-user]))
                       (restful/rest-ok

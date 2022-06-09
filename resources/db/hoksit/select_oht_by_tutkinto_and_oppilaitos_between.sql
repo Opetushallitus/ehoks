@@ -3,6 +3,7 @@ SELECT
   h.opiskeluoikeus_oid AS "opiskeluoikeusOid",
   h.oppija_oid AS "oppijaOid",
   h.eid AS "hoksEid",
+  oh.id AS "ohId",
   oh.osaamisen_hankkimistapa_koodi_uri AS "hankkimistapaTyyppi",
   oh.alku AS alkupvm,
   oh.loppu AS loppupvm,
@@ -33,3 +34,5 @@ WHERE
   AND oo.oppilaitos_oid = ?
   AND oh.loppu >= ?
   AND oh.loppu <= ?
+  AND oh.id > ?
+ORDER BY oh.id

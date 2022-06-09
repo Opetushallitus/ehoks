@@ -206,7 +206,7 @@
 (defn select-oht-by-tutkinto-and-oppilaitos-between
   "Hakee osaamisen hankkimistapoja tutkinnon ja koulutuksen järjestäjän
   perusteella tietylle aikavälille."
-  [tutkinto oppilaitos start end]
+  [tutkinto oppilaitos start end amount last-id]
   (db-ops/query
     [queries/select-oht-by-tutkinto-and-oppilaitos-between
      tutkinto
