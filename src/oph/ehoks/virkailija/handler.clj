@@ -446,8 +446,8 @@
                                oppilaitos :- (s/maybe s/Str)
                                start :- LocalDate
                                end :- LocalDate
-                               {limit :- s/Int 50}
-                               {from-id :- s/Int 0}]
+                               {pagesize :- s/Int 25}
+                               {pageindex :- s/Int 0}]
                 (cond (and oppilaitos
                            (contains?
                              (user/get-organisation-privileges
@@ -459,13 +459,17 @@
                               tutkinto
                               oppilaitos
                               start
-                              end
-                              limit
-                              from-id)
-                            last-id (first (sort > (map :ohId result)))]
+                              end)
+                            row-count-total (count result)
+                            page-count-total (Math/ceil
+                                               (row-count-total / pagesize))
+                            start-row (* pagesize pageindex)
+                            end-row (+ start-row + pagesize)
+                            pageresult (subvec result start-row end-row)]
                         (restful/rest-ok
-                          {:lastId (or last-id from-id)
-                           :result result}))
+                          {:count row-count-total
+                           :pagecount page-count-total
+                           :result pageresult}))
                       (user/oph-super-user?
                         (get-in request [:session :virkailija-user]))
                       (restful/rest-ok
