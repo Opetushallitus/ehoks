@@ -25,6 +25,8 @@ FROM hoksit h
   LEFT OUTER JOIN tyopaikalla_jarjestettavat_koulutukset AS tjk
     ON (oh.tyopaikalla_jarjestettava_koulutus_id = tjk.id)
 WHERE
-  h.oppija_oid = ?
+  (oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_koulutussopimus' OR
+  oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_oppisopimus')
+  AND h.oppija_oid = ?
   AND oh.alku <= ?
   AND oh.loppu >= ?
