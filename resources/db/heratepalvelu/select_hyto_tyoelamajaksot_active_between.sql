@@ -23,7 +23,7 @@ FROM hoksit h
   LEFT OUTER JOIN yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat AS ytooh
     ON (osa.id = ytooh.yhteisen_tutkinnon_osan_osa_alue_id)
   LEFT OUTER JOIN osaamisen_hankkimistavat AS oh
-    ON (osajoin.osaamisen_hankkimistapa_id = oh.id)
+    ON (ytooh.osaamisen_hankkimistapa_id = oh.id)
   LEFT OUTER JOIN tyopaikalla_jarjestettavat_koulutukset AS tjk
     ON (oh.tyopaikalla_jarjestettava_koulutus_id = tjk.id)
 WHERE
