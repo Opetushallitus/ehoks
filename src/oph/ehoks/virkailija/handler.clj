@@ -455,7 +455,7 @@
                                oppilaitos)
                              :read))
                       (let [result
-                            (pc/select-oht-by-tutkinto-and-oppilaitos-between
+                            (pc/get-oppilaitos-oids-cached-memoized ;;5min cache
                               tutkinto
                               oppilaitos
                               start
