@@ -461,8 +461,9 @@
                               start
                               end)
                             row-count-total (count result)
-                            page-count-total (Math/ceil
-                                               (/ row-count-total pagesize))
+                            page-count-total (int (Math/ceil
+                                                    (/ row-count-total
+                                                       pagesize)))
                             start-row (* pagesize pageindex)
                             end-row (+ start-row pagesize)
                             pageresult (subvec (vec result) start-row end-row)]
