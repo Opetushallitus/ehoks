@@ -455,14 +455,14 @@
                                oppilaitos)
                              :read))
                       (let [result
-                            (pc/select-oht-by-tutkinto-and-oppilaitos-between
+                            (pc/get-oppilaitos-oids-cached-memoized ;;5min cache
                               tutkinto
                               oppilaitos
                               start
                               end)
                             row-count-total (count result)
                             page-count-total (Math/ceil
-                                               (row-count-total / pagesize))
+                                               (/ row-count-total pagesize))
                             start-row (* pagesize pageindex)
                             end-row (+ start-row + pagesize)
                             pageresult (subvec result start-row end-row)]
