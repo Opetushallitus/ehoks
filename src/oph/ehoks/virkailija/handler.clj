@@ -464,7 +464,7 @@
                             page-count-total (Math/ceil
                                                (/ row-count-total pagesize))
                             start-row (* pagesize pageindex)
-                            end-row (+ start-row + pagesize)
+                            end-row (+ start-row pagesize)
                             pageresult (subvec result start-row end-row)]
                         (restful/rest-ok
                           {:count row-count-total
