@@ -2,6 +2,7 @@ SELECT
   h.id AS "hoksId",
   h.opiskeluoikeus_oid AS "opiskeluoikeusOid",
   h.oppija_oid AS "oppijaOid",
+  h.eid AS "hoksEid",
   oh.osaamisen_hankkimistapa_koodi_uri AS "hankkimistapaTyyppi",
   oh.alku AS alkupvm,
   oh.loppu AS loppupvm,
