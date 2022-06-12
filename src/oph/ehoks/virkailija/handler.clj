@@ -465,7 +465,10 @@
                                                     (/ row-count-total
                                                        pagesize)))
                             start-row (* pagesize pageindex)
-                            end-row (+ start-row pagesize)
+                            end-row (if (<= (+ start-row pagesize)
+                                            row-count-total)
+                                      (+ start-row pagesize)
+                                      row-count-total)
                             pageresult (subvec (vec result) start-row end-row)]
                         (restful/rest-ok
                           {:count row-count-total
