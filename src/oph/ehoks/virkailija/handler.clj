@@ -445,19 +445,35 @@
                 :query-params [tutkinto :- s/Str
                                oppilaitos :- (s/maybe s/Str)
                                start :- LocalDate
-                               end :- LocalDate]
+                               end :- LocalDate
+                               {pagesize :- s/Int 25}
+                               {pageindex :- s/Int 0}]
                 (cond (and oppilaitos
                            (contains?
                              (user/get-organisation-privileges
                                (get-in request [:session :virkailija-user])
                                oppilaitos)
                              :read))
-                      (restful/rest-ok
-                        (pc/select-oht-by-tutkinto-and-oppilaitos-between
-                          tutkinto
-                          oppilaitos
-                          start
-                          end))
+                      (let [result
+                            (pc/get-oppilaitos-oids-cached-memoized ;;5min cache
+                              tutkinto
+                              oppilaitos
+                              start
+                              end)
+                            row-count-total (count result)
+                            page-count-total (int (Math/ceil
+                                                    (/ row-count-total
+                                                       pagesize)))
+                            start-row (* pagesize pageindex)
+                            end-row (if (<= (+ start-row pagesize)
+                                            row-count-total)
+                                      (+ start-row pagesize)
+                                      row-count-total)
+                            pageresult (subvec (vec result) start-row end-row)]
+                        (restful/rest-ok
+                          {:count row-count-total
+                           :pagecount page-count-total
+                           :result pageresult}))
                       (user/oph-super-user?
                         (get-in request [:session :virkailija-user]))
                       (restful/rest-ok
