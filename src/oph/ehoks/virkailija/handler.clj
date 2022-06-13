@@ -506,12 +506,29 @@
                           opiskeluoikeus puuttuu"
                 :header-params [caller-id :- s/Str]
                 :path-params [oppilaitosoid :- s/Str]
+                :query-params [{pagesize :- s/Int 25}
+                               {pageindex :- s/Int 0}]
                 (if (contains? (user/get-organisation-privileges
                                  (get-in request [:session :virkailija-user])
                                  oppilaitosoid)
                                :read)
-                  (get-hoksit-without-oo-in-koski-by-oppilaitosoid
-                    oppilaitosoid)
+                  (let [result
+                        (get-hoksit-without-oo-in-koski-by-oppilaitosoid
+                          oppilaitosoid)
+                        row-count-total (count result)
+                        page-count-total (int (Math/ceil
+                                                (/ row-count-total
+                                                   pagesize)))
+                        start-row (* pagesize pageindex)
+                        end-row (if (<= (+ start-row pagesize)
+                                        row-count-total)
+                                  (+ start-row pagesize)
+                                  row-count-total)
+                        pageresult (subvec (vec result) start-row end-row)]
+                    (restful/rest-ok
+                      {:count row-count-total
+                       :pagecount page-count-total
+                       :result pageresult}))
                   (response/forbidden
                     {:error (str "User privileges does not match "
                                  "organisation")})))
