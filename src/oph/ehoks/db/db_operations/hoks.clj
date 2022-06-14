@@ -709,4 +709,5 @@
   (db-ops/query
     [queries/select-hoksit-by-oo-oppilaitos-and-koski404
      oppilaitos-oid]
-    {:row-fn db-ops/from-sql}))
+    {:identifiers #(do %)
+     :row-fn      db-ops/from-sql}))
