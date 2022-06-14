@@ -211,14 +211,6 @@
       (not (op/opiskeluoikeus-tila-inactive?
              (op/get-opiskeluoikeus-tila opiskeluoikeus))))))
 
-(defn get-hoksit-without-oo-in-koski-by-oppilaitosoid
-  "Get hoksit that have koski404 true by oppilaitos."
-  [oppilaitos-oid]
-  (let [hoksit (db-hoks/select-hoksit-by-oo-oppilaitos-and-koski404
-                 oppilaitos-oid)]
-    (response/ok {:count (count hoksit)
-                  :hoksit hoksit})))
-
 (defn- save-hoks
   "Save HOKS to database"
   [hoks request]
@@ -445,19 +437,35 @@
                 :query-params [tutkinto :- s/Str
                                oppilaitos :- (s/maybe s/Str)
                                start :- LocalDate
-                               end :- LocalDate]
+                               end :- LocalDate
+                               {pagesize :- s/Int 25}
+                               {pageindex :- s/Int 0}]
                 (cond (and oppilaitos
                            (contains?
                              (user/get-organisation-privileges
                                (get-in request [:session :virkailija-user])
                                oppilaitos)
                              :read))
-                      (restful/rest-ok
-                        (pc/select-oht-by-tutkinto-and-oppilaitos-between
-                          tutkinto
-                          oppilaitos
-                          start
-                          end))
+                      (let [result
+                            (pc/get-oppilaitos-oids-cached-memoized ;;5min cache
+                              tutkinto
+                              oppilaitos
+                              start
+                              end)
+                            row-count-total (count result)
+                            page-count-total (int (Math/ceil
+                                                    (/ row-count-total
+                                                       pagesize)))
+                            start-row (* pagesize pageindex)
+                            end-row (if (<= (+ start-row pagesize)
+                                            row-count-total)
+                                      (+ start-row pagesize)
+                                      row-count-total)
+                            pageresult (subvec (vec result) start-row end-row)]
+                        (restful/rest-ok
+                          {:count row-count-total
+                           :pagecount page-count-total
+                           :result pageresult}))
                       (user/oph-super-user?
                         (get-in request [:session :virkailija-user]))
                       (restful/rest-ok
@@ -490,12 +498,29 @@
                           opiskeluoikeus puuttuu"
                 :header-params [caller-id :- s/Str]
                 :path-params [oppilaitosoid :- s/Str]
+                :query-params [{pagesize :- s/Int 25}
+                               {pageindex :- s/Int 0}]
                 (if (contains? (user/get-organisation-privileges
                                  (get-in request [:session :virkailija-user])
                                  oppilaitosoid)
                                :read)
-                  (get-hoksit-without-oo-in-koski-by-oppilaitosoid
-                    oppilaitosoid)
+                  (let [result
+                        (db-hoks/select-hoksit-by-oo-oppilaitos-and-koski404
+                          oppilaitosoid)
+                        row-count-total (count result)
+                        page-count-total (int (Math/ceil
+                                                (/ row-count-total
+                                                   pagesize)))
+                        start-row (* pagesize pageindex)
+                        end-row (if (<= (+ start-row pagesize)
+                                        row-count-total)
+                                  (+ start-row pagesize)
+                                  row-count-total)
+                        pageresult (subvec (vec result) start-row end-row)]
+                    (restful/rest-ok
+                      {:count row-count-total
+                       :pagecount page-count-total
+                       :result pageresult}))
                   (response/forbidden
                     {:error (str "User privileges does not match "
                                  "organisation")})))

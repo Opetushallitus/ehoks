@@ -33,3 +33,4 @@ WHERE
   AND oo.oppilaitos_oid = ?
   AND oh.loppu >= ?
   AND oh.loppu <= ?
+ORDER BY h.id desc

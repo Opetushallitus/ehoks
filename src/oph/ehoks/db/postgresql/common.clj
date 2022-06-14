@@ -1,5 +1,6 @@
 (ns oph.ehoks.db.postgresql.common
   (:require [oph.ehoks.db.db-operations.hoks :as h]
+            [clojure.core.memoize :as memo]
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [clojure.java.jdbc :as jdbc]))
@@ -215,6 +216,13 @@
      end]
     {:identifiers #(do %)
      :row-fn      db-ops/from-sql}))
+
+(def get-oppilaitos-oids-cached-memoized
+  "Memoized get oppilaitos OIDs"
+  (memo/ttl
+    select-oht-by-tutkinto-and-oppilaitos-between
+    {}
+    :ttl/threshold 300))
 
 (defn select-oht-by-tutkinto-between
   "Hakee osaamisen hankkimistapoja tutkinnon perusteella tietylle aikavälille."
