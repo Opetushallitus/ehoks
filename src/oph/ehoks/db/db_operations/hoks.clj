@@ -540,6 +540,20 @@
                   [queries/select-paattyneet-tyoelamajaksot-hyto
                    start end limit]))))
 
+(defn select-tyoelamajaksot-active-between
+  "Hakee tietokannasta työelämäjaksot, jotka ovat tai olivat voimassa tietyn
+  aikavälin sisällä tietyllä oppijalla."
+  [osa oppija start end]
+  (map (get-and-assoc-data osa)
+       (db-ops/query
+         [(case osa
+            "hato" queries/select-hato-tyoelamajaksot-active-between
+            "hpto" queries/select-hpto-tyoelamajaksot-active-between
+            "hyto" queries/select-hyto-tyoelamajaksot-active-between)
+          oppija
+          end
+          start])))
+
 (defn update-osaamisen-hankkimistapa-tep-kasitelty
   "Merkitsee osaamisen hankkimistavan käsitellyksi tai ei käsitellyksi."
   [id to]
