@@ -36,6 +36,10 @@
   "Urasuunnitelman koodi-URI:n regex."
   #"^urasuunnitelma_\d{4}$")
 
+(def KoulutuksenOsaKoodiUri
+  "Koulutuksen osan (TUVA) koodi-URI:n regex."
+  #"^koulutuksenosattuva_\d{3}$")
+
 (def Oid
   "OID:n regex."
   #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
@@ -922,7 +926,10 @@
   "Hankittavan koulutuksen osan schema."
   (describe
     "Hankittava koulutuksen osa"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"))
+    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    :koulutuksen-osa-koodi-uri KoulutuksenOsaKoodiUri
+    "TUVA perusteen koulutuksen osan koodiuri"
+    ))
 
 (def ^:private ahato-part-of-hoks
   "Aiemmin hankitun ammatillisen tutkinnon osan HOKS-osa schemana."
