@@ -917,6 +917,13 @@
        (str "Hankitun osaamisen osoittaminen: "
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
+(s/defschema
+  HankittavaKoulutuksenOsa
+  "Hankittavan koulutuksen osan schema."
+  (describe
+    "Hankittava koulutuksen osa"
+    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"))
+
 (def ^:private ahato-part-of-hoks
   "Aiemmin hankitun ammatillisen tutkinnon osan HOKS-osa schemana."
   {:methods {:any :optional
@@ -978,6 +985,13 @@
            :post [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]
            :put [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
    :description "Hankittavat paikallisen tutkinnon osat"})
+
+(def ^:private hankittava-koulutuksen-osa
+  "TUVA HOKSin hankittava koulutuksen osa."
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [HankittavaKoulutuksenOsa]}
+   :description "Hankittavan koulutuksen osan tiedot"})
 
 (def HOKSModel
   "HOKS-schema."
@@ -1058,7 +1072,8 @@
    :opiskeluvalmiuksia-tukevat-opinnot oto-part-of-hoks
    :hankittavat-ammat-tutkinnon-osat hato-part-of-hoks
    :hankittavat-yhteiset-tutkinnon-osat hyto-part-of-hoks
-   :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks})
+   :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks
+   :hankittavat-koulutuksen-osat hankittava-koulutuksen-osa})
 
 (def HOKS
   "Generoitu HOKS-schema."
