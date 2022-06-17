@@ -198,6 +198,16 @@
        :hoks-id)
     (db/select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id hoks-id)))
 
+(defn get-hankittavat-koulutuksen-osat
+  "Hakee TUVAn hankittavat koulutuksen osat tietokannasta."
+  [hoks-id]
+  (mapv
+    #(dissoc
+       %
+       :id
+       :hoks-id)
+    (db/select-hankittavat-koulutuksen-osat-by-hoks-id hoks-id)))
+
 (defn get-osaamisen-hankkimistapa-by-id
   "Hakee yhden osaamisen hankkimistavan tietokannasta ID:n perusteella."
   [id]
