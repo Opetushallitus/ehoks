@@ -537,15 +537,15 @@
 
 (defn save-hankittavat-yhteiset-tutkinnon-osat!
   "Tallentaa hankittavat yhteiset tutkinnon osat tietokantaan."
-  ([hoks-id c]
+  ([hoks-id hytos]
     (save-hankittavat-yhteiset-tutkinnon-osat!
-      hoks-id c (db-ops/get-db-connection)))
-  ([hoks-id c db-conn]
+      hoks-id hytos (db-ops/get-db-connection)))
+  ([hoks-id hytos db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
       (mapv
         #(save-hankittava-yhteinen-tutkinnon-osa! hoks-id % conn)
-        c))))
+        hytos))))
 
 (defn- replace-hyto-osa-alueet!
   "Korvaa hankittavan yhteisen tutkinnon osan osa-alueet annetuilla arvoilla."
