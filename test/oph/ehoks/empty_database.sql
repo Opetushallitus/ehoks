@@ -16,6 +16,7 @@ DELETE FROM hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat;
 DELETE FROM hankittavan_paikallisen_tutkinnon_osan_naytto;
 DELETE FROM hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat;
 DELETE FROM hankittavat_ammat_tutkinnon_osat;
+DELETE FROM hankittavat_koulutuksen_osat;
 ALTER SEQUENCE puuttuvat_ammatilliset_tutkinnon_osat_id_seq RESTART WITH 1;
 DELETE FROM hankittavat_paikalliset_tutkinnon_osat;
 ALTER SEQUENCE puuttuvat_paikalliset_tutkinnon_osat_id_seq RESTART WITH 1;
