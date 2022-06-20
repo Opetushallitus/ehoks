@@ -131,6 +131,7 @@
 (defq select-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-id)
 (defq select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id)
+(defq select-hankittavat-koulutuksen-osat-by-hoks-id)
 (defq select-oppilaitos-oids
       "oppijat/select_oppilaitos_oids.sql")
 (defq select-oppilaitos-oids-by-koulutustoimija-oid
