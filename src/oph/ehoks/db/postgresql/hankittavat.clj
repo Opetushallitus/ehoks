@@ -56,7 +56,8 @@
   "Hankittavat koulutuksen osat"
   [id]
   (db-ops/query
-    [queries/select-hankittavat-koulutuksen-osat-by-hoks-id id]))
+    [queries/select-hankittavat-koulutuksen-osat-by-hoks-id id]
+    {:row-fn h/hankittava-koulutuksen-osa-from-sql}))
 
 (defn select-all-hatos-for-hoks
   "Hankittavat ammatillisen tutkinnon osat"
