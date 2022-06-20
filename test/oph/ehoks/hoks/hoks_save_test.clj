@@ -402,7 +402,9 @@
   (testing "GET TUVA hankittavat koulutuksen osat"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ha/save-hankittavat-koulutuksen-osat! (:id hoks) koulutuksen-osa-data)
-      (eq (ha/get-hankittavat-koulutuksen-osat (:id hoks)) koulutuksen-osa-data))))
+      (eq
+        (ha/get-hankittavat-koulutuksen-osat (:id hoks))
+        koulutuksen-osa-data))))
 
 (deftest get-hoks-test
   (testing "Save and get full HOKS"
