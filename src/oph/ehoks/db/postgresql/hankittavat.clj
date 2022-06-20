@@ -364,14 +364,14 @@
 (defn insert-hankittava-koulutuksen-osa!
   "Lisää hankittavan koulutuksen osa"
   ([koulutuksen-osa]
-   (db-ops/insert-one!
-     :hankittavat_koulutuksen_osat
-     (db-ops/to-sql koulutuksen-osa)))
+    (db-ops/insert-one!
+      :hankittavat_koulutuksen_osat
+      (db-ops/to-sql koulutuksen-osa)))
   ([koulutuksen-osa db-conn]
-   (db-ops/insert-one!
-     :hankittavat_koulutuksen_osat
-     (db-ops/to-sql koulutuksen-osa)
-     db-conn)))
+    (db-ops/insert-one!
+      :hankittavat_koulutuksen_osat
+      (db-ops/to-sql koulutuksen-osa)
+      db-conn)))
 
 (defn delete-hyto-osa-alueet!
   "Poista hankittavan yhteisen tutkinnon osan osa-alueet"

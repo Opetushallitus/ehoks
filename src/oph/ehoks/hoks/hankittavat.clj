@@ -564,14 +564,14 @@
 (defn save-hankittavat-koulutuksen-osat!
   "Tallentaan TUVAn hankittavan koulutuksen osan tietokantaan."
   ([hoks-id koulutuksen-osat]
-  (save-hankittavat-koulutuksen-osat!
-    hoks-id koulutuksen-osat (db-ops/get-db-connection)))
+    (save-hankittavat-koulutuksen-osat!
+      hoks-id koulutuksen-osat (db-ops/get-db-connection)))
   ([hoks-id koulutuksen-osat db-conn]
-   (jdbc/with-db-transaction
-     [conn db-conn]
-     (mapv
-       #(save-hankittava-koulutuksen-osa! hoks-id % conn)
-       koulutuksen-osat))))
+    (jdbc/with-db-transaction
+      [conn db-conn]
+      (mapv
+        #(save-hankittava-koulutuksen-osa! hoks-id % conn)
+        koulutuksen-osat))))
 
 (defn- replace-hyto-osa-alueet!
   "Korvaa hankittavan yhteisen tutkinnon osan osa-alueet annetuilla arvoilla."
