@@ -329,6 +329,12 @@
   [m]
   (db-ops/from-sql m {:removals [:osa-alueet]}))
 
+(defn hankittava-koulutuksen-osa-from-sql
+  "Muuttaa tietokannasta haetun hankittavan koulutuksen osan sen
+  mukaiseksi, mitä odotetaan palvelussa."
+  [m]
+  (db-ops/from-sql m))
+
 (defn hankittava-yhteinen-tutkinnon-osa-to-sql
   "Muuttaa palvelussa käytetyn hankittavan yhteisen tutkinnon osan sen
   mukaiseksi, minkä voi tallentaa tietokantaan."
