@@ -558,7 +558,7 @@
         hytos))))
 
 (defn save-hankittava-koulutuksen-osa! [hoks-id koulutuksen-osa conn]
-  )
+  (db/insert-hankittava-koulutuksen-osa! (assoc koulutuksen-osa :hoks-id hoks-id) conn))
 
 (defn save-hankittavat-koulutuksen-osat!
   "Tallentaan TUVAn hankittavan koulutuksen osan tietokantaan."
