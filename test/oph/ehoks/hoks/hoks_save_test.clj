@@ -310,6 +310,9 @@
         :koulutuksen-jarjestaja-osaamisen-arvioijat []
         :yksilolliset-kriteerit []}]}]}])
 
+(def koulutuksen-osa-data
+  [{:koulutuksen-osa-koodi-uri "koulutuksenosattuva_102"}])
+
 (def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                 :oppija-oid "1.2.246.562.24.12312312312"
                 :ensikertainen-hyvaksyminen
@@ -394,6 +397,12 @@
         (utils/dissoc-module-ids
           (ha/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks)))
         hyto-data))))
+
+(deftest get-hankittavat-koulutuksen-osat
+  (testing "GET TUVA hankittavat koulutuksen osat"
+    (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
+      (ha/save-hankittavat-koulutuksen-osat! (:id hoks) koulutuksen-osa-data)
+      (eq (ha/get-hankittavat-koulutuksen-osat (:id hoks)) koulutuksen-osa-data))))
 
 (deftest get-hoks-test
   (testing "Save and get full HOKS"
