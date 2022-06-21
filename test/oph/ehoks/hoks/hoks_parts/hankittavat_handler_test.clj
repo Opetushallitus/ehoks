@@ -46,7 +46,7 @@
               app
               (hoks-utils/get-hoks-url hoks (format "%s/1" hpto-path))
               (assoc parts-test-data/hpto-data
-                :nimi "333" :olennainen-seikka false))]
+                     :nimi "333" :olennainen-seikka false))]
         (is (= (:status patch-response) 204))))))
 
 (deftest patch-one-hankittava-paikallinen-tutkinnon-osa
