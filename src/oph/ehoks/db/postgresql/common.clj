@@ -214,8 +214,7 @@
      oppilaitos
      start
      end]
-    {:identifiers #(do %)
-     :row-fn      db-ops/from-sql}))
+    {:row-fn db-ops/from-sql}))
 
 (def get-oppilaitos-oids-cached-memoized
   "Memoized get oppilaitos OIDs"
@@ -228,5 +227,4 @@
   "Hakee osaamisen hankkimistapoja tutkinnon perusteella tietylle aikavälille."
   [tutkinto start end]
   (db-ops/query [queries/select-oht-by-tutkinto-between tutkinto start end]
-                {:identifiers #(do %)
-                 :row-fn      db-ops/from-sql}))
+                {:row-fn db-ops/from-sql}))
