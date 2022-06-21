@@ -34,7 +34,9 @@
       :opiskeluvalmiuksia-tukevat-opinnot
       (ot/get-opiskeluvalmiuksia-tukevat-opinnot id)
       :hankittavat-yhteiset-tutkinnon-osat
-      (ha/get-hankittavat-yhteiset-tutkinnon-osat id))))
+      (ha/get-hankittavat-yhteiset-tutkinnon-osat id)
+      :hankittavat-koulutuksen-osat
+      (ha/get-hankittavat-koulutuksen-osat id))))
 
 (defn trim-arvioijat
   "Poistaa nimi-kentän jokaisesta arvioija-objektista."
@@ -266,6 +268,11 @@
         (ha/save-hankittavat-yhteiset-tutkinnon-osat!
           (:id saved-hoks)
           (:hankittavat-yhteiset-tutkinnon-osat h)
+          conn)
+        :hankittavat-koulutuksen-osat
+        (ha/save-hankittavat-koulutuksen-osat!
+          (:id saved-hoks)
+          (:hankittavat-koulutuksen-osat h)
           conn)))))
 
 (defn- merge-not-given-hoks-values
