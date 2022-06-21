@@ -30,6 +30,7 @@
                 :aiemmin-hankitut-yhteiset-tutkinnon-osat
                 :hankittavat-ammat-tutkinnon-osat
                 :hankittavat-yhteiset-tutkinnon-osat
+                :hankittavat-koulutuksen-osat
                 :opiskeluvalmiuksia-tukevat-opinnot
                 :hankittavat-paikalliset-tutkinnon-osat]}))
 
