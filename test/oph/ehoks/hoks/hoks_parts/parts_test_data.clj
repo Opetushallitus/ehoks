@@ -286,6 +286,13 @@
      :alku "2019-03-01"
      :loppu "2019-06-01"}]})
 
+(def tarkentavat-tiedot-osaamisen-arvioija
+  {:lahetetty-arvioitavaksi "2020-01-24"
+   :aiemmin-hankitun-osaamisen-arvioijat
+   [{:nimi "Uusi Ominaisuus"
+     :organisaatio {:oppilaitos-oid
+                    "1.2.246.562.10.54453931322"}}]})
+
 (def ahyto-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
