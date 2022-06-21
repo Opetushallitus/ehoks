@@ -1,4 +1,4 @@
-(ns oph.ehoks.hoks.aiemmin-hankitut-handler-test
+(ns oph.ehoks.hoks.hoks-parts.aiemmin-hankitut-handler-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
