@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
-            [oph.ehoks.hoks.test-data :as test-data]))
+            [oph.ehoks.hoks.hoks-parts.parts-test-data :as test-data]))
 
 (use-fixtures :once utils/migrate-database)
 (use-fixtures :each utils/empty-database-after-test)

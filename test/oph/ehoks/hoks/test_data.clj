@@ -1,9 +1,5 @@
-(ns oph.ehoks.hoks.test-data)
-
-(def oto-data {:nimi "Nimi"
-               :kuvaus "Kuvaus"
-               :alku "2018-12-12"
-               :loppu "2018-12-20"})
+(ns oph.ehoks.hoks.test-data
+  (:require [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]))
 
 (def hao-data {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
                :tutkinnon-osa-koodi-versio 1
@@ -363,7 +359,7 @@
    :urasuunnitelma-koodi-uri "urasuunnitelma_0002"
    :versio 4
    :sahkoposti "testi@gmail.com"
-   :opiskeluvalmiuksia-tukevat-opinnot [oto-data]
+   :opiskeluvalmiuksia-tukevat-opinnot [parts-test-data/oto-data]
    :hankittavat-ammat-tutkinnon-osat [hao-data]
    :hankittavat-paikalliset-tutkinnon-osat [hpto-data]
    :hankittavat-yhteiset-tutkinnon-osat [hyto-data]
