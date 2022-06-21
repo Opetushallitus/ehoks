@@ -270,7 +270,7 @@
                 :hankittavat-ammat-tutkinnon-osat
                 [(dissoc parts-test-data/hao-data :osaamisen-hankkimistavat)]
                 :hankittavat-paikalliset-tutkinnon-osat
-                [(dissoc test-data/hpto-data :osaamisen-hankkimistavat)]}
+                [(dissoc parts-test-data/hpto-data :osaamisen-hankkimistavat)]}
           post-response (hoks-utils/create-mock-post-request "" hoks app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
           get-response-data (:data (utils/parse-body (:body get-response)))]

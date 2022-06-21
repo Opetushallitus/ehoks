@@ -46,26 +46,6 @@
       :loppu "2019-03-19"
       :yksilolliset-kriteerit ["Yksi kriteeri"]}]}])
 
-(def hpto-data {:nimi "222"
-                :osaamisen-hankkimistavat []
-                :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
-                :olennainen-seikka true
-                :opetus-ja-ohjaus-maara 16.0
-                :osaamisen-osoittaminen
-                [{:jarjestaja {:oppilaitos-oid
-                               "1.2.246.562.10.00000000002"}
-                  :koulutuksen-jarjestaja-osaamisen-arvioijat []
-                  :osa-alueet []
-                  :sisallon-kuvaus ["ensimmäinen sisältö" "toinenkin"]
-                  :nayttoymparisto {:nimi "aaa"}
-                  :alku "2018-12-12"
-                  :loppu "2018-12-20"
-                  :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
-                                                  {:nimi "Organisaation nimi"}}]
-                  :vaatimuksista-tai-tavoitteista-poikkeaminen
-                  "Poikkeama onpi tämä."
-                  :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]}]})
-
 (def hyto-data
   {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
    :tutkinnon-osa-koodi-versio 1
@@ -316,7 +296,7 @@
    :sahkoposti "testi@gmail.com"
    :opiskeluvalmiuksia-tukevat-opinnot [parts-test-data/oto-data]
    :hankittavat-ammat-tutkinnon-osat [parts-test-data/hao-data]
-   :hankittavat-paikalliset-tutkinnon-osat [hpto-data]
+   :hankittavat-paikalliset-tutkinnon-osat [parts-test-data/hpto-data]
    :hankittavat-yhteiset-tutkinnon-osat [hyto-data]
    :aiemmin-hankitut-ammat-tutkinnon-osat [ahato-data]
    :aiemmin-hankitut-paikalliset-tutkinnon-osat [ahpto-data]

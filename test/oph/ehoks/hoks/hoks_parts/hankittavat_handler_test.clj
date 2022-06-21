@@ -18,7 +18,7 @@
       [hoks app]
       (let [ppto-response (hoks-utils/mock-st-post
                             app (hoks-utils/get-hoks-url hoks hpto-path)
-                            test-data/hpto-data)
+                            parts-test-data/hpto-data)
             body (utils/parse-body (:body ppto-response))]
         (is (= (:status ppto-response) 200))
         (eq body {:data
@@ -33,7 +33,7 @@
             (utils/dissoc-module-ids
               (:data (utils/parse-body (:body ppto-new))))
             (assoc
-              test-data/hpto-data
+              parts-test-data/hpto-data
               :id 1)))))))
 
 (deftest patch-all-hankittavat-paikalliset-tutkinnon-osat
@@ -41,12 +41,12 @@
     (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/mock-st-post
-        app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
+        app (hoks-utils/get-hoks-url hoks hpto-path) parts-test-data/hpto-data)
       (let [patch-response
             (hoks-utils/mock-st-patch
               app
               (hoks-utils/get-hoks-url hoks (format "%s/1" hpto-path))
-              (assoc test-data/hpto-data :nimi "333" :olennainen-seikka false))]
+              (assoc parts-test-data/hpto-data :nimi "333" :olennainen-seikka false))]
         (is (= (:status patch-response) 204))))))
 
 (deftest patch-one-hankittava-paikallinen-tutkinnon-osa
@@ -55,7 +55,7 @@
       [hoks app]
       (let [ppto-response
             (hoks-utils/mock-st-post
-              app (hoks-utils/get-hoks-url hoks hpto-path) test-data/hpto-data)
+              app (hoks-utils/get-hoks-url hoks hpto-path) parts-test-data/hpto-data)
             ppto-body (utils/parse-body (:body ppto-response))
             patch-response
             (hoks-utils/mock-st-patch
@@ -67,7 +67,7 @@
                              :data)]
         (is (= (:status patch-response) 204))
         (eq (utils/dissoc-module-ids get-response)
-            (assoc test-data/hpto-data
+            (assoc parts-test-data/hpto-data
                    :id 1
                    :nimi "2223"))))))
 

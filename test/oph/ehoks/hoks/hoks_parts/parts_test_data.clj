@@ -85,3 +85,23 @@
        :loppu "2019-02-11"
        :yksiloiva-tunniste "jk;l"}]
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000116"}))
+
+(def hpto-data {:nimi "222"
+                :osaamisen-hankkimistavat []
+                :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000001"
+                :olennainen-seikka true
+                :opetus-ja-ohjaus-maara 16.0
+                :osaamisen-osoittaminen
+                [{:jarjestaja {:oppilaitos-oid
+                               "1.2.246.562.10.00000000002"}
+                  :koulutuksen-jarjestaja-osaamisen-arvioijat []
+                  :osa-alueet []
+                  :sisallon-kuvaus ["ensimmäinen sisältö" "toinenkin"]
+                  :nayttoymparisto {:nimi "aaa"}
+                  :alku "2018-12-12"
+                  :loppu "2018-12-20"
+                  :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                                  {:nimi "Organisaation nimi"}}]
+                  :vaatimuksista-tai-tavoitteista-poikkeaminen
+                  "Poikkeama onpi tämä."
+                  :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]}]})
