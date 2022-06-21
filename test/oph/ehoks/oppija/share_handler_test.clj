@@ -7,7 +7,7 @@
             [ring.mock.request :as mock]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.hoks.hoks-test :as hoks-data]
+            [oph.ehoks.hoks.hoks-save-test :as hoks-data]
             [oph.ehoks.hoks.hoks :as hoks]
             [oph.ehoks.virkailija.virkailija-test-utils :as v-utils])
   (:import [java.time LocalDate]))
