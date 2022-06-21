@@ -45,7 +45,8 @@
             (hoks-utils/mock-st-patch
               app
               (hoks-utils/get-hoks-url hoks (format "%s/1" hpto-path))
-              (assoc parts-test-data/hpto-data :nimi "333" :olennainen-seikka false))]
+              (assoc parts-test-data/hpto-data
+                :nimi "333" :olennainen-seikka false))]
         (is (= (:status patch-response) 204))))))
 
 (deftest patch-one-hankittava-paikallinen-tutkinnon-osa
@@ -54,7 +55,9 @@
       [hoks app]
       (let [ppto-response
             (hoks-utils/mock-st-post
-              app (hoks-utils/get-hoks-url hoks hpto-path) parts-test-data/hpto-data)
+              app
+              (hoks-utils/get-hoks-url hoks hpto-path)
+              parts-test-data/hpto-data)
             ppto-body (utils/parse-body (:body ppto-response))
             patch-response
             (hoks-utils/mock-st-patch
@@ -170,7 +173,8 @@
   (testing "PATCH ALL hankittava ammat osaaminen"
     (hoks-utils/with-hoks-and-app
       [hoks app]
-      (hoks-utils/create-mock-post-request hao-path parts-test-data/hao-data app hoks)
+      (hoks-utils/create-mock-post-request
+        hao-path parts-test-data/hao-data app hoks)
       (let [patch-response
             (hoks-utils/mock-st-patch
               app
@@ -182,7 +186,8 @@
         (eq (utils/dissoc-module-ids
               (utils/parse-body
                 (:body get-response)))
-            {:meta {} :data  (assoc parts-test-data/patch-all-hao-data :id 1)})))))
+            {:meta {} :data
+             (assoc parts-test-data/patch-all-hao-data :id 1)})))))
 
 (deftest patch-one-hankittava-ammatilinen-osaaminen
   (testing "PATCH one value hankittava ammatillinen osaaminen"
