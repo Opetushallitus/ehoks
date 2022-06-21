@@ -366,26 +366,6 @@
       :hankittavat-yhteiset-tutkinnon-osat
       test-data/hoks-data)))
 
-(deftest patch-non-existing-hoks
-  (testing "PATCH prevents updating non existing HOKS"
-    (let [response (hoks-utils/create-mock-hoks-patch-request
-                     1 {:id 1} (hoks-utils/create-app nil))]
-      (is (= (:status response) 404)))))
-
-(deftest put-non-existing-hoks
-  (testing "PUT prevents updating non existing HOKS"
-    (let [response (hoks-utils/create-mock-hoks-put-request
-                     1 {:id 1} (hoks-utils/create-app nil))]
-      (is (= (:status response) 404)))))
-
-(deftest get-hoks-by-id-not-found
-  (testing "GET HOKS by hoks-id"
-    (let [response
-          (hoks-utils/mock-st-get
-            (hoks-utils/create-app nil)
-            (format "%s/%s" base-url 43857))]
-      (is (= (:status response) 404)))))
-
 (deftest get-hoks-by-opiskeluoikeus-oid
   (testing "GET HOKS by opiskeluoikeus-oid"
     (let [opiskeluoikeus-oid "1.2.246.562.15.00000000001"

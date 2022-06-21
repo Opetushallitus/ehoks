@@ -4,7 +4,7 @@
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.test-data :as test-data]
-            [oph.ehoks.utils :as utils :refer [eq]]))
+            [oph.ehoks.utils :as utils]))
 
 (use-fixtures :once utils/migrate-database)
 (use-fixtures :each utils/empty-database-after-test)
@@ -251,3 +251,23 @@
                            1 test-data/hoks-data app)]
       (is (= (:status post-response) 200))
       (is (= (:status patch-response) 400)))))
+
+(deftest patch-non-existing-hoks
+  (testing "PATCH prevents updating non existing HOKS"
+    (let [response (hoks-utils/create-mock-hoks-patch-request
+                     1 {:id 1} (hoks-utils/create-app nil))]
+      (is (= (:status response) 404)))))
+
+(deftest put-non-existing-hoks
+  (testing "PUT prevents updating non existing HOKS"
+    (let [response (hoks-utils/create-mock-hoks-put-request
+                     1 {:id 1} (hoks-utils/create-app nil))]
+      (is (= (:status response) 404)))))
+
+(deftest get-hoks-by-id-not-found
+  (testing "GET HOKS by hoks-id"
+    (let [response
+          (hoks-utils/mock-st-get
+            (hoks-utils/create-app nil)
+            (format "%s/%s" base-url 43857))]
+      (is (= (:status response) 404)))))
