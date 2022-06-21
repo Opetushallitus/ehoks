@@ -1,19 +1,22 @@
 SELECT
-  h.id AS "hoksId",
-  h.opiskeluoikeus_oid AS "opiskeluoikeusOid",
-  h.oppija_oid AS "oppijaOid",
-  h.eid AS "hoksEid",
-  oh.osaamisen_hankkimistapa_koodi_uri AS "osaamisenHankkimistapaKoodiUri",
+  h.id AS hoks_id,
+  h.opiskeluoikeus_oid AS opiskeluoikeus_oid,
+  h.oppija_oid AS oppija_oid,
+  h.eid AS hoks_eid,
+  oh.osaamisen_hankkimistapa_koodi_uri AS osaamisen_hankkimistapa_koodi_uri,
+  oh.osaamisen_hankkimistapa_koodi_versio AS osaamisen_hankkimistapa_koodi_versio,
   oh.alku AS alkupvm,
   oh.loppu AS loppupvm,
-  oh.osa_aikaisuustieto AS "osaAikaisuus",
-  oh.oppisopimuksen_perusta_koodi_uri AS "oppisopimuksenPerustaKoodiUri",
-  tjk.tyopaikan_nimi AS "tyopaikanNimi",
+  oh.osa_aikaisuustieto AS osa_aikaisuus,
+  oh.oppisopimuksen_perusta_koodi_uri AS oppisopimuksen_perusta_koodi_uri,
+  oh.oppisopimuksen_perusta_koodi_versio AS oppisopimuksen_perusta_koodi_versio,
+  tjk.tyopaikan_nimi AS tyopaikan_nimi,
   tjk.tyopaikan_y_tunnus AS ytunnus,
-  tjk.vastuullinen_tyopaikka_ohjaaja_nimi AS "ohjaajaNimi",
-  tjk.vastuullinen_tyopaikka_ohjaaja_sahkoposti AS "ohjaajaEmail",
-  tjk.vastuullinen_tyopaikka_ohjaaja_puhelinnumero AS "ohjaajaPuhelinnumero"
-  /* osa.tutkinnon_osa_koodi_uri AS "tutkinnonOsaKoodiUri" */
+  tjk.vastuullinen_tyopaikka_ohjaaja_nimi AS ohjaaja_nimi,
+  tjk.vastuullinen_tyopaikka_ohjaaja_sahkoposti AS ohjaaja_email,
+  tjk.vastuullinen_tyopaikka_ohjaaja_puhelinnumero AS ohjaaja_puhelinnumero,
+  osa.tutkinnon_osa_koodi_uri AS tutkinnon_osa_koodi_uri,
+  osa.tutkinnon_osa_koodi_versio AS tutkinnon_osa_koodi_versio
 FROM hoksit h
   LEFT OUTER JOIN hankittavat_ammat_tutkinnon_osat AS osa
     ON (h.id = osa.hoks_id AND osa.deleted_at IS NULL)
