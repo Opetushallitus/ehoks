@@ -1,8 +1,9 @@
-(ns oph.ehoks.hoks.aiemmin-hankitut-handler-test
+(ns oph.ehoks.hoks.hoks-parts.aiemmin-hankitut-handler-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
-            [oph.ehoks.hoks.test-data :as test-data]))
+            [oph.ehoks.hoks.test-data :as test-data]
+            [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]))
 
 (use-fixtures :once utils/migrate-database)
 (use-fixtures :each utils/empty-database-after-test)
@@ -14,26 +15,26 @@
 (deftest post-and-get-aiemmin-hankitut-yhteiset-tutkinnon-osat
   (testing "POST ahyto and then get the created ahyto"
     (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa
-      ahyto-path test-data/ahyto-data)))
+      ahyto-path parts-test-data/ahyto-data)))
 
 (deftest put-ahyto-of-hoks
   (testing "PUTs aiemmin hankitut yhteiset tutkinnon osat of HOKS"
     (hoks-utils/assert-partial-put-of-hoks
-      test-data/ahyto-of-hoks-updated
+      parts-test-data/ahyto-of-hoks-updated
       :aiemmin-hankitut-yhteiset-tutkinnon-osat
       test-data/hoks-data)))
 
 (deftest put-ahpto-of-hoks
   (testing "PUTs aiemmin hankitut paikalliset tutkinnon osat of HOKS"
     (hoks-utils/assert-partial-put-of-hoks
-      test-data/ahpto-of-hoks-updated
+      parts-test-data/ahpto-of-hoks-updated
       :aiemmin-hankitut-paikalliset-tutkinnon-osat
       test-data/hoks-data)))
 
 (deftest put-ahato-of-hoks
   (testing "PUTs aiemmin hankitut ammatilliset tutkinnon osat of HOKS"
     (hoks-utils/assert-partial-put-of-hoks
-      test-data/ahato-of-hoks-updated
+      parts-test-data/ahato-of-hoks-updated
       :aiemmin-hankitut-ammat-tutkinnon-osat
       test-data/hoks-data)))
 
@@ -60,20 +61,20 @@
          (:tutkinnon-osa-koodi-versio initial-data)))
   (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
       (:tarkentavat-tiedot-osaamisen-arvioija
-        test-data/multiple-ahyto-values-patched))
+        parts-test-data/multiple-ahyto-values-patched))
   (hoks-utils/compare-tarkentavat-tiedot-naytto-values
-    updated-data test-data/multiple-ahyto-values-patched first)
+    updated-data parts-test-data/multiple-ahyto-values-patched first)
   (hoks-utils/compare-tarkentavat-tiedot-naytto-values
-    updated-data test-data/multiple-ahyto-values-patched second)
+    updated-data parts-test-data/multiple-ahyto-values-patched second)
   (eq (utils/dissoc-module-ids (:osa-alueet updated-data))
-      (:osa-alueet test-data/multiple-ahyto-values-patched)))
+      (:osa-alueet parts-test-data/multiple-ahyto-values-patched)))
 
 (deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa
   (testing "Patching values of ahyto"
     (test-patch-of-aiemmin-hankittu-osa
       ahyto-path
-      test-data/ahyto-data
-      test-data/multiple-ahyto-values-patched
+      parts-test-data/ahyto-data
+      parts-test-data/multiple-ahyto-values-patched
       assert-ahyto-is-patched-correctly)))
 
 (defn- get-arvioija [model]
@@ -101,7 +102,7 @@
 (deftest post-and-get-aiemmin-hankitut-ammatilliset-tutkinnon-osat
   (testing "POST ahato and then get the created ahato"
     (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa
-      ahato-path test-data/ahato-data)))
+      ahato-path parts-test-data/ahato-data)))
 
 (defn- assert-ahato-data-is-patched-correctly [updated-data old-data]
   (is (= (:tutkinnon-osa-koodi-versio updated-data) 3000))
@@ -109,40 +110,40 @@
          (:valittu-todentamisen-prosessi-koodi-versio old-data)))
   (is (= (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
          (:tarkentavat-tiedot-osaamisen-arvioija
-           test-data/multiple-ahato-values-patched)))
+           parts-test-data/multiple-ahato-values-patched)))
   (hoks-utils/compare-tarkentavat-tiedot-naytto-values
-    updated-data test-data/multiple-ahato-values-patched first))
+    updated-data parts-test-data/multiple-ahato-values-patched first))
 
 (deftest patch-aiemmin-hankitut-ammat-tutkinnon-osat
   (testing "Patching multiple values of ahato"
     (test-patch-of-aiemmin-hankittu-osa
       ahato-path
-      test-data/ahato-data
-      test-data/multiple-ahato-values-patched
+      parts-test-data/ahato-data
+      parts-test-data/multiple-ahato-values-patched
       assert-ahato-data-is-patched-correctly)))
 
 (deftest post-and-get-aiemmin-hankitut-paikalliset-tutkinnon-osat
   (testing "POST ahpto and then get the created ahpto"
     (hoks-utils/test-post-and-get-of-aiemmin-hankittu-osa
-      ahpto-path test-data/ahpto-data)))
+      ahpto-path parts-test-data/ahpto-data)))
 
 (defn- assert-ahpto-data-is-patched-correctly [updated-data old-data]
   (is (= (:tavoitteet-ja-sisallot updated-data) "Muutettu tavoite."))
   (is (= (:nimi updated-data) (:nimi old-data)))
   (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
       (:tarkentavat-tiedot-osaamisen-arvioija
-        test-data/multiple-ahpto-values-patched))
+        parts-test-data/multiple-ahpto-values-patched))
   (eq (utils/dissoc-module-ids
         (first (:tarkentavat-tiedot-naytto updated-data)))
       (first (:tarkentavat-tiedot-naytto
-               test-data/multiple-ahpto-values-patched)))
+               parts-test-data/multiple-ahpto-values-patched)))
   (hoks-utils/compare-tarkentavat-tiedot-naytto-values
-    updated-data test-data/multiple-ahpto-values-patched first))
+    updated-data parts-test-data/multiple-ahpto-values-patched first))
 
 (deftest patch-aiemmin-hankittu-paikalliset-tutkinnon-osat
   (testing "Patching multiple values of ahpto"
     (test-patch-of-aiemmin-hankittu-osa
       ahpto-path
-      test-data/ahpto-data
-      test-data/multiple-ahpto-values-patched
+      parts-test-data/ahpto-data
+      parts-test-data/multiple-ahpto-values-patched
       assert-ahpto-data-is-patched-correctly)))

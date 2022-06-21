@@ -7,7 +7,7 @@
              :refer [eq with-authentication parse-body]]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.hoks.hoks-test :refer [hoks-data]]
+            [oph.ehoks.hoks.hoks-save-test :refer [hoks-data]]
             [clojure.walk :as w]
             [oph.ehoks.external.http-client :as client])
   (:import [java.time LocalDate]))

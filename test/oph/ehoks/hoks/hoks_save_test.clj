@@ -1,4 +1,4 @@
-(ns oph.ehoks.hoks.hoks-test
+(ns oph.ehoks.hoks.hoks-save-test
   (:require [clojure.test :refer :all]
             [oph.ehoks.utils :as utils :refer [eq empty-database-after-test
                                                migrate-database]]
