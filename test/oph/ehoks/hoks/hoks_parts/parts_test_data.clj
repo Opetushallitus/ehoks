@@ -553,3 +553,56 @@
      :yksilolliset-kriteerit ["Toinen kriteeri"]
      :osa-alueet []
      :tyoelama-osaamisen-arvioijat []}]})
+
+(def osa-alueet-of-hyto
+  [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ru"
+    :osa-alue-koodi-versio 4
+    :vaatimuksista-tai-tavoitteista-poikkeaminen "uusi poikkeaminen"
+    :olennainen-seikka true
+    :osaamisen-hankkimistavat
+    [{:alku "2019-01-15"
+      :loppu "2020-02-23"
+      :yksiloiva-tunniste "09807987"
+      :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_muutettu"
+      :osaamisen-hankkimistapa-koodi-versio 3
+      :ajanjakson-tarkenne "tarkenne"
+      :muut-oppimisymparistot
+      [{:oppimisymparisto-koodi-uri "oppimisymparistot_0222"
+        :oppimisymparisto-koodi-versio 3
+        :alku "2016-03-12"
+        :loppu "2025-06-19"}]
+      :keskeytymisajanjaksot
+      [{:alku "2021-03-03"
+        :loppu "2021-05-05"}]
+      :jarjestajan-edustaja
+      {:nimi "testi testaaja"
+       :oppilaitos-oid "1.2.246.562.10.00000000421"}
+      :hankkijan-edustaja
+      {:nimi "testi edustaja"
+       :oppilaitos-oid "1.2.246.562.10.00000000321"}
+      :tyopaikalla-jarjestettava-koulutus
+      {:tyopaikan-nimi "joku nimi"
+       :keskeiset-tyotehtavat ["tehtava" "toinen"]
+       :vastuullinen-tyopaikka-ohjaaja
+       {:nimi "ohjaaja o"}}}]
+    :osaamisen-osoittaminen
+    [{:alku "2018-12-12"
+      :loppu "2018-12-20"
+      :sisallon-kuvaus ["Kuvaus"]
+      :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
+      :vaatimuksista-tai-tavoitteista-poikkeaminen "nyt poikettiin"
+      :jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
+      :nayttoymparisto {:nimi "aaa"}
+      :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
+                    :koodi-versio 4}]
+      :koulutuksen-jarjestaja-osaamisen-arvioijat
+      [{:nimi "Erkki Esimerkkitetsaaja"
+        :organisaatio {:oppilaitos-oid
+                       "1.2.246.562.10.13490579333"}}]
+      :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                      {:nimi "Organisaation nimi"}}]}]}])
+
+(def multiple-hyto-values-patched
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000009"
+   :osa-alueet osa-alueet-of-hyto})

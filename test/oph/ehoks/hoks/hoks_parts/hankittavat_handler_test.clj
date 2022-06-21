@@ -117,16 +117,16 @@
       (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              hyto-path
                              app
-                             test-data/multiple-hyto-values-patched)
+                             parts-test-data/multiple-hyto-values-patched)
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
             get-response-data (:data (utils/parse-body (:body get-response)))]
         (is (= (:status patch-response) 204))
         (eq (utils/dissoc-module-ids (:osa-alueet get-response-data))
-            (:osa-alueet test-data/multiple-hyto-values-patched))))))
+            (:osa-alueet parts-test-data/multiple-hyto-values-patched))))))
 
 (def hyto-sub-entity-patched
-  {:osa-alueet test-data/osa-alueet-of-hyto})
+  {:osa-alueet parts-test-data/osa-alueet-of-hyto})
 
 (deftest only-sub-entity-of-hyto-patched
   (testing "PATCH only osa-alueet of hyto and leave base hyto untouched."
