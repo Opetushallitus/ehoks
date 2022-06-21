@@ -1,4 +1,4 @@
-(ns oph.ehoks.hoks.handler-test
+(ns oph.ehoks.hoks.hoks-handler-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
