@@ -2,7 +2,8 @@
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
-            [oph.ehoks.hoks.test-data :as test-data]))
+            [oph.ehoks.hoks.test-data :as test-data]
+            [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]))
 
 (use-fixtures :once utils/migrate-database)
 (use-fixtures :each utils/empty-database-after-test)
@@ -148,7 +149,7 @@
       [hoks app]
       (let [post-response
             (hoks-utils/create-mock-post-request
-              hao-path test-data/hao-data app hoks)
+              hao-path parts-test-data/hao-data app hoks)
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status post-response) 200))
@@ -164,25 +165,25 @@
         (eq (utils/dissoc-module-ids
               (utils/parse-body
                 (:body get-response)))
-            {:meta {} :data (assoc test-data/hao-data :id 1)})))))
+            {:meta {} :data (assoc parts-test-data/hao-data :id 1)})))))
 
 (deftest patch-all-hankittava-ammatillinen-osaaminen
   (testing "PATCH ALL hankittava ammat osaaminen"
     (hoks-utils/with-hoks-and-app
       [hoks app]
-      (hoks-utils/create-mock-post-request hao-path test-data/hao-data app hoks)
+      (hoks-utils/create-mock-post-request hao-path parts-test-data/hao-data app hoks)
       (let [patch-response
             (hoks-utils/mock-st-patch
               app
               (hoks-utils/get-hoks-url hoks (str hao-path "/1"))
-              (assoc test-data/patch-all-hao-data :id 1))
+              (assoc parts-test-data/patch-all-hao-data :id 1))
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status patch-response) 204))
         (eq (utils/dissoc-module-ids
               (utils/parse-body
                 (:body get-response)))
-            {:meta {} :data  (assoc test-data/patch-all-hao-data :id 1)})))))
+            {:meta {} :data  (assoc parts-test-data/patch-all-hao-data :id 1)})))))
 
 (deftest patch-one-hankittava-ammatilinen-osaaminen
   (testing "PATCH one value hankittava ammatillinen osaaminen"
@@ -192,7 +193,7 @@
         app
         (format
           "%s/1/hankittava-ammat-tutkinnon-osa"
-          hoks-utils/base-url) test-data/hao-data)
+          hoks-utils/base-url) parts-test-data/hao-data)
       (let [response
             (hoks-utils/mock-st-patch
               app

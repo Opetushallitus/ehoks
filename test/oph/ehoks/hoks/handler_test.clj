@@ -6,6 +6,7 @@
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.hoks.test-data :as test-data]
+            [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [clj-time.core :as t]))
 
@@ -267,7 +268,7 @@
                 :ensikertainen-hyvaksyminen "2018-12-15"
                 :osaamisen-hankkimisen-tarve false
                 :hankittavat-ammat-tutkinnon-osat
-                [(dissoc test-data/hao-data :osaamisen-hankkimistavat)]
+                [(dissoc parts-test-data/hao-data :osaamisen-hankkimistavat)]
                 :hankittavat-paikalliset-tutkinnon-osat
                 [(dissoc test-data/hpto-data :osaamisen-hankkimistavat)]}
           post-response (hoks-utils/create-mock-post-request "" hoks app)
