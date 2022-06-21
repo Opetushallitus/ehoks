@@ -76,7 +76,7 @@
     (hoks-utils/with-hoks-and-app
       [hoks app]
       (let [post-response (hoks-utils/create-mock-post-request
-                            hyto-path test-data/hyto-data app hoks)
+                            hyto-path parts-test-data/hyto-data app hoks)
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)]
         (hoks-utils/assert-post-response-is-ok hyto-path post-response)
@@ -84,7 +84,7 @@
         (eq (utils/dissoc-module-ids
               (utils/parse-body
                 (:body get-response)))
-            {:meta {} :data (assoc test-data/hyto-data :id 1)})))))
+            {:meta {} :data (assoc parts-test-data/hyto-data :id 1)})))))
 
 (def ^:private one-value-of-hyto-patched
   {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})
@@ -94,7 +94,7 @@
     (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request
-        hyto-path test-data/hyto-data app hoks)
+        hyto-path parts-test-data/hyto-data app hoks)
       (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              hyto-path app one-value-of-hyto-patched)
             get-response
@@ -105,7 +105,7 @@
                (:koulutuksen-jarjestaja-oid one-value-of-hyto-patched))
             "Patched value should change.")
         (is (= (:tutkinnon-osa-koodi-versio get-response-data)
-               (:tutkinnon-osa-koodi-versio test-data/hyto-data))
+               (:tutkinnon-osa-koodi-versio parts-test-data/hyto-data))
             "Value should stay unchanged")))))
 
 (deftest patch-multiple-values-of-hankittavat-yhteiset-tutkinnon-osat
@@ -113,7 +113,7 @@
     (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request
-        hyto-path test-data/hyto-data app hoks)
+        hyto-path parts-test-data/hyto-data app hoks)
       (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              hyto-path
                              app
@@ -133,7 +133,7 @@
     (hoks-utils/with-hoks-and-app
       [hoks app]
       (hoks-utils/create-mock-post-request
-        hyto-path test-data/hyto-data app hoks)
+        hyto-path parts-test-data/hyto-data app hoks)
       (let [patch-response (hoks-utils/create-mock-hoks-osa-patch-request
                              hyto-path app hyto-sub-entity-patched)
             get-response
