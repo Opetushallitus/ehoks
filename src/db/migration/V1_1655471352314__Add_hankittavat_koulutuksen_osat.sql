@@ -6,5 +6,8 @@ CREATE TABLE hankittavat_koulutuksen_osat
   deleted_at                 TIMESTAMP WITH TIME ZONE,
   hoks_id                    INTEGER REFERENCES hoksit (id),
   koulutuksen_osa_koodi_uri  VARCHAR(256),
-  koulutuksen_osa_koodi_uri_versio INTEGER
+  koulutuksen_osa_koodi_uri_versio INTEGER,
+  alku DATE,
+  loppu DATE,
+  laajuus DECIMAL
 );
