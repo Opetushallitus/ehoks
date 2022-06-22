@@ -146,6 +146,9 @@
                                        {:nimi "Organisaation nimi"}}]
        :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]}]})
 
+(def hankittavat-koulutuksen-osat-data
+  {:koulutuksen-osa-koodi-uri "koulutuksenosattuva_102"})
+
 (def ahato-data
   {:valittu-todentamisen-prosessi-koodi-versio 3
    :tutkinnon-osa-koodi-versio 100022
