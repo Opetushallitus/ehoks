@@ -341,7 +341,7 @@
   (db-ha/delete-hankittavat-koulutuksen-osat-by-hoks-id
     hoks-id db-conn)
   (when
-    new-koulutuksen-osat-values
+   new-koulutuksen-osat-values
     (ha/save-hankittavat-koulutuksen-osat!
       hoks-id new-koulutuksen-osat-values db-conn)))
 
@@ -494,10 +494,11 @@
                                (:hankittavat-yhteiset-tutkinnon-osat
                                  new-values)
                                db-conn)
-                (replace-hankittavat-koulutuksen-osat! hoks-id
-                               (:hankittavat-koulutuksen-osat
-                                 new-values)
-                               db-conn)
+                (replace-hankittavat-koulutuksen-osat!
+                  hoks-id
+                  (:hankittavat-koulutuksen-osat
+                    new-values)
+                  db-conn)
                 (replace-ahato!
                   hoks-id
                   (:aiemmin-hankitut-ammat-tutkinnon-osat
