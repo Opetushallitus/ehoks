@@ -31,6 +31,15 @@
        %)
     c))
 
+(defn- mock-oppija-get-request [store oppija-oid oppija-app]
+  (utils/with-authenticated-oid
+    store
+    oppija-oid
+    oppija-app
+    (mock/request
+      :get
+      (format "%s/%s/hoks" url oppija-oid))))
+
 (deftest get-hoks
   (testing "GET enriched HOKS"
     (h/save-hoks! hoks-data)
@@ -38,14 +47,7 @@
           store (atom {})
           oppija-app (common-api/create-app
                 handler/app-routes (test-session-store store))
-          get-response
-          (utils/with-authenticated-oid
-            store
-            oppija-oid
-            oppija-app
-            (mock/request
-              :get
-              (format "%s/%s/hoks" url oppija-oid)))
+          get-response (mock-oppija-get-request store oppija-oid oppija-app)
           body (utils/parse-body (:body get-response))]
       (is (= (:status get-response) 200))
       (eq
