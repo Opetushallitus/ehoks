@@ -335,6 +335,16 @@
     (ha/save-hankittavat-yhteiset-tutkinnon-osat!
       hoks-id new-hyto-values db-conn)))
 
+(defn- replace-hankittavat-koulutuksen-osat!
+  "Korvaa vanhat hankittavat koulutuksen osat annetuilla arvoilla."
+  [hoks-id new-koulutuksen-osat-values db-conn]
+  (db-ha/delete-hankittavat-koulutuksen-osat-by-hoks-id
+    hoks-id db-conn)
+  (when
+    new-koulutuksen-osat-values
+    (ha/save-hankittavat-koulutuksen-osat!
+      hoks-id new-koulutuksen-osat-values db-conn)))
+
 (defn- replace-ahato!
   "Korvaa vanhat aiemmin hankitut ammatilliset tutkinnon osat annetuilla
   arvoilla."
@@ -482,6 +492,10 @@
                   db-conn)
                 (replace-hyto! hoks-id
                                (:hankittavat-yhteiset-tutkinnon-osat
+                                 new-values)
+                               db-conn)
+                (replace-hankittavat-koulutuksen-osat! hoks-id
+                               (:hankittavat-koulutuksen-osat
                                  new-values)
                                db-conn)
                 (replace-ahato!
