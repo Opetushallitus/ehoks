@@ -456,7 +456,8 @@
                                 :aiemmin-hankitut-yhteiset-tutkinnon-osat []
                                 :hankittavat-ammat-tutkinnon-osat []
                                 :opiskeluvalmiuksia-tukevat-opinnot []
-                                :hankittavat-yhteiset-tutkinnon-osat []}))))
+                                :hankittavat-yhteiset-tutkinnon-osat []
+                                :hankittavat-koulutuksen-osat []}))))
 
 (deftest set-tep-kasitelty-test
   (testing
