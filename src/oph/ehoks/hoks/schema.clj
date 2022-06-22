@@ -930,7 +930,15 @@
     :koulutuksen-osa-koodi-uri KoulutuksenOsaKoodiUri
     "TUVA perusteen koulutuksen osan koodiuri"
     :koulutuksen-osa-koodi-uri-versio s/Int
-    "TUVA perusteen koulutuksen osan koodiurin versio"))
+    "TUVA perusteen koulutuksen osan koodiurin versio"
+    :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
+    :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
+    :laajuus
+    (s/constrained s/Num
+                   #(not (neg? %))
+                   "Koulutuksen osan laajuus ei saa olla negatiivinen.")
+    (str "Tutkintoon valmentavan koulutuksen koulutuksen osan laajuus"
+         "TUVA-viikkoina.")))
 
 (def ^:private ahato-part-of-hoks
   "Aiemmin hankitun ammatillisen tutkinnon osan HOKS-osa schemana."
