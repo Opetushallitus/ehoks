@@ -266,4 +266,7 @@
    :osaamisen-hankkimisen-tarve false
    :hankittavat-koulutuksen-osat
    [{:koulutuksen-osa-koodi-uri "koulutuksenosattuva_104"
-     :koulutuksen-osa-koodi-uri-versio 1}]})
+     :koulutuksen-osa-koodi-uri-versio 1
+     :alku "2022-09-01"
+     :loppu "2022-09-21"
+     :laajuus 10.4}]})
