@@ -36,18 +36,18 @@
     (h/save-hoks! hoks-data)
     (let [oppija-oid (:oppija-oid hoks-data)
           store (atom {})
-          app (common-api/create-app
+          oppija-app (common-api/create-app
                 handler/app-routes (test-session-store store))
-          response
+          get-response
           (utils/with-authenticated-oid
             store
             oppija-oid
-            app
+            oppija-app
             (mock/request
               :get
               (format "%s/%s/hoks" url oppija-oid)))
-          body (utils/parse-body (:body response))]
-      (is (= (:status response) 200))
+          body (utils/parse-body (:body get-response))]
+      (is (= (:status get-response) 200))
       (eq
         (utils/dissoc-module-ids (:data body))
         [(dates-to-str
