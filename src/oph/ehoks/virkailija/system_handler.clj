@@ -48,11 +48,11 @@
         :return (restful/response virkailija-schema/SystemInfoOppijaindex)
         (restful/rest-ok
           {:unindexedOppijat
-            (op/get-oppijat-without-index-count)
-            :unindexedOpiskeluoikeudet
-            (op/get-opiskeluoikeudet-without-index-count)
-            :unindexedTutkinnot
-            (op/get-opiskeluoikeudet-without-tutkinto-count)}))
+           (op/get-oppijat-without-index-count)
+           :unindexedOpiskeluoikeudet
+           (op/get-opiskeluoikeudet-without-index-count)
+           :unindexedTutkinnot
+           (op/get-opiskeluoikeudet-without-tutkinto-count)}))
 
       (c-api/GET "/hoksit" []
         :summary "Järjestelmän tiedot: Hoksit."
