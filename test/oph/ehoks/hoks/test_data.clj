@@ -111,7 +111,8 @@
    :hankittavat-ammat-tutkinnon-osat [parts-test-data/hao-data]
    :hankittavat-paikalliset-tutkinnon-osat [parts-test-data/hpto-data]
    :hankittavat-yhteiset-tutkinnon-osat [parts-test-data/hyto-data]
-   :hankittavat-koulutuksen-osat [parts-test-data/hankittavat-koulutuksen-osat-data]
+   :hankittavat-koulutuksen-osat
+   [parts-test-data/hankittavat-koulutuksen-osat-data]
    :aiemmin-hankitut-ammat-tutkinnon-osat [parts-test-data/ahato-data]
    :aiemmin-hankitut-paikalliset-tutkinnon-osat [parts-test-data/ahpto-data]
    :aiemmin-hankitut-yhteiset-tutkinnon-osat [parts-test-data/ahyto-data]})
@@ -264,4 +265,5 @@
    :ensikertainen-hyvaksyminen "2018-12-15"
    :osaamisen-hankkimisen-tarve false
    :hankittavat-koulutuksen-osat
-   [{:koulutuksen-osa-koodi-uri "koulutuksenosattuva_104"}]})
+   [{:koulutuksen-osa-koodi-uri "koulutuksenosattuva_104"
+     :koulutuksen-osa-koodi-uri-versio 1}]})

@@ -311,7 +311,8 @@
         :yksilolliset-kriteerit []}]}]}])
 
 (def koulutuksen-osa-data
-  [{:koulutuksen-osa-koodi-uri "koulutuksenosattuva_102"}])
+  [{:koulutuksen-osa-koodi-uri "koulutuksenosattuva_102"
+    :koulutuksen-osa-koodi-uri-versio 1}])
 
 (def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                 :oppija-oid "1.2.246.562.24.12312312312"
