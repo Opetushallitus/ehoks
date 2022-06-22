@@ -147,7 +147,8 @@
        :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]}]})
 
 (def hankittavat-koulutuksen-osat-data
-  {:koulutuksen-osa-koodi-uri "koulutuksenosattuva_102"})
+  {:koulutuksen-osa-koodi-uri "koulutuksenosattuva_102"
+   :koulutuksen-osa-koodi-uri-versio 1})
 
 (def ahato-data
   {:valittu-todentamisen-prosessi-koodi-versio 3
