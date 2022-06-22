@@ -20,26 +20,26 @@
 (s/defschema
   SystemInfoCache
   "Järjestelmätietojen schema: Cache."
-  {:cache {:size s/Int}})
+  {:size s/Int})
 
 (s/defschema
   SystemInfoMemory
   "Järjestelmätietojen schema: Muisti."
-  {:memory {:total Long
-            :free Long
-            :max Long}})
+  {:total Long
+   :free Long
+   :max Long})
 
 (s/defschema
   SystemInfoOppijaindex
   "Järjestelmätietojen schema: Oppijaindex."
-  {:oppijaindex {:unindexedOppijat Long
-                 :unindexedOpiskeluoikeudet Long
-                 :unindexedTutkinnot Long}})
+  {:unindexedOppijat Long
+   :unindexedOpiskeluoikeudet Long
+   :unindexedTutkinnot Long})
 
 (s/defschema
   SystemInfoHoksit
   "Järjestelmätietojen schema: Hoksit."
-  {:hoksit {:amount s/Any}})
+  {:amount s/Any})
 
 (s/defschema
   DeleteConfirmInfo

@@ -30,7 +30,7 @@
         :header-params [caller-id :- s/Str]
         :return (restful/response virkailija-schema/SystemInfoCache)
         (restful/rest-ok
-          {:cache {:size (c/size)}}))
+          {:size (c/size)}))
 
       (c-api/GET "/memory" []
         :summary "Järjestelmän tiedot: Muisti."
@@ -38,22 +38,21 @@
         :return (restful/response virkailija-schema/SystemInfoMemory)
         (let [runtime (Runtime/getRuntime)]
           (restful/rest-ok
-            {:memory {:total (.totalMemory runtime)
-                      :free (.freeMemory runtime)
-                      :max (.maxMemory runtime)}})))
+            {:total (.totalMemory runtime)
+             :free (.freeMemory runtime)
+             :max (.maxMemory runtime)})))
 
       (c-api/GET "/oppijaindex" []
         :summary "Järjestelmän tiedot: Oppijaindex."
         :header-params [caller-id :- s/Str]
         :return (restful/response virkailija-schema/SystemInfoOppijaindex)
         (restful/rest-ok
-          {:oppijaindex
-           {:unindexedOppijat
+          {:unindexedOppijat
             (op/get-oppijat-without-index-count)
             :unindexedOpiskeluoikeudet
             (op/get-opiskeluoikeudet-without-index-count)
             :unindexedTutkinnot
-            (op/get-opiskeluoikeudet-without-tutkinto-count)}}))
+            (op/get-opiskeluoikeudet-without-tutkinto-count)}))
 
       (c-api/GET "/hoksit" []
         :summary "Järjestelmän tiedot: Hoksit."
