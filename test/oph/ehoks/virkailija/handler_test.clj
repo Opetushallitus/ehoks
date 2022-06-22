@@ -1001,7 +1001,7 @@
                 :get
                 (str
                   base-url
-                  "/virkailija/system-info"))
+                  "/virkailija/system-info/hoksit"))
               {:name "Testivirkailija"
                :kayttajaTyyppi "VIRKAILIJA"
                :organisation-privileges
