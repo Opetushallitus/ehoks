@@ -49,7 +49,8 @@
           oppija-app (common-api/create-app
                        handler/app-routes (test-session-store store))
           virkailja-app (virkailija-utils/create-app nil)
-          post-response (virkailija-utils/create-mock-post-request "" test-data/hoks-data virkailja-app)
+          post-response (virkailija-utils/create-mock-post-request
+                          "" test-data/hoks-data virkailja-app)
           get-response (mock-oppija-get-request store oppija-oid oppija-app)
           body (utils/parse-body (:body get-response))]
       (is (= (:status post-response) 200))
