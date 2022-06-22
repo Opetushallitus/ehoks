@@ -409,6 +409,13 @@
     :hankittavat_yhteiset_tutkinnon_osat
     ["hoks_id = ? AND deleted_at IS NULL" hoks-id] db-conn))
 
+(defn delete-hankittavat-koulutuksen-osat-by-hoks-id
+  "Poista hankittavat koulutuksen osat"
+  [hoks-id db-conn]
+  (db-ops/shallow-delete!
+    :hankittavat_koulutuksen_osat
+    ["hoks_id = ?" hoks-id] db-conn))
+
 (defn delete-osaamisen-hankkimistavan-muut-oppimisymparistot
   "Poista osaamisen hankkimistavan muut oppimisympäristöt"
   [oht-id db-conn]
