@@ -58,8 +58,7 @@
         :summary "Järjestelmän tiedot: Hoksit."
         :header-params [caller-id :- s/Str]
         :return (restful/response virkailija-schema/SystemInfoHoksit)
-        (restful/rest-ok
-          {:hoksit {:amount (:count (op/get-amount-of-hoks))}})))
+        (restful/rest-ok {:amount (:count (op/get-amount-of-hoks))})))
 
     (c-api/POST "/index" []
       :summary "Indeksoi oppijat ja opiskeluoikeudet"
