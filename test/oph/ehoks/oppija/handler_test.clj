@@ -7,7 +7,9 @@
              :refer [eq with-authentication parse-body]]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks.hoks-test-utils :as virkailija-utils]
             [oph.ehoks.hoks.hoks-save-test :refer [hoks-data]]
+            [oph.ehoks.hoks.test-data :as test-data]
             [clojure.walk :as w]
             [oph.ehoks.external.http-client :as client])
   (:import [java.time LocalDate]))
@@ -42,18 +44,20 @@
 
 (deftest get-hoks
   (testing "GET enriched HOKS"
-    (h/save-hoks! hoks-data)
-    (let [oppija-oid (:oppija-oid hoks-data)
+    (let [oppija-oid (:oppija-oid test-data/hoks-data)
           store (atom {})
           oppija-app (common-api/create-app
                 handler/app-routes (test-session-store store))
+          virkailja-app (virkailija-utils/create-app nil)
+          post-response (virkailija-utils/create-mock-post-request "" test-data/hoks-data virkailja-app)
           get-response (mock-oppija-get-request store oppija-oid oppija-app)
           body (utils/parse-body (:body get-response))]
+      (is (= (:status post-response) 200))
       (is (= (:status get-response) 200))
       (eq
         (utils/dissoc-module-ids (:data body))
         [(dates-to-str
-           (assoc hoks-data
+           (assoc test-data/hoks-data
                   :eid (get-in body [:data 0 :eid])
                   :manuaalisyotto false))]))))
 
