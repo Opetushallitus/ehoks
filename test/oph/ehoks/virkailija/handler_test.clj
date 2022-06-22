@@ -1012,7 +1012,7 @@
                  :roles {:oph-super-user true}}]})
             amount-body (utils/parse-body (:body amount-response))]
         (t/is (= (:status amount-response) 200))
-        (t/is (= (:hoksit (:data amount-body)) {:amount 1}))))))
+        (t/is (= (:data amount-body) {:amount 1}))))))
 
 (t/deftest test-get-kyselylinkit
   (t/testing "Test getting kyselylinkit"
