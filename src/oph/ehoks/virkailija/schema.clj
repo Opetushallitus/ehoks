@@ -18,16 +18,28 @@
    :isSuperuser s/Bool})
 
 (s/defschema
-  SystemInfo
-  "Järjestelmätietojen schema."
-  {:cache {:size s/Int}
-   :memory {:total Long
-            :free Long
-            :max Long}
-   :oppijaindex {:unindexedOppijat Long
-                 :unindexedOpiskeluoikeudet Long
-                 :unindexedTutkinnot Long}
-   :hoksit {:amount s/Any}})
+  SystemInfoCache
+  "Järjestelmätietojen schema: Cache."
+  {:size s/Int})
+
+(s/defschema
+  SystemInfoMemory
+  "Järjestelmätietojen schema: Muisti."
+  {:total Long
+   :free Long
+   :max Long})
+
+(s/defschema
+  SystemInfoOppijaindex
+  "Järjestelmätietojen schema: Oppijaindex."
+  {:unindexedOppijat Long
+   :unindexedOpiskeluoikeudet Long
+   :unindexedTutkinnot Long})
+
+(s/defschema
+  SystemInfoHoksit
+  "Järjestelmätietojen schema: Hoksit."
+  {:amount s/Any})
 
 (s/defschema
   DeleteConfirmInfo
