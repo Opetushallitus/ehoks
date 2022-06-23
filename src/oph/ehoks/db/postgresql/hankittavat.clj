@@ -359,7 +359,7 @@
   [hyto-id db-conn]
   (db-ops/shallow-delete!
     :yhteisen_tutkinnon_osan_osa_alueet
-    ["yhteinen_tutkinnon_osa_id = ?" hyto-id] db-conn))
+    ["yhteinen_tutkinnon_osa_id = ? AND deleted_at IS NULL" hyto-id] db-conn))
 
 (defn update-hankittava-yhteinen-tutkinnon-osa-by-id!
   "Päivitä hankittavan yhteisen tutkinnon osa"
@@ -374,39 +374,41 @@
   [hoks-id db-conn]
   (db-ops/shallow-delete!
     :hankittavat_ammat_tutkinnon_osat
-    ["hoks_id = ?" hoks-id] db-conn))
+    ["hoks_id = ? AND deleted_at IS NULL" hoks-id] db-conn))
 
 (defn delete-hankittavat-paikalliset-tutkinnon-osat-by-hoks-id
   "Poista hankittavat paikalliset tutkinnot osat"
   [hoks-id db-conn]
   (db-ops/shallow-delete!
     :hankittavat_paikalliset_tutkinnon_osat
-    ["hoks_id = ?" hoks-id] db-conn))
+    ["hoks_id = ? AND deleted_at IS NULL" hoks-id] db-conn))
 
 (defn delete-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id
   "Poista hankittavat yhteiset tutkinnon osat"
   [hoks-id db-conn]
   (db-ops/shallow-delete!
     :hankittavat_yhteiset_tutkinnon_osat
-    ["hoks_id = ?" hoks-id] db-conn))
+    ["hoks_id = ? AND deleted_at IS NULL" hoks-id] db-conn))
 
 (defn delete-osaamisen-hankkimistavan-muut-oppimisymparistot
   "Poista osaamisen hankkimistavan muut oppimisympäristöt"
   [oht-id db-conn]
   (db-ops/shallow-delete!
     :muut_oppimisymparistot
-    ["osaamisen_hankkimistapa_id = ?" (:id oht-id)] db-conn))
+    ["osaamisen_hankkimistapa_id = ? AND deleted_at IS NULL" (:id oht-id)]
+    db-conn))
 
 (defn delete-osaamisen-hankkimistavan-keskeytymisajanjaksot
   "Poista osaamisen hankkimistavan keskeytymisajanjaksot"
   [oht-id db-conn]
   (db-ops/shallow-delete!
     :keskeytymisajanjaksot
-    ["osaamisen_hankkimistapa_id = ?" (:id oht-id)] db-conn))
+    ["osaamisen_hankkimistapa_id = ? AND deleted_at IS NULL" (:id oht-id)]
+    db-conn))
 
 (defn delete-tyopaikalla-jarjestettava-koulutus
   "Poistaa työpaikalla järjestettävän koulutuksen tietokannasta."
   [tjk-id db-conn]
   (db-ops/shallow-delete! :tyopaikalla_jarjestettavat_koulutukset
-                          ["id = ?" tjk-id]
+                          ["id = ? AND deleted_at IS NULL" tjk-id]
                           db-conn))

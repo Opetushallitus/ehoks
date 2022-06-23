@@ -240,22 +240,25 @@
   ([id]
     (db-ops/shallow-delete!
       :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
-      ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ?" id]))
+      ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ? AND deleted_at IS NULL"
+       id]))
   ([id db-conn]
     (db-ops/shallow-delete!
       :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
-      ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ?" id] db-conn)))
+      ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ? AND deleted_at IS NULL" id]
+      db-conn)))
 
 (defn delete-todennettu-arviointi-arvioijat-by-tta-id!
   "Poista todennetun arvioinnin arvioija"
   ([id]
     (db-ops/shallow-delete!
       :todennettu_arviointi_arvioijat
-      ["todennettu_arviointi_lisatiedot_id = ?" id]))
+      ["todennettu_arviointi_lisatiedot_id = ? AND deleted_at IS NULL" id]))
   ([id db-conn]
     (db-ops/shallow-delete!
       :todennettu_arviointi_arvioijat
-      ["todennettu_arviointi_lisatiedot_id = ?" id] db-conn)))
+      ["todennettu_arviointi_lisatiedot_id = ? AND deleted_at IS NULL" id]
+      db-conn)))
 
 (defn update-todennettu-arviointi-lisatiedot-by-id!
   "Päivitä todennetun arvioinnin lisätiedot"
@@ -275,11 +278,16 @@
   ([id]
     (db-ops/shallow-delete!
       :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
-      ["aiemmin_hankittu_paikallinen_tutkinnon_osa_id = ?" id]))
+      [(str "aiemmin_hankittu_paikallinen_tutkinnon_osa_id = ? "
+            "AND deleted_at IS NULL")
+       id]))
   ([id db-conn]
     (db-ops/shallow-delete!
       :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
-      ["aiemmin_hankittu_paikallinen_tutkinnon_osa_id = ?" id] db-conn)))
+      [(str "aiemmin_hankittu_paikallinen_tutkinnon_osa_id = ? "
+            "AND deleted_at IS NULL")
+       id]
+      db-conn)))
 
 (defn update-aiemmin-hankittu-paikallinen-tutkinnon-osa-by-id!
   "Päivitä aiemmin hankitun paikallisen tutkinnon osa"
@@ -305,22 +313,28 @@
   ([id]
     (db-ops/shallow-delete!
       :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-      ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
+      ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ? AND deleted_at IS NULL"
+       id]))
   ([id db-conn]
     (db-ops/shallow-delete!
       :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
-      ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id] db-conn)))
+      ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ? AND deleted_at IS NULL"
+       id]
+      db-conn)))
 
 (defn delete-aiemmin-hankitut-yto-osa-alueet-by-id!
   "Poista aiemmin hankitun yhteisen tutkinnon osan osa-alue"
   ([id]
     (db-ops/shallow-delete!
       :aiemmin_hankitut_yto_osa_alueet
-      ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id]))
+      ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ? AND deleted_at IS NULL"
+       id]))
   ([id db-conn]
     (db-ops/shallow-delete!
       :aiemmin_hankitut_yto_osa_alueet
-      ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ?" id] db-conn)))
+      ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ? AND deleted_at IS NULL"
+       id]
+      db-conn)))
 
 (defn update-aiemmin-hankittu-yhteinen-tutkinnon-osa-by-id!
   "Päivitä aiemmin hankitun yhteisen tutkinnon osa"
@@ -353,18 +367,18 @@
   [hoks-id db-conn]
   (db-ops/shallow-delete!
     :aiemmin_hankitut_ammat_tutkinnon_osat
-    ["hoks_id = ?" hoks-id] db-conn))
+    ["hoks_id = ? AND deleted_at IS NULL" hoks-id] db-conn))
 
 (defn delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
   "Poista aiemmin hankitut paikalliset tutkinnon osat"
   [hoks-id db-conn]
   (db-ops/shallow-delete!
     :aiemmin_hankitut_paikalliset_tutkinnon_osat
-    ["hoks_id = ?" hoks-id] db-conn))
+    ["hoks_id = ? AND deleted_at IS NULL" hoks-id] db-conn))
 
 (defn delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id
   "Poista aiemmin hankitut yhteiset tutkinnon osat"
   [hoks-id db-conn]
   (db-ops/shallow-delete!
     :aiemmin_hankitut_yhteiset_tutkinnon_osat
-    ["hoks_id = ?" hoks-id] db-conn))
+    ["hoks_id = ? AND deleted_at IS NULL" hoks-id] db-conn))
