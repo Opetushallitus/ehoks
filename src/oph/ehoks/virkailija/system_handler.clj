@@ -22,24 +22,43 @@
   (route-middleware
     [m/wrap-oph-super-user]
 
-    (c-api/GET "/system-info" []
-      :summary "Järjestelmän tiedot"
-      :header-params [caller-id :- s/Str]
-      :return (restful/response virkailija-schema/SystemInfo)
-      (let [runtime (Runtime/getRuntime)]
+    (c-api/context "/system-info" []
+      :tags ["system-info"]
+
+      (c-api/GET "/cache" []
+        :summary "Järjestelmän tiedot: Cache."
+        :header-params [caller-id :- s/Str]
+        :return (restful/response virkailija-schema/SystemInfoCache)
         (restful/rest-ok
-          {:cache {:size (c/size)}
-           :memory {:total (.totalMemory runtime)
-                    :free (.freeMemory runtime)
-                    :max (.maxMemory runtime)}
-           :oppijaindex
-           {:unindexedOppijat
-            (op/get-oppijat-without-index-count)
-            :unindexedOpiskeluoikeudet
-            (op/get-opiskeluoikeudet-without-index-count)
-            :unindexedTutkinnot
-            (op/get-opiskeluoikeudet-without-tutkinto-count)}
-           :hoksit {:amount (:count (op/get-amount-of-hoks))}})))
+          {:size (c/size)}))
+
+      (c-api/GET "/memory" []
+        :summary "Järjestelmän tiedot: Muisti."
+        :header-params [caller-id :- s/Str]
+        :return (restful/response virkailija-schema/SystemInfoMemory)
+        (let [runtime (Runtime/getRuntime)]
+          (restful/rest-ok
+            {:total (.totalMemory runtime)
+             :free (.freeMemory runtime)
+             :max (.maxMemory runtime)})))
+
+      (c-api/GET "/oppijaindex" []
+        :summary "Järjestelmän tiedot: Oppijaindex."
+        :header-params [caller-id :- s/Str]
+        :return (restful/response virkailija-schema/SystemInfoOppijaindex)
+        (restful/rest-ok
+          {:unindexedOppijat
+           (op/get-oppijat-without-index-count)
+           :unindexedOpiskeluoikeudet
+           (op/get-opiskeluoikeudet-without-index-count)
+           :unindexedTutkinnot
+           (op/get-opiskeluoikeudet-without-tutkinto-count)}))
+
+      (c-api/GET "/hoksit" []
+        :summary "Järjestelmän tiedot: Hoksit."
+        :header-params [caller-id :- s/Str]
+        :return (restful/response virkailija-schema/SystemInfoHoksit)
+        (restful/rest-ok {:amount (:count (op/get-amount-of-hoks))})))
 
     (c-api/POST "/index" []
       :summary "Indeksoi oppijat ja opiskeluoikeudet"
