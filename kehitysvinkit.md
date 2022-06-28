@@ -63,9 +63,12 @@ Käynnistä virtualenv, `cd cloud-base`, ja aja:
 (`palvelu` = `ehoks-virkailija|ehoks-oppija|ehoks-virkailija-ui|ehoks-oppija-ui`
 
 
-### Miten tutkinnon osien tietokantahakukoodi toimii?
+### Miten tutkinnon osien tietokantahaut toimivat?
 
 Tehokkuuden takia olemme luoneet queryjä, jotka tarjoavat joitakin perinteisen
 ORM-järjestelmän tuomia hyötyjä ilman oikeaa ORM-kirjastoa. Yleinen periaate on
 se, että useiden SQL-queryjen sijaan tehdään isompia queryjä joineilla, joista
 objektit erotetaan koodissa.
+
+Jos on joskus pari vapaata viikkoa, kannattaa harkita oikean ORM-systeemin
+käyttöönottoa.
