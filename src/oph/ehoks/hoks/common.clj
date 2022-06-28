@@ -73,12 +73,17 @@
   avain on fields -argumentissa avaimena, se korvataan vastaavalla arvolla;
   muuten avain/arvo -paria ei oteta mukaan."
   [unique-on fields rows]
-  (mapv (fn [row] (reduce-kv #(assoc %1 %3 (get row %2)) {} fields))
-        (sort #(compare (get-map %1 unique-on) (get-map %2 unique-on))
-              (vals
-                (dissoc (reduce #(assoc %1 (get-map %2 unique-on) %2) {} rows)
-                        nil
-                        [nil nil])))))
+  (mapv
+    ; Hakee rivistä fieldsissä designoidut kentät ja lisää ne uuteen objektiin
+    ; uusilla nimillä. Jos fieldsissä on kv-pari `x: y` ja x on rowssa avaimena,
+    ; x:in arvo rowsta lisätään uuteen objektiin avaimella y:llä.
+    (fn [row] (reduce-kv #(assoc %1 %3 (get row %2)) {} fields))
+    (sort #(compare (get-map %1 unique-on) (get-map %2 unique-on))
+          ; Deduplikoi rivit, ja siivoa pois ne, joista unique-on -arvo ei löydy
+          (vals
+            (dissoc (reduce #(assoc %1 (get-map %2 unique-on) %2) {} rows)
+                    nil
+                    [nil nil])))))
 
 (defn extract-and-set-osaamisen-osoittaminen-values
   "Irrottaa tietyn osaamisen osoittamisen arvot tietokannasta haetuista
