@@ -16,18 +16,18 @@ SELECT
   tjk.vastuullinen_tyopaikka_ohjaaja_sahkoposti AS tyopaikkaohjaaja_email,
   tjk.vastuullinen_tyopaikka_ohjaaja_puhelinnumero AS tyopaikkaohjaaja_puhelinnumero
 FROM hoksit h
-  LEFT OUTER JOIN hankittavat_paikalliset_tutkinnon_osat AS osa
-    ON (h.id = osa.hoks_id AND osa.deleted_at IS NULL)
-  LEFT OUTER JOIN hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat AS osajoin
+  JOIN hankittavat_paikalliset_tutkinnon_osat AS osa
+    ON (h.id = osa.hoks_id)
+  JOIN hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat AS osajoin
     ON (osa.id = osajoin.hankittava_paikallinen_tutkinnon_osa_id)
-  LEFT OUTER JOIN osaamisen_hankkimistavat AS oh
+  JOIN osaamisen_hankkimistavat AS oh
     ON (osajoin.osaamisen_hankkimistapa_id = oh.id)
-  LEFT OUTER JOIN tyopaikalla_jarjestettavat_koulutukset AS tjk
+  LEFT JOIN tyopaikalla_jarjestettavat_koulutukset AS tjk
     ON (oh.tyopaikalla_jarjestettava_koulutus_id = tjk.id)
 WHERE
-  (oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_koulutussopimus' or
-  oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_oppisopimus')
+  oh.osaamisen_hankkimistapa_koodi_uri IN ('osaamisenhankkimistapa_koulutussopimus', 'osaamisenhankkimistapa_oppisopimus')
   AND oh.loppu >= ?
   AND oh.loppu <= ?
   AND oh.tep_kasitelty = false
+  AND osa.deleted_at IS NULL
 LIMIT ?
