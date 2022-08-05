@@ -155,7 +155,7 @@
   ollut."
   [old-osp new-osp]
   (and (some? new-osp)
-       (nil? old-osp)))
+       (not= new-osp old-osp)))
 
 (defn check-suoritus-type?
   "Tarkistaa, onko suorituksen tyyppi ammatillinen suoritus tai osittainen
