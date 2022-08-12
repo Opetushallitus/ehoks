@@ -331,17 +331,31 @@
   (when (oppija-doesnt-exist oid)
     (insert-new-oppija! oid)))
 
+(defn format-oppija-name
+  "Formats oppija name from fields etunimet and sukunimi"
+  [oppija]
+  (format "%s %s" (:etunimet oppija) (:sukunimi oppija)))
+
 (defn update-oppija!
-  "Update existing student in database"
-  [oid]
-  (try
-    (let [oppija (:body (onr/find-student-by-oid oid))]
-      (db-oppija/update-oppija!
-        oid
-        {:nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))}))
-    (catch Exception e
-      (log/errorf "Error updating oppija %s" oid)
-      (throw e))))
+  "Update existing student in database. Adding 2nd param skips cache."
+  ([oid]
+    (try
+      (let [oppija (:body (onr/find-student-by-oid oid))]
+        (db-oppija/update-oppija!
+          oid
+          {:nimi (format-oppija-name oppija)}))
+      (catch Exception e
+        (log/errorf "Error updating oppija %s" oid)
+        (throw e))))
+  ([oid _]
+    (try
+      (let [oppija (:body (onr/find-student-by-oid-no-cache oid))]
+        (db-oppija/update-oppija!
+          oid
+          {:nimi (format-oppija-name oppija)}))
+      (catch Exception e
+        (log/errorf "Error updating oppija %s" oid)
+        (throw e)))))
 
 (defn update-oppijat-without-index!
   "Update students without indexes in database"
