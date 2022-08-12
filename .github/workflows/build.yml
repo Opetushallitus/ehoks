@@ -59,7 +59,7 @@ jobs:
           lein uberjar
           mv target/ehoks-standalone.jar $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar
           cp -vr oph-configuration $DOCKER_BUILD_DIR/config/
-          export BASE_IMAGE="baseimage-fatjar-openjdk11:master"
+          export BASE_IMAGE=“baseimage-fatjar-openjdk11:master”
           export TRAVIS_BUILD_NUMBER="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
           ./ci-tools/common/pull-image.sh
           ./ci-tools/build/build-fatjar.sh ehoks-oppija
@@ -74,7 +74,7 @@ jobs:
           CONFIG: oph-configuration/test-ci.edn
         run: |
           source ci-tools/common/setup-tools.sh
-          export BASE_IMAGE="baseimage-fatjar-openjdk11-corretto:master"
+          export BASE_IMAGE=“baseimage-fatjar-openjdk11:master”
           export TRAVIS_BUILD_NUMBER="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
           export TRAVIS_BRANCH=${{ github.ref_name }}
           export TRAVIS_COMMIT=${{ github.sha }}
