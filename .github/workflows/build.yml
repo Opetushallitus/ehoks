@@ -74,7 +74,7 @@ jobs:
           CONFIG: oph-configuration/test-ci.edn
         run: |
           source ci-tools/common/setup-tools.sh
-          export BASE_IMAGE="baseimage-fatjar-openjdk11:master"
+          export BASE_IMAGE="baseimage-fatjar-openjdk11-corretto:master"
           export TRAVIS_BUILD_NUMBER="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
           export TRAVIS_BRANCH=${{ github.ref_name }}
           export TRAVIS_COMMIT=${{ github.sha }}
