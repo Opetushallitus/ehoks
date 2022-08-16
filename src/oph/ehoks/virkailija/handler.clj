@@ -688,15 +688,14 @@
                       (c-api/GET "/:hoks-id/vipunenSchemaTester" request
                         :path-params [hoks-id :- s/Int]
                         :summary "Testaa hoksia vipusen schemaa vasten.
-                                  Test-result true tarkoittaa,
+                                  Test-result nil tarkoittaa,
                                   että hoks vastaa schemaa."
                         (let [hoks (h/enrich-and-filter
                                      (db-hoks/select-hoks-by-id hoks-id))
                               schema-checker (s/checker
                                                hoks-schema-vipunen/HOKSVipunen)
                               result (schema-checker hoks)]
-                          (restful/rest-ok {:hoks hoks
-                                            :test-result (nil? result)})))
+                          (restful/rest-ok {:hoks hoks :test-result result})))
 
                       (c-api/POST "/:hoks-id/resend-palaute" request
                         :summary "Lähettää herätepalveluun pyynnön palautelinkin
