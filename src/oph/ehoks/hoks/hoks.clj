@@ -122,6 +122,7 @@
   [hoks]
   (-> hoks
       (dissoc :sahkoposti)
+      (dissoc :puhelinnumero)
       (update :aiemmin-hankitut-ammat-tutkinnon-osat
               (fn [ahato] (mapv trim-osa ahato)))
       (update :aiemmin-hankitut-paikalliset-tutkinnon-osat
