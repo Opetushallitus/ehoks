@@ -369,8 +369,12 @@
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
-    (s/optional-key :opetus-ja-ohjaus-maara) s/Int
-    "Tarvittava opetuksen ja ohjauksen määrä (tunnit)"))
+    (s/optional-key :opetus-ja-ohjaus-maara)
+    (s/constrained s/Num
+                   #(not (neg? %))
+                   "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")
+    (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen ja ohjauksen "
+         "määrä tunteina.")))
 
 (s/defschema
   YhteisenTutkinnonOsanOsaAlueLuontiJaMuokkaus
@@ -537,8 +541,12 @@
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
-    (s/optional-key :opetus-ja-ohjaus-maara) s/Int
-    "Tarvittava opetuksen ja ohjauksen määrä (tunnit)"))
+    (s/optional-key :opetus-ja-ohjaus-maara)
+    (s/constrained s/Num
+                   #(not (neg? %))
+                   "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")
+    (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen ja ohjauksen "
+         "määrä tunteina.")))
 
 (s/defschema
   HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus
@@ -586,8 +594,12 @@
     (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen järjestäjä "
          "katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen liittyvän "
          "osaamisen hankkimisessa tai osoittamisessa.")
-    (s/optional-key :opetus-ja-ohjaus-maara) s/Int
-    "Tarvittava opetuksen ja ohjauksen määrä (tunnit)"))
+    (s/optional-key :opetus-ja-ohjaus-maara)
+    (s/constrained s/Num
+                   #(not (neg? %))
+                   "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")
+    (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen ja ohjauksen "
+         "määrä tunteina.")))
 
 (s/defschema
   HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus
