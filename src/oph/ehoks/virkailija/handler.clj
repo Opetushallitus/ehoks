@@ -17,6 +17,7 @@
             [oph.ehoks.db.postgresql.common :as pc]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.schema :as hoks-schema]
+            [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.misc.handler :as misc-handler]
@@ -683,6 +684,18 @@
                         :summary "Hoksin tiedot.
                                 Vaatii manuaalisyöttäjän oikeudet"
                         (get-hoks hoks-id request))
+
+                      (c-api/GET "/:hoks-id/vipunenSchemaTester" request
+                        :path-params [hoks-id :- s/Int]
+                        :summary "Testaa hoksia vipusen schemaa vasten.
+                        Test-result true tarkoittaa, että hoks vastaa schemaa."
+                        (let [hoks (h/enrich-and-filter
+                                     (db-hoks/select-hoks-by-id hoks-id))
+                              schema-checker (s/checker
+                                               hoks-schema-vipunen/HOKSVipunen)
+                              result (schema-checker hoks)]
+                          (restful/rest-ok {:hoks hoks
+                                         :test-result (nil? result)})))
 
                       (c-api/POST "/:hoks-id/resend-palaute" request
                         :summary "Lähettää herätepalveluun pyynnön palautelinkin
