@@ -28,6 +28,7 @@ FROM hoksit h
 WHERE
   (oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_koulutussopimus' or
   oh.osaamisen_hankkimistapa_koodi_uri = 'osaamisenhankkimistapa_oppisopimus')
+  AND h.deleted_at IS NULL
   AND oh.osa_aikaisuustieto IS NULL
   AND oo.tutkinto_nimi @> ? ::jsonb
   AND oo.oppilaitos_oid = ?
