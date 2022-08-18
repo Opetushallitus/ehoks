@@ -929,7 +929,7 @@
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
     :koulutuksen-osa-koodi-uri KoulutuksenOsaKoodiUri
     "TUVA perusteen koulutuksen osan koodiuri"
-    :koulutuksen-osa-koodi-uri-versio s/Int
+    :koulutuksen-osa-koodi-versio s/Int
     "TUVA perusteen koulutuksen osan koodiurin versio"
     :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
     :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
