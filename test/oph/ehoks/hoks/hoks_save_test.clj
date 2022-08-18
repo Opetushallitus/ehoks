@@ -312,7 +312,7 @@
 
 (def koulutuksen-osa-data
   [{:koulutuksen-osa-koodi-uri "koulutuksenosattuva_102"
-    :koulutuksen-osa-koodi-uri-versio 1
+    :koulutuksen-osa-koodi-versio 1
     :alku (java.time.LocalDate/of 2022 1 13)
     :loppu (java.time.LocalDate/of 2022 2 19)
     :laajuus 5.5M}])
