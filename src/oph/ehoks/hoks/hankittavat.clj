@@ -3,7 +3,10 @@
             [oph.ehoks.hoks.common :as c]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks])
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [clojure.data :as d]
+            [clj-time.core :as t]
+            [clojure.tools.logging :as log])
   (:import (java.time LocalDate)))
 
 (defn- extract-and-set-osaamisen-hankkimistapa-values
@@ -142,6 +145,33 @@
    :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
    :vaatimuksista_tai_tavoitteista_poikkeaminen})
 
+(defn- add-nil-values-for-missing-fields
+  "Asettaa nilliksi arvot, jotka puuttuu datasta kun päivitetään yksiloivan
+  tunnisteen perusteella. Eli käyttäytyy puuttuvien osalta kuin oltaisiin
+  korvaamassa osaamisen hankkimistapa."
+  [oh to-upsert]
+  (cond-> to-upsert
+    (nil? (:jarjestajan-edustaja-nimi oh))
+    (assoc :jarjestajan-edustaja-nimi nil)
+    (nil? (:jarjestajan-edustaja-rooli oh))
+    (assoc :jarjestajan-edustaja-rooli nil)
+    (nil? (:jarjestajan-edustaja-oppilaitos-oid oh))
+    (assoc :jarjestajan-edustaja-oppilaitos-oid nil)
+    (nil? (:ajanjakson-tarkenne oh))
+    (assoc :ajanjakson-tarkenne nil)
+    (nil? (:hankkijan-edustaja-nimi oh))
+    (assoc :hankkijan-edustaja-nimi nil)
+    (nil? (:hankkijan-edustaja-rooli oh))
+    (assoc :hankkijan-edustaja-rooli nil)
+    (nil? (:hankkijan-edustaja-oppilaitos-oid oh))
+    (assoc :hankkijan-edustaja-oppilaitos-oid nil)
+    (nil? (:osa-aikaisuustieto oh))
+    (assoc :osa-aikaisuustieto nil)
+    (nil? (:oppisopimuksen-perusta-koodi-uri oh))
+    (assoc :oppisopimuksen-perusta-koodi-uri nil)
+    (nil? (:oppisopimuksen-perusta-koodi-versio oh))
+    (assoc :oppisopimuksen-perusta-koodi-versio nil)))
+
 (defn get-hankittavat-paikalliset-tutkinnon-osat
   "Hakee yhden HOKSin hankittavat paikalliset tutkinnon osat tietokannasta."
   [hoks-id]
@@ -247,12 +277,14 @@
                                (assoc oh :tep_kasitelty true))
                              :tyopaikalla-jarjestettava-koulutus-id
                              (:id tho))
+            to-upsert-nils-added
+            (add-nil-values-for-missing-fields oh to-upsert)
             existing-id (:id (first existing))
             o-db (if (empty? existing)
                    (db/insert-osaamisen-hankkimistapa! to-upsert conn)
                    (do
                      (db/update-osaamisen-hankkimistapa! existing-id
-                                                         to-upsert
+                                                         to-upsert-nils-added
                                                          conn)
                      {:id existing-id}))]
         (when (seq existing)

@@ -1,5 +1,5 @@
 SELECT
-  oh.id
+  oh.*
 FROM osaamisen_hankkimistavat oh
        LEFT OUTER JOIN hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat AS hptoosajoin
                        ON (oh.id = hptoosajoin.osaamisen_hankkimistapa_id)
