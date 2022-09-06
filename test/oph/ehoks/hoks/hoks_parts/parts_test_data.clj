@@ -119,6 +119,7 @@
      :osaamisen-hankkimistavat
      [{:alku "2018-12-15"
        :loppu "2018-12-23"
+       :osa-aikaisuustieto 50
        :yksiloiva-tunniste "qiuewyroqiwuer"
        :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
        :osaamisen-hankkimistapa-koodi-versio 1

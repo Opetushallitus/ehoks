@@ -272,17 +272,23 @@
               (:osaamisen-hankkimistavat
                 (first
                   test-data/hao-data-oht-matching-tunniste)))))
-      (eq (:loppu (some
-                    #(= "qiuewyroqiwuer" (:yksiloiva-tunniste %))
-                    hyto-hankkimistavat))
-          (:loppu
-            (some
+      (eq
+        (:loppu (first (filter
+                         #(= "qiuewyroqiwuer" (:yksiloiva-tunniste %))
+                         hyto-hankkimistavat)))
+        (:loppu
+          (first
+            (filter
               #(= "qiuewyroqiwuer" (:yksiloiva-tunniste %))
               (:osaamisen-hankkimistavat
                 (first
                   (:osa-alueet
                     (first
-                      test-data/hyto-data-oht-matching-and-new-tunniste)))))))
+                      test-data/hyto-data-oht-matching-and-new-tunniste))))))))
+      (is (nil? (:osa-aikaisuustieto
+                  (first (filter
+                           #(= "qiuewyroqiwuer" (:yksiloiva-tunniste %))
+                           hyto-hankkimistavat)))))
       (is (some?
             (some
               #(= "uusi-tunniste" (:yksiloiva-tunniste %))
