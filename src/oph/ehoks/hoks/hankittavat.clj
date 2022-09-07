@@ -150,27 +150,31 @@
   tunnisteen perusteella. Eli käyttäytyy puuttuvien osalta kuin oltaisiin
   korvaamassa osaamisen hankkimistapa."
   [oh to-upsert]
-  (cond-> to-upsert
-    (nil? (:jarjestajan-edustaja-nimi oh))
-    (assoc :jarjestajan-edustaja-nimi nil)
-    (nil? (:jarjestajan-edustaja-rooli oh))
-    (assoc :jarjestajan-edustaja-rooli nil)
-    (nil? (:jarjestajan-edustaja-oppilaitos-oid oh))
-    (assoc :jarjestajan-edustaja-oppilaitos-oid nil)
-    (nil? (:ajanjakson-tarkenne oh))
-    (assoc :ajanjakson-tarkenne nil)
-    (nil? (:hankkijan-edustaja-nimi oh))
-    (assoc :hankkijan-edustaja-nimi nil)
-    (nil? (:hankkijan-edustaja-rooli oh))
-    (assoc :hankkijan-edustaja-rooli nil)
-    (nil? (:hankkijan-edustaja-oppilaitos-oid oh))
-    (assoc :hankkijan-edustaja-oppilaitos-oid nil)
-    (nil? (:osa-aikaisuustieto oh))
-    (assoc :osa-aikaisuustieto nil)
-    (nil? (:oppisopimuksen-perusta-koodi-uri oh))
-    (assoc :oppisopimuksen-perusta-koodi-uri nil)
-    (nil? (:oppisopimuksen-perusta-koodi-versio oh))
-    (assoc :oppisopimuksen-perusta-koodi-versio nil)))
+  (let [jarjestajan-edustaja-missing
+        (nil? (:nimi (:jarjestajan-edustaja oh)))
+        hankkijan-edustaja-missing
+        (nil? (:nimi (:hankkijan-edustaja oh)))]
+    (cond-> to-upsert
+      (jarjestajan-edustaja-missing)
+      (assoc :jarjestajan-edustaja-nimi nil)
+      (jarjestajan-edustaja-missing)
+      (assoc :jarjestajan-edustaja-rooli nil)
+      (jarjestajan-edustaja-missing)
+      (assoc :jarjestajan-edustaja-oppilaitos-oid nil)
+      (nil? (:ajanjakson-tarkenne oh))
+      (assoc :ajanjakson-tarkenne nil)
+      (hankkijan-edustaja-missing)
+      (assoc :hankkijan-edustaja-nimi nil)
+      (hankkijan-edustaja-missing)
+      (assoc :hankkijan-edustaja-rooli nil)
+      (hankkijan-edustaja-missing)
+      (assoc :hankkijan-edustaja-oppilaitos-oid nil)
+      (nil? (:osa-aikaisuustieto oh))
+      (assoc :osa-aikaisuustieto nil)
+      (nil? (:oppisopimuksen-perusta-koodi-uri oh))
+      (assoc :oppisopimuksen-perusta-koodi-uri nil)
+      (nil? (:oppisopimuksen-perusta-koodi-versio oh))
+      (assoc :oppisopimuksen-perusta-koodi-versio nil))))
 
 (defn get-hankittavat-paikalliset-tutkinnon-osat
   "Hakee yhden HOKSin hankittavat paikalliset tutkinnon osat tietokannasta."
