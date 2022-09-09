@@ -266,23 +266,47 @@
       (is (= (:status get-response) 200))
       (is (= (count hao-hankkimistavat) 1))
       (is (= (count hyto-hankkimistavat) 2))
+      ;; hankkijan edustaja poistuu jos puuttuu tulevasta datasta
       (eq (:hankkijan-edustaja (first hao-hankkimistavat))
           (:hankkijan-edustaja
             (first
               (:osaamisen-hankkimistavat
                 (first
                   test-data/hao-data-oht-matching-tunniste)))))
-      (eq (:loppu (some
-                    #(= "qiuewyroqiwuer" (:yksiloiva-tunniste %))
-                    hyto-hankkimistavat))
-          (:loppu
-            (some
+      ;; arvo päivittyy uuteen
+      (eq (:osa-aikaisuustieto (first hao-hankkimistavat))
+          (:osa-aikaisuustieto
+            (first
+              (:osaamisen-hankkimistavat
+                (first
+                  test-data/hao-data-oht-matching-tunniste)))))
+      ;; sama arvo ei muutu
+      (eq (:ajanjakson-tarkenne (first hao-hankkimistavat))
+          (:ajanjakson-tarkenne
+            (first
+              (:osaamisen-hankkimistavat
+                (first
+                  test-data/hao-data-oht-matching-tunniste)))))
+      ;; arvo päivittyy uuteen hyton osa-alueissa
+      (eq
+        (:loppu (first (filter
+                         #(= "qiuewyroqiwuer" (:yksiloiva-tunniste %))
+                         hyto-hankkimistavat)))
+        (:loppu
+          (first
+            (filter
               #(= "qiuewyroqiwuer" (:yksiloiva-tunniste %))
               (:osaamisen-hankkimistavat
                 (first
                   (:osa-alueet
                     (first
-                      test-data/hyto-data-oht-matching-and-new-tunniste)))))))
+                      test-data/hyto-data-oht-matching-and-new-tunniste))))))))
+      ;; puuttuva arvo poistuu
+      (is (nil? (:osa-aikaisuustieto
+                  (first (filter
+                           #(= "qiuewyroqiwuer" (:yksiloiva-tunniste %))
+                           hyto-hankkimistavat)))))
+      ;; datan mukana tuleva tunniste tallentuu
       (is (some?
             (some
               #(= "uusi-tunniste" (:yksiloiva-tunniste %))

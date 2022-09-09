@@ -20,11 +20,7 @@
         :oppimisymparisto-koodi-versio 1
         :alku "2019-03-10"
         :loppu "2025-03-19"}]
-      :keskeytymisajanjaksot []
-      :hankkijan-edustaja
-      {:nimi "Heikki Hankkija"
-       :rooli "Rehtori"
-       :oppilaitos-oid "1.2.246.562.10.54452422420"}}]
+      :keskeytymisajanjaksot []}]
     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"
     :osaamisen-osoittaminen
     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}

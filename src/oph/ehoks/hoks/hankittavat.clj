@@ -142,6 +142,37 @@
    :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
    :vaatimuksista_tai_tavoitteista_poikkeaminen})
 
+(defn- add-nil-values-for-missing-fields
+  "Asettaa nilliksi arvot, jotka puuttuu datasta kun päivitetään yksiloivan
+  tunnisteen perusteella. Eli käyttäytyy puuttuvien osalta kuin oltaisiin
+  korvaamassa osaamisen hankkimistapa."
+  [oh to-upsert]
+  (let [jarjestajan-edustaja-missing
+        (nil? (:nimi (:jarjestajan-edustaja oh)))
+        hankkijan-edustaja-missing
+        (nil? (:nimi (:hankkijan-edustaja oh)))]
+    (cond-> to-upsert
+      (true? jarjestajan-edustaja-missing)
+      (assoc :jarjestajan-edustaja-nimi nil)
+      (true? jarjestajan-edustaja-missing)
+      (assoc :jarjestajan-edustaja-rooli nil)
+      (true? jarjestajan-edustaja-missing)
+      (assoc :jarjestajan-edustaja-oppilaitos-oid nil)
+      (nil? (:ajanjakson-tarkenne oh))
+      (assoc :ajanjakson-tarkenne nil)
+      (true? hankkijan-edustaja-missing)
+      (assoc :hankkijan-edustaja-nimi nil)
+      (true? hankkijan-edustaja-missing)
+      (assoc :hankkijan-edustaja-rooli nil)
+      (true? hankkijan-edustaja-missing)
+      (assoc :hankkijan-edustaja-oppilaitos-oid nil)
+      (nil? (:osa-aikaisuustieto oh))
+      (assoc :osa-aikaisuustieto nil)
+      (nil? (:oppisopimuksen-perusta-koodi-uri oh))
+      (assoc :oppisopimuksen-perusta-koodi-uri nil)
+      (nil? (:oppisopimuksen-perusta-koodi-versio oh))
+      (assoc :oppisopimuksen-perusta-koodi-versio nil))))
+
 (defn get-hankittavat-paikalliset-tutkinnon-osat
   "Hakee yhden HOKSin hankittavat paikalliset tutkinnon osat tietokannasta."
   [hoks-id]
@@ -247,12 +278,14 @@
                                (assoc oh :tep_kasitelty true))
                              :tyopaikalla-jarjestettava-koulutus-id
                              (:id tho))
+            to-upsert-nils-added
+            (add-nil-values-for-missing-fields oh to-upsert)
             existing-id (:id (first existing))
             o-db (if (empty? existing)
                    (db/insert-osaamisen-hankkimistapa! to-upsert conn)
                    (do
                      (db/update-osaamisen-hankkimistapa! existing-id
-                                                         to-upsert
+                                                         to-upsert-nils-added
                                                          conn)
                      {:id existing-id}))]
         (when (seq existing)
