@@ -17,24 +17,26 @@
 
 (defn get-hoks-values
   "Hakee annetun HOKSin tutkinnon osat ja tukevat opinnot tietokannasta."
-  [h]
-  (let [id (:id h)]
+  [hoks]
+  (let [hoks-id (:id hoks)]
     (assoc
-      h
+      hoks
       :aiemmin-hankitut-ammat-tutkinnon-osat
-      (ah/get-aiemmin-hankitut-ammat-tutkinnon-osat id)
+      (ah/get-aiemmin-hankitut-ammat-tutkinnon-osat hoks-id)
       :aiemmin-hankitut-paikalliset-tutkinnon-osat
-      (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat id)
+      (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat hoks-id)
       :hankittavat-paikalliset-tutkinnon-osat
-      (ha/get-hankittavat-paikalliset-tutkinnon-osat id)
+      (ha/get-hankittavat-paikalliset-tutkinnon-osat hoks-id)
       :aiemmin-hankitut-yhteiset-tutkinnon-osat
-      (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat id)
+      (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat hoks-id)
       :hankittavat-ammat-tutkinnon-osat
-      (ha/get-hankittavat-ammat-tutkinnon-osat id)
+      (ha/get-hankittavat-ammat-tutkinnon-osat hoks-id)
       :opiskeluvalmiuksia-tukevat-opinnot
-      (ot/get-opiskeluvalmiuksia-tukevat-opinnot id)
+      (ot/get-opiskeluvalmiuksia-tukevat-opinnot hoks-id)
       :hankittavat-yhteiset-tutkinnon-osat
-      (ha/get-hankittavat-yhteiset-tutkinnon-osat id))))
+      (ha/get-hankittavat-yhteiset-tutkinnon-osat hoks-id)
+      :hankittavat-koulutuksen-osat
+      (ha/get-hankittavat-koulutuksen-osat hoks-id))))
 
 (defn trim-arvioijat
   "Poistaa nimi-kentän jokaisesta arvioija-objektista."
@@ -267,6 +269,11 @@
         (ha/save-hankittavat-yhteiset-tutkinnon-osat!
           (:id saved-hoks)
           (:hankittavat-yhteiset-tutkinnon-osat h)
+          conn)
+        :hankittavat-koulutuksen-osat
+        (ha/save-hankittavat-koulutuksen-osat!
+          (:id saved-hoks)
+          (:hankittavat-koulutuksen-osat h)
           conn)))))
 
 (defn- merge-not-given-hoks-values
@@ -328,6 +335,16 @@
    new-hyto-values
     (ha/save-hankittavat-yhteiset-tutkinnon-osat!
       hoks-id new-hyto-values db-conn)))
+
+(defn- replace-hankittavat-koulutuksen-osat!
+  "Korvaa vanhat hankittavat koulutuksen osat annetuilla arvoilla."
+  [hoks-id new-koulutuksen-osat-values db-conn]
+  (db-ha/delete-hankittavat-koulutuksen-osat-by-hoks-id
+    hoks-id db-conn)
+  (when
+   new-koulutuksen-osat-values
+    (ha/save-hankittavat-koulutuksen-osat!
+      hoks-id new-koulutuksen-osat-values db-conn)))
 
 (defn- replace-ahato!
   "Korvaa vanhat aiemmin hankitut ammatilliset tutkinnon osat annetuilla
@@ -478,6 +495,11 @@
                                (:hankittavat-yhteiset-tutkinnon-osat
                                  new-values)
                                db-conn)
+                (replace-hankittavat-koulutuksen-osat!
+                  hoks-id
+                  (:hankittavat-koulutuksen-osat
+                    new-values)
+                  db-conn)
                 (replace-ahato!
                   hoks-id
                   (:aiemmin-hankitut-ammat-tutkinnon-osat

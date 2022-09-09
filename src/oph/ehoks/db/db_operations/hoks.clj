@@ -30,6 +30,7 @@
                 :aiemmin-hankitut-yhteiset-tutkinnon-osat
                 :hankittavat-ammat-tutkinnon-osat
                 :hankittavat-yhteiset-tutkinnon-osat
+                :hankittavat-koulutuksen-osat
                 :opiskeluvalmiuksia-tukevat-opinnot
                 :hankittavat-paikalliset-tutkinnon-osat]}))
 
@@ -328,6 +329,12 @@
   mukaiseksi, mitä odotetaan palvelussa."
   [m]
   (db-ops/from-sql m {:removals [:osa-alueet]}))
+
+(defn hankittava-koulutuksen-osa-from-sql
+  "Muuttaa tietokannasta haetun hankittavan koulutuksen osan sen
+  mukaiseksi, mitä odotetaan palvelussa."
+  [m]
+  (db-ops/from-sql m))
 
 (defn hankittava-yhteinen-tutkinnon-osa-to-sql
   "Muuttaa palvelussa käytetyn hankittavan yhteisen tutkinnon osan sen

@@ -22,7 +22,6 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppija.share-handler :as share-handler]
             [oph.ehoks.oppija.oppija-external :as oppija-external]
-            [clojure.string :as str]
             [clojure.tools.logging :as log])
   (:import (java.time LocalDate)))
 

@@ -111,6 +111,8 @@
    :hankittavat-ammat-tutkinnon-osat [parts-test-data/hao-data]
    :hankittavat-paikalliset-tutkinnon-osat [parts-test-data/hpto-data]
    :hankittavat-yhteiset-tutkinnon-osat [parts-test-data/hyto-data]
+   :hankittavat-koulutuksen-osat
+   [parts-test-data/hankittavat-koulutuksen-osat-data]
    :aiemmin-hankitut-ammat-tutkinnon-osat [parts-test-data/ahato-data]
    :aiemmin-hankitut-paikalliset-tutkinnon-osat [parts-test-data/ahpto-data]
    :aiemmin-hankitut-yhteiset-tutkinnon-osat [parts-test-data/ahyto-data]})
@@ -257,3 +259,14 @@
          :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
                                          {:nimi "Organisaation name"}}]
          :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "toka"]}]}]}]})
+
+(def hoks-with-updated-hankittavat-koulutuksen-osat
+  {:id 1
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
+   :hankittavat-koulutuksen-osat
+   [{:koulutuksen-osa-koodi-uri "koulutuksenosattuva_104"
+     :koulutuksen-osa-koodi-versio 1
+     :alku "2022-09-01"
+     :loppu "2022-09-21"
+     :laajuus 10.4}]})

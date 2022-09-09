@@ -20,6 +20,7 @@
     :hankittavat-ammat-tutkinnon-osat []
     :aiemmin-hankitut-yhteiset-tutkinnon-osat []
     :hankittavat-yhteiset-tutkinnon-osat []
+    :hankittavat-koulutuksen-osat []
     :aiemmin-hankitut-paikalliset-tutkinnon-osat []
     :opiskeluvalmiuksia-tukevat-opinnot []))
 
@@ -364,6 +365,13 @@
     (hoks-utils/assert-partial-put-of-hoks
       test-data/hyto-of-hoks-updated
       :hankittavat-yhteiset-tutkinnon-osat
+      test-data/hoks-data)))
+
+(deftest put-hankittavat-koulutuksen-osat
+  (testing "PUTs hankittavat koulutuksen osat of HOKS"
+    (hoks-utils/assert-partial-put-of-hoks
+      test-data/hoks-with-updated-hankittavat-koulutuksen-osat
+      :hankittavat-koulutuksen-osat
       test-data/hoks-data)))
 
 (deftest get-hoks-by-opiskeluoikeus-oid

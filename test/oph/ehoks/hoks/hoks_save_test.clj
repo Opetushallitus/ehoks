@@ -310,6 +310,13 @@
         :koulutuksen-jarjestaja-osaamisen-arvioijat []
         :yksilolliset-kriteerit []}]}]}])
 
+(def koulutuksen-osa-data
+  [{:koulutuksen-osa-koodi-uri "koulutuksenosattuva_102"
+    :koulutuksen-osa-koodi-versio 1
+    :alku (java.time.LocalDate/of 2022 1 13)
+    :loppu (java.time.LocalDate/of 2022 2 19)
+    :laajuus 5.5M}])
+
 (def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                 :oppija-oid "1.2.246.562.24.12312312312"
                 :ensikertainen-hyvaksyminen
@@ -322,6 +329,7 @@
                 :aiemmin-hankitut-ammat-tutkinnon-osat ahato-data
                 :hankittavat-yhteiset-tutkinnon-osat hyto-data
                 :hankittavat-ammat-tutkinnon-osat hao-data
+                :hankittavat-koulutuksen-osat koulutuksen-osa-data
                 :opiskeluvalmiuksia-tukevat-opinnot oto-data})
 
 (def min-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"})
@@ -395,6 +403,14 @@
           (ha/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks)))
         hyto-data))))
 
+(deftest get-hankittavat-koulutuksen-osat
+  (testing "GET TUVA hankittavat koulutuksen osat"
+    (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
+      (ha/save-hankittavat-koulutuksen-osat! (:id hoks) koulutuksen-osa-data)
+      (eq
+        (ha/get-hankittavat-koulutuksen-osat (:id hoks))
+        koulutuksen-osa-data))))
+
 (deftest get-hoks-test
   (testing "Save and get full HOKS"
     (let [hoks (h/save-hoks! hoks-data)]
@@ -444,7 +460,8 @@
                                 :aiemmin-hankitut-yhteiset-tutkinnon-osat []
                                 :hankittavat-ammat-tutkinnon-osat []
                                 :opiskeluvalmiuksia-tukevat-opinnot []
-                                :hankittavat-yhteiset-tutkinnon-osat []}))))
+                                :hankittavat-yhteiset-tutkinnon-osat []
+                                :hankittavat-koulutuksen-osat []}))))
 
 (deftest set-tep-kasitelty-test
   (testing

@@ -52,6 +52,13 @@
     [queries/select-hankittavat-yhteiset-tutkinnon-osat-by-hoks-id id]
     {:row-fn h/hankittava-yhteinen-tutkinnon-osa-from-sql}))
 
+(defn select-hankittavat-koulutuksen-osat-by-hoks-id
+  "Hankittavat koulutuksen osat"
+  [id]
+  (db-ops/query
+    [queries/select-hankittavat-koulutuksen-osat-by-hoks-id id]
+    {:row-fn h/hankittava-koulutuksen-osa-from-sql}))
+
 (defn select-all-hatos-for-hoks
   "Hankittavat ammatillisen tutkinnon osat"
   [id]
@@ -354,6 +361,18 @@
       (h/hankittava-yhteinen-tutkinnon-osa-to-sql m)
       db-conn)))
 
+(defn insert-hankittava-koulutuksen-osa!
+  "Lisää hankittavan koulutuksen osa"
+  ([koulutuksen-osa]
+    (db-ops/insert-one!
+      :hankittavat_koulutuksen_osat
+      (db-ops/to-sql koulutuksen-osa)))
+  ([koulutuksen-osa db-conn]
+    (db-ops/insert-one!
+      :hankittavat_koulutuksen_osat
+      (db-ops/to-sql koulutuksen-osa)
+      db-conn)))
+
 (defn delete-hyto-osa-alueet!
   "Poista hankittavan yhteisen tutkinnon osan osa-alueet"
   [hyto-id db-conn]
@@ -389,6 +408,13 @@
   (db-ops/shallow-delete!
     :hankittavat_yhteiset_tutkinnon_osat
     ["hoks_id = ? AND deleted_at IS NULL" hoks-id] db-conn))
+
+(defn delete-hankittavat-koulutuksen-osat-by-hoks-id
+  "Poista hankittavat koulutuksen osat"
+  [hoks-id db-conn]
+  (db-ops/shallow-delete!
+    :hankittavat_koulutuksen_osat
+    ["hoks_id = ?" hoks-id] db-conn))
 
 (defn delete-osaamisen-hankkimistavan-muut-oppimisymparistot
   "Poista osaamisen hankkimistavan muut oppimisympäristöt"
