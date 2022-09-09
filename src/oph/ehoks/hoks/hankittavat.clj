@@ -3,10 +3,7 @@
             [oph.ehoks.hoks.common :as c]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [clojure.data :as d]
-            [clj-time.core :as t]
-            [clojure.tools.logging :as log])
+            [oph.ehoks.db.db-operations.hoks :as db-hoks])
   (:import (java.time LocalDate)))
 
 (defn- extract-and-set-osaamisen-hankkimistapa-values
