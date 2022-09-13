@@ -33,6 +33,10 @@
   "Urasuunnitelman koodi-URI:n regex."
   #"^urasuunnitelma_\d{4}$")
 
+(def KoulutuksenOsaKoodiUri
+  "Koulutuksen osan (TUVA) koodi-URI:n regex."
+  #"^koulutuksenosattuva_\d{3}$")
+
 (def Oid
   "OID:n regex."
   #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
@@ -731,6 +735,25 @@
        (str "Hankitun osaamisen osoittaminen: "
             "Näyttö tai muu osaamisen osoittaminen"))}))
 
+(s/defschema
+  HankittavaKoulutuksenOsa
+  "Hankittavan koulutuksen osan schema."
+  (describe
+    "Hankittava koulutuksen osa"
+    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+    :koulutuksen-osa-koodi-uri KoulutuksenOsaKoodiUri
+    "TUVA perusteen koulutuksen osan koodiuri"
+    :koulutuksen-osa-koodi-versio s/Int
+    "TUVA perusteen koulutuksen osan koodiurin versio"
+    :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
+    :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
+    :laajuus
+    (s/constrained s/Num
+                   #(not (neg? %))
+                   "Koulutuksen osan laajuus ei saa olla negatiivinen.")
+    (str "Tutkintoon valmentavan koulutuksen koulutuksen osan laajuus"
+         "TUVA-viikkoina.")))
+
 (def ^:private ahato-part-of-hoks
   "Aiemmin hankitun ammatillisen tutkinnon osan HOKS-osa schemana."
   {:methods {:any :optional
@@ -796,6 +819,13 @@
            :post [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]
            :put [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
    :description "Hankittavat paikallisen tutkinnon osat"})
+
+(def ^:private hankittava-koulutuksen-osa
+  "TUVA HOKSin hankittava koulutuksen osa."
+  {:methods {:any :optional
+             :patch :excluded}
+   :types {:any [HankittavaKoulutuksenOsa]}
+   :description "Hankittavan koulutuksen osan tiedot"})
 
 (def HOKSModelVipunen
   "HOKSin schema (vipunen)."
@@ -873,7 +903,8 @@
    :opiskeluvalmiuksia-tukevat-opinnot oto-part-of-hoks
    :hankittavat-ammat-tutkinnon-osat hato-part-of-hoks
    :hankittavat-yhteiset-tutkinnon-osat hyto-part-of-hoks
-   :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks})
+   :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks
+   :hankittavat-koulutuksen-osat hankittava-koulutuksen-osa})
 
 (def HOKSVipunen
   "Generoitu HOKSin schema (vipunen)."
