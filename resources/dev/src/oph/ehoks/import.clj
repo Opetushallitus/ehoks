@@ -10,7 +10,7 @@
   #{:luotu :hyvaksytty :ensikertainen-hyvaksyminen :paivitetty})
 
 (def dates
-  #{:alku :loppu})
+  #{:alku :loppu :osaamisen-saavuttamisen-pvm :lahetetty-arvioitavaksi})
 
 (defn parse-date [s]
   (coerce/to-date (f/parse s)))
