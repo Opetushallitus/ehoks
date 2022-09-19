@@ -55,16 +55,60 @@
          (remove-empty-kriteerit)
          (adjust-osaamistaso-based-on-asteikko asteikko))))
 
+(defn get-peruste-by-id
+  "Get perusteet by ID. Uses eperusteet external api."
+  [^Long id]
+  (let [result (c/with-api-headers
+                 {:method :get
+                  :service (u/get-url "eperusteet-service-url")
+                  :url (u/get-url "eperusteet-service.external-api.find-peruste"
+                                  id)
+                  :options {:as :json}})
+        body (:body result)]
+    (println "get-peruste-by-id")
+    (println body)
+    body))
+
+(defn get-koulutuksenOsa-by-koodiUri
+  "Search for perusteet that match a koodiUri. Uses eperusteet external api."
+  [^String koodiUri]
+  (let [result
+        (c/with-api-headers
+          {:method :get
+           :service (u/get-url "eperusteet-service-url")
+           :url (u/get-url
+                  "eperusteet-service.external-api.find-perusteet-by-koodi")
+           :options {:as :json
+                     :query-params {:koodi koodiUri}}})
+        bodydata (get-in result [:body :data])
+        id (:id (first bodydata))
+        peruste (get-peruste-by-id id)
+        koulutuksenOsat (:koulutuksenOsat peruste)
+        koulutuksenOsa
+        (filter #(= koodiUri (get-in % [:nimiKoodi :uri])) koulutuksenOsat)
+        koulutuksenOsaPeruste
+        (map
+          (fn [v]
+            (-> (select-keys v [:id :nimi :osaamisalat])
+                (update :nimi select-keys [:fi :en :sv])
+                (update
+                  :osaamisalat (fn [x] (map #(select-keys % [:nimi]) x)))))
+          koulutuksenOsa)]
+    (println "get-peruste-by-koodiUri")
+    (println koulutuksenOsa)
+    (println koulutuksenOsaPeruste)
+    koulutuksenOsaPeruste))
+
 (defn search-perusteet-info
   "Search for perusteet that match a particular name"
   [nimi]
   (get-in
     (c/with-api-headers
       {:method :get
-       :service (u/get-url "eperusteet-service-external-url")
-       :url (u/get-url "eperusteet-service.external-api.find-perusteet")
+       :service (u/get-url "eperusteet-service-url")
+       :url (u/get-url "eperusteet-service.find-perusteet")
        :options {:as :json
-                 :query-params {:koodi nimi
+                 :query-params {:nimi nimi
                                 :tutkintonimikkeet true
                                 :tutkinnonosat true
                                 :osaamisalat true}}})
