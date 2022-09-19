@@ -29,6 +29,15 @@
             rest/rest-ok)
         (response/internal-server-error {:error "Service timeout exceeded"})))
 
+    (c-api/GET "/eperusteet/koulutuksenOsa" [:as request]
+      :summary "Hakee koulutuksenOsan ePerusteet-palvelusta"
+      :query-params [nimi :- String]
+      :return (rest/response [schema/Peruste])
+      (utils/with-timeout
+        (:service-timeout-ms config)
+        (rest/rest-ok (eperusteet/get-koulutuksenOsa-by-koodiUri nimi))
+        (response/internal-server-error {:error "Service timeout exceeded"})))
+
     (route-middleware
       [wrap-authorize]
       (c-api/GET "/koodistokoodi/:uri/:versio" []
