@@ -61,10 +61,10 @@
   (get-in
     (c/with-api-headers
       {:method :get
-       :service (u/get-url "eperusteet-service-url")
+       :service (u/get-url "eperusteet-service-external-url")
        :url (u/get-url "eperusteet-service.find-perusteet")
        :options {:as :json
-                 :query-params {:nimi nimi
+                 :query-params {:koodi nimi
                                 :tutkintonimikkeet true
                                 :tutkinnonosat true
                                 :osaamisalat true}}})
