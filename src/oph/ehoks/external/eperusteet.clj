@@ -92,7 +92,7 @@
                 (update :nimi select-keys [:fi :en :sv])
                 (update
                   :osaamisalat (fn [x] (map #(select-keys % [:nimi]) x)))
-                (update :koulutuksenOsaId "12345")))
+                (assoc :koulutuksenOsaId "12345")))
           koulutuksenOsa)]
     koulutuksenOsaPeruste))
 
