@@ -65,8 +65,6 @@
                                   id)
                   :options {:as :json}})
         body (:body result)]
-    (println "get-peruste-by-id")
-    (println body)
     body))
 
 (defn get-koulutuksenOsa-by-koodiUri
@@ -86,16 +84,18 @@
         koulutuksenOsat (:koulutuksenOsat peruste)
         koulutuksenOsa
         (filter #(= koodiUri (get-in % [:nimiKoodi :uri])) koulutuksenOsat)
+        koulutuksenOsaId (:id koulutuksenOsa)
         koulutuksenOsaPeruste
         (map
           (fn [v]
             (-> (select-keys v [:id :nimi :osaamisalat])
                 (update :nimi select-keys [:fi :en :sv])
                 (update
-                  :osaamisalat (fn [x] (map #(select-keys % [:nimi]) x)))))
+                  :osaamisalat (fn [x] (map #(select-keys % [:nimi]) x)))
+                (update :koulutuksenOsaId koulutuksenOsaId)))
           koulutuksenOsa)]
     (println "get-peruste-by-koodiUri")
-    (println koulutuksenOsa)
+    (println koulutuksenOsaId)
     (println koulutuksenOsaPeruste)
     koulutuksenOsaPeruste))
 
