@@ -84,7 +84,7 @@
         koulutuksenOsat (:koulutuksenOsat peruste)
         koulutuksenOsa
         (filter #(= koodiUri (get-in % [:nimiKoodi :uri])) koulutuksenOsat)
-        koulutuksenOsaId (:id koulutuksenOsa)
+        ;;koulutuksenOsaId (:id koulutuksenOsa)
         koulutuksenOsaPeruste
         (map
           (fn [v]
@@ -92,11 +92,8 @@
                 (update :nimi select-keys [:fi :en :sv])
                 (update
                   :osaamisalat (fn [x] (map #(select-keys % [:nimi]) x)))
-                (update :koulutuksenOsaId koulutuksenOsaId)))
+                (update :koulutuksenOsaId "12345")))
           koulutuksenOsa)]
-    (println "get-peruste-by-koodiUri")
-    (println koulutuksenOsaId)
-    (println koulutuksenOsaPeruste)
     koulutuksenOsaPeruste))
 
 (defn search-perusteet-info
