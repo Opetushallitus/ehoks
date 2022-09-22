@@ -84,8 +84,8 @@
         koulutuksenOsat (:koulutuksenOsat peruste)
         koulutuksenOsa
         (filter #(= koodiUri (get-in % [:nimiKoodi :uri])) koulutuksenOsat)
-        ;; TODO: UI:ssa urliin tarvittava id. ATM lähetetään vain 12345
-        ;;koulutuksenOsaId (:id koulutuksenOsa)
+        ;; TODO: tarvittava id UI:n ePerusteet urlia varten
+        ;; ATM lähetetään vain 12345
         koulutuksenOsaPeruste
         (map
           (fn [v]
