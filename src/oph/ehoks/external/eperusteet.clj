@@ -55,7 +55,7 @@
          (remove-empty-kriteerit)
          (adjust-osaamistaso-based-on-asteikko asteikko))))
 
-(defn get-peruste-by-id
+(defn- get-peruste-by-id
   "Get perusteet by ID. Uses eperusteet external api."
   [^Long id]
   (let [result (c/with-api-headers
@@ -78,12 +78,13 @@
                   "eperusteet-service.external-api.find-perusteet-by-koodi")
            :options {:as :json
                      :query-params {:koodi koodiUri}}})
-        bodydata (get-in result [:body :data])
-        id (:id (first bodydata))
+        body (get-in result [:body :data])
+        id (:id (first body))
         peruste (get-peruste-by-id id)
         koulutuksenOsat (:koulutuksenOsat peruste)
         koulutuksenOsa
         (filter #(= koodiUri (get-in % [:nimiKoodi :uri])) koulutuksenOsat)
+        ;; TODO: UI:ssa urliin tarvittava id. ATM lähetetään vain 12345
         ;;koulutuksenOsaId (:id koulutuksenOsa)
         koulutuksenOsaPeruste
         (map
