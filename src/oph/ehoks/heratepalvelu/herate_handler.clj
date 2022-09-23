@@ -77,6 +77,16 @@
         (future (h/update-opiskeluoikeudet))
         (response/no-content))
 
+      (c-api/POST "/onrmodify" request
+        :summary "Tarkastaa päivitetyn henkilön tiedot eHoksissa
+            ja tekee tarvittaessa muutokset.
+            Huom: Opiskeluoikeudet taulun oppija-oid päivittyy on update cascade
+            säännön kautta."
+        :header-params [caller-id :- s/Str]
+        :query-params [oid :- s/Str]
+        (hp/handle-onrmodified oid)
+        (response/no-content))
+
       (c-api/GET "/tyoelamajaksot-active-between" []
         :summary "Työelämäjaksot voimassa aikavälin sisällä tietyllä oppijalla"
         :query-params [oppija :- s/Str
