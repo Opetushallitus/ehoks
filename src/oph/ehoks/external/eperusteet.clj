@@ -55,6 +55,48 @@
          (remove-empty-kriteerit)
          (adjust-osaamistaso-based-on-asteikko asteikko))))
 
+(defn- get-peruste-by-id
+  "Get perusteet by ID. Uses eperusteet external api."
+  [^Long id]
+  (let [result (c/with-api-headers
+                 {:method :get
+                  :service (u/get-url "eperusteet-service-url")
+                  :url (u/get-url "eperusteet-service.external-api.find-peruste"
+                                  id)
+                  :options {:as :json}})
+        body (:body result)]
+    body))
+
+(defn get-koulutuksenOsa-by-koodiUri
+  "Search for perusteet that match a koodiUri. Uses eperusteet external api."
+  [^String koodiUri]
+  (let [result
+        (c/with-api-headers
+          {:method :get
+           :service (u/get-url "eperusteet-service-url")
+           :url (u/get-url
+                  "eperusteet-service.external-api.find-perusteet-by-koodi")
+           :options {:as :json
+                     :query-params {:koodi koodiUri}}})
+        body (get-in result [:body :data])
+        id (:id (first body))
+        peruste (get-peruste-by-id id)
+        koulutuksenOsat (:koulutuksenOsat peruste)
+        koulutuksenOsa
+        (filter #(= koodiUri (get-in % [:nimiKoodi :uri])) koulutuksenOsat)
+        ;; TODO: tarvittava id UI:n ePerusteet urlia varten
+        ;; ATM lähetetään vain 12345
+        koulutuksenOsaPeruste
+        (map
+          (fn [v]
+            (-> (select-keys v [:id :nimi :osaamisalat])
+                (update :nimi select-keys [:fi :en :sv])
+                (update
+                  :osaamisalat (fn [x] (map #(select-keys % [:nimi]) x)))
+                (assoc :koulutuksenOsaId "12345")))
+          koulutuksenOsa)]
+    koulutuksenOsaPeruste))
+
 (defn search-perusteet-info
   "Search for perusteet that match a particular name"
   [nimi]
