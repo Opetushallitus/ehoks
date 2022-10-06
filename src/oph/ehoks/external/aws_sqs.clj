@@ -53,6 +53,11 @@
   (get-queue-url-with-error-handling
     (:heratepalvelu-tyoelamapalaute-queue config)))
 
+(def ^:private tyoelamapalaute-rahoitus-queue-url
+  "Globaali työelämäpalaute queue -URL."
+  (get-queue-url-with-error-handling
+    (:heratepalvelu-tyoelamapalaute-rahoituslaskenta-queue config)))
+
 (def ^:private resend-queue-url
   "Globaali uudelleenlähetys queue -URL."
   (get-queue-url-with-error-handling
@@ -133,6 +138,13 @@
   (if (some? delete-tunnus-queue-url)
     (send-message {:kyselylinkki kyselylinkki} delete-tunnus-queue-url)
     (log/error "No AMIS delete tunnus queue!")))
+
+(defn send-teprah-message
+  "Lähettää viestin työelämäpalautteen rahoituslaskentajonoon"
+  [msg]
+  (if-let [queue-url tyoelamapalaute-rahoitus-queue-url]
+    (send-message msg tyoelamapalaute-rahoitus-queue-url)
+    (log/error "No työelämäpalaute rahoituslaskenta queue!")))
 
 (defn send-tyoelamapalaute-message
   "Lähettää työelämäpalauteviestin."

@@ -31,6 +31,15 @@
               periods (hp/process-finished-workplace-periods start end l)]
           (restful/rest-ok (count periods))))
 
+      (c-api/GET "/tyoelamajaksot/rahoituslaskenta" []
+        :summary "Päättyneet työelämäjaksot rahoituslaskentaan"
+        :query-params [start :- LocalDate
+                       end :- LocalDate
+                       limit :- (s/maybe s/Int)]
+        (let [l (or limit 10)
+              periods (hp/process-periods-for-teprah start end l)]
+          (restful/rest-ok (count periods))))
+
       (c-api/GET "/kasittelemattomat-heratteet" []
         :summary "HOKSit, joilla on käsittelemättömiä herätteitä"
         :query-params [start :- LocalDate

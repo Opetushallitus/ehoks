@@ -14,6 +14,7 @@
  :heratepalvelu-delete-tunnus-queue "services-heratepalvelu-amisDeleteTunnusQueue"
  :heratepalvelu-queue "services-heratepalvelu-eHOKSHerateQueue"
  :heratepalvelu-tyoelamapalaute-queue "services-heratepalvelu-tep-HerateQueue"
+ :heratepalvelu-tyoelamapalaute-rahoituslaskenta-queue "services-heratepalvelu-teprah-RahoitusLaskentaQueue"
  :heratepalvelu-resend-queue "services-heratepalvelu-eHOKSAmisResendQueue"
  :send-herate-messages? false
  :audit? true

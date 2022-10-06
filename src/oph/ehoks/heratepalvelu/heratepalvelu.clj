@@ -24,11 +24,30 @@
         hatos (db-hoks/select-paattyneet-tyoelamajaksot "hato" start end limit)]
     (concat hytos hptos hatos)))
 
+(defn send-workplace-periods-rahoituslaskenta
+  "Formats and sends a list of periods to a SQS queue"
+  [periods]
+  (doseq [period periods]
+    (sqs/send-teprah-message (sqs/build-tyoelamapalaute-msg period))))
+
 (defn send-workplace-periods
   "Formats and sends a list of periods to a SQS queue"
   [periods]
   (doseq [period periods]
     (sqs/send-tyoelamapalaute-message (sqs/build-tyoelamapalaute-msg period))))
+
+(defn process-periods-for-teprah
+  "Finds all finished workplace periods between dates start and
+  end and sends them to a SQS queue"
+  [start end limit]
+  (log/info (str "Processing finished periods for rahoituslaskenta: start "
+                 start ", end " end ", limit " limit))
+  (let [periods (find-finished-workplace-periods start end limit)]
+    (log/infof
+      "Sending %d  (limit %d) finished workplace periods between %s - %s"
+      (count periods) limit start end)
+    (send-workplace-periods-rahoituslaskenta periods)
+    periods))
 
 (defn process-finished-workplace-periods
   "Finds all finished workplace periods between dates start and

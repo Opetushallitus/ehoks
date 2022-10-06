@@ -54,6 +54,7 @@
               :heratepalvelu-delete-tunnus-queue s/Str
               :heratepalvelu-queue s/Str
               :heratepalvelu-tyoelamapalaute-queue s/Str
+              :heratepalvelu-tyoelamapalaute-rahoituslaskenta-queue s/Str
               :send-herate-messages? s/Bool
               :audit? s/Bool
               :db-type s/Str
