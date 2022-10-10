@@ -5,7 +5,8 @@
             [oph.ehoks.db.db-operations.oppija :as op]
             [oph.ehoks.external.organisaatio :as org]
             [clojure.java.jdbc :as jdbc]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [clojure.string :as cs]))
 
 (defn oppilaitos-oid-from-sql
   "Hakee oppilaitos OID:n tietokannasta haetusta objektista."
@@ -550,20 +551,24 @@
 (defn select-paattyneet-tyoelamajaksot
   "Hakee tietokannasta työelämäjaksot, jotka päättyivät tietyn aikavälin
   sisällä."
-  [osa start end limit]
-  (case osa
-    "hpto" (map (get-and-assoc-data "hpto")
-                (db-ops/query
-                  [queries/select-paattyneet-tyoelamajaksot-hpto
-                   start end limit]))
-    "hato" (map (get-and-assoc-data "hato")
-                (db-ops/query
-                  [queries/select-paattyneet-tyoelamajaksot-hato
-                   start end limit]))
-    "hyto" (map (get-and-assoc-data "hyto")
-                (db-ops/query
-                  [queries/select-paattyneet-tyoelamajaksot-hyto
-                   start end limit]))))
+  ([osa start end limit]
+    (select-paattyneet-tyoelamajaksot osa start end limit ""))
+  ([osa start end limit extra-filter]
+    (let [query (case osa
+                  "hpto" (map (get-and-assoc-data "hpto")
+                              (db-ops/query
+                                [queries/select-paattyneet-tyoelamajaksot-hpto
+                                 start end limit]))
+                  "hato" (map (get-and-assoc-data "hato")
+                              (db-ops/query
+                                [queries/select-paattyneet-tyoelamajaksot-hato
+                                 start end limit]))
+                  "hyto" (map (get-and-assoc-data "hyto")
+                              (db-ops/query
+                                [queries/select-paattyneet-tyoelamajaksot-hyto
+                                 start end limit])))
+          with-filter (cs/replace query ":extra-filter" extra-filter)]
+      with-filter)))
 
 (defn select-tyoelamajaksot-active-between
   "Hakee tietokannasta työelämäjaksot, jotka ovat tai olivat voimassa tietyn
@@ -578,6 +583,17 @@
           oppija
           end
           start])))
+
+(defn update-osaamisen-hankkimistapa-teprah-kasitelty
+  "Merkitsee osaamisen hankkimistavan käsitellyksi tai ei käsitellyksi."
+  [ids]
+  (when (not-empty ids)
+    (let [in-str (clojure.string/join "," ids)]
+      (log/info "Updating teprah true for ids: " ids)
+      (db-ops/update!
+        :osaamisen_hankkimistavat
+        {:teprah_kasitelty true}
+        ["id in(?)" in-str]))))
 
 (defn update-osaamisen-hankkimistapa-tep-kasitelty
   "Merkitsee osaamisen hankkimistavan käsitellyksi tai ei käsitellyksi."

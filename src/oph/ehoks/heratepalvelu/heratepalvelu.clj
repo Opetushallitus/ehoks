@@ -16,6 +16,17 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops])
   (:import (java.time LocalDate)))
 
+(defn find-finished-workplace-periods-teprah
+  "Queries for all finished workplace periods between start and end"
+  [start end limit]
+  (let [hytos (db-hoks/select-paattyneet-tyoelamajaksot
+                "hyto" start end limit "AND NOT teprah_kasitelty")
+        hptos (db-hoks/select-paattyneet-tyoelamajaksot
+                "hpto" start end limit "AND NOT teprah_kasitelty")
+        hatos (db-hoks/select-paattyneet-tyoelamajaksot
+                "hato" start end limit "AND NOT teprah_kasitelty")]
+    (concat hytos hptos hatos)))
+
 (defn find-finished-workplace-periods
   "Queries for all finished workplace periods between start and end"
   [start end limit]
@@ -36,17 +47,25 @@
   (doseq [period periods]
     (sqs/send-tyoelamapalaute-message (sqs/build-tyoelamapalaute-msg period))))
 
+(defn set-teprah-kasitelty
+  "Marks an osaamisen hankkimistapa as handled (käsitelty)."
+  [hankkimistapa-ids]
+  (db-hoks/update-osaamisen-hankkimistapa-teprah-kasitelty hankkimistapa-ids))
+
 (defn process-periods-for-teprah
   "Finds all finished workplace periods between dates start and
   end and sends them to a SQS queue"
   [start end limit]
   (log/info (str "Processing finished periods for rahoituslaskenta: start "
                  start ", end " end ", limit " limit))
-  (let [periods (find-finished-workplace-periods start end limit)]
+  (let [periods (find-finished-workplace-periods-teprah start end limit)]
     (log/infof
       "Sending %d  (limit %d) finished workplace periods between %s - %s"
       (count periods) limit start end)
     (send-workplace-periods-rahoituslaskenta periods)
+    (log/infof "Total of %d periods sent to queue, marking to db"
+               (count periods))
+    (set-teprah-kasitelty (map :hankkimistapa_id periods))
     periods))
 
 (defn process-finished-workplace-periods

@@ -30,4 +30,5 @@ WHERE
   AND oh.loppu <= ?
   AND oh.tep_kasitelty = false
   AND osa.deleted_at IS NULL
+  :extra-filter
 LIMIT ?
