@@ -550,7 +550,8 @@
 
 (defn select-paattyneet-tyoelamajaksot
   "Hakee tietokannasta työelämäjaksot, jotka päättyivät tietyn aikavälin
-  sisällä."
+  sisällä. Extra-filter-parametria käytetään tep_kasitelty ja teprah_kasitelty
+  -sarakkeilla rajaamiseen."
   ([osa start end limit]
     (select-paattyneet-tyoelamajaksot osa start end limit ""))
   ([osa start end limit extra-filter]
@@ -586,12 +587,13 @@
   "Merkitsee osaamisen hankkimistavan käsitellyksi tai ei käsitellyksi."
   [ids]
   (when (not-empty ids)
-    (let [in-str (clojure.string/join "," ids)]
-      (log/info "Updating teprah true for ids: " ids)
+    (log/info "Updating teprah true for multiple ids: " (count ids))
+    (doseq [id ids]
+      (log/info "Updating teprah true for id " id)
       (db-ops/update!
         :osaamisen_hankkimistavat
         {:teprah_kasitelty true}
-        ["id in(?)" in-str]))))
+        ["id = ?" id]))))
 
 (defn update-osaamisen-hankkimistapa-tep-kasitelty
   "Merkitsee osaamisen hankkimistavan käsitellyksi tai ei käsitellyksi."
