@@ -30,7 +30,6 @@ WHERE
   oh.osaamisen_hankkimistapa_koodi_uri IN ('osaamisenhankkimistapa_koulutussopimus', 'osaamisenhankkimistapa_oppisopimus')
   AND oh.loppu >= ?
   AND oh.loppu <= ?
-  AND oh.tep_kasitelty = false
   AND osa.deleted_at IS NULL
   AND osat.deleted_at IS NULL
   :extra-filter

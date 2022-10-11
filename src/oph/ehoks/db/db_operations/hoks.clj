@@ -554,21 +554,19 @@
   ([osa start end limit]
     (select-paattyneet-tyoelamajaksot osa start end limit ""))
   ([osa start end limit extra-filter]
-    (let [query (case osa
-                  "hpto" (map (get-and-assoc-data "hpto")
-                              (db-ops/query
-                                [queries/select-paattyneet-tyoelamajaksot-hpto
-                                 start end limit]))
-                  "hato" (map (get-and-assoc-data "hato")
-                              (db-ops/query
-                                [queries/select-paattyneet-tyoelamajaksot-hato
-                                 start end limit]))
-                  "hyto" (map (get-and-assoc-data "hyto")
-                              (db-ops/query
-                                [queries/select-paattyneet-tyoelamajaksot-hyto
-                                 start end limit])))
-          with-filter (cs/replace query ":extra-filter" extra-filter)]
-      with-filter)))
+    (let [query (cs/replace
+                  (case osa
+                    "hpto" queries/select-paattyneet-tyoelamajaksot-hpto
+                    "hato" queries/select-paattyneet-tyoelamajaksot-hato
+                    "hyto" queries/select-paattyneet-tyoelamajaksot-hyto)
+                  ":extra-filter"
+                  extra-filter)
+          result (map (get-and-assoc-data osa) (db-ops/query
+                                                 [query
+                                                  start end limit]))]
+      (log/infof "select-paattyneet-tyoelamajaksot With query %s" query)
+      (log/infof "select-paattyneet-tyoelamajaksot result %s" result)
+      result)))
 
 (defn select-tyoelamajaksot-active-between
   "Hakee tietokannasta työelämäjaksot, jotka ovat tai olivat voimassa tietyn
