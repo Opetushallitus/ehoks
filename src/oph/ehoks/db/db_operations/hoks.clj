@@ -588,8 +588,8 @@
   [ids]
   (when (not-empty ids)
     (log/info "Updating teprah true for multiple ids: " (count ids))
-    (doseq [id ids]
-      (log/info "Updating teprah true for id " id)
+    (doseq [id ids] ;fixme, nämä olisi parempi hoitaa yhdellä operaatiolla.
+      ;(log/info "Updating teprah true for id" id)
       (db-ops/update!
         :osaamisen_hankkimistavat
         {:teprah_kasitelty true}

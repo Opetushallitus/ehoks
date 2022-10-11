@@ -56,14 +56,15 @@
   (db-hoks/update-osaamisen-hankkimistapa-teprah-kasitelty hankkimistapa-ids))
 
 (defn process-periods-for-teprah
-  "Finds all finished workplace periods between dates start and
-  end and sends them to a SQS queue"
+  "Finds all finished workplace periods (teprah_kasitelty == false)
+  between dates start and end and sends them to a SQS queue,
+  marks teprah_kasitelty = true after queuing."
   [start end limit]
   (log/info (str "Processing finished periods for rahoituslaskenta: start "
                  start ", end " end ", limit " limit))
   (let [periods (find-finished-workplace-periods-teprah start end limit)]
     (log/infof
-      "Sending %d  (limit %d) finished workplace periods between %s - %s"
+      "Sending teprah %d  (limit %d) finished workplace periods between %s - %s"
       (count periods) limit start end)
     (send-workplace-periods-rahoituslaskenta periods)
     (log/infof "Total of %d periods sent to queue, marking to db"
