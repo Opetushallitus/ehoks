@@ -6,7 +6,7 @@
  :cas-password "{{ehoks_cas_password}}"
  :client-sub-system-code "{{ehoks_client_sub_system_code}}"
  :opintopolku-host "{{ehoks_opintopolku_host}}"
- :db-server "{{ehoks_db_server}}"
+ :db-server "{{ehoks_virkailija_freeze_db}}"
  :db-port {{ehoks_db_port}}
  :db-name "{{ehoks_db_name}}"
  :db-username "{{postgres_app_user}}"
