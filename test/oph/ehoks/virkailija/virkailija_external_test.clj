@@ -7,7 +7,7 @@
             [ring.mock.request :as mock]
             [oph.ehoks.session-store :refer [test-session-store]]))
 
-(def base-url "/ehoks-virkailija-backend/api/v1/virkailija/external")
+(def base-url "/ehoks-virkailija-backend-freeze/api/v1/virkailija/external")
 
 (defn with-test-virkailija
   ([request]

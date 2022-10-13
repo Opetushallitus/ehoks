@@ -10,7 +10,7 @@
 
 (t/use-fixtures :once utils/migrate-database)
 
-(def session-url "/ehoks-virkailija-backend/api/v1/virkailija/session")
+(def session-url "/ehoks-virkailija-backend-freeze/api/v1/virkailija/session")
 
 (defn- create-app [session-store]
   (common-api/create-app handler/app-routes session-store))
@@ -81,7 +81,7 @@
               (mock/request
                 :get
                 (str
-                  "/ehoks-virkailija-backend/cas-security-check"
+                  "/ehoks-virkailija-backend-freeze/cas-security-check"
                   "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab")))]
         (t/is (= (:status response) 303))))))
 
@@ -94,12 +94,12 @@
               [(mock/request
                  :get
                  (str
-                   "/ehoks-virkailija-backend/cas-security-check"
+                   "/ehoks-virkailija-backend-freeze/cas-security-check"
                    "?ticket=ST-12345-abcdefghIJKLMNopqrst-uvwxyz1234567890ab"))
                (mock/request :get session-url)
                (mock/request
                  :post
-                 "/ehoks-virkailija-backend/cas-security-check"
+                 "/ehoks-virkailija-backend-freeze/cas-security-check"
                  {:logoutRequest "
                  <samlp:LogoutRequest
                    xmlns:samlp= \"urn:oasis:names:tc:SAML:2.0:protocol\"

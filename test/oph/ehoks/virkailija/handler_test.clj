@@ -16,7 +16,7 @@
 
 (t/use-fixtures :once utils/migrate-database)
 
-(def base-url "/ehoks-virkailija-backend/api/v1")
+(def base-url "/ehoks-virkailija-backend-freeze/api/v1")
 
 (defn- add-caller-id [request]
   (mock/header request "Caller-Id" "test"))
@@ -25,7 +25,7 @@
   (t/testing "GET /buildversion.txt"
     (let [app (common-api/create-app handler/app-routes)
           response (app (mock/request
-                          :get "/ehoks-virkailija-backend/buildversion.txt"))
+                          :get "/ehoks-virkailija-backend-freeze/buildversion.txt"))
           body (slurp (:body response))]
       (t/is (= (:status response) 200))
       (t/is (re-find #"^artifactId=" body)))))

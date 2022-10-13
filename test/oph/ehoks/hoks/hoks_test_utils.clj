@@ -6,7 +6,7 @@
             [oph.ehoks.external.cache :as cache]
             [oph.ehoks.utils :as utils :refer [eq]]))
 
-(def base-url "/ehoks-virkailija-backend/api/v1/hoks")
+(def base-url "/ehoks-virkailija-backend-freeze/api/v1/hoks")
 
 (defn create-app [session-store]
   (cache/clear-cache!)

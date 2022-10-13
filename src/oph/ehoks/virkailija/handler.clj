@@ -402,7 +402,7 @@
 
 (def routes
   "Virkailija handler routes"
-  (c-api/context "/ehoks-virkailija-backend" []
+  (c-api/context "/ehoks-virkailija-backend-freeze" []
     :tags ["ehoks"]
 
     (c-api/context "/cas-security-check" []
@@ -843,8 +843,8 @@
   "Virkailija handler app routes"
   (c-api/api
     {:swagger
-     {:ui "/ehoks-virkailija-backend/doc"
-      :spec "/ehoks-virkailija-backend/doc/swagger.json"
+     {:ui "/ehoks-virkailija-backend-freeze/doc"
+      :spec "/ehoks-virkailija-backend-freeze/doc/swagger.json"
       :data {:info {:title "eHOKS virkailija backend"
                     :description "eHOKS virkailijan näkymän ja
                                   HOKS-rajapinnan backend"}

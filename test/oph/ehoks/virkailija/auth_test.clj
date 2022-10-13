@@ -9,7 +9,7 @@
 
 (t/use-fixtures :once utils/migrate-database)
 
-(def session-url "/ehoks-virkailija-backend/api/v1/virkailija/session")
+(def session-url "/ehoks-virkailija-backend-freeze/api/v1/virkailija/session")
 
 (defn create-app [session-store]
   (common-api/create-app handler/app-routes session-store))
