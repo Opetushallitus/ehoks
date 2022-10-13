@@ -42,8 +42,8 @@
       (log/info "Starting oppijaindex update in another thread.")
       (future
         (log/info "Updating oppijaindex")
-        (oppijaindex/update-oppijat-without-index!)
-        (oppijaindex/update-opiskeluoikeudet-without-index!)
+        ;(oppijaindex/update-oppijat-without-index!)
+        ;(oppijaindex/update-opiskeluoikeudet-without-index!)
         (log/info "Updating oppijaindex finished"))
       (jetty/run-jetty hoks-app {:port (:port config)
                                  :join? true
