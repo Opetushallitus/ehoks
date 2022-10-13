@@ -20,11 +20,11 @@
   "Queries for all finished workplace periods between start and end"
   [start end limit]
   (let [hytos (db-hoks/select-paattyneet-tyoelamajaksot
-                "hyto" start end limit "AND NOT teprah_kasitelty")
+                "hyto" start end limit "AND teprah_kasitelty IS NOT TRUE")
         hptos (db-hoks/select-paattyneet-tyoelamajaksot
-                "hpto" start end limit "AND NOT teprah_kasitelty")
+                "hpto" start end limit "AND teprah_kasitelty IS NOT TRUE")
         hatos (db-hoks/select-paattyneet-tyoelamajaksot
-                "hato" start end limit "AND NOT teprah_kasitelty")]
+                "hato" start end limit "AND teprah_kasitelty IS NOT TRUE")]
     (concat hytos hptos hatos)))
 
 (defn find-finished-workplace-periods
