@@ -157,9 +157,7 @@
   [hoks]
   (if (nil? (:deleted-at hoks))
     hoks
-    {:id (:id hoks)
-     :eid (:eid hoks)
-     :ensikertainen-hyvaksyminen (:ensikertainen-hyvaksyminen hoks)}))
+    (select-keys hoks [:id :eid :ensikertainen-hyvaksyminen])))
 
 (defn- new-osaamisen-saavuttamisen-pvm-added?
   "Tarkistaa, onko uusi osaamisen saavuttamisen päivämäärä lisätty kun vanhaa ei
