@@ -7,6 +7,7 @@
             [oph.ehoks.utils :as utils :refer [eq]]))
 
 (def base-url "/ehoks-virkailija-backend/api/v1/hoks")
+(def base-url-virkailija "/ehoks-virkailija-backend/api/v1/virkailija")
 
 (defn create-app [session-store]
   (cache/clear-cache!)

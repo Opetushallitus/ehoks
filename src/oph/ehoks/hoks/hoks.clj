@@ -148,8 +148,18 @@
   (let [hokses (db-hoks/select-hokses-greater-than-id
                  (or id 0)
                  amount
-                 updated-after)]
+                 updated-after
+                 true)]
     (map enrich-and-filter hokses)))
+
+(defn redact-deleted-hokses
+  "Jos HOKS on passivoitu, se sisältää vain id- ja eid-kentät."
+  [hoks]
+  (if (nil? (:deleted-at hoks))
+    hoks
+    {:id (:id hoks)
+     :eid (:eid hoks)
+     :ensikertainen-hyvaksyminen (:ensikertainen-hyvaksyminen hoks)}))
 
 (defn- new-osaamisen-saavuttamisen-pvm-added?
   "Tarkistaa, onko uusi osaamisen saavuttamisen päivämäärä lisätty kun vanhaa ei

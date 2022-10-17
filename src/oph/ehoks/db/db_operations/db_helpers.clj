@@ -82,7 +82,9 @@
 (defn shallow-delete!
   "Set deleted_at field to current date and time, marking row as deleted."
   ([table where-clause]
-    (update! table {:deleted_at (java.util.Date.)} where-clause))
+    (let [now (java.util.Date.)]
+      (update! table {:deleted_at now
+                      :updated_at now} where-clause)))
   ([table where-clause db-conn]
     (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
 
@@ -121,7 +123,6 @@
     dissoc m
     :created_at
     :updated_at
-    :deleted_at
     others))
 
 (defn to-underscore-keys
@@ -188,12 +189,16 @@
 
 (defn from-sql
   "Convert maps returned by database functions to format expected elsewhere."
-  ([m operations]
-    (-> (convert-sql m operations)
-        remove-nils
-        remove-db-columns
-        to-dash-keys))
-  ([m] (from-sql m {})))
+  ([m operations return-deleted-at?]
+    (let [remove-func (if (true? return-deleted-at?)
+                        remove-db-columns
+                        #(remove-db-columns % :deleted_at))]
+      (-> (convert-sql m operations)
+          remove-nils
+          remove-func
+          to-dash-keys)))
+  ([m operations] (from-sql m operations false))
+  ([m] (from-sql m {} false)))
 
 (defn to-sql
   "Convert maps used elsewhere to those expected by database functions."

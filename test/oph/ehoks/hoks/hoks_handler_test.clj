@@ -3,6 +3,7 @@
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.hoks.test-data :as test-data]
@@ -546,3 +547,60 @@
     (is (= "viestintapalvelussa"
            (:lahetystila (first (h/get-kyselylinkit-by-oppija-oid
                                   "1.2.246.562.24.12312312312")))))))
+
+(deftest get-paged-vipunen-data
+  (testing "GET paged Vipunen data"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :osaamisen-hankkimisen-tarve true
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
+          app (hoks-utils/create-app nil)
+          post-response (hoks-utils/mock-st-post app base-url hoks-data)]
+      (is (= (:status post-response) 200))
+      (let [hoks-uri (-> (utils/parse-body (:body post-response))
+                    :data
+                    :uri)
+            get-response (hoks-utils/mock-st-get app hoks-uri)]
+        (is (= (:status get-response) 200))
+        (let [hoks (-> (utils/parse-body (:body get-response))
+                       :data)
+              paged-response (hoks-utils/mock-st-get
+                               app (format "%s/paged" base-url))]
+          (is (= (:status paged-response) 200))
+          (is (= (-> (utils/parse-body (:body paged-response))
+                     :data
+                     :result
+                     first
+                     :eid)
+                 (-> hoks
+                     :eid))))))))
+
+(deftest get-paged-vipunen-data-deleted
+  (testing "GET paged Vipunen data with deleted HOKS"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :osaamisen-hankkimisen-tarve true
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
+          app (hoks-utils/create-app nil)
+          post-response (hoks-utils/mock-st-post app base-url hoks-data)]
+      (is (= (:status post-response) 200))
+      (let [hoks-uri (-> (utils/parse-body (:body post-response))
+                         :data
+                         :uri)
+            get-response (hoks-utils/mock-st-get app hoks-uri)]
+        (is (= (:status get-response) 200))
+        (let [hoks (-> (utils/parse-body (:body get-response))
+                       :data)
+              hoks-id (-> hoks :id)]
+          (db-hoks/shallow-delete-hoks-by-hoks-id hoks-id)
+          (let [paged-response (hoks-utils/mock-st-get
+                                 app (format "%s/paged" base-url))
+                paged-body (utils/parse-body (:body paged-response))]
+            (is (= (:status paged-response) 200))
+            (is (= (-> paged-body
+                       :data
+                       :result
+                       first)
+                   {:id hoks-id
+                    :eid (-> hoks :eid)
+                    :ensikertainen-hyvaksyminen "2018-12-15"}))))))))
