@@ -437,8 +437,7 @@
                                 [hoks-schema-vipunen/HOKSVipunen]})
         (let [limit (min (max 1 amount) 1000)
               raw-result (h/get-hokses-from-id from-id limit updated-after)
-              redacted-deleted-result (map h/redact-deleted-hokses raw-result)
-              result (map #(dissoc % :deleted-at) redacted-deleted-result)
+              result (map h/mark-as-deleted raw-result)
               last-id (first (sort > (map :id result)))
               schema-checker (s/checker hoks-schema-vipunen/HOKSVipunen)
               result-after-validation (filter

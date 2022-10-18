@@ -12,7 +12,8 @@
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.external.koski :as k]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [clojure.set :as s])
   (:import (java.time LocalDate)))
 
 (defn get-hoks-values
@@ -152,12 +153,12 @@
                  true)]
     (map enrich-and-filter hokses)))
 
-(defn redact-deleted-hokses
-  "Jos HOKS on passivoitu, se sisältää vain id- ja eid-kentät."
+(defn mark-as-deleted
+  "Jos HOKS on passivoitu, se sisältää poistettu-kentän."
   [hoks]
   (if (nil? (:deleted-at hoks))
     hoks
-    (select-keys hoks [:id :eid :ensikertainen-hyvaksyminen])))
+    (s/rename-keys hoks {:deleted-at :poistettu})))
 
 (defn- new-osaamisen-saavuttamisen-pvm-added?
   "Tarkistaa, onko uusi osaamisen saavuttamisen päivämäärä lisätty kun vanhaa ei

@@ -878,6 +878,10 @@
                 :types {:any s/Inst}
                 :description (str "HOKS-dokumentin viimeisin päivitysaika "
                                   "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
+   :poistettu {:methods {:any :optional}
+               :types {:any s/Inst}
+               :description (str "HOKS-dokumentin passivointiaika "
+                                 "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
    :osaamisen-saavuttamisen-pvm {:methods {:any :optional}
                                  :types {:any LocalDate}
                                  :description
