@@ -13,7 +13,7 @@
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.external.koski :as k]
             [clojure.tools.logging :as log]
-            [clojure.set :as s])
+            [clojure.set :refer [rename-keys]])
   (:import (java.time LocalDate)))
 
 (defn get-hoks-values
@@ -150,7 +150,7 @@
                  (or id 0)
                  amount
                  updated-after
-                 true)]
+                 #{:deleted_at})]
     (map enrich-and-filter hokses)))
 
 (defn mark-as-deleted
@@ -158,7 +158,7 @@
   [hoks]
   (if (nil? (:deleted-at hoks))
     hoks
-    (s/rename-keys hoks {:deleted-at :poistettu})))
+    (rename-keys hoks {:deleted-at :poistettu})))
 
 (defn- new-osaamisen-saavuttamisen-pvm-added?
   "Tarkistaa, onko uusi osaamisen saavuttamisen päivämäärä lisätty kun vanhaa ei

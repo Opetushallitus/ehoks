@@ -15,10 +15,10 @@
 (defn hoks-from-sql
   "Muuttaa tietokannasta haetun HOKSin siihen muotoon, joka voi palauttaa
   käyttäjälle."
-  ([h return-deleted-at?]
-    (db-ops/from-sql h {} return-deleted-at?))
+  ([h keep-columns]
+    (db-ops/from-sql h {} keep-columns))
   ([h]
-    (db-ops/from-sql h)))
+    (db-ops/from-sql h nil)))
 
 (defn hoks-to-sql
   "Muuttaa ehoksissa käytetyn HOKSin näin, että sen voi tallentaa hoksit
@@ -386,15 +386,15 @@
 (defn select-hokses-greater-than-id
   "Hakee tietokannasta tietyn määrän HOKSeja, joiden ID:t ovat annettu arvo tai
   sitä isompia, ja jotka on muokattu tietyn ajankohdan jälkeen."
-  ([from-id amount updated-after return-deleted-at?]
+  ([from-id amount updated-after keep-columns]
     (db-ops/query [queries/select-hoksit-by-id-paged
                    from-id
                    updated-after
                    updated-after
                    amount]
-                  {:row-fn #(hoks-from-sql % return-deleted-at?)}))
+                  {:row-fn #(hoks-from-sql % keep-columns)}))
   ([from-id amount updated-after]
-    (select-hokses-greater-than-id from-id amount updated-after false)))
+    (select-hokses-greater-than-id from-id amount updated-after nil)))
 
 (defn select-hoks-by-eid
   "Hakee HOKSin tietokannasta EID:n perustella."

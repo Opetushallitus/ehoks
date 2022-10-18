@@ -1,5 +1,5 @@
 (ns oph.ehoks.db.db-operations.db-helpers
-  (:require [clojure.set :refer [rename-keys]]
+  (:require [clojure.set :refer [difference rename-keys]]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.config :refer [config]]
             [clojure.data.json :as json]
@@ -116,14 +116,13 @@
       (keys m))))
 
 (defn remove-db-columns
-  "Remove keys corresponding to columns used for internal purposes, plus others
-  listed in argument others."
-  [m & others]
-  (apply
-    dissoc m
-    :created_at
-    :updated_at
-    others))
+  "Remove keys corresponding to columns used for internal purposes, keeping
+  columns listed in keep-columns."
+  [m keep-columns]
+  (let [remove-columns (difference #{:created_at :updated_at :deleted_at}
+                                   keep-columns)]
+    (apply
+      dissoc m remove-columns)))
 
 (defn to-underscore-keys
   "Convert dashes in keys to underscores."
@@ -189,16 +188,14 @@
 
 (defn from-sql
   "Convert maps returned by database functions to format expected elsewhere."
-  ([m operations return-deleted-at?]
-    (let [remove-cols-func (if (true? return-deleted-at?)
-                             remove-db-columns
-                             #(remove-db-columns % :deleted_at))]
+  ([m operations keep-columns]
+    (let [remove-cols-func #(remove-db-columns % keep-columns)]
       (-> (convert-sql m operations)
           remove-nils
           remove-cols-func
           to-dash-keys)))
-  ([m operations] (from-sql m operations false))
-  ([m] (from-sql m {} false)))
+  ([m operations] (from-sql m operations nil))
+  ([m] (from-sql m {} nil)))
 
 (defn to-sql
   "Convert maps used elsewhere to those expected by database functions."
