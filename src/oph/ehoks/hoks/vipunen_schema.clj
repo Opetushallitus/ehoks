@@ -916,7 +916,7 @@
     (g/generate HOKSModelVipunen :get)
     {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)
        Vipusen käyttöön, poistettu nimiä ja yhteystietoja"
-     :name "HOKS"}))
+     :name "HOKSVipunen"}))
 
 (s/defschema
   kyselylinkki
