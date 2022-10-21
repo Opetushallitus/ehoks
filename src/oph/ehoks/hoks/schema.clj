@@ -1037,6 +1037,11 @@
     :types {:any OpiskeluoikeusOid}
     :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
                   '1.2.246.562.15.00000000001'."}
+   :tuva-opiskeluoikeus-oid
+   {:methods {:any :optional}
+    :types {:any OpiskeluoikeusOid}
+    :description "TUVA-opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
+                  '1.2.246.562.15.00000000001'."}
    :urasuunnitelma-koodi-uri
    {:methods {:any :optional}
     :types {:any UrasuunnitelmaKoodiUri}
