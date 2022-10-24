@@ -189,11 +189,10 @@
 (defn from-sql
   "Convert maps returned by database functions to format expected elsewhere."
   ([m operations keep-columns]
-    (let [remove-cols-func #(remove-db-columns % keep-columns)]
-      (-> (convert-sql m operations)
-          remove-nils
-          remove-cols-func
-          to-dash-keys)))
+    (-> (convert-sql m operations)
+        remove-nils
+        (remove-db-columns keep-columns)
+        to-dash-keys))
   ([m operations] (from-sql m operations nil))
   ([m] (from-sql m {} nil)))
 
