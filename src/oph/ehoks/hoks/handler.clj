@@ -437,13 +437,14 @@
                                 [hoks-schema-vipunen/HOKSVipunen]})
         (let [limit (min (max 1 amount) 1000)
               raw-result (h/get-hokses-from-id from-id limit updated-after)
-              last-id (first (sort > (map :id raw-result)))
+              result (map h/mark-as-deleted raw-result)
+              last-id (first (sort > (map :id result)))
               schema-checker (s/checker hoks-schema-vipunen/HOKSVipunen)
               result-after-validation (filter
                                         (fn [hoks] (nil? (schema-checker hoks)))
-                                        raw-result)
+                                        result)
               failed-ids (seq (clojure.set/difference
-                                (set (map :id raw-result))
+                                (set (map :id result))
                                 (set (map :id result-after-validation))))]
           (when (not-empty failed-ids)
             (log/info "Failed ids for paged call:" failed-ids

@@ -3,6 +3,7 @@
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.hoks.test-data :as test-data]
@@ -546,3 +547,138 @@
     (is (= "viestintapalvelussa"
            (:lahetystila (first (h/get-kyselylinkit-by-oppija-oid
                                   "1.2.246.562.24.12312312312")))))))
+
+(deftest get-paged-vipunen-data
+  (testing "GET paged HOKSes for Vipunen"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :osaamisen-hankkimisen-tarve true
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
+          app (hoks-utils/create-app nil)
+          post-response (hoks-utils/mock-st-post app base-url hoks-data)]
+      (is (= (:status post-response) 200))
+      (let [hoks-uri (-> (utils/parse-body (:body post-response))
+                         :data
+                         :uri)
+            get-response (hoks-utils/mock-st-get app hoks-uri)]
+        (is (= (:status get-response) 200))
+        (let [hoks (-> (utils/parse-body (:body get-response))
+                       :data)
+              paged-response (hoks-utils/mock-st-get
+                               app (format "%s/paged" base-url))]
+          (is (= (:status paged-response) 200))
+          (is (= (-> (utils/parse-body (:body paged-response))
+                     :data
+                     :result
+                     first
+                     :id)
+                 (-> hoks
+                     :id))))))))
+
+(deftest get-paged-deleted
+  (testing "GET paged HOKSes with deleted item"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :osaamisen-hankkimisen-tarve true
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
+          app (hoks-utils/create-app nil)
+          post-response (hoks-utils/mock-st-post app base-url hoks-data)]
+      (is (= (:status post-response) 200))
+      (let [hoks-uri (-> (utils/parse-body (:body post-response))
+                         :data
+                         :uri)
+            get-response (hoks-utils/mock-st-get app hoks-uri)]
+        (is (= (:status get-response) 200))
+        (let [hoks (-> (utils/parse-body (:body get-response))
+                       :data)
+              hoks-id (-> hoks :id)]
+          (db-hoks/shallow-delete-hoks-by-hoks-id hoks-id)
+          (let [paged-response (hoks-utils/mock-st-get
+                                 app (format "%s/paged" base-url))
+                paged-body (utils/parse-body (:body paged-response))]
+            (is (= (:status paged-response) 200))
+            (is (= (-> paged-body
+                       :data
+                       :result
+                       first
+                       :id)
+                   hoks-id))
+            (is (empty? (-> paged-body
+                            :data
+                            :failed-ids)))
+            (is (not (nil? (-> paged-body
+                               :data
+                               :result
+                               first
+                               :poistettu))))))))))
+
+(defn make-timestamp
+  ([plus-millis]
+    (let [tz (java.util.TimeZone/getTimeZone "UTC")
+          df (new java.text.SimpleDateFormat "yyyy-MM-dd'T'HH:mm:ss'Z'")]
+      (.setTimeZone df tz)
+      (.format df (new java.util.Date (+ (.getTime (new java.util.Date))
+                                         plus-millis)))))
+  ([] (make-timestamp 0)))
+
+(deftest get-paged-delta-with-deleted
+  (testing "GET paged delta stream of HOKSes"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :osaamisen-hankkimisen-tarve true
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
+          app (hoks-utils/create-app nil)
+          post-response (hoks-utils/mock-st-post app base-url hoks-data)]
+      (is (= (:status post-response) 200))
+      (let [hoks-uri (-> (utils/parse-body (:body post-response))
+                         :data
+                         :uri)
+            get-response (hoks-utils/mock-st-get app hoks-uri)]
+        (is (= (:status get-response) 200))
+        (let [hoks (-> (utils/parse-body (:body get-response))
+                       :data)
+              hoks-id (-> hoks :id)
+              paged-response (hoks-utils/mock-st-get
+                               app (format "%s/paged" base-url))
+              paged-body (utils/parse-body (:body paged-response))
+              before-delete-ts (make-timestamp)]
+          (is (= (:status paged-response) 200))
+          (is (= (-> paged-body
+                     :data
+                     :result
+                     first
+                     :id)
+                 hoks-id))
+          (is (not (contains? (-> paged-body
+                                  :data
+                                  :result
+                                  first)
+                              :poistettu)))
+          (db-hoks/shallow-delete-hoks-by-hoks-id hoks-id)
+          (let [before-delete-resp (hoks-utils/mock-st-get
+                                     app (format "%s/paged?updated-after=%s"
+                                                 base-url
+                                                 before-delete-ts))
+                before-delete-body (utils/parse-body (:body before-delete-resp))
+                after-delete-ts (make-timestamp 2000)
+                after-delete-resp (hoks-utils/mock-st-get
+                                    app (format "%s/paged?updated-after=%s"
+                                                base-url
+                                                after-delete-ts))
+                after-delete-body (utils/parse-body (:body after-delete-resp))]
+            (is (= (:status before-delete-resp) 200))
+            (is (= (-> before-delete-body
+                       :data
+                       :result
+                       first
+                       :id)
+                   hoks-id))
+            (is (not (nil? (-> before-delete-body
+                               :data
+                               :result
+                               first
+                               :poistettu))))
+            (is (= (:status after-delete-resp) 200))
+            (is (empty? (-> after-delete-body
+                            :data
+                            :result)))))))))
