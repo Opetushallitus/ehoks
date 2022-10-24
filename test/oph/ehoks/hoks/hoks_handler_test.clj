@@ -603,6 +603,9 @@
                        first
                        :id)
                    hoks-id))
+            (is (empty? (-> paged-body
+                            :data
+                            :failed-ids)))
             (is (not (nil? (-> paged-body
                                :data
                                :result
