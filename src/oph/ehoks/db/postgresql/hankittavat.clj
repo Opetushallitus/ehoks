@@ -25,10 +25,14 @@
 
 (defn select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
   "Hoksin osaamistapa tunnisteella"
-  [hoks-id tunniste]
+  [oh-type hoks-id tunniste]
   (db-ops/query
-    [queries/select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
-     hoks-id tunniste]
+    [(case oh-type
+       :hato          queries/select-hato-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
+       :hpto          queries/select-hpto-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
+       :hyto-osa-alue queries/select-hyto-osaamisen-hankkimistavat-by-hoks-id-and-tunniste)
+     hoks-id
+     tunniste]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
 
 (defn select-osaamisen-osoittamiset-by-module-id

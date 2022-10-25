@@ -263,14 +263,15 @@
   "Tallentaa yhden osaamisen hankkimistavan tietokantaan HOKSin ID:n ja
   yksilöivän tunnisteen perusteella. Korvaa olemassaolevan osaamisen
   hankkimistavan uudella tiedolla."
-  ([oh hoks-id]
-    (save-osaamisen-hankkimistapa! oh hoks-id (db-ops/get-db-connection)))
-  ([oh hoks-id db-conn]
+  ([oh oh-type hoks-id]
+    (save-osaamisen-hankkimistapa! oh oh-type hoks-id (db-ops/get-db-connection)))
+  ([oh oh-type hoks-id db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
       (let [tho (db/insert-tyopaikalla-jarjestettava-koulutus!
                   (:tyopaikalla-jarjestettava-koulutus oh) conn)
             existing (db/select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
+                       oh-type
                        hoks-id
                        (:yksiloiva-tunniste oh))
             to-upsert (assoc (if (.isBefore (LocalDate/now) (:loppu oh))
@@ -308,7 +309,7 @@
   ([hpto oh db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
-      (let [o-db (save-osaamisen-hankkimistapa! oh (:hoks_id hpto) conn)]
+      (let [o-db (save-osaamisen-hankkimistapa! oh :hpto (:hoks_id hpto) conn)]
         (db/insert-hpto-osaamisen-hankkimistapa!
           hpto o-db conn)
         o-db))))
@@ -429,7 +430,7 @@
   ([hato oh db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
-      (let [o-db (save-osaamisen-hankkimistapa! oh (:hoks_id hato) conn)]
+      (let [o-db (save-osaamisen-hankkimistapa! oh :hato (:hoks_id hato) conn)]
         (db/insert-hankittavan-ammat-tutkinnon-osan-osaamisen-hankkimistapa!
           (:id hato) (:id o-db) conn)
         o-db))))
@@ -530,7 +531,7 @@
   ([hoks-id hyto-osa-alue oh db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
-      (let [o-db (save-osaamisen-hankkimistapa! oh hoks-id conn)]
+      (let [o-db (save-osaamisen-hankkimistapa! oh :hyto-osa-alue hoks-id conn)]
         (db/insert-hyto-osa-alueen-osaamisen-hankkimistapa!
           (:id hyto-osa-alue) (:id o-db) conn)
         o-db))))
