@@ -264,7 +264,10 @@
   yksilöivän tunnisteen perusteella. Korvaa olemassaolevan osaamisen
   hankkimistavan uudella tiedolla."
   ([oh oh-type hoks-id]
-    (save-osaamisen-hankkimistapa! oh oh-type hoks-id (db-ops/get-db-connection)))
+    (save-osaamisen-hankkimistapa! oh
+                                   oh-type
+                                   hoks-id
+                                   (db-ops/get-db-connection)))
   ([oh oh-type hoks-id db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]

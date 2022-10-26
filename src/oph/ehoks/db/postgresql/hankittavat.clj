@@ -28,9 +28,12 @@
   [oh-type hoks-id tunniste]
   (db-ops/query
     [(case oh-type
-       :hato          queries/select-hato-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
-       :hpto          queries/select-hpto-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
-       :hyto-osa-alue queries/select-hyto-osaamisen-hankkimistavat-by-hoks-id-and-tunniste)
+       :hato
+       queries/select-hato-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
+       :hpto
+       queries/select-hpto-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
+       :hyto-osa-alue
+       queries/select-hyto-osaamisen-hankkimistavat-by-hoks-id-and-tunniste)
      hoks-id
      tunniste]
     {:row-fn h/osaamisen-hankkimistapa-from-sql}))
