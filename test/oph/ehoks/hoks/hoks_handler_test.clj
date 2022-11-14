@@ -3,7 +3,9 @@
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
             [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.queries :as queries]
             [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.hoks.test-data :as test-data]
@@ -69,6 +71,32 @@
                    :id 1
                    :eid (:eid hoks)
                    :manuaalisyotto false)))))))
+
+(deftest creating-tuva-hoks-does-not-trigger-heratepalvelu
+  (testing "Creating TUVA hoks does not trigger heratepalvelu"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false
+                     :hankittavat-koulutuksen-osat
+                     [{:koulutuksen-osa-koodi-uri "koulutuksenosattuva_104"
+                       :koulutuksen-osa-koodi-versio 1
+                       :alku "2022-09-01"
+                       :loppu "2022-09-21"
+                       :laajuus 10.4}]}
+          response (hoks-utils/mock-st-post
+                     (hoks-utils/create-app nil) base-url hoks-data)
+          body (utils/parse-body (:body response))
+          hoks-id (get-in body [:meta :id])
+          kasittelytilat
+          (first
+            (db-ops/query
+              [queries/select-amisherate-kasittelytilat-by-hoks-id hoks-id]
+              {:row-fn db-ops/from-sql}))]
+      (is (= (:status response) 200))
+      (eq body {:data {:uri (format "%s/1" base-url)} :meta {:id 1}})
+      (is (= (:aloitusherate-kasitelty kasittelytilat) true))
+      (is (= (:paattoherate-kasitelty kasittelytilat) true)))))
 
 (deftest osaamisen-hankkimistavat-isnt-mandatory
   (testing "Osaamisen hankkimistavat should be optional field in ehoks"
