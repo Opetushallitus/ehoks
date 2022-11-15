@@ -18,7 +18,7 @@
 
 (defn tuva-related-hoks?
   [hoks]
-  (or (not (empty? (:hankittavat-koulutuksen-osat hoks)))
+  (or (some? (seq (:hankittavat-koulutuksen-osat hoks)))
       (some? (:tuva-opiskeluoikeus-oid hoks))))
 
 (defn get-hoks-values
