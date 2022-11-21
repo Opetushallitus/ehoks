@@ -113,6 +113,26 @@
    :aiemmin-hankitut-paikalliset-tutkinnon-osat [parts-test-data/ahpto-data]
    :aiemmin-hankitut-yhteiset-tutkinnon-osat [parts-test-data/ahyto-data]})
 
+(def hoks-data-without-osa-aikaisuus
+  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
+   :osaamisen-saavuttamisen-pvm "2020-10-22"
+   :urasuunnitelma-koodi-uri "urasuunnitelma_0002"
+   :versio 4
+   :sahkoposti "testi@gmail.com"
+   :opiskeluvalmiuksia-tukevat-opinnot [parts-test-data/oto-data]
+   :hankittavat-ammat-tutkinnon-osat [parts-test-data/hao-data-wo-osa-aikaisuus]
+   :hankittavat-paikalliset-tutkinnon-osat [parts-test-data/hpto-data]
+   :hankittavat-yhteiset-tutkinnon-osat
+   [parts-test-data/hyto-data-wo-osa-aikaisuus]
+   :hankittavat-koulutuksen-osat
+   [parts-test-data/hankittavat-koulutuksen-osat-data]
+   :aiemmin-hankitut-ammat-tutkinnon-osat [parts-test-data/ahato-data]
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat [parts-test-data/ahpto-data]
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat [parts-test-data/ahyto-data]})
+
 (def hato-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"

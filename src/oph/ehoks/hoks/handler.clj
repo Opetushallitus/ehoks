@@ -359,12 +359,14 @@
 
 (defn- save-hoks
   "Tallentaa HOKSin tietokantaan."
-  [hoks request]
+  [hoks request notifications]
   (try
-    (let [hoks-db (h/save-hoks! hoks)]
+    (let [hoks-db (h/save-hoks! hoks)
+          resp-body {:uri (format "%s/%d" (:uri request) (:id hoks-db))}]
       (assoc
-        (rest/rest-ok {:uri
-                       (format "%s/%d" (:uri request) (:id hoks-db))}
+        (rest/rest-ok (if (some? (seq notifications))
+                        (assoc resp-body :notifications notifications)
+                        resp-body)
                       :id (:id hoks-db))
         :audit-data {:new hoks}))
     (catch Exception e
@@ -396,8 +398,9 @@
           (add-oppija-to-index hoks)
           (add-opiskeluoikeus-to-index hoks)
           (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))
-        (m/check-hoks-access! hoks request)
-        (save-hoks hoks request))
+        (let [notifications (h/check-for-osa-aikaisuustieto hoks)]
+          (m/check-hoks-access! hoks request)
+          (save-hoks hoks request notifications)))
 
       (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"

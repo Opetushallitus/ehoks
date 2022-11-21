@@ -4,7 +4,8 @@
 
 (s/defschema POSTResponse
              "RESTful POST response"
-             {:uri s/Str})
+             {:uri s/Str
+              (s/optional-key :notifications) [s/Str]})
 
 (s/defschema KoodistoErrorMeta
              "Koodiston virhetilanteen metatiedot vastauksessa"
