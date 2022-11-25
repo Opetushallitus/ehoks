@@ -127,7 +127,7 @@
         :summary "Hakee koulutuksenOsan ePerusteet-palvelusta"
         :path-params [koodi-uri :- s/Str]
         :return (restful/response  [s/Any])
-        (restful/rest-ok
+        (restful/with-not-found-handling
           (eperusteet/get-koulutuksenOsa-by-koodiUri koodi-uri))))
 
     (c-api/context "/eperusteet-amosaa" []
