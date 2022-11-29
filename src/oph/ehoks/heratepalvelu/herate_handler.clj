@@ -103,4 +103,13 @@
             herätepalvelua varten."
         :header-params [caller-id :- s/Str]
         (let [hankkimistavat (db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)]
-          (restful/rest-ok {:hankkimistapa-ids hankkimistavat}))))))
+          (restful/rest-ok {:hankkimistapa-ids hankkimistavat})))
+
+      (c-api/DELETE "/opiskelijan-yhteystiedot" []
+        :summary "Poistaa opiskelijan yhteystiedot yli kolme kuukautta
+            sitten päättyneistä hokseista. Käsittelee max 500 opiskelijan
+            tiedot kerrallaan. Palauttaa kyseisten tapausten hoks id:t
+            herätepalvelua varten."
+        :header-params [caller-id :- s/Str]
+        (let [hoks-ids (db-hoks/delete-opiskelijan-yhteystiedot!)]
+          (restful/rest-ok {:hoks-ids hoks-ids}))))))

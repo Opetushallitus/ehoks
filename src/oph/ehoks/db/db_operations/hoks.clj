@@ -4,8 +4,11 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as oo]
             [oph.ehoks.db.db-operations.oppija :as op]
             [oph.ehoks.external.organisaatio :as org]
+            [oph.ehoks.external.koski :as k]
             [clojure.java.jdbc :as jdbc]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [clojure.set :as s])
+  (:import (java.time LocalDate)))
 
 (defn oppilaitos-oid-from-sql
   "Hakee oppilaitos OID:n tietokannasta haetusta objektista."
@@ -766,3 +769,43 @@
                         ["id = ?" (:tjk-id jakso)]
                         conn))
       (set (map :hankkimistapa-id jaksot)))))
+
+(defn filter-by-oo-paattymispaiva
+  "Suodattaa hoksin opiskeluoikeuden päättymispäivämäärän perusteella. Yli
+   kolme kuukautta sitten päättyneet opiskeluoikeudet = true."
+  [hoks]
+  (if-let [opiskeluoikeus
+           (k/get-opiskeluoikeus-info (:opiskeluoikeus-oid hoks))]
+    (if-let [paattymispaiva (:päättymispäivä opiskeluoikeus)]
+      (.isBefore (LocalDate/parse paattymispaiva)
+                 (.minusMonths (LocalDate/now) 3))
+      false)
+    false))
+
+(defn delete-opiskelijan-yhteystiedot!
+  "Poistaa opiskelijan yhteystiedot yli kolme kuukautta sitten
+   päättyneistä hokseista. Käsittelee max 500 hoksia kerrallaan. Palauttaa
+   kyseisten tapausten hoks id:t herätepalvelua varten."
+  []
+  (jdbc/with-db-transaction
+    [conn (db-ops/get-db-connection)]
+    (let [hoksit (jdbc/query conn
+                             [queries/select-vanhat-hoksit-having-yhteystiedot
+                              500]
+                             {:row-fn db-ops/from-sql})
+          _ (log/info (str "Haettiin " (count hoksit) " hoksia kannasta"))
+          paattyneet (filter filter-by-oo-paattymispaiva hoksit)]
+      (log/info (str "Käsitellään " (count paattyneet) " päättynyttä hoksia"))
+      (doseq [hoks paattyneet]
+        (log/info (str "Poistetaan opiskelijan yhteystiedot (hoks.id = "
+                       (:id hoks)
+                       ")"))
+        (update-hoks-by-id! (:id hoks) {:sahkoposti nil
+                                        :puhelinnumero nil} conn))
+      (let [ei-paattyneet (s/difference (set hoksit) (set paattyneet))]
+        (log/info (str "Päivitetään aikaleima "
+                       (count ei-paattyneet)
+                       " hoksiin"))
+        (doseq [hoks ei-paattyneet]
+          (update-hoks-by-id! (:id hoks) {} conn)))
+      (set (map :id paattyneet)))))
