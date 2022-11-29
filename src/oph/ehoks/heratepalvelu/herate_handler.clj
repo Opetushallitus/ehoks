@@ -1,6 +1,7 @@
 (ns oph.ehoks.heratepalvelu.herate-handler
   (:require [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
@@ -93,4 +94,13 @@
                        start :- LocalDate
                        end :- LocalDate]
         (restful/rest-ok
-          (hp/select-tyoelamajaksot-active-between oppija start end))))))
+          (hp/select-tyoelamajaksot-active-between oppija start end)))
+
+      (c-api/DELETE "/tyopaikkaohjaajan-yhteystiedot" []
+        :summary "Poistaa työpaikkaohjaajan yhteystiedot yli kolme kuukautta
+            sitten päättyneistä työpaikkajaksoista. Käsittelee max 1000 jaksoa
+            kerrallaan. Palauttaa kyseisten jaksojen id:t (hankkimistapa-id)
+            herätepalvelua varten."
+        :header-params [caller-id :- s/Str]
+        (let [hankkimistavat (db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)]
+          (restful/rest-ok {:hankkimistapa-ids hankkimistavat}))))))
