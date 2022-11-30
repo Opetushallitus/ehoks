@@ -78,24 +78,27 @@
                   "eperusteet-service.external-api.find-perusteet-by-koodi")
            :options {:as :json
                      :query-params {:koodi koodiUri}}})
-        body (get-in result [:body :data])
-        id (:id (first body))
-        peruste (get-peruste-by-id id)
-        koulutuksenOsat (:koulutuksenOsat peruste)
-        koulutuksenOsa
-        (filter #(= koodiUri (get-in % [:nimiKoodi :uri])) koulutuksenOsat)
-        ;; TODO: tarvittava id UI:n ePerusteet urlia varten
-        ;; ATM lähetetään vain 12345
-        koulutuksenOsaPeruste
-        (map
-          (fn [v]
-            (-> (select-keys v [:id :nimi :osaamisalat])
-                (update :nimi select-keys [:fi :en :sv])
-                (update
-                  :osaamisalat (fn [x] (map #(select-keys % [:nimi]) x)))
-                (assoc :koulutuksenOsaId "12345")))
-          koulutuksenOsa)]
-    koulutuksenOsaPeruste))
+        body (get-in result [:body :data])]
+    (when (empty? (seq body))
+      (throw (ex-info (str "eperusteet not found with koodiUri " koodiUri)
+                      {:status 404})))
+    (let [id (:id (first body))
+          peruste (get-peruste-by-id id)
+          koulutuksenOsat (:koulutuksenOsat peruste)
+          koulutuksenOsa
+          (filter #(= koodiUri (get-in % [:nimiKoodi :uri])) koulutuksenOsat)
+          ;; TODO: tarvittava id UI:n ePerusteet urlia varten
+          ;; ATM lähetetään vain 12345
+          koulutuksenOsaPeruste
+          (map
+            (fn [v]
+              (-> (select-keys v [:id :nimi :osaamisalat])
+                  (update :nimi select-keys [:fi :en :sv])
+                  (update
+                    :osaamisalat (fn [x] (map #(select-keys % [:nimi]) x)))
+                  (assoc :koulutuksenOsaId "12345")))
+            koulutuksenOsa)]
+      koulutuksenOsaPeruste)))
 
 (defn search-perusteet-info
   "Search for perusteet that match a particular name"

@@ -83,6 +83,19 @@
       (is (thrown? clojure.lang.ExceptionInfo
                    (ep/get-tutkinnon-osa-viitteet 100000))))))
 
+(deftest get-koulutuksenOsa-by-koodiUri-not-found
+  (testing "Not getting koulutuksenOsa by koodiUri items"
+    (client/with-mock-responses
+      [(fn [_ __] {:status 200
+                   :body {:data []
+                          :sivuja 0
+                          :kokonaismäärä 0
+                          :sivukoko 25
+                          :sivu 0}})]
+      (is (thrown? clojure.lang.ExceptionInfo
+                   (ep/get-koulutuksenOsa-by-koodiUri
+                     "koulutuksenosattuva_404"))))))
+
 (deftest find-tutkinto-not-found
   (testing "Not finding any tutkinto items"
     (client/with-mock-responses
