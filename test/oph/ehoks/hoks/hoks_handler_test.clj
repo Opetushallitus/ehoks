@@ -46,6 +46,44 @@
                  :eid (:eid hoks)
                  :manuaalisyotto false))))))
 
+(deftest get-created-hoks-with-tuva-oo
+  (testing "GET newly created HOKS with TUVA opiskeluoikeus oid"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :tuva-opiskeluoikeus-oid "1.2.246.562.15.00000000002"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :osaamisen-hankkimisen-tarve true
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
+          response
+          (hoks-utils/mock-st-post
+            (hoks-utils/create-app nil) base-url hoks-data)
+          body (utils/parse-body (:body response))]
+      (is (= (:status response) 200))
+      (eq body {:data {:uri (format "%s/1" base-url)} :meta {:id 1}})
+      (let [hoks
+            (-> (get-in body [:data :uri]) hoks-utils/get-authenticated :data)]
+        (eq
+          hoks
+          (assoc (add-empty-hoks-values hoks-data)
+                 :id 1
+                 :eid (:eid hoks)
+                 :manuaalisyotto false))))))
+
+(deftest tuva-oo-oid-is-validated
+  (testing "TUVA opiskeluoikeus oid form is validated as oid"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                     :tuva-opiskeluoikeus-oid "foo"
+                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :osaamisen-hankkimisen-tarve true
+                     :ensikertainen-hyvaksyminen "2018-12-15"}
+          response
+          (hoks-utils/mock-st-post
+            (hoks-utils/create-app nil) base-url hoks-data)
+          body (utils/parse-body (:body response))]
+      (is (= (:status response) 400))
+      (is (not (nil? (-> body
+                         :errors
+                         :tuva-opiskeluoikeus-oid)))))))
+
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
