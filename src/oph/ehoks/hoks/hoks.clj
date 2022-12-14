@@ -16,6 +16,11 @@
             [clojure.set :refer [rename-keys]])
   (:import (java.time LocalDate)))
 
+(defn tuva-related-hoks?
+  [hoks]
+  (or (some? (seq (:hankittavat-koulutuksen-osat hoks)))
+      (some? (:tuva-opiskeluoikeus-oid hoks))))
+
 (defn get-hoks-values
   "Hakee annetun HOKSin tutkinnon osat ja tukevat opinnot tietokannasta."
   [hoks]
@@ -232,13 +237,17 @@
   [h]
   (jdbc/with-db-transaction
     [conn (db-ops/get-db-connection)]
-    (let [saved-hoks (db-hoks/insert-hoks! h conn)]
-      (db-hoks/insert-amisherate-kasittelytilat! (:id saved-hoks) conn)
-      (when (:osaamisen-hankkimisen-tarve h)
+    (let [saved-hoks (db-hoks/insert-hoks! h conn)
+          hoks-id (:id saved-hoks)
+          tuva-hoks (tuva-related-hoks? h)]
+      (db-hoks/insert-amisherate-kasittelytilat! hoks-id tuva-hoks conn)
+      (when (and (:osaamisen-hankkimisen-tarve h)
+                 (false? tuva-hoks))
         (sqs/send-amis-palaute-message
           (sqs/build-hoks-hyvaksytty-msg
-            (:id saved-hoks) h)))
-      (when (:osaamisen-saavuttamisen-pvm h)
+            hoks-id h)))
+      (when (and (:osaamisen-saavuttamisen-pvm h)
+                 (false? tuva-hoks))
         (send-paattokysely (:id saved-hoks)
                            (:osaamisen-saavuttamisen-pvm h)
                            h))
@@ -524,31 +533,36 @@
                   (:aiemmin-hankitut-yhteiset-tutkinnon-osat
                     new-values)
                   db-conn))))
-        updated-hoks (get-hoks-by-id hoks-id)]
+        updated-hoks (get-hoks-by-id hoks-id)
+        tuva-hoks (tuva-related-hoks? updated-hoks)]
     (do
-      (when (new-osaamisen-saavuttamisen-pvm-added?
-              old-osaamisen-saavuttamisen-pvm
-              new-osaamisen-saavuttamisen-pvm)
+      (when (and (new-osaamisen-saavuttamisen-pvm-added?
+                   old-osaamisen-saavuttamisen-pvm
+                   new-osaamisen-saavuttamisen-pvm)
+                 (false? tuva-hoks))
         (db-hoks/update-amisherate-kasittelytilat!
           {:id (:id amisherate-kasittelytila)
            :paattoherate_kasitelty false})
         (send-paattokysely hoks-id
                            new-osaamisen-saavuttamisen-pvm
                            updated-hoks))
-      (when (or (and
-                  (true? new-osaamisen-hankkimisen-tarve)
-                  (not (true? old-osaamisen-hankkimisen-tarve)))
-                (and
-                  (some? new-sahkoposti)
-                  (not (some? old-sahkoposti)))
-                (and
-                  (some? new-puhelinnumero)
-                  (not (some? old-puhelinnumero))))
+      (when (and (or (and (true? new-osaamisen-hankkimisen-tarve)
+                          (not (true? old-osaamisen-hankkimisen-tarve)))
+                     (and (some? new-sahkoposti)
+                          (not (some? old-sahkoposti)))
+                     (and (some? new-puhelinnumero)
+                          (not (some? old-puhelinnumero))))
+                 (false? tuva-hoks))
         (db-hoks/update-amisherate-kasittelytilat!
           {:id (:id amisherate-kasittelytila)
            :aloitusherate_kasitelty false})
         (sqs/send-amis-palaute-message
-          (sqs/build-hoks-hyvaksytty-msg hoks-id updated-hoks))))
+          (sqs/build-hoks-hyvaksytty-msg hoks-id updated-hoks)))
+      (when tuva-hoks
+        (db-hoks/update-amisherate-kasittelytilat!
+          {:id (:id amisherate-kasittelytila)
+           :aloitusherate_kasitelty true
+           :paattoherate_kasitelty true})))
     h))
 
 (defn update-hoks!
@@ -594,28 +608,33 @@
                       "osaamisen hankkimistapa: " oh-missing-tyopaikan-y-tunnus)
                  {:error :disallowed-update}))
         :else
-        (let [h (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)]
-          (when (new-osaamisen-saavuttamisen-pvm-added?
-                  old-osaamisen-saavuttamisen-pvm
-                  new-osaamisen-saavuttamisen-pvm)
+        (let [h (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)
+              tuva-hoks (tuva-related-hoks? h)]
+          (when (and (new-osaamisen-saavuttamisen-pvm-added?
+                       old-osaamisen-saavuttamisen-pvm
+                       new-osaamisen-saavuttamisen-pvm)
+                     (false? tuva-hoks))
             (db-hoks/update-amisherate-kasittelytilat!
               {:id (:id amisherate-kasittelytila)
                :paattoherate_kasitelty false})
             (send-paattokysely hoks-id new-osaamisen-saavuttamisen-pvm hoks))
-          (when (or (and
-                      (true? new-osaamisen-hankkimisen-tarve)
-                      (not (true? old-osaamisen-hankkimisen-tarve)))
-                    (and
-                      (some? new-sahkoposti)
-                      (not (some? old-sahkoposti)))
-                    (and
-                      (some? new-puhelinnumero)
-                      (not (some? old-puhelinnumero))))
+          (when (and (or (and (true? new-osaamisen-hankkimisen-tarve)
+                              (not (true? old-osaamisen-hankkimisen-tarve)))
+                         (and (some? new-sahkoposti)
+                              (not (some? old-sahkoposti)))
+                         (and (some? new-puhelinnumero)
+                              (not (some? old-puhelinnumero))))
+                     (false? tuva-hoks))
             (db-hoks/update-amisherate-kasittelytilat!
               {:id (:id amisherate-kasittelytila)
                :aloitusherate_kasitelty false})
             (sqs/send-amis-palaute-message
               (sqs/build-hoks-hyvaksytty-msg hoks-id hoks)))
+          (when tuva-hoks
+            (db-hoks/update-amisherate-kasittelytilat!
+              {:id (:id amisherate-kasittelytila)
+               :aloitusherate_kasitelty true
+               :paattoherate_kasitelty true}))
           h)))))
 
 (defn insert-kyselylinkki!

@@ -627,11 +627,16 @@
 (defn insert-amisherate-kasittelytilat!
   "Luo uusi AMIS-heräterivin käsittelytilatauluun."
   ([hoks-id]
-    (insert-amisherate-kasittelytilat! hoks-id (db-ops/get-db-connection)))
-  ([hoks-id db-conn]
+    (insert-amisherate-kasittelytilat!
+      hoks-id false (db-ops/get-db-connection)))
+  ([hoks-id to]
+    (insert-amisherate-kasittelytilat! hoks-id to (db-ops/get-db-connection)))
+  ([hoks-id to db-conn]
     (first (jdbc/insert! db-conn
                          :amisherate_kasittelytilat
-                         (db-ops/to-sql {:hoks-id hoks-id})))))
+                         (db-ops/to-sql {:hoks-id hoks-id
+                                         :aloitusherate_kasitelty to
+                                         :paattoherate_kasitelty to})))))
 
 (defn update-amisherate-kasittelytilat!
   "Päivittää AMIS-herätteen käsittelytilat tietokantaan."

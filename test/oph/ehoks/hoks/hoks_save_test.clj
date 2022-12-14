@@ -329,7 +329,7 @@
                 :aiemmin-hankitut-ammat-tutkinnon-osat ahato-data
                 :hankittavat-yhteiset-tutkinnon-osat hyto-data
                 :hankittavat-ammat-tutkinnon-osat hao-data
-                :hankittavat-koulutuksen-osat koulutuksen-osa-data
+                :hankittavat-koulutuksen-osat []
                 :opiskeluvalmiuksia-tukevat-opinnot oto-data})
 
 (def min-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"})
