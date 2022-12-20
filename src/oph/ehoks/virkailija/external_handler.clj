@@ -98,21 +98,17 @@
 
       (c-api/GET "/tutkinnot/:id/suoritustavat/reformi/rakenne" []
         :path-params [id :- Long]
-        :summary "Tutkinnon rakenne."
+        :summary "Tutkinnon reformi rakenne."
         :return (restful/response s/Any)
-        (try
-          (restful/rest-ok (eperusteet/get-suoritustavat id))
-          (catch Exception e
-            (if (= (:status (ex-data e)) 404)
-              (response/not-found {:message "Rakenne not found"})
-              (throw e)))))
+        (restful/with-not-found-handling
+          (eperusteet/get-rakenne id "reformi")))
 
       (c-api/GET "/tutkinnot/:id/suoritustavat/ops/tutkinnonosat" []
         :path-params [id :- Long]
-        :summary "Tutkinnon ops suoritustavat"
+        :summary "Tutkinnon ops rakenne."
         :return (restful/response s/Any)
         (restful/with-not-found-handling
-          (eperusteet/get-ops-suoritustavat id)))
+          (eperusteet/get-rakenne id "ops")))
 
       (c-api/GET "/:koodi-uri" []
         :path-params [koodi-uri :- s/Str]

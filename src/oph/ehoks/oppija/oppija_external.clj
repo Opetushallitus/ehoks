@@ -49,21 +49,21 @@
 
       (c-api/GET "/tutkinnot/:id/suoritustavat/reformi/rakenne" [id]
         :path-params [id :- Long]
-        :summary "Tutkinnon rakenne."
+        :summary "Tutkinnon reformi rakenne."
         :return (rest/response s/Any)
-        (rest/rest-ok (eperusteet/get-suoritustavat id)))
+        (rest/with-not-found-handling
+          (eperusteet/get-rakenne id "reformi")))
 
       (c-api/GET "/tutkinnot/:id/suoritustavat/ops/tutkinnonosat" []
         :path-params [id :- Long]
-        :summary "Tutkinnon ops suoritustavat"
+        :summary "Tutkinnon ops rakenne."
         :return (rest/response s/Any)
         (rest/with-not-found-handling
-          (eperusteet/get-ops-suoritustavat id)))
+          (eperusteet/get-rakenne id "ops")))
 
       (c-api/GET "/:koodi-uri" [koodi-uri]
         :path-params [koodi-uri :- s/Str]
-        :summary "Tutkinnon osan perusteiden
-                           haku Koodisto-Koodi-Urilla."
+        :summary "Tutkinnon osan perusteiden haku Koodisto-Koodi-Urilla."
         :return (rest/response [s/Any])
         (rest/rest-ok (eperusteet/adjust-tutkinnonosa-arviointi
                         (eperusteet/find-tutkinnon-osat koodi-uri))))

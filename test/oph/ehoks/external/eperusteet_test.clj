@@ -55,12 +55,6 @@
                           :sivu 0}})]
       (is (= (ep/search-perusteet-info "no-found") [])))))
 
-(deftest get-perusteet-not-found
-  (testing "Not getting any perusteet items"
-    (client/with-mock-responses
-      [(fn [_ __] (throw (ex-info "HTTP Exception" {:status 404})))]
-      (is (thrown? clojure.lang.ExceptionInfo (ep/get-perusteet 100000))))))
-
 (deftest find-tutkinnon-osat-not-found
   (testing "Not findind any tutkinnon osat items"
     (client/with-mock-responses
@@ -99,7 +93,12 @@
 (deftest find-tutkinto-not-found
   (testing "Not finding any tutkinto items"
     (client/with-mock-responses
-      [(fn [_ __] (throw (ex-info "HTTP Exception" {:status 404})))]
+      [(fn [_ __] {:status 200
+                   :body {:data []
+                          :sivuja 0
+                          :kokonaismäärä 0
+                          :sivukoko 25
+                          :sivu 0}})]
       (is (thrown? clojure.lang.ExceptionInfo (ep/find-tutkinto "no-found"))))))
 
 (deftest get-suoritustavat-not-found
@@ -109,7 +108,8 @@
                            "HTTP Exception"
                            {:status 404 :body {:syy "Tilaa ei asetettu"
                                                :koodi "404"}})))]
-      (is (thrown? clojure.lang.ExceptionInfo (ep/get-suoritustavat 100000))))))
+      (is (thrown? clojure.lang.ExceptionInfo
+                   (ep/get-rakenne 100000 "reformi"))))))
 
 (deftest transform-arviointikriteerit
   (testing "Osaamistasot for arviointiAsteikko 3 are transformed and
