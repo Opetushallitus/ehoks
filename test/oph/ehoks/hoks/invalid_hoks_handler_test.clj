@@ -4,6 +4,7 @@
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.test-data :as test-data]
+            [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]
             [oph.ehoks.utils :as utils]))
 
 (use-fixtures :once utils/migrate-database)
@@ -271,3 +272,38 @@
             (hoks-utils/create-app nil)
             (format "%s/%s" base-url 43857))]
       (is (= (:status response) 404)))))
+
+(deftest y-tunnus-validation-failure
+  (testing "Y-tunnus validation failure scenarios"
+    (let [hoks-data (assoc test-data/hoks-data
+                           :hankittavat-ammat-tutkinnon-osat
+                           [parts-test-data/patch-all-hao-data])
+          error-details-template (fn [y-tunnus]
+                                   {:hankittavat-ammat-tutkinnon-osat
+                                    [{:osaamisen-hankkimistavat
+                                      [{:tyopaikalla-jarjestettava-koulutus
+                                        {:tyopaikan-y-tunnus y-tunnus}}]}]})
+          regex-mismatch
+          #(error-details-template
+             (str "(not (re-find #\"^[0-9]{7}-[0-9]$\" \"" % "\"))"))
+          checksum-mismatch
+          #(error-details-template
+             (str "(not (\"Kelvollinen Y-tunnus\" \"" % "\"))"))]
+      (doseq [[y-tunnus expected-error] [["Ei y-tunnusta" regex-mismatch]
+                                         ["1234567-1 "    regex-mismatch]
+                                         ["1234567-2"     checksum-mismatch]
+                                         ["7654321-8"     checksum-mismatch]]
+              :let [response (hoks-utils/mock-st-post
+                               (hoks-utils/create-app nil)
+                               base-url
+                               (assoc-in hoks-data
+                                         [:hankittavat-ammat-tutkinnon-osat
+                                          0
+                                          :osaamisen-hankkimistavat
+                                          0
+                                          :tyopaikalla-jarjestettava-koulutus
+                                          :tyopaikan-y-tunnus]
+                                         y-tunnus))]]
+        (is (= (:status response) 400))
+        (is (= (:errors (utils/parse-body (:body response)))
+               (expected-error y-tunnus)))))))

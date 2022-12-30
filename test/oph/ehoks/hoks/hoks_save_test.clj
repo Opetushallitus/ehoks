@@ -32,12 +32,12 @@
         :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
       :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
       :nayttoymparisto {:nimi "Toinen Esimerkki Oyj"
-                        :y-tunnus "12345699-2"
+                        :y-tunnus "1234562-0"
                         :kuvaus "Testiyrityksen testiosasostalla"}
       :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työmies"
                                       :organisaatio
                                       {:nimi "Testiyrityksen Sisar Oy"
-                                       :y-tunnus "12345689-3"}}]
+                                       :y-tunnus "1234563-9"}}]
       :sisallon-kuvaus ["Tutkimustyö"
                         "Raportointi"]
       :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
@@ -94,7 +94,7 @@
     [{:jarjestaja
       {:oppilaitos-oid "1.2.246.562.10.54453924330"}
       :nayttoymparisto {:nimi "Testiympäristö 2"
-                        :y-tunnus "12345671-2"
+                        :y-tunnus "1234567-1"
                         :kuvaus "Testi test"}
       :sisallon-kuvaus ["Testaus"]
       :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
@@ -105,7 +105,7 @@
       :tyoelama-osaamisen-arvioijat
       [{:nimi "Taneli Työmies"
         :organisaatio {:nimi "Tanelin Paja Ky"
-                       :y-tunnus "12345622-2"}}]
+                       :y-tunnus "1234561-2"}}]
       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
                     :koodi-versio 3}]
       :alku (java.time.LocalDate/of 2019 3 10)
@@ -123,7 +123,7 @@
        {:nimi "Aimo Ohjaaja"
         :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
        :tyopaikan-nimi "Ohjausyhtiö Oy"
-       :tyopaikan-y-tunnus "12345212-4"
+       :tyopaikan-y-tunnus "1234569-8"
        :keskeiset-tyotehtavat ["Testitehtävä"]}
       :muut-oppimisymparistot
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
@@ -241,7 +241,7 @@
        {:nimi "Olli Ohjaaja"
         :sahkoposti "olli.ohjaaja@esimerkki.com"}
        :tyopaikan-nimi "Ohjaus Oy"
-       :tyopaikan-y-tunnus "12345689-4"
+       :tyopaikan-y-tunnus "1234556-7"
        :keskeiset-tyotehtavat ["Hälytysten valvonta"
                                "Vuoronvaihdon tarkistukset"]}
       :muut-oppimisymparistot
@@ -263,7 +263,7 @@
     :osaamisen-osoittaminen
     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921330"}
       :nayttoymparisto {:nimi "Testiympäristö"
-                        :y-tunnus "12345678-1"
+                        :y-tunnus "1234567-1"
                         :kuvaus "Test"}
       :sisallon-kuvaus ["Renkaanvaihto"
                         "Tuulilasin vaihto"]
@@ -274,7 +274,7 @@
         {:oppilaitos-oid "1.2.246.562.10.54453921332"}}]
       :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työmies"
                                       :organisaatio {:nimi "Kallen Paja Ky"
-                                                     :y-tunnus "12345679-2"}}]
+                                                     :y-tunnus "1234456-4"}}]
       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_fk"
                     :koodi-versio 2}]
       :alku (java.time.LocalDate/of 2019 3 11)
@@ -489,7 +489,7 @@
             {:nimi "Aimo Ohjaaja"
              :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
             :tyopaikan-nimi "Ohjausyhtiö Oy"
-            :tyopaikan-y-tunnus "12345212-4"
+            :tyopaikan-y-tunnus "1233456-9"
             :keskeiset-tyotehtavat ["Testitehtävä"]}
            :ajanjakson-tarkenne "Ei tarkennettavia asioita"
            :hankkijan-edustaja {:nimi "Heikki Hankkija"
