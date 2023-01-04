@@ -167,6 +167,8 @@
       "heratepalvelu/select_paattyneet_tyoelamajaksot_hpto.sql")
 (defq select-paattyneet-tyoelamajaksot-hyto
       "heratepalvelu/select_paattyneet_tyoelamajaksot_hyto.sql")
+(defq select-paattyneet-tyoelamajaksot-3kk
+      "hoksit/select_paattyneet_tyoelamajaksot_3kk.sql")
 (defq select-amisherate-kasittelytilat-by-hoks-id
       "heratepalvelu/select_amisherate_kasittelytilat_by_hoks_id.sql")
 (defq select-hoksit-with-kasittelemattomat-aloitusheratteet

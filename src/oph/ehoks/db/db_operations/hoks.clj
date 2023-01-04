@@ -744,3 +744,25 @@
      oppilaitos-oid]
     {:identifiers #(do %)
      :row-fn      db-ops/from-sql}))
+
+(defn delete-tyopaikkaohjaajan-yhteystiedot!
+  "Poistaa työpaikkaohjaajan yhteystiedot yli kolme kuukautta sitten
+   päättyneistä työpaikkajaksoista. Käsittelee max 1000 jaksoa kerrallaan.
+   Palauttaa kyseisten jaksojen id:t (hankkimistapa-id) herätepalvelua varten."
+  []
+  (jdbc/with-db-transaction
+    [conn (db-ops/get-db-connection)]
+    (let [jaksot (jdbc/query conn
+                             [queries/select-paattyneet-tyoelamajaksot-3kk 1000]
+                             {:row-fn db-ops/from-sql})]
+      (doseq [jakso jaksot]
+        (log/info (str "Poistetaan ohjaajan yhteystiedot "
+                       "(tyopaikalla_jarjestettavat_koulutukset.id = "
+                       (:tjk-id jakso)
+                       ")"))
+        (db-ops/update! :tyopaikalla_jarjestettavat_koulutukset
+                        {:vastuullinen_tyopaikka_ohjaaja_sahkoposti nil
+                         :vastuullinen_tyopaikka_ohjaaja_puhelinnumero nil}
+                        ["id = ?" (:tjk-id jakso)]
+                        conn))
+      (set (map :hankkimistapa-id jaksot)))))
