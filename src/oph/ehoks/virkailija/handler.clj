@@ -203,13 +203,13 @@
         :audit-data {:new hoks}))))
 
 (defn opiskeluoikeus-void-or-active?
-  "Check whether opiskeluoikeus is nil or active"
-  [opiskeluoikeus-oid]
-  (let [opiskeluoikeus (koski/get-opiskeluoikeus-info opiskeluoikeus-oid)]
-    (or
-      (nil? opiskeluoikeus)
-      (not (op/opiskeluoikeus-tila-inactive?
-             (op/get-opiskeluoikeus-tila opiskeluoikeus))))))
+  "Check whether opiskeluoikeus is nil (mitätöity or otherwise not found) or
+   active"
+  [opiskeluoikeus]
+  (or
+    (nil? opiskeluoikeus)
+    (not (op/opiskeluoikeus-tila-inactive?
+           (op/get-opiskeluoikeus-tila opiskeluoikeus)))))
 
 (defn- save-hoks
   "Save HOKS to database"
@@ -760,9 +760,12 @@
                                                  (:oppilaitos-oid
                                                    (op/get-opiskeluoikeus-by-oid
                                                      (:opiskeluoikeus-oid
-                                                       hoks))))]
+                                                       hoks))))
+                                opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+                                opiskeluoikeus (koski/get-opiskeluoikeus-info
+                                                 opiskeluoikeus-oid)]
                             (if (opiskeluoikeus-void-or-active?
-                                  (:opiskeluoikeus-oid hoks))
+                                  opiskeluoikeus)
                               (if (seq oppilaitos-oid)
                                 (if (contains?
                                       (user/get-organisation-privileges
@@ -773,6 +776,9 @@
                                   (try
                                     (db-hoks/shallow-delete-hoks-by-hoks-id
                                       hoks-id)
+                                    (when (nil? opiskeluoikeus)
+                                      (db-hoks/delete-opiskeluoikeus-by-oid
+                                        opiskeluoikeus-oid))
                                     (assoc
                                       (response/ok {:success hoks-id})
                                       :audit-data {:old hoks
