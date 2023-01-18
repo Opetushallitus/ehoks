@@ -95,7 +95,7 @@
 
                   (c-api/GET "/hoks" [:as request]
                     :summary "Oppijan HOKSit kokonaisuudessaan"
-                    :return (rest/response [oppija-schema/OppijaHOKS])
+                    :return (rest/response [s/Any])
                     (let [hokses (h/get-hokses-by-oppija oid)]
                       (if (empty? hokses)
                         (response/not-found {:message "No HOKSes found"})

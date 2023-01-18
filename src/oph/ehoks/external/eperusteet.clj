@@ -56,33 +56,38 @@
          (adjust-osaamistaso-based-on-asteikko asteikko))))
 
 (defn- get-peruste-by-id
-  "Get perusteet by ID. Uses eperusteet external api."
+  "Get peruste by ID. Uses eperusteet external api."
   [^Long id]
   (let [result (c/with-api-headers
                  {:method :get
                   :service (u/get-url "eperusteet-service-url")
                   :url (u/get-url "eperusteet-service.external-api.find-peruste"
                                   id)
-                  :options {:as :json}})
-        body (:body result)]
-    body))
+                  :options {:as :json}})]
+    (:body result)))
+
+(defn find-perusteet-external
+  "Find perusteet using eperusteet external api. Returns eperusteet response
+   body as is."
+  [query-params]
+  (let [result (c/with-api-headers
+                 {:method :get
+                  :service (u/get-url "eperusteet-service-url")
+                  :url
+                  (u/get-url "eperusteet-service.external-api.find-perusteet")
+                  :options {:as :json
+                            :query-params (merge {:poistuneet true}
+                                                 query-params)}})]
+    (:body result)))
 
 (defn get-koulutuksenOsa-by-koodiUri
   "Search for perusteet that match a koodiUri. Uses eperusteet external api."
   [^String koodiUri]
-  (let [result
-        (c/with-api-headers
-          {:method :get
-           :service (u/get-url "eperusteet-service-url")
-           :url (u/get-url
-                  "eperusteet-service.external-api.find-perusteet-by-koodi")
-           :options {:as :json
-                     :query-params {:koodi koodiUri}}})
-        body (get-in result [:body :data])]
-    (when (empty? (seq body))
+  (let [data (:data (find-perusteet-external {:koodi koodiUri}))]
+    (when (empty? (seq data))
       (throw (ex-info (str "eperusteet not found with koodiUri " koodiUri)
                       {:status 404})))
-    (let [id (:id (first body))
+    (let [id (:id (first data))
           peruste (get-peruste-by-id id)
           koulutuksenOsat (:koulutuksenOsat peruste)
           koulutuksenOsa
@@ -103,39 +108,18 @@
 (defn search-perusteet-info
   "Search for perusteet that match a particular name"
   [nimi]
-  (get-in
-    (c/with-api-headers
-      {:method :get
-       :service (u/get-url "eperusteet-service-url")
-       :url (u/get-url "eperusteet-service.find-perusteet")
-       :options {:as :json
-                 :query-params {:nimi nimi
-                                :tutkintonimikkeet true
-                                :tutkinnonosat true
-                                :osaamisalat true}}})
-    [:body :data]))
-
-(defn get-perusteet
-  "Get perusteet by ID"
-  [^Long id]
-  (:body
-    (c/with-api-headers
-      {:method :get
-       :service (u/get-url "eperusteet-service-url")
-       :url (u/get-url "eperusteet-service.get-perusteet" id)
-       :options {:as :json}})))
+  (:data (find-perusteet-external {:nimi nimi})))
 
 (defn find-tutkinnon-osat
   "Find tutkinnon osat by koodi URL"
   [^String koodi-uri]
-  (get-in
-    (cache/with-cache!
-      {:method :get
-       :service (u/get-url "eperusteet-service-url")
-       :url (u/get-url "eperusteet-service.find-tutkinnonosat")
-       :options {:as :json
-                 :query-params {:koodiUri koodi-uri}}})
-    [:body :data]))
+  (let [found-perusteet (:data (find-perusteet-external {:koodi koodi-uri}))
+        all-tutkinnonosat
+        (flatten
+          (map #(:tutkinnonOsat (get-peruste-by-id (:id %)))
+               found-perusteet))]
+    (filter #(= (:koodiUri %) koodi-uri)
+            all-tutkinnonosat)))
 
 (defn get-tutkinnon-osa-viitteet
   "Get tutkinnon osa viitteet by ID"
@@ -162,33 +146,22 @@
 (defn find-tutkinto
   "Get perusteet by diaari number"
   [^String diaarinumero]
-  (get
-    (cache/with-cache!
-      {:method :get
-       :service (u/get-url "eperusteet-service-url")
-       :url (u/get-url "eperusteet-service.find-perusteet-by-diaari")
-       :options {:as :json
-                 :query-params {:diaarinumero diaarinumero}}})
-    :body))
+  (let [data (:data (find-perusteet-external {:diaarinumero diaarinumero}))
+        matching (filter #(= (:diaarinumero %) diaarinumero) data)]
+    (if (empty? (seq matching))
+      (throw (ex-info "HTTP Exception" {:status 404}))
+      (first matching))))
 
-(defn get-suoritustavat
-  "Get suoritustavat by ID"
-  [^Long id]
-  (get
-    (cache/with-cache!
-      {:method :get
-       :service (u/get-url "eperusteet-service-url")
-       :url (u/get-url "eperusteet-service.get-rakenne" id)
-       :options {:as :json}})
-    :body))
+(defn- get-suoritustavat
+  [^Long id ^String suoritustapakoodi]
+  (filter #(= (:suoritustapakoodi %) suoritustapakoodi)
+          (:suoritustavat (get-peruste-by-id id))))
 
-(defn get-ops-suoritustavat
-  "Get OPS suoritustavat by ID"
-  [^Long id]
-  (get
-    (cache/with-cache!
-      {:method :get
-       :service (u/get-url "eperusteet-service-url")
-       :url (u/get-url "eperusteet-service.get-ops-rakenne" id)
-       :options {:as :json}})
-    :body))
+(defn get-rakenne
+  "Get rakenne by peruste ID and suoritustapakoodi"
+  [^Long id ^String suoritustapakoodi]
+  (let [has-rakenne (filter #(contains? % :rakenne)
+                            (get-suoritustavat id suoritustapakoodi))]
+    (if (some? (seq has-rakenne))
+      (:rakenne (first has-rakenne))
+      (throw (ex-info "HTTP Exception" {:status 404})))))
