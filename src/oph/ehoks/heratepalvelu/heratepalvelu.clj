@@ -155,6 +155,13 @@
     (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))
           ehoks-oppija-nimi (:nimi oppija)
           onr-oppija-nimi (op/format-oppija-name onr-oppija)]
+      (println "oppija body")
+      (println onr-oppija)
+      (println "ehoks oppija nimi")
+      (println ehoks-oppija-nimi)
+      (println "onr oppija nimi")
+      (println onr-oppija-nimi)
+      (println (str "vertailu: " (not= ehoks-oppija-nimi onr-oppija-nimi)))
       (when (not= ehoks-oppija-nimi onr-oppija-nimi)
         (log/infof "Updating changed name for oppija %s" oid)
         (op/update-oppija! oid true)))
