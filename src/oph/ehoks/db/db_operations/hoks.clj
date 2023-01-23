@@ -750,13 +750,13 @@
 
 (defn delete-tyopaikkaohjaajan-yhteystiedot!
   "Poistaa työpaikkaohjaajan yhteystiedot yli kolme kuukautta sitten
-   päättyneistä työpaikkajaksoista. Käsittelee max 1000 jaksoa kerrallaan.
+   päättyneistä työpaikkajaksoista. Käsittelee max 5000 jaksoa kerrallaan.
    Palauttaa kyseisten jaksojen id:t (hankkimistapa-id) herätepalvelua varten."
   []
   (jdbc/with-db-transaction
     [conn (db-ops/get-db-connection)]
     (let [jaksot (jdbc/query conn
-                             [queries/select-paattyneet-tyoelamajaksot-3kk 1000]
+                             [queries/select-paattyneet-tyoelamajaksot-3kk 5000]
                              {:row-fn db-ops/from-sql})]
       (doseq [jakso jaksot]
         (log/info (str "Poistetaan ohjaajan yhteystiedot "
