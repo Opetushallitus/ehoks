@@ -443,15 +443,12 @@
 
 (defn opiskeluoikeus-active?
   "Checks if the given opiskeluoikeus is still valid, ie. not valmistunut,
-  eronnut, katsotaaneronneeksi.
-  TODO: This function can be replaced with the function below once
-  :prevent-finished-opiskeluoikeus-updates? is removed or changed to true."
-  ([opiskeluoikeus-oid]
-    (let [opiskeluoikeus (k/get-opiskeluoikeus-info opiskeluoikeus-oid)]
-      (if (some? opiskeluoikeus)
-        (not (opiskeluoikeus-tila-inactive?
-               (get-opiskeluoikeus-tila opiskeluoikeus)))
-        false))))
+  eronnut, katsotaaneronneeksi."
+  [opiskeluoikeus]
+  (if (some? opiskeluoikeus)
+    (not (opiskeluoikeus-tila-inactive?
+           (get-opiskeluoikeus-tila opiskeluoikeus)))
+    false))
 
 (defn opiskeluoikeus-still-active?
   "Checks if the given opiskeluoikeus is still valid, ie. not valmistunut,

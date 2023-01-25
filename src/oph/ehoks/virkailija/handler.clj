@@ -202,15 +202,6 @@
                        oh-missing-tyopaikan-y-tunnus)})
         :audit-data {:new hoks}))))
 
-(defn opiskeluoikeus-void-or-active?
-  "Check whether opiskeluoikeus is nil (mitätöity or otherwise not found) or
-   active"
-  [opiskeluoikeus]
-  (or
-    (nil? opiskeluoikeus)
-    (not (op/opiskeluoikeus-tila-inactive?
-           (op/get-opiskeluoikeus-tila opiskeluoikeus)))))
-
 (defn- save-hoks
   "Save HOKS to database"
   [hoks request]
@@ -258,7 +249,8 @@
 (defn- hoks-has-active-opiskeluoikeus
   "Check if HOKS has an active opiskeluoikeus"
   [hoks]
-  (some op/opiskeluoikeus-active? (map :opiskeluoikeus-oid hoks)))
+  (some #(op/opiskeluoikeus-active? (koski/get-opiskeluoikeus-info %))
+        (map :opiskeluoikeus-oid hoks)))
 
 (defn- get-oppilaitos-oid-by-oo-oid
   "Get oppilaitos OID by opiskeluoikeus OID"
@@ -764,8 +756,8 @@
                                 opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
                                 opiskeluoikeus (koski/get-opiskeluoikeus-info
                                                  opiskeluoikeus-oid)]
-                            (if (opiskeluoikeus-void-or-active?
-                                  opiskeluoikeus)
+                            (if (or (nil? opiskeluoikeus)
+                                    (op/opiskeluoikeus-active? opiskeluoikeus))
                               (if (seq oppilaitos-oid)
                                 (if (contains?
                                       (user/get-organisation-privileges
