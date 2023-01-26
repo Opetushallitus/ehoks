@@ -1,7 +1,8 @@
 (ns oph.ehoks.hoks.hoks-handler-test
-  (:require [clojure.test :refer [deftest testing is use-fixtures]]
+  (:require [clojure.test :refer [deftest testing is are use-fixtures]]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
+            [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
@@ -113,7 +114,7 @@
 (deftest creating-tuva-hoks-does-not-trigger-heratepalvelu
   (testing "Creating TUVA hoks does not trigger heratepalvelu"
     (let [sqs-call-counter (atom 0)]
-      (with-redefs [oph.ehoks.external.aws-sqs/send-amis-palaute-message
+      (with-redefs [sqs/send-amis-palaute-message
                     #(swap! sqs-call-counter inc)]
         (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                          :oppija-oid "1.2.246.562.24.12312312312"
@@ -239,6 +240,33 @@
 (def osaaminen-saavutettu-patch
   {:id 1
    :osaamisen-saavuttamisen-pvm "2020-01-01"})
+
+(deftest send-paattokysely-test
+  (testing "send-paattokysely works"
+    (let [sqs-call-counter (atom 0)]
+      (with-redefs [sqs/send-amis-palaute-message #(swap! sqs-call-counter inc)]
+        (let [app (hoks-utils/create-app nil)
+              ; hoks {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+              ;       :oppija-oid "1.2.246.562.24.12312312312"
+              ;       :ensikertainen-hyvaksyminen "2018-12-15"
+              ;       :osaamisen-hankkimisen-tarve true}
+              ;       ; :osaamisen-saavuttamisen-pvm "2020-12-01"}
+              ; post-response
+              ; (hoks-utils/create-mock-post-request "" hoks app)]
+              hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000004"
+                         :oppija-oid "1.2.246.562.24.12312312313"
+                         :osaamisen-hankkimisen-tarve true
+                         :ensikertainen-hyvaksyminen "2018-12-15"}
+              hoks-resp (hoks-utils/mock-st-post
+                         app base-url hoks-data)]
+              ; hoks {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+              ;       :oppija-oid "1.2.246.562.24.12312312312"
+              ;       :osaamisen-hankkimisen-tarve false
+              ;       :ensikertainen-hyvaksyminen "2018-12-15"}
+              ; response (hoks-utils/mock-st-post app base-url hoks)]
+          (is (= (:status hoks-resp) 200))
+          ; (is (= (:status response) 200))
+          (is (= @sqs-call-counter 1)))))))
 
 (deftest patch-hoks-as-osaaminen-saavutettu
   (testing "PATCH updates value of created HOKS"
