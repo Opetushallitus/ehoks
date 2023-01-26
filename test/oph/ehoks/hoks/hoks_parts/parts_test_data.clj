@@ -33,7 +33,7 @@
                :osaamisen-osoittaminen
                [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
                  :nayttoymparisto {:nimi "Testiympäristö 2"
-                                   :y-tunnus "12345671-2"
+                                   :y-tunnus "1234567-1"
                                    :kuvaus "Testi test"}
                  :sisallon-kuvaus ["Testaus"]
                  :koulutuksen-jarjestaja-osaamisen-arvioijat
@@ -43,7 +43,7 @@
                  :tyoelama-osaamisen-arvioijat
                  [{:nimi "Taneli Työmies"
                    :organisaatio {:nimi "Tanelin Paja Ky"
-                                  :y-tunnus "12345622-2"}}]
+                                  :y-tunnus "1234561-2"}}]
                  :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
                                :koodi-versio 3}]
                  :alku "2019-03-10"
@@ -72,7 +72,7 @@
         {:nimi "Oiva Ohjaaja"
          :sahkoposti "oiva.ohjaaja@esimerkki2.com"}
         :tyopaikan-nimi "Ohjaus Oyk"
-        :tyopaikan-y-tunnus "12345222-4"
+        :tyopaikan-y-tunnus "1234565-5"
         :keskeiset-tyotehtavat ["Testitehtävä2"]}
        :muut-oppimisymparistot []
        :keskeytymisajanjaksot []
@@ -175,12 +175,12 @@
        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
      :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
      :nayttoymparisto {:nimi "Toinen Esimerkki Oyj"
-                       :y-tunnus "12345699-2"
+                       :y-tunnus "1234566-3"
                        :kuvaus "Testiyrityksen testiosasostalla"}
      :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työmies"
                                      :organisaatio
                                      {:nimi "Testiyrityksen Sisar Oy"
-                                      :y-tunnus "12345689-3"}}]
+                                      :y-tunnus "1234563-9"}}]
      :sisallon-kuvaus ["Tutkimustyö"
                        "Raportointi"]
      :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
@@ -212,12 +212,12 @@
                   "1.2.246.562.10.93270534262"}
 
      :nayttoymparisto {:nimi "Testi Oyj"
-                       :y-tunnus "1289211-2"
+                       :y-tunnus "1289211-4"
                        :kuvaus "Testiyhtiö"}
      :tyoelama-osaamisen-arvioijat
      [{:nimi "Terttu Testihenkilö"
        :organisaatio {:nimi "Testi Oyj"
-                      :y-tunnus "1289211-2"}}]
+                      :y-tunnus "1289211-4"}}]
      :sisallon-kuvaus ["Testauksen suunnittelu"
                        "Jokin toinen testi"]
      :alku "2019-02-01"
@@ -269,12 +269,12 @@
                     "1.2.246.562.10.55890967901"}
 
        :nayttoymparisto {:nimi "Ab Yhtiö Oy"
-                         :y-tunnus "1234128-1"
+                         :y-tunnus "1234128-3"
                          :kuvaus "Testi"}
        :tyoelama-osaamisen-arvioijat
        [{:nimi "Tellervo Työntekijä"
          :organisaatio {:nimi "Ab Yhtiö Oy"
-                        :y-tunnus "1234128-1"}}]
+                        :y-tunnus "1234128-3"}}]
        :yksilolliset-kriteerit ["Joku kriteeri"]
        :alku "2019-01-04"
        :loppu "2019-03-01"}]}]
@@ -289,12 +289,12 @@
      :jarjestaja {:oppilaitos-oid
                   "1.2.246.562.10.93270579090"}
      :nayttoymparisto {:nimi "Testi Oy"
-                       :y-tunnus "1289235-2"
+                       :y-tunnus "1234567-1"
                        :kuvaus "Testiyhtiö"}
      :tyoelama-osaamisen-arvioijat
      [{:nimi "Tapio Testihenkilö"
        :organisaatio {:nimi "Testi Oy"
-                      :y-tunnus "1289235-2"}}]
+                      :y-tunnus "1234567-1"}}]
      :sisallon-kuvaus ["Testauksen suunnittelu"
                        "Jokin toinen testi"]
      :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
@@ -341,12 +341,12 @@
          :jarjestaja {:oppilaitos-oid
                       "1.2.246.562.10.55890967911"}
          :nayttoymparisto {:nimi "Ab Yhtiö"
-                           :y-tunnus "1234128-2"
+                           :y-tunnus "1234128-3"
                            :kuvaus "Testi1"}
          :tyoelama-osaamisen-arvioijat
          [{:nimi "Tellervo Tekijä"
            :organisaatio {:nimi "Ab Yhtiö"
-                          :y-tunnus "1234128-1"}}]
+                          :y-tunnus "1234128-3"}}]
          :yksilolliset-kriteerit ["Joku kriteeri" "Toinen"]
          :alku "2019-01-04"
          :loppu "2021-03-01"}]}]
@@ -360,12 +360,12 @@
        :jarjestaja {:oppilaitos-oid
                     "1.2.246.562.10.93270579093"}
        :nayttoymparisto {:nimi "Testi"
-                         :y-tunnus "1289235-3"
+                         :y-tunnus "1234567-1"
                          :kuvaus "Testiyht"}
        :tyoelama-osaamisen-arvioijat
        [{:nimi "Tapio Testi"
          :organisaatio {:nimi "Testi Oyj"
-                        :y-tunnus "1289235-3"}}]
+                        :y-tunnus "1234567-1"}}]
        :sisallon-kuvaus
        ["Testauksen suunnittelu" "Jokin toinen testi" "kolmas"]
        :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]
@@ -439,12 +439,12 @@
          :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921684"}}]
        :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921785"}
        :nayttoymparisto {:nimi "Esimerkki Oyj"
-                         :y-tunnus "12345699-3"
+                         :y-tunnus "1234565-5"
                          :kuvaus "Testiyrityksen testiosa"}
        :tyoelama-osaamisen-arvioijat [{:nimi "Teppo Työm"
                                        :organisaatio
                                        {:nimi "Testiyrityksen Sisar"
-                                        :y-tunnus "12345689-5"}}]
+                                        :y-tunnus "1234563-9"}}]
        :sisallon-kuvaus ["Tutkimustyö" "Raportointi" "joku"]
        :yksilolliset-kriteerit ["Ensimmäinen kriteeri" "toinen"]
        :alku "2018-02-09"
@@ -484,19 +484,19 @@
                     "1.2.246.562.10.55890967000"}
 
        :nayttoymparisto {:nimi "Ab Betoni Oy"
-                         :y-tunnus "1234128-1"
+                         :y-tunnus "1234128-3"
                          :kuvaus "Testi"}
        :tyoelama-osaamisen-arvioijat
        [{:nimi "Tellervo Työntekijä"
          :organisaatio {:nimi "Ab Betoni Oy"
-                        :y-tunnus "1234128-1"}}]
+                        :y-tunnus "1234128-3"}}]
        :yksilolliset-kriteerit ["testi"]
        :alku "2029-01-04"
        :loppu "2030-03-01"}]}]
 
    :tarkentavat-tiedot-naytto
    [{:nayttoymparisto {:nimi "Testi Oy"
-                       :y-tunnus "1289235-2"
+                       :y-tunnus "1234567-1"
                        :kuvaus "Testiyhtiö"}
      :koulutuksen-jarjestaja-osaamisen-arvioijat
      [{:nimi "Joku Arvioija"
@@ -530,7 +530,7 @@
        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
      :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
      :nayttoymparisto {:nimi "Testi Oy"
-                       :y-tunnus "12345699-2"
+                       :y-tunnus "1234565-5"
                        :kuvaus "Testiyrityksen testiosasostalla"}
      :sisallon-kuvaus ["Tutkimustyö"
                        "Raportointi"]
@@ -552,7 +552,7 @@
        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
      :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
      :nayttoymparisto {:nimi "Testi Oy"
-                       :y-tunnus "12345699-2"
+                       :y-tunnus "1234565-5"
                        :kuvaus "Testiyrityksen testiosasostalla"}
      :sisallon-kuvaus ["Tutkimustyö"
                        "Raportointi"]

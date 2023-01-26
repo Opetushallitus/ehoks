@@ -48,6 +48,32 @@
   "Opiskeluoikeuden OID:n regex."
   #"^1\.2\.246\.562\.15\.\d+$")
 
+(defn- calculate-y-tunnus-checksum
+  "Laskee Y-tunnuksen tarkistusnumeron tunnuksen 7 ensimmäisen numeron
+  perusteella."
+  [y-tunnus]
+  (as-> (take 7 y-tunnus) n
+    (map #(Character/getNumericValue %) n)
+    (map * n [7 9 10 5 8 4 2])
+    (reduce + n)
+    (mod n 11)
+    (case n
+      0 0
+      1 nil
+      (- 11 n))))
+
+(defn- valid-y-tunnus?
+  "Tarkistaa, täsmääkö Y-tunnuksen laskettu tarkistusnumero tunnuksen
+  viimeiseen numeroon."
+  [y-tunnus]
+  (= (calculate-y-tunnus-checksum y-tunnus)
+     (Character/getNumericValue (last y-tunnus))))
+
+(s/defschema
+  Y-tunnus
+  "Y-tunnuksen schema."
+  (s/constrained #"^[0-9]{7}-[0-9]$" valid-y-tunnus? "Kelvollinen Y-tunnus"))
+
 (s/defschema
   KoodistoKoodi
   "Koodistokoodin schema."
@@ -62,8 +88,8 @@
   (describe
     "Organisaatio"
     :nimi s/Str "Organisaation nimi"
-    (s/optional-key :y-tunnus) s/Str "Mikäli organisaatiolla on y-tunnus,
-    organisaation y-tunnus"))
+    (s/optional-key :y-tunnus) Y-tunnus
+    "Mikäli organisaatiolla on y-tunnus, organisaation y-tunnus"))
 
 (s/defschema
   TyoelamaOrganisaatio
@@ -152,7 +178,7 @@
     :vastuullinen-tyopaikka-ohjaaja VastuullinenTyopaikkaOhjaaja "Vastuullinen
     työpaikkaohjaaja"
     :tyopaikan-nimi s/Str "Työpaikan nimi"
-    (s/optional-key :tyopaikan-y-tunnus) s/Str "Työpaikan y-tunnus"
+    (s/optional-key :tyopaikan-y-tunnus) Y-tunnus "Työpaikan y-tunnus"
     :keskeiset-tyotehtavat [s/Str] "Keskeiset työtehtävät"))
 
 (s/defschema

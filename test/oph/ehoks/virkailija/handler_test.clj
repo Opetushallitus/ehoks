@@ -773,7 +773,7 @@
     [{:jarjestaja
       {:oppilaitos-oid "1.2.246.562.10.54453924330"}
       :nayttoymparisto {:nimi "Testiympäristö 2"
-                        :y-tunnus "12345671-2"
+                        :y-tunnus "1234567-1"
                         :kuvaus "Testi test"}
       :sisallon-kuvaus ["Testaus"]
       :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
@@ -784,7 +784,7 @@
       :tyoelama-osaamisen-arvioijat
       [{:nimi "Taneli Työmies"
         :organisaatio {:nimi "Tanelin Paja Ky"
-                       :y-tunnus "12345622-2"}}]
+                       :y-tunnus "1234561-2"}}]
       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
                     :koodi-versio 3}]
       :alku "2019-03-10"
@@ -805,7 +805,7 @@
        {:nimi "Aimo Ohjaaja"
         :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
        :tyopaikan-nimi "Ohjausyhtiö Oy"
-       :tyopaikan-y-tunnus "12345212-4"
+       :tyopaikan-y-tunnus "1234564-7"
        :keskeiset-tyotehtavat ["Testitehtävä"]}
       :muut-oppimisymparistot
       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
