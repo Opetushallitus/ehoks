@@ -354,6 +354,12 @@ Tähän alle kerätään ohjeita erilaisista asioista mitä kehittäjien tulee
 ottaa huomioon työskennellessään eHOKS:n ja
 [Herätepalvelun](https://github.com/Opetushallitus/heratepalvelu) parissa.
 
+### Valvontakanavien seuranta
+
+Kehittäjien vastuulla on seurata Slackin valvontakanavia mahdollisten
+ongelmatilanteiden varalta. Pääasiassa virheet koskettavat Herätepalvelua ja
+usein sen virheet eivät vaadi toimenpiteitä kehittäjiltä.
+
 ### Dead Letter Queue (DLQ) jonojen seuranta ja tyhjentäminen
 
 eHOKS-Herätepalvelu -kokonaisuudessa on AWS:ssä kolme eri SQS DLQ-jonoa joihin
@@ -379,6 +385,13 @@ päivässä. Tämä tehdään manuaalisesti AWS Consolesta seuraavalla tavalla:
    tehdä, ettei virhetilanteissa DLQ palauta viestejä heti takaisin käsittelyyn.
 8. DLQ on nyt tyhjennetty.
 
+Toistaiseksi tämä toimenpide tehdään manuaalisesti, mutta tulevaisuudessa
+olisi mahdollista automatisoida DLQ:n tyhjennys. Tämän voisi esimerkiksi
+tehdä siten, että luodaan kaksi Lambdaa, joista toinen asettaa trueksi DLQ:n
+tyhjentävien Lambdojen triggerin (cdk:ssa CfnEventSourceMapping) "enabled"
+-arvon ja toinen päinvastoin asettaisi sen falseksi. Sen jälkeen
+ajastettaisiin nämä Lambdat käynnistymään esimerkiksi joka yö siten, että
+enabloidaan käsittely klo 12AM ja disabloidaan 2AM.
 
 
 
