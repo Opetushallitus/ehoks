@@ -347,3 +347,38 @@ ajaa tietokantamigraatiot.
 ## Linkit
 
 + [eHOKS Confluence](https://wiki.eduuni.fi/x/LYZcCw)
+
+## Ohjeita kehittäjille
+
+Tähän alle kerätään ohjeita erilaisista asioista mitä kehittäjien tulee
+ottaa huomioon työskennellessään eHOKS:n ja
+[Herätepalvelun](https://github.com/Opetushallitus/heratepalvelu) parissa.
+
+### Dead Letter Queue (DLQ) jonojen seuranta ja tyhjentäminen
+
+eHOKS-Herätepalvelu -kokonaisuudessa on AWS:ssä kolme eri SQS DLQ-jonoa joihin
+syntyy erilaisten virhetilanteiden johdosta viestejä.
+
+- sade-services-heratepalvelu-tep-HerateDLQ (TEP-osio)
+- sade-services-heratepalvelu-HerateDeadLetterQueue (AMIS-osio)
+- sade-services-heratepalvelu-ONRhenkilomodifyDLQ (ONR-muutosten automatisointi)
+
+Nämä kolme jonoa on hyvä tarkastaa ja mahdollisesti tyhjentää kerran
+päivässä. Tämä tehdään manuaalisesti AWS Consolesta seuraavalla tavalla:
+
+1. Mene SQS-jonojen listaus ja valitse haluttu DLQ.
+2. Avaa SQS:n sivulta "Lambda triggers" välilehti.
+3. Valitse triggeri ja paina "View in Lambda" -painiketta. Lambdan sivu avautuu.
+4. Valitse "Configuration" -välilehti ja sieltä kohta "Triggers".
+5. Valitse triggeri ja paina "Edit" -painiketta.
+6. Valitse avautuvalta sivulta "Activate trigger" ja paina "Save"
+   -painiketta. "Activate trigger" saattaa olla automaattisesti valittuna.
+7. SQS-listauksesta voit seurata DLQ:n tyhjentymistä. Kun DLQ-jonossa ei ole
+   enää viestejä, voit käydä disabloimassa triggerin ottamalla ruksin pois
+   "Activate trigger" -valinnasta ja painamalla "Save". Tämä täytyy muistaa
+   tehdä, ettei virhetilanteissa DLQ palauta viestejä heti takaisin käsittelyyn.
+8. DLQ on nyt tyhjennetty.
+
+
+
+
