@@ -343,6 +343,38 @@ ajaa tietokantamigraatiot.
 
 ![Integraatiot](doc/integrations.png "Integraatiot")
 
+## Indeksoidut taulut
+
+Ehoks luo jokaisen Hoksin tallennuksen yhteydessä rivit Hoksin oppijasta
+tauluun `oppijat`, sekä Hoksin opiskeluoikeudesta tauluun `opiskeluoikeudet`.
+Näille riveille haetaan tietoja Oppijanumerorekisteristä sekä Koskesta.
+Näitä tietoja indeksoidaan myös asennusten ja uudelleenkäynnistysten
+yhteydessä niille Hokseille, joille ei löydy rivejä yllä mainituista
+indeksitauluista. Tietojen hakuun rajapinnoista käytetään hoksin juuressa (eli
+"hoksit" taulun rivillä) olevia kenttiä `opiskeluoikeus_oid` ja `oppija_oid`.
+
+Indeksointi on mahdollista käynnistää myös virkailijan käyttöliittymästä.
+Käyttöliittymästä voi myös uudelleenindeksoida opiskeluoikeudet indeksiä
+opiskeluoikeus-oidin tai koulutustoimijan perusteella.
+
+Indeksointia tehdään siksi, ettei Oppijanumerorekisteriä ja
+Koskea kuormiteta jatkuvalla oppijoiden tietojen hakemisella. Esimerkiksi
+virkailijan käyttöliittymän listauksissa näytetään tietoja oppijoista ja
+heidän opiskeluoikeuksistaan. Tätä varten on parempi käyttää Ehoksiin
+indeksoituja tietoja, kuin hakea niitä jatkuvasti rajapintojen kautta.
+
+### Oppijaindeksi
+
+| oid | nimi |
+| --- | --- |
+| 1.2.246.562.24.44207125156 | Onni Opiskelija |
+
+### Opiskeluoikeusindeksi
+
+| oid | oppija_oid | oppilaitos_oid | koulutustoimija_oid | tutkinto_nimi | osaamisala_nimi | paattynyt | hankintakoulutus_jarjestaja_oid | hankintakoulutus_opiskeluoikeus_oid | koski404 |
+|-----|------------|----------------|---------------------|--------------|----------------|----------|-------------------------------------|---------------------------------------|----------|
+| 1.2.246.562.15.28526155046 | 1.2.246.562.24.97452958511 | 1.2.246.562.10.36044172441 | 1.2.246.562.10.91095189945 | {"en": "Vocational qualification in Logistics", "fi": "Logistiikan perustutkinto", "sv": "Grundexamen i logistik"} | {"fi": "Kuljetuspalvelujen osaamisala", "sv": "Kompetensområdet för transportservice"} | null | null | null | null |
+
 
 ## Linkit
 
