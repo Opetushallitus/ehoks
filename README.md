@@ -363,18 +363,29 @@ virkailijan käyttöliittymän listauksissa näytetään tietoja oppijoista ja
 heidän opiskeluoikeuksistaan. Tätä varten on parempi käyttää Ehoksiin
 indeksoituja tietoja, kuin hakea niitä jatkuvasti rajapintojen kautta.
 
-### Oppijaindeksi
+### Oppijaindeksi (oppijat taulu)
 
 | oid | nimi |
 | --- | --- |
 | 1.2.246.562.24.44207125156 | Onni Opiskelija |
 
-### Opiskeluoikeusindeksi
+### Opiskeluoikeusindeksi (opiskeluoikeudet taulu)
 
 | oid | oppija_oid | oppilaitos_oid | koulutustoimija_oid | tutkinto_nimi | osaamisala_nimi | paattynyt | hankintakoulutus_jarjestaja_oid | hankintakoulutus_opiskeluoikeus_oid | koski404 |
 |-----|------------|----------------|---------------------|--------------|----------------|----------|-------------------------------------|---------------------------------------|----------|
 | 1.2.246.562.15.28526155046 | 1.2.246.562.24.97452958511 | 1.2.246.562.10.36044172441 | 1.2.246.562.10.91095189945 | {"en": "Vocational qualification in Logistics", "fi": "Logistiikan perustutkinto", "sv": "Grundexamen i logistik"} | {"fi": "Kuljetuspalvelujen osaamisala", "sv": "Kompetensområdet för transportservice"} | null | null | null | null |
 
+### Indeksin tietojen muuttuminen alkuperäisessä lähteessä
+
+Oppijaindeksiä varten on toteutettu [automaatioratkaisu](https://github.com/Opetushallitus/heratepalvelu/blob/EH-1415/doc/misc.md#oppijanumeron-p%C3%A4ivitt%C3%A4minen-ehoksiin-oppijanumerorekisterist%C3%A4)
+Oppijanumerorekisterin muutosten siirtymisestä Ehoksiin. Toistaiseksi Kosken
+muutokset eivät siirry automaattisesti Ehoksiin. Poistuneita
+opiskeluoikeuksia varten on kuitenkin luotu ratkaisu, joka merkitsee
+opiskeluoikeuksindeksiin `koski404` kentän trueksi. Sen toteutusta voi
+tarkastella `oph/ehoks/hoks/hoks.clj` tiedoston `update-opiskeluoikeudet`
+-funktiosta. Toistaiseksi koski404 -riveille ei tehdä mitään, mutta ne voisi
+jatkossa poistaa, mutta tästä tulee tehdä oma tikettinsä. Oletettavasti myös
+poistuneeseen opiskeluoikeuteen kiinnitetty hoks tulisi poistaa.
 
 ## Linkit
 
