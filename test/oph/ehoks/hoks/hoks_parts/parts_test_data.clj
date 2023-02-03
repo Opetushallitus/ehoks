@@ -11,8 +11,8 @@
                "Ei poikkeamia."
                :opetus-ja-ohjaus-maara 10.1
                :osaamisen-hankkimistavat
-               [{:alku "2018-12-12"
-                 :loppu "2018-12-20"
+               [{:alku "2022-12-12"
+                 :loppu "2022-12-20"
                  :yksiloiva-tunniste "asdfasdf"
                  :ajanjakson-tarkenne "Tarkenne tässä"
                  :osa-aikaisuustieto 25
@@ -46,9 +46,62 @@
                                   :y-tunnus "1234561-2"}}]
                  :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
                                :koodi-versio 3}]
-                 :alku "2019-03-10"
-                 :loppu "2019-03-19"
+                 :alku "2023-03-10"
+                 :loppu "2023-03-19"
                  :yksilolliset-kriteerit ["Yksi kriteeri"]}]})
+
+(def hao-data-wo-osa-aikaisuus
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
+   :tutkinnon-osa-koodi-versio               1
+   :vaatimuksista-tai-tavoitteista-poikkeaminen
+   "Ei poikkeamia."
+   :opetus-ja-ohjaus-maara                   10.1
+   :osaamisen-hankkimistavat
+   [{:alku "2022-12-12"
+     :loppu "2022-12-20"
+     :yksiloiva-tunniste "asdfasdf"
+     :ajanjakson-tarkenne "Tarkenne tässä"
+     :osa-aikaisuustieto 0
+     :osaamisen-hankkimistapa-koodi-uri
+     "osaamisenhankkimistapa_koulutussopimus"
+     :osaamisen-hankkimistapa-koodi-versio 1
+     :muut-oppimisymparistot
+     [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
+       :oppimisymparisto-koodi-versio 1
+       :alku "2019-03-10"
+       :loppu "2019-03-19"}]
+     :keskeytymisajanjaksot []
+     :hankkijan-edustaja
+     {:nimi "Heikki Hankkija"
+      :rooli "Opettaja"
+      :oppilaitos-oid "1.2.246.562.10.54452422420"}
+     :tyopaikalla-jarjestettava-koulutus
+     {:vastuullinen-tyopaikka-ohjaaja
+      {:nimi "Oiva Ohjaaja"
+       :sahkoposti "oiva.ohjaaja@esimerkki2.com"}
+      :tyopaikan-nimi "Ohjaus Oyk"
+      :tyopaikan-y-tunnus "12345222-4"
+      :keskeiset-tyotehtavat ["Testitehtävä2"]}}]
+   :koulutuksen-jarjestaja-oid               "1.2.246.562.10.00000000005"
+   :osaamisen-osoittaminen
+   [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+     :nayttoymparisto {:nimi "Testiympäristö 2"
+                       :y-tunnus "12345671-2"
+                       :kuvaus "Testi test"}
+     :sisallon-kuvaus ["Testaus"]
+     :koulutuksen-jarjestaja-osaamisen-arvioijat
+     [{:nimi "Timo Testaaja"
+       :organisaatio {:oppilaitos-oid
+                      "1.2.246.562.10.54452521332"}}]
+     :tyoelama-osaamisen-arvioijat
+     [{:nimi "Taneli Työmies"
+       :organisaatio {:nimi "Tanelin Paja Ky"
+                      :y-tunnus "12345622-2"}}]
+     :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
+                   :koodi-versio 3}]
+     :alku "2023-03-10"
+     :loppu "2023-03-19"
+     :yksilolliset-kriteerit ["Yksi kriteeri"]}]})
 
 (def patch-all-hao-data
   (merge
@@ -131,6 +184,52 @@
          :alku "2015-03-10"
          :loppu "2021-03-19"}]
        :keskeytymisajanjaksot []}]
+     :osaamisen-osoittaminen
+     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
+       :nayttoymparisto {:nimi "aaa"}
+       :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
+                     :koodi-versio 4}]
+       :koulutuksen-jarjestaja-osaamisen-arvioijat
+       [{:nimi "Erkki Esimerkkitetsaaja"
+         :organisaatio {:oppilaitos-oid
+                        "1.2.246.562.10.13490579333"}}]
+       :alku "2018-12-12"
+       :loppu "2018-12-20"
+       :sisallon-kuvaus ["Kuvaus"]
+       :tyoelama-osaamisen-arvioijat [{:nimi "Nimi" :organisaatio
+                                       {:nimi "Organisaation nimi"}}]
+       :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]}]})
+
+(def hyto-data-wo-osa-aikaisuus
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
+   :tutkinnon-osa-koodi-versio 1
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"
+   :osa-alueet
+   [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
+     :osa-alue-koodi-versio 1
+     :vaatimuksista-tai-tavoitteista-poikkeaminen "joku poikkeaminen"
+     :olennainen-seikka false
+     :opetus-ja-ohjaus-maara 10.0
+     :osaamisen-hankkimistavat
+     [{:alku "2022-12-15"
+       :loppu "2022-12-23"
+       :yksiloiva-tunniste "qiuewyroqiwuer"
+       :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
+       :osaamisen-hankkimistapa-koodi-versio 1
+       :oppisopimuksen-perusta-koodi-uri "oppisopimuksenperusta_01"
+       :oppisopimuksen-perusta-koodi-versio 1
+       :muut-oppimisymparistot
+       [{:oppimisymparisto-koodi-uri "oppimisymparistot_0222"
+         :oppimisymparisto-koodi-versio 3
+         :alku "2015-03-10"
+         :loppu "2021-03-19"}]
+       :keskeytymisajanjaksot []
+       :tyopaikalla-jarjestettava-koulutus
+       {:tyopaikan-nimi "joku nimi"
+        :tyopaikan-y-tunnus "5403241-1"
+        :keskeiset-tyotehtavat ["tehtava" "toinen"]
+        :vastuullinen-tyopaikka-ohjaaja
+        {:nimi "ohjaaja o"}}}]
      :osaamisen-osoittaminen
      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
        :nayttoymparisto {:nimi "aaa"}
