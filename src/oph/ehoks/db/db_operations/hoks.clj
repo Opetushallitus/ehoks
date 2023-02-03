@@ -714,11 +714,16 @@
     {:deleted_at nil}
     ["id = ?" hoks-id]))
 
+(defn delete-opiskeluoikeus-by-oid
+  "Poistaa opiskeluoikeuden tiedot indeksistä oidin perusteella."
+  [opiskeluoikeus-oid]
+  (db-ops/delete! :opiskeluoikeudet ["oid = ?" opiskeluoikeus-oid]))
+
 (defn delete-hoks-by-hoks-id
   "Poistaa HOKSin pysyvästi id:n perusteella"
   [hoks-id]
   (let [hoks (select-hoks-by-id hoks-id)]
-    (db-ops/delete! :opiskeluoikeudet ["oid = ?" (:opiskeluoikeus-oid hoks)])
+    (delete-opiskeluoikeus-by-oid (:opiskeluoikeus-oid hoks))
     (db-ops/delete! :hoksit ["id = ?" hoks-id])))
 
 (defn select-kyselylinkit-by-date-and-type-temp

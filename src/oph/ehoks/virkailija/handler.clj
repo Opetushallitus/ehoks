@@ -202,15 +202,6 @@
                        oh-missing-tyopaikan-y-tunnus)})
         :audit-data {:new hoks}))))
 
-(defn opiskeluoikeus-void-or-active?
-  "Check whether opiskeluoikeus is nil or active"
-  [opiskeluoikeus-oid]
-  (let [opiskeluoikeus (koski/get-opiskeluoikeus-info opiskeluoikeus-oid)]
-    (or
-      (nil? opiskeluoikeus)
-      (not (op/opiskeluoikeus-tila-inactive?
-             (op/get-opiskeluoikeus-tila opiskeluoikeus))))))
-
 (defn- save-hoks
   "Save HOKS to database"
   [hoks request]
@@ -258,7 +249,8 @@
 (defn- hoks-has-active-opiskeluoikeus
   "Check if HOKS has an active opiskeluoikeus"
   [hoks]
-  (some op/opiskeluoikeus-active? (map :opiskeluoikeus-oid hoks)))
+  (some #(op/opiskeluoikeus-active? (koski/get-opiskeluoikeus-info %))
+        (map :opiskeluoikeus-oid hoks)))
 
 (defn- get-oppilaitos-oid-by-oo-oid
   "Get oppilaitos OID by opiskeluoikeus OID"
@@ -760,9 +752,12 @@
                                                  (:oppilaitos-oid
                                                    (op/get-opiskeluoikeus-by-oid
                                                      (:opiskeluoikeus-oid
-                                                       hoks))))]
-                            (if (opiskeluoikeus-void-or-active?
-                                  (:opiskeluoikeus-oid hoks))
+                                                       hoks))))
+                                opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+                                opiskeluoikeus (koski/get-opiskeluoikeus-info
+                                                 opiskeluoikeus-oid)]
+                            (if (or (nil? opiskeluoikeus)
+                                    (op/opiskeluoikeus-active? opiskeluoikeus))
                               (if (seq oppilaitos-oid)
                                 (if (contains?
                                       (user/get-organisation-privileges
@@ -773,6 +768,9 @@
                                   (try
                                     (db-hoks/shallow-delete-hoks-by-hoks-id
                                       hoks-id)
+                                    (when (nil? opiskeluoikeus)
+                                      (db-hoks/delete-opiskeluoikeus-by-oid
+                                        opiskeluoikeus-oid))
                                     (assoc
                                       (response/ok {:success hoks-id})
                                       :audit-data {:old hoks
