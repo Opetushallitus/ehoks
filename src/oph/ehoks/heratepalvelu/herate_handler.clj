@@ -98,7 +98,7 @@
 
       (c-api/DELETE "/tyopaikkaohjaajan-yhteystiedot" []
         :summary "Poistaa työpaikkaohjaajan yhteystiedot yli kolme kuukautta
-            sitten päättyneistä työpaikkajaksoista. Käsittelee max 1000 jaksoa
+            sitten päättyneistä työpaikkajaksoista. Käsittelee max 5000 jaksoa
             kerrallaan. Palauttaa kyseisten jaksojen id:t (hankkimistapa-id)
             herätepalvelua varten."
         :header-params [caller-id :- s/Str]
