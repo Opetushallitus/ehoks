@@ -80,13 +80,13 @@
       {:nimi "Oiva Ohjaaja"
        :sahkoposti "oiva.ohjaaja@esimerkki2.com"}
       :tyopaikan-nimi "Ohjaus Oyk"
-      :tyopaikan-y-tunnus "12345222-4"
+      :tyopaikan-y-tunnus "5523718-7"
       :keskeiset-tyotehtavat ["Testitehtävä2"]}}]
    :koulutuksen-jarjestaja-oid               "1.2.246.562.10.00000000005"
    :osaamisen-osoittaminen
    [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
      :nayttoymparisto {:nimi "Testiympäristö 2"
-                       :y-tunnus "12345671-2"
+                       :y-tunnus "5523718-7"
                        :kuvaus "Testi test"}
      :sisallon-kuvaus ["Testaus"]
      :koulutuksen-jarjestaja-osaamisen-arvioijat
@@ -96,7 +96,7 @@
      :tyoelama-osaamisen-arvioijat
      [{:nimi "Taneli Työmies"
        :organisaatio {:nimi "Tanelin Paja Ky"
-                      :y-tunnus "12345622-2"}}]
+                      :y-tunnus "5523718-7"}}]
      :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
                    :koodi-versio 3}]
      :alku "2023-03-10"
