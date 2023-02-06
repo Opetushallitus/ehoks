@@ -343,7 +343,98 @@ ajaa tietokantamigraatiot.
 
 ![Integraatiot](doc/integrations.png "Integraatiot")
 
+## Indeksoidut taulut
+
+Ehoks luo jokaisen Hoksin tallennuksen yhteydessä rivit Hoksin oppijasta
+tauluun `oppijat`, sekä Hoksin opiskeluoikeudesta tauluun `opiskeluoikeudet`.
+Näille riveille haetaan tietoja Oppijanumerorekisteristä sekä Koskesta.
+Näitä tietoja indeksoidaan myös asennusten ja uudelleenkäynnistysten
+yhteydessä niille Hokseille, joille ei löydy rivejä yllä mainituista
+indeksitauluista. Tietojen hakuun rajapinnoista käytetään hoksin juuressa (eli
+"hoksit" taulun rivillä) olevia kenttiä `opiskeluoikeus_oid` ja `oppija_oid`.
+
+Indeksointi on mahdollista käynnistää myös virkailijan käyttöliittymästä.
+Käyttöliittymästä voi myös uudelleenindeksoida opiskeluoikeudet indeksiä
+opiskeluoikeus-oidin tai koulutustoimijan perusteella.
+
+Indeksointia tehdään siksi, ettei Oppijanumerorekisteriä ja
+Koskea kuormiteta jatkuvalla oppijoiden tietojen hakemisella. Esimerkiksi
+virkailijan käyttöliittymän listauksissa näytetään tietoja oppijoista ja
+heidän opiskeluoikeuksistaan. Tätä varten on parempi käyttää Ehoksiin
+indeksoituja tietoja, kuin hakea niitä jatkuvasti rajapintojen kautta.
+
+### Oppijaindeksi (oppijat taulu)
+
+| oid | nimi |
+| --- | --- |
+| 1.2.246.562.24.44207125156 | Onni Opiskelija |
+
+### Opiskeluoikeusindeksi (opiskeluoikeudet taulu)
+
+| oid | oppija_oid | oppilaitos_oid | koulutustoimija_oid | tutkinto_nimi | osaamisala_nimi | paattynyt | hankintakoulutus_jarjestaja_oid | hankintakoulutus_opiskeluoikeus_oid | koski404 |
+|-----|------------|----------------|---------------------|--------------|----------------|----------|-------------------------------------|---------------------------------------|----------|
+| 1.2.246.562.15.28526155046 | 1.2.246.562.24.97452958511 | 1.2.246.562.10.36044172441 | 1.2.246.562.10.91095189945 | {"en": "Vocational qualification in Logistics", "fi": "Logistiikan perustutkinto", "sv": "Grundexamen i logistik"} | {"fi": "Kuljetuspalvelujen osaamisala", "sv": "Kompetensområdet för transportservice"} | null | null | null | null |
+
+### Indeksin tietojen muuttuminen alkuperäisessä lähteessä
+
+Oppijaindeksiä varten on toteutettu [automaatioratkaisu](https://github.com/Opetushallitus/heratepalvelu/blob/EH-1415/doc/misc.md#oppijanumeron-p%C3%A4ivitt%C3%A4minen-ehoksiin-oppijanumerorekisterist%C3%A4)
+Oppijanumerorekisterin muutosten siirtymisestä Ehoksiin. Toistaiseksi Kosken
+muutokset eivät siirry automaattisesti Ehoksiin. Poistuneita
+opiskeluoikeuksia varten on kuitenkin luotu ratkaisu, joka merkitsee
+opiskeluoikeuksindeksiin `koski404` kentän trueksi. Sen toteutusta voi
+tarkastella `oph/ehoks/hoks/hoks.clj` tiedoston `update-opiskeluoikeudet`
+-funktiosta. Toistaiseksi koski404 -riveille ei tehdä mitään, mutta ne voisi
+jatkossa poistaa, mutta tästä tulee tehdä oma tikettinsä. Oletettavasti myös
+poistuneeseen opiskeluoikeuteen kiinnitetty hoks tulisi poistaa.
 
 ## Linkit
 
 + [eHOKS Confluence](https://wiki.eduuni.fi/x/LYZcCw)
+
+## Ohjeita kehittäjille
+
+Tähän alle kerätään ohjeita erilaisista asioista mitä kehittäjien tulee
+ottaa huomioon työskennellessään eHOKS:n ja
+[Herätepalvelun](https://github.com/Opetushallitus/heratepalvelu) parissa.
+
+### Valvontakanavien seuranta
+
+Kehittäjien vastuulla on seurata Slackin valvontakanavia mahdollisten
+ongelmatilanteiden varalta. Pääasiassa virheet koskettavat Herätepalvelua ja
+usein sen virheet eivät vaadi toimenpiteitä kehittäjiltä.
+
+### Dead Letter Queue (DLQ) jonojen seuranta ja tyhjentäminen
+
+eHOKS-Herätepalvelu -kokonaisuudessa on AWS:ssä kolme eri SQS DLQ-jonoa joihin
+syntyy erilaisten virhetilanteiden johdosta viestejä.
+
+- sade-services-heratepalvelu-tep-HerateDLQ (TEP-osio)
+- sade-services-heratepalvelu-HerateDeadLetterQueue (AMIS-osio)
+- sade-services-heratepalvelu-ONRhenkilomodifyDLQ (ONR-muutosten automatisointi)
+
+Nämä kolme jonoa on hyvä tarkastaa ja mahdollisesti tyhjentää kerran
+päivässä. Tämä tehdään manuaalisesti AWS Consolesta seuraavalla tavalla:
+
+1. Mene SQS-jonojen listaus ja valitse haluttu DLQ.
+2. Avaa SQS:n sivulta "Lambda triggers" välilehti.
+3. Valitse triggeri ja paina "View in Lambda" -painiketta. Lambdan sivu avautuu.
+4. Valitse "Configuration" -välilehti ja sieltä kohta "Triggers".
+5. Valitse triggeri ja paina "Edit" -painiketta.
+6. Valitse avautuvalta sivulta "Activate trigger" ja paina "Save"
+   -painiketta. "Activate trigger" saattaa olla automaattisesti valittuna.
+7. SQS-listauksesta voit seurata DLQ:n tyhjentymistä. Kun DLQ-jonossa ei ole
+   enää viestejä, voit käydä disabloimassa triggerin ottamalla ruksin pois
+   "Activate trigger" -valinnasta ja painamalla "Save". Tämä täytyy muistaa
+   tehdä, ettei virhetilanteissa DLQ palauta viestejä heti takaisin käsittelyyn.
+8. DLQ on nyt tyhjennetty.
+
+Toistaiseksi tämä toimenpide tehdään manuaalisesti, mutta tulevaisuudessa
+olisi mahdollista automatisoida DLQ:n tyhjennys. Tämän voisi esimerkiksi
+tehdä siten, että luodaan kaksi Lambdaa, joista toinen asettaa trueksi DLQ:n
+tyhjentävien Lambdojen triggerin (cdk:ssa CfnEventSourceMapping) "enabled"
+-arvon ja toinen päinvastoin asettaisi sen falseksi. Sen jälkeen
+ajastettaisiin nämä Lambdat käynnistymään esimerkiksi joka yö siten, että
+enabloidaan käsittely klo 12AM ja disabloidaan 2AM.
+
+
+
