@@ -202,6 +202,16 @@
       (= tyyppi "ammatillinentutkintoosittainen")
       "tutkinnon_osia_suorittaneet")))
 
+(defn- send-aloituskysely
+  "Lähettää AMIS aloituspalautekyselyn herätepalveluun."
+  [hoks-id hoks]
+  (log/infof (str "Sending aloituskysely for hoks id %s. "
+                  "osaamisen-hankkimisen-tarve: %s.")
+             hoks-id (:osaamisen-hankkimisen-tarve hoks))
+  (sqs/send-amis-palaute-message
+    (sqs/build-hoks-hyvaksytty-msg
+      hoks-id hoks)))
+
 (defn- send-paattokysely
   "Lähettää AMIS päättöpalautekyselyn herätepalveluun."
   [hoks-id os-saavut-pvm hoks]
@@ -243,12 +253,10 @@
       (db-hoks/insert-amisherate-kasittelytilat! hoks-id tuva-hoks conn)
       (when (and (:osaamisen-hankkimisen-tarve h)
                  (false? tuva-hoks))
-        (sqs/send-amis-palaute-message
-          (sqs/build-hoks-hyvaksytty-msg
-            hoks-id h)))
+        (send-aloituskysely hoks-id h))
       (when (and (:osaamisen-saavuttamisen-pvm h)
                  (false? tuva-hoks))
-        (send-paattokysely (:id saved-hoks)
+        (send-paattokysely hoks-id
                            (:osaamisen-saavuttamisen-pvm h)
                            h))
       (assoc
