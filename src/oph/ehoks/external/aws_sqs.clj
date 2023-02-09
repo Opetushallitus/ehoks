@@ -124,7 +124,18 @@
   "Lähettää AMIS-palauteviestin."
   [msg]
   (if (some? herate-queue-url)
-    (send-message msg herate-queue-url)
+    (do
+      (log/infof (str "Sending AMIS-kysely for hoks id %s. "
+                      "Type: %s. "
+                      "Opiskeluoikeus: %s. "
+                      "Oppija: %s. "
+                      "Alkupvm: %s.")
+                 (:ehoks-id msg)
+                 (:kyselytyyppi msg)
+                 (:opiskeluoikeus-oid msg)
+                 (:oppija-oid msg)
+                 (:alkupvm msg))
+      (send-message msg herate-queue-url))
     (log/error "No AMIS-palaute queue!")))
 
 (defn send-delete-tunnus-message

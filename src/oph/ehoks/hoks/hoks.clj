@@ -211,12 +211,6 @@
          (when (and
                  (some? opiskeluoikeus)
                  (some? kyselytyyppi))
-           (log/infof
-             (str "Sending päättökysely for hoks id %s. "
-                  "Triggered by hoks post or update. "
-                  "os-saavuttamisen-pvm %s. "
-                  "Kyselyn tyyppi: %s")
-             hoks-id os-saavut-pvm kyselytyyppi)
            (sqs/send-amis-palaute-message
              (sqs/build-hoks-osaaminen-saavutettu-msg
                hoks-id os-saavut-pvm hoks kyselytyyppi))))
@@ -248,7 +242,7 @@
             hoks-id h)))
       (when (and (:osaamisen-saavuttamisen-pvm h)
                  (false? tuva-hoks))
-        (send-paattokysely (:id saved-hoks)
+        (send-paattokysely hoks-id
                            (:osaamisen-saavuttamisen-pvm h)
                            h))
       (assoc
