@@ -202,6 +202,17 @@
       (= tyyppi "ammatillinentutkintoosittainen")
       "tutkinnon_osia_suorittaneet")))
 
+(defn send-aloituskysely
+  "Lähettää AMIS aloituskyselyn herätepalveluun."
+  [hoks-id hoks]
+  (try
+    (sqs/send-amis-palaute-message
+      (sqs/build-hoks-hyvaksytty-msg
+        hoks-id hoks))
+    (catch Exception e
+      (log/warn e)
+      (log/warnf "Error in sending aloituskysely for hoks id %s." hoks-id))))
+
 (defn- send-paattokysely
   "Lähettää AMIS päättöpalautekyselyn herätepalveluun."
   [hoks-id os-saavut-pvm hoks]
@@ -237,16 +248,6 @@
                 tuva-hoks (tuva-related-hoks? h)]
             (db-hoks/insert-amisherate-kasittelytilat!
               hoks-id tuva-hoks conn)
-            (when (and (:osaamisen-hankkimisen-tarve h)
-                       (false? (tuva-related-hoks? h)))
-              (sqs/send-amis-palaute-message
-                (sqs/build-hoks-hyvaksytty-msg
-                  hoks-id h)))
-            (when (and (:osaamisen-saavuttamisen-pvm h)
-                       (false? (tuva-related-hoks? h)))
-              (send-paattokysely hoks-id
-                                 (:osaamisen-saavuttamisen-pvm h)
-                                 h))
             (assoc
               saved-hoks
               :aiemmin-hankitut-ammat-tutkinnon-osat
@@ -291,9 +292,7 @@
                 conn))))]
     (when (and (:osaamisen-hankkimisen-tarve h)
                (false? (tuva-related-hoks? h)))
-      (sqs/send-amis-palaute-message
-        (sqs/build-hoks-hyvaksytty-msg
-          saved-hoks-id h)))
+      (send-aloituskysely saved-hoks-id h))
     (when (and (:osaamisen-saavuttamisen-pvm h)
                (false? (tuva-related-hoks? h)))
       (send-paattokysely saved-hoks-id
@@ -596,8 +595,7 @@
         (db-hoks/update-amisherate-kasittelytilat!
           {:id (:id amisherate-kasittelytila)
            :aloitusherate_kasitelty false})
-        (sqs/send-amis-palaute-message
-          (sqs/build-hoks-hyvaksytty-msg hoks-id updated-hoks)))
+        (send-aloituskysely hoks-id updated-hoks))
       (when tuva-hoks
         (db-hoks/update-amisherate-kasittelytilat!
           {:id (:id amisherate-kasittelytila)
@@ -668,8 +666,7 @@
             (db-hoks/update-amisherate-kasittelytilat!
               {:id (:id amisherate-kasittelytila)
                :aloitusherate_kasitelty false})
-            (sqs/send-amis-palaute-message
-              (sqs/build-hoks-hyvaksytty-msg hoks-id hoks)))
+            (send-aloituskysely hoks-id hoks))
           (when tuva-hoks
             (db-hoks/update-amisherate-kasittelytilat!
               {:id (:id amisherate-kasittelytila)
