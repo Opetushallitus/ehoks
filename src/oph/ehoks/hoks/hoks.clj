@@ -229,64 +229,77 @@
 (defn save-hoks!
   "Tallentaa yhden HOKSin arvot tietokantaan."
   [h]
-  (jdbc/with-db-transaction
-    [conn (db-ops/get-db-connection)]
-    (let [saved-hoks (db-hoks/insert-hoks! h conn)
-          hoks-id (:id saved-hoks)
-          tuva-hoks (tuva-related-hoks? h)]
-      (db-hoks/insert-amisherate-kasittelytilat! hoks-id tuva-hoks conn)
-      (when (and (:osaamisen-hankkimisen-tarve h)
-                 (false? tuva-hoks))
-        (sqs/send-amis-palaute-message
-          (sqs/build-hoks-hyvaksytty-msg
-            hoks-id h)))
-      (when (and (:osaamisen-saavuttamisen-pvm h)
-                 (false? tuva-hoks))
-        (send-paattokysely hoks-id
-                           (:osaamisen-saavuttamisen-pvm h)
-                           h))
-      (assoc
-        saved-hoks
-        :aiemmin-hankitut-ammat-tutkinnon-osat
-        (ah/save-aiemmin-hankitut-ammat-tutkinnon-osat!
-          (:id saved-hoks)
-          (:aiemmin-hankitut-ammat-tutkinnon-osat h)
-          conn)
-        :aiemmin-hankitut-paikalliset-tutkinnon-osat
-        (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
-          (:id saved-hoks)
-          (:aiemmin-hankitut-paikalliset-tutkinnon-osat h)
-          conn)
-        :hankittavat-paikalliset-tutkinnon-osat
-        (ha/save-hankittavat-paikalliset-tutkinnon-osat!
-          (:id saved-hoks)
-          (:hankittavat-paikalliset-tutkinnon-osat h)
-          conn)
-        :aiemmin-hankitut-yhteiset-tutkinnon-osat
-        (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
-          (:id saved-hoks)
-          (:aiemmin-hankitut-yhteiset-tutkinnon-osat h)
-          conn)
-        :hankittavat-ammat-tutkinnon-osat
-        (ha/save-hankittavat-ammat-tutkinnon-osat!
-          (:id saved-hoks)
-          (:hankittavat-ammat-tutkinnon-osat h)
-          conn)
-        :opiskeluvalmiuksia-tukevat-opinnot
-        (ot/save-opiskeluvalmiuksia-tukevat-opinnot!
-          (:id saved-hoks)
-          (:opiskeluvalmiuksia-tukevat-opinnot h)
-          conn)
-        :hankittavat-yhteiset-tutkinnon-osat
-        (ha/save-hankittavat-yhteiset-tutkinnon-osat!
-          (:id saved-hoks)
-          (:hankittavat-yhteiset-tutkinnon-osat h)
-          conn)
-        :hankittavat-koulutuksen-osat
-        (ha/save-hankittavat-koulutuksen-osat!
-          (:id saved-hoks)
-          (:hankittavat-koulutuksen-osat h)
-          conn)))))
+  (let [saved-hoks-id
+        (jdbc/with-db-transaction
+          [conn (db-ops/get-db-connection)]
+          (let [saved-hoks (db-hoks/insert-hoks! h conn)
+                hoks-id (:id saved-hoks)
+                tuva-hoks (tuva-related-hoks? h)]
+            (db-hoks/insert-amisherate-kasittelytilat!
+              hoks-id tuva-hoks conn)
+            (when (and (:osaamisen-hankkimisen-tarve h)
+                       (false? (tuva-related-hoks? h)))
+              (sqs/send-amis-palaute-message
+                (sqs/build-hoks-hyvaksytty-msg
+                  hoks-id h)))
+            (when (and (:osaamisen-saavuttamisen-pvm h)
+                       (false? (tuva-related-hoks? h)))
+              (send-paattokysely hoks-id
+                                 (:osaamisen-saavuttamisen-pvm h)
+                                 h))
+            (assoc
+              saved-hoks
+              :aiemmin-hankitut-ammat-tutkinnon-osat
+              (ah/save-aiemmin-hankitut-ammat-tutkinnon-osat!
+                (:id saved-hoks)
+                (:aiemmin-hankitut-ammat-tutkinnon-osat h)
+                conn)
+              :aiemmin-hankitut-paikalliset-tutkinnon-osat
+              (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
+                (:id saved-hoks)
+                (:aiemmin-hankitut-paikalliset-tutkinnon-osat h)
+                conn)
+              :hankittavat-paikalliset-tutkinnon-osat
+              (ha/save-hankittavat-paikalliset-tutkinnon-osat!
+                (:id saved-hoks)
+                (:hankittavat-paikalliset-tutkinnon-osat h)
+                conn)
+              :aiemmin-hankitut-yhteiset-tutkinnon-osat
+              (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
+                (:id saved-hoks)
+                (:aiemmin-hankitut-yhteiset-tutkinnon-osat h)
+                conn)
+              :hankittavat-ammat-tutkinnon-osat
+              (ha/save-hankittavat-ammat-tutkinnon-osat!
+                (:id saved-hoks)
+                (:hankittavat-ammat-tutkinnon-osat h)
+                conn)
+              :opiskeluvalmiuksia-tukevat-opinnot
+              (ot/save-opiskeluvalmiuksia-tukevat-opinnot!
+                (:id saved-hoks)
+                (:opiskeluvalmiuksia-tukevat-opinnot h)
+                conn)
+              :hankittavat-yhteiset-tutkinnon-osat
+              (ha/save-hankittavat-yhteiset-tutkinnon-osat!
+                (:id saved-hoks)
+                (:hankittavat-yhteiset-tutkinnon-osat h)
+                conn)
+              :hankittavat-koulutuksen-osat
+              (ha/save-hankittavat-koulutuksen-osat!
+                (:id saved-hoks)
+                (:hankittavat-koulutuksen-osat h)
+                conn))))]
+    (when (and (:osaamisen-hankkimisen-tarve h)
+               (false? (tuva-related-hoks? h)))
+      (sqs/send-amis-palaute-message
+        (sqs/build-hoks-hyvaksytty-msg
+          saved-hoks-id h)))
+    (when (and (:osaamisen-saavuttamisen-pvm h)
+               (false? (tuva-related-hoks? h)))
+      (send-paattokysely saved-hoks-id
+                         (:osaamisen-saavuttamisen-pvm h)
+                         h))
+    saved-hoks-id))
 
 (defn- merge-not-given-hoks-values
   "Varmistaa, että tietyt kentät ovat olemassa HOKSissa, vaikka niissä olisi
