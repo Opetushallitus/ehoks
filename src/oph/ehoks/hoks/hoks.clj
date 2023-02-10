@@ -290,14 +290,15 @@
                 (:id saved-hoks)
                 (:hankittavat-koulutuksen-osat h)
                 conn))))]
-    (when (and (:osaamisen-hankkimisen-tarve h)
-               (false? (tuva-related-hoks? h)))
-      (send-aloituskysely saved-hoks-id h))
-    (when (and (:osaamisen-saavuttamisen-pvm h)
-               (false? (tuva-related-hoks? h)))
-      (send-paattokysely saved-hoks-id
-                         (:osaamisen-saavuttamisen-pvm h)
-                         h))
+    (future
+      (when (and (:osaamisen-hankkimisen-tarve h)
+                 (false? (tuva-related-hoks? h)))
+        (send-aloituskysely saved-hoks-id h))
+      (when (and (:osaamisen-saavuttamisen-pvm h)
+                 (false? (tuva-related-hoks? h)))
+        (send-paattokysely saved-hoks-id
+                           (:osaamisen-saavuttamisen-pvm h)
+                           h)))
     saved-hoks-id))
 
 (defn- merge-not-given-hoks-values
