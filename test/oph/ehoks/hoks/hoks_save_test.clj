@@ -519,16 +519,13 @@
       (is (= true (:tep_kasitelty oh2)))
       (is (= true (:tep_kasitelty oh3))))))
 
-(defn call-sqs
+(defn mock-call
   [counter]
   (fn [_] (swap! counter inc)))
 
-(defn get-oo
+(defn mock-get-opiskeluoikeus
   [_]
-  {:tila {:opiskeluoikeusjaksot [{:alku "2020-01-15"
-                                  :tila {:koodiarvo "lasna"}
-                                  :opintojenRahoitus {:koodiarvo "1"}}]}
-   :suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]})
+  {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]})
 
 (def hoks-osaaminen-saavutettu
   (assoc hoks-data
@@ -544,63 +541,62 @@
          :osaamisen-hankkimisen-tarve false
          :osaamisen-saavuttamisen-pvm (java.time.LocalDate/of 2022 12 15)))
 
-(deftest send-opiskelijapalaute-in-hoks-save
-  (testing "save: sends opiskelijapalaute when has osaamisen-hankkimisen-tarve"
+(deftest form-opiskelijapalaute-in-hoks-save
+  (testing "save: forms opiskelijapalaute when has osaamisen-hankkimisen-tarve"
     (let [sqs-call-counter (atom 0)]
-      (with-redefs [sqs/send-amis-palaute-message (call-sqs sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw
-                    get-oo]
+      (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
+                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
         (h/save-hoks! hoks-osaaminen-saavutettu)
         (is (= @sqs-call-counter 2))))))
 
-(deftest do-not-send-opiskelijapalaute-in-hoks-save
-  (testing (str "save: does not send opiskelijapalaute when "
+(deftest do-not-form-opiskelijapalaute-in-hoks-save
+  (testing (str "save: does not form opiskelijapalaute when "
                 "does not have osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
-      (with-redefs [sqs/send-amis-palaute-message (call-sqs sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw get-oo]
+      (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
+                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
         (h/save-hoks!
           hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta)
         (is (= @sqs-call-counter 0))))))
 
-(deftest send-opiskelijapalaute-in-hoks-update
-  (testing (str "update: sends opiskelijapalaute when has "
+(deftest form-opiskelijapalaute-in-hoks-update
+  (testing (str "update: forms opiskelijapalaute when has "
                 "osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
-      (with-redefs [sqs/send-amis-palaute-message (call-sqs sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw get-oo]
+      (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
+                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
         (let [saved-hoks (h/save-hoks! hoks-data)]
           (h/update-hoks! (:id saved-hoks) hoks-osaaminen-saavutettu)
           (is (= @sqs-call-counter 2)))))))
 
-(deftest do-not-send-opiskelijapalaute-in-hoks-update
-  (testing (str "update: does not send opiskelijapalaute when "
+(deftest do-not-form-opiskelijapalaute-in-hoks-update
+  (testing (str "update: does not form opiskelijapalaute when "
                 "does not have osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
-      (with-redefs [sqs/send-amis-palaute-message (call-sqs sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw get-oo]
+      (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
+                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
         (let [saved-hoks (h/save-hoks! hoks-ei-osaamisen-hankkimisen-tarvetta)]
           (h/update-hoks!
             (:id saved-hoks)
             hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta)
           (is (= @sqs-call-counter 0)))))))
 
-(deftest send-opiskelijapalaute-in-hoks-replace
-  (testing (str "replace: sends opiskelijapalaute when has "
+(deftest form-opiskelijapalaute-in-hoks-replace
+  (testing (str "replace: forms opiskelijapalaute when has "
                 "osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
-      (with-redefs [sqs/send-amis-palaute-message (call-sqs sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw get-oo]
+      (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
+                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
         (let [saved-hoks (h/save-hoks! hoks-data)]
           (h/replace-hoks! (:id saved-hoks) hoks-osaaminen-saavutettu)
           (is (= @sqs-call-counter 2)))))))
 
-(deftest do-not-send-opiskelijapalaute-in-hoks-replace
-  (testing (str "replace: does not send opiskelijapalaute when "
+(deftest do-not-form-opiskelijapalaute-in-hoks-replace
+  (testing (str "replace: does not form opiskelijapalaute when "
                 "does not have osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
-      (with-redefs [sqs/send-amis-palaute-message (call-sqs sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw get-oo]
+      (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
+                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
         (let [saved-hoks (h/save-hoks! hoks-ei-osaamisen-hankkimisen-tarvetta)]
           (h/replace-hoks!
             (:id saved-hoks)
