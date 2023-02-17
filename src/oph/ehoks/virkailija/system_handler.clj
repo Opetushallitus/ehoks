@@ -218,12 +218,15 @@
       :path-params [hoks-id :- s/Int]
       (let [hoks (db-hoks/select-hoks-by-id hoks-id)]
         (if hoks
-          (if (:osaamisen-saavuttamisen-pvm hoks)
+          (if (and (:osaamisen-hankkimisen-tarve hoks)
+                   (:osaamisen-saavuttamisen-pvm hoks))
             (do
               (sqs/send-amis-palaute-message (hp/paatto-build-msg hoks))
               (response/no-content))
             (do
-              (log/warn "No osaamisen saavuttamisen pvm for hoks-id:" hoks-id)
+              (log/warn (str "No osaamisen saavuttamisen pvm or osaamisen "
+                             "saavuttamisen pvm false for hoks-id: "
+                             hoks-id))
               (response/bad-request {:error "No osaamisen saavuttamisen pvm"})))
           (do
             (log/warn "No HOKS found with given hoks-id:" hoks-id)

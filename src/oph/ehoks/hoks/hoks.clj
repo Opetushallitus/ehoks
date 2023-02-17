@@ -580,8 +580,8 @@
          :paattoherate_kasitelty true})
       (when new-osaamisen-hankkimisen-tarve
         (when (new-osaamisen-saavuttamisen-pvm-added?
-                   old-osaamisen-saavuttamisen-pvm
-                   new-osaamisen-saavuttamisen-pvm)
+                old-osaamisen-saavuttamisen-pvm
+                new-osaamisen-saavuttamisen-pvm)
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :paattoherate_kasitelty false})
@@ -648,12 +648,14 @@
                :paattoherate_kasitelty true})
             (when new-osaamisen-hankkimisen-tarve
               (when (new-osaamisen-saavuttamisen-pvm-added?
-                       old-osaamisen-saavuttamisen-pvm
-                       new-osaamisen-saavuttamisen-pvm)
+                      old-osaamisen-saavuttamisen-pvm
+                      new-osaamisen-saavuttamisen-pvm)
                 (db-hoks/update-amisherate-kasittelytilat!
                   {:id (:id amisherate-kasittelytila)
                    :paattoherate_kasitelty false})
-                (send-paattokysely hoks-id new-osaamisen-saavuttamisen-pvm hoks))
+                (send-paattokysely hoks-id
+                                   new-osaamisen-saavuttamisen-pvm
+                                   hoks))
               (when (or (not old-osaamisen-hankkimisen-tarve)
                         (and new-sahkoposti (not old-sahkoposti))
                         (and new-puhelinnumero (not old-puhelinnumero)))
