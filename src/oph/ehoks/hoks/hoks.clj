@@ -240,7 +240,7 @@
 (defn save-hoks!
   "Tallentaa yhden HOKSin arvot tietokantaan."
   [h]
-  (let [saved-hoks-id
+  (let [saved-hoks-obj
         (jdbc/with-db-transaction
           [conn (db-ops/get-db-connection)]
           (let [saved-hoks (db-hoks/insert-hoks! h conn)
@@ -293,13 +293,13 @@
     (future
       (when (and (:osaamisen-hankkimisen-tarve h)
                  (false? (tuva-related-hoks? h)))
-        (send-aloituskysely saved-hoks-id h))
+        (send-aloituskysely (:id saved-hoks-obj) h))
       (when (and (:osaamisen-saavuttamisen-pvm h)
                  (false? (tuva-related-hoks? h)))
-        (send-paattokysely saved-hoks-id
+        (send-paattokysely (:id saved-hoks-obj)
                            (:osaamisen-saavuttamisen-pvm h)
                            h)))
-    saved-hoks-id))
+    saved-hoks-obj))
 
 (defn- merge-not-given-hoks-values
   "Varmistaa, että tietyt kentät ovat olemassa HOKSissa, vaikka niissä olisi
