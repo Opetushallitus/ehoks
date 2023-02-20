@@ -547,7 +547,7 @@
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
                     k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
         (h/save-hoks! hoks-osaaminen-saavutettu)
-        (is (= @sqs-call-counter 2))))))
+        (is (true? (utils/wait-for (fn [_] (= @sqs-call-counter 2)) 5000)))))))
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-save
   (testing (str "save: does not form opiskelijapalaute when "

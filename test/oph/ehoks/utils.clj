@@ -1,6 +1,8 @@
 (ns oph.ehoks.utils
   (:require [cheshire.core :as cheshire]
             [ring.mock.request :as mock]
+            [clj-time.core :as time]
+            [clj-time.coerce :as tc]
             [clojure.test :refer [is]]
             [clojure.data :as d]
             [clojure.pprint :as p]
@@ -264,3 +266,12 @@
               (dissoc data :module-id))
       (map #(dissoc-module-ids %) data))
     data))
+
+(defn wait-for
+  [predicate timeout-ms]
+  (let [wait-until (+ (tc/to-long (time/now)) timeout-ms)
+        result (atom false)]
+    (while (and (false? @result)
+                (< (tc/to-long (time/now)) wait-until))
+      (swap! result predicate))
+    @result))
