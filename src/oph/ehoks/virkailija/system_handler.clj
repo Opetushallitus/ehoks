@@ -7,6 +7,7 @@
             [oph.ehoks.external.cache :as c]
             [oph.ehoks.oppijaindex :as op]
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
+            [oph.ehoks.hoks.hoks :as h]
             [clojure.core.async :as a]
             [ring.util.http-response :as response]
             [clojure.tools.logging :as log]
@@ -198,8 +199,7 @@
         (if hoks
           (if (:osaamisen-hankkimisen-tarve hoks)
             (do
-              (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg
-                                               hoks-id hoks))
+              (h/send-aloituskysely hoks-id hoks)
               (response/no-content))
             (do
               (log/warn "Osaamisen hankkimisen tarve false "
