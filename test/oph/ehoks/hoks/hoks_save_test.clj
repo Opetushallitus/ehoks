@@ -460,9 +460,8 @@
           (assoc data :aiemmin-hankitun-osaamisen-arvioijat [])))))
 
 (deftest get-hoks-test-send-msg-fail
-  (testing
-    (str "Save HOKS but fail in sending msg, "
-         "test that HOKS saving is not rolled back")
+  (testing (str "Save HOKS but fail in sending msg, "
+                "test that HOKS saving is not rolled back")
     (with-redefs [oph.ehoks.external.aws-sqs/send-amis-palaute-message
                   #(throw (Exception. "fail"))]
       (eq (h/get-hoks-by-id 1) {:aiemmin-hankitut-ammat-tutkinnon-osat []
