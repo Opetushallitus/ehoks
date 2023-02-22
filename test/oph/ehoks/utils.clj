@@ -1,6 +1,8 @@
 (ns oph.ehoks.utils
   (:require [cheshire.core :as cheshire]
             [ring.mock.request :as mock]
+            [clj-time.core :as time]
+            [clj-time.coerce :as tc]
             [clojure.test :refer [is]]
             [clojure.data :as d]
             [clojure.pprint :as p]
@@ -165,7 +167,9 @@
               {:status 200
                :body {:oid "1.2.246.562.15.00000000001"
                       :oppilaitos {:oid (or oppilaitos-oid
-                                            "1.2.246.562.10.12944436166")}}}
+                                            "1.2.246.562.10.12944436166")}
+                      :suoritukset
+                      [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]}}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000002")
               {:status 200
@@ -262,3 +266,12 @@
               (dissoc data :module-id))
       (map #(dissoc-module-ids %) data))
     data))
+
+(defn wait-for
+  [predicate timeout-ms]
+  (let [wait-until (+ (tc/to-long (time/now)) timeout-ms)
+        result (atom false)]
+    (while (and (false? @result)
+                (< (tc/to-long (time/now)) wait-until))
+      (swap! result predicate))
+    @result))

@@ -202,8 +202,9 @@
               (h/send-aloituskysely hoks-id hoks)
               (response/no-content))
             (do
-              (log/warn "Osaamisen hankkimisen tarve false "
-                        hoks-id)
+              (log/info (str "Did not resend aloitusheräte "
+                             "(osaamisen-hankkimisen-tarve=false) for hoks-id "
+                             hoks-id))
               (response/bad-request
                 {:error "Osaamisen hankkimisen tarve false"})))
           (do
@@ -218,13 +219,22 @@
       :path-params [hoks-id :- s/Int]
       (let [hoks (db-hoks/select-hoks-by-id hoks-id)]
         (if hoks
-          (if (:osaamisen-saavuttamisen-pvm hoks)
+          (if (and (:osaamisen-hankkimisen-tarve hoks)
+                   (:osaamisen-saavuttamisen-pvm hoks))
             (do
               (sqs/send-amis-palaute-message (hp/paatto-build-msg hoks))
               (response/no-content))
             (do
-              (log/warn "No osaamisen saavuttamisen pvm for hoks-id:" hoks-id)
-              (response/bad-request {:error "No osaamisen saavuttamisen pvm"})))
+              (log/info (str "Did not resend päättöheräte "
+                             "(osaamisen-saavuttamisen-pvm="
+                             (:osaamisen-saavuttamisen-pvm hoks)
+                             ", osaamisen-hankkimisen-tarve="
+                             (:osaamisen-hankkimisen-tarve hoks)
+                             ") for hoks-id "
+                             hoks-id))
+              (response/bad-request
+                {:error (str "No osaamisen saavuttamisen pvm or osaamisen "
+                             "hankkimisen tarve is false")})))
           (do
             (log/warn "No HOKS found with given hoks-id:" hoks-id)
             (response/not-found {:error "No HOKS found with given hoks-id"})))))

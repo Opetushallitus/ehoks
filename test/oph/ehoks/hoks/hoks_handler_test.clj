@@ -2,6 +2,7 @@
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
             [ring.mock.request :as mock]
             [oph.ehoks.utils :as utils :refer [eq]]
+            [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
@@ -113,12 +114,12 @@
 (deftest creating-tuva-hoks-does-not-trigger-heratepalvelu
   (testing "Creating TUVA hoks does not trigger heratepalvelu"
     (let [sqs-call-counter (atom 0)]
-      (with-redefs [oph.ehoks.external.aws-sqs/send-amis-palaute-message
-                    #(swap! sqs-call-counter inc)]
+      (with-redefs [sqs/send-amis-palaute-message
+                    (fn [_] (swap! sqs-call-counter inc))]
         (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                          :oppija-oid "1.2.246.562.24.12312312312"
                          :ensikertainen-hyvaksyminen "2018-12-15"
-                         :osaamisen-hankkimisen-tarve false
+                         :osaamisen-hankkimisen-tarve true
                          :hankittavat-koulutuksen-osat
                          [{:koulutuksen-osa-koodi-uri "koulutuksenosattuva_104"
                            :koulutuksen-osa-koodi-versio 1
