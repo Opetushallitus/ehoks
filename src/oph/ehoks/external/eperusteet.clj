@@ -97,7 +97,8 @@
           koulutuksenOsaPeruste
           (map
             (fn [v]
-              (-> (select-keys v [:id :nimi :osaamisalat])
+              (-> (select-keys v [:id :osaamisalat])
+                  (assoc :nimi (get-in v [:nimiKoodi :nimi]))
                   (update :nimi select-keys [:fi :en :sv])
                   (update
                     :osaamisalat (fn [x] (map #(select-keys % [:nimi]) x)))
