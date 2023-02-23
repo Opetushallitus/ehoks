@@ -111,12 +111,12 @@
                      :nimiKoodi {:nimi {:fi "Valinnaiset opinnot"
                                         :sv "Valbara utbildningsdelar"}
                                  :uri "koulutuksenosattuva_104"}}]}}))]
-     (is (= [{:id 7535567
-              :nimi {:fi "Valinnaiset opinnot"
-                     :sv "Valbara utbildningsdelar"}
-              :osaamisalat []
-              :koulutuksenOsaId "12345"}]
-            (ep/get-koulutuksenOsa-by-koodiUri "koulutuksenosattuva_104"))))))
+      (is (= [{:id 7535567
+               :nimi {:fi "Valinnaiset opinnot"
+                      :sv "Valbara utbildningsdelar"}
+               :osaamisalat []
+               :koulutuksenOsaId "12345"}]
+             (ep/get-koulutuksenOsa-by-koodiUri "koulutuksenosattuva_104"))))))
 
 (deftest find-tutkinto-not-found
   (testing "Not finding any tutkinto items"
