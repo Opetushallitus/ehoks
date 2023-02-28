@@ -115,7 +115,9 @@
   (testing "Creating TUVA hoks does not trigger heratepalvelu"
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message
-                    (fn [_] (swap! sqs-call-counter inc))]
+                    (fn [_] (swap! sqs-call-counter inc))
+                    oph.ehoks.external.koski/tuva-opiskeluoikeus?
+                    #(= "1.2.246.562.15.00000000001" %)]
         (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                          :oppija-oid "1.2.246.562.24.12312312312"
                          :ensikertainen-hyvaksyminen "2018-12-15"
@@ -143,7 +145,9 @@
 
 (deftest create-hoks-without-osa-aikaisuustieto
   (testing "Create HOKS without osa-aikaisuustieto"
-    (let [hoks-data test-data/hoks-data-without-osa-aikaisuus
+    (with-redefs [oph.ehoks.external.koski/tuva-opiskeluoikeus?
+                   (fn [_] false)]
+     (let [hoks-data test-data/hoks-data-without-osa-aikaisuus
           response
           (hoks-utils/mock-st-post
             (hoks-utils/create-app nil) base-url hoks-data)
@@ -185,7 +189,7 @@
                 first
                 (select-keys [:alku :loppu :osa-aikaisuustieto]))
             {:alku  "2022-12-15"
-             :loppu "2022-12-23"})))))
+             :loppu "2022-12-23"}))))))
 
 (deftest osaamisen-hankkimistavat-isnt-mandatory
   (testing "Osaamisen hankkimistavat should be optional field in ehoks"
@@ -328,7 +332,9 @@
 
 (deftest hoks-put-adds-non-existing-part
   (testing "If HOKS part doesn't currently exist, PUT creates it"
-    (let [app (hoks-utils/create-app nil)
+    (with-redefs [oph.ehoks.external.koski/tuva-opiskeluoikeus?
+                  (fn [_] false)]
+     (let [app (hoks-utils/create-app nil)
           post-response
           (hoks-utils/create-mock-post-request
             ""
@@ -347,7 +353,7 @@
       (is (= (:status get-response) 200))
       (eq (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data)
           (utils/dissoc-module-ids (:opiskeluvalmiuksia-tukevat-opinnot
-                                     get-response-data))))))
+                                     get-response-data)))))))
 
 (deftest hoks-put-updates-oht-using-yksiloiva-tunniste
   (testing (str "If matching oht yksiloiva-tunniste is found, update oht."

@@ -4,7 +4,7 @@
             [ring.util.http-status :as status]
             [clojure.data.json :as json]
             [oph.ehoks.external.oph-url :as u]
-            [clojure.tools.logging :as log])
+            [clojure.core.memoize :as memo])
   (:import (clojure.lang ExceptionInfo)))
 
 (defn filter-oppija
@@ -72,6 +72,20 @@
                        (= (get-in body [0 :key])
                           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
           (throw e))))))
+
+(def get-opiskeluoikeus-type
+  (memo/ttl
+    (fn [opiskeluoikeus-oid]
+      (get-in
+        (get-opiskeluoikeus-info opiskeluoikeus-oid)
+        [:tyyppi :koodiarvo]))
+    {}
+    :ttl/threshold 300))
+
+(defn tuva-opiskeluoikeus?
+  "Tarkistaa, onko opiskeluoikeus TUVA-opiskeluoikeus."
+  [opiskeluoikeus-oid]
+  (= "tuva" (get-opiskeluoikeus-type opiskeluoikeus-oid)))
 
 (defn get-opiskeluoikeus-oppilaitos-oid
   "Get oppilaitos of opiskeluoikeus"

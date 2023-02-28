@@ -1,11 +1,9 @@
 (ns oph.ehoks.hoks.schema
-  (:require [clojure.tools.logging :as log]
-            [environ.core :refer [env]]
-            [oph.ehoks.schema.generator :as g]
+  (:require [oph.ehoks.schema.generator :as g]
             [oph.ehoks.schema-tools :refer [describe modify]]
+            [oph.ehoks.external.koski :as k]
             [schema.core :as s])
-  (:import (com.google.i18n.phonenumbers PhoneNumberUtil NumberParseException)
-           (java.time LocalDate)
+  (:import (java.time LocalDate)
            (java.util UUID)))
 
 (def TutkinnonOsaKoodiUri
@@ -1129,26 +1127,47 @@
     {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
      :name "HOKS"}))
 
+(defn generate-hoks-schema [name method doc constraint]
+  (let [schema (with-meta (g/generate HOKSModel method)
+                          {:doc doc
+                           :name name})]
+    (s/constrained schema
+                   (fn [hoks]
+                     (if (:opiskeluoikeus-oid hoks)
+                       (if (k/tuva-opiskeluoikeus? (:opiskeluoikeus-oid hoks))
+                         (every? (comp empty? hoks)
+                               [:aiemmin-hankitut-ammat-tutkinnon-osat
+                                :aiemmin-hankitut-yhteiset-tutkinnon-osat
+                                :aiemmin-hankitut-paikalliset-tutkinnon-osat
+                                :opiskeluvalmiuksia-tukevat-opinnot
+                                :hankittavat-ammat-tutkinnon-osat
+                                :hankittavat-yhteiset-tutkinnon-osat
+                                :hankittavat-paikalliset-tutkinnon-osat])
+                         (empty? (:hankittavat-koulutuksen-osat hoks)))
+                       true))
+                   constraint)))
+
 (def HOKSPaivitys
   "Generoitu HOKSin päivitysschema."
-  (with-meta
-    (g/generate HOKSModel :patch)
-    {:doc "HOKS-dokumentin ylikirjoitus (PATCH)"
-     :name "HOKSPaivitys"}))
+  (generate-hoks-schema "HOKSPaivitys"
+                        :patch
+                        "HOKS-dokumentin ylikirjoitus (PATCH)"
+                        "Ristiintarkistus TUVA-hokseja varten"))
 
 (def HOKSKorvaus
   "Generoitu HOKSin korvausschema."
-  (with-meta
-    (g/generate HOKSModel :put)
-    {:doc "HOKS-dokumentin ylikirjoitus (PUT)"
-     :name "HOKSKorvaus"}))
+  (generate-hoks-schema "HOKSKorvaus"
+                        :put
+                        "HOKS-dokumentin ylikirjoitus (PUT)"
+                        "Ristiintarkistus TUVA-hokseja varten"))
 
 (def HOKSLuonti
   "Generoitu HOKSin luontischema."
-  (with-meta
-    (g/generate HOKSModel :post)
-    {:doc "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
-     :name "HOKSLuonti"}))
+  (generate-hoks-schema "HOKSLuonti"
+                        :post
+                        "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
+                        "Ristiintarkistus TUVA-hokseja varten"))
+
 
 (s/defschema
   kyselylinkki
