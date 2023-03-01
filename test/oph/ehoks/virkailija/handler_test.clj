@@ -81,6 +81,11 @@
             :body {:oid "1.2.246.562.15.760000000010"
                    :oppilaitos {:oid "1.2.246.562.10.1200000000010"}}}
            (.endsWith
+             url "/koski/api/opiskeluoikeus/1.2.246.562.15.760000000011")
+           {:status 200
+            :body {:oid "1.2.246.562.15.760000000011"
+                   :oppilaitos {:oid "1.2.246.562.10.1200000000011"}}}
+           (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.000000000020")
            {:status 200
             :body {:oid "1.2.246.562.15.000000000020"
@@ -578,15 +583,21 @@
     (utils/with-db
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
       (let [post-response
-            (post-new-hoks
-              "1.2.246.562.15.76000000001" "1.2.246.562.10.12000000001")
+            (post-new-hoks "1.2.246.562.15.760000000010"
+                           "1.2.246.562.10.1200000000010")
             get-response (get-created-hoks post-response)]
         (t/is (get-in (utils/parse-body (:body get-response))
                       [:data :manuaalisyotto]))
         (t/is (= (:status post-response) 200))))))
 
 (defn mocked-get-opiskeluoikeus-info-raw [oid]
-  (throw (ex-info "Opiskeluoikeus fetch failed" {:status 404})))
+  (throw
+    (ex-info
+      "Opiskeluoikeus fetch failed"
+      {:status 404
+       :body
+       (utils/to-string
+         {:key "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"})})))
 
 (t/deftest test-hoks-create-when-opiskeluoikeus-fetch-fails
   (t/testing "Error thrown from koski is propagated to handler"
@@ -595,8 +606,8 @@
       (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info-raw
                     mocked-get-opiskeluoikeus-info-raw]
         (let [post-response
-              (post-new-hoks
-                "1.2.246.562.15.76000000002" "1.2.246.562.10.12000000001")]
+              (post-new-hoks "1.2.246.562.15.760000000010"
+                             "1.2.246.562.10.1200000000010")]
           (t/is (= (:status post-response) 400))
           (t/is (= (utils/parse-body (:body post-response))
                    {:error "Opiskeluoikeus not found in Koski"})))))))
@@ -610,8 +621,8 @@
       (with-redefs [oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
                     mocked-find-student-by-oid]
         (let [post-response
-              (post-new-hoks
-                "1.2.246.562.15.76000000002" "1.2.246.562.10.12000000001")]
+              (post-new-hoks "1.2.246.562.15.760000000010"
+                             "1.2.246.562.10.1200000000010")]
           (t/is (= (:status post-response) 400))
           (t/is (= (utils/parse-body (:body post-response))
                    {:error "Oppija not found in Oppijanumerorekisteri"})))))))

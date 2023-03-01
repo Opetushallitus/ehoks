@@ -217,6 +217,9 @@
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
 
+(defn to-string [body]
+  (cheshire/generate-string body))
+
 (defn eq-check [value expect]
   (when (not= value expect)
     (let [diff (d/diff value expect)]
