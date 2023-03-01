@@ -90,6 +90,34 @@
                    (ep/get-koulutuksenOsa-by-koodiUri
                      "koulutuksenosattuva_404"))))))
 
+(deftest uses-nimi-from-nimiKoodi
+  (testing "Uses nimi object from nimiKoodi"
+    (client/with-mock-responses
+      [(fn [url options]
+         (cond
+           (and (.endsWith url "/external/perusteet")
+                (= "koulutuksenosattuva_104"
+                   (get-in options [:query-params :koodi])))
+           {:status 200
+            :body {:data [{:id 7534950}]}}
+           (.endsWith url "/external/peruste/7534950")
+           {:status 200
+            :body {:id 7534950
+                   :koulutuksenOsat
+                   [{:id 7535567
+                     :nimi {:_id "8332155"
+                            :fi "Valinnaiset koulutuksen osat"
+                            :sv "Valbara utbildningsdelar"}
+                     :nimiKoodi {:nimi {:fi "Valinnaiset opinnot"
+                                        :sv "Valbara utbildningsdelar"}
+                                 :uri "koulutuksenosattuva_104"}}]}}))]
+      (is (= [{:id 7535567
+               :nimi {:fi "Valinnaiset opinnot"
+                      :sv "Valbara utbildningsdelar"}
+               :osaamisalat []
+               :koulutuksenOsaId "12345"}]
+             (ep/get-koulutuksenOsa-by-koodiUri "koulutuksenosattuva_104"))))))
+
 (deftest find-tutkinto-not-found
   (testing "Not finding any tutkinto items"
     (client/with-mock-responses
