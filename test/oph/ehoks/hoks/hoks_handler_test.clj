@@ -145,51 +145,51 @@
 
 (deftest create-hoks-without-osa-aikaisuustieto
   (testing "Create HOKS without osa-aikaisuustieto"
-    (with-redefs [oph.ehoks.external.koski/tuva-opiskeluoikeus?
-                   (fn [_] false)]
-     (let [hoks-data test-data/hoks-data-without-osa-aikaisuus
-          response
-          (hoks-utils/mock-st-post
-            (hoks-utils/create-app nil) base-url hoks-data)
-          body (utils/parse-body (:body response))]
-      (is (= (:status response) 200))
-      (eq body
-          {:data {:uri (format "%s/1" base-url)
-                  :notifications
-                  [(str "Data saved successfully, but osa-aikaisuustieto is "
-                        "missing or has invalid value in työpaikkajakso: "
-                        "työpaikkajakson yksilöivä tunniste asdfasdf, "
-                        "työpaikan nimi Ohjaus Oyk, työpaikkajakson aikajakso "
-                        "2022-12-12 - 2022-12-20, opiskelijan nimi Tero Teuvo "
-                        "Testaaja")
-                   (str "Data saved successfully, but osa-aikaisuustieto is "
-                        "missing or has invalid value in työpaikkajakso: "
-                        "työpaikkajakson yksilöivä tunniste qiuewyroqiwuer, "
-                        "työpaikan nimi joku nimi, työpaikkajakson aikajakso "
-                        "2022-12-15 - 2022-12-23, opiskelijan nimi Tero Teuvo "
-                        "Testaaja")]}
-           :meta {:id 1}})
-      (let [hoks
-            (-> (get-in body [:data :uri]) hoks-utils/get-authenticated :data)]
-        (eq (-> hoks
-                :hankittavat-ammat-tutkinnon-osat
-                first
-                :osaamisen-hankkimistavat
-                first
-                (select-keys [:alku :loppu :osa-aikaisuustieto]))
-            {:alku               "2022-12-12"
-             :loppu              "2022-12-20"
-             :osa-aikaisuustieto 0})
-        (eq (-> hoks
-                :hankittavat-yhteiset-tutkinnon-osat
-                first
-                :osa-alueet
-                first
-                :osaamisen-hankkimistavat
-                first
-                (select-keys [:alku :loppu :osa-aikaisuustieto]))
-            {:alku  "2022-12-15"
-             :loppu "2022-12-23"}))))))
+    (with-redefs [oph.ehoks.external.koski/tuva-opiskeluoikeus? (fn [_] false)]
+      (let [hoks-data test-data/hoks-data-without-osa-aikaisuus
+            response
+            (hoks-utils/mock-st-post
+              (hoks-utils/create-app nil) base-url hoks-data)
+            body (utils/parse-body (:body response))]
+        (is (= (:status response) 200))
+        (eq body
+            {:data {:uri (format "%s/1" base-url)
+                    :notifications
+                    [(str "Data saved successfully, but osa-aikaisuustieto is "
+                          "missing or has invalid value in työpaikkajakso: "
+                          "työpaikkajakson yksilöivä tunniste asdfasdf, "
+                          "työpaikan nimi Ohjaus Oyk, työpaikkajakson "
+                          "aikajakso 2022-12-12 - 2022-12-20, opiskelijan nimi "
+                          "Tero Teuvo Testaaja")
+                     (str "Data saved successfully, but osa-aikaisuustieto is "
+                          "missing or has invalid value in työpaikkajakso: "
+                          "työpaikkajakson yksilöivä tunniste qiuewyroqiwuer, "
+                          "työpaikan nimi joku nimi, työpaikkajakson aikajakso "
+                          "2022-12-15 - 2022-12-23, opiskelijan nimi Tero "
+                          "Teuvo Testaaja")]}
+             :meta {:id 1}})
+        (let [hoks (-> (get-in body [:data :uri])
+                       hoks-utils/get-authenticated
+                       :data)]
+          (eq (-> hoks
+                  :hankittavat-ammat-tutkinnon-osat
+                  first
+                  :osaamisen-hankkimistavat
+                  first
+                  (select-keys [:alku :loppu :osa-aikaisuustieto]))
+              {:alku               "2022-12-12"
+               :loppu              "2022-12-20"
+               :osa-aikaisuustieto 0})
+          (eq (-> hoks
+                  :hankittavat-yhteiset-tutkinnon-osat
+                  first
+                  :osa-alueet
+                  first
+                  :osaamisen-hankkimistavat
+                  first
+                  (select-keys [:alku :loppu :osa-aikaisuustieto]))
+              {:alku  "2022-12-15"
+               :loppu "2022-12-23"}))))))
 
 (deftest osaamisen-hankkimistavat-isnt-mandatory
   (testing "Osaamisen hankkimistavat should be optional field in ehoks"
@@ -298,62 +298,58 @@
 
 (deftest hoks-part-put-fails-whole-operation-is-aborted
   (testing (str "PUT of HOKS should be inside transaction so that when"
-                "one part of operation fails, everything is aborted"
-                (with-redefs [oph.ehoks.hoks.hoks/replace-ahyto!
-                              mock-replace-ahyto]
-                  (let [app (hoks-utils/create-app nil)
-                        post-response (hoks-utils/create-mock-post-request
-                                        "" test-data/hoks-data app)
-                        put-response (hoks-utils/create-mock-hoks-put-request
-                                       1 main-level-of-hoks-updated app)
-                        get-response
-                        (hoks-utils/create-mock-hoks-get-request 1 app)
-                        get-response-data (:data (utils/parse-body
-                                                   (:body get-response)))]
-                    (is (= (:status post-response) 200))
-                    (is (= (:status put-response) 500))
-                    (is (= (:status get-response) 200))
-                    (is (= (:versio get-response-data) 4))
-                    (is (not-empty (:opiskeluvalmiuksia-tukevat-opinnot
-                                     get-response-data)))
-                    (is (not-empty (:hankittavat-ammat-tutkinnon-osat
-                                     get-response-data)))
-                    (is (not-empty (:hankittavat-paikalliset-tutkinnon-osat
-                                     get-response-data)))
-                    (is (not-empty (:hankittavat-yhteiset-tutkinnon-osat
-                                     get-response-data)))
-                    (is (not-empty (:aiemmin-hankitut-ammat-tutkinnon-osat
-                                     get-response-data)))
-                    (is (not-empty
-                          (:aiemmin-hankitut-paikalliset-tutkinnon-osat
-                            get-response-data)))
-                    (is (not-empty (:aiemmin-hankitut-yhteiset-tutkinnon-osat
-                                     get-response-data))))))))
+                "one part of operation fails, everything is aborted")
+    (with-redefs [oph.ehoks.hoks.hoks/replace-ahyto! mock-replace-ahyto]
+      (let [app (hoks-utils/create-app nil)
+            post-response (hoks-utils/create-mock-post-request
+                            "" test-data/hoks-data app)
+            put-response (hoks-utils/create-mock-hoks-put-request
+                           1 main-level-of-hoks-updated app)
+            get-response (hoks-utils/create-mock-hoks-get-request 1 app)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
+        (is (= (:status post-response) 200))
+        (is (= (:status put-response) 500))
+        (is (= (:status get-response) 200))
+        (is (= (:versio get-response-data) 4))
+        (is (not-empty (:opiskeluvalmiuksia-tukevat-opinnot
+                         get-response-data)))
+        (is (not-empty (:hankittavat-ammat-tutkinnon-osat
+                         get-response-data)))
+        (is (not-empty (:hankittavat-paikalliset-tutkinnon-osat
+                         get-response-data)))
+        (is (not-empty (:hankittavat-yhteiset-tutkinnon-osat
+                         get-response-data)))
+        (is (not-empty (:aiemmin-hankitut-ammat-tutkinnon-osat
+                         get-response-data)))
+        (is (not-empty (:aiemmin-hankitut-paikalliset-tutkinnon-osat
+                         get-response-data)))
+        (is (not-empty (:aiemmin-hankitut-yhteiset-tutkinnon-osat
+                         get-response-data)))))))
 
 (deftest hoks-put-adds-non-existing-part
   (testing "If HOKS part doesn't currently exist, PUT creates it"
     (with-redefs [oph.ehoks.external.koski/tuva-opiskeluoikeus?
                   (fn [_] false)]
-     (let [app (hoks-utils/create-app nil)
-          post-response
-          (hoks-utils/create-mock-post-request
-            ""
-            (dissoc test-data/hoks-data :opiskeluvalmiuksia-tukevat-opinnot)
-            app)
-          put-response (hoks-utils/create-mock-hoks-put-request
-                         1
-                         (-> test-data/hoks-data
-                             (assoc :id 1)
-                             (dissoc :opiskeluoikeus-oid :oppija-oid))
-                         app)
-          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
-      (is (= (:status post-response) 200))
-      (is (= (:status put-response) 204))
-      (is (= (:status get-response) 200))
-      (eq (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data)
-          (utils/dissoc-module-ids (:opiskeluvalmiuksia-tukevat-opinnot
-                                     get-response-data)))))))
+      (let [app (hoks-utils/create-app nil)
+            post-response
+            (hoks-utils/create-mock-post-request
+              ""
+              (dissoc test-data/hoks-data :opiskeluvalmiuksia-tukevat-opinnot)
+              app)
+            put-response (hoks-utils/create-mock-hoks-put-request
+                           1
+                           (-> test-data/hoks-data
+                               (assoc :id 1)
+                               (dissoc :opiskeluoikeus-oid :oppija-oid))
+                           app)
+            get-response (hoks-utils/create-mock-hoks-get-request 1 app)
+            get-response-data (:data (utils/parse-body (:body get-response)))]
+        (is (= (:status post-response) 200))
+        (is (= (:status put-response) 204))
+        (is (= (:status get-response) 200))
+        (eq (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data)
+            (utils/dissoc-module-ids
+              (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)))))))
 
 (deftest hoks-put-updates-oht-using-yksiloiva-tunniste
   (testing (str "If matching oht yksiloiva-tunniste is found, update oht."

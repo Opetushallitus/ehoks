@@ -1127,22 +1127,22 @@
     {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
      :name "HOKS"}))
 
-(defn generate-hoks-schema [name method doc constraint]
+(defn generate-hoks-schema [schema-name method doc constraint]
   (let [schema (with-meta (g/generate HOKSModel method)
                           {:doc doc
-                           :name name})]
+                           :name schema-name})]
     (s/constrained schema
                    (fn [hoks]
                      (if (:opiskeluoikeus-oid hoks)
                        (if (k/tuva-opiskeluoikeus? (:opiskeluoikeus-oid hoks))
                          (every? (comp empty? hoks)
-                               [:aiemmin-hankitut-ammat-tutkinnon-osat
-                                :aiemmin-hankitut-yhteiset-tutkinnon-osat
-                                :aiemmin-hankitut-paikalliset-tutkinnon-osat
-                                :opiskeluvalmiuksia-tukevat-opinnot
-                                :hankittavat-ammat-tutkinnon-osat
-                                :hankittavat-yhteiset-tutkinnon-osat
-                                :hankittavat-paikalliset-tutkinnon-osat])
+                                 [:aiemmin-hankitut-ammat-tutkinnon-osat
+                                  :aiemmin-hankitut-yhteiset-tutkinnon-osat
+                                  :aiemmin-hankitut-paikalliset-tutkinnon-osat
+                                  :opiskeluvalmiuksia-tukevat-opinnot
+                                  :hankittavat-ammat-tutkinnon-osat
+                                  :hankittavat-yhteiset-tutkinnon-osat
+                                  :hankittavat-paikalliset-tutkinnon-osat])
                          (empty? (:hankittavat-koulutuksen-osat hoks)))
                        true))
                    constraint)))
@@ -1167,7 +1167,6 @@
                         :post
                         "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
                         "Ristiintarkistus TUVA-hokseja varten"))
-
 
 (s/defschema
   kyselylinkki
