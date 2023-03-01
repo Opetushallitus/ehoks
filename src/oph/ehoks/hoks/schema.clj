@@ -1135,14 +1135,17 @@
                    (fn [hoks]
                      (if-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
                        (if (k/tuva-opiskeluoikeus? opiskeluoikeus-oid)
-                         (every? (comp empty? hoks)
-                                 [:aiemmin-hankitut-ammat-tutkinnon-osat
-                                  :aiemmin-hankitut-yhteiset-tutkinnon-osat
-                                  :aiemmin-hankitut-paikalliset-tutkinnon-osat
-                                  :opiskeluvalmiuksia-tukevat-opinnot
-                                  :hankittavat-ammat-tutkinnon-osat
-                                  :hankittavat-yhteiset-tutkinnon-osat
-                                  :hankittavat-paikalliset-tutkinnon-osat])
+                         (and
+                           (every?
+                             (comp empty? hoks)
+                             [:aiemmin-hankitut-ammat-tutkinnon-osat
+                              :aiemmin-hankitut-yhteiset-tutkinnon-osat
+                              :aiemmin-hankitut-paikalliset-tutkinnon-osat
+                              :opiskeluvalmiuksia-tukevat-opinnot
+                              :hankittavat-ammat-tutkinnon-osat
+                              :hankittavat-yhteiset-tutkinnon-osat
+                              :hankittavat-paikalliset-tutkinnon-osat])
+                           (nil? (:tuva-opiskeluoikeus-oid hoks)))
                          (empty? (:hankittavat-koulutuksen-osat hoks)))
                        true))
                    (str ":hankittavat-koulutuksen-osat on sallittu vain "
