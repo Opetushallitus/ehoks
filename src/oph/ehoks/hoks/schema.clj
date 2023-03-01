@@ -2,9 +2,11 @@
   (:require [oph.ehoks.schema.generator :as g]
             [oph.ehoks.schema-tools :refer [describe modify]]
             [oph.ehoks.external.koski :as k]
-            [schema.core :as s])
+            [schema.core :as s]
+            [clojure.tools.logging :as log])
   (:import (java.time LocalDate)
-           (java.util UUID)))
+           (java.util UUID)
+           (clojure.lang ExceptionInfo)))
 
 (def TutkinnonOsaKoodiUri
   "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosat)."
@@ -1127,29 +1129,47 @@
     {:doc "HOKS"
      :name "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"}))
 
+(defn- non-tuva-hoks?
+  [hoks]
+  (and (empty? (:hankittavat-koulutuksen-osat hoks))
+       (if-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
+         (try
+           (not= (k/get-opiskeluoikeus-type! opiskeluoikeus-oid) :tuva)
+           (catch ExceptionInfo e
+             (log/warn
+               (str "Opiskeluoikeuden hakeminen Koskesta ei onnistunut: "
+                    opiskeluoikeus-oid
+                    e))))
+         true)))
+
+(defn- tuva-hoks?
+  [hoks]
+  (and (nil? (:tuva-opiskeluoikeus-oid hoks))
+       (every?
+         (comp empty? hoks)
+         [:aiemmin-hankitut-ammat-tutkinnon-osat
+          :aiemmin-hankitut-yhteiset-tutkinnon-osat
+          :aiemmin-hankitut-paikalliset-tutkinnon-osat
+          :opiskeluvalmiuksia-tukevat-opinnot
+          :hankittavat-ammat-tutkinnon-osat
+          :hankittavat-yhteiset-tutkinnon-osat
+          :hankittavat-paikalliset-tutkinnon-osat])
+       (if-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
+         (try
+           (= (k/get-opiskeluoikeus-type! opiskeluoikeus-oid) :tuva)
+           (catch ExceptionInfo e
+             (log/warn
+               (str "Opiskeluoikeuden hakeminen Koskesta ei onnistunut: "
+                    opiskeluoikeus-oid
+                    e))))
+         (seq (:hankittavat-koulutuksen-osat hoks)))))
+
 (defn generate-hoks-schema [schema-name method doc]
   (let [schema (with-meta
                  (g/generate HOKSModel method)
                  {:doc doc :name schema-name})]
-    (s/constrained schema
-                   (fn [hoks]
-                     (if-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
-                       (if (k/tuva-opiskeluoikeus? opiskeluoikeus-oid)
-                         (and
-                           (every?
-                             (comp empty? hoks)
-                             [:aiemmin-hankitut-ammat-tutkinnon-osat
-                              :aiemmin-hankitut-yhteiset-tutkinnon-osat
-                              :aiemmin-hankitut-paikalliset-tutkinnon-osat
-                              :opiskeluvalmiuksia-tukevat-opinnot
-                              :hankittavat-ammat-tutkinnon-osat
-                              :hankittavat-yhteiset-tutkinnon-osat
-                              :hankittavat-paikalliset-tutkinnon-osat])
-                           (nil? (:tuva-opiskeluoikeus-oid hoks)))
-                         (empty? (:hankittavat-koulutuksen-osat hoks)))
-                       true))
-                   (str ":hankittavat-koulutuksen-osat on sallittu vain "
-                        "TUVA-HOKSissa"))))
+    (s/conditional tuva-hoks? schema
+                   non-tuva-hoks? schema)))
 
 (def HOKSPaivitys
   "HOKSin päivitysschema."

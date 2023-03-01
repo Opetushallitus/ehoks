@@ -118,7 +118,7 @@
                     (fn [_] (swap! sqs-call-counter inc))
                     oph.ehoks.external.koski/tuva-opiskeluoikeus?
                     #(= "1.2.246.562.15.00000000001" %)]
-        (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+        (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000003"
                          :oppija-oid "1.2.246.562.24.12312312312"
                          :ensikertainen-hyvaksyminen "2018-12-15"
                          :osaamisen-hankkimisen-tarve true

@@ -47,16 +47,18 @@
        :options {:basic-auth [(:cas-username config) (:cas-password config)]
                  :as :json}})))
 
-(defn get-opiskeluoikeus-info-raw
-  "Get opiskeluoikeus info without error handling"
-  [oid]
-  (:body
-    (c/with-api-headers
-      {:method :get
-       :service (u/get-url "koski-url")
-       :url (u/get-url "koski.get-opiskeluoikeus" oid)
-       :options {:basic-auth [(:cas-username config) (:cas-password config)]
-                 :as :json}})))
+(def get-opiskeluoikeus-info-raw
+  (memo/ttl
+    (fn [oid]
+      (:body
+        (c/with-api-headers
+          {:method :get
+           :service (u/get-url "koski-url")
+           :url (u/get-url "koski.get-opiskeluoikeus" oid)
+           :options {:basic-auth [(:cas-username config) (:cas-password config)]
+                     :as :json}})))
+    {}
+    :ttl/threshold 300))
 
 (defn get-opiskeluoikeus-info
   "Get opiskeluoikeus info with error handling"
@@ -73,19 +75,16 @@
                           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
           (throw e))))))
 
-(def get-opiskeluoikeus-type
-  (memo/ttl
-    (fn [opiskeluoikeus-oid]
-      (get-in
-        (get-opiskeluoikeus-info opiskeluoikeus-oid)
-        [:tyyppi :koodiarvo]))
-    {}
-    :ttl/threshold 300))
+(defn get-opiskeluoikeus-type!
+  [opiskeluoikeus-oid]
+  (keyword
+    (get-in (get-opiskeluoikeus-info opiskeluoikeus-oid)
+            [:tyyppi :koodiarvo])))
 
 (defn tuva-opiskeluoikeus?
-  "Tarkistaa, onko opiskeluoikeus TUVA-opiskeluoikeus."
-  [opiskeluoikeus-oid]
-  (= "tuva" (get-opiskeluoikeus-type opiskeluoikeus-oid)))
+  "Tarkistaa, onko opiskeluoikeuden tyyppi tuva"
+  [tyyppi]
+  (= tyyppi :tuva))
 
 (defn get-opiskeluoikeus-oppilaitos-oid
   "Get oppilaitos of opiskeluoikeus"

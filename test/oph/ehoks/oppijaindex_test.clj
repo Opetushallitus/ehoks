@@ -5,7 +5,8 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
-            [oph.ehoks.heratepalvelu.heratepalvelu :as hp])
+            [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
+            [clojure.core.async :refer [<!! timeout]])
   (:import (clojure.lang ExceptionInfo)))
 
 (t/use-fixtures :once utils/migrate-database)
@@ -19,7 +20,8 @@
       {:koodiarvo "351407"
        :nimi {:fi "Testialan perustutkinto"
               :sv "Grundexamen inom testsbranschen"
-              :en "Testing"}}}}]})
+              :en "Testing"}}}}]
+   :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
 
 (def onr-data
   {:status 200
@@ -375,6 +377,10 @@
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}}))
 
+    ; odota cachen vanhenemista
+    (<!!
+      (timeout 350))
+
     (utils/with-ticket-auth
       ["1.2.246.562.10.222222222222"
        (fn [_ url __]
@@ -545,7 +551,7 @@
           ExceptionInfo
           #"Opiskeluoikeus sisältyy toiseen opiskeluoikeuteen"
           (sut/add-opiskeluoikeus!
-            "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")))
+            "1.2.246.562.15.00000000005" "1.2.246.562.24.111111111111")))
       (t/is
         (nil? (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001"))))))
 
