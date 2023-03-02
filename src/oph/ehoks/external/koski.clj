@@ -4,7 +4,8 @@
             [ring.util.http-status :as status]
             [clojure.data.json :as json]
             [oph.ehoks.external.oph-url :as u]
-            [clojure.core.memoize :as memo])
+            [clojure.core.memoize :as memo]
+            [clojure.core.cache :as cache])
   (:import (clojure.lang ExceptionInfo)))
 
 (defn filter-oppija
@@ -13,9 +14,16 @@
   (update values :henkilö select-keys
           [:oid :hetu :syntymäaika :etunimet :kutsumanimi :sukunimi]))
 
+(defn- with-fifo-ttl-cache
+  [f ttl-millis fifo-threshold seed]
+  (let [cache (-> {}
+                  (cache/fifo-cache-factory :threshold fifo-threshold)
+                  (cache/ttl-cache-factory :ttl ttl-millis))]
+    (memo/memoizer f cache seed)))
+
 (def get-oppijat-opiskeluoikeudet
   "Palauttaa annettujen oppijoiden kaikki opiskeluoikeudet"
-  (memo/ttl
+  (with-fifo-ttl-cache
     (fn [oppija-oids]
       (:body
         (c/with-api-headers
@@ -26,8 +34,9 @@
                      :basic-auth [(:cas-username config) (:cas-password config)]
                      :content-type :json
                      :as :json}})))
-    {}
-    :ttl/threshold (or (:koski-oppija-cache-ttl-millis config) 2000)))
+    (or (:koski-oppija-cache-ttl-millis config) 5000)
+    30
+    {}))
 
 (defn get-oppija-opiskeluoikeudet
   "Palauttaa oppijan opiskeluoikeudet"
@@ -51,7 +60,8 @@
                  :as :json}})))
 
 (def get-opiskeluoikeus-info-raw
-  (memo/ttl
+  "Get opiskeluoikeus info"
+  (with-fifo-ttl-cache
     (fn [oid]
       (:body
         (c/with-api-headers
@@ -60,8 +70,9 @@
            :url (u/get-url "koski.get-opiskeluoikeus" oid)
            :options {:basic-auth [(:cas-username config) (:cas-password config)]
                      :as :json}})))
-    {}
-    :ttl/threshold (or (:koski-opiskeluoikeus-cache-ttl-millis config) 300)))
+    (or (:koski-opiskeluoikeus-cache-ttl-millis config) 2000)
+    30
+    {}))
 
 (defn get-opiskeluoikeus-info
   "Get opiskeluoikeus info with error handling"
