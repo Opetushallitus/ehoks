@@ -5,8 +5,7 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
-            [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
-            [clojure.core.async :refer [<!! timeout]])
+            [oph.ehoks.heratepalvelu.heratepalvelu :as hp])
   (:import (clojure.lang ExceptionInfo)))
 
 (t/use-fixtures :once utils/migrate-database)
@@ -378,8 +377,7 @@
          :osaamisala-nimi {:fi "" :sv ""}}))
 
     ; odota cachen vanhenemista
-    (<!!
-      (timeout 350))
+    (Thread/sleep 500)
 
     (utils/with-ticket-auth
       ["1.2.246.562.10.222222222222"
@@ -428,8 +426,7 @@
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111"))
 
     ; odota cachen vanhenemista
-    (<!!
-      (timeout 350))
+    (Thread/sleep 500)
 
     (utils/with-ticket-auth
       ["1.2.246.562.10.222222222222"]

@@ -4,7 +4,8 @@
             [ring.util.http-status :as status]
             [clojure.data.json :as json]
             [oph.ehoks.external.oph-url :as u]
-            [clojure.core.memoize :as memo])
+            [clojure.core.memoize :as memo]
+            [oph.ehoks.config :refer [config]])
   (:import (clojure.lang ExceptionInfo)))
 
 (defn filter-oppija
@@ -58,7 +59,7 @@
            :options {:basic-auth [(:cas-username config) (:cas-password config)]
                      :as :json}})))
     {}
-    :ttl/threshold 300))
+    :ttl/threshold (or (:koski-opiskeluoikeus-cache-ttl-millis config) 300)))
 
 (defn get-opiskeluoikeus-info
   "Get opiskeluoikeus info with error handling"
