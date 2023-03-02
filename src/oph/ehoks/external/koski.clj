@@ -16,16 +16,16 @@
 (def get-oppijat-opiskeluoikeudet
   "Palauttaa annettujen oppijoiden kaikki opiskeluoikeudet"
   (memo/ttl
-   (fn [oppija-oids]
-     (:body
-       (c/with-api-headers
-         {:method :post
-          :service (u/get-url "koski-url")
-          :url (u/get-url "koski.post-sure-oids")
-          :options {:body (json/write-str oppija-oids)
-                    :basic-auth [(:cas-username config) (:cas-password config)]
-                    :content-type :json
-                    :as :json}})))
+    (fn [oppija-oids]
+      (:body
+        (c/with-api-headers
+          {:method :post
+           :service (u/get-url "koski-url")
+           :url (u/get-url "koski.post-sure-oids")
+           :options {:body (json/write-str oppija-oids)
+                     :basic-auth [(:cas-username config) (:cas-password config)]
+                     :content-type :json
+                     :as :json}})))
     {}
     :ttl/threshold (or (:koski-oppija-cache-ttl-millis config) 2000)))
 
