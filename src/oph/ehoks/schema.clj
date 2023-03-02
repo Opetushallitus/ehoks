@@ -69,4 +69,5 @@
               :enforce-opiskeluoikeus-match? s/Bool
               :prevent-finished-opiskeluoikeus-updates? s/Bool
               :heratepalvelu-resend-queue s/Str
-              :koski-opiskeluoikeus-cache-ttl-millis s/Int})
+              :koski-opiskeluoikeus-cache-ttl-millis s/Int
+              :koski-oppija-cache-ttl-millis s/Int})

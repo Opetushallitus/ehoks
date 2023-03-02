@@ -8,4 +8,5 @@
  :db-password "ehoks"
  :opintopolku-host "localhost:3001"
  :audit? false
- :koski-opiskeluoikeus-cache-ttl-millis 1}
+ :koski-opiskeluoikeus-cache-ttl-millis 1
+ :koski-oppija-cache-ttl-millis 1}

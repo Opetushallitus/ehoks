@@ -4,8 +4,7 @@
             [ring.util.http-status :as status]
             [clojure.data.json :as json]
             [oph.ehoks.external.oph-url :as u]
-            [clojure.core.memoize :as memo]
-            [oph.ehoks.config :refer [config]])
+            [clojure.core.memoize :as memo])
   (:import (clojure.lang ExceptionInfo)))
 
 (defn filter-oppija
@@ -14,18 +13,21 @@
   (update values :henkilö select-keys
           [:oid :hetu :syntymäaika :etunimet :kutsumanimi :sukunimi]))
 
-(defn get-oppijat-opiskeluoikeudet
+(def get-oppijat-opiskeluoikeudet
   "Palauttaa annettujen oppijoiden kaikki opiskeluoikeudet"
-  [oppija-oids]
-  (:body
-    (c/with-api-headers
-      {:method :post
-       :service (u/get-url "koski-url")
-       :url (u/get-url "koski.post-sure-oids")
-       :options {:body (json/write-str oppija-oids)
-                 :basic-auth [(:cas-username config) (:cas-password config)]
-                 :content-type :json
-                 :as :json}})))
+  (memo/ttl
+   (fn [oppija-oids]
+     (:body
+       (c/with-api-headers
+         {:method :post
+          :service (u/get-url "koski-url")
+          :url (u/get-url "koski.post-sure-oids")
+          :options {:body (json/write-str oppija-oids)
+                    :basic-auth [(:cas-username config) (:cas-password config)]
+                    :content-type :json
+                    :as :json}})))
+    {}
+    :ttl/threshold (or (:koski-oppija-cache-ttl-millis config) 2000)))
 
 (defn get-oppija-opiskeluoikeudet
   "Palauttaa oppijan opiskeluoikeudet"
