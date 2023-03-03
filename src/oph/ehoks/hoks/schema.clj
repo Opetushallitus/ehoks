@@ -963,8 +963,8 @@
     (s/constrained s/Num
                    #(not (neg? %))
                    "Koulutuksen osan laajuus ei saa olla negatiivinen.")
-    (str "Tutkintoon valmentavan koulutuksen koulutuksen osan laajuus"
-         "TUVA-viikkoina.")))
+    "Tutkintoon valmentavan koulutuksen koulutuksen osan laajuus
+     TUVA-viikkoina."))
 
 (def ^:private ahato-part-of-hoks
   "Aiemmin hankitun ammatillisen tutkinnon osan HOKS-osa schemana."
@@ -973,7 +973,8 @@
    :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]
            :post [AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
            :put [AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description "Aiemmin hankittu ammatillinen osaaminen"})
+   :description "Aiemmin hankittu ammatillinen osaaminen. Ei sallittu
+                 TUVA-HOKSilla."})
 
 (def ^:private ahyto-part-of-hoks
   "Aiemmin hankitun yhteisen tutkinnon osan HOKS-osa schemana."
@@ -982,7 +983,8 @@
    :types {:any [AiemminHankittuYhteinenTutkinnonOsa]
            :post [AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus]
            :put [AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description "Aiemmin hankitut yhteiset tutkinnon osat (YTO)"})
+   :description "Aiemmin hankitut yhteiset tutkinnon osat (YTO). Ei sallittu
+                 TUVA-HOKSilla."})
 
 (def ^:private ahpto-part-of-hoks
   "Aiemmin hankitun paikallisen tutkinnon osan HOKS-osa schemana."
@@ -991,14 +993,16 @@
    :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]
            :post [AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]
            :put [AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description "Aiemmin hankittu paikallinen tutkinnon osa"})
+   :description "Aiemmin hankittu paikallinen tutkinnon osa. Ei sallittu
+                 TUVA-HOKSilla."})
 
 (def ^:private oto-part-of-hoks
   "Opiskeluvalmiuksia tukevien opintojen HOKS-osa schemana."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
-   :description "Opiskeluvalmiuksia tukevat opinnot"})
+   :description "Opiskeluvalmiuksia tukevat opinnot. Ei sallittu
+                 TUVA-HOKSilla."})
 
 (def ^:private hato-part-of-hoks
   "Hankittavan ammatillisen tutkinnon osan HOKS-osa schemana."
@@ -1008,7 +1012,8 @@
            :post [HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
            :put [HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]}
    :description
-   "Hankittavan ammatillisen osaamisen hankkimisen tiedot"})
+   "Hankittavan ammatillisen osaamisen hankkimisen tiedot. Ei sallittu
+    TUVA-HOKSilla."})
 
 (def ^:private hyto-part-of-hoks
   "Hankittavan yhteisen tutkinnon osan HOKS-osa schemana."
@@ -1017,7 +1022,8 @@
    :types {:any [HankittavaYTO]
            :post [HankittavaYTOLuontiJaMuokkaus]
            :put [HankittavaYTOLuontiJaMuokkaus]}
-   :description "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot"})
+   :description "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot. Ei
+                 sallittu TUVA-HOKSilla."})
 
 (def ^:private hpto-part-of-hoks
   "Hankittavan paikallisen tutkinnon osan HOKS-osa schemana."
@@ -1026,14 +1032,15 @@
    :types {:any [HankittavaPaikallinenTutkinnonOsa]
            :post [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]
            :put [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description "Hankittavat paikallisen tutkinnon osat"})
+   :description "Hankittavat paikallisen tutkinnon osat. Ei sallittu
+                 TUVA-HOKSilla."})
 
 (def ^:private hankittava-koulutuksen-osa
   "TUVA HOKSin hankittava koulutuksen osa."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [HankittavaKoulutuksenOsa]}
-   :description "Hankittavan koulutuksen osan tiedot"})
+   :description "Hankittava koulutuksen osa. Sallittu vain TUVA-HOKSilla."})
 
 (def HOKSModel
   "HOKS-schema."
@@ -1067,7 +1074,7 @@
    {:methods {:any :optional}
     :types {:any OpiskeluoikeusOid}
     :description "TUVA-opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
-                  '1.2.246.562.15.00000000001'."}
+                  '1.2.246.562.15.00000000001'. Ei sallittu TUVA-HOKSilla."}
    :urasuunnitelma-koodi-uri
    {:methods {:any :optional}
     :types {:any UrasuunnitelmaKoodiUri}
