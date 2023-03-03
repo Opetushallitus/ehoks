@@ -672,6 +672,7 @@
 
                       (c-api/GET "/:hoks-id" request
                         :path-params [hoks-id :- s/Int]
+                        :return (restful/response hoks-schema/HOKS)
                         :summary "Hoksin tiedot.
                                 Vaatii manuaalisyöttäjän oikeudet"
                         (get-hoks hoks-id request))

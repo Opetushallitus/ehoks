@@ -617,8 +617,8 @@
                              "1.2.246.562.10.1200000000010")]
           (t/is (= (:status post-response) 400))
           (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(throws? (oph.ehoks.hoks.schema/tuva-hoks? "
-                        "a-clojure.lang.PersistentHashMap))"))))))))
+                   (str "(throws? (\"Virhe HOKSin ristiintarkistuksissa\" "
+                        "a-clojure.lang.PersistentArrayMap))"))))))))
 
 (defn mocked-get-oo-tuva [oid]
   {:oid oid
@@ -639,8 +639,8 @@
                                          "1.2.246.562.15.760000000010"})]
           (t/is (= (:status post-response) 400))
           (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(not (some-matching-condition? "
-                        "a-clojure.lang.PersistentHashMap))"))))))))
+                   (str "(not (\"Virhe HOKSin ristiintarkistuksissa\" "
+                        "a-clojure.lang.PersistentArrayMap))"))))))))
 
 (defn mocked-get-oo-non-tuva [oid]
   {:oid oid
@@ -666,8 +666,8 @@
                                            :laajuus 10}]})]
           (t/is (= (:status post-response) 400))
           (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(not (some-matching-condition? "
-                        "a-clojure.lang.PersistentHashMap))"))))))))
+                   (str "(not (\"Virhe HOKSin ristiintarkistuksissa\" "
+                        "a-clojure.lang.PersistentArrayMap))"))))))))
 
 (defn mocked-find-student-by-oid [oid]
   (throw (ex-info "Opiskelija fetch failed" {:status 404})))

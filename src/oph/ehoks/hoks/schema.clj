@@ -1129,7 +1129,7 @@
     {:doc "HOKS"
      :name "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"}))
 
-(defn- non-tuva-hoks?
+(defn- check-non-tuva-hoks!
   [hoks]
   (and (empty? (:hankittavat-koulutuksen-osat hoks))
        (if-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
@@ -1142,7 +1142,7 @@
                     e))))
          true)))
 
-(defn- tuva-hoks?
+(defn- check-tuva-hoks!
   [hoks]
   (and (nil? (:tuva-opiskeluoikeus-oid hoks))
        (every?
@@ -1168,8 +1168,10 @@
   (let [schema (with-meta
                  (g/generate HOKSModel method)
                  {:doc doc :name schema-name})]
-    (s/conditional tuva-hoks? schema
-                   non-tuva-hoks? schema)))
+    (s/constrained schema
+                   (fn [hoks] (or (check-tuva-hoks! hoks)
+                                  (check-non-tuva-hoks! hoks)))
+                   "Virhe HOKSin ristiintarkistuksissa")))
 
 (def HOKSPaivitys
   "HOKSin päivitysschema."
