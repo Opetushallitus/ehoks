@@ -10,6 +10,9 @@
 /scripts/session-cookie.txt
 /resources/uberjar/buildversion.txt
 /target
+/stamps
+/schemaDoc
+/tags
 pom.xml
 pom.xml.asc
 *.code-workspace
