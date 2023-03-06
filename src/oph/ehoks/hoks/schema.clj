@@ -1134,8 +1134,8 @@
   "HOKSin schema."
   (with-meta
     (g/generate HOKSModel :get)
-    {:doc "HOKS"
-     :name "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"}))
+    {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
+     :name "HOKS"}))
 
 (defn- check-non-tuva-hoks!
   [hoks]
