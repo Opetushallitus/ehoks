@@ -1137,17 +1137,17 @@
     {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
      :name "HOKS"}))
 
+(defn opiskeluoikeus-tyyppi-match?
+  [opiskeluoikeus tyyppi]
+  (= (keyword (get-in opiskeluoikeus [:tyyppi :koodiarvo])) tyyppi))
+
 (defn- check-non-tuva-hoks!
   [hoks]
   (and (empty? (:hankittavat-koulutuksen-osat hoks))
        (if-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
-         (try
-           (not= (k/get-opiskeluoikeus-type! opiskeluoikeus-oid) :tuva)
-           (catch ExceptionInfo e
-             (log/warn
-               (str "Opiskeluoikeuden hakeminen Koskesta ei onnistunut: "
-                    opiskeluoikeus-oid
-                    e))))
+         (not (opiskeluoikeus-tyyppi-match? (k/get-opiskeluoikeus-info
+                                              opiskeluoikeus-oid)
+                                            :tuva))
          true)))
 
 (defn- check-tuva-hoks!
@@ -1163,13 +1163,9 @@
           :hankittavat-yhteiset-tutkinnon-osat
           :hankittavat-paikalliset-tutkinnon-osat])
        (if-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
-         (try
-           (= (k/get-opiskeluoikeus-type! opiskeluoikeus-oid) :tuva)
-           (catch ExceptionInfo e
-             (log/warn
-               (str "Opiskeluoikeuden hakeminen Koskesta ei onnistunut: "
-                    opiskeluoikeus-oid
-                    e))))
+         (opiskeluoikeus-tyyppi-match? (k/get-opiskeluoikeus-info
+                                         (:opiskeluoikeus-oid hoks))
+                                       :tuva)
          (seq (:hankittavat-koulutuksen-osat hoks)))))
 
 (defn generate-hoks-schema [schema-name method doc]
@@ -1179,7 +1175,7 @@
     (s/constrained schema
                    (fn [hoks] (or (check-tuva-hoks! hoks)
                                   (check-non-tuva-hoks! hoks)))
-                   "Virhe HOKSin ristiintarkistuksissa")))
+                   "tuva-hoks-cross-check")))
 
 (def HOKSPaivitys
   "HOKSin päivitysschema."

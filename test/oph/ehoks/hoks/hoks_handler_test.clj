@@ -116,8 +116,8 @@
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message
                     (fn [_] (swap! sqs-call-counter inc))
-                    oph.ehoks.external.koski/tuva-opiskeluoikeus?
-                    #(= "1.2.246.562.15.00000000001" %)]
+                    oph.ehoks.external.koski/get-opiskeluoikeus-info
+                    (fn [_] {:tyyppi {:koodiarvo "tuva"}})]
         (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000003"
                          :oppija-oid "1.2.246.562.24.12312312312"
                          :ensikertainen-hyvaksyminen "2018-12-15"
@@ -145,7 +145,8 @@
 
 (deftest create-hoks-without-osa-aikaisuustieto
   (testing "Create HOKS without osa-aikaisuustieto"
-    (with-redefs [oph.ehoks.external.koski/tuva-opiskeluoikeus? (fn [_] false)]
+    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})]
       (let [hoks-data test-data/hoks-data-without-osa-aikaisuus
             response
             (hoks-utils/mock-st-post
@@ -328,8 +329,8 @@
 
 (deftest hoks-put-adds-non-existing-part
   (testing "If HOKS part doesn't currently exist, PUT creates it"
-    (with-redefs [oph.ehoks.external.koski/tuva-opiskeluoikeus?
-                  (fn [_] false)]
+    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})]
       (let [app (hoks-utils/create-app nil)
             post-response
             (hoks-utils/create-mock-post-request

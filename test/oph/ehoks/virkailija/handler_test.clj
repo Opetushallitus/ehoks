@@ -617,7 +617,7 @@
                              "1.2.246.562.10.1200000000010")]
           (t/is (= (:status post-response) 400))
           (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(throws? (\"Virhe HOKSin ristiintarkistuksissa\" "
+                   (str "(throws? (\"tuva-hoks-cross-check\" "
                         "a-clojure.lang.PersistentArrayMap))"))))))))
 
 (defn mocked-get-oo-tuva [oid]
@@ -639,7 +639,7 @@
                                          "1.2.246.562.15.760000000010"})]
           (t/is (= (:status post-response) 400))
           (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(not (\"Virhe HOKSin ristiintarkistuksissa\" "
+                   (str "(not (\"tuva-hoks-cross-check\" "
                         "a-clojure.lang.PersistentArrayMap))"))))))))
 
 (defn mocked-get-oo-non-tuva [oid]
@@ -666,7 +666,7 @@
                                            :laajuus 10}]})]
           (t/is (= (:status post-response) 400))
           (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(not (\"Virhe HOKSin ristiintarkistuksissa\" "
+                   (str "(not (\"tuva-hoks-cross-check\" "
                         "a-clojure.lang.PersistentArrayMap))"))))))))
 
 (defn mocked-find-student-by-oid [oid]

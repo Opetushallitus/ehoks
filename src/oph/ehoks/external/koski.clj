@@ -89,17 +89,6 @@
                           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
           (throw e))))))
 
-(defn get-opiskeluoikeus-type!
-  [opiskeluoikeus-oid]
-  (keyword
-    (get-in (get-opiskeluoikeus-info opiskeluoikeus-oid)
-            [:tyyppi :koodiarvo])))
-
-(defn tuva-opiskeluoikeus?
-  "Tarkistaa, onko opiskeluoikeuden tyyppi tuva"
-  [tyyppi]
-  (= tyyppi :tuva))
-
 (defn get-opiskeluoikeus-oppilaitos-oid
   "Get oppilaitos of opiskeluoikeus"
   [opiskeluoikeus-oid]
