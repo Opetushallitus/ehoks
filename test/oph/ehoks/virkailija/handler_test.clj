@@ -518,27 +518,27 @@
                        :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
                        :koulutustoimija-oid ""}))
 
-(defn- post-new-hoks-with-extra
-  [opiskeluoikeus-oid organisaatio-oid extra]
-  (with-test-virkailija
-    (mock/json-body
-      (mock/request
-        :post
-        (str base-url "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
-      (merge {:opiskeluoikeus-oid opiskeluoikeus-oid
-              :oppija-oid "1.2.246.562.24.44000000001"
-              :ensikertainen-hyvaksyminen "2018-12-15"
-              :osaamisen-hankkimisen-tarve false}
-             extra))
-    {:name "Testivirkailija"
-     :kayttajaTyyppi "VIRKAILIJA"
-     :oidHenkilo "1.2.246.562.24.44000000333"
-     :organisation-privileges
-     [{:oid organisaatio-oid
-       :privileges #{:write :read :update :delete}}]}))
-
-(defn- post-new-hoks [opiskeluoikeus-oid organisaatio-oid]
-  (post-new-hoks-with-extra opiskeluoikeus-oid organisaatio-oid {}))
+(defn- post-new-hoks
+  ([opiskeluoikeus-oid organisaatio-oid additional-keys]
+    (with-test-virkailija
+      (mock/json-body
+        (mock/request
+          :post
+          (str base-url
+               "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
+        (merge {:opiskeluoikeus-oid opiskeluoikeus-oid
+                :oppija-oid "1.2.246.562.24.44000000001"
+                :ensikertainen-hyvaksyminen "2018-12-15"
+                :osaamisen-hankkimisen-tarve false}
+               additional-keys))
+      {:name "Testivirkailija"
+       :kayttajaTyyppi "VIRKAILIJA"
+       :oidHenkilo "1.2.246.562.24.44000000333"
+       :organisation-privileges
+       [{:oid organisaatio-oid
+         :privileges #{:write :read :update :delete}}]}))
+  ([opiskeluoikeus-oid organisaatio-oid]
+   (post-new-hoks opiskeluoikeus-oid organisaatio-oid {})))
 
 (t/deftest test-virkailija-hoks-forbidden
   (t/testing "Virkailija HOKS forbidden"
@@ -633,10 +633,10 @@
       (with-redefs [k/get-opiskeluoikeus-info-raw
                     mocked-get-oo-tuva]
         (let [post-response
-              (post-new-hoks-with-extra "1.2.246.562.15.760000000010"
-                                        "1.2.246.562.10.1200000000010"
-                                        {:tuva-opiskeluoikeus-oid
-                                         "1.2.246.562.15.760000000010"})]
+              (post-new-hoks "1.2.246.562.15.760000000010"
+                             "1.2.246.562.10.1200000000010"
+                             {:tuva-opiskeluoikeus-oid
+                              "1.2.246.562.15.760000000010"})]
           (t/is (= (:status post-response) 400))
           (t/is (= (:errors (utils/parse-body (:body post-response)))
                    (str "(not (\"tuva-hoks-cross-check\" "
@@ -655,15 +655,15 @@
       (with-redefs [k/get-opiskeluoikeus-info-raw
                     mocked-get-oo-non-tuva]
         (let [post-response
-              (post-new-hoks-with-extra "1.2.246.562.15.760000000010"
-                                        "1.2.246.562.10.1200000000010"
-                                        {:hankittavat-koulutuksen-osat
-                                         [{:koulutuksen-osa-koodi-uri
-                                           "koulutuksenosattuva_104"
-                                           :koulutuksen-osa-koodi-versio 1
-                                           :alku "2022-09-01"
-                                           :loppu "2022-09-21"
-                                           :laajuus 10}]})]
+              (post-new-hoks "1.2.246.562.15.760000000010"
+                             "1.2.246.562.10.1200000000010"
+                             {:hankittavat-koulutuksen-osat
+                              [{:koulutuksen-osa-koodi-uri
+                                "koulutuksenosattuva_104"
+                                :koulutuksen-osa-koodi-versio 1
+                                :alku "2022-09-01"
+                                :loppu "2022-09-21"
+                                :laajuus 10}]})]
           (t/is (= (:status post-response) 400))
           (t/is (= (:errors (utils/parse-body (:body post-response)))
                    (str "(not (\"tuva-hoks-cross-check\" "
