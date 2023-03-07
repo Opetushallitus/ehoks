@@ -1181,7 +1181,7 @@
   "HOKSin päivitysschema."
   (generate-hoks-schema "HOKSPaivitys"
                         :patch
-                        "HOKS-dokumentin ylikirjoitus (PATCH)"))
+                        "HOKS-dokumentin osittainen päivittäminen (PATCH)"))
 
 (def HOKSKorvaus
   "HOKSin korvausschema."
