@@ -606,68 +606,15 @@
       {:status 404
        :body [{:key "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"}]})))
 
-(t/deftest test-hoks-create-when-opiskeluoikeus-fetch-fails
-  (t/testing "Error thrown from koski is propagated to handler"
-    (utils/with-db
-      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
-      (with-redefs [k/get-opiskeluoikeus-info-raw
-                    mocked-get-opiskeluoikeus-info-raw]
-        (let [post-response
-              (post-new-hoks "1.2.246.562.15.760000000010"
-                             "1.2.246.562.10.1200000000010")]
-          (t/is (= (:status post-response) 400))
-          (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(throws? (\"tuva-hoks-cross-check\" "
-                        "a-clojure.lang.PersistentArrayMap))"))))))))
-
 (defn mocked-get-oo-tuva [oid]
   {:oid oid
    :oppilaitos {:oid "1.2.246.562.10.1200000000010"}
    :tyyppi {:koodiarvo "tuva"}})
 
-(t/deftest test-tuva-hoks-with-tuva-opiskeluoikeus-oid-fails
-  (t/testing (str "Error is thrown if trying to save tuva hoks with "
-                  "tuva-opiskeluoikeus-oid")
-    (utils/with-db
-      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
-      (with-redefs [k/get-opiskeluoikeus-info-raw
-                    mocked-get-oo-tuva]
-        (let [post-response
-              (post-new-hoks "1.2.246.562.15.760000000010"
-                             "1.2.246.562.10.1200000000010"
-                             {:tuva-opiskeluoikeus-oid
-                              "1.2.246.562.15.760000000010"})]
-          (t/is (= (:status post-response) 400))
-          (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(not (\"tuva-hoks-cross-check\" "
-                        "a-clojure.lang.PersistentArrayMap))"))))))))
-
 (defn mocked-get-oo-non-tuva [oid]
   {:oid oid
    :oppilaitos {:oid "1.2.246.562.10.1200000000010"}
    :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
-
-(t/deftest test-hoks-with-hankittavat-koulutuksen-osat
-  (t/testing (str "Error is thrown if trying to save (non-tuva) hoks with "
-                  "hankittavat-koulutuksen-osat")
-    (utils/with-db
-      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
-      (with-redefs [k/get-opiskeluoikeus-info-raw
-                    mocked-get-oo-non-tuva]
-        (let [post-response
-              (post-new-hoks "1.2.246.562.15.760000000010"
-                             "1.2.246.562.10.1200000000010"
-                             {:hankittavat-koulutuksen-osat
-                              [{:koulutuksen-osa-koodi-uri
-                                "koulutuksenosattuva_104"
-                                :koulutuksen-osa-koodi-versio 1
-                                :alku "2022-09-01"
-                                :loppu "2022-09-21"
-                                :laajuus 10}]})]
-          (t/is (= (:status post-response) 400))
-          (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(not (\"tuva-hoks-cross-check\" "
-                        "a-clojure.lang.PersistentArrayMap))"))))))))
 
 (defn mocked-find-student-by-oid [oid]
   (throw (ex-info "Opiskelija fetch failed" {:status 404})))
@@ -891,6 +838,52 @@
       :loppu "2019-03-14"
       :yksiloiva-tunniste "testi-yksilöivä-tunniste"}]
     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"}])
+
+(t/deftest test-hoks-hankittavat-koulutuksen-osat-and-hato
+  (t/testing (str "Error is thrown if trying to save hoks with "
+                  "tuva and non-tuva data")
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (with-redefs [k/get-opiskeluoikeus-info-raw
+                    mocked-get-oo-tuva]
+        (let [post-response
+              (post-new-hoks "1.2.246.562.15.760000000010"
+                             "1.2.246.562.10.1200000000010"
+                             {:hankittavat-ammat-tutkinnon-osat
+                              hato-data
+                              :hankittavat-koulutuksen-osat
+                              [{:koulutuksen-osa-koodi-uri
+                                "koulutuksenosattuva_104"
+                                :koulutuksen-osa-koodi-versio 1
+                                :alku "2022-09-01"
+                                :loppu "2022-09-21"
+                                :laajuus 10}]})]
+          (t/is (= (:status post-response) 400))
+          (t/is (= (:errors (utils/parse-body (:body post-response)))
+                   {:hankittavat-ammat-tutkinnon-osat "disallowed-key"})))))))
+
+(t/deftest test-hoks-with-hankittavat-koulutuksen-osat-and-tuva-oid
+  (t/testing (str "Error is thrown if trying to save (non-tuva) hoks with "
+                  "hankittavat-koulutuksen-osat")
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (with-redefs [k/get-opiskeluoikeus-info-raw
+                    mocked-get-oo-non-tuva]
+        (let [post-response
+              (post-new-hoks "1.2.246.562.15.760000000010"
+                             "1.2.246.562.10.1200000000010"
+                             {:tuva-opiskeluoikeus-oid
+                              "1.2.246.562.15.760000000010"
+                              :hankittavat-koulutuksen-osat
+                              [{:koulutuksen-osa-koodi-uri
+                                "koulutuksenosattuva_104"
+                                :koulutuksen-osa-koodi-versio 1
+                                :alku "2022-09-01"
+                                :loppu "2022-09-21"
+                                :laajuus 10}]})]
+          (t/is (= (:status post-response) 400))
+          (t/is (= (:errors (utils/parse-body (:body post-response)))
+                   {:tuva-opiskeluoikeus-oid "disallowed-key"})))))))
 
 (t/deftest test-virkailija-put-hoks
   (t/testing "PUT hoks virkailija"

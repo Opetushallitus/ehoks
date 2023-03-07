@@ -59,6 +59,7 @@
         (utils/dissoc-module-ids (:data body))
         [(dates-to-str
            (assoc test-data/hoks-data
+                  :hankittavat-koulutuksen-osat []
                   :eid (get-in body [:data 0 :eid])
                   :manuaalisyotto false))]))))
 

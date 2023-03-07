@@ -7,7 +7,7 @@
                  [com.googlecode.libphonenumber/libphonenumber "8.12.45"]
                  [com.layerware/hugsql "0.5.1"]
                  [com.taoensso/carmine "2.19.1"]
-                 [metosin/compojure-api "2.0.0-alpha28"]
+                 [metosin/compojure-api "2.0.0-alpha31"]
                  [org.flywaydb/flyway-core "6.3.3"]
                  [org.clojure/java.jdbc "0.7.11"]
                  [org.postgresql/postgresql "42.2.12"]
