@@ -1042,7 +1042,7 @@
    :types {:any [HankittavaKoulutuksenOsa]}
    :description "Hankittava koulutuksen osa. Sallittu vain TUVA-HOKSilla."})
 
-(def HOKSModel
+(def ^:private hoks-common
   "HOKS-schema."
   ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
     :restful true
@@ -1070,12 +1070,6 @@
     :types {:any OpiskeluoikeusOid}
     :description (str "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä "
                       "muotoa '1.2.246.562.15.00000000001'.")}
-   :tuva-opiskeluoikeus-oid
-   {:methods {:any :optional}
-    :types {:any OpiskeluoikeusOid}
-    :description (str "TUVA-opiskeluoikeuden oid-tunniste Koski-järjestelmässä "
-                      "muotoa '1.2.246.562.15.00000000001'. Ei sallittu "
-                      "TUVA-HOKSilla.")}
    :urasuunnitelma-koodi-uri
    {:methods {:any :optional}
     :types {:any UrasuunnitelmaKoodiUri}
@@ -1120,62 +1114,67 @@
    :manuaalisyotto {:methods {:any :excluded
                               :get :optional}
                     :types {:any s/Bool}
-                    :description "Tieto, onko HOKS tuotu manuaalisyötön kautta"}
-   :aiemmin-hankitut-ammat-tutkinnon-osat ahato-part-of-hoks
-   :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-part-of-hoks
-   :aiemmin-hankitut-paikalliset-tutkinnon-osat ahpto-part-of-hoks
-   :opiskeluvalmiuksia-tukevat-opinnot oto-part-of-hoks
-   :hankittavat-ammat-tutkinnon-osat hato-part-of-hoks
-   :hankittavat-yhteiset-tutkinnon-osat hyto-part-of-hoks
-   :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks
-   :hankittavat-koulutuksen-osat hankittava-koulutuksen-osa})
+                    :description
+                    "Tieto, onko HOKS tuotu manuaalisyötön kautta"}})
+
+(def ^:private ammatillinen-hoks-parts
+  :tuva-opiskeluoikeus-oid
+  {:methods {:any :optional}
+   :types {:any OpiskeluoikeusOid}
+   :description (str "TUVA-opiskeluoikeuden oid-tunniste Koski-järjestelmässä "
+                     "muotoa '1.2.246.562.15.00000000001'. Ei sallittu "
+                     "TUVA-HOKSilla.")}
+  :aiemmin-hankitut-ammat-tutkinnon-osat ahato-part-of-hoks
+  :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-part-of-hoks
+  :aiemmin-hankitut-paikalliset-tutkinnon-osat ahpto-part-of-hoks
+  :opiskeluvalmiuksia-tukevat-opinnot oto-part-of-hoks
+  :hankittavat-ammat-tutkinnon-osat hato-part-of-hoks
+  :hankittavat-yhteiset-tutkinnon-osat hyto-part-of-hoks
+  :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks)
+
+(def HOKSModel
+  (merge hoks-common ammatillinen-hoks-parts))
+
+(def ^:private tuva-hoks-parts
+  :hankittavat-koulutuksen-osat hankittava-koulutuksen-osa)
+
+(def TUVAHOKSModel
+  (merge hoks-common tuva-hoks-parts))
+
+(defn- tuva-hoks?
+  [hoks]
+  (or (seq (:hankittavat-koulutuksen-osat hoks))
+      (and (nil? (:tuva-opiskeluoikeus-oid hoks))
+           (every?
+             (comp empty? hoks)
+             [:aiemmin-hankitut-ammat-tutkinnon-osat
+              :aiemmin-hankitut-yhteiset-tutkinnon-osat
+              :aiemmin-hankitut-paikalliset-tutkinnon-osat
+              :opiskeluvalmiuksia-tukevat-opinnot
+              :hankittavat-ammat-tutkinnon-osat
+              :hankittavat-yhteiset-tutkinnon-osat
+              :hankittavat-paikalliset-tutkinnon-osat]))))
 
 (def HOKS
   "HOKSin schema."
-  (with-meta
-    (g/generate HOKSModel :get)
-    {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
-     :name "HOKS"}))
-
-(defn opiskeluoikeus-tyyppi-match?
-  [opiskeluoikeus tyyppi]
-  (= (keyword (get-in opiskeluoikeus [:tyyppi :koodiarvo])) tyyppi))
-
-(defn- check-non-tuva-hoks!
-  [hoks]
-  (and (empty? (:hankittavat-koulutuksen-osat hoks))
-       (if-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
-         (not (opiskeluoikeus-tyyppi-match? (k/get-opiskeluoikeus-info
-                                              opiskeluoikeus-oid)
-                                            :tuva))
-         true)))
-
-(defn- check-tuva-hoks!
-  [hoks]
-  (and (nil? (:tuva-opiskeluoikeus-oid hoks))
-       (every?
-         (comp empty? hoks)
-         [:aiemmin-hankitut-ammat-tutkinnon-osat
-          :aiemmin-hankitut-yhteiset-tutkinnon-osat
-          :aiemmin-hankitut-paikalliset-tutkinnon-osat
-          :opiskeluvalmiuksia-tukevat-opinnot
-          :hankittavat-ammat-tutkinnon-osat
-          :hankittavat-yhteiset-tutkinnon-osat
-          :hankittavat-paikalliset-tutkinnon-osat])
-       (if-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
-         (opiskeluoikeus-tyyppi-match? (k/get-opiskeluoikeus-info
-                                         (:opiskeluoikeus-oid hoks))
-                                       :tuva)
-         (seq (:hankittavat-koulutuksen-osat hoks)))))
+  (let [hoks (with-meta
+               (g/generate HOKSModel :get)
+               {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
+                :name "HOKS"})
+        tuva-hoks (with-meta
+                    (g/generate TUVAHOKSModel :get)
+                    {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
+                     :name "TUVAHOKS"})]
+    (s/conditional tuva-hoks? tuva-hoks :else hoks)))
 
 (defn generate-hoks-schema [schema-name method doc]
-  (let [schema (with-meta
-                 (g/generate HOKSModel method)
-                 {:doc doc :name schema-name})]
-    (s/constrained schema
-                   (fn [hoks] (or (check-tuva-hoks! hoks)
-                                  (check-non-tuva-hoks! hoks)))
-                   "tuva-hoks-cross-check")))
+  (let [hoks (with-meta
+               (g/generate HOKSModel method)
+               {:doc doc :name schema-name})
+        tuva-hoks (with-meta
+                    (g/generate HOKSModel method)
+                    {:doc (str "TUVA-" doc) :name (str "TUVA" schema-name)})]
+    (s/conditional tuva-hoks? tuva-hoks :else hoks)))
 
 (def HOKSPaivitys
   "HOKSin päivitysschema."
