@@ -5,6 +5,7 @@
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [clojure.test :as t]
+            [clojure.string :as s]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.external.http-client :as client]
@@ -90,10 +91,10 @@
             :body {:oid "1.2.246.562.15.760000000011"
                    :oppilaitos {:oid "1.2.246.562.10.1200000000010"}
                    :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
-           (.endsWith
-             url "/koski/api/opiskeluoikeus/1.2.246.562.15.000000000020")
+           (.contains
+             url "/koski/api/opiskeluoikeus/")
            {:status 200
-            :body {:oid "1.2.246.562.15.000000000020"
+            :body {:oid (last (s/split url #"/"))
                    :oppilaitos {:oid "1.2.246.562.10.1200000000200"}
                    :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}))
        (fn [url options]
@@ -616,9 +617,8 @@
               (post-new-hoks "1.2.246.562.15.760000000010"
                              "1.2.246.562.10.1200000000010")]
           (t/is (= (:status post-response) 400))
-          (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(throws? (\"tuva-hoks-cross-check\" "
-                        "a-clojure.lang.PersistentArrayMap))"))))))))
+          (t/is (= (utils/parse-body (:body post-response))
+                   {:error "Opiskeluoikeus not found in Koski"})))))))
 
 (defn mocked-get-oo-tuva [oid]
   {:oid oid
@@ -636,7 +636,14 @@
               (post-new-hoks "1.2.246.562.15.760000000010"
                              "1.2.246.562.10.1200000000010"
                              {:tuva-opiskeluoikeus-oid
-                              "1.2.246.562.15.760000000010"})]
+                              "1.2.246.562.15.760000000010"
+                              :hankittavat-koulutuksen-osat
+                              [{:koulutuksen-osa-koodi-uri
+                                "koulutuksenosattuva_104"
+                                :koulutuksen-osa-koodi-versio 1
+                                :alku "2022-09-01"
+                                :loppu "2022-09-21"
+                                :laajuus 10}]})]
           (t/is (= (:status post-response) 400))
           (t/is (= (:errors (utils/parse-body (:body post-response)))
                    (str "(not (\"tuva-hoks-cross-check\" "
@@ -665,9 +672,10 @@
                                 :loppu "2022-09-21"
                                 :laajuus 10}]})]
           (t/is (= (:status post-response) 400))
-          (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(not (\"tuva-hoks-cross-check\" "
-                        "a-clojure.lang.PersistentArrayMap))"))))))))
+          (t/is
+            (= (utils/parse-body (:body post-response))
+               {:error
+                "Opiskeluoikeus tyyppi does not match to HOKS content!"})))))))
 
 (defn mocked-find-student-by-oid [oid]
   (throw (ex-info "Opiskelija fetch failed" {:status 404})))

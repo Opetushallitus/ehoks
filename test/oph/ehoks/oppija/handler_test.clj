@@ -145,7 +145,9 @@
           store (atom {})
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
-      (h/save-hoks! hoks-data)
+      (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+                    utils/mock-get-opiskeluoikeus-info]
+        (h/save-hoks! hoks-data))
       (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/abc123"
                                :alkupvm (LocalDate/now)
                                :tyyppi "aloittaneet"
@@ -182,7 +184,9 @@
           store (atom {})
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
-      (h/save-hoks! hoks-data)
+      (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+                    utils/mock-get-opiskeluoikeus-info]
+        (h/save-hoks! hoks-data))
       (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/abc123"
                                :alkupvm (LocalDate/now)
                                :tyyppi "aloittaneet"
@@ -232,7 +236,9 @@
           store (atom {})
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
-      (h/save-hoks! hoks-data)
+      (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+                    utils/mock-get-opiskeluoikeus-info]
+        (h/save-hoks! hoks-data))
       (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/abc123"
                                :alkupvm (LocalDate/now)
                                :tyyppi "aloittaneet"
@@ -282,7 +288,9 @@
           store (atom {})
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
-      (h/save-hoks! hoks-data)
+      (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+                    utils/mock-get-opiskeluoikeus-info]
+        (h/save-hoks! hoks-data))
       (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/abc123"
                                :alkupvm (.plusDays (LocalDate/now) 1)
                                :tyyppi "aloittaneet"

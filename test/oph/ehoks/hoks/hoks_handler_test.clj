@@ -512,13 +512,6 @@
       :hankittavat-yhteiset-tutkinnon-osat
       test-data/hoks-data)))
 
-(deftest put-hankittavat-koulutuksen-osat
-  (testing "PUTs hankittavat koulutuksen osat of HOKS"
-    (hoks-utils/assert-partial-put-of-hoks
-      test-data/hoks-with-updated-hankittavat-koulutuksen-osat
-      :hankittavat-koulutuksen-osat
-      test-data/hoks-data)))
-
 (deftest get-hoks-by-opiskeluoikeus-oid
   (testing "GET HOKS by opiskeluoikeus-oid"
     (let [opiskeluoikeus-oid "1.2.246.562.15.00000000001"

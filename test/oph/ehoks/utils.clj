@@ -289,3 +289,7 @@
                 (< (tc/to-long (time/now)) wait-until))
       (swap! result predicate))
     @result))
+
+(defn mock-get-opiskeluoikeus-info
+  [_]
+  {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})

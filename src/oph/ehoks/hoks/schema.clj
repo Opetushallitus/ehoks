@@ -1137,18 +1137,9 @@
     {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
      :name "HOKS"}))
 
-(defn opiskeluoikeus-tyyppi-match?
-  [opiskeluoikeus tyyppi]
-  (= (keyword (get-in opiskeluoikeus [:tyyppi :koodiarvo])) tyyppi))
-
 (defn- check-non-tuva-hoks!
   [hoks]
-  (and (empty? (:hankittavat-koulutuksen-osat hoks))
-       (if-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
-         (not (opiskeluoikeus-tyyppi-match? (k/get-opiskeluoikeus-info
-                                              opiskeluoikeus-oid)
-                                            :tuva))
-         true)))
+  (empty? (:hankittavat-koulutuksen-osat hoks)))
 
 (defn- check-tuva-hoks!
   [hoks]
@@ -1162,11 +1153,7 @@
           :hankittavat-ammat-tutkinnon-osat
           :hankittavat-yhteiset-tutkinnon-osat
           :hankittavat-paikalliset-tutkinnon-osat])
-       (if-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
-         (opiskeluoikeus-tyyppi-match? (k/get-opiskeluoikeus-info
-                                         (:opiskeluoikeus-oid hoks))
-                                       :tuva)
-         (seq (:hankittavat-koulutuksen-osat hoks)))))
+       (seq (:hankittavat-koulutuksen-osat hoks))))
 
 (defn generate-hoks-schema [schema-name method doc]
   (let [schema (with-meta
