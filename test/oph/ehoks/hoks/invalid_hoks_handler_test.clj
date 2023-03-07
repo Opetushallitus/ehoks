@@ -5,7 +5,8 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.test-data :as test-data]
             [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]
-            [oph.ehoks.utils :as utils]))
+            [oph.ehoks.utils :as utils])
+  (:import [java.time LocalDate]))
 
 (use-fixtures :once utils/migrate-database)
 (use-fixtures :each utils/empty-database-after-test)
@@ -242,6 +243,36 @@
       (is (= (:status put-response) 400))
       (is (= (utils/parse-body (:body put-response))
              {:error "Oppija-oid update not allowed!"})))))
+
+(deftest prevent-osaamisen-saavuttaminen-out-of-range
+  (testing "The allowed range of osaaminen-saavuttamisen-pvm is from 1.1.2018
+           to two weeks in the future (from the time of saving the HOKS)."
+    (let [app (hoks-utils/create-app nil)
+          too-much-in-future (str (.plusDays (LocalDate/now) 20))
+          invalid-data
+          (assoc test-data/hoks-data :osaamisen-saavuttamisen-pvm "2017-01-01")
+          invalid-post-response
+          (hoks-utils/create-mock-post-request "" invalid-data app)
+          post-response
+          (hoks-utils/create-mock-post-request "" test-data/hoks-data app)
+          invalid-patch-response-1
+          (hoks-utils/create-mock-hoks-patch-request
+            1 {:id 1 :osaamisen-saavuttamisen-pvm "2017-01-01"} app)
+          invalid-patch-response-2
+          (hoks-utils/create-mock-hoks-patch-request
+            1 {:id 1 :osaamisen-saavuttamisen-pvm too-much-in-future} app)]
+      (is (= (:status invalid-post-response) 400))
+      (is (->> invalid-post-response
+               :body
+               utils/parse-body
+               :errors
+               :osaamisen-saavuttamisen-pvm
+               (re-find #"kaksi viikkoa")))
+      (is (= (:status post-response) 200))
+      (is (= (:status invalid-patch-response-1) 400))
+      (is (= [:osaamisen-saavuttamisen-pvm]
+             (-> invalid-patch-response-1 :body utils/parse-body :errors keys)))
+      (is (= (:status invalid-patch-response-2) 400)))))
 
 (deftest patching-of-hoks-part-not-allowed
   (testing "PATCH of HOKS can't be used to update sub entities of HOKS"
