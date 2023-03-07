@@ -538,7 +538,7 @@
        [{:oid organisaatio-oid
          :privileges #{:write :read :update :delete}}]}))
   ([opiskeluoikeus-oid organisaatio-oid]
-   (post-new-hoks opiskeluoikeus-oid organisaatio-oid {})))
+    (post-new-hoks opiskeluoikeus-oid organisaatio-oid {})))
 
 (t/deftest test-virkailija-hoks-forbidden
   (t/testing "Virkailija HOKS forbidden"
