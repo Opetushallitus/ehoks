@@ -44,7 +44,7 @@
               },
               "nayttoymparisto": {
                 "nimi": "Osa-alueen näyttöympäristö",
-                "y-tunnus": "1234567-8",
+                "y-tunnus": "1234567-1",
                 "kuvaus": "Tässä kuvataan osa-alueen näyttöympäristö"
               },
               "koulutuksen-jarjestaja-osaamisen-arvioijat": [
@@ -60,7 +60,7 @@
                   "nimi": "Tyoelama, Arvi",
                   "organisaatio": {
                     "nimi": "Talvivaara",
-                    "y-tunnus": "1234567-8"
+                    "y-tunnus": "1234567-1"
                   }
                 }
               ]
@@ -136,7 +136,7 @@
               },
               "nayttoymparisto": {
                 "nimi": "Osa-alueen näyttöympäristö",
-                "y-tunnus": "1234567-8",
+                "y-tunnus": "1234567-1",
                 "kuvaus": "Tässä kuvataan osa-alueen näyttöympäristö"
               },
               "koulutuksen-jarjestaja-osaamisen-arvioijat": [
@@ -152,7 +152,7 @@
                   "nimi": "Tyoelama, Arvi",
                   "organisaatio": {
                     "nimi": "Talvivaara",
-                    "y-tunnus": "1234567-8"
+                    "y-tunnus": "1234567-1"
                   }
                 }
               ]
@@ -166,7 +166,7 @@
                   "sahkoposti": "testimail@testi.com"
                 },
                 "tyopaikan-nimi": "Gofore Oyj",
-                "tyopaikan-y-tunnus": "123456-7",
+                "tyopaikan-y-tunnus": "2345678-0",
                 "keskeiset-tyotehtavat": [
                   "Perustyötehtävät",
                   "Vaativat työtehtävät",
@@ -217,7 +217,7 @@
               },
               "nayttoymparisto": {
                 "nimi": "Osa-alueen näyttöympäristö",
-                "y-tunnus": "1234567-8",
+                "y-tunnus": "1234567-1",
                 "kuvaus": "Tässä kuvataan osa-alueen näyttöympäristö"
               },
               "koulutuksen-jarjestaja-osaamisen-arvioijat": [
@@ -233,7 +233,7 @@
                   "nimi": "Tyoelama, Arvi",
                   "organisaatio": {
                     "nimi": "Talvivaara",
-                    "y-tunnus": "1234567-8"
+                    "y-tunnus": "1234567-1"
                   }
                 }
               ]
@@ -247,7 +247,7 @@
                   "sahkoposti": "testimail@testi.com"
                 },
                 "tyopaikan-nimi": "Gofore Oyj",
-                "tyopaikan-y-tunnus": "123456-7",
+                "tyopaikan-y-tunnus": "2345678-0",
                 "keskeiset-tyotehtavat": [
                   "Perustyötehtävät",
                   "Vaativat työtehtävät",

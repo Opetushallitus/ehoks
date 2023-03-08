@@ -41,7 +41,7 @@
           },
           "nayttoymparisto": {
             "nimi": "Jokin näyttöympäristö2",
-            "y-tunnus": "1234567-8",
+            "y-tunnus": "1234567-1",
             "kuvaus": "Tässä kuvataan näyttöympäristö2"
           },
           "koulutuksen-jarjestaja-osaamisen-arvioijat": [
@@ -57,7 +57,7 @@
               "nimi": "Tyoelama, Arvii",
               "organisaatio": {
                 "nimi": "Talvivaara",
-                "y-tunnus": "1234567-8"
+                "y-tunnus": "1234567-1"
               }
             }
           ]
@@ -83,7 +83,7 @@
           },
           "nayttoymparisto": {
             "nimi": "Jokin näyttöympäristö3",
-            "y-tunnus": "1234567-8",
+            "y-tunnus": "1234567-1",
             "kuvaus": "Tässä kuvataan näyttöympäristö3"
           },
           "koulutuksen-jarjestaja-osaamisen-arvioijat": [
@@ -99,7 +99,7 @@
               "nimi": "Tyo, Arvo",
               "organisaatio": {
                 "nimi": "Kesko",
-                "y-tunnus": "1234567-8"
+                "y-tunnus": "1234567-1"
               }
             }
           ]
@@ -113,7 +113,7 @@
               "sahkoposti": "testimail@testi.com"
             },
             "tyopaikan-nimi": "Terraframe",
-            "tyopaikan-y-tunnus": "123456-7",
+            "tyopaikan-y-tunnus": "2345678-0",
             "keskeiset-tyotehtavat": [
               "Perustyötehtävät",
               "Vaativat työtehtävät",
