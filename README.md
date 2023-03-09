@@ -121,6 +121,24 @@ tai
 lein with-profile +dev run ehoks-virkailija
 ```
 
+tai kehitysmoodissa, mutta QA:n palveluja vasten:
+
+Luo uusi config-tiedosto (dev.edn), esim:
+
+``` clojure
+{:opintopolku-host "testiopintopolku.fi"
+ :cas-username ""
+ :cas-password ""}
+```
+
+Hae cas-username & -password AWS Consolesta -> Systems Manager -> Parameter Store ->
+/pallero/services/ehoks/ehoks-cas-username
+/pallero/services/ehoks/ehoks-cas-password
+
+``` shell
+SERVICES_FILE=resources/prod/ehoks-oph.properties CONFIG=oph-configuration/dev.edn lein with-profile +dev run ehoks-virkailija
+```
+
 Replissä `lein repl`:
 
 ``` repl
