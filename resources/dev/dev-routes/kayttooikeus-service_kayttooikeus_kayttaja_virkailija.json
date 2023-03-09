@@ -5,7 +5,7 @@
     "kayttajaTyyppi": "VIRKAILIJA",
     "organisaatiot": [
       {
-        "organisaatioOid": "1.2.246.562.10.12944436166",
+        "organisaatioOid": "1.2.246.562.10.52251087186",
         "kayttooikeudet": [
           {
             "palvelu": "KAYTTOOIKEUS",
@@ -36,62 +36,7 @@
             "oikeus": "HOKS_DELETE"
           }
         ]
-      },
-      {
-        "organisaatioOid": "1.2.246.562.10.12424158689",
-        "kayttooikeudet": [
-          {
-            "palvelu": "KAYTTOOIKEUS",
-            "oikeus": "CRUD"
-          },
-          {
-            "palvelu": "KOODISTO",
-            "oikeus": "READ"
-          },
-          {
-            "palvelu": "OMATTIEDOT",
-            "oikeus": "READ_UPDATE"
-          },
-          {
-            "palvelu": "VIRKAILIJANTYOPOYTA",
-            "oikeus": "2ASTE"
-          },
-          {
-            "palvelu": "EHOKS",
-            "oikeus": "TIEDONSIIRTO"
-          },
-          {
-            "palvelu": "EHOKS",
-            "oikeus": "CRUD"
-          },
-          {
-            "palvelu": "EHOKS",
-            "oikeus": "HOKS_DELETE"
-          }
-        ]
-      },
-      {
-        "organisaatioOid": "1.2.246.562.10.12424158690",
-        "kayttooikeudet": [
-          {
-            "palvelu": "EHOKS",
-            "oikeus": "READ"
-          },
-          {
-            "palvelu": "OMATTIEDOT",
-            "oikeus": "READ_UPDATE"
-          },
-          {
-            "palvelu": "VIRKAILIJANTYOPOYTA",
-            "oikeus": "2ASTE"
-          },
-          {
-            "palvelu": "EHOKS",
-            "oikeus": "HOKS_DELETE"
-          }
-        ]
       }
-
     ]
   }
 ]
