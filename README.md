@@ -42,8 +42,8 @@ Avaimet seuraavat Clojuren notaatiota.
 
 ## QA
 
+Noudatetaan
 [The Clojure Style Guidea](https://github.com/bbatsov/clojure-style-guide).
-
 
 Repossa on `.editorconfig` jonka avulla voit kertoa editorillesi käytettävät
 tyylit.
@@ -103,6 +103,10 @@ oletuksena valittuna. Lisäksi ohjelma ottaa vastaan parametreina käytettävän
 konfiguraatiotiedoston. Ohjelman nimen (`NAME`) ja konfiguraatiotiedoston
 (`CONFIG`) voi antaa myös ympäristömuuttujana.
 
+Oletuskonfiguraatiolla `oph-configuration/default.edn` ohjelma ottaa yhteyttä
+paikalliseen postgresiin tietokantaan `ehoks`.  Katso lisää sen pystyttämisestä
+kohdassa PostgreSQL.
+
 Tuotantomoodissa:
 
 ``` shell
@@ -160,8 +164,13 @@ user> (.stop server)
 Tietokannan migraatiot voi ajaa komennolla
 
 ``` shell
-lein dbmigrate
+make stamps/db-schema  # tai käsin: lein dbmigrate
 ```
+
+Tietokannan QA-ympäristön skeemaversio on dokumentoituna osoitteessa
+https://db-documentation.testiopintopolku.fi/ehoks/public/index.html .
+Samanlaisen dokumentaation voi luoda testiympäristöstä komennolla `make
+schemaDoc` ja avaamalla `schemaDoc/index.html` omassa selaimessa.
 
 Tietokannan voi tyhjätä komennolla
 
@@ -179,7 +188,7 @@ Migraation voi luoda:
 lein genmigration /path/to/migrations "Title of the migration"
 ```
 
-Flyway migraatiovirheen korjaaminen
+#### Flyway migraatiovirheen korjaaminen
 
 Erityisesti kehitysympäristöissä kuten QA:lla voi tulla tilanne, jossa eri kehityshaaroja asenneltaessa tietokannan migraatiot voivat mennä solmuun. Yleisin virhetilanne on se, että asennettavasta versiosta puuttuu jokin migraatio, joka palvelimella olevasta versiosta löytyy ja tästä syystä asennus epäonnistuu migration checksum mismatch-virheeseen.
 
@@ -194,13 +203,15 @@ Tämän jälkeen haarasi pitäisi asentua normaalisti.
 
 ### Testit
 
-Ulkoiset API-kutsut voidaan mockata. Kehitysresursseissa on konfiguroitava
-HTTP-asiakasohjelma, jonka GET- ja POST-kutsut voidaan yliajaa. Tämä toimii
-ainoastaan `test`-profiililla.
+Ulkoiset API-kutsut voidaan mockata ja dev-profiililla onkin paljon tällaisia
+API-kutsuja, katso kaikki symbolit joiden nimi on mock-routes.
+
+Kehitysresursseissa on konfiguroitava HTTP-asiakasohjelma, jonka GET- ja
+POST-kutsut voidaan yliajaa. Tämä toimii ainoastaan `test`-profiililla.
 
 ### PostgreSQL
 
-Kontin luonti:
+Kontin luonti käy komennolla `make stamps/db-image` tai käsin:
 
 ``` shell
 cd scripts/postgres-docker
@@ -208,7 +219,7 @@ docker build -t ehoks-postgres .
 docker volume create pgdata
 ```
 
-Kontin ajaminen:
+Kontin ajaminen onnistuu `make stamps/db-running` tai käsin:
 
 ``` shell
 docker run --rm --name ehoks-postgres -p 5432:5432 --volume pgdata:/var/lib/postgresql/data ehoks-postgres
