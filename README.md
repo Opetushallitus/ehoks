@@ -32,6 +32,14 @@ rajapintojen polut on jaettu palveluittain.
 + [Logback](https://logback.qos.ch/)
 + [tools.logging](https://github.com/clojure/tools.logging)
 
+Muut riippuvuudet:
+
++ Podman tai Docker, kehitysympäristön tietokantaa varten
++ Ehkä: `psql`, kehitysympäristön tietokannan tutkimiseen
++ Ehkä: `make` automaatiosääntöjen käyttöön (ks alla)
++ Ehkä: `graphviz` tietokantakaavioihin kun tekee `make schemaDoc`
++ Ehkä: `curl` jos haluaa käyttää rajapintaa suoraan (esim luoda testidataa)
+
 #### RESTful API
 Backend pyrkii seuraamaan
 [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer)
@@ -125,7 +133,7 @@ tai
 lein with-profile +dev run ehoks-virkailija
 ```
 
-Replissä `lein repl`:
+Replissä `lein with-profiles +dev repl`:
 
 ``` repl
 user> (use 'oph.ehoks.dev-server)
@@ -225,15 +233,16 @@ Kontin ajaminen onnistuu `make stamps/db-running` tai käsin:
 docker run --rm --name ehoks-postgres -p 5432:5432 --volume pgdata:/var/lib/postgresql/data ehoks-postgres
 ```
 
-### Schemat
+### API-kutsujen schemat
 
-Sovelluksessa on mahdollisuus generoida automaattisesti metodikohtaiset schemat.
-Schemaan määritellään jokaiselle metodille sen access-type, joka voi olla
-`:required`, `:optional` tai `:excluded`. Oletuksena access-type on `:required`.
-Metodeiksi voi määritellä joko `:any`, `:get`, `:post`, `:put` tai `:patch`.
-Myös tyypin voi määritellä metodikohtaiseksi.
+Sovelluksessa on generoidaan automaattisesti kullekin HTTP-metodille (POST,
+PATCH) omat schemat.  Schemaan määritellään jokaiselle HTTP-metodille, onko
+kenttä tämän HTTP-metodin payloadissa pakollinen (:required, oletus),
+valinnainen (:optional) vai kielletty (:excluded).  HTTP-metodien vaihtoehdot
+ovat `:any`, `:get`, `:post`, `:put` tai `:patch`.  Myös kentän tyypin voi
+määritellä metodikohtaisesti.
 
-Lähdescheman tyyppi tulee olla seuraavanlaista:
+Tietorakenne, josta API-schemat generoidaan, näyttää tällaiselta:
 
 ```
 {:avain {:methods {:any :required
@@ -247,20 +256,18 @@ Lähdescheman tyyppi tulee olla seuraavanlaista:
                   :get s/Int}}}
 ```
 
-Lähdeschemaan täytyy lisätä metadataan nimi `:name`, `:doc` ja `:restful`-vipu
-(`true`), jotta dokumentaatio generoituu oikein.
+Tähän tietorakenteeseen täytyy lisätä metadataan nimi `:name`, `:doc` ja
+`:restful`-vipu (`true`), jotta dokumentaatio generoituu oikein.
 
 Restful-tyyppistä schemaa käytetään ainoastaan HTML-muotoisen
 taulukkodokumentaation generointiin.
 
 ### Kehityksen endpointit
 
-Sovellus tukee dummy-JSON-rajapintoja. Laita valmiit JSON-tiedostot kansioon
-`resources/dev/dev-routes`. Tiedostoa vastaava endpoint luodaan automaattisesti
-muuttamalla alaviivat kauttaviivoiksi. Esimerkiksi `/hello/world` endpoint
-tarjoilee `hello_world.json`-tiedoston. Turvallisuussyistä ainoastaan tiedostot
-kansiossa `dev-routes` luetaan ja endpointit toimivat ainoastaan
-kehityspalvelimen kanssa.
+Sovellus tukee dev-profiilissa dummy-JSON-rajapintoja. Laita valmiit
+JSON-tiedostot kansioon `resources/dev/dev-routes`. Tiedostoa vastaava endpoint
+luodaan automaattisesti muuttamalla alaviivat kauttaviivoiksi. Esimerkiksi
+`/hello/world_boom` endpoint tarjoilee `hello_world__boom.json`-tiedoston.
 
 ### Dev tools
 
@@ -280,23 +287,29 @@ Huom dev-tools rajapinnan Swagger-dokumentaatio ei tällä hetkellä toimi. Kood
 
 ## Dummy-datan tuonti tietokantaan
 
-Testidataa löytyy `resources/dev/demo-data` kansiosta. Näiden avulla pystyy hokseja luomaan
-joko swaggerilla (käyttämällä rajapintaa POST /ehoks-virkailija-backend/api/v1/virkailija/oppijat/{oppija-oid}/hoksit)
-tai komennolla `lein import resources/dev/demo-data/hoksit.json`.
-Swagger on suositeltavampi vaihtoehto koska `lein import` ohittaa skeemavalidoinnit
-ja siten sen avulla pystyy luomaan dataa jota järjestelmä ei oikeasti hyväksyisi.
+Testidataa löytyy `resources/dev/demo-data` kansiosta. Näiden avulla pystyy
+hokseja luomaan joko:
+
+ * skripteillä scripts/create-curl-session.sh ja scripts/upload-hoks.sh tai
+ * vastaavasti komennolla `make stamps/example-data`
+ * swaggerilla (käyttämällä rajapintaa POST
+   /ehoks-virkailija-backend/api/v1/virkailija/oppijat/{oppija-oid}/hoksit) tai
+ * komennolla `lein import resources/dev/demo-data/hoksit.json`.
+
+Rajapinnan käyttö on suositeltavampi vaihtoehto koska `lein import` ohittaa
+skeemavalidoinnit ja siten sen avulla pystyy luomaan dataa jota järjestelmä ei
+oikeasti hyväksyisi.
 
 ## Swagger
 
-Virkailijan swagger http://localhost:3000/ehoks-virkailija-backend/doc
-
-Oppijan swagger http://localhost:3000/ehoks-oppija-backend/doc
+ * [Virkailijan swagger](http://localhost:3000/ehoks-virkailija-backend/doc)
+ * [Oppijan swagger](http://localhost:3000/ehoks-oppija-backend/doc)
 
 ## Konfigurointi
 
 Oletuskonfiguraatio on `oph-configuration/default.edn`. Arvoja voi yliajaa luomalla oman
 konfiguraatiotiedoston ja antamalla sen joko `CONFIG`-ympäristömuuttujassa,
-JVM system propertyssä `config` tai kehityspalvelimen parametrina.
+JVM system propertyssä `config` tai kehityspalvelimen käynnistysparametrina.
 
 Konfiguraatiotiedostot yhdistetään niin, että oma kustomoitu tiedosto yliajaa
 vain ne arvot, mitkä siinä on määritelty. Konfiguraatio validoidaan ladattaessa.
@@ -354,7 +367,7 @@ ajaa tietokantamigraatiot.
 
 ![Integraatiot](doc/integrations.png "Integraatiot")
 
-## Indeksoidut taulut
+## Indeksoidut (API-kutsuja välimuistiin tallettavat) taulut
 
 Ehoks luo jokaisen Hoksin tallennuksen yhteydessä rivit Hoksin oppijasta
 tauluun `oppijat`, sekä Hoksin opiskeluoikeudesta tauluun `opiskeluoikeudet`.
@@ -446,6 +459,3 @@ tyhjentävien Lambdojen triggerin (cdk:ssa CfnEventSourceMapping) "enabled"
 -arvon ja toinen päinvastoin asettaisi sen falseksi. Sen jälkeen
 ajastettaisiin nämä Lambdat käynnistymään esimerkiksi joka yö siten, että
 enabloidaan käsittely klo 12AM ja disabloidaan 2AM.
-
-
-
