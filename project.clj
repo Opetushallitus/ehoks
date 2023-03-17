@@ -3,6 +3,7 @@
   :min-lein-version "2.8.1"
   :pedantic? :abort
   :dependencies [[org.clojure/clojure "1.10.1"]
+                 [org.clojure/data.csv "1.0.1"]
                  [clj-http "3.9.1"]
                  [com.googlecode.libphonenumber/libphonenumber "8.12.45"]
                  [com.layerware/hugsql "0.5.1"]
@@ -118,6 +119,7 @@
             "dbmigrate" ["run" "-m" "oph.ehoks.db.migrations/migrate!"]
             "dbclean" ["run" "-m" "oph.ehoks.db.migrations/clean!"]
             "import" ["run" "-m" "oph.ehoks.import/lein-import-file!"]
+            "karvi-export" ["run" "-m" "oph.ehoks.karvi/export!"]
             "genmigration" ["run" "-m" "oph.ehoks.migration-tools/lein-genmigration"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :profiles {:test {:resource-paths ["resources/test"
