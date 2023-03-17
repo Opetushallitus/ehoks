@@ -80,6 +80,28 @@
                                                  query-params)}})]
     (:body result)))
 
+(defn perusteenOsa-id->viite-id
+  "Traverse the 'lapset' data structure from ePerusteet to find the viite-id
+  (used by ePerusteet UI) corresponding to a perusteenOsa id."
+  [perusteenOsa-tree id]
+  (if (= id (:_perusteenOsa perusteenOsa-tree))
+    (:id perusteenOsa-tree)
+    (some #(perusteenOsa-id->viite-id % id)
+          (:lapset perusteenOsa-tree))))
+
+(defn peruste->koulutuksenOsa
+  "Format data structure of ePerusteet into our API model for koulutuksenOsa"
+  [peruste ^String koodiUri]
+  (let [rakenne (get-in peruste [:tutkintoonvalmentava :sisalto])
+        osa (->> (:koulutuksenOsat peruste)
+                 (filter #(= koodiUri (get-in % [:nimiKoodi :uri])))
+                 first)
+        viite-id (perusteenOsa-id->viite-id rakenne (str (:id osa)))]
+    (and osa [{:id (:id osa)
+               :osaamisalat (map #(select-keys % [:nimi]) (:osaamisalat osa))
+               :nimi (select-keys (get-in osa [:nimiKoodi :nimi]) [:fi :en :sv])
+               :koulutuksenOsaViiteId viite-id}])))
+
 (defn get-koulutuksenOsa-by-koodiUri
   "Search for perusteet that match a koodiUri. Uses eperusteet external api."
   [^String koodiUri]
@@ -87,24 +109,9 @@
     (when (empty? (seq data))
       (throw (ex-info (str "eperusteet not found with koodiUri " koodiUri)
                       {:status 404})))
-    (let [id (:id (first data))
-          peruste (get-peruste-by-id id)
-          koulutuksenOsat (:koulutuksenOsat peruste)
-          koulutuksenOsa
-          (filter #(= koodiUri (get-in % [:nimiKoodi :uri])) koulutuksenOsat)
-          ;; TODO: tarvittava id UI:n ePerusteet urlia varten
-          ;; ATM lähetetään vain 12345
-          koulutuksenOsaPeruste
-          (map
-            (fn [v]
-              (-> (select-keys v [:id :osaamisalat])
-                  (assoc :nimi (get-in v [:nimiKoodi :nimi]))
-                  (update :nimi select-keys [:fi :en :sv])
-                  (update
-                    :osaamisalat (fn [x] (map #(select-keys % [:nimi]) x)))
-                  (assoc :koulutuksenOsaId "12345")))
-            koulutuksenOsa)]
-      koulutuksenOsaPeruste)))
+    (-> (:id (first data))
+        get-peruste-by-id
+        (peruste->koulutuksenOsa koodiUri))))
 
 (defn search-perusteet-info
   "Search for perusteet that match a particular name"
