@@ -39,15 +39,6 @@
                          (:opiskeluoikeudet oppija)))
                   oppijat))))
 
-(defn- get-opiskeluoikeudet!
-  [oppija-oids]
-  (if (> (count oppija-oids) max-oppijat-query-size)
-    (let [current-oppija-oids (take max-oppijat-query-size oppija-oids)
-          remaining-oppija-oids (drop max-oppijat-query-size oppija-oids)]
-      (concat (get-oppijoiden-opiskeluoikeudet! current-oppija-oids)
-              (get-opiskeluoikeudet! remaining-oppija-oids)))
-    (get-oppijoiden-opiskeluoikeudet! oppija-oids)))
-
 (defn- matching-opiskeluoikeus
   [opiskeluoikeus]
   (let [opiskeluoikeusjaksot (sort-by :alku
@@ -66,18 +57,6 @@
             repeat)
        (rest csv-data)))
 
-(defn read-csv
-  [filename]
-  (csv-data->maps
-    (with-open [reader (io/reader filename)]
-      (doall
-        (csv/read-csv reader)))))
-
-(defn write-csv
-  [filename table]
-  (with-open [writer (io/writer filename)]
-    (csv/write-csv writer table)))
-
 (defn export! []
   "Vaatii karvi-in.csv tiedoston projektin juureen. Muoto:
    oppija-oid,opiskeluoikeus-oid,urasuunnitelma-koodi-uri
@@ -90,21 +69,28 @@
    psql -h localhost -p 5432 -d ehoks -U readonly -f karvi-q.sql --csv -F \",\" -o karvi-in.csv
 
    Tuottaa samanmuotoisen tiedoston karvi-out.csv"
-  (let [hoksit-in (read-csv "karvi-in.csv")
-        oppija-oids (set (map :oppija-oid hoksit-in))
-        _ (println "oppija-oideja kaikkiaan:" (count oppija-oids))
-        all-opiskeluoikeudet (get-opiskeluoikeudet!
-                               oppija-oids)
-        opiskeluoikeudet (filter matching-opiskeluoikeus all-opiskeluoikeudet)
-        opiskeluoikeus-oidit (set (map :oid opiskeluoikeudet))
-        hoksit-out (filter #(contains? opiskeluoikeus-oidit
-                             (:opiskeluoikeus-oid %))
-                           hoksit-in)
-        headers ["oppija-oid" "opiskeluoikeus-oid" "urasuunnitelma-koodi-uri"]]
-    (write-csv
-      "karvi-out.csv"
-      (concat [headers]
-              (map (fn [hoks] [(:oppija-oid hoks)
-                               (:opiskeluoikeus-oid hoks)
-                               (:urasuunnitelma-koodi-uri hoks)])
-                   hoksit-out)))))
+  (let [hoksit-in (csv-data->maps
+                   (with-open [reader (io/reader "karvi-in.csv")]
+                     (doall
+                      (csv/read-csv reader))))
+        all-oppija-oidit (set (map :oppija-oid hoksit-in))]
+    (println "oppija-oideja kaikkiaan:" (count all-oppija-oidit))
+    (with-open [writer (io/writer "karvi-out.csv")]
+      (csv/write-csv writer [["oppija-oid"
+                              "opiskeluoikeus-oid"
+                              "urasuunnitelma-koodi-uri"]])
+      (.flush writer)
+      (doseq [oppija-oidit (partition max-oppijat-query-size all-oppija-oidit)]
+        (let [opiskeluoikeudet (get-oppijoiden-opiskeluoikeudet! oppija-oidit)
+              matching-opiskeluoikeudet (filter matching-opiskeluoikeus
+                                                opiskeluoikeudet)
+              opiskeluoikeus-oidit (set (map :oid matching-opiskeluoikeudet))
+              hoksit-out-part (filter #(contains? opiskeluoikeus-oidit
+                                   (:opiskeluoikeus-oid %))
+                                 hoksit-in)]
+          (csv/write-csv writer
+                         (map (fn [hoks] [(:oppija-oid hoks)
+                                          (:opiskeluoikeus-oid hoks)
+                                          (:urasuunnitelma-koodi-uri hoks)])
+                              hoksit-out-part))
+          (.flush writer))))))
