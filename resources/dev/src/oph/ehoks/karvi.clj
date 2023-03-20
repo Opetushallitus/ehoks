@@ -63,10 +63,12 @@
    123,234,koodi_1
 
    Input-tiedoston voi muodostaa esim kantakyselyllä:
-   select oppija_oid, opiskeluoikeus_oid, urasuunnitelma_koodi_uri
-   from hoksit where deleted_at is null order by 1
+   select oppija_oid as \"oppija-oid\",
+          opiskeluoikeus_oid as \"opiskeluoikeus-oid\",
+          urasuunnitelma_koodi_uri as \"urasuunnitelma-koodi-uri\"
+     from hoksit where deleted_at is null order by 1;
 
-   psql -h localhost -p 5432 -d ehoks -U readonly -f karvi-q.sql --csv -F \",\" -o karvi-in.csv
+   psql -h localhost -p 5432 -d ehoks -U readonly -f karvi-query.sql --csv -F \",\" -o karvi-in.csv
 
    Tuottaa samanmuotoisen tiedoston karvi-out.csv"
   (let [hoksit-in (csv-data->maps
