@@ -19,9 +19,15 @@
     (GET "/koski/api/opiskeluoikeus/:oid" request
          (let [opiskeluoikeus-oid (get-in request [:params :oid])
                oppilaitos-oid
-               (if (.startsWith opiskeluoikeus-oid "1.2.246.562.15.76811932")
+               (if
+                 (or (.startsWith opiskeluoikeus-oid "1.2.246.562.15.76811932")
+                     (.startsWith opiskeluoikeus-oid "1.2.246.562.15.76811942"))
                  "1.2.246.562.10.12424158689"
                  (mock-gen/generate-oppilaitos-oid))
+               opiskeluoikeus-tyyppi
+               (if (.startsWith opiskeluoikeus-oid "1.2.246.562.15.76811942")
+                 "tuva"
+                 "perusopetus")
                tutkinto (mock-gen/generate-tutkinto)]
            (mock-gen/json-response
              {:oid opiskeluoikeus-oid
@@ -88,7 +94,7 @@
                 :osasuoritukset []
                 :tyyppi {}}]
               :tyyppi
-              {:koodiarvo "perusopetus"
+              {:koodiarvo opiskeluoikeus-tyyppi
                :nimi
                {:fi "Perusopetus"
                 :sv "Grundläggande utbildning"}
