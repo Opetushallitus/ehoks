@@ -58,7 +58,7 @@
 (defn- get-peruste-by-id
   "Get peruste by ID. Uses eperusteet external api."
   [^Long id]
-  (let [result (c/with-api-headers
+  (let [result (cache/with-cache!
                  {:method :get
                   :service (u/get-url "eperusteet-service-url")
                   :url (u/get-url "eperusteet-service.external-api.find-peruste"
@@ -70,7 +70,7 @@
   "Find perusteet using eperusteet external api. Returns eperusteet response
    body as is."
   [query-params]
-  (let [result (c/with-api-headers
+  (let [result (cache/with-cache!
                  {:method :get
                   :service (u/get-url "eperusteet-service-url")
                   :url
