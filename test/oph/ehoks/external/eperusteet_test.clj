@@ -131,6 +131,39 @@
                :koulutuksenOsaViiteId 7535295}]))
       (is (= (ep/peruste->koulutuksenOsa peruste-test-data "tataeiole") nil)))))
 
+(deftest caches-eperusteet-external-api-requests
+  (testing "Caches eperusteet external API requests"
+    (let [call-count (atom 0)]
+      (client/with-mock-responses
+        [(fn [url options]
+           (swap! call-count inc)
+           (cond
+             (and (.endsWith url "/external/perusteet")
+                  (= "koulutuksenosattuva_104"
+                     (get-in options [:query-params :koodi])))
+             {:status 200
+              :body {:data [{:id 7534950}]}}
+             (.endsWith url "/external/peruste/7534950/koulutuksenOsat")
+             {:status 200
+              :body [{:id 7535567
+                      :nimi {:_id "8332155"
+                             :fi "Valinnaiset koulutuksen osat"
+                             :sv "Valbara utbildningsdelar"}
+                      :nimiKoodi {:nimi {:fi "Valinnaiset opinnot"
+                                         :sv "Valbara utbildningsdelar"}
+                                  :uri "koulutuksenosattuva_104"}}]}))]
+        (is (every? true?
+                    (repeatedly
+                      5
+                      #(= [{:id 7535567
+                            :nimi {:fi "Valinnaiset opinnot"
+                                   :sv "Valbara utbildningsdelar"}
+                            :osaamisalat []
+                            :koulutuksenOsaViiteId nil}]
+                          (ep/get-koulutuksenOsa-by-koodiUri
+                            "koulutuksenosattuva_104")))))
+        (is (= 2 @call-count))))))
+
 (deftest find-tutkinto-not-found
   (testing "Not finding any tutkinto items"
     (client/with-mock-responses

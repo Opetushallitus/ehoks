@@ -63,7 +63,7 @@
          :service (u/get-url "eperusteet-service-url")
          :url (u/get-url "eperusteet-service.external-api.get-peruste" id part)
          :options {:as :json}}
-        (c/with-api-headers)
+        (cache/with-cache!)
         :body))
   ([^Long id]
     (get-peruste-by-id id "")))
@@ -72,7 +72,7 @@
   "Find perusteet using eperusteet external api. Returns eperusteet response
    body as is."
   [query-params]
-  (let [result (c/with-api-headers
+  (let [result (cache/with-cache!
                  {:method :get
                   :service (u/get-url "eperusteet-service-url")
                   :url
