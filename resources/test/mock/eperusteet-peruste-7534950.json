@@ -1,0 +1,2146 @@
+{
+  "id" : 7534950,
+  "globalVersion" : {
+    "aikaleima" : 1671005674757
+  },
+  "nimi" : {
+    "_id" : "7788280",
+    "_tunniste" : "65bbd2eb-4e10-4ed8-b258-11d0b3003c8f",
+    "fi" : "Tutkintokoulutukseen valmentava koulutus",
+    "sv" : "Utbildning som handleder för examensutbildning"
+  },
+  "koulutustyyppi" : "koulutustyyppi_40",
+  "toteutus" : "tutkintoonvalmentava",
+  "koulutukset" : [ {
+    "nimi" : {
+      "fi" : "Tutkintokoulutukseen valmentava koulutus",
+      "sv" : "Utbildning som handleder för examensutbildning"
+    },
+    "koulutuskoodiArvo" : "999908",
+    "koulutuskoodiUri" : "koulutus_999908",
+    "koulutusalakoodi" : null,
+    "opintoalakoodi" : null
+  } ],
+  "kielet" : [ "fi", "sv" ],
+  "kuvaus" : {
+    "_id" : "7534933",
+    "_tunniste" : "894d8090-fc1b-4550-b5d9-077fbb3c1f05",
+    "fi" : "Uudet perusteet"
+  },
+  "maarayskirje" : null,
+  "muutosmaaraykset" : [ ],
+  "diaarinumero" : "OPH-1488-2021",
+  "voimassaoloAlkaa" : 1659301200000,
+  "siirtymaPaattyy" : null,
+  "voimassaoloLoppuu" : null,
+  "paatospvm" : 1620248400000,
+  "viimeisinJulkaisuAika" : 1654520617243,
+  "luotu" : 1610688380032,
+  "muokattu" : 1671208008320,
+  "tila" : "valmis",
+  "tyyppi" : "normaali",
+  "koulutusvienti" : false,
+  "korvattavatDiaarinumerot" : [ ],
+  "osaamisalat" : [ ],
+  "tyotehtavatJoissaVoiToimia" : null,
+  "suorittaneenOsaaminen" : null,
+  "perusteenAikataulut" : [ {
+    "id" : 7792510,
+    "peruste" : {
+      "id" : 7534950,
+      "nimi" : {
+        "_id" : "7788280",
+        "_tunniste" : "65bbd2eb-4e10-4ed8-b258-11d0b3003c8f",
+        "fi" : "Tutkintokoulutukseen valmentava koulutus",
+        "sv" : "Utbildning som handleder för examensutbildning"
+      },
+      "tila" : "valmis",
+      "tyyppi" : "normaali",
+      "koulutustyyppi" : "koulutustyyppi_40",
+      "esikatseltavissa" : false,
+      "voimassaoloAlkaa" : 1659301200000,
+      "voimassaoloLoppuu" : null
+    },
+    "tavoite" : {
+      "_id" : "7792500",
+      "_tunniste" : "e218ddea-44f8-45c0-a64a-46ced3e39dee",
+      "fi" : "Peruste astuu voimaan"
+    },
+    "tapahtuma" : "julkaisu",
+    "tapahtumapaiva" : 1627765200000,
+    "julkinen" : false
+  }, {
+    "id" : 7534991,
+    "peruste" : {
+      "id" : 7534950,
+      "nimi" : {
+        "_id" : "7788280",
+        "_tunniste" : "65bbd2eb-4e10-4ed8-b258-11d0b3003c8f",
+        "fi" : "Tutkintokoulutukseen valmentava koulutus",
+        "sv" : "Utbildning som handleder för examensutbildning"
+      },
+      "tila" : "valmis",
+      "tyyppi" : "normaali",
+      "koulutustyyppi" : "koulutustyyppi_40",
+      "esikatseltavissa" : false,
+      "voimassaoloAlkaa" : 1659301200000,
+      "voimassaoloLoppuu" : null
+    },
+    "tavoite" : {
+      "_id" : "7534935",
+      "_tunniste" : "e2ae199a-9e87-46db-9e8a-ffe55c9f365e",
+      "fi" : "Peruste astuu voimaan"
+    },
+    "tapahtuma" : "tavoite",
+    "tapahtumapaiva" : 1659301200000,
+    "julkinen" : false
+  }, {
+    "id" : 7534990,
+    "peruste" : {
+      "id" : 7534950,
+      "nimi" : {
+        "_id" : "7788280",
+        "_tunniste" : "65bbd2eb-4e10-4ed8-b258-11d0b3003c8f",
+        "fi" : "Tutkintokoulutukseen valmentava koulutus",
+        "sv" : "Utbildning som handleder för examensutbildning"
+      },
+      "tila" : "valmis",
+      "tyyppi" : "normaali",
+      "koulutustyyppi" : "koulutustyyppi_40",
+      "esikatseltavissa" : false,
+      "voimassaoloAlkaa" : 1659301200000,
+      "voimassaoloLoppuu" : null
+    },
+    "tavoite" : {
+      "_id" : "7534934",
+      "_tunniste" : "bc81169b-f996-4b50-bde8-2e6985502978",
+      "fi" : "Peruste luotu"
+    },
+    "tapahtuma" : "luominen",
+    "tapahtumapaiva" : 1610688369525,
+    "julkinen" : false
+  } ],
+  "koulutuksenOsat" : [ {
+    "id" : 7535560,
+    "luotu" : 1610690435100,
+    "muokattu" : 1650969125595,
+    "muokkaaja" : "1.2.246.562.24.71880188605",
+    "nimi" : {
+      "_id" : "8332019",
+      "_tunniste" : "6e60834b-3529-4933-a209-f849b61be432",
+      "fi" : "Opiskelu- ja urasuunnittelutaidot",
+      "sv" : "Studiefärdigheter och karriärplaneringsfärdigheter"
+    },
+    "tila" : "luonnos",
+    "nimiKoodi" : {
+      "id" : 7788176,
+      "nimi" : {
+        "fi" : "Opiskelu- ja urasuunnittelutaidot",
+        "sv" : "Studiefärdigheter och karriärplaneringsfärdigheter"
+      },
+      "arvo" : "101",
+      "uri" : "koulutuksenosattuva_101",
+      "koodisto" : "koulutuksenosattuva",
+      "versio" : 1
+    },
+    "laajuusMinimi" : 2,
+    "laajuusMaksimi" : 10,
+    "koulutusOsanKoulutustyyppi" : "tutkintokoulutukseenvalmentava",
+    "koulutusOsanTyyppi" : "yhteinen",
+    "kuvaus" : {
+      "_id" : "7786630",
+      "_tunniste" : "8539cac3-f6c8-4622-8a6c-d56771983557",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "tavoitteenKuvaus" : null,
+    "tavoitteet" : [ {
+      "_id" : "7786632",
+      "_tunniste" : "6f9a6b5c-9eba-44e5-bd33-90a220b94f27",
+      "fi" : "asettaa ja arvioi oman elämänsä tavoitteita ja toiveita",
+      "sv" : "ställer upp och utvärderar mål och önskemål som berör hens eget liv"
+    }, {
+      "_id" : "7786633",
+      "_tunniste" : "d7b83489-6a9a-4721-87fb-d4e948900ce7",
+      "fi" : "osaa kuvata itseänsä oppijana ja opiskelijana",
+      "sv" : "kan beskriva sig själv som studerande och hur hen lär sig"
+    }, {
+      "_id" : "7786634",
+      "_tunniste" : "f4eed9ca-7f4a-415c-957a-2882cf929593",
+      "fi" : "tutustuu erilaisiin tapoihin oppia ja hankkia osaamista",
+      "sv" : "bekantar sig med olika sätt att lära sig och förvärva kunnande"
+    }, {
+      "_id" : "7786635",
+      "_tunniste" : "e61dc5f8-5184-439f-9162-f4750e3359c4",
+      "fi" : "käyttää soveltuvia opiskelutaitoja",
+      "sv" : "använder lämpliga studiemetoder"
+    }, {
+      "_id" : "7786636",
+      "_tunniste" : "5b100306-d5f4-4f65-94f8-8486631fbd90",
+      "fi" : "osaa suunnitella omia opintojaan tavoitteellisesti",
+      "sv" : "kan målinriktat planera sina egna studier"
+    }, {
+      "_id" : "7786637",
+      "_tunniste" : "4cc6a873-9ec9-4d56-872c-44c86076ef59",
+      "fi" : "osaa etsiä tietoa itseään kiinnostavista jatko-opinnoista sekä työelämävaihtoehdoista",
+      "sv" : "kan söka information om fortsatta studier och alternativ för arbetslivet som intresserar hen"
+    }, {
+      "_id" : "7786638",
+      "_tunniste" : "26c5a72d-bcb5-4e30-a952-d8ce1176b95c",
+      "fi" : "tarkastelee vaihtoehtoisia uramahdollisuuksiaan myös tulevaisuuden näkökulmasta",
+      "sv" : "bekantar sig med sina olika karriärmöjligheter även ur ett framtidsperspektiv"
+    }, {
+      "_id" : "7786639",
+      "_tunniste" : "3d92b69d-f2ef-4e0b-979c-1494ed7cccf9",
+      "fi" : "arvioi omaa soveltuvuuttaan eri aloille",
+      "sv" : "bedömer hur lämplig hen är för olika branscher"
+    }, {
+      "_id" : "7786650",
+      "_tunniste" : "bb988592-4235-4ea7-afd3-f2e4f8809017",
+      "fi" : "osaa tehdä realistisen jatko-opintosuunnitelman ja hakeutuu sen mukaisesti koulutukseen",
+      "sv" : "kan göra upp en realistisk plan för fortsatta studier och söker sig till utbildning i enlighet med den"
+    }, {
+      "_id" : "7786651",
+      "_tunniste" : "f4cf5e3d-b319-4215-9396-aa2b3cc03820",
+      "fi" : "valmistautuu opiskelemaan lukiokoulutuksessa tai ammatillisessa koulutuksessa",
+      "sv" : "förbereder sig för studier inom gymnasieutbildning eller yrkesutbildning"
+    }, {
+      "_id" : "7786652",
+      "_tunniste" : "f210a51c-e0bc-4e8a-b7ac-edaf32b6c96c",
+      "fi" : "ymmärtää ja osaa käyttää opiskelu- ja urasuunnitteluun liittyvää kieltä.",
+      "sv" : "förstår och kan använda ett språk som är karakteristiskt för studie- och karriärplanering."
+    } ],
+    "keskeinenSisalto" : {
+      "_id" : "7788122",
+      "_tunniste" : "41e939c2-cdfd-43cf-95a0-2b41c6ef7e62",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "laajaAlaisenOsaamisenKuvaus" : {
+      "_id" : "7786658",
+      "_tunniste" : "ddd8ca3f-2e1e-40b3-bd1d-847fb61ec64e",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "arvioinninKuvaus" : {
+      "_id" : "7788124",
+      "_tunniste" : "5749d58a-3331-46ac-9dd7-02184646ee82",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "osanTyyppi" : "koulutuksenosa"
+  }, {
+    "id" : 7535561,
+    "luotu" : 1610693268745,
+    "muokattu" : 1650969157751,
+    "muokkaaja" : "1.2.246.562.24.71880188605",
+    "nimi" : {
+      "_id" : "8332150",
+      "_tunniste" : "6d588cfc-67b6-4f13-918f-32054e9d0f44",
+      "en" : "Perustaitojen vahvistaminen",
+      "fi" : "Perustaitojen vahvistaminen",
+      "sv" : "Perustaitojen vahvistaminen"
+    },
+    "tila" : "luonnos",
+    "nimiKoodi" : {
+      "id" : 8332160,
+      "nimi" : {
+        "en" : "Perustaitojen vahvistaminen",
+        "fi" : "Perustaitojen vahvistaminen",
+        "sv" : "Stärkande av grundläggande färdigheter"
+      },
+      "arvo" : "107",
+      "uri" : "koulutuksenosattuva_107",
+      "koodisto" : "koulutuksenosattuva",
+      "versio" : 1
+    },
+    "laajuusMinimi" : 1,
+    "laajuusMaksimi" : 30,
+    "koulutusOsanKoulutustyyppi" : "perusopetus",
+    "koulutusOsanTyyppi" : "valinnainen",
+    "kuvaus" : {
+      "_id" : "7787533",
+      "_tunniste" : "82d9324f-0e2c-4a00-a422-6c39b1a73d1d",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "tavoitteenKuvaus" : null,
+    "tavoitteet" : [ {
+      "_id" : "7787534",
+      "_tunniste" : "4d2bf16b-5619-4699-8ca1-5e8c7a7186b5",
+      "fi" : "saavuttaa sellaiset perustaidot (luku-, numero- ja digitaidot), joiden avulla hän pystyy opiskelemaan toisen asteen opinnoissa",
+      "sv" : "uppnår sådana grundläggande färdigheter (läskunnighet, numeriska färdigheter och digitala färdigheter) som hen behöver för studier på andra stadiet"
+    }, {
+      "_id" : "7787535",
+      "_tunniste" : "816fc73b-de21-45df-a424-35a75b8c5f0e",
+      "fi" : "saavuttaa sellaisen opiskelu/tutkintokielen taidon, että se mahdollistaa toisen asteen koulutukseen osallistumiseen",
+      "sv" : "uppnår sådana kunskaper i undervisningsspråket som gör det möjligt att delta i utbildning på andra stadiet"
+    }, {
+      "_id" : "7787536",
+      "_tunniste" : "7da88a54-9f1d-4b4c-93cf-7a2da1958b00",
+      "fi" : "kehittää eri tiedonalojen kielen osaamista ja käyttää opiskeltavaan aineeseen sopivia opiskelumenetelmiä",
+      "sv" : "utvecklar sina kunskaper i språket som är specifikt inom olika kunskapsområden och tillämpar studiemetoder som lämpar sig för ämnet som hen studerar"
+    }, {
+      "_id" : "7787537",
+      "_tunniste" : "b6a121f9-5496-4bce-99a2-c42e45221bb2",
+      "fi" : "korottaa perusopetuksen oppimäärän arvosanoja erityisessä tutkinnossa, mikäli se on toiselle asteelle hakeutumisen näkökulmasta tarpeellista",
+      "sv" : "höjer vitsord från den grundläggande utbildningen i en särskild examen, om det behövs för att kunna söka till studier på andra stadiet."
+    } ],
+    "keskeinenSisalto" : {
+      "_id" : "7787951",
+      "_tunniste" : "34f1ca38-b4ce-467c-97ac-17b6e25bba55",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "laajaAlaisenOsaamisenKuvaus" : {
+      "_id" : "7787560",
+      "_tunniste" : "64cee246-ec3f-4d1c-bae5-8db30dcd8933",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "arvioinninKuvaus" : {
+      "_id" : "7787538",
+      "_tunniste" : "91d6523c-7339-4cca-aa44-14d2f7e4e078",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "osanTyyppi" : "koulutuksenosa"
+  }, {
+    "id" : 7535563,
+    "luotu" : 1610693860652,
+    "muokattu" : 1650969227984,
+    "muokkaaja" : "1.2.246.562.24.71880188605",
+    "nimi" : {
+      "_id" : "8332152",
+      "_tunniste" : "65a99cd7-3580-49b1-ac11-8adaea3cf022",
+      "en" : "Ammatillisen koulutuksen opinnot ja niihin valmentautuminen",
+      "fi" : "Ammatillisen koulutuksen opinnot ja niihin valmentautuminen",
+      "sv" : "Ammatillisen koulutuksen opinnot ja niihin valmentautuminen"
+    },
+    "tila" : "luonnos",
+    "nimiKoodi" : {
+      "id" : 8332162,
+      "nimi" : {
+        "en" : "Ammatillisen koulutuksen opinnot ja niihin valmentautuminen",
+        "fi" : "Ammatillisen koulutuksen opinnot ja niihin valmentautuminen",
+        "sv" : "Studier inom yrkesutbildning och studier som förbereder för dem"
+      },
+      "arvo" : "105",
+      "uri" : "koulutuksenosattuva_105",
+      "koodisto" : "koulutuksenosattuva",
+      "versio" : 1
+    },
+    "laajuusMinimi" : 1,
+    "laajuusMaksimi" : 30,
+    "koulutusOsanKoulutustyyppi" : "ammatillinenkoulutus",
+    "koulutusOsanTyyppi" : "valinnainen",
+    "kuvaus" : {
+      "_id" : "7788449",
+      "_tunniste" : "df883783-56af-40f6-bb43-e10c8f9efa60",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "tavoitteenKuvaus" : null,
+    "tavoitteet" : [ {
+      "_id" : "7787610",
+      "_tunniste" : "1b040858-0673-4776-bf6e-499fa7076fe6",
+      "fi" : "saavuttaa riittävän taidon ammatillisten opintojen opetuskielessä ja eri tiedonalojen tekstitaidoissa (sanavarasto, luetun ymmärtämis- ja tulkintataidot sekä tuottamistaidot)",
+      "sv" : "uppnår tillräckliga kunskaper i undervisningsspråket inom de yrkesinriktade studierna samt tillräcklig textkompetens inom olika ämnesområden (ordförråd och förmåga att förstå, tolka och producera text)"
+    }, {
+      "_id" : "7787611",
+      "_tunniste" : "0b5383f5-05e7-431a-8782-1fe00229fd75",
+      "fi" : "osaa käyttää alakohtaiseen koulutukseen sopivia opiskelumenetelmiä ja tieto- ja viestintätekniikkaa opiskelun apuna",
+      "sv" : "kan använda studiemetoder som lämpar sig för utbildning inom en viss bransch och informations- och kommunikationsteknik som stöd i studierna"
+    }, {
+      "_id" : "7787612",
+      "_tunniste" : "8e821756-c527-484f-80df-fc6fce32ecd8",
+      "fi" : "tutustuu ammatilliseen koulutukseen, sen käytäntöihin sekä arviointimenetelmiin",
+      "sv" : "bekantar sig med yrkesutbildningen, verksamheten och bedömningsmetoderna"
+    }, {
+      "_id" : "7787613",
+      "_tunniste" : "39736740-8cc1-406e-8520-00f461e354ad",
+      "fi" : "osaa arvioida ammatillisen koulutuksen sopivuuden itselleen",
+      "sv" : "kan bedöma hur lämplig yrkesutbildningen är som utbildningsform för hen själv"
+    }, {
+      "_id" : "7787614",
+      "_tunniste" : "cadb0bde-02a2-4fed-95a8-df89a1bdf091",
+      "fi" : "suorittaa itselleen sopivan ammatillisen koulutuksen opintoja (ammatilliset tutkinnon osat tai yhteiset tutkinnon osat).",
+      "sv" : "avlägger sådana studier inom yrkesutbildningen (yrkesinriktade examensdelar eller gemensamma examensdelar) som är lämpliga för hen själv."
+    } ],
+    "keskeinenSisalto" : {
+      "_id" : "7787616",
+      "_tunniste" : "7d62598c-2cfd-4e2f-9e79-5aba2f631ad6",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "laajaAlaisenOsaamisenKuvaus" : {
+      "_id" : "7787615",
+      "_tunniste" : "74b433a7-9879-4a37-829b-6eee0147c987",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "arvioinninKuvaus" : {
+      "_id" : "7787617",
+      "_tunniste" : "4ded2d00-8bd3-4653-a75f-56a67f0d6176",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "osanTyyppi" : "koulutuksenosa"
+  }, {
+    "id" : 7535562,
+    "luotu" : 1610693475421,
+    "muokattu" : 1650969196619,
+    "muokkaaja" : "1.2.246.562.24.71880188605",
+    "nimi" : {
+      "_id" : "8332151",
+      "_tunniste" : "8284e09e-4042-481a-8c82-373a1d02421d",
+      "en" : "Lukiokoulutuksen opinnot ja niihin valmentautuminen",
+      "fi" : "Lukiokoulutuksen opinnot ja niihin valmentautuminen",
+      "sv" : "Lukiokoulutuksen opinnot ja niihin valmentautuminen"
+    },
+    "tila" : "luonnos",
+    "nimiKoodi" : {
+      "id" : 8332161,
+      "nimi" : {
+        "en" : "Lukiokoulutuksen opinnot ja niihin valmentautuminen",
+        "fi" : "Lukiokoulutuksen opinnot ja niihin valmentautuminen",
+        "sv" : "Studier inom gymnasieutbildning och studier som förbereder för dem"
+      },
+      "arvo" : "106",
+      "uri" : "koulutuksenosattuva_106",
+      "koodisto" : "koulutuksenosattuva",
+      "versio" : 1
+    },
+    "laajuusMinimi" : 1,
+    "laajuusMaksimi" : 30,
+    "koulutusOsanKoulutustyyppi" : "lukiokoulutus",
+    "koulutusOsanTyyppi" : "valinnainen",
+    "kuvaus" : {
+      "_id" : "7787562",
+      "_tunniste" : "02706a3f-b243-45a2-8271-3991fb6e81e7",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "tavoitteenKuvaus" : null,
+    "tavoitteet" : [ {
+      "_id" : "7787563",
+      "_tunniste" : "e024dd5e-25f1-4d5a-a997-bcf0b1881d87",
+      "fi" : "saavuttaa riittävän taidon lukion opetuskielessä ja eri tiedonalojen tekstitaidoissa (sanavarasto, luetun ymmärtämis- ja tulkintataidot sekä tuottamistaidot)",
+      "sv" : "uppnår tillräckliga kunskaper i gymnasiets undervisningsspråk och tillräcklig textkompetens inom olika ämnesområden (ordförråd, förmåga att förstå, tolka och producera text)"
+    }, {
+      "_id" : "7787564",
+      "_tunniste" : "f77cb423-a401-4e35-8b70-d6f2e5c87a13",
+      "fi" : "osaa käyttää opiskeltavaan oppiaineeseen sopivia opiskelumenetelmiä ja tieto- ja viestintätekniikkaa opiskelun apuna",
+      "sv" : "kan använda studiemetoder som är lämpliga för läroämnet hen studerar och kan använda informations- och kommunikationsteknik som stöd i studierna"
+    }, {
+      "_id" : "7787565",
+      "_tunniste" : "51c14fe0-f4e3-4a88-aeb4-3ad40fc844e5",
+      "fi" : "tutustuu lukiokoulutukseen ja sen käytäntöihin sekä arviointimenetelmiin",
+      "sv" : "bekantar sig med gymnasieutbildningen, verksamheten och bedömningsmetoderna"
+    }, {
+      "_id" : "7787566",
+      "_tunniste" : "6d98cf73-bde8-4d5e-a751-bee032f90406",
+      "fi" : "osaa arvioida lukio-opintojen sopivuuden itselleen",
+      "sv" : "kan bedöma hur lämpliga gymnasiestudier är för hen själv"
+    }, {
+      "_id" : "7787567",
+      "_tunniste" : "61c7d3e9-7a93-4838-b1a8-15207cb4a71a",
+      "fi" : "suorittaa kiinnostusten ja tavoitteidensa mukaisia lukion opintoja",
+      "sv" : "avlägger gymnasiestudier som motsvarar hens egna intressen och mål."
+    } ],
+    "keskeinenSisalto" : {
+      "_id" : "7787879",
+      "_tunniste" : "869fc93f-332c-4a03-ab5a-72cde9ccb2e1",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "laajaAlaisenOsaamisenKuvaus" : {
+      "_id" : "7787878",
+      "_tunniste" : "17df16b6-791b-4295-9e48-ef057c8890c7",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "arvioinninKuvaus" : {
+      "_id" : "7787950",
+      "_tunniste" : "418dadc2-7ddf-4b68-9ba7-3c26ae387fe9",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "osanTyyppi" : "koulutuksenosa"
+  }, {
+    "id" : 7535565,
+    "luotu" : 1610694380075,
+    "muokattu" : 1650969306187,
+    "muokkaaja" : "1.2.246.562.24.71880188605",
+    "nimi" : {
+      "_id" : "8332154",
+      "_tunniste" : "0aa74012-f5fb-4487-8542-5f56b599e38a",
+      "fi" : "Arjen ja yhteiskunnallisen osallisuuden taidot",
+      "sv" : "Vardagskompetens och delaktighet i samhället"
+    },
+    "tila" : "luonnos",
+    "nimiKoodi" : {
+      "id" : 8332164,
+      "nimi" : {
+        "fi" : "Arjen taidot ja yhteiskunnallinen osallisuus",
+        "sv" : "Vardagskompetens och delaktighet i samhället"
+      },
+      "arvo" : "103",
+      "uri" : "koulutuksenosattuva_103",
+      "koodisto" : "koulutuksenosattuva",
+      "versio" : 1
+    },
+    "laajuusMinimi" : 1,
+    "laajuusMaksimi" : 20,
+    "koulutusOsanKoulutustyyppi" : "tutkintokoulutukseenvalmentava",
+    "koulutusOsanTyyppi" : "valinnainen",
+    "kuvaus" : {
+      "_id" : "7787770",
+      "_tunniste" : "c7168b85-431b-4fcc-939a-2564f9e02707",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "tavoitteenKuvaus" : null,
+    "tavoitteet" : [ {
+      "_id" : "7787793",
+      "_tunniste" : "019c88d5-95ea-488b-9a82-39d8ca6d2d34",
+      "fi" : "arvioi ja vahvistaa toimintakykyään sekä hyvinvointiaan",
+      "sv" : "utvärderar och stärker sin funktionsförmåga och sitt välbefinnande"
+    }, {
+      "_id" : "7787794",
+      "_tunniste" : "03f16634-9ad5-436c-834c-7ebb3386802f",
+      "fi" : "tuntee mielen hyvinvoinnin perusteet ja tapoja vahvistaa sitä",
+      "sv" : "känner till vad det psykiska välbefinnandet bygger på och på vilka sätt man kan stärka det"
+    }, {
+      "_id" : "7787795",
+      "_tunniste" : "78f905c1-11a7-4cc3-83c6-c6b75abaaee2",
+      "fi" : "kehittää kotitalousosaamistaan",
+      "sv" : "utvecklar sin hushållskunskap"
+    }, {
+      "_id" : "7787796",
+      "_tunniste" : "3f9410d4-b435-4953-a4eb-60c11fea6839",
+      "fi" : "vahvistaa arjen ja yhteiskunnallisen osallisuuden edellyttämiä tekstitaitoja ja harjaantuu kielenkäyttäjänä niihin liittyvissä tilanteissa",
+      "sv" : "stärker den textkompetens som förutsätts i vardagen och för att vara delaktig i samhället och övar sig på att använda språket som behövs i dessa situationer"
+    }, {
+      "_id" : "7787797",
+      "_tunniste" : "10700db3-2f57-49f6-8046-8a35d6b30aa6",
+      "fi" : "perehtyy yhteiskunnan tarjoamiin palveluihin ja osaa hakea tarvitsemiaan palveluja",
+      "sv" : "lär känna vilka tjänster som erbjuds i samhället och kan söka de tjänster som hen behöver"
+    }, {
+      "_id" : "7787798",
+      "_tunniste" : "4ad57dbf-2565-446d-a244-33604841b906",
+      "fi" : "tuntee yhteiskunnallisen vaikuttamisen tapoja ja toimintaa",
+      "sv" : "känner till sätt och metoder med vilka man kan påverka i samhället"
+    }, {
+      "_id" : "7787799",
+      "_tunniste" : "12fdcb91-9d04-44d2-8ab7-54290f41ea44",
+      "fi" : "hankkii tietoja ja taitoja taloudellisen päätöksentekonsa tueksi",
+      "sv" : "inhämtar kunskaper och färdigheter som stöd för sina ekonomiska beslut"
+    }, {
+      "_id" : "7787810",
+      "_tunniste" : "4841ad21-e2da-4297-a6fc-9eb5d46cfe2c",
+      "fi" : "suunnittelee ja tekee arkielämään liittyviä valintoja, päätöksiä ja hankintoja sekä pohtii itsenäisen asumisen mahdollisuuksia ja edellytyksiä",
+      "sv" : "planerar och gör val samt fattar beslut i vardagen och reflekterar över möjligheterna och förutsättningarna för självständigt boende"
+    }, {
+      "_id" : "7787811",
+      "_tunniste" : "5a3683af-b58b-463a-ba43-3fa82594a0f9",
+      "fi" : "tuntee turvalliset, vastuulliset ja kestävät toimintatavat opiskelu- ja asuinympäristössään",
+      "sv" : "känner till hur man agerar på ett tryggt, ansvarsfull och hållbart sätt i studie- och boendemiljön"
+    }, {
+      "_id" : "7787812",
+      "_tunniste" : "e3d766a7-a1e3-442c-b4f9-84853932de09",
+      "fi" : "tutustuu erilaisiin vapaa-ajanviettomahdollisuuksiin liikunnan, taiteen, kulttuurin tai muiden tapahtumien avulla",
+      "sv" : "bekantar sig med olika fritidsaktiviteter med hjälp av motion, konst, kultur eller andra evenemang."
+    } ],
+    "keskeinenSisalto" : {
+      "_id" : "7787816",
+      "_tunniste" : "11b6c690-b7a3-4078-86c7-64b700d6bb23",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "laajaAlaisenOsaamisenKuvaus" : {
+      "_id" : "7787870",
+      "_tunniste" : "26d92aad-97e4-427f-b24f-1fea5fd2f950",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "arvioinninKuvaus" : {
+      "_id" : "7787818",
+      "_tunniste" : "e33a11e5-ec0b-4dab-affd-f87232152335",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "osanTyyppi" : "koulutuksenosa"
+  }, {
+    "id" : 7535564,
+    "luotu" : 1610694142001,
+    "muokattu" : 1650969263245,
+    "muokkaaja" : "1.2.246.562.24.71880188605",
+    "nimi" : {
+      "_id" : "8332153",
+      "_tunniste" : "ff6a664c-f450-48b1-afbc-89be89a9ceb8",
+      "fi" : "Työelämätaidot ja työpaikalla tapahtuva oppiminen",
+      "sv" : "Arbetslivsfärdigheter och lärande i arbetslivet"
+    },
+    "tila" : "luonnos",
+    "nimiKoodi" : {
+      "id" : 8332163,
+      "nimi" : {
+        "fi" : "Työelämätaidot ja työelämässä tapahtuva oppiminen",
+        "sv" : "Arbetslivsfärdigheter och lärande i arbetslivet"
+      },
+      "arvo" : "102",
+      "uri" : "koulutuksenosattuva_102",
+      "koodisto" : "koulutuksenosattuva",
+      "versio" : 1
+    },
+    "laajuusMinimi" : 1,
+    "laajuusMaksimi" : 20,
+    "koulutusOsanKoulutustyyppi" : "tutkintokoulutukseenvalmentava",
+    "koulutusOsanTyyppi" : "valinnainen",
+    "kuvaus" : {
+      "_id" : "7787682",
+      "_tunniste" : "a570bd1a-56d5-43ad-89b1-8562c8c0fd89",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "tavoitteenKuvaus" : null,
+    "tavoitteet" : [ {
+      "_id" : "7788126",
+      "_tunniste" : "48a39b1a-2bb1-4c04-b68a-f6af4a404116",
+      "fi" : "tuntee työnhaun prosessin",
+      "sv" : "känner till processen att söka arbete"
+    }, {
+      "_id" : "7788127",
+      "_tunniste" : "36b19daf-270b-493f-b261-f999eaf37751",
+      "fi" : "tutustuu työpaikkoihin oppimisympäristöinä",
+      "sv" : "bekantar sig med arbetsplatser som lärmiljöer"
+    }, {
+      "_id" : "7788128",
+      "_tunniste" : "b9b44b64-81f8-4842-b31f-18d8aa047d31",
+      "fi" : "tuntee työelämän ja yrittäjyyden keskeiset periaatteet",
+      "sv" : "känner till de centrala principerna som berör arbetsliv och företagsamhet"
+    }, {
+      "_id" : "7788129",
+      "_tunniste" : "b3f03e63-1907-4900-8628-25c0784b3559",
+      "fi" : "osaa toimia työyhteisön jäsenenä työpaikalla",
+      "sv" : "kan fungera som en medlem i arbetsgemenskapen på arbetsplatsen"
+    }, {
+      "_id" : "7788180",
+      "_tunniste" : "0a09e336-8190-4ba2-a28b-9a4b30fe3eeb",
+      "fi" : "osaa ajankäytön suunnittelua ja hallintaa",
+      "sv" : "kan planera och hantera sin tidsanvändning"
+    }, {
+      "_id" : "7788181",
+      "_tunniste" : "fa5879b1-2220-45ca-83bc-7ca6ee98539d",
+      "fi" : "tuntee omat oikeutensa ja velvollisuutensa työpaikalla",
+      "sv" : "känner till sina egna rättigheter och skyldigheter på arbetsplatsen"
+    }, {
+      "_id" : "7788182",
+      "_tunniste" : "16f009f0-ba54-4958-9d66-4a8a0adf2e2a",
+      "fi" : "tuntee mahdollisuutensa kansainvälisyysosaamisen kehittämiseen ja osallistuu mahdollisuuksien mukaan kansainväliseen toimintaan",
+      "sv" : "känner till sina möjligheter att utveckla sin internationella kompetens och deltar i mån av möjlighet i internationell verksamhet"
+    }, {
+      "_id" : "7788183",
+      "_tunniste" : "d951c53d-9521-4df3-89a2-eddcf34916a3",
+      "fi" : "tutustuu yleisimpiin työpaikalla käytössä oleviin tietokoneohjelmiin ja työpaikan vuorovaikutustilanteiden kieleen",
+      "sv" : "bekantar sig med de vanligaste datorprogrammen som används på en arbetsplats och med språket som behövs för att kommunicera på arbetsplatsen"
+    }, {
+      "_id" : "7788184",
+      "_tunniste" : "f3816af5-62c4-4b45-b514-748ac0292e37",
+      "fi" : "tiedostaa tulevaisuuden haasteet ja työelämän muutokset",
+      "sv" : "är medveten om framtidens utmaningar och förändringar i arbetslivet"
+    } ],
+    "keskeinenSisalto" : {
+      "_id" : "7787726",
+      "_tunniste" : "75e2efc6-bb8c-4fcf-98e7-91be53d8091d",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "laajaAlaisenOsaamisenKuvaus" : {
+      "_id" : "7787724",
+      "_tunniste" : "a0b0288c-9386-48d7-b00d-19caf61b2476",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "arvioinninKuvaus" : {
+      "_id" : "7787728",
+      "_tunniste" : "cf747681-d8bd-4f92-8d70-a91dc533145f",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "osanTyyppi" : "koulutuksenosa"
+  }, {
+    "id" : 7535567,
+    "luotu" : 1610694845009,
+    "muokattu" : 1650969352221,
+    "muokkaaja" : "1.2.246.562.24.71880188605",
+    "nimi" : {
+      "_id" : "8332155",
+      "_tunniste" : "48e1504c-7254-479f-95f0-eed7f4eca3fe",
+      "fi" : "Valinnaiset koulutuksen osat",
+      "sv" : "Valbara utbildningsdelar"
+    },
+    "tila" : "luonnos",
+    "nimiKoodi" : {
+      "id" : 8332165,
+      "nimi" : {
+        "fi" : "Valinnaiset opinnot",
+        "sv" : "Valbara utbildningsdelar"
+      },
+      "arvo" : "104",
+      "uri" : "koulutuksenosattuva_104",
+      "koodisto" : "koulutuksenosattuva",
+      "versio" : 1
+    },
+    "laajuusMinimi" : 1,
+    "laajuusMaksimi" : 10,
+    "koulutusOsanKoulutustyyppi" : "tutkintokoulutukseenvalmentava",
+    "koulutusOsanTyyppi" : "valinnainen",
+    "kuvaus" : {
+      "_id" : "7787872",
+      "_tunniste" : "f2d96386-212f-4a39-b941-0a1e97baf019",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "tavoitteenKuvaus" : null,
+    "tavoitteet" : [ ],
+    "keskeinenSisalto" : null,
+    "laajaAlaisenOsaamisenKuvaus" : {
+      "_id" : "7787874",
+      "_tunniste" : "b1f02322-8647-4771-8642-6d938106cdf9",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "arvioinninKuvaus" : {
+      "_id" : "7787876",
+      "_tunniste" : "0d56bd73-dce8-4d5a-b821-cc17a8ec11e3",
+      "fi" : "redacted for brevity",
+      "sv" : "redacted for brevity"
+    },
+    "osanTyyppi" : "koulutuksenosa"
+  } ],
+  "tutkintoonvalmentava" : {
+    "id" : 7534960,
+    "sisalto" : {
+      "id" : 7534970,
+      "lapset" : [ {
+        "id" : 7534971,
+        "perusteenOsa" : {
+          "id" : 7535030,
+          "luotu" : 1610688449693,
+          "muokattu" : 1639902055267,
+          "muokkaaja" : "1.2.246.562.24.52232041128",
+          "nimi" : {
+            "_id" : "7785813",
+            "_tunniste" : "c1c3af66-0133-41af-b727-9ade01b84922",
+            "fi" : "Tutkintokoulutukseen valmentava koulutus",
+            "sv" : "Utbildning som handleder för examensutbildning"
+          },
+          "tila" : "luonnos",
+          "teksti" : {
+            "_id" : "8229554",
+            "_tunniste" : "82a5fae5-9bfe-44f0-bb87-2e7da1603f6c",
+            "fi" : "redacted for brevity",
+            "sv" : "redacted for brevity"
+          },
+          "koodit" : [ ],
+          "liite" : false,
+          "osanTyyppi" : "tekstikappale"
+        },
+        "lapset" : [ {
+          "id" : 7534972,
+          "perusteenOsa" : {
+            "id" : 7535031,
+            "luotu" : 1610688495113,
+            "muokattu" : 1622811500664,
+            "muokkaaja" : "1.2.246.562.24.72805652720",
+            "nimi" : {
+              "_id" : "7785910",
+              "_tunniste" : "e02110d1-1e81-4e3f-b2b1-a11d8f8db823",
+              "fi" : "Koulutuksen tavoitteet",
+              "sv" : "Utbildningens mål"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7787022",
+              "_tunniste" : "28cbd0b7-3e16-4ec7-b043-e9be01c02715",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535031"
+        }, {
+          "id" : 7534973,
+          "perusteenOsa" : {
+            "id" : 7535032,
+            "luotu" : 1610688517846,
+            "muokattu" : 1628051080674,
+            "muokkaaja" : "1.2.246.562.24.77925329174",
+            "nimi" : {
+              "_id" : "7785918",
+              "_tunniste" : "b224c864-3b14-49e3-8686-f682aec20539",
+              "fi" : "Koulutuksen kohderyhmä",
+              "sv" : "Utbildningens målgrupp"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7874320",
+              "_tunniste" : "da3da25a-7cd9-42c2-b903-3566a395914d",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535032"
+        }, {
+          "id" : 7534974,
+          "perusteenOsa" : {
+            "id" : 7535033,
+            "luotu" : 1610688547530,
+            "muokattu" : 1622809573910,
+            "muokkaaja" : "1.2.246.562.24.72805652720",
+            "nimi" : {
+              "_id" : "7785919",
+              "_tunniste" : "a250b422-9f9e-4323-baa8-1b59cd74ed58",
+              "fi" : "Koulutuksen arvoperusta",
+              "sv" : "Utbildningens värdegrund"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7786765",
+              "_tunniste" : "437f002b-cad8-4b87-8209-9c9caa3a3703",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535033"
+        }, {
+          "id" : 7534975,
+          "perusteenOsa" : {
+            "id" : 7535034,
+            "luotu" : 1610688581209,
+            "muokattu" : 1622812919335,
+            "muokkaaja" : "1.2.246.562.24.72805652720",
+            "nimi" : {
+              "_id" : "7786055",
+              "_tunniste" : "5651c91c-2791-411d-b5c2-6ad20dcd37ec",
+              "fi" : "Koulutuksen muodostuminen",
+              "sv" : "Uppbyggnaden av utbildningen"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7787026",
+              "_tunniste" : "18b6c6b6-4f35-483e-a082-769eefa4d7c5",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535034"
+        } ],
+        "_perusteenOsa" : "7535030"
+      }, {
+        "id" : 7534977,
+        "perusteenOsa" : {
+          "id" : 7535036,
+          "luotu" : 1610688649122,
+          "muokattu" : 1622810270918,
+          "muokkaaja" : "1.2.246.562.24.72805652720",
+          "nimi" : {
+            "_id" : "7786088",
+            "_tunniste" : "618d03cc-35ce-47f5-8c3d-d93e461d91c8",
+            "fi" : "Koulutuksen järjestäminen",
+            "sv" : "Ordnande av utbildning"
+          },
+          "tila" : "luonnos",
+          "teksti" : {
+            "_id" : "7786847",
+            "_tunniste" : "0fe7cae7-2cd7-4978-a86d-29a93499e3d4",
+            "fi" : "redacted for brevity",
+            "sv" : "redacted for brevity"
+          },
+          "koodit" : [ ],
+          "liite" : false,
+          "osanTyyppi" : "tekstikappale"
+        },
+        "lapset" : [ {
+          "id" : 7534978,
+          "perusteenOsa" : {
+            "id" : 7535037,
+            "luotu" : 1610688667488,
+            "muokattu" : 1622998028819,
+            "muokkaaja" : "1.2.246.562.24.72805652720",
+            "nimi" : {
+              "_id" : "7786089",
+              "_tunniste" : "64a325b3-5706-4546-bd29-d38762c0f749",
+              "fi" : "Opiskelijan ohjaaminen",
+              "sv" : "Handledning av en studerande"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7787397",
+              "_tunniste" : "fd801f13-387c-4ac2-8063-e1dd4f1ecb47",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535037"
+        }, {
+          "id" : 7534979,
+          "perusteenOsa" : {
+            "id" : 7535038,
+            "luotu" : 1610688691999,
+            "muokattu" : 1623055660128,
+            "muokkaaja" : "1.2.246.562.24.77925329174",
+            "nimi" : {
+              "_id" : "7786181",
+              "_tunniste" : "215e82d2-e0e7-4897-9d70-327ef9c550dd",
+              "fi" : "Henkilökohtainen opiskelusuunnitelma",
+              "sv" : "Personlig studieplan"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7788448",
+              "_tunniste" : "4134c0cc-5533-4c8e-9f0f-f3570e6b0f42",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535038"
+        }, {
+          "id" : 7535150,
+          "perusteenOsa" : {
+            "id" : 7535039,
+            "luotu" : 1610688718981,
+            "muokattu" : 1622810366687,
+            "muokkaaja" : "1.2.246.562.24.72805652720",
+            "nimi" : {
+              "_id" : "7786182",
+              "_tunniste" : "cb29e444-73f3-4b21-b139-bf3b78d7fa91",
+              "fi" : "Erityinen tuki",
+              "sv" : "Särskilt stöd"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7786930",
+              "_tunniste" : "962cec59-a12b-4d63-86bc-d5d7228b501a",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535039"
+        }, {
+          "id" : 7535151,
+          "perusteenOsa" : {
+            "id" : 7535170,
+            "luotu" : 1610688737404,
+            "muokattu" : 1671005674742,
+            "muokkaaja" : "1.2.246.562.24.16958963306",
+            "nimi" : {
+              "_id" : "7786183",
+              "_tunniste" : "5b49d39d-c5b3-47df-a42c-cdf9f17cc364",
+              "fi" : "Opiskeluhuolto",
+              "sv" : "Studerandevård"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "8563569",
+              "_tunniste" : "9bef581d-a8a2-41a2-806a-a77d4749b625",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535170"
+        }, {
+          "id" : 7535152,
+          "perusteenOsa" : {
+            "id" : 7535171,
+            "luotu" : 1610688755812,
+            "muokattu" : 1623010359101,
+            "muokkaaja" : "1.2.246.562.24.72805652720",
+            "nimi" : {
+              "_id" : "7786185",
+              "_tunniste" : "fe52e640-ca53-40d8-b06d-2a7d0f9e714c",
+              "fi" : "Koulutuksen järjestäjän suunnitelma koulutuksen toteuttamisesta",
+              "sv" : "Utbildningsanordnarens plan för genomförandet av utbildningen"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7787958",
+              "_tunniste" : "9a0beee9-08ce-4f0a-84a9-1279f36bf0fe",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535171"
+        } ],
+        "_perusteenOsa" : "7535036"
+      }, {
+        "id" : 7535153,
+        "perusteenOsa" : {
+          "id" : 7535172,
+          "luotu" : 1610688783288,
+          "muokattu" : 1622806763892,
+          "muokkaaja" : "1.2.246.562.24.72805652720",
+          "nimi" : {
+            "_id" : "7786187",
+            "_tunniste" : "2268fd2f-6ad2-4950-b316-87abb77c2f2c",
+            "fi" : "Palaute osaamisen kehittymisestä ja osaamisen arviointi",
+            "sv" : "Respons på utvecklingen av kunnandet och bedömning av kunnandet"
+          },
+          "tila" : "luonnos",
+          "teksti" : null,
+          "koodit" : [ ],
+          "liite" : false,
+          "osanTyyppi" : "tekstikappale"
+        },
+        "lapset" : [ {
+          "id" : 7535154,
+          "perusteenOsa" : {
+            "id" : 7535173,
+            "luotu" : 1610688811611,
+            "muokattu" : 1622806843883,
+            "muokkaaja" : "1.2.246.562.24.72805652720",
+            "nimi" : {
+              "_id" : "7786188",
+              "_tunniste" : "bfbf6f57-0e6d-401c-b9b0-8762789a051a",
+              "fi" : "Palaute osaamisen kehittymisestä",
+              "sv" : "Respons på utvecklingen av kunnandet"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7786330",
+              "_tunniste" : "a7557b84-c1fc-4653-9f0a-63aa7fb3b5ff",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535173"
+        }, {
+          "id" : 7535155,
+          "perusteenOsa" : {
+            "id" : 7535174,
+            "luotu" : 1610688833048,
+            "muokattu" : 1622806904686,
+            "muokkaaja" : "1.2.246.562.24.72805652720",
+            "nimi" : {
+              "_id" : "7786331",
+              "_tunniste" : "09a8249e-57b3-4950-a76e-8f50268915e1",
+              "fi" : "Opiskelijan osaamisen arviointi",
+              "sv" : "Bedömning av den studerandes kunnande"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7786332",
+              "_tunniste" : "c8524984-42a4-4f71-88aa-1f6946fe0510",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535174"
+        }, {
+          "id" : 7535156,
+          "perusteenOsa" : {
+            "id" : 7535175,
+            "luotu" : 1610688860635,
+            "muokattu" : 1623010915968,
+            "muokkaaja" : "1.2.246.562.24.72805652720",
+            "nimi" : {
+              "_id" : "7786935",
+              "_tunniste" : "5e5c69de-5d27-43b8-80f9-4779a0be27dd",
+              "fi" : "Todistukset",
+              "sv" : "Betyg och intyg"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7788120",
+              "_tunniste" : "2beb1f41-ac70-443d-a597-a3b3ff7e68d1",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535175"
+        } ],
+        "_perusteenOsa" : "7535172"
+      }, {
+        "id" : 7535157,
+        "perusteenOsa" : {
+          "id" : 7535176,
+          "luotu" : 1610688877648,
+          "muokattu" : 1622807574157,
+          "muokkaaja" : "1.2.246.562.24.72805652720",
+          "nimi" : {
+            "_id" : "7786392",
+            "_tunniste" : "74273eb0-71d4-4b92-9183-cbe7ca53769c",
+            "fi" : "Muut opiskelijoita ja koulutuksen järjestämistä koskevat säännökset",
+            "sv" : "Övriga bestämmelser som berör de studerande och ordnandet av utbildningen"
+          },
+          "tila" : "luonnos",
+          "teksti" : null,
+          "koodit" : [ ],
+          "liite" : false,
+          "osanTyyppi" : "tekstikappale"
+        },
+        "lapset" : [ {
+          "id" : 7535158,
+          "perusteenOsa" : {
+            "id" : 7535177,
+            "luotu" : 1610688904665,
+            "muokattu" : 1622807622259,
+            "muokkaaja" : "1.2.246.562.24.72805652720",
+            "nimi" : {
+              "_id" : "7786393",
+              "_tunniste" : "74d534e8-054e-41ec-80b6-02a5dd96e312",
+              "fi" : "Opiskelijan velvollisuudet",
+              "sv" : "Den studerandes skyldigheter"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7786394",
+              "_tunniste" : "80ad9680-05f4-4de6-a5b8-7752c7430abe",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535177"
+        }, {
+          "id" : 7535159,
+          "perusteenOsa" : {
+            "id" : 7535178,
+            "luotu" : 1610688934726,
+            "muokattu" : 1622811194294,
+            "muokkaaja" : "1.2.246.562.24.72805652720",
+            "nimi" : {
+              "_id" : "7786395",
+              "_tunniste" : "bd11afa1-960e-4fcb-bd76-087ed19c271b",
+              "fi" : "Perusopetuslain, lukiolain ja ammatillisesta koulutuksesta annetun lain soveltaminen",
+              "sv" : "Tillämpning av lagen om grundläggande utbildning, gymnasielagen och lagen om yrkesutbildning"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7786937",
+              "_tunniste" : "026562ec-ba16-44cd-a755-444bb4c5769e",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535178"
+        } ],
+        "_perusteenOsa" : "7535176"
+      }, {
+        "id" : 7535290,
+        "perusteenOsa" : {
+          "id" : 7535179,
+          "luotu" : 1610688964026,
+          "muokattu" : 1623009903239,
+          "muokkaaja" : "1.2.246.562.24.72805652720",
+          "nimi" : {
+            "_id" : "7787469",
+            "_tunniste" : "2358aec6-d7d7-486a-8d56-dc1daa11f1e0",
+            "fi" : "Koulutuksen osien tavoitteet ja keskeiset sisällöt",
+            "sv" : "Utbildningsdelarnas mål och centrala innehåll"
+          },
+          "tila" : "luonnos",
+          "teksti" : {
+            "_id" : "7787954",
+            "_tunniste" : "623a5627-c64b-4f61-a927-0b6b80f56afa",
+            "fi" : "redacted for brevity",
+            "sv" : "redacted for brevity"
+          },
+          "koodit" : [ ],
+          "liite" : false,
+          "osanTyyppi" : "tekstikappale"
+        },
+        "lapset" : [ {
+          "id" : 7682268,
+          "perusteenOsa" : {
+            "id" : 7689305,
+            "luotu" : 1620200220110,
+            "muokattu" : 1622812536712,
+            "muokkaaja" : "1.2.246.562.24.72805652720",
+            "nimi" : {
+              "_id" : "7786399",
+              "_tunniste" : "2c4cce43-fa4d-44cb-a073-efb2eef8bdba",
+              "fi" : "Laaja-alainen osaaminen",
+              "sv" : "Mångsidig kompetens"
+            },
+            "tila" : "luonnos",
+            "teksti" : {
+              "_id" : "7787024",
+              "_tunniste" : "ef45c062-9ea7-4272-b43c-23a9ae208ca1",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "koodit" : [ ],
+            "liite" : false,
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [ {
+            "id" : 7769070,
+            "perusteenOsa" : {
+              "id" : 7769080,
+              "luotu" : 1622440202891,
+              "muokattu" : 1622808016477,
+              "muokkaaja" : "1.2.246.562.24.72805652720",
+              "nimi" : {
+                "fi" : "Oppimaan oppiminen",
+                "sv" : "Förmåga att lära sig lära"
+              },
+              "tila" : "luonnos",
+              "nimiKoodi" : {
+                "id" : 7785376,
+                "nimi" : {
+                  "fi" : "Oppimaan oppiminen",
+                  "sv" : "Förmåga att lära sig lära"
+                },
+                "arvo" : "001",
+                "uri" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen_001",
+                "koodisto" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen",
+                "versio" : 1
+              },
+              "teksti" : {
+                "_id" : "7786494",
+                "_tunniste" : "5a18a575-89b8-464c-85f9-16da28a24fe4",
+                "fi" : "redacted for brevity",
+                "sv" : "redacted for brevity"
+              },
+              "liite" : false,
+              "osanTyyppi" : "laajaalainenosaaminen"
+            },
+            "lapset" : [ ],
+            "_perusteenOsa" : "7769080"
+          }, {
+            "id" : 7769071,
+            "perusteenOsa" : {
+              "id" : 7769081,
+              "luotu" : 1622440240426,
+              "muokattu" : 1622808039310,
+              "muokkaaja" : "1.2.246.562.24.72805652720",
+              "nimi" : {
+                "fi" : "Monilukutaito",
+                "sv" : "Multilitteracitet"
+              },
+              "tila" : "luonnos",
+              "nimiKoodi" : {
+                "id" : 7785377,
+                "nimi" : {
+                  "fi" : "Monilukutaito",
+                  "sv" : "Multilitteracitet"
+                },
+                "arvo" : "002",
+                "uri" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen_002",
+                "koodisto" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen",
+                "versio" : 1
+              },
+              "teksti" : {
+                "_id" : "7786496",
+                "_tunniste" : "0dcc3883-989d-4141-ab65-d7b9e1d1ded1",
+                "fi" : "redacted for brevity",
+                "sv" : "redacted for brevity"
+              },
+              "liite" : false,
+              "osanTyyppi" : "laajaalainenosaaminen"
+            },
+            "lapset" : [ ],
+            "_perusteenOsa" : "7769081"
+          }, {
+            "id" : 7769072,
+            "perusteenOsa" : {
+              "id" : 7769082,
+              "luotu" : 1622440279589,
+              "muokattu" : 1622808060521,
+              "muokkaaja" : "1.2.246.562.24.72805652720",
+              "nimi" : {
+                "fi" : "Digiosaaminen",
+                "sv" : "Digital kompetens"
+              },
+              "tila" : "luonnos",
+              "nimiKoodi" : {
+                "id" : 7785378,
+                "nimi" : {
+                  "fi" : "Digiosaaminen",
+                  "sv" : "Digital kompetens"
+                },
+                "arvo" : "003",
+                "uri" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen_003",
+                "koodisto" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen",
+                "versio" : 1
+              },
+              "teksti" : {
+                "_id" : "7786498",
+                "_tunniste" : "d819479b-fd58-4c93-bca9-40b4ee5106ec",
+                "fi" : "redacted for brevity",
+                "sv" : "redacted for brevity"
+              },
+              "liite" : false,
+              "osanTyyppi" : "laajaalainenosaaminen"
+            },
+            "lapset" : [ ],
+            "_perusteenOsa" : "7769082"
+          }, {
+            "id" : 7769073,
+            "perusteenOsa" : {
+              "id" : 7769083,
+              "luotu" : 1622440315841,
+              "muokattu" : 1622808083592,
+              "muokkaaja" : "1.2.246.562.24.72805652720",
+              "nimi" : {
+                "fi" : "Vuorovaikutusosaaminen",
+                "sv" : "Kommunikativ kompetens"
+              },
+              "tila" : "luonnos",
+              "nimiKoodi" : {
+                "id" : 7785379,
+                "nimi" : {
+                  "fi" : "Vuorovaikutusosaaminen",
+                  "sv" : "Kommunikativ kompetens"
+                },
+                "arvo" : "004",
+                "uri" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen_004",
+                "koodisto" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen",
+                "versio" : 1
+              },
+              "teksti" : {
+                "_id" : "7786560",
+                "_tunniste" : "bec0ce47-cfe3-4b01-ad01-f2faa68413f5",
+                "fi" : "redacted for brevity",
+                "sv" : "redacted for brevity"
+              },
+              "liite" : false,
+              "osanTyyppi" : "laajaalainenosaaminen"
+            },
+            "lapset" : [ ],
+            "_perusteenOsa" : "7769083"
+          }, {
+            "id" : 7769074,
+            "perusteenOsa" : {
+              "id" : 7769084,
+              "luotu" : 1622440353466,
+              "muokattu" : 1622808107901,
+              "muokkaaja" : "1.2.246.562.24.72805652720",
+              "nimi" : {
+                "fi" : "Hyvinvointiosaaminen",
+                "sv" : "Kompetens som berör välbefinnande"
+              },
+              "tila" : "luonnos",
+              "nimiKoodi" : {
+                "id" : 7786580,
+                "nimi" : {
+                  "fi" : "Hyvinvointiosaaminen",
+                  "sv" : "Kompetens som berör välbefinnande"
+                },
+                "arvo" : "005",
+                "uri" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen_005",
+                "koodisto" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen",
+                "versio" : 1
+              },
+              "teksti" : {
+                "_id" : "7786562",
+                "_tunniste" : "5fae2b03-6701-47af-a3be-911d6a4186e1",
+                "fi" : "redacted for brevity",
+                "sv" : "redacted for brevity"
+              },
+              "liite" : false,
+              "osanTyyppi" : "laajaalainenosaaminen"
+            },
+            "lapset" : [ ],
+            "_perusteenOsa" : "7769084"
+          }, {
+            "id" : 7769075,
+            "perusteenOsa" : {
+              "id" : 7769085,
+              "luotu" : 1622440387657,
+              "muokattu" : 1622808132244,
+              "muokkaaja" : "1.2.246.562.24.72805652720",
+              "nimi" : {
+                "fi" : "Ympäristöosaaminen",
+                "sv" : "Miljökompetens"
+              },
+              "tila" : "luonnos",
+              "nimiKoodi" : {
+                "id" : 7786581,
+                "nimi" : {
+                  "fi" : "Ympäristöosaaminen",
+                  "sv" : "Miljökompetens"
+                },
+                "arvo" : "006",
+                "uri" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen_006",
+                "koodisto" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen",
+                "versio" : 1
+              },
+              "teksti" : {
+                "_id" : "7786564",
+                "_tunniste" : "cbd5bc5e-a650-439a-908a-1de0046ec1f0",
+                "fi" : "redacted for brevity",
+                "sv" : "redacted for brevity"
+              },
+              "liite" : false,
+              "osanTyyppi" : "laajaalainenosaaminen"
+            },
+            "lapset" : [ ],
+            "_perusteenOsa" : "7769085"
+          }, {
+            "id" : 7769076,
+            "perusteenOsa" : {
+              "id" : 7769086,
+              "luotu" : 1622440427272,
+              "muokattu" : 1622808152847,
+              "muokkaaja" : "1.2.246.562.24.72805652720",
+              "nimi" : {
+                "fi" : "Yhteiskuntaosaaminen",
+                "sv" : "Samhällskompetens"
+              },
+              "tila" : "luonnos",
+              "nimiKoodi" : {
+                "id" : 7786582,
+                "nimi" : {
+                  "fi" : "Yhteiskuntaosaaminen",
+                  "sv" : "Samhällskompetens"
+                },
+                "arvo" : "007",
+                "uri" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen_007",
+                "koodisto" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen",
+                "versio" : 1
+              },
+              "teksti" : {
+                "_id" : "7786566",
+                "_tunniste" : "25378258-2647-4016-925b-26fbb78b4343",
+                "fi" : "redacted for brevity",
+                "sv" : "redacted for brevity"
+              },
+              "liite" : false,
+              "osanTyyppi" : "laajaalainenosaaminen"
+            },
+            "lapset" : [ ],
+            "_perusteenOsa" : "7769086"
+          }, {
+            "id" : 7769077,
+            "perusteenOsa" : {
+              "id" : 7769087,
+              "luotu" : 1622440477329,
+              "muokattu" : 1622808173056,
+              "muokkaaja" : "1.2.246.562.24.72805652720",
+              "nimi" : {
+                "fi" : "Kulttuuriosaaminen",
+                "sv" : "Kulturell kompetens"
+              },
+              "tila" : "luonnos",
+              "nimiKoodi" : {
+                "id" : 7786583,
+                "nimi" : {
+                  "fi" : "Kulttuuriosaaminen",
+                  "sv" : "Kulturell kompetens"
+                },
+                "arvo" : "008",
+                "uri" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen_008",
+                "koodisto" : "tutkintokoulutukseenvalmentavakoulutuslaajaalainenosaaminen",
+                "versio" : 1
+              },
+              "teksti" : {
+                "_id" : "7786568",
+                "_tunniste" : "277ed11d-b478-42b9-8fa3-1d81cc232aa3",
+                "fi" : "redacted for brevity",
+                "sv" : "redacted for brevity"
+              },
+              "liite" : false,
+              "osanTyyppi" : "laajaalainenosaaminen"
+            },
+            "lapset" : [ ],
+            "_perusteenOsa" : "7769087"
+          } ],
+          "_perusteenOsa" : "7689305"
+        }, {
+          "id" : 7535291,
+          "perusteenOsa" : {
+            "id" : 7535560,
+            "luotu" : 1610690435100,
+            "muokattu" : 1650969125595,
+            "muokkaaja" : "1.2.246.562.24.71880188605",
+            "nimi" : {
+              "_id" : "8332019",
+              "_tunniste" : "6e60834b-3529-4933-a209-f849b61be432",
+              "fi" : "Opiskelu- ja urasuunnittelutaidot",
+              "sv" : "Studiefärdigheter och karriärplaneringsfärdigheter"
+            },
+            "tila" : "luonnos",
+            "nimiKoodi" : {
+              "id" : 7788176,
+              "nimi" : {
+                "fi" : "Opiskelu- ja urasuunnittelutaidot",
+                "sv" : "Studiefärdigheter och karriärplaneringsfärdigheter"
+              },
+              "arvo" : "101",
+              "uri" : "koulutuksenosattuva_101",
+              "koodisto" : "koulutuksenosattuva",
+              "versio" : 1
+            },
+            "laajuusMinimi" : 2,
+            "laajuusMaksimi" : 10,
+            "koulutusOsanKoulutustyyppi" : "tutkintokoulutukseenvalmentava",
+            "koulutusOsanTyyppi" : "yhteinen",
+            "kuvaus" : {
+              "_id" : "7786630",
+              "_tunniste" : "8539cac3-f6c8-4622-8a6c-d56771983557",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "tavoitteenKuvaus" : null,
+            "tavoitteet" : [ {
+              "_id" : "7786632",
+              "_tunniste" : "6f9a6b5c-9eba-44e5-bd33-90a220b94f27",
+              "fi" : "asettaa ja arvioi oman elämänsä tavoitteita ja toiveita",
+              "sv" : "ställer upp och utvärderar mål och önskemål som berör hens eget liv"
+            }, {
+              "_id" : "7786633",
+              "_tunniste" : "d7b83489-6a9a-4721-87fb-d4e948900ce7",
+              "fi" : "osaa kuvata itseänsä oppijana ja opiskelijana",
+              "sv" : "kan beskriva sig själv som studerande och hur hen lär sig"
+            }, {
+              "_id" : "7786634",
+              "_tunniste" : "f4eed9ca-7f4a-415c-957a-2882cf929593",
+              "fi" : "tutustuu erilaisiin tapoihin oppia ja hankkia osaamista",
+              "sv" : "bekantar sig med olika sätt att lära sig och förvärva kunnande"
+            }, {
+              "_id" : "7786635",
+              "_tunniste" : "e61dc5f8-5184-439f-9162-f4750e3359c4",
+              "fi" : "käyttää soveltuvia opiskelutaitoja",
+              "sv" : "använder lämpliga studiemetoder"
+            }, {
+              "_id" : "7786636",
+              "_tunniste" : "5b100306-d5f4-4f65-94f8-8486631fbd90",
+              "fi" : "osaa suunnitella omia opintojaan tavoitteellisesti",
+              "sv" : "kan målinriktat planera sina egna studier"
+            }, {
+              "_id" : "7786637",
+              "_tunniste" : "4cc6a873-9ec9-4d56-872c-44c86076ef59",
+              "fi" : "osaa etsiä tietoa itseään kiinnostavista jatko-opinnoista sekä työelämävaihtoehdoista",
+              "sv" : "kan söka information om fortsatta studier och alternativ för arbetslivet som intresserar hen"
+            }, {
+              "_id" : "7786638",
+              "_tunniste" : "26c5a72d-bcb5-4e30-a952-d8ce1176b95c",
+              "fi" : "tarkastelee vaihtoehtoisia uramahdollisuuksiaan myös tulevaisuuden näkökulmasta",
+              "sv" : "bekantar sig med sina olika karriärmöjligheter även ur ett framtidsperspektiv"
+            }, {
+              "_id" : "7786639",
+              "_tunniste" : "3d92b69d-f2ef-4e0b-979c-1494ed7cccf9",
+              "fi" : "arvioi omaa soveltuvuuttaan eri aloille",
+              "sv" : "bedömer hur lämplig hen är för olika branscher"
+            }, {
+              "_id" : "7786650",
+              "_tunniste" : "bb988592-4235-4ea7-afd3-f2e4f8809017",
+              "fi" : "osaa tehdä realistisen jatko-opintosuunnitelman ja hakeutuu sen mukaisesti koulutukseen",
+              "sv" : "kan göra upp en realistisk plan för fortsatta studier och söker sig till utbildning i enlighet med den"
+            }, {
+              "_id" : "7786651",
+              "_tunniste" : "f4cf5e3d-b319-4215-9396-aa2b3cc03820",
+              "fi" : "valmistautuu opiskelemaan lukiokoulutuksessa tai ammatillisessa koulutuksessa",
+              "sv" : "förbereder sig för studier inom gymnasieutbildning eller yrkesutbildning"
+            }, {
+              "_id" : "7786652",
+              "_tunniste" : "f210a51c-e0bc-4e8a-b7ac-edaf32b6c96c",
+              "fi" : "ymmärtää ja osaa käyttää opiskelu- ja urasuunnitteluun liittyvää kieltä.",
+              "sv" : "förstår och kan använda ett språk som är karakteristiskt för studie- och karriärplanering."
+            } ],
+            "keskeinenSisalto" : {
+              "_id" : "7788122",
+              "_tunniste" : "41e939c2-cdfd-43cf-95a0-2b41c6ef7e62",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "laajaAlaisenOsaamisenKuvaus" : {
+              "_id" : "7786658",
+              "_tunniste" : "ddd8ca3f-2e1e-40b3-bd1d-847fb61ec64e",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "arvioinninKuvaus" : {
+              "_id" : "7788124",
+              "_tunniste" : "5749d58a-3331-46ac-9dd7-02184646ee82",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "osanTyyppi" : "koulutuksenosa"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535560"
+        }, {
+          "id" : 7535292,
+          "perusteenOsa" : {
+            "id" : 7535561,
+            "luotu" : 1610693268745,
+            "muokattu" : 1650969157751,
+            "muokkaaja" : "1.2.246.562.24.71880188605",
+            "nimi" : {
+              "_id" : "8332150",
+              "_tunniste" : "6d588cfc-67b6-4f13-918f-32054e9d0f44",
+              "en" : "Perustaitojen vahvistaminen",
+              "fi" : "Perustaitojen vahvistaminen",
+              "sv" : "Perustaitojen vahvistaminen"
+            },
+            "tila" : "luonnos",
+            "nimiKoodi" : {
+              "id" : 8332160,
+              "nimi" : {
+                "en" : "Perustaitojen vahvistaminen",
+                "fi" : "Perustaitojen vahvistaminen",
+                "sv" : "Stärkande av grundläggande färdigheter"
+              },
+              "arvo" : "107",
+              "uri" : "koulutuksenosattuva_107",
+              "koodisto" : "koulutuksenosattuva",
+              "versio" : 1
+            },
+            "laajuusMinimi" : 1,
+            "laajuusMaksimi" : 30,
+            "koulutusOsanKoulutustyyppi" : "perusopetus",
+            "koulutusOsanTyyppi" : "valinnainen",
+            "kuvaus" : {
+              "_id" : "7787533",
+              "_tunniste" : "82d9324f-0e2c-4a00-a422-6c39b1a73d1d",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "tavoitteenKuvaus" : null,
+            "tavoitteet" : [ {
+              "_id" : "7787534",
+              "_tunniste" : "4d2bf16b-5619-4699-8ca1-5e8c7a7186b5",
+              "fi" : "saavuttaa sellaiset perustaidot (luku-, numero- ja digitaidot), joiden avulla hän pystyy opiskelemaan toisen asteen opinnoissa",
+              "sv" : "uppnår sådana grundläggande färdigheter (läskunnighet, numeriska färdigheter och digitala färdigheter) som hen behöver för studier på andra stadiet"
+            }, {
+              "_id" : "7787535",
+              "_tunniste" : "816fc73b-de21-45df-a424-35a75b8c5f0e",
+              "fi" : "saavuttaa sellaisen opiskelu/tutkintokielen taidon, että se mahdollistaa toisen asteen koulutukseen osallistumiseen",
+              "sv" : "uppnår sådana kunskaper i undervisningsspråket som gör det möjligt att delta i utbildning på andra stadiet"
+            }, {
+              "_id" : "7787536",
+              "_tunniste" : "7da88a54-9f1d-4b4c-93cf-7a2da1958b00",
+              "fi" : "kehittää eri tiedonalojen kielen osaamista ja käyttää opiskeltavaan aineeseen sopivia opiskelumenetelmiä",
+              "sv" : "utvecklar sina kunskaper i språket som är specifikt inom olika kunskapsområden och tillämpar studiemetoder som lämpar sig för ämnet som hen studerar"
+            }, {
+              "_id" : "7787537",
+              "_tunniste" : "b6a121f9-5496-4bce-99a2-c42e45221bb2",
+              "fi" : "korottaa perusopetuksen oppimäärän arvosanoja erityisessä tutkinnossa, mikäli se on toiselle asteelle hakeutumisen näkökulmasta tarpeellista",
+              "sv" : "höjer vitsord från den grundläggande utbildningen i en särskild examen, om det behövs för att kunna söka till studier på andra stadiet."
+            } ],
+            "keskeinenSisalto" : {
+              "_id" : "7787951",
+              "_tunniste" : "34f1ca38-b4ce-467c-97ac-17b6e25bba55",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "laajaAlaisenOsaamisenKuvaus" : {
+              "_id" : "7787560",
+              "_tunniste" : "64cee246-ec3f-4d1c-bae5-8db30dcd8933",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "arvioinninKuvaus" : {
+              "_id" : "7787538",
+              "_tunniste" : "91d6523c-7339-4cca-aa44-14d2f7e4e078",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "osanTyyppi" : "koulutuksenosa"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535561"
+        }, {
+          "id" : 7535294,
+          "perusteenOsa" : {
+            "id" : 7535563,
+            "luotu" : 1610693860652,
+            "muokattu" : 1650969227984,
+            "muokkaaja" : "1.2.246.562.24.71880188605",
+            "nimi" : {
+              "_id" : "8332152",
+              "_tunniste" : "65a99cd7-3580-49b1-ac11-8adaea3cf022",
+              "en" : "Ammatillisen koulutuksen opinnot ja niihin valmentautuminen",
+              "fi" : "Ammatillisen koulutuksen opinnot ja niihin valmentautuminen",
+              "sv" : "Ammatillisen koulutuksen opinnot ja niihin valmentautuminen"
+            },
+            "tila" : "luonnos",
+            "nimiKoodi" : {
+              "id" : 8332162,
+              "nimi" : {
+                "en" : "Ammatillisen koulutuksen opinnot ja niihin valmentautuminen",
+                "fi" : "Ammatillisen koulutuksen opinnot ja niihin valmentautuminen",
+                "sv" : "Studier inom yrkesutbildning och studier som förbereder för dem"
+              },
+              "arvo" : "105",
+              "uri" : "koulutuksenosattuva_105",
+              "koodisto" : "koulutuksenosattuva",
+              "versio" : 1
+            },
+            "laajuusMinimi" : 1,
+            "laajuusMaksimi" : 30,
+            "koulutusOsanKoulutustyyppi" : "ammatillinenkoulutus",
+            "koulutusOsanTyyppi" : "valinnainen",
+            "kuvaus" : {
+              "_id" : "7788449",
+              "_tunniste" : "df883783-56af-40f6-bb43-e10c8f9efa60",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "tavoitteenKuvaus" : null,
+            "tavoitteet" : [ {
+              "_id" : "7787610",
+              "_tunniste" : "1b040858-0673-4776-bf6e-499fa7076fe6",
+              "fi" : "saavuttaa riittävän taidon ammatillisten opintojen opetuskielessä ja eri tiedonalojen tekstitaidoissa (sanavarasto, luetun ymmärtämis- ja tulkintataidot sekä tuottamistaidot)",
+              "sv" : "uppnår tillräckliga kunskaper i undervisningsspråket inom de yrkesinriktade studierna samt tillräcklig textkompetens inom olika ämnesområden (ordförråd och förmåga att förstå, tolka och producera text)"
+            }, {
+              "_id" : "7787611",
+              "_tunniste" : "0b5383f5-05e7-431a-8782-1fe00229fd75",
+              "fi" : "osaa käyttää alakohtaiseen koulutukseen sopivia opiskelumenetelmiä ja tieto- ja viestintätekniikkaa opiskelun apuna",
+              "sv" : "kan använda studiemetoder som lämpar sig för utbildning inom en viss bransch och informations- och kommunikationsteknik som stöd i studierna"
+            }, {
+              "_id" : "7787612",
+              "_tunniste" : "8e821756-c527-484f-80df-fc6fce32ecd8",
+              "fi" : "tutustuu ammatilliseen koulutukseen, sen käytäntöihin sekä arviointimenetelmiin",
+              "sv" : "bekantar sig med yrkesutbildningen, verksamheten och bedömningsmetoderna"
+            }, {
+              "_id" : "7787613",
+              "_tunniste" : "39736740-8cc1-406e-8520-00f461e354ad",
+              "fi" : "osaa arvioida ammatillisen koulutuksen sopivuuden itselleen",
+              "sv" : "kan bedöma hur lämplig yrkesutbildningen är som utbildningsform för hen själv"
+            }, {
+              "_id" : "7787614",
+              "_tunniste" : "cadb0bde-02a2-4fed-95a8-df89a1bdf091",
+              "fi" : "suorittaa itselleen sopivan ammatillisen koulutuksen opintoja (ammatilliset tutkinnon osat tai yhteiset tutkinnon osat).",
+              "sv" : "avlägger sådana studier inom yrkesutbildningen (yrkesinriktade examensdelar eller gemensamma examensdelar) som är lämpliga för hen själv."
+            } ],
+            "keskeinenSisalto" : {
+              "_id" : "7787616",
+              "_tunniste" : "7d62598c-2cfd-4e2f-9e79-5aba2f631ad6",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "laajaAlaisenOsaamisenKuvaus" : {
+              "_id" : "7787615",
+              "_tunniste" : "74b433a7-9879-4a37-829b-6eee0147c987",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "arvioinninKuvaus" : {
+              "_id" : "7787617",
+              "_tunniste" : "4ded2d00-8bd3-4653-a75f-56a67f0d6176",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "osanTyyppi" : "koulutuksenosa"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535563"
+        }, {
+          "id" : 7535293,
+          "perusteenOsa" : {
+            "id" : 7535562,
+            "luotu" : 1610693475421,
+            "muokattu" : 1650969196619,
+            "muokkaaja" : "1.2.246.562.24.71880188605",
+            "nimi" : {
+              "_id" : "8332151",
+              "_tunniste" : "8284e09e-4042-481a-8c82-373a1d02421d",
+              "en" : "Lukiokoulutuksen opinnot ja niihin valmentautuminen",
+              "fi" : "Lukiokoulutuksen opinnot ja niihin valmentautuminen",
+              "sv" : "Lukiokoulutuksen opinnot ja niihin valmentautuminen"
+            },
+            "tila" : "luonnos",
+            "nimiKoodi" : {
+              "id" : 8332161,
+              "nimi" : {
+                "en" : "Lukiokoulutuksen opinnot ja niihin valmentautuminen",
+                "fi" : "Lukiokoulutuksen opinnot ja niihin valmentautuminen",
+                "sv" : "Studier inom gymnasieutbildning och studier som förbereder för dem"
+              },
+              "arvo" : "106",
+              "uri" : "koulutuksenosattuva_106",
+              "koodisto" : "koulutuksenosattuva",
+              "versio" : 1
+            },
+            "laajuusMinimi" : 1,
+            "laajuusMaksimi" : 30,
+            "koulutusOsanKoulutustyyppi" : "lukiokoulutus",
+            "koulutusOsanTyyppi" : "valinnainen",
+            "kuvaus" : {
+              "_id" : "7787562",
+              "_tunniste" : "02706a3f-b243-45a2-8271-3991fb6e81e7",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "tavoitteenKuvaus" : null,
+            "tavoitteet" : [ {
+              "_id" : "7787563",
+              "_tunniste" : "e024dd5e-25f1-4d5a-a997-bcf0b1881d87",
+              "fi" : "saavuttaa riittävän taidon lukion opetuskielessä ja eri tiedonalojen tekstitaidoissa (sanavarasto, luetun ymmärtämis- ja tulkintataidot sekä tuottamistaidot)",
+              "sv" : "uppnår tillräckliga kunskaper i gymnasiets undervisningsspråk och tillräcklig textkompetens inom olika ämnesområden (ordförråd, förmåga att förstå, tolka och producera text)"
+            }, {
+              "_id" : "7787564",
+              "_tunniste" : "f77cb423-a401-4e35-8b70-d6f2e5c87a13",
+              "fi" : "osaa käyttää opiskeltavaan oppiaineeseen sopivia opiskelumenetelmiä ja tieto- ja viestintätekniikkaa opiskelun apuna",
+              "sv" : "kan använda studiemetoder som är lämpliga för läroämnet hen studerar och kan använda informations- och kommunikationsteknik som stöd i studierna"
+            }, {
+              "_id" : "7787565",
+              "_tunniste" : "51c14fe0-f4e3-4a88-aeb4-3ad40fc844e5",
+              "fi" : "tutustuu lukiokoulutukseen ja sen käytäntöihin sekä arviointimenetelmiin",
+              "sv" : "bekantar sig med gymnasieutbildningen, verksamheten och bedömningsmetoderna"
+            }, {
+              "_id" : "7787566",
+              "_tunniste" : "6d98cf73-bde8-4d5e-a751-bee032f90406",
+              "fi" : "osaa arvioida lukio-opintojen sopivuuden itselleen",
+              "sv" : "kan bedöma hur lämpliga gymnasiestudier är för hen själv"
+            }, {
+              "_id" : "7787567",
+              "_tunniste" : "61c7d3e9-7a93-4838-b1a8-15207cb4a71a",
+              "fi" : "suorittaa kiinnostusten ja tavoitteidensa mukaisia lukion opintoja",
+              "sv" : "avlägger gymnasiestudier som motsvarar hens egna intressen och mål."
+            } ],
+            "keskeinenSisalto" : {
+              "_id" : "7787879",
+              "_tunniste" : "869fc93f-332c-4a03-ab5a-72cde9ccb2e1",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "laajaAlaisenOsaamisenKuvaus" : {
+              "_id" : "7787878",
+              "_tunniste" : "17df16b6-791b-4295-9e48-ef057c8890c7",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "arvioinninKuvaus" : {
+              "_id" : "7787950",
+              "_tunniste" : "418dadc2-7ddf-4b68-9ba7-3c26ae387fe9",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "osanTyyppi" : "koulutuksenosa"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535562"
+        }, {
+          "id" : 7535296,
+          "perusteenOsa" : {
+            "id" : 7535565,
+            "luotu" : 1610694380075,
+            "muokattu" : 1650969306187,
+            "muokkaaja" : "1.2.246.562.24.71880188605",
+            "nimi" : {
+              "_id" : "8332154",
+              "_tunniste" : "0aa74012-f5fb-4487-8542-5f56b599e38a",
+              "fi" : "Arjen ja yhteiskunnallisen osallisuuden taidot",
+              "sv" : "Vardagskompetens och delaktighet i samhället"
+            },
+            "tila" : "luonnos",
+            "nimiKoodi" : {
+              "id" : 8332164,
+              "nimi" : {
+                "fi" : "Arjen taidot ja yhteiskunnallinen osallisuus",
+                "sv" : "Vardagskompetens och delaktighet i samhället"
+              },
+              "arvo" : "103",
+              "uri" : "koulutuksenosattuva_103",
+              "koodisto" : "koulutuksenosattuva",
+              "versio" : 1
+            },
+            "laajuusMinimi" : 1,
+            "laajuusMaksimi" : 20,
+            "koulutusOsanKoulutustyyppi" : "tutkintokoulutukseenvalmentava",
+            "koulutusOsanTyyppi" : "valinnainen",
+            "kuvaus" : {
+              "_id" : "7787770",
+              "_tunniste" : "c7168b85-431b-4fcc-939a-2564f9e02707",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "tavoitteenKuvaus" : null,
+            "tavoitteet" : [ {
+              "_id" : "7787793",
+              "_tunniste" : "019c88d5-95ea-488b-9a82-39d8ca6d2d34",
+              "fi" : "arvioi ja vahvistaa toimintakykyään sekä hyvinvointiaan",
+              "sv" : "utvärderar och stärker sin funktionsförmåga och sitt välbefinnande"
+            }, {
+              "_id" : "7787794",
+              "_tunniste" : "03f16634-9ad5-436c-834c-7ebb3386802f",
+              "fi" : "tuntee mielen hyvinvoinnin perusteet ja tapoja vahvistaa sitä",
+              "sv" : "känner till vad det psykiska välbefinnandet bygger på och på vilka sätt man kan stärka det"
+            }, {
+              "_id" : "7787795",
+              "_tunniste" : "78f905c1-11a7-4cc3-83c6-c6b75abaaee2",
+              "fi" : "kehittää kotitalousosaamistaan",
+              "sv" : "utvecklar sin hushållskunskap"
+            }, {
+              "_id" : "7787796",
+              "_tunniste" : "3f9410d4-b435-4953-a4eb-60c11fea6839",
+              "fi" : "vahvistaa arjen ja yhteiskunnallisen osallisuuden edellyttämiä tekstitaitoja ja harjaantuu kielenkäyttäjänä niihin liittyvissä tilanteissa",
+              "sv" : "stärker den textkompetens som förutsätts i vardagen och för att vara delaktig i samhället och övar sig på att använda språket som behövs i dessa situationer"
+            }, {
+              "_id" : "7787797",
+              "_tunniste" : "10700db3-2f57-49f6-8046-8a35d6b30aa6",
+              "fi" : "perehtyy yhteiskunnan tarjoamiin palveluihin ja osaa hakea tarvitsemiaan palveluja",
+              "sv" : "lär känna vilka tjänster som erbjuds i samhället och kan söka de tjänster som hen behöver"
+            }, {
+              "_id" : "7787798",
+              "_tunniste" : "4ad57dbf-2565-446d-a244-33604841b906",
+              "fi" : "tuntee yhteiskunnallisen vaikuttamisen tapoja ja toimintaa",
+              "sv" : "känner till sätt och metoder med vilka man kan påverka i samhället"
+            }, {
+              "_id" : "7787799",
+              "_tunniste" : "12fdcb91-9d04-44d2-8ab7-54290f41ea44",
+              "fi" : "hankkii tietoja ja taitoja taloudellisen päätöksentekonsa tueksi",
+              "sv" : "inhämtar kunskaper och färdigheter som stöd för sina ekonomiska beslut"
+            }, {
+              "_id" : "7787810",
+              "_tunniste" : "4841ad21-e2da-4297-a6fc-9eb5d46cfe2c",
+              "fi" : "suunnittelee ja tekee arkielämään liittyviä valintoja, päätöksiä ja hankintoja sekä pohtii itsenäisen asumisen mahdollisuuksia ja edellytyksiä",
+              "sv" : "planerar och gör val samt fattar beslut i vardagen och reflekterar över möjligheterna och förutsättningarna för självständigt boende"
+            }, {
+              "_id" : "7787811",
+              "_tunniste" : "5a3683af-b58b-463a-ba43-3fa82594a0f9",
+              "fi" : "tuntee turvalliset, vastuulliset ja kestävät toimintatavat opiskelu- ja asuinympäristössään",
+              "sv" : "känner till hur man agerar på ett tryggt, ansvarsfull och hållbart sätt i studie- och boendemiljön"
+            }, {
+              "_id" : "7787812",
+              "_tunniste" : "e3d766a7-a1e3-442c-b4f9-84853932de09",
+              "fi" : "tutustuu erilaisiin vapaa-ajanviettomahdollisuuksiin liikunnan, taiteen, kulttuurin tai muiden tapahtumien avulla",
+              "sv" : "bekantar sig med olika fritidsaktiviteter med hjälp av motion, konst, kultur eller andra evenemang."
+            } ],
+            "keskeinenSisalto" : {
+              "_id" : "7787816",
+              "_tunniste" : "11b6c690-b7a3-4078-86c7-64b700d6bb23",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "laajaAlaisenOsaamisenKuvaus" : {
+              "_id" : "7787870",
+              "_tunniste" : "26d92aad-97e4-427f-b24f-1fea5fd2f950",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "arvioinninKuvaus" : {
+              "_id" : "7787818",
+              "_tunniste" : "e33a11e5-ec0b-4dab-affd-f87232152335",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "osanTyyppi" : "koulutuksenosa"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535565"
+        }, {
+          "id" : 7535295,
+          "perusteenOsa" : {
+            "id" : 7535564,
+            "luotu" : 1610694142001,
+            "muokattu" : 1650969263245,
+            "muokkaaja" : "1.2.246.562.24.71880188605",
+            "nimi" : {
+              "_id" : "8332153",
+              "_tunniste" : "ff6a664c-f450-48b1-afbc-89be89a9ceb8",
+              "fi" : "Työelämätaidot ja työpaikalla tapahtuva oppiminen",
+              "sv" : "Arbetslivsfärdigheter och lärande i arbetslivet"
+            },
+            "tila" : "luonnos",
+            "nimiKoodi" : {
+              "id" : 8332163,
+              "nimi" : {
+                "fi" : "Työelämätaidot ja työelämässä tapahtuva oppiminen",
+                "sv" : "Arbetslivsfärdigheter och lärande i arbetslivet"
+              },
+              "arvo" : "102",
+              "uri" : "koulutuksenosattuva_102",
+              "koodisto" : "koulutuksenosattuva",
+              "versio" : 1
+            },
+            "laajuusMinimi" : 1,
+            "laajuusMaksimi" : 20,
+            "koulutusOsanKoulutustyyppi" : "tutkintokoulutukseenvalmentava",
+            "koulutusOsanTyyppi" : "valinnainen",
+            "kuvaus" : {
+              "_id" : "7787682",
+              "_tunniste" : "a570bd1a-56d5-43ad-89b1-8562c8c0fd89",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "tavoitteenKuvaus" : null,
+            "tavoitteet" : [ {
+              "_id" : "7788126",
+              "_tunniste" : "48a39b1a-2bb1-4c04-b68a-f6af4a404116",
+              "fi" : "tuntee työnhaun prosessin",
+              "sv" : "känner till processen att söka arbete"
+            }, {
+              "_id" : "7788127",
+              "_tunniste" : "36b19daf-270b-493f-b261-f999eaf37751",
+              "fi" : "tutustuu työpaikkoihin oppimisympäristöinä",
+              "sv" : "bekantar sig med arbetsplatser som lärmiljöer"
+            }, {
+              "_id" : "7788128",
+              "_tunniste" : "b9b44b64-81f8-4842-b31f-18d8aa047d31",
+              "fi" : "tuntee työelämän ja yrittäjyyden keskeiset periaatteet",
+              "sv" : "känner till de centrala principerna som berör arbetsliv och företagsamhet"
+            }, {
+              "_id" : "7788129",
+              "_tunniste" : "b3f03e63-1907-4900-8628-25c0784b3559",
+              "fi" : "osaa toimia työyhteisön jäsenenä työpaikalla",
+              "sv" : "kan fungera som en medlem i arbetsgemenskapen på arbetsplatsen"
+            }, {
+              "_id" : "7788180",
+              "_tunniste" : "0a09e336-8190-4ba2-a28b-9a4b30fe3eeb",
+              "fi" : "osaa ajankäytön suunnittelua ja hallintaa",
+              "sv" : "kan planera och hantera sin tidsanvändning"
+            }, {
+              "_id" : "7788181",
+              "_tunniste" : "fa5879b1-2220-45ca-83bc-7ca6ee98539d",
+              "fi" : "tuntee omat oikeutensa ja velvollisuutensa työpaikalla",
+              "sv" : "känner till sina egna rättigheter och skyldigheter på arbetsplatsen"
+            }, {
+              "_id" : "7788182",
+              "_tunniste" : "16f009f0-ba54-4958-9d66-4a8a0adf2e2a",
+              "fi" : "tuntee mahdollisuutensa kansainvälisyysosaamisen kehittämiseen ja osallistuu mahdollisuuksien mukaan kansainväliseen toimintaan",
+              "sv" : "känner till sina möjligheter att utveckla sin internationella kompetens och deltar i mån av möjlighet i internationell verksamhet"
+            }, {
+              "_id" : "7788183",
+              "_tunniste" : "d951c53d-9521-4df3-89a2-eddcf34916a3",
+              "fi" : "tutustuu yleisimpiin työpaikalla käytössä oleviin tietokoneohjelmiin ja työpaikan vuorovaikutustilanteiden kieleen",
+              "sv" : "bekantar sig med de vanligaste datorprogrammen som används på en arbetsplats och med språket som behövs för att kommunicera på arbetsplatsen"
+            }, {
+              "_id" : "7788184",
+              "_tunniste" : "f3816af5-62c4-4b45-b514-748ac0292e37",
+              "fi" : "tiedostaa tulevaisuuden haasteet ja työelämän muutokset",
+              "sv" : "är medveten om framtidens utmaningar och förändringar i arbetslivet"
+            } ],
+            "keskeinenSisalto" : {
+              "_id" : "7787726",
+              "_tunniste" : "75e2efc6-bb8c-4fcf-98e7-91be53d8091d",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "laajaAlaisenOsaamisenKuvaus" : {
+              "_id" : "7787724",
+              "_tunniste" : "a0b0288c-9386-48d7-b00d-19caf61b2476",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "arvioinninKuvaus" : {
+              "_id" : "7787728",
+              "_tunniste" : "cf747681-d8bd-4f92-8d70-a91dc533145f",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "osanTyyppi" : "koulutuksenosa"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535564"
+        }, {
+          "id" : 7535298,
+          "perusteenOsa" : {
+            "id" : 7535567,
+            "luotu" : 1610694845009,
+            "muokattu" : 1650969352221,
+            "muokkaaja" : "1.2.246.562.24.71880188605",
+            "nimi" : {
+              "_id" : "8332155",
+              "_tunniste" : "48e1504c-7254-479f-95f0-eed7f4eca3fe",
+              "fi" : "Valinnaiset koulutuksen osat",
+              "sv" : "Valbara utbildningsdelar"
+            },
+            "tila" : "luonnos",
+            "nimiKoodi" : {
+              "id" : 8332165,
+              "nimi" : {
+                "fi" : "Valinnaiset opinnot",
+                "sv" : "Valbara utbildningsdelar"
+              },
+              "arvo" : "104",
+              "uri" : "koulutuksenosattuva_104",
+              "koodisto" : "koulutuksenosattuva",
+              "versio" : 1
+            },
+            "laajuusMinimi" : 1,
+            "laajuusMaksimi" : 10,
+            "koulutusOsanKoulutustyyppi" : "tutkintokoulutukseenvalmentava",
+            "koulutusOsanTyyppi" : "valinnainen",
+            "kuvaus" : {
+              "_id" : "7787872",
+              "_tunniste" : "f2d96386-212f-4a39-b941-0a1e97baf019",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "tavoitteenKuvaus" : null,
+            "tavoitteet" : [ ],
+            "keskeinenSisalto" : null,
+            "laajaAlaisenOsaamisenKuvaus" : {
+              "_id" : "7787874",
+              "_tunniste" : "b1f02322-8647-4771-8642-6d938106cdf9",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "arvioinninKuvaus" : {
+              "_id" : "7787876",
+              "_tunniste" : "0d56bd73-dce8-4d5a-b821-cc17a8ec11e3",
+              "fi" : "redacted for brevity",
+              "sv" : "redacted for brevity"
+            },
+            "osanTyyppi" : "koulutuksenosa"
+          },
+          "lapset" : [ ],
+          "_perusteenOsa" : "7535567"
+        } ],
+        "_perusteenOsa" : "7535179"
+      } ]
+    }
+  }
+}

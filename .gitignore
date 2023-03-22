@@ -7,6 +7,7 @@
 /checkouts
 /classes
 /lib
+/scripts/session-cookie.txt
 /resources/uberjar/buildversion.txt
 /target
 pom.xml

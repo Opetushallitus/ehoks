@@ -115,8 +115,32 @@
                :nimi {:fi "Valinnaiset opinnot"
                       :sv "Valbara utbildningsdelar"}
                :osaamisalat []
-               :koulutuksenOsaId "12345"}]
+               :koulutuksenOsaViiteId nil}]
              (ep/get-koulutuksenOsa-by-koodiUri "koulutuksenosattuva_104"))))))
+
+(deftest peruste->koulutuksenOsa-with-different-codes
+  (testing "Transform correctly a peruste that has the searched-for code"
+    (let [peruste-test-data
+          (get-mock-eperusteet-value "mock/eperusteet-peruste-7534950.json")]
+      (is (= (ep/peruste->koulutuksenOsa
+               peruste-test-data
+               "koulutuksenosattuva_102")
+             [{:id 7535564,
+               :nimi {:fi "Työelämätaidot ja työelämässä tapahtuva oppiminen",
+                      :sv "Arbetslivsfärdigheter och lärande i arbetslivet"},
+               :osaamisalat (),
+               :koulutuksenOsaViiteId 7535295}]))
+      (is (= (ep/peruste->koulutuksenOsa peruste-test-data "tataeiole") nil)))))
+
+(deftest perusteenOsa-id->viite-id-with-found-and-unfound-values
+  (testing "finding the ePerusteet viite-id for various perusteenOsas"
+    (let [peruste-test-data
+          (get-mock-eperusteet-value "mock/eperusteet-peruste-7534950.json")
+          rakenne (get-in peruste-test-data [:tutkintoonvalmentava :sisalto])]
+      (is (= (ep/perusteenOsa-id->viite-id rakenne "8535564") nil))
+      (is (= (ep/perusteenOsa-id->viite-id rakenne "7535564") 7535295))
+      (is (= (ep/perusteenOsa-id->viite-id rakenne "7535567") 7535298))
+      (is (= (ep/perusteenOsa-id->viite-id rakenne "7535030") 7534971)))))
 
 (deftest find-tutkinto-not-found
   (testing "Not finding any tutkinto items"

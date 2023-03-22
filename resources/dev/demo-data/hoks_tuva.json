@@ -1,0 +1,31 @@
+{
+  "opiskeluoikeus-oid": "1.2.246.562.15.76811942026",
+  "oppija-oid": "1.2.246.562.24.44651722625",
+  "ensikertainen-hyvaksyminen": "2018-10-27",
+  "sahkoposti": "testikayttaja@testi.fi",
+  "hyvaksytty": "2018-10-27T21:00:00.000Z",
+  "paivitetty": "2018-10-27T21:00:00.000Z",
+  "versio": 0,
+  "urasuunnitelma-koodi-uri": "urasuunnitelma_0001",
+  "urasuunnitelma-koodi-versio": 1,
+  "osaamisen-hankkimisen-tarve": true,
+  "hankittavat-koulutuksen-osat": [{
+    "koulutuksen-osa-koodi-uri": "koulutuksenosattuva_102",
+    "koulutuksen-osa-koodi-versio": 1,
+    "alku": "2018-11-12",
+    "loppu": "2019-03-01",
+    "laajuus": 150
+  },{
+    "koulutuksen-osa-koodi-uri": "koulutuksenosattuva_104",
+    "koulutuksen-osa-koodi-versio": 1,
+    "alku": "2019-11-12",
+    "loppu": "2024-03-01",
+    "laajuus": 15
+  }],
+  "aiemmin-hankitut-ammat-tutkinnon-osat": [],
+  "aiemmin-hankitut-paikalliset-tutkinnon-osat": [],
+  "aiemmin-hankitut-yhteiset-tutkinnon-osat": [],
+  "opiskeluvalmiuksia-tukevat-opinnot": [],
+  "hankittavat-ammat-tutkinnon-osat": [],
+  "hankittavat-yhteiset-tutkinnon-osat": [],
+  "hankittavat-paikalliset-tutkinnon-osat": []}
