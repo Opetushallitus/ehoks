@@ -228,11 +228,6 @@
   [m]
   (db-ops/from-sql m {:removals [:id]}))
 
-(defn tyotehtava-from-sql
-  "Hakee työtehtävän tietokannasta haetusta objektista."
-  [m]
-  (get m :tyotehtava))
-
 (defn sisallon-kuvaus-from-sql
   "Hakee sisällön kuvauksen tietokannasta haetusta objektista."
   [m]
@@ -358,11 +353,6 @@
   sen mukaiseksi, mitä odotetaan palvelussa."
   [m]
   (db-ops/from-sql m))
-
-(defn osaamistavoite-from-sql
-  "Hakee osaamistavoitteen tietokannasta haetusta objektista."
-  [m]
-  (get m :osaamistavoite))
 
 (defn select-hoksit
   "hakee HOKSit tietokannasta."

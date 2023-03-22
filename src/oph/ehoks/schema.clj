@@ -7,12 +7,6 @@
              {:uri s/Str
               (s/optional-key :notifications) [s/Str]})
 
-(s/defschema KoodistoErrorMeta
-             "Koodiston virhetilanteen metatiedot vastauksessa"
-             {(s/optional-key :errors) [{:error-type s/Keyword
-                                         :keys [s/Keyword]
-                                         :path s/Str}]})
-
 (s/defschema User
              "User"
              {(s/optional-key :oid) s/Str

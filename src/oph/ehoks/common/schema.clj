@@ -31,10 +31,6 @@
                :id s/Int
                :modifiedBy  s/Str}])
 
-(s/defschema LocalizationHealtcheckStatus
-             "Healthcheck status of Localization Service"
-             {})
-
 (s/defschema
   OppijaSearchResult
   "Oppijan haun tulos"
@@ -54,27 +50,6 @@
   {:oid s/Str
    :nimi s/Str
    (s/optional-key :opiskeluoikeus-oid) s/Str})
-
-(s/defschema
-  Opiskeluoikeus
-  "Opiskeluoikeus ehoksissa"
-  {:oid s/Str
-   :oppija-oid s/Str
-   :oppilaitos-oid s/Str
-   (s/optional-key :koulutustoimija-oid) (s/maybe s/Str)
-   (s/optional-key :tutkinto-nimi) {(s/optional-key :fi) s/Str
-                                    (s/optional-key :en) s/Str
-                                    (s/optional-key :sv) s/Str}
-   (s/optional-key :osaamisala-nimi) {(s/optional-key :fi) s/Str
-                                      (s/optional-key :en) s/Str
-                                      (s/optional-key :sv) s/Str}
-   (s/optional-key :paattynyt) (s/maybe s/Inst)})
-
-(s/defschema
-  Tutkinto
-  "Tutkinnon perustiedot ePerusteet järjestelmässä"
-  {:laajuus s/Int
-   :nimi s/Str})
 
 (s/defschema
   KoodiMetadata

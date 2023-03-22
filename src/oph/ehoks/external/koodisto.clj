@@ -65,11 +65,3 @@
   [uri]
   (with-koodisto-get
     (u/get-url "koodisto-service.get-latest-versiot-by-uri" uri)))
-
-(defn convert-metadata
-  "Convert metadata to dash key format"
-  [m]
-  {:nimi (:nimi m)
-   :lyhyt-nimi (:lyhytNimi m)
-   :kuvaus (:kuvaus m)
-   :kieli (:kieli m)})
