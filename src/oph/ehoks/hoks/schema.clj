@@ -966,6 +966,16 @@
     (str "Tutkintoon valmentavan koulutuksen koulutuksen osan laajuus"
          "TUVA-viikkoina.")))
 
+(s/defschema
+  OsaamisenSaavuttamisenPvm
+  "Aika, jonka saa kirjoittaa osaamisen-saavuttamisen-pvm-kenttään."
+  (s/constrained
+    LocalDate
+    #(and (.isAfter % (LocalDate/of 2018 1 1))
+          (.isBefore % (.plusDays (LocalDate/now) 15)))
+    "Osaaminen voidaan merkitä saavutetuksi enintään kaksi viikkoa
+    tulevaisuuteen ja vähintään vuodelle 2018."))
+
 (def ^:private ahato-part-of-hoks
   "Aiemmin hankitun ammatillisen tutkinnon osan HOKS-osa schemana."
   {:methods {:any :optional
@@ -1096,7 +1106,7 @@
                 :description (str "HOKS-dokumentin viimeisin päivitysaika "
                                   "muodossa YYYY-MM-DDTHH:mm:ss.sssZ")}
    :osaamisen-saavuttamisen-pvm {:methods {:any :optional}
-                                 :types {:any LocalDate}
+                                 :types {:any OsaamisenSaavuttamisenPvm}
                                  :description
                                  (str "HOKSin osaamisen saavuttamisen "
                                       "ajankohta muodossa YYYY-MM-DD")}
