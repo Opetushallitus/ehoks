@@ -1,7 +1,6 @@
 (ns oph.ehoks.hoks.schema
   (:require [oph.ehoks.schema.generator :as g]
             [oph.ehoks.schema-tools :refer [describe modify]]
-            [oph.ehoks.external.koski :as k]
             [schema.core :as s]
             [clojure.tools.logging :as log])
   (:import (java.time LocalDate)
