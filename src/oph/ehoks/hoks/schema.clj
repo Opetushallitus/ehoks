@@ -1162,7 +1162,8 @@
     (s/constrained schema
                    (fn [hoks] (or (check-tuva-hoks! hoks)
                                   (check-non-tuva-hoks! hoks)))
-                   "tuva-hoks-cross-check")))
+                   (str "HOKSin rakenteen tulee vastata siihen liitetyn "
+                        "opiskeluoikeuden tyyppiä."))))
 
 (def HOKSPaivitys
   "HOKSin päivitysschema."

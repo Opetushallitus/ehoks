@@ -646,8 +646,9 @@
                                 :laajuus 10}]})]
           (t/is (= (:status post-response) 400))
           (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(not (\"tuva-hoks-cross-check\" "
-                        "a-clojure.lang.PersistentArrayMap))"))))))))
+                   (str "(not (\"HOKSin rakenteen tulee vastata siihen liitetyn"
+                        " opiskeluoikeuden tyyppiä.\""
+                        " a-clojure.lang.PersistentArrayMap))"))))))))
 
 (defn mocked-get-oo-non-tuva [oid]
   {:oid oid
