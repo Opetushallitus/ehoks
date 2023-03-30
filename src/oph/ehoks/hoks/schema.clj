@@ -1137,33 +1137,8 @@
     {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
      :name "HOKS"}))
 
-(defn- check-non-tuva-hoks!
-  [hoks]
-  (empty? (:hankittavat-koulutuksen-osat hoks)))
-
-(defn- check-tuva-hoks!
-  [hoks]
-  (and (nil? (:tuva-opiskeluoikeus-oid hoks))
-       (every?
-         (comp empty? hoks)
-         [:aiemmin-hankitut-ammat-tutkinnon-osat
-          :aiemmin-hankitut-yhteiset-tutkinnon-osat
-          :aiemmin-hankitut-paikalliset-tutkinnon-osat
-          :opiskeluvalmiuksia-tukevat-opinnot
-          :hankittavat-ammat-tutkinnon-osat
-          :hankittavat-yhteiset-tutkinnon-osat
-          :hankittavat-paikalliset-tutkinnon-osat])
-       (seq (:hankittavat-koulutuksen-osat hoks))))
-
 (defn generate-hoks-schema [schema-name method doc]
-  (let [schema (with-meta
-                 (g/generate HOKSModel method)
-                 {:doc doc :name schema-name})]
-    (s/constrained schema
-                   (fn [hoks] (or (check-tuva-hoks! hoks)
-                                  (check-non-tuva-hoks! hoks)))
-                   (str "HOKSin rakenteen tulee vastata siihen liitetyn "
-                        "opiskeluoikeuden tyyppiä."))))
+  (with-meta (g/generate HOKSModel method) {:doc doc :name schema-name}))
 
 (def HOKSPaivitys
   "HOKSin päivitysschema."

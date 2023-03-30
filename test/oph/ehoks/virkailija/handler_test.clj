@@ -645,10 +645,9 @@
                                 :loppu "2022-09-21"
                                 :laajuus 10}]})]
           (t/is (= (:status post-response) 400))
-          (t/is (= (:errors (utils/parse-body (:body post-response)))
-                   (str "(not (\"HOKSin rakenteen tulee vastata siihen liitetyn"
-                        " opiskeluoikeuden tyyppiä.\""
-                        " a-clojure.lang.PersistentArrayMap))"))))))))
+          (t/is (= (:error (utils/parse-body (:body post-response)))
+                   (str "HOKSin rakenteen tulee vastata siihen liitetyn "
+                        "opiskeluoikeuden tyyppiä (tuva)."))))))))
 
 (defn mocked-get-oo-non-tuva [oid]
   {:oid oid
@@ -676,7 +675,8 @@
           (t/is
             (= (utils/parse-body (:body post-response))
                {:error
-                "Opiskeluoikeus tyyppi does not match to HOKS content!"})))))))
+                (str "HOKSin rakenteen tulee vastata siihen liitetyn "
+                     "opiskeluoikeuden tyyppiä (ammatillinenkoulutus).")})))))))
 
 (defn mocked-find-student-by-oid [oid]
   (throw (ex-info "Opiskelija fetch failed" {:status 404})))
