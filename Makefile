@@ -6,6 +6,10 @@ stamps/db-image: $(wildcard scripts/postgres-docker/*)
 stamps/db-running: stamps/db-image
 	docker run -d --rm --name ehoks-postgres -p 5432:5432 ehoks-postgres \
 		> $@ || (rm $@ && false)
+	until echo pingping | nc localhost 5432; do \
+		echo "Waiting for database to come up..."; \
+		sleep 1; \
+	done
 
 stamps/db-schema: stamps/db-running
 	lein dbmigrate
@@ -21,6 +25,20 @@ schemaDoc: stamps/db-schema
 		-s public -dp $(PG_JAR) -o $@ \
 	|| (rm -r $@ && false)
 
+stamps/server-running: stamps/db-schema
+	lein with-profiles +dev run ehoks-virkailija \
+		> ehoks-virkailija.log 2>&1 & echo $$! > $@
+	until curl localhost:3000; do \
+		echo "Waiting for backend to come up..."; \
+		sleep 2; \
+	done
+	touch $@
+
+stamps/example-data: stamps/server-running
+	sh ./scripts/create-curl-session.sh
+	sh ./scripts/upload-hoks.sh
+	touch $@
+
 tags::
 	ctags -R --exclude='*.min.js' .
 
@@ -29,11 +47,13 @@ psql: stamps/db-running
 	psql -h localhost -U postgres ehoks
 
 .PHONY: test
-test: stamps/db-schema
+test:
 	lein test
 
 .PHONY: stop
 stop:
-	docker rm -f ehoks-postgres
+	-test -f stamps/db-running && docker rm -f ehoks-postgres
 	-rm stamps/db-running
+	-test -f stamps/server-running && kill $$(cat stamps/server-running)
+	-rm stamps/server-running
 
