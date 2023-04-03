@@ -19,7 +19,8 @@
       {:koodiarvo "351407"
        :nimi {:fi "Testialan perustutkinto"
               :sv "Grundexamen inom testsbranschen"
-              :en "Testing"}}}}]})
+              :en "Testing"}}}}]
+   :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
 
 (def onr-data
   {:status 200
@@ -375,6 +376,9 @@
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}}))
 
+    ; odota cachen vanhenemista
+    (Thread/sleep 500)
+
     (utils/with-ticket-auth
       ["1.2.246.562.10.222222222222"
        (fn [_ url __]
@@ -420,67 +424,72 @@
       (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111"))
-    (utils/with-ticket-auth ["1.2.246.562.10.222222222222"]
-                            (sut/insert-hankintakoulutus-opiskeluoikeus!
-                              "1.2.246.562.15.00000000001"
-                              "1.2.246.562.24.111111111111"
-                              (assoc
-                                opiskeluoikeus-data
-                                :oid "1.2.246.562.15.00000000002"
-                                :sisältyyOpiskeluoikeuteen
-                                {:oppilaitos {:oid "1.2.246.562.15.99999123"
-                                              :oppilaitosnumero
-                                              {:koodiarvo "10076"}
-                                              :nimi
-                                              {:fi "Testi-yliopisto"
-                                               :sv "Testi-universitet"
-                                               :en "Testi University"}}
-                                 :oid        "1.2.246.562.15.00000000001"}))
-                            (utils/eq
-                              (sut/get-opiskeluoikeus-by-oid
-                                "1.2.246.562.15.00000000002")
-                              {:osaamisala-nimi {:fi "", :sv ""},
-                               :oid "1.2.246.562.15.00000000002",
-                               :hankintakoulutus-opiskeluoikeus-oid
-                               "1.2.246.562.15.00000000001",
-                               :oppilaitos-oid "1.2.246.562.10.222222222222",
-                               :tutkinto-nimi
-                               {:en "Testing",
-                                :fi "Testialan perustutkinto",
-                                :sv "Grundexamen inom testsbranschen"},
-                               :oppija-oid "1.2.246.562.24.111111111111",
-                               :hankintakoulutus-jarjestaja-oid
-                               "1.2.246.562.15.99999123"})
-                            (sut/insert-hankintakoulutus-opiskeluoikeus!
-                              "1.2.246.562.15.00000000001"
-                              "1.2.246.562.24.111111111111"
-                              (assoc
-                                opiskeluoikeus-data
-                                :oid "1.2.246.562.15.00000000002"
-                                :sisältyyOpiskeluoikeuteen
-                                {:oppilaitos {:oid "1.2.246.562.15.99999125"
-                                              :oppilaitosnumero
-                                              {:koodiarvo "10076"}
-                                              :nimi
-                                              {:fi "Katujen-yliopisto"
-                                               :sv "Gatan-universitet"
-                                               :en "Street University"}}
-                                 :oid        "1.2.246.562.15.00000000001"}))
-                            (utils/eq
-                              (sut/get-opiskeluoikeus-by-oid
-                                "1.2.246.562.15.00000000002")
-                              {:osaamisala-nimi {:fi "", :sv ""},
-                               :oid "1.2.246.562.15.00000000002",
-                               :hankintakoulutus-opiskeluoikeus-oid
-                               "1.2.246.562.15.00000000001",
-                               :oppilaitos-oid "1.2.246.562.10.222222222222",
-                               :tutkinto-nimi
-                               {:en "Testing",
-                                :fi "Testialan perustutkinto",
-                                :sv "Grundexamen inom testsbranschen"},
-                               :oppija-oid "1.2.246.562.24.111111111111",
-                               :hankintakoulutus-jarjestaja-oid
-                               "1.2.246.562.15.99999125"}))))
+
+    ; odota cachen vanhenemista
+    (Thread/sleep 500)
+
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"]
+      (sut/insert-hankintakoulutus-opiskeluoikeus!
+        "1.2.246.562.15.00000000001"
+        "1.2.246.562.24.111111111111"
+        (assoc
+          opiskeluoikeus-data
+          :oid "1.2.246.562.15.00000000002"
+          :sisältyyOpiskeluoikeuteen
+          {:oppilaitos {:oid "1.2.246.562.15.99999123"
+                        :oppilaitosnumero
+                        {:koodiarvo "10076"}
+                        :nimi
+                        {:fi "Testi-yliopisto"
+                         :sv "Testi-universitet"
+                         :en "Testi University"}}
+           :oid        "1.2.246.562.15.00000000001"}))
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid
+          "1.2.246.562.15.00000000002")
+        {:osaamisala-nimi {:fi "", :sv ""},
+         :oid "1.2.246.562.15.00000000002",
+         :hankintakoulutus-opiskeluoikeus-oid
+         "1.2.246.562.15.00000000001",
+         :oppilaitos-oid "1.2.246.562.10.222222222222",
+         :tutkinto-nimi
+         {:en "Testing",
+          :fi "Testialan perustutkinto",
+          :sv "Grundexamen inom testsbranschen"},
+         :oppija-oid "1.2.246.562.24.111111111111",
+         :hankintakoulutus-jarjestaja-oid
+         "1.2.246.562.15.99999123"})
+      (sut/insert-hankintakoulutus-opiskeluoikeus!
+        "1.2.246.562.15.00000000001"
+        "1.2.246.562.24.111111111111"
+        (assoc
+          opiskeluoikeus-data
+          :oid "1.2.246.562.15.00000000002"
+          :sisältyyOpiskeluoikeuteen
+          {:oppilaitos {:oid "1.2.246.562.15.99999125"
+                        :oppilaitosnumero
+                        {:koodiarvo "10076"}
+                        :nimi
+                        {:fi "Katujen-yliopisto"
+                         :sv "Gatan-universitet"
+                         :en "Street University"}}
+           :oid        "1.2.246.562.15.00000000001"}))
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid
+          "1.2.246.562.15.00000000002")
+        {:osaamisala-nimi {:fi "", :sv ""},
+         :oid "1.2.246.562.15.00000000002",
+         :hankintakoulutus-opiskeluoikeus-oid
+         "1.2.246.562.15.00000000001",
+         :oppilaitos-oid "1.2.246.562.10.222222222222",
+         :tutkinto-nimi
+         {:en "Testing",
+          :fi "Testialan perustutkinto",
+          :sv "Grundexamen inom testsbranschen"},
+         :oppija-oid "1.2.246.562.24.111111111111",
+         :hankintakoulutus-jarjestaja-oid
+         "1.2.246.562.15.99999125"}))))
 
 (t/deftest set-paattynyt-test
   (t/testing "Setting paattynyt timestamp"
@@ -545,7 +554,7 @@
           ExceptionInfo
           #"Opiskeluoikeus sisältyy toiseen opiskeluoikeuteen"
           (sut/add-opiskeluoikeus!
-            "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")))
+            "1.2.246.562.15.00000000005" "1.2.246.562.24.111111111111")))
       (t/is
         (nil? (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001"))))))
 

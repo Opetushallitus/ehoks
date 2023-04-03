@@ -4,7 +4,8 @@
             [ring.util.http-status :as status]
             [clojure.data.json :as json]
             [oph.ehoks.external.oph-url :as u]
-            [clojure.tools.logging :as log])
+            [clojure.core.memoize :as memo]
+            [clojure.core.cache :as cache])
   (:import (clojure.lang ExceptionInfo)))
 
 (defn filter-oppija
@@ -13,18 +14,29 @@
   (update values :henkilö select-keys
           [:oid :hetu :syntymäaika :etunimet :kutsumanimi :sukunimi]))
 
-(defn get-oppijat-opiskeluoikeudet
+(defn- with-fifo-ttl-cache
+  [f ttl-millis fifo-threshold seed]
+  (let [cache (-> {}
+                  (cache/fifo-cache-factory :threshold fifo-threshold)
+                  (cache/ttl-cache-factory :ttl ttl-millis))]
+    (memo/memoizer f cache seed)))
+
+(def get-oppijat-opiskeluoikeudet
   "Palauttaa annettujen oppijoiden kaikki opiskeluoikeudet"
-  [oppija-oids]
-  (:body
-    (c/with-api-headers
-      {:method :post
-       :service (u/get-url "koski-url")
-       :url (u/get-url "koski.post-sure-oids")
-       :options {:body (json/write-str oppija-oids)
-                 :basic-auth [(:cas-username config) (:cas-password config)]
-                 :content-type :json
-                 :as :json}})))
+  (with-fifo-ttl-cache
+    (fn [oppija-oids]
+      (:body
+        (c/with-api-headers
+          {:method :post
+           :service (u/get-url "koski-url")
+           :url (u/get-url "koski.post-sure-oids")
+           :options {:body (json/write-str oppija-oids)
+                     :basic-auth [(:cas-username config) (:cas-password config)]
+                     :content-type :json
+                     :as :json}})))
+    (or (:koski-oppija-cache-ttl-millis config) 5000)
+    30
+    {}))
 
 (defn get-oppija-opiskeluoikeudet
   "Palauttaa oppijan opiskeluoikeudet"
@@ -47,16 +59,20 @@
        :options {:basic-auth [(:cas-username config) (:cas-password config)]
                  :as :json}})))
 
-(defn get-opiskeluoikeus-info-raw
-  "Get opiskeluoikeus info without error handling"
-  [oid]
-  (:body
-    (c/with-api-headers
-      {:method :get
-       :service (u/get-url "koski-url")
-       :url (u/get-url "koski.get-opiskeluoikeus" oid)
-       :options {:basic-auth [(:cas-username config) (:cas-password config)]
-                 :as :json}})))
+(def get-opiskeluoikeus-info-raw
+  "Get opiskeluoikeus info"
+  (with-fifo-ttl-cache
+    (fn [oid]
+      (:body
+        (c/with-api-headers
+          {:method :get
+           :service (u/get-url "koski-url")
+           :url (u/get-url "koski.get-opiskeluoikeus" oid)
+           :options {:basic-auth [(:cas-username config) (:cas-password config)]
+                     :as :json}})))
+    (or (:koski-opiskeluoikeus-cache-ttl-millis config) 2000)
+    30
+    {}))
 
 (defn get-opiskeluoikeus-info
   "Get opiskeluoikeus info with error handling"

@@ -237,9 +237,34 @@
   [id]
   (log/errorf "Error caused by hoks-id: %s" id))
 
+(defn- validate-tuva-hoks-type
+  [hoks]
+  (when-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
+    (when-let [opiskeluoikeus (k/get-opiskeluoikeus-info opiskeluoikeus-oid)]
+      (let [tyyppi (get-in opiskeluoikeus [:tyyppi :koodiarvo])
+            tuva? (= (keyword tyyppi) :tuva)]
+        (when (or (and (not tuva?)
+                       (seq (:hankittavat-koulutuksen-osat hoks)))
+                  (and tuva?
+                       (or (:tuva-opiskeluoikeus-oid hoks)
+                           (not (every?
+                                  (comp empty? hoks)
+                                  [:aiemmin-hankitut-ammat-tutkinnon-osat
+                                   :aiemmin-hankitut-yhteiset-tutkinnon-osat
+                                   :aiemmin-hankitut-paikalliset-tutkinnon-osat
+                                   :opiskeluvalmiuksia-tukevat-opinnot
+                                   :hankittavat-ammat-tutkinnon-osat
+                                   :hankittavat-yhteiset-tutkinnon-osat
+                                   :hankittavat-paikalliset-tutkinnon-osat])))))
+          (throw (ex-info
+                   (str "HOKSin rakenteen tulee vastata siihen liitetyn "
+                        "opiskeluoikeuden tyyppiä (" tyyppi ").")
+                   {:error :disallowed-update})))))))
+
 (defn save-hoks!
   "Tallentaa yhden HOKSin arvot tietokantaan."
   [h]
+  (validate-tuva-hoks-type h)
   (let [hoks-db
         (jdbc/with-db-transaction
           [conn (db-ops/get-db-connection)]
@@ -492,6 +517,8 @@
   [hoks-id new-values]
   (let [current-hoks (get-hoks-by-id hoks-id)
         old-opiskeluoikeus-oid (:opiskeluoikeus-oid current-hoks)
+        _ (validate-tuva-hoks-type
+            (merge new-values {:opiskeluoikeus-oid old-opiskeluoikeus-oid}))
         old-oppija-oid (:oppija-oid current-hoks)
         old-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
                                           current-hoks)
@@ -604,6 +631,8 @@
     [db-conn (db-ops/get-db-connection)]
     (let [hoks (get-hoks-by-id hoks-id)
           old-opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+          _ (validate-tuva-hoks-type
+              (merge new-values {:opiskeluoikeus-oid old-opiskeluoikeus-oid}))
           old-oppija-oid (:oppija-oid hoks)
           old-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
                                             hoks)

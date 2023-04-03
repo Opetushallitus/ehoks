@@ -7,4 +7,6 @@
  :db-username "ehoks_user"
  :db-password "ehoks"
  :opintopolku-host "localhost:3001"
- :audit? false}
+ :audit? false
+ :koski-opiskeluoikeus-cache-ttl-millis 1
+ :koski-oppija-cache-ttl-millis 1}

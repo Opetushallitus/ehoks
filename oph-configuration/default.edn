@@ -27,4 +27,6 @@
  :arvo-password ""
  :arvo-url "http://localhost:3000/api/vastauslinkki/v1"
  :enforce-opiskeluoikeus-match? false
- :prevent-finished-opiskeluoikeus-updates? false}
+ :prevent-finished-opiskeluoikeus-updates? false
+ :koski-opiskeluoikeus-cache-ttl-millis 2000
+ :koski-oppija-cache-ttl-millis 5000}

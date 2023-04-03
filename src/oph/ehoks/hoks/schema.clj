@@ -1,12 +1,11 @@
 (ns oph.ehoks.hoks.schema
-  (:require [clojure.tools.logging :as log]
-            [environ.core :refer [env]]
-            [oph.ehoks.schema.generator :as g]
+  (:require [oph.ehoks.schema.generator :as g]
             [oph.ehoks.schema-tools :refer [describe modify]]
-            [schema.core :as s])
-  (:import (com.google.i18n.phonenumbers PhoneNumberUtil NumberParseException)
-           (java.time LocalDate)
-           (java.util UUID)))
+            [schema.core :as s]
+            [clojure.tools.logging :as log])
+  (:import (java.time LocalDate)
+           (java.util UUID)
+           (clojure.lang ExceptionInfo)))
 
 (def TutkinnonOsaKoodiUri
   "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosat)."
@@ -963,7 +962,7 @@
     (s/constrained s/Num
                    #(not (neg? %))
                    "Koulutuksen osan laajuus ei saa olla negatiivinen.")
-    (str "Tutkintoon valmentavan koulutuksen koulutuksen osan laajuus"
+    (str "Tutkintoon valmentavan koulutuksen koulutuksen osan laajuus "
          "TUVA-viikkoina.")))
 
 (s/defschema
@@ -983,7 +982,8 @@
    :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]
            :post [AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
            :put [AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description "Aiemmin hankittu ammatillinen osaaminen"})
+   :description (str "Aiemmin hankittu ammatillinen osaaminen. Ei sallittu "
+                     "TUVA-HOKSilla.")})
 
 (def ^:private ahyto-part-of-hoks
   "Aiemmin hankitun yhteisen tutkinnon osan HOKS-osa schemana."
@@ -992,7 +992,8 @@
    :types {:any [AiemminHankittuYhteinenTutkinnonOsa]
            :post [AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus]
            :put [AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description "Aiemmin hankitut yhteiset tutkinnon osat (YTO)"})
+   :description (str "Aiemmin hankitut yhteiset tutkinnon osat (YTO). Ei "
+                     "sallittu TUVA-HOKSilla.")})
 
 (def ^:private ahpto-part-of-hoks
   "Aiemmin hankitun paikallisen tutkinnon osan HOKS-osa schemana."
@@ -1001,14 +1002,16 @@
    :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]
            :post [AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]
            :put [AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description "Aiemmin hankittu paikallinen tutkinnon osa"})
+   :description (str "Aiemmin hankittu paikallinen tutkinnon osa. Ei sallittu "
+                     "TUVA-HOKSilla.")})
 
 (def ^:private oto-part-of-hoks
   "Opiskeluvalmiuksia tukevien opintojen HOKS-osa schemana."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
-   :description "Opiskeluvalmiuksia tukevat opinnot"})
+   :description (str "Opiskeluvalmiuksia tukevat opinnot. Ei sallittu "
+                     "TUVA-HOKSilla.")})
 
 (def ^:private hato-part-of-hoks
   "Hankittavan ammatillisen tutkinnon osan HOKS-osa schemana."
@@ -1018,7 +1021,8 @@
            :post [HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
            :put [HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]}
    :description
-   "Hankittavan ammatillisen osaamisen hankkimisen tiedot"})
+   (str "Hankittavan ammatillisen osaamisen hankkimisen tiedot. Ei sallittu "
+        "TUVA-HOKSilla.")})
 
 (def ^:private hyto-part-of-hoks
   "Hankittavan yhteisen tutkinnon osan HOKS-osa schemana."
@@ -1027,7 +1031,8 @@
    :types {:any [HankittavaYTO]
            :post [HankittavaYTOLuontiJaMuokkaus]
            :put [HankittavaYTOLuontiJaMuokkaus]}
-   :description "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot"})
+   :description (str "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot. "
+                     "Ei sallittu TUVA-HOKSilla.")})
 
 (def ^:private hpto-part-of-hoks
   "Hankittavan paikallisen tutkinnon osan HOKS-osa schemana."
@@ -1036,14 +1041,15 @@
    :types {:any [HankittavaPaikallinenTutkinnonOsa]
            :post [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]
            :put [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description "Hankittavat paikallisen tutkinnon osat"})
+   :description (str "Hankittavat paikallisen tutkinnon osat. Ei sallittu "
+                     "TUVA-HOKSilla.")})
 
 (def ^:private hankittava-koulutuksen-osa
   "TUVA HOKSin hankittava koulutuksen osa."
   {:methods {:any :optional
              :patch :excluded}
    :types {:any [HankittavaKoulutuksenOsa]}
-   :description "Hankittavan koulutuksen osan tiedot"})
+   :description "Hankittava koulutuksen osa. Sallittu vain TUVA-HOKSilla."})
 
 (def HOKSModel
   "HOKS-schema."
@@ -1071,19 +1077,20 @@
    {:methods {:any :optional
               :post :required}
     :types {:any OpiskeluoikeusOid}
-    :description "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
-                  '1.2.246.562.15.00000000001'."}
+    :description (str "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä "
+                      "muotoa '1.2.246.562.15.00000000001'.")}
    :tuva-opiskeluoikeus-oid
    {:methods {:any :optional}
     :types {:any OpiskeluoikeusOid}
-    :description "TUVA-opiskeluoikeuden oid-tunniste Koski-järjestelmässä muotoa
-                  '1.2.246.562.15.00000000001'."}
+    :description (str "TUVA-opiskeluoikeuden oid-tunniste Koski-järjestelmässä "
+                      "muotoa '1.2.246.562.15.00000000001'. Ei sallittu "
+                      "TUVA-HOKSilla.")}
    :urasuunnitelma-koodi-uri
    {:methods {:any :optional}
     :types {:any UrasuunnitelmaKoodiUri}
-    :description "Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto
-    Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim.
-    urasuunnitelma_0001"}
+    :description (str "Opiskelijan tavoitteen Koodisto-koodi-URI, koodisto "
+                      "Urasuunnitelma, muotoa urasuunnitelma_xxxx, esim. "
+                      "urasuunnitelma_0001")}
    :urasuunnitelma-koodi-versio
    {:methods {:any :optional}
     :types {:any s/Int}
@@ -1094,8 +1101,8 @@
    :ensikertainen-hyvaksyminen {:methods {:patch :optional}
                                 :types {:any LocalDate}
                                 :description
-                                "HOKS-dokumentin ensimmäinen hyväksymisaika
-                                muodossa YYYY-MM-DD"}
+                                (str "HOKS-dokumentin ensimmäinen "
+                                     "hyväksymisaika muodossa YYYY-MM-DD")}
    :hyvaksytty
    {:methods {:any :optional}
     :types {:any s/Inst}
@@ -1115,10 +1122,10 @@
                                            :get :optional}
                                  :types {:any s/Bool}
                                  :description
-                                 "Tutkintokoulutuksen ja muun tarvittavan
-                               ammattitaidon hankkimisen tarve; osaamisen
-                               tunnistamis- ja tunnustamisprosessin
-                               lopputulos."}
+                                 (str "Tutkintokoulutuksen ja muun tarvittavan "
+                                      "ammattitaidon hankkimisen tarve; "
+                                      "osaamisen tunnistamis- ja "
+                                      "tunnustamisprosessin lopputulos.")}
    :manuaalisyotto {:methods {:any :excluded
                               :get :optional}
                     :types {:any s/Bool}
@@ -1133,32 +1140,33 @@
    :hankittavat-koulutuksen-osat hankittava-koulutuksen-osa})
 
 (def HOKS
-  "Generoitu HOKS-schema."
+  "HOKSin schema."
   (with-meta
     (g/generate HOKSModel :get)
     {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
      :name "HOKS"}))
 
+(defn generate-hoks-schema [schema-name method doc]
+  (with-meta (g/generate HOKSModel method) {:doc doc :name schema-name}))
+
 (def HOKSPaivitys
-  "Generoitu HOKSin päivitysschema."
-  (with-meta
-    (g/generate HOKSModel :patch)
-    {:doc "HOKS-dokumentin ylikirjoitus (PATCH)"
-     :name "HOKSPaivitys"}))
+  "HOKSin päivitysschema."
+  (generate-hoks-schema "HOKSPaivitys"
+                        :patch
+                        "HOKS-dokumentin osittainen päivittäminen (PATCH)"))
 
 (def HOKSKorvaus
-  "Generoitu HOKSin korvausschema."
-  (with-meta
-    (g/generate HOKSModel :put)
-    {:doc "HOKS-dokumentin ylikirjoitus (PUT)"
-     :name "HOKSKorvaus"}))
+  "HOKSin korvausschema."
+  (generate-hoks-schema "HOKSKorvaus"
+                        :put
+                        "HOKS-dokumentin ylikirjoitus (PUT)"))
 
 (def HOKSLuonti
-  "Generoitu HOKSin luontischema."
-  (with-meta
-    (g/generate HOKSModel :post)
-    {:doc "HOKS-dokumentin arvot uutta merkintää luotaessa (POST)"
-     :name "HOKSLuonti"}))
+  "HOKSin luontischema."
+  (generate-hoks-schema "HOKSLuonti"
+                        :post
+                        (str "HOKS-dokumentin arvot uutta merkintää luotaessa "
+                             "(POST)")))
 
 (s/defschema
   kyselylinkki

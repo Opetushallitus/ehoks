@@ -107,8 +107,7 @@
    :hankittavat-ammat-tutkinnon-osat [parts-test-data/hao-data]
    :hankittavat-paikalliset-tutkinnon-osat [parts-test-data/hpto-data]
    :hankittavat-yhteiset-tutkinnon-osat [parts-test-data/hyto-data]
-   :hankittavat-koulutuksen-osat
-   [parts-test-data/hankittavat-koulutuksen-osat-data]
+   :hankittavat-koulutuksen-osat []
    :aiemmin-hankitut-ammat-tutkinnon-osat [parts-test-data/ahato-data]
    :aiemmin-hankitut-paikalliset-tutkinnon-osat [parts-test-data/ahpto-data]
    :aiemmin-hankitut-yhteiset-tutkinnon-osat [parts-test-data/ahyto-data]})
@@ -127,8 +126,7 @@
    :hankittavat-paikalliset-tutkinnon-osat [parts-test-data/hpto-data]
    :hankittavat-yhteiset-tutkinnon-osat
    [parts-test-data/hyto-data-wo-osa-aikaisuus]
-   :hankittavat-koulutuksen-osat
-   [parts-test-data/hankittavat-koulutuksen-osat-data]
+   :hankittavat-koulutuksen-osat []
    :aiemmin-hankitut-ammat-tutkinnon-osat [parts-test-data/ahato-data]
    :aiemmin-hankitut-paikalliset-tutkinnon-osat [parts-test-data/ahpto-data]
    :aiemmin-hankitut-yhteiset-tutkinnon-osat [parts-test-data/ahyto-data]})

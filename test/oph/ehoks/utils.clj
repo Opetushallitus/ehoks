@@ -169,13 +169,24 @@
                       :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.10.12944436166")}
                       :suoritukset
-                      [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]}}
+                      [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+                      :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000002")
               {:status 200
                :body {:oid "1.2.246.562.15.00000000002"
                       :oppilaitos {:oid (or oppilaitos-oid
-                                            "1.2.246.562.24.47861388608")}}}
+                                            "1.2.246.562.24.47861388608")}
+                      :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
+              (.endsWith
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000003")
+              {:status 200
+               :body {:oid "1.2.246.562.15.00000000003"
+                      :oppilaitos {:oid (or oppilaitos-oid
+                                            "1.2.246.562.10.12944436166")}
+                      :suoritukset
+                      [{:tyyppi {:koodiarvo "tuvaperusopetus"}}]
+                      :tyyppi {:koodiarvo "tuva"}}}
               (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
               {:status 200
                :body [{:oidHenkilo "1.2.246.562.24.11474338834"
@@ -216,6 +227,9 @@
 
 (defn parse-body [body]
   (cheshire/parse-string (slurp body) true))
+
+(defn to-string [body]
+  (cheshire/generate-string body))
 
 (defn eq-check [value expect]
   (when (not= value expect)
@@ -275,3 +289,7 @@
                 (< (tc/to-long (time/now)) wait-until))
       (swap! result predicate))
     @result))
+
+(defn mock-get-opiskeluoikeus-info
+  [_]
+  {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})

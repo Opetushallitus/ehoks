@@ -77,7 +77,10 @@
 (deftest delete-tyopaikkaohjaajan-yhteystiedot-test
   (testing "Työpaikkaohjaajan yhteystiedot poistetaan yli kolme kuukautta
             sitten päättyneestä työelämäjaksosta"
-    (let [saved-hoks (h/save-hoks! hoks-data)
+    (let [saved-hoks
+          (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+                        (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})]
+            (h/save-hoks! hoks-data))
           affected-jakso-ids (db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)
           hoks (h/get-hoks-by-id (:id saved-hoks))
           osaamisen-hankkimistavat (-> hoks

@@ -216,12 +216,15 @@
           :id (:id hoks-db))
         :audit-data {:new hoks}))
     (catch Exception e
-      (if (= (:error (ex-data e)) :duplicate)
-        (do
-          (log/warnf
-            "HOKS with opiskeluoikeus-oid %s already exists"
-            (:opiskeluoikeus-oid hoks))
-          (response/bad-request! {:error (.getMessage e)}))
+      (case (:error (ex-data e))
+        :disallowed-update (assoc
+                             (response/bad-request! {:error (.getMessage e)})
+                             :audit-data {:new hoks})
+        :duplicate (do
+                     (log/warnf
+                       "HOKS with opiskeluoikeus-oid %s already exists"
+                       (:opiskeluoikeus-oid hoks))
+                     (response/bad-request! {:error (.getMessage e)}))
         (throw e)))))
 
 (defn- post-oppija

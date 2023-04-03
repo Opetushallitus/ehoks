@@ -1,9 +1,11 @@
 (ns oph.ehoks.virkailija.handler-test
   (:require [oph.ehoks.virkailija.handler :as handler]
             [oph.ehoks.virkailija.middleware :as m]
+            [oph.ehoks.external.koski :as k]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [clojure.test :as t]
+            [clojure.string :as s]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.external.http-client :as client]
@@ -15,6 +17,7 @@
   (:import (java.time LocalDate LocalDateTime)))
 
 (t/use-fixtures :once utils/migrate-database)
+(t/use-fixtures :each utils/empty-database-after-test)
 
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
@@ -74,17 +77,26 @@
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
            {:status 200
             :body {:oid "1.2.246.562.15.00000000001"
-                   :oppilaitos {:oid "1.2.246.562.10.12944436166"}}}
+                   :oppilaitos {:oid "1.2.246.562.10.12944436166"}
+                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.760000000010")
            {:status 200
             :body {:oid "1.2.246.562.15.760000000010"
-                   :oppilaitos {:oid "1.2.246.562.10.1200000000010"}}}
+                   :oppilaitos {:oid "1.2.246.562.10.1200000000010"}
+                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
            (.endsWith
-             url "/koski/api/opiskeluoikeus/1.2.246.562.15.000000000020")
+             url "/koski/api/opiskeluoikeus/1.2.246.562.15.760000000011")
            {:status 200
-            :body {:oid "1.2.246.562.15.000000000020"
-                   :oppilaitos {:oid "1.2.246.562.10.1200000000200"}}}))
+            :body {:oid "1.2.246.562.15.760000000011"
+                   :oppilaitos {:oid "1.2.246.562.10.1200000000010"}
+                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
+           (.contains
+             url "/koski/api/opiskeluoikeus/")
+           {:status 200
+            :body {:oid (last (s/split url #"/"))
+                   :oppilaitos {:oid "1.2.246.562.10.1200000000200"}
+                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}))
        (fn [url options]
          (cond
            (.endsWith
@@ -507,24 +519,27 @@
                        :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
                        :koulutustoimija-oid ""}))
 
-(defn- post-new-hoks [opiskeluoikeus-oid organisaatio-oid]
-  (with-test-virkailija
-    (mock/json-body
-      (mock/request
-        :post
-        (str
-          base-url
-          "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
-      {:opiskeluoikeus-oid opiskeluoikeus-oid
-       :oppija-oid "1.2.246.562.24.44000000001"
-       :ensikertainen-hyvaksyminen "2018-12-15"
-       :osaamisen-hankkimisen-tarve false})
-    {:name "Testivirkailija"
-     :kayttajaTyyppi "VIRKAILIJA"
-     :oidHenkilo "1.2.246.562.24.44000000333"
-     :organisation-privileges
-     [{:oid organisaatio-oid
-       :privileges #{:write :read :update :delete}}]}))
+(defn- post-new-hoks
+  ([opiskeluoikeus-oid organisaatio-oid additional-keys]
+    (with-test-virkailija
+      (mock/json-body
+        (mock/request
+          :post
+          (str base-url
+               "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
+        (merge {:opiskeluoikeus-oid opiskeluoikeus-oid
+                :oppija-oid "1.2.246.562.24.44000000001"
+                :ensikertainen-hyvaksyminen "2018-12-15"
+                :osaamisen-hankkimisen-tarve false}
+               additional-keys))
+      {:name "Testivirkailija"
+       :kayttajaTyyppi "VIRKAILIJA"
+       :oidHenkilo "1.2.246.562.24.44000000333"
+       :organisation-privileges
+       [{:oid organisaatio-oid
+         :privileges #{:write :read :update :delete}}]}))
+  ([opiskeluoikeus-oid organisaatio-oid]
+    (post-new-hoks opiskeluoikeus-oid organisaatio-oid {})))
 
 (t/deftest test-virkailija-hoks-forbidden
   (t/testing "Virkailija HOKS forbidden"
@@ -578,28 +593,90 @@
     (utils/with-db
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
       (let [post-response
-            (post-new-hoks
-              "1.2.246.562.15.76000000001" "1.2.246.562.10.12000000001")
+            (post-new-hoks "1.2.246.562.15.760000000010"
+                           "1.2.246.562.10.1200000000010")
             get-response (get-created-hoks post-response)]
         (t/is (get-in (utils/parse-body (:body get-response))
                       [:data :manuaalisyotto]))
         (t/is (= (:status post-response) 200))))))
 
 (defn mocked-get-opiskeluoikeus-info-raw [oid]
-  (throw (ex-info "Opiskeluoikeus fetch failed" {:status 404})))
+  (throw
+    (ex-info
+      "Opiskeluoikeus fetch failed"
+      {:status 404
+       :body [{:key "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"}]})))
 
 (t/deftest test-hoks-create-when-opiskeluoikeus-fetch-fails
   (t/testing "Error thrown from koski is propagated to handler"
     (utils/with-db
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
-      (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info-raw
+      (with-redefs [k/get-opiskeluoikeus-info-raw
                     mocked-get-opiskeluoikeus-info-raw]
         (let [post-response
-              (post-new-hoks
-                "1.2.246.562.15.76000000002" "1.2.246.562.10.12000000001")]
+              (post-new-hoks "1.2.246.562.15.760000000010"
+                             "1.2.246.562.10.1200000000010")]
           (t/is (= (:status post-response) 400))
           (t/is (= (utils/parse-body (:body post-response))
                    {:error "Opiskeluoikeus not found in Koski"})))))))
+
+(defn mocked-get-oo-tuva [oid]
+  {:oid oid
+   :oppilaitos {:oid "1.2.246.562.10.1200000000010"}
+   :tyyppi {:koodiarvo "tuva"}})
+
+(t/deftest test-tuva-hoks-with-tuva-opiskeluoikeus-oid-fails
+  (t/testing (str "Error is thrown if trying to save tuva hoks with "
+                  "tuva-opiskeluoikeus-oid")
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (with-redefs [k/get-opiskeluoikeus-info-raw
+                    mocked-get-oo-tuva]
+        (let [post-response
+              (post-new-hoks "1.2.246.562.15.760000000010"
+                             "1.2.246.562.10.1200000000010"
+                             {:tuva-opiskeluoikeus-oid
+                              "1.2.246.562.15.760000000010"
+                              :hankittavat-koulutuksen-osat
+                              [{:koulutuksen-osa-koodi-uri
+                                "koulutuksenosattuva_104"
+                                :koulutuksen-osa-koodi-versio 1
+                                :alku "2022-09-01"
+                                :loppu "2022-09-21"
+                                :laajuus 10}]})]
+          (t/is (= (:status post-response) 400))
+          (t/is (= (:error (utils/parse-body (:body post-response)))
+                   (str "HOKSin rakenteen tulee vastata siihen liitetyn "
+                        "opiskeluoikeuden tyyppiä (tuva)."))))))))
+
+(defn mocked-get-oo-non-tuva [oid]
+  {:oid oid
+   :oppilaitos {:oid "1.2.246.562.10.1200000000010"}
+   :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
+
+(t/deftest test-hoks-with-hankittavat-koulutuksen-osat
+  (t/testing (str "Error is thrown if trying to save (non-tuva) hoks with "
+                  "hankittavat-koulutuksen-osat")
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (with-redefs [k/get-opiskeluoikeus-info-raw
+                    mocked-get-oo-non-tuva]
+        (let [post-response
+              (post-new-hoks "1.2.246.562.15.760000000010"
+                             "1.2.246.562.10.1200000000010"
+                             {:hankittavat-koulutuksen-osat
+                              [{:koulutuksen-osa-koodi-uri
+                                "koulutuksenosattuva_104"
+                                :koulutuksen-osa-koodi-versio 1
+                                :alku "2022-09-01"
+                                :loppu "2022-09-21"
+                                :laajuus 10}]})]
+          (t/is (= (:status post-response) 400))
+          (t/is
+            (= (utils/parse-body (:body post-response))
+               {:error
+                (str "HOKSin rakenteen tulee vastata siihen liitetyn "
+                     "opiskeluoikeuden tyyppiä (ammatillinenkoulutus).")})))))))
 
 (defn mocked-find-student-by-oid [oid]
   (throw (ex-info "Opiskelija fetch failed" {:status 404})))
@@ -610,8 +687,8 @@
       (with-redefs [oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
                     mocked-find-student-by-oid]
         (let [post-response
-              (post-new-hoks
-                "1.2.246.562.15.76000000002" "1.2.246.562.10.12000000001")]
+              (post-new-hoks "1.2.246.562.15.760000000010"
+                             "1.2.246.562.10.1200000000010")]
           (t/is (= (:status post-response) 400))
           (t/is (= (utils/parse-body (:body post-response))
                    {:error "Oppija not found in Oppijanumerorekisteri"})))))))
@@ -619,7 +696,7 @@
 (t/deftest test-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
     (utils/with-db
-      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+      (create-oppija-for-hoks-post "1.2.246.562.24.44000000001")
       (let [post-response
             (post-new-hoks
               "1.2.246.562.15.760000000010" "1.2.246.562.10.1200000000010")

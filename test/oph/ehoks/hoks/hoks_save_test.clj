@@ -415,7 +415,9 @@
 
 (deftest get-hoks-test
   (testing "Save and get full HOKS"
-    (let [hoks (h/save-hoks! hoks-data)]
+    (let [hoks (with-redefs [k/get-opiskeluoikeus-info
+                             utils/mock-get-opiskeluoikeus-info]
+                 (h/save-hoks! hoks-data))]
       (eq
         (utils/dissoc-module-ids (h/get-hoks-by-id (:id hoks)))
         (assoc
@@ -426,9 +428,12 @@
 
 (deftest get-hoks-with-tuva-oo
   (testing "Save and get full HOKS with TUVA opiskeluoikeus oid"
-    (let [hoks (h/save-hoks!
-                 (assoc hoks-data
-                        :tuva-opiskeluoikeus-oid "1.2.246.562.15.00000000002"))]
+    (let [hoks (with-redefs [k/get-opiskeluoikeus-info
+                             utils/mock-get-opiskeluoikeus-info]
+                 (h/save-hoks!
+                   (assoc hoks-data
+                          :tuva-opiskeluoikeus-oid
+                          "1.2.246.562.15.00000000002")))]
       (eq
         (-> (utils/dissoc-module-ids (h/get-hoks-by-id (:id hoks)))
             (select-keys [:id :tuva-opiskeluoikeus-oid]))
@@ -525,7 +530,8 @@
 
 (defn mock-get-opiskeluoikeus
   [_]
-  {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]})
+  {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+   :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
 
 (def hoks-osaaminen-saavutettu
   (assoc hoks-data

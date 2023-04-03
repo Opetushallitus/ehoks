@@ -2,4 +2,6 @@
  :ext-cache-lifetime-minutes 30
  :opintopolku-host "localhost:3001"
  :audit? false
- :db-name "ehoks_test"}
+ :db-name "ehoks_test"
+ :koski-opiskeluoikeus-cache-ttl-millis 1
+ :koski-oppija-cache-ttl-millis 1}
