@@ -128,6 +128,7 @@
                                    [ring/ring-devel "1.7.1"
                                     :exclusions [ring/ring-core]]]
                     :env {:config "oph-configuration/test.edn"}}
+             :schemaspy {:dependencies [[net.sourceforge.schemaspy/schemaspy "5.0.0"]]}
              :dev {:main oph.ehoks.dev-server
                    :dependencies [[cheshire "5.8.1"]
                                   [ring/ring-mock "0.3.2"]

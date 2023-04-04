@@ -10,6 +10,10 @@
 /scripts/session-cookie.txt
 /resources/uberjar/buildversion.txt
 /target
+/stamps
+/schemaDoc
+/tags
+/ehoks-virkailija.log
 pom.xml
 pom.xml.asc
 *.code-workspace
