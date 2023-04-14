@@ -8,6 +8,8 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks.hankittavat :refer
+             [save-hankittava-ammat-tutkinnon-osa!]]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.hoks.test-data :as test-data]
             [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]
@@ -795,3 +797,41 @@
             (is (empty? (-> after-delete-body
                             :data
                             :result)))))))))
+
+(deftest no-internal-server-error-in-response-validation-failure
+  (testing (str "Response validation failure shouldn't give "
+                "`internal-server-error` in response")
+    (let [hoks {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+                :oppija-oid "1.2.246.562.24.12312312312"
+                :osaamisen-hankkimisen-tarve true
+                :ensikertainen-hyvaksyminen "2018-12-15"}
+          hato {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
+                :tutkinnon-osa-koodi-versio 1
+                :vaatimuksista-tai-tavoitteista-poikkeaminen
+                "Ei poikkeamia."
+                :opetus-ja-ohjaus-maara 10.1
+                :osaamisen-osoittaminen
+                [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+                  :nayttoymparisto {:nimi "Testiympäristö"
+                                    :y-tunnus "invalid"
+                                    :kuvaus "Testi test"}
+                  :sisallon-kuvaus ["Testaus"]
+                  :koulutuksen-jarjestaja-osaamisen-arvioijat []
+                  :osa-alueet []
+                  :tyoelama-osaamisen-arvioijat []
+                  :yksilolliset-kriteerit []}]
+                :osaamisen-hankkimistavat []}
+          app (hoks-utils/create-app nil)]
+      (hoks-utils/mock-st-post app base-url hoks)
+      ; Tallennetaan hato suoraan kantaan ei-validilla datalla.
+      (save-hankittava-ammat-tutkinnon-osa! 1 hato)
+      (let [response (hoks-utils/mock-st-get
+                       app
+                       (format "%s/1/hankittava-ammat-tutkinnon-osa/1"
+                               base-url))
+            body     (utils/parse-body (:body response))]
+        (is (= (:status response) 200))
+        (is (= (-> (:data body)
+                   (update-in [:osaamisen-osoittaminen 0] dissoc :module-id)
+                   (dissoc :id :module-id))
+               hato))))))
