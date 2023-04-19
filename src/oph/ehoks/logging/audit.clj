@@ -85,11 +85,18 @@
         "no session")
     (or (get-in request [:headers "user-agent"]) "no user agent")))
 
+(defn- with-only-json-types [obj]
+  (cond
+    (or (number? obj) (string? obj) (boolean? obj) (nil? obj)) obj
+    (map? obj) (zipmap (keys obj) (map with-only-json-types (vals obj)))
+    (coll? obj) (map with-only-json-types obj)
+    :else (str obj)))
+
 (defn- build-changes
   "Create object representing changes"
   [response]
-  (let [new (get-in response [:audit-data :new])
-        old (get-in response [:audit-data :old])]
+  (let [new (with-only-json-types (get-in response [:audit-data :new]))
+        old (with-only-json-types (get-in response [:audit-data :old]))]
     (cond
       (and (nil? new) (nil? old)) Changes/EMPTY
       (nil? old) (Changes/addedDto new)
