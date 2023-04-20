@@ -36,8 +36,10 @@
                             c-ex/request-parsing-handler :info)
    ::c-ex/request-validation (c-ex/with-logging
                                c-ex/request-validation-handler :info)
+   ; Lokitetaan response bodyn validoinnissa esiin nousseet virheet, mutta ei
+   ; välitetä virheitä käyttäjälle "500 Internal Server Error" -koodilla.
    ::c-ex/response-validation (c-ex/with-logging
-                                c-ex/response-validation-handler :error)
+                                c-ex/http-response-handler :error)
    :not-found not-found-handler
    ::c-ex/default exception-handler})
 
