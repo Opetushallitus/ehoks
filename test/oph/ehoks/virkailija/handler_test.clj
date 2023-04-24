@@ -5,6 +5,7 @@
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
             [clojure.test :as t]
+            [clojure.tools.logging.test :as logtest]
             [clojure.string :as s]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.session-store :refer [test-session-store]]
@@ -629,25 +630,28 @@
   (t/testing (str "Error is thrown if trying to save tuva hoks with "
                   "tuva-opiskeluoikeus-oid")
     (utils/with-db
-      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
-      (with-redefs [k/get-opiskeluoikeus-info-raw
-                    mocked-get-oo-tuva]
-        (let [post-response
-              (post-new-hoks "1.2.246.562.15.760000000010"
-                             "1.2.246.562.10.1200000000010"
-                             {:tuva-opiskeluoikeus-oid
-                              "1.2.246.562.15.760000000010"
-                              :hankittavat-koulutuksen-osat
-                              [{:koulutuksen-osa-koodi-uri
-                                "koulutuksenosattuva_104"
-                                :koulutuksen-osa-koodi-versio 1
-                                :alku "2022-09-01"
-                                :loppu "2022-09-21"
-                                :laajuus 10}]})]
-          (t/is (= (:status post-response) 400))
-          (t/is (= (:error (utils/parse-body (:body post-response)))
-                   (str "HOKSin rakenteen tulee vastata siihen liitetyn "
-                        "opiskeluoikeuden tyyppiä (tuva)."))))))))
+      (logtest/with-log
+        (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+        (with-redefs [k/get-opiskeluoikeus-info-raw
+                      mocked-get-oo-tuva]
+          (let [post-response
+                (post-new-hoks "1.2.246.562.15.760000000010"
+                               "1.2.246.562.10.1200000000010"
+                               {:tuva-opiskeluoikeus-oid
+                                "1.2.246.562.15.760000000010"
+                                :hankittavat-koulutuksen-osat
+                                [{:koulutuksen-osa-koodi-uri
+                                  "koulutuksenosattuva_104"
+                                  :koulutuksen-osa-koodi-versio 1
+                                  :alku "2022-09-01"
+                                  :loppu "2022-09-21"
+                                  :laajuus 10}]})]
+            (t/is (= (:status post-response) 400))
+            (t/is (logtest/logged? "audit" :info #"failure.*24.44000000001")
+                  (str "log entries:" (logtest/the-log)))
+            (t/is (= (:error (utils/parse-body (:body post-response)))
+                     (str "HOKSin rakenteen tulee vastata siihen liitetyn "
+                          "opiskeluoikeuden tyyppiä (tuva).")))))))))
 
 (defn mocked-get-oo-non-tuva [oid]
   {:oid oid
@@ -898,49 +902,60 @@
 
 (t/deftest test-virkailija-put-hoks
   (t/testing "PUT hoks virkailija"
-    (utils/with-db
-      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
-                           :nimi "Teuvo Testaaja"
-                           :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
-                           :oppilaitos-oid "1.2.246.562.10.1200000000010"
-                           :tutkinto-nimi {:fi "Testitutkinto 1"}
-                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
-                           :koulutustoimija-oid ""})
-      (let [response
-            (with-test-virkailija
-              (mock/json-body
-                (mock/request
-                  :post
-                  (str
-                    base-url
-                    "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
-                hoks-data)
-              virkailija-for-test)
-            body (utils/parse-body (:body response))
-            hoks-url (get-in body [:data :uri])
-            put-response
-            (with-test-virkailija
-              (mock/json-body
-                (mock/request
-                  :put
-                  hoks-url)
-                (assoc
-                  hoks-data
-                  :id (get-in body [:meta :id])
-                  :hankittavat-ammat-tutkinnon-osat
-                  hato-data))
-              virkailija-for-test)
-            get-response
-            (with-test-virkailija
-              (mock/request
-                :get
-                hoks-url)
-              virkailija-for-test)]
-        (let [body (utils/parse-body (:body get-response))]
-          (utils/eq (utils/dissoc-module-ids
-                      (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
+    (logtest/with-log
+      (utils/with-db
+        (v-utils/add-oppija {:oid "1.2.246.562.24.44000000001"
+                             :nimi "Teuvo Testaaja"
+                             :opiskeluoikeus-oid "1.2.246.562.15.760000000010"
+                             :oppilaitos-oid "1.2.246.562.10.1200000000010"
+                             :tutkinto-nimi {:fi "Testitutkinto 1"}
+                             :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                             :koulutustoimija-oid ""})
+        (let [response
+              (with-test-virkailija
+                (mock/json-body
+                  (mock/request
+                    :post
+                    (str
+                      base-url
+                      "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
+                  hoks-data)
+                virkailija-for-test)
+              body (utils/parse-body (:body response))
+              hoks-url (get-in body [:data :uri])
+              put-response-just-date
+              (with-test-virkailija
+                (mock/json-body
+                  (mock/request :put hoks-url)
+                  (assoc hoks-data
+                         :id (get-in body [:meta :id])
+                         :ensikertainen-hyvaksyminen "2018-12-17"))
+                virkailija-for-test)
+              put-response
+              (with-test-virkailija
+                (mock/json-body
+                  (mock/request :put hoks-url)
+                  (assoc
+                    hoks-data
+                    :id (get-in body [:meta :id])
+                    :hankittavat-ammat-tutkinnon-osat
                     hato-data))
-        (t/is (= (:status put-response) 204))))))
+                virkailija-for-test)
+              get-response
+              (with-test-virkailija
+                (mock/request
+                  :get
+                  hoks-url)
+                virkailija-for-test)]
+          (let [body (utils/parse-body (:body get-response))]
+            (utils/eq (utils/dissoc-module-ids
+                        (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
+                      hato-data))
+          (t/is (= (:status put-response-just-date) 204))
+          (t/is (logtest/logged? "audit" :info #"overwrite.*2018-12-17")
+                (str "log entries:" (logtest/the-log)))
+          (t/is (= (:status put-response) 204))
+          (t/is (logtest/logged? "audit" :info #"overwrite.*Tanelin Paja")))))))
 
 (t/deftest test-put-prevent-updating-opiskeluoikeus
   (t/testing "PUT hoks virkailija"
