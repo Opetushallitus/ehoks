@@ -729,6 +729,13 @@
                       [:data :osaamisen-hankkimisen-tarve]))
         (t/is (= (:status patch-response) 204))))))
 
+(def virkailija-for-test
+  {:name "Testivirkailija"
+   :kayttajaTyyppi "VIRKAILIJA"
+   :organisation-privileges
+   [{:oid "1.2.246.562.10.1200000000010"
+     :privileges #{:write :read :update :delete}}]})
+
 (t/deftest test-prevent-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
     (utils/with-db
@@ -757,11 +764,7 @@
                  :oppija-oid "1.2.246.562.24.44000000001"
                  :ensikertainen-hyvaksyminen "2018-12-15"
                  :osaamisen-hankkimisen-tarve false})
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.1200000000010"
-                 :privileges #{:write :read :update :delete}}]})
+              virkailija-for-test)
             body (utils/parse-body (:body response))
             hoks-url (get-in body [:data :uri])
             patch-response
@@ -799,11 +802,7 @@
                 {:osaamisen-hankkimisen-tarve true
                  :id (get-in body [:meta :id])
                  :opiskeluoikeus-oid "1.2.246.562.15.760000000011"})
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.1200000000010"
-                 :privileges #{:write :read :update :delete}}]})]
+              virkailija-for-test)]
         (t/is (= (:status patch-response) 400))
         (t/is (= (utils/parse-body (:body patch-response))
                  {:error "Opiskeluoikeus update not allowed!"}))))))
@@ -826,11 +825,7 @@
                 {:osaamisen-hankkimisen-tarve true
                  :id (get-in body [:meta :id])
                  :oppija-oid "1.2.246.562.10.1200000000011"})
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.1200000000010"
-                 :privileges #{:write :read :update :delete}}]})]
+              virkailija-for-test)]
         (t/is (= (:status patch-response) 400))
         (t/is (= (utils/parse-body (:body patch-response))
                  {:error "Oppija-oid update not allowed!"}))))))
@@ -920,11 +915,7 @@
                     base-url
                     "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
                 hoks-data)
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.1200000000010"
-                 :privileges #{:write :read :update :delete}}]})
+              virkailija-for-test)
             body (utils/parse-body (:body response))
             hoks-url (get-in body [:data :uri])
             put-response
@@ -938,21 +929,13 @@
                   :id (get-in body [:meta :id])
                   :hankittavat-ammat-tutkinnon-osat
                   hato-data))
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.1200000000010"
-                 :privileges #{:write :read :update :delete}}]})
+              virkailija-for-test)
             get-response
             (with-test-virkailija
               (mock/request
                 :get
                 hoks-url)
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.1200000000010"
-                 :privileges #{:write :read :update :delete}}]})]
+              virkailija-for-test)]
         (let [body (utils/parse-body (:body get-response))]
           (utils/eq (utils/dissoc-module-ids
                       (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
@@ -978,11 +961,7 @@
                     base-url
                     "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
                 hoks-data)
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.1200000000010"
-                 :privileges #{:write :read :update :delete}}]})
+              virkailija-for-test)
             body (utils/parse-body (:body response))
             hoks-url (get-in body [:data :uri])
             put-response
@@ -997,11 +976,7 @@
                  :opiskeluoikeus-oid "1.2.246.562.15.760000000011"
                  :hankittavat-ammat-tutkinnon-osat
                  hato-data})
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.1200000000010"
-                 :privileges #{:write :read :update :delete}}]})
+              virkailija-for-test)
             put-body (utils/parse-body (:body put-response))]
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
@@ -1026,11 +1001,7 @@
                     base-url
                     "/virkailija/oppijat/1.2.246.562.24.44000000001/hoksit"))
                 hoks-data)
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.1200000000010"
-                 :privileges #{:write :read :update :delete}}]})
+              virkailija-for-test)
             body (utils/parse-body (:body response))
             hoks-url (get-in body [:data :uri])
             put-response
@@ -1046,11 +1017,7 @@
                  :oppija-oid "1.2.246.562.24.44000000002"
                  :hankittavat-ammat-tutkinnon-osat
                  hato-data})
-              {:name "Testivirkailija"
-               :kayttajaTyyppi "VIRKAILIJA"
-               :organisation-privileges
-               [{:oid "1.2.246.562.10.1200000000010"
-                 :privileges #{:write :read :update :delete}}]})
+              virkailija-for-test)
             put-body (utils/parse-body (:body put-response))]
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
