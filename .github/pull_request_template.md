@@ -11,7 +11,7 @@ TODO
 ### Ennen asettamista katselmointiin
   - [ ] Toiminnallisuuden kattavat yksikkötestit on tehty osana PR:ia
   - [ ] Olemassa olevat testit menevät muustoten jälkeen läpi
-  - [ ] PR:n sisältämät muutokset noudattavat [sovittuja koodikäytänteitä](https://github.com/Opetushallitus/ehoks)
+  - [ ] PR:n sisältämät muutokset noudattavat [sovittuja koodikäytänteitä](../doc/code-guidelines.md)
   - [ ] Koodi on riittävästi dokumentoitu tai se on muuten yksiselitteistä
     - Uskotko, että toinen kehittäjä ymmärtää nopeasti koodia lukemalla, mitä koodi tekee?
   - [ ] Koodimuutokset läpäisevät automaattisesti ajettavat linterit
