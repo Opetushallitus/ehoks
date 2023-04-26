@@ -85,11 +85,18 @@
         "no session")
     (or (get-in request [:headers "user-agent"]) "no user agent")))
 
+(defn- with-only-json-types [obj]
+  (cond
+    (or (number? obj) (string? obj) (boolean? obj) (nil? obj)) obj
+    (map? obj) (zipmap (keys obj) (map with-only-json-types (vals obj)))
+    (coll? obj) (map with-only-json-types obj)
+    :else (str obj)))
+
 (defn- build-changes
   "Create object representing changes"
   [response]
-  (let [new (get-in response [:audit-data :new])
-        old (get-in response [:audit-data :old])]
+  (let [new (with-only-json-types (get-in response [:audit-data :new]))
+        old (with-only-json-types (get-in response [:audit-data :old]))]
     (cond
       (and (nil? new) (nil? old)) Changes/EMPTY
       (nil? old) (Changes/addedDto new)
@@ -120,7 +127,9 @@
     (let [user (get-user request)
           method (:request-method request)
           target (build-target request)
-          operation (if (or (server-error? response) (client-error? response))
+          operation (if (or (some? (:error response))
+                            (server-error? response)
+                            (client-error? response))
                       operation-failed
                       (case method
                         :post operation-new
@@ -135,20 +144,23 @@
             target
             changes))))
 
-(defn- create-response-handler
-  "Create function which will log request and response and handle responding"
-  [request respond]
-  (fn [response]
-    (do-log request response)
-    (respond response)))
-
 (defn wrap-audit-logger
   "Create wrapper function to add audit logging to handler"
   [handler]
   (fn
     ([request respond raise]
-      (handler request (create-response-handler request respond) raise))
+      (try
+        (handler request
+                 (fn [response] (do-log request response) (respond response))
+                 (fn [exc] (do-log request {:error exc}) (raise exc)))
+        (catch Exception exc
+          (do-log request {:error exc})
+          (throw exc))))
     ([request]
-      (let [response (handler request)]
-        (do-log request response)
-        response))))
+      (try
+        (let [response (handler request)]
+          (do-log request response)
+          response)
+        (catch Exception exc
+          (do-log request {:error exc})
+          (throw exc))))))
