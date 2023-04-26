@@ -50,8 +50,7 @@ Avaimet seuraavat Clojuren notaatiota.
 
 ## QA
 
-Noudatetaan
-[The Clojure Style Guidea](https://github.com/bbatsov/clojure-style-guide).
+Noudatetaan kehittäjien kesken sovittuja [koodikäytänteitä](doc/code-guidelines.md).
 
 Repossa on `.editorconfig` jonka avulla voit kertoa editorillesi käytettävät
 tyylit.
