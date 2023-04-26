@@ -56,21 +56,23 @@
          (adjust-osaamistaso-based-on-asteikko asteikko))))
 
 (defn- get-peruste-by-id
-  "Get peruste by ID. Uses eperusteet external api."
-  [^Long id]
-  (let [result (c/with-api-headers
-                 {:method :get
-                  :service (u/get-url "eperusteet-service-url")
-                  :url (u/get-url "eperusteet-service.external-api.find-peruste"
-                                  id)
-                  :options {:as :json}})]
-    (:body result)))
+  "Get peruste by ID. Uses eperusteet external api. An optional part argument
+  can be used to get only a subpart of the whole peruste."
+  ([^Long id ^String part]
+    (-> {:method :get
+         :service (u/get-url "eperusteet-service-url")
+         :url (u/get-url "eperusteet-service.external-api.get-peruste" id part)
+         :options {:as :json}}
+        (cache/with-cache!)
+        :body))
+  ([^Long id]
+    (get-peruste-by-id id "")))
 
 (defn find-perusteet-external
   "Find perusteet using eperusteet external api. Returns eperusteet response
    body as is."
   [query-params]
-  (let [result (c/with-api-headers
+  (let [result (cache/with-cache!
                  {:method :get
                   :service (u/get-url "eperusteet-service-url")
                   :url
@@ -80,27 +82,16 @@
                                                  query-params)}})]
     (:body result)))
 
-(defn perusteenOsa-id->viite-id
-  "Traverse the 'lapset' data structure from ePerusteet to find the viite-id
-  (used by ePerusteet UI) corresponding to a perusteenOsa id."
-  [perusteenOsa-tree id]
-  (if (= id (:_perusteenOsa perusteenOsa-tree))
-    (:id perusteenOsa-tree)
-    (some #(perusteenOsa-id->viite-id % id)
-          (:lapset perusteenOsa-tree))))
-
 (defn peruste->koulutuksenOsa
   "Format data structure of ePerusteet into our API model for koulutuksenOsa"
   [peruste ^String koodiUri]
-  (let [rakenne (get-in peruste [:tutkintoonvalmentava :sisalto])
-        osa (->> (:koulutuksenOsat peruste)
+  (let [osa (->> peruste
                  (filter #(= koodiUri (get-in % [:nimiKoodi :uri])))
-                 first)
-        viite-id (perusteenOsa-id->viite-id rakenne (str (:id osa)))]
+                 first)]
     (and osa [{:id (:id osa)
                :osaamisalat (map #(select-keys % [:nimi]) (:osaamisalat osa))
                :nimi (select-keys (get-in osa [:nimiKoodi :nimi]) [:fi :en :sv])
-               :koulutuksenOsaViiteId viite-id}])))
+               :koulutuksenOsaViiteId (:viiteId osa)}])))
 
 (defn get-koulutuksenOsa-by-koodiUri
   "Search for perusteet that match a koodiUri. Uses eperusteet external api."
@@ -110,7 +101,7 @@
       (throw (ex-info (str "eperusteet not found with koodiUri " koodiUri)
                       {:status 404})))
     (-> (:id (first data))
-        get-peruste-by-id
+        (get-peruste-by-id "koulutuksenOsat")
         (peruste->koulutuksenOsa koodiUri))))
 
 (defn search-perusteet-info

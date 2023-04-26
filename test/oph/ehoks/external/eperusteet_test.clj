@@ -100,22 +100,21 @@
                    (get-in options [:query-params :koodi])))
            {:status 200
             :body {:data [{:id 7534950}]}}
-           (.endsWith url "/external/peruste/7534950")
+           (.endsWith url "/external/peruste/7534950/koulutuksenOsat")
            {:status 200
-            :body {:id 7534950
-                   :koulutuksenOsat
-                   [{:id 7535567
-                     :nimi {:_id "8332155"
-                            :fi "Valinnaiset koulutuksen osat"
-                            :sv "Valbara utbildningsdelar"}
-                     :nimiKoodi {:nimi {:fi "Valinnaiset opinnot"
-                                        :sv "Valbara utbildningsdelar"}
-                                 :uri "koulutuksenosattuva_104"}}]}}))]
+            :body [{:id 7535567
+                    :viiteId 7654321
+                    :nimi {:_id "8332155"
+                           :fi "Valinnaiset koulutuksen osat"
+                           :sv "Valbara utbildningsdelar"}
+                    :nimiKoodi {:nimi {:fi "Valinnaiset opinnot"
+                                       :sv "Valbara utbildningsdelar"}
+                                :uri "koulutuksenosattuva_104"}}]}))]
       (is (= [{:id 7535567
                :nimi {:fi "Valinnaiset opinnot"
                       :sv "Valbara utbildningsdelar"}
                :osaamisalat []
-               :koulutuksenOsaViiteId nil}]
+               :koulutuksenOsaViiteId 7654321}]
              (ep/get-koulutuksenOsa-by-koodiUri "koulutuksenosattuva_104"))))))
 
 (deftest peruste->koulutuksenOsa-with-different-codes
@@ -132,15 +131,38 @@
                :koulutuksenOsaViiteId 7535295}]))
       (is (= (ep/peruste->koulutuksenOsa peruste-test-data "tataeiole") nil)))))
 
-(deftest perusteenOsa-id->viite-id-with-found-and-unfound-values
-  (testing "finding the ePerusteet viite-id for various perusteenOsas"
-    (let [peruste-test-data
-          (get-mock-eperusteet-value "mock/eperusteet-peruste-7534950.json")
-          rakenne (get-in peruste-test-data [:tutkintoonvalmentava :sisalto])]
-      (is (= (ep/perusteenOsa-id->viite-id rakenne "8535564") nil))
-      (is (= (ep/perusteenOsa-id->viite-id rakenne "7535564") 7535295))
-      (is (= (ep/perusteenOsa-id->viite-id rakenne "7535567") 7535298))
-      (is (= (ep/perusteenOsa-id->viite-id rakenne "7535030") 7534971)))))
+(deftest caches-eperusteet-external-api-requests
+  (testing "Caches eperusteet external API requests"
+    (let [call-count (atom 0)]
+      (client/with-mock-responses
+        [(fn [url options]
+           (swap! call-count inc)
+           (cond
+             (and (.endsWith url "/external/perusteet")
+                  (= "koulutuksenosattuva_104"
+                     (get-in options [:query-params :koodi])))
+             {:status 200
+              :body {:data [{:id 7534950}]}}
+             (.endsWith url "/external/peruste/7534950/koulutuksenOsat")
+             {:status 200
+              :body [{:id 7535567
+                      :nimi {:_id "8332155"
+                             :fi "Valinnaiset koulutuksen osat"
+                             :sv "Valbara utbildningsdelar"}
+                      :nimiKoodi {:nimi {:fi "Valinnaiset opinnot"
+                                         :sv "Valbara utbildningsdelar"}
+                                  :uri "koulutuksenosattuva_104"}}]}))]
+        (is (every? true?
+                    (repeatedly
+                      5
+                      #(= [{:id 7535567
+                            :nimi {:fi "Valinnaiset opinnot"
+                                   :sv "Valbara utbildningsdelar"}
+                            :osaamisalat []
+                            :koulutuksenOsaViiteId nil}]
+                          (ep/get-koulutuksenOsa-by-koodiUri
+                            "koulutuksenosattuva_104")))))
+        (is (= 2 @call-count))))))
 
 (deftest find-tutkinto-not-found
   (testing "Not finding any tutkinto items"
