@@ -275,27 +275,30 @@
       (.isBefore (:loppu oht) (LocalDate/of 2021 7 1))
       (:oppisopimuksen-perusta-koodi-uri oht)))
 
+(defn- nonnegative-duration?
+  "Osaamisen hankkimistavat päiväykset ovat oikein päin"
+  [oht]
+  (not (.isBefore (:loppu oht) (:alku oht))))
+
 (s/defschema
   OsaamisenHankkimistapaLuontiJaMuokkaus
   "Schema osaamisen hankkimistavan luontiin ja muokkaukseen."
-  (s/constrained
-    (modify
-      OsaamisenHankkimistapa
-      "Osaamisen hankkimisen tavan luonti ja muokkaus (POST, PUT)"
-      {:removed [:module-id :id]})
-    oppisopimus-has-perusta?
-    "Tieto oppisopimuksen perustasta puuttuu."))
+  (-> OsaamisenHankkimistapa
+      (modify "Osaamisen hankkimisen tavan muokkaus (PATCH)"
+              {:removed [:module-id :id]})
+      (s/constrained oppisopimus-has-perusta?
+                     "Tieto oppisopimuksen perustasta puuttuu.")
+      (s/constrained nonnegative-duration? "Alku ennen loppua")))
 
 (s/defschema
   OsaamisenHankkimistapaPatch
   "Schema osaamisen hankkimistavan PATCH-päivitykseen."
-  (s/constrained
-    (modify
-      OsaamisenHankkimistapa
-      "Osaamisen hankkimisen tavan muokkaus (PATCH)"
-      {:removed [:module-id]})
-    oppisopimus-has-perusta?
-    "Tieto oppisopimuksen perustasta puuttuu."))
+  (-> OsaamisenHankkimistapa
+      (modify "Osaamisen hankkimisen tavan muokkaus (PATCH)"
+              {:removed [:module-id]})
+      (s/constrained oppisopimus-has-perusta?
+                     "Tieto oppisopimuksen perustasta puuttuu.")
+      (s/constrained nonnegative-duration? "Alku ennen loppua")))
 
 (s/defschema
   NaytonJarjestaja

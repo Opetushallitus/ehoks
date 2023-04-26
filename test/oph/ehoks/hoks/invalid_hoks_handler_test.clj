@@ -244,6 +244,22 @@
       (is (= (utils/parse-body (:body put-response))
              {:error "Oppija-oid update not allowed!"})))))
 
+(deftest prevent-invalid-osaamisen-hankkimistapa
+  (testing "Start and end dates of OHT are checked"
+    (let [app (hoks-utils/create-app nil)
+          invalid-data
+          (assoc-in test-data/hoks-data
+                    [:hankittavat-yhteiset-tutkinnon-osat 0
+                     :osa-alueet 0 :osaamisen-hankkimistavat 0 :alku]
+                    "2020-10-02")
+          invalid-post-response
+          (hoks-utils/create-mock-post-request "" invalid-data app)]
+      (is (= (:status invalid-post-response) 400))
+      (is (-> (utils/parse-body (:body invalid-post-response))
+              (get-in [:errors :hankittavat-yhteiset-tutkinnon-osat 0
+                       :osa-alueet 0 :osaamisen-hankkimistavat 0])
+              (->> (re-find #"Alku ennen loppua")))))))
+
 (deftest prevent-osaamisen-saavuttaminen-out-of-range
   (testing "The allowed range of osaaminen-saavuttamisen-pvm is from 1.1.2018
            to two weeks in the future (from the time of saving the HOKS)."
