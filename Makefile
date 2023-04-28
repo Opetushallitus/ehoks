@@ -38,7 +38,7 @@ stamps/server-running: stamps/db-schema
 
 stamps/example-data: stamps/server-running
 	sh ./scripts/create-curl-session.sh
-	sh ./scripts/upload-hoks.sh
+	sh ./scripts/upload-hoks.sh resources/dev/demo-data/hoksit.json
 	touch $@
 
 tags::
