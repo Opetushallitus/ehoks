@@ -288,6 +288,15 @@
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000003"))))))
 
+(t/deftest oppijat-sql-injection
+  (t/testing "oppijat endpoint doesn't have the SQL injection it used to"
+    (utils/with-db
+      (add-oppijat)
+      (add-hoksit)
+      (let [body (get-search {:tutkinto "';drop table hoksit;commit;--"})]
+        (t/is (= (count (:data body)) 0))
+        (t/is (= (get-in body [:meta :total-count]) 0))))))
+
 (t/deftest get-oppijat-filtered-with-swedish-locale
   (t/testing "GET virkailija oppijat filtered with swedish locale"
     (utils/with-db
