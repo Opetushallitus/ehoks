@@ -3,50 +3,6 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [clojure.string :as cs]))
 
-(defn get-like
-  "Luo LIKE-ekspression SQL:ää varten."
-  [v]
-  (format "%%%s%%" (or v "")))
-
-(def translated-oppija-columns
-  "Käännettyjen sarakkeiden pohjat."
-  {:tutkinto "tutkinto_nimi->>" :osaamisala "osaamisala_nimi->>"})
-
-(def default-locale "fi")
-
-(defn- get-locale
-  "Hakee nykyisen localen."
-  [params]
-  (str "'" (get params :locale default-locale) "'"))
-
-(defn- get-translated-oppija-column
-  "Hakee sarakkeen nimen, joka sisältää myös localen nimen."
-  [column params]
-  (str (get translated-oppija-columns column) (get-locale params)))
-
-(defn- get-translated-column-filter
-  "Luo osan SQL-queryn WHERE-lauseesta, jolla tiedot suodatetaan."
-  [column params]
-  (str
-    "AND oo."
-    (get-translated-oppija-column column params)
-    " ILIKE '"
-    (get-like (column params))
-    "'"))
-
-(defn set-oppijat-count-query
-  "Luo oppijoiden määrä -queryn."
-  [params]
-  (-> queries/select-oppilaitos-oppijat-search-count
-      (cs/replace ":tutkinto-filter"
-                  (if (:tutkinto params)
-                    (get-translated-column-filter :tutkinto params)
-                    ""))
-      (cs/replace ":osaamisala-filter"
-                  (if (:osaamisala params)
-                    (get-translated-column-filter :osaamisala params)
-                    ""))))
-
 (defn select-opiskeluoikeudet-without-tutkinto
   "Hakee tietokannasta opiskeluoikeudet, joissa ei ole tutkintoa."
   []

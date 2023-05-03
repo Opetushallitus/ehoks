@@ -33,28 +33,28 @@
         osaamisala-ilike (field-matcher (:osaamisala params))
         lang (:locale params)
         order-by (str (:order-by-column params) "_"
-                      (if (:desc params) "desc" "asc"))]
-    (db-ops/query [queries/select-oppilaitos-oppijat
-                   (:oppilaitos-oid params)
-                   nimi-ilike nimi-ilike
-                   tutkinto-ilike lang tutkinto-ilike
-                   osaamisala-ilike lang osaamisala-ilike
-                   order-by lang lang
-                   order-by lang lang
-                   (:item-count params)
-                   (:offset params)]
-                  {:row-fn db-ops/from-sql})))
-
-(defn get-count
-  "Get total count of results"
-  [params]
-  (:count
-    (first
-      (db-ops/query
-        [(db-opiskeluoikeus/set-oppijat-count-query params)
-         (:oppilaitos-oid params)
-         (:koulutustoimija-oid params)
-         (db-opiskeluoikeus/get-like (:nimi params))]))))
+                      (if (:desc params) "desc" "asc"))
+        oppijat
+        (db-ops/query [queries/select-oppilaitos-oppijat
+                       (:oppilaitos-oid params)
+                       nimi-ilike nimi-ilike
+                       tutkinto-ilike lang tutkinto-ilike
+                       osaamisala-ilike lang osaamisala-ilike
+                       order-by lang lang
+                       order-by lang lang
+                       (:item-count params)
+                       (:offset params)]
+                      {:row-fn db-ops/from-sql})
+        total-count
+        (-> [queries/select-oppilaitos-oppijat-search-count
+             (:oppilaitos-oid params)
+             nimi-ilike nimi-ilike
+             tutkinto-ilike lang tutkinto-ilike
+             osaamisala-ilike lang osaamisala-ilike]
+            (db-ops/query)
+            (first)
+            :count)]
+    [oppijat total-count]))
 
 (defn get-amount-of-hoks
   "Get total amount of hokses now"
