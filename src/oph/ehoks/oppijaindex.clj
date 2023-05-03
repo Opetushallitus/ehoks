@@ -25,7 +25,7 @@
     (str "{" (cs/join "," (map field-matcher
                                (cs/split name-search #"[\s_%,]+"))) "}")))
 
-(defn search
+(defn search!
   "Search oppijat with given params"
   [params]
   (let [nimi-ilike (nimi-matcher (:nimi params))

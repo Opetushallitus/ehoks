@@ -85,7 +85,7 @@
              :nimi nimi
              :tutkinto tutkinto
              :osaamisala osaamisala}
-            [oppijat total-count] (op/search search-params)]
+            [oppijat total-count] (op/search! search-params)]
         (restful/rest-ok
           oppijat
           :total-count total-count)))))
