@@ -44,7 +44,7 @@
     :return (restful/response
               [common-schema/OppijaSearchResult]
               :total-count s/Int)
-    :query-params [{order-by-column :- s/Keyword :nimi}
+    :query-params [{order-by-column :- s/Str "nimi"}
                    {desc :- s/Bool false}
                    {nimi :- s/Str nil}
                    {tutkinto :- s/Str nil}
@@ -76,26 +76,20 @@
            (str "User has insufficient privileges for "
                 "given organisation")}))
       (let [search-params
-            (cond->
-             {:desc desc
-              :item-count item-count
-              :order-by-column order-by-column
-              :offset (* page item-count)
-              :oppilaitos-oid oppilaitos-oid
-              :locale locale}
-              (some? nimi)
-              (assoc :nimi nimi)
-              (some? tutkinto)
-              (assoc :tutkinto tutkinto)
-              (some? osaamisala)
-              (assoc :osaamisala osaamisala))
-            oppijat (mapv
-                      #(dissoc
-                         % :oppilaitos-oid :koulutustoimija-oid)
-                      (op/search search-params))]
+            {:desc desc
+             :item-count item-count
+             :order-by-column order-by-column
+             :offset (* page item-count)
+             :oppilaitos-oid oppilaitos-oid
+             :locale locale
+             :nimi nimi
+             :tutkinto tutkinto
+             :osaamisala osaamisala}
+            oppijat (op/search search-params)
+            total-count (op/get-count search-params)]
         (restful/rest-ok
           oppijat
-          :total-count (op/get-count search-params))))))
+          :total-count total-count)))))
 
 (defn- check-opiskeluoikeus-match
   "Check that opiskeluoikeus OID from HOKS matches one held by student"

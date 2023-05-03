@@ -24,16 +24,6 @@
   [column params]
   (str (get translated-oppija-columns column) (get-locale params)))
 
-(defn- get-oppija-order-by-column
-  "Hakee sarakkeen, jolla tiedot järjestetään."
-  [params]
-  (let [column (:order-by-column params)]
-    (case column
-      :nimi "nimi"
-      :tutkinto (get-translated-oppija-column column params)
-      :osaamisala (get-translated-oppija-column column params)
-      "nimi")))
-
 (defn- get-translated-column-filter
   "Luo osan SQL-queryn WHERE-lauseesta, jolla tiedot suodatetaan."
   [column params]
@@ -43,24 +33,6 @@
     " ILIKE '"
     (get-like (column params))
     "'"))
-
-(defn set-oppijat-query
-  "Luo oppijat -queryn."
-  [params nimi-filter-count]
-  (-> queries/select-oppilaitos-oppijat
-      (cs/replace ":nimi-filter"
-                  (cs/join " AND " (repeat nimi-filter-count "o.nimi ILIKE ?")))
-      (cs/replace ":order-by-column"
-                  (get-oppija-order-by-column params))
-      (cs/replace ":desc" (if (:desc params) "DESC" "ASC"))
-      (cs/replace ":tutkinto-filter"
-                  (if (:tutkinto params)
-                    (get-translated-column-filter :tutkinto params)
-                    ""))
-      (cs/replace ":osaamisala-filter"
-                  (if (:osaamisala params)
-                    (get-translated-column-filter :osaamisala params)
-                    ""))))
 
 (defn set-oppijat-count-query
   "Luo oppijoiden määrä -queryn."

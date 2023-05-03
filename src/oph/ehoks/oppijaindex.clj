@@ -3,6 +3,7 @@
             [clojure.string :as cs]
             [clojure.tools.logging :as log]
             [oph.ehoks.config :refer [config]]
+            [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
@@ -12,19 +13,37 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr])
   (:import [java.time LocalDate]))
 
+(defn- field-matcher
+  "create a SQL ILIKE pattern from a search value of a field"
+  [field-search]
+  (when field-search (str "%" (re-find #"[^%_]+" field-search) "%")))
+
+(defn- nimi-matcher
+  "create an SQL array of SQL ILIKE patterns from a search value for name"
+  [name-search]
+  (when name-search
+    (str "{" (cs/join "," (map field-matcher
+                               (cs/split name-search #"[\s_%,]+"))) "}")))
+
 (defn search
   "Search oppijat with given params"
   [params]
-  (let [nimi-filters (cs/split (or (:nimi params) "") #"\s")]
-    (db-ops/query
-      (vec (concat [(db-opiskeluoikeus/set-oppijat-query params
-                                                         (count nimi-filters))
-                    (:oppilaitos-oid params)
-                    (:koulutustoimija-oid params)]
-                   (map db-opiskeluoikeus/get-like nimi-filters)
-                   [(:item-count params)
-                    (:offset params)]))
-      {:row-fn db-ops/from-sql})))
+  (let [nimi-ilike (nimi-matcher (:nimi params))
+        tutkinto-ilike (field-matcher (:tutkinto params))
+        osaamisala-ilike (field-matcher (:osaamisala params))
+        lang (:locale params)
+        order-by (str (:order-by-column params) "_"
+                      (if (:desc params) "desc" "asc"))]
+    (db-ops/query [queries/select-oppilaitos-oppijat
+                   (:oppilaitos-oid params)
+                   nimi-ilike nimi-ilike
+                   tutkinto-ilike lang tutkinto-ilike
+                   osaamisala-ilike lang osaamisala-ilike
+                   order-by lang lang
+                   order-by lang lang
+                   (:item-count params)
+                   (:offset params)]
+                  {:row-fn db-ops/from-sql})))
 
 (defn get-count
   "Get total count of results"
