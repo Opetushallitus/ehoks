@@ -49,13 +49,14 @@
                    {nimi :- s/Str nil}
                    {tutkinto :- s/Str nil}
                    {osaamisala :- s/Str nil}
+                   {hoks-id :- s/Int nil}
                    {item-count :- s/Int 10}
                    {page :- s/Int 0}
                    oppilaitos-oid :- s/Str
                    {locale :- s/Str "fi"}]
-    :summary "Listaa virkailijan oppilaitoksen oppijat, joilla on
-                       HOKS luotuna. Käyttäjällä pitää olla READ käyttöoikeus
-                       annettuun organisaatioon eHOKS-palvelussa."
+    :summary "Listaa virkailijan oppilaitoksen oppijoiden opiskeluoikeudet,
+             joilla on HOKS luotuna. Käyttäjällä pitää olla READ-käyttöoikeus
+             annettuun organisaatioon eHOKS-palvelussa."
 
     (if-not (contains?
               (user/get-organisation-privileges
@@ -84,7 +85,8 @@
              :locale locale
              :nimi nimi
              :tutkinto tutkinto
-             :osaamisala osaamisala}
+             :osaamisala osaamisala
+             :hoks-id hoks-id}
             [oppijat total-count] (op/search! search-params)]
         (restful/rest-ok
           oppijat

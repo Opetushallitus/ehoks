@@ -31,6 +31,7 @@
   (let [nimi-ilike (nimi-matcher (:nimi params))
         tutkinto-ilike (field-matcher (:tutkinto params))
         osaamisala-ilike (field-matcher (:osaamisala params))
+        hoks-id (:hoks-id params)
         lang (:locale params)
         order-by (str (:order-by-column params) "_"
                       (if (:desc params) "desc" "asc"))
@@ -40,6 +41,7 @@
                        nimi-ilike nimi-ilike
                        tutkinto-ilike lang tutkinto-ilike
                        osaamisala-ilike lang osaamisala-ilike
+                       hoks-id hoks-id
                        order-by lang lang
                        order-by lang lang
                        (:item-count params)
@@ -50,7 +52,8 @@
              (:oppilaitos-oid params)
              nimi-ilike nimi-ilike
              tutkinto-ilike lang tutkinto-ilike
-             osaamisala-ilike lang osaamisala-ilike]
+             osaamisala-ilike lang osaamisala-ilike
+             hoks-id hoks-id]
             (db-ops/query)
             (first)
             :count)]
