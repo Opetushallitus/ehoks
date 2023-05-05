@@ -64,6 +64,7 @@
       (let [response (handler request)]
         (set-cors response)))))
 
+;; FIXME: combine this with the app of (start) and see that everything works OK
 (def dev-reload-app
   (wrap-dev-cors
     (routes
@@ -71,14 +72,6 @@
       (wrap-reload #'dev-routes)
       (wrap-cookies (wrap-reload #'dev-tools/routes))
       (wrap-reload #'ehoks-app/app))))
-
-(defn rand-str [max-len]
-  (c-str/capitalize
-    (apply
-      str
-      (take
-        (inc (rand-int (dec max-len)))
-        (repeatedly #(char (+ (rand 26) 65)))))))
 
 (defn populate-oppijaindex []
   (future
@@ -105,23 +98,6 @@
                    {:port (:port config)
                     :join? false
                     :async? true}))
-
-(defn start-server [app-name config-file]
-  (when (some? (System/setProperty "name" app-name))
-    (require 'oph.ehoks.ehoks-app :reload))
-  (start-app-server! dev-reload-app app-name config-file))
-
-(defn start-virkailija []
-  (start-server "ehoks-virkailija" nil))
-
-(defn start-oppija []
-  (start-server "ehoks-oppija" nil))
-
-(defn switch-to-oppija []
-  (System/setProperty "name" "ehoks-oppija"))
-
-(defn switch-to-virkailija []
-  (System/setProperty "name" "ehoks-virkailija"))
 
 (defn start [app-name config-file]
   (log/infof "Starting %s with config %s" app-name config-file)

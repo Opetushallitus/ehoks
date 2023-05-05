@@ -135,15 +135,15 @@ lein with-profile +dev run ehoks-virkailija
 Replissä `lein with-profiles +dev repl`:
 
 ``` repl
-user> (use 'oph.ehoks.dev-server)
-user> (def server (start-server "ehoks" nil))
+user> (require 'oph.ehoks.dev-server)
+user> (def server (oph.ehoks.dev-server/start "ehoks-virkailija" nil))
 ```
 
 Tai omalla konfiguraatiolla:
 
 ``` repl
-user> (use 'oph.ehoks.dev-server)
-user> (def server (start-server "ehoks-virkailija" "config/custom.edn"))
+user> (require 'oph.ehoks.dev-server)
+user> (def server (oph.ehoks.dev-server/start "ehoks-virkailija" "config/custom.edn"))
 ```
 
 Ajossa olevat kokonaisuudet näkee replissä
