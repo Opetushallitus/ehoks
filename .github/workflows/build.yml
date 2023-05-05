@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '11'
-          distribution: 'corretto'
+          distribution: 'temurin'
 
       - name: Install Dependencies
         shell: bash
@@ -26,10 +26,14 @@ jobs:
           git clone https://github.com/Opetushallitus/ci-tools.git
           lein deps
 
+      # Do the tests even use the database?
       - name: Run Database
         shell: bash
+        env:
+          CONFIG: oph-configuration/test-ci.edn
         run: |
           ./scripts/ci-scripts/run_postgres.sh
+          lein dbmigrate
 
       - name: Pre-Build
         shell: bash
@@ -71,13 +75,10 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          CONFIG: oph-configuration/test-ci.edn
         run: |
           source ci-tools/common/setup-tools.sh
-          export BASE_IMAGE="baseimage-fatjar-openjdk11-corretto:master"
           export TRAVIS_BUILD_NUMBER="$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT"
           export TRAVIS_BRANCH=${{ github.ref_name }}
           export TRAVIS_COMMIT=${{ github.sha }}
           ./ci-tools/build/upload-image.sh ehoks-oppija
           ./ci-tools/build/upload-image.sh ehoks-virkailija
-          lein dbmigrate
