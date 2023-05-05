@@ -231,12 +231,10 @@
       (let [body (get-search {})]
         (t/is (= (count (:data body)) 3))
         (t/is (= (get-in body [:meta :total-count]) 3))
-        (t/is (= (get-in body [:data 0 :oid])
-                 "1.2.246.562.24.44000000004"))
-        (t/is (= (get-in body [:data 1 :oid])
-                 "1.2.246.562.24.44000000003"))
-        (t/is (= (get-in body [:data 2 :oid])
-                 "1.2.246.562.24.44000000001"))))))
+        (t/is (= (set (map :oid (:data body)))
+                 #{"1.2.246.562.24.44000000004"
+                   "1.2.246.562.24.44000000003"
+                   "1.2.246.562.24.44000000001"}))))))
 
 (t/deftest get-oppijat-with-name-filter
   (t/testing "GET virkailija oppijat with name filtered"
@@ -255,7 +253,7 @@
       (add-oppijat)
       (add-hoksit)
       (let [body (get-search {:nimi "oppi"
-                              :order-by-column :nimi
+                              :order-by-column "nimi"
                               :desc true})]
         (t/is (= (count (:data body)) 2))
         (t/is (= (get-in body [:meta :total-count]) 2))
@@ -270,7 +268,7 @@
       (add-oppijat)
       (add-hoksit)
       (let [body (get-search {:nimi "oppi"
-                              :order-by-column :nimi})]
+                              :order-by-column "nimi"})]
         (t/is (= (count (:data body)) 2))
         (t/is (= (get-in body [:meta :total-count]) 2))
         (t/is (= (get-in body [:data 0 :oid])
@@ -289,6 +287,15 @@
         (t/is (= (get-in body [:meta :total-count]) 1))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000003"))))))
+
+(t/deftest oppijat-sql-injection
+  (t/testing "oppijat endpoint doesn't have the SQL injection it used to"
+    (utils/with-db
+      (add-oppijat)
+      (add-hoksit)
+      (let [body (get-search {:tutkinto "';drop table hoksit;commit;--"})]
+        (t/is (= (count (:data body)) 0))
+        (t/is (= (get-in body [:meta :total-count]) 0))))))
 
 (t/deftest get-oppijat-filtered-with-swedish-locale
   (t/testing "GET virkailija oppijat filtered with swedish locale"

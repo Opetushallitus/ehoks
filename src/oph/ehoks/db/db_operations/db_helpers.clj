@@ -104,16 +104,10 @@
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
 
-(defn convert-keys
+(defn map-keys
   "Apply a function to all keys in a map."
   [f m]
-  (rename-keys
-    m
-    (reduce
-      (fn [c n]
-        (assoc c n (f n)))
-      {}
-      (keys m))))
+  (zipmap (map f (keys m)) (vals m)))
 
 (defn remove-db-columns
   "Remove keys corresponding to columns used for internal purposes, keeping
@@ -127,12 +121,12 @@
 (defn to-underscore-keys
   "Convert dashes in keys to underscores."
   [m]
-  (convert-keys #(keyword (.replace (name %) \- \_)) m))
+  (map-keys #(keyword (.replace (name %) \- \_)) m))
 
 (defn to-dash-keys
   "Convert underscores in keys to dashes."
   [m]
-  (convert-keys #(keyword (.replace (name %) \_ \-)) m))
+  (map-keys #(keyword (.replace (name %) \_ \-)) m))
 
 (defn replace-in
   "Associate the value associated with sk with the new key or sequence of nested
