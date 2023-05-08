@@ -8,6 +8,24 @@ tyyliopasta](https://github.com/bbatsov/clojure-style-guide). Näihin
 käytänteisiin on kuitenkin sovittu kehittäjien kesken joitain poikkeuksia,
 jotka on tarkemmin kuvattuna alla.
 
+#### Funktioiden ja muuttujien nimeäminen
+
+Muuttujat nimetään sen mukaan, mitä ne sisältävät, yleensä
+mahdollisimman semanttisella tasolla.  Esimerkiksi hyvä nimi
+muuttujalle, jossa on lista HOKSeista, jotka ovat muuttuneet, on
+`changed-hoksit` mieluummin kuin `hoksit` mieluummin kuin `maps`
+mieluummin kuin `coll` mieluummin kuin `obj`.
+
+Funktiot nimetään sen mukaan, mitä ne palauttavat, esimerkiksi
+`oppija-contact-details`.  Joskus nimeen voi ottaa myös vihjeitä siitä,
+mitä ensimmäinen positionaalinen argumentti tekee, esimerkiksi
+`hoks-by-opiskeluoikeus-oid`.  Jos funktio muuttaa funktion ulkopuolista
+tilaa, funktion nimessä pitää kuvailla, mitä tilaa se muuttaa ja miten.
+Lisäksi funktio on tällöin huutomerkillinen, katso alla.
+
+Älä tee funktioita, jotka sekä muuttavat funktion ulkopuolista tilaa
+että palauttavat jotain (muuta kuin nil).
+
 #### Huutomerkin käyttö funktion nimessä
 
 Clojure-yhteisön tyylioppaasta poiketen, projektissa **epäpuhtaat funktiot
