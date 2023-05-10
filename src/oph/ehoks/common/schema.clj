@@ -37,6 +37,7 @@
   {:oid s/Str
    :nimi s/Str
    :opiskeluoikeus-oid s/Str
+   (s/optional-key :hoks-id) s/Int
    (s/optional-key :tutkinto-nimi) {(s/optional-key :fi) s/Str
                                     (s/optional-key :en) s/Str
                                     (s/optional-key :sv) s/Str}

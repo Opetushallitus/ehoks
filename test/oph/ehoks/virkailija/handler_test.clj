@@ -231,6 +231,8 @@
       (let [body (get-search {})]
         (t/is (= (count (:data body)) 3))
         (t/is (= (get-in body [:meta :total-count]) 3))
+        (t/is (= (set (map :hoks-id (:data body)))
+                 #{1 3 4}))
         (t/is (= (set (map :oid (:data body)))
                  #{"1.2.246.562.24.44000000004"
                    "1.2.246.562.24.44000000003"
@@ -244,8 +246,23 @@
       (let [body (get-search {:nimi "teu"})]
         (t/is (= (count (:data body)) 1))
         (t/is (= (get-in body [:meta :total-count]) 1))
+        (t/is (= (get-in body [:data 0 :hoks-id]) 1))
         (t/is (= (get-in body [:data 0 :oid])
                  "1.2.246.562.24.44000000001"))))))
+
+(t/deftest get-oppijat-with-hoks-id
+  (t/testing "oppijat endpoint returns correct result by exact hoks-id"
+    (utils/with-db
+      (add-oppijat)
+      (add-hoksit)
+      (let [body (get-search {:hoks-id 3})]
+        (t/is (= (count (:data body)) 1))
+        (t/is (= (:total-count (:meta body)) 1))
+        (t/is (= (get-in body [:data 0 :oid]) "1.2.246.562.24.44000000003"))
+        (t/is (= (get-in body [:data 0 :hoks-id]) 3)))
+      (let [body (get-search {:hoks-id 30033})]
+        (t/is (= (count (:data body)) 0))
+        (t/is (= (:total-count (:meta body)) 0))))))
 
 (t/deftest get-oppijat-with-name-filter-and-order-desc
   (t/testing "GET virkailija oppijat ordered descending and filtered with name"
