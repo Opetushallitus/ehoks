@@ -1,7 +1,7 @@
 (ns oph.ehoks.heratepalvelu.herate-handler
   (:require [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            ;[oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
@@ -100,16 +100,18 @@
         :summary "Poistaa työpaikkaohjaajan yhteystiedot yli kolme kuukautta
             sitten päättyneistä työpaikkajaksoista. Käsittelee max 5000 jaksoa
             kerrallaan. Palauttaa kyseisten jaksojen id:t (hankkimistapa-id)
-            herätepalvelua varten."
+            herätepalvelua varten. POISTETTU KÄYTÖSTÄ TILAPÄISESTI."
         :header-params [caller-id :- s/Str]
-        (let [hankkimistavat (db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)]
+
+        (let [hankkimistavat
+              []] ;(db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)]
           (restful/rest-ok {:hankkimistapa-ids hankkimistavat})))
 
       (c-api/DELETE "/opiskelijan-yhteystiedot" []
         :summary "Poistaa opiskelijan yhteystiedot yli kolme kuukautta
             sitten päättyneistä hokseista. Käsittelee max 500 opiskelijan
             tiedot kerrallaan. Palauttaa kyseisten tapausten hoks id:t
-            herätepalvelua varten."
+            herätepalvelua varten. POISTETTU KÄYTÖSTÄ TILAPÄISESTI."
         :header-params [caller-id :- s/Str]
-        (let [hoks-ids (db-hoks/delete-opiskelijan-yhteystiedot!)]
+        (let [hoks-ids []] ;(db-hoks/delete-opiskelijan-yhteystiedot!)]
           (restful/rest-ok {:hoks-ids hoks-ids}))))))
