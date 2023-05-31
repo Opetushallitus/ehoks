@@ -13,8 +13,7 @@
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
 (deftest get-kasittelemattomat-heratteet
-  (testing "GET /heratepalvelu/kasittelemattomat-heratteet")
-  (with-redefs []
+  (testing "GET /heratepalvelu/kasittelemattomat-heratteet"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
                      :oppija-oid "1.2.246.562.24.12312312312"
                      :osaamisen-hankkimisen-tarve true
