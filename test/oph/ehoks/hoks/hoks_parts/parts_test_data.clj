@@ -103,6 +103,61 @@
      :loppu "2023-03-19"
      :yksilolliset-kriteerit ["Yksi kriteeri"]}]})
 
+(def hao-data-with-valid-osa-aikaisuus
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
+   :tutkinnon-osa-koodi-versio 1
+   :vaatimuksista-tai-tavoitteista-poikkeaminen
+   "Ei poikkeamia."
+   :opetus-ja-ohjaus-maara 10.1
+   :osaamisen-hankkimistavat
+   [{:alku "2023-07-01"
+     :loppu "2023-08-01"
+     :yksiloiva-tunniste "ihanmitävaan"
+     :osa-aikaisuustieto 50
+     :osaamisen-hankkimistapa-koodi-uri
+     "osaamisenhankkimistapa_koulutussopimus"
+     :osaamisen-hankkimistapa-koodi-versio 1
+     :keskeytymisajanjaksot []
+     :hankkijan-edustaja
+     {:nimi "Heikki Hankkija"
+      :rooli "Opettaja"
+      :oppilaitos-oid "1.2.246.562.10.54452422420"}
+     :tyopaikalla-jarjestettava-koulutus
+     {:vastuullinen-tyopaikka-ohjaaja
+      {:nimi "Oiva Ohjaaja"
+       :sahkoposti "oiva.ohjaaja@esimerkki2.com"}
+      :tyopaikan-nimi "Ohjaus Oyk"
+      :tyopaikan-y-tunnus "5523718-7"
+      :keskeiset-tyotehtavat ["Testitehtävä2"]}}]
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"})
+
+(def hao-data-without-osa-aikaisuus
+  {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
+   :tutkinnon-osa-koodi-versio 1
+   :vaatimuksista-tai-tavoitteista-poikkeaminen
+   "Ei poikkeamia."
+   :opetus-ja-ohjaus-maara 10.1
+   :osaamisen-hankkimistavat
+   [{:alku "2023-07-01"
+     :loppu "2023-08-01"
+     :yksiloiva-tunniste "ihanmitävaan"
+     :osaamisen-hankkimistapa-koodi-uri
+     "osaamisenhankkimistapa_koulutussopimus"
+     :osaamisen-hankkimistapa-koodi-versio 1
+     :keskeytymisajanjaksot []
+     :hankkijan-edustaja
+     {:nimi "Heikki Hankkija"
+      :rooli "Opettaja"
+      :oppilaitos-oid "1.2.246.562.10.54452422420"}
+     :tyopaikalla-jarjestettava-koulutus
+     {:vastuullinen-tyopaikka-ohjaaja
+      {:nimi "Oiva Ohjaaja"
+       :sahkoposti "oiva.ohjaaja@esimerkki2.com"}
+      :tyopaikan-nimi "Ohjaus Oyk"
+      :tyopaikan-y-tunnus "5523718-7"
+      :keskeiset-tyotehtavat ["Testitehtävä2"]}}]
+   :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"})
+
 (def patch-all-hao-data
   (merge
     hao-data

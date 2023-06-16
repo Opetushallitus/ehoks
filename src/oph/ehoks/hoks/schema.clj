@@ -218,6 +218,17 @@
                  (reduced false))
               (sort-by :alku (seq jaksot)))))
 
+(defn- osa-aikaisuustieto-valid?
+  "Varmistaa, että jakson osa-aikaisuustieto on välillä 1-100, mikäli jakson
+  loppupäivä on 1.7.2023 tai sen jälkeen."
+  [oht]
+  (let [osa-aikaisuustieto (:osa-aikaisuustieto oht)]
+    (if (.isAfter (:loppu oht) (LocalDate/of 2023 6 30))
+      (and (some? osa-aikaisuustieto)
+           (<= osa-aikaisuustieto 100)
+           (>= osa-aikaisuustieto 1))
+      true)))
+
 (s/defschema
   OsaamisenHankkimistapa
   "Osaamisen hankkimistavan schema."
@@ -253,7 +264,8 @@
          "liittyvät tiedot")
     (s/optional-key :osa-aikaisuustieto) s/Int
     (str "Osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). "
-         "Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen.")
+         "Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen. "
+         "Pakollinen 1.7.2023 ja sen jälkeen päättyvillä jaksoilla.")
     (s/optional-key :oppisopimuksen-perusta-koodi-uri)
     OppisopimuksenPerustaKoodiUri
     "Oppisopimuksen perustan Koodisto-uri."
@@ -286,6 +298,8 @@
   (-> OsaamisenHankkimistapa
       (modify "Osaamisen hankkimisen tavan muokkaus (PATCH)"
               {:removed [:module-id :id]})
+      (s/constrained osa-aikaisuustieto-valid?
+                     "Osa-aikaisuustieto ei ole välillä 1-100.")
       (s/constrained oppisopimus-has-perusta?
                      "Tieto oppisopimuksen perustasta puuttuu.")
       (s/constrained nonnegative-duration? "Alku ennen loppua")))
@@ -296,6 +310,8 @@
   (-> OsaamisenHankkimistapa
       (modify "Osaamisen hankkimisen tavan muokkaus (PATCH)"
               {:removed [:module-id]})
+      (s/constrained osa-aikaisuustieto-valid?
+                     "Osa-aikaisuustieto ei ole välillä 1-100.")
       (s/constrained oppisopimus-has-perusta?
                      "Tieto oppisopimuksen perustasta puuttuu.")
       (s/constrained nonnegative-duration? "Alku ennen loppua")))

@@ -131,6 +131,22 @@
    :aiemmin-hankitut-paikalliset-tutkinnon-osat [parts-test-data/ahpto-data]
    :aiemmin-hankitut-yhteiset-tutkinnon-osat [parts-test-data/ahyto-data]})
 
+(def new-hoks-with-valid-osa-aikaisuus
+  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
+   :hankittavat-ammat-tutkinnon-osat
+   [parts-test-data/hao-data-with-valid-osa-aikaisuus]})
+
+(def new-hoks-without-osa-aikaisuus
+  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+   :oppija-oid "1.2.246.562.24.12312312312"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
+   :hankittavat-ammat-tutkinnon-osat
+   [parts-test-data/hao-data-without-osa-aikaisuus]})
+
 (def hato-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
