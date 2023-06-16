@@ -207,22 +207,20 @@
 
 (deftest create-new-hoks-without-osa-aikaisuus
   (testing "Create new hoks without osa-aikaisuustieto"
-           (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
-                         (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})]
-             (let [hoks-data test-data/new-hoks-without-osa-aikaisuus
-                   response
-                   (hoks-utils/mock-st-post
-                    (hoks-utils/create-app nil) base-url hoks-data)
-                   body (utils/parse-body (:body response))]
-               (is (= (:status response) 400))
-               (is
-                 (eq (:errors body)
-                     {:hankittavat-ammat-tutkinnon-osat
-                      [{:osaamisen-hankkimistavat
-                        [
-                          (str "(not (\"Osa-aikaisuustieto ei ole välillä "
-                               "1-100.\" a-clojure.lang.PersistentArrayMap))")
-                        ]}]}))))))
+    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})]
+      (let [hoks-data test-data/new-hoks-without-osa-aikaisuus
+            response
+            (hoks-utils/mock-st-post
+              (hoks-utils/create-app nil) base-url hoks-data)
+            body (utils/parse-body (:body response))]
+        (is (= (:status response) 400))
+        (is
+          (eq (:errors body)
+              {:hankittavat-ammat-tutkinnon-osat
+               [{:osaamisen-hankkimistavat
+                 [(str "(not (\"Osa-aikaisuustieto ei ole välillä "
+                       "1-100.\" a-clojure.lang.PersistentArrayMap))")]}]}))))))
 
 (deftest osaamisen-hankkimistavat-isnt-mandatory
   (testing "Osaamisen hankkimistavat should be optional field in ehoks"
