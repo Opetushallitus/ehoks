@@ -264,6 +264,8 @@
          "liittyvät tiedot")
     (s/optional-key :osa-aikaisuustieto) s/Int
     (str "Osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). "
+         "100 tarkoittaa, että työ on kokoaikaista. Esimerkiksi 80 tarkoittaa, "
+         "että työ on osa-aikaista, 80 % normaalista kokonaistyöajasta. "
          "Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen. "
          "Pakollinen 1.7.2023 ja sen jälkeen päättyvillä jaksoilla.")
     (s/optional-key :oppisopimuksen-perusta-koodi-uri)
