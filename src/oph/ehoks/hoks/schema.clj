@@ -219,11 +219,17 @@
               (sort-by :alku (seq jaksot)))))
 
 (defn- osa-aikaisuustieto-valid?
-  "Varmistaa, että jakson osa-aikaisuustieto on välillä 1-100, mikäli jakson
-  loppupäivä on 1.7.2023 tai sen jälkeen."
+  "Varmistaa, että jakson osa-aikaisuustieto on välillä 1-100, mikäli
+  työpaikkajakson loppupäivä on 1.7.2023 tai sen jälkeen."
   [oht]
-  (let [osa-aikaisuustieto (:osa-aikaisuustieto oht)]
-    (if (.isAfter (:loppu oht) (LocalDate/of 2023 6 30))
+  (let [osa-aikaisuustieto (:osa-aikaisuustieto oht)
+        hankkimistapa (:osaamisen-hankkimistapa-koodi-uri oht)]
+    (if (and (.isAfter (:loppu oht) (LocalDate/of 2023 6 30))
+             (or
+               (= hankkimistapa
+                  "osaamisenhankkimistapa_koulutussopimus")
+               (= hankkimistapa
+                  "osaamisenhankkimistapa_oppisopimus")))
       (and (some? osa-aikaisuustieto)
            (<= osa-aikaisuustieto 100)
            (>= osa-aikaisuustieto 1))
@@ -267,7 +273,7 @@
          "100 tarkoittaa, että työ on kokoaikaista. Esimerkiksi 80 tarkoittaa, "
          "että työ on osa-aikaista, 80 % normaalista kokonaistyöajasta. "
          "Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen. "
-         "Pakollinen 1.7.2023 ja sen jälkeen päättyvillä jaksoilla.")
+         "Pakollinen 1.7.2023 ja sen jälkeen päättyvillä työpaikkajaksoilla.")
     (s/optional-key :oppisopimuksen-perusta-koodi-uri)
     OppisopimuksenPerustaKoodiUri
     "Oppisopimuksen perustan Koodisto-uri."

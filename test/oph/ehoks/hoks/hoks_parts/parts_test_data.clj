@@ -128,7 +128,18 @@
        :sahkoposti "oiva.ohjaaja@esimerkki2.com"}
       :tyopaikan-nimi "Ohjaus Oyk"
       :tyopaikan-y-tunnus "5523718-7"
-      :keskeiset-tyotehtavat ["Testitehtävä2"]}}]
+      :keskeiset-tyotehtavat ["Testitehtävä2"]}}
+    {:alku "2023-07-02"
+     :loppu "2023-08-02"
+     :yksiloiva-tunniste "ihanmitävaan2"
+     :osaamisen-hankkimistapa-koodi-uri
+     "osaamisenhankkimistapa_oppilaitosmuotoinenkoulutus"
+     :osaamisen-hankkimistapa-koodi-versio 1
+     :keskeytymisajanjaksot []
+     :hankkijan-edustaja
+     {:nimi "Heikki Hankkija"
+      :rooli "Opettaja"
+      :oppilaitos-oid "1.2.246.562.10.54452422420"}}]
    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"})
 
 (def hao-data-without-osa-aikaisuus
