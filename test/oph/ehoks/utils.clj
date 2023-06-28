@@ -277,7 +277,7 @@
       (reduce (fn [res val]
                 (conj res [(first val) (dissoc-module-ids (second val))]))
               {}
-              (dissoc data :module-id))
+              (dissoc data :module-id :yksiloiva-tunniste))
       (map #(dissoc-module-ids %) data))
     data))
 

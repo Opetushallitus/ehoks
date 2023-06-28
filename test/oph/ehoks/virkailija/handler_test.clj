@@ -613,17 +613,111 @@
      [{:oid "1.2.246.562.10.12000000001"
        :privileges #{:write :read :update :delete}}]}))
 
+(def hato-data
+  [{:tutkinnon-osa-koodi-uri "tutkinnonosat_102499"
+    :tutkinnon-osa-koodi-versio 4
+    :vaatimuksista-tai-tavoitteista-poikkeaminen
+    "Ei poikkeamia."
+    :osaamisen-osoittaminen
+    [{:jarjestaja
+      {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+      :nayttoymparisto {:nimi "Testiympäristö 2"
+                        :y-tunnus "1234567-1"
+                        :kuvaus "Testi test"}
+      :sisallon-kuvaus ["Testaus"]
+      :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
+      :koulutuksen-jarjestaja-osaamisen-arvioijat
+      [{:nimi "Timo Testaaja"
+        :organisaatio
+        {:oppilaitos-oid "1.2.246.562.10.54452521332"}}]
+      :tyoelama-osaamisen-arvioijat
+      [{:nimi "Taneli Työmies"
+        :organisaatio {:nimi "Tanelin Paja Ky"
+                       :y-tunnus "1234561-2"}}]
+      :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
+                    :koodi-versio 3}]
+      :alku "2019-03-10"
+      :loppu "2019-03-19"}]
+    :osaamisen-hankkimistavat
+    [{:jarjestajan-edustaja
+      {:nimi "Ville Valvoja"
+       :rooli "Valvojan apulainen"
+       :oppilaitos-oid "1.2.246.562.10.54451211340"}
+      :osaamisen-hankkimistapa-koodi-uri
+      "osaamisenhankkimistapa_oppisopimus"
+      :osaamisen-hankkimistapa-koodi-versio 2
+      :oppisopimuksen-perusta-koodi-uri
+      "oppisopimuksenperusta_01"
+      :oppisopimuksen-perusta-koodi-versio 1
+      :tyopaikalla-jarjestettava-koulutus
+      {:vastuullinen-tyopaikka-ohjaaja
+       {:nimi "Aimo Ohjaaja"
+        :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
+       :tyopaikan-nimi "Ohjausyhtiö Oy"
+       :tyopaikan-y-tunnus "1234564-7"
+       :keskeiset-tyotehtavat ["Testitehtävä"]}
+      :muut-oppimisymparistot
+      [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
+        :oppimisymparisto-koodi-versio 1
+        :alku "2019-01-13"
+        :loppu "2019-02-19"}]
+      :keskeytymisajanjaksot []
+      :ajanjakson-tarkenne "Ei tarkennettavia asioita"
+      :osa-aikaisuustieto 50
+      :hankkijan-edustaja
+      {:nimi "Heikki Hankkija"
+       :rooli "Opettaja"
+       :oppilaitos-oid "1.2.246.562.10.54452422420"}
+      :alku "2019-01-11"
+      :loppu "2019-03-14"
+      :yksiloiva-tunniste "testi-yksilöivä-tunniste"}
+     {:jarjestajan-edustaja
+      {:nimi "Ville Valvoja"
+       :rooli "Valvojan apulainen"
+       :oppilaitos-oid "1.2.246.562.10.54451211340"}
+      :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
+      :osaamisen-hankkimistapa-koodi-versio 2
+      :oppisopimuksen-perusta-koodi-uri "oppisopimuksenperusta_01"
+      :oppisopimuksen-perusta-koodi-versio 1
+      :tyopaikalla-jarjestettava-koulutus
+      {:vastuullinen-tyopaikka-ohjaaja
+       {:nimi "Aimo Ohjaaja"
+        :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
+       :tyopaikan-nimi "Ohjausyhtiö Oy"
+       :tyopaikan-y-tunnus "1234564-7"
+       :keskeiset-tyotehtavat ["Testitehtävä"]}
+      :muut-oppimisymparistot []
+      :keskeytymisajanjaksot []
+      :osa-aikaisuustieto 100
+      :hankkijan-edustaja
+      {:nimi "Heikki Hankkija"
+       :rooli "Opettaja"
+       :oppilaitos-oid "1.2.246.562.10.54452422420"}
+      :alku "2023-01-11"
+      :loppu "2023-03-14"}]
+    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"}])
+
 (t/deftest test-virkailija-create-hoks
   (t/testing "POST hoks virkailija"
     (utils/with-db
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
       (let [post-response
-            (post-new-hoks "1.2.246.562.15.760000000010"
-                           "1.2.246.562.10.1200000000010")
+            (post-new-hoks
+              "1.2.246.562.15.760000000010" "1.2.246.562.10.1200000000010"
+              {:hankittavat-ammat-tutkinnon-osat hato-data})
             get-response (get-created-hoks post-response)]
-        (t/is (get-in (utils/parse-body (:body get-response))
-                      [:data :manuaalisyotto]))
-        (t/is (= (:status post-response) 200))))))
+        (let [body (utils/parse-body (:body get-response))]
+          (t/is (= (get-in body [:data :hankittavat-ammat-tutkinnon-osat 0
+                                 :osaamisen-hankkimistavat 0
+                                 :yksiloiva-tunniste])
+                   "testi-yksilöivä-tunniste"))
+          (t/is (re-matches
+                  #"[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}"
+                  (get-in body [:data :hankittavat-ammat-tutkinnon-osat 0
+                                :osaamisen-hankkimistavat 1
+                                :yksiloiva-tunniste])))
+          (t/is (get-in body [:data :manuaalisyotto]))
+          (t/is (= (:status post-response) 200)))))))
 
 (defn mocked-get-opiskeluoikeus-info-raw [oid]
   (throw
@@ -864,66 +958,6 @@
    :ensikertainen-hyvaksyminen "2018-12-15"
    :osaamisen-hankkimisen-tarve false})
 
-(def hato-data
-  [{:tutkinnon-osa-koodi-uri "tutkinnonosat_102499"
-    :tutkinnon-osa-koodi-versio 4
-    :vaatimuksista-tai-tavoitteista-poikkeaminen
-    "Ei poikkeamia."
-    :osaamisen-osoittaminen
-    [{:jarjestaja
-      {:oppilaitos-oid "1.2.246.562.10.54453924330"}
-      :nayttoymparisto {:nimi "Testiympäristö 2"
-                        :y-tunnus "1234567-1"
-                        :kuvaus "Testi test"}
-      :sisallon-kuvaus ["Testaus"]
-      :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
-      :koulutuksen-jarjestaja-osaamisen-arvioijat
-      [{:nimi "Timo Testaaja"
-        :organisaatio
-        {:oppilaitos-oid "1.2.246.562.10.54452521332"}}]
-      :tyoelama-osaamisen-arvioijat
-      [{:nimi "Taneli Työmies"
-        :organisaatio {:nimi "Tanelin Paja Ky"
-                       :y-tunnus "1234561-2"}}]
-      :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_kl"
-                    :koodi-versio 3}]
-      :alku "2019-03-10"
-      :loppu "2019-03-19"}]
-    :osaamisen-hankkimistavat
-    [{:jarjestajan-edustaja
-      {:nimi "Ville Valvoja"
-       :rooli "Valvojan apulainen"
-       :oppilaitos-oid "1.2.246.562.10.54451211340"}
-      :osaamisen-hankkimistapa-koodi-uri
-      "osaamisenhankkimistapa_oppisopimus"
-      :osaamisen-hankkimistapa-koodi-versio 2
-      :oppisopimuksen-perusta-koodi-uri
-      "oppisopimuksenperusta_01"
-      :oppisopimuksen-perusta-koodi-versio 1
-      :tyopaikalla-jarjestettava-koulutus
-      {:vastuullinen-tyopaikka-ohjaaja
-       {:nimi "Aimo Ohjaaja"
-        :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
-       :tyopaikan-nimi "Ohjausyhtiö Oy"
-       :tyopaikan-y-tunnus "1234564-7"
-       :keskeiset-tyotehtavat ["Testitehtävä"]}
-      :muut-oppimisymparistot
-      [{:oppimisymparisto-koodi-uri "oppimisymparistot_0002"
-        :oppimisymparisto-koodi-versio 1
-        :alku "2019-01-13"
-        :loppu "2019-02-19"}]
-      :keskeytymisajanjaksot []
-      :ajanjakson-tarkenne "Ei tarkennettavia asioita"
-      :osa-aikaisuustieto 50
-      :hankkijan-edustaja
-      {:nimi "Heikki Hankkija"
-       :rooli "Opettaja"
-       :oppilaitos-oid "1.2.246.562.10.54452422420"}
-      :alku "2019-01-11"
-      :loppu "2019-03-14"
-      :yksiloiva-tunniste "testi-yksilöivä-tunniste"}]
-    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"}])
-
 (t/deftest test-virkailija-put-hoks
   (t/testing "PUT hoks virkailija"
     (logtest/with-log
@@ -972,9 +1006,18 @@
                   hoks-url)
                 virkailija-for-test)]
           (let [body (utils/parse-body (:body get-response))]
+            (t/is (= (get-in body [:data :hankittavat-ammat-tutkinnon-osat 0
+                                   :osaamisen-hankkimistavat 0
+                                   :yksiloiva-tunniste])
+                     "testi-yksilöivä-tunniste"))
+            (t/is (re-matches
+                    #"[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}"
+                    (get-in body [:data :hankittavat-ammat-tutkinnon-osat 0
+                                  :osaamisen-hankkimistavat 1
+                                  :yksiloiva-tunniste])))
             (utils/eq (utils/dissoc-module-ids
                         (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
-                      hato-data))
+                      (utils/dissoc-module-ids hato-data)))
           (t/is (= (:status put-response-just-date) 204))
           (t/is (logtest/logged? "audit" :info #"overwrite.*2018-12-17")
                 (str "log entries:" (logtest/the-log)))

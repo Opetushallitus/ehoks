@@ -98,9 +98,8 @@
     (is (= (:status post-response) 200))
     (is (= (:status put-response) 204))
     (is (= (:status get-response) 200))
-    (eq (utils/dissoc-module-ids
-          (hoks-part get-response-data))
-        (hoks-part updated-hoks))))
+    (eq (utils/dissoc-module-ids (hoks-part get-response-data))
+        (utils/dissoc-module-ids (hoks-part updated-hoks)))))
 
 (defn assert-post-response-is-ok [post-path post-response]
   (is (= (:status post-response) 200))
