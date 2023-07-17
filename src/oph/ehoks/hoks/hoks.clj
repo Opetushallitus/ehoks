@@ -13,8 +13,10 @@
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.external.koski :as k]
             [clojure.tools.logging :as log]
+            [clojure.walk]
             [clojure.set :refer [rename-keys]])
-  (:import (java.time LocalDate)))
+  (:import (java.time LocalDate)
+           (java.util UUID)))
 
 (defn tuva-related-hoks?
   [hoks]
@@ -43,6 +45,24 @@
       (ha/get-hankittavat-yhteiset-tutkinnon-osat hoks-id)
       :hankittavat-koulutuksen-osat
       (ha/get-hankittavat-koulutuksen-osat hoks-id))))
+
+(defn ensure-yksiloiva-tunniste-in-ohts
+  "If the given data structure has an :osaamisen-hankkimistavat key,
+  adds an :yksiloiva-tunniste to all its children where it's missing."
+  [data]
+  (if-not (:osaamisen-hankkimistavat data) data
+          (update data :osaamisen-hankkimistavat
+                  (partial map (fn [oht]
+                                 (update oht :yksiloiva-tunniste
+                                         #(or % (str (UUID/randomUUID)))))))))
+
+(defn add-missing-oht-yksiloiva-tunniste
+  "Lisää yksilöivät tunnisteet osaamisen hankkimistavoille, jos niitä ei ole.
+  Tätä on tarkoitus käyttää vain manuaalisyötetyille uusille HOKSeille;
+  muille API-kutsuille on tulossa pakolliseksi, että yksilöivä tunniste
+  tulee lähdejärjestelmästä - tai muokkauksen tapauksessa vastaa vanhaa."
+  [hoks]
+  (clojure.walk/prewalk ensure-yksiloiva-tunniste-in-ohts hoks))
 
 (defn trim-arvioijat
   "Poistaa nimi-kentän jokaisesta arvioija-objektista."

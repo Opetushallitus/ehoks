@@ -378,7 +378,8 @@
         (is (= (:status post-response) 200))
         (is (= (:status put-response) 204))
         (is (= (:status get-response) 200))
-        (eq (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data)
+        (eq (utils/dissoc-module-ids
+              (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data))
             (utils/dissoc-module-ids
               (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)))))))
 

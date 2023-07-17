@@ -55,12 +55,13 @@
           body (utils/parse-body (:body get-response))]
       (is (= (:status post-response) 200))
       (is (= (:status get-response) 200))
-      (eq
-        (utils/dissoc-module-ids (:data body))
-        [(dates-to-str
-           (assoc test-data/hoks-data
-                  :eid (get-in body [:data 0 :eid])
-                  :manuaalisyotto false))]))))
+      (-> test-data/hoks-data
+          (utils/dissoc-module-ids)
+          (assoc :eid (get-in body [:data 0 :eid])
+                 :manuaalisyotto false)
+          (dates-to-str)
+          (vector)
+          (eq (utils/dissoc-module-ids (:data body)))))))
 
 (defn- mock-authenticated [request]
   (let [store (atom {})

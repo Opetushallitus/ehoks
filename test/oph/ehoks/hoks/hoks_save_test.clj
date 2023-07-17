@@ -346,7 +346,7 @@
         (utils/dissoc-module-ids
           (ah/get-aiemmin-hankitut-ammat-tutkinnon-osat
             (:id hoks)))
-        ahato-data))))
+        (utils/dissoc-module-ids ahato-data)))))
 
 (deftest get-aiemmin-hankitut-paikalliset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut paikalliset tutkinnon osat"
@@ -356,7 +356,7 @@
       (eq
         (utils/dissoc-module-ids
           (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks)))
-        ahpto-data))))
+        (utils/dissoc-module-ids ahpto-data)))))
 
 (deftest get-hankittava-ammat-tutkinnon-osa-test
   (testing "Get HOKS hankittava ammatillinen osaaminen"
@@ -365,7 +365,7 @@
       (eq
         (utils/dissoc-module-ids
           (ha/get-hankittavat-ammat-tutkinnon-osat (:id hoks)))
-        hao-data))))
+        (utils/dissoc-module-ids hao-data)))))
 
 (deftest get-opiskeluvalmiuksia-tukevat-opinnot-test
   (testing "Get HOKS opiskeluvalmiuksia tukevat opinnot"
@@ -374,7 +374,7 @@
       (eq
         (utils/dissoc-module-ids
           (ot/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks)))
-        oto-data))))
+        (utils/dissoc-module-ids oto-data)))))
 
 (deftest get-aiemmin-hankitut-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut yhteiset tutkinnon osat"
@@ -383,7 +383,7 @@
       (eq
         (utils/dissoc-module-ids
           (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks)))
-        ahyto-data))))
+        (utils/dissoc-module-ids ahyto-data)))))
 
 (deftest get-hankittavat-paikalliset-tutkinnon-osat-test
   (testing "Set HOKS hankittavat paikalliset tutkinnon osat"
@@ -394,7 +394,7 @@
       (eq
         (utils/dissoc-module-ids
           (ha/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks)))
-        hpto-data))))
+        (utils/dissoc-module-ids hpto-data)))))
 
 (deftest get-hankittavat-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS hankittavat yhteiset tutkinnon osat"
@@ -403,7 +403,7 @@
       (eq
         (utils/dissoc-module-ids
           (ha/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks)))
-        hyto-data))))
+        (utils/dissoc-module-ids hyto-data)))))
 
 (deftest get-hankittavat-koulutuksen-osat
   (testing "GET TUVA hankittavat koulutuksen osat"
@@ -421,7 +421,7 @@
       (eq
         (utils/dissoc-module-ids (h/get-hoks-by-id (:id hoks)))
         (assoc
-          hoks-data
+          (utils/dissoc-module-ids hoks-data)
           :id 1
           :eid (:eid hoks)
           :manuaalisyotto false)))))

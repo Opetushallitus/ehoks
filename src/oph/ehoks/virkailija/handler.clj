@@ -234,7 +234,7 @@
     (add-opiskeluoikeus hoks)
     (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))
   (check-virkailija-privileges hoks request)
-  (save-hoks hoks request))
+  (save-hoks (h/add-missing-oht-yksiloiva-tunniste hoks) request))
 
 (defn- get-hoks-perustiedot
   "Get basic information from HOKS"
@@ -730,7 +730,8 @@
                             "Ylikirjoittaa olemassa olevan HOKSin arvon tai
                              arvot"
                             :body [hoks-values hoks-schema/HOKSKorvaus]
-                            (put-hoks hoks-values hoks-id))
+                            (put-hoks (h/add-missing-oht-yksiloiva-tunniste
+                                        hoks-values) hoks-id))
 
                           (c-api/PATCH "/" request
                             :body [hoks-values hoks-schema/HOKSPaivitys]
