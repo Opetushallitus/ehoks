@@ -155,13 +155,14 @@
     (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))
           ehoks-oppija-nimi (:nimi oppija)
           onr-oppija-nimi (op/format-oppija-name onr-oppija)]
-      (when (not= ehoks-oppija-nimi onr-oppija-nimi)
-        (log/infof "Updating changed name for oppija %s" oid)
-        (op/update-oppija! oid true)))
+      (if (= ehoks-oppija-nimi onr-oppija-nimi)
+        (log/info "Update for" oid "from ONR but no changes detected")
+        (do (log/infof "Updating changed name for oppija %s" oid)
+            (op/update-oppija! oid true))))
     ;; Jos oppijaa ei löydy päivitetyllä oidilla ehoksista,
     ;; niin ensin tarkastetaan, ettei kyseessä ole duplicate/slave oid.
     ;; (tämä saattaa olla turha tarkastus, mutta ainakin se estää sen,
-    ;; että koskaan päivitettäisiin slave oideja ehoksin tauluihin.
+    ;; että koskaan päivitettäisiin slave oideja ehoksin tauluihin.)
     ;;
     ;; Sitten haetaan kyseisen master-oidin slavet ja niiden oideilla
     ;; oppijat ehoksin oppijat-taulusta.
@@ -170,7 +171,9 @@
     ;; hokseihin, opiskeluoikeuksiin ja oppijat-taulun riviin uusi
     ;; master-oid. Lopuksi poistetaan slave-oidit oppijat taulusta.
     (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))]
-      (when-not (:duplicate onr-oppija)
+      (if (:duplicate onr-oppija)
+        (log/warn "Update for" oid "from ONR but it's marked as duplicate:"
+                  onr-oppija)
         (let [slave-oppija-oids
               (map
                 :oidHenkilo
@@ -181,7 +184,9 @@
                         (map
                           #(:oid (op/get-oppija-by-oid %))
                           slave-oppija-oids)))]
-          (when (seq oppijas-from-oppijaindex-by-slave-oids)
+          (if (empty? oppijas-from-oppijaindex-by-slave-oids)
+            (log/warn "Update for" oid "from ONR but no updatable oids found in"
+                      slave-oppija-oids)
             (jdbc/with-db-transaction
               [db-conn (db-ops/get-db-connection)]
               (doseq [oppija-oid oppijas-from-oppijaindex-by-slave-oids]
