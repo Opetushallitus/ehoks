@@ -625,10 +625,8 @@
                   :path-params [oppija-oid :- s/Str]
 
                   (c-api/POST "/index" []
-                    :summary
-                    "Indeksoi oppijan tiedot, jos on tarpeen. DEPRECATED"
-                    (a/go
-                      (response/ok {:message "Route is deprected."})))
+                    :summary "Indeksoi oppijan tiedot. DEPRECATED"
+                    (response/gone {:message "Route is deprected."}))
 
                   (c-api/context "/hoksit" []
                     (c-api/POST "/" [:as request]
@@ -648,8 +646,7 @@
                       (c-api/GET "/oppilaitos/:oppilaitos-oid" request
                         :path-params [oppilaitos-oid :- s/Str]
                         :return (restful/response [hoks-schema/HOKS])
-                        :summary "Oppijan hoksit (perustiedot,
-                                                  rajoitettu uusi versio)"
+                        :summary "Oppijan hoksit (rajoitettu uusi versio)"
                         (if (contains?
                               (user/get-organisation-privileges
                                 (get-in

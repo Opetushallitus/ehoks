@@ -156,8 +156,7 @@
           (restful/rest-ok {:opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
                             :oppija-oid (:oppija-oid hoks)})
           (do
-            (log/warn "No HOKS found with given hoks-id "
-                      hoks-id)
+            (log/warn "No HOKS found with given hoks-id" hoks-id)
             (response/not-found
               {:error "No HOKS found with given hoks-id"})))))
 
