@@ -244,6 +244,7 @@
       :header-params [caller-id :- s/Str]
       :query-params [from :- LocalDate
                      to :- LocalDate]
+      :return {:count s/Int}
       (let [count (hp/resend-aloituskyselyherate-between from to)]
         (restful/rest-ok {:count count})))
 
@@ -252,5 +253,6 @@
       :header-params [caller-id :- s/Str]
       :query-params [from :- LocalDate
                      to :- LocalDate]
+      :return {:count s/Int}
       (let [count (hp/resend-paattokyselyherate-between from to)]
         (restful/rest-ok {:count count})))))

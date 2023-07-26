@@ -430,6 +430,9 @@
                                end :- LocalDate
                                {pagesize :- s/Int 25}
                                {pageindex :- s/Int 0}]
+                :return {:count s/Int
+                         :pagecount s/Int
+                         :result [s/Any]}
                 (cond (and oppilaitos
                            (contains?
                              (user/get-organisation-privileges
@@ -475,6 +478,7 @@
                 :summary "Vastaajatunnuksen tiedot"
                 :header-params [caller-id :- s/Str]
                 :path-params [tunnus :- s/Str]
+                :return s/Any
                 (get-vastaajatunnus-info tunnus))
 
               (c-api/DELETE "/vastaajatunnus/:tunnus" []
@@ -490,6 +494,9 @@
                 :path-params [oppilaitosoid :- s/Str]
                 :query-params [{pagesize :- s/Int 25}
                                {pageindex :- s/Int 0}]
+                :return {:count s/Int
+                         :pagecount s/Int
+                         :result [s/Any]}
                 (if (contains? (user/get-organisation-privileges
                                  (get-in request [:session :virkailija-user])
                                  oppilaitosoid)
@@ -523,6 +530,11 @@
                                {alkupvm-loppu :- LocalDate (LocalDate/now)}
                                {limit :- s/Int 2000}
                                {from-id :- s/Int 0}]
+                :return {:last-id s/Int
+                         :paattokysely-total-count s/Int
+                         :o-s-pvm-ilman-vahvistuspvm-count s/Int
+                         :vahvistuspvm-ilman-o-s-pvm-count s/Int
+                         :vahvistuspvm-ja-o-s-pvm s/Int}
                 (let [data (db-hoks/select-kyselylinkit-by-date-and-type-temp
                              alkupvm alkupvm-loppu from-id limit)
                       last-id (:hoks-id (last data))]
@@ -575,6 +587,9 @@
                 true."
                 :query-params [{limit :- s/Int 2000}
                                {from-id :- s/Int 0}]
+                :return {:count s/Int
+                         :ids [s/Int]
+                         :last-id s/Int}
                 (let [hoksit (db-hoks/select-hokses-greater-than-id
                                from-id
                                limit
@@ -672,6 +687,7 @@
                         :path-params [hoks-id :- s/Int]
                         :summary "Hoksin tiedot.
                                 Vaatii manuaalisyöttäjän oikeudet"
+                        :return hoks-schema/HOKS
                         (get-hoks hoks-id request))
 
                       (c-api/POST "/:hoks-id/resend-palaute" request
@@ -679,6 +695,7 @@
                                   uudelleen lähetykselle"
                         :path-params [hoks-id :- s/Int]
                         :body [data hoks-schema/palaute-resend]
+                        :return {:sahkoposti s/Str}
                         (let [kyselylinkit
                               (heratepalvelu/get-oppija-kyselylinkit
                                 oppija-oid)
@@ -705,6 +722,7 @@
                         :summary "Palauttaa tietoja oppijan aktiivisista
                                   kyselylinkeistä (ilman kyselytunnuksia)"
                         :path-params [hoks-id :- s/Int]
+                        :return [s/Any]
                         (let [kyselylinkit
                               (heratepalvelu/get-oppija-kyselylinkit
                                 oppija-oid)
@@ -745,6 +763,7 @@
                           :summary "Asettaa HOKSin
                               poistetuksi(shallow delete) id:n perusteella."
                           :body [data hoks-schema/shallow-delete-hoks]
+                          :return {:success s/Int}
                           (let [hoks (h/get-hoks-by-id hoks-id)
                                 oppilaitos-oid (if (seq (:oppilaitos-oid data))
                                                  (:oppilaitos-oid data)
@@ -801,6 +820,7 @@
                         (c-api/GET "/" []
                           :summary "Kaikki hoksit (perustiedot).
                         Tarvitsee OPH-pääkäyttäjän oikeudet"
+                          :return [s/Any]
                           (restful/rest-ok (db-hoks/select-hoksit))))))
 
                   (route-middleware
