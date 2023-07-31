@@ -28,6 +28,7 @@
         :query-params [start :- LocalDate
                        end :- LocalDate
                        limit :- (s/maybe s/Int)]
+        :return s/Int
         (let [l (or limit 10)
               periods (hp/process-finished-workplace-periods start end l)]
           (restful/rest-ok (count periods))))
@@ -37,6 +38,7 @@
         :query-params [start :- LocalDate
                        end :- LocalDate
                        limit :- (s/maybe s/Int)]
+        :return s/Int
         (let [l (or limit 10)
               hoksit (hp/process-hoksit-without-kyselylinkit start end l)]
           (restful/rest-ok (count hoksit))))
@@ -61,6 +63,7 @@
         :header-params [caller-id :- s/Str]
         :query-params [from :- LocalDate
                        to :- LocalDate]
+        :return {:count s/Int}
         (let [count (hp/resend-aloituskyselyherate-between from to)]
           (restful/rest-ok {:count count})))
 
@@ -69,6 +72,7 @@
         :header-params [caller-id :- s/Str]
         :query-params [from :- LocalDate
                        to :- LocalDate]
+        :return {:count s/Int}
         (let [count (hp/resend-paattokyselyherate-between from to)]
           (restful/rest-ok {:count count})))
 
@@ -102,7 +106,7 @@
             kerrallaan. Palauttaa kyseisten jaksojen id:t (hankkimistapa-id)
             herätepalvelua varten. POISTETTU KÄYTÖSTÄ TILAPÄISESTI."
         :header-params [caller-id :- s/Str]
-
+        :return {:hankkimistapa-ids [s/Int]}
         (let [hankkimistavat
               []] ;(db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)]
           (restful/rest-ok {:hankkimistapa-ids hankkimistavat})))
@@ -113,5 +117,6 @@
             tiedot kerrallaan. Palauttaa kyseisten tapausten hoks id:t
             herätepalvelua varten. POISTETTU KÄYTÖSTÄ TILAPÄISESTI."
         :header-params [caller-id :- s/Str]
+        :return {:hoks-ids [s/Int]}
         (let [hoks-ids []] ;(db-hoks/delete-opiskelijan-yhteystiedot!)]
           (restful/rest-ok {:hoks-ids hoks-ids}))))))

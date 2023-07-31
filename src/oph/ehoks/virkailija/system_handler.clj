@@ -156,8 +156,7 @@
           (restful/rest-ok {:opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
                             :oppija-oid (:oppija-oid hoks)})
           (do
-            (log/warn "No HOKS found with given hoks-id "
-                      hoks-id)
+            (log/warn "No HOKS found with given hoks-id" hoks-id)
             (response/not-found
               {:error "No HOKS found with given hoks-id"})))))
 
@@ -244,6 +243,7 @@
       :header-params [caller-id :- s/Str]
       :query-params [from :- LocalDate
                      to :- LocalDate]
+      :return {:count s/Int}
       (let [count (hp/resend-aloituskyselyherate-between from to)]
         (restful/rest-ok {:count count})))
 
@@ -252,5 +252,6 @@
       :header-params [caller-id :- s/Str]
       :query-params [from :- LocalDate
                      to :- LocalDate]
+      :return {:count s/Int}
       (let [count (hp/resend-paattokyselyherate-between from to)]
         (restful/rest-ok {:count count})))))
