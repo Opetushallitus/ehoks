@@ -1,5 +1,6 @@
 (ns oph.ehoks.schema.generator
   (:require [schema.core :as s]
+            [clojure.walk]
             [ring.swagger.json-schema :as rsjs]))
 
 (def method-fallbacks
@@ -43,24 +44,38 @@
            (s/optional-key :patch-virkailija) s/Any}
    :description s/Str})
 
-(defn generate
-  "Generate schema for given HTTP method"
+(defn schema-template->schema
+  "Generate schema for given HTTP method from template m.  If m is not
+  a template, just return it as is."
   [m method]
-  (reduce
-    (fn [c [k v]]
-      (s/validate ModelValue v)
-      (let [value-type (get-type v method)
-            access-type (get-access v method)]
-        (assert
-          (and (some? access-type) (some? value-type))
-          (format
-            "Value type definition is missing for %s with method of %s (%s, %s)"
-            k method value-type access-type))
-        (case access-type
-          :excluded c
-          :optional (assoc c (s/optional-key k)
-                           (rsjs/describe value-type (:description v)))
-          :required (assoc c k
-                           (rsjs/describe value-type (:description v))))))
-    {}
-    m))
+  (if-not (= ::schema-template (:type (meta m)))
+    m
+    (with-meta
+      (reduce
+        (fn [c [k v]]
+          (s/validate ModelValue v)
+          (let [value-type (get-type v method)
+                access-type (get-access v method)]
+            (assert
+              (and (some? access-type) (some? value-type))
+              (format
+                "Value type definition is missing for field %s for %s in %s"
+                k method (or (:name (meta m)) m)))
+            (case access-type
+              :excluded c
+              :optional (assoc c (s/optional-key k)
+                               (rsjs/describe value-type (:description v)))
+              :required (assoc c k
+                               (rsjs/describe value-type (:description v))))))
+        {}
+        m)
+      {:name (str (:name (meta m)) "-" (name method))
+       :doc (:doc (meta m))})))
+
+(defn generate
+  "Walk a schema for any templates within, and turn those templates into
+  concrete schemata, creating a real Clojure/JSON schema."
+  [schema-with-templates specialisation-choice]
+  (clojure.walk/prewalk
+    (fn [subschema] (schema-template->schema subschema specialisation-choice))
+    schema-with-templates))

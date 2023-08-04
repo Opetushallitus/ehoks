@@ -1067,6 +1067,7 @@
 (def HOKSModel
   "HOKS-schema."
   ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"
+    :type ::g/schema-template
     :restful true
     :name "HOKSModel"}
   {:id {:methods {:post :excluded}
@@ -1152,15 +1153,13 @@
    :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks
    :hankittavat-koulutuksen-osat hankittava-koulutuksen-osa})
 
-(def HOKS
-  "HOKSin schema."
-  (with-meta
-    (g/generate HOKSModel :get)
-    {:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti (GET)"
-     :name "HOKS"}))
-
 (defn generate-hoks-schema [schema-name method doc]
   (with-meta (g/generate HOKSModel method) {:doc doc :name schema-name}))
+
+(def HOKS
+  "HOKSin schema."
+  (generate-hoks-schema
+    "HOKS" :get "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti"))
 
 (def HOKSPaivitys
   "HOKSin päivitysschema."
