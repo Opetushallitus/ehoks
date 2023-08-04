@@ -2,15 +2,25 @@
   (:require [schema.core :as s]
             [ring.swagger.json-schema :as rsjs]))
 
+(def method-fallbacks
+  {:post-virkailija :post,
+   :put-virkailija :put,
+   :patch-virkailija :patch})
+
 (defn get-access
   "Get access type for method"
   [v method]
-  (or (get-in v [:methods method]) (get-in v [:methods :any]) :required))
+  (or (get-in v [:methods method])
+      (get-in v [:methods (method-fallbacks method)])
+      (get-in v [:methods :any])
+      :required))
 
 (defn get-type
   "Get value type for method"
   [v method]
-  (or (get-in v [:types method]) (get-in v [:types :any])))
+  (or (get-in v [:types method])
+      (get-in v [:types (method-fallbacks method)])
+      (get-in v [:types :any])))
 
 (s/defschema
   ModelValue
@@ -19,12 +29,18 @@
              (s/optional-key :get) s/Keyword
              (s/optional-key :post) s/Keyword
              (s/optional-key :put) s/Keyword
-             (s/optional-key :patch) s/Keyword}
+             (s/optional-key :patch) s/Keyword
+             (s/optional-key :post-virkailija) s/Keyword
+             (s/optional-key :put-virkailija) s/Keyword
+             (s/optional-key :patch-virkailija) s/Keyword}
    :types {(s/optional-key :any) s/Any
            (s/optional-key :get) s/Any
            (s/optional-key :post) s/Any
            (s/optional-key :put) s/Any
-           (s/optional-key :patch) s/Any}
+           (s/optional-key :patch) s/Any
+           (s/optional-key :post-virkailija) s/Any
+           (s/optional-key :put-virkailija) s/Any
+           (s/optional-key :patch-virkailija) s/Any}
    :description s/Str})
 
 (defn generate

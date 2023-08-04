@@ -1164,22 +1164,17 @@
 
 (def HOKSPaivitys
   "HOKSin päivitysschema."
-  (generate-hoks-schema "HOKSPaivitys"
-                        :patch
-                        "HOKS-dokumentin osittainen päivittäminen (PATCH)"))
+  (generate-hoks-schema
+    "HOKSPaivitys" :patch "HOKS-dokumentin osittainen päivittäminen (PATCH)"))
 
 (def HOKSKorvaus
   "HOKSin korvausschema."
-  (generate-hoks-schema "HOKSKorvaus"
-                        :put
-                        "HOKS-dokumentin ylikirjoitus (PUT)"))
+  (generate-hoks-schema
+    "HOKSKorvaus" :put "HOKS-dokumentin ylikirjoitus (PUT)"))
 
 (def HOKSLuonti
   "HOKSin luontischema."
-  (generate-hoks-schema "HOKSLuonti"
-                        :post
-                        (str "HOKS-dokumentin arvot uutta merkintää luotaessa "
-                             "(POST)")))
+  (generate-hoks-schema "HOKSLuonti" :post "HOKS-dokumentin luominen (POST)"))
 
 (s/defschema
   kyselylinkki
