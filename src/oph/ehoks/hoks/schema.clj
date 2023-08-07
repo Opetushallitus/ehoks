@@ -235,57 +235,6 @@
            (>= osa-aikaisuustieto 1))
       true)))
 
-(s/defschema
-  OsaamisenHankkimistapa
-  "Osaamisen hankkimistavan schema."
-  (describe
-    "Osaamisen hankkimisen tapa"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
-    :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
-    :module-id UUID (str "Tietorakenteen yksilöivä tunniste "
-                         "esimerkiksi tiedon jakamista varten")
-    (s/optional-key :yksiloiva-tunniste) (s/constrained s/Str not-empty)
-    "Tietorakenteen yksilöivä tunniste yhden Hoksin kontekstissa."
-    (s/optional-key :ajanjakson-tarkenne) s/Str
-    "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."
-    :osaamisen-hankkimistapa-koodi-uri OsaamisenHankkimistapaKoodiUri
-    "Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa)
-    eli muotoa osaamisenhankkimistapa_xxx eli esim.
-    osaamisenhankkimistapa_koulutussopimus"
-    :osaamisen-hankkimistapa-koodi-versio s/Int
-    "Koodisto-koodin versio, koodistolle osaamisenhankkimistapa"
-    (s/optional-key :jarjestajan-edustaja) Oppilaitoshenkilo
-    "Koulutuksen järjestäjän edustaja"
-    (s/optional-key :hankkijan-edustaja) Oppilaitoshenkilo
-    "Oppisopimuskoulutusta hankkineen koulutuksen järjestäjän edustaja"
-    (s/optional-key :tyopaikalla-jarjestettava-koulutus)
-    TyopaikallaJarjestettavaKoulutus
-    (str "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. "
-         "Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai "
-         "koulutussopimus.")
-    (s/optional-key :muut-oppimisymparistot)
-    [MuuOppimisymparisto]
-    (str "Muussa oppimisympäristössä tapahtuvaan osaamisen hankkimiseen "
-         "liittyvät tiedot")
-    (s/optional-key :osa-aikaisuustieto) s/Int
-    (str "Osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). "
-         "100 tarkoittaa, että työ on kokoaikaista. Esimerkiksi 80 tarkoittaa, "
-         "että työ on osa-aikaista, 80 % normaalista kokonaistyöajasta. "
-         "Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen. "
-         "Pakollinen 1.7.2023 ja sen jälkeen päättyvillä työpaikkajaksoilla.")
-    (s/optional-key :oppisopimuksen-perusta-koodi-uri)
-    OppisopimuksenPerustaKoodiUri
-    "Oppisopimuksen perustan Koodisto-uri."
-    (s/optional-key :oppisopimuksen-perusta-koodi-versio) s/Int
-    "Oppisopimuksen perustan Koodisto-versio."
-    (s/optional-key :keskeytymisajanjaksot)
-    (s/constrained [Keskeytymisajanjakso] not-overlapping?)
-    (str "Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä "
-         "työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään "
-         "työelämäpalautteessa tarvittavan työpaikkajakson keston "
-         "laskemiseen.")))
-
 (defn- oppisopimus-has-perusta?
   "Varmistaa, että osaamisen hankkimistavassa on oppisopimuksen perusta, jos
   osaamisen hankkimistapatyyppi on oppisopimus."
@@ -300,29 +249,95 @@
   [oht]
   (not (.isBefore (:loppu oht) (:alku oht))))
 
-(s/defschema
-  OsaamisenHankkimistapaLuontiJaMuokkaus
-  "Schema osaamisen hankkimistavan luontiin ja muokkaukseen."
-  (-> OsaamisenHankkimistapa
-      (modify "Osaamisen hankkimisen tavan muokkaus (PATCH)"
-              {:removed [:module-id :id]})
-      (s/constrained osa-aikaisuustieto-valid?
-                     "Osa-aikaisuustieto ei ole välillä 1-100.")
-      (s/constrained oppisopimus-has-perusta?
-                     "Tieto oppisopimuksen perustasta puuttuu.")
-      (s/constrained nonnegative-duration? "Alku ennen loppua")))
+(def OsaamisenHankkimistapa-template
+  "Osaamisen hankkimistavan schema eri toiminnoille."
+  ^{:doc "Osaamisen hankkimistavan schema eri toiminnoille."
+    :type ::g/schema-template
+    :constraints
+    [[osa-aikaisuustieto-valid? "Osa-aikaisuustieto ei ole välillä 1-100."]
+     [oppisopimus-has-perusta? "Tieto oppisopimuksen perustasta puuttuu."]
+     [nonnegative-duration? "Alku ennen loppua"]]
+    :name "OsaamisenHankkimistapa"}
+  {:id {:methods {:any :excluded, :patch :optional, :get :optional}
+        :types {:any s/Int}
+        :description "Tunniste eHOKS-järjestelmässä"}
+   :alku {:methods {:any :required}
+          :types {:any LocalDate}
+          :description "Alkupäivämäärä muodossa YYYY-MM-DD"}
+   :loppu {:methods {:any :required}
+           :types {:any LocalDate}
+           :description "Loppupäivämäärä muodossa YYYY-MM-DD"}
+   :module-id {:methods {:any :excluded, :get :required}
+               :types {:any UUID}
+               :description (str "Tietorakenteen yksilöivä tunniste "
+                                 "esimerkiksi tiedon jakamista varten")}
+   :yksiloiva-tunniste
+   {:methods {:any :optional  ; TODO: change to :required
+              :post-virkailija :optional
+              :put-virkailija :optional
+              :patch-virkailija :optional}
+    :types {:any (s/constrained s/Str not-empty)}
+    :description "Tietorakenteen yksilöivä tunniste yhden Hoksin kontekstissa."}
+   :ajanjakson-tarkenne
+   {:methods {:any :optional} :types {:any s/Str}
+    :description "Tarkentava teksti ajanjaksolle, jos useita aikavälillä."}
+   :osaamisen-hankkimistapa-koodi-uri
+   {:methods {:any :required} :types {:any OsaamisenHankkimistapaKoodiUri}
+    :description
+    (str "Osaamisen hankkimisen Koodisto-koodi-URI (osaamisenhankkimistapa) "
+         "eli muotoa osaamisenhankkimistapa_xxx eli esim. "
+         "osaamisenhankkimistapa_koulutussopimus")}
+   :osaamisen-hankkimistapa-koodi-versio
+   {:methods {:any :required} :types {:any s/Int}
+    :description "Koodisto-koodin versio, koodistolle osaamisenhankkimistapa"}
+   :jarjestajan-edustaja
+   {:methods {:any :optional} :types {:any Oppilaitoshenkilo}
+    :description "Koulutuksen järjestäjän edustaja"}
+   :hankkijan-edustaja
+   {:methods {:any :optional} :types {:any Oppilaitoshenkilo}
+    :description (str "Oppisopimuskoulutusta hankkineen koulutuksen "
+                      "järjestäjän edustaja")}
+   :tyopaikalla-jarjestettava-koulutus
+   {:methods {:any :optional} :types {:any TyopaikallaJarjestettavaKoulutus}
+    :description
+    (str "Työpaikalla tapahtuvaan osaamisen hankkimiseen liittyvät tiedot. "
+         "Tämä tieto tuodaan, jos hankkimistapa on oppisopimuskoulutus tai "
+         "koulutussopimus.")}
+   :muut-oppimisymparistot
+   {:methods {:any :optional} :types {:any [MuuOppimisymparisto]}
+    :description (str "Muussa oppimisympäristössä tapahtuvaan osaamisen "
+                      "hankkimiseen liittyvät tiedot")}
+   :osa-aikaisuustieto
+   {:methods {:any :optional} :types {:any s/Int}
+    :description
+    (str "Osaamisen hankkimisen osa-aikaisuuden määrä prosentteina (1-100). "
+         "100 tarkoittaa, että työ on kokoaikaista. Esimerkiksi 80 tarkoittaa, "
+         "että työ on osa-aikaista, 80 % normaalista kokonaistyöajasta. "
+         "Käytetään työelämäpalautteen työpaikkajakson keston laskemiseen. "
+         "Pakollinen 1.7.2023 ja sen jälkeen päättyvillä työpaikkajaksoilla.")}
+   :oppisopimuksen-perusta-koodi-uri
+   {:methods {:any :optional} :types {:any OppisopimuksenPerustaKoodiUri}
+    :description "Oppisopimuksen perustan Koodisto-uri."}
+   :oppisopimuksen-perusta-koodi-versio
+   {:methods {:any :optional} :types {:any s/Int}
+    :description "Oppisopimuksen perustan Koodisto-versio."}
+   :keskeytymisajanjaksot
+   {:methods {:any :optional}
+    :types {:any (s/constrained [Keskeytymisajanjakso] not-overlapping?)}
+    :description
+    (str "Ajanjaksot, jolloin tutkinnon osan osaamisen hankkiminen kyseisellä "
+         "työpaikalla on ollut keskeytyneenä. Tietoa hyödynnetään "
+         "työelämäpalautteessa tarvittavan työpaikkajakson keston "
+         "laskemiseen.")}})
 
-(s/defschema
-  OsaamisenHankkimistapaPatch
-  "Schema osaamisen hankkimistavan PATCH-päivitykseen."
-  (-> OsaamisenHankkimistapa
-      (modify "Osaamisen hankkimisen tavan muokkaus (PATCH)"
-              {:removed [:module-id]})
-      (s/constrained osa-aikaisuustieto-valid?
-                     "Osa-aikaisuustieto ei ole välillä 1-100.")
-      (s/constrained oppisopimus-has-perusta?
-                     "Tieto oppisopimuksen perustasta puuttuu.")
-      (s/constrained nonnegative-duration? "Alku ennen loppua")))
+(s/defschema OsaamisenHankkimistapa
+             (g/generate OsaamisenHankkimistapa-template :get))
+
+(s/defschema OsaamisenHankkimistapaLuontiJaMuokkaus
+             (g/generate OsaamisenHankkimistapa-template :post))
+
+(s/defschema OsaamisenHankkimistapaPatch
+             (g/generate OsaamisenHankkimistapa-template :patch))
 
 (s/defschema
   NaytonJarjestaja

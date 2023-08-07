@@ -50,27 +50,29 @@
   [m method]
   (if-not (= ::schema-template (:type (meta m)))
     m
-    (with-meta
-      (reduce
-        (fn [c [k v]]
-          (s/validate ModelValue v)
-          (let [value-type (get-type v method)
-                access-type (get-access v method)]
-            (assert
-              (and (some? access-type) (some? value-type))
-              (format
-                "Value type definition is missing for field %s for %s in %s"
-                k method (or (:name (meta m)) m)))
-            (case access-type
-              :excluded c
-              :optional (assoc c (s/optional-key k)
-                               (rsjs/describe value-type (:description v)))
-              :required (assoc c k
-                               (rsjs/describe value-type (:description v))))))
-        {}
-        m)
-      {:name (str (:name (meta m)) "-" (name method))
-       :doc (:doc (meta m))})))
+    (as-> m schema
+      (keep (fn [[k v]]
+              (s/validate ModelValue v)
+              (let [value-type (get-type v method)
+                    value-described (rsjs/describe value-type (:description v))
+                    access-type (get-access v method)]
+                (assert
+                  (and (some? access-type) (some? value-type))
+                  (format "definition is missing for field %s for %s in %s"
+                          k method (or (:name (meta m)) m)))
+                (case access-type
+                  :excluded nil
+                  :optional [(s/optional-key k) value-described]
+                  :required [k value-described])))
+            schema)
+      (into {} schema)
+      (reduce (fn [schema [constraint description]]
+                (s/constrained schema constraint description))
+              schema
+              (:constraints (meta m)))
+      (with-meta schema
+                 {:name (str (:name (meta m)) "-" (name method))
+                  :doc (:doc (meta m))}))))
 
 (defn generate
   "Walk a schema for any templates within, and turn those templates into
