@@ -786,159 +786,92 @@
 (s/defschema HankittavaPaikallinenTutkinnonOsaPatch
              (g/generate HankittavaPaikallinenTutkinnonOsa-template :patch))
 
-(s/defschema
-  AiemminHankittuPaikallinenTutkinnonOsa
-  "Aiemmin hankitun paikallisen tutkinnon osan schema."
-  (modify
-    HankittavaPaikallinenTutkinnonOsa
-    "Aiemmin hankittu yhteinen tutkinnon osa"
-    {:removed [:osaamisen-hankkimistavat :osaamisen-osoittaminen]
-     :added
-     (describe
-       ""
-       :valittu-todentamisen-prosessi-koodi-uri TodentamisenProsessiKoodiUri
-       "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
-       :valittu-todentamisen-prosessi-koodi-versio s/Int
-       "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio
-       (Osaamisen todentamisen prosessi)"
-       (s/optional-key :tarkentavat-tiedot-naytto) [OsaamisenOsoittaminen]
-       "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
-       (s/optional-key :tarkentavat-tiedot-osaamisen-arvioija)
-       TodennettuArviointiLisatiedot "Mikäli arvioijan kautta todennettu,
-       annetaan myös arvioijan lisätiedot")}))
+(defn hankittava->aiemmin-hankittu
+  "Muuttaa hankittavan tutkinnon osan skeema-mallineen aiemmin hankitun
+  tutkinnon osan skeema-mallineeksi."
+  [schema & flags]
+  (let [prosessi-mode (if (some #{:prosessi-required} flags)
+                        :required :optional)]
+    (-> schema
+        (dissoc :osaamisen-hankkimistavat :osaamisen-osoittaminen :osa-alueet)
+        (assoc :valittu-todentamisen-prosessi-koodi-uri
+               {:methods {:any prosessi-mode}
+                :types {:any TodentamisenProsessiKoodiUri}
+                :description (str "Todentamisen prosessin kuvaus "
+                                  "(suoraan/arvioijien kautta/näyttö)")}
+               :valittu-todentamisen-prosessi-koodi-versio
+               {:methods {:any prosessi-mode}
+                :types {:any s/Int}
+                :description
+                (str "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn "
+                     "versio (Osaamisen todentamisen prosessi)")}
+               :tarkentavat-tiedot-naytto
+               {:methods {:any :optional}
+                :types {:any [OsaamisenOsoittaminen-template]}
+                :description
+                "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."}
+               :tarkentavat-tiedot-osaamisen-arvioija
+               {:methods {:any :optional}
+                :types {:any TodennettuArviointiLisatiedot}
+                :description (str "Mikäli arvioijan kautta todennettu, "
+                                  "annetaan myös arvioijan lisätiedot")}))))
 
-(s/defschema
-  AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus
-  "Schema aiemmin hankitun paikallisen tutkinnon osan luontiin ja muokkaukseen."
-  (modify
-    AiemminHankittuPaikallinenTutkinnonOsa
-    "Aiemmin hankitun paikallisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto :id]
-     :added
-     (describe
-       ""
-       (s/optional-key :tarkentavat-tiedot-naytto)
-       [OsaamisenOsoittaminenLuontiJaMuokkaus]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
+(def AiemminHankittuPaikallinenTutkinnonOsa-template
+  (with-meta
+    (hankittava->aiemmin-hankittu
+      HankittavaPaikallinenTutkinnonOsa-template
+      :prosessi-required)
+    {:doc "Aiemmin hankitun paikallisen tutkinnon osan schema."
+     :type ::g/schema-template
+     :name "AiemminHankittuPaikallinenTutkinnonOsa"}))
+
+(s/defschema AiemminHankittuPaikallinenTutkinnonOsa
+             (g/generate AiemminHankittuPaikallinenTutkinnonOsa-template :get))
+
+(s/defschema AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus
+             (g/generate AiemminHankittuPaikallinenTutkinnonOsa-template :post))
 
 (s/defschema
   AiemminHankittuPaikallinenTutkinnonOsaPatch
-  "Schema aiemmin hankitun paikallisen tutkinnon osan PATCH-päivitykseen."
-  (modify
-    AiemminHankittuPaikallinenTutkinnonOsa
-    "Aiemmin hankitun paikallisen osaamisen tiedot (PATCH)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto]
-     :added
-     (describe
-       ""
-       (s/optional-key :tarkentavat-tiedot-naytto)
-       [OsaamisenOsoittaminenPatch]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
+  (g/generate AiemminHankittuPaikallinenTutkinnonOsa-template :patch))
 
-(s/defschema
-  AiemminHankittuYhteinenTutkinnonOsa
-  "Aiemmin hankitun yhteisen tutkinnon osan schema."
-  (modify
-    HankittavaYTO
-    "Aiemmin hankittu yhteinen tutkinnon osa"
-    {:removed [:osa-alueet]
-     :added
-     (describe
-       ""
-       :osa-alueet [AiemminHankitunYTOOsaAlue] "YTO osa-alueet"
-       (s/optional-key :valittu-todentamisen-prosessi-koodi-uri)
-       TodentamisenProsessiKoodiUri
-       "Todentamisen prosessin kuvaus (suoraan/arvioijien kautta/näyttö)"
-       (s/optional-key :valittu-todentamisen-prosessi-koodi-versio) s/Int
-       "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn versio
-       (Osaamisen todentamisen prosessi)"
-       (s/optional-key :tarkentavat-tiedot-naytto) [OsaamisenOsoittaminen]
-       "Mikäli valittu näytön kautta, tuodaan myös näytön tiedot."
-       (s/optional-key :tarkentavat-tiedot-osaamisen-arvioija)
-       TodennettuArviointiLisatiedot "Mikäli arvioijan kautta todennettu,
-       annetaan myös arvioijan lisätiedot")}))
+(def AiemminHankittuYhteinenTutkinnonOsa-template
+  (with-meta
+    (assoc (hankittava->aiemmin-hankittu YhteinenTutkinnonOsa-template)
+           :osa-alueet {:methods {:any :required}
+                        :types {:any [AiemminHankitunYTOOsaAlue-template]}
+                        :description "YTOn osa-alueet"})
+    {:doc "Aiemmin hankitun yhteisen tutkinnon osan schema."
+     :type ::g/schema-template
+     :name "AiemminHankittuYhteinenTutkinnonOsa"}))
 
-(s/defschema
-  AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus
-  "Schema aiemmin hankitun yhteisen tutkinnon osan luontiin ja muokkaukseen."
-  (modify
-    AiemminHankittuYhteinenTutkinnonOsa
-    "Aiemmin hankitun yhteisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto :osa-alueet :id]
-     :added
-     (describe
-       ""
-       (s/optional-key :tarkentavat-tiedot-naytto)
-       [OsaamisenOsoittaminenLuontiJaMuokkaus]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen")
-       :osa-alueet [AiemminHankitunYTOOsaAlueLuontiJaMuokkaus]
-       "YTO osa-alueet")}))
+(s/defschema AiemminHankittuYhteinenTutkinnonOsa
+             (g/generate AiemminHankittuYhteinenTutkinnonOsa-template :get))
 
-(s/defschema
-  AiemminHankittuYhteinenTutkinnonOsaPatch
-  "Schema aiemmin hankitun yhteisen tutkinnon osan PATCH-päivitykseen."
-  (modify
-    AiemminHankittuYhteinenTutkinnonOsa
-    "Aiemmin hankitun yhteisen osaamisen tiedot (PATCH)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto :osa-alueet]
-     :added
-     (describe
-       ""
-       (s/optional-key :tarkentavat-tiedot-naytto)
-       [OsaamisenOsoittaminenPatch]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen")
-       :osa-alueet [AiemminHankitunYTOOsaAluePatch]
-       "YTO osa-alueet")}))
+(s/defschema AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus
+             (g/generate AiemminHankittuYhteinenTutkinnonOsa-template :post))
+
+(s/defschema AiemminHankittuYhteinenTutkinnonOsaPatch
+             (g/generate AiemminHankittuYhteinenTutkinnonOsa-template :patch))
+
+(def AiemminHankittuAmmatillinenTutkinnonOsa-template
+  (with-meta
+    (hankittava->aiemmin-hankittu HankittavaAmmatillinenTutkinnonOsa-template)
+    {:doc "Aiemmin hankitun ammatillisen tutkinnon osan schema."
+     :type ::g/schema-template
+     :name "AiemminHankittuAmmatillinenTutkinnonOsa"}))
 
 (s/defschema
   AiemminHankittuAmmatillinenTutkinnonOsa
-  "Aiemmin hankitun ammatillisen tutkinnon osan schema."
-  (modify
-    AiemminHankittuYhteinenTutkinnonOsa
-    "Aiemmin hankittu ammatillisen tutkinnon osa"
-    {:removed [:osa-alueet]
-     :added
-     (describe
-       ""
-       (s/optional-key :olennainen-seikka) s/Bool
-       (str "Tieto sellaisen seikan olemassaolosta, jonka koulutuksen
-    järjestäjä katsoo oleelliseksi tutkinnon osaan tai osa-alueeseen
-    liittyvän osaamisen hankkimisessa tai osoittamisessa."))}))
+  (g/generate AiemminHankittuAmmatillinenTutkinnonOsa-template :get))
 
 (s/defschema
   AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus
-  "Schema aiemmin hankitun ammatillisen tutkinnon osan luontiin ja
-  muokkaukseen."
-  (modify
-    AiemminHankittuAmmatillinenTutkinnonOsa
-    "Aiemmin hankitun ammatillisen osaamisen tiedot (POST, PUT)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto :id]
-     :added
-     (describe
-       ""
-       (s/optional-key :tarkentavat-tiedot-naytto)
-       [OsaamisenOsoittaminenLuontiJaMuokkaus]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
+  (g/generate AiemminHankittuAmmatillinenTutkinnonOsa-template :post))
 
 (s/defschema
   AiemminHankittuAmmatillinenTutkinnonOsaPatch
-  "Schema aiemmin hankitun ammatillisen tutkinnon osan PATCH-päivitykseen."
-  (modify
-    AiemminHankittuAmmatillinenTutkinnonOsa
-    "Aiemmin hankitun ammatillisen osaamisen tiedot (PATCH)"
-    {:removed [:module-id :tarkentavat-tiedot-naytto]
-     :added
-     (describe
-       ""
-       (s/optional-key :tarkentavat-tiedot-naytto)
-       [OsaamisenOsoittaminenPatch]
-       (str "Hankitun osaamisen osoittaminen: "
-            "Näyttö tai muu osaamisen osoittaminen"))}))
+  (g/generate AiemminHankittuAmmatillinenTutkinnonOsa-template :patch))
 
 (s/defschema
   HankittavaKoulutuksenOsa
