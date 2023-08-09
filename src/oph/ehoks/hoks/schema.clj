@@ -793,7 +793,8 @@
   (let [prosessi-mode (if (some #{:prosessi-required} flags)
                         :required :optional)]
     (-> schema
-        (dissoc :osaamisen-hankkimistavat :osaamisen-osoittaminen :osa-alueet)
+        (dissoc :osaamisen-hankkimistavat :osaamisen-osoittaminen :osa-alueet
+                :opetus-ja-ohjaus-maara)
         (assoc :valittu-todentamisen-prosessi-koodi-uri
                {:methods {:any prosessi-mode}
                 :types {:any TodentamisenProsessiKoodiUri}
