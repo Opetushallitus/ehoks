@@ -333,12 +333,6 @@
 (s/defschema OsaamisenHankkimistapa
              (g/generate OsaamisenHankkimistapa-template :get))
 
-(s/defschema OsaamisenHankkimistapaLuontiJaMuokkaus
-             (g/generate OsaamisenHankkimistapa-template :post))
-
-(s/defschema OsaamisenHankkimistapaPatch
-             (g/generate OsaamisenHankkimistapa-template :patch))
-
 (s/defschema
   NaytonJarjestaja
   "Näytön järjestäjän schema."
@@ -462,12 +456,6 @@
 (s/defschema OsaamisenOsoittaminen
              (g/generate OsaamisenOsoittaminen-template :get))
 
-(s/defschema OsaamisenOsoittaminenLuontiJaMuokkaus
-             (g/generate OsaamisenOsoittaminen-template :post))
-
-(s/defschema OsaamisenOsoittaminenPatch
-             (g/generate OsaamisenOsoittaminen-template :patch))
-
 (defn hankittava->aiemmin-hankittu
   "Muuttaa hankittavan tutkinnon osan skeema-mallineen aiemmin hankitun
   tutkinnon osan skeema-mallineeksi."
@@ -558,12 +546,6 @@
 (s/defschema HankittavanYTOnOsaAlue
              (g/generate HankittavanYTOnOsaAlue-template :get))
 
-(s/defschema HankittavanYTOnOsaAlueLuontiJaMuokkaus
-             (g/generate HankittavanYTOnOsaAlue-template :post))
-
-(s/defschema HankittavanYTOnOsaAluePatch
-             (g/generate HankittavanYTOnOsaAlue-template :patch))
-
 (def AiemminHankitunYTOnOsaAlue-template
   (with-meta
     (hankittava->aiemmin-hankittu
@@ -575,12 +557,6 @@
 
 (s/defschema AiemminHankitunYTOnOsaAlue
              (g/generate AiemminHankitunYTOnOsaAlue-template :get))
-
-(s/defschema AiemminHankitunYTOnOsaAlueLuontiJaMuokkaus
-             (g/generate AiemminHankitunYTOnOsaAlue-template :post))
-
-(s/defschema AiemminHankitunYTOnOsaAluePatch
-             (g/generate AiemminHankitunYTOnOsaAlue-template :patch))
 
 (def HankittavaYhteinenTutkinnonOsa-template
   ^{:doc "Hankittava Yhteinen Tutkinnon osa (YTO)"
@@ -857,73 +833,11 @@
     "Osaaminen voidaan merkitä saavutetuksi enintään kaksi viikkoa
     tulevaisuuteen ja vähintään vuodelle 2018."))
 
-(def ^:private ahato-part-of-hoks
-  "Aiemmin hankitun ammatillisen tutkinnon osan HOKS-osa schemana."
-  {:methods {:any :optional
-             :patch :excluded}
-   :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa]
-           :post [AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
-           :put [AiemminHankittuAmmatillinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description (str "Aiemmin hankittu ammatillinen osaaminen. Ei sallittu "
-                     "TUVA-HOKSilla.")})
-
-(def ^:private ahyto-part-of-hoks
-  "Aiemmin hankitun yhteisen tutkinnon osan HOKS-osa schemana."
-  {:methods {:any :optional
-             :patch :excluded}
-   :types {:any [AiemminHankittuYhteinenTutkinnonOsa]
-           :post [AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus]
-           :put [AiemminHankittuYhteinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description (str "Aiemmin hankitut yhteiset tutkinnon osat (YTO). Ei "
-                     "sallittu TUVA-HOKSilla.")})
-
-(def ^:private ahpto-part-of-hoks
-  "Aiemmin hankitun paikallisen tutkinnon osan HOKS-osa schemana."
-  {:methods {:any :optional
-             :patch :excluded}
-   :types {:any [AiemminHankittuPaikallinenTutkinnonOsa]
-           :post [AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]
-           :put [AiemminHankittuPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description (str "Aiemmin hankittu paikallinen tutkinnon osa. Ei sallittu "
-                     "TUVA-HOKSilla.")})
-
 (def ^:private oto-part-of-hoks
   "Opiskeluvalmiuksia tukevien opintojen HOKS-osa schemana."
-  {:methods {:any :optional
-             :patch :excluded}
+  {:methods {:any :optional :patch :excluded}
    :types {:any [OpiskeluvalmiuksiaTukevatOpinnot]}
    :description (str "Opiskeluvalmiuksia tukevat opinnot. Ei sallittu "
-                     "TUVA-HOKSilla.")})
-
-(def ^:private hato-part-of-hoks
-  "Hankittavan ammatillisen tutkinnon osan HOKS-osa schemana."
-  {:methods {:any :optional
-             :patch :excluded}
-   :types {:any [HankittavaAmmatillinenTutkinnonOsa]
-           :post [HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]
-           :put [HankittavaAmmatillinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description
-   (str "Hankittavan ammatillisen osaamisen hankkimisen tiedot. Ei sallittu "
-        "TUVA-HOKSilla.")})
-
-(def ^:private hyto-part-of-hoks
-  "Hankittavan yhteisen tutkinnon osan HOKS-osa schemana."
-  {:methods {:any :optional
-             :patch :excluded}
-   :types {:any [HankittavaYhteinenTutkinnonOsa]
-           :post [HankittavaYhteinenTutkinnonOsaLuontiJaMuokkaus]
-           :put [HankittavaYhteinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description (str "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot. "
-                     "Ei sallittu TUVA-HOKSilla.")})
-
-(def ^:private hpto-part-of-hoks
-  "Hankittavan paikallisen tutkinnon osan HOKS-osa schemana."
-  {:methods {:any :optional
-             :patch :excluded}
-   :types {:any [HankittavaPaikallinenTutkinnonOsa]
-           :post [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]
-           :put [HankittavaPaikallinenTutkinnonOsaLuontiJaMuokkaus]}
-   :description (str "Hankittavat paikallisen tutkinnon osat. Ei sallittu "
                      "TUVA-HOKSilla.")})
 
 (def ^:private hankittava-koulutuksen-osa
@@ -1013,13 +927,39 @@
                               :get :optional}
                     :types {:any s/Bool}
                     :description "Tieto, onko HOKS tuotu manuaalisyötön kautta"}
-   :aiemmin-hankitut-ammat-tutkinnon-osat ahato-part-of-hoks
-   :aiemmin-hankitut-yhteiset-tutkinnon-osat ahyto-part-of-hoks
-   :aiemmin-hankitut-paikalliset-tutkinnon-osat ahpto-part-of-hoks
+   :aiemmin-hankitut-ammat-tutkinnon-osat
+   {:methods {:any :optional :patch :excluded}
+    :types {:any [AiemminHankittuAmmatillinenTutkinnonOsa-template]}
+    :description (str "Aiemmin hankittu ammatillinen osaaminen. Ei sallittu "
+                      "TUVA-HOKSilla.")}
+   :aiemmin-hankitut-yhteiset-tutkinnon-osat
+   {:methods {:any :optional :patch :excluded}
+    :types {:any [AiemminHankittuYhteinenTutkinnonOsa-template]}
+    :description (str "Aiemmin hankitut yhteiset tutkinnon osat (YTO). Ei "
+                      "sallittu TUVA-HOKSilla.")}
+   :aiemmin-hankitut-paikalliset-tutkinnon-osat
+   {:methods {:any :optional :patch :excluded}
+    :types {:any [AiemminHankittuPaikallinenTutkinnonOsa-template]}
+    :description (str "Aiemmin hankittu paikallinen tutkinnon osa. Ei sallittu "
+                      "TUVA-HOKSilla.")}
    :opiskeluvalmiuksia-tukevat-opinnot oto-part-of-hoks
-   :hankittavat-ammat-tutkinnon-osat hato-part-of-hoks
-   :hankittavat-yhteiset-tutkinnon-osat hyto-part-of-hoks
-   :hankittavat-paikalliset-tutkinnon-osat hpto-part-of-hoks
+   :hankittavat-ammat-tutkinnon-osat
+   {:methods {:any :optional :patch :excluded}
+    :types {:any [HankittavaAmmatillinenTutkinnonOsa-template]}
+    :description (str "Hankittavan ammatillisen osaamisen hankkimisen "
+                      "tiedot. Ei sallittu TUVA-HOKSilla.")}
+   :hankittavat-yhteiset-tutkinnon-osat
+   {:methods {:any :optional
+              :patch :excluded}
+    :types {:any [HankittavaYhteinenTutkinnonOsa-template]}
+    :description (str "Hankittavan yhteisen tutkinnon osan hankkimisen tiedot. "
+                      "Ei sallittu TUVA-HOKSilla.")}
+   :hankittavat-paikalliset-tutkinnon-osat
+   {:methods {:any :optional
+              :patch :excluded}
+    :types {:any [HankittavaPaikallinenTutkinnonOsa-template]}
+    :description (str "Hankittavat paikallisen tutkinnon osat. Ei sallittu "
+                      "TUVA-HOKSilla.")}
    :hankittavat-koulutuksen-osat hankittava-koulutuksen-osa})
 
 (defn generate-hoks-schema [schema-name method doc]
