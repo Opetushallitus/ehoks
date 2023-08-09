@@ -272,7 +272,7 @@
                :description (str "Tietorakenteen yksilöivä tunniste "
                                  "esimerkiksi tiedon jakamista varten")}
    :yksiloiva-tunniste
-   {:methods {:any :optional  ; TODO: change to :required
+   {:methods {:any :required
               :post-virkailija :optional
               :put-virkailija :optional
               :patch-virkailija :optional}

@@ -260,6 +260,21 @@
                        :osa-alueet 0 :osaamisen-hankkimistavat 0])
               (->> (re-find #"Alku ennen loppua")))))))
 
+(deftest require-yksiloiva-tunniste-in-oht
+  (testing "Osaamisen hankkimistavassa pitää olla yksilöivä tunniste."
+    (let [app (hoks-utils/create-app nil)
+          invalid-data
+          (update-in test-data/hoks-data
+                     [:hankittavat-ammat-tutkinnon-osat 0
+                      :osaamisen-hankkimistavat 0]
+                     dissoc :yksiloiva-tunniste)
+          invalid-post-response
+          (hoks-utils/create-mock-post-request "" invalid-data app)]
+      (is (= (:status invalid-post-response) 400))
+      (is (-> (utils/parse-body (:body invalid-post-response))
+              (get-in [:errors :hankittavat-ammat-tutkinnon-osat 0
+                       :osaamisen-hankkimistavat 0 :yksiloiva-tunniste]))))))
+
 (deftest prevent-osaamisen-saavuttaminen-out-of-range
   (testing "The allowed range of osaaminen-saavuttamisen-pvm is from 1.1.2018
            to two weeks in the future (from the time of saving the HOKS)."
