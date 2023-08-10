@@ -42,7 +42,7 @@ stamps/example-data: stamps/server-running
 	touch $@
 
 tags::
-	ctags -R --exclude='*.min.js' .
+	ctags -R --exclude='*.min.js' --exclude='json-schema-viewer.js' .
 
 .PHONY: psql
 psql: stamps/db-running
