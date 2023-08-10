@@ -24,11 +24,11 @@
 
 (defn select-opiskeluoikeus-by-oid
   "Hakee tietokannasta opiskeluoikeuden OID:n perusteella."
-  [oid]
+  [oid & keep-columns]
   (first
     (db-ops/query
       [queries/select-opiskeluoikeudet-by-oid oid]
-      {:row-fn db-ops/from-sql})))
+      {:row-fn #(db-ops/from-sql % {} keep-columns)})))
 
 (defn select-hankintakoulutus-oids-by-master-oid
   "Hakee tietokannasta lista opiskeluoikeus OID:istä

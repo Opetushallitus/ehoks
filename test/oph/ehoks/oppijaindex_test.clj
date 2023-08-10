@@ -2,11 +2,13 @@
   (:require [oph.ehoks.oppijaindex :as sut]
             [clojure.test :as t]
             [oph.ehoks.utils :as utils]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp])
-  (:import (clojure.lang ExceptionInfo)))
+  (:import (clojure.lang ExceptionInfo)
+           (java.time LocalDate)))
 
 (t/use-fixtures :once utils/migrate-database)
 (t/use-fixtures :each utils/empty-database-after-test)
@@ -328,6 +330,8 @@
            {:status 200
             :body (assoc
                     opiskeluoikeus-data
+                    :alkamispäivä "2023-07-03"
+                    :arvioituPäättymispäivä "2025-12-01"
                     :oid "1.2.246.562.15.00000000001")}))]
       (sut/add-oppija! "1.2.246.562.24.111111111111")
       (sut/add-opiskeluoikeus!
@@ -339,6 +343,8 @@
       (utils/eq
         (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
         {:oid "1.2.246.562.15.00000000001"
+         :alkamispaiva (LocalDate/of 2023 7 3)
+         :arvioitu-paattymispaiva (LocalDate/of 2025 12 1)
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
          :tutkinto-nimi {:fi "Testialan perustutkinto"
@@ -375,6 +381,60 @@
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}}))
+
+    ; testataan että jos ei ole alkamispäivää korvataan aina uudella
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ ___ __]
+         {:status 200
+          :body (assoc
+                  opiskeluoikeus-data
+                  :alkamispäivä "2023-07-01"
+                  :oid "1.2.246.562.15.00000000001")})]
+      (t/is (sut/opiskeluoikeus-information-outdated?
+              "1.2.246.562.15.00000000001"))
+      (sut/add-opiskeluoikeus!
+        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        {:oid "1.2.246.562.15.00000000001"
+         :alkamispaiva (LocalDate/of 2023 7 1)
+         :oppija-oid "1.2.246.562.24.111111111111"
+         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
+         :osaamisala-nimi {:fi "" :sv ""}}))
+
+    ; testataan että muuten pidetään indeksissä jo oleva
+    (utils/with-ticket-auth
+      ["1.2.246.562.10.222222222222"
+       (fn [_ ___ __]
+         {:status 200
+          :body (assoc
+                  opiskeluoikeus-data
+                  :alkamispäivä "2023-07-03"
+                  :arvioituPäättymispäivä "2025-10-01"
+                  :oid "1.2.246.562.15.00000000001")})]
+      (t/is (not (sut/opiskeluoikeus-information-outdated?
+                   "1.2.246.562.15.00000000001")))
+      (sut/add-opiskeluoikeus!
+        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+      (utils/eq
+        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        {:oid "1.2.246.562.15.00000000001"
+         :alkamispaiva (LocalDate/of 2023 7 1)  ;; i.e. no change
+         :oppija-oid "1.2.246.562.24.111111111111"
+         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :tutkinto-nimi {:fi "Testialan perustutkinto"
+                         :sv "Grundexamen inom testsbranschen"
+                         :en "Testing"}
+         :osaamisala-nimi {:fi "" :sv ""}})
+      (db-ops/update! :opiskeluoikeudet
+                      {:updated_at (java.time.LocalDate/of 2022 9 1)}
+                      ["oid = ?" "1.2.246.562.15.00000000001"])
+      (t/is (sut/opiskeluoikeus-information-outdated?
+              "1.2.246.562.15.00000000001")))
 
     ; odota cachen vanhenemista
     (Thread/sleep 500)
