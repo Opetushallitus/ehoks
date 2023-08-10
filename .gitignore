@@ -8,6 +8,7 @@
 /classes
 /lib
 /scripts/session-cookie.txt
+/scripts/cas-tgt-url.txt
 /resources/uberjar/buildversion.txt
 /target
 /stamps
