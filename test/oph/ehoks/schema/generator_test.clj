@@ -6,6 +6,7 @@
             [oph.ehoks.utils :refer [eq]]))
 
 (def example
+  ^{:type ::g/schema-template}
   {:id {:methods {:any :required
                   :post :excluded}
         :description "Hello ID"

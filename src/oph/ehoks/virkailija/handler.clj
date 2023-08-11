@@ -632,7 +632,9 @@
                     (c-api/POST "/" [:as request]
                       :summary (str "Luo uuden HOKSin. "
                                     "Vaatii manuaalisyöttäjän oikeudet")
-                      :body [hoks hoks-schema/HOKSLuonti]
+                      :body [hoks (hoks-schema/generate-hoks-schema
+                                    "HOKSLuonti-virkailija" :post-virkailija
+                                    "HOKS-dokumentin luonti")]
                       :return (restful/response schema/POSTResponse :id s/Int)
                       (post-oppija hoks request))
 
@@ -744,12 +746,18 @@
                             :summary
                             "Ylikirjoittaa olemassa olevan HOKSin arvon tai
                              arvot"
-                            :body [hoks-values hoks-schema/HOKSKorvaus]
+                            :body [hoks-values
+                                   (hoks-schema/generate-hoks-schema
+                                     "HOKSKorvaus-virkailija" :put-virkailija
+                                     "HOKS-dokumentin korvaus")]
                             (put-hoks (h/add-missing-oht-yksiloiva-tunniste
                                         hoks-values) hoks-id))
 
                           (c-api/PATCH "/" request
-                            :body [hoks-values hoks-schema/HOKSPaivitys]
+                            :body [hoks-values
+                                   (hoks-schema/generate-hoks-schema
+                                     "HOKSPaivitys-virkailija" :patch-virkailija
+                                     "HOKS-dokumentin päivitys")]
                             :summary "Oppijan hoksin päätason arvojen päivitys"
                             (patch-hoks hoks-values hoks-id))))
 

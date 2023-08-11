@@ -27,19 +27,19 @@
       :koulutuksen-jarjestaja-oid]}))
 
 (s/defschema
-  HankittavaYTOLuonti
+  HankittavaYhteinenTutkinnonOsaLuonti
   "Schema hankittavan yhteisen tutkinnon osan luontikyselyyn."
   (modify
-    hoks-schema/HankittavaYTOLuontiJaMuokkaus
+    hoks-schema/HankittavaYhteinenTutkinnonOsaLuontiJaMuokkaus
     (str "Hankittavan yhteinen tutkinnon osan tiedot uutta merkintää "
          "luotaessa (POST)")
     {:removed [:id :module-id]}))
 
 (s/defschema
-  HankittavaYTOPaivitys
+  HankittavaYhteinenTutkinnonOsaPaivitys
   "Schema hankittavan yhteisen tutkinnon osan päivityskyselyyn."
   (modify
-    hoks-schema/HankittavaYTOPatch
+    hoks-schema/HankittavaYhteinenTutkinnonOsaPatch
     (str "Hankittavan yhteinen tutkinnon osan tiedot kenttää tai kenttiä "
          "päivittäessä (PATCH)")
     {:removed [:module-id]

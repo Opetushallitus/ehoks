@@ -831,6 +831,7 @@
   "HOKSin schema (vipunen)."
   ^{:doc "Henkilökohtainen osaamisen kehittämissuunnitelmadokumentti
      Vipusta varten, ei sisällä henkilöiden nimiä tai sähköpostiosoitteita"
+    :type ::g/schema-template
     :restful true
     :name "HOKSModelVipunen"}
   {:id {:methods {:post :excluded}
