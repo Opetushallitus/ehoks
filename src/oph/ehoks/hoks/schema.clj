@@ -1,5 +1,6 @@
 (ns oph.ehoks.hoks.schema
   (:require [oph.ehoks.schema.generator :as g]
+            [oph.ehoks.hoks.hoks :refer [y-tunnus-missing?]]
             [oph.ehoks.schema-tools :refer [describe modify]]
             [schema.core :as s]
             [clojure.tools.logging :as log])
@@ -273,6 +274,8 @@
      {:check tyopaikkajakso-has-yksiloiva-tunniste?
       :except-methods #{:put-virkailija :post-virkailija :patch-virkailija}
       :description "Lisää työpaikkajaksoon yksilöivä tunniste."}
+     {:check #(not (y-tunnus-missing? %))
+      :description "Lisää työpaikkajaksoon työpaikan Y-tunnus."}
      {:check oppisopimus-has-perusta?
       :description "Lisää jaksoon oppisopimuksen perustan koodi-uri."}
      {:check nonnegative-duration?

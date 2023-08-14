@@ -183,20 +183,6 @@
         {:error
          (str "User has unsufficient privileges")}))))
 
-(defn- check-for-missing-tyopaikan-y-tunnus
-  "Check whether any osaamisen hankkimistavat are missing työpaikan Y-tunnus"
-  [hoks]
-  (let [osaamisen-hankkimistavat (h/get-osaamisen-hankkimistavat hoks)
-        oh-missing-tyopaikan-y-tunnus (h/missing-tyopaikan-y-tunnus?
-                                        osaamisen-hankkimistavat)]
-    (when (some? oh-missing-tyopaikan-y-tunnus)
-      (assoc
-        (response/bad-request!
-          {:error (str "tyopaikan-y-tunnus missing for "
-                       "osaamisen hankkimistapa: "
-                       oh-missing-tyopaikan-y-tunnus)})
-        :audit-data {:new hoks}))))
-
 (defn- save-hoks
   "Save HOKS to database"
   [hoks request]
@@ -229,7 +215,6 @@
         (koski/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
     (check-opiskeluoikeus-match hoks opiskeluoikeudet)
     (check-opiskeluoikeus-validity hoks opiskeluoikeudet)
-    (check-for-missing-tyopaikan-y-tunnus hoks)
     (add-oppija hoks)
     (add-opiskeluoikeus hoks)
     (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))

@@ -343,20 +343,6 @@
                           (:opiskeluoikeus-oid hoks))})
         :audit-data {:new hoks}))))
 
-(defn- check-for-missing-tyopaikan-y-tunnus
-  "Tarkistaa, puuttuuko Y-tunnus jostakin osaamisen hankkimistavasta."
-  [hoks]
-  (let [osaamisen-hankkimistavat (h/get-osaamisen-hankkimistavat hoks)
-        oh-missing-tyopaikan-y-tunnus (h/missing-tyopaikan-y-tunnus?
-                                        osaamisen-hankkimistavat)]
-    (when (some? oh-missing-tyopaikan-y-tunnus)
-      (assoc
-        (response/bad-request!
-          {:error (str "tyopaikan-y-tunnus missing for "
-                       "osaamisen hankkimistapa: "
-                       oh-missing-tyopaikan-y-tunnus)})
-        :audit-data {:new hoks}))))
-
 (defn- save-hoks
   "Tallentaa HOKSin tietokantaan."
   [hoks request notifications]
@@ -394,7 +380,6 @@
                                  (:oppija-oid hoks))]
           (check-opiskeluoikeus-match hoks opiskeluoikeudet)
           (check-opiskeluoikeus-validity hoks opiskeluoikeudet)
-          (check-for-missing-tyopaikan-y-tunnus hoks)
           (add-oppija-to-index hoks)
           (add-opiskeluoikeus-to-index hoks)
           (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))

@@ -372,19 +372,32 @@
              (str "(not (re-find #\"^[0-9]{7}-[0-9]$\" \"" % "\"))"))
           checksum-mismatch
           #(error-details-template
-             (str "(not (\"Kelvollinen Y-tunnus\" \"" % "\"))"))]
-      (doseq [[y-tunnus expected-error] [["Ei y-tunnusta" regex-mismatch]
-                                         ["1234567-1 "    regex-mismatch]
-                                         ["1234567-2"     checksum-mismatch]
-                                         ["7654321-8"     checksum-mismatch]]
+             (str "(not (\"Kelvollinen Y-tunnus\" \"" % "\"))"))
+          response-1
+          (hoks-utils/mock-st-post
+            (hoks-utils/create-app nil)
+            base-url
+            (update-in hoks-data [:hankittavat-ammat-tutkinnon-osat 0
+                                  :osaamisen-hankkimistavat 0
+                                  :tyopaikalla-jarjestettava-koulutus]
+                       dissoc :tyopaikan-y-tunnus))]
+      (is (= (:status response-1) 400))
+      (is (-> (:body response-1)
+              (utils/parse-body)
+              (get-in [:errors :hankittavat-ammat-tutkinnon-osat 0
+                       :osaamisen-hankkimistavat 0])
+              (->> (re-find #"Y-tunnus"))))
+      (doseq [[y-tunnus expected-error]
+              [["Ei y-tunnusta" regex-mismatch]
+               ["1234567-1 "    regex-mismatch]
+               ["1234567-2"     checksum-mismatch]
+               ["7654321-8"     checksum-mismatch]]
               :let [response (hoks-utils/mock-st-post
                                (hoks-utils/create-app nil)
                                base-url
                                (assoc-in hoks-data
-                                         [:hankittavat-ammat-tutkinnon-osat
-                                          0
-                                          :osaamisen-hankkimistavat
-                                          0
+                                         [:hankittavat-ammat-tutkinnon-osat 0
+                                          :osaamisen-hankkimistavat 0
                                           :tyopaikalla-jarjestettava-koulutus
                                           :tyopaikan-y-tunnus]
                                          y-tunnus))]]
