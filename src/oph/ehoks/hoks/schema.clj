@@ -249,14 +249,28 @@
   [oht]
   (not (.isBefore (:loppu oht) (:alku oht))))
 
+(defn- tyopaikkajakso-has-yksiloiva-tunniste?
+  [oht]
+  (or (-> (:osaamisen-hankkimistapa-koodi-uri oht)
+          #{"osaamisenhankkimistapa_oppisopimus"
+            "osaamisenhankkimistapa_koulutussopimus"}
+          (not))
+      (:yksiloiva-tunniste oht)))
+
 (def OsaamisenHankkimistapa-template
   "Osaamisen hankkimistavan schema eri toiminnoille."
   ^{:doc "Osaamisen hankkimistavan schema eri toiminnoille."
     :type ::g/schema-template
     :constraints
-    [[osa-aikaisuustieto-valid? "Osa-aikaisuustieto ei ole välillä 1-100."]
-     [oppisopimus-has-perusta? "Tieto oppisopimuksen perustasta puuttuu."]
-     [nonnegative-duration? "Alku ennen loppua"]]
+    [{:check osa-aikaisuustieto-valid?
+      :description "Osa-aikaisuustieto ei ole välillä 1-100."}
+     {:check tyopaikkajakso-has-yksiloiva-tunniste?
+      :except-methods #{:put-virkailija :post-virkailija :patch-virkailija}
+      :description "Työpaikkajaksossa on yksilöivä tunniste."}
+     {:check oppisopimus-has-perusta?
+      :description "Tieto oppisopimuksen perustasta puuttuu."}
+     {:check nonnegative-duration?
+      :description "Jakson alku on ennen loppua"}]
     :name "OsaamisenHankkimistapa"}
   {:id {:methods {:any :excluded, :patch :optional, :get :optional}
         :types {:any s/Int}
@@ -272,10 +286,7 @@
                :description (str "Tietorakenteen yksilöivä tunniste "
                                  "esimerkiksi tiedon jakamista varten")}
    :yksiloiva-tunniste
-   {:methods {:any :optional  ; TODO: change to :required
-              :post-virkailija :optional
-              :put-virkailija :optional
-              :patch-virkailija :optional}
+   {:methods {:any :optional}
     :types {:any (s/constrained s/Str not-empty)}
     :description "Tietorakenteen yksilöivä tunniste yhden Hoksin kontekstissa."}
    :ajanjakson-tarkenne

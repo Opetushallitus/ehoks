@@ -44,6 +44,11 @@
            (s/optional-key :patch-virkailija) s/Any}
    :description s/Str})
 
+(defn applicable-constraints
+  "Given a :constraints definition, give all that apply to the given method."
+  [constraints method]
+  (remove #(contains? (:except-methods %) method) constraints))
+
 (defn schema-template->schema
   "Generate schema for given HTTP method from template m.  If m is not
   a template, just return it as is."
@@ -66,10 +71,10 @@
                   :required [k value-described])))
             schema)
       (into {} schema)
-      (reduce (fn [schema [constraint description]]
-                (s/constrained schema constraint description))
+      (reduce (fn [schema {:keys [check description]}]
+                (s/constrained schema check description))
               schema
-              (:constraints (meta m)))
+              (applicable-constraints (:constraints (meta m)) method))
       (with-meta schema
                  {:name (str (:name (meta m)) "-" (name method))
                   :doc (:doc (meta m))}))))
