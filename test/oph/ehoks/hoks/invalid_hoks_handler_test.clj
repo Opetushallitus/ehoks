@@ -247,18 +247,30 @@
 (deftest prevent-invalid-osaamisen-hankkimistapa
   (testing "Start and end dates of OHT are checked"
     (let [app (hoks-utils/create-app nil)
-          invalid-data
+          invalid-data-1
           (assoc-in test-data/hoks-data
                     [:hankittavat-yhteiset-tutkinnon-osat 0
                      :osa-alueet 0 :osaamisen-hankkimistavat 0 :alku]
                     "2020-10-02")
-          invalid-post-response
-          (hoks-utils/create-mock-post-request "" invalid-data app)]
-      (is (= (:status invalid-post-response) 400))
-      (is (-> (utils/parse-body (:body invalid-post-response))
+          invalid-post-response-1
+          (hoks-utils/create-mock-post-request "" invalid-data-1 app)
+          invalid-data-2
+          (assoc-in test-data/hoks-data
+                    [:hankittavat-ammat-tutkinnon-osat 0
+                     :osaamisen-hankkimistavat 0 :loppu]
+                    "2030-12-08")
+          invalid-post-response-2
+          (hoks-utils/create-mock-post-request "" invalid-data-2 app)]
+      (is (= (:status invalid-post-response-1) 400))
+      (is (-> (utils/parse-body (:body invalid-post-response-1))
               (get-in [:errors :hankittavat-yhteiset-tutkinnon-osat 0
                        :osa-alueet 0 :osaamisen-hankkimistavat 0])
-              (->> (re-find #"Korjaa alku- ja loppupäivä")))))))
+              (->> (re-find #"Korjaa alku- ja loppupäivä"))))
+      (is (= (:status invalid-post-response-2) 400))
+      (is (-> (utils/parse-body (:body invalid-post-response-2))
+              (get-in [:errors :hankittavat-ammat-tutkinnon-osat 0
+                       :osaamisen-hankkimistavat 0])
+              (->> (re-find #"5 vuoden pituiseksi")))))))
 
 (deftest require-yksiloiva-tunniste-in-oht
   (testing "Osaamisen hankkimistavassa pitää olla yksilöivä tunniste."
