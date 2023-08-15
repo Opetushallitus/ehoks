@@ -260,7 +260,19 @@
                      :osaamisen-hankkimistavat 0 :loppu]
                     "2030-12-08")
           invalid-post-response-2
-          (hoks-utils/create-mock-post-request "" invalid-data-2 app)]
+          (hoks-utils/create-mock-post-request "" invalid-data-2 app)
+          invalid-data-3
+          (assoc test-data/hoks-data
+                 :opiskeluoikeus-oid
+                 "1.2.246.562.15.00000000004")
+          invalid-post-response-3
+          (hoks-utils/create-mock-post-request "" invalid-data-3 app)
+          invalid-data-4
+          (assoc test-data/hoks-data
+                 :opiskeluoikeus-oid
+                 "1.2.246.562.15.00000000005")
+          invalid-post-response-4
+          (hoks-utils/create-mock-post-request "" invalid-data-4 app)]
       (is (= (:status invalid-post-response-1) 400))
       (is (-> (utils/parse-body (:body invalid-post-response-1))
               (get-in [:errors :hankittavat-yhteiset-tutkinnon-osat 0
@@ -270,7 +282,15 @@
       (is (-> (utils/parse-body (:body invalid-post-response-2))
               (get-in [:errors :hankittavat-ammat-tutkinnon-osat 0
                        :osaamisen-hankkimistavat 0])
-              (->> (re-find #"5 vuoden pituiseksi")))))))
+              (->> (re-find #"5 vuoden pituiseksi"))))
+      (is (= (:status invalid-post-response-3) 400))
+      (is (= (:status invalid-post-response-4) 400))
+      (is (-> (utils/parse-body (:body invalid-post-response-3))
+              :error
+              (->> (re-find #"ajallisesti opiskeluoikeuden"))))
+      (is (-> (utils/parse-body (:body invalid-post-response-4))
+              :error
+              (->> (re-find #"ajallisesti opiskeluoikeuden")))))))
 
 (deftest require-yksiloiva-tunniste-in-oht
   (testing "Osaamisen hankkimistavassa pitää olla yksilöivä tunniste."

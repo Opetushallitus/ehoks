@@ -281,6 +281,37 @@
                         "opiskeluoikeuden tyyppiä (" tyyppi ").")
                    {:error :disallowed-update})))))))
 
+(defn get-osaamisen-hankkimistavat
+  "Hakee kaikki osaamisen hankkimistavat HOKSista."
+  [hoks]
+  (concat
+    (mapcat
+      :osaamisen-hankkimistavat
+      (:hankittavat-ammat-tutkinnon-osat hoks))
+    (mapcat
+      :osaamisen-hankkimistavat
+      (:hankittavat-paikalliset-tutkinnon-osat hoks))
+    (mapcat :osaamisen-hankkimistavat
+            (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
+
+(defn validate-hoks-osaamisen-hankkimistavat-with-opiskeluoikeus!
+  "Tarkistaa, että HOKSissa olevat osaamisen hankkimistavat eivät
+  ala ennen opiskeluoikeudet alkua eivätkä pääty opiskeluoikeuden
+  suunnitellun loppumisajan jälkeen."
+  [hoks]
+  (let [oo (oppijaindex/get-opiskeluoikeus-by-oid (:opiskeluoikeus-oid hoks))
+        oo-alku (:alkamispaiva oo)
+        oo-loppu (:arvioitu-paattymispaiva oo)]
+    (if-not oo-alku
+      (log/error "Opiskeluoikeus ei sisällä alkamispäivää:" oo)
+      (doseq [oht (get-osaamisen-hankkimistavat hoks)]
+        (when (or (.isBefore (:alku oht) oo-alku)
+                  (and oo-loppu (.isAfter (:loppu oht) oo-loppu)))
+          (throw (ex-info (str "Osaamisen hankkimistapa on ajallisesti "
+                               "opiskeluoikeuden (" oo-alku "-" oo-loppu ") "
+                               "ulkopuolella: " oht)
+                          {:error :disallowed-update})))))))
+
 (defn save-hoks!
   "Tallentaa yhden HOKSin arvot tietokantaan."
   [h]
@@ -360,6 +391,7 @@
                               (:opiskeluoikeus-oid hoks))
                       {:error :disallowed-update})))
     (validate-tuva-hoks-type hoks)
+    (validate-hoks-osaamisen-hankkimistavat-with-opiskeluoikeus! hoks)
     (save-hoks! hoks)))
 
 (defn- merge-not-given-hoks-values
@@ -464,19 +496,6 @@
     (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
       hoks-id new-ahyto-values db-conn)))
 
-(defn get-osaamisen-hankkimistavat
-  "Hakee kaikki osaamisen hankkimistavat HOKSista."
-  [hoks]
-  (concat
-    (mapcat
-      :osaamisen-hankkimistavat
-      (:hankittavat-ammat-tutkinnon-osat hoks))
-    (mapcat
-      :osaamisen-hankkimistavat
-      (:hankittavat-paikalliset-tutkinnon-osat hoks))
-    (mapcat :osaamisen-hankkimistavat
-            (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
-
 (defn- should-check-hankkimistapa-y-tunnus?
   "Tarkistaa, loppuuko osaamisen hankkimistapa käyttöönottopäivämäärän jälkeen."
   [oh]
@@ -539,6 +558,8 @@
                       {:error :disallowed-update})))
     (validate-tuva-hoks-type
       (merge new-hoks {:opiskeluoikeus-oid old-opiskeluoikeus-oid}))
+    (validate-hoks-osaamisen-hankkimistavat-with-opiskeluoikeus!
+      (merge old-hoks new-hoks))
     (when (and (some? new-opiskeluoikeus-oid)
                (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
       (throw (ex-info "Opiskeluoikeus update not allowed!"
