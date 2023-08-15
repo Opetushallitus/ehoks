@@ -92,61 +92,6 @@
           oppijat
           :total-count total-count)))))
 
-(defn- check-opiskeluoikeus-match
-  "Check that opiskeluoikeus OID from HOKS matches one held by student"
-  [hoks opiskeluoikeudet]
-  (if-not
-   (op/oppija-opiskeluoikeus-match?
-     opiskeluoikeudet (:opiskeluoikeus-oid hoks))
-    (assoc
-      (response/bad-request!
-        {:error "Opiskeluoikeus does not match any held by oppija"})
-      :audit-data {:new hoks})))
-
-(defn- add-oppija
-  "Insert student whose ID is found in HOKS into database"
-  [hoks]
-  (try
-    (op/add-oppija! (:oppija-oid hoks))
-    (catch Exception e
-      (if (= (:status (ex-data e)) 404)
-        (do
-          (log/warn "Oppija with oid "
-                    (:oppija-oid hoks)
-                    " not found in ONR")
-          (response/bad-request!
-            {:error
-             (str "Oppija not found in"
-                  " Oppijanumerorekisteri")}))
-        (throw e)))))
-
-(defn- add-opiskeluoikeus
-  "Add HOKS opiskeluoikeus to database for HOKS student"
-  [hoks]
-  (try
-    (op/add-opiskeluoikeus!
-      (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
-    (catch Exception e
-      (cond
-        (= (:status (ex-data e)) 404)
-        (do
-          (log/warn "Opiskeluoikeus with oid "
-                    (:opiskeluoikeus-oid hoks)
-                    " not found in Koski")
-          (response/bad-request!
-            {:error "Opiskeluoikeus not found in Koski"}))
-        (= (:error (ex-data e)) :hankintakoulutus)
-        (response/bad-request!
-          {:error (ex-message e)})
-        :else (throw e)))))
-
-(defn- add-hankintakoulutukset-to-index
-  "Add hankintakoulutukset to index for opiskeluoikeus and oppija in HOKS"
-  [hoks opiskeluoikeudet]
-  (op/add-oppija-hankintakoulutukset opiskeluoikeudet
-                                     (:opiskeluoikeus-oid hoks)
-                                     (:oppija-oid hoks)))
-
 (defn- check-opiskeluoikeus-validity
   "Check whether opiskeluoikeus is still valid"
   ([hoks-values]
@@ -156,15 +101,7 @@
         (response/bad-request!
           {:error (format "Opiskeluoikeus %s is no longer active"
                           (:opiskeluoikeus-oid hoks-values))})
-        :audit-data {:new hoks-values})))
-  ([hoks opiskeluoikeudet]
-    (if-not
-     (op/opiskeluoikeus-still-active? hoks opiskeluoikeudet)
-      (assoc
-        (response/bad-request!
-          {:error (format "Opiskeluoikeus %s is no longer active"
-                          (:opiskeluoikeus-oid hoks))})
-        :audit-data {:new hoks}))))
+        :audit-data {:new hoks-values}))))
 
 (defn- check-virkailija-privileges
   "Check whether virkailija user has write privileges in HOKS"
@@ -183,43 +120,28 @@
         {:error
          (str "User has unsufficient privileges")}))))
 
-(defn- save-hoks
-  "Save HOKS to database"
+(defn- post-oppija
+  "Add new HOKS for oppija"
   [hoks request]
   (try
-    (let [hoks-db (h/save-hoks!
-                    (assoc hoks :manuaalisyotto true))]
-      (assoc
-        (restful/rest-ok
-          {:uri (format "%s/%d"
-                        (:uri request)
-                        (:id hoks-db))}
-          :id (:id hoks-db))
-        :audit-data {:new hoks}))
+    (op/add-hoks-dependents-in-index! hoks)
+    (check-virkailija-privileges hoks request)
+    (let [hoks-db (-> (h/add-missing-oht-yksiloiva-tunniste hoks)
+                      (assoc :manuaalisyotto true)
+                      (h/check-and-save-hoks!))]
+      (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
+          (restful/rest-ok :id (:id hoks-db))
+          (assoc :audit-data {:new hoks})))
     (catch Exception e
       (case (:error (ex-data e))
         :disallowed-update (assoc
                              (response/bad-request! {:error (.getMessage e)})
                              :audit-data {:new hoks})
-        :duplicate (do
-                     (log/warnf
-                       "HOKS with opiskeluoikeus-oid %s already exists"
-                       (:opiskeluoikeus-oid hoks))
-                     (response/bad-request! {:error (.getMessage e)}))
+        :duplicate (do (log/warnf
+                         "HOKS with opiskeluoikeus-oid %s already exists"
+                         (:opiskeluoikeus-oid hoks))
+                       (response/bad-request! {:error (.getMessage e)}))
         (throw e)))))
-
-(defn- post-oppija
-  "Add new HOKS for oppija"
-  [hoks request]
-  (let [opiskeluoikeudet
-        (koski/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
-    (check-opiskeluoikeus-match hoks opiskeluoikeudet)
-    (check-opiskeluoikeus-validity hoks opiskeluoikeudet)
-    (add-oppija hoks)
-    (add-opiskeluoikeus hoks)
-    (add-hankintakoulutukset-to-index hoks opiskeluoikeudet))
-  (check-virkailija-privileges hoks request)
-  (save-hoks (h/add-missing-oht-yksiloiva-tunniste hoks) request))
 
 (defn- get-hoks-perustiedot
   "Get basic information from HOKS"

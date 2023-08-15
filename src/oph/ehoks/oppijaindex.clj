@@ -452,6 +452,33 @@
       (insert-hankintakoulutus-opiskeluoikeus!
         opiskeluoikeus-oid oppija-oid hankintakoulutus))))
 
+(defn add-hoks-dependents-in-index!
+  "Adds oppija, opiskeluoikeus and hankintakoulutukset for given HOKS"
+  [hoks]
+  (let [opiskeluoikeudet
+        (k/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
+    (try (add-oppija! (:oppija-oid hoks))
+         (catch Exception e
+           (when (= (:status (ex-data e)) 404)
+             (log/warn "Oppija" (:oppija-oid hoks) "not found in ONR")
+             (throw (ex-info "Oppija not found in Oppijanumerorekisteri"
+                             {:error :disallowed-update})))
+           (throw e)))
+    (try (add-opiskeluoikeus!
+           (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
+         (catch Exception e
+           (when (= (:status (ex-data e)) 404)
+             (log/warn "Opiskeluoikeus" (:opiskeluoikeus-oid hoks)
+                       "not found in Koski")
+             (throw (ex-info "Opiskeluoikeus not found in Koski"
+                             {:error :disallowed-update})))
+
+           (when (= (:error (ex-data e)) :hankintakoulutus)
+             (throw (ex-info (ex-message e) {:error :disallowed-update})))
+           (throw e)))
+    (add-oppija-hankintakoulutukset
+      opiskeluoikeudet (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))))
+
 (defn get-opiskeluoikeus-tila
   "Extract tila from opiskeluoikeus"
   [opiskeluoikeus]

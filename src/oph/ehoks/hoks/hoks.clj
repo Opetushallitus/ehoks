@@ -284,7 +284,6 @@
 (defn save-hoks!
   "Tallentaa yhden HOKSin arvot tietokantaan."
   [h]
-  (validate-tuva-hoks-type h)
   (let [hoks-db
         (jdbc/with-db-transaction
           [conn (db-ops/get-db-connection)]
@@ -344,6 +343,24 @@
                              (:osaamisen-saavuttamisen-pvm h)
                              h))))
     hoks-db))
+
+(defn check-and-save-hoks!
+  "Tekee uuden HOKSin tarkistukset ja tallentaa sen, jos kaikki on OK."
+  [hoks]
+  (let [opiskeluoikeudet
+        (k/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
+    (when-not
+     (oppijaindex/oppija-opiskeluoikeus-match?
+       opiskeluoikeudet (:opiskeluoikeus-oid hoks))
+      (throw (ex-info "Opiskeluoikeus does not match any held by oppija"
+                      {:error :disallowed-update})))
+    (when-not
+     (oppijaindex/opiskeluoikeus-still-active? hoks opiskeluoikeudet)
+      (throw (ex-info (format "Opiskeluoikeus %s is no longer active"
+                              (:opiskeluoikeus-oid hoks))
+                      {:error :disallowed-update})))
+    (validate-tuva-hoks-type hoks)
+    (save-hoks! hoks)))
 
 (defn- merge-not-given-hoks-values
   "Varmistaa, että tietyt kentät ovat olemassa HOKSissa, vaikka niissä olisi
