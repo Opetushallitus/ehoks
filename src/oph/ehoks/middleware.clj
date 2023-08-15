@@ -1,5 +1,6 @@
 (ns oph.ehoks.middleware
   (:require [ring.util.http-response :refer [unauthorized header]]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
             [oph.ehoks.user :as user]))
 
@@ -83,3 +84,19 @@
           (unauthorized
             {:error
              "User not found for given ticket. Ticket may be expired."}))))))
+
+(defn add-hoks
+  "Add HOKS to request"
+  [request]
+  (let [hoks-id (Integer/parseInt (get-in request [:route-params :hoks-id]))
+        hoks (db-hoks/select-hoks-by-id hoks-id)]
+    (assoc request :hoks hoks)))
+
+(defn wrap-hoks
+  "Wrap request with hoks"
+  [handler]
+  (fn
+    ([request respond raise]
+      (handler (add-hoks request) respond raise))
+    ([request]
+      (handler (add-hoks request)))))

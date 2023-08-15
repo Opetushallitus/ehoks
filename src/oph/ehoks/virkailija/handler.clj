@@ -19,6 +19,7 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
+            [oph.ehoks.middleware :refer [wrap-hoks]]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.oppijaindex :as op]
@@ -192,44 +193,18 @@
           {:error
            (str "User has insufficient privileges")})))))
 
-(defn- put-hoks
-  "Replace HOKS with particular ID"
-  [hoks-values hoks-id]
+(defn- change-hoks
+  "Change contents of HOKS with particular ID"
+  [hoks request db-handler]
   (try
-    (check-opiskeluoikeus-validity hoks-values)
-    (let [hoks-db
-          (h/replace-hoks! hoks-id hoks-values)]
-      (assoc
-        (response/no-content)
-        :audit-data
-        {:new  hoks-values}))
+    (h/check-hoks-for-update! (:hoks request) hoks)
+    (let [hoks-db (db-handler (:id (:hoks request))
+                              (h/add-missing-oht-yksiloiva-tunniste hoks))]
+      (assoc (response/no-content) :audit-data {:new hoks}))
     (catch Exception e
       (if (= (:error (ex-data e)) :disallowed-update)
-        (assoc
-          (response/bad-request!
-            {:error
-             (.getMessage e)})
-          :audit-data {:new hoks-values})
-        (throw e)))))
-
-(defn- patch-hoks
-  "Patch HOKS with particular ID"
-  [hoks-values hoks-id]
-  (try
-    (check-opiskeluoikeus-validity hoks-values)
-    (let [hoks-db
-          (h/update-hoks! hoks-id hoks-values)]
-      (assoc
-        (response/no-content)
-        :audit-data
-        {:new  hoks-values}))
-    (catch Exception e
-      (if (= (:error (ex-data e)) :disallowed-update)
-        (assoc
-          (response/bad-request!
-            {:error
-             (.getMessage e)})
-          :audit-data {:new hoks-values})
+        (assoc (response/bad-request! {:error (.getMessage e)})
+               :audit-data {:new hoks})
         (throw e)))))
 
 (defn- get-vastaajatunnus-info
@@ -643,11 +618,11 @@
                                   kyselylinkit))]
                           (restful/rest-ok lahetysdata)))
 
-                      (route-middleware
-                        [m/wrap-virkailija-write-access]
+                      (c-api/context "/:hoks-id" []
+                        :path-params [hoks-id :- s/Int]
 
-                        (c-api/context "/:hoks-id" []
-                          :path-params [hoks-id :- s/Int]
+                        (route-middleware
+                          [wrap-hoks m/wrap-virkailija-write-access]
 
                           (c-api/PUT "/" request
                             :summary
@@ -657,8 +632,7 @@
                                    (hoks-schema/generate-hoks-schema
                                      "HOKSKorvaus-virkailija" :put-virkailija
                                      "HOKS-dokumentin korvaus")]
-                            (put-hoks (h/add-missing-oht-yksiloiva-tunniste
-                                        hoks-values) hoks-id))
+                            (change-hoks hoks-values request h/replace-hoks!))
 
                           (c-api/PATCH "/" request
                             :body [hoks-values
@@ -666,7 +640,7 @@
                                      "HOKSPaivitys-virkailija" :patch-virkailija
                                      "HOKS-dokumentin päivitys")]
                             :summary "Oppijan hoksin päätason arvojen päivitys"
-                            (patch-hoks hoks-values hoks-id))))
+                            (change-hoks hoks-values request h/update-hoks!))))
 
                       (c-api/context "/:hoks-id" []
                         :path-params [hoks-id :- s/Int]
