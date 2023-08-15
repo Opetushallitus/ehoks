@@ -258,7 +258,7 @@
       (is (-> (utils/parse-body (:body invalid-post-response))
               (get-in [:errors :hankittavat-yhteiset-tutkinnon-osat 0
                        :osa-alueet 0 :osaamisen-hankkimistavat 0])
-              (->> (re-find #"alku on ennen loppua")))))))
+              (->> (re-find #"Korjaa alku- ja loppupäivä")))))))
 
 (deftest require-yksiloiva-tunniste-in-oht
   (testing "Osaamisen hankkimistavassa pitää olla yksilöivä tunniste."

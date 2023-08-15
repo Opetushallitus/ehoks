@@ -219,7 +219,7 @@
           (eq (:errors body)
               {:hankittavat-ammat-tutkinnon-osat
                [{:osaamisen-hankkimistavat
-                 [(str "(not (\"Osa-aikaisuustieto ei ole välillä "
+                 [(str "(not (\"Lisää osa-aikaisuustieto, joka on välillä "
                        "1-100.\" a-clojure.lang.PersistentArrayMap))")]}]}))))))
 
 (deftest osaamisen-hankkimistavat-isnt-mandatory

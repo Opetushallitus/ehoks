@@ -263,14 +263,14 @@
     :type ::g/schema-template
     :constraints
     [{:check osa-aikaisuustieto-valid?
-      :description "Osa-aikaisuustieto ei ole välillä 1-100."}
+      :description "Lisää osa-aikaisuustieto, joka on välillä 1-100."}
      {:check tyopaikkajakso-has-yksiloiva-tunniste?
       :except-methods #{:put-virkailija :post-virkailija :patch-virkailija}
-      :description "Työpaikkajaksossa on yksilöivä tunniste."}
+      :description "Lisää työpaikkajaksoon yksilöivä tunniste."}
      {:check oppisopimus-has-perusta?
-      :description "Tieto oppisopimuksen perustasta puuttuu."}
+      :description "Lisää jaksoon oppisopimuksen perustan koodi-uri."}
      {:check nonnegative-duration?
-      :description "Jakson alku on ennen loppua"}]
+      :description "Korjaa alku- ja loppupäivämäärä oikein päin."}]
     :name "OsaamisenHankkimistapa"}
   {:id {:methods {:any :excluded, :patch :optional, :get :optional}
         :types {:any s/Int}
