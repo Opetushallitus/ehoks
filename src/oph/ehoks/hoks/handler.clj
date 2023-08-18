@@ -277,7 +277,7 @@
           (response/no-content)
           (response/not-found {:error "OTO not found with given OTO ID"}))))))
 
-(defn- post-hoks
+(defn- post-hoks!
   "Käsittelee HOKS-luontipyynnön."
   [hoks request]
   (try
@@ -303,7 +303,7 @@
                        (response/bad-request! {:error (.getMessage e)}))
         (throw e)))))
 
-(defn- change-hoks
+(defn- change-hoks!
   "Käsittelee HOKS-muutospyynnön."
   [hoks request db-handler]
   (if (empty? (:hoks request))
@@ -333,7 +333,7 @@
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
-        (post-hoks hoks request))
+        (post-hoks! hoks request))
 
       (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
@@ -427,12 +427,12 @@
             :summary
             "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
             :body [hoks-values hoks-schema/HOKSPaivitys]
-            (change-hoks hoks-values request h/update-hoks!))
+            (change-hoks! hoks-values request h/update-hoks!))
 
           (c-api/PUT "/" request
             :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
             :body [hoks-values hoks-schema/HOKSKorvaus]
-            (change-hoks hoks-values request h/replace-hoks!))
+            (change-hoks! hoks-values request h/replace-hoks!))
 
           (c-api/GET "/hankintakoulutukset" request
             :summary "Palauttaa hoksin hankintakoulutus opiskeluoikeus-oidit"

@@ -121,7 +121,7 @@
         {:error
          (str "User has unsufficient privileges")}))))
 
-(defn- post-oppija
+(defn- post-oppija!
   "Add new HOKS for oppija"
   [hoks request]
   (try
@@ -193,7 +193,7 @@
           {:error
            (str "User has insufficient privileges")})))))
 
-(defn- change-hoks
+(defn- change-hoks!
   "Change contents of HOKS with particular ID"
   [hoks request db-handler]
   (try
@@ -518,7 +518,7 @@
                                     "HOKSLuonti-virkailija" :post-virkailija
                                     "HOKS-dokumentin luonti")]
                       :return (restful/response schema/POSTResponse :id s/Int)
-                      (post-oppija hoks request))
+                      (post-oppija! hoks request))
 
                     (route-middleware
                       [m/wrap-virkailija-oppija-access]
@@ -632,7 +632,7 @@
                                    (hoks-schema/generate-hoks-schema
                                      "HOKSKorvaus-virkailija" :put-virkailija
                                      "HOKS-dokumentin korvaus")]
-                            (change-hoks hoks-values request h/replace-hoks!))
+                            (change-hoks! hoks-values request h/replace-hoks!))
 
                           (c-api/PATCH "/" request
                             :body [hoks-values
@@ -640,7 +640,7 @@
                                      "HOKSPaivitys-virkailija" :patch-virkailija
                                      "HOKS-dokumentin päivitys")]
                             :summary "Oppijan hoksin päätason arvojen päivitys"
-                            (change-hoks hoks-values request h/update-hoks!))))
+                            (change-hoks! hoks-values request h/update-hoks!))))
 
                       (c-api/context "/:hoks-id" []
                         :path-params [hoks-id :- s/Int]
@@ -651,12 +651,12 @@
                           :body [data hoks-schema/shallow-delete-hoks]
                           :return {:success s/Int}
                           (let [hoks (h/get-hoks-by-id hoks-id)
-                                oppilaitos-oid (if (seq (:oppilaitos-oid data))
-                                                 (:oppilaitos-oid data)
-                                                 (:oppilaitos-oid
-                                                   (op/get-opiskeluoikeus-by-oid
-                                                     (:opiskeluoikeus-oid
-                                                       hoks))))
+                                oppilaitos-oid
+                                (if (seq (:oppilaitos-oid data))
+                                  (:oppilaitos-oid data)
+                                  (:oppilaitos-oid
+                                    (op/get-opiskeluoikeus-by-oid!
+                                      (:opiskeluoikeus-oid hoks))))
                                 opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
                                 opiskeluoikeus (koski/get-opiskeluoikeus-info
                                                  opiskeluoikeus-oid)]

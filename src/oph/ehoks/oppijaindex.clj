@@ -13,6 +13,8 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr])
   (:import [java.time LocalDate]))
 
+(def ^:const opiskeluoikeus-refresh-interval-in-days 180)
+
 (defn- field-matcher
   "create a SQL ILIKE pattern from a search value of a field"
   [field-search]
@@ -110,7 +112,7 @@
   [oppija-oid]
   (db-oppija/select-oppija-with-opiskeluoikeus-oid-by-oid oppija-oid))
 
-(defn get-opiskeluoikeus-by-oid
+(defn get-opiskeluoikeus-by-oid!
   "Get opiskeluoikeus by OID"
   [oid & keep-columns]
   (apply db-opiskeluoikeus/select-opiskeluoikeus-by-oid oid keep-columns))
@@ -216,17 +218,18 @@
   (db-opiskeluoikeus/insert-opiskeluoikeus!
     (get-opiskeluoikeus-info oid oppija-oid)))
 
-(defn opiskeluoikeus-information-outdated?
+(defn opiskeluoikeus-information-outdated?!
   "Check whether opiskeluoikeus does not have all information in the database.
   This checks specifically for alkamispäivä, since that was the latest
   addition to the index and so not having it implies that the opiskeluoikeus
   was fetched before the expansion of the schema."
   [oid]
-  (let [oo (get-opiskeluoikeus-by-oid oid :updated_at)]
+  (let [oo (get-opiskeluoikeus-by-oid! oid :updated_at)]
     (or (empty? oo)
         (nil? (:alkamispaiva oo))
         (.isBefore (.toLocalDate (.toLocalDateTime (:updated-at oo)))
-                   (.minusDays (LocalDate/now) 180)))))
+                   (.minusDays (LocalDate/now)
+                               opiskeluoikeus-refresh-interval-in-days)))))
 
 (defn insert-hankintakoulutus-opiskeluoikeus!
   "Insert hankintakoulutus opiskeluoikeus or update if already exists"
@@ -236,7 +239,7 @@
         hankintakoulutus-opiskeluoikeus-oid
         (get hankintakoulutus-opiskeluoikeus :oid)]
     (try
-      (if (opiskeluoikeus-information-outdated?
+      (if (opiskeluoikeus-information-outdated?!
             hankintakoulutus-opiskeluoikeus-oid)
         (do
           (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
@@ -283,14 +286,14 @@
   "Add opiskeluoikeus for oppija if it doesn't already exist, without passing
   errors up the call stack"
   [oid oppija-oid]
-  (when (opiskeluoikeus-information-outdated? oid)
+  (when (opiskeluoikeus-information-outdated?! oid)
     (db-opiskeluoikeus/delete-opiskeluoikeus-from-index! oid)
     (insert-new-opiskeluoikeus-without-error-forwarding! oid oppija-oid)))
 
 (defn add-opiskeluoikeus!
   "Add opiskeluoikeus for oppija, if it doesn't already exist"
   [oid oppija-oid]
-  (when (opiskeluoikeus-information-outdated? oid)
+  (when (opiskeluoikeus-information-outdated?! oid)
     (db-opiskeluoikeus/delete-opiskeluoikeus-from-index! oid)
     (insert-new-opiskeluoikeus! oid oppija-oid)))
 

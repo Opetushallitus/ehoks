@@ -301,7 +301,7 @@
     (t/is (= (sut/get-oppija-by-oid "1.2.246.562.24.11111111112")
              {:oid "1.2.246.562.24.11111111112" :nimi "Test 2"}))))
 
-(t/deftest get-opiskeluoikeus-by-oid
+(t/deftest get-opiskeluoikeus-by-oid!
   (t/testing "Get opiskeluoikeus by oid"
     (db-oppija/insert-oppija!
       {:oid "1.2.246.562.24.11111111111" :nimi "Test 1"})
@@ -311,10 +311,10 @@
     (db-opiskeluoikeus/insert-opiskeluoikeus!
       {:oid "1.2.246.562.15.22222222223"
        :oppija_oid "1.2.246.562.24.11111111111"})
-    (t/is (= (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.22222222222")
+    (t/is (= (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.22222222222")
              {:oid "1.2.246.562.15.22222222222"
               :oppija-oid "1.2.246.562.24.11111111111"}))
-    (t/is (= (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.22222222223")
+    (t/is (= (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.22222222223")
              {:oid "1.2.246.562.15.22222222223"
               :oppija-oid "1.2.246.562.24.11111111111"}))))
 
@@ -341,7 +341,7 @@
         {:oid "1.2.246.562.24.111111111111"
          :nimi "Tero Testaaja"})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
         {:oid "1.2.246.562.15.00000000001"
          :alkamispaiva (LocalDate/of 2023 7 3)
          :arvioitu-paattymispaiva (LocalDate/of 2025 12 1)
@@ -373,7 +373,7 @@
         {:oid "1.2.246.562.24.111111111111"
          :nimi "Tero Testaaja"})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
@@ -391,12 +391,12 @@
                   opiskeluoikeus-data
                   :alkamispäivä "2023-07-01"
                   :oid "1.2.246.562.15.00000000001")})]
-      (t/is (sut/opiskeluoikeus-information-outdated?
+      (t/is (sut/opiskeluoikeus-information-outdated?!
               "1.2.246.562.15.00000000001"))
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
         {:oid "1.2.246.562.15.00000000001"
          :alkamispaiva (LocalDate/of 2023 7 1)
          :oppija-oid "1.2.246.562.24.111111111111"
@@ -416,12 +416,12 @@
                   :alkamispäivä "2023-07-03"
                   :arvioituPäättymispäivä "2025-10-01"
                   :oid "1.2.246.562.15.00000000001")})]
-      (t/is (not (sut/opiskeluoikeus-information-outdated?
+      (t/is (not (sut/opiskeluoikeus-information-outdated?!
                    "1.2.246.562.15.00000000001")))
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
         {:oid "1.2.246.562.15.00000000001"
          :alkamispaiva (LocalDate/of 2023 7 1)  ;; i.e. no change
          :oppija-oid "1.2.246.562.24.111111111111"
@@ -433,7 +433,7 @@
       (db-ops/update! :opiskeluoikeudet
                       {:updated_at (java.time.LocalDate/of 2022 9 1)}
                       ["oid = ?" "1.2.246.562.15.00000000001"])
-      (t/is (sut/opiskeluoikeus-information-outdated?
+      (t/is (sut/opiskeluoikeus-information-outdated?!
               "1.2.246.562.15.00000000001")))
 
     ; odota cachen vanhenemista
@@ -461,7 +461,7 @@
         {:oid "1.2.246.562.24.111111111111"
          :nimi "Tero Testinen"})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222223"
@@ -506,7 +506,7 @@
                          :en "Testi University"}}
            :oid        "1.2.246.562.15.00000000001"}))
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid
+        (sut/get-opiskeluoikeus-by-oid!
           "1.2.246.562.15.00000000002")
         {:osaamisala-nimi {:fi "", :sv ""},
          :oid "1.2.246.562.15.00000000002",
@@ -536,7 +536,7 @@
                          :en "Street University"}}
            :oid        "1.2.246.562.15.00000000001"}))
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid
+        (sut/get-opiskeluoikeus-by-oid!
           "1.2.246.562.15.00000000002")
         {:osaamisala-nimi {:fi "", :sv ""},
          :oid "1.2.246.562.15.00000000002",
@@ -563,7 +563,7 @@
         (= (.compareTo
              timestamp
              (get
-               (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.22222222223")
+               (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.22222222223")
                :paattynyt))
            0)))))
 
@@ -616,7 +616,7 @@
           (sut/add-opiskeluoikeus!
             "1.2.246.562.15.00000000005" "1.2.246.562.24.111111111111")))
       (t/is
-        (nil? (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001"))))))
+        (nil? (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001"))))))
 
 (t/deftest hankintakoulutus-filter-test
   (t/testing "Existing hankintakoulutus is filtered from opiskeluoikeudet"
@@ -772,7 +772,7 @@
         {:oid "1.2.246.562.24.111111111111"
          :nimi "Tero Testaaja"})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111111"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
@@ -784,7 +784,7 @@
       (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
         "1.2.246.562.15.00000000001")
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
         nil))))
 
 (t/deftest onr-modify-name-change
@@ -875,7 +875,7 @@
         {:oid "1.2.246.562.24.46525423540"
          :nimi "Sami Testaa"})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.30738063716"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
@@ -884,7 +884,7 @@
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000002")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000002")
         {:oid "1.2.246.562.15.00000000002"
          :oppija-oid "1.2.246.562.24.20043052079"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
@@ -893,7 +893,7 @@
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000003")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000003")
         {:oid "1.2.246.562.15.00000000003"
          :oppija-oid "1.2.246.562.24.46525423540"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
@@ -917,7 +917,7 @@
         {:oid "1.2.246.562.24.111111111222"
          :nimi "Matti Masteri"})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000001")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
         {:oid "1.2.246.562.15.00000000001"
          :oppija-oid "1.2.246.562.24.111111111222"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
@@ -926,7 +926,7 @@
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000002")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000002")
         {:oid "1.2.246.562.15.00000000002"
          :oppija-oid "1.2.246.562.24.111111111222"
          :oppilaitos-oid "1.2.246.562.10.222222222222"
@@ -935,7 +935,7 @@
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid "1.2.246.562.15.00000000003")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000003")
         {:oid "1.2.246.562.15.00000000003"
          :oppija-oid "1.2.246.562.24.111111111222"
          :oppilaitos-oid "1.2.246.562.10.222222222222"

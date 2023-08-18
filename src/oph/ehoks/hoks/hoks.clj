@@ -296,10 +296,10 @@
 
 (defn validate-hoks-osaamisen-hankkimistavat-with-opiskeluoikeus!
   "Tarkistaa, että HOKSissa olevat osaamisen hankkimistavat eivät
-  ala ennen opiskeluoikeudet alkua eivätkä pääty opiskeluoikeuden
+  ala ennen opiskeluoikeuden alkua eivätkä pääty opiskeluoikeuden
   suunnitellun loppumisajan jälkeen."
   [hoks]
-  (let [oo (oppijaindex/get-opiskeluoikeus-by-oid (:opiskeluoikeus-oid hoks))
+  (let [oo (oppijaindex/get-opiskeluoikeus-by-oid! (:opiskeluoikeus-oid hoks))
         oo-alku (:alkamispaiva oo)
         oo-loppu (:arvioitu-paattymispaiva oo)]
     (if-not oo-alku
