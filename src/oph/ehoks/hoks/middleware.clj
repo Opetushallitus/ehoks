@@ -16,7 +16,7 @@
 (defn authorized?
   "Is user authorized"
   [hoks ticket-user method]
-  (let [oppilaitos-oid (:oppilaitos-oid (oppijaindex/get-opiskeluoikeus-by-oid
+  (let [oppilaitos-oid (:oppilaitos-oid (oppijaindex/get-opiskeluoikeus-by-oid!
                                           (:opiskeluoikeus-oid hoks)))]
     (if oppilaitos-oid
       (some?
@@ -111,22 +111,6 @@
         (handler request)
         (response/forbidden
           {:error "User type 'PALVELU' is required"})))))
-
-(defn add-hoks
-  "Add HOKS to request"
-  [request]
-  (let [hoks-id (Integer/parseInt (get-in request [:route-params :hoks-id]))
-        hoks (db-hoks/select-hoks-by-id hoks-id)]
-    (assoc request :hoks hoks)))
-
-(defn wrap-hoks
-  "Wrap request with hoks"
-  [handler]
-  (fn
-    ([request respond raise]
-      (handler (add-hoks request) respond raise))
-    ([request]
-      (handler (add-hoks request)))))
 
 (defn oph-authorized?
   "Does user have OPH privileges?"

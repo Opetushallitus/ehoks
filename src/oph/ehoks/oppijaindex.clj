@@ -13,6 +13,8 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr])
   (:import [java.time LocalDate]))
 
+(def ^:const opiskeluoikeus-refresh-interval-in-days 180)
+
 (defn- field-matcher
   "create a SQL ILIKE pattern from a search value of a field"
   [field-search]
@@ -110,10 +112,10 @@
   [oppija-oid]
   (db-oppija/select-oppija-with-opiskeluoikeus-oid-by-oid oppija-oid))
 
-(defn get-opiskeluoikeus-by-oid
+(defn get-opiskeluoikeus-by-oid!
   "Get opiskeluoikeus by OID"
-  [oid]
-  (db-opiskeluoikeus/select-opiskeluoikeus-by-oid oid))
+  [oid & keep-columns]
+  (apply db-opiskeluoikeus/select-opiskeluoikeus-by-oid oid keep-columns))
 
 (defn get-hankintakoulutus-oids-by-master-oid
   "Get hankintakoulutus by master OID"
@@ -162,14 +164,15 @@
 (defn- opiskeluoikeus-to-sql
   "Convert opiskeluoikeus to an object format that can be saved to the database"
   [opiskeluoikeus oppija-oid]
-  (let [tutkinto (get-tutkinto-nimi opiskeluoikeus)
-        osaamisala (get-osaamisala-nimi opiskeluoikeus)]
-    {:oid (:oid opiskeluoikeus)
-     :oppija_oid oppija-oid
-     :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
-     :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
-     :tutkinto_nimi tutkinto
-     :osaamisala_nimi osaamisala}))
+  {:oid (:oid opiskeluoikeus)
+   :oppija_oid oppija-oid
+   :oppilaitos_oid (get-in opiskeluoikeus [:oppilaitos :oid])
+   :koulutustoimija_oid (get-in opiskeluoikeus [:koulutustoimija :oid])
+   :alkamispaiva (some-> opiskeluoikeus :alkamispäivä LocalDate/parse)
+   :arvioitu_paattymispaiva
+   (some-> opiskeluoikeus :arvioituPäättymispäivä LocalDate/parse)
+   :tutkinto_nimi (get-tutkinto-nimi opiskeluoikeus)
+   :osaamisala_nimi (get-osaamisala-nimi opiskeluoikeus)})
 
 (defn- get-opiskeluoikeus-info
   "Get opiskeluoikeus info from Koski and convert to SQL-compatible format"
@@ -215,10 +218,18 @@
   (db-opiskeluoikeus/insert-opiskeluoikeus!
     (get-opiskeluoikeus-info oid oppija-oid)))
 
-(defn- opiskeluoikeus-doesnt-exist
-  "Check whether opiskeluoikeus is not present in database"
+(defn opiskeluoikeus-information-outdated?!
+  "Check whether opiskeluoikeus does not have all information in the database.
+  This checks specifically for alkamispäivä, since that was the latest
+  addition to the index and so not having it implies that the opiskeluoikeus
+  was fetched before the expansion of the schema."
   [oid]
-  (empty? (get-opiskeluoikeus-by-oid oid)))
+  (let [oo (get-opiskeluoikeus-by-oid! oid :updated_at)]
+    (or (empty? oo)
+        (nil? (:alkamispaiva oo))
+        (.isBefore (.toLocalDate (.toLocalDateTime (:updated-at oo)))
+                   (.minusDays (LocalDate/now)
+                               opiskeluoikeus-refresh-interval-in-days)))))
 
 (defn insert-hankintakoulutus-opiskeluoikeus!
   "Insert hankintakoulutus opiskeluoikeus or update if already exists"
@@ -228,14 +239,16 @@
         hankintakoulutus-opiskeluoikeus-oid
         (get hankintakoulutus-opiskeluoikeus :oid)]
     (try
-      (if (opiskeluoikeus-doesnt-exist hankintakoulutus-opiskeluoikeus-oid)
-        (db-opiskeluoikeus/insert-opiskeluoikeus!
-          (assoc
-            (opiskeluoikeus-to-sql hankintakoulutus-opiskeluoikeus oppija-oid)
-            :hankintakoulutus_jarjestaja_oid
-            jarjestaja-oid
-            :hankintakoulutus_opiskeluoikeus_oid
-            opiskeluoikeus-oid))
+      (if (opiskeluoikeus-information-outdated?!
+            hankintakoulutus-opiskeluoikeus-oid)
+        (do
+          (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
+            hankintakoulutus-opiskeluoikeus-oid)
+          (db-opiskeluoikeus/insert-opiskeluoikeus!
+            (assoc
+              (opiskeluoikeus-to-sql hankintakoulutus-opiskeluoikeus oppija-oid)
+              :hankintakoulutus_jarjestaja_oid jarjestaja-oid
+              :hankintakoulutus_opiskeluoikeus_oid opiskeluoikeus-oid)))
         (do (log/infof
               "Oppija %s already has hankintakoulutus opiskeluoikeus %s for
               opiskeluoikeus %s. Updating the existing opiskeluoikeus."
@@ -273,13 +286,15 @@
   "Add opiskeluoikeus for oppija if it doesn't already exist, without passing
   errors up the call stack"
   [oid oppija-oid]
-  (when (opiskeluoikeus-doesnt-exist oid)
+  (when (opiskeluoikeus-information-outdated?! oid)
+    (db-opiskeluoikeus/delete-opiskeluoikeus-from-index! oid)
     (insert-new-opiskeluoikeus-without-error-forwarding! oid oppija-oid)))
 
 (defn add-opiskeluoikeus!
   "Add opiskeluoikeus for oppija, if it doesn't already exist"
   [oid oppija-oid]
-  (when (opiskeluoikeus-doesnt-exist oid)
+  (when (opiskeluoikeus-information-outdated?! oid)
+    (db-opiskeluoikeus/delete-opiskeluoikeus-from-index! oid)
     (insert-new-opiskeluoikeus! oid oppija-oid)))
 
 (defn update-opiskeluoikeus-without-error-forwarding!
@@ -439,6 +454,33 @@
     (doseq [hankintakoulutus hankintakoulutukset]
       (insert-hankintakoulutus-opiskeluoikeus!
         opiskeluoikeus-oid oppija-oid hankintakoulutus))))
+
+(defn add-hoks-dependents-in-index!
+  "Adds oppija, opiskeluoikeus and hankintakoulutukset for given HOKS"
+  [hoks]
+  (let [opiskeluoikeudet
+        (k/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
+    (try (add-oppija! (:oppija-oid hoks))
+         (catch Exception e
+           (when (= (:status (ex-data e)) 404)
+             (log/warn "Oppija" (:oppija-oid hoks) "not found in ONR")
+             (throw (ex-info "Oppija not found in Oppijanumerorekisteri"
+                             {:error :disallowed-update})))
+           (throw e)))
+    (try (add-opiskeluoikeus!
+           (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
+         (catch Exception e
+           (when (= (:status (ex-data e)) 404)
+             (log/warn "Opiskeluoikeus" (:opiskeluoikeus-oid hoks)
+                       "not found in Koski")
+             (throw (ex-info "Opiskeluoikeus not found in Koski"
+                             {:error :disallowed-update})))
+
+           (when (= (:error (ex-data e)) :hankintakoulutus)
+             (throw (ex-info (ex-message e) {:error :disallowed-update})))
+           (throw e)))
+    (add-oppija-hankintakoulutukset
+      opiskeluoikeudet (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))))
 
 (defn get-opiskeluoikeus-tila
   "Extract tila from opiskeluoikeus"

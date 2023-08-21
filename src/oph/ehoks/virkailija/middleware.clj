@@ -70,7 +70,7 @@
 (defn virkailija-has-privilege-in-opiskeluoikeus?
   "Check if user has access privileges to opiskeluoikeus"
   [ticket-user opiskeluoikeus-oid privilege]
-  (let [opiskeluoikeus (op/get-opiskeluoikeus-by-oid opiskeluoikeus-oid)]
+  (let [opiskeluoikeus (op/get-opiskeluoikeus-by-oid! opiskeluoikeus-oid)]
     (and (some? opiskeluoikeus)
          (contains?
            (user/get-organisation-privileges

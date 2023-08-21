@@ -321,7 +321,7 @@
             "oppilaitos-oid": "1.2.246.562.10.54425555"
           },
           "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
-          "alku": "2018-11-01",
+          "alku": "2018-11-16",
           "loppu": "2018-12-13",
           "osa-aikaisuustieto": 50
         }
@@ -416,7 +416,7 @@
             "oppilaitos-oid": "1.2.246.562.10.54425555"
           },
           "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
-          "alku": "2018-11-01",
+          "alku": "2018-11-16",
           "loppu": "2021-12-13",
           "osa-aikaisuustieto": 33
         }
@@ -549,7 +549,7 @@
             "oppilaitos-oid": "1.2.246.562.10.54425555"
           },
           "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
-          "alku": "2018-05-02",
+          "alku": "2019-05-02",
           "loppu": "2023-08-11",
           "osa-aikaisuustieto": 5
         },
@@ -581,7 +581,7 @@
             "oppilaitos-oid": "1.2.246.562.10.54425555"
           },
           "ajanjakson-tarkenne": "Tämä on ajanjakson tarkenne",
-          "alku": "2019-03-12",
+          "alku": "2021-03-12",
           "loppu": "2025-04-13"
         }
       ]
@@ -722,7 +722,7 @@
                 "oppilaitos-oid": "1.2.246.562.10.54453921329"
               },
               "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
-              "alku": "2018-11-01",
+              "alku": "2018-11-16",
               "loppu": "2021-12-13",
               "osa-aikaisuustieto": 25
             }
@@ -803,7 +803,7 @@
                 "oppilaitos-oid": "1.2.246.562.10.54453921329"
               },
               "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
-              "alku": "2018-11-01",
+              "alku": "2018-11-16",
               "loppu": "2021-12-13",
               "osa-aikaisuustieto": 25
             }

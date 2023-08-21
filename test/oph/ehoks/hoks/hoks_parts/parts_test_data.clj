@@ -200,8 +200,8 @@
        {:nimi "Harri Hankkija"
         :rooli "Opettajan sijainen"
         :oppilaitos-oid "1.2.246.562.10.55552422420"}
-       :alku "2019-01-12"
-       :loppu "2019-02-11"
+       :alku "2022-01-12"
+       :loppu "2022-02-11"
        :yksiloiva-tunniste "jk;l"}]
      :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000116"}))
 

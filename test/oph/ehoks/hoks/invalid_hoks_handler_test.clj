@@ -247,18 +247,50 @@
 (deftest prevent-invalid-osaamisen-hankkimistapa
   (testing "Start and end dates of OHT are checked"
     (let [app (hoks-utils/create-app nil)
-          invalid-data
+          invalid-data-1
           (assoc-in test-data/hoks-data
                     [:hankittavat-yhteiset-tutkinnon-osat 0
                      :osa-alueet 0 :osaamisen-hankkimistavat 0 :alku]
                     "2020-10-02")
-          invalid-post-response
-          (hoks-utils/create-mock-post-request "" invalid-data app)]
-      (is (= (:status invalid-post-response) 400))
-      (is (-> (utils/parse-body (:body invalid-post-response))
+          invalid-post-response-1
+          (hoks-utils/create-mock-post-request "" invalid-data-1 app)
+          invalid-data-2
+          (assoc-in test-data/hoks-data
+                    [:hankittavat-ammat-tutkinnon-osat 0
+                     :osaamisen-hankkimistavat 0 :loppu]
+                    "2030-12-08")
+          invalid-post-response-2
+          (hoks-utils/create-mock-post-request "" invalid-data-2 app)
+          invalid-data-3
+          (assoc test-data/hoks-data
+                 :opiskeluoikeus-oid
+                 "1.2.246.562.15.00000000004")
+          invalid-post-response-3
+          (hoks-utils/create-mock-post-request "" invalid-data-3 app)
+          invalid-data-4
+          (assoc test-data/hoks-data
+                 :opiskeluoikeus-oid
+                 "1.2.246.562.15.00000000005")
+          invalid-post-response-4
+          (hoks-utils/create-mock-post-request "" invalid-data-4 app)]
+      (is (= (:status invalid-post-response-1) 400))
+      (is (-> (utils/parse-body (:body invalid-post-response-1))
               (get-in [:errors :hankittavat-yhteiset-tutkinnon-osat 0
                        :osa-alueet 0 :osaamisen-hankkimistavat 0])
-              (->> (re-find #"Korjaa alku- ja loppupäivä")))))))
+              (->> (re-find #"Korjaa alku- ja loppupäivä"))))
+      (is (= (:status invalid-post-response-2) 400))
+      (is (-> (utils/parse-body (:body invalid-post-response-2))
+              (get-in [:errors :hankittavat-ammat-tutkinnon-osat 0
+                       :osaamisen-hankkimistavat 0])
+              (->> (re-find #"5 vuoden pituiseksi"))))
+      (is (= (:status invalid-post-response-3) 400))
+      (is (= (:status invalid-post-response-4) 400))
+      (is (-> (utils/parse-body (:body invalid-post-response-3))
+              :error
+              (->> (re-find #"ajallisesti opiskeluoikeuden"))))
+      (is (-> (utils/parse-body (:body invalid-post-response-4))
+              :error
+              (->> (re-find #"ajallisesti opiskeluoikeuden")))))))
 
 (deftest require-yksiloiva-tunniste-in-oht
   (testing "Osaamisen hankkimistavassa pitää olla yksilöivä tunniste."
@@ -360,19 +392,32 @@
              (str "(not (re-find #\"^[0-9]{7}-[0-9]$\" \"" % "\"))"))
           checksum-mismatch
           #(error-details-template
-             (str "(not (\"Kelvollinen Y-tunnus\" \"" % "\"))"))]
-      (doseq [[y-tunnus expected-error] [["Ei y-tunnusta" regex-mismatch]
-                                         ["1234567-1 "    regex-mismatch]
-                                         ["1234567-2"     checksum-mismatch]
-                                         ["7654321-8"     checksum-mismatch]]
+             (str "(not (\"Kelvollinen Y-tunnus\" \"" % "\"))"))
+          response-1
+          (hoks-utils/mock-st-post
+            (hoks-utils/create-app nil)
+            base-url
+            (update-in hoks-data [:hankittavat-ammat-tutkinnon-osat 0
+                                  :osaamisen-hankkimistavat 0
+                                  :tyopaikalla-jarjestettava-koulutus]
+                       dissoc :tyopaikan-y-tunnus))]
+      (is (= (:status response-1) 400))
+      (is (-> (:body response-1)
+              (utils/parse-body)
+              (get-in [:errors :hankittavat-ammat-tutkinnon-osat 0
+                       :osaamisen-hankkimistavat 0])
+              (->> (re-find #"Y-tunnus"))))
+      (doseq [[y-tunnus expected-error]
+              [["Ei y-tunnusta" regex-mismatch]
+               ["1234567-1 "    regex-mismatch]
+               ["1234567-2"     checksum-mismatch]
+               ["7654321-8"     checksum-mismatch]]
               :let [response (hoks-utils/mock-st-post
                                (hoks-utils/create-app nil)
                                base-url
                                (assoc-in hoks-data
-                                         [:hankittavat-ammat-tutkinnon-osat
-                                          0
-                                          :osaamisen-hankkimistavat
-                                          0
+                                         [:hankittavat-ammat-tutkinnon-osat 0
+                                          :osaamisen-hankkimistavat 0
                                           :tyopaikalla-jarjestettava-koulutus
                                           :tyopaikan-y-tunnus]
                                          y-tunnus))]]

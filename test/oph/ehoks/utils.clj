@@ -187,6 +187,27 @@
                       :suoritukset
                       [{:tyyppi {:koodiarvo "tuvaperusopetus"}}]
                       :tyyppi {:koodiarvo "tuva"}}}
+              (.endsWith
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000004")
+              {:status 200
+               :body {:oid "1.2.246.562.15.00000000004"
+                      :oppilaitos {:oid (or oppilaitos-oid
+                                            "1.2.246.562.10.12944436166")}
+                      :alkamispäivä "2023-10-01"
+                      :suoritukset
+                      [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+                      :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
+              (.endsWith
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000005")
+              {:status 200
+               :body {:oid "1.2.246.562.15.00000000005"
+                      :oppilaitos {:oid (or oppilaitos-oid
+                                            "1.2.246.562.10.12944436166")}
+                      :alkamispäivä "2010-10-01"
+                      :arvioituPäättymispäivä "2010-12-01"
+                      :suoritukset
+                      [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+                      :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
               (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
               {:status 200
                :body [{:oidHenkilo "1.2.246.562.24.11474338834"

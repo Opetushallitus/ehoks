@@ -1,5 +1,6 @@
 (ns oph.ehoks.hoks.schema
   (:require [oph.ehoks.schema.generator :as g]
+            [oph.ehoks.hoks.hoks :refer [y-tunnus-missing?]]
             [oph.ehoks.schema-tools :refer [describe modify]]
             [schema.core :as s]
             [clojure.tools.logging :as log])
@@ -245,7 +246,7 @@
       (:oppisopimuksen-perusta-koodi-uri oht)))
 
 (defn- nonnegative-duration?
-  "Osaamisen hankkimistavat päiväykset ovat oikein päin"
+  "Osaamisen hankkimistavan päiväykset ovat oikein päin"
   [oht]
   (not (.isBefore (:loppu oht) (:alku oht))))
 
@@ -257,6 +258,12 @@
           (not))
       (:yksiloiva-tunniste oht)))
 
+(defn- duration-max-5-years?
+  "Osaamisen hankkimistapa kestää enintään 5 vuotta"
+  [oht]
+  (not (.isAfter (:loppu oht)
+                 (.plusYears (:alku oht) 5))))
+
 (def OsaamisenHankkimistapa-template
   "Osaamisen hankkimistavan schema eri toiminnoille."
   ^{:doc "Osaamisen hankkimistavan schema eri toiminnoille."
@@ -267,10 +274,14 @@
      {:check tyopaikkajakso-has-yksiloiva-tunniste?
       :except-methods #{:put-virkailija :post-virkailija :patch-virkailija}
       :description "Lisää työpaikkajaksoon yksilöivä tunniste."}
+     {:check #(not (y-tunnus-missing? %))
+      :description "Lisää työpaikkajaksoon työpaikan Y-tunnus."}
      {:check oppisopimus-has-perusta?
       :description "Lisää jaksoon oppisopimuksen perustan koodi-uri."}
      {:check nonnegative-duration?
-      :description "Korjaa alku- ja loppupäivämäärä oikein päin."}]
+      :description "Korjaa alku- ja loppupäivämäärä oikein päin."}
+     {:check duration-max-5-years?
+      :description "Korjaa jakso enintään 5 vuoden pituiseksi."}]
     :name "OsaamisenHankkimistapa"}
   {:id {:methods {:any :excluded, :patch :optional, :get :optional}
         :types {:any s/Int}
