@@ -50,7 +50,7 @@
                                      respond
                                      raise))))))))))
 
-(def both-app
+(def both-app-routes
   "App with both oppija and virkailija routes initialized."
   (app-union
     oppija-handler/app-routes
@@ -61,16 +61,33 @@
           (response/not-found)
           (response/content-type "application/json")))))
 
-(defn create-app
-  "Create ehoks web app of given name. Name will decide if system has oppija
-  (ehoks), virkailija (ehoks-virkailija) or both routes."
-  [app-name]
+(def both-app
+  "Ready-to-call app with both-app-routes and session middleware.
+  It is important that it is assigned to a var, since hot reloading
+  depends on that var (i.e. oph.ehoks.ehoks-app/both-app) getting
+  updated."
+  (common-api/create-app both-app-routes (session-store/db-store)))
+
+(def virkailija-app
+  "Ready-to-call app with virkailija app-routes and session middleware."
   (common-api/create-app
-    (case app-name
-      "ehoks-virkailija" virkailija-handler/app-routes
-      "ehoks-oppija" oppija-handler/app-routes
-      both-app)
-    (session-store/db-store)))
+    virkailija-handler/app-routes (session-store/db-store)))
+
+(def oppija-app
+  "Ready-to-call app with oppija app-routes and session middleware."
+  (common-api/create-app oppija-handler/app-routes (session-store/db-store)))
+
+(def app-by-name
+  {"ehoks-virkailija" #'virkailija-app
+   "ehoks-oppija" #'oppija-app
+   "both" #'both-app})
+
+(defn create-app
+  "Give an app that has the routes that belong to app-name.  The app given
+  will be updated when this namespace is reloaded, since it's a var that
+  delegates to the actual app function."
+  [app-name]
+  (get app-by-name app-name #'both-app))
 
 (defn get-app-name
   "Get the app name."

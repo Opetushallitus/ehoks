@@ -137,28 +137,35 @@ Replissä `lein with-profiles +dev repl`:
 ``` repl
 user> (require 'oph.ehoks.dev-server)
 user> (def server (oph.ehoks.dev-server/start "ehoks-virkailija" nil))
+;; jos oot jo oikeassa nimiavaruudessa, kuten dev-profiili tekee
+oph.ehoks.dev-server=> (def server (start "ehoks-virkailija" nil))
 ```
 
 Tai omalla konfiguraatiolla:
 
 ``` repl
-user> (require 'oph.ehoks.dev-server)
-user> (def server (oph.ehoks.dev-server/start "ehoks-virkailija" "config/custom.edn"))
+oph.ehoks.dev-server=> (def server (start "both" "config/custom.edn"))
 ```
 
-Ajossa olevat kokonaisuudet näkee replissä
+Nimiavaruudessa `oph.ehoks.ehoks-app` ovat ne muuttujat (var), jotka
+`start` antaa run-jettylle käsittelemään kutsuja.  Siksi juuri tämän
+nimiavaruuden reload saa Jettyn käsittelemään tulevat kutsut päivitetyllä
+handlerilla jos esim. lähdekoodia on muutettu:
 
 ``` repl
-user> (System/getProperty “name”)
+oph.ehoks.dev-server=> (require 'oph.ehoks.ehoks-app :reload-all)
 ```
 
-Tämän voi vaihtaa ajamalla replissä
+Mikäli tämä ei auta (jos esim. kyse on varsinaisen handlerin
+ulkopuolella tehdyistä muutoksista), serverin voi myös uudelleenluoda
+(reload toki tarvitaan silti sille nimiavaruudelle, jota on muutettu):
 
 ``` repl
-user> (System/setProperty “name” “ehoks-virkailija”)
+oph.ehoks.dev-server=> (.stop server)
+[...]
+nil
+oph.ehoks.dev-server=> (def server (start "ehoks-oppija" nil))
 ```
-
-ja lataamalla tiedoston [ehoks_app.clj](src/oph/ehoks/ehoks_app.clj) uudelleen replissä.
 
 Ja ohjelman sammuttaminen:
 
