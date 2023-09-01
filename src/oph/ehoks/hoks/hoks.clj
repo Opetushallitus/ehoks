@@ -299,9 +299,9 @@
   ala ennen opiskeluoikeuden alkua eivätkä pääty opiskeluoikeuden
   suunnitellun loppumisajan jälkeen."
   [hoks]
-  (let [oo (oppijaindex/get-opiskeluoikeus-by-oid! (:opiskeluoikeus-oid hoks))
-        oo-alku (:alkamispaiva oo)
-        oo-loppu (:arvioitu-paattymispaiva oo)]
+  (let [oo (k/get-opiskeluoikeus-info (:opiskeluoikeus-oid hoks))
+        oo-alku (some-> (:alkamispäivä oo) (LocalDate/parse))
+        oo-loppu (some-> (:arvioituPäättymispäivä oo) (LocalDate/parse))]
     (if-not oo-alku
       (log/error "Opiskeluoikeus ei sisällä alkamispäivää:" oo)
       (doseq [oht (get-osaamisen-hankkimistavat hoks)]
