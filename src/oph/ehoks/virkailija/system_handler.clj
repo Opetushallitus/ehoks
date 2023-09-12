@@ -5,9 +5,10 @@
             [oph.ehoks.restful :as restful]
             [oph.ehoks.virkailija.schema :as virkailija-schema]
             [oph.ehoks.external.cache :as c]
-            [oph.ehoks.oppijaindex :as op]
+            [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
             [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.opiskelijapalaute :as op]
             [clojure.core.async :as a]
             [ring.util.http-response :as response]
             [clojure.tools.logging :as log]
@@ -49,25 +50,25 @@
         :return (restful/response virkailija-schema/SystemInfoOppijaindex)
         (restful/rest-ok
           {:unindexedOppijat
-           (op/get-oppijat-without-index-count)
+           (oi/get-oppijat-without-index-count)
            :unindexedOpiskeluoikeudet
-           (op/get-opiskeluoikeudet-without-index-count)
+           (oi/get-opiskeluoikeudet-without-index-count)
            :unindexedTutkinnot
-           (op/get-opiskeluoikeudet-without-tutkinto-count)}))
+           (oi/get-opiskeluoikeudet-without-tutkinto-count)}))
 
       (c-api/GET "/hoksit" []
         :summary "Järjestelmän tiedot: Hoksit."
         :header-params [caller-id :- s/Str]
         :return (restful/response virkailija-schema/SystemInfoHoksit)
-        (restful/rest-ok {:amount (:count (op/get-amount-of-hoks))})))
+        (restful/rest-ok {:amount (:count (oi/get-amount-of-hoks))})))
 
     (c-api/POST "/index" []
       :summary "Indeksoi oppijat ja opiskeluoikeudet"
       :header-params [caller-id :- s/Str]
       (a/go
-        (op/update-oppijat-without-index!)
-        (op/update-opiskeluoikeudet-without-index!)
-        (op/update-opiskeluoikeudet-without-tutkinto!)
+        (oi/update-oppijat-without-index!)
+        (oi/update-opiskeluoikeudet-without-index!)
+        (oi/update-opiskeluoikeudet-without-tutkinto!)
         (response/ok)))
 
     (c-api/DELETE "/cache" []
@@ -85,8 +86,8 @@
         ehoks-järjestelmästä"})
         (do
           (if (some? (db-oppija/select-oppija-by-oid (:oppija-oid data)))
-            (op/update-oppija! (:oppija-oid data))
-            (op/add-oppija-without-error-forwarding! (:oppija-oid data)))
+            (oi/update-oppija! (:oppija-oid data))
+            (oi/add-oppija-without-error-forwarding! (:oppija-oid data)))
           (response/no-content))))
 
     (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
@@ -116,7 +117,7 @@
           (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
             (:opiskeluoikeus-oid data))
           (a/go
-            (op/update-opiskeluoikeudet-without-index!)
+            (oi/update-opiskeluoikeudet-without-index!)
             (response/no-content)))))
 
     (c-api/PUT "/opiskeluoikeudet/update" request
@@ -128,7 +129,7 @@
                   (db-opiskeluoikeus/delete-from-index-by-koulutustoimija!
                     (:koulutustoimija-oid data))))
         (a/go
-          (op/update-opiskeluoikeudet-without-index!)
+          (oi/update-opiskeluoikeudet-without-index!)
           (response/no-content))
         (response/not-found {:error "No opiskeluoikeus found with given oid"})))
 
@@ -198,7 +199,7 @@
         (if hoks
           (if (:osaamisen-hankkimisen-tarve hoks)
             (do
-              (h/send-aloituskysely hoks-id hoks)
+              (op/send-aloituskysely! hoks-id hoks)
               (response/no-content))
             (do
               (log/info (str "Did not resend aloitusheräte "

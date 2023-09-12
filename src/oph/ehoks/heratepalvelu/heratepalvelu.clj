@@ -9,7 +9,8 @@
             [oph.ehoks.hoks.hoks :as h]
             [clojure.string :as str]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
-            [oph.ehoks.oppijaindex :as op]
+            [oph.ehoks.oppijaindex :as oi]
+            [oph.ehoks.opiskelijapalaute :as op]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
             [clojure.java.jdbc :as jdbc]
@@ -99,8 +100,11 @@
   [hoks]
   (if-let [opiskeluoikeus (k/get-opiskeluoikeus-info
                             (:opiskeluoikeus-oid hoks))]
-    (if-let [kyselytyyppi (h/get-kysely-type opiskeluoikeus)]
-      (sqs/build-hoks-osaaminen-saavutettu-msg (:id hoks) hoks kyselytyyppi))))
+    (if-let [kyselytyyppi (op/get-kysely-type opiskeluoikeus)]
+      (sqs/build-hoks-osaaminen-saavutettu-msg
+        (:id hoks)
+        hoks
+        kyselytyyppi))))
 
 (defn resend-paattokyselyherate-between
   "Resend päättökyselyt for given time period."
@@ -144,17 +148,17 @@
   "Handles ONR-modified call from heratepalvelu which is triggered by
   data change in ONR service."
   [oid]
-  (if-let [oppija (op/get-oppija-by-oid oid)]
+  (if-let [oppija (oi/get-oppija-by-oid oid)]
     ;; Jos päivitetyn oppijan oid löytyy ehoksista, niin tiedetään
     ;; että kyseessä ei ole oid-tiedon päivitys ja voidaan vain tarkastaa,
     ;; että nimi täsmää ONR:n tiedon kanssa.
     (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))
           ehoks-oppija-nimi (:nimi oppija)
-          onr-oppija-nimi (op/format-oppija-name onr-oppija)]
+          onr-oppija-nimi (oi/format-oppija-name onr-oppija)]
       (if (= ehoks-oppija-nimi onr-oppija-nimi)
         (log/info "Update for" oid "from ONR but no changes detected")
         (do (log/infof "Updating changed name for oppija %s" oid)
-            (op/update-oppija! oid true))))
+            (oi/update-oppija! oid true))))
     ;; Jos oppijaa ei löydy päivitetyllä oidilla ehoksista,
     ;; niin ensin tarkastetaan, ettei kyseessä ole duplicate/slave oid.
     ;; (tämä saattaa olla turha tarkastus, mutta ainakin se estää sen,
@@ -178,7 +182,7 @@
               (remove nil?
                       (flatten
                         (map
-                          #(:oid (op/get-oppija-by-oid %))
+                          #(:oid (oi/get-oppija-by-oid %))
                           slave-oppija-oids)))]
           (if (empty? oppijas-from-oppijaindex-by-slave-oids)
             (log/warn "Update for" oid "from ONR but no updatable oids found in"
@@ -193,7 +197,7 @@
                 (db-hoks/update-hoks-by-oppija-oid! oppija-oid
                                                     {:oppija-oid oid}
                                                     db-conn)
-                (if (some? (op/get-oppija-by-oid oid))
+                (if (some? (oi/get-oppija-by-oid oid))
                   (do
                     (db-oo/update-opiskeluoikeus-by-oppija-oid!
                       oppija-oid {:oppija-oid oid})
@@ -202,7 +206,7 @@
                   (db-oppija/update-oppija!
                     oppija-oid
                     {:oid  oid
-                     :nimi (op/format-oppija-name onr-oppija)}))))))))))
+                     :nimi (oi/format-oppija-name onr-oppija)}))))))))))
 
 (defn select-tyoelamajaksot-active-between
   "Finds all workplace periods active between start and end dates for student

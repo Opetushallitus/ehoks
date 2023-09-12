@@ -3,7 +3,6 @@
             [oph.ehoks.db.postgresql.hankittavat :as db-ha]
             [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as db-ot]
             [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
@@ -12,6 +11,7 @@
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.external.koski :as k]
+            [oph.ehoks.opiskelijapalaute :as op]
             [clojure.tools.logging :as log]
             [clojure.walk]
             [clojure.set :refer [rename-keys]])
@@ -192,67 +192,6 @@
   (and (some? new-osp)
        (not= new-osp old-osp)))
 
-(defn check-suoritus-type?
-  "Tarkistaa, onko suorituksen tyyppi ammatillinen suoritus tai osittainen
-  ammatillinen suoritus."
-  [suoritus]
-  (or (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkinto")
-      (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkintoosittainen")))
-
-(defn get-suoritus
-  "Hakee opiskeluoikeudesta ensimmäisen suorituksen, jonka tyyppi on
-  ammatillinen suoritus tai osittainen ammatillinen suoritus."
-  [opiskeluoikeus]
-  (reduce
-    (fn [_ suoritus]
-      (when (check-suoritus-type? suoritus)
-        (reduced suoritus)))
-    nil (:suoritukset opiskeluoikeus)))
-
-(defn get-kysely-type
-  "Muuttaa opiskeluoikeuden suorituksen tyypin sellaiseksi, minkä herätepalvelu
-  voi hyväksyä."
-  [opiskeluoikeus]
-  (let [tyyppi (get-in
-                 (get-suoritus opiskeluoikeus)
-                 [:tyyppi :koodiarvo])]
-    (cond
-      (= tyyppi "ammatillinentutkinto")
-      "tutkinnon_suorittaneet"
-      (= tyyppi "ammatillinentutkintoosittainen")
-      "tutkinnon_osia_suorittaneet")))
-
-(defn send-aloituskysely
-  "Lähettää AMIS aloituskyselyn herätepalveluun."
-  [hoks-id hoks]
-  (try
-    (sqs/send-amis-palaute-message
-      (sqs/build-hoks-hyvaksytty-msg
-        hoks-id hoks))
-    (catch Exception e
-      (log/warn e)
-      (log/warnf "Error in sending aloituskysely for hoks id %s." hoks-id))))
-
-(defn- send-paattokysely
-  "Lähettää AMIS-päättöpalautekyselyn herätepalveluun."
-  [hoks-id hoks]
-  {:pre [(:osaamisen-saavuttamisen-pvm hoks)]}
-  (try (let [opiskeluoikeus (k/get-opiskeluoikeus-info
-                              (:opiskeluoikeus-oid hoks))
-             kyselytyyppi (get-kysely-type opiskeluoikeus)]
-         (when (and (some? opiskeluoikeus) (some? kyselytyyppi))
-           (sqs/send-amis-palaute-message
-             (sqs/build-hoks-osaaminen-saavutettu-msg
-               hoks-id hoks kyselytyyppi))))
-       (catch Exception e
-         (log/warn e)
-         (log/warnf (str "Error in sending päättökysely for hoks id %s. "
-                         "osaamisen-saavuttamisen-pvm %s. "
-                         "opiskeluoikeus-oid %s.")
-                    hoks-id
-                    (:osaamisen-saavuttamisen-pvm hoks)
-                    (:opiskeluoikeus-oid hoks)))))
-
 (defn error-log-hoks-id
   "Logittaa HOKSin ID:n virheenä."
   [id]
@@ -369,9 +308,9 @@
     (future
       (when (and (:osaamisen-hankkimisen-tarve h)
                  (false? (tuva-related-hoks? h)))
-        (send-aloituskysely (:id hoks-db) h)
+        (op/send-aloituskysely! (:id hoks-db) h)
         (when (:osaamisen-saavuttamisen-pvm h)
-          (send-paattokysely (:id hoks-db) h))))
+          (op/send-paattokysely! (:id hoks-db) h))))
     hoks-db))
 
 (defn check-and-save-hoks!
@@ -639,14 +578,14 @@
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :paattoherate_kasitelty false})
-          (send-paattokysely hoks-id updated-hoks))
+          (op/send-paattokysely! hoks-id updated-hoks))
         (when (or (not old-osaamisen-hankkimisen-tarve)
                   (and new-sahkoposti (not old-sahkoposti))
                   (and new-puhelinnumero (not old-puhelinnumero)))
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :aloitusherate_kasitelty false})
-          (send-aloituskysely hoks-id updated-hoks))))
+          (op/send-aloituskysely! hoks-id updated-hoks))))
     h))
 
 (defn update-hoks!
@@ -680,14 +619,14 @@
               (db-hoks/update-amisherate-kasittelytilat!
                 {:id (:id amisherate-kasittelytila)
                  :paattoherate_kasitelty false})
-              (send-paattokysely hoks-id new-values))
+              (op/send-paattokysely! hoks-id new-values))
             (when (or (not old-osaamisen-hankkimisen-tarve)
                       (and new-sahkoposti (not old-sahkoposti))
                       (and new-puhelinnumero (not old-puhelinnumero)))
               (db-hoks/update-amisherate-kasittelytilat!
                 {:id (:id amisherate-kasittelytila)
                  :aloitusherate_kasitelty false})
-              (send-aloituskysely hoks-id new-values))))
+              (op/send-aloituskysely! hoks-id new-values))))
         h))))
 
 (defn insert-kyselylinkki!
@@ -737,7 +676,7 @@
           (oppijaindex/add-oppija-hankintakoulutukset opiskeluoikeudet
                                                       hoks-opiskeluoikeus-oid
                                                       oppija-oid))
-        (catch Exception e
+        (catch Exception _
           (log/errorf "Hankintakoulutukset-päivitys epäonnistui hoksille %s"
                       (:id hoks)))))
     (let [hokses-without-oo

@@ -1,7 +1,7 @@
 (ns oph.ehoks.virkailija.middleware
   (:require [ring.util.http-response :as response]
             [oph.ehoks.user :as user]
-            [oph.ehoks.oppijaindex :as op]
+            [oph.ehoks.oppijaindex :as oi]
             [clojure.tools.logging :as log]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
@@ -65,12 +65,12 @@
              ticket-user (:oppilaitos-oid opiskeluoikeus))
            privilege)
           opiskeluoikeus))
-      (op/get-oppija-opiskeluoikeudet oppija-oid))))
+      (oi/get-oppija-opiskeluoikeudet oppija-oid))))
 
 (defn virkailija-has-privilege-in-opiskeluoikeus?
   "Check if user has access privileges to opiskeluoikeus"
   [ticket-user opiskeluoikeus-oid privilege]
-  (let [opiskeluoikeus (op/get-opiskeluoikeus-by-oid! opiskeluoikeus-oid)]
+  (let [opiskeluoikeus (oi/get-opiskeluoikeus-by-oid! opiskeluoikeus-oid)]
     (and (some? opiskeluoikeus)
          (contains?
            (user/get-organisation-privileges
