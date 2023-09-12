@@ -71,14 +71,15 @@
 
 (defn build-hoks-osaaminen-saavutettu-msg
   "Luo HOKS osaamisen saavutettu -viestin."
-  [id saavuttamisen-pvm hoks kyselytyyppi]
+  [id hoks kyselytyyppi]
+  {:pre [(:osaamisen-saavuttamisen-pvm hoks)]}
   {:ehoks-id id
    :kyselytyyppi kyselytyyppi
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
    :oppija-oid (:oppija-oid hoks)
    :sahkoposti (:sahkoposti hoks)
    :puhelinnumero (:puhelinnumero hoks)
-   :alkupvm (str saavuttamisen-pvm)})
+   :alkupvm (str (:osaamisen-saavuttamisen-pvm hoks))})
 
 (defn build-tyoelamapalaute-msg
   "Luo työelämäpalauteviestin."

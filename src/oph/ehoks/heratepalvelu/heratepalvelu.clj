@@ -100,11 +100,7 @@
   (if-let [opiskeluoikeus (k/get-opiskeluoikeus-info
                             (:opiskeluoikeus-oid hoks))]
     (if-let [kyselytyyppi (h/get-kysely-type opiskeluoikeus)]
-      (sqs/build-hoks-osaaminen-saavutettu-msg
-        (:id hoks)
-        (:osaamisen-saavuttamisen-pvm hoks)
-        hoks
-        kyselytyyppi))))
+      (sqs/build-hoks-osaaminen-saavutettu-msg (:id hoks) hoks kyselytyyppi))))
 
 (defn resend-paattokyselyherate-between
   "Resend päättökyselyt for given time period."
