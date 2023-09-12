@@ -235,21 +235,22 @@
 
 (defn- send-paattokysely
   "Lähettää AMIS-päättöpalautekyselyn herätepalveluun."
-  [hoks-id osaamisen-saavuttamisen-pvm hoks]
+  [hoks-id hoks]
+  {:pre [(:osaamisen-saavuttamisen-pvm hoks)]}
   (try (let [opiskeluoikeus (k/get-opiskeluoikeus-info
                               (:opiskeluoikeus-oid hoks))
              kyselytyyppi (get-kysely-type opiskeluoikeus)]
          (when (and (some? opiskeluoikeus) (some? kyselytyyppi))
            (sqs/send-amis-palaute-message
              (sqs/build-hoks-osaaminen-saavutettu-msg
-               hoks-id osaamisen-saavuttamisen-pvm hoks kyselytyyppi))))
+               hoks-id hoks kyselytyyppi))))
        (catch Exception e
          (log/warn e)
          (log/warnf (str "Error in sending päättökysely for hoks id %s. "
                          "osaamisen-saavuttamisen-pvm %s. "
                          "opiskeluoikeus-oid %s.")
                     hoks-id
-                    osaamisen-saavuttamisen-pvm
+                    (:osaamisen-saavuttamisen-pvm hoks)
                     (:opiskeluoikeus-oid hoks)))))
 
 (defn error-log-hoks-id
@@ -370,9 +371,7 @@
                  (false? (tuva-related-hoks? h)))
         (send-aloituskysely (:id hoks-db) h)
         (when (:osaamisen-saavuttamisen-pvm h)
-          (send-paattokysely (:id hoks-db)
-                             (:osaamisen-saavuttamisen-pvm h)
-                             h))))
+          (send-paattokysely (:id hoks-db) h))))
     hoks-db))
 
 (defn check-and-save-hoks!
@@ -640,9 +639,7 @@
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :paattoherate_kasitelty false})
-          (send-paattokysely hoks-id
-                             new-osaamisen-saavuttamisen-pvm
-                             updated-hoks))
+          (send-paattokysely hoks-id updated-hoks))
         (when (or (not old-osaamisen-hankkimisen-tarve)
                   (and new-sahkoposti (not old-sahkoposti))
                   (and new-puhelinnumero (not old-puhelinnumero)))
@@ -683,16 +680,14 @@
               (db-hoks/update-amisherate-kasittelytilat!
                 {:id (:id amisherate-kasittelytila)
                  :paattoherate_kasitelty false})
-              (send-paattokysely hoks-id
-                                 new-osaamisen-saavuttamisen-pvm
-                                 hoks))
+              (send-paattokysely hoks-id new-values))
             (when (or (not old-osaamisen-hankkimisen-tarve)
                       (and new-sahkoposti (not old-sahkoposti))
                       (and new-puhelinnumero (not old-puhelinnumero)))
               (db-hoks/update-amisherate-kasittelytilat!
                 {:id (:id amisherate-kasittelytila)
                  :aloitusherate_kasitelty false})
-              (send-aloituskysely hoks-id hoks))))
+              (send-aloituskysely hoks-id new-values))))
         h))))
 
 (defn insert-kyselylinkki!
