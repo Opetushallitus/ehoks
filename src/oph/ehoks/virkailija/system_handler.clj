@@ -7,7 +7,6 @@
             [oph.ehoks.external.cache :as c]
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
-            [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.opiskelijapalaute :as op]
             [clojure.core.async :as a]
             [ring.util.http-response :as response]
