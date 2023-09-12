@@ -1,7 +1,5 @@
 (ns oph.ehoks.heratepalvelu.heratepalvelu
-  (:require [clj-time.core :as t]
-            [clj-time.format :as f]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
@@ -82,7 +80,7 @@
          c 0]
     (if (:osaamisen-hankkimisen-tarve hoks)
       (do
-        (if-let [msg (build-msg hoks)]
+        (when-let [msg (build-msg hoks)]
           (sqs/send-amis-palaute-message msg))
         (recur (first r) (rest r) (inc c)))
       (if (not-empty r)
@@ -98,9 +96,9 @@
 (defn paatto-build-msg
   "Build päättökysely message."
   [hoks]
-  (if-let [opiskeluoikeus (k/get-opiskeluoikeus-info
-                            (:opiskeluoikeus-oid hoks))]
-    (if-let [kyselytyyppi (op/get-kysely-type opiskeluoikeus)]
+  (when-let [opiskeluoikeus (k/get-opiskeluoikeus-info
+                              (:opiskeluoikeus-oid hoks))]
+    (when-let [kyselytyyppi (op/get-kysely-type opiskeluoikeus)]
       (sqs/build-hoks-osaaminen-saavutettu-msg
         (:id hoks)
         hoks

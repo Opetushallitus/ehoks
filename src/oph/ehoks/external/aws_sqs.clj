@@ -36,7 +36,7 @@
   [queue-name]
   (try
     (get-queue-url queue-name)
-    (catch QueueDoesNotExistException e
+    (catch QueueDoesNotExistException _
       (log/error (str queue-name " does not exist")))))
 
 (def ^:private herate-queue-url
