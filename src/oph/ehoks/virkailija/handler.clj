@@ -22,7 +22,7 @@
             [oph.ehoks.middleware :refer [wrap-hoks]]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.hoks.handler :as hoks-handler]
-            [oph.ehoks.oppijaindex :as op]
+            [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
@@ -88,7 +88,7 @@
              :tutkinto tutkinto
              :osaamisala osaamisala
              :hoks-id hoks-id}
-            [oppijat total-count] (op/search! search-params)]
+            [oppijat total-count] (oi/search! search-params)]
         (restful/rest-ok
           oppijat
           :total-count total-count)))))
@@ -97,7 +97,7 @@
   "Check whether opiskeluoikeus is still valid"
   ([hoks-values]
     (if-not
-     (op/opiskeluoikeus-still-active? (:opiskeluoikeus-oid hoks-values))
+     (oi/opiskeluoikeus-still-active? (:opiskeluoikeus-oid hoks-values))
       (assoc
         (response/bad-request!
           {:error (format "Opiskeluoikeus %s is no longer active"
@@ -125,7 +125,7 @@
   "Add new HOKS for oppija"
   [hoks request]
   (try
-    (op/add-hoks-dependents-in-index! hoks)
+    (oi/add-hoks-dependents-in-index! hoks)
     (check-virkailija-privileges hoks request)
     (let [hoks-db (-> (h/add-missing-oht-yksiloiva-tunniste hoks)
                       (assoc :manuaalisyotto true)
@@ -155,7 +155,7 @@
 (defn- hoks-has-active-opiskeluoikeus
   "Check if HOKS has an active opiskeluoikeus"
   [hoks]
-  (some #(op/opiskeluoikeus-active? (koski/get-opiskeluoikeus-info %))
+  (some #(oi/opiskeluoikeus-active? (koski/get-opiskeluoikeus-info %))
         (map :opiskeluoikeus-oid hoks)))
 
 (defn- get-oppilaitos-oid-by-oo-oid
@@ -492,7 +492,7 @@
                         (let [opiskeluoikeus
                               (db-oo/select-opiskeluoikeus-by-oid oo-oid)]
                           (when (some? opiskeluoikeus)
-                            (op/set-opiskeluoikeus-koski404 oo-oid))))
+                            (oi/set-opiskeluoikeus-koski404 oo-oid))))
                       (response/ok {:count (count result)
                                     :ids result
                                     :last-id last-id}))
@@ -655,13 +655,13 @@
                                 (if (seq (:oppilaitos-oid data))
                                   (:oppilaitos-oid data)
                                   (:oppilaitos-oid
-                                    (op/get-opiskeluoikeus-by-oid!
+                                    (oi/get-opiskeluoikeus-by-oid!
                                       (:opiskeluoikeus-oid hoks))))
                                 opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
                                 opiskeluoikeus (koski/get-opiskeluoikeus-info
                                                  opiskeluoikeus-oid)]
                             (if (or (nil? opiskeluoikeus)
-                                    (op/opiskeluoikeus-active? opiskeluoikeus))
+                                    (oi/opiskeluoikeus-active? opiskeluoikeus))
                               (if (seq oppilaitos-oid)
                                 (if (contains?
                                       (user/get-organisation-privileges
@@ -721,14 +721,14 @@
                     (c-api/GET "/" []
                       :return (restful/response common-schema/Oppija)
                       :summary "Oppijan tiedot"
-                      (if-let [oppija (op/get-oppija-by-oid oppija-oid)]
+                      (if-let [oppija (oi/get-oppija-by-oid oppija-oid)]
                         (restful/rest-ok oppija)
                         (response/not-found)))
 
                     (c-api/GET "/with-oo" []
                       :return (restful/response common-schema/Oppija)
                       :summary "Oppijan tiedot. Opiskeluoikeus-oid lisättynä."
-                      (if-let [oppija (op/get-oppija-with-oo-oid-by-oid
+                      (if-let [oppija (oi/get-oppija-with-oo-oid-by-oid
                                         oppija-oid)]
                         (restful/rest-ok oppija)
                         (response/not-found)))))))))
