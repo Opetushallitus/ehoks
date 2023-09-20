@@ -196,7 +196,7 @@
       :path-params [hoks-id :- s/Int]
       (let [hoks (db-hoks/select-hoks-by-id hoks-id)]
         (if hoks
-          (if (:osaamisen-hankkimisen-tarve hoks)
+          (if (op/send? :aloituskysely hoks)
             (do
               (op/send-aloituskysely! hoks)
               (response/no-content))
@@ -218,8 +218,7 @@
       :path-params [hoks-id :- s/Int]
       (let [hoks (db-hoks/select-hoks-by-id hoks-id)]
         (if hoks
-          (if (and (:osaamisen-hankkimisen-tarve hoks)
-                   (:osaamisen-saavuttamisen-pvm hoks))
+          (if (op/send? :paattokysely hoks)
             (do
               (sqs/send-amis-palaute-message (hp/paatto-build-msg hoks))
               (response/no-content))
