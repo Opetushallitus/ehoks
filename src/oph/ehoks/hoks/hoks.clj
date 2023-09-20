@@ -252,66 +252,69 @@
                                "ulkopuolella: " oht)
                           {:error :disallowed-update})))))))
 
+(defn- save-hoks-parts!
+  "Tallentaa HOKSin osat tietokantaan."
+  [hoks conn]
+  (assoc
+    hoks
+    :aiemmin-hankitut-ammat-tutkinnon-osat
+    (ah/save-aiemmin-hankitut-ammat-tutkinnon-osat!
+      (:id hoks)
+      (:aiemmin-hankitut-ammat-tutkinnon-osat hoks)
+      conn)
+    :aiemmin-hankitut-paikalliset-tutkinnon-osat
+    (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
+      (:id hoks)
+      (:aiemmin-hankitut-paikalliset-tutkinnon-osat hoks)
+      conn)
+    :hankittavat-paikalliset-tutkinnon-osat
+    (ha/save-hankittavat-paikalliset-tutkinnon-osat!
+      (:id hoks)
+      (:hankittavat-paikalliset-tutkinnon-osat hoks)
+      conn)
+    :aiemmin-hankitut-yhteiset-tutkinnon-osat
+    (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
+      (:id hoks)
+      (:aiemmin-hankitut-yhteiset-tutkinnon-osat hoks)
+      conn)
+    :hankittavat-ammat-tutkinnon-osat
+    (ha/save-hankittavat-ammat-tutkinnon-osat!
+      (:id hoks)
+      (:hankittavat-ammat-tutkinnon-osat hoks)
+      conn)
+    :opiskeluvalmiuksia-tukevat-opinnot
+    (ot/save-opiskeluvalmiuksia-tukevat-opinnot!
+      (:id hoks)
+      (:opiskeluvalmiuksia-tukevat-opinnot hoks)
+      conn)
+    :hankittavat-yhteiset-tutkinnon-osat
+    (ha/save-hankittavat-yhteiset-tutkinnon-osat!
+      (:id hoks)
+      (:hankittavat-yhteiset-tutkinnon-osat hoks)
+      conn)
+    :hankittavat-koulutuksen-osat
+    (ha/save-hankittavat-koulutuksen-osat!
+      (:id hoks)
+      (:hankittavat-koulutuksen-osat hoks)
+      conn)))
+
 (defn save-hoks!
   "Tallentaa yhden HOKSin arvot tietokantaan."
-  [h]
-  (let [hoks-db
-        (jdbc/with-db-transaction
-          [conn (db-ops/get-db-connection)]
-          (let [saved-hoks (db-hoks/insert-hoks! h conn)
-                hoks-id (:id saved-hoks)
-                tuva-hoks (tuva-related-hoks? h)]
-            (db-hoks/insert-amisherate-kasittelytilat!
-              hoks-id tuva-hoks conn)
-            (assoc
-              saved-hoks
-              :aiemmin-hankitut-ammat-tutkinnon-osat
-              (ah/save-aiemmin-hankitut-ammat-tutkinnon-osat!
-                (:id saved-hoks)
-                (:aiemmin-hankitut-ammat-tutkinnon-osat h)
-                conn)
-              :aiemmin-hankitut-paikalliset-tutkinnon-osat
-              (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
-                (:id saved-hoks)
-                (:aiemmin-hankitut-paikalliset-tutkinnon-osat h)
-                conn)
-              :hankittavat-paikalliset-tutkinnon-osat
-              (ha/save-hankittavat-paikalliset-tutkinnon-osat!
-                (:id saved-hoks)
-                (:hankittavat-paikalliset-tutkinnon-osat h)
-                conn)
-              :aiemmin-hankitut-yhteiset-tutkinnon-osat
-              (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat!
-                (:id saved-hoks)
-                (:aiemmin-hankitut-yhteiset-tutkinnon-osat h)
-                conn)
-              :hankittavat-ammat-tutkinnon-osat
-              (ha/save-hankittavat-ammat-tutkinnon-osat!
-                (:id saved-hoks)
-                (:hankittavat-ammat-tutkinnon-osat h)
-                conn)
-              :opiskeluvalmiuksia-tukevat-opinnot
-              (ot/save-opiskeluvalmiuksia-tukevat-opinnot!
-                (:id saved-hoks)
-                (:opiskeluvalmiuksia-tukevat-opinnot h)
-                conn)
-              :hankittavat-yhteiset-tutkinnon-osat
-              (ha/save-hankittavat-yhteiset-tutkinnon-osat!
-                (:id saved-hoks)
-                (:hankittavat-yhteiset-tutkinnon-osat h)
-                conn)
-              :hankittavat-koulutuksen-osat
-              (ha/save-hankittavat-koulutuksen-osat!
-                (:id saved-hoks)
-                (:hankittavat-koulutuksen-osat h)
-                conn))))]
+  [hoks]
+  (let [hoks (jdbc/with-db-transaction
+               [conn (db-ops/get-db-connection)]
+               (let [hoks (merge hoks (db-hoks/insert-hoks! hoks conn))
+                     tuva-hoks (tuva-related-hoks? hoks)]
+                 (db-hoks/insert-amisherate-kasittelytilat!
+                   (:id hoks) tuva-hoks conn)
+                 (save-hoks-parts! hoks conn)))]
     (future
-      (when (and (:osaamisen-hankkimisen-tarve h)
-                 (false? (tuva-related-hoks? h)))
-        (op/send-aloituskysely! (:id hoks-db) h)
-        (when (:osaamisen-saavuttamisen-pvm h)
-          (op/send-paattokysely! (:id hoks-db) h))))
-    hoks-db))
+      (when (and (:osaamisen-hankkimisen-tarve hoks)
+                 (false? (tuva-related-hoks? hoks)))
+        (op/send-aloituskysely! (:id hoks) hoks)
+        (when (:osaamisen-saavuttamisen-pvm hoks)
+          (op/send-paattokysely! (:id hoks) hoks))))
+    hoks))
 
 (defn check-and-save-hoks!
   "Tekee uuden HOKSin tarkistukset ja tallentaa sen, jos kaikki on OK."
@@ -507,10 +510,38 @@
       (throw (ex-info "Oppija-oid update not allowed!"
                       {:error :disallowed-update})))))
 
+(defn- replace-hoks-parts!
+  [hoks conn]
+  (replace-oto! (:id hoks)
+                (:opiskeluvalmiuksia-tukevat-opinnot hoks)
+                conn)
+  (replace-hato! (:id hoks)
+                 (:hankittavat-ammat-tutkinnon-osat hoks)
+                 conn)
+  (replace-hpto! (:id hoks)
+                 (:hankittavat-paikalliset-tutkinnon-osat hoks)
+                 conn)
+  (replace-hyto! (:id hoks)
+                 (:hankittavat-yhteiset-tutkinnon-osat hoks)
+                 conn)
+  (replace-hankittavat-koulutuksen-osat! (:id hoks)
+                                         (:hankittavat-koulutuksen-osat hoks)
+                                         conn)
+  (replace-ahato! (:id hoks)
+                  (:aiemmin-hankitut-ammat-tutkinnon-osat hoks)
+                  conn)
+  (replace-ahpto! (:id hoks)
+                  (:aiemmin-hankitut-paikalliset-tutkinnon-osat hoks)
+                  conn)
+  (replace-ahyto! (:id hoks)
+                  (:aiemmin-hankitut-yhteiset-tutkinnon-osat hoks)
+                  conn))
+
 (defn replace-hoks!
   "Korvaa kokonaisen HOKSin (ml. tutkinnon osat) annetuilla arvoilla."
   [hoks-id new-values]
   (let [current-hoks (get-hoks-by-id hoks-id)
+        updated-hoks (assoc new-values :id hoks-id)
         old-osaamisen-saavuttamisen-pvm (:osaamisen-saavuttamisen-pvm
                                           current-hoks)
         old-osaamisen-hankkimisen-tarve (:osaamisen-hankkimisen-tarve
@@ -528,44 +559,7 @@
         h (jdbc/with-db-transaction
             [db-conn (db-ops/get-db-connection)]
             (replace-main-hoks! hoks-id new-values db-conn)
-            (replace-oto! hoks-id
-                          (:opiskeluvalmiuksia-tukevat-opinnot
-                            new-values)
-                          db-conn)
-            (replace-hato! hoks-id
-                           (:hankittavat-ammat-tutkinnon-osat
-                             new-values)
-                           db-conn)
-            (replace-hpto!
-              hoks-id
-              (:hankittavat-paikalliset-tutkinnon-osat
-                new-values)
-              db-conn)
-            (replace-hyto! hoks-id
-                           (:hankittavat-yhteiset-tutkinnon-osat
-                             new-values)
-                           db-conn)
-            (replace-hankittavat-koulutuksen-osat!
-              hoks-id
-              (:hankittavat-koulutuksen-osat
-                new-values)
-              db-conn)
-            (replace-ahato!
-              hoks-id
-              (:aiemmin-hankitut-ammat-tutkinnon-osat
-                new-values)
-              db-conn)
-            (replace-ahpto!
-              hoks-id
-              (:aiemmin-hankitut-paikalliset-tutkinnon-osat
-                new-values)
-              db-conn)
-            (replace-ahyto!
-              hoks-id
-              (:aiemmin-hankitut-yhteiset-tutkinnon-osat
-                new-values)
-              db-conn))
-        updated-hoks (get-hoks-by-id hoks-id)]
+            (replace-hoks-parts! updated-hoks db-conn))]
     (if (tuva-related-hoks? updated-hoks)
       (db-hoks/update-amisherate-kasittelytilat!
         {:id (:id amisherate-kasittelytila)
