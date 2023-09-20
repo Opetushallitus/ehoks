@@ -311,9 +311,9 @@
     (future
       (when (and (:osaamisen-hankkimisen-tarve hoks)
                  (false? (tuva-related-hoks? hoks)))
-        (op/send-aloituskysely! (:id hoks) hoks)
+        (op/send-aloituskysely! hoks)
         (when (:osaamisen-saavuttamisen-pvm hoks)
-          (op/send-paattokysely! (:id hoks) hoks))))
+          (op/send-paattokysely! hoks))))
     hoks))
 
 (defn check-and-save-hoks!
@@ -572,14 +572,14 @@
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :paattoherate_kasitelty false})
-          (op/send-paattokysely! hoks-id updated-hoks))
+          (op/send-paattokysely! (assoc updated-hoks :id hoks-id)))
         (when (or (not old-osaamisen-hankkimisen-tarve)
                   (and new-sahkoposti (not old-sahkoposti))
                   (and new-puhelinnumero (not old-puhelinnumero)))
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :aloitusherate_kasitelty false})
-          (op/send-aloituskysely! hoks-id updated-hoks))))
+          (op/send-aloituskysely! (assoc updated-hoks :id hoks-id)))))
     h))
 
 (defn update-hoks!
@@ -600,10 +600,11 @@
         (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id! hoks-id)]
     (jdbc/with-db-transaction
       [db-conn (db-ops/get-db-connection)]
-      (let [h (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)]
-        (if (tuva-related-hoks? h)
+      (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)
+      (let [updated-hoks (merge hoks new-values)]
+        (if (tuva-related-hoks? updated-hoks)
           (db-hoks/update-amisherate-kasittelytilat!
-            {:id (:id amisherate-kasittelytila)
+           {:id (:id amisherate-kasittelytila)
              :aloitusherate_kasitelty true
              :paattoherate_kasitelty true})
           (when new-osaamisen-hankkimisen-tarve
@@ -613,15 +614,15 @@
               (db-hoks/update-amisherate-kasittelytilat!
                 {:id (:id amisherate-kasittelytila)
                  :paattoherate_kasitelty false})
-              (op/send-paattokysely! hoks-id new-values))
+              (op/send-paattokysely! updated-hoks))
             (when (or (not old-osaamisen-hankkimisen-tarve)
                       (and new-sahkoposti (not old-sahkoposti))
                       (and new-puhelinnumero (not old-puhelinnumero)))
               (db-hoks/update-amisherate-kasittelytilat!
                 {:id (:id amisherate-kasittelytila)
                  :aloitusherate_kasitelty false})
-              (op/send-aloituskysely! hoks-id new-values))))
-        h))))
+              (op/send-aloituskysely! updated-hoks))))
+        updated-hoks))))
 
 (defn insert-kyselylinkki!
   "Lisää yhden kyselylinkin tietokantatauluun."

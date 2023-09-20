@@ -32,31 +32,29 @@
 
 (defn send-aloituskysely!
   "Lähettää AMIS aloituskyselyn herätepalveluun."
-  [hoks-id hoks]
+  [hoks]
+  {:pre [(:id hoks)]}
   (try
-    (sqs/send-amis-palaute-message
-      (sqs/build-hoks-hyvaksytty-msg
-        hoks-id hoks))
+    (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg hoks))
     (catch Exception e
       (log/warn e)
-      (log/warnf "Error in sending aloituskysely for hoks id %s." hoks-id))))
+      (log/warnf "Error in sending aloituskysely for hoks id %s." (:id hoks)))))
 
 (defn send-paattokysely!
   "Lähettää AMIS-päättöpalautekyselyn herätepalveluun."
-  [hoks-id hoks]
-  {:pre [(:osaamisen-saavuttamisen-pvm hoks)]}
+  [hoks]
+  {:pre [(:id hoks) (:osaamisen-saavuttamisen-pvm hoks)]}
   (try (let [opiskeluoikeus (k/get-opiskeluoikeus-info
                               (:opiskeluoikeus-oid hoks))
              kyselytyyppi (get-kysely-type opiskeluoikeus)]
          (when (and (some? opiskeluoikeus) (some? kyselytyyppi))
            (sqs/send-amis-palaute-message
-             (sqs/build-hoks-osaaminen-saavutettu-msg
-               hoks-id hoks kyselytyyppi))))
+             (sqs/build-hoks-osaaminen-saavutettu-msg hoks kyselytyyppi))))
        (catch Exception e
          (log/warn e)
          (log/warnf (str "Error in sending päättökysely for hoks id %s. "
                          "osaamisen-saavuttamisen-pvm %s. "
                          "opiskeluoikeus-oid %s.")
-                    hoks-id
+                    (:id hoks)
                     (:osaamisen-saavuttamisen-pvm hoks)
                     (:opiskeluoikeus-oid hoks)))))

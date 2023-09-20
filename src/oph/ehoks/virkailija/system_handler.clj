@@ -198,7 +198,7 @@
         (if hoks
           (if (:osaamisen-hankkimisen-tarve hoks)
             (do
-              (op/send-aloituskysely! hoks-id hoks)
+              (op/send-aloituskysely! hoks)
               (response/no-content))
             (do
               (log/info (str "Did not resend aloitusheräte "

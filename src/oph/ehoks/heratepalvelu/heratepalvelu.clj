@@ -91,7 +91,7 @@
   "Resend aloituskyselyt for given time period."
   [from to]
   (send-kyselyt-for-hoksit (db-hoks/select-hoksit-created-between from to)
-                           #(sqs/build-hoks-hyvaksytty-msg (:id %) %)))
+                           #(sqs/build-hoks-hyvaksytty-msg %)))
 
 (defn paatto-build-msg
   "Build päättökysely message."
@@ -99,10 +99,7 @@
   (when-let [opiskeluoikeus (k/get-opiskeluoikeus-info
                               (:opiskeluoikeus-oid hoks))]
     (when-let [kyselytyyppi (op/get-kysely-type opiskeluoikeus)]
-      (sqs/build-hoks-osaaminen-saavutettu-msg
-        (:id hoks)
-        hoks
-        kyselytyyppi))))
+      (sqs/build-hoks-osaaminen-saavutettu-msg hoks kyselytyyppi))))
 
 (defn resend-paattokyselyherate-between
   "Resend päättökyselyt for given time period."
@@ -127,8 +124,7 @@
     (log/infof
       "Sending %d (limit %d) hoksit between %s and %s"
       (count hoksit) (* 2 limit) start end)
-    (send-kyselyt-for-hoksit aloittaneet
-                             #(sqs/build-hoks-hyvaksytty-msg (:id %) %))
+    (send-kyselyt-for-hoksit aloittaneet #(sqs/build-hoks-hyvaksytty-msg %))
     (send-kyselyt-for-hoksit paattyneet paatto-build-msg)
     hoksit))
 
