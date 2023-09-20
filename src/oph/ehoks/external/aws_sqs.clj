@@ -60,8 +60,9 @@
 
 (defn build-hoks-hyvaksytty-msg
   "Luo HOKS hyväksytty -viestin."
-  [id hoks]
-  {:ehoks-id id
+  [hoks]
+  {:pre [(:id hoks)]}
+  {:ehoks-id (:id hoks)
    :kyselytyyppi "aloittaneet"
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
    :oppija-oid (:oppija-oid hoks)
@@ -71,9 +72,9 @@
 
 (defn build-hoks-osaaminen-saavutettu-msg
   "Luo HOKS osaamisen saavutettu -viestin."
-  [id hoks kyselytyyppi]
-  {:pre [(:osaamisen-saavuttamisen-pvm hoks)]}
-  {:ehoks-id id
+  [hoks kyselytyyppi]
+  {:pre [(:id hoks) (:osaamisen-saavuttamisen-pvm hoks)]}
+  {:ehoks-id (:id hoks)
    :kyselytyyppi kyselytyyppi
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
    :oppija-oid (:oppija-oid hoks)
