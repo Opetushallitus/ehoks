@@ -17,7 +17,7 @@
   [opiskeluoikeus]
   (some #(when (ammatillinen-suoritus? %) %) (:suoritukset opiskeluoikeus)))
 
-(defn get-kysely-type
+(defn- get-kysely-type
   "Muuttaa opiskeluoikeuden suorituksen tyypin sellaiseksi, minkä herätepalvelu
   voi hyväksyä."
   [opiskeluoikeus]
@@ -29,35 +29,6 @@
       "tutkinnon_suorittaneet"
       (= tyyppi "ammatillinentutkintoosittainen")
       "tutkinnon_osia_suorittaneet")))
-
-(defn send-aloituskysely!
-  "Lähettää AMIS aloituskyselyn herätepalveluun."
-  [hoks]
-  {:pre [(:id hoks)]}
-  (try
-    (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg hoks))
-    (catch Exception e
-      (log/warn e)
-      (log/warnf "Error in sending aloituskysely for hoks id %s." (:id hoks)))))
-
-(defn send-paattokysely!
-  "Lähettää AMIS-päättöpalautekyselyn herätepalveluun."
-  [hoks]
-  {:pre [(:id hoks) (:osaamisen-saavuttamisen-pvm hoks)]}
-  (try (let [opiskeluoikeus (k/get-opiskeluoikeus-info
-                              (:opiskeluoikeus-oid hoks))
-             kyselytyyppi (get-kysely-type opiskeluoikeus)]
-         (when (and (some? opiskeluoikeus) (some? kyselytyyppi))
-           (sqs/send-amis-palaute-message
-             (sqs/build-hoks-osaaminen-saavutettu-msg hoks kyselytyyppi))))
-       (catch Exception e
-         (log/warn e)
-         (log/warnf (str "Error in sending päättökysely for hoks id %s. "
-                         "osaamisen-saavuttamisen-pvm %s. "
-                         "opiskeluoikeus-oid %s.")
-                    (:id hoks)
-                    (:osaamisen-saavuttamisen-pvm hoks)
-                    (:opiskeluoikeus-oid hoks)))))
 
 (defn- added?
   [key* current-hoks updated-hoks]
@@ -108,3 +79,52 @@
                             updated-hoks))
                (log/info msg "`osaamisen-saavuttamisen-pvm` has been added.")
                :else true)))))) ; will be converted to `false`.
+
+(defn send!
+  "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
+  `:paattokysely`) to appropriate DynamoDB table of Herätepalvelu and returns
+  `true` if kysely was successfully sent."
+  [kysely hoks]
+  {:pre [(#{:aloituskysely :paattokysely} kysely)
+         (:id hoks)]}
+  (try
+    (case kysely
+      :aloituskysely
+      (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg hoks))
+      ; In the case of päättökysely, `opiskeluoikeus` is fetched from Koski in
+      ; order to determine, if the kyselytyyppi is `tutkinnon_suorittaneet` or
+      ; `tutkinnon_osia_suorittaneet`."
+      :paattokysely
+      (or (some->> (:opiskeluoikeus-oid hoks)
+                   k/get-opiskeluoikeus-info
+                   get-kysely-type
+                   (sqs/build-hoks-osaaminen-saavutettu-msg hoks)
+                   sqs/send-amis-palaute-message)
+          (log/warnf (str "Not sending paattokysely for HOKS `%s`. Couldn't "
+                          "get opiskeluoikeus `%s` from Koski.`")
+                     (:id hoks)
+                     (:opiskeluoikeus-oid hoks))))
+    (catch Exception e
+      (log/warn e)
+      (log/warnf (str "Error in sending %s for HOKS `%s`. "
+                      "osaamisen-saavuttamisen-pvm %s."
+                      "opiskeluoikeus-oid %s.")
+                 (name kysely)
+                 (:id hoks)
+                 (:osaamisen-saavuttamisen-pvm hoks)
+                 (:opiskeluoikeus-oid hoks)))))
+
+(defn send-if-needed!
+  "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
+  `:paattokysely`) to appropriate DynamoDB table of Herätepalvelu if no check is
+  preventing the sending. Returns `true` if kysely was successfully sent."
+  [kysely hoks]
+  (when (send? kysely hoks) (send! kysely hoks)))
+
+(defn send-every-needed!
+  "Effectively the same as running `send-if-needed!` for multiple HOKSes, but
+  also returns a count of the number of kyselys sent."
+  [kysely hoksit]
+  (->> hoksit
+       (filter #(send-if-needed! kysely %))
+       count))

@@ -194,36 +194,25 @@
       :summary "Lähettää uuden aloituskyselyherätteen herätepalveluun"
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
-      (let [hoks (db-hoks/select-hoks-by-id hoks-id)]
-        (if hoks
-          (if (op/send? :aloituskysely hoks)
-            (do
-              (op/send-aloituskysely! hoks)
-              (response/no-content))
-            (do
-              (log/info (str "Did not resend aloitusheräte "
+      (if-let [hoks (db-hoks/select-hoks-by-id hoks-id)]
+        (if (op/send-if-needed! :aloituskysely hoks)
+          (response/no-content)
+          (do (log/info (str "Did not resend aloitusheräte "
                              "(osaamisen-hankkimisen-tarve=false) for hoks-id "
                              hoks-id))
               (response/bad-request
                 {:error "Osaamisen hankkimisen tarve false"})))
-          (do
-            (log/warn "No HOKS found with given hoks-id "
-                      hoks-id)
-            (response/not-found
-              {:error "No HOKS found with given hoks-id"})))))
+        (do (log/warn "No HOKS found with given hoks-id " hoks-id)
+            (response/not-found {:error "No HOKS found with given hoks-id"}))))
 
     (c-api/POST "/hoks/:hoks-id/resend-paattoherate" request
       :summary "Lähettää uuden päättökyselyherätteen herätepalveluun"
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
-      (let [hoks (db-hoks/select-hoks-by-id hoks-id)]
-        (if hoks
-          (if (op/send? :paattokysely hoks)
-            (do
-              (sqs/send-amis-palaute-message (hp/paatto-build-msg hoks))
-              (response/no-content))
-            (do
-              (log/info (str "Did not resend päättöheräte "
+      (if-let [hoks (db-hoks/select-hoks-by-id hoks-id)]
+        (if (op/send-if-needed! :paattokysely hoks)
+          (response/no-content)
+          (do (log/info (str "Did not resend päättöheräte "
                              "(osaamisen-saavuttamisen-pvm="
                              (:osaamisen-saavuttamisen-pvm hoks)
                              ", osaamisen-hankkimisen-tarve="
@@ -233,9 +222,8 @@
               (response/bad-request
                 {:error (str "No osaamisen saavuttamisen pvm or osaamisen "
                              "hankkimisen tarve is false")})))
-          (do
-            (log/warn "No HOKS found with given hoks-id:" hoks-id)
-            (response/not-found {:error "No HOKS found with given hoks-id"})))))
+        (do (log/warn "No HOKS found with given hoks-id:" hoks-id)
+            (response/not-found {:error "No HOKS found with given hoks-id"}))))
 
     (c-api/POST "/hoks/resend-aloitusherate" request
       :summary "Lähettää uudet aloituskyselyherätteet herätepalveluun"
@@ -243,7 +231,8 @@
       :query-params [from :- LocalDate
                      to :- LocalDate]
       :return {:count s/Int}
-      (let [count (hp/resend-aloituskyselyherate-between from to)]
+      (let [hoksit (db-hoks/select-hoksit-created-between from to)
+            count  (op/send-every-needed! :aloituskysely hoksit)]
         (restful/rest-ok {:count count})))
 
     (c-api/POST "/hoks/resend-paattoherate" request
@@ -252,5 +241,6 @@
       :query-params [from :- LocalDate
                      to :- LocalDate]
       :return {:count s/Int}
-      (let [count (hp/resend-paattokyselyherate-between from to)]
+      (let [hoksit (db-hoks/select-hoksit-finished-between from to)
+            count  (op/send-every-needed! :paattokysely hoksit)]
         (restful/rest-ok {:count count})))))
