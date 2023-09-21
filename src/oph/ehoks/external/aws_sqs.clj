@@ -116,11 +116,10 @@
                                           (.queueUrl queue-url)
                                           (.messageBody (json/write-str msg))
                                           (.build)))]
-    (when-not (some? (.messageId resp))
-      (log/error "Failed to send message " msg)
-      (throw (ex-info
-               "Failed to send SQS message"
-               {:error :sqs-error})))))
+    (if (some? (.messageId resp))
+      true
+      (do (log/error "Failed to send message " msg)
+          (throw (ex-info "Failed to send SQS message" {:error :sqs-error}))))))
 
 (defn send-amis-palaute-message
   "Lähettää AMIS-palauteviestin."

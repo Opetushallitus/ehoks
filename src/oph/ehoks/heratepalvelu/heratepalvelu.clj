@@ -3,7 +3,6 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.external.koski :as k]
             [oph.ehoks.hoks.hoks :as h]
             [clojure.string :as str]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
@@ -72,42 +71,6 @@
   [hankkimistapa-id to]
   (db-hoks/update-osaamisen-hankkimistapa-tep-kasitelty hankkimistapa-id to))
 
-(defn- send-kyselyt-for-hoksit
-  "Send questionaires for the given set of HOKSes."
-  [hoksit build-msg]
-  (loop [hoks (first hoksit)
-         r (rest hoksit)
-         c 0]
-    (if (:osaamisen-hankkimisen-tarve hoks)
-      (do
-        (when-let [msg (build-msg hoks)]
-          (sqs/send-amis-palaute-message msg))
-        (recur (first r) (rest r) (inc c)))
-      (if (not-empty r)
-        (recur (first r) (rest r) c)
-        c))))
-
-(defn resend-aloituskyselyherate-between
-  "Resend aloituskyselyt for given time period."
-  [from to]
-  (send-kyselyt-for-hoksit (db-hoks/select-hoksit-created-between from to)
-                           #(sqs/build-hoks-hyvaksytty-msg %)))
-
-(defn paatto-build-msg
-  "Build päättökysely message."
-  [hoks]
-  (when-let [opiskeluoikeus (k/get-opiskeluoikeus-info
-                              (:opiskeluoikeus-oid hoks))]
-    (when-let [kyselytyyppi (op/get-kysely-type opiskeluoikeus)]
-      (sqs/build-hoks-osaaminen-saavutettu-msg hoks kyselytyyppi))))
-
-(defn resend-paattokyselyherate-between
-  "Resend päättökyselyt for given time period."
-  [from to]
-  (send-kyselyt-for-hoksit
-    (db-hoks/select-hoksit-finished-between from to)
-    paatto-build-msg))
-
 (defn process-hoksit-without-kyselylinkit
   "Finds all HOKSit for which kyselylinkit haven't been created and sends them
   to the SQS queue"
@@ -124,8 +87,8 @@
     (log/infof
       "Sending %d (limit %d) hoksit between %s and %s"
       (count hoksit) (* 2 limit) start end)
-    (send-kyselyt-for-hoksit aloittaneet #(sqs/build-hoks-hyvaksytty-msg %))
-    (send-kyselyt-for-hoksit paattyneet paatto-build-msg)
+    (op/send-every-needed! :aloituskysely aloittaneet)
+    (op/send-every-needed! :paattokysely  paattyneet)
     hoksit))
 
 (defn set-aloitusherate-kasitelty

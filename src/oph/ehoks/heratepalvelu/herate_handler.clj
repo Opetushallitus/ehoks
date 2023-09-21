@@ -1,15 +1,16 @@
 (ns oph.ehoks.heratepalvelu.herate-handler
-  (:require [compojure.api.sweet :as c-api]
-            [compojure.api.core :refer [route-middleware]]
-            ;[oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.hoks.middleware :as m]
-            [oph.ehoks.middleware :refer [wrap-user-details]]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
-            [oph.ehoks.restful :as restful]
+  (:require [compojure.api.core :refer [route-middleware]]
+            [compojure.api.sweet :as c-api]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
-            [schema.core :as s]
+            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks.middleware :as m]
+            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.middleware :refer [wrap-user-details]]
+            [oph.ehoks.opiskelijapalaute :as op]
+            [oph.ehoks.restful :as restful]
             [ring.util.http-response :as response]
-            [oph.ehoks.hoks.hoks :as h])
+            [schema.core :as s])
   (:import (java.time LocalDate)))
 
 (def routes
@@ -64,7 +65,8 @@
         :query-params [from :- LocalDate
                        to :- LocalDate]
         :return {:count s/Int}
-        (let [count (hp/resend-aloituskyselyherate-between from to)]
+        (let [hoksit (db-hoks/select-hoksit-created-between from to)
+              count  (op/send-every-needed! :aloituskysely hoksit)]
           (restful/rest-ok {:count count})))
 
       (c-api/POST "/hoksit/resend-paattoherate" request
@@ -73,7 +75,8 @@
         :query-params [from :- LocalDate
                        to :- LocalDate]
         :return {:count s/Int}
-        (let [count (hp/resend-paattokyselyherate-between from to)]
+        (let [hoksit (db-hoks/select-hoksit-finished-between from to)
+              count  (op/send-every-needed! :paattokysely hoksit)]
           (restful/rest-ok {:count count})))
 
       (c-api/POST "/opiskeluoikeus-update" request

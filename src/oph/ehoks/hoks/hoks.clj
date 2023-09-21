@@ -298,10 +298,8 @@
                    (:id hoks) tuva-hoks conn)
                  (save-hoks-parts! hoks conn)))]
     (future
-      (when (op/send? :aloituskysely hoks)
-        (op/send-aloituskysely! hoks))
-      (when (op/send? :paattokysely hoks)
-        (op/send-paattokysely! hoks)))
+      (op/send-if-needed! :aloituskysely hoks)
+      (op/send-if-needed! :paattokysely hoks))
     hoks))
 
 (defn check-and-save-hoks!
@@ -546,12 +544,12 @@
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :aloitusherate_kasitelty false})
-          (op/send-aloituskysely! updated-hoks))
+          (op/send! :aloituskysely updated-hoks))
         (when (op/send? :paattokysely current-hoks updated-hoks)
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :paattoherate_kasitelty false})
-          (op/send-paattokysely! updated-hoks))))
+          (op/send! :paattokysely updated-hoks))))
     h))
 
 (defn update-hoks!
@@ -574,12 +572,12 @@
               (db-hoks/update-amisherate-kasittelytilat!
                 {:id (:id amisherate-kasittelytila)
                  :aloitusherate_kasitelty false})
-              (op/send-aloituskysely! updated-hoks))
+              (op/send! :aloituskysely updated-hoks))
             (when (op/send? :paattokysely current-hoks updated-hoks)
               (db-hoks/update-amisherate-kasittelytilat!
                 {:id (:id amisherate-kasittelytila)
                  :paattoherate_kasitelty false})
-              (op/send-paattokysely! updated-hoks))))
+              (op/send! :paattokysely updated-hoks))))
         updated-hoks))))
 
 (defn insert-kyselylinkki!
