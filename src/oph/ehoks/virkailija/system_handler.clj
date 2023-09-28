@@ -1,22 +1,22 @@
 (ns oph.ehoks.virkailija.system-handler
-  (:require [compojure.api.sweet :as c-api]
-            [compojure.api.core :refer [route-middleware]]
-            [oph.ehoks.virkailija.middleware :as m]
-            [oph.ehoks.restful :as restful]
-            [oph.ehoks.virkailija.schema :as virkailija-schema]
-            [oph.ehoks.external.cache :as c]
-            [oph.ehoks.oppijaindex :as oi]
-            [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
-            [oph.ehoks.opiskelijapalaute :as op]
-            [clojure.core.async :as a]
-            [ring.util.http-response :as response]
+  (:require [clojure.core.async :as a]
             [clojure.tools.logging :as log]
+            [compojure.api.core :refer [route-middleware]]
+            [compojure.api.sweet :as c-api]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [schema.core :as s]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
-            [oph.ehoks.external.aws-sqs :as sqs])
-  (:import (java.time LocalDate)))
+            [oph.ehoks.external.cache :as c]
+            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.opiskelijapalaute :as op]
+            [oph.ehoks.oppijaindex :as oi]
+            [oph.ehoks.restful :as restful]
+            [oph.ehoks.virkailija.middleware :as m]
+            [oph.ehoks.virkailija.schema :as virkailija-schema]
+            [ring.util.http-response :as response]
+            [schema.core :as s])
+  (:import
+    (java.time LocalDate)))
 
 (def routes
   "System handlerin reitit"
@@ -194,7 +194,7 @@
       :summary "Lähettää uuden aloituskyselyherätteen herätepalveluun"
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
-      (if-let [hoks (db-hoks/select-hoks-by-id hoks-id)]
+      (if-let [hoks (h/get-hoks-with-hankittavat-koulutuksen-osat! hoks-id)]
         (if (op/send-if-needed! :aloituskysely hoks)
           (response/no-content)
           (do (log/info (str "Did not resend aloitusheräte "
@@ -209,7 +209,7 @@
       :summary "Lähettää uuden päättökyselyherätteen herätepalveluun"
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
-      (if-let [hoks (db-hoks/select-hoks-by-id hoks-id)]
+      (if-let [hoks (h/get-hoks-with-hankittavat-koulutuksen-osat! hoks-id)]
         (if (op/send-if-needed! :paattokysely hoks)
           (response/no-content)
           (do (log/info (str "Did not resend päättöheräte "
@@ -231,7 +231,7 @@
       :query-params [from :- LocalDate
                      to :- LocalDate]
       :return {:count s/Int}
-      (let [hoksit (db-hoks/select-hoksit-created-between from to)
+      (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
             count  (op/send-every-needed! :aloituskysely hoksit)]
         (restful/rest-ok {:count count})))
 
@@ -241,6 +241,6 @@
       :query-params [from :- LocalDate
                      to :- LocalDate]
       :return {:count s/Int}
-      (let [hoksit (db-hoks/select-hoksit-finished-between from to)
+      (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
             count  (op/send-every-needed! :paattokysely hoksit)]
         (restful/rest-ok {:count count})))))
