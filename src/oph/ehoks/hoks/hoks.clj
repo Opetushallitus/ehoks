@@ -523,6 +523,9 @@
                   (:aiemmin-hankitut-yhteiset-tutkinnon-osat hoks)
                   conn))
 
+(def ^:private tuva-hoks-msg-template
+  "HOKS `%s` is a TUVA-HOKS or rinnakkainen ammatillinen HOKS.")
+
 (defn replace-hoks!
   "Korvaa kokonaisen HOKSin (ml. tutkinnon osat) annetuilla arvoilla."
   [hoks-id new-values]
@@ -535,10 +538,9 @@
             (replace-main-hoks! hoks-id new-values db-conn)
             (replace-hoks-parts! updated-hoks db-conn))]
     (if (c/tuva-related-hoks? updated-hoks)
-      (db-hoks/update-amisherate-kasittelytilat!
-        {:id (:id amisherate-kasittelytila)
-         :aloitusherate_kasitelty true
-         :paattoherate_kasitelty true})
+      (db-hoks/set-amisherate-kasittelytilat-to-true!
+        amisherate-kasittelytila
+        (format tuva-hoks-msg-template (:id updated-hoks)))
       (do
         (when (op/send? :aloituskysely current-hoks updated-hoks)
           (db-hoks/update-amisherate-kasittelytilat!
@@ -563,10 +565,9 @@
       (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)
       (let [updated-hoks (merge current-hoks new-values)]
         (if (c/tuva-related-hoks? updated-hoks)
-          (db-hoks/update-amisherate-kasittelytilat!
-            {:id (:id amisherate-kasittelytila)
-             :aloitusherate_kasitelty true
-             :paattoherate_kasitelty true})
+          (db-hoks/set-amisherate-kasittelytilat-to-true!
+            amisherate-kasittelytila
+            (format tuva-hoks-msg-template (:id updated-hoks)))
           (do
             (when (op/send? :aloituskysely current-hoks updated-hoks)
               (db-hoks/update-amisherate-kasittelytilat!

@@ -640,6 +640,21 @@
                     (db-ops/to-sql (dissoc tilat :id))
                     ["id = ?" (:id tilat)] db-conn)))
 
+(defn set-amisherate-kasittelytilat-to-true!
+  "Set both `aloitusherate_kasitelty` and `paattoherate_kasitelty` to `true` if
+  both or either one had previsouly value `false`. For log printing purposes,
+  `reason-msg` should tell why kasittelytilat will be set to `true`."
+  [kasittelytilat reason-msg]
+  ; Only set kasittelytilat if either kasittelytila is `false`.
+  (when-not (and (:aloitusherate_kasitelty kasittelytilat)
+                 (:paattoherate_kasitelty kasittelytilat))
+    (log/info "Setting `aloitusherate_kasitelty` and `paattoherate_kasitelty`"
+              "to `true`. Reason: " reason-msg)
+    (update-amisherate-kasittelytilat!
+      {:id (:id kasittelytilat)
+       :aloitusherate_kasitelty true
+       :paattoherate_kasitelty true})))
+
 (defn select-hoksit-with-kasittelemattomat-aloitusheratteet
   "Hakee tietokannasta HOKSit, joissa on käsittelemättömiä aloitusherätteitä."
   [start end limit]
