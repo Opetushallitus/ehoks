@@ -140,6 +140,12 @@
   [id]
   (get-hoks-values (db-hoks/select-hoks-by-id id)))
 
+(defn get-hoks-with-hankittavat-koulutuksen-osat!
+  [hoks-id]
+  (assoc (db-hoks/select-hoks-by-id hoks-id)
+         :hankittavat-koulutuksen-osat
+         (ha/get-hankittavat-koulutuksen-osat hoks-id)))
+
 (defn filter-for-vipunen
   "Trimmaa kaikki HOKSin tutkinnon osat paitsi hankittavat paikalliset tutkinnon
   osat vipusta varten."

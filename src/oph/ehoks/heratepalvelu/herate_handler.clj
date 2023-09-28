@@ -65,7 +65,7 @@
         :query-params [from :- LocalDate
                        to :- LocalDate]
         :return {:count s/Int}
-        (let [hoksit (db-hoks/select-hoksit-created-between from to)
+        (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
               count  (op/send-every-needed! :aloituskysely hoksit)]
           (restful/rest-ok {:count count})))
 
@@ -75,7 +75,7 @@
         :query-params [from :- LocalDate
                        to :- LocalDate]
         :return {:count s/Int}
-        (let [hoksit (db-hoks/select-hoksit-finished-between from to)
+        (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
               count  (op/send-every-needed! :paattokysely hoksit)]
           (restful/rest-ok {:count count})))
 
