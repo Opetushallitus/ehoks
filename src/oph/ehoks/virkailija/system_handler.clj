@@ -197,11 +197,9 @@
       (if-let [hoks (h/get-hoks-with-hankittavat-koulutuksen-osat! hoks-id)]
         (if (op/send-if-needed! :aloituskysely hoks)
           (response/no-content)
-          (do (log/info (str "Did not resend aloitusheräte "
-                             "(osaamisen-hankkimisen-tarve=false) for hoks-id "
-                             hoks-id))
-              (response/bad-request
-                {:error "Osaamisen hankkimisen tarve false"})))
+          (response/bad-request
+            {:error (str "Either `osaamisen-hankkimisen-tarve` is `false` or "
+                         "HOKS is TUVA related.")}))
         (do (log/warn "No HOKS found with given hoks-id " hoks-id)
             (response/not-found {:error "No HOKS found with given hoks-id"}))))
 
@@ -212,16 +210,10 @@
       (if-let [hoks (h/get-hoks-with-hankittavat-koulutuksen-osat! hoks-id)]
         (if (op/send-if-needed! :paattokysely hoks)
           (response/no-content)
-          (do (log/info (str "Did not resend päättöheräte "
-                             "(osaamisen-saavuttamisen-pvm="
-                             (:osaamisen-saavuttamisen-pvm hoks)
-                             ", osaamisen-hankkimisen-tarve="
-                             (:osaamisen-hankkimisen-tarve hoks)
-                             ") for hoks-id "
-                             hoks-id))
-              (response/bad-request
-                {:error (str "No osaamisen saavuttamisen pvm or osaamisen "
-                             "hankkimisen tarve is false")})))
+          (response/bad-request
+            {:error (str "Either `osaamisen-hankkimisen-tarve` is `false`, "
+                         "`osaamisen-hankkimisen-pvm` has not been set or "
+                         "HOKS is TUVA related.")}))
         (do (log/warn "No HOKS found with given hoks-id:" hoks-id)
             (response/not-found {:error "No HOKS found with given hoks-id"}))))
 
