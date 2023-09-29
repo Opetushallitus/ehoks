@@ -18,6 +18,7 @@
                  [org.apache.logging.log4j/log4j-api "2.17.0"]
                  [org.apache.logging.log4j/log4j-core "2.17.0"]
                  [org.apache.logging.log4j/log4j-slf4j-impl "2.17.0"]
+                 [org.clojure/data.csv "1.0.1"]
                  [org.clojure/data.xml "0.0.8"]
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.1.0"]
@@ -138,6 +139,7 @@
                    :resource-paths ["resources/dev"
                                     "resources/test/src"
                                     "resources/dev/src"
-                                    "resources/prod/src"]}
+                                    "resources/prod/src"]
+                   :env {:config "oph-configuration/dev.edn"}}
              :uberjar {:resource-paths ["resources/uberjar"
                                         "resources/public"]}})

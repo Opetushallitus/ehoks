@@ -62,7 +62,7 @@
       1 nil
       (- 11 n))))
 
-(defn- valid-y-tunnus?
+(defn valid-y-tunnus?
   "Tarkistaa, täsmääkö Y-tunnuksen laskettu tarkistusnumero tunnuksen
   viimeiseen numeroon."
   [y-tunnus]
