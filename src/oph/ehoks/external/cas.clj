@@ -57,21 +57,31 @@
 
 (defn add-cas-ticket
   "Add service ticket to headers and params"
-  [data service]
-  (when (or (nil? (:url @grant-ticket))
-            (t/after? (t/now) (:expires @grant-ticket)))
-    (refresh-grant-ticket!))
-  (let [ticket (get-service-ticket (:url @grant-ticket) service)]
-    (-> data
-        (assoc-in [:headers "accept"] "*/*")
-        (assoc-in [:headers "ticket"] ticket)
-        (assoc-in [:query-params :ticket] ticket))))
+  ([data service]
+    (add-cas-ticket data service false))
+  ([data service force-refresh-tgt?]
+    (when (or force-refresh-tgt?
+              (nil? (:url @grant-ticket))
+              (t/after? (t/now) (:expires @grant-ticket)))
+      (refresh-grant-ticket!))
+    (let [ticket (get-service-ticket (:url @grant-ticket) service)]
+      (-> data
+          (assoc-in [:headers "accept"] "*/*")
+          (assoc-in [:headers "ticket"] ticket)
+          (assoc-in [:query-params :ticket] ticket)))))
 
 (defn with-service-ticket
   "Perform request with API headers and valid service ticket"
   [data]
-  (c/with-api-headers
-    (update data :options add-cas-ticket (:service data))))
+  (try
+    (c/with-api-headers
+      (update data :options add-cas-ticket (:service data)))
+    (catch Exception e
+      (if (= (:status (ex-data e)) 401)
+        ; Retry the same request with a new Ticket Granting Ticket (TGT)
+        (c/with-api-headers
+          (update data :options add-cas-ticket (:service data) true))
+        (throw e)))))
 
 (defn xml->map
   "Convert XML data to Clojure map"
