@@ -75,11 +75,11 @@
         oh_id (Long/parseLong hankkimistapa_id)
         osaamisen_hankkimistapa (first (db-ops/query [select-osaamisen-hankkimistavat-by-id oh_id] {}))
         tjk_id (:tyopaikalla_jarjestettava_koulutus_id osaamisen_hankkimistapa)]
-    (println (str "Päivitetään oh/tjk:n " oh_id "/" tjk_id " y-tunnus arvoon " uusi-y-tunnus))
+    (println (str "Päivitetään oh/tjk:n " oh_id "/" tjk_id " y-tunnus eHoksiin " uusi-y-tunnus))
     (db-ops/update!
       :tyopaikalla_jarjestettavat_koulutukset
       {:tyopaikan_y_tunnus uusi-y-tunnus}
-      ["id = ? AND deleted_at IS NULL" tjk_id])
+      ["id = ? AND tyopaikan_y_tunnus = ? AND deleted_at IS NULL" tjk_id vanha-y-tunnus])
     [hankkimistapa_id tjk_id yksiloiva_tunniste vanha-y-tunnus uusi-y-tunnus]))
 
 (defn- voi-korjata?
