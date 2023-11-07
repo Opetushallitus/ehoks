@@ -1024,6 +1024,26 @@
           (t/is (= (:status put-response) 204))
           (t/is (logtest/logged? "audit" :info #"overwrite.*Tanelin Paja")))))))
 
+(t/deftest test-delete-vastaajatunnus
+  (t/testing "DELETE vastaajatunnus is logged to auditlog"
+    (logtest/with-log
+      (with-redefs [oph.ehoks.db.postgresql.common/select-kyselylinkit-by-tunnus
+                    (fn [_]
+                      [{:kyselylinkki "https://arvo-dev.csc.fi/x/foofaa"}])
+                    oph.ehoks.external.arvo/delete-kyselytunnus identity
+                    oph.ehoks.db.postgresql.common/delete-kyselylinkki-by-tunnus
+                    identity
+                    oph.ehoks.external.aws-sqs/send-delete-tunnus-message
+                    identity]
+        (let [response (with-test-virkailija
+                         (mock/request
+                           :delete
+                           (str "/ehoks-virkailija-backend/api/v1/virkailija"
+                                "/vastaajatunnus/foofaa"))
+                         virkailija-for-test)]
+          (t/is (= 200 (:status response)))
+          (t/is (logtest/logged? "audit" :info #"delete.*foofaa")))))))
+
 (t/deftest test-put-prevent-updating-opiskeluoikeus
   (t/testing "PUT hoks virkailija"
     (utils/with-db

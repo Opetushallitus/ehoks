@@ -22,7 +22,7 @@
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.1.0"]
                  [software.amazon.awssdk/sqs "2.5.37"]
-                 [fi.vm.sade/auditlogger "8.3.0-20190605.103856-7"]
+                 [fi.vm.sade/auditlogger "9.2.2-20231108.123740-2"]
                  [com.rpl/specter "1.1.3"]
                  [org.clojure/core.memoize "1.0.250"]]
   :managed-dependencies [[org.clojure/clojure "1.10.1"]
@@ -60,7 +60,8 @@
                          [com.fasterxml.jackson.core/jackson-databind "2.9.8"]
                          [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.9.8"]
                          [org.clojure/data.json "0.2.6"]
-                         [com.google.code.gson/gson "2.8.0"]
+                         [com.google.code.gson/gson "2.10.1"]
+                         [com.tananaev/json-patch "1.2"]
 
                          ;; XML
                          [org.clojure/data.xml "0.0.8"]
