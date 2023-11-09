@@ -883,7 +883,7 @@
          :types {:any s/Str}
          :description "HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä"}
    :oppija-oid {:methods {:any :optional
-                          :post :required}
+                          :post :required} ; FIXME: should be required for :put
                 :types {:any Oid}
                 :description "Oppijan tunniste Opintopolku-ympäristössä"}
    :sahkoposti {:methods {:any :optional}
@@ -894,7 +894,7 @@
                    :description "Oppijan puhelinnumero, merkkijono."}
    :opiskeluoikeus-oid
    {:methods {:any :optional
-              :post :required}
+              :post :required} ; FIXME: should be required for :put
     :types {:any OpiskeluoikeusOid}
     :description (str "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä "
                       "muotoa '1.2.246.562.15.00000000001'.")}

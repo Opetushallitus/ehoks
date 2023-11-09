@@ -536,13 +536,13 @@
   "Korvaa kokonaisen HOKSin (ml. tutkinnon osat) annetuilla arvoilla."
   [hoks-id new-values]
   (let [current-hoks (get-hoks-by-id hoks-id)
-        updated-hoks (assoc new-values :id hoks-id)
         amisherate-kasittelytila
         (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id! hoks-id)
         h (jdbc/with-db-transaction
             [db-conn (db-ops/get-db-connection)]
             (replace-main-hoks! hoks-id new-values db-conn)
-            (replace-hoks-parts! updated-hoks db-conn))]
+            (replace-hoks-parts! (assoc new-values :id hoks-id) db-conn))
+        updated-hoks (get-hoks-by-id hoks-id)]
     (if (c/tuva-related-hoks? updated-hoks)
       (db-hoks/set-amisherate-kasittelytilat-to-true!
         amisherate-kasittelytila
