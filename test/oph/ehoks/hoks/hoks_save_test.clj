@@ -588,14 +588,31 @@
           (is (= @sqs-call-counter 0)))))))
 
 (deftest form-opiskelijapalaute-in-hoks-replace
-  (testing (str "replace: forms opiskelijapalaute when has "
-                "osaamisen-hankkimisen-tarve")
-    (let [sqs-call-counter (atom 0)]
-      (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
-        (let [saved-hoks (h/save-hoks! hoks-data)]
-          (h/replace-hoks! (:id saved-hoks) hoks-osaaminen-saavutettu)
-          (is (= @sqs-call-counter 2)))))))
+  (let [sqs-call-counter (atom 0)]
+    (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
+                  k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
+      (testing "When existing HOKS is replaced with a new one, "
+        (testing
+         "form opiskelijapalaute if `osaamisen-hankkimisen-tarve` is `true`"
+          (let [saved-hoks (h/save-hoks! hoks-data)]
+            (is (= @sqs-call-counter 1)) ; sent herate for aloituskysely
+            (h/replace-hoks! (:id saved-hoks) hoks-osaaminen-saavutettu)
+            (is (= @sqs-call-counter 2))) ; herate sent for paattokysely
+
+          (reset! sqs-call-counter 0)
+          (utils/clear-db)
+
+          ; FIXME: Currently `opiskeluoikeus-oid` is not required in
+          ; `HOKSKorvaus` schema, even though it probably should be. The
+          ; following assertions can be removed once that is fixed.
+          (testing ", even when `opiskeluoikeus-oid` is missing from new HOKS"
+            (let [saved-hoks (h/save-hoks! hoks-data)]
+              (is (= @sqs-call-counter 1)) ; herate sent for aloituskysely
+              (h/replace-hoks! (:id saved-hoks)
+                               (dissoc hoks-osaaminen-saavutettu
+                                       :opiskeluoikeus-oid))
+              (is (= @sqs-call-counter 2))))))))) ; herate sent for paattokysely
+
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-replace
   (testing (str "replace: does not form opiskelijapalaute when "
