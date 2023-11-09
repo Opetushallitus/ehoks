@@ -1,0 +1,24 @@
+digraph tilat {
+ei_laheteta[shape=doubleoctagon]
+vastausaika_loppunut[shape=doubleoctagon]
+lahetys_epaonnistunut[shape=doubleoctagon]
+vastattu[shape=box]
+
+odottaa_kasittelya -> niputettu -> kysely_muodostettu [label="vain tep-jaksot"]
+odottaa_kasittelya -> kysely_muodostettu -> ei_laheteta
+
+kysely_muodostettu -> viestintapalvelussa -> viesti_lahetetty -> viesti_ja_sms_lahetetty
+viestintapalvelussa -> lahetys_epaonnistunut
+kysely_muodostettu -> viesti_ja_sms_lahetetty [label="jos ei sähköpostia"]
+
+viesti_ja_sms_lahetetty -> n1_muistutus_lahetetty -> n2_muistutus_lahetetty -> vastattu
+viesti_lahetetty -> vastattu
+viesti_ja_sms_lahetetty -> vastattu
+n1_muistutus_lahetetty -> vastattu
+
+kysely_muodostettu -> vastausaika_loppunut
+viestintapalvelussa -> vastausaika_loppunut
+viesti_ja_sms_lahetetty -> vastausaika_loppunut
+n1_muistutus_lahetetty -> vastausaika_loppunut
+n2_muistutus_lahetetty -> vastausaika_loppunut
+}
