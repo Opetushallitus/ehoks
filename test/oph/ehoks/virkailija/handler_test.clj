@@ -981,13 +981,14 @@
                 virkailija-for-test)
               body (utils/parse-body (:body response))
               hoks-url (get-in body [:data :uri])
-              put-response-just-date
+              put-response-just-dates
               (with-test-virkailija
                 (mock/json-body
                   (mock/request :put hoks-url)
                   (assoc hoks-data
                          :id (get-in body [:meta :id])
-                         :ensikertainen-hyvaksyminen "2018-12-17"))
+                         :ensikertainen-hyvaksyminen "2018-12-17"
+                         :paivitetty "2019-01-02T10:20:30.000Z"))
                 virkailija-for-test)
               put-response
               (with-test-virkailija
@@ -996,6 +997,8 @@
                   (assoc
                     hoks-data
                     :id (get-in body [:meta :id])
+                    :ensikertainen-hyvaksyminen "2018-12-17"
+                    :paivitetty "2019-01-02T10:20:30.001Z"
                     :hankittavat-ammat-tutkinnon-osat
                     hato-data))
                 virkailija-for-test)
@@ -1018,9 +1021,11 @@
             (utils/eq (utils/dissoc-module-ids
                         (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
                       (utils/dissoc-module-ids hato-data)))
-          (t/is (= (:status put-response-just-date) 204))
+          (t/is (= (:status put-response-just-dates) 204))
           (t/is (logtest/logged? "audit" :info #"overwrite.*2018-12-17")
                 (str "log entries:" (logtest/the-log)))
+          (t/is (logtest/logged?
+                  "audit" :info #"overwrite.*2019-01-02T10:20:30Z"))
           (t/is (= (:status put-response) 204))
           (t/is (logtest/logged? "audit" :info #"overwrite.*Tanelin Paja")))))))
 

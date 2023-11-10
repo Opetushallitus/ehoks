@@ -12,6 +12,7 @@
                                 Operation
                                 Target$Builder
                                 Changes)
+           (java.time ZonedDateTime ZoneOffset)
            (java.net InetAddress)
            (org.ietf.jgss Oid)))
 
@@ -90,6 +91,9 @@
     (or (number? obj) (string? obj) (boolean? obj) (nil? obj)) obj
     (map? obj) (zipmap (keys obj) (map with-only-json-types (vals obj)))
     (coll? obj) (map with-only-json-types obj)
+    (instance? java.util.Date obj) (-> (.toInstant obj)
+                                       (.atZone (ZoneOffset/UTC))
+                                       (str))
     :else (str obj)))
 
 (defn- build-changes
