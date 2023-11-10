@@ -1,0 +1,26 @@
+@startuml
+
+database "eHOKS-db" as edb {
+  database HOKSit
+  database Palautteet
+}
+
+component eHOKS {
+  component virkailija
+  component palaute
+}
+
+:kj:
+[viestintäpalvelu]
+[Arvo]
+[SMS_gateway]
+
+kj -> virkailija : HOKS
+HOKSit <-- virkailija : HOKS
+HOKSit --> palaute : ajastettu \namis & tep
+Palautteet <-- palaute : kyselyiden ja \nviestien tila
+palaute --> viestintäpalvelu : viestit
+palaute --> SMS_gateway : viestit
+palaute -> Arvo : kyselyt
+
+@enduml

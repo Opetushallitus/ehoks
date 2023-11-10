@@ -1,0 +1,35 @@
+@startuml
+
+:kj:
+[eHOKS]
+kj -> eHOKS : HOKSit
+
+database "eHOKS-db" as edb
+eHOKS <--> edb
+
+stack amis
+stack tep
+eHOKS -> amis
+eHOKS -> tep
+amis -[hidden]-> tep
+
+[herätepalvelu]
+amis -> herätepalvelu
+tep -> herätepalvelu
+
+database DynamoDB
+herätepalvelu --> DynamoDB
+
+[herätepalvelu-ajastettu] as hpa
+hpa <- DynamoDB
+eHOKS <-- hpa : tilatieto
+
+[viestintäpalvelu]
+[SMS gateway] as sgw
+hpa --> viestintäpalvelu : viestit
+hpa --> sgw : viestit
+
+[Arvo]
+hpa --> Arvo : kyselyt
+
+@enduml
