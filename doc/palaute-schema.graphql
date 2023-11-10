@@ -16,15 +16,15 @@ type Hoksit {
 enum Palaute_tila {
   ei_laheteta
   kysely_muodostettu
+  lahetetty
   lahetys_epaonnistunut
-  n1_muistutus_lahetetty
-  n2_muistutus_lahetetty
   niputettu
   odottaa_kasittelya
+  tpk_kysely_muodostettu
+  tpk_niputettu
+  vastaajatunnus_muodostettu
   vastattu
   vastausaika_loppunut
-  viesti_ja_sms_lahetetty
-  viesti_lahetetty
   viestintapalvelussa
 }
 
@@ -35,30 +35,59 @@ enum Kysely_tyyppi {
   tyopaikkajakson_suorittaneet
 }
 
+enum Suorituskieli {
+  fi
+  sv
+  en
+  jne
+}
+
+enum Tutkinnonosa_tyyppi {
+  hato
+  hpto
+  hyto
+}
+
+enum Herate_source {
+  ehoks_update
+  koski_update
+}
+
+enum Lahetetty_viesti {
+  email
+  sms
+  email_muistutus_1
+  sms_muistutus_1
+  email_muistutus_2
+  sms_muistutus_2
+}
+
 type Palaute {
+  id: ID
   created_at: DateTime!
   updated_at: DateTime
   deleted_at: DateTime
-  herate_source: String!
-  rahoituskausi: String!
+  herate_source: Herate_source!
   kyselytyyppi: Kysely_tyyppi
   tila: Palaute_tila!
+  lahetetyt_viestit: [Lahetetty_viesti!]!
   kyselylinkki: Uri
   viestintapalvelu_id: Int
   voimassa_alkupvm: Date
   voimassa_loppupvm: Date
   hoks_id: Hoksit!
-  hankkimistapa_id: Osaamisen_hankkimistavat
-  tutkinnonosa_tyyppi: String
+  jakson_yksiloiva_tunniste: Osaamisen_hankkimistavat
+  tutkinnonosa_tyyppi: Tutkinnonosa_tyyppi
   koulutustoimija: OID
   hankintakoulutuksen_toteuttaja: OID
   toimipiste_oid: OID
-  suorituskieli: String
+  suorituskieli: Suorituskieli
   tutkintotunnus: Int
   tutkintonimike: String
 }
 
 type Palaute_tapahtuma {
+  id: ID
   palaute_id: Palaute!
   created_at: DateTime!
   vanha_tila: Palaute_tila

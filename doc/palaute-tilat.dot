@@ -4,21 +4,16 @@ vastausaika_loppunut[shape=doubleoctagon]
 lahetys_epaonnistunut[shape=doubleoctagon]
 vastattu[shape=box]
 
-odottaa_kasittelya -> niputettu -> kysely_muodostettu [label="vain tep-jaksot"]
-odottaa_kasittelya -> kysely_muodostettu -> ei_laheteta
+odottaa_kasittelya -> vastaajatunnus_muodostettu -> niputettu -> kysely_muodostettu [label="vain tep-jaksot"]
+odottaa_kasittelya -> kysely_muodostettu -> viestintapalvelussa -> lahetetty -> vastattu
 
-kysely_muodostettu -> viestintapalvelussa -> viesti_lahetetty -> viesti_ja_sms_lahetetty
+kysely_muodostettu -> ei_laheteta
 viestintapalvelussa -> lahetys_epaonnistunut
-kysely_muodostettu -> viesti_ja_sms_lahetetty [label="jos ei sähköpostia"]
-
-viesti_ja_sms_lahetetty -> n1_muistutus_lahetetty -> n2_muistutus_lahetetty -> vastattu
-viesti_lahetetty -> vastattu
-viesti_ja_sms_lahetetty -> vastattu
-n1_muistutus_lahetetty -> vastattu
+kysely_muodostettu -> lahetetty [label="jos ei sähköpostia"]
 
 kysely_muodostettu -> vastausaika_loppunut
 viestintapalvelussa -> vastausaika_loppunut
-viesti_ja_sms_lahetetty -> vastausaika_loppunut
-n1_muistutus_lahetetty -> vastausaika_loppunut
-n2_muistutus_lahetetty -> vastausaika_loppunut
+lahetetty -> vastausaika_loppunut
+
+vastattu -> tpk_niputettu -> tpk_kysely_muodostettu [label="vain tep-jaksot"]
 }
