@@ -72,6 +72,7 @@ type Palaute {
   tila: Palaute_tila!
   lahetetyt_viestit: [Lahetetty_viesti!]!
   kyselylinkki: Uri
+  arvo_tunniste: String
   viestintapalvelu_id: Int
   voimassa_alkupvm: Date
   voimassa_loppupvm: Date

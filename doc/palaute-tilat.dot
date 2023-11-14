@@ -1,19 +1,29 @@
 digraph tilat {
+
 ei_laheteta[shape=doubleoctagon]
-vastausaika_loppunut[shape=doubleoctagon]
-lahetys_epaonnistunut[shape=doubleoctagon]
-vastattu[shape=box]
 
-odottaa_kasittelya -> vastaajatunnus_muodostettu -> niputettu -> kysely_muodostettu [label="vain tep-jaksot"]
-odottaa_kasittelya -> kysely_muodostettu -> viestintapalvelussa -> lahetetty -> vastattu
+subgraph cluster_0 {
+  label = "vain tep-jaksot"
+  odottaa_kasittelya2[label="odottaa_kasittelya"]
 
-kysely_muodostettu -> ei_laheteta
-viestintapalvelussa -> lahetys_epaonnistunut
-kysely_muodostettu -> lahetetty [label="jos ei sähköpostia"]
+  odottaa_kasittelya2 -> vastaajatunnus_muodostettu -> niputettu -> tpk_niputettu
+}
 
-kysely_muodostettu -> vastausaika_loppunut
-viestintapalvelussa -> vastausaika_loppunut
-lahetetty -> vastausaika_loppunut
+subgraph cluster_1 {
+  label = "amis-kyselyt, tep-niput ja tpk-niput"
+  lahetys_epaonnistunut[shape=doubleoctagon]
+  vastausaika_loppunut[shape=doubleoctagon]
+  vastattu[shape=box]
+  tpk_niputettu[shape=box]
+  odottaa_kasittelya1[label="odottaa_kasittelya"]
 
-vastattu -> tpk_niputettu -> tpk_kysely_muodostettu [label="vain tep-jaksot"]
+  odottaa_kasittelya1 -> kysely_muodostettu -> lahetetty -> vastattu
+
+  odottaa_kasittelya1 -> ei_laheteta
+  odottaa_kasittelya2 -> ei_laheteta
+  kysely_muodostettu -> lahetys_epaonnistunut
+  kysely_muodostettu -> vastausaika_loppunut
+  lahetetty -> vastausaika_loppunut
+}
+
 }
