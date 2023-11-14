@@ -1,0 +1,141 @@
+@startuml
+entity Osaamisen_hankkimistavat {
+  id: ID
+  hoks_id: ID
+  yksiloiva_tunniste: String
+  .. jne ..
+}
+
+entity Tyopaikalla_jarjestettavat_koulutukset {
+  id: ID
+  osaamisen_hankkimistapa_id : ID
+  laskettu_kesto: Int
+  .. jne ..
+}
+
+entity Hoksit {
+  id: ID
+  opiskeluoikeus_oid: OID
+  .. jne ..
+}
+
+entity Opiskeluoikeudet {
+  oid: OID
+  .. jne ..
+}
+
+Tyopaikalla_jarjestettavat_koulutukset::osaamisen_hankkimistapa_id "0..1" --> Osaamisen_hankkimistavat
+Osaamisen_hankkimistavat::hoks_id "0..*" --> Hoksit
+Hoksit::opiskeluoikeus_oid "1" -> Opiskeluoikeudet
+
+enum Palaute_tila {
+  ei_laheteta
+  kysely_muodostettu
+  lahetetty
+  lahetys_epaonnistunut
+  niputettu
+  odottaa_kasittelya
+  tpk_niputettu
+  vastaajatunnus_muodostettu
+  vastattu
+  vastausaika_loppunut
+}
+
+enum Kysely_tyyppi {
+  aloittaneet
+  valmistuneet
+  osia_suorittaneet
+  tyopaikkajakson_suorittaneet
+  tep_nippu
+  tpk_nippu
+}
+
+enum Suorituskieli {
+  fi
+  sv
+  en
+  .. jne ..
+}
+
+enum Herate_source {
+  ehoks_update
+  koski_update
+}
+
+enum Viestityyppi {
+  email
+  sms
+  email_muistutus_1
+  sms_muistutus_1
+  email_muistutus_2
+  sms_muistutus_2
+}
+
+enum Lahetystila {
+  odottaa_lahetysta
+  lahetetty
+  lahetys_epaonnistui
+}
+
+entity Palautteet {
+  * id: ID
+  * created_at: DateTime
+  * updated_at: DateTime
+  deleted_at: DateTime
+  * herate_source: Herate_source
+  heratepvm: DateTime
+  kyselytyyppi: Kysely_tyyppi
+  * tila: Palaute_tila
+  kyselylinkki: Uri
+  arvo_tunniste: String
+  voimassa_alkupvm: Date
+  voimassa_loppupvm: Date
+  * hoks_id: ID
+  jakson_yksiloiva_tunniste: String
+  koulutustoimija: OID
+  hankintakoulutuksen_toteuttaja: OID
+  toimipiste_oid: OID
+  suorituskieli: Suorituskieli
+  tutkintotunnus: Int
+  tutkintonimike: String
+}
+
+Herate_source <-- Palautteet::herate_source
+Kysely_tyyppi <-- Palautteet::kyselytyyppi
+Palaute_tila <-- Palautteet::tila
+Palautteet::hoks_id "0..*" -> Hoksit : jokaiselle kyselytyypille oma
+Palautteet::jakson_yksiloiva_tunniste "0..1" -> Osaamisen_hankkimistavat : myös hoks_id
+Suorituskieli <-- Palautteet::suorituskieli
+
+entity Palaute_tapahtumat {
+  * id: ID
+  * palaute_id: ID
+  * created_at: DateTime
+  vanha_tila: Palaute_tila
+  uusi_tila: Palaute_tila
+  * tyyppi: String
+  syy: String
+  lisatiedot: JSON
+}
+
+Palaute_tapahtumat::palaute_id "0..*" -> Palautteet
+Palaute_tila <-- Palaute_tapahtumat::vanha_tila
+Palaute_tila <-- Palaute_tapahtumat::uusi_tila
+
+entity Palaute_viestit {
+  * id: ID
+  * palaute_id: ID
+  * created_at: DateTime
+  * updated_at: DateTime
+  deleted_at: DateTime
+  ulkoinen_tunniste: String
+  viestityyppi: Viestityyppi
+  tila: Lahetystila
+  vastaanottaja: String
+}
+
+Palautteet <-- "0..*" Palaute_viestit::palaute_id
+Palaute_viestit::viestityyppi -> Viestityyppi
+Lahetystila <- Palaute_viestit::tila
+
+@enduml
