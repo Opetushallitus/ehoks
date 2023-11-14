@@ -981,13 +981,14 @@
                 virkailija-for-test)
               body (utils/parse-body (:body response))
               hoks-url (get-in body [:data :uri])
-              put-response-just-date
+              put-response-just-dates
               (with-test-virkailija
                 (mock/json-body
                   (mock/request :put hoks-url)
                   (assoc hoks-data
                          :id (get-in body [:meta :id])
-                         :ensikertainen-hyvaksyminen "2018-12-17"))
+                         :ensikertainen-hyvaksyminen "2018-12-17"
+                         :paivitetty "2019-01-02T10:20:30.000Z"))
                 virkailija-for-test)
               put-response
               (with-test-virkailija
@@ -996,6 +997,8 @@
                   (assoc
                     hoks-data
                     :id (get-in body [:meta :id])
+                    :ensikertainen-hyvaksyminen "2018-12-17"
+                    :paivitetty "2019-01-02T10:20:30.001Z"
                     :hankittavat-ammat-tutkinnon-osat
                     hato-data))
                 virkailija-for-test)
@@ -1018,11 +1021,33 @@
             (utils/eq (utils/dissoc-module-ids
                         (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
                       (utils/dissoc-module-ids hato-data)))
-          (t/is (= (:status put-response-just-date) 204))
+          (t/is (= (:status put-response-just-dates) 204))
           (t/is (logtest/logged? "audit" :info #"overwrite.*2018-12-17")
                 (str "log entries:" (logtest/the-log)))
+          (t/is (logtest/logged?
+                  "audit" :info #"overwrite.*2019-01-02T10:20:30Z"))
           (t/is (= (:status put-response) 204))
           (t/is (logtest/logged? "audit" :info #"overwrite.*Tanelin Paja")))))))
+
+(t/deftest test-delete-vastaajatunnus
+  (t/testing "DELETE vastaajatunnus is logged to auditlog"
+    (logtest/with-log
+      (with-redefs [oph.ehoks.db.postgresql.common/select-kyselylinkit-by-tunnus
+                    (fn [_]
+                      [{:kyselylinkki "https://arvo-dev.csc.fi/x/foofaa"}])
+                    oph.ehoks.external.arvo/delete-kyselytunnus identity
+                    oph.ehoks.db.postgresql.common/delete-kyselylinkki-by-tunnus
+                    identity
+                    oph.ehoks.external.aws-sqs/send-delete-tunnus-message
+                    identity]
+        (let [response (with-test-virkailija
+                         (mock/request
+                           :delete
+                           (str "/ehoks-virkailija-backend/api/v1/virkailija"
+                                "/vastaajatunnus/foofaa"))
+                         virkailija-for-test)]
+          (t/is (= 200 (:status response)))
+          (t/is (logtest/logged? "audit" :info #"delete.*foofaa")))))))
 
 (t/deftest test-put-prevent-updating-opiskeluoikeus
   (t/testing "PUT hoks virkailija"

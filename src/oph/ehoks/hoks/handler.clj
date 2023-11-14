@@ -294,9 +294,7 @@
         :audit-data {:new hoks}))
     (catch Exception e
       (case (:error (ex-data e))
-        :disallowed-update (assoc
-                             (response/bad-request! {:error (.getMessage e)})
-                             :audit-data {:new hoks})
+        :disallowed-update (response/bad-request! {:error (.getMessage e)})
         :duplicate (do (log/warnf
                          "HOKS with opiskeluoikeus-oid %s already exists"
                          (:opiskeluoikeus-oid hoks))
@@ -306,18 +304,18 @@
 (defn- change-hoks!
   "Käsittelee HOKS-muutospyynnön."
   [hoks request db-handler]
-  (if (empty? (:hoks request))
-    (response/not-found {:error "HOKS not found with given HOKS ID"})
-    (try
-      (h/check-hoks-for-update! (:hoks request) hoks)
-      (let [hoks-db (db-handler (get-in request [:hoks :id]) hoks)]
-        (assoc (response/no-content) :audit-data {:new hoks}))
-      (catch Exception e
-        (h/error-log-hoks-id (get-in request [:hoks :id]))
-        (if (= (:error (ex-data e)) :disallowed-update)
-          (assoc (response/bad-request! {:error (.getMessage e)})
-                 :audit-data {:new hoks})
-          (throw e))))))
+  (let [old-hoks (:hoks request)]
+    (if (empty? old-hoks)
+      (response/not-found {:error "HOKS not found with given HOKS ID"})
+      (try
+        (h/check-hoks-for-update! old-hoks hoks)
+        (let [db-hoks (db-handler (get-in request [:hoks :id]) hoks)]
+          (assoc (response/no-content) :audit-data {:new hoks :old old-hoks}))
+        (catch Exception e
+          (h/error-log-hoks-id (get-in request [:hoks :id]))
+          (if (= (:error (ex-data e)) :disallowed-update)
+            (response/bad-request! {:error (.getMessage e)})
+            (throw e)))))))
 
 (def routes
   "HOKS handlering reitit."
@@ -409,7 +407,9 @@
           :body [data hoks-schema/kyselylinkki-lahetys]
           (let [updated-count (first (h/update-kyselylinkki! data))]
             (if (pos? updated-count)
-              (response/no-content)
+              (assoc (response/no-content)
+                     :audit-data {:old {}
+                                  :new data})
               (response/not-found
                 {:error "No kyselylinkki found"})))))
 
@@ -455,12 +455,13 @@
               :summary "Lisää kyselylinkin hoksille"
               :body [data hoks-schema/kyselylinkki]
               (if (not-empty (:hoks request))
-                (do
-                  (h/insert-kyselylinkki!
-                    (assoc
-                      data
-                      :oppija-oid (get-in request [:hoks :oppija-oid])
-                      :hoks-id (get-in request [:hoks :id])))
-                  (response/no-content))
+                (let [enriched-data
+                      (assoc
+                        data
+                        :oppija-oid (get-in request [:hoks :oppija-oid])
+                        :hoks-id (get-in request [:hoks :id]))]
+                  (h/insert-kyselylinkki! enriched-data)
+                  (assoc (response/no-content)
+                         :audit-data {:new enriched-data}))
                 (response/not-found
                   {:error "HOKS not found with given HOKS ID"})))))))))

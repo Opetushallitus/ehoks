@@ -98,11 +98,9 @@
   ([hoks-values]
     (if-not
      (oi/opiskeluoikeus-still-active? (:opiskeluoikeus-oid hoks-values))
-      (assoc
-        (response/bad-request!
-          {:error (format "Opiskeluoikeus %s is no longer active"
-                          (:opiskeluoikeus-oid hoks-values))})
-        :audit-data {:new hoks-values}))))
+      (response/bad-request!
+        {:error (format "Opiskeluoikeus %s is no longer active"
+                        (:opiskeluoikeus-oid hoks-values))}))))
 
 (defn- check-virkailija-privileges
   "Check whether virkailija user has write privileges in HOKS"
@@ -135,9 +133,7 @@
           (assoc :audit-data {:new hoks})))
     (catch Exception e
       (case (:error (ex-data e))
-        :disallowed-update (assoc
-                             (response/bad-request! {:error (.getMessage e)})
-                             :audit-data {:new hoks})
+        :disallowed-update (response/bad-request! {:error (.getMessage e)})
         :duplicate (do (log/warnf
                          "HOKS with opiskeluoikeus-oid %s already exists"
                          (:opiskeluoikeus-oid hoks))
@@ -197,14 +193,15 @@
   "Change contents of HOKS with particular ID"
   [hoks request db-handler]
   (try
-    (h/check-hoks-for-update! (:hoks request) hoks)
-    (let [hoks-db (db-handler (:id (:hoks request))
-                              (h/add-missing-oht-yksiloiva-tunniste hoks))]
-      (assoc (response/no-content) :audit-data {:new hoks}))
+    (let [old-hoks (:hoks request)]
+      (h/check-hoks-for-update! old-hoks hoks)
+      (let [hoks-db (db-handler (:id (:hoks request))
+                                (h/add-missing-oht-yksiloiva-tunniste hoks))]
+        (assoc (response/no-content) :audit-data {:new hoks
+                                                  :old old-hoks})))
     (catch Exception e
       (if (= (:error (ex-data e)) :disallowed-update)
-        (assoc (response/bad-request! {:error (.getMessage e)})
-               :audit-data {:new hoks})
+        (response/bad-request! {:error (.getMessage e)})
         (throw e)))))
 
 (defn- get-vastaajatunnus-info
@@ -245,7 +242,7 @@
       (arvo/delete-kyselytunnus tunnus)
       (pc/delete-kyselylinkki-by-tunnus tunnus)
       (sqs/send-delete-tunnus-message (:kyselylinkki (first linkit)))
-      (response/ok))
+      (assoc (response/ok) :audit-data {:old {:tunnus tunnus}}))
     (catch ExceptionInfo e
       (if (and (= 404 (:status (ex-data e)))
                (.contains (:body (ex-data e)) "Tunnus ei ole poistettavissa"))

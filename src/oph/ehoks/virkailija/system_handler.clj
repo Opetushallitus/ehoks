@@ -176,9 +176,11 @@
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
       :return (restful/response {})
-      (if (pos? (first (db-hoks/delete-hoks-by-hoks-id hoks-id)))
-        (restful/rest-ok {})
-        (response/not-found {:error "No HOKS found with given hoks-id"})))
+      (let [hoks (h/get-hoks-by-id hoks-id)]
+        (if (pos? (first (db-hoks/delete-hoks-by-hoks-id hoks-id)))
+          (assoc (restful/rest-ok {})
+                 :audit-data {:old hoks})
+          (response/not-found {:error "No HOKS found with given hoks-id"}))))
 
     (c-api/PATCH "/hoks/:hoks-id/undo-shallow-delete" request
       :summary "Poistaa deleted_at arvon hoksilta, joka on asetettu
@@ -187,7 +189,9 @@
       :path-params [hoks-id :- s/Int]
       :return (restful/response {})
       (if (pos? (first (db-hoks/undo-shallow-delete hoks-id)))
-        (restful/rest-ok {})
+        (assoc (restful/rest-ok {})
+               :audit-data {:old {:id hoks-id}
+                            :new {:id hoks-id :deleted_at "*REMOVED*"}})
         (response/not-found {:error "No HOKS found with given hoks-id"})))
 
     (c-api/POST "/hoks/:hoks-id/resend-aloitusherate" request

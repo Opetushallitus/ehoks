@@ -93,6 +93,7 @@
         :header-params [caller-id :- s/Str]
         :query-params [oid :- s/Str]
         (hp/handle-onrmodified oid)
+        ; TODO refaktoroi onr-käsittelyä auditlokitusystävällisemmäksi (OY-4523)
         (response/no-content))
 
       (c-api/GET "/tyoelamajaksot-active-between" []
@@ -112,6 +113,7 @@
         :return {:hankkimistapa-ids [s/Int]}
         (let [hankkimistavat
               []] ;(db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)]
+          ; TODO lisää auditlog entry, kun siivous enabloidaan
           (restful/rest-ok {:hankkimistapa-ids hankkimistavat})))
 
       (c-api/DELETE "/opiskelijan-yhteystiedot" []
@@ -122,4 +124,5 @@
         :header-params [caller-id :- s/Str]
         :return {:hoks-ids [s/Int]}
         (let [hoks-ids []] ;(db-hoks/delete-opiskelijan-yhteystiedot!)]
+          ; TODO lisää auditlog entry, kun siivous enabloidaan
           (restful/rest-ok {:hoks-ids hoks-ids}))))))
