@@ -1,5 +1,6 @@
 (ns oph.ehoks.external.cas-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
+            [clojure.string :as s]
             [oph.ehoks.external.cas :as c]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.http-client :as client]
@@ -27,8 +28,8 @@
       (t/minutes
         (inc (:ext-cache-lifetime-minutes config))))}})
 
-(deftest test-refresh-service-ticket
-  (testing "Refresh service ticket successfully"
+(deftest test-refresh-grant-ticket
+  (testing "Refresh grant ticket successfully"
     (reset! c/grant-ticket {:url nil :expires nil})
     (is (= (deref c/grant-ticket) {:url nil :expires nil}))
     (client/set-post!
@@ -43,10 +44,17 @@
     (is (= (:url (deref c/grant-ticket)) "test-url"))
     (is (some? (:expires (deref c/grant-ticket)))))
 
-  (testing "Refresh service ticket unsuccessfully"
+  (testing "Refresh grant ticket unsuccessfully (404)"
     (reset! c/grant-ticket {:url nil :expires nil})
     (client/set-post! (fn [_ options]
-                        {:status 404}))
+                        (throw (ex-info "HTTP Exception" {:status 404}))))
+    (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                          #"HTTP Exception"
+                          (c/refresh-grant-ticket!))))
+  (testing "Refresh grant ticket unsuccessfully (missing location header)"
+    (reset! c/grant-ticket {:url nil :expires nil})
+    (client/set-post! (fn [_ options]
+                        {:status 201}))
     (is (thrown-with-msg? clojure.lang.ExceptionInfo
                           #"Failed to refresh CAS Service Ticket"
                           (c/refresh-grant-ticket!)))))
@@ -62,14 +70,87 @@
            "test-ticket"))))
 
 (deftest test-add-cas-ticket
-  (testing "Add service ticket"
+  (testing "Add service ticket successfully"
     (client/set-post! (fn [_ options] {:body "test-ticket"}))
 
     (reset! c/grant-ticket {:url "http://ticket.url"
                             :expires (t/plus (t/now) (t/hours 2))})
     (let [data (c/add-cas-ticket {} "http://test-service")]
       (is (= (get-in data [:headers "accept"]) "*/*"))
-      (is (= (get-in data [:query-params :ticket]) "test-ticket")))))
+      (is (= (get-in data [:query-params :ticket]) "test-ticket"))))
+  (testing "Add service ticket retries when get ST returns 404 once"
+    (let [get-st-returns-404 (atom true)
+          get-st-call-count (atom 0)]
+      (client/set-post!
+        (fn [url _]
+          (cond
+            ; refresh ticket granting ticket
+            (.endsWith url "/v1/tickets")
+            {:status 201 :headers {"location" "http://ticket.url"}}
+            ; get service ticket returns 404 once
+            (= url "http://ticket.url")
+            (do
+              (swap! get-st-call-count inc)
+              (if @get-st-returns-404
+                (do
+                  (reset! get-st-returns-404 false)
+                  (throw
+                    (ex-info
+                      "Test HTTP Exception"
+                      {:body
+                       "TGT-nnn could not be found or is considered invalid"
+                       :status 404})))
+                {:status 201 :body "test-ticket"})))))
+      (reset! c/grant-ticket {:url "http://ticket.url"
+                              :expires (t/plus (t/now) (t/hours 2))})
+      (let [data (c/add-cas-ticket {} "http://test-service")]
+        (is (= (get-in data [:headers "accept"]) "*/*"))
+        (is (= (get-in data [:query-params :ticket]) "test-ticket")))
+      (is (= @get-st-call-count 2))))
+  (testing "Add service ticket eventually throws"
+    (let [get-st-call-count (atom 0)]
+      (client/set-post!
+        (fn [url _]
+          (cond
+            ; refresh ticket granting ticket
+            (.endsWith url "/v1/tickets")
+            {:status 201 :headers {"location" "http://ticket.url"}}
+            ; get service ticket returns 404 continuously
+            (= url "http://ticket.url")
+            (do
+              (swap! get-st-call-count inc)
+              (throw
+                (ex-info
+                  "Test HTTP Exception"
+                  {:status 404
+                   :body
+                   "TGT-nnn could not be found or is considered invalid"}))))))
+      (reset! c/grant-ticket {:url "http://ticket.url"
+                              :expires (t/plus (t/now) (t/hours 2))})
+      (let [result (try
+                     (c/add-cas-ticket {} "http://test-service")
+                     nil
+                     (catch Exception e
+                       e))]
+        (is (= :unauthorized (:type (ex-data result)))))
+      (is (= @get-st-call-count 2))))
+  (testing "Add service ticket immediately throws when get ST returns 500"
+    (let [get-st-call-count (atom 0)]
+      (client/set-post! (fn [_ __]
+                          (swap! get-st-call-count inc)
+                          (throw (ex-info "Test HTTP Exception"
+                                          {:status 500
+                                           :body "Infernal server error"}))))
+      (reset! c/grant-ticket {:url "http://ticket.url"
+                              :expires (t/plus (t/now) (t/hours 2))})
+      (let [result (try
+                     (c/add-cas-ticket {} "http://test-service")
+                     nil
+                     (catch Exception e
+                       e))]
+        (is (= :unauthorized (:type (ex-data result)))))
+      ; not trying to retry in this case
+      (is (= @get-st-call-count 1)))))
 
 (deftest test-with-service-ticket
   (testing "Request with API headers"
