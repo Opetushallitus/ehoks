@@ -22,7 +22,7 @@
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.1.0"]
                  [software.amazon.awssdk/sqs "2.5.37"]
-                 [fi.vm.sade/auditlogger "9.2.2-20231108.123740-2"]
+                 [fi.vm.sade/auditlogger "9.2.2-20231114.085926-4"]
                  [com.rpl/specter "1.1.3"]
                  [org.clojure/core.memoize "1.0.250"]]
   :managed-dependencies [[org.clojure/clojure "1.10.1"]
