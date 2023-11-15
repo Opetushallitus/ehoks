@@ -1,8 +1,8 @@
 @startuml
 entity Osaamisen_hankkimistavat {
   id: ID
-  hoks_id: ID
   yksiloiva_tunniste: String
+  hoks_id: ID
   .. jne ..
 }
 
@@ -24,9 +24,9 @@ entity Opiskeluoikeudet {
   .. jne ..
 }
 
-Tyopaikalla_jarjestettavat_koulutukset::osaamisen_hankkimistapa_id "0..1" --> Osaamisen_hankkimistavat
-Osaamisen_hankkimistavat::hoks_id "0..*" --> Hoksit
-Hoksit::opiskeluoikeus_oid "1" -> Opiskeluoikeudet
+Tyopaikalla_jarjestettavat_koulutukset::osaamisen_hankkimistapa_id "0..1" --> Osaamisen_hankkimistavat::id
+Osaamisen_hankkimistavat::hoks_id "0..*" --> Hoksit::id
+Hoksit::opiskeluoikeus_oid "1" -> Opiskeluoikeudet::oid
 
 enum Palaute_tila {
   ei_laheteta
@@ -46,7 +46,7 @@ enum Kysely_tyyppi {
   valmistuneet
   osia_suorittaneet
   tyopaikkajakson_suorittaneet
-  tep_nippu
+  tpo_nippu
   tpk_nippu
 }
 
@@ -60,6 +60,7 @@ enum Suorituskieli {
 enum Herate_source {
   ehoks_update
   koski_update
+  niputus
 }
 
 enum Viestityyppi {
@@ -74,7 +75,7 @@ enum Viestityyppi {
 enum Lahetystila {
   odottaa_lahetysta
   lahetetty
-  lahetys_epaonnistui
+  lahetys_epaonnistunut
 }
 
 entity Palautteet {
@@ -84,14 +85,15 @@ entity Palautteet {
   deleted_at: DateTime
   * herate_source: Herate_source
   heratepvm: DateTime
-  kyselytyyppi: Kysely_tyyppi
+  * kyselytyyppi: Kysely_tyyppi
   * tila: Palaute_tila
   kyselylinkki: Uri
   arvo_tunniste: String
   voimassa_alkupvm: Date
   voimassa_loppupvm: Date
-  * hoks_id: ID
   jakson_yksiloiva_tunniste: String
+  hoks_id: ID
+  nippu_id: ID
   koulutustoimija: OID
   hankintakoulutuksen_toteuttaja: OID
   toimipiste_oid: OID
@@ -103,9 +105,10 @@ entity Palautteet {
 Herate_source <-- Palautteet::herate_source
 Kysely_tyyppi <-- Palautteet::kyselytyyppi
 Palaute_tila <-- Palautteet::tila
-Palautteet::hoks_id "0..*" -> Hoksit : jokaiselle kyselytyypille oma
-Palautteet::jakson_yksiloiva_tunniste "0..1" -> Osaamisen_hankkimistavat : myös hoks_id
+Palautteet::hoks_id "0..*" -> Hoksit::id : enintään 1/kyselytyyppi \npaitsi jaksoille
+Palautteet::jakson_yksiloiva_tunniste "0..1" -> Osaamisen_hankkimistavat::yksiloiva_tunniste : vain jaksoille \nyhdistelmäavain hoks_id
 Suorituskieli <-- Palautteet::suorituskieli
+Palautteet <-- "0..*" Palautteet::nippu_id : vain jaksoille
 
 entity Palaute_tapahtumat {
   * id: ID
@@ -118,7 +121,7 @@ entity Palaute_tapahtumat {
   lisatiedot: JSON
 }
 
-Palaute_tapahtumat::palaute_id "0..*" -> Palautteet
+Palaute_tapahtumat::palaute_id "0..*" -> Palautteet::id
 Palaute_tila <-- Palaute_tapahtumat::vanha_tila
 Palaute_tila <-- Palaute_tapahtumat::uusi_tila
 
@@ -134,7 +137,7 @@ entity Palaute_viestit {
   vastaanottaja: String
 }
 
-Palautteet <-- "0..*" Palaute_viestit::palaute_id
+Palautteet::id <-- "0..*" Palaute_viestit::palaute_id
 Palaute_viestit::viestityyppi -> Viestityyppi
 Lahetystila <- Palaute_viestit::tila
 
