@@ -312,7 +312,6 @@
         (let [db-hoks (db-handler (get-in request [:hoks :id]) hoks)]
           (assoc (response/no-content) :audit-data {:new hoks :old old-hoks}))
         (catch Exception e
-          (h/error-log-hoks-id (get-in request [:hoks :id]))
           (if (= (:error (ex-data e)) :disallowed-update)
             (response/bad-request! {:error (.getMessage e)})
             (throw e)))))))
