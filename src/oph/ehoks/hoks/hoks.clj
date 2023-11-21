@@ -187,11 +187,6 @@
     hoks
     (rename-keys hoks {:deleted-at :poistettu})))
 
-(defn error-log-hoks-id
-  "Logittaa HOKSin ID:n virheenä."
-  [id]
-  (log/errorf "Error caused by hoks-id: %s" id))
-
 (defn- validate-tuva-hoks-type
   [hoks]
   (when-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
