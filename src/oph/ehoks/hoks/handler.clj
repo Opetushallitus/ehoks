@@ -15,7 +15,8 @@
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
-            [oph.ehoks.middleware :refer [wrap-user-details wrap-hoks]]
+            [oph.ehoks.middleware :refer
+             [wrap-user-details wrap-hoks wrap-opiskeluoikeus]]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [schema.core :as s]
             [oph.ehoks.oppijaindex :as oppijaindex]
@@ -317,7 +318,7 @@
             (throw e)))))))
 
 (def routes
-  "HOKS handlering reitit."
+  "HOKS handlerin reitit."
   (c-api/context "/hoks" []
     :tags ["hoks"]
     :header-params [ticket :- s/Str
@@ -325,12 +326,6 @@
 
     (route-middleware
       [wrap-user-details m/wrap-require-service-user wrap-audit-logger]
-
-      (c-api/POST "/" [:as request]
-        :summary "Luo uuden HOKSin"
-        :body [hoks hoks-schema/HOKSLuonti]
-        :return (rest/response schema/POSTResponse :id s/Int)
-        (post-hoks! hoks request))
 
       (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
@@ -412,15 +407,22 @@
               (response/not-found
                 {:error "No kyselylinkki found"})))))
 
+      (c-api/POST "/" [:as request]
+        :middleware [wrap-opiskeluoikeus]
+        :summary "Luo uuden HOKSin"
+        :body [hoks hoks-schema/HOKSLuonti]
+        :return (rest/response schema/POSTResponse :id s/Int)
+        (post-hoks! hoks request))
+
+      (c-api/GET "/:hoks-id" request
+        :middleware [wrap-hoks m/wrap-hoks-access]
+        :summary "Palauttaa HOKSin"
+        :return (rest/response hoks-schema/HOKS)
+        (rest/rest-ok (h/get-hoks-values (:hoks request))))
+
       (c-api/context "/:hoks-id" []
-
         (route-middleware
-          [wrap-hoks m/wrap-hoks-access]
-
-          (c-api/GET "/" request
-            :summary "Palauttaa HOKSin"
-            :return (rest/response hoks-schema/HOKS)
-            (rest/rest-ok (h/get-hoks-values (:hoks request))))
+          [wrap-hoks m/wrap-hoks-access wrap-opiskeluoikeus]
 
           (c-api/PATCH "/" request
             :summary

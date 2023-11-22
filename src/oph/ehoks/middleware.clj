@@ -1,6 +1,7 @@
 (ns oph.ehoks.middleware
   (:require [ring.util.http-response :refer [unauthorized header]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
             [oph.ehoks.user :as user]))
 
@@ -100,3 +101,38 @@
       (handler (add-hoks request) respond raise))
     ([request]
       (handler (add-hoks request)))))
+
+(defn add-opiskeluoikeus
+  "Add opiskeluoikeus to request.  Depends on the HOKS that is already
+  in the request, either added from database, or in the body."
+  [request]
+  (let [hoks (or (not-empty (:hoks request)) (:body-params request))
+        oo (some-> (:opiskeluoikeus-oid hoks) k/get-opiskeluoikeus-info)]
+    (cond-> request
+      (seq oo) (assoc :opiskeluoikeus oo))))
+
+(def ^:dynamic *current-opiskeluoikeus* :none)
+
+(defn get-current-opiskeluoikeus
+  "Returns the opiskeluoikeus associated with the current HTTP request.
+  This information is made available by wrap-opiskeluoikeus."
+  []
+  (when (= :none *current-opiskeluoikeus*)
+    (throw (ex-info "get-current-opiskeluoikeus outside wrap-opiskeluoikeus"
+                    {:error-type :internal})))
+  *current-opiskeluoikeus*)
+
+(defn wrap-opiskeluoikeus
+  "Make opiskeluoikeus available for request handler.  It is there
+  both in the request map (under the :opiskeluoikeus key), and via
+  get-current-opiskeluoikeus."
+  [handler]
+  (fn
+    ([request respond raise]
+      (let [new-request (add-opiskeluoikeus request)]
+        (binding [*current-opiskeluoikeus* (:opiskeluoikeus new-request)]
+          (handler new-request respond raise))))
+    ([request]
+      (let [new-request (add-opiskeluoikeus request)]
+        (binding [*current-opiskeluoikeus* (:opiskeluoikeus new-request)]
+          (handler new-request))))))
