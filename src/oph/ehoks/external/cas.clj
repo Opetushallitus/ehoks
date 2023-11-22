@@ -64,7 +64,24 @@
               (nil? (:url @grant-ticket))
               (t/after? (t/now) (:expires @grant-ticket)))
       (refresh-grant-ticket!))
-    (let [ticket (get-service-ticket (:url @grant-ticket) service)]
+    (let [ticket (try
+                   (get-service-ticket (:url @grant-ticket) service)
+                   (catch Exception e
+                     (if (= 404 (:status (ex-data e)))
+                       ; Refresh Ticket Granting Ticket and retry,
+                       ; when fetch Service Ticket call returns 404.
+                       ; This potentially happens after CAS service restart.
+                       (do
+                         (refresh-grant-ticket!)
+                         (try
+                           (get-service-ticket (:url @grant-ticket) service)
+                           (catch Exception ex
+                             (throw (ex-info "Error getting Service Ticket"
+                                             {:type :unauthorized}
+                                             ex)))))
+                       (throw (ex-info "Error getting Service Ticket"
+                                       {:type :unauthorized}
+                                       e)))))]
       (-> data
           (assoc-in [:headers "accept"] "*/*")
           (assoc-in [:headers "ticket"] ticket)

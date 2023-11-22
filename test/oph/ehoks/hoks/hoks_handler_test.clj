@@ -864,3 +864,44 @@
                    (update-in [:osaamisen-osoittaminen 0] dissoc :module-id)
                    (dissoc :id :module-id))
                hato))))))
+
+(deftest test-handles-unauthorized
+  (testing "Responds with unauthorized when not able to get ST for käyttöoikeus"
+    (client/set-post!
+      (fn [url _]
+        (cond
+          (.endsWith url "/v1/tickets")
+          {:status 201
+           :headers {"location" "http://localhost/TGT-1234"}}
+          (= url "http://localhost/TGT-1234")
+          (throw
+            (ex-info
+              "Test HTTP Exception"
+              {:status 404
+               :body
+               "TGT-1234 could not be found or is considered invalid"})))))
+    (client/set-get!
+      (fn [url options]
+        (cond
+          (.endsWith url "/serviceValidate")
+          {:status 200
+           :body
+           (str "<cas:serviceResponse"
+                "  xmlns:cas='http://www.yale.edu/tp/cas'>"
+                "<cas:authenticationSuccess><cas:user>ehoks</cas:user>"
+                "<cas:attributes>"
+                "<cas:longTermAuthenticationRequestTokenUsed>false"
+                "</cas:longTermAuthenticationRequestTokenUsed>"
+                "<cas:isFromNewLogin>false</cas:isFromNewLogin>"
+                "<cas:authenticationDate>2019-02-20T10:14:24.046+02:00"
+                "</cas:authenticationDate></cas:attributes>"
+                "</cas:authenticationSuccess></cas:serviceResponse>")})))
+    (let [app (hoks-utils/create-app nil)
+          response (app (-> (mock/request
+                              :get
+                              (str hoks-utils/base-url "/1"))
+                            (mock/header "Caller-Id" "test")
+                            (mock/header "ticket" "ST-testitiketti")))]
+      (is (= (:status response) 401))
+      (is (= (utils/parse-body (:body response))
+             {:reason "Unable to check access rights"})))))

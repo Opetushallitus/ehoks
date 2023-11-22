@@ -14,6 +14,11 @@
   [_ __ ___]
   (response/not-found {:reason "Route not found"}))
 
+(defn unauthorized-handler
+  "Käsittelee tapauksen, jossa ei (ole/saada tarkistettua) käyttöoikeuksia."
+  [_ __ ___]
+  (response/unauthorized {:reason "Unable to check access rights"}))
+
 (defn log-exception
   "Logittaa virheen."
   [ex data]
@@ -41,6 +46,7 @@
    ::c-ex/response-validation (c-ex/with-logging
                                 c-ex/http-response-handler :error)
    :not-found not-found-handler
+   :unauthorized unauthorized-handler
    ::c-ex/default exception-handler})
 
 (defn create-app
