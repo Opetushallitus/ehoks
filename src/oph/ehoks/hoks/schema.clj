@@ -1,6 +1,9 @@
 (ns oph.ehoks.hoks.schema
   (:require [oph.ehoks.schema.generator :as g]
+            [oph.ehoks.opiskelijapalaute :refer
+             [kuuluu-palautteen-kohderyhmaan?]]
             [oph.ehoks.hoks.hoks :refer [y-tunnus-missing? tyopaikkajakso?]]
+            [oph.ehoks.middleware :refer [get-current-opiskeluoikeus]]
             [oph.ehoks.schema-tools :refer [describe modify]]
             [schema.core :as s]
             [clojure.tools.logging :as log])
@@ -226,7 +229,8 @@
   (let [osa-aikaisuustieto (:osa-aikaisuustieto oht)
         hankkimistapa (:osaamisen-hankkimistapa-koodi-uri oht)]
     (if (and (.isAfter (:loppu oht) (LocalDate/of 2023 6 30))
-             (tyopaikkajakso? oht))
+             (tyopaikkajakso? oht)
+             (kuuluu-palautteen-kohderyhmaan? (get-current-opiskeluoikeus)))
       (and (some? osa-aikaisuustieto)
            (<= osa-aikaisuustieto 100)
            (>= osa-aikaisuustieto 1))

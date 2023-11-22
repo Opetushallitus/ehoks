@@ -222,6 +222,19 @@
                  [(str "(not (\"Lisää osa-aikaisuustieto, joka on välillä "
                        "1-100.\" a-clojure.lang.PersistentArrayMap))")]}]}))))))
 
+(deftest create-new-telma-hoks-without-osa-aikaisuus
+  (testing "Create new hoks without osa-aikaisuustieto"
+    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
+                           :suoritukset [{:tyyppi {:koodiarvo "telma"}}]})]
+      (let [hoks-data test-data/new-hoks-without-osa-aikaisuus
+            response
+            (hoks-utils/mock-st-post
+              (hoks-utils/create-app nil) base-url hoks-data)
+            body (utils/parse-body (:body response))]
+        (is (= (:status response) 200))
+        (is (= (get-in body [:data :uri]) (str base-url "/1")))))))
+
 (deftest osaamisen-hankkimistavat-isnt-mandatory
   (testing "Osaamisen hankkimistavat should be optional field in ehoks"
     (let [app (hoks-utils/create-app nil)
