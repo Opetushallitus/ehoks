@@ -1,6 +1,6 @@
 (ns oph.ehoks.hoks.schema
   (:require [oph.ehoks.schema.generator :as g]
-            [oph.ehoks.hoks.hoks :refer [y-tunnus-missing?]]
+            [oph.ehoks.hoks.hoks :refer [y-tunnus-missing? tyopaikkajakso?]]
             [oph.ehoks.schema-tools :refer [describe modify]]
             [schema.core :as s]
             [clojure.tools.logging :as log])
@@ -226,11 +226,7 @@
   (let [osa-aikaisuustieto (:osa-aikaisuustieto oht)
         hankkimistapa (:osaamisen-hankkimistapa-koodi-uri oht)]
     (if (and (.isAfter (:loppu oht) (LocalDate/of 2023 6 30))
-             (or
-               (= hankkimistapa
-                  "osaamisenhankkimistapa_koulutussopimus")
-               (= hankkimistapa
-                  "osaamisenhankkimistapa_oppisopimus")))
+             (tyopaikkajakso? oht))
       (and (some? osa-aikaisuustieto)
            (<= osa-aikaisuustieto 100)
            (>= osa-aikaisuustieto 1))
@@ -252,11 +248,8 @@
 
 (defn- tyopaikkajakso-has-yksiloiva-tunniste?
   [oht]
-  (or (-> (:osaamisen-hankkimistapa-koodi-uri oht)
-          #{"osaamisenhankkimistapa_oppisopimus"
-            "osaamisenhankkimistapa_koulutussopimus"}
-          (not))
-      (:yksiloiva-tunniste oht)))
+  (or (not (tyopaikkajakso? oht))
+      (some? (:yksiloiva-tunniste oht))))
 
 (defn- duration-max-5-years?
   "Osaamisen hankkimistapa kestää enintään 5 vuotta"
