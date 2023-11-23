@@ -509,7 +509,7 @@
         (dissoc :osaamisen-hankkimistavat :osaamisen-osoittaminen :osa-alueet
                 :opetus-ja-ohjaus-maara)
         (assoc :valittu-todentamisen-prosessi-koodi-uri
-               {:methods {:any prosessi-mode}
+               {:methods {:any prosessi-mode, :patch :optional}
                 :types {:any TodentamisenProsessiKoodiUri}
                 :description
                 (str "Todentamisen prosessin kuvauksen (suoraan/arvioijien "
@@ -517,7 +517,7 @@
                      "todentamisen prosessi, eli muotoa "
                      "osaamisentodentamisenprosessi_xxxx")}
                :valittu-todentamisen-prosessi-koodi-versio
-               {:methods {:any prosessi-mode}
+               {:methods {:any prosessi-mode, :patch :optional}
                 :types {:any s/Int}
                 :description
                 (str "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn "
@@ -612,17 +612,17 @@
                :types {:any UUID}
                :description (str "Tietorakenteen yksilöivä tunniste "
                                  "esimerkiksi tiedon jakamista varten")}
-   :osa-alueet {:methods {:any :required}
+   :osa-alueet {:methods {:any :required, :patch :optional}
                 :types {:any [HankittavanYTOnOsaAlue-template]}
                 :description "yhteisen tutkinnon osan osa-alueet"}
    :tutkinnon-osa-koodi-uri
-   {:methods {:any :required}
+   {:methods {:any :required, :patch :optional}
     :types {:any TutkinnonOsaKoodiUri}
     :description (str "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa "
                       "(tutkinnonosat) muotoa tutkinnonosat_xxxxxx eli esim. "
                       "tutkinnonosat_100002")}
    :tutkinnon-osa-koodi-versio
-   {:methods {:any :required}
+   {:methods {:any :required, :patch :optional}
     :types {:any s/Int}
     :description (str "Tutkinnon osan Koodisto-koodi-URIn versio "
                       "ePerusteet-palvelussa (tutkinnonosat)")}
@@ -643,16 +643,34 @@
 (s/defschema HankittavaYhteinenTutkinnonOsaPatch
              (g/generate HankittavaYhteinenTutkinnonOsa-template :patch))
 
-(s/defschema
-  OpiskeluvalmiuksiaTukevatOpinnot
-  "Opiskeluvalmiuksia tukevien opintojen schema."
-  (describe
-    "Opiskeluvalmiuksia tukevat opinnot"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :nimi s/Str "Opintojen nimi"
-    :kuvaus s/Str "Opintojen kuvaus"
-    :alku LocalDate "Opintojen alkupäivämäärä muodossa YYYY-MM-DD"
-    :loppu LocalDate "Opintojen loppupäivämäärä muodossa YYYY-MM-DD"))
+(def OpiskeluvalmiuksiaTukevatOpinnot-template
+  ^{:doc "Opiskeluvalmiuksia tukevien opintojen schema."
+    :type ::g/schema-template
+    :name "OpiskeluvalmiuksiaTukevatOpinnot"}
+  {:id {:methods {:any :optional, :post :excluded}
+        :types {:any s/Int}
+        :description "Tunniste eHOKS-järjestelmässä"}
+   :nimi {:methods {:any :required, :patch :optional}
+          :types {:any s/Str}
+          :description "Opintojen nimi"}
+   :kuvaus {:methods {:any :required, :patch :optional}
+            :types {:any s/Str}
+            :description "Opintojen kuvaus"}
+   :alku {:methods {:any :required, :patch :optional}
+          :types {:any LocalDate}
+          :description "Opintojen alkupäivämäärä muodossa YYYY-MM-DD"}
+   :loppu {:methods {:any :required, :patch :optional}
+           :types {:any LocalDate}
+           :description "Opintojen loppupäivämäärä muodossa YYYY-MM-DD"}})
+
+(s/defschema OpiskeluvalmiuksiaTukevatOpinnot
+             (g/generate OpiskeluvalmiuksiaTukevatOpinnot-template :get))
+
+(s/defschema OpiskeluvalmiuksiaTukevatOpinnotLuontiJaMuokkaus
+             (g/generate OpiskeluvalmiuksiaTukevatOpinnot-template :post))
+
+(s/defschema OpiskeluvalmiuksiaTukevatOpinnotPatch
+             (g/generate OpiskeluvalmiuksiaTukevatOpinnot-template :patch))
 
 (def HankittavaAmmatillinenTutkinnonOsa-template
   ^{:doc "Hankittavan ammatillisen tutkinnon osan schema."
@@ -666,13 +684,13 @@
                :description (str "Tietorakenteen yksilöivä tunniste "
                                  "esimerkiksi tiedon jakamista varten")}
    :tutkinnon-osa-koodi-uri
-   {:methods {:any :required}
+   {:methods {:any :required, :patch :optional}
     :types {:any TutkinnonOsaKoodiUri}
     :description (str "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa "
                       "(tutkinnonosat) muotoa tutkinnonosat_xxxxxx eli esim. "
                       "tutkinnonosat_100002")}
    :tutkinnon-osa-koodi-versio
-   {:methods {:any :required}
+   {:methods {:any :required, :patch :optional}
     :types {:any s/Int}
     :description (str "Tutkinnon osan Koodisto-koodi-URIn versio "
                       "ePerusteet-palvelussa (tutkinnonosat)")}
@@ -812,7 +830,7 @@
   (with-meta
     (assoc (hankittava->aiemmin-hankittu
              HankittavaYhteinenTutkinnonOsa-template)
-           :osa-alueet {:methods {:any :required}
+           :osa-alueet {:methods {:any :required, :patch :optional}
                         :types {:any [AiemminHankitunYTOnOsaAlue-template]}
                         :description "YTOn osa-alueet"})
     {:doc "Aiemmin hankitun yhteisen tutkinnon osan schema."
