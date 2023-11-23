@@ -187,30 +187,6 @@
     hoks
     (rename-keys hoks {:deleted-at :poistettu})))
 
-(defn- validate-tuva-hoks-type
-  [hoks]
-  (when-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
-    (when-let [opiskeluoikeus (k/get-opiskeluoikeus-info opiskeluoikeus-oid)]
-      (let [tyyppi (get-in opiskeluoikeus [:tyyppi :koodiarvo])
-            tuva? (= (keyword tyyppi) :tuva)]
-        (when (or (and (not tuva?)
-                       (seq (:hankittavat-koulutuksen-osat hoks)))
-                  (and tuva?
-                       (or (:tuva-opiskeluoikeus-oid hoks)
-                           (not (every?
-                                  (comp empty? hoks)
-                                  [:aiemmin-hankitut-ammat-tutkinnon-osat
-                                   :aiemmin-hankitut-yhteiset-tutkinnon-osat
-                                   :aiemmin-hankitut-paikalliset-tutkinnon-osat
-                                   :opiskeluvalmiuksia-tukevat-opinnot
-                                   :hankittavat-ammat-tutkinnon-osat
-                                   :hankittavat-yhteiset-tutkinnon-osat
-                                   :hankittavat-paikalliset-tutkinnon-osat])))))
-          (throw (ex-info
-                   (str "HOKSin rakenteen tulee vastata siihen liitetyn "
-                        "opiskeluoikeuden tyyppiä (" tyyppi ").")
-                   {:error :disallowed-update})))))))
-
 (defn get-osaamisen-hankkimistavat
   "Hakee kaikki osaamisen hankkimistavat HOKSista."
   [hoks]
@@ -300,7 +276,6 @@
       (throw (ex-info (format "Opiskeluoikeus %s is no longer active"
                               (:opiskeluoikeus-oid hoks))
                       {:error :disallowed-update})))
-    (validate-tuva-hoks-type hoks)
     (save-hoks! hoks)))
 
 (defn- merge-not-given-hoks-values
@@ -470,8 +445,6 @@
       (throw (ex-info (format "Opiskeluoikeus %s is no longer active"
                               new-opiskeluoikeus-oid)
                       {:error :disallowed-update})))
-    (validate-tuva-hoks-type
-      (merge new-hoks {:opiskeluoikeus-oid old-opiskeluoikeus-oid}))
     (when (and (some? new-opiskeluoikeus-oid)
                (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
       (throw (ex-info "Opiskeluoikeus update not allowed!"

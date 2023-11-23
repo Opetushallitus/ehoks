@@ -769,9 +769,8 @@
             (t/is (= (:status post-response) 400))
             (t/is (logtest/logged? "audit" :info #"failure.*24.44000000001")
                   (str "log entries:" (logtest/the-log)))
-            (t/is (= (:error (utils/parse-body (:body post-response)))
-                     (str "HOKSin rakenteen tulee vastata siihen liitetyn "
-                          "opiskeluoikeuden tyyppiä (tuva).")))))))))
+            (t/is (re-find #"Ota tuva-opiskeluoikeus-oid pois"
+                           (slurp (:body post-response))))))))))
 
 (defn mocked-get-oo-non-tuva [oid]
   {:oid oid
@@ -796,11 +795,12 @@
                                 :loppu "2022-09-21"
                                 :laajuus 10}]})]
           (t/is (= (:status post-response) 400))
-          (t/is
-            (= (utils/parse-body (:body post-response))
-               {:error
-                (str "HOKSin rakenteen tulee vastata siihen liitetyn "
-                     "opiskeluoikeuden tyyppiä (ammatillinenkoulutus).")})))))))
+          (let [body (utils/parse-body (:body post-response))]
+            (t/is (= (get-in body [:errors :hankittavat-koulutuksen-osat 0])
+                     (str "(not (\"Ota koulutuksenosa pois, koska "
+                          "opiskeluoikeus ei ole TUVA.\" "
+                          "a-clojure.lang.PersistentArrayMap))"))
+                  (str body))))))))
 
 (defn mocked-find-student-by-oid [oid]
   (throw (ex-info "Opiskelija fetch failed" {:status 404})))
