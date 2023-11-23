@@ -255,6 +255,24 @@
   (or (not (tyopaikkajakso? oht))
       (some? (:yksiloiva-tunniste oht))))
 
+(defn- starts-after-opiskeluoikeus?
+  "Osaamisen hankkimistapa ei edellä opiskeluoikeutta"
+  [oht]
+  (let [oo-alku (some-> (get-current-opiskeluoikeus)
+                        :alkamispäivä
+                        (LocalDate/parse))]
+    (or (not oo-alku)
+        (not (.isBefore (:alku oht) oo-alku)))))
+
+(defn- ends-before-opiskeluoikeus?
+  "Osaamisen hankkimistapa ei jatku opiskeluoikeuden arvioidun ajan jälkeen"
+  [oht]
+  (let [oo-loppu (some-> (get-current-opiskeluoikeus)
+                         :arvioituPäättymispäivä
+                         (LocalDate/parse))]
+    (or (not oo-loppu)
+        (not (.isAfter (:loppu oht) oo-loppu)))))
+
 (defn- duration-max-5-years?
   "Osaamisen hankkimistapa kestää enintään 5 vuotta"
   [oht]
@@ -277,6 +295,12 @@
       :description "Lisää jaksoon oppisopimuksen perustan koodi-uri."}
      {:check nonnegative-duration?
       :description "Korjaa alku- ja loppupäivämäärä oikein päin."}
+     {:check starts-after-opiskeluoikeus?
+      :description (str "Korjaa alkupäivä aikaisintaan opiskeluoikeuden "
+                        "alkamispäiväksi.")}
+     {:check ends-before-opiskeluoikeus?
+      :description (str "Korjaa loppupäivä viimeistään opiskeluoikeuden "
+                        "arvioiduksi päättymispäiväksi.")}
      {:check duration-max-5-years?
       :description "Korjaa jakso enintään 5 vuoden pituiseksi."}]
     :name "OsaamisenHankkimistapa"}
