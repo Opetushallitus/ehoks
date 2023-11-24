@@ -89,6 +89,23 @@
                           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
           (throw e))))))
 
+(defn get-opiskeluoikeus
+  "Get opiskeluoikeus. If opiskeluoikeus cannot be fetched, throws an
+  exception with cause."
+  [oid]
+  (try
+    (get-opiskeluoikeus-info-raw oid)
+    (catch ExceptionInfo e
+      (throw
+        (ex-info (format "Couldn't get opiskeluoikeus `%s` from Koski." oid)
+                 {:type :could-not-get-opiskeluoikeus
+                  :opiskeluoikeus-oid oid
+                  :status (:status (ex-data e))
+                  :virhekoodi (some-> (:body (ex-data e))
+                                      (json/read-str :key-fn keyword)
+                                      (get-in [0 :key]))}
+                 e)))))
+
 (defn get-opiskeluoikeus-oppilaitos-oid
   "Get oppilaitos of opiskeluoikeus"
   [opiskeluoikeus-oid]

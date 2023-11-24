@@ -1,5 +1,9 @@
 (ns oph.ehoks.opiskelijapalaute-test
   (:require [clojure.test :refer [are deftest is testing]]
+            [clojure.tools.logging.test :refer [logged? with-log]]
+            [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.external.koski :as k]
+            [oph.ehoks.hoks.test-data :as test-data]
             [oph.ehoks.opiskelijapalaute :as op]
             [oph.ehoks.utils :refer [assoc-if-some]]))
 
@@ -150,3 +154,58 @@
         "2023-09-01" "2023-09-01"
         "2023-09-01" "2023-09-02"
         "2023-09-01" nil))))
+
+(def sqs-msg (atom nil))
+
+(defn mock-get-opiskeluoikeus-info-raw
+  [oid]
+  (case oid
+    "1.2.246.562.15.00000000001" {:suoritukset
+                                  [{:tyyppi
+                                    {:koodiarvo "ammatillinentutkinto"}}]
+                                  :tyyppi {:koodiarvo "ammatillinenkoulutus"}}
+    "1.2.246.562.15.00000000002" {:suoritukset
+                                  [{:tyyppi {:koodiarvo "joku_muu"}}]
+                                  :tyyppi {:koodiarvo "ammatillinenkoulutus"}}
+    (throw (ex-info "Opiskeluoikeus not found" {:status 404}))))
+
+(defn expected-msg
+  [kysely hoks]
+  {:ehoks-id (:id hoks)
+   :kyselytyyppi (case kysely
+                   :aloituskysely "aloittaneet"
+                   :paattokysely  "tutkinnon_suorittaneet")
+   :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+   :oppija-oid (:oppija-oid hoks)
+   :sahkoposti (:sahkoposti hoks)
+   :puhelinnumero (:puhelinnumero hoks)
+   :alkupvm
+   (case kysely
+     :aloituskysely (:ensikertainen-hyvaksyminen hoks)
+     :paattokysely  (:osaamisen-saavuttamisen-pvm hoks))})
+
+(deftest test-send!
+  (with-redefs [sqs/send-amis-palaute-message (fn [msg] (reset! sqs-msg msg))
+                k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus-info-raw]
+    (let [hoks (assoc test-data/hoks-data :id 1)]
+      (testing "Testing that function `send!`"
+        (testing (str "can successfully sends aloituskysely and paattokysely"
+                      "herate to SQS queue")
+          (are [kysely] (= (expected-msg kysely hoks)
+                           (do (op/send! kysely hoks) @sqs-msg))
+            :aloituskysely
+            :paattokysely))
+        (testing "logs appropriately when messages could not be send."
+          (with-log
+            (op/send!
+              :paattokysely
+              (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.00000000002"))
+            (is (logged? 'oph.ehoks.opiskelijapalaute
+                         :info
+                         #"No ammatillinen suoritus"))
+            (op/send!
+              :paattokysely
+              (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.00000000003"))
+            (is (logged? 'oph.ehoks.opiskelijapalaute
+                         :warn
+                         #"Couldn't get opiskeluoikeus"))))))))
