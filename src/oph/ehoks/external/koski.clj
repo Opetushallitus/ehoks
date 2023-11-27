@@ -74,20 +74,27 @@
     30
     {}))
 
+(defn virhekoodi
+  "Takes an ExceptionInfo object and tries to parse Koski-specific error code
+  (virhekoodi) from a string in `:body` that is expected to be in JSON format.
+  Returns `nil` if the function fails to parse the code for any reason."
+  [^ExceptionInfo e]
+  (try
+    (some-> (:body (ex-data e))
+            (json/read-str :key-fn keyword)
+            (get-in [0 :key]))
+    (catch Exception _ nil)))
+
 (defn get-opiskeluoikeus-info
   "Get opiskeluoikeus info with error handling"
   [oid]
   (try
     (get-opiskeluoikeus-info-raw oid)
     (catch ExceptionInfo e
-      (let [e-data (ex-data e)
-            body (if (some? (:body e-data))
-                   (json/read-str (:body e-data) :key-fn keyword)
-                   {})]
-        (when-not (and (= (:status e-data) status/not-found)
-                       (= (get-in body [0 :key])
-                          "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
-          (throw e))))))
+      (when-not (and (= (:status (ex-data e)) status/not-found)
+                     (= (virhekoodi e)
+                        "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
+        (throw e)))))
 
 (defn get-opiskeluoikeus
   "Get opiskeluoikeus. If opiskeluoikeus cannot be fetched, throws an
@@ -101,9 +108,7 @@
                  {:type :could-not-get-opiskeluoikeus
                   :opiskeluoikeus-oid oid
                   :status (:status (ex-data e))
-                  :virhekoodi (some-> (:body (ex-data e))
-                                      (json/read-str :key-fn keyword)
-                                      (get-in [0 :key]))}
+                  :virhekoodi (virhekoodi e)}
                  e)))))
 
 (defn get-opiskeluoikeus-oppilaitos-oid
