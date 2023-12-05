@@ -918,3 +918,14 @@
       (is (= (:status response) 401))
       (is (= (utils/parse-body (:body response))
              {:reason "Unable to check access rights"})))))
+
+(deftest test-bypasses-oht-date-checks-when-eronnut
+  (testing "Bypasses OHT date check when opiskeluoikeus tila is eronnut"
+    (let [app (hoks-utils/create-app nil)
+          data
+          (assoc test-data/hoks-data
+                 :opiskeluoikeus-oid
+                 "1.2.246.562.15.00000000006")
+          post-response
+          (hoks-utils/create-mock-post-request "" data app)]
+      (is (= (:status post-response) 200)))))
