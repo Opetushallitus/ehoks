@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+case $# in
+  1) input="-" ;; # Read HOKS update JSON from stdin
+  2) input=$2 ;; # Read HOKS update JSON from file
+  *)
+    {
+      echo "Usage: $0 OPPIJA_OID [HOKS_UPDATE_FILE]"
+      echo "If HOKS_UPDATE_FILE is not passed in as a positional argument," \
+           "the script tries to read HOKS JSON string from stdin. HOKS_ID is" \
+           "parsed from the JSON."
+    } >&2
+    exit 1
+esac
+
+scripts/check-env-vars OPH_VIRKAILIJA_DOMAIN OPH_CURRENT_ENV OPH_CALLER_ID
+
+oppija_oid=$1
+update=$(cat "$input")
+hoks_id=$(echo "$update" | jq -er '."id"')
+
+endpoint="$OPH_VIRKAILIJA_DOMAIN/ehoks-virkailija-backend/api/v1/virkailija/oppijat/$oppija_oid/hoksit/$hoks_id"
+
+if [ "$OPH_CURRENT_ENV" = prod ] || \
+   [ "$OPH_VIRKAILIJA_DOMAIN" = "https://virkailija.opintopolku.fi" ] ; then
+  scripts/ask-confirmation "You're about to UPDATE a HOKS in production" \
+                           "environment."
+fi
+
+curl -s -b scripts/session-cookie.txt -X PATCH \
+     -H 'Content-Type: application/json' \
+     -H "caller-id: $OPH_CALLER_ID" \
+     -d "$update" \
+     "$endpoint"

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 HOKS_ID" >&2
+  exit 1
+fi
+
+scripts/check-env-vars OPH_VIRKAILIJA_DOMAIN OPH_CALLER_ID
+
+hoks_endpoint="$OPH_VIRKAILIJA_DOMAIN/ehoks-virkailija-backend/api/v1/virkailija/hoks/$1"
+
+curl -s -b scripts/session-cookie.txt -X GET \
+     -H 'Accept: application/json' \
+     -H "caller-id: $OPH_CALLER_ID" \
+     "$hoks_endpoint" \
+  | grep -o "1.2.246.562.15.[0-9]\+"

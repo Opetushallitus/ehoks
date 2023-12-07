@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ $# -ne 0 ] ; then
+  {
+    echo "Get CAS Ticket Granting Ticket (TGT)."
+    echo "Usage: $0"
+    echo "The script requires no parameters. "
+  } >&2
+    exit 1
+fi
+
+scripts/check-env-vars OPH_VIRKAILIJA_DOMAIN OPH_CAS_USERNAME OPH_CAS_PASSWORD
+
+response=$(curl -s "$OPH_VIRKAILIJA_DOMAIN/cas/v1/tickets" \
+                -d "username=$OPH_CAS_USERNAME" \
+                -d "password=$OPH_CAS_PASSWORD")
+
+tgt=$(echo "$response" | grep -o "TGT-.*-ip[-0-9]\+")
+
+if [ -z "$tgt" ]; then
+  echo "$response" 1>&2
+  exit 1
+fi
+
+echo "$tgt"

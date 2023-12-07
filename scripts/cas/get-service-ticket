@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ $# -ne 1 ] ; then
+
+  {
+    echo "Get CAS service ticket for authentication."
+    echo -e "Usage: $0 SERVICE_URL\n"
+  } >&2
+  exit 1
+fi
+
+scripts/check-env-vars OPH_VIRKAILIJA_DOMAIN OPH_CAS_TGT
+
+if [ -z "$OPH_CAS_TGT" ]; then
+  {
+    echo "You need to fetch a Ticket Granting Ticket (TGT) first." \
+         "This script expects it to be stored in an environment variable" \
+         "OPH_CAS_TGT. Script \`scripts/env/activate\` should set this" \
+         "automatically, but you can refresh the TGT by running"
+    echo -e "\nexport OPH_CAS_TGT=\$(scripts/cas/get-tgt)\n"
+  } >&2
+  exit 1
+fi
+
+response=$(curl -s "$OPH_VIRKAILIJA_DOMAIN/cas/v1/tickets/$OPH_CAS_TGT" \
+                -d "service=$1")
+
+if ! [[ "$response" =~ ^ST-.*-ip[-0-9]+$ ]]; then
+  echo "$response" >&2
+  exit 1
+fi
+
+echo "$response"

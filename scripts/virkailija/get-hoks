@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 OPPIJA_OID HOKS_ID" >&2
+  exit 1
+fi
+
+endpoint="$OPH_VIRKAILIJA_DOMAIN/ehoks-virkailija-backend/api/v1/virkailija/oppijat/$1/hoksit/$2"
+
+curl -s -b scripts/session-cookie.txt -X GET \
+     -H 'Accept: application/json' \
+     -H "caller-id: $OPH_CALLER_ID" \
+     "$endpoint"

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+if [ $# -ne 1 ]; then
+  echo "DELETE /ehoks-virkailija-backend/api/v1/virkailija/hoks/{hoks-id}"
+  echo "Usage: $0 HOKS_ID"
+  exit 1
+fi
+
+scripts/check-env-vars OPH_VIRKAILIJA_DOMAIN OPH_CALLER_ID
+
+endpoint="$OPH_VIRKAILIJA_DOMAIN/ehoks-virkailija-backend/api/v1/virkailija/hoks/$1"
+
+scripts/ask-confirmation "You're about to permanently DELETE hoks $1." \
+                         "It cannot be restored after the script execution."
+
+curl -s -b scripts/session-cookie.txt -X DELETE \
+     -H "caller-id: $OPH_CALLER_ID" \
+     "$endpoint"

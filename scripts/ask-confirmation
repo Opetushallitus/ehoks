@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "$@"
+while true; do
+  read -rp "Are you sure you want to continue (yes/no)? " ans
+  case $ans in
+      [Yy]es) exit   ;;
+      [Nn]o)  exit 1 ;;
+      * ) echo "Please answer yes or no.";;
+  esac
+done
