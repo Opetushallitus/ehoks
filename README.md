@@ -306,6 +306,12 @@ Rajapinnan käyttö on suositeltavampi vaihtoehto koska `lein import` ohittaa
 skeemavalidoinnit ja siten sen avulla pystyy luomaan dataa jota järjestelmä ei
 oikeasti hyväksyisi.
 
+## Skriptit
+
+Repositorioon on lisätty jonkin verran selvitystyötä ja testaamista helpottavia
+skriptejä. Näiden toimintaperiaatteesta voi lukea niille osoitetusta
+[dokumentaatiosta](./doc/scripts.md).
+
 ## Swagger
 
  * [Virkailijan swagger](http://localhost:3000/ehoks-virkailija-backend/doc)
