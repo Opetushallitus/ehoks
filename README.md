@@ -24,7 +24,6 @@ rajapintojen polut on jaettu palveluittain.
 + [Compojure-api 2](https://github.com/metosin/compojure-api/)
 + [Leiningen](https://leiningen.org/)
 + [PostgreSQL 9.5](https://www.postgresql.org/docs/9.5/static/index.html)
-+ [HugSQL](https://www.hugsql.org/)
 + [Flyway](https://flywaydb.org/)
 + [clj-http](https://github.com/dakrone/clj-http)
 + [Cheshire](https://github.com/dakrone/cheshire)
