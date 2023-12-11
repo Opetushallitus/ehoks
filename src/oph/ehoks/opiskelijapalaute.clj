@@ -18,6 +18,11 @@
   {"ammatillinentutkinto"           "tutkinnon_suorittaneet"
    "ammatillinentutkintoosittainen" "tutkinnon_osia_suorittaneet"})
 
+(defn- telma-suoritus?
+  "Tarkistaa, onko suorituksen tyyppi TELMA (työhön ja elämään valmentava)."
+  [suoritus]
+  (some? (#{"telma", "telmakoulutuksenosa"} (suoritustyyppi suoritus))))
+
 (defn- first-ammatillinen-suoritus
   "Hakee opiskeluoikeudesta ensimmäisen ammatillisen suorituksen (tyyppi
   ammatillinen suoritus tai osittainen ammatillinen suoritus). Nostaa
@@ -26,6 +31,15 @@
   (or (some #(when (ammatillinen-suoritus? %) %) (:suoritukset opiskeluoikeus))
       (throw (ex-info "No ammatillinen suoritus in opiskeluoikeus."
                       {:type :no-ammatillinen-suoritus}))))
+
+(defn kuuluu-palautteen-kohderyhmaan?
+  "Kuuluuko opiskeluoikeus palautteen kohderyhmään?  Tällä hetkellä
+  vain katsoo, onko kyseessä TELMA-opiskeluoikeus, joka ei ole tutkintoon
+  tähtäävä koulutus (ks. OY-4433).  Muita mahdollisia kriteereitä
+  ovat tulevaisuudessa koulutuksen rahoitus ja muut kriteerit, joista
+  voidaan katsoa, onko koulutus tutkintoon tähtäävä."
+  [opiskeluoikeus]
+  (every? (complement telma-suoritus?) (:suoritukset opiskeluoikeus)))
 
 (defn- added?
   [key* current-hoks updated-hoks]

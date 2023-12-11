@@ -723,21 +723,23 @@
   (throw
     (ex-info
       "Opiskeluoikeus fetch failed"
-      {:status 404
-       :body [{:key "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"}]})))
+      {:body "[{\"key\": \"notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia\"}]"
+       :status 404})))
 
 (t/deftest test-hoks-create-when-opiskeluoikeus-fetch-fails
   (t/testing "Error thrown from koski is propagated to handler"
     (utils/with-db
-      (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
-      (with-redefs [k/get-opiskeluoikeus-info-raw
-                    mocked-get-opiskeluoikeus-info-raw]
-        (let [post-response
-              (post-new-hoks "1.2.246.562.15.760000000010"
-                             "1.2.246.562.10.1200000000010")]
-          (t/is (= (:status post-response) 400))
-          (t/is (= (utils/parse-body (:body post-response))
-                   {:error "Opiskeluoikeus not found in Koski"})))))))
+      (logtest/with-log
+        (create-oppija-for-hoks-post "1.2.246.562.10.12000000001")
+        (with-redefs [k/get-opiskeluoikeus-info-raw
+                      mocked-get-opiskeluoikeus-info-raw]
+          (let [post-response
+                (post-new-hoks "1.2.246.562.15.760000000010"
+                               "1.2.246.562.10.1200000000010")]
+            (t/is (= (:status post-response) 400)
+                  (str "Log entries:" (logtest/the-log)))
+            (t/is (= (utils/parse-body (:body post-response))
+                     {:error "Opiskeluoikeus not found in Koski"}))))))))
 
 (defn mocked-get-oo-tuva [oid]
   {:oid oid

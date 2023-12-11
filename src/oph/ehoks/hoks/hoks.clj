@@ -429,12 +429,17 @@
   [oh]
   (.isAfter (:loppu oh) (LocalDate/of 2021 8 25)))
 
+(defn tyopaikkajakso?
+  "Onko osaamisen hankkimistapa työpaikkajakso?"
+  [oht]
+  (#{"osaamisenhankkimistapa_koulutussopimus"
+     "osaamisenhankkimistapa_oppisopimus"}
+    (:osaamisen-hankkimistapa-koodi-uri oht)))
+
 (defn y-tunnus-missing?
   "Puuttuuko Y-tunnus osaamisen hankkimistavasta, vaikka pitäisi olla?"
   [oh]
-  (and (-> (:osaamisen-hankkimistapa-koodi-uri oh)
-           #{"osaamisenhankkimistapa_koulutussopimus"
-             "osaamisenhankkimistapa_oppisopimus"})
+  (and (tyopaikkajakso? oh)
        (should-check-hankkimistapa-y-tunnus? oh)
        (:tyopaikalla-jarjestettava-koulutus oh)
        (-> oh :tyopaikalla-jarjestettava-koulutus :tyopaikan-y-tunnus nil?)))

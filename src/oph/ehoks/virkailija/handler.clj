@@ -19,7 +19,8 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
-            [oph.ehoks.middleware :refer [wrap-hoks]]
+            [oph.ehoks.middleware :refer
+             [wrap-hoks wrap-opiskeluoikeus get-current-opiskeluoikeus]]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.oppijaindex :as oi]
@@ -509,6 +510,7 @@
 
                   (c-api/context "/hoksit" []
                     (c-api/POST "/" [:as request]
+                      :middleware [wrap-opiskeluoikeus]
                       :summary (str "Luo uuden HOKSin. "
                                     "Vaatii manuaalisyöttäjän oikeudet")
                       :body [hoks (hoks-schema/generate-hoks-schema
@@ -619,7 +621,9 @@
                         :path-params [hoks-id :- s/Int]
 
                         (route-middleware
-                          [wrap-hoks m/wrap-virkailija-write-access]
+                          [wrap-hoks
+                           m/wrap-virkailija-write-access
+                           wrap-opiskeluoikeus]
 
                           (c-api/PUT "/" request
                             :summary
