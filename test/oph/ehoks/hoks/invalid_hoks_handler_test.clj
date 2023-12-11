@@ -285,12 +285,10 @@
               (->> (re-find #"5 vuoden pituiseksi"))))
       (is (= (:status invalid-post-response-3) 400))
       (is (= (:status invalid-post-response-4) 400))
-      (is (-> (utils/parse-body (:body invalid-post-response-3))
-              :error
-              (->> (re-find #"ajallisesti opiskeluoikeuden"))))
-      (is (-> (utils/parse-body (:body invalid-post-response-4))
-              :error
-              (->> (re-find #"ajallisesti opiskeluoikeuden")))))))
+      (is (re-find #"Korjaa alkupäivä"
+                   (slurp (:body invalid-post-response-3))))
+      (is (re-find #"Korjaa loppupäivä"
+                   (slurp (:body invalid-post-response-4)))))))
 
 (deftest require-yksiloiva-tunniste-in-oht
   (testing "Osaamisen hankkimistavassa pitää olla yksilöivä tunniste."
