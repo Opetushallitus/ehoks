@@ -20,8 +20,8 @@
       utils/parse-body))
 
 (defn create-hoks [app]
-  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                   :oppija-oid "1.2.246.562.24.12312312312"
+  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                   :oppija-oid "1.2.246.562.24.12312312319"
                    :ensikertainen-hyvaksyminen
                    (java.time.LocalDate/of 2019 3 18)
                    :osaamisen-hankkimisen-tarve false}]

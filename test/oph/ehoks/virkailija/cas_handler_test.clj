@@ -18,7 +18,7 @@
 (defn- ticket-response [url options]
   (if (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
     {:status 200
-     :body [{:oidHenkilo "1.2.246.562.24.11474338833"
+     :body [{:oidHenkilo "1.2.246.562.24.11474338834"
              :username "ehoksvirkailija"
              :organisaatiot
              [{:organisaatioOid "1.2.246.562.10.12944436166"

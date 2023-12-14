@@ -4,10 +4,10 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
-(def dummy-user {:oid "1.2.246.562.24.12312312312"
+(def dummy-user {:oid "1.2.246.562.24.12312312319"
                  :nimi "Teuvo Testaaja"
-                 :opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                 :oppilaitos-oid "1.2.246.562.10.12000000000"
+                 :opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                 :oppilaitos-oid "1.2.246.562.10.12000000005"
                  :tutkinto-nimi {:fi "Testitutkinto 1" :sv "Testskrivning 1"}
                  :osaamisala-nimi
                  {:fi "Testiosaamisala numero 1" :sv "Kunnande 1"}
