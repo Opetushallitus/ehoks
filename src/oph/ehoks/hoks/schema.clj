@@ -5,11 +5,12 @@
             [oph.ehoks.hoks.hoks :refer [y-tunnus-missing? tyopaikkajakso?]]
             [oph.ehoks.middleware :refer [get-current-opiskeluoikeus]]
             [oph.ehoks.schema-tools :refer [describe modify]]
-            [schema.core :as s]
-            [clojure.tools.logging :as log])
+            [oph.ehoks.schema.oid :refer [OpiskeluoikeusOID
+                                          OppijaOID
+                                          OrganisaatioOID]]
+            [schema.core :as s])
   (:import (java.time LocalDate)
-           (java.util UUID)
-           (clojure.lang ExceptionInfo)))
+           (java.util UUID)))
 
 (defn- is-tuva-opiskeluoikeus?
   "Onko opiskeluoikeus TUVA?"
@@ -49,14 +50,6 @@
 (def KoulutuksenOsaKoodiUri
   "Koulutuksen osan (TUVA) koodi-URI:n regex."
   #"^koulutuksenosattuva_\d{3}$")
-
-(def Oid
-  "OID:n regex."
-  #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
-
-(def OpiskeluoikeusOid
-  "Opiskeluoikeuden OID:n regex."
-  #"^1\.2\.246\.562\.15\.\d+$")
 
 (defn- calculate-y-tunnus-checksum
   "Laskee Y-tunnuksen tarkistusnumeron tunnuksen 7 ensimmäisen numeron
@@ -119,7 +112,7 @@
      :added
      (describe
        ""
-       (s/optional-key :oppilaitos-oid) Oid
+       (s/optional-key :oppilaitos-oid) OrganisaatioOID
        "Mikäli kyseessä oppilaitos, oppilaitoksen oid-tunniste
        Opintopolku-palvelussa.")}))
 
@@ -176,7 +169,7 @@
      :added
      (describe
        ""
-       :oppilaitos-oid Oid
+       :oppilaitos-oid OrganisaatioOID
        "Oppilaitoksen oid-tunniste Opintopolku-palvelussa.")}))
 
 (s/defschema
@@ -389,7 +382,7 @@
   (describe
     "Näytön tai osaamisen osoittamisen järjestäjä"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :oppilaitos-oid) Oid
+    (s/optional-key :oppilaitos-oid) OrganisaatioOID
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")))
@@ -573,7 +566,7 @@
                       "Näyttö tai muu osaamisen osoittaminen")}
    :koulutuksen-jarjestaja-oid
    {:methods {:any :optional}
-    :types {:any Oid}
+    :types {:any OrganisaatioOID}
     :description
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -638,7 +631,7 @@
                       "ePerusteet-palvelussa (tutkinnonosat)")}
    :koulutuksen-jarjestaja-oid
    {:methods {:any :optional}
-    :types {:any Oid}
+    :types {:any OrganisaatioOID}
     :description
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -725,7 +718,7 @@
                               :description "Osaamisen hankkimistavat"}
    :koulutuksen-jarjestaja-oid
    {:methods {:any :optional}
-    :types {:any Oid}
+    :types {:any OrganisaatioOID}
     :description
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -797,7 +790,7 @@
                               :description "Osaamisen hankkimistavat"}
    :koulutuksen-jarjestaja-oid
    {:methods {:any :optional}
-    :types {:any Oid}
+    :types {:any OrganisaatioOID}
     :description
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -954,7 +947,7 @@
          :description "HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä"}
    :oppija-oid {:methods {:any :optional
                           :post :required} ; FIXME: should be required for :put
-                :types {:any Oid}
+                :types {:any OppijaOID}
                 :description "Oppijan tunniste Opintopolku-ympäristössä"}
    :sahkoposti {:methods {:any :optional}
                 :types {:any s/Str}
@@ -965,13 +958,13 @@
    :opiskeluoikeus-oid
    {:methods {:any :optional
               :post :required} ; FIXME: should be required for :put
-    :types {:any OpiskeluoikeusOid}
+    :types {:any OpiskeluoikeusOID}
     :description (str "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä "
                       "muotoa '1.2.246.562.15.00000000001'.")}
    :tuva-opiskeluoikeus-oid
    {:methods {:any :optional}
     :types {:any (s/constrained
-                   OpiskeluoikeusOid (comp not is-tuva-opiskeluoikeus?)
+                   OpiskeluoikeusOID (comp not is-tuva-opiskeluoikeus?)
                    (str "Ota tuva-opiskeluoikeus-oid pois, koska se on "
                         "sallittu vain TUVA-opiskeluoikeuden kanssa "
                         "rinnakkaiselle opiskeluoikeudelle, ei TUVA-"
@@ -1107,4 +1100,4 @@
 (s/defschema
   shallow-delete-hoks
   "Schema HOKSin poistoon oppilaitos-OID:n perusteella."
-  {:oppilaitos-oid s/Str})
+  {:oppilaitos-oid OrganisaatioOID})

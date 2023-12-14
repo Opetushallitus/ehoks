@@ -24,15 +24,15 @@
     {:lahetetty-arvioitavaksi (java.time.LocalDate/of 2019 3 18)
      :aiemmin-hankitun-osaamisen-arvioijat
      [{:nimi "Erkki Esimerkki"
-       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921623"}}]}
-    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921419"
+       :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921626"}}]}
+    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921410"
     :tarkentavat-tiedot-naytto
     [{:osa-alueet [{:koodi-uri "ammatillisenoppiaineet_fy"
                     :koodi-versio 1}]
       :koulutuksen-jarjestaja-osaamisen-arvioijat
       [{:nimi "Aapo Arvioija"
-        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921674"}}]
-      :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921685"}
+        :organisaatio {:oppilaitos-oid "1.2.246.562.10.54453921675"}}]
+      :jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453921683"}
       :nayttoymparisto {:nimi "Toinen Esimerkki Oyj"
                         :y-tunnus "1234562-0"
                         :kuvaus "Testiyrityksen testiosasostalla"}
@@ -60,8 +60,8 @@
      :aiemmin-hankitun-osaamisen-arvioijat
      [{:nimi "Aarne Arvioija"
        :organisaatio {:oppilaitos-oid
-                      "1.2.246.562.10.54453923411"}}]}
-    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453945322"
+                      "1.2.246.562.10.54453923416"}}]}
+    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54453945328"
     :vaatimuksista-tai-tavoitteista-poikkeaminen
     "Ei poikkeamaa."
     :tarkentavat-tiedot-naytto
@@ -70,9 +70,9 @@
       :koulutuksen-jarjestaja-osaamisen-arvioijat
       [{:nimi "Teuvo Testaaja"
         :organisaatio {:oppilaitos-oid
-                       "1.2.246.562.10.12346234690"}}]
+                       "1.2.246.562.10.12346234698"}}]
       :jarjestaja {:oppilaitos-oid
-                   "1.2.246.562.10.93270534262"}
+                   "1.2.246.562.10.93270534261"}
 
       :nayttoymparisto {:nimi "Testi Oyj"
                         :y-tunnus "1289211-2"
@@ -94,7 +94,7 @@
     "Ei poikkeamia."
     :osaamisen-osoittaminen
     [{:jarjestaja
-      {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+      {:oppilaitos-oid "1.2.246.562.10.54453924331"}
       :nayttoymparisto {:nimi "Testiympäristö 2"
                         :y-tunnus "1234567-1"
                         :kuvaus "Testi test"}
@@ -103,7 +103,7 @@
       :koulutuksen-jarjestaja-osaamisen-arvioijat
       [{:nimi "Timo Testaaja"
         :organisaatio
-        {:oppilaitos-oid "1.2.246.562.10.54452521332"}}]
+        {:oppilaitos-oid "1.2.246.562.10.54452521336"}}]
       :tyoelama-osaamisen-arvioijat
       [{:nimi "Taneli Työmies"
         :organisaatio {:nimi "Tanelin Paja Ky"
@@ -116,7 +116,7 @@
     [{:jarjestajan-edustaja
       {:nimi "Ville Valvoja"
        :rooli "Valvojan apulainen"
-       :oppilaitos-oid "1.2.246.562.10.54451211340"}
+       :oppilaitos-oid "1.2.246.562.10.54451211343"}
       :osaamisen-hankkimistapa-koodi-uri
       "osaamisenhankkimistapa_oppisopimus"
       :osaamisen-hankkimistapa-koodi-versio 2
@@ -141,11 +141,11 @@
       :hankkijan-edustaja
       {:nimi "Heikki Hankkija"
        :rooli "Opettaja"
-       :oppilaitos-oid "1.2.246.562.10.54452422420"}
+       :oppilaitos-oid "1.2.246.562.10.54452422428"}
       :alku (java.time.LocalDate/of 2019 1 11)
       :loppu (java.time.LocalDate/of 2019 3 14)
       :yksiloiva-tunniste "1234567890"}]
-    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232222"}])
+    :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232223"}])
 
 (def oto-data
   [{:nimi "Testiopintojakso"
@@ -165,12 +165,12 @@
      :aiemmin-hankitun-osaamisen-arvioijat
      [{:nimi "Arttu Arvioija"
        :organisaatio {:oppilaitos-oid
-                      "1.2.246.562.10.54453931311"}}]}
+                      "1.2.246.562.10.54453931310"}}]}
     :osa-alueet
     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
       :osa-alue-koodi-versio 4
       :koulutuksen-jarjestaja-oid
-      "1.2.246.562.10.54453923578"
+      "1.2.246.562.10.54453923572"
       :vaatimuksista-tai-tavoitteista-poikkeaminen
       "Testaus ei kuulu vaatimuksiin."
       :valittu-todentamisen-prosessi-koodi-uri
@@ -188,9 +188,9 @@
         :koulutuksen-jarjestaja-osaamisen-arvioijat
         [{:nimi "Teppo Testaaja"
           :organisaatio {:oppilaitos-oid
-                         "1.2.246.562.10.54539267901"}}]
+                         "1.2.246.562.10.54539267903"}}]
         :jarjestaja {:oppilaitos-oid
-                     "1.2.246.562.10.55890967901"}
+                     "1.2.246.562.10.55890967908"}
 
         :nayttoymparisto {:nimi "Ab Yhtiö Oy"
                           :y-tunnus "1234128-1"
@@ -210,9 +210,9 @@
       :koulutuksen-jarjestaja-osaamisen-arvioijat
       [{:nimi "Erkki Esimerkkitestaaja"
         :organisaatio {:oppilaitos-oid
-                       "1.2.246.562.10.13490579090"}}]
+                       "1.2.246.562.10.13490579094"}}]
       :jarjestaja {:oppilaitos-oid
-                   "1.2.246.562.10.93270579090"}
+                   "1.2.246.562.10.93270579092"}
       :nayttoymparisto {:nimi "Testi Oy"
                         :y-tunnus "1289235-2"
                         :kuvaus "Testiyhtiö"}
@@ -319,8 +319,8 @@
     :loppu (java.time.LocalDate/of 2022 2 19)
     :laajuus 5.5M}])
 
-(def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                :oppija-oid "1.2.246.562.24.12312312312"
+(def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                :oppija-oid "1.2.246.562.24.12312312319"
                 :ensikertainen-hyvaksyminen
                 (java.time.LocalDate/of 2019 3 18)
                 :osaamisen-hankkimisen-tarve true
@@ -334,7 +334,7 @@
                 :hankittavat-koulutuksen-osat []
                 :opiskeluvalmiuksia-tukevat-opinnot oto-data})
 
-(def min-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"})
+(def min-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"})
 
 (deftest get-aiemmin-hankitut-ammat-tutkinnon-osat-test
   (testing "Set HOKS aiemmin hankitut tutkinnon osat"
@@ -433,12 +433,12 @@
                  (h/save-hoks!
                    (assoc hoks-data
                           :tuva-opiskeluoikeus-oid
-                          "1.2.246.562.15.00000000002")))]
+                          "1.2.246.562.15.20000000008")))]
       (eq
         (-> (utils/dissoc-module-ids (h/get-hoks-by-id (:id hoks)))
             (select-keys [:id :tuva-opiskeluoikeus-oid]))
         {:id 1
-         :tuva-opiskeluoikeus-oid "1.2.246.562.15.00000000002"}))))
+         :tuva-opiskeluoikeus-oid "1.2.246.562.15.20000000008"}))))
 
 (deftest tarkentavat-tiedot-osaamisen-arvioija-save
   (testing "If tarkentavat-tiedot-osaamisen-arvioija is missing
@@ -486,7 +486,7 @@
     (let [oh-data
           {:jarjestajan-edustaja {:nimi "Ville Valvoja"
                                   :rooli "Valvojan apulainen"
-                                  :oppilaitos-oid "1.2.246.562.10.54451211340"}
+                                  :oppilaitos-oid "1.2.246.562.10.54451211343"}
            :osaamisen-hankkimistapa-koodi-uri
            "osaamisenhankkimistapa_oppisopimus"
            :osaamisen-hankkimistapa-koodi-versio 2
@@ -500,7 +500,7 @@
            :ajanjakson-tarkenne "Ei tarkennettavia asioita"
            :hankkijan-edustaja {:nimi "Heikki Hankkija"
                                 :rooli "Opettaja"
-                                :oppilaitos-oid "1.2.246.562.10.54452422420"}
+                                :oppilaitos-oid "1.2.246.562.10.54452422428"}
            :alku (java.time.LocalDate/of 2019 1 11)}
           oh1 (ha/save-osaamisen-hankkimistapa!
                 (assoc
