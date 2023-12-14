@@ -30,7 +30,7 @@
                :contact [{:value "kayttaja@domain.local"
                           :type "YHTEYSTIETO_SAHKOPOSTI"}]})}))))
 
-(def student-info {:oppijanumero "1.2.246.562.24.62444477777",
+(def student-info {:oppijanumero "1.2.246.562.24.62444477771",
                    :etunimet "Pauliina Joku",
                    :asiointiKieli {:kieliKoodi "fi", :kieliTyyppi "suomi"},
                    :syntymaaika "1975-04-20",
@@ -38,7 +38,7 @@
                    :sukunimi "Pouta",
                    :kansalaisuus [{:kansalaisuusKoodi "246"}],
                    :hetu "200475-0000",
-                   :oidHenkilo "1.2.246.562.24.62444477777",
+                   :oidHenkilo "1.2.246.562.24.62444477771",
                    :kutsumanimi "Pauliina",
                    :yhteystiedotRyhma
                    [{:id 118888872,
@@ -75,7 +75,7 @@
                       {:yhteystietoTyyppi "YHTEYSTIETO_PUHELINNUMERO",
                        :yhteystietoArvo nil}]}]})
 
-(def converted-student-info {:oid "1.2.246.562.24.62444477777"
+(def converted-student-info {:oid "1.2.246.562.24.62444477771"
                              :first-name "Pauliina Joku"
                              :surname "Pouta"
                              :common-name "Pauliina"
@@ -104,10 +104,10 @@
 (deftest convert-all-nil-contact-info
   (testing "contact group containg only nil contact values should be pruned"
     (is (= (onr/convert-student-info
-             {:oppijanumero "1.2.246.562.24.62444477777",
+             {:oppijanumero "1.2.246.562.24.62444477771",
               :etunimet "Pauliina Joku",
               :sukunimi "Pouta",
-              :oidHenkilo "1.2.246.562.24.62444477777",
+              :oidHenkilo "1.2.246.562.24.62444477771",
               :kutsumanimi "Pauliina",
               :yhteystiedotRyhma
               [{:id 118888872,
@@ -123,7 +123,7 @@
                                :yhteystietoArvo nil}
                               {:yhteystietoTyyppi "YHTEYSTIETO_PUHELINNUMERO",
                                :yhteystietoArvo nil}]}]})
-           {:oid "1.2.246.562.24.62444477777"
+           {:oid "1.2.246.562.24.62444477771"
             :first-name "Pauliina Joku"
             :surname "Pouta"
             :common-name "Pauliina"

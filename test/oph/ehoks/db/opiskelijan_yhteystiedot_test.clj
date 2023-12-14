@@ -43,8 +43,8 @@
     :osaamisen-osoittaminen []}])
 
 (def simple-hoks-data
-  {:opiskeluoikeus-oid          "1.2.246.562.15.00000000001"
-   :oppija-oid                  "1.2.246.562.24.12312312312"
+  {:opiskeluoikeus-oid          "1.2.246.562.15.10000000009"
+   :oppija-oid                  "1.2.246.562.24.12312312319"
    :ensikertainen-hyvaksyminen  (java.time.LocalDate/of 2022 7 1)
    :osaamisen-hankkimisen-tarve true
    :osaamisen-saavuttamisen-pvm (java.time.LocalDate/of 2022 9 1)
@@ -52,8 +52,8 @@
    :puhelinnumero               "0401234567"})
 
 (def full-hoks-data
-  {:opiskeluoikeus-oid          "1.2.246.562.15.00000000002"
-   :oppija-oid                  "1.2.246.562.24.12312312312"
+  {:opiskeluoikeus-oid          "1.2.246.562.15.20000000008"
+   :oppija-oid                  "1.2.246.562.24.12312312319"
    :ensikertainen-hyvaksyminen  (java.time.LocalDate/of 2022 7 1)
    :osaamisen-hankkimisen-tarve true
    :sahkoposti                  "erkki.esimerkki@esimerkki.com"
@@ -61,8 +61,8 @@
    :hankittavat-paikalliset-tutkinnon-osat hpto-data})
 
 (def recent-hoks-data
-  {:opiskeluoikeus-oid          "1.2.246.562.15.00000000003"
-   :oppija-oid                  "1.2.246.562.24.12312312312"
+  {:opiskeluoikeus-oid          "1.2.246.562.15.30000000007"
+   :oppija-oid                  "1.2.246.562.24.12312312319"
    :ensikertainen-hyvaksyminen  (java.time.LocalDate/of 2022 7 1)
    :osaamisen-saavuttamisen-pvm (.minusDays (java.time.LocalDate/now) 10)
    :osaamisen-hankkimisen-tarve true

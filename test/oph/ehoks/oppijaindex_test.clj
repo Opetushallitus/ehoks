@@ -14,7 +14,7 @@
 (t/use-fixtures :each utils/empty-database-after-test)
 
 (def opiskeluoikeus-data
-  {:oppilaitos {:oid "1.2.246.562.10.222222222222"}
+  {:oppilaitos {:oid "1.2.246.562.10.22222222220"}
    :tila {:opiskeluoikeusjaksot
           [{:alku "2023-07-03"
             :tila {:koodiarvo "lasna"
@@ -32,7 +32,7 @@
 
 (def onr-data
   {:status 200
-   :body {:oidHenkilo "1.2.246.562.24.111111111111"
+   :body {:oidHenkilo "1.2.246.562.24.11111111110"
           :hetu "250103-5360"
           :etunimet "Tero"
           :kutsumanimi "Tero"
@@ -41,7 +41,7 @@
 (def onr-data-master
   {:status 200
    :body {:duplicate false
-          :oidHenkilo "1.2.246.562.24.111111111222"
+          :oidHenkilo "1.2.246.562.24.11111111123"
           :hetu "250103-5360"
           :etunimet "Matti"
           :kutsumanimi "Masterinho"
@@ -173,7 +173,7 @@
 
 (def onr-data-name-changed
   {:status 200
-   :body {:oidHenkilo "1.2.246.562.24.111111111111"
+   :body {:oidHenkilo "1.2.246.562.24.11111111110"
           :hetu "250103-5360"
           :etunimet "Tero"
           :kutsumanimi "Tero"
@@ -199,36 +199,36 @@
 
 (t/deftest get-oppijat-without-index
   (t/testing "Get oppijat without index"
-    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
-                           :opiskeluoikeus-oid "1.2.246.562.15.22222222222"})
-    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
-                           :opiskeluoikeus-oid "1.2.246.562.15.22222222223"})
-    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111112"
-                           :opiskeluoikeus-oid "1.2.246.562.15.22222222224"})
+    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111110"
+                           :opiskeluoikeus-oid "1.2.246.562.15.22222222220"})
+    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111110"
+                           :opiskeluoikeus-oid "1.2.246.562.15.23222222228"})
+    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.12111111119"
+                           :opiskeluoikeus-oid "1.2.246.562.15.24222222226"})
     (t/is
       (= (sut/get-oppijat-without-index)
-         [{:oppija_oid "1.2.246.562.24.11111111111"}
-          {:oppija_oid "1.2.246.562.24.11111111112"}]))
+         [{:oppija_oid "1.2.246.562.24.11111111110"}
+          {:oppija_oid "1.2.246.562.24.12111111119"}]))
     (t/is
       (= (sut/get-oppijat-without-index-count)
          2))))
 
 (t/deftest get-opiskeluoikeudet-without-index
   (t/testing "Get opiskeluoikeudet without index"
-    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
-                           :opiskeluoikeus-oid "1.2.246.562.15.22222222222"})
-    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111111"
-                           :opiskeluoikeus-oid "1.2.246.562.15.22222222223"})
-    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111112"
-                           :opiskeluoikeus-oid "1.2.246.562.15.22222222224"})
+    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111110"
+                           :opiskeluoikeus-oid "1.2.246.562.15.22222222220"})
+    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.11111111110"
+                           :opiskeluoikeus-oid "1.2.246.562.15.23222222228"})
+    (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.12111111119"
+                           :opiskeluoikeus-oid "1.2.246.562.15.24222222226"})
     (t/is
       (= (sut/get-opiskeluoikeudet-without-index)
-         [{:oppija_oid "1.2.246.562.24.11111111111"
-           :opiskeluoikeus_oid "1.2.246.562.15.22222222222"}
-          {:oppija_oid "1.2.246.562.24.11111111111"
-           :opiskeluoikeus_oid "1.2.246.562.15.22222222223"}
-          {:oppija_oid "1.2.246.562.24.11111111112"
-           :opiskeluoikeus_oid "1.2.246.562.15.22222222224"}]))
+         [{:oppija_oid "1.2.246.562.24.11111111110"
+           :opiskeluoikeus_oid "1.2.246.562.15.22222222220"}
+          {:oppija_oid "1.2.246.562.24.11111111110"
+           :opiskeluoikeus_oid "1.2.246.562.15.23222222228"}
+          {:oppija_oid "1.2.246.562.24.12111111119"
+           :opiskeluoikeus_oid "1.2.246.562.15.24222222226"}]))
     (t/is
       (= (sut/get-opiskeluoikeudet-without-index-count)
          3))))
@@ -236,98 +236,98 @@
 (t/deftest get-opiskeluoikeudet-without-tutkinto-nimi
   (t/testing "Get opiskeluoikeudet without tutkinto_nimi"
     (db-oppija/insert-oppija!
-      {:oid "1.2.246.562.24.11111111111"
+      {:oid "1.2.246.562.24.11111111110"
        :nimi "Testi Oppija"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oid "1.2.246.562.15.76000000002"
-       :oppija_oid "1.2.246.562.24.11111111111"})
+      {:oid "1.2.246.562.15.76000000000"
+       :oppija_oid "1.2.246.562.24.11111111110"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oid "1.2.246.562.15.76000000003"
-       :oppija_oid "1.2.246.562.24.11111111111"})
+      {:oid "1.2.246.562.15.76300000007"
+       :oppija_oid "1.2.246.562.24.11111111110"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oid "1.2.246.562.15.76000000004"
-       :oppija_oid "1.2.246.562.24.11111111111"
+      {:oid "1.2.246.562.15.76400000006"
+       :oppija_oid "1.2.246.562.24.11111111110"
        :tutkinto-nimi {:fi "Testitutkinto" :sv "test"}})
     (let [results (vec (sort-by :oid
                                 (sut/get-opiskeluoikeudet-without-tutkinto)))]
       (t/is (= (get-in results [0 :oid])
-               "1.2.246.562.15.76000000002"))
+               "1.2.246.562.15.76000000000"))
       (t/is (= (get-in results [1 :oid])
-               "1.2.246.562.15.76000000003")))))
+               "1.2.246.562.15.76300000007")))))
 
 (t/deftest get-opiskeluoikeudet-without-tutkinto-count
   (t/testing "Get count of opiskeluoikeudet without tutkinto_nimi"
     (db-oppija/insert-oppija!
-      {:oid "1.2.246.562.24.11111111111"
+      {:oid "1.2.246.562.24.11111111110"
        :nimi "Testi Oppija"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oid "1.2.246.562.15.76000000002"
-       :oppija_oid "1.2.246.562.24.11111111111"})
+      {:oid "1.2.246.562.15.76000000000"
+       :oppija_oid "1.2.246.562.24.11111111110"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oid "1.2.246.562.15.76000000003"
-       :oppija_oid "1.2.246.562.24.11111111111"})
+      {:oid "1.2.246.562.15.76300000007"
+       :oppija_oid "1.2.246.562.24.11111111110"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oid "1.2.246.562.15.76000000004"
-       :oppija_oid "1.2.246.562.24.11111111111"
+      {:oid "1.2.246.562.15.76400000006"
+       :oppija_oid "1.2.246.562.24.11111111110"
        :tutkinto-nimi {:fi "Testitutkinto" :sv "test"}})
     (t/is (= (sut/get-opiskeluoikeudet-without-tutkinto-count) 2))))
 
 (t/deftest get-oppija-opiskeluoikeudet
   (t/testing "Get oppija opiskeluoikeudet"
-    (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111111"})
+    (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111110"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oppija-oid "1.2.246.562.24.11111111111"
-       :oid "1.2.246.562.15.22222222222"})
+      {:oppija-oid "1.2.246.562.24.11111111110"
+       :oid "1.2.246.562.15.22222222220"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oppija-oid "1.2.246.562.24.11111111111"
-       :oid "1.2.246.562.15.22222222224"})
-    (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111112"})
+      {:oppija-oid "1.2.246.562.24.11111111110"
+       :oid "1.2.246.562.15.24222222226"})
+    (db-oppija/insert-oppija! {:oid "1.2.246.562.24.12111111119"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oppija-oid "1.2.246.562.24.11111111112"
-       :oid "1.2.246.562.15.22222222223"})
+      {:oppija-oid "1.2.246.562.24.12111111119"
+       :oid "1.2.246.562.15.23222222228"})
     (t/is
-      (= (sut/get-oppija-opiskeluoikeudet "1.2.246.562.24.11111111111")
-         [{:oid "1.2.246.562.15.22222222222"
-           :oppija-oid "1.2.246.562.24.11111111111"}
-          {:oid "1.2.246.562.15.22222222224"
-           :oppija-oid "1.2.246.562.24.11111111111"}]))
+      (= (sut/get-oppija-opiskeluoikeudet "1.2.246.562.24.11111111110")
+         [{:oid "1.2.246.562.15.22222222220"
+           :oppija-oid "1.2.246.562.24.11111111110"}
+          {:oid "1.2.246.562.15.24222222226"
+           :oppija-oid "1.2.246.562.24.11111111110"}]))
     (t/is
-      (= (sut/get-oppija-opiskeluoikeudet "1.2.246.562.24.11111111112")
-         [{:oid "1.2.246.562.15.22222222223"
-           :oppija-oid "1.2.246.562.24.11111111112"}]))))
+      (= (sut/get-oppija-opiskeluoikeudet "1.2.246.562.24.12111111119")
+         [{:oid "1.2.246.562.15.23222222228"
+           :oppija-oid "1.2.246.562.24.12111111119"}]))))
 
 (t/deftest get-oppija-by-oid
   (t/testing "Get oppija by oid"
     (db-oppija/insert-oppija!
-      {:oid "1.2.246.562.24.11111111111" :nimi "Test 1"})
+      {:oid "1.2.246.562.24.11111111110" :nimi "Test 1"})
     (db-oppija/insert-oppija!
-      {:oid "1.2.246.562.24.11111111112" :nimi "Test 2"})
-    (t/is (= (sut/get-oppija-by-oid "1.2.246.562.24.11111111111")
-             {:oid "1.2.246.562.24.11111111111" :nimi "Test 1"}))
-    (t/is (= (sut/get-oppija-by-oid "1.2.246.562.24.11111111112")
-             {:oid "1.2.246.562.24.11111111112" :nimi "Test 2"}))))
+      {:oid "1.2.246.562.24.12111111119" :nimi "Test 2"})
+    (t/is (= (sut/get-oppija-by-oid "1.2.246.562.24.11111111110")
+             {:oid "1.2.246.562.24.11111111110" :nimi "Test 1"}))
+    (t/is (= (sut/get-oppija-by-oid "1.2.246.562.24.12111111119")
+             {:oid "1.2.246.562.24.12111111119" :nimi "Test 2"}))))
 
 (t/deftest get-opiskeluoikeus-by-oid!
   (t/testing "Get opiskeluoikeus by oid"
     (db-oppija/insert-oppija!
-      {:oid "1.2.246.562.24.11111111111" :nimi "Test 1"})
+      {:oid "1.2.246.562.24.11111111110" :nimi "Test 1"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oid "1.2.246.562.15.22222222222"
-       :oppija_oid "1.2.246.562.24.11111111111"})
+      {:oid "1.2.246.562.15.22222222220"
+       :oppija_oid "1.2.246.562.24.11111111110"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oid "1.2.246.562.15.22222222223"
-       :oppija_oid "1.2.246.562.24.11111111111"})
-    (t/is (= (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.22222222222")
-             {:oid "1.2.246.562.15.22222222222"
-              :oppija-oid "1.2.246.562.24.11111111111"}))
-    (t/is (= (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.22222222223")
-             {:oid "1.2.246.562.15.22222222223"
-              :oppija-oid "1.2.246.562.24.11111111111"}))))
+      {:oid "1.2.246.562.15.23222222228"
+       :oppija_oid "1.2.246.562.24.11111111110"})
+    (t/is (= (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.22222222220")
+             {:oid "1.2.246.562.15.22222222220"
+              :oppija-oid "1.2.246.562.24.11111111110"}))
+    (t/is (= (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.23222222228")
+             {:oid "1.2.246.562.15.23222222228"
+              :oppija-oid "1.2.246.562.24.11111111110"}))))
 
 (t/deftest add-oppija-opiskeluoikeus
   (t/testing "Add oppija and opiskeluoikeus"
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"
+      ["1.2.246.562.10.22222222220"
        (fn [_ url __]
          (cond
            (> (.indexOf url "oppijanumerorekisteri-service") -1)
@@ -338,21 +338,21 @@
                     opiskeluoikeus-data
                     :alkamispäivä "2023-07-03"
                     :arvioituPäättymispäivä "2025-12-01"
-                    :oid "1.2.246.562.15.00000000001")}))]
-      (sut/add-oppija! "1.2.246.562.24.111111111111")
+                    :oid "1.2.246.562.15.10000000009")}))]
+      (sut/add-oppija! "1.2.246.562.24.11111111110")
       (sut/add-opiskeluoikeus!
-        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+        "1.2.246.562.15.10000000009" "1.2.246.562.24.11111111110")
       (utils/eq
-        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
-        {:oid "1.2.246.562.24.111111111111"
+        (sut/get-oppija-by-oid "1.2.246.562.24.11111111110")
+        {:oid "1.2.246.562.24.11111111110"
          :nimi "Tero Testaaja"})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
-        {:oid "1.2.246.562.15.00000000001"
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.10000000009")
+        {:oid "1.2.246.562.15.10000000009"
          :alkamispaiva (LocalDate/of 2023 7 3)
          :arvioitu-paattymispaiva (LocalDate/of 2025 12 1)
-         :oppija-oid "1.2.246.562.24.111111111111"
-         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :oppija-oid "1.2.246.562.24.11111111110"
+         :oppilaitos-oid "1.2.246.562.10.22222222220"
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
@@ -361,7 +361,7 @@
 (t/deftest update-oppija-opiskeluoikeus
   (t/testing "Update oppija and opiskeluoikeus"
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"
+      ["1.2.246.562.10.22222222220"
        (fn [_ url __]
          (cond
            (> (.indexOf url "oppijanumerorekisteri-service") -1)
@@ -370,19 +370,19 @@
            {:status 200
             :body (assoc
                     opiskeluoikeus-data
-                    :oid "1.2.246.562.15.00000000001")}))]
-      (sut/add-oppija! "1.2.246.562.24.111111111111")
+                    :oid "1.2.246.562.15.10000000009")}))]
+      (sut/add-oppija! "1.2.246.562.24.11111111110")
       (sut/add-opiskeluoikeus!
-        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+        "1.2.246.562.15.10000000009" "1.2.246.562.24.11111111110")
       (utils/eq
-        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
-        {:oid "1.2.246.562.24.111111111111"
+        (sut/get-oppija-by-oid "1.2.246.562.24.11111111110")
+        {:oid "1.2.246.562.24.11111111110"
          :nimi "Tero Testaaja"})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
-        {:oid "1.2.246.562.15.00000000001"
-         :oppija-oid "1.2.246.562.24.111111111111"
-         :oppilaitos-oid "1.2.246.562.10.222222222222"
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.10000000009")
+        {:oid "1.2.246.562.15.10000000009"
+         :oppija-oid "1.2.246.562.24.11111111110"
+         :oppilaitos-oid "1.2.246.562.10.22222222220"
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
@@ -390,23 +390,23 @@
 
     ; testataan että jos ei ole alkamispäivää korvataan aina uudella
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"
+      ["1.2.246.562.10.22222222220"
        (fn [_ ___ __]
          {:status 200
           :body (assoc
                   opiskeluoikeus-data
                   :alkamispäivä "2023-07-01"
-                  :oid "1.2.246.562.15.00000000001")})]
+                  :oid "1.2.246.562.15.10000000009")})]
       (t/is (sut/opiskeluoikeus-information-outdated?!
-              "1.2.246.562.15.00000000001"))
+              "1.2.246.562.15.10000000009"))
       (sut/add-opiskeluoikeus!
-        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+        "1.2.246.562.15.10000000009" "1.2.246.562.24.11111111110")
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
-        {:oid "1.2.246.562.15.00000000001"
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.10000000009")
+        {:oid "1.2.246.562.15.10000000009"
          :alkamispaiva (LocalDate/of 2023 7 1)
-         :oppija-oid "1.2.246.562.24.111111111111"
-         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :oppija-oid "1.2.246.562.24.11111111110"
+         :oppilaitos-oid "1.2.246.562.10.22222222220"
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
@@ -414,44 +414,44 @@
 
     ; testataan että muuten pidetään indeksissä jo oleva
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"
+      ["1.2.246.562.10.22222222220"
        (fn [_ ___ __]
          {:status 200
           :body (assoc
                   opiskeluoikeus-data
                   :alkamispäivä "2023-07-03"
                   :arvioituPäättymispäivä "2025-10-01"
-                  :oid "1.2.246.562.15.00000000001")})]
+                  :oid "1.2.246.562.15.10000000009")})]
       (t/is (not (sut/opiskeluoikeus-information-outdated?!
-                   "1.2.246.562.15.00000000001")))
+                   "1.2.246.562.15.10000000009")))
       (sut/add-opiskeluoikeus!
-        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+        "1.2.246.562.15.10000000009" "1.2.246.562.24.11111111110")
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
-        {:oid "1.2.246.562.15.00000000001"
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.10000000009")
+        {:oid "1.2.246.562.15.10000000009"
          :alkamispaiva (LocalDate/of 2023 7 1)  ;; i.e. no change
-         :oppija-oid "1.2.246.562.24.111111111111"
-         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :oppija-oid "1.2.246.562.24.11111111110"
+         :oppilaitos-oid "1.2.246.562.10.22222222220"
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}})
       (db-ops/update! :opiskeluoikeudet
                       {:updated_at (java.time.LocalDate/of 2022 9 1)}
-                      ["oid = ?" "1.2.246.562.15.00000000001"])
+                      ["oid = ?" "1.2.246.562.15.10000000009"])
       (t/is (sut/opiskeluoikeus-information-outdated?!
-              "1.2.246.562.15.00000000001")))
+              "1.2.246.562.15.10000000009")))
 
     ; odota cachen vanhenemista
     (Thread/sleep 500)
 
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"
+      ["1.2.246.562.10.22222222220"
        (fn [_ url __]
          (cond
            (> (.indexOf url "oppijanumerorekisteri-service") -1)
            {:status 200
-            :body {:oidHenkilo "1.2.246.562.24.111111111111"
+            :body {:oidHenkilo "1.2.246.562.24.11111111110"
                    :hetu "250103-5360"
                    :etunimet "Tero"
                    :kutsumanimi "Tero"
@@ -459,17 +459,17 @@
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
             :body {:oppilaitos {:oid "1.2.246.562.10.222222222223"}}}))]
-      (sut/update-oppija! "1.2.246.562.24.111111111111")
+      (sut/update-oppija! "1.2.246.562.24.11111111110")
       (sut/update-opiskeluoikeus-without-error-forwarding!
-        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+        "1.2.246.562.15.10000000009" "1.2.246.562.24.11111111110")
       (utils/eq
-        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
-        {:oid "1.2.246.562.24.111111111111"
+        (sut/get-oppija-by-oid "1.2.246.562.24.11111111110")
+        {:oid "1.2.246.562.24.11111111110"
          :nimi "Tero Testinen"})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
-        {:oid "1.2.246.562.15.00000000001"
-         :oppija-oid "1.2.246.562.24.111111111111"
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.10000000009")
+        {:oid "1.2.246.562.15.10000000009"
+         :oppija-oid "1.2.246.562.24.11111111110"
          :oppilaitos-oid "1.2.246.562.10.222222222223"
          :tutkinto-nimi {:fi "" :sv ""}
          :osaamisala-nimi {:fi "" :sv ""}}))))
@@ -477,7 +477,7 @@
 (t/deftest insert-and-update-oppija-opiskeluoikeus-with-hankintakoulutus
   (t/testing "Insert and update oppija and opiskeluoikeus with hankintakoulutus"
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"
+      ["1.2.246.562.10.22222222220"
        (fn [_ url __]
          (cond
            (> (.indexOf url "oppijanumerorekisteri-service") -1)
@@ -486,22 +486,22 @@
            {:status 200
             :body   (assoc
                       opiskeluoikeus-data
-                      :oid "1.2.246.562.15.00000000001")}))]
-      (sut/add-oppija! "1.2.246.562.24.111111111111")
+                      :oid "1.2.246.562.15.10000000009")}))]
+      (sut/add-oppija! "1.2.246.562.24.11111111110")
       (sut/add-opiskeluoikeus!
-        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111"))
+        "1.2.246.562.15.10000000009" "1.2.246.562.24.11111111110"))
 
     ; odota cachen vanhenemista
     (Thread/sleep 500)
 
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"]
+      ["1.2.246.562.10.22222222220"]
       (sut/insert-hankintakoulutus-opiskeluoikeus!
-        "1.2.246.562.15.00000000001"
-        "1.2.246.562.24.111111111111"
+        "1.2.246.562.15.10000000009"
+        "1.2.246.562.24.11111111110"
         (assoc
           opiskeluoikeus-data
-          :oid "1.2.246.562.15.00000000002"
+          :oid "1.2.246.562.15.20000000008"
           :sisältyyOpiskeluoikeuteen
           {:oppilaitos {:oid "1.2.246.562.15.99999123"
                         :oppilaitosnumero
@@ -510,73 +510,73 @@
                         {:fi "Testi-yliopisto"
                          :sv "Testi-universitet"
                          :en "Testi University"}}
-           :oid        "1.2.246.562.15.00000000001"}))
+           :oid        "1.2.246.562.15.10000000009"}))
       (utils/eq
         (sut/get-opiskeluoikeus-by-oid!
-          "1.2.246.562.15.00000000002")
+          "1.2.246.562.15.20000000008")
         {:osaamisala-nimi {:fi "", :sv ""},
-         :oid "1.2.246.562.15.00000000002",
+         :oid "1.2.246.562.15.20000000008",
          :hankintakoulutus-opiskeluoikeus-oid
-         "1.2.246.562.15.00000000001",
-         :oppilaitos-oid "1.2.246.562.10.222222222222",
+         "1.2.246.562.15.10000000009",
+         :oppilaitos-oid "1.2.246.562.10.22222222220",
          :tutkinto-nimi
          {:en "Testing",
           :fi "Testialan perustutkinto",
           :sv "Grundexamen inom testsbranschen"},
-         :oppija-oid "1.2.246.562.24.111111111111",
+         :oppija-oid "1.2.246.562.24.11111111110",
          :hankintakoulutus-jarjestaja-oid
          "1.2.246.562.15.99999123"})
       (sut/insert-hankintakoulutus-opiskeluoikeus!
-        "1.2.246.562.15.00000000001"
-        "1.2.246.562.24.111111111111"
+        "1.2.246.562.15.10000000009"
+        "1.2.246.562.24.11111111110"
         (assoc
           opiskeluoikeus-data
-          :oid "1.2.246.562.15.00000000002"
+          :oid "1.2.246.562.15.20000000008"
           :sisältyyOpiskeluoikeuteen
-          {:oppilaitos {:oid "1.2.246.562.15.99999125"
+          {:oppilaitos {:oid "1.2.246.562.10.99999125000"
                         :oppilaitosnumero
                         {:koodiarvo "10076"}
                         :nimi
                         {:fi "Katujen-yliopisto"
                          :sv "Gatan-universitet"
                          :en "Street University"}}
-           :oid        "1.2.246.562.15.00000000001"}))
+           :oid        "1.2.246.562.15.10000000009"}))
       (utils/eq
         (sut/get-opiskeluoikeus-by-oid!
-          "1.2.246.562.15.00000000002")
+          "1.2.246.562.15.20000000008")
         {:osaamisala-nimi {:fi "", :sv ""},
-         :oid "1.2.246.562.15.00000000002",
+         :oid "1.2.246.562.15.20000000008",
          :hankintakoulutus-opiskeluoikeus-oid
-         "1.2.246.562.15.00000000001",
-         :oppilaitos-oid "1.2.246.562.10.222222222222",
+         "1.2.246.562.15.10000000009",
+         :oppilaitos-oid "1.2.246.562.10.22222222220",
          :tutkinto-nimi
          {:en "Testing",
           :fi "Testialan perustutkinto",
           :sv "Grundexamen inom testsbranschen"},
-         :oppija-oid "1.2.246.562.24.111111111111",
+         :oppija-oid "1.2.246.562.24.11111111110",
          :hankintakoulutus-jarjestaja-oid
-         "1.2.246.562.15.99999125"}))))
+         "1.2.246.562.10.99999125000"}))))
 
 (t/deftest set-paattynyt-test
   (t/testing "Setting paattynyt timestamp"
-    (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111112"})
+    (db-oppija/insert-oppija! {:oid "1.2.246.562.24.12111111119"})
     (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oppija-oid "1.2.246.562.24.11111111112"
-       :oid "1.2.246.562.15.22222222223"})
+      {:oppija-oid "1.2.246.562.24.12111111119"
+       :oid "1.2.246.562.15.23222222228"})
     (let [timestamp (java.sql.Timestamp. 1568367627293)]
-      (sut/set-opiskeluoikeus-paattynyt! "1.2.246.562.15.22222222223" timestamp)
+      (sut/set-opiskeluoikeus-paattynyt! "1.2.246.562.15.23222222228" timestamp)
       (t/is
         (= (.compareTo
              timestamp
              (get
-               (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.22222222223")
+               (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.23222222228")
                :paattynyt))
            0)))))
 
 (t/deftest oppija-opiskeluoikeus-match-test
   (with-redefs [oph.ehoks.config/config {:enforce-opiskeluoikeus-match? true}]
     (let [opiskeluoikeudet [{:oid "1.2.246.562.15.55003456345"
-                             :oppilaitos {:oid "1.2.246.562.10.12000000000"
+                             :oppilaitos {:oid "1.2.246.562.10.12000000005"
                                           :nimi {:fi "TestiFi"
                                                  :sv "TestiSv"
                                                  :en "TestiEn"}}
@@ -598,7 +598,7 @@
 (t/deftest hankintakoulutus-opiskeluoikeus-test
   (t/testing "Save opiskeluoikeus with sisältyyOpiskeluoikeuteen information"
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"
+      ["1.2.246.562.10.22222222220"
        (fn [_ url __]
          (cond
            (> (.indexOf url "oppijanumerorekisteri-service") -1)
@@ -620,9 +620,9 @@
           ExceptionInfo
           #"Opiskeluoikeus sisältyy toiseen opiskeluoikeuteen"
           (sut/add-opiskeluoikeus!
-            "1.2.246.562.15.00000000005" "1.2.246.562.24.111111111111")))
+            "1.2.246.562.15.50000000005" "1.2.246.562.24.11111111110")))
       (t/is
-        (nil? (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001"))))))
+        (nil? (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.10000000009"))))))
 
 (t/deftest hankintakoulutus-filter-test
   (t/testing "Existing hankintakoulutus is filtered from opiskeluoikeudet"
@@ -668,7 +668,7 @@
 
     (t/testing "Active opiskeluoikeus returns true"
       (utils/with-ticket-auth
-        ["1.2.246.562.10.222222222222"
+        ["1.2.246.562.10.22222222220"
          (fn [_ url __]
            (cond
              (> (.indexOf url "oppijanumerorekisteri-service") -1)
@@ -689,7 +689,7 @@
 
     (t/testing "Finished opiskeluoikeus returns false"
       (utils/with-ticket-auth
-        ["1.2.246.562.10.222222222222"
+        ["1.2.246.562.10.22222222220"
          (fn [_ url __]
            (cond
              (> (.indexOf url "oppijanumerorekisteri-service") -1)
@@ -712,7 +712,7 @@
 
     (t/testing "Active opiskeluoikeus matching hoks is filtered from multiple"
       (utils/with-ticket-auth
-        ["1.2.246.562.10.222222222222"
+        ["1.2.246.562.10.22222222220"
          (fn [_ url __]
            (cond
              (> (.indexOf url "oppijanumerorekisteri-service") -1)
@@ -729,7 +729,7 @@
 
     (t/testing "Active opiskeluoikeus is parsed from hoks and opiskeluoikeudet"
       (utils/with-ticket-auth
-        ["1.2.246.562.10.222222222222"
+        ["1.2.246.562.10.22222222220"
          (fn [_ url __]
            (cond
              (> (.indexOf url "oppijanumerorekisteri-service") -1)
@@ -759,63 +759,63 @@
 (t/deftest delete-opiskeluoikeus-from-index
   (t/testing "Delete opiskeluoikeus from index"
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"
+      ["1.2.246.562.10.22222222220"
        (fn [_ url __]
          (cond
            (> (.indexOf url (str "oppijanumerorekisteri-service/henkilo/"
-                                 "1.2.246.562.24.111111111111")) -1)
+                                 "1.2.246.562.24.11111111110")) -1)
            onr-data
            (> (.indexOf url "/koski/api/opiskeluoikeus") -1)
            {:status 200
             :body (assoc
                     opiskeluoikeus-data
-                    :oid "1.2.246.562.15.00000000001")}))]
-      (sut/add-oppija! "1.2.246.562.24.111111111111")
+                    :oid "1.2.246.562.15.10000000009")}))]
+      (sut/add-oppija! "1.2.246.562.24.11111111110")
       (sut/add-opiskeluoikeus!
-        "1.2.246.562.15.00000000001" "1.2.246.562.24.111111111111")
+        "1.2.246.562.15.10000000009" "1.2.246.562.24.11111111110")
       (utils/eq
-        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
-        {:oid "1.2.246.562.24.111111111111"
+        (sut/get-oppija-by-oid "1.2.246.562.24.11111111110")
+        {:oid "1.2.246.562.24.11111111110"
          :nimi "Tero Testaaja"})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
-        {:oid "1.2.246.562.15.00000000001"
-         :oppija-oid "1.2.246.562.24.111111111111"
-         :oppilaitos-oid "1.2.246.562.10.222222222222"
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.10000000009")
+        {:oid "1.2.246.562.15.10000000009"
+         :oppija-oid "1.2.246.562.24.11111111110"
+         :oppilaitos-oid "1.2.246.562.10.22222222220"
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}})
 
       (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
-        "1.2.246.562.15.00000000001")
+        "1.2.246.562.15.10000000009")
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.10000000009")
         nil))))
 
 (t/deftest onr-modify-name-change
   (t/testing "onr-modified call has different name compared to oppijaindex"
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"
+      ["1.2.246.562.10.22222222220"
        (fn [_ url __]
          (when
           (> (.indexOf url "oppijanumerorekisteri-service") -1)
            onr-data))]
-      (sut/add-oppija! "1.2.246.562.24.111111111111")
+      (sut/add-oppija! "1.2.246.562.24.11111111110")
       (utils/eq
-        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
-        {:oid "1.2.246.562.24.111111111111"
+        (sut/get-oppija-by-oid "1.2.246.562.24.11111111110")
+        {:oid "1.2.246.562.24.11111111110"
          :nimi "Tero Testaaja"}))
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"
+      ["1.2.246.562.10.22222222220"
        (fn [_ url __]
          (when
           (> (.indexOf url "oppijanumerorekisteri-service") -1)
            onr-data-name-changed))]
-      (sut/handle-onrmodified "1.2.246.562.24.111111111111")
+      (sut/handle-onrmodified "1.2.246.562.24.11111111110")
       (utils/eq
-        (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
-        {:oid "1.2.246.562.24.111111111111"
+        (sut/get-oppija-by-oid "1.2.246.562.24.11111111110")
+        {:oid "1.2.246.562.24.11111111110"
          :nimi "Tero Testaaja-Paivitetty"}))))
 
 (t/deftest onr-modify-slaves-found
@@ -823,7 +823,7 @@
   oppijat-table. /slaves call from ONR returns three oppijas and they all have
   opiskeluoikeus and hoks."
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"
+      ["1.2.246.562.10.22222222220"
        (fn [_ url __]
          (cond
            (> (.indexOf url (str "oppijanumerorekisteri-service/henkilo/"
@@ -836,38 +836,38 @@
                                  "1.2.246.562.24.46525423540")) -1)
            onr-data-slave3
            (> (.indexOf url (str "/koski/api/opiskeluoikeus/"
-                                 "1.2.246.562.15.00000000001")) -1)
+                                 "1.2.246.562.15.10000000009")) -1)
            {:status 200
             :body (assoc
                     opiskeluoikeus-data
-                    :oid "1.2.246.562.15.00000000001")}
+                    :oid "1.2.246.562.15.10000000009")}
            (> (.indexOf url (str "/koski/api/opiskeluoikeus/"
-                                 "1.2.246.562.15.00000000002")) -1)
+                                 "1.2.246.562.15.20000000008")) -1)
            {:status 200
             :body (assoc
                     opiskeluoikeus-data
-                    :oid "1.2.246.562.15.00000000002")}
+                    :oid "1.2.246.562.15.20000000008")}
            (> (.indexOf url (str "/koski/api/opiskeluoikeus/"
-                                 "1.2.246.562.15.00000000003")) -1)
+                                 "1.2.246.562.15.30000000007")) -1)
            {:status 200
             :body (assoc
                     opiskeluoikeus-data
-                    :oid "1.2.246.562.15.00000000003")}))]
+                    :oid "1.2.246.562.15.30000000007")}))]
       (sut/add-oppija! "1.2.246.562.24.30738063716")
       (sut/add-oppija! "1.2.246.562.24.20043052079")
       (sut/add-oppija! "1.2.246.562.24.46525423540")
       (sut/add-opiskeluoikeus!
-        "1.2.246.562.15.00000000001" "1.2.246.562.24.30738063716")
+        "1.2.246.562.15.10000000009" "1.2.246.562.24.30738063716")
       (sut/add-opiskeluoikeus!
-        "1.2.246.562.15.00000000002" "1.2.246.562.24.20043052079")
+        "1.2.246.562.15.20000000008" "1.2.246.562.24.20043052079")
       (sut/add-opiskeluoikeus!
-        "1.2.246.562.15.00000000003" "1.2.246.562.24.46525423540")
+        "1.2.246.562.15.30000000007" "1.2.246.562.24.46525423540")
       (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.30738063716"
-                             :opiskeluoikeus-oid "1.2.246.562.15.00000000001"})
+                             :opiskeluoikeus-oid "1.2.246.562.15.10000000009"})
       (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.20043052079"
-                             :opiskeluoikeus-oid "1.2.246.562.15.00000000002"})
+                             :opiskeluoikeus-oid "1.2.246.562.15.20000000008"})
       (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.46525423540"
-                             :opiskeluoikeus-oid "1.2.246.562.15.00000000003"})
+                             :opiskeluoikeus-oid "1.2.246.562.15.30000000007"})
       (utils/eq
         (sut/get-oppija-by-oid "1.2.246.562.24.30738063716")
         {:oid "1.2.246.562.24.30738063716"
@@ -881,70 +881,70 @@
         {:oid "1.2.246.562.24.46525423540"
          :nimi "Sami Testaa"})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
-        {:oid "1.2.246.562.15.00000000001"
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.10000000009")
+        {:oid "1.2.246.562.15.10000000009"
          :oppija-oid "1.2.246.562.24.30738063716"
-         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :oppilaitos-oid "1.2.246.562.10.22222222220"
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000002")
-        {:oid "1.2.246.562.15.00000000002"
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.20000000008")
+        {:oid "1.2.246.562.15.20000000008"
          :oppija-oid "1.2.246.562.24.20043052079"
-         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :oppilaitos-oid "1.2.246.562.10.22222222220"
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000003")
-        {:oid "1.2.246.562.15.00000000003"
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.30000000007")
+        {:oid "1.2.246.562.15.30000000007"
          :oppija-oid "1.2.246.562.24.46525423540"
-         :oppilaitos-oid "1.2.246.562.10.222222222222"
+         :oppilaitos-oid "1.2.246.562.10.22222222220"
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}}))
     (utils/with-ticket-auth
-      ["1.2.246.562.10.222222222222"
+      ["1.2.246.562.10.22222222220"
        (fn [_ url __]
          (cond
            (> (.indexOf url (str "slaves")) -1)
            onr-slaves-data
            (> (.indexOf url (str "oppijanumerorekisteri-service"
                                  "/henkilo"
-                                 "/1.2.246.562.24.111111111222")) -1)
+                                 "/1.2.246.562.24.11111111123")) -1)
            onr-data-master))]
-      (sut/handle-onrmodified "1.2.246.562.24.111111111222")
+      (sut/handle-onrmodified "1.2.246.562.24.11111111123")
       (utils/eq
-        (sut/get-oppija-by-oid "1.2.246.562.24.111111111222")
-        {:oid "1.2.246.562.24.111111111222"
+        (sut/get-oppija-by-oid "1.2.246.562.24.11111111123")
+        {:oid "1.2.246.562.24.11111111123"
          :nimi "Matti Masteri"})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000001")
-        {:oid "1.2.246.562.15.00000000001"
-         :oppija-oid "1.2.246.562.24.111111111222"
-         :oppilaitos-oid "1.2.246.562.10.222222222222"
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.10000000009")
+        {:oid "1.2.246.562.15.10000000009"
+         :oppija-oid "1.2.246.562.24.11111111123"
+         :oppilaitos-oid "1.2.246.562.10.22222222220"
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000002")
-        {:oid "1.2.246.562.15.00000000002"
-         :oppija-oid "1.2.246.562.24.111111111222"
-         :oppilaitos-oid "1.2.246.562.10.222222222222"
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.20000000008")
+        {:oid "1.2.246.562.15.20000000008"
+         :oppija-oid "1.2.246.562.24.11111111123"
+         :oppilaitos-oid "1.2.246.562.10.22222222220"
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
          :osaamisala-nimi {:fi "" :sv ""}})
       (utils/eq
-        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.00000000003")
-        {:oid "1.2.246.562.15.00000000003"
-         :oppija-oid "1.2.246.562.24.111111111222"
-         :oppilaitos-oid "1.2.246.562.10.222222222222"
+        (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.30000000007")
+        {:oid "1.2.246.562.15.30000000007"
+         :oppija-oid "1.2.246.562.24.11111111123"
+         :oppilaitos-oid "1.2.246.562.10.22222222220"
          :tutkinto-nimi {:fi "Testialan perustutkinto"
                          :sv "Grundexamen inom testsbranschen"
                          :en "Testing"}
@@ -959,8 +959,8 @@
         (sut/get-oppija-by-oid "1.2.246.562.24.46525423540")
         nil)
       (utils/eq
-        (sut/get-oppija-by-oid "1.2.246.562.24.111111111222")
-        {:oid "1.2.246.562.24.111111111222"
+        (sut/get-oppija-by-oid "1.2.246.562.24.11111111123")
+        {:oid "1.2.246.562.24.11111111123"
          :nimi "Matti Masteri"})
       (utils/eq
         (empty?
@@ -977,7 +977,7 @@
       (utils/eq
         (sort-by :id (map #(select-keys % [:id :oppija-oid])
                           (db-hoks/select-hoks-by-oppija-oid
-                            "1.2.246.562.24.111111111222")))
-        [{:id 1, :oppija-oid "1.2.246.562.24.111111111222"}
-         {:id 2, :oppija-oid "1.2.246.562.24.111111111222"}
-         {:id 3, :oppija-oid "1.2.246.562.24.111111111222"}]))))
+                            "1.2.246.562.24.11111111123")))
+        [{:id 1, :oppija-oid "1.2.246.562.24.11111111123"}
+         {:id 2, :oppija-oid "1.2.246.562.24.11111111123"}
+         {:id 3, :oppija-oid "1.2.246.562.24.11111111123"}]))))

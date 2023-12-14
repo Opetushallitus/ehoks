@@ -32,8 +32,8 @@
 
 (deftest get-created-hoks
   (testing "GET newly created HOKS"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :osaamisen-hankkimisen-tarve true
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           response
@@ -53,9 +53,9 @@
 
 (deftest get-created-hoks-with-tuva-oo
   (testing "GET newly created HOKS with TUVA opiskeluoikeus oid"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :tuva-opiskeluoikeus-oid "1.2.246.562.15.00000000002"
-                     :oppija-oid "1.2.246.562.24.12312312312"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :tuva-opiskeluoikeus-oid "1.2.246.562.15.20000000008"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :osaamisen-hankkimisen-tarve true
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           response
@@ -75,9 +75,9 @@
 
 (deftest tuva-oo-oid-is-validated
   (testing "TUVA opiskeluoikeus oid form is validated as oid"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
                      :tuva-opiskeluoikeus-oid "foo"
-                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :osaamisen-hankkimisen-tarve true
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           response
@@ -91,8 +91,8 @@
 
 (deftest get-last-version-of-hoks
   (testing "GET latest (second) version of HOKS"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
       (let [response
@@ -120,8 +120,8 @@
                     (fn [_] (swap! sqs-call-counter inc))
                     oph.ehoks.external.koski/get-opiskeluoikeus-info
                     (fn [_] {:tyyppi {:koodiarvo "tuva"}})]
-        (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000003"
-                         :oppija-oid "1.2.246.562.24.12312312312"
+        (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.30000000007"
+                         :oppija-oid "1.2.246.562.24.12312312319"
                          :ensikertainen-hyvaksyminen "2018-12-15"
                          :osaamisen-hankkimisen-tarve true
                          :hankittavat-koulutuksen-osat
@@ -259,8 +259,8 @@
 (deftest osaamisen-hankkimistavat-isnt-mandatory
   (testing "Osaamisen hankkimistavat should be optional field in ehoks"
     (let [app (hoks-utils/create-app nil)
-          hoks {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                :oppija-oid "1.2.246.562.24.12312312312"
+          hoks {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                :oppija-oid "1.2.246.562.24.12312312319"
                 :ensikertainen-hyvaksyminen "2018-12-15"
                 :osaamisen-hankkimisen-tarve false
                 :hankittavat-ammat-tutkinnon-osat
@@ -586,9 +586,9 @@
 
 (deftest get-hoks-by-opiskeluoikeus-oid
   (testing "GET HOKS by opiskeluoikeus-oid"
-    (let [opiskeluoikeus-oid "1.2.246.562.15.00000000001"
+    (let [opiskeluoikeus-oid "1.2.246.562.15.10000000009"
           hoks-data {:opiskeluoikeus-oid opiskeluoikeus-oid
-                     :oppija-oid "1.2.246.562.24.12312312312"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}
           app (hoks-utils/create-app nil)]
@@ -616,7 +616,7 @@
     (client/with-mock-responses
       [(fn [url options]
          (cond (.endsWith
-                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
+                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000009")
                {:status 200
                 :body {:oppilaitos {:oid "1.2.246.562.10.12944436166"}}}
                (.endsWith url "/serviceValidate")
@@ -650,8 +650,8 @@
            {:status 200
             :body "ST-1234-testi"}))]
       (let [app (hoks-utils/create-app nil)
-            hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                       :oppija-oid "1.2.246.562.24.12312312312"
+            hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                       :oppija-oid "1.2.246.562.24.12312312319"
                        :laatija {:nimi "Teppo Tekijä"}
                        :paivittaja {:nimi "Pekka Päivittäjä"}
                        :hyvaksyja {:nimi "Heikki Hyväksyjä"}
@@ -666,8 +666,8 @@
                {:error "User type 'PALVELU' is required"}))))))
 
 (deftest post-kyselylinkki
-  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                   :oppija-oid "1.2.246.562.24.12312312312"
+  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                   :oppija-oid "1.2.246.562.24.12312312319"
                    :osaamisen-hankkimisen-tarve true
                    :ensikertainen-hyvaksyminen "2018-12-15"}
         app (hoks-utils/create-app nil)
@@ -688,11 +688,11 @@
 
     (is (= "https://palaute.fi/abc123"
            (:kyselylinkki (first (h/get-kyselylinkit-by-oppija-oid
-                                   "1.2.246.562.24.12312312312")))))))
+                                   "1.2.246.562.24.12312312319")))))))
 
 (deftest put-kyselylinkki-lahetysdata
-  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                   :oppija-oid "1.2.246.562.24.12312312312"
+  (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                   :oppija-oid "1.2.246.562.24.12312312319"
                    :osaamisen-hankkimisen-tarve true
                    :ensikertainen-hyvaksyminen "2018-12-15"}
         app (hoks-utils/create-app nil)
@@ -719,7 +719,7 @@
       "1.2.246.562.10.00000000001")
 
     (is (nil? (:sahkoposti (first (h/get-kyselylinkit-by-oppija-oid
-                                    "1.2.246.562.24.12312312312")))))
+                                    "1.2.246.562.24.12312312319")))))
 
     (utils/with-service-ticket
       app
@@ -728,15 +728,15 @@
 
     (is (= "testi@testi.fi"
            (:sahkoposti (first (h/get-kyselylinkit-by-oppija-oid
-                                 "1.2.246.562.24.12312312312")))))
+                                 "1.2.246.562.24.12312312319")))))
     (is (= "viestintapalvelussa"
            (:lahetystila (first (h/get-kyselylinkit-by-oppija-oid
-                                  "1.2.246.562.24.12312312312")))))))
+                                  "1.2.246.562.24.12312312319")))))))
 
 (deftest get-paged-vipunen-data
   (testing "GET paged HOKSes for Vipunen"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :osaamisen-hankkimisen-tarve true
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           app (hoks-utils/create-app nil)
@@ -762,8 +762,8 @@
 
 (deftest get-paged-deleted
   (testing "GET paged HOKSes with deleted item"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :osaamisen-hankkimisen-tarve true
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           app (hoks-utils/create-app nil)
@@ -808,8 +808,8 @@
 
 (deftest get-paged-delta-with-deleted
   (testing "GET paged delta stream of HOKSes"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :osaamisen-hankkimisen-tarve true
                      :ensikertainen-hyvaksyminen "2018-12-15"}
           app (hoks-utils/create-app nil)
@@ -871,8 +871,8 @@
 (deftest no-internal-server-error-in-response-validation-failure
   (testing (str "Response validation failure shouldn't give "
                 "`internal-server-error` in response")
-    (let [hoks {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                :oppija-oid "1.2.246.562.24.12312312312"
+    (let [hoks {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                :oppija-oid "1.2.246.562.24.12312312319"
                 :osaamisen-hankkimisen-tarve true
                 :ensikertainen-hyvaksyminen "2018-12-15"}
           hato {:tutkinnon-osa-koodi-uri "tutkinnonosat_300268"
@@ -881,7 +881,7 @@
                 "Ei poikkeamia."
                 :opetus-ja-ohjaus-maara 10.1
                 :osaamisen-osoittaminen
-                [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+                [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924331"}
                   :nayttoymparisto {:nimi "Testiympäristö"
                                     :y-tunnus "invalid"
                                     :kuvaus "Testi test"}
@@ -953,7 +953,7 @@
           data
           (assoc test-data/hoks-data
                  :opiskeluoikeus-oid
-                 "1.2.246.562.15.00000000006")
+                 "1.2.246.562.15.60000000004")
           post-response
           (hoks-utils/create-mock-post-request "" data app)]
       (is (= (:status post-response) 200)))))
