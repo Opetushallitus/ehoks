@@ -80,7 +80,8 @@
 (defn virkailija-has-access?
   "Check if user has access to oppija"
   [virkailija-user oppija-oid]
-  (virkailija-has-privilege? virkailija-user oppija-oid :read))
+  (or (virkailija-has-privilege? virkailija-user oppija-oid :read)
+      (user/oph-super-user? virkailija-user)))
 
 (defn- handle-virkailija-write-access [request]
   (let [hoks (db-hoks/select-hoks-by-id

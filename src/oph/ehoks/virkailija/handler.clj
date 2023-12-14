@@ -195,7 +195,11 @@
   [hoks request db-handler]
   (try
     (let [old-hoks (:hoks request)]
-      (h/check-hoks-for-update! old-hoks hoks)
+      ;; Skip opiskeluoikeus and oppija OID update restrictions if virkailija
+      ;; is OPH super user.
+      (when-not (user/oph-super-user?
+                  (get-in request [:session :virkailija-user]))
+        (h/check-hoks-for-update! old-hoks hoks))
       (let [hoks-db (db-handler (:id (:hoks request))
                                 (h/add-missing-oht-yksiloiva-tunniste hoks))]
         (assoc (response/no-content) :audit-data {:new hoks
