@@ -148,7 +148,14 @@
 (deftest create-hoks-without-osa-aikaisuustieto
   (testing "Create HOKS without osa-aikaisuustieto"
     (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
-                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})]
+                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
+                           :tila {:opiskeluoikeusjaksot
+                                  [{:alku "2023-07-03"
+                                    :tila {:koodiarvo "lasna"
+                                           :nimi {:fi "Läsnä"}
+                                           :koodistoUri
+                                           "koskiopiskeluoikeudentila"
+                                           :koodistoVersio 1}}]}})]
       (let [hoks-data test-data/hoks-data-without-osa-aikaisuus
             response
             (hoks-utils/mock-st-post
@@ -197,7 +204,14 @@
 (deftest create-new-hoks-with-valid-osa-aikaisuus
   (testing "Create new hoks with valid osa-aikaisuustieto"
     (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
-                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})]
+                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
+                           :tila {:opiskeluoikeusjaksot
+                                  [{:alku "2023-07-03"
+                                    :tila {:koodiarvo "lasna"
+                                           :nimi {:fi "Läsnä"}
+                                           :koodistoUri
+                                           "koskiopiskeluoikeudentila"
+                                           :koodistoVersio 1}}]}})]
       (let [hoks-data test-data/new-hoks-with-valid-osa-aikaisuus
             response
             (hoks-utils/mock-st-post
@@ -226,6 +240,13 @@
   (testing "Create new hoks without osa-aikaisuustieto"
     (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
                   (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
+                           :tila {:opiskeluoikeusjaksot
+                                  [{:alku "2023-07-03"
+                                    :tila {:koodiarvo "lasna"
+                                           :nimi {:fi "Läsnä"}
+                                           :koodistoUri
+                                           "koskiopiskeluoikeudentila"
+                                           :koodistoVersio 1}}]}
                            :suoritukset [{:tyyppi {:koodiarvo "telma"}}]})]
       (let [hoks-data test-data/new-hoks-without-osa-aikaisuus
             response
@@ -373,7 +394,14 @@
 (deftest hoks-put-adds-non-existing-part
   (testing "If HOKS part doesn't currently exist, PUT creates it"
     (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
-                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})]
+                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
+                           :tila {:opiskeluoikeusjaksot
+                                  [{:alku "2023-07-03"
+                                    :tila {:koodiarvo "lasna"
+                                           :nimi {:fi "Läsnä"}
+                                           :koodistoUri
+                                           "koskiopiskeluoikeudentila"
+                                           :koodistoVersio 1}}]}})]
       (let [app (hoks-utils/create-app nil)
             post-response
             (hoks-utils/create-mock-post-request
