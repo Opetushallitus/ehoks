@@ -76,3 +76,21 @@
       "1.2.246.562.10.778312915310"   ; checksum != 0
       "1.2.246.562.10.54440598189"    ; checksum mismatch
       "1.2.246.562.10.37998957910"))) ; checksum mismatch
+
+;;;; The following tests can be used to test OID validation with data stored in
+;;;; files. They're commented because it's not necessary to run them everytime.
+
+; (deftest test-opiskeluoikeus-oid-validation-with-hoks-opiskeluoikeus-oids
+;   (let [opiskeluoikeus-oids (str/split-lines (slurp "./opiskeluoikeudet"))]
+;     (doseq [oid opiskeluoikeus-oids]
+;       (is (s/validate OpiskeluoikeusOID oid)))))
+;
+; (deftest test-opiskeluoikeus-oid-validation-with-hoks-oppija-oids
+;   (let [oppija-oids (str/split-lines (slurp "./oppijat"))]
+;     (doseq [oid oppija-oids]
+;       (is (s/validate OppijaOID oid)))))
+
+; (deftest test-opiskeluoikeus-oid-validation-with-hato-koulutuksenjarjestajat
+;   (let [kj-oids (str/split-lines (slurp "./koulutuksenjarjestajat"))]
+;     (doseq [oid kj-oids]
+;       (is (s/validate OrganisaatioOID oid)))))
