@@ -62,20 +62,22 @@
       "1.2.246.562.10.77831291537"
       "1.2.246.562.10.38262856784"
       "1.2.246.562.10.67924833642"
-      "1.2.246.562.10.587342913610"   ; checksum == 0
-      "1.2.246.562.10.143886286710")) ; checksum == 0
+      "1.2.246.562.10.2013110716590316970385" ; These types OIDs also exist
+      "1.2.246.562.10.2014081110425906984827"
+      "1.2.246.562.10.587342913610"
+      "1.2.246.562.10.54440598189"
+      "1.2.246.562.10.37998957910"
+      "1.2.246.562.10.778312915310"
+      "1.2.246.562.10.143886286710"))
   (testing "Invalid organisaatio OIDs won't pass the validation."
     (are [oid] (thrown? ExceptionInfo (s/validate OrganisaatioOID oid))
       "asd"
       "1.2.3"
-      "1.2.246.562.10.09873698279"    ; correct checksum but starts with zero
-      "1.2.246.562.10.5286980957"     ; correct checksum but too few digits
-      "1.2.246.562.10.289763074597"   ; correct checksum but too many digits
+      "1.2.246.562.10.5286980957"
+      "1.2.246.562.10.2897630745971"
+      "1.2.246.562.10.20131107165903169703852"
       "1.2.246.562.15.92214483247"    ; opiskeluoikeus oid node
-      "1.2.246.562.24.18950669244"    ; oppija oid node
-      "1.2.246.562.10.778312915310"   ; checksum != 0
-      "1.2.246.562.10.54440598189"    ; checksum mismatch
-      "1.2.246.562.10.37998957910"))) ; checksum mismatch
+      "1.2.246.562.24.18950669244"))) ; oppija oid node
 
 ;;;; The following tests can be used to test OID validation with data stored in
 ;;;; files. They're commented because it's not necessary to run them everytime.
@@ -91,6 +93,7 @@
 ;       (is (s/validate OppijaOID oid)))))
 
 ; (deftest test-opiskeluoikeus-oid-validation-with-hato-koulutuksenjarjestajat
-;   (let [kj-oids (str/split-lines (slurp "./koulutuksenjarjestajat"))]
-;     (doseq [oid kj-oids]
+;   (let [organisaatio-oids (str/split-lines
+;                             (slurp "./organisaatio_oidit.csv"))]
+;     (doseq [oid organisaatio-oids]
 ;       (is (s/validate OrganisaatioOID oid)))))
