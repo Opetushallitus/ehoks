@@ -1,7 +1,7 @@
 (ns oph.ehoks.schema.oid
   "Skeemamääritykset erityyppisille OID:eille"
   (:require [clojure.string :as str]
-            [schema.core :refer [constrained defschema]]))
+            [schema.core :refer [cond-pre constrained defschema]]))
 
 ;;;; Opetushallitukselle on myönnetty koulutustoimialan OID-solmuluokka:
 ;;;; 1.2.246.562.NN.XXXXXXXXXXY, missä NN vaihtelee käyttötarkoituksen
@@ -82,5 +82,12 @@
 (defschema OppijaOID
            (constrained #"^1\.2\.246\.562\.24\.[1-9]\d{9}(\d|10)$" valid-oid?))
 
+; There are a few organisaatio OIDs where the check digit doesn't match with the
+; calculated Luhn checksum. This is why we don't do check digit check in case of
+; organisaatio OIDs.
+(def OrganisaatioOID' #"^1\.2\.246\.562\.10\.([1-9]\d{9}(\d|10)|0{10}1)$")
+; The following types of OIDs were generated in 2013-2014
+(def OrganisaatioOIDWithTimestamp #"^1\.2\.246\.562\.10\.201[34]\d{18}$")
+
 (defschema OrganisaatioOID
-           (constrained #"^1\.2\.246\.562\.10\.[1-9]\d{9}(\d|10)$" valid-oid?))
+           (cond-pre OrganisaatioOID' OrganisaatioOIDWithTimestamp))
