@@ -23,7 +23,7 @@
     "grunt-contrib-jshint": "~1",
     "grunt-contrib-uglify": "~2",
     "grunt-contrib-watch": "~1",
-    "grunt-node-sass": "~1",
+    "grunt-node-sass": "~2.0.0",
     "grunt-preprocess": "~5"
   },
   "scripts": {
