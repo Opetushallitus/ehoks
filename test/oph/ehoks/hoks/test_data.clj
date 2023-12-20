@@ -21,9 +21,9 @@
         :alku "2019-03-10"
         :loppu "2025-03-19"}]
       :keskeytymisajanjaksot []}]
-    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"
+    :koulutuksen-jarjestaja-oid "1.2.246.562.10.50000000005"
     :osaamisen-osoittaminen
-    [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+    [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924331"}
       :nayttoymparisto {:nimi "Testiympäristö 2"
                         :y-tunnus "1234567-1"
                         :kuvaus "Testi test"}
@@ -31,7 +31,7 @@
       :koulutuksen-jarjestaja-osaamisen-arvioijat
       [{:nimi "Timo Testaaja"
         :organisaatio {:oppilaitos-oid
-                       "1.2.246.562.10.54452521332"}}]
+                       "1.2.246.562.10.54452521336"}}]
       :tyoelama-osaamisen-arvioijat
       [{:nimi "Taneli Työmies"
         :organisaatio {:nimi "Tanelin Paja Ky"
@@ -45,7 +45,7 @@
 (def hyto-data-oht-matching-and-new-tunniste
   [{:tutkinnon-osa-koodi-uri "tutkinnonosat_3002683"
     :tutkinnon-osa-koodi-versio 1
-    :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"
+    :koulutuksen-jarjestaja-oid "1.2.246.562.10.70000000003"
     :osa-alueet
     [{:osa-alue-koodi-uri "ammatillisenoppiaineet_ku"
       :osa-alue-koodi-versio 1
@@ -79,14 +79,14 @@
           :loppu "2021-03-19"}]
         :keskeytymisajanjaksot []}]
       :osaamisen-osoittaminen
-      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000002"}
+      [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.20000000008"}
         :nayttoymparisto {:nimi "aaa"}
         :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_en"
                       :koodi-versio 4}]
         :koulutuksen-jarjestaja-osaamisen-arvioijat
         [{:nimi "Erkki Esimerkkitetsaaja"
           :organisaatio {:oppilaitos-oid
-                         "1.2.246.562.10.13490579333"}}]
+                         "1.2.246.562.10.13490579334"}}]
         :alku "2018-12-12"
         :loppu "2018-12-20"
         :sisallon-kuvaus ["Kuvaus"]
@@ -95,8 +95,8 @@
         :yksilolliset-kriteerit ["Ensimmäinen kriteeri"]}]}]}])
 
 (def hoks-data
-  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-   :oppija-oid "1.2.246.562.24.12312312312"
+  {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+   :oppija-oid "1.2.246.562.24.12312312319"
    :ensikertainen-hyvaksyminen "2018-12-15"
    :osaamisen-hankkimisen-tarve false
    :osaamisen-saavuttamisen-pvm "2020-10-22"
@@ -113,8 +113,8 @@
    :aiemmin-hankitut-yhteiset-tutkinnon-osat [parts-test-data/ahyto-data]})
 
 (def hoks-data-without-osa-aikaisuus
-  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-   :oppija-oid "1.2.246.562.24.12312312312"
+  {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+   :oppija-oid "1.2.246.562.24.12312312319"
    :ensikertainen-hyvaksyminen "2018-12-15"
    :osaamisen-hankkimisen-tarve false
    :osaamisen-saavuttamisen-pvm "2020-10-22"
@@ -132,16 +132,16 @@
    :aiemmin-hankitut-yhteiset-tutkinnon-osat [parts-test-data/ahyto-data]})
 
 (def new-hoks-with-valid-osa-aikaisuus
-  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-   :oppija-oid "1.2.246.562.24.12312312312"
+  {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+   :oppija-oid "1.2.246.562.24.12312312319"
    :ensikertainen-hyvaksyminen "2018-12-15"
    :osaamisen-hankkimisen-tarve false
    :hankittavat-ammat-tutkinnon-osat
    [parts-test-data/hao-data-with-valid-osa-aikaisuus]})
 
 (def new-hoks-without-osa-aikaisuus
-  {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-   :oppija-oid "1.2.246.562.24.12312312312"
+  {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+   :oppija-oid "1.2.246.562.24.12312312319"
    :ensikertainen-hyvaksyminen "2018-12-15"
    :osaamisen-hankkimisen-tarve false
    :hankittavat-ammat-tutkinnon-osat
@@ -156,7 +156,7 @@
      :tutkinnon-osa-koodi-versio 2
      :vaatimuksista-tai-tavoitteista-poikkeaminen
      "Ei poikkeamia."
-     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000005"
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.50000000005"
      :osaamisen-hankkimistavat
      [{:alku "2018-12-12"
        :loppu "2018-12-20"
@@ -177,9 +177,9 @@
        :hankkijan-edustaja
        {:nimi "Heikki Hank"
         :rooli "Opettaja"
-        :oppilaitos-oid "1.2.246.562.10.54452422420"}}]
+        :oppilaitos-oid "1.2.246.562.10.54452422428"}}]
      :osaamisen-osoittaminen
-     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924330"}
+     [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.54453924331"}
        :nayttoymparisto {:nimi "Testiympäristö 2"
                          :y-tunnus "1234567-1"
                          :kuvaus "Testi test"}
@@ -187,7 +187,7 @@
        :koulutuksen-jarjestaja-osaamisen-arvioijat
        [{:nimi "Timo Testaaja2"
          :organisaatio {:oppilaitos-oid
-                        "1.2.246.562.10.54452521332"}}]
+                        "1.2.246.562.10.54452521336"}}]
        :tyoelama-osaamisen-arvioijat
        [{:nimi "Taneli Työmies2"
          :organisaatio {:nimi "Tanelin Paja Oy"
@@ -205,7 +205,7 @@
    :hankittavat-paikalliset-tutkinnon-osat
    [{:nimi "testinimi"
      :koulutuksen-jarjestaja-oid
-     "1.2.246.562.10.00000000001"
+     "1.2.246.562.10.10000000009"
      :olennainen-seikka false
      :osaamisen-hankkimistavat
      [{:alku "2019-12-12"
@@ -228,10 +228,10 @@
        :hankkijan-edustaja
        {:nimi "Heikki Hankk"
         :rooli "Opettaja"
-        :oppilaitos-oid "1.2.246.562.10.54452422420"}}]
+        :oppilaitos-oid "1.2.246.562.10.54452422428"}}]
      :osaamisen-osoittaminen
      [{:jarjestaja {:oppilaitos-oid
-                    "1.2.246.562.10.00000000022"}
+                    "1.2.246.562.10.10000000025"}
        :koulutuksen-jarjestaja-osaamisen-arvioijat []
        :osa-alueet []
        :sisallon-kuvaus
@@ -254,7 +254,7 @@
    :hankittavat-yhteiset-tutkinnon-osat
    [{:tutkinnon-osa-koodi-uri "tutkinnonosat_3002690"
      :tutkinnon-osa-koodi-versio 3
-     :koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000007"
+     :koulutuksen-jarjestaja-oid "1.2.246.562.10.70000000003"
      :osa-alueet
      [{:osa-alue-koodi-uri "ammatillisenoppiaineet_bi"
        :osa-alue-koodi-versio 1
@@ -275,14 +275,14 @@
          [{:alku "2021-09-01"
            :loppu "2021-09-21"}]}]
        :osaamisen-osoittaminen
-       [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.00000000032"}
+       [{:jarjestaja {:oppilaitos-oid "1.2.246.562.10.10000000033"}
          :nayttoymparisto {:nimi "aaab"}
          :osa-alueet [{:koodi-uri "ammatillisenoppiaineet_ru"
                        :koodi-versio 4}]
          :koulutuksen-jarjestaja-osaamisen-arvioijat
          [{:nimi "Erkki Esimerkkitest"
            :organisaatio {:oppilaitos-oid
-                          "1.2.246.562.10.13490579322"}}]
+                          "1.2.246.562.10.13490579326"}}]
          :alku "2018-12-12"
          :loppu "2019-12-20"
          :sisallon-kuvaus ["Kuvaus" "toinen"]

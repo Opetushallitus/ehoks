@@ -160,11 +160,11 @@
 (defn mock-get-opiskeluoikeus-info-raw
   [oid]
   (case oid
-    "1.2.246.562.15.00000000001" {:suoritukset
+    "1.2.246.562.15.10000000009" {:suoritukset
                                   [{:tyyppi
                                     {:koodiarvo "ammatillinentutkinto"}}]
                                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}}
-    "1.2.246.562.15.00000000002" {:suoritukset
+    "1.2.246.562.15.20000000008" {:suoritukset
                                   [{:tyyppi {:koodiarvo "joku_muu"}}]
                                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}}
     (throw (ex-info "Opiskeluoikeus not found" {:status 404}))))
@@ -199,13 +199,13 @@
           (with-log
             (op/send!
               :paattokysely
-              (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.00000000002"))
+              (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.20000000008"))
             (is (logged? 'oph.ehoks.opiskelijapalaute
                          :info
                          #"No ammatillinen suoritus"))
             (op/send!
               :paattokysely
-              (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.00000000003"))
+              (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.30000000007"))
             (is (logged? 'oph.ehoks.opiskelijapalaute
                          :warn
                          #"Couldn't get opiskeluoikeus"))))))))

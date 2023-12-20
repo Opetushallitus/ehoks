@@ -88,7 +88,7 @@
                                      parts-test-data/hyto-data) :id 1)})))))
 
 (def ^:private one-value-of-hyto-patched
-  {:koulutuksen-jarjestaja-oid "1.2.246.562.10.00000000012"})
+  {:koulutuksen-jarjestaja-oid "1.2.246.562.10.10000000017"})
 
 (deftest patch-one-value-of-hankittava-yhteinen-tutkinnon-osa
   (testing "PATCH one value hankittavat yhteisen tutkinnon osat"
