@@ -1,14 +1,15 @@
 (ns oph.ehoks.oppijaindex
   (:require [clojure.core.memoize :as memo]
+            [clojure.java.jdbc :as jdbc]
             [clojure.string :as cs]
             [clojure.tools.logging :as log]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.db.postgresql.common :as db]
+            [oph.ehoks.db.queries :as queries]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.oppijanumerorekisteri :as onr])
   (:import [java.time LocalDate]))
@@ -539,3 +540,67 @@
           true
           false))
       true)))
+
+(defn handle-onrmodified
+  "Handles ONR-modified call from heratepalvelu which is triggered by
+  data change in ONR service."
+  [oid]
+  (if-let [oppija (get-oppija-by-oid oid)]
+    ;; Jos päivitetyn oppijan oid löytyy ehoksista, niin tiedetään
+    ;; että kyseessä ei ole oid-tiedon päivitys ja voidaan vain tarkastaa,
+    ;; että nimi täsmää ONR:n tiedon kanssa.
+    (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))
+          ehoks-oppija-nimi (:nimi oppija)
+          onr-oppija-nimi (format-oppija-name onr-oppija)]
+      (if (= ehoks-oppija-nimi onr-oppija-nimi)
+        (log/info "Update for" oid "from ONR but no changes detected")
+        (do (log/infof "Updating changed name for oppija %s" oid)
+            (update-oppija! oid true))))
+    ;; Jos oppijaa ei löydy päivitetyllä oidilla ehoksista,
+    ;; niin ensin tarkastetaan, ettei kyseessä ole duplicate/slave oid.
+    ;; (tämä saattaa olla turha tarkastus, mutta ainakin se estää sen,
+    ;; että koskaan päivitettäisiin slave oideja ehoksin tauluihin.)
+    ;;
+    ;; Sitten haetaan kyseisen master-oidin slavet ja niiden oideilla
+    ;; oppijat ehoksin oppijat-taulusta.
+    ;;
+    ;; Jos oppijoita löytyy slave oideilla, niin päivitetään niiden
+    ;; hokseihin, opiskeluoikeuksiin ja oppijat-taulun riviin uusi
+    ;; master-oid. Lopuksi poistetaan slave-oidit oppijat taulusta.
+    (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))]
+      (if (:duplicate onr-oppija)
+        (log/warn "Update for" oid "from ONR but it's marked as duplicate:"
+                  onr-oppija)
+        (let [slave-oppija-oids
+              (map
+                :oidHenkilo
+                (:body (onr/get-slaves-of-master-oppija-oid oid)))
+              oppijas-from-oppijaindex-by-slave-oids
+              (remove nil?
+                      (flatten
+                        (map
+                          #(:oid (get-oppija-by-oid %))
+                          slave-oppija-oids)))]
+          (if (empty? oppijas-from-oppijaindex-by-slave-oids)
+            (log/warn "Update for" oid "from ONR but no updatable oids found in"
+                      slave-oppija-oids)
+            (jdbc/with-db-transaction
+              [db-conn (db-ops/get-db-connection)]
+              (doseq [oppija-oid oppijas-from-oppijaindex-by-slave-oids]
+                (log/infof (str "Changing duplicate oppija-oid %s to %s "
+                                "for tables hoksit, oppijat and "
+                                "opiskeluoikeudet.")
+                           oppija-oid oid)
+                (db-hoks/update-hoks-by-oppija-oid! oppija-oid
+                                                    {:oppija-oid oid}
+                                                    db-conn)
+                (if (some? (get-oppija-by-oid oid))
+                  (do
+                    (db-opiskeluoikeus/update-opiskeluoikeus-by-oppija-oid!
+                      oppija-oid {:oppija-oid oid})
+                    (db-ops/delete!
+                      :oppijat ["oid = ?" oppija-oid]))
+                  (db-oppija/update-oppija!
+                    oppija-oid
+                    {:oid  oid
+                     :nimi (format-oppija-name onr-oppija)}))))))))))
