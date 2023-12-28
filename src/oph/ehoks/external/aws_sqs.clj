@@ -24,12 +24,12 @@
     (if (nil? (:env-stage env))
       (log/warn "Stage missing from env variables")
       (.queueUrl (.getQueueUrl
-                   sqs-client
-                   (-> (GetQueueUrlRequest/builder)
-                       (.queueName
-                         (str (:env-stage env) "-"
-                              queue-name))
-                       (.build)))))))
+                   ^SqsClient sqs-client
+                   ^GetQueueUrlRequest (-> (GetQueueUrlRequest/builder)
+                                           (.queueName
+                                             (str (:env-stage env) "-"
+                                                  queue-name))
+                                           (.build)))))))
 
 (defn- get-queue-url-with-error-handling
   "Hakee SQS-queuen URL:n sen nimen perusteella, ja käsittelee virheitä."
@@ -112,10 +112,12 @@
 (defn send-message
   "Lähettää viestin SQS-queueen."
   [msg queue-url]
-  (let [resp (.sendMessage sqs-client (-> (SendMessageRequest/builder)
-                                          (.queueUrl queue-url)
-                                          (.messageBody (json/write-str msg))
-                                          (.build)))]
+  (let [resp (.sendMessage
+               ^SqsClient sqs-client
+               ^SendMessageRequest (-> (SendMessageRequest/builder)
+                                       (.queueUrl queue-url)
+                                       (.messageBody (json/write-str msg))
+                                       (.build)))]
     (if (some? (.messageId resp))
       true
       (do (log/error "Failed to send message " msg)

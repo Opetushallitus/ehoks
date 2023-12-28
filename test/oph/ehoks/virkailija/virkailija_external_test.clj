@@ -12,7 +12,7 @@
 (defn with-test-virkailija
   ([request]
     (client/with-mock-responses
-      [(fn [url _]
+      [(fn [^String url _]
          (cond
            (.endsWith
              url "/rest/codeelement/latest/ammatillisenoppiaineet_VVTL")

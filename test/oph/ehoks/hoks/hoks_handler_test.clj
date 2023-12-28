@@ -614,7 +614,7 @@
 (deftest non-service-user-test
   (testing "Deny access from non-service user"
     (client/with-mock-responses
-      [(fn [url options]
+      [(fn [^String url options]
          (cond (.endsWith
                  url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
                {:status 200
@@ -641,7 +641,7 @@
                         [{:organisaatioOid "1.2.246.562.10.12944436166"
                           :kayttooikeudet [{:palvelu "EHOKS"
                                             :oikeus "CRUD"}]}]}]}))
-       (fn [url options]
+       (fn [^String url options]
          (cond
            (.endsWith url "/v1/tickets")
            {:status 201
@@ -800,10 +800,11 @@
 (defn make-timestamp
   ([plus-millis]
     (let [tz (java.util.TimeZone/getTimeZone "UTC")
-          df (new java.text.SimpleDateFormat "yyyy-MM-dd'T'HH:mm:ss'Z'")]
+          df (new java.text.SimpleDateFormat "yyyy-MM-dd'T'HH:mm:ss'Z'")
+          ^long millis (+ (.getTime (new java.util.Date))
+                          plus-millis)]
       (.setTimeZone df tz)
-      (.format df (new java.util.Date (+ (.getTime (new java.util.Date))
-                                         plus-millis)))))
+      (.format df (new java.util.Date millis))))
   ([] (make-timestamp 0)))
 
 (deftest get-paged-delta-with-deleted
@@ -909,7 +910,7 @@
 (deftest test-handles-unauthorized
   (testing "Responds with unauthorized when not able to get ST for käyttöoikeus"
     (client/set-post!
-      (fn [url _]
+      (fn [^String url _]
         (cond
           (.endsWith url "/v1/tickets")
           {:status 201
@@ -922,7 +923,7 @@
                :body
                "TGT-1234 could not be found or is considered invalid"})))))
     (client/set-get!
-      (fn [url options]
+      (fn [^String url options]
         (cond
           (.endsWith url "/serviceValidate")
           {:status 200

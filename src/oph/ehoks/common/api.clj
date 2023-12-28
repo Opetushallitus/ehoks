@@ -21,7 +21,7 @@
 
 (defn log-exception
   "Logittaa virheen."
-  [ex data]
+  [^Exception ex data]
   (log/errorf
     "Unhandled exception\n%s\n%s\n%s"
     (str ex)

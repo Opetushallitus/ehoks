@@ -14,7 +14,7 @@
 (defn- get-cas-url
   "Get CAS url (service param) of url. Some uses spring and ehoks uses
    cas-security-check."
-  [service]
+  [^String service]
   (cond
     (.contains service (u/get-url "ehoks.virkailija-login-return"))
     service
@@ -192,7 +192,7 @@
 
 (defn- call-cas-oppija-ticket-validation
   "Do CAS oppija ticket valiation"
-  [ticket domain]
+  [ticket ^String domain]
   (c/with-api-headers
     {:method :get
      :service (u/get-url "cas-oppija.validate-service")

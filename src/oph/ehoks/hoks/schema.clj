@@ -62,9 +62,9 @@
 (defn- calculate-y-tunnus-checksum
   "Laskee Y-tunnuksen tarkistusnumeron tunnuksen 7 ensimmäisen numeron
   perusteella."
-  [y-tunnus]
+  [^String y-tunnus]
   (as-> (take 7 y-tunnus) n
-    (map #(Character/getNumericValue %) n)
+    (map #(Character/getNumericValue ^char %) n)
     (map * n [7 9 10 5 8 4 2])
     (reduce + n)
     (mod n 11)
@@ -76,9 +76,9 @@
 (defn- valid-y-tunnus?
   "Tarkistaa, täsmääkö Y-tunnuksen laskettu tarkistusnumero tunnuksen
   viimeiseen numeroon."
-  [y-tunnus]
+  [^String y-tunnus]
   (= (calculate-y-tunnus-checksum y-tunnus)
-     (Character/getNumericValue (last y-tunnus))))
+     (Character/getNumericValue ^char (last y-tunnus))))
 
 (s/defschema
   Y-tunnus
@@ -225,7 +225,8 @@
   "Varmistaa, että keskeytymisajanjaksot eivät mene päällekkäin."
   [jaksot]
   (or (<= (count jaksot) 1)
-      (reduce #(if (and (:loppu %1) (.isBefore (:loppu %1) (:alku %2)))
+      (reduce #(if (and (:loppu %1) (.isBefore ^LocalDate (:loppu %1)
+                                               ^LocalDate (:alku %2)))
                  %2
                  (reduced false))
               (sort-by :alku (seq jaksot)))))
@@ -236,7 +237,7 @@
   [oht]
   (let [osa-aikaisuustieto (:osa-aikaisuustieto oht)
         hankkimistapa (:osaamisen-hankkimistapa-koodi-uri oht)]
-    (if (and (.isAfter (:loppu oht) (LocalDate/of 2023 6 30))
+    (if (and (.isAfter ^LocalDate (:loppu oht) (LocalDate/of 2023 6 30))
              (tyopaikkajakso? oht)
              (kuuluu-palautteen-kohderyhmaan? (get-current-opiskeluoikeus)))
       (and (some? osa-aikaisuustieto)
@@ -250,13 +251,13 @@
   [oht]
   (or (not= (:osaamisen-hankkimistapa-koodi-uri oht)
             "osaamisenhankkimistapa_oppisopimus")
-      (.isBefore (:loppu oht) (LocalDate/of 2021 7 1))
+      (.isBefore ^LocalDate (:loppu oht) (LocalDate/of 2021 7 1))
       (:oppisopimuksen-perusta-koodi-uri oht)))
 
 (defn- nonnegative-duration?
   "Osaamisen hankkimistavan päiväykset ovat oikein päin"
   [oht]
-  (not (.isBefore (:loppu oht) (:alku oht))))
+  (not (.isBefore ^LocalDate (:loppu oht) ^LocalDate (:alku oht))))
 
 (defn- tyopaikkajakso-has-yksiloiva-tunniste?
   [oht]
@@ -282,7 +283,7 @@
                         (LocalDate/parse))]
     (or (katsotaan-eronneeksi? oo)
         (not oo-alku)
-        (not (.isBefore (:alku oht) oo-alku)))))
+        (not (.isBefore ^LocalDate (:alku oht) oo-alku)))))
 
 (defn- ends-before-opiskeluoikeus?
   "Osaamisen hankkimistapa ei jatku opiskeluoikeuden arvioidun ajan jälkeen"
@@ -293,13 +294,13 @@
                          (LocalDate/parse))]
     (or (katsotaan-eronneeksi? oo)
         (not oo-loppu)
-        (not (.isAfter (:loppu oht) oo-loppu)))))
+        (not (.isAfter ^LocalDate (:loppu oht) oo-loppu)))))
 
 (defn- duration-max-5-years?
   "Osaamisen hankkimistapa kestää enintään 5 vuotta"
   [oht]
-  (not (.isAfter (:loppu oht)
-                 (.plusYears (:alku oht) 5))))
+  (not (.isAfter ^LocalDate (:loppu oht)
+                 (.plusYears ^LocalDate (:alku oht) 5))))
 
 (def OsaamisenHankkimistapa-template
   "Osaamisen hankkimistavan schema eri toiminnoille."
@@ -935,8 +936,8 @@
   "Aika, jonka saa kirjoittaa osaamisen-saavuttamisen-pvm-kenttään."
   (s/constrained
     LocalDate
-    #(and (.isAfter % (LocalDate/of 2018 1 1))
-          (.isBefore % (.plusDays (LocalDate/now) 15)))
+    #(and (.isAfter ^LocalDate % (LocalDate/of 2018 1 1))
+          (.isBefore ^LocalDate % (.plusDays (LocalDate/now) 15)))
     "Osaaminen voidaan merkitä saavutetuksi enintään kaksi viikkoa
     tulevaisuuteen ja vähintään vuodelle 2018."))
 

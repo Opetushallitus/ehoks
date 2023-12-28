@@ -3,7 +3,7 @@
             [clojure.test :as t]
             [oph.ehoks.external.http-client :as client]))
 
-(defn get-tutkinnon-osa-response [url __]
+(defn get-tutkinnon-osa-response [^String url __]
   {:status 200
    :body (if (.endsWith
                url

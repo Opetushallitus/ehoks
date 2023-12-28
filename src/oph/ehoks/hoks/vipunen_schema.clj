@@ -144,7 +144,8 @@
   "Varmistaa, että keskeytymisajanjaksot eivät mene päällekkäin."
   [jaksot]
   (or (<= (count jaksot) 1)
-      (reduce #(if (and (:loppu %1) (.isBefore (:loppu %1) (:alku %2)))
+      (reduce #(if (and (:loppu %1) (.isBefore ^LocalDate (:loppu %1)
+                                               ^LocalDate (:alku %2)))
                  %2
                  (reduced false))
               (sort-by :alku (seq jaksot)))))
