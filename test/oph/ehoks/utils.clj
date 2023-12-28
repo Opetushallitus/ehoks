@@ -5,6 +5,7 @@
             [clj-time.coerce :as tc]
             [clojure.test :refer [is]]
             [clojure.data :as d]
+            [clojure.java.io :as j]
             [clojure.pprint :as p]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.cache :as cache]
@@ -17,7 +18,7 @@
 (defn authenticate
   ([app oppija-oid]
     (client/with-mock-responses
-      [(fn [url options]
+      [(fn [^String url options]
          (cond
            (.endsWith url "/serviceValidate")
            {:status 200
@@ -39,7 +40,7 @@
                    :etunimet "Aarto Maurits"
                    :kutsumanimi "Aarto"
                    :sukunimi "Väisänen-perftest"}}))
-       (fn [url options]
+       (fn [^String url options]
          (cond
            (.endsWith url "/v1/tickets")
            {:status 201
@@ -77,7 +78,7 @@
 
 (defn set-auth-functions! [organisaatio-oid unmatched-fn]
   (client/set-post!
-    (fn [url options]
+    (fn [^String url options]
       (cond
         (.endsWith url "/v1/tickets")
         {:status 201
@@ -87,7 +88,7 @@
          :body "ST-1234-testi"}
         :else (unmatched-fn :post url options))))
   (client/set-get!
-    (fn [url options]
+    (fn [^String url options]
       (cond (.endsWith url "/serviceValidate")
             {:status 200
              :body
@@ -128,7 +129,7 @@
 (defn with-service-ticket
   ([app request oppilaitos-oid]
     (client/set-post!
-      (fn [url options]
+      (fn [^String url options]
         (cond
           (.endsWith url "/v1/tickets")
           {:status 201
@@ -148,7 +149,7 @@
                                          :en "TestiEn"}}
                      :alkamispäivä "2020-03-12"}]}]})))
     (client/set-get!
-      (fn [url options]
+      (fn [^String url options]
         (cond (.endsWith url "/serviceValidate")
               {:status 200
                :body
@@ -312,7 +313,7 @@
 (defn clear-db []
   (jdbc/execute!
     (db-ops/get-db-connection)
-    (slurp (clojure.java.io/resource "oph/ehoks/empty_database.sql"))))
+    (slurp (j/resource "oph/ehoks/empty_database.sql"))))
 
 (defn migrate-database [f]
   (m/clean!)

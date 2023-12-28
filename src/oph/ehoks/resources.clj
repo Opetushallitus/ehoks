@@ -5,7 +5,7 @@
 
 (defn create-routes
   "Create routes under particular path"
-  [path root]
+  [^String path root]
   (GET (str path (if (.endsWith path "/") "*" "/*"))
     {{resource-path :*} :route-params}
     (response/content-type

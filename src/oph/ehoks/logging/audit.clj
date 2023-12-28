@@ -1,5 +1,6 @@
 (ns oph.ehoks.logging.audit
   (:require [clojure.tools.logging :as log]
+            [clojure.string :as str]
             [oph.ehoks.logging.access :refer [current-fin-time-str
                                               get-session]]
             [environ.core :refer [env]]
@@ -13,6 +14,7 @@
                                 Target$Builder
                                 Changes)
            (java.time ZonedDateTime ZoneOffset)
+           (java.util Date)
            (java.net InetAddress)
            (org.ietf.jgss Oid)))
 
@@ -69,14 +71,14 @@
   "Get IP address of client from request"
   [request]
   (if-let [ips (get-in request [:headers "x-forwarded-for"])]
-    (-> ips (clojure.string/split #",") first)
+    (-> ips (str/split #",") first)
     (:remote-addr request)))
 
 (defn- get-user
   "Create instance of user object for given request"
   [request]
   (User.
-    (when-let [oid (get-user-oid request)]
+    (when-let [^String oid (get-user-oid request)]
       (Oid. oid))
     (if-let [ip (get-client-ip request)]
       (InetAddress/getByName ip)
@@ -91,9 +93,9 @@
     (or (number? obj) (string? obj) (boolean? obj) (nil? obj)) obj
     (map? obj) (zipmap (keys obj) (map with-only-json-types (vals obj)))
     (coll? obj) (map with-only-json-types obj)
-    (instance? java.util.Date obj) (-> (.toInstant obj)
-                                       (.atZone (ZoneOffset/UTC))
-                                       (str))
+    (instance? Date obj) (-> (.toInstant ^Date obj)
+                             (.atZone (ZoneOffset/UTC))
+                             (str))
     :else (str obj)))
 
 (defn- build-changes
@@ -142,7 +144,7 @@
                         :put operation-overwrite
                         operation-read))
           changes (build-changes response)]
-      (.log audit
+      (.log ^Audit audit
             user
             operation
             target

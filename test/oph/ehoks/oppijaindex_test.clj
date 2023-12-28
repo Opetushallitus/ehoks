@@ -328,7 +328,7 @@
   (t/testing "Add oppija and opiskeluoikeus"
     (utils/with-ticket-auth
       ["1.2.246.562.10.22222222220"
-       (fn [_ url __]
+       (fn [_ ^String url __]
          (cond
            (> (.indexOf url "oppijanumerorekisteri-service") -1)
            onr-data
@@ -362,7 +362,7 @@
   (t/testing "Update oppija and opiskeluoikeus"
     (utils/with-ticket-auth
       ["1.2.246.562.10.22222222220"
-       (fn [_ url __]
+       (fn [_ ^String url __]
          (cond
            (> (.indexOf url "oppijanumerorekisteri-service") -1)
            onr-data
@@ -447,7 +447,7 @@
 
     (utils/with-ticket-auth
       ["1.2.246.562.10.22222222220"
-       (fn [_ url __]
+       (fn [_ ^String url __]
          (cond
            (> (.indexOf url "oppijanumerorekisteri-service") -1)
            {:status 200
@@ -478,7 +478,7 @@
   (t/testing "Insert and update oppija and opiskeluoikeus with hankintakoulutus"
     (utils/with-ticket-auth
       ["1.2.246.562.10.22222222220"
-       (fn [_ url __]
+       (fn [_ ^String url __]
          (cond
            (> (.indexOf url "oppijanumerorekisteri-service") -1)
            onr-data
@@ -568,6 +568,7 @@
       (t/is
         (= (.compareTo
              timestamp
+             ^java.sql.Timestamp
              (get
                (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.23222222228")
                :paattynyt))
@@ -599,7 +600,7 @@
   (t/testing "Save opiskeluoikeus with sisältyyOpiskeluoikeuteen information"
     (utils/with-ticket-auth
       ["1.2.246.562.10.22222222220"
-       (fn [_ url __]
+       (fn [_ ^String url __]
          (cond
            (> (.indexOf url "oppijanumerorekisteri-service") -1)
            onr-data
@@ -669,7 +670,7 @@
     (t/testing "Active opiskeluoikeus returns true"
       (utils/with-ticket-auth
         ["1.2.246.562.10.22222222220"
-         (fn [_ url __]
+         (fn [_ ^String url __]
            (cond
              (> (.indexOf url "oppijanumerorekisteri-service") -1)
              onr-data
@@ -690,7 +691,7 @@
     (t/testing "Finished opiskeluoikeus returns false"
       (utils/with-ticket-auth
         ["1.2.246.562.10.22222222220"
-         (fn [_ url __]
+         (fn [_ ^String url __]
            (cond
              (> (.indexOf url "oppijanumerorekisteri-service") -1)
              onr-data
@@ -713,7 +714,7 @@
     (t/testing "Active opiskeluoikeus matching hoks is filtered from multiple"
       (utils/with-ticket-auth
         ["1.2.246.562.10.22222222220"
-         (fn [_ url __]
+         (fn [_ ^String url __]
            (cond
              (> (.indexOf url "oppijanumerorekisteri-service") -1)
              onr-data
@@ -730,7 +731,7 @@
     (t/testing "Active opiskeluoikeus is parsed from hoks and opiskeluoikeudet"
       (utils/with-ticket-auth
         ["1.2.246.562.10.22222222220"
-         (fn [_ url __]
+         (fn [_ ^String url __]
            (cond
              (> (.indexOf url "oppijanumerorekisteri-service") -1)
              onr-data
@@ -760,7 +761,7 @@
   (t/testing "Delete opiskeluoikeus from index"
     (utils/with-ticket-auth
       ["1.2.246.562.10.22222222220"
-       (fn [_ url __]
+       (fn [_ ^String url __]
          (cond
            (> (.indexOf url (str "oppijanumerorekisteri-service/henkilo/"
                                  "1.2.246.562.24.11111111110")) -1)
@@ -797,7 +798,7 @@
   (t/testing "onr-modified call has different name compared to oppijaindex"
     (utils/with-ticket-auth
       ["1.2.246.562.10.22222222220"
-       (fn [_ url __]
+       (fn [_ ^String url __]
          (when
           (> (.indexOf url "oppijanumerorekisteri-service") -1)
            onr-data))]
@@ -808,7 +809,7 @@
          :nimi "Tero Testaaja"}))
     (utils/with-ticket-auth
       ["1.2.246.562.10.22222222220"
-       (fn [_ url __]
+       (fn [_ ^String url __]
          (when
           (> (.indexOf url "oppijanumerorekisteri-service") -1)
            onr-data-name-changed))]
@@ -824,7 +825,7 @@
   opiskeluoikeus and hoks."
     (utils/with-ticket-auth
       ["1.2.246.562.10.22222222220"
-       (fn [_ url __]
+       (fn [_ ^String url __]
          (cond
            (> (.indexOf url (str "oppijanumerorekisteri-service/henkilo/"
                                  "1.2.246.562.24.30738063716")) -1)
@@ -909,7 +910,7 @@
          :osaamisala-nimi {:fi "" :sv ""}}))
     (utils/with-ticket-auth
       ["1.2.246.562.10.22222222220"
-       (fn [_ url __]
+       (fn [_ ^String url __]
          (cond
            (> (.indexOf url (str "slaves")) -1)
            onr-slaves-data

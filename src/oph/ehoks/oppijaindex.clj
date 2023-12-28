@@ -12,7 +12,8 @@
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.oppijanumerorekisteri :as onr])
-  (:import [java.time LocalDate]))
+  (:import [java.time LocalDate]
+           [java.sql Timestamp]))
 
 (def ^:const opiskeluoikeus-refresh-interval-in-days 180)
 
@@ -195,11 +196,11 @@
 
 (defn- log-opiskeluoikeus-insert-error!
   "Log errors that occur while inserting opiskeluoikeus for oppija"
-  ([oid oppija-oid exception]
+  ([oid oppija-oid ^Exception exception]
     (log/errorf
       "Error adding opiskeluoikeus %s of oppija %s: %s"
       oid oppija-oid (.getMessage exception)))
-  ([oid oppija-oid exception skip-indexing]
+  ([oid oppija-oid ^Exception exception skip-indexing]
     (log/errorf
       "%sError adding opiskeluoikeus %s of oppija %s: %s"
       (if skip-indexing
@@ -228,7 +229,8 @@
   (let [oo (get-opiskeluoikeus-by-oid! oid :updated_at)]
     (or (empty? oo)
         (nil? (:alkamispaiva oo))
-        (.isBefore (.toLocalDate (.toLocalDateTime (:updated-at oo)))
+        (.isBefore (.toLocalDate (.toLocalDateTime
+                                   ^Timestamp (:updated-at oo)))
                    (.minusDays (LocalDate/now)
                                opiskeluoikeus-refresh-interval-in-days)))))
 
@@ -312,9 +314,9 @@
 
 (defn- log-opiskelija-insert-error!
   "Log errors that occur when inserting a student"
-  ([oid exception]
+  ([oid ^Exception exception]
     (log/errorf "Error adding oppija %s: %s" oid (.getMessage exception)))
-  ([oid exception skip-indexing]
+  ([oid ^Exception exception skip-indexing]
     (log/errorf "%sError adding oppija %s: %s"
                 (if skip-indexing
                   "Skipped indexing. "
