@@ -806,7 +806,7 @@
          (when
           (> (.indexOf url "oppijanumerorekisteri-service") -1)
            onr-data-name-changed))]
-      (hp/handle-onrmodified "1.2.246.562.24.111111111111")
+      (sut/handle-onrmodified "1.2.246.562.24.111111111111")
       (utils/eq
         (sut/get-oppija-by-oid "1.2.246.562.24.111111111111")
         {:oid "1.2.246.562.24.111111111111"
@@ -911,7 +911,7 @@
                                  "/henkilo"
                                  "/1.2.246.562.24.111111111222")) -1)
            onr-data-master))]
-      (hp/handle-onrmodified "1.2.246.562.24.111111111222")
+      (sut/handle-onrmodified "1.2.246.562.24.111111111222")
       (utils/eq
         (sut/get-oppija-by-oid "1.2.246.562.24.111111111222")
         {:oid "1.2.246.562.24.111111111222"
