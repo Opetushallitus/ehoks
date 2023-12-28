@@ -85,6 +85,13 @@
            {:status 200
             :body {:oid "1.2.246.562.15.760000000010"
                    :oppilaitos {:oid "1.2.246.562.10.1200000000010"}
+                   :tila {:opiskeluoikeusjaksot
+                          [{:alku "2023-07-03"
+                            :tila {:koodiarvo "lasna"
+                                   :nimi {:fi "Läsnä"}
+                                   :koodistoUri
+                                   "koskiopiskeluoikeudentila"
+                                   :koodistoVersio 1}}]}
                    :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.760000000011")

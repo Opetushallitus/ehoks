@@ -531,6 +531,13 @@
 (defn mock-get-opiskeluoikeus
   [_]
   {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+   :tila {:opiskeluoikeusjaksot
+          [{:alku "2020-07-03"
+            :tila {:koodiarvo "lasna"
+                   :nimi {:fi "Läsnä"}
+                   :koodistoUri
+                   "koskiopiskeluoikeudentila"
+                   :koodistoVersio 1}}]}
    :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
 
 (def hoks-osaaminen-saavutettu

@@ -2,6 +2,7 @@
   (:require [oph.ehoks.schema.generator :as g]
             [oph.ehoks.opiskelijapalaute :refer
              [kuuluu-palautteen-kohderyhmaan?]]
+            [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.hoks.hoks :refer [y-tunnus-missing? tyopaikkajakso?]]
             [oph.ehoks.middleware :refer [get-current-opiskeluoikeus]]
             [oph.ehoks.schema-tools :refer [describe modify]]
@@ -262,22 +263,36 @@
   (or (not (tyopaikkajakso? oht))
       (some? (:yksiloiva-tunniste oht))))
 
+(defn- katsotaan-eronneeksi?
+  "Palauttaa true jos tila löytyy ja se ei ole valmistunut, lasna tai
+  valiaikaisestikeskeytynyt"
+  [opiskeluoikeus]
+  (let [tila (some-> opiskeluoikeus
+                     oppijaindex/get-opiskeluoikeus-tila)]
+    (and (some? tila)
+         (not (contains? #{"valmistunut" "lasna" "valiaikaisestikeskeytynyt"}
+                         tila)))))
+
 (defn- starts-after-opiskeluoikeus?
   "Osaamisen hankkimistapa ei edellä opiskeluoikeutta"
   [oht]
-  (let [oo-alku (some-> (get-current-opiskeluoikeus)
+  (let [oo (get-current-opiskeluoikeus)
+        oo-alku (some-> oo
                         :alkamispäivä
                         (LocalDate/parse))]
-    (or (not oo-alku)
+    (or (katsotaan-eronneeksi? oo)
+        (not oo-alku)
         (not (.isBefore (:alku oht) oo-alku)))))
 
 (defn- ends-before-opiskeluoikeus?
   "Osaamisen hankkimistapa ei jatku opiskeluoikeuden arvioidun ajan jälkeen"
   [oht]
-  (let [oo-loppu (some-> (get-current-opiskeluoikeus)
+  (let [oo (get-current-opiskeluoikeus)
+        oo-loppu (some-> oo
                          :arvioituPäättymispäivä
                          (LocalDate/parse))]
-    (or (not oo-loppu)
+    (or (katsotaan-eronneeksi? oo)
+        (not oo-loppu)
         (not (.isAfter (:loppu oht) oo-loppu)))))
 
 (defn- duration-max-5-years?

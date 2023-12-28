@@ -15,6 +15,12 @@
 
 (def opiskeluoikeus-data
   {:oppilaitos {:oid "1.2.246.562.10.222222222222"}
+   :tila {:opiskeluoikeusjaksot
+          [{:alku "2023-07-03"
+            :tila {:koodiarvo "lasna"
+                   :nimi {:fi "Läsnä"}
+                   :koodistoUri "koskiopiskeluoikeudentila"
+                   :koodistoVersio 1}}]}
    :suoritukset
    [{:koulutusmoduuli
      {:tunniste
