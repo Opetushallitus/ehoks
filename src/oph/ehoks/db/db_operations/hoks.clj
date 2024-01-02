@@ -722,20 +722,167 @@
      :opiskeluoikeusOid (:opiskeluoikeus-oid hoks)
      :oppilaitosOid (:oppilaitos-oid oo)}))
 
-(defn shallow-delete-hoks-by-hoks-id
-  "Asettaa HOKSin poistetuksi(shallow delete) id:n perusteella."
-  [hoks-id]
-  (db-ops/shallow-delete!
-    :hoksit
-    ["id = ?" hoks-id]))
+(defn shallow-delete-hoks
+  "Asettaa HOKSin ja sen hankittavat tutkinnon osat poistetuiksi
+  hoksin perusteella (shallow delete)."
+  [hoks]
+  (jdbc/with-db-transaction
+    [connection (db-ops/get-db-connection)]
+    (let [now (java.util.Date.)
+          delete! (fn [table id]
+                    (db-ops/shallow-delete-marking-updated!
+                      table ["id = ? AND deleted_at IS NULL" id]
+                      connection now))
+          delete-from-junction-table!
+          (fn [table id-field id]
+            (db-ops/shallow-delete!
+              table [(str id-field " = ? AND deleted_at IS NULL") id]
+              connection))]
+      (delete! :hoksit (:id hoks))
+      ; hyto
+      (doseq [hyto (:hankittavat-yhteiset-tutkinnon-osat hoks)]
+        (delete! :hankittavat_yhteiset_tutkinnon_osat (:id hyto))
+        (doseq [hyto-osa (:osa-alueet hyto)]
+          (delete! :yhteisen_tutkinnon_osan_osa_alueet (:id hyto-osa))
+          (delete-from-junction-table!
+            :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
+            "yhteisen_tutkinnon_osan_osa_alue_id" (:id hyto-osa))
+          (doseq [oh (:osaamisen-hankkimistavat hyto-osa)]
+            (delete! :osaamisen_hankkimistavat (:id oh))
+            (when-let [tyopaikalla-jarjestettava-koulutus
+                       (:tyopaikalla-jarjestettava-koulutus oh)]
+              (delete! :tyopaikalla_jarjestettavat_koulutukset
+                       (:id tyopaikalla-jarjestettava-koulutus))))))
+      ; hato
+      (doseq [hato (:hankittavat-ammat-tutkinnon-osat hoks)]
+        (delete! :hankittavat_ammat_tutkinnon_osat (:id hato))
+        (delete-from-junction-table!
+          :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
+          "hankittava_ammat_tutkinnon_osa_id" (:id hato))
+        (doseq [oh (:osaamisen-hankkimistavat hato)]
+          (delete! :osaamisen_hankkimistavat (:id oh))
+          (when-let [tyopaikalla-jarjestettava-koulutus
+                     (:tyopaikalla-jarjestettava-koulutus oh)]
+            (delete! :tyopaikalla_jarjestettavat_koulutukset
+                     (:id tyopaikalla-jarjestettava-koulutus)))))
+      ; hpto
+      (doseq [hpto (:hankittavat-paikalliset-tutkinnon-osat hoks)]
+        (delete! :hankittavat_paikalliset_tutkinnon_osat (:id hpto))
+        (delete-from-junction-table!
+          :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
+          "hankittava_paikallinen_tutkinnon_osa_id" (:id hpto))
+        (doseq [oh (:osaamisen-hankkimistavat hpto)]
+          (delete! :osaamisen_hankkimistavat (:id oh))
+          (when-let [tyopaikalla-jarjestettava-koulutus
+                     (:tyopaikalla-jarjestettava-koulutus oh)]
+            (delete! :tyopaikalla_jarjestettavat_koulutukset
+                     (:id tyopaikalla-jarjestettava-koulutus))))))))
 
 (defn undo-shallow-delete
   "Merkitsee HOKSin palautetuksi asettamalla nil:in sen deleted_at -kenttään."
   [hoks-id]
-  (db-ops/update!
-    :hoksit
-    {:deleted_at nil}
-    ["id = ?" hoks-id]))
+  (jdbc/with-db-transaction
+    [connection (db-ops/get-db-connection)]
+    (when-let [hoks (first (db-ops/query-in-tx
+                             [(str "SELECT id, deleted_at FROM hoksit "
+                                   "WHERE id = ? AND deleted_at IS NOT NULL")
+                              hoks-id]
+                             {:row-fn #(hoks-from-sql % #{:deleted_at})}
+                             connection))]
+      (when-let [deleted-at (:deleted-at hoks)]
+        (let [now (java.util.Date.)
+              undo-delete!
+              (fn [table id]
+                (db-ops/update! table {:deleted_at nil :updated_at now}
+                                [(str "id = ? AND deleted_at = ?") id
+                                 deleted-at] connection))
+              undo-delete-junction-table!
+              (fn [table id-field id]
+                (db-ops/update! table {:deleted_at nil}
+                                [(str id-field " = ? AND deleted_at = ?") id
+                                 deleted-at] connection))]
+          (undo-delete! :hoksit hoks-id)
+          ; hyto
+          (doseq [hyto (db-ops/query
+                         [(str "SELECT id FROM "
+                               "hankittavat_yhteiset_tutkinnon_osat "
+                               "WHERE hoks_id = ? AND deleted_at = ?")
+                          hoks-id deleted-at] {:row-fn db-ops/from-sql})]
+            (undo-delete! :hankittavat_yhteiset_tutkinnon_osat (:id hyto))
+            (doseq [hyto-osa (db-ops/query
+                               [(str "SELECT id FROM "
+                                     "yhteisen_tutkinnon_osan_osa_alueet "
+                                     "WHERE yhteinen_tutkinnon_osa_id = ? "
+                                     "AND deleted_at = ?")
+                                (:id hyto) deleted-at]
+                               {:row-fn db-ops/from-sql})]
+              (undo-delete! :yhteisen_tutkinnon_osan_osa_alueet (:id hyto-osa))
+              (undo-delete-junction-table!
+                :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
+                "yhteisen_tutkinnon_osan_osa_alue_id" (:id hyto-osa))
+              (doseq [oh (db-ops/query
+                           [(str "SELECT DISTINCT oh.id, "
+                                 "oh.tyopaikalla_jarjestettava_koulutus_id "
+                                 "FROM osaamisen_hankkimistavat oh "
+                                 "JOIN yhteisen_tutkinnon_osan_osa_alueen_"
+                                 "osaamisen_hankkimistavat o ON "
+                                 "o.osaamisen_hankkimistapa_id = oh.id WHERE "
+                                 "o.yhteisen_tutkinnon_osan_osa_alue_id = ? "
+                                 "AND oh.deleted_at = ?")
+                            (:id hyto-osa) deleted-at]
+                           {:row-fn db-ops/from-sql})]
+                (undo-delete! :osaamisen_hankkimistavat (:id oh))
+                (when-let [tjk-id (:tyopaikalla-jarjestettava-koulutus-id oh)]
+                  (undo-delete! :tyopaikalla_jarjestettavat_koulutukset
+                                tjk-id)))))
+          ; hato
+          (doseq [hato (db-ops/query
+                         [(str "SELECT id FROM "
+                               "hankittavat_ammat_tutkinnon_osat "
+                               "WHERE hoks_id = ? AND deleted_at = ?")
+                          hoks-id deleted-at] {:row-fn db-ops/from-sql})]
+            (undo-delete! :hankittavat_ammat_tutkinnon_osat (:id hato))
+            (undo-delete-junction-table!
+              :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
+              "hankittava_ammat_tutkinnon_osa_id" (:id hato))
+            (doseq [oh (db-ops/query
+                         [(str "SELECT DISTINCT oh.id, "
+                               "oh.tyopaikalla_jarjestettava_koulutus_id FROM "
+                               "osaamisen_hankkimistavat oh "
+                               "JOIN hankittavan_ammat_tutkinnon_osan_"
+                               "osaamisen_hankkimistavat o ON "
+                               "o.osaamisen_hankkimistapa_id = oh.id WHERE "
+                               "o.hankittava_ammat_tutkinnon_osa_id = ? "
+                               "AND oh.deleted_at = ?") (:id hato) deleted-at]
+                         {:row-fn db-ops/from-sql})]
+              (undo-delete! :osaamisen_hankkimistavat (:id oh))
+              (when-let [tjk-id (:tyopaikalla-jarjestettava-koulutus-id oh)]
+                (undo-delete! :tyopaikalla_jarjestettavat_koulutukset tjk-id))))
+          ; hpto
+          (doseq [hpto (db-ops/query
+                         [(str "SELECT id FROM "
+                               "hankittavat_paikalliset_tutkinnon_osat "
+                               "WHERE hoks_id = ? AND deleted_at = ?")
+                          hoks-id deleted-at] {:row-fn db-ops/from-sql})]
+            (undo-delete! :hankittavat_paikalliset_tutkinnon_osat (:id hpto))
+            (undo-delete-junction-table!
+              :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
+              "hankittava_paikallinen_tutkinnon_osa_id" (:id hpto))
+            (doseq [oh (db-ops/query
+                         [(str "SELECT DISTINCT oh.id, "
+                               "oh.tyopaikalla_jarjestettava_koulutus_id FROM "
+                               "osaamisen_hankkimistavat oh "
+                               "JOIN hankittavan_paikallisen_tutkinnon_osan_"
+                               "osaamisen_hankkimistavat o ON "
+                               "o.osaamisen_hankkimistapa_id = oh.id WHERE "
+                               "o.hankittava_ammat_tutkinnon_osa_id = ? "
+                               "AND oh.deleted_at = ?") (:id hpto) deleted-at]
+                         {:row-fn db-ops/from-sql})]
+              (undo-delete! :osaamisen_hankkimistavat (:id oh))
+              (when-let [tjk-id
+                         (:tyopaikalla-jarjestettava-koulutus-id oh)]
+                (undo-delete! :tyopaikalla_jarjestettavat_koulutukset
+                              tjk-id)))))))))
 
 (defn delete-opiskeluoikeus-by-oid
   "Poistaa opiskeluoikeuden tiedot indeksistä oidin perusteella."

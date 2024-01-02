@@ -777,7 +777,7 @@
         (let [hoks (-> (utils/parse-body (:body get-response))
                        :data)
               hoks-id (-> hoks :id)]
-          (db-hoks/shallow-delete-hoks-by-hoks-id hoks-id)
+          (db-hoks/shallow-delete-hoks hoks)
           (let [paged-response (hoks-utils/mock-st-get
                                  app (format "%s/paged" base-url))
                 paged-body (utils/parse-body (:body paged-response))]
@@ -839,7 +839,7 @@
                                   :result
                                   first)
                               :poistettu)))
-          (db-hoks/shallow-delete-hoks-by-hoks-id hoks-id)
+          (db-hoks/shallow-delete-hoks hoks)
           (let [before-delete-resp (hoks-utils/mock-st-get
                                      app (format "%s/paged?updated-after=%s"
                                                  base-url

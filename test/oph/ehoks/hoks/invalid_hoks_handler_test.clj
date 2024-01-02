@@ -39,7 +39,7 @@
                          :ensikertainen-hyvaksyminen "2018-12-15"
                          :osaamisen-hankkimisen-tarve false}]
       (hoks-utils/mock-st-post app base-url hoks-data)
-      (db-hoks/shallow-delete-hoks-by-hoks-id 1)
+      (db-hoks/shallow-delete-hoks (assoc hoks-data :id 1))
       (let [post-response (hoks-utils/mock-st-post app base-url new-hoks-data)]
         (is (= (:status post-response) 400))
         (is (= (utils/parse-body (:body post-response))
