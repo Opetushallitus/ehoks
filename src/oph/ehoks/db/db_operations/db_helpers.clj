@@ -80,13 +80,20 @@
     (jdbc/update! db-conn table values where-clause)))
 
 (defn shallow-delete!
-  "Set deleted_at field to current date and time, marking row as deleted."
-  ([table where-clause]
-    (let [now (java.util.Date.)]
-      (update! table {:deleted_at now
-                      :updated_at now} where-clause)))
+  "Set deleted_at field to given/current date and time, marking row as deleted."
+  ([table where-clause db-conn timestamp]
+    (update! table {:deleted_at timestamp} where-clause db-conn))
   ([table where-clause db-conn]
-    (update! table {:deleted_at (java.util.Date.)} where-clause db-conn)))
+    (shallow-delete! table where-clause db-conn (java.util.Date.)))
+  ([table where-clause]
+    (shallow-delete! table where-clause (get-db-connection))))
+
+(defn shallow-delete-marking-updated!
+  "Set deleted_at & updated_at field to given date and time, marking row as
+  deleted."
+  [table where-clause db-conn timestamp]
+  (update! table {:deleted_at timestamp
+                  :updated_at timestamp} where-clause db-conn))
 
 (defn delete!
   "Actually delete row from database."

@@ -813,6 +813,47 @@
                             :data
                             :result)))))))))
 
+(deftest test-hoks-shallow-delete-and-undo
+  (testing "HOKS shallow delete and undo"
+    (let [app (hoks-utils/create-app nil)
+          hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.12312312319"
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false
+                     :hankittavat-ammat-tutkinnon-osat
+                     [parts-test-data/hao-data]
+                     :hankittavat-paikalliset-tutkinnon-osat
+                     [parts-test-data/hpto-data]
+                     :hankittavat-yhteiset-tutkinnon-osat
+                     [parts-test-data/hyto-data]
+                     :aiemmin-hankitut-ammat-tutkinnon-osat
+                     [parts-test-data/ahato-data]
+                     :aiemmin-hankitut-paikalliset-tutkinnon-osat
+                     [parts-test-data/ahpto-data]
+                     :aiemmin-hankitut-yhteiset-tutkinnon-osat
+                     [parts-test-data/ahyto-data]}
+          post-response (hoks-utils/mock-st-post app base-url hoks-data)]
+      (is (= (:status post-response) 200))
+      (let [hoks-uri (-> (utils/parse-body (:body post-response))
+                         :data
+                         :uri)
+            get-response (hoks-utils/mock-st-get app hoks-uri)
+            hoks (-> (utils/parse-body (:body get-response))
+                     :data)
+            hoks-id (-> hoks :id)]
+        (is (= (:status get-response) 200))
+        (is (some? (seq (:hankittavat-ammat-tutkinnon-osat hoks))))
+        (is (some? (seq (:hankittavat-paikalliset-tutkinnon-osat hoks))))
+        (is (some? (seq (:hankittavat-yhteiset-tutkinnon-osat hoks))))
+        (db-hoks/shallow-delete-hoks-by-hoks-id hoks-id)
+        (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
+          (is (= (:status get-resp) 404)))
+        (db-hoks/undo-shallow-delete hoks-id)
+        (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
+          (is (= (:status get-resp) 200))
+          (is (= (-> (utils/parse-body (:body get-resp))
+                     :data) hoks)))))))
+
 (deftest no-internal-server-error-in-response-validation-failure
   (testing (str "Response validation failure shouldn't give "
                 "`internal-server-error` in response")
