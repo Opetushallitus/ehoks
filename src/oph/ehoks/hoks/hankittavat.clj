@@ -213,11 +213,12 @@
           yto-osa-alue-fields)))
 
 (defn get-hankittava-yhteinen-tutkinnon-osa
-  "Hakee yhden hankittavan yhteisen tutkinnon osan tietokannasta."
+  "Hakee yhden hankittavan yhteisen tutkinnon osan tietokannasta.
+  Palauttaa `nil` jos yhteistä tutkinnon osaa ei löydy."
   [hyto-id]
-  (when-let [hato-db
-             (db/select-hankittava-yhteinen-tutkinnon-osa-by-id hyto-id)]
-    (assoc hato-db :osa-alueet (get-yto-osa-alueet hyto-id))))
+  (let [hyto-db (db/select-hankittava-yhteinen-tutkinnon-osa-by-id hyto-id)]
+    (when (not-empty hyto-db)
+      (assoc hyto-db :osa-alueet (get-yto-osa-alueet hyto-id)))))
 
 (defn get-hankittavat-yhteiset-tutkinnon-osat
   "Hakee hankittavat yhteiset tutkinnon osat tietokannasta."
