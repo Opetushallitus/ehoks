@@ -954,6 +954,7 @@
     :type ::g/schema-template
     :restful true
     :name "HOKSModel"}
+  ; FIXME: `:id` shouldn't be required for PUT and PATCH
   {:id {:methods {:post :excluded}
         :types {:any s/Int}
         :description "Tunniste eHOKS-järjestelmässä"}
