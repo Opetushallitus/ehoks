@@ -568,6 +568,7 @@
       (t/is
         (= (.compareTo
              timestamp
+             ^java.sql.Timestamp
              (get
                (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.23222222228")
                :paattynyt))

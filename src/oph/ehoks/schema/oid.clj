@@ -61,7 +61,7 @@
   (let [splitted-oid                 (str/split oid #"\.")
         node                         (nth splitted-oid 4)
         [first-10-digits last-digit] (split-at 10 (nth splitted-oid 5))
-        first-10-digits              (map #(Character/getNumericValue %)
+        first-10-digits              (map #(Character/getNumericValue ^char %)
                                           first-10-digits)
         ; Apparently there has been a bug in OID Generator earlier, so that it
         ; has generated OIDs that have 12 digits in the last component instead
@@ -70,7 +70,7 @@
         last-digit                   (if (> (count last-digit) 1)
                                        0
                                        (Character/getNumericValue
-                                         (first last-digit)))]
+                                         ^char (first last-digit)))]
     (= last-digit
        (if (= node "24")
          (ibm-1-3-7-checksum first-10-digits) ; Only used for oppija OIDs.
