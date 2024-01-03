@@ -27,7 +27,7 @@
 (deftest test-get-oppija-opiskeluoikeudet
   (testing "Get opiskeluoikeudet for oppija"
     (client/set-post!
-      (fn [url options]
+      (fn [^String url options]
         (cond
           (.endsWith
             url "/koski/api/sure/oids")

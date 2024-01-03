@@ -24,9 +24,9 @@
   "Check whether jakolinkki is still valid"
   [jakolinkki]
   (cond
-    (.isAfter (:voimassaolo-alku jakolinkki) (LocalDate/now))
+    (.isAfter ^LocalDate (:voimassaolo-alku jakolinkki) (LocalDate/now))
     (throw (ex-info "Shared link not yet active" {:cause :inactive}))
-    (.isBefore (:voimassaolo-loppu jakolinkki) (LocalDate/now))
+    (.isBefore ^LocalDate (:voimassaolo-loppu jakolinkki) (LocalDate/now))
     (throw (ex-info "Shared link is expired" {:cause :expired}))))
 
 (defn- fetch-shared-link-data

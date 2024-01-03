@@ -22,9 +22,9 @@
 (defn migrate!
   "Run migrations with flyway"
   []
-  (.migrate flyway))
+  (.migrate ^Flyway flyway))
 
 (defn clean!
   "Clean database"
   []
-  (.clean flyway))
+  (.clean ^Flyway flyway))
