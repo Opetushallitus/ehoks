@@ -4,6 +4,7 @@
   :pedantic? :abort
   :dependencies [[org.clojure/clojure]
                  [clj-http]
+                 [cheshire]
                  [com.googlecode.libphonenumber/libphonenumber]
                  [metosin/compojure-api]
                  [org.flywaydb/flyway-core]
@@ -41,6 +42,7 @@
                          [org.apache.httpcomponents/httpcore "4.4.16"]
                          [org.apache.httpcomponents/httpcore-nio "4.4.16"]
                          [org.apache.httpcomponents/httpmime "4.5.14"]
+                         [cheshire "5.12.0"]
 
                          ;; logging
                          [org.clojure/tools.logging "1.2.4"]
