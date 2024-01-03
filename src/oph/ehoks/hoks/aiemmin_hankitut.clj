@@ -61,6 +61,8 @@
    :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
    :osa__olennainen_seikka          :olennainen_seikka
    :osa__module_id                  :module_id
+   :osa__tarkentavat_tiedot_osaamisen_arvioija_id
+   :tarkentavat_tiedot_osaamisen_arvioija_id
    :osa__valittu_todentamisen_prosessi_koodi_uri
    :valittu_todentamisen_prosessi_koodi_uri
    :osa__valittu_todentamisen_prosessi_koodi_versio
@@ -96,6 +98,8 @@
    :osa__tavoitteet_ja_sisallot     :tavoitteet_ja_sisallot
    :osa__amosaa_tunniste            :amosaa_tunniste
    :osa__lahetetty_arvioitavaksi    :lahetetty_arvioitavaksi
+   :osa__tarkentavat_tiedot_osaamisen_arvioija_id
+   :tarkentavat_tiedot_osaamisen_arvioija_id
    :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
    :vaatimuksista_tai_tavoitteista_poikkeaminen
    :osa__valittu_todentamisen_prosessi_koodi_uri
@@ -130,6 +134,8 @@
    :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
    :osa__olennainen_seikka          :olennainen_seikka
    :osa__module_id                  :module_id
+   :osa__tarkentavat_tiedot_osaamisen_arvioija_id
+   :tarkentavat_tiedot_osaamisen_arvioija_id
    :osa__vaatimuksista_tai_tavoitteista_poikkeaminen
    :vaatimuksista_tai_tavoitteista_poikkeaminen
    :osa__valittu_todentamisen_prosessi_koodi_uri
@@ -155,6 +161,8 @@
    :osa__koulutuksen_jarjestaja_oid :koulutuksen_jarjestaja_oid
    :osa__lahetetty_arvioitavaksi    :lahetetty_arvioitavaksi
    :osa__module_id                  :module_id
+   :osa__tarkentavat_tiedot_osaamisen_arvioija_id
+   :tarkentavat_tiedot_osaamisen_arvioija_id
    :osa__valittu_todentamisen_prosessi_koodi_uri
    :valittu_todentamisen_prosessi_koodi_uri
    :osa__valittu_todentamisen_prosessi_koodi_versio

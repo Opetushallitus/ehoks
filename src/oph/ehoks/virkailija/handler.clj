@@ -1,42 +1,41 @@
 (ns oph.ehoks.virkailija.handler
   (:require [clj-time.core :as t]
-            [compojure.api.sweet :as c-api]
+            [clojure.string :as str]
+            [clojure.tools.logging :as log]
             [compojure.api.core :refer [route-middleware]]
+            [compojure.api.sweet :as c-api]
             [compojure.route :as compojure-route]
-            [schema.core :as s]
-            [ring.util.http-response :as response]
-            [oph.ehoks.resources :as resources]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
-            [oph.ehoks.virkailija.auth :as auth]
-            [oph.ehoks.user :as user]
-            [oph.ehoks.schema :as schema]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
             [oph.ehoks.db.postgresql.common :as pc]
-            [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.restful :as restful]
-            [oph.ehoks.healthcheck.handler :as healthcheck-handler]
-            [oph.ehoks.middleware :refer
-             [wrap-hoks wrap-opiskeluoikeus get-current-opiskeluoikeus]]
-            [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.hoks.handler :as hoks-handler]
-            [oph.ehoks.oppijaindex :as oi]
-            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.healthcheck.handler :as healthcheck-handler]
+            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
+            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]
+            [oph.ehoks.hoks.handler :as hoks-handler]
+            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks.schema :as hoks-schema]
+            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.middleware :refer
+             [wrap-hoks wrap-opiskeluoikeus]]
+            [oph.ehoks.misc.handler :as misc-handler]
+            [oph.ehoks.oppijaindex :as oi]
+            [oph.ehoks.resources :as resources]
+            [oph.ehoks.restful :as restful]
+            [oph.ehoks.schema :as schema]
+            [oph.ehoks.user :as user]
             [oph.ehoks.validation.handler :as validation-handler]
-            [clojure.core.async :as a]
-            [clojure.string :as str]
-            [clojure.tools.logging :as log]
+            [oph.ehoks.virkailija.auth :as auth]
+            [oph.ehoks.virkailija.cas-handler :as cas-handler]
+            [oph.ehoks.virkailija.external-handler :as external-handler]
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.virkailija.system-handler :as system-handler]
-            [oph.ehoks.virkailija.external-handler :as external-handler]
-            [oph.ehoks.virkailija.cas-handler :as cas-handler]
-            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
-            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu])
+            [ring.util.http-response :as response]
+            [schema.core :as s])
   (:import (clojure.lang ExceptionInfo)
            (java.time LocalDate)))
 
@@ -196,10 +195,10 @@
   (try
     (let [old-hoks (:hoks request)]
       (h/check-hoks-for-update! old-hoks hoks)
-      (let [hoks-db (db-handler (:id (:hoks request))
-                                (h/add-missing-oht-yksiloiva-tunniste hoks))]
-        (assoc (response/no-content) :audit-data {:new hoks
-                                                  :old old-hoks})))
+      (let [new-hoks (db-handler (:id (:hoks request))
+                                 (h/add-missing-oht-yksiloiva-tunniste hoks))]
+        (assoc (response/no-content) :audit-data {:old old-hoks
+                                                  :new new-hoks})))
     (catch Exception e
       (if (= (:error (ex-data e)) :disallowed-update)
         (response/bad-request! {:error (.getMessage e)})
@@ -677,13 +676,12 @@
                                     (when (nil? opiskeluoikeus)
                                       (db-hoks/delete-opiskeluoikeus-by-oid
                                         opiskeluoikeus-oid))
-                                    (assoc
-                                      (response/ok {:success hoks-id})
-                                      :audit-data {:old hoks
-                                                   :new (assoc
-                                                          hoks
-                                                          :deleted_at
-                                                          "*ADDED*")})
+                                    (assoc (response/ok {:success hoks-id})
+                                           :audit-data
+                                           {:old hoks
+                                            :new (assoc hoks
+                                                        :deleted_at
+                                                        "*ADDED*")})
                                     (catch Exception e
                                       (response/bad-request!
                                         {:error (ex-message e)})))

@@ -189,8 +189,7 @@
       :return (restful/response {})
       (let [hoks (h/get-hoks-by-id hoks-id)]
         (if (pos? (first (db-hoks/delete-hoks-by-hoks-id hoks-id)))
-          (assoc (restful/rest-ok {})
-                 :audit-data {:old hoks})
+          (assoc (restful/rest-ok {}) :audit-data {:old hoks})
           (response/not-found {:error "No HOKS found with given hoks-id"}))))
 
     (c-api/PATCH "/hoks/:hoks-id/undo-shallow-delete" request

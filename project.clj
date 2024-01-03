@@ -21,7 +21,6 @@
                  [org.clojure/data.json]
                  [environ]
                  [software.amazon.awssdk/sqs]
-                 [fi.vm.sade/auditlogger]
                  [com.rpl/specter]
                  [org.clojure/core.memoize]]
   :managed-dependencies [[org.clojure/clojure "1.11.2"]
@@ -81,7 +80,6 @@
                          [environ "1.2.0"]
                          [software.amazon.awssdk/sqs "2.21.40" :exclusions [org.slf4j/slf4j-api]]
                          [com.googlecode.libphonenumber/libphonenumber "8.13.26"]
-                         [fi.vm.sade/auditlogger "9.2.2-20231114.085926-4"]
                          [com.rpl/specter "1.1.4"]
                          [ring/ring-mock "0.4.0"]
                          [ring/ring-devel "1.10.0" :exclusions [ring/ring-core
