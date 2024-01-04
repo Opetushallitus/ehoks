@@ -722,61 +722,75 @@
      :opiskeluoikeusOid (:opiskeluoikeus-oid hoks)
      :oppilaitosOid (:oppilaitos-oid oo)}))
 
+(defn delete-hoks-part!
+  [part-type data connection timestamp]
+  (case part-type
+    :hyto
+    (do
+      (db-ops/shallow-delete-marking-updated!
+        :hankittavat_yhteiset_tutkinnon_osat
+        ["id = ? AND deleted_at IS NULL" (:id data)] connection timestamp)
+      (doseq [hyto-osa (:osa-alueet data)]
+        (delete-hoks-part! :hyto-osa hyto-osa connection timestamp)))
+    :hyto-osa
+    (do
+      (db-ops/shallow-delete-marking-updated!
+        :yhteisen_tutkinnon_osan_osa_alueet
+        ["id = ? AND deleted_at IS NULL" (:id data)] connection timestamp)
+      (db-ops/shallow-delete!
+        :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
+        ["yhteisen_tutkinnon_osan_osa_alue_id = ? AND deleted_at IS NULL"
+         (:id data)] connection timestamp)
+      (doseq [oh (:osaamisen-hankkimistavat data)]
+        (delete-hoks-part! :oh oh connection timestamp)))
+    :hato
+    (do
+      (db-ops/shallow-delete-marking-updated!
+        :hankittavat_ammat_tutkinnon_osat
+        ["id = ? AND deleted_at IS NULL" (:id data)] connection timestamp)
+      (db-ops/shallow-delete!
+        :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
+        ["hankittava_ammat_tutkinnon_osa_id = ? AND deleted_at IS NULL"
+         (:id data)] connection timestamp)
+      (doseq [oh (:osaamisen-hankkimistavat data)]
+        (delete-hoks-part! :oh oh connection timestamp)))
+    :hpto
+    (do
+      (db-ops/shallow-delete-marking-updated!
+        :hankittavat_paikalliset_tutkinnon_osat
+        ["id = ? AND deleted_at IS NULL" (:id data)] connection timestamp)
+      (db-ops/shallow-delete!
+        :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
+        ["hankittava_paikallinen_tutkinnon_osa_id = ? AND deleted_at IS NULL"
+         (:id data)] connection timestamp)
+      (doseq [oh (:osaamisen-hankkimistavat data)]
+        (delete-hoks-part! :oh oh connection timestamp)))
+    :oh
+    (do
+      (db-ops/shallow-delete-marking-updated!
+        :osaamisen_hankkimistavat
+        ["id = ? AND deleted_at IS NULL" (:id data)] connection timestamp)
+      (when-let [tjk (:tyopaikalla-jarjestettava-koulutus data)]
+        (db-ops/shallow-delete-marking-updated!
+          :tyopaikalla_jarjestettavat_koulutukset
+          ["id = ? AND deleted_at IS NULL" (:id data)] connection timestamp)))))
+
 (defn shallow-delete-hoks
   "Asettaa HOKSin ja sen hankittavat tutkinnon osat poistetuiksi
   hoksin perusteella (shallow delete)."
   [hoks]
   (jdbc/with-db-transaction
     [connection (db-ops/get-db-connection)]
-    (let [now (java.util.Date.)
-          delete! (fn [table id]
-                    (db-ops/shallow-delete-marking-updated!
-                      table ["id = ? AND deleted_at IS NULL" id]
-                      connection now))
-          delete-from-junction-table!
-          (fn [table id-field id]
-            (db-ops/shallow-delete!
-              table [(str id-field " = ? AND deleted_at IS NULL") id]
-              connection))]
-      (delete! :hoksit (:id hoks))
-      ; hyto
+    (let [timestamp (java.util.Date.)]
+      (db-ops/shallow-delete-marking-updated!
+        :hoksit ["id = ? AND deleted_at IS NULL" (:id hoks)] connection
+        timestamp)
       (doseq [hyto (:hankittavat-yhteiset-tutkinnon-osat hoks)]
-        (delete! :hankittavat_yhteiset_tutkinnon_osat (:id hyto))
-        (doseq [hyto-osa (:osa-alueet hyto)]
-          (delete! :yhteisen_tutkinnon_osan_osa_alueet (:id hyto-osa))
-          (delete-from-junction-table!
-            :yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat
-            "yhteisen_tutkinnon_osan_osa_alue_id" (:id hyto-osa))
-          (doseq [oh (:osaamisen-hankkimistavat hyto-osa)]
-            (delete! :osaamisen_hankkimistavat (:id oh))
-            (when-let [tyopaikalla-jarjestettava-koulutus
-                       (:tyopaikalla-jarjestettava-koulutus oh)]
-              (delete! :tyopaikalla_jarjestettavat_koulutukset
-                       (:id tyopaikalla-jarjestettava-koulutus))))))
-      ; hato
+        (delete-hoks-part! :hyto hyto connection timestamp))
       (doseq [hato (:hankittavat-ammat-tutkinnon-osat hoks)]
-        (delete! :hankittavat_ammat_tutkinnon_osat (:id hato))
-        (delete-from-junction-table!
-          :hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat
-          "hankittava_ammat_tutkinnon_osa_id" (:id hato))
-        (doseq [oh (:osaamisen-hankkimistavat hato)]
-          (delete! :osaamisen_hankkimistavat (:id oh))
-          (when-let [tyopaikalla-jarjestettava-koulutus
-                     (:tyopaikalla-jarjestettava-koulutus oh)]
-            (delete! :tyopaikalla_jarjestettavat_koulutukset
-                     (:id tyopaikalla-jarjestettava-koulutus)))))
-      ; hpto
+        (delete-hoks-part! :hato hato connection timestamp))
       (doseq [hpto (:hankittavat-paikalliset-tutkinnon-osat hoks)]
-        (delete! :hankittavat_paikalliset_tutkinnon_osat (:id hpto))
-        (delete-from-junction-table!
-          :hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat
-          "hankittava_paikallinen_tutkinnon_osa_id" (:id hpto))
-        (doseq [oh (:osaamisen-hankkimistavat hpto)]
-          (delete! :osaamisen_hankkimistavat (:id oh))
-          (when-let [tyopaikalla-jarjestettava-koulutus
-                     (:tyopaikalla-jarjestettava-koulutus oh)]
-            (delete! :tyopaikalla_jarjestettavat_koulutukset
-                     (:id tyopaikalla-jarjestettava-koulutus))))))))
+        (delete-hoks-part! :hpto hpto connection timestamp)))))
 
 (defn undo-shallow-delete
   "Merkitsee HOKSin palautetuksi asettamalla nil:in sen deleted_at -kenttään."
