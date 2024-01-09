@@ -84,6 +84,10 @@
                          [com.googlecode.libphonenumber/libphonenumber "8.13.26"]
                          [fi.vm.sade/auditlogger "9.2.2-20231114.085926-4"]
                          [com.rpl/specter "1.1.4"]
+                         [ring/ring-mock "0.4.0"]
+                         [ring/ring-devel "1.10.0" :exclusions [ring/ring-core
+                                                                org.clojure/java.classpath]]
+                         [camel-snake-kebab "0.4.3"]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.3.7"]
@@ -130,20 +134,14 @@
   :profiles {:test {:resource-paths ["resources/test"
                                      "resources/test/src"
                                      "resources/test/config"]
-                    :dependencies [[cheshire "5.12.0"]
-                                   [ring/ring-mock "0.4.0"]
-                                   [ring/ring-devel "1.10.0"
-                                    :exclusions [ring/ring-core
-                                                 org.clojure/java.classpath]]]
+                    :dependencies [[ring/ring-mock]
+                                   [ring/ring-devel]]
                     :env {:config "oph-configuration/test.edn"}}
              :schemaspy {:dependencies [[net.sourceforge.schemaspy/schemaspy "5.0.0"]]}
              :dev {:main oph.ehoks.dev-server
-                   :dependencies [[cheshire "5.12.0"]
-                                  [ring/ring-mock "0.4.0"]
-                                  [ring/ring-devel "1.10.0"
-                                   :exclusions [ring/ring-core
-                                                org.clojure/java.classpath]]
-                                  [camel-snake-kebab "0.4.3"]]
+                   :dependencies [[ring/ring-mock]
+                                  [ring/ring-devel]
+                                  [camel-snake-kebab]]
                    :resource-paths ["resources/dev"
                                     "resources/test/src"
                                     "resources/dev/src"
