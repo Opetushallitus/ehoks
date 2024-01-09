@@ -2,7 +2,7 @@
   (:require [oph.ehoks.config :refer [config]])
   (:import org.flywaydb.core.Flyway))
 
-(def flyway
+(def ^Flyway flyway
   "Flyway instance"
   (when-not *compile-files*
     (-> (Flyway/configure)
@@ -22,9 +22,9 @@
 (defn migrate!
   "Run migrations with flyway"
   []
-  (.migrate ^Flyway flyway))
+  (.migrate flyway))
 
 (defn clean!
   "Clean database"
   []
-  (.clean ^Flyway flyway))
+  (.clean flyway))
