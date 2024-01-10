@@ -228,9 +228,9 @@
                       [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
                       :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
               (.endsWith
-                url "/koski/api/opiskeluoikeus/1.2.246.562.15.76000000018")
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.60000000004")
               {:status 200
-               :body {:oid "1.2.246.562.15.76000000018"
+               :body {:oid "1.2.246.562.15.60000000004"
                       :tila {:opiskeluoikeusjaksot
                              [{:alku "2010-12-01"
                                :tila {:koodiarvo "eronnut"

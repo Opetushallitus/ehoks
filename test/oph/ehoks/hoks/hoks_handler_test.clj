@@ -954,7 +954,7 @@
           data
           (assoc test-data/hoks-data
                  :opiskeluoikeus-oid
-                 "1.2.246.562.15.76000000018")
+                 "1.2.246.562.15.60000000004")
           post-response
           (hoks-utils/create-mock-post-request "" data app)]
       (is (= (:status post-response) 200)))))

@@ -10,7 +10,7 @@
              GetQueueUrlRequest
              QueueDoesNotExistException)))
 
-(def ^:private sqs-client
+(def ^{:private true :tag SqsClient} sqs-client
   "Globaali SQS-client."
   (when (:send-herate-messages? config)
     (-> (SqsClient/builder)
@@ -24,7 +24,7 @@
     (if (nil? (:env-stage env))
       (log/warn "Stage missing from env variables")
       (.queueUrl (.getQueueUrl
-                   ^SqsClient sqs-client
+                   sqs-client
                    ^GetQueueUrlRequest (-> (GetQueueUrlRequest/builder)
                                            (.queueName
                                              (str (:env-stage env) "-"
@@ -113,7 +113,7 @@
   "Lähettää viestin SQS-queueen."
   [msg queue-url]
   (let [resp (.sendMessage
-               ^SqsClient sqs-client
+               sqs-client
                ^SendMessageRequest (-> (SendMessageRequest/builder)
                                        (.queueUrl queue-url)
                                        (.messageBody (json/write-str msg))
