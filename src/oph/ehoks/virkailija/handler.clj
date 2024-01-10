@@ -246,7 +246,8 @@
       (assoc (response/ok) :audit-data {:old {:tunnus tunnus}}))
     (catch ExceptionInfo e
       (if (and (= 404 (:status (ex-data e)))
-               (.contains (:body (ex-data e)) "Tunnus ei ole poistettavissa"))
+               (.contains ^String (:body (ex-data e))
+                          "Tunnus ei ole poistettavissa"))
         (response/bad-request {:error "Survey ID cannot be removed"})
         (throw e)))))
 

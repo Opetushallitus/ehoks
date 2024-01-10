@@ -383,7 +383,7 @@
 (defn- should-check-hankkimistapa-y-tunnus?
   "Tarkistaa, loppuuko osaamisen hankkimistapa käyttöönottopäivämäärän jälkeen."
   [oh]
-  (.isAfter (:loppu oh) (LocalDate/of 2021 8 25)))
+  (.isAfter ^LocalDate (:loppu oh) (LocalDate/of 2021 8 25)))
 
 (defn tyopaikkajakso?
   "Onko osaamisen hankkimistapa työpaikkajakso?"
@@ -404,8 +404,8 @@
   [oh]
   (let [validation-start-date (LocalDate/parse "2022-06-30")
         osa-aikaisuustieto (:osa-aikaisuustieto oh)
-        hankkimistapa (:osaamisen-hankkimistapa-koodi-uri oh)]
-    (and (.isAfter (:loppu oh) validation-start-date)
+        ^String hankkimistapa (:osaamisen-hankkimistapa-koodi-uri oh)]
+    (and (.isAfter ^LocalDate (:loppu oh) validation-start-date)
          (or (= hankkimistapa "osaamisenhankkimistapa_koulutussopimus")
              (= hankkimistapa "osaamisenhankkimistapa_oppisopimus"))
          (or (nil? osa-aikaisuustieto)

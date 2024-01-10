@@ -110,7 +110,7 @@
 (deftest get-organisation-privileges
   (testing "Get organisation privileges"
     (client/set-get!
-      (fn [url options]
+      (fn [^String url options]
         (cond
           (.endsWith
             url "/rest/organisaatio/v4/1.2.246.562.10.30000000007")

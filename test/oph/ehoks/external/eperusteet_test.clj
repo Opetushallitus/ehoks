@@ -93,7 +93,7 @@
 (deftest uses-nimi-from-nimiKoodi
   (testing "Uses nimi object from nimiKoodi"
     (client/with-mock-responses
-      [(fn [url options]
+      [(fn [^String url options]
          (cond
            (and (.endsWith url "/external/perusteet")
                 (= "koulutuksenosattuva_104"
@@ -135,7 +135,7 @@
   (testing "Caches eperusteet external API requests"
     (let [call-count (atom 0)]
       (client/with-mock-responses
-        [(fn [url options]
+        [(fn [^String url options]
            (swap! call-count inc)
            (cond
              (and (.endsWith url "/external/perusteet")

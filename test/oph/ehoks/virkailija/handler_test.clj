@@ -68,7 +68,7 @@
 (defn with-test-virkailija
   ([request virkailija]
     (client/with-mock-responses
-      [(fn [url options]
+      [(fn [^String url options]
          (cond
            (.contains
              url "/rest/organisaatio/v4/")
@@ -105,7 +105,7 @@
             :body {:oid (last (s/split url #"/"))
                    :oppilaitos {:oid "1.2.246.562.10.12000000203"}
                    :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}))
-       (fn [url options]
+       (fn [^String url options]
          (cond
            (.endsWith
              url "/koski/api/sure/oids")
@@ -472,7 +472,7 @@
   (t/testing "Virkailija has oppija access"
     (utils/with-db
       (client/with-mock-responses
-        [(fn [url options]
+        [(fn [^String url options]
            (cond
              (.contains
                url "/rest/organisaatio/v4/")
