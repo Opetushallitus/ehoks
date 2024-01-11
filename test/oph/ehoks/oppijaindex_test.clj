@@ -47,6 +47,15 @@
           :kutsumanimi "Masterinho"
           :sukunimi "Masteri"}})
 
+(def onr-data-master-name-changed
+  {:status 200
+   :body {:duplicate false
+          :oidHenkilo "1.2.246.562.24.11111111123"
+          :hetu "250103-5360"
+          :etunimet "Matti2"
+          :kutsumanimi "Masterinho"
+          :sukunimi "Masteri"}})
+
 (def onr-data-slave1
   {:status 200
    :body {:oidHenkilo "1.2.246.562.24.30738063716"
@@ -836,6 +845,15 @@
            (> (.indexOf url (str "oppijanumerorekisteri-service/henkilo/"
                                  "1.2.246.562.24.46525423540")) -1)
            onr-data-slave3
+           (> (.indexOf url (str "oppijanumerorekisteri-service/henkilo/"
+                                 "1.2.246.562.24.11111111123")) -1)
+           onr-data-master
+           (> (.indexOf url (str "/koski/api/opiskeluoikeus/"
+                                 "1.2.246.562.15.40000000006")) -1)
+           {:status 200
+            :body (assoc
+                    opiskeluoikeus-data
+                    :oid "1.2.246.562.15.40000000006")}
            (> (.indexOf url (str "/koski/api/opiskeluoikeus/"
                                  "1.2.246.562.15.10000000009")) -1)
            {:status 200
@@ -856,17 +874,22 @@
                     :oid "1.2.246.562.15.30000000007")}))]
       (sut/add-oppija! "1.2.246.562.24.30738063716")
       (sut/add-oppija! "1.2.246.562.24.20043052079")
+      (sut/add-oppija! "1.2.246.562.24.11111111123")
       (sut/add-oppija! "1.2.246.562.24.46525423540")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.10000000009" "1.2.246.562.24.30738063716")
       (sut/add-opiskeluoikeus!
         "1.2.246.562.15.20000000008" "1.2.246.562.24.20043052079")
       (sut/add-opiskeluoikeus!
+        "1.2.246.562.15.40000000006" "1.2.246.562.24.11111111123")
+      (sut/add-opiskeluoikeus!
         "1.2.246.562.15.30000000007" "1.2.246.562.24.46525423540")
       (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.30738063716"
                              :opiskeluoikeus-oid "1.2.246.562.15.10000000009"})
       (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.20043052079"
                              :opiskeluoikeus-oid "1.2.246.562.15.20000000008"})
+      (db-hoks/insert-hoks! {:opiskeluoikeus-oid "1.2.246.562.15.40000000006"
+                             :oppija-oid "1.2.246.562.24.11111111123"})
       (db-hoks/insert-hoks! {:oppija-oid "1.2.246.562.24.46525423540"
                              :opiskeluoikeus-oid "1.2.246.562.15.30000000007"})
       (utils/eq
@@ -881,6 +904,10 @@
         (sut/get-oppija-by-oid "1.2.246.562.24.46525423540")
         {:oid "1.2.246.562.24.46525423540"
          :nimi "Sami Testaa"})
+      (utils/eq
+        (sut/get-oppija-by-oid "1.2.246.562.24.11111111123")
+        {:oid "1.2.246.562.24.11111111123"
+         :nimi "Matti Masteri"})
       (utils/eq
         (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.10000000009")
         {:oid "1.2.246.562.15.10000000009"
@@ -917,12 +944,12 @@
            (> (.indexOf url (str "oppijanumerorekisteri-service"
                                  "/henkilo"
                                  "/1.2.246.562.24.11111111123")) -1)
-           onr-data-master))]
+           onr-data-master-name-changed))]
       (sut/handle-onrmodified "1.2.246.562.24.11111111123")
       (utils/eq
         (sut/get-oppija-by-oid "1.2.246.562.24.11111111123")
         {:oid "1.2.246.562.24.11111111123"
-         :nimi "Matti Masteri"})
+         :nimi "Matti2 Masteri"})
       (utils/eq
         (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.10000000009")
         {:oid "1.2.246.562.15.10000000009"
@@ -960,10 +987,6 @@
         (sut/get-oppija-by-oid "1.2.246.562.24.46525423540")
         nil)
       (utils/eq
-        (sut/get-oppija-by-oid "1.2.246.562.24.11111111123")
-        {:oid "1.2.246.562.24.11111111123"
-         :nimi "Matti Masteri"})
-      (utils/eq
         (empty?
           (db-hoks/select-hoks-by-oppija-oid "1.2.246.562.24.30738063716"))
         true)
@@ -981,4 +1004,5 @@
                             "1.2.246.562.24.11111111123")))
         [{:id 1, :oppija-oid "1.2.246.562.24.11111111123"}
          {:id 2, :oppija-oid "1.2.246.562.24.11111111123"}
-         {:id 3, :oppija-oid "1.2.246.562.24.11111111123"}]))))
+         {:id 3, :oppija-oid "1.2.246.562.24.11111111123"}
+         {:id 4, :oppija-oid "1.2.246.562.24.11111111123"}]))))
