@@ -834,13 +834,10 @@
                      [parts-test-data/ahyto-data]}
           post-response (hoks-utils/mock-st-post app base-url hoks-data)]
       (is (= (:status post-response) 200))
-      (let [hoks-uri (-> (utils/parse-body (:body post-response))
-                         :data
-                         :uri)
+      (let [hoks-uri (-> post-response :body (utils/parse-body) :data :uri)
             get-response (hoks-utils/mock-st-get app hoks-uri)
-            hoks (-> (utils/parse-body (:body get-response))
-                     :data)
-            hoks-id (-> hoks :id)]
+            hoks (-> get-response :body (utils/parse-body) :data)
+            hoks-id (:id hoks)]
         (is (= (:status get-response) 200))
         (is (some? (seq (:hankittavat-ammat-tutkinnon-osat hoks))))
         (is (some? (seq (:hankittavat-paikalliset-tutkinnon-osat hoks))))
