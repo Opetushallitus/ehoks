@@ -724,7 +724,8 @@
 
 (defn shallow-delete-hoks-by-hoks-id
   "Asettaa HOKSin ja sen hankittavat tutkinnon osat poistetuiksi
-  hoksin perusteella (shallow delete)."
+  hoksin perusteella. Käynnistää tietokantatriggerin (cascading_shallow_delete),
+  joka propagoi deleted_at-tiedon hoksin osiin."
   [hoks-id]
   (db-ops/shallow-delete-marking-updated!
     :hoksit ["id = ? AND deleted_at IS NULL" hoks-id] (db-ops/get-db-connection)
