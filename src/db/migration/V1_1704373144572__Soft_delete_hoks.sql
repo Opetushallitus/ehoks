@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION cascading_shallow_delete() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION cascading_soft_delete() RETURNS TRIGGER AS $$
   DECLARE
     osaamisen_hankkimistapa RECORD;
     tyopaikalla_jarj_koulutus RECORD;
@@ -661,7 +661,7 @@ CREATE OR REPLACE FUNCTION cascading_shallow_delete() RETURNS TRIGGER AS $$
   END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER cascading_shallow_delete
+CREATE TRIGGER cascading_soft_delete
   AFTER UPDATE OF deleted_at ON hoksit
   FOR EACH ROW
-  EXECUTE PROCEDURE cascading_shallow_delete();
+  EXECUTE PROCEDURE cascading_soft_delete();

@@ -199,7 +199,7 @@
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
       :return (restful/response {})
-      (if (pos? (first (db-hoks/undo-shallow-delete hoks-id)))
+      (if (pos? (first (db-hoks/undo-soft-delete hoks-id)))
         (assoc (restful/rest-ok {})
                :audit-data {:old {:id hoks-id}
                             :new {:id hoks-id :deleted_at "*REMOVED*"}})

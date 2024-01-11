@@ -721,7 +721,7 @@
         (let [hoks (-> (utils/parse-body (:body get-response))
                        :data)
               hoks-id (-> hoks :id)]
-          (db-hoks/shallow-delete-hoks-by-hoks-id hoks-id)
+          (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
           (let [paged-response (hoks-utils/mock-st-get
                                  app (format "%s/paged" base-url))
                 paged-body (utils/parse-body (:body paged-response))]
@@ -784,7 +784,7 @@
                                   :result
                                   first)
                               :poistettu)))
-          (db-hoks/shallow-delete-hoks-by-hoks-id hoks-id)
+          (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
           (let [before-delete-resp (hoks-utils/mock-st-get
                                      app (format "%s/paged?updated-after=%s"
                                                  base-url
@@ -842,10 +842,10 @@
         (is (some? (seq (:hankittavat-ammat-tutkinnon-osat hoks))))
         (is (some? (seq (:hankittavat-paikalliset-tutkinnon-osat hoks))))
         (is (some? (seq (:hankittavat-yhteiset-tutkinnon-osat hoks))))
-        (db-hoks/shallow-delete-hoks-by-hoks-id hoks-id)
+        (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
         (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
           (is (= (:status get-resp) 404)))
-        (db-hoks/undo-shallow-delete hoks-id)
+        (db-hoks/undo-soft-delete hoks-id)
         (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
           (is (= (:status get-resp) 200))
           (is (= (-> (utils/parse-body (:body get-resp))

@@ -722,16 +722,16 @@
      :opiskeluoikeusOid (:opiskeluoikeus-oid hoks)
      :oppilaitosOid (:oppilaitos-oid oo)}))
 
-(defn shallow-delete-hoks-by-hoks-id
+(defn soft-delete-hoks-by-hoks-id
   "Asettaa HOKSin ja sen hankittavat tutkinnon osat poistetuiksi
-  hoksin perusteella. Käynnistää tietokantatriggerin (cascading_shallow_delete),
+  hoksin perusteella. Käynnistää tietokantatriggerin (cascading_soft_delete),
   joka propagoi deleted_at-tiedon hoksin osiin."
   [hoks-id]
   (db-ops/shallow-delete-marking-updated!
     :hoksit ["id = ? AND deleted_at IS NULL" hoks-id] (db-ops/get-db-connection)
     (java.util.Date.)))
 
-(defn undo-shallow-delete
+(defn undo-soft-delete
   "Merkitsee HOKSin palautetuksi asettamalla nil:in sen deleted_at -kenttään."
   [hoks-id]
   (db-ops/update!
