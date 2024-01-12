@@ -49,6 +49,6 @@
 (defn delete-opiskeluvalmiuksia-tukevat-opinnot-by-hoks-id
   "Poista opiskeluvalmiuksia tukevat opinnot"
   [hoks-id db-conn]
-  (db-ops/shallow-delete!
+  (db-ops/soft-delete!
     :opiskeluvalmiuksia_tukevat_opinnot
     ["hoks_id = ? AND deleted_at IS NULL" hoks-id] db-conn))

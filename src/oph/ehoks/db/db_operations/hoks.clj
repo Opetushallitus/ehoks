@@ -727,7 +727,7 @@
   hoksin perusteella. Käynnistää tietokantatriggerin (cascading_soft_delete),
   joka propagoi deleted_at-tiedon hoksin osiin."
   [hoks-id]
-  (db-ops/shallow-delete-marking-updated!
+  (db-ops/soft-delete-marking-updated!
     :hoksit ["id = ? AND deleted_at IS NULL" hoks-id] (db-ops/get-db-connection)
     (java.util.Date.)))
 
