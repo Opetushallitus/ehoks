@@ -281,14 +281,10 @@
     (oppijaindex/add-hoks-dependents-in-index! hoks)
     (m/check-hoks-access! hoks request)
     (let [hoks-db (h/check-and-save-hoks! hoks)
-          resp-body {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
-          notifications (h/check-for-osa-aikaisuustieto hoks)]
-      (assoc
-        (rest/rest-ok (if (seq notifications)
-                        (assoc resp-body :notifications notifications)
-                        resp-body)
-                      :id (:id hoks-db))
-        :audit-data {:new hoks}))
+          resp-body {:uri (format "%s/%d" (:uri request) (:id hoks-db))}]
+      (-> resp-body
+          (rest/rest-ok :id (:id hoks-db))
+          (assoc :audit-data {:new hoks})))
     (catch Exception e
       (case (:error (ex-data e))
         :disallowed-update (response/bad-request! {:error (.getMessage e)})
