@@ -145,62 +145,6 @@
           (is (= (:paattoherate-kasitelty kasittelytilat) true))
           (is (= @sqs-call-counter 0)))))))
 
-(deftest create-hoks-without-osa-aikaisuustieto
-  (testing "Create HOKS without osa-aikaisuustieto"
-    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
-                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
-                           :tila {:opiskeluoikeusjaksot
-                                  [{:alku "2023-07-03"
-                                    :tila {:koodiarvo "lasna"
-                                           :nimi {:fi "Läsnä"}
-                                           :koodistoUri
-                                           "koskiopiskeluoikeudentila"
-                                           :koodistoVersio 1}}]}})]
-      (let [hoks-data test-data/hoks-data-without-osa-aikaisuus
-            response
-            (hoks-utils/mock-st-post
-              (hoks-utils/create-app nil) base-url hoks-data)
-            body (utils/parse-body (:body response))]
-        (is (= (:status response) 200))
-        (eq body
-            {:data {:uri (format "%s/1" base-url)
-                    :notifications
-                    [(str "Data saved successfully, but osa-aikaisuustieto is "
-                          "missing or has invalid value in työpaikkajakso: "
-                          "työpaikkajakson yksilöivä tunniste asdfasdf, "
-                          "työpaikan nimi Ohjaus Oyk, työpaikkajakson "
-                          "aikajakso 2022-12-12 - 2022-12-20, opiskelijan nimi "
-                          "Tero Teuvo Testaaja")
-                     (str "Data saved successfully, but osa-aikaisuustieto is "
-                          "missing or has invalid value in työpaikkajakso: "
-                          "työpaikkajakson yksilöivä tunniste qiuewyroqiwuer, "
-                          "työpaikan nimi joku nimi, työpaikkajakson aikajakso "
-                          "2022-12-15 - 2022-12-23, opiskelijan nimi Tero "
-                          "Teuvo Testaaja")]}
-             :meta {:id 1}})
-        (let [hoks (-> (get-in body [:data :uri])
-                       hoks-utils/get-authenticated
-                       :data)]
-          (eq (-> hoks
-                  :hankittavat-ammat-tutkinnon-osat
-                  first
-                  :osaamisen-hankkimistavat
-                  first
-                  (select-keys [:alku :loppu :osa-aikaisuustieto]))
-              {:alku               "2022-12-12"
-               :loppu              "2022-12-20"
-               :osa-aikaisuustieto 0})
-          (eq (-> hoks
-                  :hankittavat-yhteiset-tutkinnon-osat
-                  first
-                  :osa-alueet
-                  first
-                  :osaamisen-hankkimistavat
-                  first
-                  (select-keys [:alku :loppu :osa-aikaisuustieto]))
-              {:alku  "2022-12-15"
-               :loppu "2022-12-23"}))))))
-
 (deftest create-new-hoks-with-valid-osa-aikaisuus
   (testing "Create new hoks with valid osa-aikaisuustieto"
     (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info

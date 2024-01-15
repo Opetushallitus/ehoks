@@ -187,19 +187,6 @@
     hoks
     (rename-keys hoks {:deleted-at :poistettu})))
 
-(defn get-osaamisen-hankkimistavat
-  "Hakee kaikki osaamisen hankkimistavat HOKSista."
-  [hoks]
-  (concat
-    (mapcat
-      :osaamisen-hankkimistavat
-      (:hankittavat-ammat-tutkinnon-osat hoks))
-    (mapcat
-      :osaamisen-hankkimistavat
-      (:hankittavat-paikalliset-tutkinnon-osat hoks))
-    (mapcat :osaamisen-hankkimistavat
-            (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
-
 (defn- save-hoks-parts!
   "Tallentaa HOKSin osat tietokantaan."
   [hoks conn]
@@ -399,39 +386,6 @@
        (should-check-hankkimistapa-y-tunnus? oh)
        (:tyopaikalla-jarjestettava-koulutus oh)
        (-> oh :tyopaikalla-jarjestettava-koulutus :tyopaikan-y-tunnus nil?)))
-
-(defn- osa-aikaisuustieto-missing?
-  [oh]
-  (let [validation-start-date (LocalDate/parse "2022-06-30")
-        osa-aikaisuustieto (:osa-aikaisuustieto oh)
-        ^String hankkimistapa (:osaamisen-hankkimistapa-koodi-uri oh)]
-    (and (.isAfter ^LocalDate (:loppu oh) validation-start-date)
-         (or (= hankkimistapa "osaamisenhankkimistapa_koulutussopimus")
-             (= hankkimistapa "osaamisenhankkimistapa_oppisopimus"))
-         (or (nil? osa-aikaisuustieto)
-             (> osa-aikaisuustieto 100)
-             (< osa-aikaisuustieto 1)))))
-
-(defn check-for-osa-aikaisuustieto
-  "Tarkistaa, onko osa-aikaisuustieto merkitty työpaikkajaksoille, ja palauttaa
-  listan ilmoituksia niistä jaksoista, joista osa-aikaisuus puuttuu."
-  [hoks]
-  (let [hankkimistavat (get-osaamisen-hankkimistavat hoks)
-        hankkimistavat-missing-osa-aikaisuus (filter osa-aikaisuustieto-missing?
-                                                     hankkimistavat)]
-    (when (some? (seq hankkimistavat-missing-osa-aikaisuus))
-      (map
-        #(let [tyopaikan-nimi (get-in % [:tyopaikalla-jarjestettava-koulutus
-                                         :tyopaikan-nimi])
-               oppija-oid (:oppija-oid hoks)
-               oppija (oppijaindex/get-oppija-by-oid oppija-oid)]
-           (str "Data saved successfully, but osa-aikaisuustieto is "
-                "missing or has invalid value in työpaikkajakso: "
-                "työpaikkajakson yksilöivä tunniste " (:yksiloiva-tunniste %)
-                ", työpaikan nimi " tyopaikan-nimi
-                ", työpaikkajakson aikajakso " (:alku %) " - " (:loppu %)
-                ", opiskelijan nimi " (or (:nimi oppija) oppija-oid)))
-        hankkimistavat-missing-osa-aikaisuus))))
 
 (defn check-hoks-for-update!
   "Tarkistaa, saako HOKSin päivittää uusilla arvoilla."
