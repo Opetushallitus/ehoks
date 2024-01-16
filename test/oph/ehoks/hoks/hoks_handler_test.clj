@@ -813,8 +813,14 @@
                             :data
                             :result)))))))))
 
-(deftest test-hoks-shallow-delete-and-undo
-  (testing "HOKS shallow delete and undo"
+(defn select-deleted-at-from
+  [table where arg]
+  (-> (db-ops/query [(str "SELECT deleted_at FROM " table " WHERE " where) arg])
+      first
+      :deleted_at))
+
+(deftest test-hoks-soft-delete-and-undo
+  (testing "HOKS soft delete and undo"
     (let [app (hoks-utils/create-app nil)
           hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
                      :oppija-oid "1.2.246.562.24.12312312319"
@@ -845,6 +851,34 @@
         (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
         (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
           (is (= (:status get-resp) 404)))
+        (let [hoks (select-deleted-at-from
+                     "hoksit"
+                     "id = ?" hoks-id)
+              hato (select-deleted-at-from
+                     "hankittavat_ammat_tutkinnon_osat"
+                     "hoks_id = ?" hoks-id)
+              hpto (select-deleted-at-from
+                     "hankittavat_paikalliset_tutkinnon_osat"
+                     "hoks_id = ?" hoks-id)
+              hyto (select-deleted-at-from
+                     "hankittavat_yhteiset_tutkinnon_osat"
+                     "hoks_id = ?" hoks-id)
+              ahato (select-deleted-at-from
+                      "aiemmin_hankitut_ammat_tutkinnon_osat"
+                      "hoks_id = ?" hoks-id)
+              ahpto (select-deleted-at-from
+                      "aiemmin_hankitut_paikalliset_tutkinnon_osat"
+                      "hoks_id = ?" hoks-id)
+              ahyto (select-deleted-at-from
+                      "aiemmin_hankitut_yhteiset_tutkinnon_osat"
+                      "hoks_id = ?" hoks-id)]
+          (is (not (nil? hoks)))
+          (is (= hoks hato))
+          (is (= hoks hpto))
+          (is (= hoks hyto))
+          (is (= hoks ahato))
+          (is (= hoks ahpto))
+          (is (= hoks ahyto)))
         (db-hoks/undo-soft-delete hoks-id)
         (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
           (is (= (:status get-resp) 200))
