@@ -85,9 +85,13 @@
 ; There are a few organisaatio OIDs where the check digit doesn't match with the
 ; calculated Luhn checksum. This is why we don't do check digit check in case of
 ; organisaatio OIDs.
-(def OrganisaatioOID' #"^1\.2\.246\.562\.10\.([1-9]\d{9}(\d|10)|0{10}1)$")
-; The following types of OIDs were generated in 2013-2014
-(def OrganisaatioOIDWithTimestamp #"^1\.2\.246\.562\.10\.201[34]\d{18}$")
-
-(defschema OrganisaatioOID
-           (cond-pre OrganisaatioOID' OrganisaatioOIDWithTimestamp))
+;
+; Some remarks:
+; - These has been a bug in org oid generation few years ago. That's why some
+;   OIDs have 12 digits in the last part instead of 11. The last two digits are
+;   "10" in those cases.
+; - Very old OIDs have some sort of timestamp in the last part, e.g.,
+;   "1.2.246.562.10.2013102416241359289612". The length of the last part is
+;   22 digits in those cases.
+(def OrganisaatioOID
+  #"^1\.2\.246\.562\.10\.([1-9]\d{9}(\d|10)|0{10}1|201[34]\d{18})$")
