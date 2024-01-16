@@ -276,7 +276,8 @@
             existing (db/select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
                        oh-type
                        hoks-id
-                       (:yksiloiva-tunniste oh))
+                       (:yksiloiva-tunniste oh)
+                       db-conn)
             to-upsert (assoc (if (.isBefore (LocalDate/now) (:loppu oh))
                                oh
                                (assoc oh :tep_kasitelty true))

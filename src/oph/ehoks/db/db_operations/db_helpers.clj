@@ -84,7 +84,7 @@
   ([table where-clause db-conn]
     (update! table {:deleted_at (java.util.Date.)} where-clause db-conn))
   ([table where-clause]
-   (soft-delete! table where-clause (get-db-connection))))
+    (soft-delete! table where-clause (get-db-connection))))
 
 (defn soft-delete-marking-updated!
   "Set deleted_at & updated_at field to given date and time, marking row as
@@ -108,6 +108,11 @@
     (query queries {}))
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
+
+(defn query-in-tx
+  "Execute DB query within given database connection."
+  [queries opts conn]
+  (jdbc/query conn queries opts))
 
 (defn map-keys
   "Apply a function to all keys in a map."
