@@ -885,6 +885,122 @@
           (is (= (-> (utils/parse-body (:body get-resp))
                      :data) hoks)))))))
 
+(deftest test-hoks-delete-undo-patch-hoks-delete-undo
+  (testing "HOKS soft delete, undo, patch hoks, delete & undo"
+    ; luo hoks
+    (let [app (hoks-utils/create-app nil)
+          hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.12312312319"
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false
+                     :hankittavat-ammat-tutkinnon-osat
+                     [parts-test-data/hao-data]
+                     :hankittavat-paikalliset-tutkinnon-osat
+                     [parts-test-data/hpto-data]
+                     :hankittavat-yhteiset-tutkinnon-osat
+                     [parts-test-data/hyto-data]
+                     :aiemmin-hankitut-ammat-tutkinnon-osat
+                     [parts-test-data/ahato-data]
+                     :aiemmin-hankitut-paikalliset-tutkinnon-osat
+                     [parts-test-data/ahpto-data]
+                     :aiemmin-hankitut-yhteiset-tutkinnon-osat
+                     [parts-test-data/ahyto-data]}
+          post-response (hoks-utils/mock-st-post app base-url hoks-data)]
+      (is (= (:status post-response) 200))
+      (let [hoks-uri (-> post-response :body (utils/parse-body) :data :uri)
+            get-response (hoks-utils/mock-st-get app hoks-uri)
+            hoks (-> get-response :body (utils/parse-body) :data)
+            hoks-id (:id hoks)]
+        (is (= (:status get-response) 200))
+        ; poista ja palauta
+        (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
+        (db-hoks/undo-soft-delete hoks-id)
+        (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
+          (is (= (:status get-resp) 200))
+          (is (= (-> (utils/parse-body (:body get-resp))
+                     :data) hoks)))
+        ; päivitä hoksia
+        (let [patch-response
+              (hoks-utils/create-mock-hoks-patch-request
+                hoks-id
+                {:id hoks-id
+                 :osaamisen-saavuttamisen-pvm "2023-12-31"}
+                app)]
+          (is (= (:status patch-response) 204))
+          (let [get-hoks-after-patch (hoks-utils/mock-st-get app hoks-uri)
+                hoks-after-patch
+                (-> get-hoks-after-patch :body (utils/parse-body) :data)]
+            (is (= (:status get-hoks-after-patch) 200))
+            (is (= "2023-12-31"
+                   (:osaamisen-saavuttamisen-pvm hoks-after-patch)))
+            ; poista ja palauta
+            (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
+            (db-hoks/undo-soft-delete hoks-id)
+            (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
+              (is (= (:status get-resp) 200))
+              (is (= (-> (utils/parse-body (:body get-resp))
+                         :data) hoks-after-patch)))))))))
+
+(deftest test-hoks-delete-undo-patch-hato-delete-undo
+  (testing "HOKS soft delete, undo, patch hato, delete & undo"
+    ; luo hoks
+    (let [app (hoks-utils/create-app nil)
+          hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.12312312319"
+                     :ensikertainen-hyvaksyminen "2018-12-15"
+                     :osaamisen-hankkimisen-tarve false
+                     :hankittavat-ammat-tutkinnon-osat
+                     [parts-test-data/hao-data]
+                     :hankittavat-paikalliset-tutkinnon-osat
+                     [parts-test-data/hpto-data]
+                     :hankittavat-yhteiset-tutkinnon-osat
+                     [parts-test-data/hyto-data]
+                     :aiemmin-hankitut-ammat-tutkinnon-osat
+                     [parts-test-data/ahato-data]
+                     :aiemmin-hankitut-paikalliset-tutkinnon-osat
+                     [parts-test-data/ahpto-data]
+                     :aiemmin-hankitut-yhteiset-tutkinnon-osat
+                     [parts-test-data/ahyto-data]}
+          post-response (hoks-utils/mock-st-post app base-url hoks-data)]
+      (is (= (:status post-response) 200))
+      (let [hoks-uri (-> post-response :body (utils/parse-body) :data :uri)
+            get-response (hoks-utils/mock-st-get app hoks-uri)
+            hoks (-> get-response :body (utils/parse-body) :data)
+            hoks-id (:id hoks)]
+        (is (= (:status get-response) 200))
+        ; poista ja palauta
+        (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
+        (db-hoks/undo-soft-delete hoks-id)
+        (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
+          (is (= (:status get-resp) 200))
+          (is (= (-> (utils/parse-body (:body get-resp))
+                     :data) hoks)))
+        ; päivitä hankittavaa ammatillista tutkinnon osaa
+        (let [patch-response
+              (hoks-utils/create-mock-hato-patch-request
+                hoks-id 1
+                (assoc parts-test-data/hao-data
+                       :id 1
+                       :opetus-ja-ohjaus-maara 10.5)
+                app)]
+          (is (= (:status patch-response) 204))
+          (let [get-hoks-after-patch (hoks-utils/mock-st-get app hoks-uri)
+                hoks-after-patch
+                (-> get-hoks-after-patch :body (utils/parse-body) :data)]
+            (is (= (:status get-hoks-after-patch) 200))
+            (is (= (-> hoks-after-patch
+                       :hankittavat-ammat-tutkinnon-osat
+                       first
+                       :opetus-ja-ohjaus-maara)
+                   10.5))
+            ; poista ja palauta
+            (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
+            (db-hoks/undo-soft-delete hoks-id)
+            (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
+              (is (= (:status get-resp) 200))
+              (is (= (-> (utils/parse-body (:body get-resp))
+                         :data) hoks-after-patch)))))))))
+
 (deftest test-hoks-delete-undo-update-part-delete-undo
   (testing "HOKS soft delete, undo, update hato, delete & undo"
     ; luo hoks
@@ -915,6 +1031,10 @@
         ; poista ja palauta
         (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
         (db-hoks/undo-soft-delete hoks-id)
+        (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
+          (is (= (:status get-resp) 200))
+          (is (= (-> (utils/parse-body (:body get-resp))
+                     :data) hoks)))
         (let [hoks-update
               (assoc hoks-data
                      :hankittavat-ammat-tutkinnon-osat
