@@ -724,7 +724,7 @@
 
 (defn soft-delete-hoks-by-hoks-id
   "Asettaa HOKSin ja sen hankittavat tutkinnon osat poistetuiksi
-  hoksin perusteella. Käynnistää tietokantatriggerin (cascading_soft_delete),
+  hoksin perusteella. Käynnistää tietokantatriggerin (t_hoksit_casc_delete),
   joka propagoi deleted_at-tiedon hoksin osiin."
   [hoks-id]
   (db-ops/soft-delete-marking-updated!
