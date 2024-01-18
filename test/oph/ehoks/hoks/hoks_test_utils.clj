@@ -86,6 +86,12 @@
 (defn create-mock-hoks-patch-request [hoks-id patched-data app]
   (mock-st-patch app (format "%s/%d" base-url hoks-id) patched-data))
 
+(defn create-mock-hato-patch-request [hoks-id hato-id patched-data app]
+  (mock-st-patch
+    app
+    (format "%s/%d/hankittava-ammat-tutkinnon-osa/%d" base-url hoks-id hato-id)
+    patched-data))
+
 (defn create-mock-hoks-osa-patch-request [path app patched-data]
   (mock-st-patch app (format "%s/1/%s/1" base-url path) patched-data))
 
