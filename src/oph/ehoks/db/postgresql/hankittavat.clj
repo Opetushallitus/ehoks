@@ -23,22 +23,6 @@
   (db-ops/query
     [queries/select-osaamisen-hankkimistavat-by-module-id uuid]))
 
-(defn select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
-  "Hoksin osaamistapa tunnisteella"
-  [oh-type hoks-id tunniste conn]
-  (db-ops/query-in-tx
-    [(case oh-type
-       :hato
-       queries/select-hato-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
-       :hpto
-       queries/select-hpto-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
-       :hyto-osa-alue
-       queries/select-hyto-osaamisen-hankkimistavat-by-hoks-id-and-tunniste)
-     hoks-id
-     tunniste]
-    {:row-fn h/osaamisen-hankkimistapa-from-sql}
-    conn))
-
 (defn select-osaamisen-osoittamiset-by-module-id
   "Hankittavan ammatillisen tutkinnon osan osaamisen osoittamiset"
   [uuid]
