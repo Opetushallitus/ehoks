@@ -109,11 +109,6 @@
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
 
-(defn query-in-tx
-  "Execute DB query within given database connection."
-  [queries opts conn]
-  (jdbc/query conn queries opts))
-
 (defn map-keys
   "Apply a function to all keys in a map."
   [f m]
