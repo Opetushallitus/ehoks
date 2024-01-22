@@ -80,7 +80,9 @@
     (jdbc/update! db-conn table values where-clause)))
 
 (defn soft-delete!
-  "Set deleted_at field to given/current date and time, marking row as deleted."
+  "Set deleted_at field to given/current date and time, marking row as deleted.
+  Possibly triggers a cascading effect on related database rows
+  (check cascading_soft_delete database migration)."
   ([table where-clause db-conn]
     (update! table {:deleted_at (java.util.Date.)} where-clause db-conn))
   ([table where-clause]

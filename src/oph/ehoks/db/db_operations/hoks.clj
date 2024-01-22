@@ -732,7 +732,10 @@
     (java.util.Date.)))
 
 (defn undo-soft-delete
-  "Merkitsee HOKSin palautetuksi asettamalla nil:in sen deleted_at -kenttään."
+  "Merkitsee HOKSin palautetuksi asettamalla nil:in sen deleted_at -kenttään.
+  Käynnistää tietokantatriggerin (t_hoksit_casc_delete), joka propagoi
+  palautuksen niihin hoksin osiin, jotka olivat liitettynä hoksiin
+  poistohetkellä."
   [hoks-id]
   (db-ops/update!
     :hoksit {:deleted_at nil :updated_at (java.util.Date.)}
