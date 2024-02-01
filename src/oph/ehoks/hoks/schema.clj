@@ -1116,4 +1116,4 @@
 (s/defschema
   shallow-delete-hoks
   "Schema HOKSin poistoon oppilaitos-OID:n perusteella."
-  {:oppilaitos-oid OrganisaatioOID})
+  {:oppilaitos-oid (s/maybe OrganisaatioOID)})
