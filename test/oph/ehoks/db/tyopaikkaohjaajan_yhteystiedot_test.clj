@@ -64,7 +64,7 @@
        :oppilaitos-oid "1.2.246.562.10.54453921350"}
       :alku (.minusDays (java.time.LocalDate/now) 100)
       :loppu (.minusDays (java.time.LocalDate/now) 80)
-      :yksiloiva-tunniste "abcd"}]
+      :yksiloiva-tunniste "abce"}]
     :osaamisen-osoittaminen []}])
 
 (def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"

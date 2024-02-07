@@ -672,7 +672,7 @@
                                         oppilaitos-oid)
                                       :hoks_delete)
                                   (try
-                                    (db-hoks/shallow-delete-hoks-by-hoks-id
+                                    (db-hoks/soft-delete-hoks-by-hoks-id
                                       hoks-id)
                                     (when (nil? opiskeluoikeus)
                                       (db-hoks/delete-opiskeluoikeus-by-oid
