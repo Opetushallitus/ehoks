@@ -23,7 +23,8 @@
                  [software.amazon.awssdk/sqs]
                  [fi.vm.sade/auditlogger]
                  [com.rpl/specter]
-                 [org.clojure/core.memoize]]
+                 [org.clojure/core.memoize]
+                 [com.github.java-json-tools/json-patch]]
   :managed-dependencies [[org.clojure/clojure "1.11.1"]
 
                          ;; http server
@@ -62,6 +63,7 @@
                          [org.clojure/data.json "2.4.0"]
                          [com.google.code.gson/gson "2.10.1"]
                          [com.tananaev/json-patch "1.2"]
+                         [com.github.java-json-tools/json-patch "1.12"]
 
                          ;; XML
                          [org.clojure/data.xml "0.0.8"]
