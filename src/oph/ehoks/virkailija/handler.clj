@@ -176,10 +176,10 @@
   [hoks request db-handler]
   (let [old-hoks (:hoks request)]
     (hoks/check-for-update! old-hoks hoks)
-    (let [hoks-db (db-handler (:id (:hoks request))
-                              (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
-      (assoc (response/no-content) :audit-data {:new hoks
-                                                :old old-hoks}))))
+    (let [new-hoks (db-handler (:id (:hoks request))
+                               (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
+      (assoc (response/no-content) :audit-data {:old old-hoks
+                                                :new new-hoks}))))
 
 (defn- update-kyselylinkki-status!
   "Takes a `linkki-info` map, fetches the latest kyselylinkki status from Arvo

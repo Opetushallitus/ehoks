@@ -10,6 +10,7 @@ SELECT
   osa.koulutuksen_jarjestaja_oid AS osa__koulutuksen_jarjestaja_oid,
   osa.olennainen_seikka AS osa__olennainen_seikka,
   osa.module_id AS osa__module_id,
+  osa.tarkentavat_tiedot_osaamisen_arvioija_id as osa__tarkentavat_tiedot_osaamisen_arvioija_id,
   tal.id AS tal__id,
   tal.lahetetty_arvioitavaksi AS tal__lahetetty_arvioitavaksi,
   talkjoa.id AS talkjoa__id,

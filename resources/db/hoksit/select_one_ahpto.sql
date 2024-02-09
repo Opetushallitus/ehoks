@@ -15,6 +15,7 @@ SELECT
   osa.vaatimuksista_tai_tavoitteista_poikkeaminen
     AS osa__vaatimuksista_tai_tavoitteista_poikkeaminen,
   osa.lahetetty_arvioitavaksi AS osa__lahetetty_arvioitavaksi,
+  osa.tarkentavat_tiedot_osaamisen_arvioija_id as osa__tarkentavat_tiedot_osaamisen_arvioija_id,
   tal.id AS tal__id,
   tal.lahetetty_arvioitavaksi AS tal__lahetetty_arvioitavaksi,
   talkjoa.id AS talkjoa__id,
