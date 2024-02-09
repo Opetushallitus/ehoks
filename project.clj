@@ -61,7 +61,6 @@
                          [com.fasterxml.jackson.core/jackson-datatype-jsr310 "2.16.0"]
                          [org.clojure/data.json "2.4.0"]
                          [com.google.code.gson/gson "2.10.1"]
-                         [com.tananaev/json-patch "1.2"]
 
                          ;; XML
                          [org.clojure/data.xml "0.0.8"]
