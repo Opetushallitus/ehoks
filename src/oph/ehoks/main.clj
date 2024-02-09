@@ -1,14 +1,15 @@
 (ns oph.ehoks.main
   (:gen-class)
-  (:require [ring.adapter.jetty :as jetty]
-            [oph.ehoks.db.migrations :as m]
-            [clojure.string :refer [lower-case]]
+  (:require [clojure.string :refer [lower-case]]
             [clojure.tools.logging :as log]
             [oph.ehoks.common.api :as common-api]
-            [oph.ehoks.ehoks-app :as ehoks-app]
             [oph.ehoks.config :refer [config]]
+            [oph.ehoks.db.migrations :as m]
+            [oph.ehoks.db.session-store :as session-store]
+            [oph.ehoks.ehoks-app :as ehoks-app]
+            [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.db.session-store :as session-store]))
+            [ring.adapter.jetty :as jetty]))
 
 (defn has-arg?
   "Is arg present"
@@ -45,6 +46,8 @@
         (oppijaindex/update-oppijat-without-index!)
         (oppijaindex/update-opiskeluoikeudet-without-index!)
         (log/info "Updating oppijaindex finished"))
+      (when audit/enabled?
+        (audit/start-heartbeat!))
       (jetty/run-jetty hoks-app {:port (:port config)
                                  :join? true
                                  :async? true}))))
