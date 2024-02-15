@@ -14,6 +14,7 @@
                                          update-kyselylinkki!]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.hoks.hoks-test-utils :refer [virkailija-base-url]]
             [oph.ehoks.virkailija.virkailija-test-utils :as v-utils])
   (:import (java.time LocalDate LocalDateTime)))
 
@@ -572,6 +573,21 @@
          :privileges #{:write :read :update :delete}}]}))
   ([opiskeluoikeus-oid organisaatio-oid]
     (post-new-hoks opiskeluoikeus-oid organisaatio-oid {})))
+
+(defn- shallow-delete-hoks
+  [oppija-oid hoks-id organisaatio-oid oppilaitos-oid]
+  (with-test-virkailija
+    (mock/json-body
+      (mock/request
+        :patch (str virkailija-base-url "/oppijat/" oppija-oid "/hoksit/"
+                    hoks-id "/shallow-delete"))
+      {:oppilaitos-oid oppilaitos-oid})
+    {:name "Testivirkailija"
+     :kayttajaTyyppi "VIRKAILIJA"
+     :oidHenkilo "1.2.246.562.24.44000000338"
+     :organisation-privileges
+     [{:oid organisaatio-oid
+       :privileges #{:write :read :update :delete :hoks_delete}}]}))
 
 (t/deftest test-virkailija-hoks-forbidden
   (t/testing "Virkailija HOKS forbidden"
@@ -1260,3 +1276,47 @@
                   :sahkoposti        "testi@testi.fi"
                   :lahetystila       "viestintapalvelussa"
                   :voimassa-loppupvm (str (LocalDate/from loppupvm))}))))))))
+
+(t/deftest test-shallow-delete
+  (t/testing "shallow delete works"
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
+      (let [organisaatio-oid "1.2.246.562.10.12000000013"
+            post-response
+            (post-new-hoks
+              "1.2.246.562.15.76000000018" organisaatio-oid
+              {:hankittavat-ammat-tutkinnon-osat hato-data})]
+        (t/is (= (:status post-response) 200))
+        (let [get-response (get-created-hoks post-response)
+              body (utils/parse-body (:body get-response))
+              hoks-id (-> body :data :id)
+              delete-response
+              (shallow-delete-hoks "1.2.246.562.24.44000000008"
+                                   hoks-id
+                                   organisaatio-oid
+                                   organisaatio-oid)
+              delete-body (utils/parse-body (:body delete-response))]
+          (t/is (= (:status delete-response) 200))
+          (t/is (= (:success delete-body) hoks-id))))))
+
+  (t/testing (str "shallow delete works without oppilaitos oid "
+                  "(in case of opiskeluoikeus voided)")
+    (utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
+      (let [organisaatio-oid "1.2.246.562.10.12000000013"
+            post-response
+            (post-new-hoks
+              "1.2.246.562.15.76000000018" organisaatio-oid
+              {:hankittavat-ammat-tutkinnon-osat hato-data})]
+        (t/is (= (:status post-response) 200))
+        (let [get-response (get-created-hoks post-response)
+              body (utils/parse-body (:body get-response))
+              hoks-id (-> body :data :id)
+              delete-response
+              (shallow-delete-hoks "1.2.246.562.24.44000000008"
+                                   hoks-id
+                                   organisaatio-oid
+                                   nil)
+              delete-body (utils/parse-body (:body delete-response))]
+          (t/is (= (:status delete-response) 200))
+          (t/is (= (:success delete-body) hoks-id)))))))
