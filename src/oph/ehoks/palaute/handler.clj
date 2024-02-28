@@ -18,10 +18,10 @@
 
         healthcheck-handler/routes))
 
-      (c-api/undocumented
-        (GET "/buildversion.txt" []
-          (response/content-type
-            (response/resource-response "buildversion.txt") "text/plain")))))
+    (c-api/undocumented
+      (GET "/buildversion.txt" []
+        (response/content-type
+          (response/resource-response "buildversion.txt") "text/plain")))))
 
 (def app-routes
   "Palaute app routes"
