@@ -72,6 +72,8 @@ jobs:
           ./ci-tools/build/build-fatjar.sh ehoks-oppija
           mv $DOCKER_BUILD_DIR/artifact/ehoks-oppija.jar $DOCKER_BUILD_DIR/artifact/ehoks-virkailija.jar
           ./ci-tools/build/build-fatjar.sh ehoks-virkailija
+          mv $DOCKER_BUILD_DIR/artifact/ehoks-virkailija.jar $DOCKER_BUILD_DIR/artifact/ehoks-palaute.jar
+          ./ci-tools/build/build-fatjar.sh ehoks-palaute
 
       - name: Upload Package
         shell: bash
@@ -85,3 +87,4 @@ jobs:
           export TRAVIS_COMMIT=${{ github.sha }}
           ./ci-tools/build/upload-image.sh ehoks-oppija
           ./ci-tools/build/upload-image.sh ehoks-virkailija
+          ./ci-tools/build/upload-image.sh ehoks-palaute
