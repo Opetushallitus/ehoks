@@ -131,6 +131,12 @@ tai
 lein with-profile +dev run ehoks-virkailija
 ```
 
+tai
+
+``` shell
+lein with-profile +dev run ehoks-palaute
+```
+
 Replissä `lein with-profiles +dev repl`:
 
 ``` repl
@@ -315,6 +321,7 @@ skriptejä. Näiden toimintaperiaatteesta voi lukea niille osoitetusta
 
  * [Virkailijan swagger](http://localhost:3000/ehoks-virkailija-backend/doc)
  * [Oppijan swagger](http://localhost:3000/ehoks-oppija-backend/doc)
+ * [Palautteiden swagger](http://localhost:3000/ehoks-palaute-backend/doc)
 
 ## Konfigurointi
 

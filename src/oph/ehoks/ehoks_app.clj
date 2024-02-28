@@ -87,7 +87,7 @@
   {"ehoks-virkailija" #'virkailija-app
    "ehoks-oppija" #'oppija-app
    "ehoks-palaute" #'palaute-app
-   "all" #'all-app})
+   "both" #'all-app})
 
 (defn create-app
   "Give an app that has the routes that belong to app-name.  The app given
@@ -99,7 +99,7 @@
 (defn get-app-name
   "Get the app name."
   []
-  (lower-case (:name env (or (System/getProperty "name") "all"))))
+  (lower-case (:name env (or (System/getProperty "name") "both"))))
 
 (def app
   "Global app variable."
