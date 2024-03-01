@@ -747,7 +747,8 @@
 (def app-routes
   "Virkailija handler app routes"
   (c-api/api
-    {:swagger
+    {:coercion :custom-schema
+     :swagger
      {:ui "/ehoks-virkailija-backend/doc"
       :spec "/ehoks-virkailija-backend/doc/swagger.json"
       :data {:info {:title "eHOKS virkailija backend"

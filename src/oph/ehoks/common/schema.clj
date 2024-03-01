@@ -1,5 +1,9 @@
 (ns oph.ehoks.common.schema
-  (:require [schema.core :as s]))
+  (:require [schema.core :as s]
+            [schema.coerce :as coerce]
+            [clojure.string :as str]
+            [compojure.api.coercion.core :as cc]
+            [compojure.api.coercion.schema :as schema-coercion]))
 
 (s/defschema Translated
              "Translated string"
@@ -67,3 +71,21 @@
    :koodi-uri s/Str
    :versio s/Int
    (s/optional-key :metadata) [KoodiMetadata]})
+
+(defn- trim-strings-matcher
+  [schema]
+  (when (= s/Str schema)
+    (coerce/safe
+      (fn [value]
+        (if (string? value)
+          (str/trim value)
+          value)))))
+
+; https://github.com/metosin/compojure-api/wiki/Coercion#custom-schema-coercion
+(defmethod cc/named-coercion :custom-schema [_]
+  (schema-coercion/create-coercion
+    (assoc-in
+      schema-coercion/default-options
+      [:body :formats "application/json"]
+      (coerce/first-matcher
+        [trim-strings-matcher schema-coercion/json-coercion-matcher]))))
