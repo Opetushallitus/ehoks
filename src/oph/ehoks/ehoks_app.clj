@@ -7,6 +7,7 @@
             [oph.ehoks.db.session-store :as session-store]
             [oph.ehoks.oppija.handler :as oppija-handler]
             [oph.ehoks.virkailija.handler :as virkailija-handler]
+            [oph.ehoks.palaute.handler :as palaute-handler]
             [clojure.java.io]
             [clojure.string :refer [lower-case]]
             [environ.core :refer [env]]))
@@ -50,23 +51,24 @@
                                      respond
                                      raise))))))))))
 
-(def both-app-routes
-  "App with both oppija and virkailija routes initialized."
+(def all-app-routes
+  "App with all oppija, virkailija and palaute routes initialized."
   (app-union
     oppija-handler/app-routes
     virkailija-handler/app-routes
+    palaute-handler/app-routes
     (compojure-route/not-found
-      (-> (str "{\"reason\": \"Use APIs under /ehoks-virkailija-backend "
-               "or /ehoks-oppija-backend\"}")
+      (-> (str "{\"reason\": \"Use APIs under /ehoks-virkailija-backend, "
+               "/ehoks-oppija-backend or /ehoks-palaute-backend\"}")
           (response/not-found)
           (response/content-type "application/json")))))
 
-(def both-app
-  "Ready-to-call app with both-app-routes and session middleware.
+(def all-app
+  "Ready-to-call app with all-app-routes and session middleware.
   It is important that it is assigned to a var, since hot reloading
-  depends on that var (i.e. oph.ehoks.ehoks-app/both-app) getting
+  depends on that var (i.e. oph.ehoks.ehoks-app/all-app) getting
   updated."
-  (common-api/create-app both-app-routes (session-store/db-store)))
+  (common-api/create-app all-app-routes (session-store/db-store)))
 
 (def virkailija-app
   "Ready-to-call app with virkailija app-routes and session middleware."
@@ -77,17 +79,22 @@
   "Ready-to-call app with oppija app-routes and session middleware."
   (common-api/create-app oppija-handler/app-routes (session-store/db-store)))
 
+(def palaute-app
+  "Ready-to-call app with palaute app-routes and session middleware"
+  (common-api/create-app palaute-handler/app-routes (session-store/db-store)))
+
 (def app-by-name
   {"ehoks-virkailija" #'virkailija-app
    "ehoks-oppija" #'oppija-app
-   "both" #'both-app})
+   "ehoks-palaute" #'palaute-app
+   "both" #'all-app})
 
 (defn create-app
   "Give an app that has the routes that belong to app-name.  The app given
   will be updated when this namespace is reloaded, since it's a var that
   delegates to the actual app function."
   [app-name]
-  (get app-by-name app-name #'both-app))
+  (get app-by-name app-name #'all-app))
 
 (defn get-app-name
   "Get the app name."
