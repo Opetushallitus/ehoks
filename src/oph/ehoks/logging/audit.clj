@@ -7,6 +7,8 @@
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
             [oph.ehoks.config :refer [config]]
+            [medley.core :refer [assoc-some filter-vals map-keys]]
+            [oph.ehoks.user :as user]
             [oph.ehoks.logging.access :refer [get-session]])
   (:import (java.time ZoneOffset)
            (java.util Date)))
@@ -91,30 +93,47 @@
    "hostname"         (System/getProperty "HOSTNAME" "")
    "serviceName"     (or (:name env) "both")})
 
+(defn- keyword->camel-case-str
+  [k]
+  (let [words            (str/split (name k) #"-")
+        rest-capitalized (map str/capitalize (rest words))]
+    (str/join (cons (first words) rest-capitalized))))
+
 (defn- target-info
   "Collects relevant target info (HOKS being read / modified plus
-  oppija and opiskeluois OIDs) from `request` for auditing purposes."
-  [request]
-  {"hoksId"            (get-in request [:route-params :hoks-id])
-   "oppijaOid"         (or (get-in request [:params :oppija-oid])
-                           (get-in request [:route-params :oppija-oid]))
-   "opiskeluoikeusOid" (get-in request [:route-params :opiskeluoikeus-oid])})
+  oppija and opiskeluois OIDs) from `request` for auditing purposes.
+  In most cases we can infer `hoks-id`, `oppija-oid`, and `opiskeluoikeus-oid`
+  from wrapped hoks or `:route-params`, but in case of some endpoints target
+  info needs to be defined explicitly by setting [:audit-data :target] in
+  `response`."
+  [request response]
+  (let [from-request
+        (assoc-some
+          nil
+          :hoks-id            (or (get-in request [:hoks :id])
+                                  (get-in request [:route-params :hoks-id]))
+          :oppija-oid         (or (get-in request [:hoks :oppija-oid])
+                                  (get-in request [:route-params :oppija-oid]))
+          :opiskeluoikeus-oid (or (get-in request [:hoks :opiskeluoikeus-oid])
+                                  (get-in request [:route-params
+                                                   :opiskeluoikeus-oid])))]
+    (->> (get-in response [:audit-data :target])
+         (filter-vals some?) ; We don't want to overwrite with `nil` values
+         not-empty
+         (merge from-request)
+         (map-keys keyword->camel-case-str))))
 
 (defn- get-user-oid
   "Get OID of user from request."
   [request]
-  (when-let [user (or (:service-ticket-user request)
-                      (get-in request [:session :virkailija-user])
-                      (:virkailija-user request)
-                      (get-in request [:session :user]))]
-    (or (:oidHenkilo user)
-        (:oid user))))
+  (when-let [user (first (keep #(user/get request %) user/types))]
+    (or (:oidHenkilo user) (:oid user))))
 
 (defn- get-client-ip
   "Get IP address of client from request for auditing purposes."
   [request]
   (if-let [ips (get-in request [:headers "x-forwarded-for"])]
-    (-> ips (str/split #",") first)
+    (first (str/split ips #","))
     (:remote-addr request)))
 
 (defn- user-info
@@ -153,13 +172,14 @@
                             (server-error? response)
                             (client-error? response))
                       "failure"
-                      (method->crud request-method))
+                      (or (get-in response [:audit-data :operation])
+                          (method->crud request-method)))
           new-data (get-in response [:audit-data :new])
           old-data (get-in response [:audit-data :old])]
       (log! (-> (common-data)
                 (assoc "type"      "log"
                        "user"      (user-info request)
-                       "target"    (target-info request)
+                       "target"    (target-info request response)
                        "operation" operation
                        "changes"   (changes old-data new-data))
                 make-json-serializable

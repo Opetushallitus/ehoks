@@ -1,7 +1,8 @@
 SELECT
   k.*,
-  o.oid AS oppijan_oid,
-  o.nimi AS oppijan_nimi,
+  k.hoks_id as hoks_id,
+  o.oid AS oppija_oid,
+  o.nimi AS oppija_nimi,
   h.opiskeluoikeus_oid AS opiskeluoikeus_oid
 FROM kyselylinkit k
   LEFT OUTER JOIN oppijat AS o ON o.oid = k.oppija_oid

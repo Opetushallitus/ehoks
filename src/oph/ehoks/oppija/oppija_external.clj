@@ -1,8 +1,9 @@
 (ns oph.ehoks.oppija.oppija-external
   (:require [oph.ehoks.external.organisaatio :as organisaatio]
             [compojure.api.core :refer [route-middleware]]
-            [oph.ehoks.middleware :refer [wrap-authorize]]
+            [oph.ehoks.middleware :refer [wrap-require-user-type-and-auth]]
             [oph.ehoks.restful :as rest]
+            [oph.ehoks.user :as user]
             [ring.util.http-response :as response]
             [schema.core :as s]
             [compojure.api.sweet :as c-api]
@@ -13,7 +14,7 @@
 (def routes
   "Oppija external routes"
   (route-middleware
-    [wrap-authorize]
+    [(wrap-require-user-type-and-auth ::user/oppija)]
     (c-api/context "/koodisto" []
       (c-api/GET "/:koodi-uri" [koodi-uri]
         :path-params [koodi-uri :- s/Str]

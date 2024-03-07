@@ -251,18 +251,25 @@
 (defn check-and-save-hoks!
   "Tekee uuden HOKSin tarkistukset ja tallentaa sen, jos kaikki on OK."
   [hoks]
-  (let [opiskeluoikeudet
-        (k/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
+  (let [oppija-oid         (:oppija-oid hoks)
+        opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+        opiskeluoikeudet   (k/fetch-opiskeluoikeudet-by-oppija-id oppija-oid)]
     (when-not
      (oppijaindex/oppija-opiskeluoikeus-match?
        opiskeluoikeudet (:opiskeluoikeus-oid hoks))
-      (throw (ex-info "Opiskeluoikeus does not match any held by oppija"
-                      {:error :disallowed-update})))
+      (throw (ex-info
+               (format "Opiskeluoikeus `%s` does not match any held by oppija"
+                       opiskeluoikeus-oid)
+               {:error              :disallowed-update
+                :oppija-oid         oppija-oid
+                :opiskeluoikeus-oid opiskeluoikeus-oid})))
     (when-not
      (oppijaindex/opiskeluoikeus-still-active? hoks opiskeluoikeudet)
-      (throw (ex-info (format "Opiskeluoikeus %s is no longer active"
-                              (:opiskeluoikeus-oid hoks))
-                      {:error :disallowed-update})))
+      (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
+                              opiskeluoikeus-oid)
+                      {:error              :disallowed-update
+                       :oppija-oid         oppija-oid
+                       :opiskeluoikeus-oid opiskeluoikeus-oid})))
     (save-hoks! hoks)))
 
 (defn- merge-not-given-hoks-values

@@ -73,7 +73,7 @@
       app
       (mock/header request "Caller-Id" "test"))))
 
-(deftest get-organisaatio
+(deftest get-organisaatio!
   (testing "GET organisaatio"
     (client/with-mock-responses
       [(fn [_ __]

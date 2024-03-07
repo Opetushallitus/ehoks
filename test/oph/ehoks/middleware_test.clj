@@ -5,6 +5,7 @@
             [ring.util.http-response :refer [ok]]
             [ring.mock.request :as mock]
             [oph.ehoks.middleware :as middleware]
+            [oph.ehoks.user :as user]
             [ring.middleware.session :as session]
             [clojure.core.async :as async]))
 
@@ -39,14 +40,14 @@
 (def async-routes
   (c-api/context "/async" []
     (route-middleware
-      [middleware/wrap-authorize]
+      [(middleware/wrap-require-user-type-and-auth ::user/oppija)]
       (c-api/GET "/" [] (async/go (ok ""))))
     (c-api/GET "/public" [] (async/go (ok "")))))
 
 (def sync-routes
   (c-api/context "/sync" []
     (route-middleware
-      [middleware/wrap-authorize]
+      [(middleware/wrap-require-user-type-and-auth ::user/oppija)]
       (c-api/GET "/" [] (ok "")))
     (c-api/GET "/public" [] (ok ""))
     (c-api/POST "/authenticate" [] (assoc (ok "") :session {:user "User"}))))

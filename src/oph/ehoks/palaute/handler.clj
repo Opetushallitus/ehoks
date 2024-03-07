@@ -4,7 +4,6 @@
             [compojure.route :as compojure-route]
             [ring.util.http-response :as response]
             [oph.ehoks.common.api :as common-api]
-            [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]))
 
 (def routes

@@ -1,6 +1,6 @@
 (ns oph.ehoks.common.api
   (:require [ring.util.http-response :as response]
-            [clojure.string :as cstr]
+            [clojure.string :as str]
             [clojure.tools.logging :as log]
             [compojure.api.exception :as c-ex]
             [ring.middleware.session :as session]
@@ -26,7 +26,7 @@
     "Unhandled exception\n%s\n%s\n%s"
     (str ex)
     (str data)
-    (cstr/join "\n" (.getStackTrace ex))))
+    (str/join "\n" (.getStackTrace ex))))
 
 (defn exception-handler
   "Käsittelee virhetilanteita."

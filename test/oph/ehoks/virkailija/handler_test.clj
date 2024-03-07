@@ -1,21 +1,21 @@
 (ns oph.ehoks.virkailija.handler-test
-  (:require [oph.ehoks.virkailija.handler :as handler]
-            [oph.ehoks.virkailija.middleware :as m]
-            [oph.ehoks.external.koski :as k]
-            [oph.ehoks.common.api :as common-api]
-            [ring.mock.request :as mock]
+  (:require [clojure.string :as s]
             [clojure.test :as t]
             [clojure.tools.logging.test :as logtest]
-            [clojure.string :as s]
-            [oph.ehoks.utils :as utils]
-            [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.hoks.hoks :refer [insert-kyselylinkki!
-                                         update-kyselylinkki!]]
+            [oph.ehoks.common.api :as common-api]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.external.koski :as k]
+            [oph.ehoks.hoks.hoks :refer [insert-kyselylinkki!
+                                         update-kyselylinkki!]]
             [oph.ehoks.hoks.hoks-test-utils :refer [virkailija-base-url]]
-            [oph.ehoks.virkailija.virkailija-test-utils :as v-utils])
+            [oph.ehoks.session-store :refer [test-session-store]]
+            [oph.ehoks.user :as user]
+            [oph.ehoks.utils :as utils]
+            [oph.ehoks.virkailija.handler :as handler]
+            [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]
+            [ring.mock.request :as mock])
   (:import (java.time LocalDate LocalDateTime)))
 
 (t/use-fixtures :once utils/migrate-database)
@@ -485,26 +485,19 @@
                              :opiskeluoikeus-oid "1.2.246.562.15.76000000000"
                              :oppilaitos-oid "1.2.246.562.10.12000000005"
                              :koulutustoimija-oid ""})
-        (t/is
-          (not
-            (m/virkailija-has-access?
-              {:organisation-privileges
-               [{:oid "1.2.246.562.10.12000000002"
-                 :privileges #{:read}}]}
-              "1.2.246.562.24.44000000008")))
-        (t/is
-          (not
-            (m/virkailija-has-access?
-              {:organisation-privileges
-               [{:oid "1.2.246.562.10.12000000005"
-                 :privileges #{}}]}
-              "1.2.246.562.24.44000000008")))
-        (t/is
-          (m/virkailija-has-access?
-            {:organisation-privileges
-             [{:oid "1.2.246.562.10.12000000005"
-               :privileges #{:read}}]}
-            "1.2.246.562.24.44000000008"))))))
+        (t/is (not (user/has-read-privileges-to-oppija?!
+                     {:organisation-privileges
+                       [{:oid "1.2.246.562.10.12000000002"
+                        :privileges #{:read}}]}
+                       "1.2.246.562.24.44000000008")))
+        (t/is (not (user/has-read-privileges-to-oppija?!
+                     {:organisation-privileges
+                       [{:oid "1.2.246.562.10.12000000005" :privileges #{}}]}
+                      "1.2.246.562.24.44000000008")))
+        (t/is (user/has-read-privileges-to-oppija?!
+                {:organisation-privileges [{:oid "1.2.246.562.10.12000000005"
+                                            :privileges #{:read}}]}
+                "1.2.246.562.24.44000000008"))))))
 
 (t/deftest test-virkailija-hoks-write-forbidden
   (t/testing "Virkailija HOKS write is forbidden"
@@ -1059,7 +1052,10 @@
     (logtest/with-log
       (with-redefs [oph.ehoks.db.postgresql.common/select-kyselylinkit-by-tunnus
                     (fn [_]
-                      [{:kyselylinkki "https://arvo-dev.csc.fi/x/foofaa"}])
+                      [{:kyselylinkki       "https://arvo-dev.csc.fi/x/foofaa"
+                        :hoks-id            1
+                        :oppija-oid         "1.2.246.452.24.44000000008"
+                        :opiskeluoikeus-oid "1.2.246.562.15.76000000018"}])
                     oph.ehoks.external.arvo/delete-kyselytunnus identity
                     oph.ehoks.db.postgresql.common/delete-kyselylinkki-by-tunnus
                     identity

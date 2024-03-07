@@ -350,11 +350,3 @@
 (defn mock-get-opiskeluoikeus-info
   [_]
   {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})
-
-(defn assoc-if-some
-  "Like `assoc`, but doesn't add key-value-pair to map if value is `nil`."
-  [m & kvs]
-  (->> (partition 2 kvs)
-       (filter (comp some? second))
-       (map vec)
-       (into m)))

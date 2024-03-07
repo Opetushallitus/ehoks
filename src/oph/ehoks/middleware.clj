@@ -1,27 +1,25 @@
 (ns oph.ehoks.middleware
-  (:require [ring.util.http-response :refer [unauthorized header]]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.external.koski :as k]
+  (:require [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
-            [oph.ehoks.user :as user]))
+            [oph.ehoks.external.koski :as k]
+            [oph.ehoks.user :as user]
+            [ring.util.http-response :refer [header unauthorized]]))
 
-(defn- authenticated?
-  "Check whether request is authenticated"
-  [request]
-  (some? (get-in request [:session :user])))
-
-(defn wrap-authorize
-  "Require user with session"
-  [handler]
-  (fn
-    ([request respond raise]
-      (if (authenticated? request)
-        (handler request respond raise)
-        (respond (unauthorized))))
-    ([request]
-      (if (authenticated? request)
-        (handler request)
-        (unauthorized)))))
+(defn wrap-require-user-type-and-auth
+  "Takes a `user-type`, e.g., `:user/virkailija` and returns a middleware that
+  requires the user to be of that specific type. Also requires authentication
+  of the user."
+  [user-type]
+  {:pre [(user/types user-type)]}
+  (fn [handler]
+    (fn ([request respond raise]
+         (if (user/authenticated? request user-type)
+           (handler request respond raise)
+           (respond (unauthorized))))
+      ([request]
+       (if (user/authenticated? request user-type)
+         (handler request)
+         (unauthorized))))))
 
 (defn- cache-control-no-cache-response
   "Add cache control no cache headers to response"
@@ -89,9 +87,12 @@
 (defn add-hoks
   "Add HOKS to request"
   [request]
-  (let [hoks-id (Integer/parseInt (get-in request [:route-params :hoks-id]))
-        hoks (db-hoks/select-hoks-by-id hoks-id)]
-    (assoc request :hoks hoks)))
+  (assoc request
+         :hoks
+         (some-> request
+                 (get-in [:route-params :hoks-id])
+                 Integer/parseInt
+                 db-hoks/select-hoks-by-id)))
 
 (defn wrap-hoks
   "Wrap request with hoks"

@@ -1,7 +1,24 @@
 (ns oph.ehoks.user
-  (:require [clojure.string :as str]
+  (:refer-clojure :exclude [get])
+  (:require [clojure.core :as core]
+            [clojure.string :as str]
             [oph.ehoks.external.organisaatio :as o]
             [oph.ehoks.oppijaindex :as oi]))
+
+(def types #{::palvelu ::virkailija ::oppija})
+(def privilege-types #{:read :write :update :delete})
+
+(defn get
+  [request user-type]
+  (case user-type
+    ::palvelu    (:service-ticket-user request)
+    ::virkailija (get-in request [:session :virkailija-user])
+    ::oppija     (get-in request [:session :user])))
+
+(defn authenticated?
+  "Returns `true` is user of `user-type` has been authenticated."
+  [request user-type]
+  (some? (get request user-type)))
 
 (defn resolve-privilege
   "Resolves OPH privilege to keyword sets"
@@ -64,28 +81,55 @@
 (defn oph-super-user?
   "Is user OPH ehoks super user"
   [ticket-user]
-  (some
-    #(when (get (:roles %) :oph-super-user) true)
-    (:organisation-privileges ticket-user)))
+  (some #(contains? (:roles %) :oph-super-user)
+        (:organisation-privileges ticket-user)))
 
-(defn check-parent-oids
-  "Check whether user belongs to target organisation or its parent"
-  [user-org target-org]
-  (or (= user-org target-org)
-      (some
-        #(= user-org %)
-        (str/split
-          (:parentOidPath (o/get-organisaatio target-org) "")
-          #"\|"))))
-
-(defn get-organisation-privileges
-  "Get ticket user privileges in organisation"
+(defn organisation-privileges!
+  "Returns `ticket-user` privileges in organisation with oid `organisation-oid`.
+  If `user` has no privileges in the given organisation, returns `nil`."
   [ticket-user organisation-oid]
-  (let [privileges
-        (reduce into
-                (map :privileges
-                     (filter
-                       #(check-parent-oids (:oid %) organisation-oid)
-                       (:organisation-privileges ticket-user))))]
-    (when (seq privileges)
-      privileges)))
+  (let [parent-organisation-oids (some-> (o/get-organisaatio! organisation-oid)
+                                         :parentOidPath
+                                         (str/split #"\|"))]
+    (->> (:organisation-privileges ticket-user)
+         (filter #(or (= (:oid %) organisation-oid)
+                      (some #{(:oid %)} parent-organisation-oids)))
+         (map :privileges) ; Returns sequence of *sets*
+         (reduce into)
+         not-empty)))
+
+(defn service?
+  "Returns `true` if `user` is of type `PALVELU`"
+  [user]
+  (= (:kayttajaTyyppi user) "PALVELU"))
+
+(defn has-privilege-in-oppilaitos?
+  "Returns `true` if `ticket-user` has `privilege` in oppilaitos corresponding
+  to `oppilaitos-oid`, otherwise `false`."
+  [ticket-user privilege oppilaitos-oid]
+  {:pre [(some? ticket-user)
+         (some? oppilaitos-oid)
+         (privilege-types privilege)]}
+  (contains? (organisation-privileges! ticket-user oppilaitos-oid) privilege))
+
+(defn has-privilege-to-hoks?
+  "Returns `true` is `ticket-user` has specified `privilege` to `hoks`,
+  otherwise `nil`."
+  [ticket-user privilege hoks]
+  {:pre [(some? ticket-user) (privilege-types privilege) (some? hoks)]}
+  (some-> (:opiskeluoikeus-oid hoks)
+          oi/get-opiskeluoikeus-by-oid!
+          :oppilaitos-oid
+          (->> (has-privilege-in-oppilaitos? ticket-user privilege))))
+
+(defn has-read-privileges-to-oppija?!
+  "Returns `true` if `ticket-user` has read privileges in ANY organisation
+  specified in opiskeluoikeudet of oppija.
+
+  NOTE: This function basically grants `ticket-user` READ access to ALL oppija
+  information if used for checking user access! This also includes data in other
+  oppilaitokset that `ticker-user` isn't member of!"
+  [ticket-user oppija-oid]
+  (->> (oi/get-oppija-opiskeluoikeudet oppija-oid)
+       (map :oppilaitos-oid)
+       (some #(has-privilege-in-oppilaitos? ticket-user :read %))))

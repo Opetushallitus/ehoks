@@ -30,36 +30,40 @@
         :summary "Järjestelmän tiedot: Cache."
         :header-params [caller-id :- s/Str]
         :return (restful/response virkailija-schema/SystemInfoCache)
-        (restful/rest-ok
-          {:size (c/size)}))
+        (assoc (restful/rest-ok {:size (c/size)})
+               :audit-data {:target {:system-info ::cache}}))
 
       (c-api/GET "/memory" []
         :summary "Järjestelmän tiedot: Muisti."
         :header-params [caller-id :- s/Str]
         :return (restful/response virkailija-schema/SystemInfoMemory)
-        (let [runtime (Runtime/getRuntime)]
-          (restful/rest-ok
-            {:total (.totalMemory runtime)
-             :free (.freeMemory runtime)
-             :max (.maxMemory runtime)})))
+        (assoc (let [runtime (Runtime/getRuntime)]
+                 (restful/rest-ok
+                   {:total (.totalMemory runtime)
+                    :free (.freeMemory runtime)
+                    :max (.maxMemory runtime)}))
+               :audit-data {:target {:system-info ::memory}}))
 
       (c-api/GET "/oppijaindex" []
         :summary "Järjestelmän tiedot: Oppijaindex."
         :header-params [caller-id :- s/Str]
         :return (restful/response virkailija-schema/SystemInfoOppijaindex)
-        (restful/rest-ok
-          {:unindexedOppijat
-           (oi/get-oppijat-without-index-count)
-           :unindexedOpiskeluoikeudet
-           (oi/get-opiskeluoikeudet-without-index-count)
-           :unindexedTutkinnot
-           (oi/get-opiskeluoikeudet-without-tutkinto-count)}))
+        (assoc (restful/rest-ok
+                 {:unindexedOppijat
+                  (oi/get-oppijat-without-index-count)
+                  :unindexedOpiskeluoikeudet
+                  (oi/get-opiskeluoikeudet-without-index-count)
+                  :unindexedTutkinnot
+                  (oi/get-opiskeluoikeudet-without-tutkinto-count)})
+               :audit-data {:target {:system-info ::oppija-index}}))
 
       (c-api/GET "/hoksit" []
         :summary "Järjestelmän tiedot: Hoksit."
         :header-params [caller-id :- s/Str]
         :return (restful/response virkailija-schema/SystemInfoHoksit)
-        (restful/rest-ok {:amount (:count (oi/get-amount-of-hoks))})))
+        (assoc
+          (restful/rest-ok {:amount (:count (oi/get-amount-of-hoks))})
+          :audit-data {:target {:system-info ::hoks-count}})))
 
     (c-api/POST "/index" []
       :summary "Indeksoi oppijat ja opiskeluoikeudet"
@@ -68,26 +72,36 @@
         (oi/update-oppijat-without-index!)
         (oi/update-opiskeluoikeudet-without-index!)
         (oi/update-opiskeluoikeudet-without-tutkinto!)
-        (response/ok)))
+        (assoc (response/ok)
+               :audit-data
+               {:operation
+                :system-operation/index-oppijat-and-opiskeluoikeudet})))
 
     (c-api/DELETE "/cache" []
       :summary "Välimuistin tyhjennys"
       :header-params [caller-id :- s/Str]
       (c/clear-cache!)
-      (response/ok))
+      (assoc (response/ok)
+             :audit-data
+             {:operation :system-operation/clear-cache}))
 
     (c-api/PUT "/oppija/update" request
       :summary "Päivittää oppijan tiedot oppija-indeksiin"
       :header-params [caller-id :- s/Str]
       :body [data virkailija-schema/UpdateOppija]
-      (if (empty? (db-hoks/select-hoks-by-oppija-oid (:oppija-oid data)))
-        (response/not-found {:error "Tällä oppija-oidilla ei löydy hoksia
-        ehoks-järjestelmästä"})
-        (do
-          (if (some? (db-oppija/select-oppija-by-oid (:oppija-oid data)))
-            (oi/update-oppija! (:oppija-oid data))
-            (oi/add-oppija-without-error-forwarding! (:oppija-oid data)))
-          (response/no-content))))
+      (let [oppija-oid (:oppija-oid data)]
+        (assoc
+          (if (empty? (db-hoks/select-hoks-by-oppija-oid oppija-oid))
+            (response/not-found
+              {:error (str "Tällä oppija-oidilla ei löydy hoksia "
+                           "ehoks-järjestelmästä")})
+            (do
+              (if (some? (db-oppija/select-oppija-by-oid oppija-oid))
+                (oi/update-oppija! oppija-oid)
+                (oi/add-oppija-without-error-forwarding! oppija-oid))
+              (response/no-content)))
+          :audit-data {:operation :system-operation/update-oppija
+                       :target    {:oppija-oid oppija-oid}})))
 
     (c-api/POST "/onrmodify" request
       :summary "Tarkastaa päivitetyn henkilön tiedot eHoksissa
@@ -97,23 +111,29 @@
       :header-params [caller-id :- s/Str]
       :query-params [oid :- s/Str]
       (oi/handle-onrmodified oid)
-      ; TODO refaktoroi onr-käsittelyä auditlokitusystävällisemmäksi (OY-4523)
-      (response/no-content))
+      (assoc (response/no-content)
+             :audit-log {:operation :system-operation/update-oppija-onr
+                         :target    {:oppija-oid oid}}))
 
     (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
       :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
       :header-params [caller-id :- s/Str]
       :path-params [opiskeluoikeus-oid :- s/Str]
       :return (restful/response {:id s/Int})
-      (let [hoks (first (db-hoks/select-hoksit-by-opiskeluoikeus-oid
-                          opiskeluoikeus-oid))]
-        (if hoks
-          (restful/rest-ok {:id (:id hoks)})
-          (do
-            (log/warn "No HOKS found with given opiskeluoikeus "
-                      opiskeluoikeus-oid)
-            (response/not-found
-              {:error "No HOKS found with given opiskeluoikeus"})))))
+      (if-let [hoks (-> (db-hoks/select-hoksit-by-opiskeluoikeus-oid)
+                        first
+                        not-empty)]
+        (assoc (restful/rest-ok {:id (:id hoks)})
+               :audit-data {:target {:hoks-id            (:id hoks)
+                                     :oppija-oid         (:oppija-oid hoks)
+                                     :opiskeluoikeus-oid opiskeluoikeus-oid}})
+        (do
+          (log/warn "No HOKS found with given opiskeluoikeus "
+                    opiskeluoikeus-oid)
+          (assoc (response/not-found
+                   {:error "No HOKS found with given opiskeluoikeus"})
+                 :audit-data
+                 {:target {:opiskeluoikeus-oid opiskeluoikeus-oid}}))))
 
     (c-api/PUT "/opiskeluoikeus/update" request
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin"
@@ -121,27 +141,35 @@
       :body [data virkailija-schema/UpdateOpiskeluoikeus]
       (if (empty? (db-hoks/select-hoksit-by-opiskeluoikeus-oid
                     (:opiskeluoikeus-oid data)))
-        (response/not-found {:error "Tällä opiskeluoikeudella ei löydy hoksia
-        ehoks-järjestelmästä"})
+        (response/not-found
+          {:error (str "Tällä opiskeluoikeudella ei löydy hoksia "
+                       "ehoks-järjestelmästä")})
         (do
           (db-opiskeluoikeus/delete-opiskeluoikeus-from-index!
             (:opiskeluoikeus-oid data))
           (a/go
             (oi/update-opiskeluoikeudet-without-index!)
-            (response/no-content)))))
+            (assoc (response/no-content)
+                   :audit-data
+                   {:operation :system-operation/update-opiskeluoikeus-in-index
+                    :target    {:opiskeluoikeus-oid
+                                (:opiskeluoikeus-oid data)}})))))
 
     (c-api/PUT "/opiskeluoikeudet/update" request
       :summary "Poistaa ja hakee uudelleen tiedot opiskeluoikeusindeksiin
       koulutustoimijan perusteella"
       :header-params [caller-id :- s/Str]
       :body [data virkailija-schema/UpdateOpiskeluoikeudet]
-      (if (pos? (first
-                  (db-opiskeluoikeus/delete-from-index-by-koulutustoimija!
-                    (:koulutustoimija-oid data))))
-        (a/go
-          (oi/update-opiskeluoikeudet-without-index!)
-          (response/no-content))
-        (response/not-found {:error "No opiskeluoikeus found with given oid"})))
+      (assoc (if (-> (:koulutustoimija-oid data)
+                     db-opiskeluoikeus/delete-from-index-by-koulutustoimija!
+                     first
+                     pos?)
+               (a/go (oi/update-opiskeluoikeudet-without-index!)
+                     (response/no-content))
+               (response/not-found
+                 {:error "No opiskeluoikeus found with given oid"}))
+             :audit-data
+             {:operation :system-operation/reset-opiskeluoikeus-index}))
 
     (c-api/GET "/opiskeluoikeudet/:koulutustoimija-oid/deletion-info" request
       :summary "Palauttaa opiskeluoikeuksien määrän poistamisen varmistusta
@@ -149,11 +177,14 @@
       :header-params [caller-id :- s/Str]
       :path-params [koulutustoimija-oid :- s/Str]
       :return (restful/response s/Int)
-      (if-let [info (db-opiskeluoikeus/select-opiskeluoikeus-delete-confirm-info
-                      koulutustoimija-oid)]
-        (restful/rest-ok info)
-        (response/not-found {:error "No opiskeluoikeus found
-                                     with given koulutustoimija-id"})))
+      (assoc
+        (if-let [info
+                 (db-opiskeluoikeus/select-opiskeluoikeus-delete-confirm-info
+                   koulutustoimija-oid)]
+          (restful/rest-ok info)
+          (response/not-found {:error "No opiskeluoikeus found
+                                       with given koulutustoimija-id"}))
+        :audit-data {:target {:koulutustoimija-oid koulutustoimija-oid}}))
 
     (c-api/GET "/hoks/:hoks-id" request
       :summary "Palauttaa HOKSin hoks-id:llä"
@@ -161,15 +192,11 @@
       :path-params [hoks-id :- s/Int]
       :return (restful/response {:opiskeluoikeus-oid s/Str
                                  :oppija-oid s/Str})
-      (let [hoks (db-hoks/select-hoks-by-id
-                   hoks-id)]
-        (if hoks
-          (restful/rest-ok {:opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-                            :oppija-oid (:oppija-oid hoks)})
-          (do
-            (log/warn "No HOKS found with given hoks-id" hoks-id)
-            (response/not-found
-              {:error "No HOKS found with given hoks-id"})))))
+      (if-let [hoks (db-hoks/select-hoks-by-id hoks-id)]
+        (restful/rest-ok {:opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+                          :oppija-oid         (:oppija-oid hoks)})
+        (do (log/warn "No HOKS found with given hoks-id" hoks-id)
+            (response/not-found {:error "No HOKS found with given hoks-id"}))))
 
     (c-api/GET "/hoks/:hoks-id/deletion-info" request
       :summary "Palauttaa tietoja HOKSista, opiskeluoikeudesta ja oppijasta
@@ -239,7 +266,9 @@
       :return {:count s/Int}
       (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
             count  (op/send-every-needed! :aloituskysely hoksit)]
-        (restful/rest-ok {:count count})))
+        (assoc (restful/rest-ok {:count count})
+               :audit-data
+               {:operation :system-operation/resend-aloitusherate})))
 
     (c-api/POST "/hoks/resend-paattoherate" request
       :summary "Lähettää uudet päättökyselyherätteet herätepalveluun"
@@ -249,4 +278,6 @@
       :return {:count s/Int}
       (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
             count  (op/send-every-needed! :paattokysely hoksit)]
-        (restful/rest-ok {:count count})))))
+        (assoc (restful/rest-ok {:count count})
+               :audit-data
+               {:operation :system-operation/resend-paattoherate})))))
