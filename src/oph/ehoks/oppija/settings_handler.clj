@@ -3,7 +3,8 @@
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.restful :as rest]
-            [oph.ehoks.user-settings :as user-settings]
+            [oph.ehoks.user :as user]
+            [oph.ehoks.user.settings :as user-settings]
             [schema.core :as s]))
 
 (def routes
@@ -14,13 +15,11 @@
       :summary "Istunnon käyttäjän asetukset"
       :return (rest/response schema/UserSettings)
       (rest/rest-ok
-        (or (user-settings/get-settings
-              (get-in request [:session :user :oid]))
+        (or (user-settings/get! (:oid (user/get request ::user/oppija)))
             {})))
 
     (c-api/PUT "/" request
       :summary "Istunnon käyttäjän asetuksien tallennus"
       :body [data schema/UserSettings]
-      (user-settings/save-settings!
-        (get-in request [:session :user :oid]) data)
+      (user-settings/save! (:oid (user/get request ::user/oppija)) data)
       (response/created))))
