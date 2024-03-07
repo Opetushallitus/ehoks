@@ -75,11 +75,10 @@
 (defn- trim-strings-matcher
   [schema]
   (when (= s/Str schema)
-    (coerce/safe
-      (fn [value]
-        (if (string? value)
-          (str/trim value)
-          value)))))
+    (fn [value]
+      (if (string? value)
+        (str/trim value)
+        value))))
 
 ; https://github.com/metosin/compojure-api/wiki/Coercion#custom-schema-coercion
 (defmethod cc/named-coercion :custom-schema [_]
