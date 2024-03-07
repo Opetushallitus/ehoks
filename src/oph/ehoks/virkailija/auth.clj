@@ -17,7 +17,7 @@
       :summary "Virkailijan istunto"
       :header-params [caller-id :- s/Str]
       :return (restful/response schema/VirkailijaSession)
-      (if-let [virkailija-user (get-in request [:session :virkailija-user])]
+      (if-let [virkailija-user (user/get request ::user/virkailija)]
         (restful/rest-ok
           (assoc (select-keys virkailija-user
                               [:oidHenkilo :organisation-privileges])

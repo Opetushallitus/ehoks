@@ -21,12 +21,13 @@
   [values]
   (cond
     (.isBefore ^LocalDate (:voimassaolo-loppu values) (LocalDate/now))
-    (throw
-      (Exception. "Shared link end date cannot be in the past"))
+    (throw (ex-info "Shared link end date cannot be in the past"
+                    {:error :shared-link-date-validation-error}))
     (.isBefore ^LocalDate (:voimassaolo-loppu values)
                (:voimassaolo-alku values))
-    (throw
-      (Exception. "Shared link end date cannot be before the start date"))))
+    (throw (ex-info "Shared link end date cannot be before the start date"
+                    {:error :shared-link-date-validation-error}))))
+
 
 (defn insert-shared-module!
   "Tallentaa shared modulen tietokantaan."

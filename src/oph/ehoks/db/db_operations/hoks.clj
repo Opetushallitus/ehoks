@@ -466,13 +466,16 @@
                 [queries/select-hoksit-by-opiskeluoikeus-oid-deleted-at-included
                  (:opiskeluoikeus-oid hoks)]))]
         (when hoks-by-oo
-          (let [error-info (if (some? (:deleted_at hoks-by-oo))
-                             (str "Archived HOKS with given opiskeluoikeus "
-                                  "oid found. Contact eHOKS support for more "
-                                  "information.")
-                             (str "HOKS with the same opiskeluoikeus-oid "
-                                  "already exists"))]
-            (throw (ex-info error-info {:error :duplicate})))))
+          (let [message (if (some? (:deleted_at hoks-by-oo))
+                          (str "Archived HOKS with given opiskeluoikeus "
+                               "oid found. Contact eHOKS support for more "
+                               "information.")
+                          (str "HOKS with the same opiskeluoikeus-oid "
+                               "already exists"))]
+            (throw (ex-info
+                     message
+                     {:error              :duplicate-opiskeluoikeus
+                      :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)})))))
       (let [eid (generate-unique-eid)]
         (first
           (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid))))))))

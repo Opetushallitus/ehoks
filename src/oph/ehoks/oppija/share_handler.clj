@@ -1,6 +1,7 @@
 (ns oph.ehoks.oppija.share-handler
   (:require [compojure.api.sweet :as c-api]
             [oph.ehoks.restful :as rest]
+            [clojure.tools.logging :as log]
             [oph.ehoks.oppija.schema :as oppija-schema]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.db.db-operations.shared-modules :as db]
@@ -25,9 +26,10 @@
   [jakolinkki]
   (cond
     (.isAfter ^LocalDate (:voimassaolo-alku jakolinkki) (LocalDate/now))
-    (throw (ex-info "Shared link not yet active" {:cause :inactive}))
+    (throw (ex-info "Shared link not yet active"
+                    {:error :shared-link-inactive}))
     (.isBefore ^LocalDate (:voimassaolo-loppu jakolinkki) (LocalDate/now))
-    (throw (ex-info "Shared link is expired" {:cause :expired}))))
+    (throw (ex-info "Shared link is expired" {:error :shared-link-expired}))))
 
 (defn- fetch-shared-link-data
   "Queries and combines data associated with the shared link"
@@ -70,8 +72,11 @@
             (rest/rest-ok
               {:uri (format "%s/%s" (:uri request) share-id)}
               :uuid share-id))
-          (catch Exception e
-            (response/bad-request! {:error (ex-message e)}))))
+          (catch ExceptionInfo e
+            (if (= (:error (ex-data e)) :shared-link-date-validation-error)
+              (do (log/warn e)
+                  (response/bad-request {:error (ex-message e)}))
+              (throw e)))))
 
       (c-api/GET "/:uuid" []
         :return (rest/response oppija-schema/Jakolinkki)
@@ -81,14 +86,16 @@
           (if-let [jakolinkki (fetch-shared-link-data uuid)]
             (rest/rest-ok jakolinkki)
             (response/not-found))
-          (catch ExceptionInfo ei
-            (cond
-              (= :expired (-> ei ex-data :cause))
-              (response/gone! {:message (ex-message ei)})
-              (= :inactive (-> ei ex-data :cause))
-              (response/locked! {:message (ex-message ei)})))
-          (catch Exception e
-            (response/bad-request! {:error (ex-message e)}))))
+          (catch ExceptionInfo e
+            (let [error-type (:error (ex-data e))]
+              (cond
+                (= error-type :shared-link-expired)
+                (do (log/warn e)
+                    (response/gone {:message (ex-message e)}))
+                (= error-type :shared-link-inactive)
+                (do (log/warn e)
+                    (response/locked {:message (ex-message e)}))
+                :else (throw e))))))
 
       (c-api/DELETE "/:uuid" []
         :summary "Poistaa jakolinkin"

@@ -3,14 +3,15 @@
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
             [schema.core :as s]
-            [oph.ehoks.middleware :refer [wrap-authorize]]
+            [oph.ehoks.middleware :refer [wrap-require-user-type-and-auth]]
             [oph.ehoks.external.schema :as schema]
             [oph.ehoks.external.utils :as utils]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.external.eperusteet :as eperusteet]
             [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.config :refer [config]]))
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.user :as user]))
 
 (def routes
   "External handlerin reitit"
@@ -30,7 +31,7 @@
         (response/internal-server-error {:error "Service timeout exceeded"})))
 
     (route-middleware
-      [wrap-authorize]
+      [(wrap-require-user-type-and-auth ::user/oppija)]
       (c-api/GET "/koodistokoodi/:uri/:versio" []
         :summary "Hakee koodisto koodin tietoja Koodisto-palvelusta"
         :path-params [uri :- s/Str, versio :- s/Int]
@@ -48,7 +49,7 @@
         :return (rest/response schema/KoskiOppija)
         (utils/with-timeout
           (:service-timeout-ms config)
-          (-> (get-in request [:session :user :oid])
+          (-> (:oid (user/get request ::user/oppija))
               (koski/get-student-info)
               koski/filter-oppija
               rest/rest-ok)

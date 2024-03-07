@@ -1,16 +1,16 @@
 (ns oph.ehoks.hoks.middleware
   (:require [clojure.tools.logging :as log]
-            [ring.util.http-response :as response]
-            [oph.ehoks.user :as user]
+            [medley.core :refer [find-first]]
             [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
+            [oph.ehoks.user :as user]
+            [ring.util.http-response :as response]))
 
 (def method-privileges
   "Privileges afforded to each REST method"
-  {:get :read
-   :post :write
-   :patch :update
-   :put :update
+  {:get    :read
+   :post   :write
+   :patch  :update
+   :put    :update
    :delete :delete})
 
 (defn authorized?
@@ -21,7 +21,7 @@
     (if oppilaitos-oid
       (some?
         (get
-          (user/get-organisation-privileges ticket-user oppilaitos-oid)
+          (user/organisation-privileges! ticket-user oppilaitos-oid)
           method))
       (response/bad-request!
         {:error "Opiskeluoikeus not found"}))))
@@ -29,9 +29,8 @@
 (defn hoks-access?
   "Does user has access to hoks"
   [hoks ticket-user method]
-  (and
-    (some? (:opiskeluoikeus-oid hoks))
-    (authorized? hoks ticket-user method)))
+  (and (some? (:opiskeluoikeus-oid hoks))
+       (authorized? hoks ticket-user method)))
 
 (defn check-hoks-access!
   "Check if ticket user has access privileges to hoks"
@@ -55,11 +54,10 @@
 (defn user-has-access?
   "Check if user has access privileges to hoks"
   [request hoks]
-  (let [ticket-user (:service-ticket-user request)]
     (hoks-access?
       hoks
-      ticket-user
-      (get method-privileges (:request-method request)))))
+      (:service-ticket-user request)
+      (get method-privileges (:request-method request))))
 
 (defn wrap-hoks-access
   "Wrap with hoks access"
@@ -102,12 +100,12 @@
   [handler]
   (fn
     ([request respond raise]
-      (if (= (:kayttajaTyyppi (:service-ticket-user request)) "PALVELU")
+      (if (user/service? (:service-ticket-user request))
         (handler request respond raise)
         (respond (response/forbidden
                    {:error "User type 'PALVELU' is required"}))))
     ([request]
-      (if (= (:kayttajaTyyppi (:service-ticket-user request)) "PALVELU")
+      (if (user/service? (:service-ticket-user request))
         (handler request)
         (response/forbidden
           {:error "User type 'PALVELU' is required"})))))
@@ -115,16 +113,13 @@
 (defn oph-authorized?
   "Does user have OPH privileges?"
   [request]
-  (let [user (:service-ticket-user request)
-        method (get method-privileges (:request-method request))]
-    (some?
-      (get
-        (:privileges
-          (first
-            (filter
-              #(= (:oid %) "1.2.246.562.10.00000000001")
-              (:organisation-privileges user))))
-        method))))
+  (let [method (method-privileges (:request-method request))]
+    (->> (:service-ticket-user request)
+         :organisation-privileges
+         (find-first #(= (:oid %) "1.2.246.562.10.00000000001"))
+         :privileges
+         method ; keyword, e.g., :read
+         some?)))
 
 (defn wrap-require-oph-privileges
   "Require oph org"

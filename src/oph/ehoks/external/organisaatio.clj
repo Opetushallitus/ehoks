@@ -5,7 +5,7 @@
             [clj-http.client :refer [success?]]
             [clojure.tools.logging :as log]))
 
-(defn get-organisaatio
+(defn get-organisaatio!
   "Get organisaatio info; log at WARN level on failure"
   [oid]
   (let [resp

@@ -4,7 +4,7 @@
             [clojure.string :as str])
   (:import (clojure.lang ExceptionInfo)))
 
-(defn get-kyselytunnus-status
+(defn get-kyselytunnus-status!
   "Hakee kyselytunnuksen tilan Arvosta."
   [tunnus]
   (:body (c/with-api-headers {:method :get
@@ -18,7 +18,7 @@
 (defn get-kyselylinkki-status
   "Hakee kyselylinkin tilan Arvosta."
   [link]
-  (get-kyselytunnus-status (last (str/split link #"/"))))
+  (get-kyselytunnus-status! (last (str/split link #"/"))))
 
 (defn get-kyselylinkki-status-catch-404
   "Hakee kyselylinkin tilan Arvosta, ja käsittelee 404-virheitä."

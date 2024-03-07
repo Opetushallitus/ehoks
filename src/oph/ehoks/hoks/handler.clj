@@ -13,13 +13,15 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
-            [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus
+            [oph.ehoks.middleware :refer [wrap-hoks
+                                          wrap-opiskeluoikeus
                                           wrap-user-details]]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.schema :as schema]
             [ring.util.http-response :as response]
-            [schema.core :as s]))
+            [schema.core :as s])
+  (:import [clojure.lang ExceptionInfo]))
 
 (def ^:private hankittava-paikallinen-tutkinnon-osa
   "Hankittavan paikallisen tutkinnon osan reitit."
@@ -300,31 +302,37 @@
           resp-body {:uri (format "%s/%d" (:uri request) (:id hoks-db))}]
       (-> resp-body
           (rest/rest-ok :id (:id hoks-db))
-          (assoc :audit-data {:new hoks})))
-    (catch Exception e
-      (case (:error (ex-data e))
-        :disallowed-update (response/bad-request! {:error (.getMessage e)})
-        :duplicate (do (log/warnf
-                         "HOKS with opiskeluoikeus-oid %s already exists"
-                         (:opiskeluoikeus-oid hoks))
-                       (response/bad-request! {:error (.getMessage e)}))
+          (assoc :audit-data
+                 {:new hoks
+                  :target {:hoks-id            (:id hoks-db)
+                           :oppija-oid         (:oppija-oid hoks)
+                           :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)}})))
+    (catch ExceptionInfo e
+      (if (contains? #{:disallowed-update :duplicate-opiskeluoikeus}
+                     (:error (ex-data e)))
+        (do (log/warn e) (response/bad-request {:error (ex-message e)}))
         (throw e)))))
 
 (defn- change-hoks!
   "Käsittelee HOKS-muutospyynnön."
   [hoks request db-handler]
-  (let [old-hoks (:hoks request)]
-    (if (empty? old-hoks)
-      (response/not-found {:error "HOKS not found with given HOKS ID"})
-      (try
-        (h/check-hoks-for-update! old-hoks hoks)
-        (let [new-hoks (db-handler (get-in request [:hoks :id]) hoks)]
-          (assoc (response/no-content) :audit-data {:old old-hoks
-                                                    :new new-hoks}))
-        (catch Exception e
-          (if (= (:error (ex-data e)) :disallowed-update)
-            (response/bad-request! {:error (.getMessage e)})
-            (throw e)))))))
+  (update
+    (let [old-hoks (:hoks request)]
+      (if (empty? old-hoks)
+        (response/not-found {:error "HOKS not found with given HOKS ID"})
+        (try
+          (h/check-hoks-for-update! old-hoks hoks)
+          (let [new-hoks (db-handler (get-in request [:hoks :id]) hoks)]
+            (assoc (response/no-content) :audit-data {:old old-hoks
+                                                      :new new-hoks}))
+          (catch Exception e
+            (if (= (:error (ex-data e)) :disallowed-update)
+              (do (log/errorf "Disallowed update: %s" e)
+                  (response/bad-request {:error (.getMessage e)}))
+              (throw e))))))
+    :audit-data assoc :target {:hoks-id            (get-in request [:hoks :id])
+                               :oppija-oid         (:oppija-oid hoks)
+                               :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)}))
 
 (def routes
   "HOKS handlerin reitit."
@@ -334,9 +342,12 @@
                     caller-id :- s/Str]
 
     (route-middleware
-      [wrap-user-details m/wrap-require-service-user wrap-audit-logger]
+      [wrap-user-details
+       m/wrap-require-service-user
+       wrap-hoks
+       wrap-audit-logger]
 
-      (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
+      (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" [:as request]
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
         :path-params [opiskeluoikeus-oid :- s/Str]
         :return (rest/response hoks-schema/HOKS)
@@ -345,7 +356,9 @@
           (if hoks
             (do
               (m/check-hoks-access! hoks request)
-              (rest/rest-ok hoks))
+              (assoc (rest/rest-ok hoks)
+                     :audit-data {:target {:hoks-id (:id hoks)
+                                           :oppija-oid (:oppija-oid hoks)}}))
             (do
               (log/warn "No HOKS found with given opiskeluoikeus "
                         opiskeluoikeus-oid)
@@ -386,9 +399,12 @@
           (when (not-empty failed-ids)
             (log/info "Failed ids for paged call:" failed-ids
                       "params" {:from-id from-id :amount amount}))
-          (rest/rest-ok {:last-id (or last-id from-id)
-                         :failed-ids (sort failed-ids)
-                         :result result-after-validation})))
+          (assoc (rest/rest-ok {:last-id (or last-id from-id)
+                                :failed-ids (sort failed-ids)
+                                :result result-after-validation})
+                 :audit-data {:target {:from-id from-id
+                                       :last-id last-id
+                                       :amount amount}})))
 
       (route-middleware
         [m/wrap-require-oph-privileges]
@@ -398,23 +414,28 @@
           :path-params [oht-id :- s/Int]
           :return (rest/response hoks-schema/OsaamisenHankkimistapa)
           (let [oht (ha/get-osaamisen-hankkimistapa-by-id oht-id)]
-            (if oht
-              (rest/rest-ok oht)
-              (do
-                (log/warn "No osaamisen hankkimistapa found with ID: " oht-id)
-                (response/not-found
-                  {:error "No osaamisen hankkimistapa found with given ID"})))))
+            (assoc
+              (if oht
+                (rest/rest-ok oht)
+                (do
+                  (log/warn "No osaamisen hankkimistapa found with ID: " oht-id)
+                  (response/not-found
+                    {:error "No osaamisen hankkimistapa found with given ID"})))
+              :audit-data {:target {:oht-id oht-id}})))
 
         (c-api/PATCH "/kyselylinkki" request
           :summary "Lisää lähetystietoja kyselylinkille"
           :body [data hoks-schema/kyselylinkki-lahetys]
           (if-let [old-data (select-kyselylinkki (:kyselylinkki data))]
-            (do (h/update-kyselylinkki! data)
-                (assoc (response/no-content)
-                       :audit-data
-                       {:old old-data
-                        :new (select-kyselylinkki (:kyselylinkki data))}))
-
+            (let [hoks (db-hoks/select-hoks-by-id (:hoks-id old-data))]
+              (h/update-kyselylinkki! data)
+              (assoc (response/no-content)
+                    :audit-data
+                    {:target {:hoks-id (:id hoks)
+                              :oppija-oid (:oppija-oid hoks)
+                              :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)}
+                      :old old-data
+                      :new (select-kyselylinkki (:kyselylinkki data))}))
             (response/not-found
               {:error "No kyselylinkki found"}))))
 
@@ -426,14 +447,13 @@
         (post-hoks! hoks request))
 
       (c-api/GET "/:hoks-id" request
-        :middleware [wrap-hoks m/wrap-hoks-access]
+        :middleware [m/wrap-hoks-access]
         :summary "Palauttaa HOKSin"
         :return (rest/response hoks-schema/HOKS)
         (rest/rest-ok (h/get-hoks-values (:hoks request))))
 
       (c-api/context "/:hoks-id" []
-        (route-middleware
-          [wrap-hoks m/wrap-hoks-access wrap-opiskeluoikeus]
+        (route-middleware [m/wrap-hoks-access wrap-opiskeluoikeus]
 
           (c-api/PATCH "/" request
             :summary

@@ -7,7 +7,8 @@
             [oph.ehoks.config :refer [config]]
             [schema.core :as s]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
-            [oph.ehoks.middleware :refer [wrap-authorize]]
+            [oph.ehoks.middleware :refer [wrap-require-user-type-and-auth]]
+            [oph.ehoks.user :as user]
             [oph.ehoks.oppija.settings-handler :as settings-handler]
             [clojure.tools.logging :as log]
             [oph.ehoks.external.cas :as cas]
@@ -99,12 +100,12 @@
       (assoc-in (response/ok) [:headers "Allow"] "OPTIONS, GET, DELETE"))
 
     (route-middleware
-      [wrap-authorize]
+      [(wrap-require-user-type-and-auth ::user/oppija)]
       (c-api/GET "/user-info" [:as request]
         :summary "Palauttaa istunnon käyttäjän tiedot"
         :header-params [caller-id :- s/Str]
         :return (rest/response [schema/UserInfo])
-        (let [session-user (get-in request [:session :user])
+        (let [session-user    (user/get request ::user/oppija)
               using-valtuudet (:usingValtuudet session-user)]
           (if-not using-valtuudet
             (let [user-info-response (onr/find-student-by-oid
