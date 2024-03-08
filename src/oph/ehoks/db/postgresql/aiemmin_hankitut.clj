@@ -238,12 +238,12 @@
 (defn delete-aiemmin-hankitun-ammat-tutkinnon-osan-naytto-by-id!
   "Poista aiemmin hankitun ammatillisen tutkinnon osan näyttö"
   ([id]
-    (db-ops/shallow-delete!
+    (db-ops/soft-delete!
       :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
       ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ? AND deleted_at IS NULL"
        id]))
   ([id db-conn]
-    (db-ops/shallow-delete!
+    (db-ops/soft-delete!
       :aiemmin_hankitun_ammat_tutkinnon_osan_naytto
       ["aiemmin_hankittu_ammat_tutkinnon_osa_id = ? AND deleted_at IS NULL" id]
       db-conn)))
@@ -251,11 +251,11 @@
 (defn delete-todennettu-arviointi-arvioijat-by-tta-id!
   "Poista todennetun arvioinnin arvioija"
   ([id]
-    (db-ops/shallow-delete!
+    (db-ops/soft-delete!
       :todennettu_arviointi_arvioijat
       ["todennettu_arviointi_lisatiedot_id = ? AND deleted_at IS NULL" id]))
   ([id db-conn]
-    (db-ops/shallow-delete!
+    (db-ops/soft-delete!
       :todennettu_arviointi_arvioijat
       ["todennettu_arviointi_lisatiedot_id = ? AND deleted_at IS NULL" id]
       db-conn)))
@@ -276,13 +276,13 @@
 (defn delete-aiemmin-hankitun-paikallisen-tutkinnon-osan-naytto-by-id!
   "Poista aiemmin hankitun paikallisen tutkinnon osan näyttö"
   ([id]
-    (db-ops/shallow-delete!
+    (db-ops/soft-delete!
       :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
       [(str "aiemmin_hankittu_paikallinen_tutkinnon_osa_id = ? "
             "AND deleted_at IS NULL")
        id]))
   ([id db-conn]
-    (db-ops/shallow-delete!
+    (db-ops/soft-delete!
       :aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto
       [(str "aiemmin_hankittu_paikallinen_tutkinnon_osa_id = ? "
             "AND deleted_at IS NULL")
@@ -311,12 +311,12 @@
 (defn delete-aiemmin-hankitun-yhteisen-tutkinnon-osan-naytto-by-id!
   "Poista aiemmin hankitun yhteisen tutkinnon osan näyttö"
   ([id]
-    (db-ops/shallow-delete!
+    (db-ops/soft-delete!
       :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
       ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ? AND deleted_at IS NULL"
        id]))
   ([id db-conn]
-    (db-ops/shallow-delete!
+    (db-ops/soft-delete!
       :aiemmin_hankitun_yhteisen_tutkinnon_osan_naytto
       ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ? AND deleted_at IS NULL"
        id]
@@ -325,12 +325,12 @@
 (defn delete-aiemmin-hankitut-yto-osa-alueet-by-id!
   "Poista aiemmin hankitun yhteisen tutkinnon osan osa-alue"
   ([id]
-    (db-ops/shallow-delete!
+    (db-ops/soft-delete!
       :aiemmin_hankitut_yto_osa_alueet
       ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ? AND deleted_at IS NULL"
        id]))
   ([id db-conn]
-    (db-ops/shallow-delete!
+    (db-ops/soft-delete!
       :aiemmin_hankitut_yto_osa_alueet
       ["aiemmin_hankittu_yhteinen_tutkinnon_osa_id = ? AND deleted_at IS NULL"
        id]
@@ -365,20 +365,20 @@
 (defn delete-aiemmin-hankitut-ammatilliset-tutkinnon-osat-by-hoks-id
   "Poista aiemmin hankitut ammatilliset tutkinnon osat"
   [hoks-id db-conn]
-  (db-ops/shallow-delete!
+  (db-ops/soft-delete!
     :aiemmin_hankitut_ammat_tutkinnon_osat
     ["hoks_id = ? AND deleted_at IS NULL" hoks-id] db-conn))
 
 (defn delete-aiemmin-hankitut-paikalliset-tutkinnon-osat-by-hoks-id
   "Poista aiemmin hankitut paikalliset tutkinnon osat"
   [hoks-id db-conn]
-  (db-ops/shallow-delete!
+  (db-ops/soft-delete!
     :aiemmin_hankitut_paikalliset_tutkinnon_osat
     ["hoks_id = ? AND deleted_at IS NULL" hoks-id] db-conn))
 
 (defn delete-aiemmin-hankitut-yhteiset-tutkinnon-osat-by-hoks-id
   "Poista aiemmin hankitut yhteiset tutkinnon osat"
   [hoks-id db-conn]
-  (db-ops/shallow-delete!
+  (db-ops/soft-delete!
     :aiemmin_hankitut_yhteiset_tutkinnon_osat
     ["hoks_id = ? AND deleted_at IS NULL" hoks-id] db-conn))

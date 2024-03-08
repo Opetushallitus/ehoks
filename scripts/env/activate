@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+deactivate () {
+  if [ -n "${_OLD_PS1:-}" ] ; then
+      PS1="${_OLD_PS1:-}"
+      export PS1
+      unset _OLD_PS1
+  fi
+
+  unset OPH_CURRENT_ENV OPH_VIRKAILIJA_DOMAIN OPH_AWS_REGION \
+        OPH_AWS_PROFILE OPH_CAS_USERNAME OPH_CAS_PASSWORD \
+        OPH_CALLER_ID deactivate
+}
+
+printf "Which environment (prod/dev)? "
+read -r env
+
+if [ "$env" != prod ] && [ "$env" != dev ] ; then
+  echo "Not a valid environment: $env"
+  return 1
+fi
+
+echo "Please provide your CAS credentials."
+read -rp "Username: "  OPH_CAS_USERNAME
+read -rsp "Password: " OPH_CAS_PASSWORD
+echo
+
+export OPH_CAS_USERNAME
+export OPH_CAS_PASSWORD
+export OPH_CALLER_ID=$OPH_CAS_USERNAME
+
+case $env in
+  prod) export OPH_VIRKAILIJA_DOMAIN=https://virkailija.opintopolku.fi ;;
+  dev)  export OPH_VIRKAILIJA_DOMAIN=https://virkailija.testiopintopolku.fi ;;
+  *)    return 1
+esac
+
+echo -n "Fetching CAS Ticket Granting Ticket (TGT)... "
+export OPH_CAS_TGT=$(scripts/cas/get-tgt 2>&1)
+
+if [[ $OPH_CAS_TGT =~ ^TGT-.* ]] ; then
+  echo "Success."
+else
+  echo "Failed."
+  echo "$OPH_CAS_TGT" >&2
+  deactivate
+  return 1
+fi
+
+scripts/cas/refresh-session-cookie || { deactivate; return 1; }
+
+export OPH_CURRENT_ENV="$env"
+export OPH_AWS_PROFILE="oph-$env"
+export OPH_AWS_REGION=eu-west-1
+
+_OLD_PS1="${PS1:-}"
+PS1="($env) ${PS1:-}"
+export PS1

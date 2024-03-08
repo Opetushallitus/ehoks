@@ -2,33 +2,44 @@
   (:require [clojure.tools.logging :as log]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
-            [oph.ehoks.hoks.common :as c]))
+            [oph.ehoks.hoks.common :as c])
+  (:import [clojure.lang ExceptionInfo]))
+
+(defn- suoritustyyppi [suoritus] (get-in suoritus [:tyyppi :koodiarvo]))
 
 (defn- ammatillinen-suoritus?
-  "Tarkistaa, onko suorituksen tyyppi ammatillinen suoritus tai osittainen
-  ammatillinen suoritus."
+  "Varmistaa, että suorituksen tyyppi on joko ammatillinen tutkinto tai
+  osittainen ammatillinen tutkinto."
   [suoritus]
-  (or (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkinto")
-      (= (:koodiarvo (:tyyppi suoritus)) "ammatillinentutkintoosittainen")))
+  (some? (#{"ammatillinentutkinto" "ammatillinentutkintoosittainen"}
+           (suoritustyyppi suoritus))))
 
-(defn- get-suoritus
-  "Hakee opiskeluoikeudesta ensimmäisen suorituksen, jonka tyyppi on
-  ammatillinen suoritus tai osittainen ammatillinen suoritus."
-  [opiskeluoikeus]
-  (some #(when (ammatillinen-suoritus? %) %) (:suoritukset opiskeluoikeus)))
+(def ^:private suoritustyyppi->kyselytyyppi
+  {"ammatillinentutkinto"           "tutkinnon_suorittaneet"
+   "ammatillinentutkintoosittainen" "tutkinnon_osia_suorittaneet"})
 
-(defn- get-kysely-type
-  "Muuttaa opiskeluoikeuden suorituksen tyypin sellaiseksi, minkä herätepalvelu
-  voi hyväksyä."
+(defn- telma-suoritus?
+  "Tarkistaa, onko suorituksen tyyppi TELMA (työhön ja elämään valmentava)."
+  [suoritus]
+  (some? (#{"telma", "telmakoulutuksenosa"} (suoritustyyppi suoritus))))
+
+(defn- first-ammatillinen-suoritus
+  "Hakee opiskeluoikeudesta ensimmäisen ammatillisen suorituksen (tyyppi
+  ammatillinen suoritus tai osittainen ammatillinen suoritus). Nostaa
+  poikkeuksen, jos yhtään ammatillista suoritusta ei löydy."
   [opiskeluoikeus]
-  (let [tyyppi (get-in
-                 (get-suoritus opiskeluoikeus)
-                 [:tyyppi :koodiarvo])]
-    (cond
-      (= tyyppi "ammatillinentutkinto")
-      "tutkinnon_suorittaneet"
-      (= tyyppi "ammatillinentutkintoosittainen")
-      "tutkinnon_osia_suorittaneet")))
+  (or (some #(when (ammatillinen-suoritus? %) %) (:suoritukset opiskeluoikeus))
+      (throw (ex-info "No ammatillinen suoritus in opiskeluoikeus."
+                      {:type :no-ammatillinen-suoritus}))))
+
+(defn kuuluu-palautteen-kohderyhmaan?
+  "Kuuluuko opiskeluoikeus palautteen kohderyhmään?  Tällä hetkellä
+  vain katsoo, onko kyseessä TELMA-opiskeluoikeus, joka ei ole tutkintoon
+  tähtäävä koulutus (ks. OY-4433).  Muita mahdollisia kriteereitä
+  ovat tulevaisuudessa koulutuksen rahoitus ja muut kriteerit, joista
+  voidaan katsoa, onko koulutus tutkintoon tähtäävä."
+  [opiskeluoikeus]
+  (every? (complement telma-suoritus?) (:suoritukset opiskeluoikeus)))
 
 (defn- added?
   [key* current-hoks updated-hoks]
@@ -86,7 +97,8 @@
   `true` if kysely was successfully sent."
   [kysely hoks]
   {:pre [(#{:aloituskysely :paattokysely} kysely)
-         (:id hoks)]}
+         (:id hoks)
+         (:opiskeluoikeus-oid hoks)]}
   (try
     (case kysely
       :aloituskysely
@@ -94,25 +106,23 @@
       ; In the case of päättökysely, `opiskeluoikeus` is fetched from Koski in
       ; order to determine, if the kyselytyyppi is `tutkinnon_suorittaneet` or
       ; `tutkinnon_osia_suorittaneet`."
-      :paattokysely
-      (or (some->> (:opiskeluoikeus-oid hoks)
-                   k/get-opiskeluoikeus-info
-                   get-kysely-type
-                   (sqs/build-hoks-osaaminen-saavutettu-msg hoks)
-                   sqs/send-amis-palaute-message)
-          (log/warnf (str "Not sending paattokysely for HOKS `%s`. Couldn't "
-                          "get opiskeluoikeus `%s` from Koski.`")
-                     (:id hoks)
-                     (:opiskeluoikeus-oid hoks))))
-    (catch Exception e
-      (log/warn e)
-      (log/warnf (str "Error in sending %s for HOKS `%s`. "
-                      "osaamisen-saavuttamisen-pvm %s."
-                      "opiskeluoikeus-oid %s.")
-                 (name kysely)
-                 (:id hoks)
-                 (:osaamisen-saavuttamisen-pvm hoks)
-                 (:opiskeluoikeus-oid hoks)))))
+      :paattokysely (->> (:opiskeluoikeus-oid hoks)
+                         k/get-opiskeluoikeus
+                         first-ammatillinen-suoritus
+                         suoritustyyppi
+                         suoritustyyppi->kyselytyyppi
+                         (sqs/build-hoks-osaaminen-saavutettu-msg hoks)
+                         sqs/send-amis-palaute-message))
+    (catch ExceptionInfo e
+      (log/logf (case (:type (ex-data e))
+                  :could-not-get-opiskeluoikeus :warn
+                  :no-ammatillinen-suoritus :info
+                  :error)
+                "Not sending %s for HOKS `%s` - %s %s"
+                (name kysely)
+                (:id hoks)
+                (.getMessage e)
+                (ex-data e)))))
 
 (defn send-if-needed!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or

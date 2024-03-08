@@ -8,6 +8,7 @@
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.opiskelijapalaute :as op]
+            [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.restful :as restful]
             [ring.util.http-response :as response]
             [schema.core :as s])
@@ -92,7 +93,7 @@
             säännön kautta."
         :header-params [caller-id :- s/Str]
         :query-params [oid :- s/Str]
-        (hp/handle-onrmodified oid)
+        (oi/handle-onrmodified oid)
         ; TODO refaktoroi onr-käsittelyä auditlokitusystävällisemmäksi (OY-4523)
         (response/no-content))
 

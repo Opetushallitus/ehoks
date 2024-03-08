@@ -20,4 +20,6 @@ TODO: PR:iin liittyvä Jira-tiketti (tunniste ja linkki)
     - Jos muutoksilla voi jotain rikkoessaan olla kauaskantoiset vaikutukset, kannattaa muutokset hyväksyttää useammalla katselmoijalla
   - [ ] Katselmoijien esittämät muutosehdotukset on huomioitu
   - [ ] Muutokset on testattu QA-ympäristössä
+    - [ ] Testausohje kirjoitettu
+    - [ ] Testaus delegoitu OPH:lle mikäli mahdollista
   - [ ] Yli jääneet kehityskohteet on tiketöity

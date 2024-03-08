@@ -14,8 +14,8 @@
 (deftest prevent-creating-hoks-with-existing-opiskeluoikeus
   (testing "Prevent POST HOKS with existing opiskeluoikeus"
     (let [app (hoks-utils/create-app nil)
-          hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
+          hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
       (hoks-utils/mock-st-post app base-url hoks-data)
@@ -30,16 +30,16 @@
   (testing (str "Prevent creation and show correct error message when "
                 "shallow-deleted HOKS with same opiskeluoikeus is found")
     (let [app (hoks-utils/create-app nil)
-          hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
+          hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}
-          new-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                         :oppija-oid "1.2.246.562.24.12312312313"
+          new-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                         :oppija-oid "1.2.246.562.24.12312312322"
                          :ensikertainen-hyvaksyminen "2018-12-15"
                          :osaamisen-hankkimisen-tarve false}]
       (hoks-utils/mock-st-post app base-url hoks-data)
-      (db-hoks/shallow-delete-hoks-by-hoks-id 1)
+      (db-hoks/soft-delete-hoks-by-hoks-id 1)
       (let [post-response (hoks-utils/mock-st-post app base-url new-hoks-data)]
         (is (= (:status post-response) 400))
         (is (= (utils/parse-body (:body post-response))
@@ -50,8 +50,8 @@
 
 (deftest prevent-creating-hoks-with-non-existing-oppija
   (testing "Prevent POST HOKS with non-existing oppija"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.40404040404"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.40404040406"
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
       (let [response
@@ -64,8 +64,8 @@
 
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
-                     :oppija-oid "1.2.246.562.24.12312312312"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.20000000008"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
       (let [response
@@ -75,8 +75,8 @@
 
 (deftest prevent-getting-unauthorized-hoks
   (testing "Prevent GET unauthorized HOKS"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000002"
-                     :oppija-oid "1.2.246.562.24.12312312312"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.20000000008"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :ensikertainen-hyvaksyminen "2018-12-15"
                      :osaamisen-hankkimisen-tarve false}]
 
@@ -85,7 +85,7 @@
               (hoks-utils/create-app nil)
               (-> (mock/request :post base-url)
                   (mock/json-body hoks-data))
-              "1.2.246.562.24.47861388608")
+              "1.2.246.562.10.47861388602")
             body (utils/parse-body (:body response))]
         (is (= (:status
                  (hoks-utils/mock-st-get (hoks-utils/create-app nil)
@@ -99,8 +99,8 @@
             (hoks-utils/mock-st-post
               app
               base-url
-              {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-               :oppija-oid "1.2.246.562.24.12312312312"
+              {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+               :oppija-oid "1.2.246.562.24.12312312319"
                :ensikertainen-hyvaksyminen "2018-12-15"
                :osaamisen-hankkimisen-tarve false})
             body (utils/parse-body (:body response))]
@@ -109,7 +109,7 @@
                    app
                    (get-in body [:data :uri])
                    {:id (get-in body [:meta :id])
-                    :opiskeluoikeus-oid "1.2.246.562.15.00000000001"})
+                    :opiskeluoikeus-oid "1.2.246.562.15.10000000009"})
                  :status)
                204)
             "Should not return bad request for updating opiskeluoikeus oid
@@ -120,7 +120,7 @@
                    app
                    (get-in body [:data :uri])
                    {:id (get-in body [:meta :id])
-                    :oppija-oid "1.2.246.562.24.12312312312"})
+                    :oppija-oid "1.2.246.562.24.12312312319"})
                  :status)
                204)
             "Should not return bad request for updating oppija oid if the
@@ -132,10 +132,10 @@
                              (get-in body [:data :uri]))
                            :body))]
           (is (= (get-in get-body [:data :opiskeluoikeus-oid])
-                 "1.2.246.562.15.00000000001")
+                 "1.2.246.562.15.10000000009")
               "Opiskeluoikeus oid should be unchanged")
           (is (= (get-in get-body [:data :oppija-oid])
-                 "1.2.246.562.24.12312312312")
+                 "1.2.246.562.24.12312312319")
               "Oppija oid should be unchanged"))))))
 
 (deftest prevent-oppija-oid-patch
@@ -145,8 +145,8 @@
             (hoks-utils/mock-st-post
               app
               base-url
-              {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-               :oppija-oid "1.2.246.562.24.12312312312"
+              {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+               :oppija-oid "1.2.246.562.24.12312312319"
                :ensikertainen-hyvaksyminen "2018-12-15"
                :osaamisen-hankkimisen-tarve false})
             body (utils/parse-body (:body response))]
@@ -155,7 +155,7 @@
                    app
                    (get-in body [:data :uri])
                    {:id (get-in body [:meta :id])
-                    :oppija-oid "1.2.246.562.24.12312312313"})
+                    :oppija-oid "1.2.246.562.24.12312312322"})
                  :status)
                400)
             "Should return bad request for updating oppija oid if the
@@ -167,7 +167,7 @@
                              (get-in body [:data :uri]))
                            :body))]
           (is (= (get-in get-body [:data :oppija-oid])
-                 "1.2.246.562.24.12312312312")
+                 "1.2.246.562.24.12312312319")
               "Oppija oid should be unchanged"))))))
 
 (deftest prevent-opiskeluoikeus-patch
@@ -177,8 +177,8 @@
             (hoks-utils/mock-st-post
               app
               base-url
-              {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-               :oppija-oid "1.2.246.562.24.12312312312"
+              {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+               :oppija-oid "1.2.246.562.24.12312312319"
                :ensikertainen-hyvaksyminen "2018-12-15"
                :osaamisen-hankkimisen-tarve false})
             body (utils/parse-body (:body response))]
@@ -187,7 +187,7 @@
                    app
                    (get-in body [:data :uri])
                    {:id (get-in body [:meta :id])
-                    :opiskeluoikeus-oid "1.2.246.562.15.00000000002"})
+                    :opiskeluoikeus-oid "1.2.246.562.15.20000000008"})
                  :status)
                400)
             "Should return bad request for updating opiskeluoikeus oid
@@ -199,7 +199,7 @@
                              (get-in body [:data :uri]))
                            :body))]
           (is (= (get-in get-body [:data :opiskeluoikeus-oid])
-                 "1.2.246.562.15.00000000001")
+                 "1.2.246.562.15.10000000009")
               "Opiskeluoikeus oid should be unchanged"))))))
 
 (deftest prevent-updating-opiskeluoikeus
@@ -216,7 +216,7 @@
                              (assoc :id 1)
                              (dissoc :opiskeluoikeus-oid :oppija-oid)
                              (assoc :opiskeluoikeus-oid
-                                    "1.2.246.562.15.00000000002"))
+                                    "1.2.246.562.15.20000000008"))
                          app)]
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 400))
@@ -237,7 +237,7 @@
                              (assoc :id 1)
                              (dissoc :opiskeluoikeus-oid :oppija-oid)
                              (assoc :oppija-oid
-                                    "1.2.246.562.24.12312312313"))
+                                    "1.2.246.562.24.12312312322"))
                          app)]
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 400))
@@ -264,13 +264,13 @@
           invalid-data-3
           (assoc test-data/hoks-data
                  :opiskeluoikeus-oid
-                 "1.2.246.562.15.00000000004")
+                 "1.2.246.562.15.40000000006")
           invalid-post-response-3
           (hoks-utils/create-mock-post-request "" invalid-data-3 app)
           invalid-data-4
           (assoc test-data/hoks-data
                  :opiskeluoikeus-oid
-                 "1.2.246.562.15.00000000005")
+                 "1.2.246.562.15.50000000005")
           invalid-post-response-4
           (hoks-utils/create-mock-post-request "" invalid-data-4 app)]
       (is (= (:status invalid-post-response-1) 400))
@@ -285,12 +285,10 @@
               (->> (re-find #"5 vuoden pituiseksi"))))
       (is (= (:status invalid-post-response-3) 400))
       (is (= (:status invalid-post-response-4) 400))
-      (is (-> (utils/parse-body (:body invalid-post-response-3))
-              :error
-              (->> (re-find #"ajallisesti opiskeluoikeuden"))))
-      (is (-> (utils/parse-body (:body invalid-post-response-4))
-              :error
-              (->> (re-find #"ajallisesti opiskeluoikeuden")))))))
+      (is (re-find #"Korjaa alkupäivä"
+                   (slurp (:body invalid-post-response-3))))
+      (is (re-find #"Korjaa loppupäivä"
+                   (slurp (:body invalid-post-response-4)))))))
 
 (deftest require-yksiloiva-tunniste-in-oht
   (testing "Osaamisen hankkimistavassa pitää olla yksilöivä tunniste."

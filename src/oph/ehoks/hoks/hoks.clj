@@ -187,61 +187,6 @@
     hoks
     (rename-keys hoks {:deleted-at :poistettu})))
 
-(defn- validate-tuva-hoks-type
-  [hoks]
-  (when-let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
-    (when-let [opiskeluoikeus (k/get-opiskeluoikeus-info opiskeluoikeus-oid)]
-      (let [tyyppi (get-in opiskeluoikeus [:tyyppi :koodiarvo])
-            tuva? (= (keyword tyyppi) :tuva)]
-        (when (or (and (not tuva?)
-                       (seq (:hankittavat-koulutuksen-osat hoks)))
-                  (and tuva?
-                       (or (:tuva-opiskeluoikeus-oid hoks)
-                           (not (every?
-                                  (comp empty? hoks)
-                                  [:aiemmin-hankitut-ammat-tutkinnon-osat
-                                   :aiemmin-hankitut-yhteiset-tutkinnon-osat
-                                   :aiemmin-hankitut-paikalliset-tutkinnon-osat
-                                   :opiskeluvalmiuksia-tukevat-opinnot
-                                   :hankittavat-ammat-tutkinnon-osat
-                                   :hankittavat-yhteiset-tutkinnon-osat
-                                   :hankittavat-paikalliset-tutkinnon-osat])))))
-          (throw (ex-info
-                   (str "HOKSin rakenteen tulee vastata siihen liitetyn "
-                        "opiskeluoikeuden tyyppiä (" tyyppi ").")
-                   {:error :disallowed-update})))))))
-
-(defn get-osaamisen-hankkimistavat
-  "Hakee kaikki osaamisen hankkimistavat HOKSista."
-  [hoks]
-  (concat
-    (mapcat
-      :osaamisen-hankkimistavat
-      (:hankittavat-ammat-tutkinnon-osat hoks))
-    (mapcat
-      :osaamisen-hankkimistavat
-      (:hankittavat-paikalliset-tutkinnon-osat hoks))
-    (mapcat :osaamisen-hankkimistavat
-            (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))))
-
-(defn validate-hoks-osaamisen-hankkimistavat-with-opiskeluoikeus!
-  "Tarkistaa, että HOKSissa olevat osaamisen hankkimistavat eivät
-  ala ennen opiskeluoikeuden alkua eivätkä pääty opiskeluoikeuden
-  suunnitellun loppumisajan jälkeen."
-  [hoks]
-  (let [oo (k/get-opiskeluoikeus-info (:opiskeluoikeus-oid hoks))
-        oo-alku (some-> (:alkamispäivä oo) (LocalDate/parse))
-        oo-loppu (some-> (:arvioituPäättymispäivä oo) (LocalDate/parse))]
-    (if-not oo-alku
-      (log/error "Opiskeluoikeus ei sisällä alkamispäivää:" oo)
-      (doseq [oht (get-osaamisen-hankkimistavat hoks)]
-        (when (or (.isBefore (:alku oht) oo-alku)
-                  (and oo-loppu (.isAfter (:loppu oht) oo-loppu)))
-          (throw (ex-info (str "Osaamisen hankkimistapa on ajallisesti "
-                               "opiskeluoikeuden (" oo-alku "-" oo-loppu ") "
-                               "ulkopuolella: " oht)
-                          {:error :disallowed-update})))))))
-
 (defn- save-hoks-parts!
   "Tallentaa HOKSin osat tietokantaan."
   [hoks conn]
@@ -318,8 +263,6 @@
       (throw (ex-info (format "Opiskeluoikeus %s is no longer active"
                               (:opiskeluoikeus-oid hoks))
                       {:error :disallowed-update})))
-    (validate-tuva-hoks-type hoks)
-    (validate-hoks-osaamisen-hankkimistavat-with-opiskeluoikeus! hoks)
     (save-hoks! hoks)))
 
 (defn- merge-not-given-hoks-values
@@ -427,50 +370,22 @@
 (defn- should-check-hankkimistapa-y-tunnus?
   "Tarkistaa, loppuuko osaamisen hankkimistapa käyttöönottopäivämäärän jälkeen."
   [oh]
-  (.isAfter (:loppu oh) (LocalDate/of 2021 8 25)))
+  (.isAfter ^LocalDate (:loppu oh) (LocalDate/of 2021 8 25)))
+
+(defn tyopaikkajakso?
+  "Onko osaamisen hankkimistapa työpaikkajakso?"
+  [oht]
+  (#{"osaamisenhankkimistapa_koulutussopimus"
+     "osaamisenhankkimistapa_oppisopimus"}
+    (:osaamisen-hankkimistapa-koodi-uri oht)))
 
 (defn y-tunnus-missing?
   "Puuttuuko Y-tunnus osaamisen hankkimistavasta, vaikka pitäisi olla?"
   [oh]
-  (and (-> (:osaamisen-hankkimistapa-koodi-uri oh)
-           #{"osaamisenhankkimistapa_koulutussopimus"
-             "osaamisenhankkimistapa_oppisopimus"})
+  (and (tyopaikkajakso? oh)
        (should-check-hankkimistapa-y-tunnus? oh)
        (:tyopaikalla-jarjestettava-koulutus oh)
        (-> oh :tyopaikalla-jarjestettava-koulutus :tyopaikan-y-tunnus nil?)))
-
-(defn- osa-aikaisuustieto-missing?
-  [oh]
-  (let [validation-start-date (LocalDate/parse "2022-06-30")
-        osa-aikaisuustieto (:osa-aikaisuustieto oh)
-        hankkimistapa (:osaamisen-hankkimistapa-koodi-uri oh)]
-    (and (.isAfter (:loppu oh) validation-start-date)
-         (or (= hankkimistapa "osaamisenhankkimistapa_koulutussopimus")
-             (= hankkimistapa "osaamisenhankkimistapa_oppisopimus"))
-         (or (nil? osa-aikaisuustieto)
-             (> osa-aikaisuustieto 100)
-             (< osa-aikaisuustieto 1)))))
-
-(defn check-for-osa-aikaisuustieto
-  "Tarkistaa, onko osa-aikaisuustieto merkitty työpaikkajaksoille, ja palauttaa
-  listan ilmoituksia niistä jaksoista, joista osa-aikaisuus puuttuu."
-  [hoks]
-  (let [hankkimistavat (get-osaamisen-hankkimistavat hoks)
-        hankkimistavat-missing-osa-aikaisuus (filter osa-aikaisuustieto-missing?
-                                                     hankkimistavat)]
-    (when (some? (seq hankkimistavat-missing-osa-aikaisuus))
-      (map
-        #(let [tyopaikan-nimi (get-in % [:tyopaikalla-jarjestettava-koulutus
-                                         :tyopaikan-nimi])
-               oppija-oid (:oppija-oid hoks)
-               oppija (oppijaindex/get-oppija-by-oid oppija-oid)]
-           (str "Data saved successfully, but osa-aikaisuustieto is "
-                "missing or has invalid value in työpaikkajakso: "
-                "työpaikkajakson yksilöivä tunniste " (:yksiloiva-tunniste %)
-                ", työpaikan nimi " tyopaikan-nimi
-                ", työpaikkajakson aikajakso " (:alku %) " - " (:loppu %)
-                ", opiskelijan nimi " (or (:nimi oppija) oppija-oid)))
-        hankkimistavat-missing-osa-aikaisuus))))
 
 (defn check-hoks-for-update!
   "Tarkistaa, saako HOKSin päivittää uusilla arvoilla."
@@ -484,10 +399,6 @@
       (throw (ex-info (format "Opiskeluoikeus %s is no longer active"
                               new-opiskeluoikeus-oid)
                       {:error :disallowed-update})))
-    (validate-tuva-hoks-type
-      (merge new-hoks {:opiskeluoikeus-oid old-opiskeluoikeus-oid}))
-    (validate-hoks-osaamisen-hankkimistavat-with-opiskeluoikeus!
-      (merge old-hoks new-hoks))
     (when (and (some? new-opiskeluoikeus-oid)
                (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
       (throw (ex-info "Opiskeluoikeus update not allowed!"

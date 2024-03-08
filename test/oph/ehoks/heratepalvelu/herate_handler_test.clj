@@ -1,8 +1,6 @@
 (ns oph.ehoks.heratepalvelu.herate-handler-test
   (:require [clj-time.core :as t]
             [clojure.test :refer [deftest testing is use-fixtures]]
-            [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.external.koski :as k]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.utils :as utils]
             [ring.mock.request :as mock]))
@@ -14,8 +12,8 @@
 
 (deftest get-kasittelemattomat-heratteet
   (testing "GET /heratepalvelu/kasittelemattomat-heratteet"
-    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                     :oppija-oid "1.2.246.562.24.12312312312"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                     :oppija-oid "1.2.246.562.24.12312312319"
                      :osaamisen-hankkimisen-tarve true
                      :ensikertainen-hyvaksyminen (str (t/today))
                      :osaamisen-saavuttamisen-pvm (str (t/today))

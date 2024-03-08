@@ -2,7 +2,7 @@
   (:require [oph.ehoks.config :refer [config]])
   (:import org.flywaydb.core.Flyway))
 
-(def flyway
+(def ^Flyway flyway
   "Flyway instance"
   (when-not *compile-files*
     (-> (Flyway/configure)

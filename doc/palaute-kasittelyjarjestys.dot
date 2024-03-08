@@ -1,0 +1,33 @@
+digraph palaute {
+
+kerrantunnissa [label="Kerran \ntunnissa"]
+kerranpaivassa [label="Kerran päivässä, \nei yöaikaan"]
+kerranviikossa [label="Kerran \nviikossa"]
+kaksikrtvuodessa [label="2 kertaa \nvuodessa"]
+hoks [label="HOKSin \ntallennus"]
+koski [label="Opiskeluoikeusmuutosten \nkysely"]
+kyselyt [label="Palautekyselyiden \nmuodostus"]
+niputus
+kyselyt2 [label="Palautekyselyiden \nmuodostus (nipuille)"]
+arvo [label="Seuranta \nArvosta"]
+viestit [label="Vastauskutsujen \nlähetys"]
+muistutukset [label="Muistutusten \nlähetys"]
+viestitilat [label="Viestitilojen \npäivitys"]
+tpk [label="TPK-niputus"]
+tietojenpoisto [label="Vanhojen yhteystietojen \npoisto"]
+kyselyt3 [label="Palautekyselyiden \nmuodostus"]
+kyselyt4 [label="Palautekyselyiden \nmuodostus (TPK-nipuille)"]
+
+kerranpaivassa -> koski -> kyselyt -> arvo -> viestit -> viestitilat
+arvo -> muistutukset -> viestitilat
+kyselyt -> niputus -> kyselyt2 -> arvo [style=dotted; label="vain niputuspäivinä"]
+
+kerrantunnissa -> viestitilat
+
+kerranviikossa -> tietojenpoisto
+
+hoks -> kyselyt3
+
+kaksikrtvuodessa -> tpk -> kyselyt4
+
+}

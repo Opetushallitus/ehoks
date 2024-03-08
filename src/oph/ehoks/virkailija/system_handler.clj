@@ -89,6 +89,17 @@
             (oi/add-oppija-without-error-forwarding! (:oppija-oid data)))
           (response/no-content))))
 
+    (c-api/POST "/onrmodify" request
+      :summary "Tarkastaa päivitetyn henkilön tiedot eHoksissa
+          ja tekee tarvittaessa muutokset.
+          Huom: Opiskeluoikeudet taulun oppija-oid päivittyy on update cascade
+          säännön kautta."
+      :header-params [caller-id :- s/Str]
+      :query-params [oid :- s/Str]
+      (oi/handle-onrmodified oid)
+      ; TODO refaktoroi onr-käsittelyä auditlokitusystävällisemmäksi (OY-4523)
+      (response/no-content))
+
     (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
       :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
       :header-params [caller-id :- s/Str]
@@ -188,7 +199,7 @@
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
       :return (restful/response {})
-      (if (pos? (first (db-hoks/undo-shallow-delete hoks-id)))
+      (if (pos? (first (db-hoks/undo-soft-delete hoks-id)))
         (assoc (restful/rest-ok {})
                :audit-data {:old {:id hoks-id}
                             :new {:id hoks-id :deleted_at "*REMOVED*"}})

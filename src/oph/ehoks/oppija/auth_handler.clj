@@ -13,6 +13,7 @@
             [oph.ehoks.external.cas :as cas]
             [ring.middleware.session.store :refer [delete-session]]
             [oph.ehoks.db.db-operations.session :as db-session]
+            [clojure.set :as set]
             [clojure.string :as cstr]
             [clojure.data.xml :as xml]))
 
@@ -23,14 +24,14 @@
         user-info (:body response)]
     (-> user-info
         (select-keys [:oidHenkilo :etunimet :sukunimi :kutsumanimi])
-        (clojure.set/rename-keys {:oidHenkilo :oid
-                                  :etunimet :first-name
-                                  :sukunimi :surname
-                                  :kutsumanimi :common-name}))))
+        (set/rename-keys {:oidHenkilo :oid
+                          :etunimet :first-name
+                          :sukunimi :surname
+                          :kutsumanimi :common-name}))))
 
 (defn- respond-with-successful-authentication
   "Adds user-info and ticket to response to store them to session-store"
-  [user-info ticket domain]
+  [user-info ticket ^String domain]
   ; There propably should be localized versions of /misc/environment route
   ; return value for cas-oppija-login-url (same as logout urls). We could then
   ; redirect here to the correct hostname based on locale.

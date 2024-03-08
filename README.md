@@ -24,7 +24,6 @@ rajapintojen polut on jaettu palveluittain.
 + [Compojure-api 2](https://github.com/metosin/compojure-api/)
 + [Leiningen](https://leiningen.org/)
 + [PostgreSQL 9.5](https://www.postgresql.org/docs/9.5/static/index.html)
-+ [HugSQL](https://www.hugsql.org/)
 + [Flyway](https://flywaydb.org/)
 + [clj-http](https://github.com/dakrone/clj-http)
 + [Cheshire](https://github.com/dakrone/cheshire)
@@ -130,6 +129,12 @@ tai
 
 ``` shell
 lein with-profile +dev run ehoks-virkailija
+```
+
+tai
+
+``` shell
+lein with-profile +dev run ehoks-palaute
 ```
 
 Replissä `lein with-profiles +dev repl`:
@@ -306,10 +311,17 @@ Rajapinnan käyttö on suositeltavampi vaihtoehto koska `lein import` ohittaa
 skeemavalidoinnit ja siten sen avulla pystyy luomaan dataa jota järjestelmä ei
 oikeasti hyväksyisi.
 
+## Skriptit
+
+Repositorioon on lisätty jonkin verran selvitystyötä ja testaamista helpottavia
+skriptejä. Näiden toimintaperiaatteesta voi lukea niille osoitetusta
+[dokumentaatiosta](./doc/scripts.md).
+
 ## Swagger
 
  * [Virkailijan swagger](http://localhost:3000/ehoks-virkailija-backend/doc)
  * [Oppijan swagger](http://localhost:3000/ehoks-oppija-backend/doc)
+ * [Palautteiden swagger](http://localhost:3000/ehoks-palaute-backend/doc)
 
 ## Konfigurointi
 
