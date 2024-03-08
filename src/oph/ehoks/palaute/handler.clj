@@ -26,16 +26,16 @@
 (def app-routes
   "Palaute app routes"
   (c-api/api
-   {:swagger
-    {:ui "/ehoks-palaute-backend/doc"
-     :spec "/ehoks-palaute-backend/doc/swagger.json"
-     :data {:info {:title "eHOKS Palaute backend"
-                   :description "Palaute backend for eHOKS"}
-            :tags [{:name "api", :description ""}]}}
-    :exceptions
-    {:handlers common-api/handlers}}
+    {:swagger
+     {:ui "/ehoks-palaute-backend/doc"
+      :spec "/ehoks-palaute-backend/doc/swagger.json"
+      :data {:info {:title "eHOKS Palaute backend"
+                    :description "Palaute backend for eHOKS"}
+             :tags [{:name "api", :description ""}]}}
+     :exceptions
+     {:handlers common-api/handlers}}
 
-   routes
-   (c-api/undocumented
-     (compojure-route/not-found
-       (response/not-found {:reason "Route not found"})))))
+    routes
+    (c-api/undocumented
+      (compojure-route/not-found
+        (response/not-found {:reason "Route not found"})))))

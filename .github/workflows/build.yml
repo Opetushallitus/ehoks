@@ -51,7 +51,6 @@ jobs:
           lein test
 
       - name: Run Linter
-        if: false
         shell: bash
         run: |
           lein checkall
