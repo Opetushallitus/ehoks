@@ -1,17 +1,19 @@
 (ns oph.ehoks.oppijaindex
   (:require [clojure.core.memoize :as memo]
+            [clojure.java.jdbc :as jdbc]
             [clojure.string :as cs]
             [clojure.tools.logging :as log]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.db.queries :as queries]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.db.postgresql.common :as db]
+            [oph.ehoks.db.queries :as queries]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.oppijanumerorekisteri :as onr])
-  (:import [java.time LocalDate]))
+  (:import [java.time LocalDate]
+           [java.sql Timestamp]))
 
 (def ^:const opiskeluoikeus-refresh-interval-in-days 180)
 
@@ -194,11 +196,11 @@
 
 (defn- log-opiskeluoikeus-insert-error!
   "Log errors that occur while inserting opiskeluoikeus for oppija"
-  ([oid oppija-oid exception]
+  ([oid oppija-oid ^Exception exception]
     (log/errorf
       "Error adding opiskeluoikeus %s of oppija %s: %s"
       oid oppija-oid (.getMessage exception)))
-  ([oid oppija-oid exception skip-indexing]
+  ([oid oppija-oid ^Exception exception skip-indexing]
     (log/errorf
       "%sError adding opiskeluoikeus %s of oppija %s: %s"
       (if skip-indexing
@@ -227,7 +229,8 @@
   (let [oo (get-opiskeluoikeus-by-oid! oid :updated_at)]
     (or (empty? oo)
         (nil? (:alkamispaiva oo))
-        (.isBefore (.toLocalDate (.toLocalDateTime (:updated-at oo)))
+        (.isBefore (.toLocalDate (.toLocalDateTime
+                                   ^Timestamp (:updated-at oo)))
                    (.minusDays (LocalDate/now)
                                opiskeluoikeus-refresh-interval-in-days)))))
 
@@ -311,9 +314,9 @@
 
 (defn- log-opiskelija-insert-error!
   "Log errors that occur when inserting a student"
-  ([oid exception]
+  ([oid ^Exception exception]
     (log/errorf "Error adding oppija %s: %s" oid (.getMessage exception)))
-  ([oid exception skip-indexing]
+  ([oid ^Exception exception skip-indexing]
     (log/errorf "%sError adding oppija %s: %s"
                 (if skip-indexing
                   "Skipped indexing. "
@@ -539,3 +542,44 @@
           true
           false))
       true)))
+
+(defn update-oppija-oid-in-db!
+  "Change the OID of an oppija to a new one in all tables in the database."
+  [old-oid new-oid]
+  (log/infof (str "Changing duplicate oppija-oid %s to %s for tables "
+                  "hoksit, oppijat and opiskeluoikeudet.") old-oid new-oid)
+  (jdbc/with-db-transaction
+    [db-conn (db-ops/get-db-connection)]
+    (db-hoks/update-hoks-by-oppija-oid! old-oid {:oppija-oid new-oid} db-conn)
+    (add-oppija! new-oid)
+    (db-opiskeluoikeus/update-opiskeluoikeus-by-oppija-oid!
+      old-oid {:oppija-oid new-oid})
+    (db-ops/delete! :oppijat ["oid = ?" old-oid])))
+
+(defn handle-onrmodified
+  "Handles ONR-modified call from heratepalvelu which is triggered by
+  data change in ONR service."
+  [oid]
+  (let [onr-oppija (:body (onr/find-student-by-oid-no-cache oid))]
+    ;; Tarkistetaan, että oppijan nimi on oikein.
+    (when-let [indexed-oppija (get-oppija-by-oid oid)]
+      (let [indexed-oppija-nimi (:nimi indexed-oppija)
+            onr-oppija-nimi (format-oppija-name onr-oppija)]
+        (if (= indexed-oppija-nimi onr-oppija-nimi)
+          (log/info "Update for" oid "from ONR but name not changed")
+          (do (log/infof "Updating changed name for oppija %s" oid)
+              (update-oppija! oid true)))))
+    ;; Jos OID on henkilön pää-OID (ei duplikaatti eikä yhdistetty toiseen),
+    ;; päivitetään mahdollisesti eHOKSista vanhoilla OIDeilla löytyvät tiedot
+    ;; uudelle OIDille.
+    (if (:duplicate onr-oppija)
+      (log/warn "Update for" oid "from ONR but it's marked as duplicate:"
+                onr-oppija)
+      (let [slaves (:body (onr/get-slaves-of-master-oppija-oid oid))
+            indexed-slaves (keep #(:oid (get-oppija-by-oid %))
+                                 (map :oidHenkilo slaves))]
+        (if (empty? indexed-slaves)
+          (log/warn "Update for" oid "from ONR but no updatable oids found in"
+                    (map :oidHenkilo slaves))
+          (doseq [slave-oid indexed-slaves]
+            (update-oppija-oid-in-db! slave-oid oid)))))))

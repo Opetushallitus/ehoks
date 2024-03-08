@@ -19,7 +19,8 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
-            [oph.ehoks.middleware :refer [wrap-hoks]]
+            [oph.ehoks.middleware :refer
+             [wrap-hoks wrap-opiskeluoikeus get-current-opiskeluoikeus]]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.oppijaindex :as oi]
@@ -245,7 +246,8 @@
       (assoc (response/ok) :audit-data {:old {:tunnus tunnus}}))
     (catch ExceptionInfo e
       (if (and (= 404 (:status (ex-data e)))
-               (.contains (:body (ex-data e)) "Tunnus ei ole poistettavissa"))
+               (.contains ^String (:body (ex-data e))
+                          "Tunnus ei ole poistettavissa"))
         (response/bad-request {:error "Survey ID cannot be removed"})
         (throw e)))))
 
@@ -509,6 +511,7 @@
 
                   (c-api/context "/hoksit" []
                     (c-api/POST "/" [:as request]
+                      :middleware [wrap-opiskeluoikeus]
                       :summary (str "Luo uuden HOKSin. "
                                     "Vaatii manuaalisyöttäjän oikeudet")
                       :body [hoks (hoks-schema/generate-hoks-schema
@@ -619,7 +622,9 @@
                         :path-params [hoks-id :- s/Int]
 
                         (route-middleware
-                          [wrap-hoks m/wrap-virkailija-write-access]
+                          [wrap-hoks
+                           m/wrap-virkailija-write-access
+                           wrap-opiskeluoikeus]
 
                           (c-api/PUT "/" request
                             :summary
@@ -667,7 +672,7 @@
                                         oppilaitos-oid)
                                       :hoks_delete)
                                   (try
-                                    (db-hoks/shallow-delete-hoks-by-hoks-id
+                                    (db-hoks/soft-delete-hoks-by-hoks-id
                                       hoks-id)
                                     (when (nil? opiskeluoikeus)
                                       (db-hoks/delete-opiskeluoikeus-by-oid

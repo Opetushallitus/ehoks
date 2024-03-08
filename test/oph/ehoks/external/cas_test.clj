@@ -82,7 +82,7 @@
     (let [get-st-returns-404 (atom true)
           get-st-call-count (atom 0)]
       (client/set-post!
-        (fn [url _]
+        (fn [^String url _]
           (cond
             ; refresh ticket granting ticket
             (.endsWith url "/v1/tickets")
@@ -110,7 +110,7 @@
   (testing "Add service ticket eventually throws"
     (let [get-st-call-count (atom 0)]
       (client/set-post!
-        (fn [url _]
+        (fn [^String url _]
           (cond
             ; refresh ticket granting ticket
             (.endsWith url "/v1/tickets")

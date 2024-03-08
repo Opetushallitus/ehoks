@@ -1,12 +1,24 @@
 (ns oph.ehoks.hoks.schema
   (:require [oph.ehoks.schema.generator :as g]
-            [oph.ehoks.hoks.hoks :refer [y-tunnus-missing?]]
+            [oph.ehoks.opiskelijapalaute :refer
+             [kuuluu-palautteen-kohderyhmaan?]]
+            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.hoks.hoks :refer [y-tunnus-missing? tyopaikkajakso?]]
+            [oph.ehoks.middleware :refer [get-current-opiskeluoikeus]]
             [oph.ehoks.schema-tools :refer [describe modify]]
-            [schema.core :as s]
-            [clojure.tools.logging :as log])
+            [oph.ehoks.schema.oid :refer [OpiskeluoikeusOID
+                                          OppijaOID
+                                          OrganisaatioOID]]
+            [schema.core :as s])
   (:import (java.time LocalDate)
-           (java.util UUID)
-           (clojure.lang ExceptionInfo)))
+           (java.util UUID)))
+
+(defn- is-tuva-opiskeluoikeus?
+  "Onko opiskeluoikeus TUVA?"
+  [koulutuksenosa]
+  (-> (get-current-opiskeluoikeus)
+      (get-in [:tyyppi :koodiarvo])
+      (= "tuva")))
 
 (def TutkinnonOsaKoodiUri
   "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosat)."
@@ -40,20 +52,12 @@
   "Koulutuksen osan (TUVA) koodi-URI:n regex."
   #"^koulutuksenosattuva_\d{3}$")
 
-(def Oid
-  "OID:n regex."
-  #"^1\.2\.246\.562\.[0-3]\d\.\d+$")
-
-(def OpiskeluoikeusOid
-  "Opiskeluoikeuden OID:n regex."
-  #"^1\.2\.246\.562\.15\.\d+$")
-
 (defn- calculate-y-tunnus-checksum
   "Laskee Y-tunnuksen tarkistusnumeron tunnuksen 7 ensimmäisen numeron
   perusteella."
-  [y-tunnus]
+  [^String y-tunnus]
   (as-> (take 7 y-tunnus) n
-    (map #(Character/getNumericValue %) n)
+    (map #(Character/getNumericValue ^char %) n)
     (map * n [7 9 10 5 8 4 2])
     (reduce + n)
     (mod n 11)
@@ -65,9 +69,9 @@
 (defn- valid-y-tunnus?
   "Tarkistaa, täsmääkö Y-tunnuksen laskettu tarkistusnumero tunnuksen
   viimeiseen numeroon."
-  [y-tunnus]
+  [^String y-tunnus]
   (= (calculate-y-tunnus-checksum y-tunnus)
-     (Character/getNumericValue (last y-tunnus))))
+     (Character/getNumericValue ^char (last y-tunnus))))
 
 (s/defschema
   Y-tunnus
@@ -109,7 +113,7 @@
      :added
      (describe
        ""
-       (s/optional-key :oppilaitos-oid) Oid
+       (s/optional-key :oppilaitos-oid) OrganisaatioOID
        "Mikäli kyseessä oppilaitos, oppilaitoksen oid-tunniste
        Opintopolku-palvelussa.")}))
 
@@ -166,7 +170,7 @@
      :added
      (describe
        ""
-       :oppilaitos-oid Oid
+       :oppilaitos-oid OrganisaatioOID
        "Oppilaitoksen oid-tunniste Opintopolku-palvelussa.")}))
 
 (s/defschema
@@ -214,7 +218,8 @@
   "Varmistaa, että keskeytymisajanjaksot eivät mene päällekkäin."
   [jaksot]
   (or (<= (count jaksot) 1)
-      (reduce #(if (and (:loppu %1) (.isBefore (:loppu %1) (:alku %2)))
+      (reduce #(if (and (:loppu %1) (.isBefore ^LocalDate (:loppu %1)
+                                               ^LocalDate (:alku %2)))
                  %2
                  (reduced false))
               (sort-by :alku (seq jaksot)))))
@@ -225,12 +230,9 @@
   [oht]
   (let [osa-aikaisuustieto (:osa-aikaisuustieto oht)
         hankkimistapa (:osaamisen-hankkimistapa-koodi-uri oht)]
-    (if (and (.isAfter (:loppu oht) (LocalDate/of 2023 6 30))
-             (or
-               (= hankkimistapa
-                  "osaamisenhankkimistapa_koulutussopimus")
-               (= hankkimistapa
-                  "osaamisenhankkimistapa_oppisopimus")))
+    (if (and (.isAfter ^LocalDate (:loppu oht) (LocalDate/of 2023 6 30))
+             (tyopaikkajakso? oht)
+             (kuuluu-palautteen-kohderyhmaan? (get-current-opiskeluoikeus)))
       (and (some? osa-aikaisuustieto)
            (<= osa-aikaisuustieto 100)
            (>= osa-aikaisuustieto 1))
@@ -242,27 +244,56 @@
   [oht]
   (or (not= (:osaamisen-hankkimistapa-koodi-uri oht)
             "osaamisenhankkimistapa_oppisopimus")
-      (.isBefore (:loppu oht) (LocalDate/of 2021 7 1))
+      (.isBefore ^LocalDate (:loppu oht) (LocalDate/of 2021 7 1))
       (:oppisopimuksen-perusta-koodi-uri oht)))
 
 (defn- nonnegative-duration?
   "Osaamisen hankkimistavan päiväykset ovat oikein päin"
   [oht]
-  (not (.isBefore (:loppu oht) (:alku oht))))
+  (not (.isBefore ^LocalDate (:loppu oht) ^LocalDate (:alku oht))))
 
 (defn- tyopaikkajakso-has-yksiloiva-tunniste?
   [oht]
-  (or (-> (:osaamisen-hankkimistapa-koodi-uri oht)
-          #{"osaamisenhankkimistapa_oppisopimus"
-            "osaamisenhankkimistapa_koulutussopimus"}
-          (not))
-      (:yksiloiva-tunniste oht)))
+  (or (not (tyopaikkajakso? oht))
+      (some? (:yksiloiva-tunniste oht))))
+
+(defn- katsotaan-eronneeksi?
+  "Palauttaa true jos tila löytyy ja se ei ole valmistunut, lasna tai
+  valiaikaisestikeskeytynyt"
+  [opiskeluoikeus]
+  (let [tila (some-> opiskeluoikeus
+                     oppijaindex/get-opiskeluoikeus-tila)]
+    (and (some? tila)
+         (not (contains? #{"valmistunut" "lasna" "valiaikaisestikeskeytynyt"}
+                         tila)))))
+
+(defn- starts-after-opiskeluoikeus?
+  "Osaamisen hankkimistapa ei edellä opiskeluoikeutta"
+  [oht]
+  (let [oo (get-current-opiskeluoikeus)
+        oo-alku (some-> oo
+                        :alkamispäivä
+                        (LocalDate/parse))]
+    (or (katsotaan-eronneeksi? oo)
+        (not oo-alku)
+        (not (.isBefore ^LocalDate (:alku oht) oo-alku)))))
+
+(defn- ends-before-opiskeluoikeus?
+  "Osaamisen hankkimistapa ei jatku opiskeluoikeuden arvioidun ajan jälkeen"
+  [oht]
+  (let [oo (get-current-opiskeluoikeus)
+        oo-loppu (some-> oo
+                         :arvioituPäättymispäivä
+                         (LocalDate/parse))]
+    (or (katsotaan-eronneeksi? oo)
+        (not oo-loppu)
+        (not (.isAfter ^LocalDate (:loppu oht) oo-loppu)))))
 
 (defn- duration-max-5-years?
   "Osaamisen hankkimistapa kestää enintään 5 vuotta"
   [oht]
-  (not (.isAfter (:loppu oht)
-                 (.plusYears (:alku oht) 5))))
+  (not (.isAfter ^LocalDate (:loppu oht)
+                 (.plusYears ^LocalDate (:alku oht) 5))))
 
 (def OsaamisenHankkimistapa-template
   "Osaamisen hankkimistavan schema eri toiminnoille."
@@ -280,6 +311,12 @@
       :description "Lisää jaksoon oppisopimuksen perustan koodi-uri."}
      {:check nonnegative-duration?
       :description "Korjaa alku- ja loppupäivämäärä oikein päin."}
+     {:check starts-after-opiskeluoikeus?
+      :description (str "Korjaa alkupäivä aikaisintaan opiskeluoikeuden "
+                        "alkamispäiväksi.")}
+     {:check ends-before-opiskeluoikeus?
+      :description (str "Korjaa loppupäivä viimeistään opiskeluoikeuden "
+                        "arvioiduksi päättymispäiväksi.")}
      {:check duration-max-5-years?
       :description "Korjaa jakso enintään 5 vuoden pituiseksi."}]
     :name "OsaamisenHankkimistapa"}
@@ -361,7 +398,7 @@
   (describe
     "Näytön tai osaamisen osoittamisen järjestäjä"
     (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    (s/optional-key :oppilaitos-oid) Oid
+    (s/optional-key :oppilaitos-oid) OrganisaatioOID
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
          "koulutuksen järjestäjän oid.")))
@@ -488,7 +525,7 @@
         (dissoc :osaamisen-hankkimistavat :osaamisen-osoittaminen :osa-alueet
                 :opetus-ja-ohjaus-maara)
         (assoc :valittu-todentamisen-prosessi-koodi-uri
-               {:methods {:any prosessi-mode}
+               {:methods {:any prosessi-mode, :patch :optional}
                 :types {:any TodentamisenProsessiKoodiUri}
                 :description
                 (str "Todentamisen prosessin kuvauksen (suoraan/arvioijien "
@@ -496,7 +533,7 @@
                      "todentamisen prosessi, eli muotoa "
                      "osaamisentodentamisenprosessi_xxxx")}
                :valittu-todentamisen-prosessi-koodi-versio
-               {:methods {:any prosessi-mode}
+               {:methods {:any prosessi-mode, :patch :optional}
                 :types {:any s/Int}
                 :description
                 (str "Todentamisen prosessin kuvauksen Koodisto-koodi-URIn "
@@ -545,7 +582,7 @@
                       "Näyttö tai muu osaamisen osoittaminen")}
    :koulutuksen-jarjestaja-oid
    {:methods {:any :optional}
-    :types {:any Oid}
+    :types {:any OrganisaatioOID}
     :description
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid-numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -582,6 +619,9 @@
 
 (def HankittavaYhteinenTutkinnonOsa-template
   ^{:doc "Hankittava Yhteinen Tutkinnon osa (YTO)"
+    :constraints
+    [{:check (comp not is-tuva-opiskeluoikeus?)
+      :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
     :type ::g/schema-template
     :name "HankittavaYhteinenTutkinnonOsa"}
   {:id {:methods {:any :excluded, :patch :optional, :get :optional}
@@ -591,23 +631,23 @@
                :types {:any UUID}
                :description (str "Tietorakenteen yksilöivä tunniste "
                                  "esimerkiksi tiedon jakamista varten")}
-   :osa-alueet {:methods {:any :required}
+   :osa-alueet {:methods {:any :required, :patch :optional}
                 :types {:any [HankittavanYTOnOsaAlue-template]}
                 :description "yhteisen tutkinnon osan osa-alueet"}
    :tutkinnon-osa-koodi-uri
-   {:methods {:any :required}
+   {:methods {:any :required, :patch :optional}
     :types {:any TutkinnonOsaKoodiUri}
     :description (str "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa "
                       "(tutkinnonosat) muotoa tutkinnonosat_xxxxxx eli esim. "
                       "tutkinnonosat_100002")}
    :tutkinnon-osa-koodi-versio
-   {:methods {:any :required}
+   {:methods {:any :required, :patch :optional}
     :types {:any s/Int}
     :description (str "Tutkinnon osan Koodisto-koodi-URIn versio "
                       "ePerusteet-palvelussa (tutkinnonosat)")}
    :koulutuksen-jarjestaja-oid
    {:methods {:any :optional}
-    :types {:any Oid}
+    :types {:any OrganisaatioOID}
     :description
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -622,19 +662,43 @@
 (s/defschema HankittavaYhteinenTutkinnonOsaPatch
              (g/generate HankittavaYhteinenTutkinnonOsa-template :patch))
 
-(s/defschema
-  OpiskeluvalmiuksiaTukevatOpinnot
-  "Opiskeluvalmiuksia tukevien opintojen schema."
-  (describe
-    "Opiskeluvalmiuksia tukevat opinnot"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :nimi s/Str "Opintojen nimi"
-    :kuvaus s/Str "Opintojen kuvaus"
-    :alku LocalDate "Opintojen alkupäivämäärä muodossa YYYY-MM-DD"
-    :loppu LocalDate "Opintojen loppupäivämäärä muodossa YYYY-MM-DD"))
+(def OpiskeluvalmiuksiaTukevatOpinnot-template
+  ^{:doc "Opiskeluvalmiuksia tukevien opintojen schema."
+    :constraints
+    [{:check (comp not is-tuva-opiskeluoikeus?)
+      :description "Ota tukevat opinnot pois, koska opiskeluoikeus on TUVA."}]
+    :type ::g/schema-template
+    :name "OpiskeluvalmiuksiaTukevatOpinnot"}
+  {:id {:methods {:any :optional, :post :excluded}
+        :types {:any s/Int}
+        :description "Tunniste eHOKS-järjestelmässä"}
+   :nimi {:methods {:any :required, :patch :optional}
+          :types {:any s/Str}
+          :description "Opintojen nimi"}
+   :kuvaus {:methods {:any :required, :patch :optional}
+            :types {:any s/Str}
+            :description "Opintojen kuvaus"}
+   :alku {:methods {:any :required, :patch :optional}
+          :types {:any LocalDate}
+          :description "Opintojen alkupäivämäärä muodossa YYYY-MM-DD"}
+   :loppu {:methods {:any :required, :patch :optional}
+           :types {:any LocalDate}
+           :description "Opintojen loppupäivämäärä muodossa YYYY-MM-DD"}})
+
+(s/defschema OpiskeluvalmiuksiaTukevatOpinnot
+             (g/generate OpiskeluvalmiuksiaTukevatOpinnot-template :get))
+
+(s/defschema OpiskeluvalmiuksiaTukevatOpinnotLuontiJaMuokkaus
+             (g/generate OpiskeluvalmiuksiaTukevatOpinnot-template :post))
+
+(s/defschema OpiskeluvalmiuksiaTukevatOpinnotPatch
+             (g/generate OpiskeluvalmiuksiaTukevatOpinnot-template :patch))
 
 (def HankittavaAmmatillinenTutkinnonOsa-template
   ^{:doc "Hankittavan ammatillisen tutkinnon osan schema."
+    :constraints
+    [{:check (comp not is-tuva-opiskeluoikeus?)
+      :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
     :type ::g/schema-template
     :name "HankittavaAmmatillinenTutkinnonOsa"}
   {:id {:methods {:any :excluded, :patch :optional, :get :optional}
@@ -645,13 +709,13 @@
                :description (str "Tietorakenteen yksilöivä tunniste "
                                  "esimerkiksi tiedon jakamista varten")}
    :tutkinnon-osa-koodi-uri
-   {:methods {:any :required}
+   {:methods {:any :required, :patch :optional}
     :types {:any TutkinnonOsaKoodiUri}
     :description (str "Tutkinnon osan Koodisto-koodi-URI ePerusteet-palvelussa "
                       "(tutkinnonosat) muotoa tutkinnonosat_xxxxxx eli esim. "
                       "tutkinnonosat_100002")}
    :tutkinnon-osa-koodi-versio
-   {:methods {:any :required}
+   {:methods {:any :required, :patch :optional}
     :types {:any s/Int}
     :description (str "Tutkinnon osan Koodisto-koodi-URIn versio "
                       "ePerusteet-palvelussa (tutkinnonosat)")}
@@ -670,7 +734,7 @@
                               :description "Osaamisen hankkimistavat"}
    :koulutuksen-jarjestaja-oid
    {:methods {:any :optional}
-    :types {:any Oid}
+    :types {:any OrganisaatioOID}
     :description
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -701,6 +765,9 @@
 
 (def HankittavaPaikallinenTutkinnonOsa-template
   ^{:doc "Hankittavan paikallisen tutkinnon osan schema."
+    :constraints
+    [{:check (comp not is-tuva-opiskeluoikeus?)
+      :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
     :type ::g/schema-template
     :name "HankittavaPaikallinenTutkinnonOsa"}
   {:id {:methods {:any :excluded, :patch :optional, :get :optional}
@@ -739,7 +806,7 @@
                               :description "Osaamisen hankkimistavat"}
    :koulutuksen-jarjestaja-oid
    {:methods {:any :optional}
-    :types {:any Oid}
+    :types {:any OrganisaatioOID}
     :description
     (str "Organisaation tunniste Opintopolku-palvelussa. Oid numero, joka on "
          "kaikilla organisaatiotasoilla: toimipisteen oid, koulun oid, "
@@ -774,6 +841,9 @@
       HankittavaPaikallinenTutkinnonOsa-template
       :prosessi-required)
     {:doc "Aiemmin hankitun paikallisen tutkinnon osan schema."
+     :constraints
+     [{:check (comp not is-tuva-opiskeluoikeus?)
+       :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
      :type ::g/schema-template
      :name "AiemminHankittuPaikallinenTutkinnonOsa"}))
 
@@ -791,10 +861,13 @@
   (with-meta
     (assoc (hankittava->aiemmin-hankittu
              HankittavaYhteinenTutkinnonOsa-template)
-           :osa-alueet {:methods {:any :required}
+           :osa-alueet {:methods {:any :required, :patch :optional}
                         :types {:any [AiemminHankitunYTOnOsaAlue-template]}
                         :description "YTOn osa-alueet"})
     {:doc "Aiemmin hankitun yhteisen tutkinnon osan schema."
+     :constraints
+     [{:check (comp not is-tuva-opiskeluoikeus?)
+       :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
      :type ::g/schema-template
      :name "AiemminHankittuYhteinenTutkinnonOsa"}))
 
@@ -811,6 +884,9 @@
   (with-meta
     (hankittava->aiemmin-hankittu HankittavaAmmatillinenTutkinnonOsa-template)
     {:doc "Aiemmin hankitun ammatillisen tutkinnon osan schema."
+     :constraints
+     [{:check (comp not is-tuva-opiskeluoikeus?)
+       :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
      :type ::g/schema-template
      :name "AiemminHankittuAmmatillinenTutkinnonOsa"}))
 
@@ -829,29 +905,32 @@
 (s/defschema
   HankittavaKoulutuksenOsa
   "Hankittavan koulutuksen osan schema."
-  (describe
-    "Hankittava koulutuksen osa"
-    (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
-    :koulutuksen-osa-koodi-uri KoulutuksenOsaKoodiUri
-    "TUVA perusteen koulutuksen osan koodiuri"
-    :koulutuksen-osa-koodi-versio s/Int
-    "TUVA perusteen koulutuksen osan koodiurin versio"
-    :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
-    :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
-    :laajuus
-    (s/constrained s/Num
-                   #(not (neg? %))
-                   "Koulutuksen osan laajuus ei saa olla negatiivinen.")
-    (str "Tutkintoon valmentavan koulutuksen koulutuksen osan laajuus "
-         "TUVA-viikkoina.")))
+  (s/constrained
+    (describe
+      "Hankittava koulutuksen osa, sallittu vain TUVA-HOKSilla."
+      (s/optional-key :id) s/Int "Tunniste eHOKS-järjestelmässä"
+      :koulutuksen-osa-koodi-uri KoulutuksenOsaKoodiUri
+      "TUVA perusteen koulutuksen osan koodiuri"
+      :koulutuksen-osa-koodi-versio s/Int
+      "TUVA perusteen koulutuksen osan koodiurin versio"
+      :alku LocalDate "Alkupäivämäärä muodossa YYYY-MM-DD"
+      :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
+      :laajuus
+      (s/constrained s/Num
+                     #(not (neg? %))
+                     "Muuta koulutuksen osan laajuus positiiviseksi.")
+      (str "Tutkintoon valmentavan koulutuksen koulutuksen osan laajuus "
+           "TUVA-viikkoina."))
+    is-tuva-opiskeluoikeus?
+    "Ota koulutuksenosa pois, koska opiskeluoikeus ei ole TUVA."))
 
 (s/defschema
   OsaamisenSaavuttamisenPvm
   "Aika, jonka saa kirjoittaa osaamisen-saavuttamisen-pvm-kenttään."
   (s/constrained
     LocalDate
-    #(and (.isAfter % (LocalDate/of 2018 1 1))
-          (.isBefore % (.plusDays (LocalDate/now) 15)))
+    #(and (.isAfter ^LocalDate % (LocalDate/of 2018 1 1))
+          (.isBefore ^LocalDate % (.plusDays (LocalDate/now) 15)))
     "Osaaminen voidaan merkitä saavutetuksi enintään kaksi viikkoa
     tulevaisuuteen ja vähintään vuodelle 2018."))
 
@@ -884,7 +963,7 @@
          :description "HOKSin generoitu ulkoinen tunniste eHOKS-järjestelmässä"}
    :oppija-oid {:methods {:any :optional
                           :post :required} ; FIXME: should be required for :put
-                :types {:any Oid}
+                :types {:any OppijaOID}
                 :description "Oppijan tunniste Opintopolku-ympäristössä"}
    :sahkoposti {:methods {:any :optional}
                 :types {:any s/Str}
@@ -895,12 +974,17 @@
    :opiskeluoikeus-oid
    {:methods {:any :optional
               :post :required} ; FIXME: should be required for :put
-    :types {:any OpiskeluoikeusOid}
+    :types {:any OpiskeluoikeusOID}
     :description (str "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä "
                       "muotoa '1.2.246.562.15.00000000001'.")}
    :tuva-opiskeluoikeus-oid
    {:methods {:any :optional}
-    :types {:any OpiskeluoikeusOid}
+    :types {:any (s/constrained
+                   OpiskeluoikeusOID (comp not is-tuva-opiskeluoikeus?)
+                   (str "Ota tuva-opiskeluoikeus-oid pois, koska se on "
+                        "sallittu vain TUVA-opiskeluoikeuden kanssa "
+                        "rinnakkaiselle opiskeluoikeudelle, ei TUVA-"
+                        "opiskeluoikeudelle."))}
     :description (str "TUVA-opiskeluoikeuden oid-tunniste Koski-järjestelmässä "
                       "muotoa '1.2.246.562.15.00000000001'. Ei sallittu "
                       "TUVA-HOKSilla.")}
@@ -1032,4 +1116,4 @@
 (s/defschema
   shallow-delete-hoks
   "Schema HOKSin poistoon oppilaitos-OID:n perusteella."
-  {:oppilaitos-oid s/Str})
+  {:oppilaitos-oid (s/maybe OrganisaatioOID)})

@@ -27,7 +27,7 @@
 (deftest test-get-oppija-opiskeluoikeudet
   (testing "Get opiskeluoikeudet for oppija"
     (client/set-post!
-      (fn [url options]
+      (fn [^String url options]
         (cond
           (.endsWith
             url "/koski/api/sure/oids")
@@ -53,3 +53,17 @@
              :oppilaitos
              {:oid "1.2.246.562.10.12944436166"}}]))
     (client/reset-functions!)))
+
+(deftest test-virhekoodi
+  (testing "Can parse Koski-specific virhekoodi."
+    (is (= (k/virhekoodi
+             (ex-info
+               "Something something..."
+               {:body (str "[{\"key\":\"notFound.opiskeluoikeutta"
+                           "EiLöydyTaiEiOikeuksia\",\"message\":"
+                           "\"Opiskeluoikeutta ei löydy annetulla oid:llä tai "
+                           "käyttäjällä ei ole siihen oikeuksia\"}]")}))
+           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia")))
+  (testing "`nil` is returned if virhekoodi cannot be parsed."
+    (is (nil? (k/virhekoodi (ex-info "Something something..."
+                                     {:body "Not valid JSON"}))))))

@@ -15,14 +15,14 @@
               handler/app-routes (test-session-store store))]
     (utils/with-authenticated-oid
       store
-      "1.2.246.562.24.12312312312"
+      "1.2.246.562.24.12312312319"
       app
       request)))
 
 (t/deftest koodisto-response-handling-test
   (t/testing "Querying non-existing koodisto values returns not found"
     (client/set-get!
-      (fn [url _]
+      (fn [^String url _]
         (cond
           (.endsWith
             url "/rest/codeelement/latest/ammatillisenoppiaineet_VVTL")

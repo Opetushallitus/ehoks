@@ -20,10 +20,11 @@
   "Varmistaa, että sharen päivämäärän ovat hyväksyttäviä."
   [values]
   (cond
-    (.isBefore (:voimassaolo-loppu values) (LocalDate/now))
+    (.isBefore ^LocalDate (:voimassaolo-loppu values) (LocalDate/now))
     (throw
       (Exception. "Shared link end date cannot be in the past"))
-    (.isBefore (:voimassaolo-loppu values) (:voimassaolo-alku values))
+    (.isBefore ^LocalDate (:voimassaolo-loppu values)
+               (:voimassaolo-alku values))
     (throw
       (Exception. "Shared link end date cannot be before the start date"))))
 

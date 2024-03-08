@@ -234,6 +234,8 @@
                     [ "...", "/aws/lambda/sade-services-heratepalve-AMISEmailResendHandlerF9-11Q29X3QL9HAA", { "region": "eu-west-1", "label": "AMISEmailResendHandler" } ],
                     [ "...", "/aws/lambda/sade-services-heratepalve-EhoksOpiskeluoikeusUpdat-0Jz3W5TtFYfq", { "region": "eu-west-1", "label": "EhoksOpiskeluoikeusUpdat" } ],
                     [ "...", "/aws/lambda/sade-services-heratepalve-AMISMassHerateResendHand-3mC7JD9B5k1M", { "region": "eu-west-1", "label": "AMISMassHerateResendHand" } ],
+                    [ "...", "/aws/lambda/sade-services-heratepalve-TPKNiputusHandler045E4FB-FM7sYBGu7STK", { "region": "eu-west-1", "label": "TPKNiputusHandler" } ],
+                    [ "...", "/aws/lambda/sade-services-heratepalve-TPKArvoCallHandlerC3E485-w2vkAxlFD32s", { "region": "eu-west-1", "label": "TPKArvoCallHandler" } ],
                     [ "...", "/aws/lambda/sade-services-heratepalve-ONRhenkilomodifyHandler1-NrZUkqk4Qhx9", { "region": "eu-west-1", "label": "ONRhenkilomodifyHandler" } ]
                 ],
                 "view": "singleValue",
@@ -291,7 +293,10 @@
                     [ ".", "sade/heratepalvelu/TEPJaksoHandler/errors", { "region": "eu-west-1", "label": "TEPJaksoHandler" } ],
                     [ ".", "sade/heratepalvelu/EmailMuistutusHandler/errors", { "region": "eu-west-1", "id": "m8", "label": "EmailMuistutusHandler" } ],
                     [ ".", "sade/heratepalvelu/AMISEmailResendHandler/errors", { "region": "eu-west-1", "label": "AMISEmailResendHandler" } ],
-                    [ ".", "sade/heratepalvelu/EhoksOpiskeluoikeusUpdateHandler/errors", { "region": "eu-west-1", "id": "m15", "label": "EhoksOpiskeluoikeusUpdateHandler" } ]
+                    [ ".", "sade/heratepalvelu/EhoksOpiskeluoikeusUpdateHandler/errors", { "region": "eu-west-1", "id": "m15", "label": "EhoksOpiskeluoikeusUpdateHandler" } ],
+                    [ ".", "sade/heratepalvelu/AMISMassHerateResendHandler/errors", { "region": "eu-west-1", "label": "AMISMassHerateResendHandler" } ],
+                    [ ".", "sade/heratepalvelu/TPKNiputusHandler/errors", { "region": "eu-west-1", "label": "TPKNiputusHandler" } ],
+                    [ ".", "sade/heratepalvelu/TPKArvoCallHandler/errors", { "region": "eu-west-1", "label": "TPKArvoCallHandler" } ]
                 ],
                 "view": "singleValue",
                 "stacked": false,

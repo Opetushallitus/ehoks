@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ $# -ne 1 ]; then
+  echo "A script for fetching organization name from Organisaatiopalvelu."
+  echo "Usage: $0 ORGANISAATIO_OID"
+  exit 1
+fi
+
+curl -s -X GET "https://virkailija.opintopolku.fi/organisaatio-service/api/$1/nimet" \
+  -H "accept: application/json"

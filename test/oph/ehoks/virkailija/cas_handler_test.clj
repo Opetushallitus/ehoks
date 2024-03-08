@@ -15,10 +15,10 @@
 (defn- create-app [session-store]
   (common-api/create-app handler/app-routes session-store))
 
-(defn- ticket-response [url options]
+(defn- ticket-response [^String url options]
   (if (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
     {:status 200
-     :body [{:oidHenkilo "1.2.246.562.24.11474338833"
+     :body [{:oidHenkilo "1.2.246.562.24.11474338834"
              :username "ehoksvirkailija"
              :organisaatiot
              [{:organisaatioOid "1.2.246.562.10.12944436166"

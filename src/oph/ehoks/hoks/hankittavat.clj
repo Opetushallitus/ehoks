@@ -273,10 +273,6 @@
       [conn db-conn]
       (let [tho (db/insert-tyopaikalla-jarjestettava-koulutus!
                   (:tyopaikalla-jarjestettava-koulutus oh) conn)
-            existing (db/select-osaamisen-hankkimistavat-by-hoks-id-and-tunniste
-                       oh-type
-                       hoks-id
-                       (:yksiloiva-tunniste oh))
             to-upsert (assoc (if (.isBefore (LocalDate/now) (:loppu oh))
                                oh
                                (assoc oh :tep_kasitelty true))
@@ -284,20 +280,7 @@
                              (:id tho))
             to-upsert-nils-added
             (add-nil-values-for-missing-fields oh to-upsert)
-            existing-id (:id (first existing))
-            o-db (if (empty? existing)
-                   (db/insert-osaamisen-hankkimistapa! to-upsert conn)
-                   (do
-                     (db/update-osaamisen-hankkimistapa! existing-id
-                                                         to-upsert-nils-added
-                                                         conn)
-                     {:id existing-id}))]
-        (when (seq existing)
-          (db/delete-tyopaikalla-jarjestettava-koulutus
-            (:tyopaikalla-jarjestettava-koulutus-id (first existing))
-            conn)
-          (db/delete-osaamisen-hankkimistavan-muut-oppimisymparistot o-db conn)
-          (db/delete-osaamisen-hankkimistavan-keskeytymisajanjaksot o-db conn))
+            o-db (db/insert-osaamisen-hankkimistapa! to-upsert conn)]
         (db/insert-osaamisen-hankkimistavan-muut-oppimisymparistot!
           o-db (:muut-oppimisymparistot oh) conn)
         (db/insert-osaamisen-hankkimistavan-keskeytymisajanjaksot!

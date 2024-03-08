@@ -5,6 +5,7 @@
             [clj-time.coerce :as tc]
             [clojure.test :refer [is]]
             [clojure.data :as d]
+            [clojure.java.io :as j]
             [clojure.pprint :as p]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.cache :as cache]
@@ -17,7 +18,7 @@
 (defn authenticate
   ([app oppija-oid]
     (client/with-mock-responses
-      [(fn [url options]
+      [(fn [^String url options]
          (cond
            (.endsWith url "/serviceValidate")
            {:status 200
@@ -39,7 +40,7 @@
                    :etunimet "Aarto Maurits"
                    :kutsumanimi "Aarto"
                    :sukunimi "Väisänen-perftest"}}))
-       (fn [url options]
+       (fn [^String url options]
          (cond
            (.endsWith url "/v1/tickets")
            {:status 201
@@ -77,7 +78,7 @@
 
 (defn set-auth-functions! [organisaatio-oid unmatched-fn]
   (client/set-post!
-    (fn [url options]
+    (fn [^String url options]
       (cond
         (.endsWith url "/v1/tickets")
         {:status 201
@@ -87,7 +88,7 @@
          :body "ST-1234-testi"}
         :else (unmatched-fn :post url options))))
   (client/set-get!
-    (fn [url options]
+    (fn [^String url options]
       (cond (.endsWith url "/serviceValidate")
             {:status 200
              :body
@@ -128,7 +129,7 @@
 (defn with-service-ticket
   ([app request oppilaitos-oid]
     (client/set-post!
-      (fn [url options]
+      (fn [^String url options]
         (cond
           (.endsWith url "/v1/tickets")
           {:status 201
@@ -139,16 +140,16 @@
           (.endsWith
             url "/koski/api/sure/oids")
           {:status 200
-           :body [{:henkilö {:oid "1.2.246.562.24.44000000001"}
+           :body [{:henkilö {:oid "1.2.246.562.24.44000000008"}
                    :opiskeluoikeudet
-                   [{:oid "1.2.246.562.15.76000000001"
-                     :oppilaitos {:oid "1.2.246.562.10.12000000000"
+                   [{:oid "1.2.246.562.15.76000000000"
+                     :oppilaitos {:oid "1.2.246.562.10.12000000005"
                                   :nimi {:fi "TestiFi"
                                          :sv "TestiSv"
                                          :en "TestiEn"}}
                      :alkamispäivä "2020-03-12"}]}]})))
     (client/set-get!
-      (fn [url options]
+      (fn [^String url options]
         (cond (.endsWith url "/serviceValidate")
               {:status 200
                :body
@@ -163,34 +164,46 @@
                     "</cas:authenticationDate></cas:attributes>"
                     "</cas:authenticationSuccess></cas:serviceResponse>")}
               (.endsWith
-                url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000001")
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000009")
               {:status 200
-               :body {:oid "1.2.246.562.15.00000000001"
+               :body {:oid "1.2.246.562.15.10000000009"
+                      :tila {:opiskeluoikeusjaksot
+                             [{:alku "2010-01-01"
+                               :tila {:koodiarvo "lasna"
+                                      :nimi {:fi "Läsnä"}
+                                      :koodistoUri "koskiopiskeluoikeudentila"
+                                      :koodistoVersio 1}}]}
                       :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.10.12944436166")}
                       :suoritukset
                       [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
                       :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
               (.endsWith
-                url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000002")
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.20000000008")
               {:status 200
-               :body {:oid "1.2.246.562.15.00000000002"
+               :body {:oid "1.2.246.562.15.20000000008"
                       :oppilaitos {:oid (or oppilaitos-oid
-                                            "1.2.246.562.24.47861388608")}
+                                            "1.2.246.562.10.47861388602")}
                       :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
               (.endsWith
-                url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000003")
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.30000000007")
               {:status 200
-               :body {:oid "1.2.246.562.15.00000000003"
+               :body {:oid "1.2.246.562.15.30000000007"
                       :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.10.12944436166")}
                       :suoritukset
                       [{:tyyppi {:koodiarvo "tuvaperusopetus"}}]
                       :tyyppi {:koodiarvo "tuva"}}}
               (.endsWith
-                url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000004")
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.40000000006")
               {:status 200
-               :body {:oid "1.2.246.562.15.00000000004"
+               :body {:oid "1.2.246.562.15.40000000006"
+                      :tila {:opiskeluoikeusjaksot
+                             [{:alku "2023-10-01"
+                               :tila {:koodiarvo "lasna"
+                                      :nimi {:fi "Läsnä"}
+                                      :koodistoUri "koskiopiskeluoikeudentila"
+                                      :koodistoVersio 1}}]}
                       :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.10.12944436166")}
                       :alkamispäivä "2023-10-01"
@@ -198,9 +211,32 @@
                       [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
                       :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
               (.endsWith
-                url "/koski/api/opiskeluoikeus/1.2.246.562.15.00000000005")
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.50000000005")
               {:status 200
-               :body {:oid "1.2.246.562.15.00000000005"
+               :body {:oid "1.2.246.562.15.50000000005"
+                      :tila {:opiskeluoikeusjaksot
+                             [{:alku "2010-10-01"
+                               :tila {:koodiarvo "lasna"
+                                      :nimi {:fi "Läsnä"}
+                                      :koodistoUri "koskiopiskeluoikeudentila"
+                                      :koodistoVersio 1}}]}
+                      :oppilaitos {:oid (or oppilaitos-oid
+                                            "1.2.246.562.10.12944436166")}
+                      :alkamispäivä "2010-10-01"
+                      :arvioituPäättymispäivä "2010-12-01"
+                      :suoritukset
+                      [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+                      :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
+              (.endsWith
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.60000000004")
+              {:status 200
+               :body {:oid "1.2.246.562.15.60000000004"
+                      :tila {:opiskeluoikeusjaksot
+                             [{:alku "2010-12-01"
+                               :tila {:koodiarvo "eronnut"
+                                      :nimi {:fi "Eronnut"}
+                                      :koodistoUri "koskiopiskeluoikeudentila"
+                                      :koodistoVersio 1}}]}
                       :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.10.12944436166")}
                       :alkamispäivä "2010-10-01"
@@ -219,7 +255,7 @@
                          :kayttooikeudet [{:palvelu "EHOKS"
                                            :oikeus "CRUD"}]}]}]}
               (.endsWith
-                url "/rest/organisaatio/v4/1.2.246.562.24.47861388608")
+                url "/rest/organisaatio/v4/1.2.246.562.10.47861388602")
               {:status 200
                :body {:parentOidPath
                       "|"}}
@@ -230,7 +266,7 @@
                       "|1.2.246.562.10.00000000001|"}}
               (> (.indexOf url "oppijanumerorekisteri-service/henkilo") -1)
               (let [oid (last (.split url "/"))]
-                (if (= oid "1.2.246.562.24.40404040404")
+                (if (= oid "1.2.246.562.24.40404040406")
                   (throw (ex-info "Not found" {:status 404}))
                   {:status 200
                    :body {:oidHenkilo oid
@@ -277,7 +313,7 @@
 (defn clear-db []
   (jdbc/execute!
     (db-ops/get-db-connection)
-    (slurp (clojure.java.io/resource "oph/ehoks/empty_database.sql"))))
+    (slurp (j/resource "oph/ehoks/empty_database.sql"))))
 
 (defn migrate-database [f]
   (m/clean!)

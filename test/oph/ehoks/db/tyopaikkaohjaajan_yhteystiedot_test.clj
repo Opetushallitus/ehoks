@@ -64,11 +64,11 @@
        :oppilaitos-oid "1.2.246.562.10.54453921350"}
       :alku (.minusDays (java.time.LocalDate/now) 100)
       :loppu (.minusDays (java.time.LocalDate/now) 80)
-      :yksiloiva-tunniste "abcd"}]
+      :yksiloiva-tunniste "abce"}]
     :osaamisen-osoittaminen []}])
 
-(def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.00000000001"
-                :oppija-oid "1.2.246.562.24.12312312312"
+(def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                :oppija-oid "1.2.246.562.24.12312312319"
                 :ensikertainen-hyvaksyminen (java.time.LocalDate/of 2022 7 1)
                 :osaamisen-hankkimisen-tarve true
                 :sahkoposti "erkki.esimerkki@esimerkki.com"

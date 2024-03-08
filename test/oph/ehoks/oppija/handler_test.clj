@@ -69,7 +69,7 @@
               handler/app-routes (test-session-store store))]
     (utils/with-authenticated-oid
       store
-      "1.2.246.562.24.12312312312"
+      "1.2.246.562.24.12312312319"
       app
       (mock/header request "Caller-Id" "test"))))
 
@@ -155,7 +155,7 @@
                                :oppija-oid oppija-oid
                                :hoks-id 1})
       (client/set-get!
-        (fn [url options]
+        (fn [^String url options]
           (cond
             (.endsWith
               url "/status/abc123")
@@ -199,7 +199,7 @@
                                :oppija-oid (:oppija-oid hoks-data)
                                :hoks-id 1})
       (client/set-get!
-        (fn [url options]
+        (fn [^String url options]
           (cond
             (.endsWith
               url "/status/abc123")
@@ -251,7 +251,7 @@
                                :oppija-oid (:oppija-oid hoks-data)
                                :hoks-id 1})
       (client/set-get!
-        (fn [url options]
+        (fn [^String url options]
           (cond
             (.endsWith
               url "/status/abc123")
@@ -298,7 +298,7 @@
                                :oppija-oid oppija-oid
                                :hoks-id 1})
       (client/set-get!
-        (fn [url options]
+        (fn [^String url options]
           (cond
             (.endsWith
               url "/status/abc123")

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ $# -ne 0 ] ; then
+  {
+    echo "Get session cookie. This scripts requires no arguments."
+  } >&2
+  exit 1
+fi
+
+scripts/check-env-vars OPH_VIRKAILIJA_DOMAIN OPH_CAS_USERNAME OPH_CAS_PASSWORD
+
+cookie_path="scripts/session-cookie.txt"
+service_url="$OPH_VIRKAILIJA_DOMAIN/ehoks-virkailija-backend/api/v1/virkailija/session/opintopolku"
+
+echo -n "Refreshing session cookie... "
+
+response=$(curl -s -c $cookie_path -G "$service_url" \
+                -H "Accept: application/json" \
+                -d "ticket=$(scripts/cas/get-service-ticket "$service_url")")
+
+if [ -z "$response" ] ; then
+  echo "Success."
+else
+  echo "Failed."
+  echo "$response" >&2
+  exit 1
+fi

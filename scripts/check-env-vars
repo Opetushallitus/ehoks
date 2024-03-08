@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Checks existence of given environment variables
+for env_var in "$@"; do
+  if [ -z "${!env_var}" ] ; then
+    echo "jee"
+    {
+      echo "For this script to work, you need to have the following environment" \
+           "variables set: $*"
+      echo
+      echo "Note: running script \`scripts/env/activate\` will prompt for your CAS" \
+           "username and password and will automatically set the previously" \
+           "mentioned environment variables."
+    } >&2
+    exit 1
+  fi
+done

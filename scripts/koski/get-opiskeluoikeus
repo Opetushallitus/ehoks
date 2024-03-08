@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ $# -ne 1 ]; then
+  echo "A script for fetching opiskeluoikeus from Koski."
+  echo "Usage: $0 OPISKELUOIKEUS_OID"
+  exit 1
+fi
+
+scripts/check-env-vars OPH_VIRKAILIJA_DOMAIN OPH_CAS_USERNAME OPH_CAS_PASSWORD
+
+curl -s -X GET "$OPH_VIRKAILIJA_DOMAIN"/koski/api/opiskeluoikeus/"$1" \
+     --user "$OPH_CAS_USERNAME":"$OPH_CAS_PASSWORD"
