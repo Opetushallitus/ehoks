@@ -395,15 +395,18 @@
             "type": "metric",
             "properties": {
                 "metrics": [
-                    [ { "expression": "m1 + m2", "label": "HTTP 5XX", "id": "e1", "color": "#d62728", "region": "eu-west-1" } ],
-                    [ { "expression": "m3 + m4", "label": "HTTP 4XX", "id": "e2", "color": "#ffbb78", "region": "eu-west-1" } ],
-                    [ { "expression": "m5 + m6", "label": "HTTP 2XX", "id": "e3", "region": "eu-west-1" } ],
+                    [ { "expression": "m1 + m2 + m3", "label": "HTTP 5XX", "id": "e1", "color": "#d62728", "region": "eu-west-1" } ],
+                    [ { "expression": "m4 + m5 + m6", "label": "HTTP 4XX", "id": "e2", "color": "#ffbb78", "region": "eu-west-1" } ],
+                    [ { "expression": "m7 + m8 + m9", "label": "HTTP 2XX", "id": "e3", "region": "eu-west-1" } ],
                     [ "AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "TargetGroup", "targetgroup/sade-ehoks-oppija-FTG/214e9c0025e7c739", "LoadBalancer", "app/sade-ALB/d9414606100fe733", "AvailabilityZone", "eu-west-1b", { "region": "eu-west-1", "color": "#d62728", "id": "m1", "visible": false } ],
                     [ "...", "eu-west-1c", { "color": "#d62728", "region": "eu-west-1", "id": "m2", "visible": false } ],
-                    [ ".", "HTTPCode_Target_4XX_Count", ".", ".", ".", ".", ".", "eu-west-1b", { "region": "eu-west-1", "color": "#ffbb78", "id": "m3", "visible": false } ],
-                    [ "...", "eu-west-1c", { "region": "eu-west-1", "color": "#ffbb78", "id": "m4", "visible": false } ],
-                    [ ".", "HTTPCode_Target_2XX_Count", ".", ".", ".", ".", ".", "eu-west-1b", { "region": "eu-west-1", "color": "#2ca02c", "id": "m5", "visible": false } ],
-                    [ "...", "eu-west-1c", { "region": "eu-west-1", "color": "#2ca02c", "id": "m6", "visible": false } ]
+                    [ "...", "AvailabilityZone", "eu-west-1a", "LoadBalancer", "app/sade-ALB/d9414606100fe733", { "id": "m3", "color": "#d62728", "region": "eu-west-1", "visible": false } ],
+                    [ ".", "HTTPCode_Target_4XX_Count", ".", ".", ".", ".", ".", ".", { "id": "m4", "color": "#ffbb78", "region": "eu-west-1", "visible": false } ],
+                    [ "...", "LoadBalancer", "app/sade-ALB/d9414606100fe733", "AvailabilityZone", "eu-west-1b", { "region": "eu-west-1", "color": "#ffbb78", "id": "m5", "visible": false } ],
+                    [ "...", "eu-west-1c", { "region": "eu-west-1", "color": "#ffbb78", "id": "m6", "visible": false } ],
+                    [ ".", "HTTPCode_Target_2XX_Count", ".", ".", "AvailabilityZone", "eu-west-1a", "LoadBalancer", "app/sade-ALB/d9414606100fe733", { "id": "m7", "color": "#2ca02c", "region": "eu-west-1", "visible": false } ],
+                    [ "...", "LoadBalancer", "app/sade-ALB/d9414606100fe733", "AvailabilityZone", "eu-west-1b", { "region": "eu-west-1", "color": "#2ca02c", "id": "m8", "visible": false } ],
+                    [ "...", "eu-west-1c", { "region": "eu-west-1", "color": "#2ca02c", "id": "m9", "visible": false } ]
                 ],
                 "view": "timeSeries",
                 "stacked": true,
