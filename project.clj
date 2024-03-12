@@ -35,7 +35,7 @@
                          [ring/ring-servlet "1.10.0"]
 
                          ;; http client
-                         [clj-http "3.12.3"]
+                         [clj-http "3.12.2"]
                          [org.apache.httpcomponents/httpasyncclient "4.1.5"]
                          [org.apache.httpcomponents/httpclient "4.5.14"]
                          [org.apache.httpcomponents/httpclient-cache "4.5.14"]
