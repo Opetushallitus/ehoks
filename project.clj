@@ -24,7 +24,7 @@
                  [fi.vm.sade/auditlogger]
                  [com.rpl/specter]
                  [org.clojure/core.memoize]]
-  :managed-dependencies [[org.clojure/clojure "1.11.1"]
+  :managed-dependencies [[org.clojure/clojure "1.11.2"]
 
                          ;; http server
                          [javax.servlet/javax.servlet-api "4.0.1"]
@@ -69,7 +69,7 @@
                          ;; postgresql
                          [org.clojure/java.jdbc "0.7.12"]
                          [org.flywaydb/flyway-core "6.5.7"]
-                         [org.postgresql/postgresql "42.7.1"]
+                         [org.postgresql/postgresql "42.7.2"]
 
                          ;; other
                          [org.clojure/core.async "1.6.681"]

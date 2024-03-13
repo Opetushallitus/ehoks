@@ -53,6 +53,7 @@ jobs:
       - name: Run Linter
         shell: bash
         run: |
+          make check-pom-xml
           lein checkall
 
       - name: Build
