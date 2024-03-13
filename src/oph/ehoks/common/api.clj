@@ -1,13 +1,14 @@
 (ns oph.ehoks.common.api
-  (:require [ring.util.http-response :as response]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
             [compojure.api.exception :as c-ex]
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]
+            [oph.ehoks.logging.audit :as audit]
+            [oph.ehoks.middleware :as middleware]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]
-            [oph.ehoks.config :refer [config]]
-            [oph.ehoks.middleware :as middleware]
-            [oph.ehoks.logging.access :refer [wrap-access-logger]]))
+            [ring.util.http-response :as response]))
 
 (defn not-found-handler
   "Käsittelee tapauksen, jossa reittiä ei löydy."
@@ -37,17 +38,22 @@
 
 (def handlers
   "Map of request handlers"
-  {::c-ex/request-parsing (c-ex/with-logging
-                            c-ex/request-parsing-handler :info)
-   ::c-ex/request-validation (c-ex/with-logging
-                               c-ex/request-validation-handler :info)
+  {::c-ex/request-parsing     (-> c-ex/request-parsing-handler
+                                  (c-ex/with-logging :info)
+                                  audit/with-logging)
+   ::c-ex/request-validation  (-> c-ex/request-validation-handler
+                                (c-ex/with-logging :info)
+                                audit/with-logging)
    ; Lokitetaan response bodyn validoinnissa esiin nousseet virheet, mutta ei
-   ; välitetä virheitä käyttäjälle "500 Internal Server Error" -koodilla.
-   ::c-ex/response-validation (c-ex/with-logging
-                                c-ex/http-response-handler :error)
-   :not-found not-found-handler
-   :unauthorized unauthorized-handler
-   ::c-ex/default exception-handler})
+   ; välitetä virheitä käyttäjälle "500 Internal Server Error" -koodilla. Tästä
+   ; syystä `c-ex/response-validation-handler` korvatu
+   ; `c-ex/http-response-handler`illa.
+   ::c-ex/response-validation (-> c-ex/http-response-handler
+                                  (c-ex/with-logging :error)
+                                  audit/with-logging)
+   :not-found                 (audit/with-logging not-found-handler)
+   :unauthorized              (audit/with-logging unauthorized-handler)
+   ::c-ex/default             (audit/with-logging exception-handler)})
 
 (defn create-app
   "Creates application with given routes and session store.

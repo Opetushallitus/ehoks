@@ -137,6 +137,7 @@
     "userAgent" "no user agent"}
    "applicationType" "backend"
    "operation" "create"
+   "succeeded" true
    "serviceName" "both"
    "changes"
    [{"path" ""
@@ -163,6 +164,7 @@
     "userAgent" "no user agent"}
    "applicationType" "backend"
    "operation" "create"
+   "succeeded" true
    "serviceName" "both"
    "changes"
    [{"path" ""
@@ -224,6 +226,7 @@
     "userAgent" "no user agent"},
    "applicationType" "backend",
    "operation" "update",
+   "succeeded" true
    "serviceName" "both",
    "changes"
    [{"path" ":tutkinnon-osa-koodi-versio",
@@ -290,6 +293,7 @@
     "userAgent" "no user agent"}
    "applicationType" "backend"
    "operation" "read"
+   "succeeded" true
    "serviceName" "both"
    "changes" []
    "type" "log"

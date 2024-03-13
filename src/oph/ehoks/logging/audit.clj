@@ -168,12 +168,11 @@
   [request response]
   (when enabled?
     (let [request-method (:request-method request)
-          operation (if (or (some? (:error response))
-                            (server-error? response)
-                            (client-error? response))
-                      "failure"
-                      (or (get-in response [:audit-data :operation])
-                          (method->crud request-method)))
+          operation      (or (get-in response [:audit-data :operation])
+                             (method->crud request-method))
+          succeeded      (not (or (some? (:error response))
+                                  (server-error? response)
+                                  (client-error? response)))
           new-data (get-in response [:audit-data :new])
           old-data (get-in response [:audit-data :old])]
       (log! (-> (common-data)
@@ -181,6 +180,7 @@
                        "user"      (user-info request)
                        "target"    (target-info request response)
                        "operation" operation
+                       "succeeded" succeeded
                        "changes"   (changes old-data new-data))
                 make-json-serializable
                 json/write-str)))))
@@ -200,6 +200,14 @@
                      "message" "alive")
               json/write-str
               log!)))))
+
+(defn with-logging
+  "Wraps compojure-api exception handler with a function that will do
+  audit logging before executing the wrapped handler."
+  [handler]
+  (fn [^Exception e data request]
+    (handle-audit-logging! request (or (:response data) {:error true}))
+    (handler e data request)))
 
 (defn wrap-audit-logger
   "Create wrapper function to add audit logging to handler"

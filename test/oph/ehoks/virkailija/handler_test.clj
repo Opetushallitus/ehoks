@@ -783,7 +783,10 @@
                                   :loppu "2022-09-21"
                                   :laajuus 10}]})]
             (t/is (= (:status post-response) 400))
-            (t/is (logtest/logged? "audit" :info #"failure.*24.44000000008")
+            (t/is (logtest/logged?
+                    "audit"
+                    :info
+                    #"24.44000000008.*\"succeeded\":false")
                   (str "log entries:" (logtest/the-log)))
             (t/is (re-find #"Ota tuva-opiskeluoikeus-oid pois"
                            (slurp (:body post-response))))))))))
