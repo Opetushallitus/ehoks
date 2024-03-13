@@ -45,21 +45,21 @@
 (deftest test-changes
   (testing "Single element replaced in map"
     (is (= (#'a/changes {:a 1 :b 2 :c 3} {:a 1 :b -2 :c 3})
-        '({"path" ":b" "oldValue" 2 "newValue" -2}))))
+           '({"path" ":b" "oldValue" 2 "newValue" -2}))))
 
   (testing "Single element added to map"
     (is (= (#'a/changes {:a 1 :b 2} {:a 1 :b 2 :c 3})
-        '({"path" ":c" "newValue" 3}))))
+           '({"path" ":c" "newValue" 3}))))
 
   (testing "Single element removed from map"
     (is (= (#'a/changes {:a 1 :b 2 :c 3} {:a 1 :c 3})
-        '({"path" ":b" "oldValue" 2}))))
+           '({"path" ":b" "oldValue" 2}))))
 
   (testing "Changes in nested data structures (within map) are detected"
     (is (= (#'a/changes {:a 1 :b {:c 2 :d  3} :e 4 :f [0  1 2]}
                         {:a 1 :b {:c 2 :d -3} :e 4 :f [0 -1 2]})
-        '({"path" ":b.:d" "oldValue" 3 "newValue" -3}
-          {"path" ":f.1"  "oldValue" 1 "newValue" -1}))))
+           '({"path" ":b.:d" "oldValue" 3 "newValue" -3}
+              {"path" ":f.1"  "oldValue" 1 "newValue" -1}))))
 
   (testing "Single element replaced in vector"
     (is (= (#'a/changes [0 1 2] [0 3 2])
@@ -74,45 +74,43 @@
   (testing "Single removal from the middle of the vector"
     (is (= (#'a/changes [0 1 2 3 4] [0 1 3 4])
            '({"path" "2" "oldValue" 2 "newValue" 3}
-             {"path" "3" "oldValue" 3 "newValue" 4}
-             {"path" "4" "oldValue" 4}))))
+              {"path" "3" "oldValue" 3 "newValue" 4}
+              {"path" "4" "oldValue" 4}))))
 
   (testing "Single addition to the middle of the vector"
     (is (= (#'a/changes [0 1 3 4] [0 1 2 3 4])
            '({"path" "2" "oldValue" 3 "newValue" 2}
-             {"path" "3" "oldValue" 4 "newValue" 3}
-             {"path" "4" "newValue" 4}))))
+              {"path" "3" "oldValue" 4 "newValue" 3}
+              {"path" "4" "newValue" 4}))))
 
   (testing "Changes in nested data structures (within vector) are detected"
     (is (= (#'a/changes [0 {:a 1 :b 2} 3 [4 5 6] 7]
-                      [0 {:a 1 :b -2} 3 [4 -5 6] 7])
+                        [0 {:a 1 :b -2} 3 [4 -5 6] 7])
            '({"path" "1.:b" "oldValue" 2 "newValue" -2}
-             {"path" "3.1" "oldValue" 5 "newValue" -5}))))
+              {"path" "3.1" "oldValue" 5 "newValue" -5}))))
 
-  (testing
-    "Value is added when old value is `nil`"
+  (testing "Value is added when old value is `nil`"
     (are [new] (get (first (#'a/changes nil new)) "newValue")
-         1 "a" true {:a 1} [0 1]))
-  (testing
-    "Value is removed when new value is `nil`"
+      1 "a" true {:a 1} [0 1]))
+  (testing "Value is removed when new value is `nil`"
     (are [old] (get (first (#'a/changes old nil)) "oldValue")
-         1 "a" true {:a 1} [0 1]))
+      1 "a" true {:a 1} [0 1]))
   (testing (str "Value is replaced when the old and the new value are unequal
                 but both are not maps or vectors.")
     (are [old new] (as-> (#'a/changes old new) c
-                         (first c)
-                         (and (= (get c "oldValue") old)
-                              (= (get c "newValue") new)))
-         "kissa"     "koira"
-         1           2
-         1           "1"
-         true        1
-         false       0
-         :a          "a"
-         \a          "a"
-         1.0         1
-         1/2         0.5
-         {:a 1 :b 2} [1 2])))
+                     (first c)
+                     (and (= (get c "oldValue") old)
+                          (= (get c "newValue") new)))
+      "kissa"     "koira"
+      1           2
+      1           "1"
+      true        1
+      false       0
+      :a          "a"
+      \a          "a"
+      1.0         1
+      1/2         0.5
+      {:a 1 :b 2} [1 2])))
 
 (deftest test-make-json-serializable
   (testing "The function returns (expected) values that are JSON serializable"
@@ -276,7 +274,6 @@
    "version" 1,
    "target"
    {"hoksId" "1", "oppijaOid" nil, "opiskeluoikeusOid" nil}})
-
 
 (defn- expected-log-entry-on-ahato-read
   [logseq]

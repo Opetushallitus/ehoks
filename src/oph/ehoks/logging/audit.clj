@@ -1,19 +1,17 @@
 (ns oph.ehoks.logging.audit
-  (:require
-   [clj-http.client :refer [client-error? server-error?]]
-   [clj-time.local :as l]
-   [clojure.data.json :as json]
-   [clojure.set :refer [difference union]]
-   [clojure.string :as str]
-   [clojure.tools.logging :as log]
-   [environ.core :refer [env]]
-   [oph.ehoks.config :refer [config]]
-   [oph.ehoks.logging.access :refer [get-session]])
-  (:import
-   (java.time LocalDate ZoneOffset)
-   (java.util Date)))
+  (:require [clj-http.client :refer [client-error? server-error?]]
+            [clj-time.local :as l]
+            [clojure.data.json :as json]
+            [clojure.set :refer [union]]
+            [clojure.string :as str]
+            [clojure.tools.logging :as log]
+            [environ.core :refer [env]]
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.logging.access :refer [get-session]])
+  (:import (java.time ZoneOffset)
+           (java.util Date)))
 
-(def auditing-enabled? (:audit? config))
+(def enabled? (:audit? config))
 (def heartbeat-enabled? (atom true))
 (def logseq (atom 0))
 (def ten-minutes-in-milliseconds (* 10 60 1000))
@@ -35,21 +33,23 @@
   The function utilizes two helper functions, `map-changes` and `vec-changes`,
   which calculate the changes for nested maps and vectors, respectively."
   ([old-value new-value]
-   (changes old-value new-value []))
+    (changes old-value new-value []))
   ([old-value new-value path]
-   (cond
-     (and (map? old-value) (map? new-value))
-     (hashmap-changes old-value new-value path)
-     (and (vector? old-value) (vector? new-value))
-     (vec-changes old-value new-value path)
-     :else (atom-changes old-value new-value path))))
+    (cond
+      (and (map? old-value) (map? new-value))
+      (hashmap-changes old-value new-value path)
+      (and (vector? old-value) (vector? new-value))
+      (vec-changes old-value new-value path)
+      :else (atom-changes old-value new-value path))))
 
-(defn atom-changes [old-value new-value path]
-    (if (= old-value new-value)
-      []
-      [(cond-> {"path" (str/join "." path)}
-               (some? new-value) (assoc "newValue" new-value)
-               (some? old-value) (assoc "oldValue" old-value))]))
+(defn atom-changes
+  [old-value new-value path]
+  (if (= old-value new-value)
+    []
+    [(cond->
+      {"path" (str/join "." path)}
+       (some? new-value) (assoc "newValue" new-value)
+       (some? old-value) (assoc "oldValue" old-value))]))
 
 (defn- hashmap-changes
   "Constructs a sequence of changes between maps `old-value` and `new-value`.
@@ -147,7 +147,7 @@
   `response` and puts it into a map which is finally serialized into JSON and
   finally logged to \"audit\" namespace."
   [request response]
-  (when auditing-enabled?
+  (when enabled?
     (let [request-method (:request-method request)
           operation (if (or (some? (:error response))
                             (server-error? response)
@@ -157,15 +157,16 @@
           new-data (get-in response [:audit-data :new])
           old-data (get-in response [:audit-data :old])]
       (log! (-> (common-data)
-               (assoc "type"      "log"
-                      "user"      (user-info request)
-                      "target"    (target-info request)
-                      "operation" operation
-                      "changes"   (changes old-data new-data))
-               make-json-serializable
-               json/write-str)))))
+                (assoc "type"      "log"
+                       "user"      (user-info request)
+                       "target"    (target-info request)
+                       "operation" operation
+                       "changes"   (changes old-data new-data))
+                make-json-serializable
+                json/write-str)))))
 
-(when auditing-enabled?
+(defn start-heartbeat!
+  []
   (-> (common-data)
       (assoc "type"    "alive"
              "message" "started")
