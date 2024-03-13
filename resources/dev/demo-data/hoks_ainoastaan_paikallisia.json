@@ -1,5 +1,5 @@
 {
-  "opiskeluoikeus-oid": "1.2.246.562.15.76811932025",
+  "opiskeluoikeus-oid": "1.2.246.562.15.76811932052",
   "oppija-oid": "1.2.246.562.24.44651722625",
   "ensikertainen-hyvaksyminen": "2017-10-25",
   "sahkoposti": "testikayttaja@testi.fi",
@@ -125,7 +125,7 @@
             "oppilaitos-oid": "1.2.246.562.10.54453921329"
           },
           "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
-          "alku": "2018-11-01",
+          "alku": "2020-11-01",
           "loppu": "2021-12-13",
           "osa-aikaisuustieto": 50,
           "muut-oppimisymparistot": []
