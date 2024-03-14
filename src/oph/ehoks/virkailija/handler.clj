@@ -12,6 +12,7 @@
             [oph.ehoks.virkailija.auth :as auth]
             [oph.ehoks.user :as user]
             [oph.ehoks.schema :as schema]
+            [oph.ehoks.schema.oid :as oid-s]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
             [oph.ehoks.db.postgresql.common :as pc]
@@ -52,7 +53,7 @@
                    {hoks-id :- s/Int nil}
                    {item-count :- s/Int 10}
                    {page :- s/Int 0}
-                   oppilaitos-oid :- s/Str
+                   oppilaitos-oid :- oid-s/OrganisaatioOID
                    {locale :- s/Str "fi"}]
     :summary "Listaa virkailijan oppilaitoksen oppijoiden opiskeluoikeudet,
              joilla on HOKS luotuna. Käyttäjällä pitää olla READ-käyttöoikeus
@@ -301,7 +302,7 @@
                 :summary "Työpaikkajaksojen raportti"
                 :header-params [caller-id :- s/Str]
                 :query-params [tutkinto :- s/Str
-                               oppilaitos :- (s/maybe s/Str)
+                               oppilaitos :- (s/maybe oid-s/OrganisaatioOID)
                                start :- LocalDate
                                end :- LocalDate
                                {pagesize :- s/Int 25}
@@ -366,7 +367,7 @@
                 :summary "Palauttaa listan hokseista, joiden
                           opiskeluoikeus puuttuu"
                 :header-params [caller-id :- s/Str]
-                :path-params [oppilaitosoid :- s/Str]
+                :path-params [oppilaitosoid :- oid-s/OrganisaatioOID]
                 :query-params [{pagesize :- s/Int 25}
                                {pageindex :- s/Int 0}]
                 :return {:count s/Int
@@ -496,7 +497,7 @@
                 get-oppijat-route
 
                 (c-api/context "/:oppija-oid" []
-                  :path-params [oppija-oid :- s/Str]
+                  :path-params [oppija-oid :- oid-s/OppijaOID]
 
                   (c-api/POST "/index" []
                     :summary "Indeksoi oppijan tiedot. DEPRECATED"
@@ -521,7 +522,8 @@
                         (get-hoks-perustiedot oppija-oid))
 
                       (c-api/GET "/oppilaitos/:oppilaitos-oid" request
-                        :path-params [oppilaitos-oid :- s/Str]
+                        :path-params
+                        [oppilaitos-oid :- oid-s/OrganisaatioOID]
                         :return (restful/response [hoks-schema/HOKS])
                         :summary "Oppijan hoksit (rajoitettu uusi versio)"
                         (if (contains?

@@ -13,6 +13,7 @@
             [oph.ehoks.restful :as restful]
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.virkailija.schema :as virkailija-schema]
+            [oph.ehoks.schema.oid :as oid-schema]
             [ring.util.http-response :as response]
             [schema.core :as s])
   (:import
@@ -93,7 +94,7 @@
           Huom: Opiskeluoikeudet taulun oppija-oid päivittyy on update cascade
           säännön kautta."
       :header-params [caller-id :- s/Str]
-      :query-params [oid :- s/Str]
+      :query-params [oid :- oid-schema/OppijaOID]
       (oi/handle-onrmodified oid)
       ; TODO refaktoroi onr-käsittelyä auditlokitusystävällisemmäksi (OY-4523)
       (response/no-content))
@@ -101,7 +102,7 @@
     (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
       :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
       :header-params [caller-id :- s/Str]
-      :path-params [opiskeluoikeus-oid :- s/Str]
+      :path-params [opiskeluoikeus-oid :- oid-schema/OpiskeluoikeusOID]
       :return (restful/response {:id s/Int})
       (let [hoks (first (db-hoks/select-hoksit-by-opiskeluoikeus-oid
                           opiskeluoikeus-oid))]
@@ -145,7 +146,7 @@
       :summary "Palauttaa opiskeluoikeuksien määrän poistamisen varmistusta
       varten"
       :header-params [caller-id :- s/Str]
-      :path-params [koulutustoimija-oid :- s/Str]
+      :path-params [koulutustoimija-oid :- oid-schema/OrganisaatioOID]
       :return (restful/response s/Int)
       (if-let [info (db-opiskeluoikeus/select-opiskeluoikeus-delete-confirm-info
                       koulutustoimija-oid)]
