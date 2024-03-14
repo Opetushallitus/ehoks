@@ -15,7 +15,7 @@
     (c-api/GET "/environment" [:as request]
       :summary "Palauttaa ympäristön tiedot ja asetukset"
       :return (rest/response schema/Environment)
-      (rest/rest-ok
+      (rest/ok
         (merge
           {:virkailija-login-url
            (format

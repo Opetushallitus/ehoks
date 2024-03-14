@@ -19,8 +19,7 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
-            [oph.ehoks.middleware :refer
-             [wrap-hoks wrap-opiskeluoikeus get-current-opiskeluoikeus]]
+            [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus]]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.oppijaindex :as oi]
@@ -28,7 +27,6 @@
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.validation.handler :as validation-handler]
-            [clojure.core.async :as a]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
             [oph.ehoks.virkailija.middleware :as m]
@@ -90,9 +88,7 @@
              :osaamisala osaamisala
              :hoks-id hoks-id}
             [oppijat total-count] (oi/search! search-params)]
-        (restful/rest-ok
-          oppijat
-          :total-count total-count)))))
+        (restful/ok oppijat :total-count total-count)))))
 
 (defn- check-opiskeluoikeus-validity
   "Check whether opiskeluoikeus is still valid"
@@ -130,7 +126,7 @@
                       (assoc :manuaalisyotto true)
                       (h/check-and-save-hoks!))]
       (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
-          (restful/rest-ok :id (:id hoks-db))
+          (restful/ok :id (:id hoks-db))
           (assoc :audit-data {:new hoks})))
     (catch Exception e
       (case (:error (ex-data e))
@@ -144,9 +140,8 @@
 (defn- get-hoks-perustiedot
   "Get basic information from HOKS"
   [oppija-oid]
-  (if-let [hoks
-           (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
-    (restful/rest-ok hoks)
+  (if-let [hoks (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
+    (restful/ok hoks)
     (response/not-found {:message "HOKS not found"})))
 
 (defn- hoks-has-active-opiskeluoikeus
@@ -178,7 +173,7 @@
                           [:session :virkailija-user])]
     (if (m/virkailija-has-privilege?
           virkailija-user (:oppija-oid hoks) :read)
-      (restful/rest-ok (h/get-hoks-by-id hoks-id))
+      (restful/ok (h/get-hoks-by-id hoks-id))
       (do
         (log/warnf
           "User %s privileges don't match oppija %s"
@@ -232,7 +227,7 @@
                                (:oid (:koulutustoimija opiskeluoikeus))
                                :koulutustoimijan-nimi
                                (:nimi (:koulutustoimija opiskeluoikeus)))]
-        (restful/rest-ok linkki-info))
+        (restful/ok linkki-info))
       (response/bad-request {:error "Survey ID not found"}))))
 
 (defn- delete-vastaajatunnus
@@ -336,13 +331,12 @@
                                       (+ start-row pagesize)
                                       row-count-total)
                             pageresult (subvec (vec result) start-row end-row)]
-                        (restful/rest-ok
-                          {:count row-count-total
-                           :pagecount page-count-total
-                           :result pageresult}))
+                        (restful/ok {:count     row-count-total
+                                     :pagecount page-count-total
+                                     :result    pageresult}))
                       (user/oph-super-user?
                         (get-in request [:session :virkailija-user]))
-                      (restful/rest-ok
+                      (restful/ok
                         (pc/select-oht-by-tutkinto-between tutkinto start end))
                       :else
                       (do (log/warnf
@@ -395,10 +389,9 @@
                                   (+ start-row pagesize)
                                   row-count-total)
                         pageresult (subvec (vec result) start-row end-row)]
-                    (restful/rest-ok
-                      {:count row-count-total
-                       :pagecount page-count-total
-                       :result pageresult}))
+                    (restful/ok {:count     row-count-total
+                                 :pagecount page-count-total
+                                 :result    pageresult}))
                   (response/forbidden
                     {:error (str "User privileges does not match "
                                  "organisation")})))
@@ -542,12 +535,10 @@
                                           oppija-oid)]
                             (if-let [oppilaitos-hoks (get-hoks-by-oppilaitos
                                                        oppilaitos-oid hoks)]
-                              (restful/rest-ok
-                                (if
-                                 (hoks-has-active-opiskeluoikeus
-                                   oppilaitos-hoks)
-                                  hoks
-                                  oppilaitos-hoks))
+                              (restful/ok (if (hoks-has-active-opiskeluoikeus
+                                                oppilaitos-hoks)
+                                            hoks
+                                            oppilaitos-hoks))
                               (response/not-found
                                 {:message
                                  "HOKS not found for oppilaitos"}))
@@ -596,8 +587,7 @@
                                :sahkoposti (:sahkoposti hoks)
                                :lahetyspvm (LocalDate/parse (str (t/today)))
                                :lahetystila "lahetetty"}))
-                          (restful/rest-ok
-                            {:sahkoposti (:sahkoposti hoks)})))
+                          (restful/ok {:sahkoposti (:sahkoposti hoks)})))
 
                       (c-api/GET "/:hoks-id/opiskelijapalaute" request
                         :summary "Palauttaa tietoja oppijan aktiivisista
@@ -616,7 +606,7 @@
                                      (not (nil? (:lahetystila %1)))
                                      (not= "ei_lahetetty" (:lahetystila %1)))
                                   kyselylinkit))]
-                          (restful/rest-ok lahetysdata)))
+                          (restful/ok lahetysdata)))
 
                       (c-api/context "/:hoks-id" []
                         :path-params [hoks-id :- s/Int]
@@ -709,7 +699,7 @@
                           :summary "Kaikki hoksit (perustiedot).
                         Tarvitsee OPH-pääkäyttäjän oikeudet"
                           :return [s/Any]
-                          (restful/rest-ok (db-hoks/select-hoksit))))))
+                          (restful/ok (db-hoks/select-hoksit))))))
 
                   (route-middleware
                     [m/wrap-virkailija-oppija-access]
@@ -717,14 +707,14 @@
                     (c-api/GET "/opiskeluoikeudet" [:as request]
                       :summary "Oppijan opiskeluoikeudet"
                       :return (restful/response [s/Any])
-                      (restful/rest-ok
+                      (restful/ok
                         (koski/get-oppija-opiskeluoikeudet oppija-oid)))
 
                     (c-api/GET "/" []
                       :return (restful/response common-schema/Oppija)
                       :summary "Oppijan tiedot"
                       (if-let [oppija (oi/get-oppija-by-oid oppija-oid)]
-                        (restful/rest-ok oppija)
+                        (restful/ok oppija)
                         (response/not-found)))
 
                     (c-api/GET "/with-oo" []
@@ -732,7 +722,7 @@
                       :summary "Oppijan tiedot. Opiskeluoikeus-oid lisättynä."
                       (if-let [oppija (oi/get-oppija-with-oo-oid-by-oid
                                         oppija-oid)]
-                        (restful/rest-ok oppija)
+                        (restful/ok oppija)
                         (response/not-found)))))))))
 
         healthcheck-handler/routes

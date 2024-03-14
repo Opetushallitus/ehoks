@@ -13,7 +13,7 @@
     (c-api/GET "/" request
       :summary "Istunnon käyttäjän asetukset"
       :return (rest/response schema/UserSettings)
-      (rest/rest-ok
+      (rest/ok
         (or (user-settings/get-settings
               (get-in request [:session :user :oid]))
             {})))
