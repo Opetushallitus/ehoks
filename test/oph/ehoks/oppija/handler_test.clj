@@ -78,19 +78,19 @@
     (client/with-mock-responses
       [(fn [_ __]
          {:status 200
-          :body {:oid "1.2.246.562.15.4042"
+          :body {:oid  "1.2.246.562.10.12345678911"
                  :nimi {:fi "Test"}}})]
-      (let [response (mock-authenticated
-                       (mock/request
-                         :get
-                         (str
-                           "/ehoks-oppija-backend/api/v1/oppija"
-                           "/external/organisaatio/1.2.246.562.15.4042")))
+      (let [response
+            (mock-authenticated
+              (mock/request
+                :get (str
+                       "/ehoks-oppija-backend/api/v1/oppija"
+                       "/external/organisaatio/1.2.246.562.10.12345678911")))
             body (utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (eq
           (:data body)
-          {:oid "1.2.246.562.15.4042"
+          {:oid "1.2.246.562.10.12345678911"
            :nimi {:fi "Test"}})))))
 
 (deftest get-not-found-organisaatio
@@ -103,12 +103,12 @@
                    :body {:errorMessage
                           "organisaatio.exception.organisaatio.not.found"
                           :errorKey ""}})))]
-      (let [response (mock-authenticated
-                       (mock/request
-                         :get
-                         (str
-                           "/ehoks-oppija-backend/api/v1/oppija"
-                           "/external/organisaatio/1.2.246.562.15.404")))]
+      (let [response
+            (mock-authenticated
+              (mock/request
+                :get (str
+                       "/ehoks-oppija-backend/api/v1/oppija"
+                       "/external/organisaatio/1.2.246.562.10.40440440440")))]
         (is (= (:status response) 404))))))
 
 (deftest buildversion

@@ -4,6 +4,7 @@
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
             [oph.ehoks.schema :as schema]
+            [oph.ehoks.schema.oid :as oid-schema]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
             [oph.ehoks.restful :as rest]
@@ -310,7 +311,7 @@
 
       (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
-        :path-params [opiskeluoikeus-oid :- s/Str]
+        :path-params [opiskeluoikeus-oid :- oid-schema/OpiskeluoikeusOID]
         :return (rest/response hoks-schema/HOKS)
         (let [hoks (first (db-hoks/select-hoksit-by-opiskeluoikeus-oid
                             opiskeluoikeus-oid))]

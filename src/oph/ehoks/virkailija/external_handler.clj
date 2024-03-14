@@ -1,6 +1,7 @@
 (ns oph.ehoks.virkailija.external-handler
   (:require [compojure.api.sweet :as c-api]
             [schema.core :as s]
+            [oph.ehoks.schema.oid :as oid-schema]
             [ring.util.http-response :as response]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.external.koodisto :as koodisto]
@@ -25,7 +26,7 @@
         (restful/ok (organisaatio/find-organisaatiot oids)))
 
       (c-api/GET "/:oid" []
-        :path-params [oid :- s/Str]
+        :path-params [oid :- oid-schema/OrganisaatioOID]
         :summary "Organisaation tiedot oidin perusteella"
         :return (restful/response s/Any)
         (try

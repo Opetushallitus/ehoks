@@ -3,6 +3,7 @@
             [compojure.api.core :refer [route-middleware]]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.restful :as rest]
+            [oph.ehoks.schema.oid :as oid-schema]
             [ring.util.http-response :as response]
             [schema.core :as s]
             [compojure.api.sweet :as c-api]
@@ -84,7 +85,7 @@
 
     (c-api/context "/organisaatio" []
       (c-api/GET "/:oid" []
-        :path-params [oid :- s/Str]
+        :path-params [oid :- oid-schema/OrganisaatioOID]
         :summary "Organisaation tiedot oidin perusteella"
         :return (rest/response s/Any)
         (rest/with-not-found-handling

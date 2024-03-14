@@ -4,6 +4,7 @@
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
             [schema.core :as s]
+            [oph.ehoks.schema.oid :as oid-schema]
             [oph.ehoks.db.db-operations.oppija :as oppija-db]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as opiskeluoikeus-db]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
@@ -102,7 +103,7 @@
 
       (c-api/context "/organisation-privileges" []
         (c-api/DELETE "/:organisation-oid" request
-          :path-params [organisation-oid :- s/Str]
+          :path-params [organisation-oid :- oid-schema/OrganisaatioOID]
           :summary "Remove organisation from current user"
           (remove-session-organisation (:session-key request) organisation-oid)
           (response/no-content))
@@ -120,10 +121,8 @@
           (response/ok (oppija-db/insert-oppija! oppija)))
 
         (c-api/DELETE "/oppija/:oppija-oid" []
-          :path-params [oppija-oid :- s/Str]
-          (response/ok
-            (db-ops/delete!
-              :oppijat ["oid = ?" oppija-oid])))
+          :path-params [oppija-oid :- oid-schema/OppijaOID]
+          (response/ok (db-ops/delete! :oppijat ["oid = ?" oppija-oid])))
 
         (c-api/POST "/opiskeluoikeus" []
           :body [opiskeluoikeus Opiskeluoikeus]
@@ -131,7 +130,7 @@
             (opiskeluoikeus-db/insert-opiskeluoikeus! opiskeluoikeus)))
 
         (c-api/DELETE "/opiskeluoikeus/:opiskeluoikeus-oid" []
-          :path-params [opiskeluoikeus-oid :- s/Str]
+          :path-params [opiskeluoikeus-oid :- oid-schema/OpiskeluoikeusOID]
           (response/ok
             (db-ops/delete!
               :opiskeluoikeudet ["oid = ?" opiskeluoikeus-oid])))))))
