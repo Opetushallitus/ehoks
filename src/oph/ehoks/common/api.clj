@@ -1,14 +1,15 @@
 (ns oph.ehoks.common.api
-  (:require [ring.util.http-response :as response]
-            [clojure.string :as cstr]
+  (:require [clojure.string :as cstr]
             [clojure.tools.logging :as log]
             [compojure.api.coercion.core :as cc]
             [compojure.api.exception :as c-ex]
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.external.organisaatio :as organisaatio]
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]
+            [oph.ehoks.middleware :as middleware]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]
-            [oph.ehoks.config :refer [config]]
-            [oph.ehoks.middleware :as middleware]
-            [oph.ehoks.logging.access :refer [wrap-access-logger]]))
+            [ring.util.http-response :as response]))
 
 (defn dissoc-schema-validation-handler!
   [e data req]
@@ -53,6 +54,8 @@
    ; välitetä virheitä käyttäjälle "500 Internal Server Error" -koodilla.
    ::c-ex/response-validation (c-ex/with-logging
                                 c-ex/http-response-handler :error)
+   ::organisaatio/organisation-not-found (c-ex/with-logging
+                                           organisaatio/not-found-handler :warn)
    :not-found not-found-handler
    :unauthorized unauthorized-handler
    ::c-ex/default exception-handler})

@@ -75,7 +75,7 @@
       (some
         #(= user-org %)
         (str/split
-          (:parentOidPath (o/get-organisaatio target-org) "")
+          (:parentOidPath (o/get-existing-organisation! target-org) "")
           #"\|"))))
 
 (defn get-organisation-privileges
