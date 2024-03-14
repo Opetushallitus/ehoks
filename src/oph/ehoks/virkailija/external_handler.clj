@@ -29,13 +29,9 @@
         :path-params [oid :- oid-schema/OrganisaatioOID]
         :summary "Organisaation tiedot oidin perusteella"
         :return (restful/response s/Any)
-        (try
-          (restful/ok (organisaatio/get-organisaatio-info oid))
-          (catch Exception e
-            (let [data (ex-data e)]
-              (if (= (:status data) 404)
-                (response/not-found)
-                (throw e)))))))
+        (if-let [organisation (organisaatio/get-organisation! oid)]
+          (restful/ok organisation)
+          (response/not-found))))
 
     (c-api/context "/koodisto" []
       (c-api/GET "/:koodi-uri" []

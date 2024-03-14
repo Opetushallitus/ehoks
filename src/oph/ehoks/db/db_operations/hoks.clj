@@ -713,8 +713,7 @@
   (let [hoks (select-hoks-by-id hoks-id)
         oppija (op/select-oppija-by-oid (:oppija-oid hoks))
         oo (oo/select-opiskeluoikeus-by-oid (:opiskeluoikeus-oid hoks))
-        organisaatio (if-let [oppilaitos-oid (:oppilaitos-oid oo)]
-                       (org/get-organisaatio-info oppilaitos-oid))]
+        organisaatio (org/get-existing-organisation! (:oppilaitos-oid oo))]
     {:nimi (:nimi oppija)
      :hoksId (:id hoks)
      :oppilaitosNimi (get-in organisaatio [:nimi] {:fi "" :sv ""})
