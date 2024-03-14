@@ -12,5 +12,5 @@
       :summary "Hakee lokalisoinnin tulokset lokalisointipalvelusta"
       :return (restful/response common-schema/Lokalisointi)
       :query-params [{category :- String "ehoks"}]
-      (a/go (restful/rest-ok
+      (a/go (restful/ok
               (lokalisointi/get-localization-results :category category))))))
