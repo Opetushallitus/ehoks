@@ -84,14 +84,13 @@
                     :summary "Oppijan perustiedot"
                     :return (rest/response common-schema/Oppija)
                     (if-let [oppija (oppijaindex/get-oppija-by-oid oid)]
-                      (rest/rest-ok oppija)
+                      (rest/ok oppija)
                       (response/not-found)))
 
                   (c-api/GET "/opiskeluoikeudet" [:as request]
                     :summary "Oppijan opiskeluoikeudet"
                     :return (rest/response [s/Any])
-                    (rest/rest-ok
-                      (koski/get-oppija-opiskeluoikeudet oid)))
+                    (rest/ok (koski/get-oppija-opiskeluoikeudet oid)))
 
                   (c-api/GET "/hoks" [:as request]
                     :summary "Oppijan HOKSit kokonaisuudessaan"
@@ -99,7 +98,7 @@
                     (let [hokses (h/get-hokses-by-oppija oid)]
                       (if (empty? hokses)
                         (response/not-found {:message "No HOKSes found"})
-                        (rest/rest-ok (map #(dissoc % :id) hokses)))))
+                        (rest/ok (map #(dissoc % :id) hokses)))))
 
                   (c-api/GET "/kyselylinkit" []
                     :summary "Palauttaa oppijan aktiiviset kyselylinkit"
@@ -114,7 +113,7 @@
                                              (LocalDate/now)
                                              (:voimassa-loppupvm %1))))
                                 (heratepalvelu/get-oppija-kyselylinkit oid)))]
-                        (rest/rest-ok kyselylinkit))
+                        (rest/ok kyselylinkit))
                       (catch Exception e
                         (log/error e)
                         (throw e)))))))

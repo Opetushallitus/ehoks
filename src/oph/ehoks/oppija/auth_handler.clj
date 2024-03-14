@@ -112,16 +112,16 @@
                   user-info (:body user-info-response)]
               (if (and (= (:status user-info-response) 200)
                        (seq user-info))
-                (rest/rest-ok [(onr/convert-student-info user-info)])
+                (rest/ok [(onr/convert-student-info user-info)])
                 (throw (ex-info "External system error" user-info-response))))
-            (rest/rest-ok [session-user]))))
+            (rest/ok [session-user]))))
 
       (c-api/GET "/" [:as request]
         :summary "Käyttäjän istunto"
         :header-params [caller-id :- s/Str]
         :return (rest/response [schema/User])
         (let [{{:keys [user]} :session} request]
-          (rest/rest-ok
+          (rest/ok
             [(select-keys user [:oid :first-name :common-name :surname
                                 :usingValtuudet])])))
 

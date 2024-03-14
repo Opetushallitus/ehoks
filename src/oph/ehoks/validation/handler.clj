@@ -16,4 +16,4 @@
       :summary "Validointi uuden HOKSin luontiin"
       :body [hoks hoks-schema/HOKSLuonti]
       :return (rest/response {})
-      (rest/rest-ok {}))))
+      (rest/ok {}))))
