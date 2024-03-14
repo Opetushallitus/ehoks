@@ -10,6 +10,7 @@
             [oph.ehoks.opiskelijapalaute :as op]
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.restful :as restful]
+            [oph.ehoks.schema.oid :as oid-schema]
             [ring.util.http-response :as response]
             [schema.core :as s])
   (:import (java.time LocalDate)))
@@ -92,14 +93,14 @@
             Huom: Opiskeluoikeudet taulun oppija-oid päivittyy on update cascade
             säännön kautta."
         :header-params [caller-id :- s/Str]
-        :query-params [oid :- s/Str]
+        :query-params [oid :- oid-schema/OppijaOID]
         (oi/handle-onrmodified oid)
         ; TODO refaktoroi onr-käsittelyä auditlokitusystävällisemmäksi (OY-4523)
         (response/no-content))
 
       (c-api/GET "/tyoelamajaksot-active-between" []
         :summary "Työelämäjaksot voimassa aikavälin sisällä tietyllä oppijalla"
-        :query-params [oppija :- s/Str
+        :query-params [oppija :- oid-schema/OppijaOID
                        start :- LocalDate
                        end :- LocalDate]
         (restful/ok (hp/select-tyoelamajaksot-active-between oppija start end)))
