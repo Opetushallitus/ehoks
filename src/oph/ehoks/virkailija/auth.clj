@@ -18,7 +18,7 @@
       :header-params [caller-id :- s/Str]
       :return (restful/response schema/VirkailijaSession)
       (if-let [virkailija-user (get-in request [:session :virkailija-user])]
-        (restful/rest-ok
+        (restful/ok
           (assoc (select-keys virkailija-user
                               [:oidHenkilo :organisation-privileges])
                  :isSuperuser (boolean (user/oph-super-user?

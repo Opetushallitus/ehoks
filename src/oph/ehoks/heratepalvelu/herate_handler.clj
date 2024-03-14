@@ -33,7 +33,7 @@
         :return s/Int
         (let [l (or limit 10)
               periods (hp/process-finished-workplace-periods start end l)]
-          (restful/rest-ok (count periods))))
+          (restful/ok (count periods))))
 
       (c-api/GET "/kasittelemattomat-heratteet" []
         :summary "HOKSit, joilla on käsittelemättömiä herätteitä"
@@ -43,7 +43,7 @@
         :return s/Int
         (let [l (or limit 10)
               hoksit (hp/process-hoksit-without-kyselylinkit start end l)]
-          (restful/rest-ok (count hoksit))))
+          (restful/ok (count hoksit))))
 
       (c-api/PATCH "/osaamisenhankkimistavat/:id/kasitelty" []
         :path-params [id :- s/Int]
@@ -68,7 +68,7 @@
         :return {:count s/Int}
         (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
               count  (op/send-every-needed! :aloituskysely hoksit)]
-          (restful/rest-ok {:count count})))
+          (restful/ok {:count count})))
 
       (c-api/POST "/hoksit/resend-paattoherate" request
         :summary "Lähettää uudet päättökyselyherätteet herätepalveluun"
@@ -78,7 +78,7 @@
         :return {:count s/Int}
         (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
               count  (op/send-every-needed! :paattokysely hoksit)]
-          (restful/rest-ok {:count count})))
+          (restful/ok {:count count})))
 
       (c-api/POST "/opiskeluoikeus-update" request
         :summary "Päivittää aktiivisten hoksien opiskeluoikeudet Koskesta"
@@ -102,8 +102,7 @@
         :query-params [oppija :- s/Str
                        start :- LocalDate
                        end :- LocalDate]
-        (restful/rest-ok
-          (hp/select-tyoelamajaksot-active-between oppija start end)))
+        (restful/ok (hp/select-tyoelamajaksot-active-between oppija start end)))
 
       (c-api/DELETE "/tyopaikkaohjaajan-yhteystiedot" []
         :summary "Poistaa työpaikkaohjaajan yhteystiedot yli kolme kuukautta
@@ -115,7 +114,7 @@
         (let [hankkimistavat
               []] ;(db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)]
           ; TODO lisää auditlog entry, kun siivous enabloidaan
-          (restful/rest-ok {:hankkimistapa-ids hankkimistavat})))
+          (restful/ok {:hankkimistapa-ids hankkimistavat})))
 
       (c-api/DELETE "/opiskelijan-yhteystiedot" []
         :summary "Poistaa opiskelijan yhteystiedot yli kolme kuukautta
@@ -126,4 +125,4 @@
         :return {:hoks-ids [s/Int]}
         (let [hoks-ids []] ;(db-hoks/delete-opiskelijan-yhteystiedot!)]
           ; TODO lisää auditlog entry, kun siivous enabloidaan
-          (restful/rest-ok {:hoks-ids hoks-ids}))))))
+          (restful/ok {:hoks-ids hoks-ids}))))))

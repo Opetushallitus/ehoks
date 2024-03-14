@@ -19,33 +19,31 @@
         :path-params [koodi-uri :- s/Str]
         :summary "Koodiston haku Koodisto-Koodi-Urilla."
         :return (rest/response s/Any)
-        (rest/rest-ok (koodisto/get-koodi koodi-uri))))
+        (rest/ok (koodisto/get-koodi koodi-uri))))
 
     (c-api/context "/eperusteet" []
       (c-api/GET "/tutkinnonosat/:id/viitteet" [id]
         :path-params [id :- Long]
         :summary "Tutkinnon osan viitteet."
         :return (rest/response [s/Any])
-        (rest/rest-ok (eperusteet/get-tutkinnon-osa-viitteet id)))
+        (rest/ok (eperusteet/get-tutkinnon-osa-viitteet id)))
 
       (c-api/GET "/tutkinnonosat/:id/osaalueet" []
         :path-params [id :- Long]
         :summary "Yhteisen tutkinnon osan osa-alueet."
         :return (rest/response [s/Any])
-        (try
-          (rest/rest-ok
-            (eperusteet/get-tutkinnon-osan-osa-alueet id))
-          (catch Exception e
-            (if (= (:status (ex-data e)) 400)
-              (response/not-found
-                {:message "Tutkinnon osan osa-alue not found"})
-              (throw e)))))
+        (try (rest/ok (eperusteet/get-tutkinnon-osan-osa-alueet id))
+             (catch Exception e
+               (if (= (:status (ex-data e)) 400)
+                 (response/not-found
+                   {:message "Tutkinnon osan osa-alue not found"})
+                 (throw e)))))
 
       (c-api/GET "/tutkinnot" []
         :query-params [diaarinumero :- String]
         :summary "Tutkinnon haku diaarinumeron perusteella."
         :return (rest/response s/Any)
-        (rest/rest-ok (eperusteet/find-tutkinto diaarinumero)))
+        (rest/ok (eperusteet/find-tutkinto diaarinumero)))
 
       (c-api/GET "/tutkinnot/:id/suoritustavat/reformi/rakenne" [id]
         :path-params [id :- Long]
@@ -65,8 +63,8 @@
         :path-params [koodi-uri :- s/Str]
         :summary "Tutkinnon osan perusteiden haku Koodisto-Koodi-Urilla."
         :return (rest/response [s/Any])
-        (rest/rest-ok (eperusteet/adjust-tutkinnonosa-arviointi
-                        (eperusteet/find-tutkinnon-osat koodi-uri))))
+        (rest/ok (eperusteet/adjust-tutkinnonosa-arviointi
+                   (eperusteet/find-tutkinnon-osat koodi-uri))))
 
       (c-api/GET "/koulutuksenOsa/:koodi-uri" [:as request]
         :summary "Hakee koulutuksenOsan ePerusteet-palvelusta"
@@ -82,7 +80,7 @@
                  Koodiin täydennetään automaattisesti
                  'paikallinen_tutkinnonosa'"
         :return (rest/response [s/Any])
-        (rest/rest-ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))
+        (rest/ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))
 
     (c-api/context "/organisaatio" []
       (c-api/GET "/:oid" []

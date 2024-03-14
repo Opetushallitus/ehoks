@@ -67,9 +67,8 @@
         (try
           (let [jakolinkki (db/insert-shared-module! values)
                 share-id (str (:share_id jakolinkki))]
-            (rest/rest-ok
-              {:uri (format "%s/%s" (:uri request) share-id)}
-              :uuid share-id))
+            (rest/ok {:uri (format "%s/%s" (:uri request) share-id)}
+                     :uuid share-id))
           (catch Exception e
             (response/bad-request! {:error (ex-message e)}))))
 
@@ -79,7 +78,7 @@
         :path-params [uuid :- String]
         (try
           (if-let [jakolinkki (fetch-shared-link-data uuid)]
-            (rest/rest-ok jakolinkki)
+            (rest/ok jakolinkki)
             (response/not-found))
           (catch ExceptionInfo ei
             (cond
@@ -104,5 +103,5 @@
       :path-params [module-uuid :- String]
       (let [jakolinkit (db/select-shared-module-links module-uuid)]
         (if (pos? (count jakolinkit))
-          (rest/rest-ok jakolinkit)
-          (rest/rest-ok []))))))
+          (rest/ok jakolinkit)
+          (rest/ok []))))))
