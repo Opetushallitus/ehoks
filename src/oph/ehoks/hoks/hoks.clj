@@ -1,21 +1,22 @@
 (ns oph.ehoks.hoks.hoks
-  (:require [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
-            [oph.ehoks.db.postgresql.hankittavat :as db-ha]
-            [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as db-ot]
-            [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.oppijaindex :as oppijaindex]
+  (:require [clojure.java.jdbc :as jdbc]
+            [clojure.set :refer [rename-keys]]
+            [clojure.tools.logging :as log]
+            [clojure.walk]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
+            [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
+            [oph.ehoks.db.postgresql.hankittavat :as db-ha]
+            [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as db-ot]
+            [oph.ehoks.external.koski :as k]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
+            [oph.ehoks.hoks.common :as c]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
-            [oph.ehoks.hoks.common :as c]
-            [oph.ehoks.external.koski :as k]
             [oph.ehoks.opiskelijapalaute :as op]
-            [clojure.tools.logging :as log]
-            [clojure.walk]
-            [clojure.set :refer [rename-keys]])
+            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
+            [oph.ehoks.oppijaindex :as oppijaindex])
   (:import (java.time LocalDate)
            (java.util UUID)))
 
@@ -251,15 +252,13 @@
 (defn check-and-save-hoks!
   "Tekee uuden HOKSin tarkistukset ja tallentaa sen, jos kaikki on OK."
   [hoks]
-  (let [opiskeluoikeudet
-        (k/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
-    (when-not
-     (oppijaindex/oppija-opiskeluoikeus-match?
-       opiskeluoikeudet (:opiskeluoikeus-oid hoks))
+  (let [opiskeluoikeudet (k/fetch-opiskeluoikeudet-by-oppija-id
+                           (:oppija-oid hoks))]
+    (when-not (oppijaindex/oppija-opiskeluoikeus-match?
+                opiskeluoikeudet (:opiskeluoikeus-oid hoks))
       (throw (ex-info "Opiskeluoikeus does not match any held by oppija"
                       {:error :disallowed-update})))
-    (when-not
-     (oppijaindex/opiskeluoikeus-still-active? hoks opiskeluoikeudet)
+    (when-not (opiskeluoikeus/still-active? hoks opiskeluoikeudet)
       (throw (ex-info (format "Opiskeluoikeus %s is no longer active"
                               (:opiskeluoikeus-oid hoks))
                       {:error :disallowed-update})))
@@ -394,8 +393,7 @@
         old-oppija-oid (:oppija-oid old-hoks)
         new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-hoks)
         old-opiskeluoikeus-oid (:opiskeluoikeus-oid old-hoks)]
-    (when-not
-     (oppijaindex/opiskeluoikeus-still-active? new-opiskeluoikeus-oid)
+    (when-not (opiskeluoikeus/still-active? new-opiskeluoikeus-oid)
       (throw (ex-info (format "Opiskeluoikeus %s is no longer active"
                               new-opiskeluoikeus-oid)
                       {:error :disallowed-update})))

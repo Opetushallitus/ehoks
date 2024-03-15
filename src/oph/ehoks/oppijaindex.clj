@@ -486,30 +486,6 @@
     (add-oppija-hankintakoulutukset
       opiskeluoikeudet (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))))
 
-(defn opiskeluoikeus-still-active?
-  "Checks if the given opiskeluoikeus is still valid, ie. not valmistunut,
-  eronnut, katsotaaneronneeksi.
-  Alternatively checks from the list of all opiskeluoikeudet held by the oppija
-  that the opiskeluoikeus associated with the hoks is still valid."
-  ([opiskeluoikeus-oid]
-    (if (:prevent-finished-opiskeluoikeus-updates? config)
-      (let [opiskeluoikeus (k/get-opiskeluoikeus-info opiskeluoikeus-oid)]
-        (not (opiskeluoikeus/inactive? opiskeluoikeus)))
-      true))
-  ([hoks opiskeluoikeudet]
-    (if (:prevent-finished-opiskeluoikeus-updates? config)
-      (let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-            opiskeluoikeus (reduce
-                             (fn [active oo]
-                               (if (= (:oid oo) opiskeluoikeus-oid)
-                                 oo
-                                 active))
-                             opiskeluoikeudet)]
-        (if-not (opiskeluoikeus/inactive? opiskeluoikeus)
-          true
-          false))
-      true)))
-
 (defn update-oppija-oid-in-db!
   "Change the OID of an oppija to a new one in all tables in the database."
   [old-oid new-oid]
