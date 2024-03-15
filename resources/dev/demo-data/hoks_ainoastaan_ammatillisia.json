@@ -1,5 +1,5 @@
 {
-  "opiskeluoikeus-oid": "1.2.246.562.15.76811932025",
+  "opiskeluoikeus-oid": "1.2.246.562.15.76811932045",
   "oppija-oid": "1.2.246.562.24.44651722625",
   "ensikertainen-hyvaksyminen": "2017-10-25",
   "sahkoposti": "testikayttaja@testi.fi",
@@ -65,17 +65,18 @@
             "oppilaitos-oid": "1.2.246.562.10.54453921329"
           },
           "osaamisen-hankkimistapa-koodi-versio": 1,
+	  "osa-aikaisuustieto": 75,
           "jarjestajan-edustaja": {
             "nimi": "Jarjen, Jari",
             "rooli": "Järjestysedustaja",
-            "oppilaitos-oid": "1.2.246.562.10.54425555"
+            "oppilaitos-oid": "1.2.246.562.10.10054425555"
           },
           "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
           "alku": "2028-02-10",
           "loppu": "2028-02-10"
         }
       ],
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.10054425555",
       "olennainen-seikka": true
     }
   ],

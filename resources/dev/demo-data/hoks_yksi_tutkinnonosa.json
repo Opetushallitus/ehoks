@@ -1,5 +1,5 @@
 {
-  "opiskeluoikeus-oid": "1.2.246.562.15.76811932025",
+  "opiskeluoikeus-oid": "1.2.246.562.15.76811932078",
   "oppija-oid": "1.2.246.562.24.44651722625",
   "ensikertainen-hyvaksyminen": "2017-10-25",
   "sahkoposti": "testikayttaja@testi.fi",
@@ -17,7 +17,7 @@
     {
       "tutkinnon-osa-koodi-uri": "tutkinnonosat_103590",
       "tutkinnon-osa-koodi-versio": 1,
-      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.54425555",
+      "koulutuksen-jarjestaja-oid": "1.2.246.562.10.10054425555",
       "olennainen-seikka": true,
       "osaamisen-osoittaminen": [
         {
@@ -130,10 +130,10 @@
           "jarjestajan-edustaja": {
             "nimi": "Tyyppi, Joku",
             "rooli": "Järjestysedustaja",
-            "oppilaitos-oid": "1.2.246.562.10.54425555"
+            "oppilaitos-oid": "1.2.246.562.10.10054425555"
           },
           "ajanjakson-tarkenne": "Tarkempia tietoja ajanjaksoista",
-          "alku": "2018-05-02",
+          "alku": "2023-05-02",
           "loppu": "2023-08-11",
           "osa-aikaisuustieto": 75
         }

@@ -1,0 +1,568 @@
+	{
+		"aiemmin-hankitut-yhteiset-tutkinnon-osat": [],
+		"hankittavat-paikalliset-tutkinnon-osat": [
+			{
+				"tavoitteet-ja-sisallot": "Kansainvälisessä työympäristössä toimiminen.\r\nOpiskelija osaa:\r\n-hakeutua kansainväliseen työympäristöön\r\n-toimia kansainvälisessä ympäristössä työtehtävissä tai projektissa\r\n-dokumentoida sekä viestiä toiminnastaan\r\n-arvioida työskentelyään",
+				"nimi": "Kansainvälisessä työympäristössä toimiminen",
+				"laajuus": 15,
+				"olennainen-seikka": false,
+				"osaamisen-osoittaminen": [],
+				"osaamisen-hankkimistavat": []
+			}
+		],
+		"ensikertainen-hyvaksyminen": "2021-08-13",
+		"hankittavat-koulutuksen-osat": [],
+		"sahkoposti": "siibarbiibar@edu.keuda.fi",
+		"osaamisen-hankkimisen-tarve": true,
+		"urasuunnitelma-koodi-uri": "urasuunnitelma_0005",
+		"aiemmin-hankitut-paikalliset-tutkinnon-osat": [],
+		"opiskeluoikeus-oid": "1.2.246.562.15.76811932094",
+		"aiemmin-hankitut-ammat-tutkinnon-osat": [],
+		"paivitetty": "2023-09-20T00:00:00Z",
+		"hankittavat-yhteiset-tutkinnon-osat": [
+			{
+				"tutkinnon-osa-koodi-uri": "tutkinnonosat_400012",
+				"tutkinnon-osa-koodi-versio": 2,
+				"osa-alueet": [
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_vvai",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 48,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_vvai",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 12,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_vvai7",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 48,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_vvai7",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 36,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_vvtk",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 12,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_vvtk",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 36,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_vvvk",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 36,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_vvvk",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 60,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_vvtd",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 24,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_vvtd",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 36,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_vvtl",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 36,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_vvtl",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 12,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					}
+				]
+			},
+			{
+				"tutkinnon-osa-koodi-uri": "tutkinnonosat_400013",
+				"tutkinnon-osa-koodi-versio": 2,
+				"osa-alueet": [
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_fk",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 24,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_fk",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 36,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_ma",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 12,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_ma",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 48,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					}
+				]
+			},
+			{
+				"tutkinnon-osa-koodi-uri": "tutkinnonosat_400014",
+				"tutkinnon-osa-koodi-versio": 2,
+				"osa-alueet": [
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_ytyk",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 24,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_ytyk",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 36,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_yttt",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 36,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_yttt",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 24,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_ytou",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 12,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_ytyy",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 12,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_ytth",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 24,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_ytth",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 36,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_ytkk",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 36,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					},
+					{
+						"osa-alue-koodi-uri": "ammatillisenoppiaineet_ytkk",
+						"osa-alue-koodi-versio": 1,
+						"olennainen-seikka": false,
+						"opetus-ja-ohjaus-maara": 12,
+						"osaamisen-osoittaminen": [],
+						"osaamisen-hankkimistavat": []
+					}
+				]
+			}
+		],
+		"oppija-oid": "1.2.246.562.24.99685381249",
+		"hankittavat-ammat-tutkinnon-osat": [
+			{
+				"tutkinnon-osa-koodi-uri": "tutkinnonosat_106281",
+				"tutkinnon-osa-koodi-versio": 2,
+				"olennainen-seikka": false,
+				"opetus-ja-ohjaus-maara": 240,
+				"osaamisen-osoittaminen": [
+					{
+						"koulutuksen-jarjestaja-osaamisen-arvioijat": [
+							{
+								"nimi": "Aho, Marketta",
+								"organisaatio": {
+									"oppilaitos-oid": "1.2.246.562.10.55867603791"
+								}
+							}
+						],
+						"nayttoymparisto": {
+							"nimi": "Eponton Oy, Ravintola Karppi"
+						},
+						"osa-alueet": [],
+						"sisallon-kuvaus": [
+							"Asiakas- ja työtilojen kunnostaminen, tuotteiden valmistaminen, asiakkaiden palveleminen, kassapalveluissa työskentely, asiakas- ja työtilojen siisteydestä sekä viihtyisyydestä huolehtiminen sekä työvuoron lopetustyöt\n"
+						],
+						"tyoelama-osaamisen-arvioijat": [
+							{
+								"nimi": "Kaaso, Inka",
+								"organisaatio": {
+									"nimi": "Eponton Oy, Ravintola Karppi"
+								}
+							}
+						],
+						"alku": "2022-04-20",
+						"yksilolliset-kriteerit": [
+							""
+						],
+						"loppu": "2022-05-27"
+					}
+				],
+				"osaamisen-hankkimistavat": [
+					{
+						"keskeytymisajanjaksot": [],
+						"osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_oppilaitosmuotoinenkoulutus",
+						"osaamisen-hankkimistapa-koodi-versio": 1,
+						"yksiloiva-tunniste": "33895328003589565523",
+						"muut-oppimisymparistot": [
+							{
+								"alku": "2021-12-02",
+								"loppu": "2022-02-09",
+								"oppimisymparisto-koodi-uri": "oppimisymparistot_0001",
+								"oppimisymparisto-koodi-versio": 1
+							}
+						],
+						"alku": "2021-12-02",
+						"loppu": "2022-02-09"
+					},
+					{
+						"keskeytymisajanjaksot": [],
+						"tyopaikalla-jarjestettava-koulutus": {
+							"tyopaikan-nimi": "Eponton Oy, Ravintola Karppi",
+							"tyopaikan-y-tunnus": "2613026-8",
+							"vastuullinen-tyopaikka-ohjaaja": {
+								"nimi": "Kaaso, Inka",
+								"sahkoposti": "myynti@eponton.fi",
+								"puhelinnumero": "0509920011"
+							},
+							"keskeiset-tyotehtavat": [
+								"-Asiakas- ja työtilojen kunnostaminen tuotteiden valmistaminen asiakkaiden palveleminen, kassapalveluissa \ntyöskentely\n-Asiakas- ja työtilojen  siisteydestä sekä viihtyisyydestä huolehtiminen\n- Työvuoron lopetustyöt"
+							]
+						},
+						"osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_koulutussopimus",
+						"osa-aikaisuustieto": 100,
+						"osaamisen-hankkimistapa-koodi-versio": 1,
+						"yksiloiva-tunniste": "338953280041441482914144148322",
+						"muut-oppimisymparistot": [],
+						"alku": "2022-04-12",
+						"loppu": "2022-05-27"
+					},
+					{
+						"keskeytymisajanjaksot": [],
+						"osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_oppilaitosmuotoinenkoulutus",
+						"osaamisen-hankkimistapa-koodi-versio": 1,
+						"yksiloiva-tunniste": "33895328004177443373",
+						"muut-oppimisymparistot": [
+							{
+								"alku": "2021-08-09",
+								"loppu": "2021-10-10",
+								"oppimisymparisto-koodi-uri": "oppimisymparistot_0001",
+								"oppimisymparisto-koodi-versio": 1
+							}
+						],
+						"alku": "2021-08-09",
+						"loppu": "2021-10-10"
+					}
+				]
+			},
+			{
+				"tutkinnon-osa-koodi-uri": "tutkinnonosat_106272",
+				"tutkinnon-osa-koodi-versio": 2,
+				"olennainen-seikka": false,
+				"opetus-ja-ohjaus-maara": 300,
+				"osaamisen-osoittaminen": [
+					{
+						"koulutuksen-jarjestaja-osaamisen-arvioijat": [
+							{
+								"nimi": "Hintsa, Jarno",
+								"organisaatio": {
+									"oppilaitos-oid": "1.2.246.562.10.55867603791"
+								}
+							}
+						],
+						"nayttoymparisto": {
+							"nimi": "PahisRavintola Oy"
+						},
+						"osa-alueet": [],
+						"sisallon-kuvaus": [
+							"Ruokaravintolan asiakaspalvelutehtävät. ruokien ja juomien myynti. Työvuoroon liittyvät tehtävät, alus- ja sulkuvuorot. Omavalvonta ja ravintolan puhtaanapitotehtävät. Työyhteisössä toimiminen ja palautteen käsittely, työyhteisössä ja asiakaspalvelussa."
+						],
+						"tyoelama-osaamisen-arvioijat": [
+							{
+								"nimi": "Kurman-Otsa, Peera",
+								"organisaatio": {
+									"nimi": "PahisRavintola Oy"
+								}
+							}
+						],
+						"alku": "2023-08-15",
+						"yksilolliset-kriteerit": [],
+						"loppu": "2023-08-21"
+					}
+				],
+				"osaamisen-hankkimistavat": [
+					{
+						"keskeytymisajanjaksot": [],
+						"osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_oppilaitosmuotoinenkoulutus",
+						"osaamisen-hankkimistapa-koodi-versio": 1,
+						"yksiloiva-tunniste": "33895328025056794728",
+						"muut-oppimisymparistot": [
+							{
+								"alku": "2023-02-13",
+								"loppu": "2023-06-02",
+								"oppimisymparisto-koodi-uri": "oppimisymparistot_0001",
+								"oppimisymparisto-koodi-versio": 1
+							}
+						],
+						"alku": "2023-02-13",
+						"loppu": "2023-06-02"
+					},
+					{
+						"keskeytymisajanjaksot": [],
+						"osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_oppilaitosmuotoinenkoulutus",
+						"osaamisen-hankkimistapa-koodi-versio": 1,
+						"yksiloiva-tunniste": "33895328025346931574",
+						"muut-oppimisymparistot": [
+							{
+								"alku": "2023-06-03",
+								"loppu": "2023-08-13",
+								"oppimisymparisto-koodi-uri": "oppimisymparistot_0003",
+								"oppimisymparisto-koodi-versio": 1
+							}
+						],
+						"alku": "2023-06-03",
+						"loppu": "2023-08-13"
+					}
+				]
+			},
+			{
+				"tutkinnon-osa-koodi-uri": "tutkinnonosat_106270",
+				"tutkinnon-osa-koodi-versio": 2,
+				"olennainen-seikka": false,
+				"opetus-ja-ohjaus-maara": 480,
+				"osaamisen-osoittaminen": [],
+				"osaamisen-hankkimistavat": [
+					{
+						"keskeytymisajanjaksot": [],
+						"osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_oppilaitosmuotoinenkoulutus",
+						"osaamisen-hankkimistapa-koodi-versio": 1,
+						"yksiloiva-tunniste": "33895328045587728569",
+						"muut-oppimisymparistot": [
+							{
+								"alku": "2023-08-14",
+								"loppu": "2023-09-09",
+								"oppimisymparisto-koodi-uri": "oppimisymparistot_0001",
+								"oppimisymparisto-koodi-versio": 1
+							}
+						],
+						"alku": "2023-08-14",
+						"loppu": "2023-09-09"
+					},
+					{
+						"keskeytymisajanjaksot": [],
+						"osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_oppilaitosmuotoinenkoulutus",
+						"osaamisen-hankkimistapa-koodi-versio": 1,
+						"yksiloiva-tunniste": "33895328045699528135",
+						"muut-oppimisymparistot": [
+							{
+								"alku": "2023-10-07",
+								"loppu": "2023-12-22",
+								"oppimisymparisto-koodi-uri": "oppimisymparistot_0001",
+								"oppimisymparisto-koodi-versio": 1
+							}
+						],
+						"alku": "2023-10-07",
+						"loppu": "2023-12-22"
+					}
+				]
+			},
+			{
+				"tutkinnon-osa-koodi-uri": "tutkinnonosat_106287",
+				"tutkinnon-osa-koodi-versio": 2,
+				"olennainen-seikka": false,
+				"opetus-ja-ohjaus-maara": 360,
+				"osaamisen-osoittaminen": [],
+				"osaamisen-hankkimistavat": []
+			},
+			{
+				"tutkinnon-osa-koodi-uri": "tutkinnonosat_106273",
+				"tutkinnon-osa-koodi-versio": 2,
+				"olennainen-seikka": false,
+				"opetus-ja-ohjaus-maara": 300,
+				"osaamisen-osoittaminen": [],
+				"osaamisen-hankkimistavat": []
+			},
+			{
+				"tutkinnon-osa-koodi-uri": "tutkinnonosat_106274",
+				"tutkinnon-osa-koodi-versio": 2,
+				"olennainen-seikka": false,
+				"opetus-ja-ohjaus-maara": 120,
+				"osaamisen-osoittaminen": [
+					{
+						"koulutuksen-jarjestaja-osaamisen-arvioijat": [
+							{
+								"nimi": "Orakan, Terkel",
+								"organisaatio": {
+									"oppilaitos-oid": "1.2.246.562.10.55867603791"
+								}
+							}
+						],
+						"nayttoymparisto": {
+							"nimi": "Kahvila Kolputinrauta Oy"
+						},
+						"osa-alueet": [],
+						"sisallon-kuvaus": [
+							"-saavun ajoissa työpaikalle asianmukaisessa vaatetuksessa.\n-siistin työtiloja, pyöritän astiahuoltoa\n-otan asiakkaita vastaan\n-ruoka- ja juomatuotteiden myyminen ja laskuttaminen (kassajärjestelmän käyttö)\n-tuotteiden valmistaminen, kahvin keittäminen\n-tarjoilu asiakkaille\n-lakaisen lattioita, puhdistan pöytiä\n-pyöritän astiahuoltoa ja järjestelen tavaroita paikoilleen"
+						],
+						"tyoelama-osaamisen-arvioijat": [
+							{
+								"nimi": "Hedberg, Liisa",
+								"organisaatio": {
+									"nimi": "Kahvila Kolputinrauta Oy"
+								}
+							}
+						],
+						"alku": "2022-09-13",
+						"yksilolliset-kriteerit": [],
+						"loppu": "2022-09-28"
+					}
+				],
+				"osaamisen-hankkimistavat": [
+					{
+						"keskeytymisajanjaksot": [],
+						"tyopaikalla-jarjestettava-koulutus": {
+							"tyopaikan-nimi": "Kahvila Kolputinrauta Oy",
+							"tyopaikan-y-tunnus": "2708404-8",
+							"vastuullinen-tyopaikka-ohjaaja": {
+								"nimi": "Orakan, Terkel",
+								"sahkoposti": "kolputinrauta@gmail.com",
+								"puhelinnumero": "0444954300"
+							},
+							"keskeiset-tyotehtavat": [
+								"valmistautua asiakaspalvelutilanteisiin\n\npalvella asiakkaita, myydä ja tarjoilla kahvilan ruoka- ja juomatuotteita\n\nrekisteröidä myyntiä ja laskuttaa asiakkaita\nhyödyntää alakohtaista kielitaitoa asiakaspalvelussa\ntehdä työvuoron tilityksen ja valmistella seuraavaa työvuoroa\narvioida omaa osaamistaan ja toimintaansa työyhteisön jäsenenä.\n"
+							]
+						},
+						"osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_koulutussopimus",
+						"osaamisen-hankkimistapa-koodi-versio": 1,
+						"yksiloiva-tunniste": "338953281646081596934608159694",
+						"muut-oppimisymparistot": [],
+						"alku": "2022-09-12",
+						"loppu": "2022-09-28"
+					}
+				]
+			},
+			{
+				"tutkinnon-osa-koodi-uri": "tutkinnonosat_106275",
+				"tutkinnon-osa-koodi-versio": 2,
+				"olennainen-seikka": false,
+				"opetus-ja-ohjaus-maara": 120,
+				"osaamisen-osoittaminen": [],
+				"osaamisen-hankkimistavat": []
+			},
+			{
+				"tutkinnon-osa-koodi-uri": "tutkinnonosat_106284",
+				"tutkinnon-osa-koodi-versio": 2,
+				"olennainen-seikka": false,
+				"opetus-ja-ohjaus-maara": 300,
+				"osaamisen-osoittaminen": [],
+				"osaamisen-hankkimistavat": [
+					{
+						"keskeytymisajanjaksot": [],
+						"osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_oppilaitosmuotoinenkoulutus",
+						"osaamisen-hankkimistapa-koodi-versio": 1,
+						"yksiloiva-tunniste": "33895328284510474639",
+						"muut-oppimisymparistot": [
+							{
+								"alku": "2022-08-10",
+								"loppu": "2022-12-16",
+								"oppimisymparisto-koodi-uri": "oppimisymparistot_0001",
+								"oppimisymparisto-koodi-versio": 1
+							}
+						],
+						"alku": "2022-08-10",
+						"loppu": "2022-12-16"
+					}
+				]
+			}
+		],
+		"puhelinnumero": "0442409429",
+		"opiskeluvalmiuksia-tukevat-opinnot": []
+	}
