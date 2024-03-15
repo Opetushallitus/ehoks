@@ -11,9 +11,10 @@
             [oph.ehoks.db.postgresql.common :as db]
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.external.koski :as k]
-            [oph.ehoks.external.oppijanumerorekisteri :as onr])
-  (:import [java.time LocalDate]
-           [java.sql Timestamp]))
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
+            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus])
+  (:import [java.sql Timestamp]
+           [java.time LocalDate]))
 
 (def ^:const opiskeluoikeus-refresh-interval-in-days 180)
 
@@ -485,38 +486,6 @@
     (add-oppija-hankintakoulutukset
       opiskeluoikeudet (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))))
 
-(defn get-opiskeluoikeus-tila
-  "Extract tila from opiskeluoikeus"
-  [opiskeluoikeus]
-  (let [opiskeluoikeusjaksot (get-in opiskeluoikeus
-                                     [:tila :opiskeluoikeusjaksot])
-        latest-jakso (reduce
-                       (fn [latest jakso]
-                         (if (.isAfter
-                               (LocalDate/parse (:alku jakso))
-                               (LocalDate/parse (:alku latest)))
-                           jakso
-                           latest))
-                       opiskeluoikeusjaksot)]
-    (get-in latest-jakso [:tila :koodiarvo])))
-
-(defn opiskeluoikeus-tila-inactive?
-  "Check whether opiskeluoikeus tila is inactive"
-  [tila]
-  (some #(= tila %) ["valmistunut"
-                     "eronnut"
-                     "katsotaaneronneeksi"
-                     "peruutettu"]))
-
-(defn opiskeluoikeus-active?
-  "Checks if the given opiskeluoikeus is still valid, ie. not valmistunut,
-  eronnut, katsotaaneronneeksi."
-  [opiskeluoikeus]
-  (if (some? opiskeluoikeus)
-    (not (opiskeluoikeus-tila-inactive?
-           (get-opiskeluoikeus-tila opiskeluoikeus)))
-    false))
-
 (defn opiskeluoikeus-still-active?
   "Checks if the given opiskeluoikeus is still valid, ie. not valmistunut,
   eronnut, katsotaaneronneeksi.
@@ -525,8 +494,7 @@
   ([opiskeluoikeus-oid]
     (if (:prevent-finished-opiskeluoikeus-updates? config)
       (let [opiskeluoikeus (k/get-opiskeluoikeus-info opiskeluoikeus-oid)]
-        (not (opiskeluoikeus-tila-inactive?
-               (get-opiskeluoikeus-tila opiskeluoikeus))))
+        (not (opiskeluoikeus/inactive? opiskeluoikeus)))
       true))
   ([hoks opiskeluoikeudet]
     (if (:prevent-finished-opiskeluoikeus-updates? config)
@@ -537,8 +505,7 @@
                                  oo
                                  active))
                              opiskeluoikeudet)]
-        (if-not (opiskeluoikeus-tila-inactive?
-                  (get-opiskeluoikeus-tila opiskeluoikeus))
+        (if-not (opiskeluoikeus/inactive? opiskeluoikeus)
           true
           false))
       true)))

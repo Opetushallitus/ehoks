@@ -148,6 +148,12 @@
         <groupId>metosin</groupId>
         <artifactId>compojure-api</artifactId>
         <version>2.0.0-alpha31</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>medley</artifactId>
+            <groupId>medley</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>ring</groupId>
@@ -295,6 +301,11 @@
         <version>42.7.2</version>
       </dependency>
       <dependency>
+        <groupId>dev.weavejester</groupId>
+        <artifactId>medley</artifactId>
+        <version>1.7.0</version>
+      </dependency>
+      <dependency>
         <groupId>org.clojure</groupId>
         <artifactId>core.async</artifactId>
         <version>1.6.681</version>
@@ -418,6 +429,10 @@
     <dependency>
       <groupId>com.googlecode.libphonenumber</groupId>
       <artifactId>libphonenumber</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>dev.weavejester</groupId>
+      <artifactId>medley</artifactId>
     </dependency>
     <dependency>
       <groupId>metosin</groupId>
