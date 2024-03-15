@@ -1,12 +1,10 @@
 (ns oph.ehoks.virkailija.handler
   (:require [clj-time.core :as t]
-            [compojure.api.sweet :as c-api]
+            [clojure.string :as str]
+            [clojure.tools.logging :as log]
             [compojure.api.core :refer [route-middleware]]
+            [compojure.api.sweet :as c-api]
             [compojure.route :as compojure-route]
-            [schema.core :as s]
-            [ring.util.http-response :as response]
-            [oph.ehoks.resources :as resources]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.virkailija.auth :as auth]
@@ -16,26 +14,29 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
             [oph.ehoks.db.postgresql.common :as pc]
-            [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.restful :as restful]
-            [oph.ehoks.healthcheck.handler :as healthcheck-handler]
-            [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus]]
-            [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.hoks.handler :as hoks-handler]
-            [oph.ehoks.oppijaindex :as oi]
-            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.healthcheck.handler :as healthcheck-handler]
+            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
+            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]
+            [oph.ehoks.hoks.handler :as hoks-handler]
+            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks.schema :as hoks-schema]
+            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus]]
+            [oph.ehoks.misc.handler :as misc-handler]
+            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
+            [oph.ehoks.oppijaindex :as oi]
+            [oph.ehoks.resources :as resources]
+            [oph.ehoks.restful :as restful]
             [oph.ehoks.validation.handler :as validation-handler]
-            [clojure.string :as str]
-            [clojure.tools.logging :as log]
+            [oph.ehoks.virkailija.cas-handler :as cas-handler]
+            [oph.ehoks.virkailija.external-handler :as external-handler]
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.virkailija.system-handler :as system-handler]
-            [oph.ehoks.virkailija.external-handler :as external-handler]
-            [oph.ehoks.virkailija.cas-handler :as cas-handler]
-            [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
-            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu])
+            [ring.util.http-response :as response]
+            [schema.core :as s])
   (:import (clojure.lang ExceptionInfo)
            (java.time LocalDate)))
 
@@ -144,7 +145,7 @@
 (defn- hoks-has-active-opiskeluoikeus
   "Check if HOKS has an active opiskeluoikeus"
   [hoks]
-  (some #(oi/opiskeluoikeus-active? (koski/get-opiskeluoikeus-info %))
+  (some #(opiskeluoikeus/active? (koski/get-opiskeluoikeus-info %))
         (map :opiskeluoikeus-oid hoks)))
 
 (defn- get-oppilaitos-oid-by-oo-oid
@@ -651,7 +652,7 @@
                                 opiskeluoikeus (koski/get-opiskeluoikeus-info
                                                  opiskeluoikeus-oid)]
                             (if (or (nil? opiskeluoikeus)
-                                    (oi/opiskeluoikeus-active? opiskeluoikeus))
+                                    (opiskeluoikeus/active? opiskeluoikeus))
                               (if (seq oppilaitos-oid)
                                 (if (contains?
                                       (user/get-organisation-privileges

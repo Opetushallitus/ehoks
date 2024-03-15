@@ -6,6 +6,7 @@
                  [clj-http]
                  [cheshire]
                  [com.googlecode.libphonenumber/libphonenumber]
+                 [dev.weavejester/medley]
                  [metosin/compojure-api]
                  [org.flywaydb/flyway-core]
                  [org.clojure/java.jdbc]
@@ -28,7 +29,7 @@
 
                          ;; http server
                          [javax.servlet/javax.servlet-api "4.0.1"]
-                         [metosin/compojure-api "2.0.0-alpha31"]
+                         [metosin/compojure-api "2.0.0-alpha31" :exclusions [medley]]
                          [ring/ring-codec "1.2.0"]
                          [ring/ring-core "1.10.0"]
                          [ring/ring-jetty-adapter "1.10.0"]
@@ -72,6 +73,7 @@
                          [org.postgresql/postgresql "42.7.2"]
 
                          ;; other
+                         [dev.weavejester/medley "1.7.0"]
                          [org.clojure/core.async "1.6.681"]
                          [org.clojure/core.memoize "1.0.257"]
                          [commons-codec "1.16.0"]
