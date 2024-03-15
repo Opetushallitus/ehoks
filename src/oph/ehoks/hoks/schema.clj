@@ -1,11 +1,11 @@
 (ns oph.ehoks.hoks.schema
-  (:require [oph.ehoks.schema.generator :as g]
+  (:require [oph.ehoks.hoks.hoks :refer [tyopaikkajakso? y-tunnus-missing?]]
+            [oph.ehoks.middleware :refer [get-current-opiskeluoikeus]]
             [oph.ehoks.opiskelijapalaute :refer
              [kuuluu-palautteen-kohderyhmaan?]]
-            [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.hoks.hoks :refer [y-tunnus-missing? tyopaikkajakso?]]
-            [oph.ehoks.middleware :refer [get-current-opiskeluoikeus]]
+            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.schema-tools :refer [describe modify]]
+            [oph.ehoks.schema.generator :as g]
             [oph.ehoks.schema.oid :refer [OpiskeluoikeusOID
                                           OppijaOID
                                           OrganisaatioOID]]
@@ -261,8 +261,7 @@
   "Palauttaa true jos tila löytyy ja se ei ole valmistunut, lasna tai
   valiaikaisestikeskeytynyt"
   [opiskeluoikeus]
-  (let [tila (some-> opiskeluoikeus
-                     oppijaindex/get-opiskeluoikeus-tila)]
+  (let [tila (opiskeluoikeus/tila opiskeluoikeus)]
     (and (some? tila)
          (not (contains? #{"valmistunut" "lasna" "valiaikaisestikeskeytynyt"}
                          tila)))))
