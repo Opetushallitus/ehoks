@@ -132,10 +132,6 @@
     (catch Exception e
       (case (:error (ex-data e))
         :disallowed-update (response/bad-request! {:error (.getMessage e)})
-        :duplicate (do (log/warnf
-                         "HOKS with opiskeluoikeus-oid %s already exists"
-                         (:opiskeluoikeus-oid hoks))
-                       (response/bad-request! {:error (.getMessage e)}))
         (throw e)))))
 
 (defn- get-hoks-perustiedot

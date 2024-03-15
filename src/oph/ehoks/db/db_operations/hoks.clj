@@ -459,12 +459,13 @@
   ([hoks db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
-      (let [hoks-by-oo
+      (let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+            hoks-by-oo
             (first
               (jdbc/query
                 conn
                 [queries/select-hoksit-by-opiskeluoikeus-oid-deleted-at-included
-                 (:opiskeluoikeus-oid hoks)]))]
+                 opiskeluoikeus-oid]))]
         (when hoks-by-oo
           (let [error-info (if (some? (:deleted_at hoks-by-oo))
                              (str "Archived HOKS with given opiskeluoikeus "
@@ -472,7 +473,9 @@
                                   "information.")
                              (str "HOKS with the same opiskeluoikeus-oid "
                                   "already exists"))]
-            (throw (ex-info error-info {:error :duplicate})))))
+            (throw (ex-info error-info
+                            {:type               :opiskeluoikeus-already-exists
+                             :opiskeluoikeus-oid opiskeluoikeus-oid})))))
       (let [eid (generate-unique-eid)]
         (first
           (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid))))))))
