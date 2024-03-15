@@ -92,15 +92,6 @@
             [oppijat total-count] (oi/search! search-params)]
         (restful/ok oppijat :total-count total-count)))))
 
-(defn- check-opiskeluoikeus-validity
-  "Check whether opiskeluoikeus is still valid"
-  ([hoks-values]
-    (if-not
-     (oi/opiskeluoikeus-still-active? (:opiskeluoikeus-oid hoks-values))
-      (response/bad-request!
-        {:error (format "Opiskeluoikeus %s is no longer active"
-                        (:opiskeluoikeus-oid hoks-values))}))))
-
 (defn- check-virkailija-privileges
   "Check whether virkailija user has write privileges in HOKS"
   [hoks request]
