@@ -35,6 +35,7 @@
                                 c-ex/http-response-handler :error)
    ::organisaatio/organisation-not-found (c-ex/with-logging
                                            organisaatio/not-found-handler :warn)
+   :disallowed-update (c-ex/with-logging bad-request-handler :warn)
    :opiskeluoikeus-already-exists (c-ex/with-logging bad-request-handler :warn)
    :not-found not-found-handler
    :unauthorized unauthorized-handler
