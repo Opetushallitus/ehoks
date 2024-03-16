@@ -59,8 +59,8 @@
               (hoks-utils/create-app nil) base-url hoks-data)]
         (is (= (:status response) 400))
         (is (= (utils/parse-body (:body response))
-               {:error
-                "Oppija not found in Oppijanumerorekisteri"}))))))
+               {:error (str "Oppija `1.2.246.562.24.40404040406` not found in "
+                            "Oppijanumerorekisteri")}))))))
 
 (deftest prevent-creating-unauthorized-hoks
   (testing "Prevent POST unauthorized HOKS"
@@ -221,7 +221,8 @@
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 400))
       (is (= (utils/parse-body (:body put-response))
-             {:error "Opiskeluoikeus update not allowed!"})))))
+             {:error
+              "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"})))))
 
 (deftest prevent-updating-oppija-oid
   (testing "Prevent PUT HOKS with existing opiskeluoikeus"
@@ -242,7 +243,7 @@
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 400))
       (is (= (utils/parse-body (:body put-response))
-             {:error "Oppija-oid update not allowed!"})))))
+             {:error "Updating `oppija-oid` in HOKS is not allowed!"})))))
 
 (deftest prevent-invalid-osaamisen-hankkimistapa
   (testing "Start and end dates of OHT are checked"
