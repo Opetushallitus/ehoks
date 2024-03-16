@@ -268,18 +268,13 @@
 (defn- post-hoks!
   "Käsittelee HOKS-luontipyynnön."
   [hoks request]
-  (try
-    (oppijaindex/add-hoks-dependents-in-index! hoks)
-    (m/check-hoks-access! hoks request)
-    (let [hoks-db (hoks/check-and-save! hoks)
-          resp-body {:uri (format "%s/%d" (:uri request) (:id hoks-db))}]
-      (-> resp-body
-          (rest/ok :id (:id hoks-db))
-          (assoc :audit-data {:new hoks})))
-    (catch Exception e
-      (case (:error (ex-data e))
-        :disallowed-update (response/bad-request! {:error (.getMessage e)})
-        (throw e)))))
+  (oppijaindex/add-hoks-dependents-in-index! hoks)
+  (m/check-hoks-access! hoks request)
+  (let [hoks-db (hoks/check-and-save! hoks)
+        resp-body {:uri (format "%s/%d" (:uri request) (:id hoks-db))}]
+    (-> resp-body
+        (rest/ok :id (:id hoks-db))
+        (assoc :audit-data {:new hoks}))))
 
 (defn- change-hoks!
   "Käsittelee HOKS-muutospyynnön."
@@ -287,15 +282,10 @@
   (let [old-hoks (:hoks request)]
     (if (empty? old-hoks)
       (response/not-found {:error "HOKS not found with given HOKS ID"})
-      (try
-        (hoks/check-for-update! old-hoks hoks)
-        (let [new-hoks (db-handler (get-in request [:hoks :id]) hoks)]
-          (assoc (response/no-content) :audit-data {:old old-hoks
-                                                    :new new-hoks}))
-        (catch Exception e
-          (if (= (:error (ex-data e)) :disallowed-update)
-            (response/bad-request! {:error (.getMessage e)})
-            (throw e)))))))
+      (do (hoks/check-for-update! old-hoks hoks)
+          (let [new-hoks (db-handler (get-in request [:hoks :id]) hoks)]
+            (assoc (response/no-content) :audit-data {:old old-hoks
+                                                      :new new-hoks}))))))
 
 (def routes
   "HOKS handlerin reitit."

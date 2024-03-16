@@ -772,7 +772,8 @@
             (t/is (= (:status post-response) 400)
                   (str "Log entries:" (logtest/the-log)))
             (t/is (= (utils/parse-body (:body post-response))
-                     {:error "Opiskeluoikeus not found in Koski"}))))))))
+                     {:error (str "Opiskeluoikeus `1.2.246.562.15.76000000018` "
+                                  "not found in Koski")}))))))))
 
 (defn mocked-get-oo-tuva [oid]
   {:oid oid
@@ -848,7 +849,8 @@
                              "1.2.246.562.10.12000000013")]
           (t/is (= (:status post-response) 400))
           (t/is (= (utils/parse-body (:body post-response))
-                   {:error "Oppija not found in Oppijanumerorekisteri"})))))))
+                   {:error (str "Oppija `1.2.246.562.24.44000000008` not found "
+                                "in Oppijanumerorekisteri")})))))))
 
 (t/deftest test-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
@@ -962,7 +964,8 @@
               virkailija-for-test)]
         (t/is (= (:status patch-response) 400))
         (t/is (= (utils/parse-body (:body patch-response))
-                 {:error "Opiskeluoikeus update not allowed!"}))))))
+                 {:error
+                  "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"}))))))
 
 (t/deftest prevent-patch-hoks-with-updated-oppija-oid
   (t/testing "PATCH hoks virkailija"
@@ -985,7 +988,7 @@
               virkailija-for-test)]
         (t/is (= (:status patch-response) 400))
         (t/is (= (utils/parse-body (:body patch-response))
-                 {:error "Oppija-oid update not allowed!"}))))))
+                 {:error "Updating `oppija-oid` in HOKS is not allowed!"}))))))
 
 (def hoks-data
   {:opiskeluoikeus-oid "1.2.246.562.15.76000000018"
@@ -1135,7 +1138,8 @@
             put-body (utils/parse-body (:body put-response))]
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
-                 {:error "Opiskeluoikeus update not allowed!"}))))))
+                 {:error
+                  "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"}))))))
 
 (t/deftest test-put-prevent-updating-oppija-oid
   (t/testing "PUT hoks virkailija"
@@ -1176,7 +1180,7 @@
             put-body (utils/parse-body (:body put-response))]
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
-                 {:error "Oppija-oid update not allowed!"}))))))
+                 {:error "Updating `oppija-oid` in HOKS is not allowed!"}))))))
 
 (t/deftest test-get-amount
   (t/testing "Test getting the amount of hokses"
