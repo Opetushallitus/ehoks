@@ -179,6 +179,21 @@
                       [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
                       :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
               (.endsWith
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000017")
+              {:status 200
+               :body {:oid "1.2.246.562.15.10000000017"
+                      :tyyppi {:koodiarvo "ammatillinenkoulutus"}
+                      :tila {:opiskeluoikeusjaksot
+                             [{:alku "2023-07-03"
+                               :tila {:koodiarvo "lasna"
+                                      :nimi {:fi "Läsnä"}
+                                      :koodistoUri
+                                      "koskiopiskeluoikeudentila"
+                                      :koodistoVersio 1}}]}
+                      :oppilaitos {:oid (or oppilaitos-oid
+                                            "1.2.246.562.10.12944436166")}
+                      :suoritukset [{:tyyppi {:koodiarvo "telma"}}]}}
+              (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.20000000008")
               {:status 200
                :body {:oid "1.2.246.562.15.20000000008"
@@ -347,7 +362,7 @@
       (swap! result predicate))
     @result))
 
-(defn mock-get-opiskeluoikeus-info
+(defn mock-get-opiskeluoikeus-info-raw
   [_]
   {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})
 

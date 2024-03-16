@@ -132,7 +132,7 @@
 (defn- hoks-has-active-opiskeluoikeus
   "Check if HOKS has an active opiskeluoikeus"
   [hoks]
-  (some #(opiskeluoikeus/active? (koski/get-opiskeluoikeus-info %))
+  (some #(opiskeluoikeus/active? (koski/get-existing-opiskeluoikeus! %))
         (map :opiskeluoikeus-oid hoks)))
 
 (defn- get-oppilaitos-oid-by-oo-oid
@@ -200,7 +200,7 @@
                             (assoc (first linkit)
                                    :voimassa-loppupvm loppupvm
                                    :vastattu (:vastattu status))))
-            opiskeluoikeus (koski/get-opiskeluoikeus-info
+            opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                              (:opiskeluoikeus-oid linkki-info))
             linkki-info (assoc linkki-info
                                :koulutustoimijan-oid
@@ -391,49 +391,41 @@
                          :vahvistuspvm-ja-o-s-pvm s/Int}
                 (let [data (db-hoks/select-kyselylinkit-by-date-and-type-temp
                              alkupvm alkupvm-loppu from-id limit)
-                      last-id (:hoks-id (last data))]
-                  (try
-                    (let [hoks-infos
-                          (map
-                            (fn [{ospvm :osaamisen-saavuttamisen-pvm
-                                  oo-id :opiskeluoikeus-oid}]
-                              (let [opiskeluoikeus
-                                    (when oo-id
-                                      (koski/get-opiskeluoikeus-info oo-id))
-                                    vahvistus-pvm
-                                    (when opiskeluoikeus
-                                      (get-vahvistus-pvm opiskeluoikeus))]
-                                {:osaamisen-saavuttamisen-pvm ospvm
-                                 :vahvistus-pvm vahvistus-pvm}))
-                            data)]
-                      (response/ok {:last-id last-id
-                                    :paattokysely-total-count (count hoks-infos)
-                                    :o-s-pvm-ilman-vahvistuspvm-count
-                                    (count (filter
-                                             #(and
-                                                (some?
-                                                  (:osaamisen-saavuttamisen-pvm
-                                                    %))
-                                                (nil? (:vahvistus-pvm %)))
-                                             hoks-infos))
-                                    :vahvistuspvm-ilman-o-s-pvm-count
-                                    (count (filter
-                                             #(and
-                                                (some? (:vahvistus-pvm %))
-                                                (nil?
-                                                  (:osaamisen-saavuttamisen-pvm
-                                                    %)))
-                                             hoks-infos))
-                                    :vahvistuspvm-ja-o-s-pvm
-                                    (count (filter
-                                             #(and
-                                                (some?
-                                                  (:osaamisen-saavuttamisen-pvm
-                                                    %))
-                                                (some? (:vahvistus-pvm %)))
-                                             hoks-infos))}))
-                    (catch Exception e
-                      (response/bad-request {:error e})))))
+                      last-id (:hoks-id (last data))
+                      hoks-infos (map
+                                   (fn [{ospvm :osaamisen-saavuttamisen-pvm
+                                         oo-id :opiskeluoikeus-oid}]
+                                     {:osaamisen-saavuttamisen-pvm ospvm
+                                      :vahvistus-pvm
+                                      (some-> (koski/get-opiskeluoikeus! oo-id)
+                                              get-vahvistus-pvm)})
+                                   data)]
+                  (response/ok {:last-id last-id
+                                :paattokysely-total-count (count hoks-infos)
+                                :o-s-pvm-ilman-vahvistuspvm-count
+                                (count (filter
+                                         #(and
+                                            (some?
+                                              (:osaamisen-saavuttamisen-pvm
+                                                %))
+                                            (nil? (:vahvistus-pvm %)))
+                                         hoks-infos))
+                                :vahvistuspvm-ilman-o-s-pvm-count
+                                (count (filter
+                                         #(and
+                                            (some? (:vahvistus-pvm %))
+                                            (nil?
+                                              (:osaamisen-saavuttamisen-pvm
+                                                %)))
+                                         hoks-infos))
+                                :vahvistuspvm-ja-o-s-pvm
+                                (count (filter
+                                         #(and
+                                            (some?
+                                              (:osaamisen-saavuttamisen-pvm
+                                                %))
+                                            (some? (:vahvistus-pvm %)))
+                                         hoks-infos))})))
 
               (c-api/GET "/puuttuvat-opiskeluoikeudet-temp" request
                 :summary "Palauttaa listan hoks-id:sta, joiden opiskeluoikeutta
@@ -453,11 +445,11 @@
                     (let [hokses-without-oo
                           (filter
                             some?
-                            (pmap
-                              (fn [x]
-                                (when (nil?
-                                        (koski/get-opiskeluoikeus-info
-                                          (:opiskeluoikeus-oid x))) x)) hoksit))
+                            (pmap (fn [hoks]
+                                    (when (nil? (koski/get-opiskeluoikeus!
+                                                  (:opiskeluoikeus-oid hoks)))
+                                      hoks))
+                                  hoksit))
                           result (map :id hokses-without-oo)]
                       (doseq [oo-oid (map :opiskeluoikeus-oid
                                           hokses-without-oo)]
@@ -631,8 +623,8 @@
                                     (oi/get-opiskeluoikeus-by-oid!
                                       (:opiskeluoikeus-oid hoks))))
                                 opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-                                opiskeluoikeus (koski/get-opiskeluoikeus-info
-                                                 opiskeluoikeus-oid)]
+                                opiskeluoikeus
+                                (koski/get-opiskeluoikeus! opiskeluoikeus-oid)]
                             (if (or (nil? opiskeluoikeus)
                                     (opiskeluoikeus/active? opiskeluoikeus))
                               (if (seq oppilaitos-oid)

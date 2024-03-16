@@ -1,8 +1,9 @@
 (ns oph.ehoks.external.koski-test
-  (:require [clojure.test :refer [deftest testing is]]
-            [oph.ehoks.external.koski :as k]
+  (:require [cheshire.core :as json]
+            [clojure.test :refer [deftest is testing]]
             [oph.ehoks.external.http-client :as client]
-            [cheshire.core :as json]))
+            [oph.ehoks.external.koski :as k])
+  (:import [clojure.lang ExceptionInfo]))
 
 (deftest test-filter-oppija
   (testing "Filtering Oppija values"
@@ -24,6 +25,41 @@
                       :sukunimi "Väisänen-perftest"}
             :opiskeluoikeudet [{}]}))))
 
+(defn mock-get-opiskeluoikeus-raw
+  [oid]
+  (case oid
+    "1.246.562.15.12345678911" {}
+    "1.246.562.15.12345678910" (throw (ex-info "Internal server error"
+                                               {:status 500}))
+    (throw (ex-info "Asd" {:status 404
+                           :body (str "[{\"key\": \"notFound.opiskeluoikeutta"
+                                      "EiLöydyTaiEiOikeuksia\"}]")}))))
+
+(deftest test-get-opiskeluoikeus!
+  (with-redefs [k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus-raw]
+    (testing "The function returns opiskeluoikeus when found"
+      (is (some? (k/get-opiskeluoikeus! "1.246.562.15.12345678911"))))
+    (testing "The function returns `nil` when opiskeluoikeus is not found."
+      (is (nil? (k/get-opiskeluoikeus! "1.246.562.15.40440440440"))))
+    (testing "The function throws on exceptional status codes."
+      (is (thrown-with-msg?
+            ExceptionInfo
+            #"Error while fetching opiskeluoikeus from Koski"
+            (k/get-opiskeluoikeus! "1.246.562.15.12345678910"))))))
+
+(deftest test-get-existing-opiskeluoikeus!
+  (with-redefs [k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus-raw]
+    (testing "The function returns opiskeluoikeus when found"
+      (is (some? (k/get-opiskeluoikeus! "1.246.562.15.12345678911"))))
+    (testing "The function throws when opiskeluoikeus is not found."
+      (is (thrown-with-msg? ExceptionInfo
+                            #"Opiskeluoikeus `testi` not found in Koski"
+                            (k/get-existing-opiskeluoikeus! "testi"))))
+    (testing "The function throws on exceptional status codes."
+      (is (thrown-with-msg?
+            ExceptionInfo
+            #"Error while fetching opiskeluoikeus from Koski"
+            (k/get-opiskeluoikeus! "1.246.562.15.12345678910"))))))
 (deftest test-get-oppija-opiskeluoikeudet
   (testing "Get opiskeluoikeudet for oppija"
     (client/set-post!

@@ -107,7 +107,7 @@
       ; order to determine, if the kyselytyyppi is `tutkinnon_suorittaneet` or
       ; `tutkinnon_osia_suorittaneet`."
       :paattokysely (->> (:opiskeluoikeus-oid hoks)
-                         k/get-opiskeluoikeus
+                         k/get-existing-opiskeluoikeus!
                          first-ammatillinen-suoritus
                          suoritustyyppi
                          suoritustyyppi->kyselytyyppi
@@ -115,8 +115,8 @@
                          sqs/send-amis-palaute-message))
     (catch ExceptionInfo e
       (log/logf (case (:type (ex-data e))
-                  :could-not-get-opiskeluoikeus :warn
-                  :no-ammatillinen-suoritus :info
+                  ::k/opiskeluoikeus-not-found :warn
+                  :no-ammatillinen-suoritus    :info
                   :error)
                 "Not sending %s for HOKS `%s` - %s %s"
                 (name kysely)

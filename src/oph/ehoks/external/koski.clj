@@ -1,11 +1,11 @@
 (ns oph.ehoks.external.koski
-  (:require [oph.ehoks.config :refer [config]]
-            [oph.ehoks.external.connection :as c]
-            [ring.util.http-status :as status]
-            [clojure.data.json :as json]
-            [oph.ehoks.external.oph-url :as u]
+  (:require [clojure.core.cache :as cache]
             [clojure.core.memoize :as memo]
-            [clojure.core.cache :as cache])
+            [clojure.data.json :as json]
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.external.connection :as c]
+            [oph.ehoks.external.oph-url :as u]
+            [ring.util.http-status :as status])
   (:import (clojure.lang ExceptionInfo)))
 
 (defn filter-oppija
@@ -85,38 +85,31 @@
             (get-in [0 :key]))
     (catch Exception _ nil)))
 
-(defn get-opiskeluoikeus-info
-  "Get opiskeluoikeus info with error handling"
+(defn get-opiskeluoikeus!
+  "Returns `nil` if no opiskeluoikeus with `oid` is found from Koski."
   [oid]
   (try
     (get-opiskeluoikeus-info-raw oid)
     (catch ExceptionInfo e
-      (when-not (and (= (:status (ex-data e)) status/not-found)
-                     (= (virhekoodi e)
-                        "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
-        (throw e)))))
+      (let [koski-virhekoodi (virhekoodi e)]
+        (when-not (and (= (:status (ex-data e)) status/not-found)
+                       (= koski-virhekoodi
+                          "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
+          (throw (ex-info "Error while fetching opiskeluoikeus from Koski"
+                          {:type              ::opiskeluoikeus-fetching-error
+                           :opiskeluoikeus-oid oid
+                           :koski-virhekoodi   koski-virhekoodi}
+                          e)))))))
 
-(defn get-opiskeluoikeus
-  "Get opiskeluoikeus. If opiskeluoikeus cannot be fetched, throws an
-  exception with cause."
+(defn get-existing-opiskeluoikeus!
+  "Like `get-opiskeluoikeus!` but expects that opiskeluoikeus with `oid` is
+  found from Koski and thus, throws an exception if no opiskeluoikeus is found."
   [oid]
-  (try
-    (get-opiskeluoikeus-info-raw oid)
-    (catch ExceptionInfo e
-      (throw
-        (ex-info (format "Couldn't get opiskeluoikeus `%s` from Koski." oid)
-                 {:type :could-not-get-opiskeluoikeus
-                  :opiskeluoikeus-oid oid
-                  :status (:status (ex-data e))
-                  :virhekoodi (virhekoodi e)}
-                 e)))))
-
-(defn get-opiskeluoikeus-oppilaitos-oid
-  "Get oppilaitos of opiskeluoikeus"
-  [opiskeluoikeus-oid]
-  (get-in
-    (get-opiskeluoikeus-info opiskeluoikeus-oid)
-    [:oppilaitos :oid]))
+  (if-let [opiskeluoikeus (get-opiskeluoikeus! oid)]
+    opiskeluoikeus
+    (throw (ex-info (format "Opiskeluoikeus `%s` not found in Koski" oid)
+                    {:type               ::opiskeluoikeus-not-found
+                     :opiskeluoikeus-oid oid}))))
 
 (defn fetch-opiskeluoikeudet-by-oppija-id
   "Fetches list of opiskeluoikeudet from Koski for oppija"

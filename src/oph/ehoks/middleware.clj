@@ -107,7 +107,7 @@
   in the request, either added from database, or in the body."
   [request]
   (let [hoks (or (not-empty (:hoks request)) (:body-params request))
-        oo (some-> (:opiskeluoikeus-oid hoks) k/get-opiskeluoikeus-info)]
+        oo   (some-> (:opiskeluoikeus-oid hoks) k/get-existing-opiskeluoikeus!)]
     (cond-> request
       (seq oo) (assoc :opiskeluoikeus oo))))
 

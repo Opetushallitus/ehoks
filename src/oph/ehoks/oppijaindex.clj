@@ -180,12 +180,11 @@
 (defn- get-opiskeluoikeus-info
   "Get opiskeluoikeus info from Koski and convert to SQL-compatible format"
   [oid oppija-oid]
-  (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
+  (let [opiskeluoikeus (k/get-existing-opiskeluoikeus! oid)]
     (when (:sisältyyOpiskeluoikeuteen opiskeluoikeus)
-      (log/warnf
-        "Opiskeluoikeus %s has sisältyyOpiskeluoikeuteen information" oid)
       (throw (ex-info "Opiskeluoikeus sisältyy toiseen opiskeluoikeuteen"
-                      {:error :hankintakoulutus})))
+                      {:type               :disallowed-update
+                       :opiskeluoikeus-oid oid})))
     (when (> (count (:suoritukset opiskeluoikeus)) 1)
       (log/warnf
         "Opiskeluoikeus %s has multiple suoritukset. First is used for tutkinto"
@@ -475,22 +474,9 @@
                       {:type       :disallowed-update
                        :oppija-oid oppija-oid})))
            (throw e)))
-    (try (add-opiskeluoikeus! opiskeluoikeus-oid oppija-oid)
-         (catch Exception e
-           (when (= (:status (ex-data e)) 404)
-             (log/warn "Opiskeluoikeus" opiskeluoikeus-oid "not found in Koski")
-             (throw (ex-info (format "Opiskeluoikeus `%s` not found in Koski"
-                                     opiskeluoikeus-oid)
-                             {:type               :disallowed-update
-                              :opiskeluoikeus-oid opiskeluoikeus-oid})))
-
-           (when (= (:error (ex-data e)) :hankintakoulutus)
-             (throw (ex-info (ex-message e)
-                             {:type               :disallowed-update
-                              :opiskeluoikeus-oid opiskeluoikeus-oid})))
-           (throw e)))
+    (add-opiskeluoikeus! opiskeluoikeus-oid oppija-oid)
     (add-oppija-hankintakoulutukset
-      opiskeluoikeudet (:opiskeluoikeus-oid hoks) oppija-oid)))
+      opiskeluoikeudet opiskeluoikeus-oid oppija-oid)))
 
 (defn update-oppija-oid-in-db!
   "Change the OID of an oppija to a new one in all tables in the database."
