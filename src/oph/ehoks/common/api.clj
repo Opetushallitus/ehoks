@@ -1,6 +1,7 @@
 (ns oph.ehoks.common.api
   (:require [compojure.api.exception :as c-ex]
             [oph.ehoks.config :refer [config]]
+            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [oph.ehoks.middleware :as middleware]
@@ -27,23 +28,37 @@
   (response/unauthorized {:reason "Unable to check access rights"}))
 
 (defn bad-request-handler
-  [^ExceptionInfo e _ _]
+  "Opiskeluoikeus and organisation information are prerequisites for many
+  handlers. This is why we want to default to giving `response/bad-request` in
+  cases where the prerequisite is missing. E.g., HOKS should always have an
+  existing opiskeluoikeus linked to it, the organisation of the user accessing
+  a HOKS should be found, etc."
+  [^ExceptionInfo e data _]
   (response/bad-request {:error (ex-message e)}))
 
 (def handlers
   "Map of request handlers"
-  {::c-ex/request-parsing (c-ex/with-logging
-                            c-ex/request-parsing-handler :info)
-   ::c-ex/request-validation (c-ex/with-logging
-                               dissoc-schema-validation-handler! :info)
+  {::c-ex/request-parsing
+   (c-ex/with-logging c-ex/request-parsing-handler :info)
+
+   ::c-ex/request-validation
+   (c-ex/with-logging dissoc-schema-validation-handler! :info)
+
    ; Lokitetaan response bodyn validoinnissa esiin nousseet virheet, mutta ei
    ; välitetä virheitä käyttäjälle "500 Internal Server Error" -koodilla.
-   ::c-ex/response-validation (c-ex/with-logging
-                                c-ex/http-response-handler :error)
-   ::organisaatio/organisation-not-found (c-ex/with-logging
-                                           bad-request-handler :warn)
+   ::c-ex/response-validation
+   (c-ex/with-logging c-ex/http-response-handler :error)
+
+   ::organisaatio/organisation-not-found
+   (c-ex/with-logging bad-request-handler :warn)
+
    :disallowed-update (c-ex/with-logging bad-request-handler :warn)
+
    :opiskeluoikeus-already-exists (c-ex/with-logging bad-request-handler :warn)
+
+   ::koski/opiskeluoikeus-not-found
+   (c-ex/with-logging bad-request-handler :warn)
+
    :not-found not-found-handler
    :unauthorized unauthorized-handler
    ::c-ex/default c-ex/safe-handler})

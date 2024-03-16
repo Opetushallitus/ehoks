@@ -167,7 +167,10 @@
     "1.2.246.562.15.20000000008" {:suoritukset
                                   [{:tyyppi {:koodiarvo "joku_muu"}}]
                                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}}
-    (throw (ex-info "Opiskeluoikeus not found" {:status 404}))))
+    (throw (ex-info "Opiskeluoikeus not found"
+                    {:status 404
+                     :body (str "[{\"key\": \"notFound.opiskeluoikeutta"
+                                "EiLöydyTaiEiOikeuksia\"}]")}))))
 
 (defn expected-msg
   [kysely hoks]
@@ -208,4 +211,4 @@
               (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.30000000007"))
             (is (logged? 'oph.ehoks.opiskelijapalaute
                          :warn
-                         #"Couldn't get opiskeluoikeus"))))))))
+                         #"not found in Koski"))))))))

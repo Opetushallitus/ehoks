@@ -809,13 +809,12 @@
   "Suodattaa hoksin opiskeluoikeuden päättymispäivämäärän perusteella. Yli
    kolme kuukautta sitten päättyneet opiskeluoikeudet = true."
   [hoks]
-  (if-let [opiskeluoikeus
-           (k/get-opiskeluoikeus-info (:opiskeluoikeus-oid hoks))]
+  (let [opiskeluoikeus (k/get-existing-opiskeluoikeus!
+                         (:opiskeluoikeus-oid hoks))]
     (if-let [paattymispaiva (:päättymispäivä opiskeluoikeus)]
       (.isBefore (LocalDate/parse paattymispaiva)
                  (.minusMonths (LocalDate/now) 3))
-      false)
-    false))
+      false)))
 
 (defn delete-opiskelijan-yhteystiedot!
   "Poistaa opiskelijan yhteystiedot yli kolme kuukautta sitten

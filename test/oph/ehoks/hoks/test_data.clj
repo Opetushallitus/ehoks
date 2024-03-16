@@ -147,6 +147,14 @@
    :hankittavat-ammat-tutkinnon-osat
    [parts-test-data/hao-data-without-osa-aikaisuus]})
 
+(def new-hoks-without-osa-aikaisuus-telma
+  {:opiskeluoikeus-oid "1.2.246.562.15.10000000017"
+   :oppija-oid "1.2.246.562.24.12312312319"
+   :ensikertainen-hyvaksyminen "2018-12-15"
+   :osaamisen-hankkimisen-tarve false
+   :hankittavat-ammat-tutkinnon-osat
+   [parts-test-data/hao-data-without-osa-aikaisuus]})
+
 (def hato-of-hoks-updated
   {:id 1
    :ensikertainen-hyvaksyminen "2018-12-15"
