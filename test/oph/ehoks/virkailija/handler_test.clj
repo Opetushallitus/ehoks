@@ -1,21 +1,20 @@
 (ns oph.ehoks.virkailija.handler-test
-  (:require [oph.ehoks.virkailija.handler :as handler]
-            [oph.ehoks.virkailija.middleware :as m]
-            [oph.ehoks.external.koski :as k]
-            [oph.ehoks.common.api :as common-api]
-            [ring.mock.request :as mock]
+  (:require [clojure.string :as s]
             [clojure.test :as t]
             [clojure.tools.logging.test :as logtest]
-            [clojure.string :as s]
-            [oph.ehoks.utils :as utils]
-            [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.hoks.hoks :refer [insert-kyselylinkki!
-                                         update-kyselylinkki!]]
+            [oph.ehoks.common.api :as common-api]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.external.koski :as k]
             [oph.ehoks.hoks.hoks-test-utils :refer [virkailija-base-url]]
-            [oph.ehoks.virkailija.virkailija-test-utils :as v-utils])
+            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.session-store :refer [test-session-store]]
+            [oph.ehoks.utils :as utils]
+            [oph.ehoks.virkailija.handler :as handler]
+            [oph.ehoks.virkailija.middleware :as m]
+            [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]
+            [ring.mock.request :as mock])
   (:import (java.time LocalDate LocalDateTime)))
 
 (t/use-fixtures :once utils/migrate-database)
@@ -1237,14 +1236,14 @@
              :osaamisen-hankkimisen-tarve false
              :ensikertainen-hyvaksyminen
              (java.time.LocalDate/of 2018 12 15)})
-          (insert-kyselylinkki!
+          (kyselylinkki/insert!
             {:kyselylinkki "https://kysely.linkki/ABC123"
              :hoks-id 1
              :tyyppi "aloittaneet"
              :oppija-oid "1.2.246.562.24.44000000008"
              :alkupvm alkupvm
              :lahetystila "ei_lahetetty"})
-          (insert-kyselylinkki!
+          (kyselylinkki/insert!
             {:kyselylinkki "https://kysely.linkki/DEF456"
              :hoks-id 1
              :tyyppi "tutkinnonsuorittaneet"
@@ -1268,11 +1267,10 @@
                 body (utils/parse-body (:body resp))]
             (t/is (= 200 (:status resp)))
             (t/is (empty? (:data body))))
-          (update-kyselylinkki!
-            {:kyselylinkki "https://kysely.linkki/ABC123"
-             :lahetyspvm alkupvm
-             :sahkoposti "testi@testi.fi"
-             :lahetystila "viestintapalvelussa"})
+          (kyselylinkki/update! {:kyselylinkki "https://kysely.linkki/ABC123"
+                                 :lahetyspvm alkupvm
+                                 :sahkoposti "testi@testi.fi"
+                                 :lahetystila "viestintapalvelussa"})
           (let [resp (with-test-virkailija
                        (mock/request
                          :get

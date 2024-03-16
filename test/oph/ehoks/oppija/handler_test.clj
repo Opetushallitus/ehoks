@@ -1,17 +1,19 @@
 (ns oph.ehoks.oppija.handler-test
-  (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [oph.ehoks.oppija.handler :as handler]
-            [oph.ehoks.common.api :as common-api]
-            [ring.mock.request :as mock]
-            [oph.ehoks.utils :as utils
-             :refer [eq with-authentication parse-body]]
-            [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.hoks.hoks-test-utils :as virkailija-utils]
-            [oph.ehoks.hoks.hoks-save-test :refer [hoks-data]]
-            [oph.ehoks.hoks.test-data :as test-data]
+  (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [clojure.walk :as w]
-            [oph.ehoks.external.http-client :as client])
+            [oph.ehoks.common.api :as common-api]
+            [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.hoks :as hoks]
+            [oph.ehoks.hoks.hoks-save-test :refer [hoks-data]]
+            [oph.ehoks.hoks.hoks-test-utils :as virkailija-utils]
+            [oph.ehoks.hoks.test-data :as test-data]
+            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.oppija.handler :as handler]
+            [oph.ehoks.session-store :refer [test-session-store]]
+            [oph.ehoks.utils :as utils
+             :refer [eq parse-body with-authentication]]
+            [ring.mock.request :as mock])
   (:import [java.time LocalDate]))
 
 (def url "/ehoks-oppija-backend/api/v1/oppija/oppijat")
@@ -146,14 +148,14 @@
           store (atom {})
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
-      (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+      (with-redefs [koski/get-opiskeluoikeus-info
                     utils/mock-get-opiskeluoikeus-info]
-        (h/save-hoks! hoks-data))
-      (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/abc123"
-                               :alkupvm (LocalDate/now)
-                               :tyyppi "aloittaneet"
-                               :oppija-oid oppija-oid
-                               :hoks-id 1})
+        (hoks/save! hoks-data))
+      (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
+                             :alkupvm (LocalDate/now)
+                             :tyyppi "aloittaneet"
+                             :oppija-oid oppija-oid
+                             :hoks-id 1})
       (client/set-get!
         (fn [^String url options]
           (cond
@@ -185,19 +187,19 @@
           store (atom {})
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
-      (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+      (with-redefs [koski/get-opiskeluoikeus-info
                     utils/mock-get-opiskeluoikeus-info]
-        (h/save-hoks! hoks-data))
-      (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/abc123"
-                               :alkupvm (LocalDate/now)
-                               :tyyppi "aloittaneet"
-                               :oppija-oid oppija-oid
-                               :hoks-id 1})
-      (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/vastattu"
-                               :alkupvm (LocalDate/now)
-                               :tyyppi "aloittaneet"
-                               :oppija-oid (:oppija-oid hoks-data)
-                               :hoks-id 1})
+        (hoks/save! hoks-data))
+      (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
+                             :alkupvm (LocalDate/now)
+                             :tyyppi "aloittaneet"
+                             :oppija-oid oppija-oid
+                             :hoks-id 1})
+      (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/vastattu"
+                             :alkupvm (LocalDate/now)
+                             :tyyppi "aloittaneet"
+                             :oppija-oid (:oppija-oid hoks-data)
+                             :hoks-id 1})
       (client/set-get!
         (fn [^String url options]
           (cond
@@ -237,19 +239,19 @@
           store (atom {})
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
-      (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+      (with-redefs [koski/get-opiskeluoikeus-info
                     utils/mock-get-opiskeluoikeus-info]
-        (h/save-hoks! hoks-data))
-      (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/abc123"
-                               :alkupvm (LocalDate/now)
-                               :tyyppi "aloittaneet"
-                               :oppija-oid oppija-oid
-                               :hoks-id 1})
-      (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/vanha"
-                               :alkupvm (LocalDate/now)
-                               :tyyppi "aloittaneet"
-                               :oppija-oid (:oppija-oid hoks-data)
-                               :hoks-id 1})
+        (hoks/save! hoks-data))
+      (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
+                             :alkupvm (LocalDate/now)
+                             :tyyppi "aloittaneet"
+                             :oppija-oid oppija-oid
+                             :hoks-id 1})
+      (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/vanha"
+                             :alkupvm (LocalDate/now)
+                             :tyyppi "aloittaneet"
+                             :oppija-oid (:oppija-oid hoks-data)
+                             :hoks-id 1})
       (client/set-get!
         (fn [^String url options]
           (cond
@@ -289,14 +291,14 @@
           store (atom {})
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
-      (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+      (with-redefs [koski/get-opiskeluoikeus-info
                     utils/mock-get-opiskeluoikeus-info]
-        (h/save-hoks! hoks-data))
-      (h/insert-kyselylinkki! {:kyselylinkki "https://palaute.fi/abc123"
-                               :alkupvm (.plusDays (LocalDate/now) 1)
-                               :tyyppi "aloittaneet"
-                               :oppija-oid oppija-oid
-                               :hoks-id 1})
+        (hoks/save! hoks-data))
+      (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
+                             :alkupvm (.plusDays (LocalDate/now) 1)
+                             :tyyppi "aloittaneet"
+                             :oppija-oid oppija-oid
+                             :hoks-id 1})
       (client/set-get!
         (fn [^String url options]
           (cond

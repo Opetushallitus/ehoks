@@ -1,8 +1,8 @@
 (ns oph.ehoks.db.tyopaikkaohjaajan_yhteystiedot_test
   (:require [clojure.test :refer :all]
-            [oph.ehoks.utils :as utils :refer [eq empty-database-after-test
+            [oph.ehoks.utils :as utils :refer [empty-database-after-test
                                                migrate-database]]
-            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
 (use-fixtures :once migrate-database)
@@ -80,9 +80,9 @@
     (let [saved-hoks
           (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
                         (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})]
-            (h/save-hoks! hoks-data))
+            (hoks/save! hoks-data))
           affected-jakso-ids (db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)
-          hoks (h/get-hoks-by-id (:id saved-hoks))
+          hoks (hoks/get-by-id (:id saved-hoks))
           osaamisen-hankkimistavat (-> hoks
                                        :hankittavat-paikalliset-tutkinnon-osat
                                        first

@@ -3,7 +3,7 @@
             [compojure.api.sweet :as c-api]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
-            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.middleware :refer [wrap-user-details]]
@@ -84,7 +84,7 @@
       (c-api/POST "/opiskeluoikeus-update" request
         :summary "Päivittää aktiivisten hoksien opiskeluoikeudet Koskesta"
         :header-params [caller-id :- s/Str]
-        (future (h/update-opiskeluoikeudet))
+        (future (hoks/update-opiskeluoikeudet))
         (response/no-content))
 
       (c-api/POST "/onrmodify" request

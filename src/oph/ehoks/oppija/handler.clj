@@ -9,7 +9,7 @@
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.oppija.schema :as oppija-schema]
-            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]
             [oph.ehoks.middleware :refer [wrap-authorize]]
@@ -95,7 +95,7 @@
                   (c-api/GET "/hoks" [:as request]
                     :summary "Oppijan HOKSit kokonaisuudessaan"
                     :return (rest/response [s/Any])
-                    (let [hokses (h/get-hokses-by-oppija oid)]
+                    (let [hokses (hoks/get-by-oppija oid)]
                       (if (empty? hokses)
                         (response/not-found {:message "No HOKSes found"})
                         (rest/ok (map #(dissoc % :id) hokses)))))
