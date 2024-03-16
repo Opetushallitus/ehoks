@@ -35,7 +35,7 @@
   that the opiskeluoikeus associated with the hoks is still valid."
   ([opiskeluoikeus-oid]
     (if (:prevent-finished-opiskeluoikeus-updates? config)
-      (active? (koski/get-opiskeluoikeus-info opiskeluoikeus-oid))
+      (active? (koski/get-existing-opiskeluoikeus! opiskeluoikeus-oid))
       true))
   ([hoks opiskeluoikeudet]
     (if (:prevent-finished-opiskeluoikeus-updates? config)
