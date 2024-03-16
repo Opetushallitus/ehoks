@@ -7,7 +7,7 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.external.cache :as c]
-            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.opiskelijapalaute :as op]
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.restful :as restful]
@@ -16,8 +16,7 @@
             [oph.ehoks.schema.oid :as oid-schema]
             [ring.util.http-response :as response]
             [schema.core :as s])
-  (:import
-    (java.time LocalDate)))
+  (:import (java.time LocalDate)))
 
 (def routes
   "System handlerin reitit"
@@ -186,7 +185,7 @@
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
       :return (restful/response {})
-      (let [hoks (h/get-hoks-by-id hoks-id)]
+      (let [hoks (hoks/get-by-id hoks-id)]
         (if (pos? (first (db-hoks/delete-hoks-by-hoks-id hoks-id)))
           (assoc (restful/ok {}) :audit-data {:old hoks})
           (response/not-found {:error "No HOKS found with given hoks-id"}))))
@@ -207,7 +206,7 @@
       :summary "Lähettää uuden aloituskyselyherätteen herätepalveluun"
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
-      (if-let [hoks (h/get-hoks-with-hankittavat-koulutuksen-osat! hoks-id)]
+      (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
         (if (op/send-if-needed! :aloituskysely hoks)
           (response/no-content)
           (response/bad-request
@@ -220,7 +219,7 @@
       :summary "Lähettää uuden päättökyselyherätteen herätepalveluun"
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
-      (if-let [hoks (h/get-hoks-with-hankittavat-koulutuksen-osat! hoks-id)]
+      (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
         (if (op/send-if-needed! :paattokysely hoks)
           (response/no-content)
           (response/bad-request

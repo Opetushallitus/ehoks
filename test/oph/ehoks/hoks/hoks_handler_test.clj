@@ -1,19 +1,21 @@
 (ns oph.ehoks.hoks.hoks-handler-test
-  (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [ring.mock.request :as mock]
-            [oph.ehoks.utils :as utils :refer [eq]]
-            [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.external.http-client :as client]
+  (:require [clj-time.core :as t]
+            [clojure.test :refer [deftest is testing use-fixtures]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.queries :as queries]
-            [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.hoks.hankittavat :refer
-             [save-hankittava-ammat-tutkinnon-osa!]]
+            [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.hoks :as hoks]
+            [oph.ehoks.hoks.hankittavat
+             :refer [save-hankittava-ammat-tutkinnon-osa!]]
+            [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.hoks.test-data :as test-data]
-            [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]
-            [clj-time.core :as t]))
+            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.utils :as utils :refer [eq]]
+            [ring.mock.request :as mock]))
 
 (use-fixtures :once utils/migrate-database)
 (use-fixtures :each utils/empty-database-after-test)
@@ -118,7 +120,7 @@
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message
                     (fn [_] (swap! sqs-call-counter inc))
-                    oph.ehoks.external.koski/get-opiskeluoikeus-info
+                    koski/get-opiskeluoikeus-info
                     (fn [_] {:tyyppi {:koodiarvo "tuva"}})]
         (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.30000000007"
                          :oppija-oid "1.2.246.562.24.12312312319"
@@ -147,7 +149,7 @@
 
 (deftest create-new-hoks-with-valid-osa-aikaisuus
   (testing "Create new hoks with valid osa-aikaisuustieto"
-    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+    (with-redefs [koski/get-opiskeluoikeus-info
                   (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
                            :tila {:opiskeluoikeusjaksot
                                   [{:alku "2023-07-03"
@@ -165,7 +167,7 @@
 
 (deftest create-new-hoks-without-osa-aikaisuus
   (testing "Create new hoks without osa-aikaisuustieto"
-    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+    (with-redefs [koski/get-opiskeluoikeus-info
                   (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})]
       (let [hoks-data test-data/new-hoks-without-osa-aikaisuus
             response
@@ -182,7 +184,7 @@
 
 (deftest create-new-telma-hoks-without-osa-aikaisuus
   (testing "Create new hoks without osa-aikaisuustieto"
-    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+    (with-redefs [koski/get-opiskeluoikeus-info
                   (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
                            :tila {:opiskeluoikeusjaksot
                                   [{:alku "2023-07-03"
@@ -308,7 +310,7 @@
 (deftest hoks-part-put-fails-whole-operation-is-aborted
   (testing (str "PUT of HOKS should be inside transaction so that when"
                 "one part of operation fails, everything is aborted")
-    (with-redefs [oph.ehoks.hoks.hoks/replace-ahyto! mock-replace-ahyto]
+    (with-redefs [hoks/replace-ahyto! mock-replace-ahyto]
       (let [app (hoks-utils/create-app nil)
             post-response (hoks-utils/create-mock-post-request
                             "" test-data/hoks-data app)
@@ -337,7 +339,7 @@
 
 (deftest hoks-put-adds-non-existing-part
   (testing "If HOKS part doesn't currently exist, PUT creates it"
-    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+    (with-redefs [koski/get-opiskeluoikeus-info
                   (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
                            :tila {:opiskeluoikeusjaksot
                                   [{:alku "2023-07-03"
@@ -631,7 +633,7 @@
       "1.2.246.562.10.00000000001")
 
     (is (= "https://palaute.fi/abc123"
-           (:kyselylinkki (first (h/get-kyselylinkit-by-oppija-oid
+           (:kyselylinkki (first (kyselylinkki/get-by-oppija-oid!
                                    "1.2.246.562.24.12312312319")))))))
 
 (deftest put-kyselylinkki-lahetysdata
@@ -662,7 +664,7 @@
       (mock/json-body req1 data-post)
       "1.2.246.562.10.00000000001")
 
-    (is (nil? (:sahkoposti (first (h/get-kyselylinkit-by-oppija-oid
+    (is (nil? (:sahkoposti (first (kyselylinkki/get-by-oppija-oid!
                                     "1.2.246.562.24.12312312319")))))
 
     (utils/with-service-ticket
@@ -671,10 +673,10 @@
       "1.2.246.562.10.00000000001")
 
     (is (= "testi@testi.fi"
-           (:sahkoposti (first (h/get-kyselylinkit-by-oppija-oid
+           (:sahkoposti (first (kyselylinkki/get-by-oppija-oid!
                                  "1.2.246.562.24.12312312319")))))
     (is (= "viestintapalvelussa"
-           (:lahetystila (first (h/get-kyselylinkit-by-oppija-oid
+           (:lahetystila (first (kyselylinkki/get-by-oppija-oid!
                                   "1.2.246.562.24.12312312319")))))))
 
 (deftest get-paged-vipunen-data
