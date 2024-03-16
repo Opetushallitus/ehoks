@@ -21,8 +21,9 @@
             [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
             [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]
             [oph.ehoks.hoks.handler :as hoks-handler]
-            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.schema :as hoks-schema]
+            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus]]
             [oph.ehoks.misc.handler :as misc-handler]
@@ -115,9 +116,9 @@
   (try
     (oi/add-hoks-dependents-in-index! hoks)
     (check-virkailija-privileges hoks request)
-    (let [hoks-db (-> (h/add-missing-oht-yksiloiva-tunniste hoks)
+    (let [hoks-db (-> (hoks/add-missing-oht-yksiloiva-tunniste hoks)
                       (assoc :manuaalisyotto true)
-                      (h/check-and-save-hoks!))]
+                      (hoks/check-and-save!))]
       (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
           (restful/ok :id (:id hoks-db))
           (assoc :audit-data {:new hoks})))
@@ -162,7 +163,7 @@
                           [:session :virkailija-user])]
     (if (m/virkailija-has-privilege?
           virkailija-user (:oppija-oid hoks) :read)
-      (restful/ok (h/get-hoks-by-id hoks-id))
+      (restful/ok (hoks/get-by-id hoks-id))
       (do
         (log/warnf
           "User %s privileges don't match oppija %s"
@@ -179,9 +180,9 @@
   [hoks request db-handler]
   (try
     (let [old-hoks (:hoks request)]
-      (h/check-hoks-for-update! old-hoks hoks)
+      (hoks/check-for-update! old-hoks hoks)
       (let [hoks-db (db-handler (:id (:hoks request))
-                                (h/add-missing-oht-yksiloiva-tunniste hoks))]
+                                (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
         (assoc (response/no-content) :audit-data {:new hoks
                                                   :old old-hoks})))
     (catch Exception e
@@ -202,7 +203,7 @@
                                              (str/split
                                                (:voimassa_loppupvm status)
                                                #"T")))]
-                            (h/update-kyselylinkki!
+                            (kyselylinkki/update!
                               {:kyselylinkki (:kyselylinkki (first linkit))
                                :voimassa_loppupvm loppupvm
                                :vastattu (:vastattu status)})
@@ -572,7 +573,7 @@
                             (sqs/send-palaute-resend-message
                               {:kyselylinkki (:kyselylinkki kyselylinkki)
                                :sahkoposti (:sahkoposti hoks)})
-                            (h/update-kyselylinkki!
+                            (kyselylinkki/update!
                               {:kyselylinkki (:kyselylinkki kyselylinkki)
                                :sahkoposti (:sahkoposti hoks)
                                :lahetyspvm (LocalDate/parse (str (t/today)))
@@ -614,7 +615,7 @@
                                    (hoks-schema/generate-hoks-schema
                                      "HOKSKorvaus-virkailija" :put-virkailija
                                      "HOKS-dokumentin korvaus")]
-                            (change-hoks! hoks-values request h/replace-hoks!))
+                            (change-hoks! hoks-values request hoks/replace!))
 
                           (c-api/PATCH "/" request
                             :body [hoks-values
@@ -622,7 +623,7 @@
                                      "HOKSPaivitys-virkailija" :patch-virkailija
                                      "HOKS-dokumentin päivitys")]
                             :summary "Oppijan hoksin päätason arvojen päivitys"
-                            (change-hoks! hoks-values request h/update-hoks!))))
+                            (change-hoks! hoks-values request hoks/update!))))
 
                       (c-api/context "/:hoks-id" []
                         :path-params [hoks-id :- s/Int]
@@ -632,7 +633,7 @@
                               poistetuksi(shallow delete) id:n perusteella."
                           :body [data hoks-schema/shallow-delete-hoks]
                           :return {:success s/Int}
-                          (let [hoks (h/get-hoks-by-id hoks-id)
+                          (let [hoks (hoks/get-by-id hoks-id)
                                 oppilaitos-oid
                                 (if (seq (:oppilaitos-oid data))
                                   (:oppilaitos-oid data)

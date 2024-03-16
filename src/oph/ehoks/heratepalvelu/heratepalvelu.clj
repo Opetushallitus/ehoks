@@ -1,17 +1,11 @@
 (ns oph.ehoks.heratepalvelu.heratepalvelu
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.string :as str]
+            [clojure.tools.logging :as log]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.hoks.hoks :as h]
-            [clojure.string :as str]
-            [oph.ehoks.external.oppijanumerorekisteri :as onr]
-            [oph.ehoks.oppijaindex :as oi]
-            [oph.ehoks.opiskelijapalaute :as op]
-            [oph.ehoks.db.db-operations.oppija :as db-oppija]
-            [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
-            [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops])
+            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.opiskelijapalaute :as opiskelijapalaute])
   (:import (java.time LocalDate)))
 
 (defn find-finished-workplace-periods
@@ -52,19 +46,17 @@
              (let [loppupvm (LocalDate/parse
                               (first
                                 (str/split (:voimassa_loppupvm status) #"T")))]
-               (h/update-kyselylinkki!
-                 {:kyselylinkki (:kyselylinkki %1)
-                  :voimassa_loppupvm loppupvm
-                  :vastattu (:vastattu status)})
-               (assoc
-                 %1
-                 :voimassa-loppupvm loppupvm
-                 :vastattu (:vastattu status))))
+               (kyselylinkki/update! {:kyselylinkki (:kyselylinkki %1)
+                                      :voimassa_loppupvm loppupvm
+                                      :vastattu (:vastattu status)})
+               (assoc %1
+                      :voimassa-loppupvm loppupvm
+                      :vastattu (:vastattu status))))
            %1)
          (catch Exception e
            (log/error e)
            (throw e)))
-      (h/get-kyselylinkit-by-oppija-oid oppija-oid))))
+      (kyselylinkki/get-by-oppija-oid! oppija-oid))))
 
 (defn set-tep-kasitelty
   "Marks an osaamisen hankkimistapa as handled (käsitelty)."
@@ -87,8 +79,8 @@
     (log/infof
       "Sending %d (limit %d) hoksit between %s and %s"
       (count hoksit) (* 2 limit) start end)
-    (op/send-every-needed! :aloituskysely aloittaneet)
-    (op/send-every-needed! :paattokysely  paattyneet)
+    (opiskelijapalaute/send-every-needed! :aloituskysely aloittaneet)
+    (opiskelijapalaute/send-every-needed! :paattokysely  paattyneet)
     hoksit))
 
 (defn set-aloitusherate-kasitelty

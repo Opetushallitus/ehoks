@@ -5,7 +5,7 @@
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
-            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
@@ -417,9 +417,9 @@
   (testing "Save and get full HOKS"
     (let [hoks (with-redefs [k/get-opiskeluoikeus-info
                              utils/mock-get-opiskeluoikeus-info]
-                 (h/save-hoks! hoks-data))]
+                 (hoks/save! hoks-data))]
       (eq
-        (utils/dissoc-module-ids (h/get-hoks-by-id (:id hoks)))
+        (utils/dissoc-module-ids (hoks/get-by-id (:id hoks)))
         (assoc
           (utils/dissoc-module-ids hoks-data)
           :id 1
@@ -430,12 +430,12 @@
   (testing "Save and get full HOKS with TUVA opiskeluoikeus oid"
     (let [hoks (with-redefs [k/get-opiskeluoikeus-info
                              utils/mock-get-opiskeluoikeus-info]
-                 (h/save-hoks!
+                 (hoks/save!
                    (assoc hoks-data
                           :tuva-opiskeluoikeus-oid
                           "1.2.246.562.15.20000000008")))]
       (eq
-        (-> (utils/dissoc-module-ids (h/get-hoks-by-id (:id hoks)))
+        (-> (utils/dissoc-module-ids (hoks/get-by-id (:id hoks)))
             (select-keys [:id :tuva-opiskeluoikeus-oid]))
         {:id 1
          :tuva-opiskeluoikeus-oid "1.2.246.562.15.20000000008"}))))
@@ -471,14 +471,14 @@
                 "test that HOKS saving is not rolled back")
     (with-redefs [oph.ehoks.external.aws-sqs/send-amis-palaute-message
                   #(throw (Exception. "fail"))]
-      (eq (h/get-hoks-by-id 1) {:aiemmin-hankitut-ammat-tutkinnon-osat []
-                                :aiemmin-hankitut-paikalliset-tutkinnon-osat []
-                                :hankittavat-paikalliset-tutkinnon-osat []
-                                :aiemmin-hankitut-yhteiset-tutkinnon-osat []
-                                :hankittavat-ammat-tutkinnon-osat []
-                                :opiskeluvalmiuksia-tukevat-opinnot []
-                                :hankittavat-yhteiset-tutkinnon-osat []
-                                :hankittavat-koulutuksen-osat []}))))
+      (eq (hoks/get-by-id 1) {:aiemmin-hankitut-ammat-tutkinnon-osat []
+                              :aiemmin-hankitut-paikalliset-tutkinnon-osat []
+                              :hankittavat-paikalliset-tutkinnon-osat []
+                              :aiemmin-hankitut-yhteiset-tutkinnon-osat []
+                              :hankittavat-ammat-tutkinnon-osat []
+                              :opiskeluvalmiuksia-tukevat-opinnot []
+                              :hankittavat-yhteiset-tutkinnon-osat []
+                              :hankittavat-koulutuksen-osat []}))))
 
 (deftest set-tep-kasitelty-test
   (testing
@@ -559,7 +559,7 @@
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
                     k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
-        (h/save-hoks! hoks-osaaminen-saavutettu)
+        (hoks/save! hoks-osaaminen-saavutettu)
         (is (true? (utils/wait-for (fn [_] (= @sqs-call-counter 2)) 5000)))))))
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-save
@@ -568,8 +568,7 @@
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
                     k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
-        (h/save-hoks!
-          hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta)
+        (hoks/save! hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta)
         (is (= @sqs-call-counter 0))))))
 
 (deftest form-opiskelijapalaute-in-hoks-update
@@ -578,8 +577,8 @@
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
                     k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
-        (let [saved-hoks (h/save-hoks! hoks-data)]
-          (h/update-hoks! (:id saved-hoks) hoks-osaaminen-saavutettu)
+        (let [saved-hoks (hoks/save! hoks-data)]
+          (hoks/update! (:id saved-hoks) hoks-osaaminen-saavutettu)
           (is (= @sqs-call-counter 2)))))))
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-update
@@ -588,8 +587,8 @@
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
                     k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
-        (let [saved-hoks (h/save-hoks! hoks-ei-osaamisen-hankkimisen-tarvetta)]
-          (h/update-hoks!
+        (let [saved-hoks (hoks/save! hoks-ei-osaamisen-hankkimisen-tarvetta)]
+          (hoks/update!
             (:id saved-hoks)
             hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta)
           (is (= @sqs-call-counter 0)))))))
@@ -601,9 +600,9 @@
       (testing "When existing HOKS is replaced with a new one, "
         (testing
          "form opiskelijapalaute if `osaamisen-hankkimisen-tarve` is `true`"
-          (let [saved-hoks (h/save-hoks! hoks-data)]
+          (let [saved-hoks (hoks/save! hoks-data)]
             (is (= @sqs-call-counter 1)) ; sent herate for aloituskysely
-            (h/replace-hoks! (:id saved-hoks) hoks-osaaminen-saavutettu)
+            (hoks/replace! (:id saved-hoks) hoks-osaaminen-saavutettu)
             (is (= @sqs-call-counter 2))) ; herate sent for paattokysely
 
           (reset! sqs-call-counter 0)
@@ -613,11 +612,11 @@
           ; `HOKSKorvaus` schema, even though it probably should be. The
           ; following assertions can be removed once that is fixed.
           (testing ", even when `opiskeluoikeus-oid` is missing from new HOKS"
-            (let [saved-hoks (h/save-hoks! hoks-data)]
+            (let [saved-hoks (hoks/save! hoks-data)]
               (is (= @sqs-call-counter 1)) ; herate sent for aloituskysely
-              (h/replace-hoks! (:id saved-hoks)
-                               (dissoc hoks-osaaminen-saavutettu
-                                       :opiskeluoikeus-oid))
+              (hoks/replace! (:id saved-hoks)
+                             (dissoc hoks-osaaminen-saavutettu
+                                     :opiskeluoikeus-oid))
               (is (= @sqs-call-counter 2))))))))) ; herate sent for paattokysely
 
 
@@ -627,8 +626,8 @@
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
                     k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
-        (let [saved-hoks (h/save-hoks! hoks-ei-osaamisen-hankkimisen-tarvetta)]
-          (h/replace-hoks!
+        (let [saved-hoks (hoks/save! hoks-ei-osaamisen-hankkimisen-tarvetta)]
+          (hoks/replace!
             (:id saved-hoks)
             hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta)
           (is (= @sqs-call-counter 0)))))))
