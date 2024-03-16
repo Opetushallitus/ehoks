@@ -119,9 +119,7 @@
   (testing "Creating TUVA hoks does not trigger heratepalvelu"
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message
-                    (fn [_] (swap! sqs-call-counter inc))
-                    koski/get-opiskeluoikeus-info
-                    (fn [_] {:tyyppi {:koodiarvo "tuva"}})]
+                    (fn [_] (swap! sqs-call-counter inc))]
         (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.30000000007"
                          :oppija-oid "1.2.246.562.24.12312312319"
                          :ensikertainen-hyvaksyminen "2018-12-15"
@@ -149,58 +147,33 @@
 
 (deftest create-new-hoks-with-valid-osa-aikaisuus
   (testing "Create new hoks with valid osa-aikaisuustieto"
-    (with-redefs [koski/get-opiskeluoikeus-info
-                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
-                           :tila {:opiskeluoikeusjaksot
-                                  [{:alku "2023-07-03"
-                                    :tila {:koodiarvo "lasna"
-                                           :nimi {:fi "Läsnä"}
-                                           :koodistoUri
-                                           "koskiopiskeluoikeudentila"
-                                           :koodistoVersio 1}}]}})]
-      (let [hoks-data test-data/new-hoks-with-valid-osa-aikaisuus
-            response
-            (hoks-utils/mock-st-post
-              (hoks-utils/create-app nil) base-url hoks-data)
-            body (utils/parse-body (:body response))]
-        (is (= (:status response) 200))))))
+    (let [hoks-data test-data/new-hoks-with-valid-osa-aikaisuus
+          response  (hoks-utils/mock-st-post
+                      (hoks-utils/create-app nil) base-url hoks-data)
+          body      (utils/parse-body (:body response))]
+      (is (= (:status response) 200)))))
 
 (deftest create-new-hoks-without-osa-aikaisuus
   (testing "Create new hoks without osa-aikaisuustieto"
-    (with-redefs [koski/get-opiskeluoikeus-info
-                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})]
-      (let [hoks-data test-data/new-hoks-without-osa-aikaisuus
-            response
-            (hoks-utils/mock-st-post
-              (hoks-utils/create-app nil) base-url hoks-data)
-            body (utils/parse-body (:body response))]
-        (is (= (:status response) 400))
-        (is
-          (eq (:errors body)
+    (let [hoks-data test-data/new-hoks-without-osa-aikaisuus
+          response  (hoks-utils/mock-st-post
+                      (hoks-utils/create-app nil) base-url hoks-data)
+          body      (utils/parse-body (:body response))]
+      (is (= (:status response) 400))
+      (is (eq (:errors body)
               {:hankittavat-ammat-tutkinnon-osat
                [{:osaamisen-hankkimistavat
                  [(str "(not (\"Lisää osa-aikaisuustieto, joka on välillä "
-                       "1-100.\" a-clojure.lang.PersistentArrayMap))")]}]}))))))
+                       "1-100.\" a-clojure.lang.PersistentArrayMap))")]}]})))))
 
 (deftest create-new-telma-hoks-without-osa-aikaisuus
   (testing "Create new hoks without osa-aikaisuustieto"
-    (with-redefs [koski/get-opiskeluoikeus-info
-                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
-                           :tila {:opiskeluoikeusjaksot
-                                  [{:alku "2023-07-03"
-                                    :tila {:koodiarvo "lasna"
-                                           :nimi {:fi "Läsnä"}
-                                           :koodistoUri
-                                           "koskiopiskeluoikeudentila"
-                                           :koodistoVersio 1}}]}
-                           :suoritukset [{:tyyppi {:koodiarvo "telma"}}]})]
-      (let [hoks-data test-data/new-hoks-without-osa-aikaisuus
-            response
-            (hoks-utils/mock-st-post
-              (hoks-utils/create-app nil) base-url hoks-data)
-            body (utils/parse-body (:body response))]
-        (is (= (:status response) 200))
-        (is (= (get-in body [:data :uri]) (str base-url "/1")))))))
+    (let [hoks-data test-data/new-hoks-without-osa-aikaisuus-telma
+          response  (hoks-utils/mock-st-post
+                      (hoks-utils/create-app nil) base-url hoks-data)
+          body      (utils/parse-body (:body response))]
+      (is (= (:status response) 200))
+      (is (= (get-in body [:data :uri]) (str base-url "/1"))))))
 
 (deftest osaamisen-hankkimistavat-isnt-mandatory
   (testing "Osaamisen hankkimistavat should be optional field in ehoks"
@@ -339,36 +312,27 @@
 
 (deftest hoks-put-adds-non-existing-part
   (testing "If HOKS part doesn't currently exist, PUT creates it"
-    (with-redefs [koski/get-opiskeluoikeus-info
-                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
-                           :tila {:opiskeluoikeusjaksot
-                                  [{:alku "2023-07-03"
-                                    :tila {:koodiarvo "lasna"
-                                           :nimi {:fi "Läsnä"}
-                                           :koodistoUri
-                                           "koskiopiskeluoikeudentila"
-                                           :koodistoVersio 1}}]}})]
-      (let [app (hoks-utils/create-app nil)
-            post-response
-            (hoks-utils/create-mock-post-request
-              ""
-              (dissoc test-data/hoks-data :opiskeluvalmiuksia-tukevat-opinnot)
-              app)
-            put-response (hoks-utils/create-mock-hoks-put-request
-                           1
-                           (-> test-data/hoks-data
-                               (assoc :id 1)
-                               (dissoc :opiskeluoikeus-oid :oppija-oid))
-                           app)
-            get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-            get-response-data (:data (utils/parse-body (:body get-response)))]
-        (is (= (:status post-response) 200))
-        (is (= (:status put-response) 204))
-        (is (= (:status get-response) 200))
-        (eq (utils/dissoc-module-ids
-              (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data))
-            (utils/dissoc-module-ids
-              (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)))))))
+    (let [app (hoks-utils/create-app nil)
+          post-response
+          (hoks-utils/create-mock-post-request
+            ""
+            (dissoc test-data/hoks-data :opiskeluvalmiuksia-tukevat-opinnot)
+            app)
+          put-response (hoks-utils/create-mock-hoks-put-request
+                         1
+                         (-> test-data/hoks-data
+                             (assoc :id 1)
+                             (dissoc :opiskeluoikeus-oid :oppija-oid))
+                         app)
+          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status put-response) 204))
+      (is (= (:status get-response) 200))
+      (eq (utils/dissoc-module-ids
+            (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data))
+          (utils/dissoc-module-ids
+            (:opiskeluvalmiuksia-tukevat-opinnot get-response-data))))))
 
 (deftest hoks-put-updates-oht-using-yksiloiva-tunniste
   (testing (str "If matching oht yksiloiva-tunniste is found, update oht."

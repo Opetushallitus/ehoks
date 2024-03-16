@@ -148,8 +148,8 @@
           store (atom {})
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
-      (with-redefs [koski/get-opiskeluoikeus-info
-                    utils/mock-get-opiskeluoikeus-info]
+      (with-redefs [koski/get-opiskeluoikeus-info-raw
+                    utils/mock-get-opiskeluoikeus-info-raw]
         (hoks/save! hoks-data))
       (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
                              :alkupvm (LocalDate/now)
@@ -187,8 +187,8 @@
           store (atom {})
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
-      (with-redefs [koski/get-opiskeluoikeus-info
-                    utils/mock-get-opiskeluoikeus-info]
+      (with-redefs [koski/get-opiskeluoikeus-info-raw
+                    utils/mock-get-opiskeluoikeus-info-raw]
         (hoks/save! hoks-data))
       (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
                              :alkupvm (LocalDate/now)
@@ -239,8 +239,8 @@
           store (atom {})
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
-      (with-redefs [koski/get-opiskeluoikeus-info
-                    utils/mock-get-opiskeluoikeus-info]
+      (with-redefs [koski/get-opiskeluoikeus-info-raw
+                    utils/mock-get-opiskeluoikeus-info-raw]
         (hoks/save! hoks-data))
       (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
                              :alkupvm (LocalDate/now)
@@ -291,8 +291,8 @@
           store (atom {})
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
-      (with-redefs [koski/get-opiskeluoikeus-info
-                    utils/mock-get-opiskeluoikeus-info]
+      (with-redefs [koski/get-opiskeluoikeus-info-raw
+                    utils/mock-get-opiskeluoikeus-info-raw]
         (hoks/save! hoks-data))
       (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
                              :alkupvm (.plusDays (LocalDate/now) 1)

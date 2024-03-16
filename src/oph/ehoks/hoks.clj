@@ -495,11 +495,11 @@
     (doseq [hoks hoksit]
       (try
         (let [oppija-oid (:oppija-oid hoks)
-              hoks-opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+              opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
               opiskeluoikeudet (koski/fetch-opiskeluoikeudet-by-oppija-id
                                  oppija-oid)]
           (oppijaindex/add-oppija-hankintakoulutukset opiskeluoikeudet
-                                                      hoks-opiskeluoikeus-oid
+                                                      opiskeluoikeus-oid
                                                       oppija-oid))
         (catch Exception _
           (log/errorf "Hankintakoulutukset-päivitys epäonnistui hoksille %s"
@@ -508,10 +508,10 @@
           (filter
             some?
             (pmap
-              (fn [x]
-                (when (nil? (koski/get-opiskeluoikeus-info
-                              (:opiskeluoikeus-oid x)))
-                  x))
+              (fn [hoks]
+                (when (nil? (koski/get-opiskeluoikeus!
+                              (:opiskeluoikeus-oid hoks)))
+                  hoks))
               hoksit-created-in-7-days))
           oo-oids (map :opiskeluoikeus-oid hokses-without-oo)]
       (log/infof "Päivitetään opiskeluoikeus-indeksiin koski404 tietoja.
