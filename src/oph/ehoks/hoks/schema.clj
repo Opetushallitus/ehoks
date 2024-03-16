@@ -1,5 +1,5 @@
 (ns oph.ehoks.hoks.schema
-  (:require [oph.ehoks.hoks.hoks :refer [tyopaikkajakso? y-tunnus-missing?]]
+  (:require [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.middleware :refer [get-current-opiskeluoikeus]]
             [oph.ehoks.opiskelijapalaute :refer
              [kuuluu-palautteen-kohderyhmaan?]]
@@ -228,10 +228,9 @@
   "Varmistaa, että jakson osa-aikaisuustieto on välillä 1-100, mikäli
   työpaikkajakson loppupäivä on 1.7.2023 tai sen jälkeen."
   [oht]
-  (let [osa-aikaisuustieto (:osa-aikaisuustieto oht)
-        hankkimistapa (:osaamisen-hankkimistapa-koodi-uri oht)]
+  (let [osa-aikaisuustieto (:osa-aikaisuustieto oht)]
     (if (and (.isAfter ^LocalDate (:loppu oht) (LocalDate/of 2023 6 30))
-             (tyopaikkajakso? oht)
+             (oht/tyopaikkajakso? oht)
              (kuuluu-palautteen-kohderyhmaan? (get-current-opiskeluoikeus)))
       (and (some? osa-aikaisuustieto)
            (<= osa-aikaisuustieto 100)
@@ -254,7 +253,7 @@
 
 (defn- tyopaikkajakso-has-yksiloiva-tunniste?
   [oht]
-  (or (not (tyopaikkajakso? oht))
+  (or (not (oht/tyopaikkajakso? oht))
       (some? (:yksiloiva-tunniste oht))))
 
 (defn- katsotaan-eronneeksi?
@@ -304,7 +303,7 @@
      {:check tyopaikkajakso-has-yksiloiva-tunniste?
       :except-methods #{:put-virkailija :post-virkailija :patch-virkailija}
       :description "Lisää työpaikkajaksoon yksilöivä tunniste."}
-     {:check #(not (y-tunnus-missing? %))
+     {:check #(not (oht/y-tunnus-missing? %))
       :description "Lisää työpaikkajaksoon työpaikan Y-tunnus."}
      {:check oppisopimus-has-perusta?
       :description "Lisää jaksoon oppisopimuksen perustan koodi-uri."}

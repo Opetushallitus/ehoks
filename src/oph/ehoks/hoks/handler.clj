@@ -3,25 +3,26 @@
             [clojure.tools.logging :as log]
             [compojure.api.core :refer [route-middleware]]
             [ring.util.http-response :as response]
-            [oph.ehoks.schema :as schema]
-            [oph.ehoks.schema.oid :as oid-schema]
-            [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
-            [oph.ehoks.restful :as rest]
-            [oph.ehoks.db.postgresql.aiemmin-hankitut :as pdb-ah]
-            [oph.ehoks.db.postgresql.hankittavat :as pdb-ha]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as pdb-ot]
-            [oph.ehoks.hoks.hoks :as h]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
-            [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
-            [oph.ehoks.middleware :refer
-             [wrap-user-details wrap-hoks wrap-opiskeluoikeus]]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
-            [schema.core :as s]
-            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.middleware :as m]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
+            [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
+            [oph.ehoks.hoks.schema :as hoks-schema]
+            [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
+            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus
+                                          wrap-user-details]]
+            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.restful :as rest]
+            [oph.ehoks.schema :as schema]
+            [oph.ehoks.schema.oid :as oid-schema]
+            [oph.ehoks.db.postgresql.aiemmin-hankitut :as pdb-ah]
+            [oph.ehoks.db.postgresql.hankittavat :as pdb-ha]
+            [schema.core :as s]))
 
 (def ^:private hankittava-paikallinen-tutkinnon-osa
   "Hankittavan paikallisen tutkinnon osan reitit."
@@ -270,7 +271,7 @@
   (try
     (oppijaindex/add-hoks-dependents-in-index! hoks)
     (m/check-hoks-access! hoks request)
-    (let [hoks-db (h/check-and-save-hoks! hoks)
+    (let [hoks-db (hoks/check-and-save! hoks)
           resp-body {:uri (format "%s/%d" (:uri request) (:id hoks-db))}]
       (-> resp-body
           (rest/ok :id (:id hoks-db))
@@ -287,9 +288,10 @@
     (if (empty? old-hoks)
       (response/not-found {:error "HOKS not found with given HOKS ID"})
       (try
-        (h/check-hoks-for-update! old-hoks hoks)
-        (let [db-hoks (db-handler (get-in request [:hoks :id]) hoks)]
-          (assoc (response/no-content) :audit-data {:new hoks :old old-hoks}))
+        (hoks/check-for-update! old-hoks hoks)
+        (let [new-hoks (db-handler (get-in request [:hoks :id]) hoks)]
+          (assoc (response/no-content) :audit-data {:old old-hoks
+                                                    :new new-hoks}))
         (catch Exception e
           (if (= (:error (ex-data e)) :disallowed-update)
             (response/bad-request! {:error (.getMessage e)})
@@ -342,8 +344,10 @@
                                 :result
                                 [hoks-schema-vipunen/HOKSVipunen]})
         (let [limit (min (max 1 amount) 1000)
-              raw-result (h/get-hokses-from-id from-id limit updated-after)
-              result (map h/mark-as-deleted raw-result)
+              raw-result (hoks/get-starting-from-id! from-id
+                                                     limit
+                                                     updated-after)
+              result (map hoks/mark-as-deleted raw-result)
               last-id (first (sort > (map :id result)))
               schema-checker (s/checker hoks-schema-vipunen/HOKSVipunen)
               result-after-validation (filter
@@ -377,13 +381,12 @@
         (c-api/PATCH "/kyselylinkki" request
           :summary "Lisää lähetystietoja kyselylinkille"
           :body [data hoks-schema/kyselylinkki-lahetys]
-          (let [updated-count (first (h/update-kyselylinkki! data))]
+          (let [updated-count (first (kyselylinkki/update! data))]
             (if (pos? updated-count)
               (assoc (response/no-content)
                      :audit-data {:old {}
                                   :new data})
-              (response/not-found
-                {:error "No kyselylinkki found"})))))
+              (response/not-found {:error "No kyselylinkki found"})))))
 
       (c-api/POST "/" [:as request]
         :middleware [wrap-opiskeluoikeus]
@@ -396,7 +399,7 @@
         :middleware [wrap-hoks m/wrap-hoks-access]
         :summary "Palauttaa HOKSin"
         :return (rest/response hoks-schema/HOKS)
-        (rest/ok (h/get-hoks-values (:hoks request))))
+        (rest/ok (hoks/get-values (:hoks request))))
 
       (c-api/context "/:hoks-id" []
         (route-middleware
@@ -406,12 +409,12 @@
             :summary
             "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
             :body [hoks-values hoks-schema/HOKSPaivitys]
-            (change-hoks! hoks-values request h/update-hoks!))
+            (change-hoks! hoks-values request hoks/update!))
 
           (c-api/PUT "/" request
             :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
             :body [hoks-values hoks-schema/HOKSKorvaus]
-            (change-hoks! hoks-values request h/replace-hoks!))
+            (change-hoks! hoks-values request hoks/replace!))
 
           (c-api/GET "/hankintakoulutukset" request
             :summary "Palauttaa hoksin hankintakoulutus opiskeluoikeus-oidit"
@@ -439,7 +442,7 @@
                         data
                         :oppija-oid (get-in request [:hoks :oppija-oid])
                         :hoks-id (get-in request [:hoks :id]))]
-                  (h/insert-kyselylinkki! enriched-data)
+                  (kyselylinkki/insert! enriched-data)
                   (assoc (response/no-content)
                          :audit-data {:new enriched-data}))
                 (response/not-found

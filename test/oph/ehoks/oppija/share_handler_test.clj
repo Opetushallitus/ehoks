@@ -1,15 +1,16 @@
 (ns oph.ehoks.oppija.share-handler-test
   (:require [clojure.test :as t]
-            [oph.ehoks.utils :as utils]
-            [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
-            [oph.ehoks.db.db-operations.shared-modules :as sdb]
-            [ring.mock.request :as mock]
-            [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.db-operations.shared-modules :as sdb]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.hoks-save-test :as hoks-data]
-            [oph.ehoks.hoks.hoks :as hoks]
-            [oph.ehoks.virkailija.virkailija-test-utils :as v-utils])
+            [oph.ehoks.oppija.handler :as handler]
+            [oph.ehoks.session-store :refer [test-session-store]]
+            [oph.ehoks.utils :as utils]
+            [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]
+            [ring.mock.request :as mock])
   (:import [java.time LocalDate]))
 
 (t/use-fixtures :once utils/migrate-database)
@@ -100,9 +101,9 @@
 (t/deftest get-shared-hato-osaamisenhankkiminen-link
   (t/testing "Existing shared hato with osaamisenhankkiminen can be retrieved"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
-          hoks (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+          hoks (with-redefs [koski/get-opiskeluoikeus-info
                              utils/mock-get-opiskeluoikeus-info]
-                 (hoks/save-hoks! full-hoks-data))
+                 (hoks/save! full-hoks-data))
           tuo-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
                                       :module_id]))
           module-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
@@ -131,9 +132,9 @@
 (t/deftest get-shared-hato-osaamisenosoittaminen-link
   (t/testing "Existing shared hato with osaamisenosoittaminen can be retrieved"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
-          hoks (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+          hoks (with-redefs [koski/get-opiskeluoikeus-info
                              utils/mock-get-opiskeluoikeus-info]
-                 (hoks/save-hoks! full-hoks-data))
+                 (hoks/save! full-hoks-data))
           tuo-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
                                       :module_id]))
           module-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
@@ -161,9 +162,9 @@
 (t/deftest get-shared-hpto-osaamisenosoittaminen-link
   (t/testing "Existing shared hpto with osaamisenosoittaminen can be retrieved"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
-          hoks (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+          hoks (with-redefs [koski/get-opiskeluoikeus-info
                              utils/mock-get-opiskeluoikeus-info]
-                 (hoks/save-hoks! full-hoks-data))
+                 (hoks/save! full-hoks-data))
           tuo-uuid (str (get-in hoks [:hankittavat-paikalliset-tutkinnon-osat 0
                                       :module_id]))
           module-uuid (str (get-in hoks
@@ -194,9 +195,9 @@
 (t/deftest get-shared-hyto-osaamisenhankkiminen-link
   (t/testing "Existing shared hpto with osaamisenosoittaminen can be retrieved"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
-          hoks (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+          hoks (with-redefs [koski/get-opiskeluoikeus-info
                              utils/mock-get-opiskeluoikeus-info]
-                 (hoks/save-hoks! full-hoks-data))
+                 (hoks/save! full-hoks-data))
           tuo-uuid (str (get-in hoks [:hankittavat-yhteiset-tutkinnon-osat 0
                                       :module_id]))
           module-uuid (str (get-in hoks
@@ -311,9 +312,9 @@
 (t/deftest get-shared-modules
   (t/testing "Multiple shared links for a single module can be fetched"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
-          hoks (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
+          hoks (with-redefs [koski/get-opiskeluoikeus-info
                              utils/mock-get-opiskeluoikeus-info]
-                 (hoks/save-hoks! full-hoks-data))
+                 (hoks/save! full-hoks-data))
           tuo1-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
                                        :module_id]))
           module1-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0

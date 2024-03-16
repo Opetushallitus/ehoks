@@ -424,7 +424,7 @@ Oppijanumerorekisterin muutosten siirtymisestä Ehoksiin. Toistaiseksi Kosken
 muutokset eivät siirry automaattisesti Ehoksiin. Poistuneita
 opiskeluoikeuksia varten on kuitenkin luotu ratkaisu, joka merkitsee
 opiskeluoikeuksindeksiin `koski404` kentän trueksi. Sen toteutusta voi
-tarkastella `oph/ehoks/hoks/hoks.clj` tiedoston `update-opiskeluoikeudet`
+tarkastella `oph/ehoks/hoks.clj` tiedoston `update-opiskeluoikeudet`
 -funktiosta. Toistaiseksi koski404 -riveille ei tehdä mitään, mutta ne voisi
 jatkossa poistaa, mutta tästä tulee tehdä oma tikettinsä. Oletettavasti myös
 poistuneeseen opiskeluoikeuteen kiinnitetty hoks tulisi poistaa.
