@@ -316,31 +316,43 @@
         new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-hoks)
         old-opiskeluoikeus-oid (:opiskeluoikeus-oid old-hoks)]
     (when-not (opiskeluoikeus/still-active? new-opiskeluoikeus-oid)
-      (throw (ex-info (format "Opiskeluoikeus %s is no longer active"
+      (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
                               new-opiskeluoikeus-oid)
-                      {:error :disallowed-update})))
+                      {:type               :disallowed-update
+                       :opiskeluoikeus-oid new-opiskeluoikeus-oid})))
     (when (and (some? new-opiskeluoikeus-oid)
                (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
-      (throw (ex-info "Opiskeluoikeus update not allowed!"
-                      {:error :disallowed-update})))
+      (throw (ex-info "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"
+                      {:type                   :disallowed-update
+                       :old-opiskeluoikeus-oid old-opiskeluoikeus-oid
+                       :new-opiskeluoikeus-oid new-opiskeluoikeus-oid})))
     (when (and (some? new-oppija-oid)
                (not= new-oppija-oid old-oppija-oid))
-      (throw (ex-info "Oppija-oid update not allowed!"
-                      {:error :disallowed-update})))))
+      (throw (ex-info "Updating `oppija-oid` in HOKS is not allowed!"
+                      {:type           :disallowed-update
+                       :old-oppija-oid old-oppija-oid
+                       :new-oppija-oid new-oppija-oid})))))
 
 (defn check-and-save!
   "Tekee uuden HOKSin tarkistukset ja tallentaa sen, jos kaikki on OK."
   [hoks]
-  (let [opiskeluoikeudet (koski/fetch-opiskeluoikeudet-by-oppija-id
-                           (:oppija-oid hoks))]
-    (when-not (oppijaindex/oppija-opiskeluoikeus-match?
-                opiskeluoikeudet (:opiskeluoikeus-oid hoks))
-      (throw (ex-info "Opiskeluoikeus does not match any held by oppija"
-                      {:error :disallowed-update})))
+  (let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+        oppija-oid         (:oppija-oid hoks)
+        opiskeluoikeudet (koski/fetch-opiskeluoikeudet-by-oppija-id oppija-oid)]
+    (when-not (oppijaindex/oppija-opiskeluoikeus-match? opiskeluoikeudet
+                                                        opiskeluoikeus-oid)
+      (-> (format "Opiskeluoikeus `%s` does not match any held by oppija `%s`"
+                  opiskeluoikeus-oid
+                  oppija-oid)
+          (ex-info {:type               :disallowed-update
+                    :opiskeluoikeus-oid opiskeluoikeus-oid
+                    :oppija-oid         oppija-oid})
+          throw))
     (when-not (opiskeluoikeus/still-active? hoks opiskeluoikeudet)
-      (throw (ex-info (format "Opiskeluoikeus %s is no longer active"
-                              (:opiskeluoikeus-oid hoks))
-                      {:error :disallowed-update})))
+      (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
+                              opiskeluoikeus-oid)
+                      {:type               :disallowed-update
+                       :opiskeluoikeus-oid opiskeluoikeus-oid})))
     (save! hoks)))
 
 (defn get-with-hankittavat-koulutuksen-osat!

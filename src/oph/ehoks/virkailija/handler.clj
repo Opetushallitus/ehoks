@@ -113,19 +113,14 @@
 (defn- post-oppija!
   "Add new HOKS for oppija"
   [hoks request]
-  (try
-    (oi/add-hoks-dependents-in-index! hoks)
-    (check-virkailija-privileges hoks request)
-    (let [hoks-db (-> (hoks/add-missing-oht-yksiloiva-tunniste hoks)
-                      (assoc :manuaalisyotto true)
-                      (hoks/check-and-save!))]
-      (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
-          (restful/ok :id (:id hoks-db))
-          (assoc :audit-data {:new hoks})))
-    (catch Exception e
-      (case (:error (ex-data e))
-        :disallowed-update (response/bad-request! {:error (.getMessage e)})
-        (throw e)))))
+  (oi/add-hoks-dependents-in-index! hoks)
+  (check-virkailija-privileges hoks request)
+  (let [hoks-db (-> (hoks/add-missing-oht-yksiloiva-tunniste hoks)
+                    (assoc :manuaalisyotto true)
+                    (hoks/check-and-save!))]
+    (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
+        (restful/ok :id (:id hoks-db))
+        (assoc :audit-data {:new hoks}))))
 
 (defn- get-hoks-perustiedot
   "Get basic information from HOKS"
@@ -178,17 +173,12 @@
 (defn- change-hoks!
   "Change contents of HOKS with particular ID"
   [hoks request db-handler]
-  (try
-    (let [old-hoks (:hoks request)]
-      (hoks/check-for-update! old-hoks hoks)
-      (let [hoks-db (db-handler (:id (:hoks request))
-                                (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
-        (assoc (response/no-content) :audit-data {:new hoks
-                                                  :old old-hoks})))
-    (catch Exception e
-      (if (= (:error (ex-data e)) :disallowed-update)
-        (response/bad-request! {:error (.getMessage e)})
-        (throw e)))))
+  (let [old-hoks (:hoks request)]
+    (hoks/check-for-update! old-hoks hoks)
+    (let [hoks-db (db-handler (:id (:hoks request))
+                              (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
+      (assoc (response/no-content) :audit-data {:new hoks
+                                                :old old-hoks}))))
 
 (defn- get-vastaajatunnus-info
   "Get details of vastaajatunnus from database or Arvo"
