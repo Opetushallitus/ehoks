@@ -331,7 +331,7 @@
 (defn- insert-oppija!
   "Insert student into database"
   [oid]
-  (let [oppija (:body (onr/find-student-by-oid oid))]
+  (let [oppija (onr/get-existing-oppija! oid)]
     (db-oppija/insert-oppija!
       {:oid oid
        :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))})))
@@ -380,7 +380,7 @@
   "Update existing student in database. Adding 2nd param skips cache."
   ([oid]
     (try
-      (let [oppija (:body (onr/find-student-by-oid oid))]
+      (let [oppija (onr/get-existing-oppija! oid)]
         (db-oppija/update-oppija!
           oid
           {:nimi (format-oppija-name oppija)}))
@@ -464,16 +464,7 @@
   (let [oppija-oid         (:oppija-oid hoks)
         opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
         opiskeluoikeudet   (k/fetch-opiskeluoikeudet-by-oppija-id oppija-oid)]
-    (try (add-oppija! oppija-oid)
-         (catch Exception e
-           (when (= (:status (ex-data e)) 404)
-             (log/warn "Oppija" oppija-oid "not found in ONR")
-             (throw (ex-info
-                      (format "Oppija `%s` not found in Oppijanumerorekisteri"
-                              oppija-oid)
-                      {:type       :disallowed-update
-                       :oppija-oid oppija-oid})))
-           (throw e)))
+    (add-oppija! oppija-oid)
     (add-opiskeluoikeus! opiskeluoikeus-oid oppija-oid)
     (add-oppija-hankintakoulutukset
       opiskeluoikeudet opiskeluoikeus-oid oppija-oid)))

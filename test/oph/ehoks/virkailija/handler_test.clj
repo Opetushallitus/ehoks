@@ -7,6 +7,7 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.koski :as k]
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.hoks.hoks-test-utils :refer [virkailija-base-url]]
             [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
             [oph.ehoks.session-store :refer [test-session-store]]
@@ -836,14 +837,13 @@
                           "a-clojure.lang.PersistentArrayMap))"))
                   (str body))))))))
 
-(defn mocked-find-student-by-oid [oid]
+(defn mock-get-oppija-raw! [_]
   (throw (ex-info "Opiskelija fetch failed" {:status 404})))
 
 (t/deftest test-hoks-create-when-oppijanumerorekisteri-fails
   (t/testing "Error thrown from oppijanumerorekisteri is propagated to handler"
     (utils/with-db
-      (with-redefs [oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
-                    mocked-find-student-by-oid]
+      (with-redefs [onr/get-oppija-raw! mock-get-oppija-raw!]
         (let [post-response
               (post-new-hoks "1.2.246.562.15.76000000018"
                              "1.2.246.562.10.12000000013")]

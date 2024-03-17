@@ -2,6 +2,7 @@
   (:require [compojure.api.exception :as c-ex]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [oph.ehoks.middleware :as middleware]
@@ -57,6 +58,9 @@
    :opiskeluoikeus-already-exists (c-ex/with-logging bad-request-handler :warn)
 
    ::koski/opiskeluoikeus-not-found
+   (c-ex/with-logging bad-request-handler :warn)
+
+   ::onr/oppija-not-found
    (c-ex/with-logging bad-request-handler :warn)
 
    :not-found not-found-handler
