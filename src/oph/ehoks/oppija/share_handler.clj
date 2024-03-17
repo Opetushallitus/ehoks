@@ -22,12 +22,16 @@
 
 (defn- jakolinkki-still-valid?
   "Check whether jakolinkki is still valid"
-  [jakolinkki]
+  [{:keys [voimassaolo-alku voimassaolo-loppu]}]
   (cond
-    (.isAfter ^LocalDate (:voimassaolo-alku jakolinkki) (LocalDate/now))
-    (throw (ex-info "Shared link not yet active" {:cause :inactive}))
-    (.isBefore ^LocalDate (:voimassaolo-loppu jakolinkki) (LocalDate/now))
-    (throw (ex-info "Shared link is expired" {:cause :expired}))))
+    (.isAfter ^LocalDate voimassaolo-alku (LocalDate/now))
+    (throw (ex-info "Shared link not yet active"
+                    {:type             :shared-link-inactive
+                     :voimassaolo-alku voimassaolo-alku}))
+    (.isBefore ^LocalDate voimassaolo-loppu (LocalDate/now))
+    (throw (ex-info "Shared link is expired"
+                    {:type              :shared-link-expired
+                     :voimassaolo-loppu voimassaolo-loppu}))))
 
 (defn- fetch-shared-link-data
   "Queries and combines data associated with the shared link"
@@ -64,30 +68,17 @@
         :body [values oppija-schema/JakolinkkiLuonti]
         :return (rest/response schema/POSTResponse :uuid String)
         :summary "Luo uuden jakolinkin"
-        (try
-          (let [jakolinkki (db/insert-shared-module! values)
-                share-id (str (:share_id jakolinkki))]
-            (rest/ok {:uri (format "%s/%s" (:uri request) share-id)}
-                     :uuid share-id))
-          (catch Exception e
-            (response/bad-request! {:error (ex-message e)}))))
+        (let [share-id (str (:share_id (db/insert-shared-module! values)))]
+          (rest/ok {:uri  (format "%s/%s" (:uri request) share-id)}
+                   :uuid share-id)))
 
       (c-api/GET "/:uuid" []
         :return (rest/response oppija-schema/Jakolinkki)
         :summary "Yksittäisen jakolinkin katselunäkymän tietojen haku"
         :path-params [uuid :- String]
-        (try
-          (if-let [jakolinkki (fetch-shared-link-data uuid)]
-            (rest/ok jakolinkki)
-            (response/not-found))
-          (catch ExceptionInfo ei
-            (cond
-              (= :expired (-> ei ex-data :cause))
-              (response/gone! {:message (ex-message ei)})
-              (= :inactive (-> ei ex-data :cause))
-              (response/locked! {:message (ex-message ei)})))
-          (catch Exception e
-            (response/bad-request! {:error (ex-message e)}))))
+        (if-let [jakolinkki (fetch-shared-link-data uuid)]
+          (rest/ok jakolinkki)
+          (response/not-found)))
 
       (c-api/DELETE "/:uuid" []
         :summary "Poistaa jakolinkin"
