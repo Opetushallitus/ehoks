@@ -1,12 +1,12 @@
 (ns oph.ehoks.oppija.auth-handler-test
-  (:require [clojure.test :refer [deftest testing is]]
-            [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.db.session-store :as db-session-store]
-            [oph.ehoks.oppija.handler :as handler]
+  (:require [clojure.test :refer [deftest is testing]]
             [oph.ehoks.common.api :as common-api]
-            [ring.mock.request :as mock]
-            [oph.ehoks.utils :refer [parse-body authenticate]]
-            [oph.ehoks.external.http-client :as client]))
+            [oph.ehoks.db.session-store :as db-session-store]
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
+            [oph.ehoks.oppija.handler :as handler]
+            [oph.ehoks.session-store :refer [test-session-store]]
+            [oph.ehoks.utils :refer [authenticate parse-body]]
+            [ring.mock.request :as mock]))
 
 (def base-url
   "http://testiopintopolku.fi/ehoks-oppija-backend/api/v1/oppija/session")
@@ -63,28 +63,26 @@
         "</cas:authenticationSuccess>"
         "</cas:serviceResponse>")})
 
-(defn mock-oppijanumerorekisteri-response [oid]
-  {:status 200,
-   :body {:oidHenkilo "1.2.246.562.24.44651722625"
-          :hetu "250103-5360"
-          :etunimet "Aarto Maurits"
-          :kutsumanimi "Aarto"
-          :sukunimi "Väisänen-perftest"
-          :yhteystiedotRyhma
-          '({:id 0
-             :readOnly true
-             :ryhmaAlkuperaTieto "testiservice"
-             :ryhmaKuvaus "testiryhmä"
-             :yhteystieto
-             [{:yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"
-               :yhteystietoArvo "testikayttaja@testi.fi"}]})}})
+(defn mock-get-oppija-raw! [_]
+  {:oidHenkilo "1.2.246.562.24.44651722625"
+   :hetu "250103-5360"
+   :etunimet "Aarto Maurits"
+   :kutsumanimi "Aarto"
+   :sukunimi "Väisänen-perftest"
+   :yhteystiedotRyhma
+   '({:id 0
+      :readOnly true
+      :ryhmaAlkuperaTieto "testiservice"
+      :ryhmaKuvaus "testiryhmä"
+      :yhteystieto
+      [{:yhteystietoTyyppi "YHTEYSTIETO_SAHKOPOSTI"
+        :yhteystietoArvo "testikayttaja@testi.fi"}]})})
 
 (deftest successful-cas-authentication
   (testing "Successful oppija authentication"
     (with-redefs [oph.ehoks.external.cas/call-cas-oppija-ticket-validation
                   ticket-validation-mock-response
-                  oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
-                  mock-oppijanumerorekisteri-response]
+                  onr/get-oppija-raw! mock-get-oppija-raw!]
       (let [session-store (atom {})
             app (common-api/create-app handler/app-routes
                                        (test-session-store session-store))
@@ -101,8 +99,7 @@
   (testing "Successful oppija authentication and logout after"
     (with-redefs [oph.ehoks.external.cas/call-cas-oppija-ticket-validation
                   ticket-validation-mock-response
-                  oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
-                  mock-oppijanumerorekisteri-response]
+                  onr/get-oppija-raw! mock-get-oppija-raw!]
       (let [session-store (db-session-store/db-store)
             app (common-api/create-app handler/app-routes
                                        session-store)
@@ -161,8 +158,7 @@
   (testing "Cas fails ticket validation"
     (with-redefs [oph.ehoks.external.cas/call-cas-oppija-ticket-validation
                   ticket-validation-fail-mock-response
-                  oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
-                  mock-oppijanumerorekisteri-response]
+                  onr/get-oppija-raw! mock-get-oppija-raw!]
       (let [session-store (atom {})
             app (common-api/create-app handler/app-routes
                                        (test-session-store session-store))
