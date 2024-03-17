@@ -20,14 +20,12 @@
 (defn- get-user-info-from-onr
   "Get user information from oppijanumerorekisteri"
   [oid]
-  (let [response (onr/find-student-by-oid oid)
-        user-info (:body response)]
-    (-> user-info
-        (select-keys [:oidHenkilo :etunimet :sukunimi :kutsumanimi])
-        (set/rename-keys {:oidHenkilo :oid
-                          :etunimet :first-name
-                          :sukunimi :surname
-                          :kutsumanimi :common-name}))))
+  (-> (onr/get-existing-oppija! oid)
+      (select-keys [:oidHenkilo :etunimet :sukunimi :kutsumanimi])
+      (set/rename-keys {:oidHenkilo :oid
+                        :etunimet :first-name
+                        :sukunimi :surname
+                        :kutsumanimi :common-name})))
 
 (defn- respond-with-successful-authentication
   "Adds user-info and ticket to response to store them to session-store"
@@ -107,13 +105,8 @@
         (let [session-user (get-in request [:session :user])
               using-valtuudet (:usingValtuudet session-user)]
           (if-not using-valtuudet
-            (let [user-info-response (onr/find-student-by-oid
-                                       (:oid session-user))
-                  user-info (:body user-info-response)]
-              (if (and (= (:status user-info-response) 200)
-                       (seq user-info))
-                (rest/ok [(onr/convert-student-info user-info)])
-                (throw (ex-info "External system error" user-info-response))))
+            (let [user-info (onr/get-existing-oppija! (:oid session-user))]
+              (rest/ok [(onr/convert-student-info user-info)]))
             (rest/ok [session-user]))))
 
       (c-api/GET "/" [:as request]
