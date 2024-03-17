@@ -18,15 +18,17 @@
 
 (defn- validate-share-dates
   "Varmistaa, että sharen päivämäärän ovat hyväksyttäviä."
-  [values]
+  [{:keys [voimassaolo-alku voimassaolo-loppu]}]
   (cond
-    (.isBefore ^LocalDate (:voimassaolo-loppu values) (LocalDate/now))
-    (throw
-      (Exception. "Shared link end date cannot be in the past"))
-    (.isBefore ^LocalDate (:voimassaolo-loppu values)
-               (:voimassaolo-alku values))
-    (throw
-      (Exception. "Shared link end date cannot be before the start date"))))
+    (.isBefore ^LocalDate voimassaolo-loppu (LocalDate/now))
+    (throw (ex-info "Shared link end date cannot be in the past"
+                    {:type              :shared-link-validation-error
+                     :voimassaolo-loppu voimassaolo-loppu}))
+    (.isBefore ^LocalDate voimassaolo-loppu voimassaolo-alku)
+    (throw (ex-info "Shared link end date cannot be before the start date"
+                    {:type              :shared-link-validation-error
+                     :voimassaolo-alku  voimassaolo-alku
+                     :voimassaolo-loppu voimassaolo-loppu}))))
 
 (defn insert-shared-module!
   "Tallentaa shared modulen tietokantaan."

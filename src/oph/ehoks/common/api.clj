@@ -28,44 +28,49 @@
   [_ __ ___]
   (response/unauthorized {:reason "Unable to check access rights"}))
 
-(defn bad-request-handler
-  "Opiskeluoikeus and organisation information are prerequisites for many
-  handlers. This is why we want to default to giving `response/bad-request` in
-  cases where the prerequisite is missing. E.g., HOKS should always have an
-  existing opiskeluoikeus linked to it, the organisation of the user accessing
-  a HOKS should be found, etc."
-  [^ExceptionInfo e data _]
-  (response/bad-request {:error (ex-message e)}))
+(defn custom-ex-handler
+  ([resp]
+    (custom-ex-handler resp nil))
+  ([resp custom-key]
+    (if custom-key
+      (fn [^ExceptionInfo e _ _] (resp {custom-key (ex-message e)}))
+      (fn [^ExceptionInfo e _ _] (resp {:error (ex-message e)})))))
+
+;; `bad-request` is currently the most commonly used response we want to return.
+;; Opiskeluoikeus, oppija, and organisation information are prerequisites for
+;; many request handlers (e.g., HOKS should always have an existing oppija and
+;; opiskeluoikeus linked to it) so if the user provides an OID which doesn't
+;; link to any existing entity, it's a bad request. Logging level in these cases
+;; should be `:warn`.
+(def bad-request-handler
+  (c-ex/with-logging (custom-ex-handler response/bad-request) :warn))
 
 (def handlers
-  "Map of request handlers"
-  {::c-ex/request-parsing
-   (c-ex/with-logging c-ex/request-parsing-handler :info)
+  "Map of custom exception handlers"
+  {::c-ex/request-parsing                (c-ex/with-logging
+                                           c-ex/request-parsing-handler :info)
+   ::c-ex/request-validation             (c-ex/with-logging
+                                           dissoc-schema-validation-handler!
+                                           :info)
+   ; Do log response body validation errors, but don't give the user internal
+   ; server errors in response.
+   ::c-ex/response-validation            (c-ex/with-logging
+                                           c-ex/http-response-handler :error)
 
-   ::c-ex/request-validation
-   (c-ex/with-logging dissoc-schema-validation-handler! :info)
+   ::organisaatio/organisation-not-found bad-request-handler
+   :disallowed-update                    bad-request-handler
+   :opiskeluoikeus-already-exists        bad-request-handler
+   ::koski/opiskeluoikeus-not-found      bad-request-handler
+   ::onr/oppija-not-found                bad-request-handler
+   :shared-link-validation-error         bad-request-handler
+   :shared-link-expired                  (custom-ex-handler response/gone
+                                                            :message)
+   :shared-link-inactive                 (custom-ex-handler response/locked
+                                                            :message)
+   :not-found                            not-found-handler
+   :unauthorized                         unauthorized-handler
 
-   ; Lokitetaan response bodyn validoinnissa esiin nousseet virheet, mutta ei
-   ; välitetä virheitä käyttäjälle "500 Internal Server Error" -koodilla.
-   ::c-ex/response-validation
-   (c-ex/with-logging c-ex/http-response-handler :error)
-
-   ::organisaatio/organisation-not-found
-   (c-ex/with-logging bad-request-handler :warn)
-
-   :disallowed-update (c-ex/with-logging bad-request-handler :warn)
-
-   :opiskeluoikeus-already-exists (c-ex/with-logging bad-request-handler :warn)
-
-   ::koski/opiskeluoikeus-not-found
-   (c-ex/with-logging bad-request-handler :warn)
-
-   ::onr/oppija-not-found
-   (c-ex/with-logging bad-request-handler :warn)
-
-   :not-found not-found-handler
-   :unauthorized unauthorized-handler
-   ::c-ex/default c-ex/safe-handler})
+   ::c-ex/default                        c-ex/safe-handler})
 
 (defn create-app
   "Creates application with given routes and session store.
