@@ -62,7 +62,7 @@
              annettuun organisaatioon eHOKS-palvelussa."
 
     (if-not (contains?
-              (user/get-organisation-privileges
+              (user/organisation-privileges!
                 (get-in
                   request
                   [:session :virkailija-user])
@@ -291,7 +291,7 @@
                          :result [s/Any]}
                 (cond (and oppilaitos
                            (contains?
-                             (user/get-organisation-privileges
+                             (user/organisation-privileges!
                                (get-in request [:session :virkailija-user])
                                oppilaitos)
                              :read))
@@ -352,7 +352,7 @@
                 :return {:count s/Int
                          :pagecount s/Int
                          :result [s/Any]}
-                (if (contains? (user/get-organisation-privileges
+                (if (contains? (user/organisation-privileges!
                                  (get-in request [:session :virkailija-user])
                                  oppilaitosoid)
                                :read)
@@ -498,7 +498,7 @@
                         :return (restful/response [hoks-schema/HOKS])
                         :summary "Oppijan hoksit (rajoitettu uusi versio)"
                         (if (contains?
-                              (user/get-organisation-privileges
+                              (user/organisation-privileges!
                                 (get-in
                                   request
                                   [:session :virkailija-user])
@@ -629,7 +629,7 @@
                                     (opiskeluoikeus/active? opiskeluoikeus))
                               (if (seq oppilaitos-oid)
                                 (if (contains?
-                                      (user/get-organisation-privileges
+                                      (user/organisation-privileges!
                                         (get-in
                                           request [:session :virkailija-user])
                                         oppilaitos-oid)
