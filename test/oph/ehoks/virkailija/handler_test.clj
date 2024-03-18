@@ -128,7 +128,7 @@
                   handler/app-routes (test-session-store store))]
         (app (-> request
                  (mock/header :cookie cookie)
-                 (mock/header "Caller-Id" "test"))))))
+                 (mock/header "caller-id" "test"))))))
   ([request] (with-test-virkailija
                request
                {:name "Test"
@@ -676,7 +676,7 @@
       {:vastuullinen-tyopaikka-ohjaaja
        {:nimi "Aimo Ohjaaja"
         :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
-       :tyopaikan-nimi "Ohjausyhtiö Oy"
+       :tyopaikan-nimi "Ohjausyhtiö 1 Oy "
        :tyopaikan-y-tunnus "1234564-7"
        :keskeiset-tyotehtavat ["Testitehtävä"]}
       :muut-oppimisymparistot
@@ -706,7 +706,7 @@
       {:vastuullinen-tyopaikka-ohjaaja
        {:nimi "Aimo Ohjaaja"
         :sahkoposti "aimo.ohjaaja@esimerkki2.com"}
-       :tyopaikan-nimi "Ohjausyhtiö Oy"
+       :tyopaikan-nimi " Ohjausyhtiö 2 Oy "
        :tyopaikan-y-tunnus "1234564-7"
        :keskeiset-tyotehtavat ["Testitehtävä"]}
       :muut-oppimisymparistot []
@@ -727,20 +727,31 @@
       (let [post-response
             (post-new-hoks
               "1.2.246.562.15.76000000018" "1.2.246.562.10.12000000013"
-              {:hankittavat-ammat-tutkinnon-osat hato-data})
-            get-response (get-created-hoks post-response)]
-        (let [body (utils/parse-body (:body get-response))]
+              {:hankittavat-ammat-tutkinnon-osat hato-data})]
+        (t/is (= (:status post-response) 200))
+        (let [get-response (get-created-hoks post-response)
+              body (utils/parse-body (:body get-response))]
+          (t/is (= (:status get-response) 200))
           (t/is (= (get-in body [:data :hankittavat-ammat-tutkinnon-osat 0
                                  :osaamisen-hankkimistavat 0
                                  :yksiloiva-tunniste])
                    "testi-yksilöivä-tunniste"))
+          (t/is (= (get-in body [:data :hankittavat-ammat-tutkinnon-osat 0
+                                 :osaamisen-hankkimistavat 0
+                                 :tyopaikalla-jarjestettava-koulutus
+                                 :tyopaikan-nimi])
+                   "Ohjausyhtiö 1 Oy"))
+          (t/is (= (get-in body [:data :hankittavat-ammat-tutkinnon-osat 0
+                                 :osaamisen-hankkimistavat 1
+                                 :tyopaikalla-jarjestettava-koulutus
+                                 :tyopaikan-nimi])
+                   "Ohjausyhtiö 2 Oy"))
           (t/is (re-matches
                   #"[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}"
                   (get-in body [:data :hankittavat-ammat-tutkinnon-osat 0
                                 :osaamisen-hankkimistavat 1
                                 :yksiloiva-tunniste])))
-          (t/is (get-in body [:data :manuaalisyotto]))
-          (t/is (= (:status post-response) 200)))))))
+          (t/is (get-in body [:data :manuaalisyotto])))))))
 
 (defn mocked-get-opiskeluoikeus-info-raw [oid]
   (throw
@@ -1045,7 +1056,20 @@
                                   :yksiloiva-tunniste])))
             (utils/eq (utils/dissoc-module-ids
                         (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
-                      (utils/dissoc-module-ids hato-data)))
+                      (utils/dissoc-module-ids
+                        (-> hato-data
+                            (update-in [0
+                                        :osaamisen-hankkimistavat
+                                        0
+                                        :tyopaikalla-jarjestettava-koulutus
+                                        :tyopaikan-nimi]
+                                       s/trim)
+                            (update-in [0
+                                        :osaamisen-hankkimistavat
+                                        1
+                                        :tyopaikalla-jarjestettava-koulutus
+                                        :tyopaikan-nimi]
+                                       s/trim)))))
           (t/is (= (:status put-response-just-dates) 204))
           (t/is (logtest/logged? "audit" :info #"overwrite.*2018-12-17")
                 (str "log entries:" (logtest/the-log)))
