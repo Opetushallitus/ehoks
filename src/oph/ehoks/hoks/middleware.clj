@@ -21,7 +21,7 @@
     (if oppilaitos-oid
       (some?
         (get
-          (user/get-organisation-privileges ticket-user oppilaitos-oid)
+          (user/organisation-privileges! ticket-user oppilaitos-oid)
           method))
       (response/bad-request!
         {:error "Opiskeluoikeus not found"}))))
