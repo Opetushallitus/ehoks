@@ -61,7 +61,7 @@
       (fn [opiskeluoikeus]
         (when
          (contains?
-           (user/get-organisation-privileges
+           (user/organisation-privileges!
              ticket-user (:oppilaitos-oid opiskeluoikeus))
            privilege)
           opiskeluoikeus))
@@ -73,7 +73,7 @@
   (let [opiskeluoikeus (oi/get-opiskeluoikeus-by-oid! opiskeluoikeus-oid)]
     (and (some? opiskeluoikeus)
          (contains?
-           (user/get-organisation-privileges
+           (user/organisation-privileges!
              ticket-user (:oppilaitos-oid opiskeluoikeus))
            privilege))))
 

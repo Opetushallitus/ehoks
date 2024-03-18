@@ -1,6 +1,6 @@
 (ns oph.ehoks.user
   (:require [clojure.string :as str]
-            [oph.ehoks.external.organisaatio :as o]
+            [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.oppijaindex :as oi]))
 
 (defn resolve-privilege
@@ -64,28 +64,20 @@
 (defn oph-super-user?
   "Is user OPH ehoks super user"
   [ticket-user]
-  (some
-    #(when (get (:roles %) :oph-super-user) true)
-    (:organisation-privileges ticket-user)))
+  (some #(contains? (:roles %) :oph-super-user)
+        (:organisation-privileges ticket-user)))
 
-(defn check-parent-oids
-  "Check whether user belongs to target organisation or its parent"
-  [user-org target-org]
-  (or (= user-org target-org)
-      (some
-        #(= user-org %)
-        (str/split
-          (:parentOidPath (o/get-existing-organisation! target-org) "")
-          #"\|"))))
-
-(defn get-organisation-privileges
-  "Get ticket user privileges in organisation"
+(defn organisation-privileges!
+  "Returns `ticket-user` privileges in organisation with oid `organisation-oid`.
+  If `user` has no privileges in the given organisation, returns `nil`."
   [ticket-user organisation-oid]
-  (let [privileges
-        (reduce into
-                (map :privileges
-                     (filter
-                       #(check-parent-oids (:oid %) organisation-oid)
-                       (:organisation-privileges ticket-user))))]
-    (when (seq privileges)
-      privileges)))
+  (let [parent-organisation-oids (some-> organisation-oid
+                                         organisaatio/get-organisation!
+                                         :parentOidPath
+                                         (str/split #"\|"))]
+    (->> (:organisation-privileges ticket-user)
+         (filter #(or (= (:oid %) organisation-oid)
+                      (some #{(:oid %)} parent-organisation-oids)))
+         (map :privileges) ; Returns sequence of *sets*
+         (reduce into)
+         not-empty)))

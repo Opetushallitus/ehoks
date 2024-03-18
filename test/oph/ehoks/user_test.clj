@@ -107,7 +107,7 @@
                 :privileges #{}
                 :roles #{}})})))))
 
-(deftest get-organisation-privileges
+(deftest organisation-privileges!
   (testing "Get organisation privileges"
     (client/set-get!
       (fn [^String url options]
@@ -127,7 +127,7 @@
            :body {:parentOidPath
                   "|1.2.246.562.10.10000000009|"}})))
 
-    (eq (user/get-organisation-privileges
+    (eq (user/organisation-privileges!
           {:organisation-privileges
            '({:oid "1.2.246.562.10.20000000008"
               :privileges #{:read :write :update :delete}
@@ -139,7 +139,7 @@
         #{:read :write :update :delete})
 
     (is (nil?
-          (user/get-organisation-privileges
+          (user/organisation-privileges!
             {:organisation-privileges
              '({:oid "1.2.246.562.10.20000000008"
                 :privileges #{:read :write :update :delete}
@@ -150,7 +150,7 @@
             "1.2.246.562.10.10000000009")))
 
     ; From parentOidPath
-    (eq (user/get-organisation-privileges
+    (eq (user/organisation-privileges!
           {:organisation-privileges
            '({:oid "1.2.246.562.10.20000000008"
               :privileges #{:read :write :update :delete}
