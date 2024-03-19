@@ -114,8 +114,7 @@
             (.endsWith
               url (str "/rest/organisaatio/v4/" organisaatio-oid))
             {:status 200
-             :body {:parentOidPath
-                    "|"}}
+             :body {:oid organisaatio-oid :parentOidPath "|"}}
             :else (unmatched-fn :get url options)))))
 
 (defmacro with-ticket-auth
@@ -272,13 +271,13 @@
               (.endsWith
                 url "/rest/organisaatio/v4/1.2.246.562.10.47861388602")
               {:status 200
-               :body {:parentOidPath
-                      "|"}}
+               :body {:oid           "1.2.246.562.10.47861388602"
+                      :parentOidPath "|"}}
               (.endsWith
                 url "/rest/organisaatio/v4/1.2.246.562.10.12944436166")
               {:status 200
-               :body {:parentOidPath
-                      "|1.2.246.562.10.00000000001|"}}
+               :body {:oid           "1.2.246.562.10.12944436166"
+                      :parentOidPath "|1.2.246.562.10.00000000001|"}}
               (> (.indexOf url "oppijanumerorekisteri-service/henkilo") -1)
               (let [oid (last (.split url "/"))]
                 (if (= oid "1.2.246.562.24.40404040406")
