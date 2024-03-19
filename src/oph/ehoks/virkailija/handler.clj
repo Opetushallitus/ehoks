@@ -234,6 +234,18 @@
     (log/warn "Opiskeluoikeudessa" (:oid opiskeluoikeus)
               "ei vahvistus päivämäärää")))
 
+(defn- paginate
+  "Paginate the query `result` using `page-size` and `page-offset`"
+  [result page-size page-offset]
+  (let [row-count-total  (count result)
+        page-count-total (int (Math/ceil (/ row-count-total page-size)))
+        start-row        (* page-size page-offset)
+        end-row          (if (<= (+ start-row page-size) row-count-total)
+                           (+ start-row page-size)
+                           row-count-total)
+        pageresult       (subvec (vec result) start-row end-row)]
+    {:count row-count-total :pagecount page-count-total :result pageresult}))
+
 (def routes
   "Virkailija handler routes"
   (c-api/context "/ehoks-virkailija-backend" []
