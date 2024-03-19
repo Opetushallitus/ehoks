@@ -1,6 +1,7 @@
 (ns oph.ehoks.user
   (:require [clojure.string :as string]
             [oph.ehoks.external.organisaatio :as organisaatio]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.oppijaindex :as oi]))
 
 (defn resolve-privilege
@@ -67,16 +68,15 @@
   (some #(contains? (:roles %) :oph-super-user)
         (:organisation-privileges ticket-user)))
 
-(defn organisation-privileges!
-  "Returns `ticket-user` privileges in organisation with oid `organisation-oid`.
-  If `user` has no privileges in the given organisation, returns `nil`."
-  [ticket-user organisation-oid]
-  (let [parent-organisation-oids (some-> organisation-oid
-                                         organisaatio/get-organisation!
+(defn organisation-privileges
+  "Returns `ticket-user` privileges in `organisation`. If `user` has no
+  privileges in the given `organisation`, returns `nil`."
+  [organisation ticket-user]
+  (let [parent-organisation-oids (some-> organisation
                                          :parentOidPath
                                          (string/split #"\|"))]
     (->> (:organisation-privileges ticket-user)
-         (filter #(or (= (:oid %) organisation-oid)
+         (filter #(or (= (:oid %) (:oid organisation))
                       (some #{(:oid %)} parent-organisation-oids)))
          (map :privileges) ; Returns sequence of *sets*
          (reduce into)
@@ -85,10 +85,8 @@
 (defn has-privilege-to-hoks?
   "Returns `true` if user has a specified `privilege` to hoks."
   [hoks ticket-user privilege]
-  (some-> (:opiskeluoikeus-oid hoks)
-          oi/get-existing-opiskeluoikeus-by-oid! ; throws if not found
-          :oppilaitos-oid
-          (->> (organisation-privileges! ticket-user))
+  (some-> (hoks/get-oppilaitos! hoks)
+          (organisation-privileges ticket-user)
           (contains? privilege)))
 
 (defn has-read-privileges-to-oppija?
@@ -100,5 +98,5 @@
   oppilaitokset that `ticker-user` isn't member of!"
   [ticket-user oppija-oid]
   (->> (oi/get-oppija-opiskeluoikeudet oppija-oid)
-       (map :oppilaitos-oid)
-       (some #(contains? (organisation-privileges! ticket-user %) :read))))
+       (map #(organisaatio/get-organisation! (:oppilaitos-oid %)))
+       (some #(contains? (organisation-privileges % ticket-user) :read))))
