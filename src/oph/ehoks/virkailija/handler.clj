@@ -1,5 +1,6 @@
 (ns oph.ehoks.virkailija.handler
   (:require [clj-time.core :as t]
+            [clojure.set :refer [rename-keys]]
             [clojure.string :as string]
             [clojure.tools.logging :as log]
             [compojure.api.core :refer [route-middleware]]
@@ -7,10 +8,7 @@
             [compojure.route :as compojure-route]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
-            [oph.ehoks.virkailija.auth :as auth]
-            [oph.ehoks.user :as user]
-            [oph.ehoks.schema :as schema]
-            [oph.ehoks.schema.oid :as oid-s]
+            [oph.ehoks.common.utils :refer [apply-when]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
             [oph.ehoks.db.postgresql.common :as pc]
@@ -21,18 +19,22 @@
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
             [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]
-            [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks :as hoks]
+            [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
             [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
             [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus]]
             [oph.ehoks.misc.handler :as misc-handler]
+            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.resources :as resources]
             [oph.ehoks.restful :as restful]
+            [oph.ehoks.schema :as schema]
+            [oph.ehoks.schema.oid :as oid-s]
+            [oph.ehoks.user :as user]
             [oph.ehoks.validation.handler :as validation-handler]
+            [oph.ehoks.virkailija.auth :as auth]
             [oph.ehoks.virkailija.cas-handler :as cas-handler]
             [oph.ehoks.virkailija.external-handler :as external-handler]
             [oph.ehoks.virkailija.middleware :as m]
@@ -168,35 +170,41 @@
       (assoc (response/no-content) :audit-data {:new hoks
                                                 :old old-hoks}))))
 
-(defn- get-vastaajatunnus-info
+(defn- update-kyselylinkki-status!
+  "Takes a `linkki-info` map, fetches the latest kyselylinkki status from Arvo
+  and returns an updated `kyselylinkki-info` map. The functions *throws* if
+  kyselytunnus status cannot be fetched from Arvo or if the database update
+  fails for some reason."
+  [linkki-info]
+  (let [kyselylinkki (:kyselylinkki linkki-info)
+        tunnus       (last (string/split kyselylinkki #"/"))
+        status       (arvo/get-kyselytunnus-status! tunnus)
+        loppupvm     (LocalDate/parse
+                       (first (string/split (:voimassa_loppupvm status) #"T")))]
+    (kyselylinkki/update! {:kyselylinkki kyselylinkki
+                           :voimassa_loppupvm loppupvm
+                           :vastattu (:vastattu status)})
+    (assoc linkki-info
+           :voimassa-loppupvm loppupvm
+           :vastattu          (:vastattu status))))
+
+(defn- get-vastaajatunnus-info!
   "Get details of vastaajatunnus from database or Arvo"
   [tunnus]
-  (let [linkit (pc/select-kyselylinkit-by-tunnus tunnus)]
-    (if (seq linkit)
-      (let [linkki-info (if (:vastattu (first linkit))
-                          (first linkit)
-                          (let [status (arvo/get-kyselytunnus-status tunnus)
-                                loppupvm (LocalDate/parse
-                                           (first
-                                             (string/split
-                                               (:voimassa_loppupvm status)
-                                               #"T")))]
-                            (kyselylinkki/update!
-                              {:kyselylinkki (:kyselylinkki (first linkit))
-                               :voimassa_loppupvm loppupvm
-                               :vastattu (:vastattu status)})
-                            (assoc (first linkit)
-                                   :voimassa-loppupvm loppupvm
-                                   :vastattu (:vastattu status))))
-            opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                             (:opiskeluoikeus-oid linkki-info))
-            linkki-info (assoc linkki-info
-                               :koulutustoimijan-oid
-                               (:oid (:koulutustoimija opiskeluoikeus))
-                               :koulutustoimijan-nimi
-                               (:nimi (:koulutustoimija opiskeluoikeus)))]
-        (restful/ok linkki-info))
-      (response/bad-request {:error "Survey ID not found"}))))
+  (if-let [linkki-info (some-> (pc/select-kyselylinkit-by-tunnus tunnus)
+                               first
+                               not-empty
+                               (apply-when #(not (:vastattu %))
+                                           update-kyselylinkki-status!))]
+    (-> (koski/get-opiskeluoikeus! (:opiskeluoikeus-oid linkki-info))
+        :koulutustoimija
+        (select-keys [:oid :nimi])
+        (rename-keys {:oid  :koulutustoimijan-oid
+                      :nimi :koulutustoimijan-nimi})
+        (->> (merge linkki-info))
+        (dissoc :hoks-id)
+        restful/ok)
+    (response/not-found {:error "No survey link found with given `tunnus`"})))
 
 (defn- delete-vastaajatunnus
   "Delete vastaajatunnus from Arvo, database, and Herätepalvelu"
@@ -339,7 +347,7 @@
                 :header-params [caller-id :- s/Str]
                 :path-params [tunnus :- s/Str]
                 :return s/Any
-                (get-vastaajatunnus-info tunnus))
+                (get-vastaajatunnus-info! tunnus))
 
               (c-api/DELETE "/vastaajatunnus/:tunnus" []
                 :summary "Vastaajatunnuksen poisto"
