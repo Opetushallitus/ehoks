@@ -156,8 +156,7 @@
         virkailija-user (get-in
                           request
                           [:session :virkailija-user])]
-    (if (m/virkailija-has-privilege?
-          virkailija-user (:oppija-oid hoks) :read)
+    (if (user/has-read-privileges-to-oppija? virkailija-user (:oppija-oid hoks))
       (restful/ok (hoks/get-by-id hoks-id))
       (do
         (log/warnf
