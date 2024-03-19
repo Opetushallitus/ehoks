@@ -11,9 +11,9 @@
             [oph.ehoks.hoks.hoks-test-utils :refer [virkailija-base-url]]
             [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
             [oph.ehoks.session-store :refer [test-session-store]]
+            [oph.ehoks.user :as user]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.virkailija.handler :as handler]
-            [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]
             [ring.mock.request :as mock])
   (:import (java.time LocalDate LocalDateTime)))
@@ -469,7 +469,7 @@
                           :privileges #{}}]})]
         (t/is (= (:status response) 403))))))
 
-(t/deftest test-virkailija-has-access
+(t/deftest test-virkailija-has-read-access
   (t/testing "Virkailija has oppija access"
     (utils/with-db
       (client/with-mock-responses
@@ -487,20 +487,20 @@
                              :koulutustoimija-oid ""})
         (t/is
           (not
-            (m/virkailija-has-access?
+            (user/has-read-privileges-to-oppija?
               {:organisation-privileges
                [{:oid "1.2.246.562.10.12000000002"
                  :privileges #{:read}}]}
               "1.2.246.562.24.44000000008")))
         (t/is
           (not
-            (m/virkailija-has-access?
+            (user/has-read-privileges-to-oppija?
               {:organisation-privileges
                [{:oid "1.2.246.562.10.12000000005"
                  :privileges #{}}]}
               "1.2.246.562.24.44000000008")))
         (t/is
-          (m/virkailija-has-access?
+          (user/has-read-privileges-to-oppija?
             {:organisation-privileges
              [{:oid "1.2.246.562.10.12000000005"
                :privileges #{:read}}]}

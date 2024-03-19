@@ -90,3 +90,15 @@
           :oppilaitos-oid
           (->> (organisation-privileges! ticket-user))
           (contains? privilege)))
+
+(defn has-read-privileges-to-oppija?
+  "Returns `true` if `ticket-user` has read privileges in ANY organisation
+  specified in opiskeluoikeudet of oppija.
+
+  NOTE: This function basically grants `ticket-user` READ access to ALL oppija
+  information if used for checking user access! This also includes data in other
+  oppilaitokset that `ticker-user` isn't member of!"
+  [ticket-user oppija-oid]
+  (->> (oi/get-oppija-opiskeluoikeudet oppija-oid)
+       (map :oppilaitos-oid)
+       (some #(contains? (organisation-privileges! ticket-user %) :read))))
