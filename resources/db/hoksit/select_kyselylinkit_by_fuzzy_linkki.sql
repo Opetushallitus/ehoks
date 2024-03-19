@@ -1,5 +1,6 @@
 SELECT
   k.*,
+  k.hoks_id AS hoks_id,
   o.oid AS oppijan_oid,
   o.nimi AS oppijan_nimi,
   h.opiskeluoikeus_oid AS opiskeluoikeus_oid
