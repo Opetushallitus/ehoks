@@ -1,5 +1,5 @@
 (ns oph.ehoks.heratepalvelu.heratepalvelu
-  (:require [clojure.string :as str]
+  (:require [clojure.string :as string]
             [clojure.tools.logging :as log]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.arvo :as arvo]
@@ -45,7 +45,8 @@
                                (:kyselylinkki %1))]
              (let [loppupvm (LocalDate/parse
                               (first
-                                (str/split (:voimassa_loppupvm status) #"T")))]
+                                (string/split (:voimassa_loppupvm status)
+                                              #"T")))]
                (kyselylinkki/update! {:kyselylinkki (:kyselylinkki %1)
                                       :voimassa_loppupvm loppupvm
                                       :vastattu (:vastattu status)})

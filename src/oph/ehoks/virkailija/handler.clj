@@ -1,6 +1,6 @@
 (ns oph.ehoks.virkailija.handler
   (:require [clj-time.core :as t]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [clojure.tools.logging :as log]
             [compojure.api.core :refer [route-middleware]]
             [compojure.api.sweet :as c-api]
@@ -189,7 +189,7 @@
                           (let [status (arvo/get-kyselytunnus-status tunnus)
                                 loppupvm (LocalDate/parse
                                            (first
-                                             (str/split
+                                             (string/split
                                                (:voimassa_loppupvm status)
                                                #"T")))]
                             (kyselylinkki/update!

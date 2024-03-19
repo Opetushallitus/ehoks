@@ -1,5 +1,5 @@
 (ns oph.ehoks.user
-  (:require [clojure.string :as str]
+  (:require [clojure.string :as string]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.oppijaindex :as oi]))
 
@@ -74,7 +74,7 @@
   (let [parent-organisation-oids (some-> organisation-oid
                                          organisaatio/get-organisation!
                                          :parentOidPath
-                                         (str/split #"\|"))]
+                                         (string/split #"\|"))]
     (->> (:organisation-privileges ticket-user)
          (filter #(or (= (:oid %) organisation-oid)
                       (some #{(:oid %)} parent-organisation-oids)))
