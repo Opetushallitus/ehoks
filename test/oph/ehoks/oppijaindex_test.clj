@@ -317,21 +317,39 @@
              {:oid "1.2.246.562.24.12111111119" :nimi "Test 2"}))))
 
 (t/deftest get-opiskeluoikeus-by-oid!
+  (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111110" :nimi "Test 1"})
+  (db-opiskeluoikeus/insert-opiskeluoikeus!
+    {:oid        "1.2.246.562.15.22222222220"
+     :oppija_oid "1.2.246.562.24.11111111110"})
+  (db-opiskeluoikeus/insert-opiskeluoikeus!
+    {:oid        "1.2.246.562.15.23222222228"
+     :oppija_oid "1.2.246.562.24.11111111110"})
   (t/testing "Get opiskeluoikeus by oid"
-    (db-oppija/insert-oppija!
-      {:oid "1.2.246.562.24.11111111110" :nimi "Test 1"})
-    (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oid "1.2.246.562.15.22222222220"
-       :oppija_oid "1.2.246.562.24.11111111110"})
-    (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oid "1.2.246.562.15.23222222228"
-       :oppija_oid "1.2.246.562.24.11111111110"})
     (t/is (= (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.22222222220")
-             {:oid "1.2.246.562.15.22222222220"
+             {:oid        "1.2.246.562.15.22222222220"
               :oppija-oid "1.2.246.562.24.11111111110"}))
     (t/is (= (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.23222222228")
-             {:oid "1.2.246.562.15.23222222228"
-              :oppija-oid "1.2.246.562.24.11111111110"}))))
+             {:oid        "1.2.246.562.15.23222222228"
+              :oppija-oid "1.2.246.562.24.11111111110"})))
+  (t/testing "Returns nil if no opiskeluoikeus is found in index"
+    (t/is (nil? (sut/get-opiskeluoikeus-by-oid!
+                  "1.2.246.562.15.22222222221")))))
+
+(t/deftest get-existing-opiskeluoikeus-by-oid!
+  (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111110" :nimi "Test 1"})
+  (db-opiskeluoikeus/insert-opiskeluoikeus!
+    {:oid        "1.2.246.562.15.22222222220"
+     :oppija_oid "1.2.246.562.24.11111111110"})
+  (t/testing "Get existing opiskeluoikeus by oid"
+    (t/is (= (sut/get-existing-opiskeluoikeus-by-oid!
+               "1.2.246.562.15.22222222220")
+             {:oid        "1.2.246.562.15.22222222220"
+              :oppija-oid "1.2.246.562.24.11111111110"})))
+  (t/testing "Throws if opiskeluoikeus is not found in index"
+    (t/is (thrown-with-msg? ExceptionInfo
+                            #"`1.2.246.562.15.23222222228` not in index"
+                            (sut/get-existing-opiskeluoikeus-by-oid!
+                              "1.2.246.562.15.23222222228")))))
 
 (t/deftest add-oppija-opiskeluoikeus
   (t/testing "Add oppija and opiskeluoikeus"
