@@ -13,15 +13,6 @@
    :put :update
    :delete :delete})
 
-(defn has-privilege-to-hoks?
-  "Returns `true` if user has a specified `privilege` to hoks."
-  [hoks ticket-user privilege]
-  (some-> (:opiskeluoikeus-oid hoks)
-          oppijaindex/get-existing-opiskeluoikeus-by-oid! ; throws if not found
-          :oppilaitos-oid
-          (->> (user/organisation-privileges! ticket-user))
-          (contains? privilege)))
-
 (defn check-hoks-access!
   "Check if ticket user has access privileges to hoks"
   [hoks request]
@@ -29,7 +20,7 @@
     (response/not-found!)
     (let [ticket-user (:service-ticket-user request)
           privilege   (get method-privileges (:request-method request))]
-      (when-not (has-privilege-to-hoks? hoks ticket-user privilege)
+      (when-not (user/has-privilege-to-hoks? hoks ticket-user privilege)
         (log/warnf "User %s has no access to hoks %d with opiskeluoikeus %s"
                    (:username ticket-user)
                    (:id hoks)
@@ -48,7 +39,7 @@
             privilege   (get method-privileges (:request-method request))]
         (if (nil? hoks)
           (respond (response/not-found {:error "HOKS not found"}))
-          (if (has-privilege-to-hoks? hoks ticket-user privilege)
+          (if (user/has-privilege-to-hoks? hoks ticket-user privilege)
             (handler request respond raise)
             (do
               (log/warnf
@@ -66,7 +57,7 @@
             privilege   (get method-privileges (:request-method request))]
         (if (nil? hoks)
           (response/not-found {:error "HOKS not found"})
-          (if (has-privilege-to-hoks? hoks ticket-user privilege)
+          (if (user/has-privilege-to-hoks? hoks ticket-user privilege)
             (handler request)
             (do
               (log/warnf
