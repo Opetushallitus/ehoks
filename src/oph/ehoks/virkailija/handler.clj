@@ -270,6 +270,19 @@
       :else (response/forbidden
               {:error "User privileges do not match organisation"}))))
 
+(defn- get-hoksit-with-missing-opiskeluoikeus-handler!
+  "Handler for `GET /missing-oo-hoksit/:oppilaitosoid`"
+  [request oppilaitos-oid page-size page-offset]
+  (if (contains? (user/organisation-privileges
+                   (organisaatio/get-existing-organisation! oppilaitos-oid)
+                   (get-in request [:session :virkailija-user]))
+                 :read)
+    (-> (db-hoks/select-hoksit-by-oo-oppilaitos-and-koski404 oppilaitos-oid)
+        (paginate page-size page-offset)
+        restful/ok)
+    (response/forbidden
+      {:error "User privileges does not match organisation"})))
+
 (def routes
   "Virkailija handler routes"
   (c-api/context "/ehoks-virkailija-backend" []
@@ -334,40 +347,18 @@
                 :path-params [tunnus :- s/Str]
                 (delete-vastaajatunnus tunnus))
 
-              (c-api/GET "/missing-oo-hoksit/:oppilaitosoid" request
+              (c-api/GET "/missing-oo-hoksit/:oppilaitos-oid" request
                 :summary "Palauttaa listan hokseista, joiden
                           opiskeluoikeus puuttuu"
                 :header-params [caller-id :- s/Str]
-                :path-params [oppilaitosoid :- oid-s/OrganisaatioOID]
+                :path-params [oppilaitos-oid :- oid-s/OrganisaatioOID]
                 :query-params [{pagesize :- s/Int 25}
                                {pageindex :- s/Int 0}]
                 :return {:count s/Int
                          :pagecount s/Int
                          :result [s/Any]}
-                (let [user (get-in request [:session :virkailija-user])
-                      oppilaitos (organisaatio/get-existing-organisation!
-                                   oppilaitosoid)]
-                  (if (contains? (user/organisation-privileges oppilaitos user)
-                                 :read)
-                    (let [result
-                          (db-hoks/select-hoksit-by-oo-oppilaitos-and-koski404
-                            oppilaitosoid)
-                          row-count-total (count result)
-                          page-count-total (int (Math/ceil
-                                                  (/ row-count-total
-                                                     pagesize)))
-                          start-row (* pagesize pageindex)
-                          end-row (if (<= (+ start-row pagesize)
-                                          row-count-total)
-                                    (+ start-row pagesize)
-                                    row-count-total)
-                          pageresult (subvec (vec result) start-row end-row)]
-                      (restful/ok {:count     row-count-total
-                                   :pagecount page-count-total
-                                   :result    pageresult}))
-                    (response/forbidden
-                      {:error (str "User privileges does not match "
-                                   "organisation")}))))
+                (get-hoksit-with-missing-opiskeluoikeus-handler!
+                  request oppilaitos-oid pagesize pageindex))
 
               (c-api/GET "/paattyneet-kyselylinkit-temp" request
                 :summary "Palauttaa tietoja kyselylinkkeihin liittyvistä
