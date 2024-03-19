@@ -1,6 +1,6 @@
 (ns oph.ehoks.schema.oid
   "Skeemamääritykset erityyppisille OID:eille"
-  (:require [clojure.string :as str]
+  (:require [clojure.string :as string]
             [schema.core :refer [cond-pre constrained defschema]]))
 
 ;;;; Opetushallitukselle on myönnetty koulutustoimialan OID-solmuluokka:
@@ -58,7 +58,7 @@
   NOTE: This function expects that validity checks against an OID regexp pattern
   have been made for `oid` before calling this function!"
   [oid]
-  (let [splitted-oid                 (str/split oid #"\.")
+  (let [splitted-oid                 (string/split oid #"\.")
         node                         (nth splitted-oid 4)
         [first-10-digits last-digit] (split-at 10 (nth splitted-oid 5))
         first-10-digits              (map #(Character/getNumericValue ^char %)

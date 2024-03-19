@@ -1,6 +1,6 @@
 (ns oph.ehoks.logging.audit
   (:require [clojure.tools.logging :as log]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [oph.ehoks.logging.access :refer [current-fin-time-str
                                               get-session]]
             [environ.core :refer [env]]
@@ -71,7 +71,7 @@
   "Get IP address of client from request"
   [request]
   (if-let [ips (get-in request [:headers "x-forwarded-for"])]
-    (-> ips (str/split #",") first)
+    (-> ips (string/split #",") first)
     (:remote-addr request)))
 
 (defn- get-user

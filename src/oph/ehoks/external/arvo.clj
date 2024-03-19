@@ -1,7 +1,7 @@
 (ns oph.ehoks.external.arvo
   (:require [oph.ehoks.external.connection :as c]
             [oph.ehoks.config :refer [config]]
-            [clojure.string :as str])
+            [clojure.string :as string])
   (:import (clojure.lang ExceptionInfo)))
 
 (defn get-kyselytunnus-status
@@ -18,7 +18,7 @@
 (defn get-kyselylinkki-status
   "Hakee kyselylinkin tilan Arvosta."
   [link]
-  (get-kyselytunnus-status (last (str/split link #"/"))))
+  (get-kyselytunnus-status (last (string/split link #"/"))))
 
 (defn get-kyselylinkki-status-catch-404
   "Hakee kyselylinkin tilan Arvosta, ja käsittelee 404-virheitä."
