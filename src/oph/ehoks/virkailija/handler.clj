@@ -246,6 +246,30 @@
         pageresult       (subvec (vec result) start-row end-row)]
     {:count row-count-total :pagecount page-count-total :result pageresult}))
 
+(defn- get-tep-jakso-raportti-handler!
+  "Handler for `GET /tep-jakso-raportti`"
+  [request & {:keys [tutkinto oppilaitos-oid start end page-size page-offset]}]
+  ; FIXME: This handler does different things depending on type of user
+  ; (super user vs. oppilaitos virkailija). This handler was only simplified
+  ; as part of refactoring, but this obviously still needs to be fixed.
+  (let [user       (get-in request [:session :virkailija-user])
+        oppilaitos (organisaatio/get-organisation! oppilaitos-oid)]
+    (cond
+      (user/oph-super-user? user)
+      (restful/ok (pc/select-oht-by-tutkinto-between tutkinto start end))
+
+      (nil? oppilaitos)
+      (response/bad-request {:error "`oppilaitos` missing from request."})
+
+      (contains? (user/organisation-privileges oppilaitos user) :read)
+      (-> (pc/get-oppilaitos-oids-cached-memoized! ;; 5min cache
+            tutkinto oppilaitos-oid start end)
+          (paginate page-size page-offset)
+          restful/ok)
+
+      :else (response/forbidden
+              {:error "User privileges do not match organisation"}))))
+
 (def routes
   "Virkailija handler routes"
   (c-api/context "/ehoks-virkailija-backend" []
@@ -289,46 +313,13 @@
                 :return {:count s/Int
                          :pagecount s/Int
                          :result [s/Any]}
-                (let [user         (get-in request [:session :virkailija-user])
-                      organisation (organisaatio/get-organisation! oppilaitos)]
-                  (cond (some-> organisation
-                                (user/organisation-privileges user)
-                                (contains? :read))
-                        ;; 5min cache
-                        (let [result (pc/get-oppilaitos-oids-cached-memoized
-                                       tutkinto
-                                       oppilaitos
-                                       start
-                                       end)
-                              row-count-total (count result)
-                              page-count-total (int (Math/ceil
-                                                      (/ row-count-total
-                                                         pagesize)))
-                              start-row (* pagesize pageindex)
-                              end-row (if (<= (+ start-row pagesize)
-                                              row-count-total)
-                                        (+ start-row pagesize)
-                                        row-count-total)
-                              pageresult (subvec (vec result)
-                                                 start-row
-                                                 end-row)]
-                          (restful/ok {:count     row-count-total
-                                       :pagecount page-count-total
-                                       :result    pageresult}))
-                        (user/oph-super-user? user)
-                        (restful/ok
-                          (pc/select-oht-by-tutkinto-between tutkinto
-                                                             start
-                                                             end))
-                        :else
-                        (do (log/warnf
-                              "TEP jaksoraportti:"
-                              "User %s privileges do not match oppilaitos %s"
-                              (:oidHenkilo user)
-                              oppilaitos)
-                            (response/forbidden
-                              {:error
-                               "User privileges do not match organisation"})))))
+                (get-tep-jakso-raportti-handler! request
+                                                 {:tutkinto tutkinto
+                                                  :oppilaitos oppilaitos
+                                                  :start start
+                                                  :end end
+                                                  :page-size pagesize
+                                                  :page-offset pageindex}))
 
               (c-api/GET "/vastaajatunnus/:tunnus" []
                 :summary "Vastaajatunnuksen tiedot"
