@@ -81,3 +81,12 @@
          (map :privileges) ; Returns sequence of *sets*
          (reduce into)
          not-empty)))
+
+(defn has-privilege-to-hoks?
+  "Returns `true` if user has a specified `privilege` to hoks."
+  [hoks ticket-user privilege]
+  (some-> (:opiskeluoikeus-oid hoks)
+          oi/get-existing-opiskeluoikeus-by-oid! ; throws if not found
+          :oppilaitos-oid
+          (->> (organisation-privileges! ticket-user))
+          (contains? privilege)))
