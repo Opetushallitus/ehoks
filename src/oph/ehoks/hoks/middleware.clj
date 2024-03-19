@@ -16,8 +16,9 @@
 (defn authorized?
   "Is user authorized"
   [hoks ticket-user method]
-  (let [oppilaitos-oid (:oppilaitos-oid (oppijaindex/get-opiskeluoikeus-by-oid!
-                                          (:opiskeluoikeus-oid hoks)))]
+  (let [oppilaitos-oid (:oppilaitos-oid
+                         (oppijaindex/get-existing-opiskeluoikeus-by-oid!
+                           (:opiskeluoikeus-oid hoks)))]
     (if oppilaitos-oid
       (some?
         (get
