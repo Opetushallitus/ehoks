@@ -10,6 +10,7 @@
             [oph.ehoks.db.postgresql.hankittavat :as db-ha]
             [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as db-ot]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
@@ -528,3 +529,12 @@
   (if (nil? (:deleted-at hoks))
     hoks
     (rename-keys hoks {:deleted-at :poistettu})))
+
+(defn get-oppilaitos!
+  "Given existing `hoks`, get oppilaitos linked to it. Returns `nil` if
+  opiskeluoikeus of `hoks` doesn't have an oppilaitos linked to it."
+  [hoks]
+  (some-> (:opiskeluoikeus-oid hoks)
+          oppijaindex/get-existing-opiskeluoikeus-by-oid! ; throws if not found
+          :oppilaitos-oid
+          organisaatio/get-organisation!))
