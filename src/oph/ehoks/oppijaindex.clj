@@ -120,6 +120,16 @@
   [oid & keep-columns]
   (apply db-opiskeluoikeus/select-opiskeluoikeus-by-oid oid keep-columns))
 
+(defn get-existing-opiskeluoikeus-by-oid!
+  "Like `get-opiskeluoikeus-by-oid!` but expects that opiskeluoikeus with `oid`
+  is found in index. Throws an exception if opiskeluoikeus is not found."
+  [oid & keep-columns]
+  (if-let [opiskeluoikeus (apply get-opiskeluoikeus-by-oid! oid keep-columns)]
+    opiskeluoikeus
+    (throw (ex-info (format "Opiskeluoikeus `%s` not in index" oid)
+                    {:type               ::opiskeluoikeus-not-found
+                     :opiskeluoikeus-oid oid}))))
+
 (defn get-hankintakoulutus-oids-by-master-oid
   "Get hankintakoulutus by master OID"
   [oid]

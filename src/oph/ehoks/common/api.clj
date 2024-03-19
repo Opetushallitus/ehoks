@@ -4,6 +4,7 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.organisaatio :as organisaatio]
+            [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.logging.access :refer [wrap-access-logger]]
             [oph.ehoks.middleware :as middleware]
             [ring.middleware.session :as session]
@@ -62,6 +63,7 @@
    :opiskeluoikeus-already-exists        bad-request-handler
    ::koski/opiskeluoikeus-not-found      bad-request-handler
    ::onr/oppija-not-found                bad-request-handler
+   ::oi/opiskeluoikeus-not-found         bad-request-handler
    :shared-link-validation-error         bad-request-handler
    :shared-link-expired                  (custom-ex-handler response/gone
                                                             :message)
