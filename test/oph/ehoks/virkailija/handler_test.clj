@@ -1,5 +1,5 @@
 (ns oph.ehoks.virkailija.handler-test
-  (:require [clojure.string :as s]
+  (:require [clojure.string :as string]
             [clojure.test :as t]
             [clojure.tools.logging.test :as logtest]
             [oph.ehoks.common.api :as common-api]
@@ -74,7 +74,8 @@
            (.contains
              url "/rest/organisaatio/v4/")
            {:status 200
-            :body {:parentOidPath "|"}}
+            :body {:oid           (last (string/split url #"/"))
+                   :parentOidPath "|"}}
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000009")
            {:status 200
@@ -103,7 +104,7 @@
            (.contains
              url "/koski/api/opiskeluoikeus/")
            {:status 200
-            :body {:oid (last (s/split url #"/"))
+            :body {:oid (last (string/split url #"/"))
                    :oppilaitos {:oid "1.2.246.562.10.12000000203"}
                    :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}))
        (fn [^String url options]
@@ -478,7 +479,8 @@
              (.contains
                url "/rest/organisaatio/v4/")
              {:status 200
-              :body {:parentOidPath "|"}}))]
+              :body {:oid           (last (string/split url #"/"))
+                     :parentOidPath "|"}}))]
 
         (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                              :nimi "Testi 1"
@@ -1065,13 +1067,13 @@
                                         0
                                         :tyopaikalla-jarjestettava-koulutus
                                         :tyopaikan-nimi]
-                                       s/trim)
+                                       string/trim)
                             (update-in [0
                                         :osaamisen-hankkimistavat
                                         1
                                         :tyopaikalla-jarjestettava-koulutus
                                         :tyopaikan-nimi]
-                                       s/trim)))))
+                                       string/trim)))))
           (t/is (= (:status put-response-just-dates) 204))
           (t/is (logtest/logged? "audit" :info #"overwrite.*2018-12-17")
                 (str "log entries:" (logtest/the-log)))

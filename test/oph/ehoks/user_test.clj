@@ -1,12 +1,11 @@
 (ns oph.ehoks.user-test
-  (:require [clojure.test :as t :refer [deftest testing is]]
-            [oph.ehoks.utils :as utils :refer [eq with-db]]
-            [oph.ehoks.user :as user]
-            [oph.ehoks.external.http-client :as client]
-            [clj-time.coerce :as c]
+  (:require [clj-time.coerce :as c]
+            [clojure.test :as t :refer [deftest is testing]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
-            [oph.ehoks.db.db-operations.oppija :as db-oppija]))
+            [oph.ehoks.db.db-operations.oppija :as db-oppija]
+            [oph.ehoks.user :as user]
+            [oph.ehoks.utils :as utils :refer [eq with-db]]))
 
 (t/use-fixtures :once utils/migrate-database)
 
@@ -107,54 +106,47 @@
                 :privileges #{}
                 :roles #{}})})))))
 
-(deftest organisation-privileges!
-  (testing "Get organisation privileges"
-    (client/set-get!
-      (fn [^String url options]
-        (cond
-          (.endsWith
-            url "/rest/organisaatio/v4/1.2.246.562.10.30000000007")
-          {:status 200
-           :body {:parentOidPath
-                  "|1.2.246.562.10.10000000009|1.2.246.562.10.20000000008"}}
-          (.endsWith
-            url "/rest/organisaatio/v4/1.2.246.562.10.10000000009")
-          {:status 200
-           :body {}}
-          (.endsWith
-            url "/rest/organisaatio/v4/1.2.246.562.10.20000000008")
-          {:status 200
-           :body {:parentOidPath
-                  "|1.2.246.562.10.10000000009|"}})))
-
-    (eq (user/organisation-privileges!
+(deftest organisation-privileges
+  (testing "Returns `nil` if user has no privileges in organisation"
+    (is (nil? (user/organisation-privileges
+                {:oid           "1.2.246.562.10.20000000008"
+                 :parentOidPath "|1.2.246.562.10.10000000009|"}
+                {:organisation-privileges
+                 '({:oid        "1.2.246.562.10.20000000008"
+                    :privileges #{}
+                    :roles      #{:oph-super-user}})}))))
+  (testing (str "Returns `nil` if `organisation` (or parent organisation) "
+                "doesn't match any of users orgs")
+    (is (nil? (user/organisation-privileges
+                {:oid           "1.2.246.562.10.20000000008"
+                 :parentOidPath "|1.2.246.562.10.10000000009|"}
+                {:organisation-privileges
+                 '({:oid        "1.2.246.562.10.30000000007"
+                    :privileges #{:read :write :update :delete}
+                    :roles      #{:oph-super-user}})}))))
+  (testing "Returns `nil` if `organisation` is `nil` or empty map"
+    (is (nil? (user/organisation-privileges
+                nil
+                {:organisation-privileges
+                 '({:oid        "1.2.246.562.10.30000000007"
+                    :privileges #{:read :write :update :delete}
+                    :roles      #{:oph-super-user}})})))
+    (is (nil? (user/organisation-privileges
+                {}
+                {:organisation-privileges
+                 '({:oid        "1.2.246.562.10.30000000007"
+                    :privileges #{:read :write :update :delete}
+                    :roles      #{:oph-super-user}})}))))
+  (testing (str "Returns user privileges in organisation if it matches to one "
+                "of users organisations")
+    (eq (user/organisation-privileges
+          {:oid           "1.2.246.562.10.20000000008"
+           :parentOidPath "|1.2.246.562.10.10000000009|"}
           {:organisation-privileges
-           '({:oid "1.2.246.562.10.20000000008"
+           '({:oid        "1.2.246.562.10.20000000008"
               :privileges #{:read :write :update :delete}
-              :roles #{}}
-              {:oid "1.2.246.562.10.10000000009"
+              :roles      #{}}
+              {:oid        "1.2.246.562.10.10000000009"
                :privileges #{}
-               :roles #{:oph-super-user}})}
-          "1.2.246.562.10.20000000008")
-        #{:read :write :update :delete})
-
-    (is (nil?
-          (user/organisation-privileges!
-            {:organisation-privileges
-             '({:oid "1.2.246.562.10.20000000008"
-                :privileges #{:read :write :update :delete}
-                :roles #{}}
-                {:oid "1.2.246.562.10.30000000007"
-                 :privileges #{}
-                 :roles #{:oph-super-user}})}
-            "1.2.246.562.10.10000000009")))
-
-    ; From parentOidPath
-    (eq (user/organisation-privileges!
-          {:organisation-privileges
-           '({:oid "1.2.246.562.10.20000000008"
-              :privileges #{:read :write :update :delete}
-              :roles #{}})}
-          "1.2.246.562.10.30000000007")
-        #{:read :write :update :delete})
-    (client/reset-functions!)))
+               :roles      #{:oph-super-user}})})
+        #{:read :write :update :delete})))

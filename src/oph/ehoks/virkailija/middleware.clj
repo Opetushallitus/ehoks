@@ -53,25 +53,11 @@
         (handler request)
         (response/forbidden)))))
 
-(defn virkailija-has-privilege-in-opiskeluoikeus?
-  "Check if user has access privileges to opiskeluoikeus"
-  [ticket-user opiskeluoikeus-oid privilege]
-  (let [opiskeluoikeus (oi/get-opiskeluoikeus-by-oid! opiskeluoikeus-oid)]
-    (and (some? opiskeluoikeus)
-         (contains?
-           (user/organisation-privileges!
-             ticket-user (:oppilaitos-oid opiskeluoikeus))
-           privilege))))
-
 (defn- handle-virkailija-write-access [request]
   (let [hoks (db-hoks/select-hoks-by-id
                (Integer/parseInt (get-in request [:params :hoks-id])))
-        virkailija-user (get-in
-                          request
-                          [:session :virkailija-user])]
-    (when-not (virkailija-has-privilege-in-opiskeluoikeus?
-                virkailija-user
-                (:opiskeluoikeus-oid hoks) :write)
+        user (get-in request [:session :virkailija-user])]
+    (when-not (user/has-privilege-to-hoks? hoks user :write)
       (log/warnf
         "User %s privileges do not match opiskeluoikeus
                                 %s of oppija %s"
