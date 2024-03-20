@@ -444,7 +444,7 @@
   (let [current-hoks (get-hoks-by-id hoks-id)
         amisherate-kasittelytila
         (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id! hoks-id)
-        h (jdbc/with-db-transaction
+        _ (jdbc/with-db-transaction
             [db-conn (db-ops/get-db-connection)]
             (replace-main-hoks! hoks-id new-values db-conn)
             (replace-hoks-parts! (assoc new-values :id hoks-id) db-conn))
@@ -464,7 +464,7 @@
             {:id (:id amisherate-kasittelytila)
              :paattoherate_kasitelty false})
           (op/send! :paattokysely updated-hoks))))
-    h))
+    updated-hoks))
 
 (defn update-hoks!
   "Päivittää annetut arvot HOKSiin."
