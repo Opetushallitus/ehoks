@@ -65,15 +65,13 @@
              annettuun organisaatioon eHOKS-palvelussa."
 
     (let [user       (get-in request [:session :virkailija-user])
-          oppilaitos (organisaatio/get-existing-organisation! oppilaitos-oid)]
+          oppilaitos (organisaatio/get-existing-organisaatio! oppilaitos-oid)]
       (if-not (contains? (user/organisation-privileges oppilaitos user) :read)
-        (do
-          (log/warnf
-            "User %s privileges does not match oppilaitos %s"
-            (:oidHenkilo user)
-            oppilaitos-oid)
-          (response/forbidden
-            {:error "User has insufficient privileges for given organisation"}))
+        (do (log/warnf "User %s privileges does not match oppilaitos %s"
+                       (:oidHenkilo user)
+                       oppilaitos-oid)
+            (response/forbidden {:error (str "User has insufficient privileges "
+                                             "for given organisation")}))
         (let [search-params        {:desc desc
                                     :item-count item-count
                                     :order-by-column order-by-column
@@ -144,7 +142,7 @@
   [oppilaitos-oid oppija-oid]
   (let [hoksit (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
     (if-let [hoksit-oppilaitoksessa (seq (get-hoksit-by-oppilaitos
-                                            oppilaitos-oid hoksit))]
+                                           oppilaitos-oid hoksit))]
       ;; OY-2850: User should not be able to see HOKSes from other oppilaitoses
       ;; if users oppilaitos doesn't have any oppijas HOKSes with active OO.
       (restful/ok (if (any-hoks-has-active-opiskeluoikeus?
@@ -274,7 +272,7 @@
   ; (super user vs. oppilaitos virkailija). This handler was only simplified
   ; as part of refactoring, but this obviously still needs to be fixed.
   (let [user       (get-in request [:session :virkailija-user])
-        oppilaitos (organisaatio/get-organisation! oppilaitos-oid)]
+        oppilaitos (organisaatio/get-organisaatio! oppilaitos-oid)]
     (cond
       (user/oph-super-user? user)
       (restful/ok (pc/select-oht-by-tutkinto-between tutkinto start end))
@@ -295,7 +293,7 @@
   "Handler for `GET /missing-oo-hoksit/:oppilaitosoid`"
   [request oppilaitos-oid page-size page-offset]
   (if (contains? (user/organisation-privileges
-                   (organisaatio/get-existing-organisation! oppilaitos-oid)
+                   (organisaatio/get-existing-organisaatio! oppilaitos-oid)
                    (get-in request [:session :virkailija-user]))
                  :read)
     (-> (db-hoks/select-hoksit-by-oo-oppilaitos-and-koski404 oppilaitos-oid)
@@ -323,7 +321,7 @@
                                        " support for more " "information.")})
 
       (not (contains? (user/organisation-privileges
-                        (organisaatio/get-existing-organisation! oppilaitos-oid)
+                        (organisaatio/get-existing-organisaatio! oppilaitos-oid)
                         (get-in request [:session :virkailija-user]))
                       :hoks_delete))
       (response/forbidden {:error "User privileges do not match organisation"})
@@ -538,7 +536,7 @@
                         (let [user (get-in request [:session :virkailija-user])]
                           (if (contains?
                                 (user/organisation-privileges
-                                  (organisaatio/get-existing-organisation!
+                                  (organisaatio/get-existing-organisaatio!
                                     oppilaitos-oid)
                                   user)
                                 :read)

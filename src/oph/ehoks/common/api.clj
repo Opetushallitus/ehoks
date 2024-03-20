@@ -30,6 +30,10 @@
   (response/unauthorized {:reason "Unable to check access rights"}))
 
 (defn custom-ex-handler
+  "Returns an exception handler that will return with a response `resp`.
+  By default, response body will be a map with a key `:error` and the value is
+  the error message extracted from the exception object. A `custom-key` can be
+  provided if `:error` isn't okay for any reason."
   ([resp]
     (custom-ex-handler resp nil))
   ([resp custom-key]
@@ -65,10 +69,14 @@
    ::onr/oppija-not-found                bad-request-handler
    ::oi/opiskeluoikeus-not-found         bad-request-handler
    :shared-link-validation-error         bad-request-handler
-   :shared-link-expired                  (custom-ex-handler response/gone
-                                                            :message)
-   :shared-link-inactive                 (custom-ex-handler response/locked
-                                                            :message)
+   :shared-link-expired                  (c-ex/with-logging
+                                           (custom-ex-handler response/gone
+                                                              :message)
+                                           :warn)
+   :shared-link-inactive                 (c-ex/with-logging
+                                           (custom-ex-handler response/locked
+                                                              :message)
+                                           :warn)
    :not-found                            not-found-handler
    :unauthorized                         unauthorized-handler
 
