@@ -86,7 +86,9 @@
     (catch Exception _ nil)))
 
 (defn get-opiskeluoikeus!
-  "Returns `nil` if no opiskeluoikeus with `oid` is found from Koski."
+  "Get info about opiskeluoikeus with `oid` from Koski. Returns `nil` if
+  opiskeluoikeus is not found from Koski. Throws an exception in case of
+  excetional status codes."
   [oid]
   (try
     (get-opiskeluoikeus-info-raw oid)

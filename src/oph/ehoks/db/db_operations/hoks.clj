@@ -716,7 +716,7 @@
   (let [hoks (select-hoks-by-id hoks-id)
         oppija (op/select-oppija-by-oid (:oppija-oid hoks))
         oo (oo/select-opiskeluoikeus-by-oid (:opiskeluoikeus-oid hoks))
-        organisaatio (org/get-existing-organisation! (:oppilaitos-oid oo))]
+        organisaatio (org/get-existing-organisaatio! (:oppilaitos-oid oo))]
     {:nimi (:nimi oppija)
      :hoksId (:id hoks)
      :oppilaitosNimi (get-in organisaatio [:nimi] {:fi "" :sv ""})

@@ -4,23 +4,24 @@
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.oppijaindex :as oi]))
 
+(def privilege-types #{:read :write :update :delete})
+
 (defn resolve-privilege
   "Resolves OPH privilege to keyword sets"
   [privilege]
   (when (= (:palvelu privilege) "EHOKS")
     (case (:oikeus privilege)
-      "CRUD" #{:read :write :delete :update}
-      "OPHPAAKAYTTAJA" #{:read :write :delete :update}
-      "READ" #{:read}
-      "HOKS_DELETE" #{:hoks_delete}
+      "CRUD"           privilege-types
+      "OPHPAAKAYTTAJA" privilege-types
+      "READ"           #{:read}
+      "HOKS_DELETE"    #{:hoks_delete}
       #{})))
 
 (defn get-service-privileges
   "Resolves service OPH privileges"
   [service-privileges]
   (reduce
-    (fn [c n]
-      (into c (resolve-privilege n)))
+    (fn [c n] (into c (resolve-privilege n)))
     #{}
     service-privileges))
 
@@ -46,9 +47,9 @@
 (defn resolve-privileges
   "Resolves organisation privileges"
   [organisation]
-  {:oid                (:organisaatioOid organisation)
-   :privileges         (get-service-privileges (:kayttooikeudet organisation))
-   :roles              (get-service-roles (:kayttooikeudet organisation))
+  {:oid                 (:organisaatioOid organisation)
+   :privileges          (get-service-privileges (:kayttooikeudet organisation))
+   :roles               (get-service-roles (:kayttooikeudet organisation))
    :child-organisations (if (= (:organisaatioOid organisation)
                                "1.2.246.562.10.00000000001")
                           (oi/get-oppilaitos-oids-cached)
@@ -98,5 +99,5 @@
   oppilaitokset that `ticker-user` isn't member of!"
   [ticket-user oppija-oid]
   (->> (oi/get-oppija-opiskeluoikeudet oppija-oid)
-       (map #(organisaatio/get-organisation! (:oppilaitos-oid %)))
+       (map #(organisaatio/get-organisaatio! (:oppilaitos-oid %)))
        (some #(contains? (organisation-privileges % ticket-user) :read))))
