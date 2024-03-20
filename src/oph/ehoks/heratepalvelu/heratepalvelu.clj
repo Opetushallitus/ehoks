@@ -38,26 +38,21 @@
   [oppija-oid]
   (filter
     some?
-    (map
-      #(try
-         (if-not (:vastattu %1)
-           (when-let [status (arvo/get-kyselylinkki-status-catch-404
-                               (:kyselylinkki %1))]
-             (let [loppupvm (LocalDate/parse
-                              (first
-                                (string/split (:voimassa_loppupvm status)
-                                              #"T")))]
-               (kyselylinkki/update! {:kyselylinkki (:kyselylinkki %1)
-                                      :voimassa_loppupvm loppupvm
-                                      :vastattu (:vastattu status)})
-               (assoc %1
-                      :voimassa-loppupvm loppupvm
-                      :vastattu (:vastattu status))))
-           %1)
-         (catch Exception e
-           (log/error e)
-           (throw e)))
-      (kyselylinkki/get-by-oppija-oid! oppija-oid))))
+    (map #(if-not (:vastattu %1)
+            (when-let [status (arvo/get-kyselylinkki-status-catch-404
+                                (:kyselylinkki %1))]
+              (let [loppupvm (LocalDate/parse
+                               (first
+                                 (string/split (:voimassa_loppupvm status)
+                                               #"T")))]
+                (kyselylinkki/update! {:kyselylinkki (:kyselylinkki %1)
+                                       :voimassa_loppupvm loppupvm
+                                       :vastattu (:vastattu status)})
+                (assoc %1
+                       :voimassa-loppupvm loppupvm
+                       :vastattu (:vastattu status))))
+            %1)
+         (kyselylinkki/get-by-oppija-oid! oppija-oid))))
 
 (defn set-tep-kasitelty
   "Marks an osaamisen hankkimistapa as handled (käsitelty)."

@@ -88,6 +88,6 @@
         :path-params [oid :- oid-schema/OrganisaatioOID]
         :summary "Organisaation tiedot oidin perusteella"
         :return (rest/response s/Any)
-        (if-let [organisation (organisaatio/get-organisation! oid)]
+        (if-let [organisation (organisaatio/get-organisaatio! oid)]
           (rest/ok organisation)
           (response/not-found))))))

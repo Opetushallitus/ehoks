@@ -103,20 +103,13 @@
                   (c-api/GET "/kyselylinkit" []
                     :summary "Palauttaa oppijan aktiiviset kyselylinkit"
                     :return (rest/response [s/Any])
-                    (try
-                      (let [kyselylinkit
-                            (map
-                              :kyselylinkki
-                              (filter
-                                #(and (not (:vastattu %1))
-                                      (not (.isAfter
-                                             (LocalDate/now)
-                                             (:voimassa-loppupvm %1))))
-                                (heratepalvelu/get-oppija-kyselylinkit oid)))]
-                        (rest/ok kyselylinkit))
-                      (catch Exception e
-                        (log/error e)
-                        (throw e)))))))
+                    (->> (heratepalvelu/get-oppija-kyselylinkit oid)
+                         (filter #(and (not (:vastattu %))
+                                       (not (.isAfter
+                                              (LocalDate/now)
+                                              (:voimassa-loppupvm %)))))
+                         (map :kyselylinkki)
+                         rest/ok)))))
 
             (c-api/context "/jaot" []
               :header-params [caller-id :- s/Str]

@@ -29,7 +29,7 @@
         :path-params [oid :- oid-schema/OrganisaatioOID]
         :summary "Organisaation tiedot oidin perusteella"
         :return (restful/response s/Any)
-        (if-let [organisation (organisaatio/get-organisation! oid)]
+        (if-let [organisation (organisaatio/get-organisaatio! oid)]
           (restful/ok organisation)
           (response/not-found))))
 

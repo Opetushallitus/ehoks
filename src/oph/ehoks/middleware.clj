@@ -90,7 +90,7 @@
   "Add HOKS to request"
   [request]
   (let [hoks-id (Integer/parseInt (get-in request [:route-params :hoks-id]))
-        hoks (db-hoks/select-hoks-by-id hoks-id)]
+        hoks    (db-hoks/select-hoks-by-id hoks-id)]
     (assoc request :hoks hoks)))
 
 (defn wrap-hoks
