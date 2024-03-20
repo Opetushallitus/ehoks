@@ -537,4 +537,4 @@
   (some-> (:opiskeluoikeus-oid hoks)
           oppijaindex/get-existing-opiskeluoikeus-by-oid! ; throws if not found
           :oppilaitos-oid
-          organisaatio/get-organisation!))
+          organisaatio/get-organisaatio!))

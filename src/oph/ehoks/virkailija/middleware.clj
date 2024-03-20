@@ -1,7 +1,6 @@
 (ns oph.ehoks.virkailija.middleware
   (:require [ring.util.http-response :as response]
             [oph.ehoks.user :as user]
-            [oph.ehoks.oppijaindex :as oi]
             [clojure.tools.logging :as log]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 

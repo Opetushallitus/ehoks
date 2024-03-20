@@ -2,11 +2,10 @@
   (:require [clojure.data.json :as json]
             [oph.ehoks.external.cache :as cache]
             [oph.ehoks.external.oph-url :as u]
-            [ring.util.http-response :as response]
             [ring.util.http-status :as status])
   (:import [clojure.lang ExceptionInfo]))
 
-(defn get-organisation!
+(defn get-organisaatio!
   "Get info about organisation with `oid` from Organisaatiopalvelu. Returns
   `nil` if organisation is not found from Organisaatiopalvelu. Throws an
   exception in case of excetional status codes."
@@ -25,22 +24,17 @@
                          :organisation-oid oid}
                         e))))))
 ;
-(defn get-existing-organisation!
+(defn get-existing-organisaatio!
   "Like `get-organisaatio!` but expects an organisation with `oid` to be found
   from Organisaatiopalvelu, and thus, throws an exception if no organisation
   is found."
   [oid]
-  (if-let [organisaatio (get-organisation! oid)]
+  (if-let [organisaatio (get-organisaatio! oid)]
     organisaatio
     (throw (ex-info
              (format "Organisation `%s` not found from Organisaatiopalvelu" oid)
              {:type             ::organisation-not-found
               :organisation-oid oid}))))
-
-(defn not-found-handler
-  [^ExceptionInfo e data _]
-  {:pre [(= (:type data) ::organisation-not-found)]}
-  (response/bad-request (ex-message e)))
 
 (defn try-to-get-organisaatiot-from-cache!
   "Find organisaatiot by OIDs (with caching)"

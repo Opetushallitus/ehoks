@@ -1,14 +1,15 @@
 (ns oph.ehoks.hoks.middleware
   (:require [clojure.tools.logging :as log]
+            [medley.core :refer [find-first]]
             [oph.ehoks.user :as user]
             [ring.util.http-response :as response]))
 
-(def method-privileges
+(def rest-method->privilege-type
   "Privileges afforded to each REST method"
-  {:get :read
-   :post :write
-   :patch :update
-   :put :update
+  {:get    :read
+   :post   :write
+   :patch  :update
+   :put    :update
    :delete :delete})
 
 (defn check-hoks-access!
@@ -17,7 +18,8 @@
   (if (nil? hoks)
     (response/not-found!)
     (let [ticket-user (:service-ticket-user request)
-          privilege   (get method-privileges (:request-method request))]
+          privilege   (get rest-method->privilege-type
+                           (:request-method request))]
       (when-not (user/has-privilege-to-hoks? hoks ticket-user privilege)
         (log/warnf "User %s has no access to hoks %d with opiskeluoikeus %s"
                    (:username ticket-user)
@@ -34,7 +36,8 @@
     ([request respond raise]
       (let [hoks        (:hoks request)
             ticket-user (:service-ticket-user request)
-            privilege   (get method-privileges (:request-method request))]
+            privilege   (get rest-method->privilege-type
+                             (:request-method request))]
         (if (nil? hoks)
           (respond (response/not-found {:error "HOKS not found"}))
           (if (user/has-privilege-to-hoks? hoks ticket-user privilege)
@@ -52,7 +55,8 @@
     ([request]
       (let [hoks        (:hoks request)
             ticket-user (:service-ticket-user request)
-            privilege   (get method-privileges (:request-method request))]
+            privilege   (get rest-method->privilege-type
+                             (:request-method request))]
         (if (nil? hoks)
           (response/not-found {:error "HOKS not found"})
           (if (user/has-privilege-to-hoks? hoks ticket-user privilege)
@@ -85,16 +89,13 @@
 (defn oph-authorized?
   "Does user have OPH privileges?"
   [request]
-  (let [user (:service-ticket-user request)
-        method (get method-privileges (:request-method request))]
-    (some?
-      (get
-        (:privileges
-          (first
-            (filter
-              #(= (:oid %) "1.2.246.562.10.00000000001")
-              (:organisation-privileges user))))
-        method))))
+  (let [privilege (rest-method->privilege-type (:request-method request))]
+    (->> (:service-ticket-user request)
+         :organisation-privileges
+         (find-first #(= (:oid %) "1.2.246.562.10.00000000001"))
+         :privileges
+         privilege ; keyword, e.g., :read
+         some?)))
 
 (defn wrap-require-oph-privileges
   "Require oph org"
