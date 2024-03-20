@@ -1,34 +1,40 @@
 (ns oph.ehoks.external.organisaatio
-  (:require [oph.ehoks.external.cache :as cache]
+  (:require [clojure.data.json :as json]
+            [oph.ehoks.external.cache :as cache]
             [oph.ehoks.external.oph-url :as u]
-            [clojure.data.json :as json]
-            [clj-http.client :refer [success?]]
-            [clojure.tools.logging :as log]))
+            [ring.util.http-status :as status])
+  (:import [clojure.lang ExceptionInfo]))
 
-(defn get-organisaatio
-  "Get organisaatio info; log at WARN level on failure"
+(defn get-organisaatio!
+  "Get info about organisation with `oid` from Organisaatiopalvelu. Returns
+  `nil` if organisation is not found from Organisaatiopalvelu. Throws an
+  exception in case of excetional status codes."
   [oid]
-  (let [resp
-        (cache/with-cache!
-          {:method :get
-           :service (u/get-url "organisaatio-service-url")
-           :url (u/get-url "organisaatio-service.get-organisaatio" oid)
-           :options {:as :json
-                     :throw-exceptions false}})]
-    (if (success? resp)
-      (:body resp)
-      (log/warn "Error getting organization " oid ", " resp))))
-
-(defn get-organisaatio-info
-  "Get organisaatio info without handling exceptions"
+  (try
+    (:body (cache/with-cache!
+             {:method :get
+              :service (u/get-url "organisaatio-service-url")
+              :url (u/get-url "organisaatio-service.get-organisaatio" oid)
+              :options {:as :json}}))
+    (catch ExceptionInfo e
+      (when-not (= (:status (ex-data e)) status/not-found)
+        (throw (ex-info (str "Error while fetching organisation from "
+                             "Organisaatiopalvelu")
+                        {:type             ::organisation-fetching-error
+                         :organisation-oid oid}
+                        e))))))
+;
+(defn get-existing-organisaatio!
+  "Like `get-organisaatio!` but expects an organisation with `oid` to be found
+  from Organisaatiopalvelu, and thus, throws an exception if no organisation
+  is found."
   [oid]
-  (get
-    (cache/with-cache!
-      {:method :get
-       :service (u/get-url "organisaatio-service-url")
-       :url (u/get-url "organisaatio-service.get-organisaatio" oid)
-       :options {:as :json}})
-    :body))
+  (if-let [organisaatio (get-organisaatio! oid)]
+    organisaatio
+    (throw (ex-info
+             (format "Organisation `%s` not found from Organisaatiopalvelu" oid)
+             {:type             ::organisation-not-found
+              :organisation-oid oid}))))
 
 (defn try-to-get-organisaatiot-from-cache!
   "Find organisaatiot by OIDs (with caching)"

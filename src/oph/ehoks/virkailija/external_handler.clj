@@ -1,6 +1,7 @@
 (ns oph.ehoks.virkailija.external-handler
   (:require [compojure.api.sweet :as c-api]
             [schema.core :as s]
+            [oph.ehoks.schema.oid :as oid-schema]
             [ring.util.http-response :as response]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.external.koodisto :as koodisto]
@@ -22,41 +23,34 @@
         :query-params [oids :- [s/Str]]
         :summary "Hakee organisaatiot oidien perusteella"
         :return (restful/response [s/Any])
-        (restful/rest-ok
-          (organisaatio/find-organisaatiot oids)))
+        (restful/ok (organisaatio/find-organisaatiot oids)))
 
       (c-api/GET "/:oid" []
-        :path-params [oid :- s/Str]
+        :path-params [oid :- oid-schema/OrganisaatioOID]
         :summary "Organisaation tiedot oidin perusteella"
         :return (restful/response s/Any)
-        (try
-          (let [organisaatio (organisaatio/get-organisaatio-info oid)]
-            (restful/rest-ok organisaatio))
-          (catch Exception e
-            (let [data (ex-data e)]
-              (if (= (:status data) 404)
-                (response/not-found)
-                (throw e)))))))
+        (if-let [organisation (organisaatio/get-organisaatio! oid)]
+          (restful/ok organisation)
+          (response/not-found))))
 
     (c-api/context "/koodisto" []
       (c-api/GET "/:koodi-uri" []
         :path-params [koodi-uri :- s/Str]
         :summary "Koodiston haku Koodisto-Koodi-Urilla."
         :return (restful/response s/Any)
-        (restful/rest-ok (koodisto/get-koodi koodi-uri)))
+        (restful/ok (koodisto/get-koodi koodi-uri)))
 
       (c-api/GET "/:koodi-uri/versiot" []
         :path-params [koodi-uri :- s/Str]
         :summary "Koodiston versioiden haku Koodisto-koodi-urilla."
         :return (restful/response s/Any)
-        (restful/rest-ok (koodisto/get-koodi-versiot koodi-uri)))
+        (restful/ok (koodisto/get-koodi-versiot koodi-uri)))
 
       (c-api/GET "/:koodi-uri/koodi" []
         :path-params [koodi-uri :- s/Str]
         :summary "Koodiston uusimpien versioiden haku."
         :return (restful/response [s/Any])
-        (restful/rest-ok
-          (koodisto/get-koodi-latest-versiot koodi-uri))))
+        (restful/ok (koodisto/get-koodi-latest-versiot koodi-uri))))
 
     (c-api/context "/eperusteet" []
       (c-api/GET "/tutkinnonosat/:id/viitteet" []
@@ -64,8 +58,7 @@
         :summary "Tutkinnon osan viitteet."
         :return (restful/response [s/Any])
         (try
-          (restful/rest-ok
-            (eperusteet/get-tutkinnon-osa-viitteet id))
+          (restful/ok (eperusteet/get-tutkinnon-osa-viitteet id))
           (catch Exception e
             (if (= (:status (ex-data e)) 400)
               (response/not-found
@@ -77,8 +70,7 @@
         :summary "Yhteisen tutkinnon osan osa-alueet."
         :return (restful/response [s/Any])
         (try
-          (restful/rest-ok
-            (eperusteet/get-tutkinnon-osan-osa-alueet id))
+          (restful/ok (eperusteet/get-tutkinnon-osan-osa-alueet id))
           (catch Exception e
             (if (= (:status (ex-data e)) 400)
               (response/not-found
@@ -90,7 +82,7 @@
         :summary "Tutkinnon haku diaarinumeron perusteella."
         :return (restful/response s/Any)
         (try
-          (restful/rest-ok (eperusteet/find-tutkinto diaarinumero))
+          (restful/ok (eperusteet/find-tutkinto diaarinumero))
           (catch Exception e
             (if (= (:status (ex-data e)) 404)
               (response/not-found {:message "Tutkinto not found"})
@@ -115,9 +107,9 @@
         :summary "Tutkinnon osan perusteiden haku
                             Koodisto-Koodi-Urilla."
         :return (restful/response [s/Any])
-        (restful/rest-ok
-          (eperusteet/adjust-tutkinnonosa-arviointi
-            (eperusteet/find-tutkinnon-osat koodi-uri))))
+        (-> (eperusteet/find-tutkinnon-osat koodi-uri)
+            eperusteet/adjust-tutkinnonosa-arviointi
+            restful/ok))
 
       (c-api/GET "/koulutuksenOsa/:koodi-uri" [:as request]
         :summary "Hakee koulutuksenOsan ePerusteet-palvelusta"
@@ -133,4 +125,4 @@
                  Koodiin täydennetään automaattisesti
                  'paikallinen_tutkinnonosa'"
         :return (restful/response [s/Any])
-        (restful/rest-ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))))
+        (restful/ok (amosaa/get-tutkinnon-osa-by-koodi koodi))))))

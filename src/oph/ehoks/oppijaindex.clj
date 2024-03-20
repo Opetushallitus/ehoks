@@ -11,9 +11,10 @@
             [oph.ehoks.db.postgresql.common :as db]
             [oph.ehoks.db.queries :as queries]
             [oph.ehoks.external.koski :as k]
-            [oph.ehoks.external.oppijanumerorekisteri :as onr])
-  (:import [java.time LocalDate]
-           [java.sql Timestamp]))
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
+            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus])
+  (:import [java.sql Timestamp]
+           [java.time LocalDate]))
 
 (def ^:const opiskeluoikeus-refresh-interval-in-days 180)
 
@@ -119,6 +120,16 @@
   [oid & keep-columns]
   (apply db-opiskeluoikeus/select-opiskeluoikeus-by-oid oid keep-columns))
 
+(defn get-existing-opiskeluoikeus-by-oid!
+  "Like `get-opiskeluoikeus-by-oid!` but expects that opiskeluoikeus with `oid`
+  is found in index. Throws an exception if opiskeluoikeus is not found."
+  [oid & keep-columns]
+  (if-let [opiskeluoikeus (apply get-opiskeluoikeus-by-oid! oid keep-columns)]
+    opiskeluoikeus
+    (throw (ex-info (format "Opiskeluoikeus `%s` not in index" oid)
+                    {:type               ::opiskeluoikeus-not-found
+                     :opiskeluoikeus-oid oid}))))
+
 (defn get-hankintakoulutus-oids-by-master-oid
   "Get hankintakoulutus by master OID"
   [oid]
@@ -179,12 +190,11 @@
 (defn- get-opiskeluoikeus-info
   "Get opiskeluoikeus info from Koski and convert to SQL-compatible format"
   [oid oppija-oid]
-  (let [opiskeluoikeus (k/get-opiskeluoikeus-info-raw oid)]
+  (let [opiskeluoikeus (k/get-existing-opiskeluoikeus! oid)]
     (when (:sisältyyOpiskeluoikeuteen opiskeluoikeus)
-      (log/warnf
-        "Opiskeluoikeus %s has sisältyyOpiskeluoikeuteen information" oid)
       (throw (ex-info "Opiskeluoikeus sisältyy toiseen opiskeluoikeuteen"
-                      {:error :hankintakoulutus})))
+                      {:type               :disallowed-update
+                       :opiskeluoikeus-oid oid})))
     (when (> (count (:suoritukset opiskeluoikeus)) 1)
       (log/warnf
         "Opiskeluoikeus %s has multiple suoritukset. First is used for tutkinto"
@@ -331,7 +341,7 @@
 (defn- insert-oppija!
   "Insert student into database"
   [oid]
-  (let [oppija (:body (onr/find-student-by-oid oid))]
+  (let [oppija (onr/get-existing-oppija! oid)]
     (db-oppija/insert-oppija!
       {:oid oid
        :nimi (format "%s %s" (:etunimet oppija) (:sukunimi oppija))})))
@@ -380,7 +390,7 @@
   "Update existing student in database. Adding 2nd param skips cache."
   ([oid]
     (try
-      (let [oppija (:body (onr/find-student-by-oid oid))]
+      (let [oppija (onr/get-existing-oppija! oid)]
         (db-oppija/update-oppija!
           oid
           {:nimi (format-oppija-name oppija)}))
@@ -461,87 +471,13 @@
 (defn add-hoks-dependents-in-index!
   "Adds oppija, opiskeluoikeus and hankintakoulutukset for given HOKS"
   [hoks]
-  (let [opiskeluoikeudet
-        (k/fetch-opiskeluoikeudet-by-oppija-id (:oppija-oid hoks))]
-    (try (add-oppija! (:oppija-oid hoks))
-         (catch Exception e
-           (when (= (:status (ex-data e)) 404)
-             (log/warn "Oppija" (:oppija-oid hoks) "not found in ONR")
-             (throw (ex-info "Oppija not found in Oppijanumerorekisteri"
-                             {:error :disallowed-update})))
-           (throw e)))
-    (try (add-opiskeluoikeus!
-           (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))
-         (catch Exception e
-           (when (= (:status (ex-data e)) 404)
-             (log/warn "Opiskeluoikeus" (:opiskeluoikeus-oid hoks)
-                       "not found in Koski")
-             (throw (ex-info "Opiskeluoikeus not found in Koski"
-                             {:error :disallowed-update})))
-
-           (when (= (:error (ex-data e)) :hankintakoulutus)
-             (throw (ex-info (ex-message e) {:error :disallowed-update})))
-           (throw e)))
+  (let [oppija-oid         (:oppija-oid hoks)
+        opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+        opiskeluoikeudet   (k/fetch-opiskeluoikeudet-by-oppija-id oppija-oid)]
+    (add-oppija! oppija-oid)
+    (add-opiskeluoikeus! opiskeluoikeus-oid oppija-oid)
     (add-oppija-hankintakoulutukset
-      opiskeluoikeudet (:opiskeluoikeus-oid hoks) (:oppija-oid hoks))))
-
-(defn get-opiskeluoikeus-tila
-  "Extract tila from opiskeluoikeus"
-  [opiskeluoikeus]
-  (let [opiskeluoikeusjaksot (get-in opiskeluoikeus
-                                     [:tila :opiskeluoikeusjaksot])
-        latest-jakso (reduce
-                       (fn [latest jakso]
-                         (if (.isAfter
-                               (LocalDate/parse (:alku jakso))
-                               (LocalDate/parse (:alku latest)))
-                           jakso
-                           latest))
-                       opiskeluoikeusjaksot)]
-    (get-in latest-jakso [:tila :koodiarvo])))
-
-(defn opiskeluoikeus-tila-inactive?
-  "Check whether opiskeluoikeus tila is inactive"
-  [tila]
-  (some #(= tila %) ["valmistunut"
-                     "eronnut"
-                     "katsotaaneronneeksi"
-                     "peruutettu"]))
-
-(defn opiskeluoikeus-active?
-  "Checks if the given opiskeluoikeus is still valid, ie. not valmistunut,
-  eronnut, katsotaaneronneeksi."
-  [opiskeluoikeus]
-  (if (some? opiskeluoikeus)
-    (not (opiskeluoikeus-tila-inactive?
-           (get-opiskeluoikeus-tila opiskeluoikeus)))
-    false))
-
-(defn opiskeluoikeus-still-active?
-  "Checks if the given opiskeluoikeus is still valid, ie. not valmistunut,
-  eronnut, katsotaaneronneeksi.
-  Alternatively checks from the list of all opiskeluoikeudet held by the oppija
-  that the opiskeluoikeus associated with the hoks is still valid."
-  ([opiskeluoikeus-oid]
-    (if (:prevent-finished-opiskeluoikeus-updates? config)
-      (let [opiskeluoikeus (k/get-opiskeluoikeus-info opiskeluoikeus-oid)]
-        (not (opiskeluoikeus-tila-inactive?
-               (get-opiskeluoikeus-tila opiskeluoikeus))))
-      true))
-  ([hoks opiskeluoikeudet]
-    (if (:prevent-finished-opiskeluoikeus-updates? config)
-      (let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-            opiskeluoikeus (reduce
-                             (fn [active oo]
-                               (if (= (:oid oo) opiskeluoikeus-oid)
-                                 oo
-                                 active))
-                             opiskeluoikeudet)]
-        (if-not (opiskeluoikeus-tila-inactive?
-                  (get-opiskeluoikeus-tila opiskeluoikeus))
-          true
-          false))
-      true)))
+      opiskeluoikeudet opiskeluoikeus-oid oppija-oid)))
 
 (defn update-oppija-oid-in-db!
   "Change the OID of an oppija to a new one in all tables in the database."

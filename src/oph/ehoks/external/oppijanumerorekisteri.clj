@@ -1,29 +1,45 @@
 (ns oph.ehoks.external.oppijanumerorekisteri
-  (:require [oph.ehoks.external.cache :as cache]
-            [clojure.set :refer [rename-keys]]
-            [oph.ehoks.external.oph-url :as u]
-            [oph.ehoks.external.cas :as cas]))
+  (:require [clojure.set :refer [rename-keys]]
+            [oph.ehoks.external.cache :as cache]
+            [oph.ehoks.external.cas :as cas]
+            [oph.ehoks.external.oph-url :as u])
+  (:import [clojure.lang ExceptionInfo]))
 
-(defn find-student-by-nat-id
-  "Find oppija with given HETU"
-  [nat-id]
-  (cache/with-cache!
-    {:method :get
-     :service (u/get-url "oppijanumerorekisteri-url")
-     :url (u/get-url "oppijanumerorekisteri.search-henkilo")
-     :options {:query-params {:hetu nat-id}
-               :as :json}
-     :authenticate? true}))
-
-(defn find-student-by-oid
-  "Find student by OID"
+(defn- get-oppija-raw!
+  "Get oppija information with no exception handling. Can be mocked in tests."
   [oid]
-  (cache/with-cache!
-    {:method :get
-     :service (u/get-url "oppijanumerorekisteri-url")
-     :url (u/get-url "oppijanumerorekisteri.get-henkilo-by-oid" oid)
-     :options {:as :json}
-     :authenticate? true}))
+  (:body (cache/with-cache!
+           {:method :get
+            :service (u/get-url "oppijanumerorekisteri-url")
+            :url (u/get-url "oppijanumerorekisteri.get-henkilo-by-oid" oid)
+            :options {:as :json}
+            :authenticate? true})))
+
+(defn get-oppija!
+  "Get info about oppija with `oid` from Oppijanumerorekisteri. Returns
+  `nil` if oppija is not found. Throws an exception in case of excetional
+  status codes."
+  [oid]
+  (try (get-oppija-raw! oid)
+       (catch ExceptionInfo e
+         (when-not (= (:status (ex-data e)) 404)
+           (throw
+             (ex-info "Error while fetching oppija from Oppijanumerorekisteri"
+                      {:type       ::oppija-fetching-error
+                       :oppija-oid oid}
+                      e))))))
+
+(defn get-existing-oppija!
+  "Like `get-oppija!` but expects an oppija with `oid` to be found
+  from Oppijanumerorekisteri, and thus, throws an exception if no oppija with
+  given `oid` is found."
+  [oid]
+  (if-let [student (get-oppija! oid)]
+    student
+    (throw (ex-info (format "Oppija `%s` not found in Oppijanumerorekisteri"
+                            oid)
+                    {:type       ::oppija-not-found
+                     :oppija-oid oid}))))
 
 (defn find-student-by-oid-no-cache
   "Find student by OID without cache. Cas auth enabled without cache."

@@ -26,7 +26,7 @@
         (:service-timeout-ms config)
         (-> (eperusteet/search-perusteet-info nimi)
             eperusteet/map-perusteet
-            rest/rest-ok)
+            rest/ok)
         (response/internal-server-error {:error "Service timeout exceeded"})))
 
     (route-middleware
@@ -40,7 +40,7 @@
           (-> (koodisto/get-koodi-versio uri versio)
               :body
               koodisto/filter-koodisto-values
-              rest/rest-ok)
+              rest/ok)
           (response/internal-server-error {:error "Service timeout exceeded"})))
 
       (c-api/GET "/koski/oppija" [:as request]
@@ -51,6 +51,6 @@
           (-> (get-in request [:session :user :oid])
               (koski/get-student-info)
               koski/filter-oppija
-              rest/rest-ok)
+              rest/ok)
           (response/internal-server-error
             {:error "Service timeout exceeded"}))))))

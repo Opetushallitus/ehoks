@@ -217,7 +217,7 @@
     {:identifiers #(do %)
      :row-fn      db-ops/from-sql}))
 
-(def get-oppilaitos-oids-cached-memoized
+(def get-oppilaitos-oids-cached-memoized!
   "Memoized get oppilaitos OIDs"
   (memo/ttl
     select-oht-by-tutkinto-and-oppilaitos-between

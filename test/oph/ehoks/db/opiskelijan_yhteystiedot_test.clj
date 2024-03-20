@@ -1,8 +1,8 @@
 (ns oph.ehoks.db.opiskelijan_yhteystiedot_test
   (:require [clojure.test :refer :all]
-            [oph.ehoks.utils :as utils :refer [eq empty-database-after-test
+            [oph.ehoks.utils :as utils :refer [empty-database-after-test
                                                migrate-database]]
-            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
 
@@ -77,8 +77,8 @@
             päättyneestä hoksista"
     (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info-raw
                   mocked-get-opiskeluoikeus-info-raw]
-      (let [saved-hoks (h/save-hoks! simple-hoks-data)
-            another-hoks (h/save-hoks! recent-hoks-data)
+      (let [saved-hoks (hoks/save! simple-hoks-data)
+            another-hoks (hoks/save! recent-hoks-data)
             _ (db-ops/update! :hoksit
                               {:updated_at (java.time.LocalDate/of 2022 9 1)}
                               ["id = ?" (:id saved-hoks)])
@@ -86,8 +86,8 @@
                               {:updated_at (java.time.LocalDate/of 2022 9 1)}
                               ["id = ?" (:id another-hoks)])
             affected-hoks-ids (db-hoks/delete-opiskelijan-yhteystiedot!)
-            hoks (h/get-hoks-by-id (:id saved-hoks))
-            second-hoks (h/get-hoks-by-id (:id another-hoks))]
+            hoks (hoks/get-by-id (:id saved-hoks))
+            second-hoks (hoks/get-by-id (:id another-hoks))]
         (is (nil? (:puhelinnumero hoks)))
         (is (nil? (:sahkoposti hoks)))
         (is (= (:puhelinnumero second-hoks) "0401234568"))
@@ -99,12 +99,12 @@
             päättyneen jakson perusteella"
     (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info-raw
                   mocked-get-opiskeluoikeus-info-raw]
-      (let [saved-hoks (h/save-hoks! full-hoks-data)
+      (let [saved-hoks (hoks/save! full-hoks-data)
             _ (db-ops/update! :hoksit
                               {:updated_at (java.time.LocalDate/of 2022 9 1)}
                               ["id = ?" (:id saved-hoks)])
             affected-hoks-ids (db-hoks/delete-opiskelijan-yhteystiedot!)
-            hoks (h/get-hoks-by-id (:id saved-hoks))]
+            hoks (hoks/get-by-id (:id saved-hoks))]
         (is (nil? (:puhelinnumero hoks)))
         (is (nil? (:sahkoposti hoks)))
         (is (= affected-hoks-ids #{(:id hoks)}))))))

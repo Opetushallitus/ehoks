@@ -7,16 +7,16 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.external.cache :as c]
-            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.opiskelijapalaute :as op]
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.virkailija.schema :as virkailija-schema]
+            [oph.ehoks.schema.oid :as oid-schema]
             [ring.util.http-response :as response]
             [schema.core :as s])
-  (:import
-    (java.time LocalDate)))
+  (:import (java.time LocalDate)))
 
 (def routes
   "System handlerin reitit"
@@ -30,24 +30,22 @@
         :summary "Järjestelmän tiedot: Cache."
         :header-params [caller-id :- s/Str]
         :return (restful/response virkailija-schema/SystemInfoCache)
-        (restful/rest-ok
-          {:size (c/size)}))
+        (restful/ok {:size (c/size)}))
 
       (c-api/GET "/memory" []
         :summary "Järjestelmän tiedot: Muisti."
         :header-params [caller-id :- s/Str]
         :return (restful/response virkailija-schema/SystemInfoMemory)
         (let [runtime (Runtime/getRuntime)]
-          (restful/rest-ok
-            {:total (.totalMemory runtime)
-             :free (.freeMemory runtime)
-             :max (.maxMemory runtime)})))
+          (restful/ok {:total (.totalMemory runtime)
+                       :free (.freeMemory runtime)
+                       :max (.maxMemory runtime)})))
 
       (c-api/GET "/oppijaindex" []
         :summary "Järjestelmän tiedot: Oppijaindex."
         :header-params [caller-id :- s/Str]
         :return (restful/response virkailija-schema/SystemInfoOppijaindex)
-        (restful/rest-ok
+        (restful/ok
           {:unindexedOppijat
            (oi/get-oppijat-without-index-count)
            :unindexedOpiskeluoikeudet
@@ -59,7 +57,7 @@
         :summary "Järjestelmän tiedot: Hoksit."
         :header-params [caller-id :- s/Str]
         :return (restful/response virkailija-schema/SystemInfoHoksit)
-        (restful/rest-ok {:amount (:count (oi/get-amount-of-hoks))})))
+        (restful/ok {:amount (:count (oi/get-amount-of-hoks))})))
 
     (c-api/POST "/index" []
       :summary "Indeksoi oppijat ja opiskeluoikeudet"
@@ -95,7 +93,7 @@
           Huom: Opiskeluoikeudet taulun oppija-oid päivittyy on update cascade
           säännön kautta."
       :header-params [caller-id :- s/Str]
-      :query-params [oid :- s/Str]
+      :query-params [oid :- oid-schema/OppijaOID]
       (oi/handle-onrmodified oid)
       ; TODO refaktoroi onr-käsittelyä auditlokitusystävällisemmäksi (OY-4523)
       (response/no-content))
@@ -103,12 +101,12 @@
     (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
       :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
       :header-params [caller-id :- s/Str]
-      :path-params [opiskeluoikeus-oid :- s/Str]
+      :path-params [opiskeluoikeus-oid :- oid-schema/OpiskeluoikeusOID]
       :return (restful/response {:id s/Int})
       (let [hoks (first (db-hoks/select-hoksit-by-opiskeluoikeus-oid
                           opiskeluoikeus-oid))]
         (if hoks
-          (restful/rest-ok {:id (:id hoks)})
+          (restful/ok {:id (:id hoks)})
           (do
             (log/warn "No HOKS found with given opiskeluoikeus "
                       opiskeluoikeus-oid)
@@ -147,11 +145,11 @@
       :summary "Palauttaa opiskeluoikeuksien määrän poistamisen varmistusta
       varten"
       :header-params [caller-id :- s/Str]
-      :path-params [koulutustoimija-oid :- s/Str]
+      :path-params [koulutustoimija-oid :- oid-schema/OrganisaatioOID]
       :return (restful/response s/Int)
       (if-let [info (db-opiskeluoikeus/select-opiskeluoikeus-delete-confirm-info
                       koulutustoimija-oid)]
-        (restful/rest-ok info)
+        (restful/ok info)
         (response/not-found {:error "No opiskeluoikeus found
                                      with given koulutustoimija-id"})))
 
@@ -164,8 +162,8 @@
       (let [hoks (db-hoks/select-hoks-by-id
                    hoks-id)]
         (if hoks
-          (restful/rest-ok {:opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-                            :oppija-oid (:oppija-oid hoks)})
+          (restful/ok {:opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+                       :oppija-oid         (:oppija-oid hoks)})
           (do
             (log/warn "No HOKS found with given hoks-id" hoks-id)
             (response/not-found
@@ -178,7 +176,7 @@
       :path-params [hoks-id :- s/Int]
       :return (restful/response virkailija-schema/DeleteConfirmInfo)
       (if-let [info (db-hoks/select-hoks-delete-confirm-info hoks-id)]
-        (restful/rest-ok info)
+        (restful/ok info)
         (response/not-found {:error "No HOKS or opiskeluoikeus found
                                      with given hoks-id"})))
 
@@ -187,10 +185,9 @@
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
       :return (restful/response {})
-      (let [hoks (h/get-hoks-by-id hoks-id)]
+      (let [hoks (hoks/get-by-id hoks-id)]
         (if (pos? (first (db-hoks/delete-hoks-by-hoks-id hoks-id)))
-          (assoc (restful/rest-ok {})
-                 :audit-data {:old hoks})
+          (assoc (restful/ok {}) :audit-data {:old hoks})
           (response/not-found {:error "No HOKS found with given hoks-id"}))))
 
     (c-api/PATCH "/hoks/:hoks-id/undo-shallow-delete" request
@@ -200,7 +197,7 @@
       :path-params [hoks-id :- s/Int]
       :return (restful/response {})
       (if (pos? (first (db-hoks/undo-soft-delete hoks-id)))
-        (assoc (restful/rest-ok {})
+        (assoc (restful/ok {})
                :audit-data {:old {:id hoks-id}
                             :new {:id hoks-id :deleted_at "*REMOVED*"}})
         (response/not-found {:error "No HOKS found with given hoks-id"})))
@@ -209,7 +206,7 @@
       :summary "Lähettää uuden aloituskyselyherätteen herätepalveluun"
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
-      (if-let [hoks (h/get-hoks-with-hankittavat-koulutuksen-osat! hoks-id)]
+      (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
         (if (op/send-if-needed! :aloituskysely hoks)
           (response/no-content)
           (response/bad-request
@@ -222,7 +219,7 @@
       :summary "Lähettää uuden päättökyselyherätteen herätepalveluun"
       :header-params [caller-id :- s/Str]
       :path-params [hoks-id :- s/Int]
-      (if-let [hoks (h/get-hoks-with-hankittavat-koulutuksen-osat! hoks-id)]
+      (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
         (if (op/send-if-needed! :paattokysely hoks)
           (response/no-content)
           (response/bad-request
@@ -240,7 +237,7 @@
       :return {:count s/Int}
       (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
             count  (op/send-every-needed! :aloituskysely hoksit)]
-        (restful/rest-ok {:count count})))
+        (restful/ok {:count count})))
 
     (c-api/POST "/hoks/resend-paattoherate" request
       :summary "Lähettää uudet päättökyselyherätteet herätepalveluun"
@@ -250,4 +247,4 @@
       :return {:count s/Int}
       (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
             count  (op/send-every-needed! :paattokysely hoksit)]
-        (restful/rest-ok {:count count})))))
+        (restful/ok {:count count})))))
