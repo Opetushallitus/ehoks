@@ -204,3 +204,11 @@
         (catch Exception exc
           (handle-audit-logging! request {:error exc})
           (throw exc))))))
+
+(defn with-logging
+  "Wraps compojure-api exception handler with a function that will do
+  audit logging before executing the wrapped handler."
+  [handler]
+  (fn [^Exception e data request]
+    (handle-audit-logging! request (or (:response data) {:error true}))
+    (handler e data request)))
