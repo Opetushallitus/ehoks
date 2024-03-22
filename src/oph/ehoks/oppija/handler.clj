@@ -18,7 +18,7 @@
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppija.share-handler :as share-handler]
             [oph.ehoks.oppija.oppija-external :as oppija-external]
@@ -56,7 +56,7 @@
         (c-api/undocumented lokalisointi-handler/routes)
 
         (route-middleware
-          [wrap-audit-logger]
+          [audit/wrap-logger]
 
           (c-api/undocumented auth-handler/routes)
 

@@ -14,7 +14,7 @@
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus
                                           wrap-user-details]]
             [oph.ehoks.oppijaindex :as oppijaindex]
@@ -316,7 +316,7 @@
                     caller-id :- s/Str]
 
     (route-middleware
-      [wrap-user-details m/wrap-require-service-user wrap-audit-logger]
+      [wrap-user-details m/wrap-require-service-user audit/wrap-logger]
 
       (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
