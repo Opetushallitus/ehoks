@@ -181,7 +181,7 @@
               json/write-str
               log!)))))
 
-(defn wrap-audit-logger
+(defn wrap-logger
   "Create wrapper function to add audit logging to handler"
   [handler]
   (fn

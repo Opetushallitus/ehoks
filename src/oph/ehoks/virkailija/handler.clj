@@ -22,7 +22,7 @@
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus]]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
@@ -352,7 +352,7 @@
         herate-handler/routes
 
         (route-middleware
-          [wrap-audit-logger]
+          [audit/wrap-logger]
 
           validation-handler/routes
 
