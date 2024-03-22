@@ -5,7 +5,7 @@
             [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.middleware :as m]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.opiskelijapalaute :as op]
             [oph.ehoks.oppijaindex :as oi]
@@ -24,7 +24,7 @@
 
     (route-middleware
       [wrap-user-details m/wrap-require-service-user
-       wrap-audit-logger m/wrap-require-oph-privileges]
+       audit/wrap-logger m/wrap-require-oph-privileges]
 
       (c-api/GET "/tyoelamajaksot" []
         :summary "Päättyneet työelämäjaksot"
