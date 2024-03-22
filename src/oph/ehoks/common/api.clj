@@ -4,9 +4,10 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.organisaatio :as organisaatio]
-            [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.logging.access :refer [wrap-access-logger]]
+            [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :as middleware]
+            [oph.ehoks.oppijaindex :as oi]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]
             [ring.util.http-response :as response])
@@ -41,6 +42,12 @@
       (fn [^ExceptionInfo e _ _] (resp {custom-key (ex-message e)}))
       (fn [^ExceptionInfo e _ _] (resp {:error (ex-message e)})))))
 
+(defn with-logging
+  "Combines `compojure.api.exception/with-logging` and `audit/with-logging`."
+  ([handler]           (audit/with-logging (c-ex/with-logging handler)))
+  ([handler log-level] (audit/with-logging
+                         (c-ex/with-logging handler log-level))))
+
 ;; `bad-request` is currently the most commonly used response we want to return.
 ;; Opiskeluoikeus, oppija, and organisation information are prerequisites for
 ;; many request handlers (e.g., HOKS should always have an existing oppija and
@@ -48,18 +55,18 @@
 ;; link to any existing entity, it's a bad request. Logging level in these cases
 ;; should be `:warn`.
 (def bad-request-handler
-  (c-ex/with-logging (custom-ex-handler response/bad-request) :warn))
+  (with-logging (custom-ex-handler response/bad-request) :warn))
 
 (def handlers
   "Map of custom exception handlers"
-  {::c-ex/request-parsing                (c-ex/with-logging
+  {::c-ex/request-parsing                (with-logging
                                            c-ex/request-parsing-handler :info)
-   ::c-ex/request-validation             (c-ex/with-logging
+   ::c-ex/request-validation             (with-logging
                                            dissoc-schema-validation-handler!
                                            :info)
    ; Do log response body validation errors, but don't give the user internal
    ; server errors in response.
-   ::c-ex/response-validation            (c-ex/with-logging
+   ::c-ex/response-validation            (with-logging
                                            c-ex/http-response-handler :error)
 
    ::organisaatio/organisation-not-found bad-request-handler
@@ -69,11 +76,11 @@
    ::onr/oppija-not-found                bad-request-handler
    ::oi/opiskeluoikeus-not-found         bad-request-handler
    :shared-link-validation-error         bad-request-handler
-   :shared-link-expired                  (c-ex/with-logging
+   :shared-link-expired                  (with-logging
                                            (custom-ex-handler response/gone
                                                               :message)
                                            :warn)
-   :shared-link-inactive                 (c-ex/with-logging
+   :shared-link-inactive                 (with-logging
                                            (custom-ex-handler response/locked
                                                               :message)
                                            :warn)
