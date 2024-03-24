@@ -147,10 +147,9 @@
       "oppija-oid" "1.2.246.562.24.12312312319"}}]
    "type" "log"
    "version" 1
-   "target"
-   {"hoksId" nil
-    "oppijaOid" "1.2.246.562.24.12312312319"
-    "opiskeluoikeusOid" nil}})
+   "target" {"hoksId" 1
+             "oppijaOid" "1.2.246.562.24.12312312319"
+             "opiskeluoikeusOid" "1.2.246.562.15.10000000009"}})
 
 (defn- expected-log-entry-on-ahato-creation
   [logseq]
@@ -208,8 +207,9 @@
           "koodi-versio" 1}]}]}}]
    "type" "log"
    "version" 1
-   "target"
-   {"hoksId" "1" "oppijaOid" nil "opiskeluoikeusOid" nil}})
+   "target" {"hoksId" 1
+             "oppijaOid" "1.2.246.562.24.12312312319"
+             "opiskeluoikeusOid" "1.2.246.562.15.10000000009"}})
 
 (defn- expected-log-entry-on-ahato-update
   [logseq]
@@ -272,8 +272,9 @@
      "newValue" "1.2.246.562.10.54453555556"}],
    "type" "log",
    "version" 1,
-   "target"
-   {"hoksId" "1", "oppijaOid" nil, "opiskeluoikeusOid" nil}})
+   "target" {"hoksId" 1
+             "oppijaOid" "1.2.246.562.24.12312312319"
+             "opiskeluoikeusOid" "1.2.246.562.15.10000000009"}})
 
 (defn- expected-log-entry-on-ahato-read
   [logseq]
@@ -290,5 +291,6 @@
    "changes" []
    "type" "log"
    "version" 1
-   "target"
-   {"hoksId" "1" "oppijaOid" nil "opiskeluoikeusOid" nil}})
+   "target" {"hoksId" 1
+             "oppijaOid" "1.2.246.562.24.12312312319"
+             "opiskeluoikeusOid" "1.2.246.562.15.10000000009"}})
