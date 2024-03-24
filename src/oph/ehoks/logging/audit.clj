@@ -1,11 +1,12 @@
 (ns oph.ehoks.logging.audit
-  (:require [clojure.tools.logging :as log]
-            [clojure.string :as string]
-            [clj-http.client :refer [client-error? server-error?]]
+  (:require [clj-http.client :refer [client-error? server-error?]]
             [clj-time.local :as l]
             [clojure.data.json :as json]
             [clojure.set :refer [union]]
+            [clojure.string :as string]
+            [clojure.tools.logging :as log]
             [environ.core :refer [env]]
+            [medley.core :refer [assoc-some filter-vals map-keys]]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.logging.access :refer [get-session]])
   (:import (java.time ZoneOffset)
@@ -91,14 +92,32 @@
    "hostname"         (System/getProperty "HOSTNAME" "")
    "serviceName"     (or (:name env) "both")})
 
+(defn- keyword->camel-case-str
+  [k]
+  (let [words            (string/split (name k) #"-")
+        rest-capitalized (map string/capitalize (rest words))]
+    (string/join (cons (first words) rest-capitalized))))
+
 (defn- target-info
   "Collects relevant target info (HOKS being read / modified plus
   oppija and opiskeluois OIDs) from `request` for auditing purposes."
-  [request]
-  {"hoksId"            (get-in request [:route-params :hoks-id])
-   "oppijaOid"         (or (get-in request [:params :oppija-oid])
-                           (get-in request [:route-params :oppija-oid]))
-   "opiskeluoikeusOid" (get-in request [:route-params :opiskeluoikeus-oid])})
+  [request response]
+  (let [from-request
+        (assoc-some
+          nil
+          :hoks-id            (or (get-in request [:hoks :id])
+                                  (get-in request [:route-params :hoks-id]))
+          :oppija-oid         (or (get-in request [:hoks :oppija-oid])
+                                  (get-in request [:params :oppija-oid])
+                                  (get-in request [:route-params :oppija-oid]))
+          :opiskeluoikeus-oid (or (get-in request [:hoks :opiskeluoikeus-oid])
+                                  (get-in request [:route-params
+                                                   :opiskeluoikeus-oid])))]
+    (->> (get-in response [:audit-data :target])
+         (filter-vals some?)
+         not-empty
+         (merge from-request)
+         (map-keys keyword->camel-case-str))))
 
 (defn- get-user-oid
   "Get OID of user from request."
@@ -159,7 +178,7 @@
       (log! (-> (common-data)
                 (assoc "type"      "log"
                        "user"      (user-info request)
-                       "target"    (target-info request)
+                       "target"    (target-info request response)
                        "operation" operation
                        "changes"   (changes old-data new-data))
                 make-json-serializable
