@@ -8,12 +8,13 @@
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.external.cache :as c]
             [oph.ehoks.hoks :as hoks]
+            [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.opiskelijapalaute :as op]
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.restful :as restful]
+            [oph.ehoks.schema.oid :as oid-schema]
             [oph.ehoks.virkailija.middleware :as m]
             [oph.ehoks.virkailija.schema :as virkailija-schema]
-            [oph.ehoks.schema.oid :as oid-schema]
             [ring.util.http-response :as response]
             [schema.core :as s])
   (:import (java.time LocalDate)))
@@ -187,7 +188,7 @@
       :return (restful/response {})
       (let [hoks (hoks/get-by-id hoks-id)]
         (if (pos? (first (db-hoks/delete-hoks-by-hoks-id hoks-id)))
-          (assoc (restful/ok {}) :audit-data {:old hoks})
+          (assoc (restful/ok {}) ::audit/changes {:old hoks})
           (response/not-found {:error "No HOKS found with given hoks-id"}))))
 
     (c-api/PATCH "/hoks/:hoks-id/undo-shallow-delete" request
@@ -198,8 +199,8 @@
       :return (restful/response {})
       (if (pos? (first (db-hoks/undo-soft-delete hoks-id)))
         (assoc (restful/ok {})
-               :audit-data {:old {:id hoks-id}
-                            :new {:id hoks-id :deleted_at "*REMOVED*"}})
+               ::audit/changes {:old {:id hoks-id}
+                                :new {:id hoks-id :deleted_at "*REMOVED*"}})
         (response/not-found {:error "No HOKS found with given hoks-id"})))
 
     (c-api/POST "/hoks/:hoks-id/resend-aloitusherate" request
