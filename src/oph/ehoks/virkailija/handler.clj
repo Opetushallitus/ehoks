@@ -99,7 +99,7 @@
         {:error
          (str "User has unsufficient privileges")}))))
 
-(defn- post-oppija!
+(defn- post-hoks!
   "Add new HOKS for oppija"
   [hoks request]
   (oi/add-hoks-dependents-in-index! hoks)
@@ -109,7 +109,7 @@
                     (hoks/check-and-save!))]
     (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
         (restful/ok :id (:id hoks-db))
-        (assoc :audit-data {:new hoks}))))
+        (assoc ::audit/changes {:new hoks}))))
 
 (defn- get-hoks-perustiedot
   "Get basic information from HOKS"
@@ -178,8 +178,8 @@
     (hoks/check-for-update! old-hoks hoks)
     (let [new-hoks (db-handler (:id (:hoks request))
                                (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
-      (assoc (response/no-content) :audit-data {:old old-hoks
-                                                :new new-hoks}))))
+      (assoc (response/no-content)
+             ::audit/changes {:old old-hoks :new new-hoks}))))
 
 (defn- update-kyselylinkki-status!
   "Takes a `linkki-info` map, fetches the latest kyselylinkki status from Arvo
@@ -225,7 +225,7 @@
       (arvo/delete-kyselytunnus tunnus)
       (pc/delete-kyselylinkki-by-tunnus tunnus)
       (sqs/send-delete-tunnus-message (:kyselylinkki (first linkit)))
-      (assoc (response/ok) :audit-data {:old {:tunnus tunnus}}))
+      (assoc (response/ok) ::audit/changes {:old {:tunnus tunnus}}))
     (catch ExceptionInfo e
       (if (and (= 404 (:status (ex-data e)))
                (.contains ^String (:body (ex-data e))
@@ -329,11 +329,10 @@
       :else (do (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
                 (when (nil? opiskeluoikeus)
                   (db-hoks/delete-opiskeluoikeus-by-oid opiskeluoikeus-oid))
-                (assoc (response/ok {:success hoks-id})
-                       :audit-data {:old hoks
-                                    :new (assoc hoks
-                                                :deleted_at
-                                                "*ADDED*")})))))
+                (assoc
+                  (response/ok {:success hoks-id})
+                  ::audit/changes {:old hoks
+                                   :new (assoc hoks :deleted_at "*ADDED*")})))))
 
 (def routes
   "Virkailija handler routes"
@@ -519,7 +518,7 @@
                                     "HOKSLuonti-virkailija" :post-virkailija
                                     "HOKS-dokumentin luonti")]
                       :return (restful/response schema/POSTResponse :id s/Int)
-                      (post-oppija! hoks request))
+                      (post-hoks! hoks request))
 
                     (route-middleware
                       [m/wrap-virkailija-oppija-access]

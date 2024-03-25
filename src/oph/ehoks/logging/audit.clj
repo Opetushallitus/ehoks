@@ -8,6 +8,7 @@
             [environ.core :refer [env]]
             [medley.core :refer [assoc-some filter-vals map-keys]]
             [oph.ehoks.config :refer [config]]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.logging.access :refer [get-session]])
   (:import (java.time ZoneOffset)
            (java.util Date)))
@@ -113,7 +114,7 @@
           :opiskeluoikeus-oid (or (get-in request [:hoks :opiskeluoikeus-oid])
                                   (get-in request [:route-params
                                                    :opiskeluoikeus-oid])))]
-    (->> (get-in response [:audit-data :target])
+    (->> (::target response)
          (filter-vals some?)
          not-empty
          (merge from-request)
@@ -173,8 +174,8 @@
                             (client-error? response))
                       "failure"
                       (method->crud request-method))
-          new-data (get-in response [:audit-data :new])
-          old-data (get-in response [:audit-data :old])]
+          new-data (get-in response [::changes :new])
+          old-data (get-in response [::changes :old])]
       (log! (-> (common-data)
                 (assoc "type"      "log"
                        "user"      (user-info request)
@@ -208,7 +209,7 @@
       (try
         (handler request
                  (fn [response] (handle-audit-logging! request response)
-                   (respond (dissoc response :audit-data)))
+                   (respond (dissoc response ::changes ::target)))
                  (fn [exc]
                    (handle-audit-logging! request {:error exc})
                    (raise exc)))
@@ -219,7 +220,7 @@
       (try
         (let [response (handler request)]
           (handle-audit-logging! request response)
-          (dissoc response :audit-data))
+          (dissoc response ::changes ::target))
         (catch Exception exc
           (handle-audit-logging! request {:error exc})
           (throw exc))))))
@@ -231,3 +232,12 @@
   (fn [^Exception e data request]
     (handle-audit-logging! request (or (:response data) {:error true}))
     (handler e data request)))
+
+(defn hoks-target-data
+  "Extract target data (`hoks-id`, `oppija-oid`, `opiskeluoikeus-oid`) from HOKS
+  or if `hoks` is an `int`, fetch HOKS from DB and then extract the data."
+  [hoks]
+  (let [hoks (if (int? hoks) (db-hoks/select-hoks-by-id hoks) hoks)]
+    {:hoks-id            (:id hoks)
+     :oppija-oid         (:oppija-oid hoks)
+     :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)}))
