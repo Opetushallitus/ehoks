@@ -173,7 +173,8 @@
                             (server-error? response)
                             (client-error? response))
                       "failure"
-                      (method->crud request-method))
+                      (or (::operation response)
+                          (method->crud request-method)))
           new-data (get-in response [::changes :new])
           old-data (get-in response [::changes :old])]
       (log! (-> (common-data)
