@@ -328,15 +328,17 @@
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
         :path-params [opiskeluoikeus-oid :- oid-schema/OpiskeluoikeusOID]
         :return (rest/response hoks-schema/HOKS)
-        (let [hoks (first (db-hoks/select-hoksit-by-opiskeluoikeus-oid
-                            opiskeluoikeus-oid))]
-          (if hoks
+        (assoc-in
+          (if-let [hoks (first (db-hoks/select-hoksit-by-opiskeluoikeus-oid
+                                 opiskeluoikeus-oid))]
             (do (m/check-hoks-access! hoks request)
-                (rest/ok hoks))
+                (assoc (rest/ok hoks)
+                       ::audit/target (audit/hoks-target-data hoks)))
             (do (log/warn "No HOKS found with given opiskeluoikeus "
                           opiskeluoikeus-oid)
                 (response/not-found
-                  {:error "No HOKS found with given opiskeluoikeus"})))))
+                  {:error "No HOKS found with given opiskeluoikeus"})))
+          [::audit/target :opiskeluoikeus-oid] opiskeluoikeus-oid))
 
       (c-api/GET "/paged" request
         :summary "Palauttaa halutun määrän annetusta id:stä seuraavia
@@ -374,9 +376,12 @@
           (when (not-empty failed-ids)
             (log/info "Failed ids for paged call:" failed-ids
                       "params" {:from-id from-id :amount amount}))
-          (rest/ok {:last-id (or last-id from-id)
-                    :failed-ids (sort failed-ids)
-                    :result result-after-validation})))
+          (assoc (rest/ok {:last-id (or last-id from-id)
+                           :failed-ids (sort failed-ids)
+                           :result result-after-validation})
+                 ::audit/target {:from-id from-id
+                                 :amount  amount
+                                 :updated-after updated-after})))
 
       (route-middleware
         [m/wrap-require-oph-privileges]
@@ -385,24 +390,27 @@
           :summary "Palauttaa osaamisen hankkimistavan ID:llä"
           :path-params [oht-id :- s/Int]
           :return (rest/response hoks-schema/OsaamisenHankkimistapa)
-          (let [oht (ha/get-osaamisen-hankkimistapa-by-id oht-id)]
-            (if oht
+          (assoc
+            (if-let [oht (ha/get-osaamisen-hankkimistapa-by-id oht-id)]
               (rest/ok oht)
               (do
                 (log/warn "No osaamisen hankkimistapa found with ID: " oht-id)
                 (response/not-found
-                  {:error "No osaamisen hankkimistapa found with given ID"})))))
+                  {:error "No osaamisen hankkimistapa found with given ID"})))
+            ::audit/target {:oht-id oht-id}))
 
         (c-api/PATCH "/kyselylinkki" request
           :summary "Lisää lähetystietoja kyselylinkille"
           :body [data hoks-schema/kyselylinkki-lahetys]
-          (if-let [old-data (select-kyselylinkki (:kyselylinkki data))]
-            (do (kyselylinkki/update! data)
-                (assoc (response/no-content)
-                       ::audit/changes
-                       {:old old-data
-                        :new (select-kyselylinkki (:kyselylinkki data))}))
-            (response/not-found {:error "No kyselylinkki found"}))))
+          (assoc
+            (if-let [old-data (select-kyselylinkki (:kyselylinkki data))]
+              (do (kyselylinkki/update! data)
+                  (assoc (response/no-content)
+                         ::audit/changes
+                         {:old old-data
+                          :new (select-kyselylinkki (:kyselylinkki data))}))
+              (response/not-found {:error "No kyselylinkki found"}))
+            ::audit/target {:kyselylinkki (:kyselylinkki data)})))
 
       (c-api/POST "/" [:as request]
         :middleware [wrap-opiskeluoikeus]
