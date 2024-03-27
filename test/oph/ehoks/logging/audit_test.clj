@@ -135,6 +135,7 @@
     "ipAddress" "127.0.0.1"
     "session" "ST-testitiketti"
     "userAgent" "no user agent"}
+   "status" "succeeded"
    "applicationType" "backend"
    "operation" "create"
    "serviceName" "both"
@@ -160,6 +161,7 @@
     "ipAddress" "127.0.0.1"
     "session" "ST-testitiketti"
     "userAgent" "no user agent"}
+   "status" "succeeded"
    "applicationType" "backend"
    "operation" "create"
    "serviceName" "both"
@@ -220,6 +222,7 @@
     "ipAddress" "127.0.0.1",
     "session" "ST-testitiketti",
     "userAgent" "no user agent"},
+   "status" "succeeded"
    "applicationType" "backend",
    "operation" "update",
    "serviceName" "both",
@@ -285,6 +288,7 @@
     "ipAddress" "127.0.0.1"
     "session" "ST-testitiketti"
     "userAgent" "no user agent"}
+   "status" "succeeded"
    "applicationType" "backend"
    "operation" "read"
    "serviceName" "both"
