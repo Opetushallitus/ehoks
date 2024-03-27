@@ -169,18 +169,20 @@
   [request response]
   (when enabled?
     (let [request-method (:request-method request)
-          operation (if (or (some? (:error response))
-                            (server-error? response)
-                            (client-error? response))
-                      "failure"
-                      (or (::operation response)
-                          (method->crud request-method)))
+          status (if (or (some? (:error response))
+                         (server-error? response)
+                         (client-error? response))
+                   "failed"
+                   "succeeded")
+          operation (or (::operation response)
+                        (method->crud request-method))
           new-data (get-in response [::changes :new])
           old-data (get-in response [::changes :old])]
       (log! (-> (common-data)
                 (assoc "type"      "log"
                        "user"      (user-info request)
                        "target"    (target-info request response)
+                       "status"    status
                        "operation" operation
                        "changes"   (changes old-data new-data))
                 make-json-serializable
