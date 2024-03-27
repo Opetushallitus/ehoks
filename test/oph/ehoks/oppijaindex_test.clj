@@ -1,12 +1,12 @@
 (ns oph.ehoks.oppijaindex-test
-  (:require [oph.ehoks.oppijaindex :as sut]
-            [clojure.test :as t]
-            [oph.ehoks.utils :as utils]
+  (:require [clojure.test :as t]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
-            [oph.ehoks.heratepalvelu.heratepalvelu :as hp])
+            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
+            [oph.ehoks.oppijaindex :as sut]
+            [oph.ehoks.utils :as utils])
   (:import (clojure.lang ExceptionInfo)
            (java.time LocalDate)))
 
@@ -317,21 +317,39 @@
              {:oid "1.2.246.562.24.12111111119" :nimi "Test 2"}))))
 
 (t/deftest get-opiskeluoikeus-by-oid!
+  (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111110" :nimi "Test 1"})
+  (db-opiskeluoikeus/insert-opiskeluoikeus!
+    {:oid        "1.2.246.562.15.22222222220"
+     :oppija_oid "1.2.246.562.24.11111111110"})
+  (db-opiskeluoikeus/insert-opiskeluoikeus!
+    {:oid        "1.2.246.562.15.23222222228"
+     :oppija_oid "1.2.246.562.24.11111111110"})
   (t/testing "Get opiskeluoikeus by oid"
-    (db-oppija/insert-oppija!
-      {:oid "1.2.246.562.24.11111111110" :nimi "Test 1"})
-    (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oid "1.2.246.562.15.22222222220"
-       :oppija_oid "1.2.246.562.24.11111111110"})
-    (db-opiskeluoikeus/insert-opiskeluoikeus!
-      {:oid "1.2.246.562.15.23222222228"
-       :oppija_oid "1.2.246.562.24.11111111110"})
     (t/is (= (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.22222222220")
-             {:oid "1.2.246.562.15.22222222220"
+             {:oid        "1.2.246.562.15.22222222220"
               :oppija-oid "1.2.246.562.24.11111111110"}))
     (t/is (= (sut/get-opiskeluoikeus-by-oid! "1.2.246.562.15.23222222228")
-             {:oid "1.2.246.562.15.23222222228"
-              :oppija-oid "1.2.246.562.24.11111111110"}))))
+             {:oid        "1.2.246.562.15.23222222228"
+              :oppija-oid "1.2.246.562.24.11111111110"})))
+  (t/testing "Returns nil if no opiskeluoikeus is found in index"
+    (t/is (nil? (sut/get-opiskeluoikeus-by-oid!
+                  "1.2.246.562.15.22222222221")))))
+
+(t/deftest get-existing-opiskeluoikeus-by-oid!
+  (db-oppija/insert-oppija! {:oid "1.2.246.562.24.11111111110" :nimi "Test 1"})
+  (db-opiskeluoikeus/insert-opiskeluoikeus!
+    {:oid        "1.2.246.562.15.22222222220"
+     :oppija_oid "1.2.246.562.24.11111111110"})
+  (t/testing "Get existing opiskeluoikeus by oid"
+    (t/is (= (sut/get-existing-opiskeluoikeus-by-oid!
+               "1.2.246.562.15.22222222220")
+             {:oid        "1.2.246.562.15.22222222220"
+              :oppija-oid "1.2.246.562.24.11111111110"})))
+  (t/testing "Throws if opiskeluoikeus is not found in index"
+    (t/is (thrown-with-msg? ExceptionInfo
+                            #"`1.2.246.562.15.23222222228` not in index"
+                            (sut/get-existing-opiskeluoikeus-by-oid!
+                              "1.2.246.562.15.23222222228")))))
 
 (t/deftest add-oppija-opiskeluoikeus
   (t/testing "Add oppija and opiskeluoikeus"
@@ -695,7 +713,7 @@
                                       :koodistoUri "koskiopiskeluoikeudentila"
                                       :koodistoVersio 1}}]})}))]
 
-        (t/is (sut/opiskeluoikeus-still-active? "1.2.246.562.15.55003456344"))))
+        (t/is (opiskeluoikeus/still-active? "1.2.246.562.15.55003456344"))))
 
     (t/testing "Finished opiskeluoikeus returns false"
       (utils/with-ticket-auth
@@ -717,8 +735,7 @@
                                       :koodistoVersio 1}}]})}))]
 
         (t/is
-          (not
-            (sut/opiskeluoikeus-still-active? "1.2.246.562.15.55003456345")))))
+          (not (opiskeluoikeus/still-active? "1.2.246.562.15.55003456345")))))
 
     (t/testing "Active opiskeluoikeus matching hoks is filtered from multiple"
       (utils/with-ticket-auth
@@ -734,8 +751,7 @@
                       :oid "1.2.246.562.15.55003456346"
                       :tila tila-data)}))]
 
-        (t/is
-          (sut/opiskeluoikeus-still-active? "1.2.246.562.15.55003456346"))))
+        (t/is (opiskeluoikeus/still-active? "1.2.246.562.15.55003456346"))))
 
     (t/testing "Active opiskeluoikeus is parsed from hoks and opiskeluoikeudet"
       (utils/with-ticket-auth
@@ -752,7 +768,7 @@
                       :tila tila-data)}))]
 
         (t/is
-          (sut/opiskeluoikeus-still-active?
+          (opiskeluoikeus/still-active?
             {:id 1234
              :opiskeluoikeus-oid "1.2.246.562.15.55003456346"}
             (list
@@ -762,9 +778,9 @@
                 :tila tila-data)))))))
 
   (t/testing "Without feature flag enabled always returns true"
-    (t/is (sut/opiskeluoikeus-still-active? "not an opiskeluoikeus-oid"))
-    (t/is (sut/opiskeluoikeus-still-active? "not a hoks"
-                                            "not a list of opiskeluoikeus"))))
+    (t/is (opiskeluoikeus/still-active? "not an opiskeluoikeus-oid"))
+    (t/is (opiskeluoikeus/still-active? "not a hoks"
+                                        "not a list of opiskeluoikeus"))))
 
 (t/deftest delete-opiskeluoikeus-from-index
   (t/testing "Delete opiskeluoikeus from index"

@@ -1,19 +1,21 @@
 (ns oph.ehoks.hoks.hoks-handler-test
-  (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [ring.mock.request :as mock]
-            [oph.ehoks.utils :as utils :refer [eq]]
-            [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.external.http-client :as client]
+  (:require [clj-time.core :as t]
+            [clojure.test :refer [deftest is testing use-fixtures]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.queries :as queries]
-            [oph.ehoks.hoks.hoks :as h]
-            [oph.ehoks.hoks.hankittavat :refer
-             [save-hankittava-ammat-tutkinnon-osa!]]
+            [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.hoks :as hoks]
+            [oph.ehoks.hoks.hankittavat
+             :refer [save-hankittava-ammat-tutkinnon-osa!]]
+            [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.hoks.test-data :as test-data]
-            [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]
-            [clj-time.core :as t]))
+            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.utils :as utils :refer [eq]]
+            [ring.mock.request :as mock]))
 
 (use-fixtures :once utils/migrate-database)
 (use-fixtures :each utils/empty-database-after-test)
@@ -117,9 +119,7 @@
   (testing "Creating TUVA hoks does not trigger heratepalvelu"
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message
-                    (fn [_] (swap! sqs-call-counter inc))
-                    oph.ehoks.external.koski/get-opiskeluoikeus-info
-                    (fn [_] {:tyyppi {:koodiarvo "tuva"}})]
+                    (fn [_] (swap! sqs-call-counter inc))]
         (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.30000000007"
                          :oppija-oid "1.2.246.562.24.12312312319"
                          :ensikertainen-hyvaksyminen "2018-12-15"
@@ -147,58 +147,33 @@
 
 (deftest create-new-hoks-with-valid-osa-aikaisuus
   (testing "Create new hoks with valid osa-aikaisuustieto"
-    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
-                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
-                           :tila {:opiskeluoikeusjaksot
-                                  [{:alku "2023-07-03"
-                                    :tila {:koodiarvo "lasna"
-                                           :nimi {:fi "Läsnä"}
-                                           :koodistoUri
-                                           "koskiopiskeluoikeudentila"
-                                           :koodistoVersio 1}}]}})]
-      (let [hoks-data test-data/new-hoks-with-valid-osa-aikaisuus
-            response
-            (hoks-utils/mock-st-post
-              (hoks-utils/create-app nil) base-url hoks-data)
-            body (utils/parse-body (:body response))]
-        (is (= (:status response) 200))))))
+    (let [hoks-data test-data/new-hoks-with-valid-osa-aikaisuus
+          response  (hoks-utils/mock-st-post
+                      (hoks-utils/create-app nil) base-url hoks-data)
+          body      (utils/parse-body (:body response))]
+      (is (= (:status response) 200)))))
 
 (deftest create-new-hoks-without-osa-aikaisuus
   (testing "Create new hoks without osa-aikaisuustieto"
-    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
-                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})]
-      (let [hoks-data test-data/new-hoks-without-osa-aikaisuus
-            response
-            (hoks-utils/mock-st-post
-              (hoks-utils/create-app nil) base-url hoks-data)
-            body (utils/parse-body (:body response))]
-        (is (= (:status response) 400))
-        (is
-          (eq (:errors body)
+    (let [hoks-data test-data/new-hoks-without-osa-aikaisuus
+          response  (hoks-utils/mock-st-post
+                      (hoks-utils/create-app nil) base-url hoks-data)
+          body      (utils/parse-body (:body response))]
+      (is (= (:status response) 400))
+      (is (eq (:errors body)
               {:hankittavat-ammat-tutkinnon-osat
                [{:osaamisen-hankkimistavat
                  [(str "(not (\"Lisää osa-aikaisuustieto, joka on välillä "
-                       "1-100.\" a-clojure.lang.PersistentArrayMap))")]}]}))))))
+                       "1-100.\" a-clojure.lang.PersistentArrayMap))")]}]})))))
 
 (deftest create-new-telma-hoks-without-osa-aikaisuus
   (testing "Create new hoks without osa-aikaisuustieto"
-    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
-                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
-                           :tila {:opiskeluoikeusjaksot
-                                  [{:alku "2023-07-03"
-                                    :tila {:koodiarvo "lasna"
-                                           :nimi {:fi "Läsnä"}
-                                           :koodistoUri
-                                           "koskiopiskeluoikeudentila"
-                                           :koodistoVersio 1}}]}
-                           :suoritukset [{:tyyppi {:koodiarvo "telma"}}]})]
-      (let [hoks-data test-data/new-hoks-without-osa-aikaisuus
-            response
-            (hoks-utils/mock-st-post
-              (hoks-utils/create-app nil) base-url hoks-data)
-            body (utils/parse-body (:body response))]
-        (is (= (:status response) 200))
-        (is (= (get-in body [:data :uri]) (str base-url "/1")))))))
+    (let [hoks-data test-data/new-hoks-without-osa-aikaisuus-telma
+          response  (hoks-utils/mock-st-post
+                      (hoks-utils/create-app nil) base-url hoks-data)
+          body      (utils/parse-body (:body response))]
+      (is (= (:status response) 200))
+      (is (= (get-in body [:data :uri]) (str base-url "/1"))))))
 
 (deftest osaamisen-hankkimistavat-isnt-mandatory
   (testing "Osaamisen hankkimistavat should be optional field in ehoks"
@@ -308,7 +283,7 @@
 (deftest hoks-part-put-fails-whole-operation-is-aborted
   (testing (str "PUT of HOKS should be inside transaction so that when"
                 "one part of operation fails, everything is aborted")
-    (with-redefs [oph.ehoks.hoks.hoks/replace-ahyto! mock-replace-ahyto]
+    (with-redefs [hoks/replace-ahyto! mock-replace-ahyto]
       (let [app (hoks-utils/create-app nil)
             post-response (hoks-utils/create-mock-post-request
                             "" test-data/hoks-data app)
@@ -337,36 +312,27 @@
 
 (deftest hoks-put-adds-non-existing-part
   (testing "If HOKS part doesn't currently exist, PUT creates it"
-    (with-redefs [oph.ehoks.external.koski/get-opiskeluoikeus-info
-                  (fn [_] {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
-                           :tila {:opiskeluoikeusjaksot
-                                  [{:alku "2023-07-03"
-                                    :tila {:koodiarvo "lasna"
-                                           :nimi {:fi "Läsnä"}
-                                           :koodistoUri
-                                           "koskiopiskeluoikeudentila"
-                                           :koodistoVersio 1}}]}})]
-      (let [app (hoks-utils/create-app nil)
-            post-response
-            (hoks-utils/create-mock-post-request
-              ""
-              (dissoc test-data/hoks-data :opiskeluvalmiuksia-tukevat-opinnot)
-              app)
-            put-response (hoks-utils/create-mock-hoks-put-request
-                           1
-                           (-> test-data/hoks-data
-                               (assoc :id 1)
-                               (dissoc :opiskeluoikeus-oid :oppija-oid))
-                           app)
-            get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-            get-response-data (:data (utils/parse-body (:body get-response)))]
-        (is (= (:status post-response) 200))
-        (is (= (:status put-response) 204))
-        (is (= (:status get-response) 200))
-        (eq (utils/dissoc-module-ids
-              (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data))
-            (utils/dissoc-module-ids
-              (:opiskeluvalmiuksia-tukevat-opinnot get-response-data)))))))
+    (let [app (hoks-utils/create-app nil)
+          post-response
+          (hoks-utils/create-mock-post-request
+            ""
+            (dissoc test-data/hoks-data :opiskeluvalmiuksia-tukevat-opinnot)
+            app)
+          put-response (hoks-utils/create-mock-hoks-put-request
+                         1
+                         (-> test-data/hoks-data
+                             (assoc :id 1)
+                             (dissoc :opiskeluoikeus-oid :oppija-oid))
+                         app)
+          get-response (hoks-utils/create-mock-hoks-get-request 1 app)
+          get-response-data (:data (utils/parse-body (:body get-response)))]
+      (is (= (:status post-response) 200))
+      (is (= (:status put-response) 204))
+      (is (= (:status get-response) 200))
+      (eq (utils/dissoc-module-ids
+            (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data))
+          (utils/dissoc-module-ids
+            (:opiskeluvalmiuksia-tukevat-opinnot get-response-data))))))
 
 (deftest hoks-put-updates-oht-using-yksiloiva-tunniste
   (testing (str "If matching oht yksiloiva-tunniste is found, update oht."
@@ -631,7 +597,7 @@
       "1.2.246.562.10.00000000001")
 
     (is (= "https://palaute.fi/abc123"
-           (:kyselylinkki (first (h/get-kyselylinkit-by-oppija-oid
+           (:kyselylinkki (first (kyselylinkki/get-by-oppija-oid!
                                    "1.2.246.562.24.12312312319")))))))
 
 (deftest put-kyselylinkki-lahetysdata
@@ -662,7 +628,7 @@
       (mock/json-body req1 data-post)
       "1.2.246.562.10.00000000001")
 
-    (is (nil? (:sahkoposti (first (h/get-kyselylinkit-by-oppija-oid
+    (is (nil? (:sahkoposti (first (kyselylinkki/get-by-oppija-oid!
                                     "1.2.246.562.24.12312312319")))))
 
     (utils/with-service-ticket
@@ -671,10 +637,10 @@
       "1.2.246.562.10.00000000001")
 
     (is (= "testi@testi.fi"
-           (:sahkoposti (first (h/get-kyselylinkit-by-oppija-oid
+           (:sahkoposti (first (kyselylinkki/get-by-oppija-oid!
                                  "1.2.246.562.24.12312312319")))))
     (is (= "viestintapalvelussa"
-           (:lahetystila (first (h/get-kyselylinkit-by-oppija-oid
+           (:lahetystila (first (kyselylinkki/get-by-oppija-oid!
                                   "1.2.246.562.24.12312312319")))))))
 
 (deftest get-paged-vipunen-data

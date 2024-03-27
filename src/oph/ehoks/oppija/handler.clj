@@ -9,7 +9,7 @@
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
             [oph.ehoks.oppija.schema :as oppija-schema]
-            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]
             [oph.ehoks.middleware :refer [wrap-authorize]]
@@ -18,7 +18,7 @@
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.external.handler :as external-handler]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppija.share-handler :as share-handler]
             [oph.ehoks.oppija.oppija-external :as oppija-external]
@@ -56,7 +56,7 @@
         (c-api/undocumented lokalisointi-handler/routes)
 
         (route-middleware
-          [wrap-audit-logger]
+          [audit/wrap-logger]
 
           (c-api/undocumented auth-handler/routes)
 
@@ -84,40 +84,32 @@
                     :summary "Oppijan perustiedot"
                     :return (rest/response common-schema/Oppija)
                     (if-let [oppija (oppijaindex/get-oppija-by-oid oid)]
-                      (rest/rest-ok oppija)
+                      (rest/ok oppija)
                       (response/not-found)))
 
                   (c-api/GET "/opiskeluoikeudet" [:as request]
                     :summary "Oppijan opiskeluoikeudet"
                     :return (rest/response [s/Any])
-                    (rest/rest-ok
-                      (koski/get-oppija-opiskeluoikeudet oid)))
+                    (rest/ok (koski/get-oppija-opiskeluoikeudet oid)))
 
                   (c-api/GET "/hoks" [:as request]
                     :summary "Oppijan HOKSit kokonaisuudessaan"
                     :return (rest/response [s/Any])
-                    (let [hokses (h/get-hokses-by-oppija oid)]
+                    (let [hokses (hoks/get-by-oppija oid)]
                       (if (empty? hokses)
                         (response/not-found {:message "No HOKSes found"})
-                        (rest/rest-ok (map #(dissoc % :id) hokses)))))
+                        (rest/ok (map #(dissoc % :id) hokses)))))
 
                   (c-api/GET "/kyselylinkit" []
                     :summary "Palauttaa oppijan aktiiviset kyselylinkit"
                     :return (rest/response [s/Any])
-                    (try
-                      (let [kyselylinkit
-                            (map
-                              :kyselylinkki
-                              (filter
-                                #(and (not (:vastattu %1))
-                                      (not (.isAfter
-                                             (LocalDate/now)
-                                             (:voimassa-loppupvm %1))))
-                                (heratepalvelu/get-oppija-kyselylinkit oid)))]
-                        (rest/rest-ok kyselylinkit))
-                      (catch Exception e
-                        (log/error e)
-                        (throw e)))))))
+                    (->> (heratepalvelu/get-oppija-kyselylinkit oid)
+                         (filter #(and (not (:vastattu %))
+                                       (not (.isAfter
+                                              (LocalDate/now)
+                                              (:voimassa-loppupvm %)))))
+                         (map :kyselylinkki)
+                         rest/ok)))))
 
             (c-api/context "/jaot" []
               :header-params [caller-id :- s/Str]

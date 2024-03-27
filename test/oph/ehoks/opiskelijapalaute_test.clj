@@ -1,46 +1,46 @@
 (ns oph.ehoks.opiskelijapalaute-test
   (:require [clojure.test :refer [are deftest is testing]]
             [clojure.tools.logging.test :refer [logged? with-log]]
+            [medley.core :refer [assoc-some]]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.hoks.test-data :as test-data]
-            [oph.ehoks.opiskelijapalaute :as op]
-            [oph.ehoks.utils :refer [assoc-if-some]]))
+            [oph.ehoks.opiskelijapalaute :as op]))
 
 (def hoksit
   (for [tarve  [true false nil]
         pvm    ["2023-09-01" nil]
         sposti ["testi.testaaja@testidomain.testi" nil]
         puh    ["0123456789" nil]]
-    (assoc-if-some {}
-                   :osaamisen-hankkimisen-tarve tarve
-                   :osaamisen-saavuttamisen-pvm pvm
-                   :sahkoposti sposti
-                   :puhelinnumero puh)))
+    (assoc-some {}
+                :osaamisen-hankkimisen-tarve tarve
+                :osaamisen-saavuttamisen-pvm pvm
+                :sahkoposti sposti
+                :puhelinnumero puh)))
 
 (def tuva-hoksit
   (for [tarve  [true false nil]
         pvm    ["2023-09-01" nil]
         sposti ["testi.testaaja@testidomain.testi" nil]
         puh    ["0123456789" nil]]
-    (assoc-if-some {}
-                   :osaamisen-hankkimisen-tarve tarve
-                   :osaamisen-saavuttamisen-pvm pvm
-                   :sahkoposti sposti
-                   :puhelinnumero puh
-                   :hankittavat-koulutuksen-osat ["koulutuksen-osa"])))
+    (assoc-some {}
+                :osaamisen-hankkimisen-tarve tarve
+                :osaamisen-saavuttamisen-pvm pvm
+                :sahkoposti sposti
+                :puhelinnumero puh
+                :hankittavat-koulutuksen-osat ["koulutuksen-osa"])))
 
 (def tuva-rinnakkaiset-ammat-hoksit
   (for [tarve  [true false nil]
         pvm    ["2023-09-01" nil]
         sposti ["testi.testaaja@testidomain.testi" nil]
         puh    ["0123456789" nil]]
-    (assoc-if-some {}
-                   :osaamisen-hankkimisen-tarve tarve
-                   :osaamisen-saavuttamisen-pvm pvm
-                   :sahkoposti sposti
-                   :puhelinnumero puh
-                   :tuva-opiskeluoikeus-oid "1.2.246.562.15.88406700034")))
+    (assoc-some {}
+                :osaamisen-hankkimisen-tarve tarve
+                :osaamisen-saavuttamisen-pvm pvm
+                :sahkoposti sposti
+                :puhelinnumero puh
+                :tuva-opiskeluoikeus-oid "1.2.246.562.15.88406700034")))
 
 (deftest test-send?
   (testing "On HOKS creation or update"
@@ -167,7 +167,10 @@
     "1.2.246.562.15.20000000008" {:suoritukset
                                   [{:tyyppi {:koodiarvo "joku_muu"}}]
                                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}}
-    (throw (ex-info "Opiskeluoikeus not found" {:status 404}))))
+    (throw (ex-info "Opiskeluoikeus not found"
+                    {:status 404
+                     :body (str "[{\"key\": \"notFound.opiskeluoikeutta"
+                                "EiLöydyTaiEiOikeuksia\"}]")}))))
 
 (defn expected-msg
   [kysely hoks]
@@ -208,4 +211,4 @@
               (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.30000000007"))
             (is (logged? 'oph.ehoks.opiskelijapalaute
                          :warn
-                         #"Couldn't get opiskeluoikeus"))))))))
+                         #"not found in Koski"))))))))

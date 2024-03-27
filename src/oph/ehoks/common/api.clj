@@ -1,14 +1,17 @@
 (ns oph.ehoks.common.api
-  (:require [ring.util.http-response :as response]
-            [clojure.string :as cstr]
-            [clojure.tools.logging :as log]
-            [compojure.api.coercion.core :as cc]
-            [compojure.api.exception :as c-ex]
+  (:require [compojure.api.exception :as c-ex]
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
+            [oph.ehoks.external.organisaatio :as organisaatio]
+            [oph.ehoks.logging.access :refer [wrap-access-logger]]
+            [oph.ehoks.logging.audit :as audit]
+            [oph.ehoks.middleware :as middleware]
+            [oph.ehoks.oppijaindex :as oi]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]
-            [oph.ehoks.config :refer [config]]
-            [oph.ehoks.middleware :as middleware]
-            [oph.ehoks.logging.access :refer [wrap-access-logger]]))
+            [ring.util.http-response :as response])
+  (:import [clojure.lang ExceptionInfo]))
 
 (defn dissoc-schema-validation-handler!
   [e data req]
@@ -27,35 +30,64 @@
   [_ __ ___]
   (response/unauthorized {:reason "Unable to check access rights"}))
 
-(defn log-exception
-  "Logittaa virheen."
-  [^Exception ex data]
-  (log/errorf
-    "Unhandled exception\n%s\n%s\n%s"
-    (str ex)
-    (str data)
-    (cstr/join "\n" (.getStackTrace ex))))
+(defn custom-ex-handler
+  "Returns an exception handler that will return with a response `resp`.
+  By default, response body will be a map with a key `:error` and the value is
+  the error message extracted from the exception object. A `custom-key` can be
+  provided if `:error` isn't okay for any reason."
+  ([resp]
+    (custom-ex-handler resp nil))
+  ([resp custom-key]
+    (if custom-key
+      (fn [^ExceptionInfo e _ _] (resp {custom-key (ex-message e)}))
+      (fn [^ExceptionInfo e _ _] (resp {:error (ex-message e)})))))
 
-(defn exception-handler
-  "Käsittelee virhetilanteita."
-  [^Exception ex & other]
-  (let [exception-data (if (map? (first other)) (first other) (ex-data ex))]
-    (log-exception ex exception-data))
-  (response/internal-server-error {:type "unknown-exception"}))
+(defn with-logging
+  "Combines `compojure.api.exception/with-logging` and `audit/with-logging`."
+  ([handler]           (audit/with-logging (c-ex/with-logging handler)))
+  ([handler log-level] (audit/with-logging
+                         (c-ex/with-logging handler log-level))))
+
+;; `bad-request` is currently the most commonly used response we want to return.
+;; Opiskeluoikeus, oppija, and organisation information are prerequisites for
+;; many request handlers (e.g., HOKS should always have an existing oppija and
+;; opiskeluoikeus linked to it) so if the user provides an OID which doesn't
+;; link to any existing entity, it's a bad request. Logging level in these cases
+;; should be `:warn`.
+(def bad-request-handler
+  (with-logging (custom-ex-handler response/bad-request) :warn))
 
 (def handlers
-  "Map of request handlers"
-  {::c-ex/request-parsing (c-ex/with-logging
-                            c-ex/request-parsing-handler :info)
-   ::c-ex/request-validation (c-ex/with-logging
-                               dissoc-schema-validation-handler! :info)
-   ; Lokitetaan response bodyn validoinnissa esiin nousseet virheet, mutta ei
-   ; välitetä virheitä käyttäjälle "500 Internal Server Error" -koodilla.
-   ::c-ex/response-validation (c-ex/with-logging
-                                c-ex/http-response-handler :error)
-   :not-found not-found-handler
-   :unauthorized unauthorized-handler
-   ::c-ex/default exception-handler})
+  "Map of custom exception handlers"
+  {::c-ex/request-parsing                (with-logging
+                                           c-ex/request-parsing-handler :info)
+   ::c-ex/request-validation             (with-logging
+                                           dissoc-schema-validation-handler!
+                                           :info)
+   ; Do log response body validation errors, but don't give the user internal
+   ; server errors in response.
+   ::c-ex/response-validation            (with-logging
+                                           c-ex/http-response-handler :error)
+
+   ::organisaatio/organisation-not-found bad-request-handler
+   :disallowed-update                    bad-request-handler
+   :opiskeluoikeus-already-exists        bad-request-handler
+   ::koski/opiskeluoikeus-not-found      bad-request-handler
+   ::onr/oppija-not-found                bad-request-handler
+   ::oi/opiskeluoikeus-not-found         bad-request-handler
+   :shared-link-validation-error         bad-request-handler
+   :shared-link-expired                  (with-logging
+                                           (custom-ex-handler response/gone
+                                                              :message)
+                                           :warn)
+   :shared-link-inactive                 (with-logging
+                                           (custom-ex-handler response/locked
+                                                              :message)
+                                           :warn)
+   :not-found                            not-found-handler
+   :unauthorized                         unauthorized-handler
+
+   ::c-ex/default                        c-ex/safe-handler})
 
 (defn create-app
   "Creates application with given routes and session store.

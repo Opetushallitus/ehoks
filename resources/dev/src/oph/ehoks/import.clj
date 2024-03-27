@@ -1,7 +1,7 @@
 (ns oph.ehoks.import
   (:require [clojure.data.json :as json]
             [clojure.java.io :as io]
-            [oph.ehoks.hoks.hoks :as h]
+            [oph.ehoks.hoks :as hoks]
             [clj-time.coerce :as coerce]
             [clj-time.format :as f])
   (:import java.time.LocalDate))
@@ -29,8 +29,8 @@
 (defn import-file! [path]
   (let [data (read-file path)]
     (if (map? data)
-      (h/save-hoks! data)
-      (map h/save-hoks! data))))
+      (hoks/save! data)
+      (map hoks/save! data))))
 
 (defn lein-import-file! [path]
   (printf "Importing file %s\n" path)

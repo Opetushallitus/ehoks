@@ -114,8 +114,7 @@
             (.endsWith
               url (str "/rest/organisaatio/v4/" organisaatio-oid))
             {:status 200
-             :body {:parentOidPath
-                    "|"}}
+             :body {:oid organisaatio-oid :parentOidPath "|"}}
             :else (unmatched-fn :get url options)))))
 
 (defmacro with-ticket-auth
@@ -178,6 +177,21 @@
                       :suoritukset
                       [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
                       :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
+              (.endsWith
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000017")
+              {:status 200
+               :body {:oid "1.2.246.562.15.10000000017"
+                      :tyyppi {:koodiarvo "ammatillinenkoulutus"}
+                      :tila {:opiskeluoikeusjaksot
+                             [{:alku "2023-07-03"
+                               :tila {:koodiarvo "lasna"
+                                      :nimi {:fi "Läsnä"}
+                                      :koodistoUri
+                                      "koskiopiskeluoikeudentila"
+                                      :koodistoVersio 1}}]}
+                      :oppilaitos {:oid (or oppilaitos-oid
+                                            "1.2.246.562.10.12944436166")}
+                      :suoritukset [{:tyyppi {:koodiarvo "telma"}}]}}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.20000000008")
               {:status 200
@@ -257,13 +271,13 @@
               (.endsWith
                 url "/rest/organisaatio/v4/1.2.246.562.10.47861388602")
               {:status 200
-               :body {:parentOidPath
-                      "|"}}
+               :body {:oid           "1.2.246.562.10.47861388602"
+                      :parentOidPath "|"}}
               (.endsWith
                 url "/rest/organisaatio/v4/1.2.246.562.10.12944436166")
               {:status 200
-               :body {:parentOidPath
-                      "|1.2.246.562.10.00000000001|"}}
+               :body {:oid           "1.2.246.562.10.12944436166"
+                      :parentOidPath "|1.2.246.562.10.00000000001|"}}
               (> (.indexOf url "oppijanumerorekisteri-service/henkilo") -1)
               (let [oid (last (.split url "/"))]
                 (if (= oid "1.2.246.562.24.40404040406")
@@ -347,14 +361,6 @@
       (swap! result predicate))
     @result))
 
-(defn mock-get-opiskeluoikeus-info
+(defn mock-get-opiskeluoikeus-info-raw
   [_]
   {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})
-
-(defn assoc-if-some
-  "Like `assoc`, but doesn't add key-value-pair to map if value is `nil`."
-  [m & kvs]
-  (->> (partition 2 kvs)
-       (filter (comp some? second))
-       (map vec)
-       (into m)))

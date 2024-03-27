@@ -1,21 +1,21 @@
 (ns oph.ehoks.virkailija.handler-test
-  (:require [oph.ehoks.virkailija.handler :as handler]
-            [oph.ehoks.virkailija.middleware :as m]
-            [oph.ehoks.external.koski :as k]
-            [oph.ehoks.common.api :as common-api]
-            [ring.mock.request :as mock]
+  (:require [clojure.string :as string]
             [clojure.test :as t]
             [clojure.tools.logging.test :as logtest]
-            [clojure.string :as s]
-            [oph.ehoks.utils :as utils]
-            [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.hoks.hoks :refer [insert-kyselylinkki!
-                                         update-kyselylinkki!]]
+            [oph.ehoks.common.api :as common-api]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
+            [oph.ehoks.external.http-client :as client]
+            [oph.ehoks.external.koski :as k]
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.hoks.hoks-test-utils :refer [virkailija-base-url]]
-            [oph.ehoks.virkailija.virkailija-test-utils :as v-utils])
+            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.session-store :refer [test-session-store]]
+            [oph.ehoks.user :as user]
+            [oph.ehoks.utils :as utils]
+            [oph.ehoks.virkailija.handler :as handler]
+            [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]
+            [ring.mock.request :as mock])
   (:import (java.time LocalDate LocalDateTime)))
 
 (t/use-fixtures :once utils/migrate-database)
@@ -74,7 +74,8 @@
            (.contains
              url "/rest/organisaatio/v4/")
            {:status 200
-            :body {:parentOidPath "|"}}
+            :body {:oid           (last (string/split url #"/"))
+                   :parentOidPath "|"}}
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000009")
            {:status 200
@@ -103,7 +104,7 @@
            (.contains
              url "/koski/api/opiskeluoikeus/")
            {:status 200
-            :body {:oid (last (s/split url #"/"))
+            :body {:oid (last (string/split url #"/"))
                    :oppilaitos {:oid "1.2.246.562.10.12000000203"}
                    :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}))
        (fn [^String url options]
@@ -469,7 +470,7 @@
                           :privileges #{}}]})]
         (t/is (= (:status response) 403))))))
 
-(t/deftest test-virkailija-has-access
+(t/deftest test-virkailija-has-read-access
   (t/testing "Virkailija has oppija access"
     (utils/with-db
       (client/with-mock-responses
@@ -478,7 +479,8 @@
              (.contains
                url "/rest/organisaatio/v4/")
              {:status 200
-              :body {:parentOidPath "|"}}))]
+              :body {:oid           (last (string/split url #"/"))
+                     :parentOidPath "|"}}))]
 
         (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                              :nimi "Testi 1"
@@ -487,20 +489,20 @@
                              :koulutustoimija-oid ""})
         (t/is
           (not
-            (m/virkailija-has-access?
+            (user/has-read-privileges-to-oppija?
               {:organisation-privileges
                [{:oid "1.2.246.562.10.12000000002"
                  :privileges #{:read}}]}
               "1.2.246.562.24.44000000008")))
         (t/is
           (not
-            (m/virkailija-has-access?
+            (user/has-read-privileges-to-oppija?
               {:organisation-privileges
                [{:oid "1.2.246.562.10.12000000005"
                  :privileges #{}}]}
               "1.2.246.562.24.44000000008")))
         (t/is
-          (m/virkailija-has-access?
+          (user/has-read-privileges-to-oppija?
             {:organisation-privileges
              [{:oid "1.2.246.562.10.12000000005"
                :privileges #{:read}}]}
@@ -773,7 +775,8 @@
             (t/is (= (:status post-response) 400)
                   (str "Log entries:" (logtest/the-log)))
             (t/is (= (utils/parse-body (:body post-response))
-                     {:error "Opiskeluoikeus not found in Koski"}))))))))
+                     {:error (str "Opiskeluoikeus `1.2.246.562.15.76000000018` "
+                                  "not found in Koski")}))))))))
 
 (defn mocked-get-oo-tuva [oid]
   {:oid oid
@@ -836,20 +839,20 @@
                           "a-clojure.lang.PersistentArrayMap))"))
                   (str body))))))))
 
-(defn mocked-find-student-by-oid [oid]
+(defn mock-get-oppija-raw! [_]
   (throw (ex-info "Opiskelija fetch failed" {:status 404})))
 
 (t/deftest test-hoks-create-when-oppijanumerorekisteri-fails
   (t/testing "Error thrown from oppijanumerorekisteri is propagated to handler"
     (utils/with-db
-      (with-redefs [oph.ehoks.external.oppijanumerorekisteri/find-student-by-oid
-                    mocked-find-student-by-oid]
+      (with-redefs [onr/get-oppija-raw! mock-get-oppija-raw!]
         (let [post-response
               (post-new-hoks "1.2.246.562.15.76000000018"
                              "1.2.246.562.10.12000000013")]
           (t/is (= (:status post-response) 400))
           (t/is (= (utils/parse-body (:body post-response))
-                   {:error "Oppija not found in Oppijanumerorekisteri"})))))))
+                   {:error (str "Oppija `1.2.246.562.24.44000000008` not found "
+                                "in Oppijanumerorekisteri")})))))))
 
 (t/deftest test-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
@@ -963,7 +966,8 @@
               virkailija-for-test)]
         (t/is (= (:status patch-response) 400))
         (t/is (= (utils/parse-body (:body patch-response))
-                 {:error "Opiskeluoikeus update not allowed!"}))))))
+                 {:error
+                  "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"}))))))
 
 (t/deftest prevent-patch-hoks-with-updated-oppija-oid
   (t/testing "PATCH hoks virkailija"
@@ -986,7 +990,7 @@
               virkailija-for-test)]
         (t/is (= (:status patch-response) 400))
         (t/is (= (utils/parse-body (:body patch-response))
-                 {:error "Oppija-oid update not allowed!"}))))))
+                 {:error "Updating `oppija-oid` in HOKS is not allowed!"}))))))
 
 (def hoks-data
   {:opiskeluoikeus-oid "1.2.246.562.15.76000000018"
@@ -1063,13 +1067,13 @@
                                         0
                                         :tyopaikalla-jarjestettava-koulutus
                                         :tyopaikan-nimi]
-                                       s/trim)
+                                       string/trim)
                             (update-in [0
                                         :osaamisen-hankkimistavat
                                         1
                                         :tyopaikalla-jarjestettava-koulutus
                                         :tyopaikan-nimi]
-                                       s/trim)))))
+                                       string/trim)))))
           (t/is (= (:status put-response-just-dates) 204))
           (t/is (logtest/logged? "audit" :info #"overwrite.*2018-12-17")
                 (str "log entries:" (logtest/the-log)))
@@ -1136,7 +1140,8 @@
             put-body (utils/parse-body (:body put-response))]
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
-                 {:error "Opiskeluoikeus update not allowed!"}))))))
+                 {:error
+                  "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"}))))))
 
 (t/deftest test-put-prevent-updating-oppija-oid
   (t/testing "PUT hoks virkailija"
@@ -1177,7 +1182,7 @@
             put-body (utils/parse-body (:body put-response))]
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
-                 {:error "Oppija-oid update not allowed!"}))))))
+                 {:error "Updating `oppija-oid` in HOKS is not allowed!"}))))))
 
 (t/deftest test-get-amount
   (t/testing "Test getting the amount of hokses"
@@ -1237,14 +1242,14 @@
              :osaamisen-hankkimisen-tarve false
              :ensikertainen-hyvaksyminen
              (java.time.LocalDate/of 2018 12 15)})
-          (insert-kyselylinkki!
+          (kyselylinkki/insert!
             {:kyselylinkki "https://kysely.linkki/ABC123"
              :hoks-id 1
              :tyyppi "aloittaneet"
              :oppija-oid "1.2.246.562.24.44000000008"
              :alkupvm alkupvm
              :lahetystila "ei_lahetetty"})
-          (insert-kyselylinkki!
+          (kyselylinkki/insert!
             {:kyselylinkki "https://kysely.linkki/DEF456"
              :hoks-id 1
              :tyyppi "tutkinnonsuorittaneet"
@@ -1268,11 +1273,10 @@
                 body (utils/parse-body (:body resp))]
             (t/is (= 200 (:status resp)))
             (t/is (empty? (:data body))))
-          (update-kyselylinkki!
-            {:kyselylinkki "https://kysely.linkki/ABC123"
-             :lahetyspvm alkupvm
-             :sahkoposti "testi@testi.fi"
-             :lahetystila "viestintapalvelussa"})
+          (kyselylinkki/update! {:kyselylinkki "https://kysely.linkki/ABC123"
+                                 :lahetyspvm alkupvm
+                                 :sahkoposti "testi@testi.fi"
+                                 :lahetystila "viestintapalvelussa"})
           (let [resp (with-test-virkailija
                        (mock/request
                          :get

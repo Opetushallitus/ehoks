@@ -3,10 +3,12 @@
             [clj-time.local :as l]
             [clojure.data.json :as json]
             [clojure.set :refer [union]]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
+            [medley.core :refer [assoc-some filter-vals map-keys]]
             [oph.ehoks.config :refer [config]]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.logging.access :refer [get-session]])
   (:import (java.time ZoneOffset)
            (java.util Date)))
@@ -47,7 +49,7 @@
   (if (= old-value new-value)
     []
     [(cond->
-      {"path" (str/join "." path)}
+      {"path" (string/join "." path)}
        (some? new-value) (assoc "newValue" new-value)
        (some? old-value) (assoc "oldValue" old-value))]))
 
@@ -91,14 +93,32 @@
    "hostname"         (System/getProperty "HOSTNAME" "")
    "serviceName"     (or (:name env) "both")})
 
+(defn- keyword->camel-case-str
+  [k]
+  (let [words            (string/split (name k) #"-")
+        rest-capitalized (map string/capitalize (rest words))]
+    (string/join (cons (first words) rest-capitalized))))
+
 (defn- target-info
   "Collects relevant target info (HOKS being read / modified plus
   oppija and opiskeluois OIDs) from `request` for auditing purposes."
-  [request]
-  {"hoksId"            (get-in request [:route-params :hoks-id])
-   "oppijaOid"         (or (get-in request [:params :oppija-oid])
-                           (get-in request [:route-params :oppija-oid]))
-   "opiskeluoikeusOid" (get-in request [:route-params :opiskeluoikeus-oid])})
+  [request response]
+  (let [from-request
+        (assoc-some
+          nil
+          :hoks-id            (or (get-in request [:hoks :id])
+                                  (get-in request [:route-params :hoks-id]))
+          :oppija-oid         (or (get-in request [:hoks :oppija-oid])
+                                  (get-in request [:params :oppija-oid])
+                                  (get-in request [:route-params :oppija-oid]))
+          :opiskeluoikeus-oid (or (get-in request [:hoks :opiskeluoikeus-oid])
+                                  (get-in request [:route-params
+                                                   :opiskeluoikeus-oid])))]
+    (->> (::target response)
+         (filter-vals some?)
+         not-empty
+         (merge from-request)
+         (map-keys keyword->camel-case-str))))
 
 (defn- get-user-oid
   "Get OID of user from request."
@@ -114,7 +134,7 @@
   "Get IP address of client from request for auditing purposes."
   [request]
   (if-let [ips (get-in request [:headers "x-forwarded-for"])]
-    (-> ips (str/split #",") first)
+    (-> ips (string/split #",") first)
     (:remote-addr request)))
 
 (defn- user-info
@@ -153,13 +173,14 @@
                             (server-error? response)
                             (client-error? response))
                       "failure"
-                      (method->crud request-method))
-          new-data (get-in response [:audit-data :new])
-          old-data (get-in response [:audit-data :old])]
+                      (or (::operation response)
+                          (method->crud request-method)))
+          new-data (get-in response [::changes :new])
+          old-data (get-in response [::changes :old])]
       (log! (-> (common-data)
                 (assoc "type"      "log"
                        "user"      (user-info request)
-                       "target"    (target-info request)
+                       "target"    (target-info request response)
                        "operation" operation
                        "changes"   (changes old-data new-data))
                 make-json-serializable
@@ -181,7 +202,7 @@
               json/write-str
               log!)))))
 
-(defn wrap-audit-logger
+(defn wrap-logger
   "Create wrapper function to add audit logging to handler"
   [handler]
   (fn
@@ -189,7 +210,7 @@
       (try
         (handler request
                  (fn [response] (handle-audit-logging! request response)
-                   (respond (dissoc response :audit-data)))
+                   (respond (dissoc response ::changes ::target)))
                  (fn [exc]
                    (handle-audit-logging! request {:error exc})
                    (raise exc)))
@@ -200,7 +221,24 @@
       (try
         (let [response (handler request)]
           (handle-audit-logging! request response)
-          (dissoc response :audit-data))
+          (dissoc response ::changes ::target))
         (catch Exception exc
           (handle-audit-logging! request {:error exc})
           (throw exc))))))
+
+(defn with-logging
+  "Wraps compojure-api exception handler with a function that will do
+  audit logging before executing the wrapped handler."
+  [handler]
+  (fn [^Exception e data request]
+    (handle-audit-logging! request (or (:response data) {:error true}))
+    (handler e data request)))
+
+(defn hoks-target-data
+  "Extract target data (`hoks-id`, `oppija-oid`, `opiskeluoikeus-oid`) from HOKS
+  or if `hoks` is an `int`, fetch HOKS from DB and then extract the data."
+  [hoks]
+  (let [hoks (if (int? hoks) (db-hoks/select-hoks-by-id hoks) hoks)]
+    {:hoks-id            (:id hoks)
+     :oppija-oid         (:oppija-oid hoks)
+     :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)}))

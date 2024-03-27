@@ -459,12 +459,13 @@
   ([hoks db-conn]
     (jdbc/with-db-transaction
       [conn db-conn]
-      (let [hoks-by-oo
+      (let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+            hoks-by-oo
             (first
               (jdbc/query
                 conn
                 [queries/select-hoksit-by-opiskeluoikeus-oid-deleted-at-included
-                 (:opiskeluoikeus-oid hoks)]))]
+                 opiskeluoikeus-oid]))]
         (when hoks-by-oo
           (let [error-info (if (some? (:deleted_at hoks-by-oo))
                              (str "Archived HOKS with given opiskeluoikeus "
@@ -472,7 +473,9 @@
                                   "information.")
                              (str "HOKS with the same opiskeluoikeus-oid "
                                   "already exists"))]
-            (throw (ex-info error-info {:error :duplicate})))))
+            (throw (ex-info error-info
+                            {:type               :opiskeluoikeus-already-exists
+                             :opiskeluoikeus-oid opiskeluoikeus-oid})))))
       (let [eid (generate-unique-eid)]
         (first
           (jdbc/insert! conn :hoksit (hoks-to-sql (assoc hoks :eid eid))))))))
@@ -713,8 +716,7 @@
   (let [hoks (select-hoks-by-id hoks-id)
         oppija (op/select-oppija-by-oid (:oppija-oid hoks))
         oo (oo/select-opiskeluoikeus-by-oid (:opiskeluoikeus-oid hoks))
-        organisaatio (if-let [oppilaitos-oid (:oppilaitos-oid oo)]
-                       (org/get-organisaatio-info oppilaitos-oid))]
+        organisaatio (org/get-existing-organisaatio! (:oppilaitos-oid oo))]
     {:nimi (:nimi oppija)
      :hoksId (:id hoks)
      :oppilaitosNimi (get-in organisaatio [:nimi] {:fi "" :sv ""})
@@ -807,13 +809,12 @@
   "Suodattaa hoksin opiskeluoikeuden päättymispäivämäärän perusteella. Yli
    kolme kuukautta sitten päättyneet opiskeluoikeudet = true."
   [hoks]
-  (if-let [opiskeluoikeus
-           (k/get-opiskeluoikeus-info (:opiskeluoikeus-oid hoks))]
+  (let [opiskeluoikeus (k/get-existing-opiskeluoikeus!
+                         (:opiskeluoikeus-oid hoks))]
     (if-let [paattymispaiva (:päättymispäivä opiskeluoikeus)]
       (.isBefore (LocalDate/parse paattymispaiva)
                  (.minusMonths (LocalDate/now) 3))
-      false)
-    false))
+      false)))
 
 (defn delete-opiskelijan-yhteystiedot!
   "Poistaa opiskelijan yhteystiedot yli kolme kuukautta sitten

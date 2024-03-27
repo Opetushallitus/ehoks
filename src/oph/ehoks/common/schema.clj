@@ -1,7 +1,7 @@
 (ns oph.ehoks.common.schema
   (:require [schema.core :as s]
             [schema.coerce :as coerce]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [compojure.api.coercion.core :as cc]
             [compojure.api.coercion.schema :as schema-coercion]))
 
@@ -77,7 +77,7 @@
   (when (= s/Str schema)
     (fn [value]
       (if (string? value)
-        (str/trim value)
+        (string/trim value)
         value))))
 
 ; https://github.com/metosin/compojure-api/wiki/Coercion#custom-schema-coercion
