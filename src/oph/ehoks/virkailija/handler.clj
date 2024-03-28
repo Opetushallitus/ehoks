@@ -320,7 +320,7 @@
 
 (defn- shallow-delete-hoks-handler!
   [request hoks-id data]
-  (let [hoks               (hoks/get-by-id hoks-id)
+  (let [hoks               (db-hoks/select-hoks-by-id hoks-id)
         opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
         oppilaitos-oid     (or (:oppilaitos-oid data)
                                (:oppilaitos-oid (oi/get-opiskeluoikeus-by-oid!
