@@ -114,9 +114,8 @@
                  (db-hoks/insert-amisherate-kasittelytilat!
                    (:id hoks) tuva-hoks conn)
                  (save-parts! hoks conn)))]
-    (future
-      (opiskelijapalaute/send-if-needed! :aloituskysely hoks)
-      (opiskelijapalaute/send-if-needed! :paattokysely hoks))
+    (opiskelijapalaute/send-if-needed! :aloituskysely hoks)
+    (opiskelijapalaute/send-if-needed! :paattokysely hoks)
     hoks))
 
 (def ^:private tuva-hoks-msg-template
@@ -149,8 +148,8 @@
                 (db-hoks/update-amisherate-kasittelytilat!
                   {:id (:id amisherate-kasittelytila)
                    :paattoherate_kasitelty false})
-                (opiskelijapalaute/send! :paattokysely updated-hoks))))
-        updated-hoks))))
+                (opiskelijapalaute/send! :paattokysely updated-hoks))))))
+    (db-hoks/select-hoks-by-id hoks-id)))
 
 (defn- merge-not-given-hoks-values
   "Varmistaa, että tietyt kentät ovat olemassa HOKSissa, vaikka niissä olisi
