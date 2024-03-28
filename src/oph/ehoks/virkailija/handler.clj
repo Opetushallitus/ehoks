@@ -22,7 +22,7 @@
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.logging.audit :refer [wrap-audit-logger]]
+            [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus]]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
@@ -66,24 +66,28 @@
 
     (let [user       (get-in request [:session :virkailija-user])
           oppilaitos (organisaatio/get-existing-organisaatio! oppilaitos-oid)]
-      (if-not (contains? (user/organisation-privileges oppilaitos user) :read)
-        (do (log/warnf "User %s privileges does not match oppilaitos %s"
-                       (:oidHenkilo user)
-                       oppilaitos-oid)
-            (response/forbidden {:error (str "User has insufficient privileges "
-                                             "for given organisation")}))
-        (let [search-params        {:desc desc
-                                    :item-count item-count
-                                    :order-by-column order-by-column
-                                    :offset (* page item-count)
-                                    :oppilaitos-oid oppilaitos-oid
-                                    :locale locale
-                                    :nimi nimi
-                                    :tutkinto tutkinto
-                                    :osaamisala osaamisala
-                                    :hoks-id hoks-id}
-              [oppijat total-count] (oi/search! search-params)]
-          (restful/ok oppijat :total-count total-count))))))
+      (assoc
+        (if-not (contains? (user/organisation-privileges oppilaitos user) :read)
+          (do (log/warnf "User %s privileges does not match oppilaitos %s"
+                         (:oidHenkilo user)
+                         oppilaitos-oid)
+              (response/forbidden
+                {:error (str "User has insufficient privileges for given "
+                             "organisation")}))
+          (let [search-params        {:desc desc
+                                      :item-count item-count
+                                      :order-by-column order-by-column
+                                      :offset (* page item-count)
+                                      :oppilaitos-oid oppilaitos-oid
+                                      :locale locale
+                                      :nimi nimi
+                                      :tutkinto tutkinto
+                                      :osaamisala osaamisala
+                                      :hoks-id hoks-id}
+                [oppijat total-count] (oi/search! search-params)]
+            (restful/ok oppijat :total-count total-count)))
+        ::audit/target {:oppilaitos-oid oppilaitos-oid
+                        :hoks-id hoks-id}))))
 
 (defn- check-virkailija-privileges
   "Check whether virkailija user has write privileges in HOKS"
@@ -99,7 +103,7 @@
         {:error
          (str "User has unsufficient privileges")}))))
 
-(defn- post-oppija!
+(defn- post-hoks!
   "Add new HOKS for oppija"
   [hoks request]
   (oi/add-hoks-dependents-in-index! hoks)
@@ -109,13 +113,15 @@
                     (hoks/check-and-save!))]
     (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
         (restful/ok :id (:id hoks-db))
-        (assoc :audit-data {:new hoks}))))
+        (assoc ::audit/changes {:new hoks}
+               ::audit/target  (audit/hoks-target-data hoks-db)))))
 
 (defn- get-hoks-perustiedot
   "Get basic information from HOKS"
   [oppija-oid]
   (if-let [hoks (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
-    (restful/ok hoks)
+    (assoc (restful/ok hoks)
+           ::audit/target (audit/hoks-target-data  hoks))
     (response/not-found {:message "HOKS not found"})))
 
 (defn- any-hoks-has-active-opiskeluoikeus?
@@ -159,7 +165,8 @@
                           request
                           [:session :virkailija-user])]
     (if (user/has-read-privileges-to-oppija? virkailija-user (:oppija-oid hoks))
-      (restful/ok (hoks/get-by-id hoks-id))
+      (assoc (restful/ok (hoks/get-by-id hoks-id))
+             ::audit/target (audit/hoks-target-data hoks))
       (do
         (log/warnf
           "User %s privileges don't match oppija %s"
@@ -167,19 +174,17 @@
                            :virkailija-user
                            :oidHenkilo])
           (get-in request [:params :oppija-oid]))
-        (response/forbidden
-          {:error
-           (str "User has insufficient privileges")})))))
+        (response/forbidden {:error "User has insufficient privileges"})))))
 
 (defn- change-hoks!
   "Change contents of HOKS with particular ID"
   [hoks request db-handler]
   (let [old-hoks (:hoks request)]
     (hoks/check-for-update! old-hoks hoks)
-    (let [hoks-db (db-handler (:id (:hoks request))
-                              (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
-      (assoc (response/no-content) :audit-data {:new hoks
-                                                :old old-hoks}))))
+    (let [new-hoks (db-handler (:id (:hoks request))
+                               (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
+      (assoc (response/no-content)
+             ::audit/changes {:old old-hoks :new new-hoks}))))
 
 (defn- update-kyselylinkki-status!
   "Takes a `linkki-info` map, fetches the latest kyselylinkki status from Arvo
@@ -202,20 +207,22 @@
 (defn- get-vastaajatunnus-info!
   "Get details of vastaajatunnus from database or Arvo"
   [tunnus]
-  (if-let [linkki-info (some-> (pc/select-kyselylinkit-by-tunnus tunnus)
-                               first
-                               not-empty
-                               (apply-when #(not (:vastattu %))
-                                           update-kyselylinkki-status!))]
-    (-> (koski/get-opiskeluoikeus! (:opiskeluoikeus-oid linkki-info))
-        :koulutustoimija
-        (select-keys [:oid :nimi])
-        (rename-keys {:oid  :koulutustoimijan-oid
-                      :nimi :koulutustoimijan-nimi})
-        (->> (merge linkki-info))
-        (dissoc :hoks-id)
-        restful/ok)
-    (response/not-found {:error "No survey link found with given `tunnus`"})))
+  (assoc
+    (if-let [linkki-info (some-> (pc/select-kyselylinkit-by-tunnus tunnus)
+                                 first
+                                 not-empty
+                                 (apply-when #(not (:vastattu %))
+                                             update-kyselylinkki-status!))]
+      (-> (koski/get-opiskeluoikeus! (:opiskeluoikeus-oid linkki-info))
+          :koulutustoimija
+          (select-keys [:oid :nimi])
+          (rename-keys {:oid  :koulutustoimijan-oid
+                        :nimi :koulutustoimijan-nimi})
+          (->> (merge linkki-info))
+          (dissoc :hoks-id)
+          restful/ok)
+      (response/not-found {:error "No survey link found with given `tunnus`"}))
+    ::audit/target {:tunnus tunnus}))
 
 (defn- delete-vastaajatunnus
   "Delete vastaajatunnus from Arvo, database, and Herätepalvelu"
@@ -225,7 +232,9 @@
       (arvo/delete-kyselytunnus tunnus)
       (pc/delete-kyselylinkki-by-tunnus tunnus)
       (sqs/send-delete-tunnus-message (:kyselylinkki (first linkit)))
-      (assoc (response/ok) :audit-data {:old {:tunnus tunnus}}))
+      (assoc (response/ok)
+             ::audit/changes {:old {:tunnus tunnus}}
+             ::audit/target  {:tunnus tunnus}))
     (catch ExceptionInfo e
       (if (and (= 404 (:status (ex-data e)))
                (.contains ^String (:body (ex-data e))
@@ -273,38 +282,45 @@
   ; as part of refactoring, but this obviously still needs to be fixed.
   (let [user       (get-in request [:session :virkailija-user])
         oppilaitos (organisaatio/get-organisaatio! oppilaitos-oid)]
-    (cond
-      (user/oph-super-user? user)
-      (restful/ok (pc/select-oht-by-tutkinto-between tutkinto start end))
+    (assoc
+      (cond
+        (user/oph-super-user? user)
+        (restful/ok (pc/select-oht-by-tutkinto-between tutkinto start end))
 
-      (nil? oppilaitos)
-      (response/bad-request {:error "`oppilaitos` missing from request."})
+        (nil? oppilaitos)
+        (response/bad-request {:error "`oppilaitos` missing from request."})
 
-      (contains? (user/organisation-privileges oppilaitos user) :read)
-      (-> (pc/get-oppilaitos-oids-cached-memoized! ;; 5min cache
-            tutkinto oppilaitos-oid start end)
-          (paginate page-size page-offset)
-          restful/ok)
+        (contains? (user/organisation-privileges oppilaitos user) :read)
+        (-> (pc/get-oppilaitos-oids-cached-memoized! ;; 5min cache
+              tutkinto oppilaitos-oid start end)
+            (paginate page-size page-offset)
+            restful/ok)
 
-      :else (response/forbidden
-              {:error "User privileges do not match organisation"}))))
+        :else (response/forbidden
+                {:error "User privileges do not match organisation"}))
+      ::audit/target {:tutkinto       tutkinto
+                      :oppilaitos-oid oppilaitos
+                      :start          start
+                      :end            end})))
 
 (defn- get-hoksit-with-missing-opiskeluoikeus-handler!
   "Handler for `GET /missing-oo-hoksit/:oppilaitosoid`"
   [request oppilaitos-oid page-size page-offset]
-  (if (contains? (user/organisation-privileges
-                   (organisaatio/get-existing-organisaatio! oppilaitos-oid)
-                   (get-in request [:session :virkailija-user]))
-                 :read)
-    (-> (db-hoks/select-hoksit-by-oo-oppilaitos-and-koski404 oppilaitos-oid)
-        (paginate page-size page-offset)
-        restful/ok)
-    (response/forbidden
-      {:error "User privileges does not match organisation"})))
+  (assoc
+    (if (contains? (user/organisation-privileges
+                     (organisaatio/get-existing-organisaatio! oppilaitos-oid)
+                     (get-in request [:session :virkailija-user]))
+                   :read)
+      (-> (db-hoks/select-hoksit-by-oo-oppilaitos-and-koski404 oppilaitos-oid)
+          (paginate page-size page-offset)
+          restful/ok)
+      (response/forbidden
+        {:error "User privileges does not match organisation"}))
+    ::audit/target {:oppilaitos-oid oppilaitos-oid}))
 
 (defn- shallow-delete-hoks-handler!
   [request hoks-id data]
-  (let [hoks               (hoks/get-by-id hoks-id)
+  (let [hoks               (db-hoks/select-hoks-by-id hoks-id)
         opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
         oppilaitos-oid     (or (:oppilaitos-oid data)
                                (:oppilaitos-oid (oi/get-opiskeluoikeus-by-oid!
@@ -329,11 +345,11 @@
       :else (do (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
                 (when (nil? opiskeluoikeus)
                   (db-hoks/delete-opiskeluoikeus-by-oid opiskeluoikeus-oid))
-                (assoc (response/ok {:success hoks-id})
-                       :audit-data {:old hoks
-                                    :new (assoc hoks
-                                                :deleted_at
-                                                "*ADDED*")})))))
+                (assoc
+                  (response/ok {:success hoks-id})
+                  ::audit/changes {:old hoks
+                                   :new (assoc hoks :deleted_at "*ADDED*")}
+                  ::audit/target  (audit/hoks-target-data hoks))))))
 
 (def routes
   "Virkailija handler routes"
@@ -352,7 +368,7 @@
         herate-handler/routes
 
         (route-middleware
-          [wrap-audit-logger]
+          [audit/wrap-logger]
 
           validation-handler/routes
 
@@ -519,7 +535,7 @@
                                     "HOKSLuonti-virkailija" :post-virkailija
                                     "HOKS-dokumentin luonti")]
                       :return (restful/response schema/POSTResponse :id s/Int)
-                      (post-oppija! hoks request))
+                      (post-hoks! hoks request))
 
                     (route-middleware
                       [m/wrap-virkailija-oppija-access]
@@ -534,17 +550,19 @@
                         :return (restful/response [hoks-schema/HOKS])
                         :summary "Oppijan hoksit (rajoitettu uusi versio)"
                         (let [user (get-in request [:session :virkailija-user])]
-                          (if (contains?
-                                (user/organisation-privileges
-                                  (organisaatio/get-existing-organisaatio!
-                                    oppilaitos-oid)
-                                  user)
-                                :read)
-                            (get-oppilaitoksen-oppijan-hoksit oppilaitos-oid
-                                                              oppija-oid)
-                            (response/forbidden
-                              {:error (str "User privileges does not "
-                                           "match organisation")}))))
+                          (assoc
+                            (if (contains?
+                                  (user/organisation-privileges
+                                    (organisaatio/get-existing-organisaatio!
+                                      oppilaitos-oid)
+                                    user)
+                                  :read)
+                              (get-oppilaitoksen-oppijan-hoksit oppilaitos-oid
+                                                                oppija-oid)
+                              (response/forbidden
+                                {:error (str "User privileges does not "
+                                             "match organisation")}))
+                            ::audit/target {:oppilaitos-oid oppilaitos-oid})))
 
                       (c-api/GET "/:hoks-id" request
                         :path-params [hoks-id :- s/Int]
@@ -578,7 +596,9 @@
                                :sahkoposti (:sahkoposti hoks)
                                :lahetyspvm (LocalDate/parse (str (t/today)))
                                :lahetystila "lahetetty"}))
-                          (restful/ok {:sahkoposti (:sahkoposti hoks)})))
+                          (assoc
+                            (restful/ok {:sahkoposti (:sahkoposti hoks)})
+                            ::audit/operation ::heratepalvelu/resend-palaute)))
 
                       (c-api/GET "/:hoks-id/opiskelijapalaute" request
                         :summary "Palauttaa tietoja oppijan aktiivisista
@@ -586,8 +606,7 @@
                         :path-params [hoks-id :- s/Int]
                         :return [s/Any]
                         (let [kyselylinkit
-                              (heratepalvelu/get-oppija-kyselylinkit
-                                oppija-oid)
+                              (heratepalvelu/get-oppija-kyselylinkit oppija-oid)
                               lahetysdata
                               (map
                                 #(dissoc %1 :kyselylinkki :vastattu)

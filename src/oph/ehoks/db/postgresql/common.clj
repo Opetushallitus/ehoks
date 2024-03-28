@@ -192,6 +192,13 @@
     [queries/select-oppilaitos-oids-by-koulutustoimija-oid oid]
     {:row-fn h/oppilaitos-oid-from-sql}))
 
+(defn select-kyselylinkki
+  "Hakee kyselylinkin tietokannasta linkin perusteella."
+  [linkki]
+  (db-ops/query
+    [queries/select-kyselylinkki linkki]
+    {:row-fn db-ops/from-sql}))
+
 (defn select-kyselylinkit-by-tunnus
   "Hakee kyselylinkit tietokannasta tunnuksen perusteella."
   [tunnus]
