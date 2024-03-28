@@ -306,7 +306,9 @@
 (defn- change-hoks!
   "Käsittelee HOKS-muutospyynnön."
   [hoks request db-handler]
-  (let [old-hoks (:hoks request)]
+  (let [old-hoks (if (= (:request-method request) :put)
+                   (hoks/get-values (:hoks request))
+                   (:hoks request))]
     (if (empty? old-hoks)
       (response/not-found {:error "HOKS not found with given HOKS ID"})
       (do (hoks/check-for-update! old-hoks hoks)
