@@ -179,7 +179,9 @@
 (defn- change-hoks!
   "Change contents of HOKS with particular ID"
   [hoks request db-handler]
-  (let [old-hoks (:hoks request)]
+  (let [old-hoks (if (= (:request-method request) :put)
+                   (hoks/get-values (:hoks request))
+                   (:hoks request))]
     (hoks/check-for-update! old-hoks hoks)
     (let [new-hoks (db-handler (:id (:hoks request))
                                (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
