@@ -123,15 +123,15 @@
   "HOKS `%s` is a TUVA-HOKS or rinnakkainen ammatillinen HOKS.")
 
 (defn update!
-  "Päivittää annetut arvot HOKSiin."
+  "Päivittää HOKSin ylätason arvoja."
   [hoks-id new-values]
-  (let [current-hoks (get-by-id hoks-id)
+  (let [current-hoks (db-hoks/select-hoks-by-id hoks-id)
         amisherate-kasittelytila
         (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id! hoks-id)]
     (jdbc/with-db-transaction
       [db-conn (db-ops/get-db-connection)]
       (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)
-      (let [updated-hoks (merge current-hoks new-values)]
+      (let [updated-hoks (db-hoks/select-hoks-by-id hoks-id)]
         (if (tuva-related? updated-hoks)
           (db-hoks/set-amisherate-kasittelytilat-to-true!
             amisherate-kasittelytila
