@@ -65,7 +65,7 @@
                        {:wrong "things"}))
           body (utils/parse-body (:body response))]
       (t/is (= 400 (:status response)))
-      (t/is (:schema body))))
+      (t/is (nil? (:schema body)))))
 
   (t/testing "Shared link end date cannot be in the past"
     (let [response (mock-authenticated

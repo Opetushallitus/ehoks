@@ -2,12 +2,20 @@
   (:require [ring.util.http-response :as response]
             [clojure.string :as cstr]
             [clojure.tools.logging :as log]
+            [compojure.api.coercion.core :as cc]
             [compojure.api.exception :as c-ex]
             [ring.middleware.session :as session]
             [ring.middleware.session.memory :as mem]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.middleware :as middleware]
             [oph.ehoks.logging.access :refer [wrap-access-logger]]))
+
+(defn dissoc-schema-validation-handler!
+  [e data req]
+  (update (c-ex/request-validation-handler e data req)
+          :body
+          dissoc
+          :schema))
 
 (defn not-found-handler
   "Käsittelee tapauksen, jossa reittiä ei löydy."
@@ -40,7 +48,7 @@
   {::c-ex/request-parsing (c-ex/with-logging
                             c-ex/request-parsing-handler :info)
    ::c-ex/request-validation (c-ex/with-logging
-                               c-ex/request-validation-handler :info)
+                               dissoc-schema-validation-handler! :info)
    ; Lokitetaan response bodyn validoinnissa esiin nousseet virheet, mutta ei
    ; välitetä virheitä käyttäjälle "500 Internal Server Error" -koodilla.
    ::c-ex/response-validation (c-ex/with-logging

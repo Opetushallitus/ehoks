@@ -422,3 +422,12 @@
         (is (= (:status response) 400))
         (is (= (:errors (utils/parse-body (:body response)))
                (expected-error y-tunnus)))))))
+
+(deftest schema-not-present-in-bad-requests
+  (testing ":schema not present in bad requests"
+    (let [response (hoks-utils/mock-st-post
+                     (hoks-utils/create-app nil) base-url {})]
+      (is (= (:status response) 400))
+      (is (nil? (-> (:body response)
+                    (utils/parse-body)
+                    :schema))))))
