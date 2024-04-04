@@ -1,9 +1,10 @@
 (ns oph.ehoks.middleware
-  (:require [ring.util.http-response :refer [unauthorized header]]
+  (:require [medley.core :refer [assoc-some]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.kayttooikeus :as kayttooikeus]
-            [oph.ehoks.user :as user]))
+            [oph.ehoks.external.koski :as k]
+            [oph.ehoks.user :as user]
+            [ring.util.http-response :refer [header unauthorized]]))
 
 (defn- authenticated?
   "Check whether request is authenticated"
@@ -89,9 +90,12 @@
 (defn add-hoks
   "Add HOKS to request"
   [request]
-  (let [hoks-id (Integer/parseInt (get-in request [:route-params :hoks-id]))
-        hoks    (db-hoks/select-hoks-by-id hoks-id)]
-    (assoc request :hoks hoks)))
+  (assoc-some request
+              :hoks
+              (some-> request
+                      (get-in [:route-params :hoks-id])
+                      Integer/parseInt
+                      db-hoks/select-hoks-by-id)))
 
 (defn wrap-hoks
   "Wrap request with hoks"
