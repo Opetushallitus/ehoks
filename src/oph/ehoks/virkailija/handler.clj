@@ -370,7 +370,7 @@
         herate-handler/routes
 
         (route-middleware
-          [audit/wrap-logger]
+          [wrap-hoks audit/wrap-logger]
 
           validation-handler/routes
 
@@ -624,8 +624,7 @@
                         :path-params [hoks-id :- s/Int]
 
                         (route-middleware
-                          [wrap-hoks
-                           m/wrap-virkailija-write-access
+                          [m/wrap-virkailija-write-access
                            wrap-opiskeluoikeus]
 
                           (c-api/PUT "/" request

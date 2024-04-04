@@ -27,7 +27,6 @@
   "Hankittavan paikallisen tutkinnon osan reitit."
   (c-api/context "/hankittava-paikallinen-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
-    :middleware [wrap-hoks]
 
     (c-api/GET "/:id" [:as request]
       :summary "Palauttaa HOKSin hankittavan paikallisen tutkinnon osan"
@@ -65,7 +64,6 @@
   "Hankittavan ammatillisen tutkinnon osan reitit."
   (c-api/context "/hankittava-ammat-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
-    :middleware [wrap-hoks]
 
     (c-api/GET "/:id" [:as request]
       :summary "Palauttaa HOKSin hankittavan ammatillisen tutkinnon osan"
@@ -101,7 +99,6 @@
   "Hankittavan yhteisen tutkinnon osan reitit."
   (c-api/context "/hankittava-yhteinen-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
-    :middleware [wrap-hoks]
 
     (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin hankittavan yhteisen tutkinnon osan"
@@ -137,7 +134,6 @@
   "Aiemmin hankitun ammatillisen tutkinnon osan reitit."
   (c-api/context "/aiemmin-hankittu-ammat-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
-    :middleware [wrap-hoks]
 
     (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin aiemmin hankitun ammatillisen tutkinnon osan"
@@ -177,7 +173,6 @@
   "Aiemmin hankitun paikallisen tutkinnon osan reitit."
   (c-api/context "/aiemmin-hankittu-paikallinen-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
-    :middleware [wrap-hoks]
 
     (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin olemassa olevan paikallisen tutkinnon osan"
@@ -218,7 +213,6 @@
   "Aiemmin hankitun yhteisen tutkinnon osan reitit."
   (c-api/context "/aiemmin-hankittu-yhteinen-tutkinnon-osa" []
     :path-params [hoks-id :- s/Int]
-    :middleware [wrap-hoks]
 
     (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin aiemmin hankitun yhteisen tutkinnon osan"
@@ -257,7 +251,6 @@
   "Opiskeluvalimuksia tukevien opintojen reitit."
   (c-api/context "/opiskeluvalmiuksia-tukevat-opinnot" []
     :path-params [hoks-id :- s/Int]
-    :middleware [wrap-hoks]
 
     (c-api/GET "/:id" []
       :summary "Palauttaa HOKSin opiskeluvalmiuksia tukevat opinnot"
@@ -324,7 +317,10 @@
                     caller-id :- s/Str]
 
     (route-middleware
-      [wrap-user-details m/wrap-require-service-user audit/wrap-logger]
+      [wrap-user-details
+       m/wrap-require-service-user
+       wrap-hoks
+       audit/wrap-logger]
 
       (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
         :summary "Palauttaa HOKSin opiskeluoikeuden oidilla"
@@ -422,14 +418,14 @@
         (post-hoks! hoks request))
 
       (c-api/GET "/:hoks-id" request
-        :middleware [wrap-hoks m/wrap-hoks-access]
+        :middleware [m/wrap-hoks-access]
         :summary "Palauttaa HOKSin"
         :return (rest/response hoks-schema/HOKS)
         (rest/ok (hoks/get-values (:hoks request))))
 
       (c-api/context "/:hoks-id" []
         (route-middleware
-          [wrap-hoks m/wrap-hoks-access wrap-opiskeluoikeus]
+          [m/wrap-hoks-access wrap-opiskeluoikeus]
 
           (c-api/PATCH "/" request
             :summary
