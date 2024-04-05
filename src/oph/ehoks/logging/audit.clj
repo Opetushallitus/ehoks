@@ -211,7 +211,8 @@
     ([request respond raise]
       (try
         (handler request
-                 (fn [response] (handle-audit-logging! request response)
+                 (fn [response]
+                   (handle-audit-logging! request response)
                    (respond (dissoc response ::changes ::target)))
                  (fn [exc]
                    (handle-audit-logging! request {:error exc})

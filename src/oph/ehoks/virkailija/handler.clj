@@ -119,9 +119,12 @@
 (defn- get-hoks-perustiedot
   "Get basic information from HOKS"
   [oppija-oid]
-  (if-let [hoks (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
-    (assoc (restful/ok hoks)
-           ::audit/target (audit/hoks-target-data  hoks))
+  (if-let [hoksit (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
+    (assoc (restful/ok hoksit)
+           ::audit/target
+           {:hoks-ids            (map :id hoksit)
+            :oppija-oid          (:oppija-oid (first hoksit))
+            :opiskeluoikeus-oids (map :opiskeluoikeus-oid hoksit)})
     (response/not-found {:message "HOKS not found"})))
 
 (defn- any-hoks-has-active-opiskeluoikeus?
@@ -296,7 +299,7 @@
         (-> (pc/get-oppilaitos-oids-cached-memoized! ;; 5min cache
               tutkinto oppilaitos-oid start end)
             (paginate page-size page-offset)
-            restful/ok)
+            response/ok)
 
         :else (response/forbidden
                 {:error "User privileges do not match organisation"}))
@@ -315,7 +318,7 @@
                    :read)
       (-> (db-hoks/select-hoksit-by-oo-oppilaitos-and-koski404 oppilaitos-oid)
           (paginate page-size page-offset)
-          restful/ok)
+          response/ok)
       (response/forbidden
         {:error "User privileges does not match organisation"}))
     ::audit/target {:oppilaitos-oid oppilaitos-oid}))
