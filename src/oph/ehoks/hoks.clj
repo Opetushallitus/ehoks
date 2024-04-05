@@ -114,8 +114,9 @@
                  (db-hoks/insert-amisherate-kasittelytilat!
                    (:id hoks) tuva-hoks conn)
                  (save-parts! hoks conn)))]
-    (opiskelijapalaute/send-if-needed! :aloituskysely hoks)
-    (opiskelijapalaute/send-if-needed! :paattokysely hoks)
+    (future
+      (opiskelijapalaute/send-if-needed! :aloituskysely hoks)
+      (opiskelijapalaute/send-if-needed! :paattokysely hoks))
     hoks))
 
 (def ^:private tuva-hoks-msg-template
