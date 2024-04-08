@@ -8,7 +8,7 @@
             [oph.ehoks.hoks.hoks-save-test :refer [hoks-data]]
             [oph.ehoks.hoks.hoks-test-utils :as virkailija-utils]
             [oph.ehoks.hoks.test-data :as test-data]
-            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.utils :as utils

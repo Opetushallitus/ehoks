@@ -14,7 +14,7 @@
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
-            [oph.ehoks.opiskelijapalaute :as opiskelijapalaute]
+            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.oppijaindex :as oppijaindex])
   (:import [java.time LocalDate]

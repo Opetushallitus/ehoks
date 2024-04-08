@@ -4,8 +4,8 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
-            [oph.ehoks.opiskelijapalaute :as opiskelijapalaute])
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute])
   (:import (java.time LocalDate)))
 
 (defn find-finished-workplace-periods

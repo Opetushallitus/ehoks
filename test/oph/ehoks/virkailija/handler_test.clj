@@ -9,7 +9,7 @@
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.hoks.hoks-test-utils :refer [virkailija-base-url]]
-            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.user :as user]
             [oph.ehoks.utils :as utils]

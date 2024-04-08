@@ -1,4 +1,4 @@
-(ns oph.ehoks.opiskelijapalaute
+(ns oph.ehoks.palaute.opiskelija
   (:require [clojure.tools.logging :as log]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
