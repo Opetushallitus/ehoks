@@ -75,8 +75,8 @@
     (log/infof
       "Sending %d (limit %d) hoksit between %s and %s"
       (count hoksit) (* 2 limit) start end)
-    (opiskelijapalaute/send-every-needed! :aloituskysely aloittaneet)
-    (opiskelijapalaute/send-every-needed! :paattokysely  paattyneet)
+    (opiskelijapalaute/initiate-every-needed! :aloituskysely aloittaneet)
+    (opiskelijapalaute/initiate-every-needed! :paattokysely  paattyneet)
     hoksit))
 
 (defn set-aloitusherate-kasitelty

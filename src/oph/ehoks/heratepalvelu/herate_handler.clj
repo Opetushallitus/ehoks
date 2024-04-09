@@ -68,8 +68,8 @@
                        to :- LocalDate]
         :return (restful/response {:count s/Int})
         (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
-              count  (opiskelijapalaute/send-every-needed! :aloituskysely
-                                                           hoksit)]
+              count  (opiskelijapalaute/initiate-every-needed! :aloituskysely
+                                                               hoksit)]
           (restful/ok {:count count})))
 
       (c-api/POST "/hoksit/resend-paattoherate" request
@@ -79,8 +79,8 @@
                        to :- LocalDate]
         :return (restful/response {:count s/Int})
         (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
-              count  (opiskelijapalaute/send-every-needed! :paattokysely
-                                                           hoksit)]
+              count  (opiskelijapalaute/initiate-every-needed! :paattokysely
+                                                               hoksit)]
           (restful/ok {:count count})))
 
       (c-api/POST "/opiskeluoikeus-update" request
