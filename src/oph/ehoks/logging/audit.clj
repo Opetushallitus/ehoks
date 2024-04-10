@@ -22,6 +22,9 @@
 (declare vec-changes)
 (declare atom-changes)
 
+; Exclude certain changes based on the last key of the `path`.
+(def exclusions #{:module-id})
+
 (defn- changes
   "Takes an `old-value` and a `new-value` and recursively constructs a sequence
   containing information about the changes between the two values. Each entry in
@@ -46,7 +49,7 @@
 
 (defn atom-changes
   [old-value new-value path]
-  (if (= old-value new-value)
+  (if (or (= old-value new-value) (contains? exclusions (peek path)))
     []
     [(cond->
       {"path" (string/join "." path)}
