@@ -17,11 +17,6 @@
          expected-log-entry-on-ahato-update
          expected-log-entry-on-ahato-read)
 
-(defn- vec-remove
-  "Remove element from vector"
-  [coll index]
-  (into (subvec coll 0 index) (subvec coll (inc index))))
-
 (deftest test-handle-audit-logging
   (with-log
     (hoks-utils/with-hoks-and-app
@@ -37,8 +32,7 @@
         (are [actual expected] (= actual expected)
           hoks-create    (expected-log-entry-on-hoks-creation  logseq)
           ahato-creation (expected-log-entry-on-ahato-creation (+ 2 logseq))
-          (update ahato-update "changes" vec-remove 5)
-          (expected-log-entry-on-ahato-update   (+ 3 logseq))
+          ahato-update   (expected-log-entry-on-ahato-update   (+ 3 logseq))
           ahato-read     (expected-log-entry-on-ahato-read     (+ 4 logseq))))
       (utils/clear-db))))
 
