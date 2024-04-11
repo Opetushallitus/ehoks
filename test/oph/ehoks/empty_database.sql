@@ -1,3 +1,4 @@
+DELETE FROM palautteet;
 DELETE FROM aiemmin_hankitun_ammat_tutkinnon_osan_naytto;
 DELETE FROM aiemmin_hankitun_paikallisen_tutkinnon_osan_arvioijat;
 DELETE FROM aiemmin_hankitun_paikallisen_tutkinnon_osan_naytto;

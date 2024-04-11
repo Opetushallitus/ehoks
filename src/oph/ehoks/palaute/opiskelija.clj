@@ -1,9 +1,14 @@
 (ns oph.ehoks.palaute.opiskelija
+  "A namespace for everything related to opiskelijapalaute"
   (:require [clojure.tools.logging :as log]
+            [hugsql.core :as hugsql]
+            [oph.ehoks.db :as db]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.hoks.common :as c])
   (:import [clojure.lang ExceptionInfo]))
+
+(hugsql/def-db-fns "oph/ehoks/db/sql/opiskelijapalaute.sql")
 
 (defn- suoritustyyppi [suoritus] (get-in suoritus [:tyyppi :koodiarvo]))
 
@@ -14,9 +19,16 @@
   (some? (#{"ammatillinentutkinto" "ammatillinentutkintoosittainen"}
            (suoritustyyppi suoritus))))
 
-(def ^:private suoritustyyppi->kyselytyyppi
-  {"ammatillinentutkinto"           "tutkinnon_suorittaneet"
-   "ammatillinentutkintoosittainen" "tutkinnon_osia_suorittaneet"})
+(def ^:private koski-suoritustyyppi->kyselytyyppi
+  {"ammatillinentutkinto"           "valmistuneet"
+   "ammatillinentutkintoosittainen" "osia_suorittaneet"})
+
+(def ^:private translate-kyselytyyppi
+  "Translate kyselytyyppi name to the equivalent one used in Herätepalvelu,
+  i.e., `lhs` is the one used in eHOKS and `rhs` is the one used Herätepalvelu.
+  This should not be needed when eHOKS-Herätepalvelu integration is done."
+  {"valmistuneet"      "tutkinnon_suorittaneet"
+   "osia_suorittaneet" "tutkinnon_osia_suorittaneet"})
 
 (defn- telma-suoritus?
   "Tarkistaa, onko suorituksen tyyppi TELMA (työhön ja elämään valmentava)."
@@ -91,6 +103,27 @@
                (log/info msg "`osaamisen-saavuttamisen-pvm` has been added.")
                :else true)))))) ; will be converted to `false`.
 
+(defn aloituskysely-data
+  [hoks]
+  {:hoks-id       (:id hoks)
+   :heratepvm     (:ensikertainen-hyvaksyminen hoks)
+   :kyselytyyppi  "aloittaneet"
+   :herate-source "ehoks_update"})
+
+(defn paattokysely-data!
+  "Collect the paattokysely data to be stored in DB. Fetches `opiskeluoikeus`
+  from Koski in order to determine if kyselytyyppi should be
+  `tutkinnon_suorittaneet` or `tutkinnon_osia_suorittaneet`."
+  [hoks]
+  {:hoks-id       (:id hoks)
+   :heratepvm     (:osaamisen-saavuttamisen-pvm hoks)
+   :kyselytyyppi  (->> (:opiskeluoikeus-oid hoks)
+                       k/get-existing-opiskeluoikeus!
+                       first-ammatillinen-suoritus
+                       suoritustyyppi
+                       koski-suoritustyyppi->kyselytyyppi)
+   :herate-source "ehoks_update"})
+
 (defn initiate!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
   `:paattokysely`) to appropriate DynamoDB table of Herätepalvelu and returns
@@ -101,18 +134,14 @@
          (:opiskeluoikeus-oid hoks)]}
   (try
     (case kysely
-      :aloituskysely
-      (sqs/send-amis-palaute-message (sqs/build-hoks-hyvaksytty-msg hoks))
-      ; In the case of päättökysely, `opiskeluoikeus` is fetched from Koski in
-      ; order to determine, if the kyselytyyppi is `tutkinnon_suorittaneet` or
-      ; `tutkinnon_osia_suorittaneet`."
-      :paattokysely (->> (:opiskeluoikeus-oid hoks)
-                         k/get-existing-opiskeluoikeus!
-                         first-ammatillinen-suoritus
-                         suoritustyyppi
-                         suoritustyyppi->kyselytyyppi
-                         (sqs/build-hoks-osaaminen-saavutettu-msg hoks)
-                         sqs/send-amis-palaute-message))
+      :aloituskysely (do (insert! db/spec (aloituskysely-data hoks))
+                         (sqs/send-amis-palaute-message
+                           (sqs/build-hoks-hyvaksytty-msg hoks)))
+      :paattokysely  (let [data (paattokysely-data! hoks)]
+                       (insert! db/spec data)
+                       (->> (translate-kyselytyyppi (:kyselytyyppi data))
+                            (sqs/build-hoks-osaaminen-saavutettu-msg hoks)
+                            sqs/send-amis-palaute-message)))
     (catch ExceptionInfo e
       (log/logf (case (:type (ex-data e))
                   ::k/opiskeluoikeus-not-found :warn
