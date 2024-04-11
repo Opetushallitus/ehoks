@@ -68,7 +68,7 @@
    :oppija-oid (:oppija-oid hoks)
    :sahkoposti (:sahkoposti hoks)
    :puhelinnumero (:puhelinnumero hoks)
-   :alkupvm (str (:ensikertainen-hyvaksyminen hoks))})
+   :alkupvm (str (:ensikertainen-hyvaksyminen hoks))}) ; heratepvm
 
 (defn build-hoks-osaaminen-saavutettu-msg
   "Luo HOKS osaamisen saavutettu -viestin."

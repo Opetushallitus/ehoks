@@ -1,9 +1,10 @@
 (ns oph.ehoks.db.db-operations.db-helpers
-  (:require [clojure.set :refer [difference rename-keys]]
-            [clojure.java.jdbc :as jdbc]
-            [oph.ehoks.config :refer [config]]
+  (:require [clj-time.coerce :as c]
             [clojure.data.json :as json]
-            [clj-time.coerce :as c])
+            [clojure.java.jdbc :as jdbc]
+            [clojure.set :refer [difference]]
+            [medley.core :refer [map-keys]]
+            [oph.ehoks.config :refer [config]])
   (:import (org.postgresql.util PGobject)))
 
 (extend-protocol jdbc/ISQLValue
@@ -110,11 +111,6 @@
     (query queries {}))
   ([queries arg & opts]
     (query queries (apply hash-map arg opts))))
-
-(defn map-keys
-  "Apply a function to all keys in a map."
-  [f m]
-  (zipmap (map f (keys m)) (vals m)))
 
 (defn remove-db-columns
   "Remove keys corresponding to columns used for internal purposes, keeping

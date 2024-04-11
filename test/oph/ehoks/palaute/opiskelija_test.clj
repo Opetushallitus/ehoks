@@ -1,11 +1,18 @@
 (ns oph.ehoks.palaute.opiskelija-test
-  (:require [clojure.test :refer [are deftest is testing]]
+  (:require [clojure.test :refer [are deftest is testing use-fixtures]]
             [clojure.tools.logging.test :refer [logged? with-log]]
             [medley.core :refer [assoc-some]]
+            [oph.ehoks.db :as db]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.hoks.test-data :as test-data]
-            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]))
+            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
+            [oph.ehoks.test-utils :as test-utils])
+  (:import (java.time LocalDate)))
+
+(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :each test-utils/empty-database-after-test)
 
 (def hoksit
   (for [tarve  [true false nil]
@@ -211,24 +218,42 @@
   (with-redefs [sqs/send-amis-palaute-message (fn [msg] (reset! sqs-msg msg))
                 k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus-info-raw]
     (let [hoks (assoc test-data/hoks-data :id 1)]
+      (db-hoks/insert-hoks! {:oppija-oid         (:oppija-oid hoks)
+                             :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)})
       (testing "Testing that function `initiate!`"
-        (testing "successfully initiates aloituskysely and paattokysely"
+        (testing (str "stores kysely info to `palautteet` DB table and "
+                      "successfully sends aloituskysely and paattokysely "
+                      "herate to SQS queue")
           (are [kysely] (= (expected-msg kysely hoks)
                            (do (opiskelijapalaute/initiate! kysely hoks)
                                @sqs-msg))
             :aloituskysely
-            :paattokysely))
-        (testing "logs appropriately when kyselys could not be initiated."
-          (with-log
-            (opiskelijapalaute/initiate!
-              :paattokysely
-              (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.20000000008"))
-            (is (logged? 'oph.ehoks.palaute.opiskelija
-                         :info
-                         #"No ammatillinen suoritus"))
-            (opiskelijapalaute/initiate!
-              :paattokysely
-              (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.30000000007"))
-            (is (logged? 'oph.ehoks.palaute.opiskelija
-                         :warn
-                         #"not found in Koski"))))))))
+            :paattokysely)
+          (are [kyselytyyppi heratepvm]
+               (= (select-keys
+                    (opiskelijapalaute/get-by-hoks-id-and-tyyppi!
+                      db/spec
+                      {:hoks-id      (:id hoks)
+                       :kyselytyyppi kyselytyyppi})
+                    [:tila :kyselytyyppi :hoks-id :heratepvm :herate-source])
+                  {:tila "odottaa_kasittelya"
+                   :kyselytyyppi kyselytyyppi
+                   :hoks-id 1
+                   :heratepvm (LocalDate/parse heratepvm)
+                   :herate-source "ehoks_update"})
+            "aloittaneet"  (:ensikertainen-hyvaksyminen hoks)
+            "valmistuneet" (:osaamisen-saavuttamisen-pvm hoks))))
+      (testing "logs appropriately when messages could not be send."
+        (with-log
+          (opiskelijapalaute/initiate!
+            :paattokysely
+            (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.20000000008"))
+          (is (logged? 'oph.ehoks.palaute.opiskelija
+                       :info
+                       #"No ammatillinen suoritus"))
+          (opiskelijapalaute/initiate!
+            :paattokysely
+            (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.30000000007"))
+          (is (logged? 'oph.ehoks.palaute.opiskelija
+                       :warn
+                       #"not found in Koski")))))))
