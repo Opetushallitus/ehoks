@@ -1,7 +1,6 @@
 (ns oph.ehoks.hoks.hoks-save-test
   (:require [clojure.test :refer :all]
-            [oph.ehoks.utils :as utils :refer [eq empty-database-after-test
-                                               migrate-database]]
+            [oph.ehoks.test-utils :as test-utils :refer [eq]]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
@@ -11,8 +10,8 @@
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
-(use-fixtures :once migrate-database)
-(use-fixtures :each empty-database-after-test)
+(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :each test-utils/empty-database-after-test)
 
 (def ahato-data
   [{:valittu-todentamisen-prosessi-koodi-versio 1
@@ -342,48 +341,43 @@
       (ah/save-aiemmin-hankitut-ammat-tutkinnon-osat!
         (:id hoks)
         ahato-data)
-      (eq
-        (utils/dissoc-module-ids
-          (ah/get-aiemmin-hankitut-ammat-tutkinnon-osat
-            (:id hoks)))
-        (utils/dissoc-module-ids ahato-data)))))
+      (eq (test-utils/dissoc-module-ids
+            (ah/get-aiemmin-hankitut-ammat-tutkinnon-osat
+              (:id hoks)))
+          (test-utils/dissoc-module-ids ahato-data)))))
 
 (deftest get-aiemmin-hankitut-paikalliset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut paikalliset tutkinnon osat"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ah/save-aiemmin-hankitut-paikalliset-tutkinnon-osat!
         (:id hoks) ahpto-data)
-      (eq
-        (utils/dissoc-module-ids
-          (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks)))
-        (utils/dissoc-module-ids ahpto-data)))))
+      (eq (test-utils/dissoc-module-ids
+            (ah/get-aiemmin-hankitut-paikalliset-tutkinnon-osat (:id hoks)))
+          (test-utils/dissoc-module-ids ahpto-data)))))
 
 (deftest get-hankittava-ammat-tutkinnon-osa-test
   (testing "Get HOKS hankittava ammatillinen osaaminen"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ha/save-hankittavat-ammat-tutkinnon-osat! (:id hoks) hao-data)
-      (eq
-        (utils/dissoc-module-ids
-          (ha/get-hankittavat-ammat-tutkinnon-osat (:id hoks)))
-        (utils/dissoc-module-ids hao-data)))))
+      (eq (test-utils/dissoc-module-ids
+            (ha/get-hankittavat-ammat-tutkinnon-osat (:id hoks)))
+          (test-utils/dissoc-module-ids hao-data)))))
 
 (deftest get-opiskeluvalmiuksia-tukevat-opinnot-test
   (testing "Get HOKS opiskeluvalmiuksia tukevat opinnot"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ot/save-opiskeluvalmiuksia-tukevat-opinnot! (:id hoks) oto-data)
-      (eq
-        (utils/dissoc-module-ids
-          (ot/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks)))
-        (utils/dissoc-module-ids oto-data)))))
+      (eq (test-utils/dissoc-module-ids
+            (ot/get-opiskeluvalmiuksia-tukevat-opinnot (:id hoks)))
+          (test-utils/dissoc-module-ids oto-data)))))
 
 (deftest get-aiemmin-hankitut-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS aiemmin hankitut yhteiset tutkinnon osat"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ah/save-aiemmin-hankitut-yhteiset-tutkinnon-osat! (:id hoks) ahyto-data)
-      (eq
-        (utils/dissoc-module-ids
-          (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks)))
-        (utils/dissoc-module-ids ahyto-data)))))
+      (eq (test-utils/dissoc-module-ids
+            (ah/get-aiemmin-hankitut-yhteiset-tutkinnon-osat (:id hoks)))
+          (test-utils/dissoc-module-ids ahyto-data)))))
 
 (deftest get-hankittavat-paikalliset-tutkinnon-osat-test
   (testing "Set HOKS hankittavat paikalliset tutkinnon osat"
@@ -391,54 +385,49 @@
           ppto-col
           (ha/save-hankittavat-paikalliset-tutkinnon-osat!
             (:id hoks) hpto-data)]
-      (eq
-        (utils/dissoc-module-ids
-          (ha/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks)))
-        (utils/dissoc-module-ids hpto-data)))))
+      (eq (test-utils/dissoc-module-ids
+            (ha/get-hankittavat-paikalliset-tutkinnon-osat (:id hoks)))
+          (test-utils/dissoc-module-ids hpto-data)))))
 
 (deftest get-hankittavat-yhteiset-tutkinnon-osat-test
   (testing "Get HOKS hankittavat yhteiset tutkinnon osat"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ha/save-hankittavat-yhteiset-tutkinnon-osat! (:id hoks) hyto-data)
-      (eq
-        (utils/dissoc-module-ids
-          (ha/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks)))
-        (utils/dissoc-module-ids hyto-data)))))
+      (eq (test-utils/dissoc-module-ids
+            (ha/get-hankittavat-yhteiset-tutkinnon-osat (:id hoks)))
+          (test-utils/dissoc-module-ids hyto-data)))))
 
 (deftest get-hankittavat-koulutuksen-osat
   (testing "GET TUVA hankittavat koulutuksen osat"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
       (ha/save-hankittavat-koulutuksen-osat! (:id hoks) koulutuksen-osa-data)
-      (eq
-        (ha/get-hankittavat-koulutuksen-osat (:id hoks))
-        koulutuksen-osa-data))))
+      (eq (ha/get-hankittavat-koulutuksen-osat (:id hoks))
+          koulutuksen-osa-data))))
 
 (deftest get-hoks-test
   (testing "Save and get full HOKS"
     (let [hoks (with-redefs [k/get-opiskeluoikeus-info-raw
-                             utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw]
                  (hoks/save! hoks-data))]
-      (eq
-        (utils/dissoc-module-ids (hoks/get-by-id (:id hoks)))
-        (assoc
-          (utils/dissoc-module-ids hoks-data)
-          :id 1
-          :eid (:eid hoks)
-          :manuaalisyotto false)))))
+      (eq (test-utils/dissoc-module-ids (hoks/get-by-id (:id hoks)))
+          (assoc
+            (test-utils/dissoc-module-ids hoks-data)
+            :id 1
+            :eid (:eid hoks)
+            :manuaalisyotto false)))))
 
 (deftest get-hoks-with-tuva-oo
   (testing "Save and get full HOKS with TUVA opiskeluoikeus oid"
     (let [hoks (with-redefs [k/get-opiskeluoikeus-info-raw
-                             utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw]
                  (hoks/save!
                    (assoc hoks-data
                           :tuva-opiskeluoikeus-oid
                           "1.2.246.562.15.20000000008")))]
-      (eq
-        (-> (utils/dissoc-module-ids (hoks/get-by-id (:id hoks)))
-            (select-keys [:id :tuva-opiskeluoikeus-oid]))
-        {:id 1
-         :tuva-opiskeluoikeus-oid "1.2.246.562.15.20000000008"}))))
+      (eq (-> (test-utils/dissoc-module-ids (hoks/get-by-id (:id hoks)))
+              (select-keys [:id :tuva-opiskeluoikeus-oid]))
+          {:id 1
+           :tuva-opiskeluoikeus-oid "1.2.246.562.15.20000000008"}))))
 
 (deftest tarkentavat-tiedot-osaamisen-arvioija-save
   (testing "If tarkentavat-tiedot-osaamisen-arvioija is missing
@@ -462,7 +451,7 @@
                   {:hoks-id (:id hoks)})
           data {}
           tta (ah/save-tarkentavat-tiedot-osaamisen-arvioija! data)]
-      (eq (utils/dissoc-module-ids
+      (eq (test-utils/dissoc-module-ids
             (ah/get-tarkentavat-tiedot-osaamisen-arvioija (:id tta)))
           (assoc data :aiemmin-hankitun-osaamisen-arvioijat [])))))
 
@@ -560,7 +549,8 @@
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
                     k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
         (hoks/save! hoks-osaaminen-saavutettu)
-        (is (true? (utils/wait-for (fn [_] (= @sqs-call-counter 2)) 5000)))))))
+        (is (true? (test-utils/wait-for
+                     (fn [_] (= @sqs-call-counter 2)) 5000)))))))
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-save
   (testing (str "save: does not form opiskelijapalaute when "
@@ -606,7 +596,7 @@
             (is (= @sqs-call-counter 2))) ; herate sent for paattokysely
 
           (reset! sqs-call-counter 0)
-          (utils/clear-db)
+          (test-utils/clear-db)
 
           ; FIXME: Currently `opiskeluoikeus-oid` is not required in
           ; `HOKSKorvaus` schema, even though it probably should be. The

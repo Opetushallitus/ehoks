@@ -1,11 +1,11 @@
 (ns oph.ehoks.hoks.hoks-parts.hankittavat-handler-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [oph.ehoks.utils :as utils :refer [eq]]
+            [oph.ehoks.test-utils :as test-utils :refer [eq]]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]))
 
-(use-fixtures :once utils/migrate-database)
-(use-fixtures :each utils/empty-database-after-test)
+(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :each test-utils/empty-database-after-test)
 
 (def hpto-path "hankittava-paikallinen-tutkinnon-osa")
 (def hyto-path "hankittava-yhteinen-tutkinnon-osa")
@@ -18,7 +18,7 @@
       (let [ppto-response (hoks-utils/mock-st-post
                             app (hoks-utils/get-hoks-url hoks hpto-path)
                             parts-test-data/hpto-data)
-            body (utils/parse-body (:body ppto-response))]
+            body (test-utils/parse-body (:body ppto-response))]
         (is (= (:status ppto-response) 200))
         (eq body {:data
                   {:uri
@@ -29,10 +29,10 @@
                          (hoks-utils/get-hoks-url
                            hoks (format "%s/1" hpto-path)))]
           (eq
-            (utils/dissoc-module-ids
-              (:data (utils/parse-body (:body ppto-new))))
+            (test-utils/dissoc-module-ids
+              (:data (test-utils/parse-body (:body ppto-new))))
             (assoc
-              (utils/dissoc-module-ids parts-test-data/hpto-data)
+              (test-utils/dissoc-module-ids parts-test-data/hpto-data)
               :id 1)))))))
 
 (deftest patch-all-hankittavat-paikalliset-tutkinnon-osat
@@ -58,7 +58,7 @@
               app
               (hoks-utils/get-hoks-url hoks hpto-path)
               parts-test-data/hpto-data)
-            ppto-body (utils/parse-body (:body ppto-response))
+            ppto-body (test-utils/parse-body (:body ppto-response))
             patch-response
             (hoks-utils/mock-st-patch
               app
@@ -68,8 +68,8 @@
                              hoks-utils/get-authenticated
                              :data)]
         (is (= (:status patch-response) 204))
-        (eq (utils/dissoc-module-ids get-response)
-            (assoc (utils/dissoc-module-ids parts-test-data/hpto-data)
+        (eq (test-utils/dissoc-module-ids get-response)
+            (assoc (test-utils/dissoc-module-ids parts-test-data/hpto-data)
                    :id 1
                    :nimi "2223"))))))
 
@@ -83,8 +83,9 @@
             (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)]
         (hoks-utils/assert-post-response-is-ok hyto-path post-response)
         (is (= (:status get-response) 200))
-        (eq (utils/dissoc-module-ids (utils/parse-body (:body get-response)))
-            {:meta {} :data (assoc (utils/dissoc-module-ids
+        (eq (test-utils/dissoc-module-ids (test-utils/parse-body
+                                            (:body get-response)))
+            {:meta {} :data (assoc (test-utils/dissoc-module-ids
                                      parts-test-data/hyto-data) :id 1)})))))
 
 (def ^:private one-value-of-hyto-patched
@@ -100,7 +101,9 @@
                              hyto-path app one-value-of-hyto-patched)
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
-            get-response-data (:data (utils/parse-body (:body get-response)))]
+            get-response-data (-> (:body get-response)
+                                  test-utils/parse-body
+                                  :data)]
         (is (= (:status patch-response) 204))
         (is (= (:koulutuksen-jarjestaja-oid get-response-data)
                (:koulutuksen-jarjestaja-oid one-value-of-hyto-patched))
@@ -121,10 +124,12 @@
                              parts-test-data/multiple-hyto-values-patched)
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
-            get-response-data (:data (utils/parse-body (:body get-response)))]
+            get-response-data (-> (:body get-response)
+                                  test-utils/parse-body
+                                  :data)]
         (is (= (:status patch-response) 204))
-        (eq (utils/dissoc-module-ids (:osa-alueet get-response-data))
-            (utils/dissoc-module-ids
+        (eq (test-utils/dissoc-module-ids (:osa-alueet get-response-data))
+            (test-utils/dissoc-module-ids
               (:osa-alueet parts-test-data/multiple-hyto-values-patched)))))))
 
 (def hyto-sub-entity-patched
@@ -140,10 +145,13 @@
                              hyto-path app hyto-sub-entity-patched)
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request hyto-path app hoks)
-            get-response-data (:data (utils/parse-body (:body get-response)))]
+            get-response-data (-> (:body get-response)
+                                  test-utils/parse-body
+                                  :data)]
         (is (= (:status patch-response) 204))
-        (eq (utils/dissoc-module-ids (:osa-alueet get-response-data))
-            (utils/dissoc-module-ids (:osa-alueet hyto-sub-entity-patched)))))))
+        (eq (test-utils/dissoc-module-ids (:osa-alueet get-response-data))
+            (test-utils/dissoc-module-ids
+              (:osa-alueet hyto-sub-entity-patched)))))))
 
 (deftest post-and-get-hankittava-ammatillinen-osaaminen
   (testing "POST hankittava ammatillinen osaaminen and then get created hao"
@@ -155,7 +163,7 @@
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status post-response) 200))
-        (eq (utils/parse-body
+        (eq (test-utils/parse-body
               (:body post-response))
             {:meta {:id 1}
              :data
@@ -164,8 +172,9 @@
                 "%s/1/hankittava-ammat-tutkinnon-osa/1"
                 hoks-utils/base-url)}})
         (is (= (:status get-response) 200))
-        (eq (utils/dissoc-module-ids (utils/parse-body (:body get-response)))
-            {:meta {} :data (assoc (utils/dissoc-module-ids
+        (eq (test-utils/dissoc-module-ids (test-utils/parse-body
+                                            (:body get-response)))
+            {:meta {} :data (assoc (test-utils/dissoc-module-ids
                                      parts-test-data/hao-data) :id 1)})))))
 
 (deftest patch-all-hankittava-ammatillinen-osaaminen
@@ -182,9 +191,11 @@
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request hao-path app hoks)]
         (is (= (:status patch-response) 204))
-        (eq (utils/dissoc-module-ids (utils/parse-body (:body get-response)))
+        (eq (test-utils/dissoc-module-ids (test-utils/parse-body
+                                            (:body get-response)))
             {:meta {} :data
-             (assoc (utils/dissoc-module-ids parts-test-data/patch-all-hao-data)
+             (assoc (test-utils/dissoc-module-ids
+                      parts-test-data/patch-all-hao-data)
                     :id 1)})))))
 
 (deftest patch-one-hankittava-ammatilinen-osaaminen

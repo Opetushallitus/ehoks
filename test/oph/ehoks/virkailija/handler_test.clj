@@ -12,14 +12,14 @@
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.user :as user]
-            [oph.ehoks.utils :as utils]
+            [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.virkailija.handler :as handler]
             [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]
             [ring.mock.request :as mock])
   (:import (java.time LocalDate LocalDateTime)))
 
-(t/use-fixtures :once utils/migrate-database)
-(t/use-fixtures :each utils/empty-database-after-test)
+(t/use-fixtures :once test-utils/migrate-database)
+(t/use-fixtures :each test-utils/empty-database-after-test)
 
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
@@ -49,7 +49,7 @@
           response (app
                      (mock/request
                        :get (str base-url "/healthcheck")))
-          body (utils/parse-body (:body response))]
+          body (test-utils/parse-body (:body response))]
       (t/is (= (:status response) 200))
       (t/is (= body {})))))
 
@@ -61,7 +61,7 @@
                        (mock/request
                          :get (str base-url "/misc/environment"))))]
       (t/is (= (:status response) 200))
-      (let [data (-> response :body utils/parse-body :data)]
+      (let [data (-> response :body test-utils/parse-body :data)]
         (t/is (some? (:eperusteet-peruste-url data)))
         (t/is (some? (:virkailija-login-url data)))
         (t/is (some? (:raamit-url data)))))))
@@ -186,7 +186,7 @@
 
 (t/deftest test-list-oppijat-with-empty-index
   (t/testing "GET empty oppijat list"
-    (utils/with-db
+    (test-utils/with-db
       (let [response (with-test-virkailija
                        (mock/request
                          :get
@@ -196,7 +196,7 @@
 
 (t/deftest test-virkailija-privileges
   (t/testing "Prevent getting other organisation oppijat"
-    (utils/with-db
+    (test-utils/with-db
       (let [response (with-test-virkailija
                        (mock/request
                          :get
@@ -220,7 +220,7 @@
                 (str base-url "/virkailija/oppijat")
                 (assoc params :oppilaitos-oid "1.2.246.562.10.12000000005"))))]
       (t/is (= (:status response) 200))
-      (utils/parse-body (:body response))))
+      (test-utils/parse-body (:body response))))
   ([params] (get-search params nil)))
 
 (defn- add-oppijat []
@@ -270,7 +270,7 @@
 
 (t/deftest get-oppijat-without-filtering
   (t/testing "GET virkailija oppijat without any search filters"
-    (utils/with-db
+    (test-utils/with-db
       (add-oppijat)
       (add-hoksit)
       (let [body (get-search {})]
@@ -285,7 +285,7 @@
 
 (t/deftest get-oppijat-with-name-filter
   (t/testing "GET virkailija oppijat with name filtered"
-    (utils/with-db
+    (test-utils/with-db
       (add-oppijat)
       (add-hoksit)
       (let [body (get-search {:nimi "teu"})]
@@ -297,7 +297,7 @@
 
 (t/deftest get-oppijat-with-hoks-id
   (t/testing "oppijat endpoint returns correct result by exact hoks-id"
-    (utils/with-db
+    (test-utils/with-db
       (add-oppijat)
       (add-hoksit)
       (let [body (get-search {:hoks-id 3})]
@@ -311,7 +311,7 @@
 
 (t/deftest get-oppijat-with-name-filter-and-order-desc
   (t/testing "GET virkailija oppijat ordered descending and filtered with name"
-    (utils/with-db
+    (test-utils/with-db
       (add-oppijat)
       (add-hoksit)
       (let [body (get-search {:nimi "oppi"
@@ -326,7 +326,7 @@
 
 (t/deftest get-oppijat-with-name-filter-and-order-asc
   (t/testing "GET virkailija oppijat ordered ascending and filtered with name"
-    (utils/with-db
+    (test-utils/with-db
       (add-oppijat)
       (add-hoksit)
       (let [body (get-search {:nimi "oppi"
@@ -340,7 +340,7 @@
 
 (t/deftest get-oppijat-filtered-with-tutkinto-and-osaamisala
   (t/testing "GET virkailija oppijat filtered with tutkinto and osaamisala"
-    (utils/with-db
+    (test-utils/with-db
       (add-oppijat)
       (add-hoksit)
       (let [body (get-search {:tutkinto "testitutkinto"
@@ -352,7 +352,7 @@
 
 (t/deftest oppijat-sql-injection
   (t/testing "oppijat endpoint doesn't have the SQL injection it used to"
-    (utils/with-db
+    (test-utils/with-db
       (add-oppijat)
       (add-hoksit)
       (let [body (get-search {:tutkinto "';drop table hoksit;commit;--"})]
@@ -361,7 +361,7 @@
 
 (t/deftest get-oppijat-filtered-with-swedish-locale
   (t/testing "GET virkailija oppijat filtered with swedish locale"
-    (utils/with-db
+    (test-utils/with-db
       (add-oppijat)
       (add-hoksit)
       (let [body (get-search {:tutkinto "testskrivning"
@@ -379,7 +379,7 @@
 (t/deftest get-oppijat-with-swedish-locale-without-translation
   (t/testing
    "Doesn't have swedish translation and no search filters, shouldn't filter"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.45000000007"
                            :nimi "Olli Oppija"
                            :opiskeluoikeus-oid "1.2.246.562.15.76300000007"
@@ -400,7 +400,7 @@
 
 (t/deftest test-list-virkailija-oppija-with-multi-opiskeluoikeus
   (t/testing "GET virkailija oppijat"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000018"
@@ -445,7 +445,7 @@
 
 (t/deftest test-list-virkailija-oppija-with-multi-opiskeluoikeus-one-hoks
   (t/testing "GET virkailija oppijat"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000018"
@@ -488,7 +488,7 @@
 
 (t/deftest test-virkailija-with-no-read
   (t/testing "Prevent GET virkailija oppijat without read privilege"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                            :nimi "Testi 1"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000000"
@@ -508,7 +508,7 @@
 
 (t/deftest test-virkailija-has-read-access
   (t/testing "Virkailija has oppija access"
-    (utils/with-db
+    (test-utils/with-db
       (client/with-mock-responses
         [(fn [^String url options]
            (cond
@@ -546,7 +546,7 @@
 
 (t/deftest test-virkailija-hoks-write-forbidden
   (t/testing "Virkailija HOKS write is forbidden"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000018"
@@ -629,7 +629,7 @@
 
 (t/deftest test-virkailija-hoks-forbidden
   (t/testing "Virkailija HOKS forbidden"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000000"
@@ -666,7 +666,7 @@
   (with-test-virkailija
     (mock/request
       :get
-      (get-in (utils/parse-body (:body post-response)) [:data :uri]))
+      (get-in (test-utils/parse-body (:body post-response)) [:data :uri]))
     {:name "Testivirkailija"
      :kayttajaTyyppi "VIRKAILIJA"
      :oidHenkilo "1.2.246.562.24.44000000338"
@@ -760,7 +760,7 @@
 
 (t/deftest test-virkailija-create-hoks
   (t/testing "POST hoks virkailija"
-    (utils/with-db
+    (test-utils/with-db
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
       (let [post-response
             (post-new-hoks
@@ -768,7 +768,7 @@
               {:hankittavat-ammat-tutkinnon-osat hato-data})]
         (t/is (= (:status post-response) 200))
         (let [get-response (get-created-hoks post-response)
-              body (utils/parse-body (:body get-response))]
+              body (test-utils/parse-body (:body get-response))]
           (t/is (= (:status get-response) 200))
           (t/is (= (get-in body [:data :hankittavat-ammat-tutkinnon-osat 0
                                  :osaamisen-hankkimistavat 0
@@ -800,7 +800,7 @@
 
 (t/deftest test-hoks-create-when-opiskeluoikeus-fetch-fails
   (t/testing "Error thrown from koski is propagated to handler"
-    (utils/with-db
+    (test-utils/with-db
       (logtest/with-log
         (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
         (with-redefs [k/get-opiskeluoikeus-info-raw
@@ -810,7 +810,7 @@
                                "1.2.246.562.10.12000000013")]
             (t/is (= (:status post-response) 400)
                   (str "Log entries:" (logtest/the-log)))
-            (t/is (= (utils/parse-body (:body post-response))
+            (t/is (= (test-utils/parse-body (:body post-response))
                      {:error (str "Opiskeluoikeus `1.2.246.562.15.76000000018` "
                                   "not found in Koski")}))))))))
 
@@ -822,7 +822,7 @@
 (t/deftest test-tuva-hoks-with-tuva-opiskeluoikeus-oid-fails
   (t/testing (str "Error is thrown if trying to save tuva hoks with "
                   "tuva-opiskeluoikeus-oid")
-    (utils/with-db
+    (test-utils/with-db
       (logtest/with-log
         (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
         (with-redefs [k/get-opiskeluoikeus-info-raw
@@ -855,7 +855,7 @@
 (t/deftest test-hoks-with-hankittavat-koulutuksen-osat
   (t/testing (str "Error is thrown if trying to save (non-tuva) hoks with "
                   "hankittavat-koulutuksen-osat")
-    (utils/with-db
+    (test-utils/with-db
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
       (with-redefs [k/get-opiskeluoikeus-info-raw
                     mocked-get-oo-non-tuva]
@@ -870,7 +870,7 @@
                                 :loppu "2022-09-21"
                                 :laajuus 10}]})]
           (t/is (= (:status post-response) 400))
-          (let [body (utils/parse-body (:body post-response))]
+          (let [body (test-utils/parse-body (:body post-response))]
             (t/is (= (get-in body [:errors :hankittavat-koulutuksen-osat 0])
                      (str "(not (\"Ota koulutuksenosa pois, koska "
                           "opiskeluoikeus ei ole TUVA.\" "
@@ -882,24 +882,24 @@
 
 (t/deftest test-hoks-create-when-oppijanumerorekisteri-fails
   (t/testing "Error thrown from oppijanumerorekisteri is propagated to handler"
-    (utils/with-db
+    (test-utils/with-db
       (with-redefs [onr/get-oppija-raw! mock-get-oppija-raw!]
         (let [post-response
               (post-new-hoks "1.2.246.562.15.76000000018"
                              "1.2.246.562.10.12000000013")]
           (t/is (= (:status post-response) 400))
-          (t/is (= (utils/parse-body (:body post-response))
+          (t/is (= (test-utils/parse-body (:body post-response))
                    {:error (str "Oppija `1.2.246.562.24.44000000008` not found "
                                 "in Oppijanumerorekisteri")})))))))
 
 (t/deftest test-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
-    (utils/with-db
+    (test-utils/with-db
       (create-oppija-for-hoks-post "1.2.246.562.24.44000000008")
       (let [post-response
             (post-new-hoks
               "1.2.246.562.15.76000000018" "1.2.246.562.10.12000000013")
-            body (utils/parse-body (:body post-response))
+            body (test-utils/parse-body (:body post-response))
             hoks-url (get-in body [:data :uri])
             patch-response
             (with-test-virkailija
@@ -924,7 +924,7 @@
                :organisation-privileges
                [{:oid "1.2.246.562.10.12000000013"
                  :privileges #{:write :read :update :delete}}]})]
-        (t/is (get-in (utils/parse-body (:body get-response))
+        (t/is (get-in (test-utils/parse-body (:body get-response))
                       [:data :osaamisen-hankkimisen-tarve]))
         (t/is (= (:status patch-response) 204))))))
 
@@ -937,7 +937,7 @@
 
 (t/deftest test-prevent-virkailija-patch-hoks
   (t/testing "PATCH hoks virkailija"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000018"
@@ -964,7 +964,7 @@
                  :ensikertainen-hyvaksyminen "2018-12-15"
                  :osaamisen-hankkimisen-tarve false})
               virkailija-for-test)
-            body (utils/parse-body (:body response))
+            body (test-utils/parse-body (:body response))
             hoks-url (get-in body [:data :uri])
             patch-response
             (with-test-virkailija
@@ -985,12 +985,12 @@
 
 (t/deftest prevent-patch-hoks-with-updated-opiskeluoikeus
   (t/testing "PATCH hoks virkailija"
-    (utils/with-db
+    (test-utils/with-db
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
       (let [post-response
             (post-new-hoks
               "1.2.246.562.15.76000000018" "1.2.246.562.10.12000000013")
-            body (utils/parse-body (:body post-response))
+            body (test-utils/parse-body (:body post-response))
             hoks-url (get-in body [:data :uri])
             patch-response
             (with-test-virkailija
@@ -1003,18 +1003,18 @@
                  :opiskeluoikeus-oid "1.2.246.562.15.76000000000"})
               virkailija-for-test)]
         (t/is (= (:status patch-response) 400))
-        (t/is (= (utils/parse-body (:body patch-response))
+        (t/is (= (test-utils/parse-body (:body patch-response))
                  {:error
                   "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"}))))))
 
 (t/deftest prevent-patch-hoks-with-updated-oppija-oid
   (t/testing "PATCH hoks virkailija"
-    (utils/with-db
+    (test-utils/with-db
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
       (let [post-response
             (post-new-hoks
               "1.2.246.562.15.76000000018" "1.2.246.562.10.12000000013")
-            body (utils/parse-body (:body post-response))
+            body (test-utils/parse-body (:body post-response))
             hoks-url (get-in body [:data :uri])
             patch-response
             (with-test-virkailija
@@ -1027,7 +1027,7 @@
                  :oppija-oid "1.2.246.562.24.12000000014"})
               virkailija-for-test)]
         (t/is (= (:status patch-response) 400))
-        (t/is (= (utils/parse-body (:body patch-response))
+        (t/is (= (test-utils/parse-body (:body patch-response))
                  {:error "Updating `oppija-oid` in HOKS is not allowed!"}))))))
 
 (def hoks-data
@@ -1039,7 +1039,7 @@
 (t/deftest test-virkailija-put-hoks
   (t/testing "PUT hoks virkailija"
     (logtest/with-log
-      (utils/with-db
+      (test-utils/with-db
         (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                              :nimi "Teuvo Testaaja"
                              :opiskeluoikeus-oid "1.2.246.562.15.76000000018"
@@ -1057,7 +1057,7 @@
                       "/virkailija/oppijat/1.2.246.562.24.44000000008/hoksit"))
                   hoks-data)
                 virkailija-for-test)
-              body (utils/parse-body (:body response))
+              body (test-utils/parse-body (:body response))
               hoks-url (get-in body [:data :uri])
               put-response-just-dates
               (with-test-virkailija
@@ -1086,7 +1086,7 @@
                   :get
                   hoks-url)
                 virkailija-for-test)]
-          (let [body (utils/parse-body (:body get-response))]
+          (let [body (test-utils/parse-body (:body get-response))]
             (t/is (= (get-in body [:data :hankittavat-ammat-tutkinnon-osat 0
                                    :osaamisen-hankkimistavat 0
                                    :yksiloiva-tunniste])
@@ -1096,22 +1096,23 @@
                     (get-in body [:data :hankittavat-ammat-tutkinnon-osat 0
                                   :osaamisen-hankkimistavat 1
                                   :yksiloiva-tunniste])))
-            (utils/eq (utils/dissoc-module-ids
-                        (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
-                      (utils/dissoc-module-ids
-                        (-> hato-data
-                            (update-in [0
-                                        :osaamisen-hankkimistavat
-                                        0
-                                        :tyopaikalla-jarjestettava-koulutus
-                                        :tyopaikan-nimi]
-                                       string/trim)
-                            (update-in [0
-                                        :osaamisen-hankkimistavat
-                                        1
-                                        :tyopaikalla-jarjestettava-koulutus
-                                        :tyopaikan-nimi]
-                                       string/trim)))))
+            (test-utils/eq
+              (test-utils/dissoc-module-ids
+                (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
+              (test-utils/dissoc-module-ids
+                (-> hato-data
+                    (update-in [0
+                                :osaamisen-hankkimistavat
+                                0
+                                :tyopaikalla-jarjestettava-koulutus
+                                :tyopaikan-nimi]
+                               string/trim)
+                    (update-in [0
+                                :osaamisen-hankkimistavat
+                                1
+                                :tyopaikalla-jarjestettava-koulutus
+                                :tyopaikan-nimi]
+                               string/trim)))))
           (t/is (= (:status put-response-just-dates) 204))
           (t/is (logtest/logged? "audit" :info #"overwrite.*2018-12-17")
                 (str "log entries:" (logtest/the-log)))
@@ -1142,7 +1143,7 @@
 
 (t/deftest test-put-prevent-updating-opiskeluoikeus
   (t/testing "PUT hoks virkailija"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000018"
@@ -1160,7 +1161,7 @@
                     "/virkailija/oppijat/1.2.246.562.24.44000000008/hoksit"))
                 hoks-data)
               virkailija-for-test)
-            body (utils/parse-body (:body response))
+            body (test-utils/parse-body (:body response))
             hoks-url (get-in body [:data :uri])
             put-response
             (with-test-virkailija
@@ -1175,7 +1176,7 @@
                  :hankittavat-ammat-tutkinnon-osat
                  hato-data})
               virkailija-for-test)
-            put-body (utils/parse-body (:body put-response))]
+            put-body (test-utils/parse-body (:body put-response))]
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
                  {:error
@@ -1183,7 +1184,7 @@
 
 (t/deftest test-put-prevent-updating-oppija-oid
   (t/testing "PUT hoks virkailija"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000018"
@@ -1201,7 +1202,7 @@
                     "/virkailija/oppijat/1.2.246.562.24.44000000008/hoksit"))
                 hoks-data)
               virkailija-for-test)
-            body (utils/parse-body (:body response))
+            body (test-utils/parse-body (:body response))
             hoks-url (get-in body [:data :uri])
             put-response
             (with-test-virkailija
@@ -1217,14 +1218,14 @@
                  :hankittavat-ammat-tutkinnon-osat
                  hato-data})
               virkailija-for-test)
-            put-body (utils/parse-body (:body put-response))]
+            put-body (test-utils/parse-body (:body put-response))]
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
                  {:error "Updating `oppija-oid` in HOKS is not allowed!"}))))))
 
 (t/deftest test-get-amount
   (t/testing "Test getting the amount of hokses"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.76000000018"
@@ -1253,13 +1254,13 @@
                  :oikeus "OPHPAAKAYTTAJA"
                  :palvelu "EHOKS"
                  :roles {:oph-super-user true}}]})
-            amount-body (utils/parse-body (:body amount-response))]
+            amount-body (test-utils/parse-body (:body amount-response))]
         (t/is (= (:status amount-response) 200))
         (t/is (= (:data amount-body) {:amount 1}))))))
 
 (t/deftest test-get-oppijan-hoksit-for-virkailija
   (t/testing "Test getting oppija's other hokses when opiskeluoikeus active"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.10000000009"
@@ -1302,11 +1303,11 @@
                  :oikeus "OPHPAAKAYTTAJA"
                  :palvelu "EHOKS"
                  :roles {:oph-super-user true}}]})
-            get-body (utils/parse-body (:body get-response))]
+            get-body (test-utils/parse-body (:body get-response))]
         (t/is (= (:status get-response) 200))
         (t/is (= (count (:data get-body)) 2)))))
   (t/testing "Test getting only oppija's hokses in virkailija's oppilaitos"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.12000000203"
@@ -1348,7 +1349,7 @@
                  :oikeus "OPHPAAKAYTTAJA"
                  :palvelu "EHOKS"
                  :roles {:oph-super-user true}}]})
-            get-body (utils/parse-body (:body get-response))]
+            get-body (test-utils/parse-body (:body get-response))]
         (t/is (= (:status get-response) 200))
         (t/is (= (count (:data get-body)) 1))
         (t/is (= (-> get-body
@@ -1356,7 +1357,7 @@
                      first
                      :opiskeluoikeus-oid) "1.2.246.562.15.12000000005")))))
   (t/testing "Missing opiskeluoikeus is handled correctly"
-    (utils/with-db
+    (test-utils/with-db
       (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
                            :nimi "Teuvo Testaaja"
                            :opiskeluoikeus-oid "1.2.246.562.15.12000000203"
@@ -1398,7 +1399,7 @@
                  :oikeus "OPHPAAKAYTTAJA"
                  :palvelu "EHOKS"
                  :roles {:oph-super-user true}}]})
-            get-body (utils/parse-body (:body get-response))]
+            get-body (test-utils/parse-body (:body get-response))]
         (t/is (= (:status get-response) 200))
         (t/is (= (count (:data get-body)) 1))
         (t/is (= (-> get-body
@@ -1414,7 +1415,7 @@
                     (fn [_]
                       {:vastattu false
                        :voimassa_loppupvm (str loppupvm "Z")})]
-        (utils/with-db
+        (test-utils/with-db
           (v-utils/add-oppija
             {:oid "1.2.246.562.24.44000000008"
              :nimi "Teuvo Testaaja"
@@ -1457,7 +1458,7 @@
                           :oikeus "OPHPAAKAYTTAJA"
                           :palvelu "EHOKS"
                           :roles {:oph-super-user true}}]})
-                body (utils/parse-body (:body resp))]
+                body (test-utils/parse-body (:body resp))]
             (t/is (= 200 (:status resp)))
             (t/is (empty? (:data body))))
           (kyselylinkki/update! {:kyselylinkki "https://kysely.linkki/ABC123"
@@ -1479,7 +1480,7 @@
                           :oikeus "OPHPAAKAYTTAJA"
                           :palvelu "EHOKS"
                           :roles {:oph-super-user true}}]})
-                body (utils/parse-body (:body resp))]
+                body (test-utils/parse-body (:body resp))]
             (t/is (= 200 (:status resp)))
             (t/is
               (= (first (:data body))
@@ -1494,7 +1495,7 @@
 
 (t/deftest test-shallow-delete
   (t/testing "shallow delete works"
-    (utils/with-db
+    (test-utils/with-db
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
       (let [organisaatio-oid "1.2.246.562.10.12000000013"
             post-response
@@ -1503,20 +1504,20 @@
               {:hankittavat-ammat-tutkinnon-osat hato-data})]
         (t/is (= (:status post-response) 200))
         (let [get-response (get-created-hoks post-response)
-              body (utils/parse-body (:body get-response))
+              body (test-utils/parse-body (:body get-response))
               hoks-id (-> body :data :id)
               delete-response
               (shallow-delete-hoks "1.2.246.562.24.44000000008"
                                    hoks-id
                                    organisaatio-oid
                                    organisaatio-oid)
-              delete-body (utils/parse-body (:body delete-response))]
+              delete-body (test-utils/parse-body (:body delete-response))]
           (t/is (= (:status delete-response) 200))
           (t/is (= (:success delete-body) hoks-id))))))
 
   (t/testing (str "shallow delete works without oppilaitos oid "
                   "(in case of opiskeluoikeus voided)")
-    (utils/with-db
+    (test-utils/with-db
       (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
       (let [organisaatio-oid "1.2.246.562.10.12000000013"
             post-response
@@ -1525,13 +1526,13 @@
               {:hankittavat-ammat-tutkinnon-osat hato-data})]
         (t/is (= (:status post-response) 200))
         (let [get-response (get-created-hoks post-response)
-              body (utils/parse-body (:body get-response))
+              body (test-utils/parse-body (:body get-response))
               hoks-id (-> body :data :id)
               delete-response
               (shallow-delete-hoks "1.2.246.562.24.44000000008"
                                    hoks-id
                                    organisaatio-oid
                                    nil)
-              delete-body (utils/parse-body (:body delete-response))]
+              delete-body (test-utils/parse-body (:body delete-response))]
           (t/is (= (:status delete-response) 200))
           (t/is (= (:success delete-body) hoks-id)))))))

@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest testing is]]
             [oph.ehoks.schema-tools :as st]
             [schema.core :as s]
-            [oph.ehoks.utils :refer [eq]]))
+            [oph.ehoks.test-utils :refer [eq]]))
 
 (s/defschema
   TestSchema

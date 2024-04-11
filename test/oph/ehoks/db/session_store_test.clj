@@ -2,10 +2,10 @@
   (:require [ring.middleware.session.store :refer [SessionStore]]
             [oph.ehoks.db.session-store :as sut]
             [clojure.test :as t]
-            [oph.ehoks.utils :as u]))
+            [oph.ehoks.test-utils :as test-utils]))
 
-(t/use-fixtures :once u/migrate-database)
-(t/use-fixtures :each u/empty-database-after-test)
+(t/use-fixtures :once test-utils/migrate-database)
+(t/use-fixtures :each test-utils/empty-database-after-test)
 
 (t/deftest get-no-session
   (t/testing "Get no session"

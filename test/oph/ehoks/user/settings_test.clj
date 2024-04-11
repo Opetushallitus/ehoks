@@ -1,10 +1,10 @@
 (ns oph.ehoks.user.settings-test
   (:require [oph.ehoks.user.settings :as user-settings]
             [clojure.test :as t]
-            [oph.ehoks.utils :as utils]))
+            [oph.ehoks.test-utils :as test-utils]))
 
-(t/use-fixtures :once utils/migrate-database)
-(t/use-fixtures :each utils/empty-database-after-test)
+(t/use-fixtures :once test-utils/migrate-database)
+(t/use-fixtures :each test-utils/empty-database-after-test)
 
 (t/deftest save-new-test
   (t/testing "Save new settings"

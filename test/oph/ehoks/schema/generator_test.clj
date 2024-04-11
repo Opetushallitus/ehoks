@@ -3,7 +3,7 @@
             [oph.ehoks.schema.generator :as g]
             [schema.core :as s]
             [ring.swagger.json-schema :as rsjs]
-            [oph.ehoks.utils :refer [eq]]))
+            [oph.ehoks.test-utils :refer [eq]]))
 
 (def example
   ^{:type ::g/schema-template}

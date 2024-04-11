@@ -5,7 +5,7 @@
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.utils :refer [authenticate parse-body]]
+            [oph.ehoks.test-utils :refer [authenticate parse-body]]
             [ring.mock.request :as mock]))
 
 (def base-url

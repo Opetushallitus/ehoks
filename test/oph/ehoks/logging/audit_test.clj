@@ -6,9 +6,9 @@
              :refer [ahato-data multiple-ahato-values-patched]]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.logging.audit :as a]
-            [oph.ehoks.utils :as utils]))
+            [oph.ehoks.test-utils :as test-utils]))
 
-(use-fixtures :once utils/migrate-database)
+(use-fixtures :once test-utils/migrate-database)
 
 (def ahato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
 
@@ -34,7 +34,7 @@
           ahato-creation (expected-log-entry-on-ahato-creation (+ 2 logseq))
           ahato-update   (expected-log-entry-on-ahato-update   (+ 3 logseq))
           ahato-read     (expected-log-entry-on-ahato-read     (+ 4 logseq))))
-      (utils/clear-db))))
+      (test-utils/clear-db))))
 
 (deftest test-changes
   (testing "Single element replaced in map"

@@ -1,11 +1,11 @@
 (ns oph.ehoks.hoks.hoks-parts.opiskeluvalmiuksia-tukevat-handler-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [oph.ehoks.utils :as utils :refer [eq]]
+            [oph.ehoks.test-utils :as test-utils :refer [eq]]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.hoks.hoks-parts.parts-test-data :as test-data]))
 
-(use-fixtures :once utils/migrate-database)
-(use-fixtures :each utils/empty-database-after-test)
+(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :each test-utils/empty-database-after-test)
 
 (def oto-path "opiskeluvalmiuksia-tukevat-opinnot")
 
@@ -19,7 +19,7 @@
             (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)]
         (hoks-utils/assert-post-response-is-ok oto-path post-response)
         (is (= (:status get-response) 200))
-        (eq (utils/parse-body
+        (eq (test-utils/parse-body
               (:body get-response))
             {:meta {} :data (assoc test-data/oto-data :id 1)})))))
 
@@ -36,7 +36,9 @@
                              oto-path app one-value-of-oto-patched)
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)
-            get-response-data (:data (utils/parse-body (:body get-response)))]
+            get-response-data (-> (:body get-response)
+                                  test-utils/parse-body
+                                  :data)]
         (is (= (:status patch-response) 204))
         (is (= (:nimi get-response-data)
                (:nimi one-value-of-oto-patched))
@@ -61,6 +63,8 @@
                              oto-path app all-values-of-oto-patched)
             get-response
             (hoks-utils/create-mock-hoks-osa-get-request oto-path app hoks)
-            get-response-data (:data (utils/parse-body (:body get-response)))]
+            get-response-data (-> (:body get-response)
+                                  test-utils/parse-body
+                                  :data)]
         (is (= (:status patch-response) 204))
         (eq get-response-data (assoc all-values-of-oto-patched :id 1))))))

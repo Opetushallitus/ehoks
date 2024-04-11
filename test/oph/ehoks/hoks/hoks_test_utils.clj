@@ -4,7 +4,7 @@
             [clojure.test :refer [is]]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.utils :as utils :refer [eq]]))
+            [oph.ehoks.test-utils :as test-utils :refer [eq]]))
 
 (def base-url "/ehoks-virkailija-backend/api/v1/hoks")
 (def virkailija-base-url "/ehoks-virkailija-backend/api/v1/virkailija")
@@ -14,11 +14,11 @@
   (common-api/create-app handler/app-routes session-store))
 
 (defn get-authenticated [url]
-  (-> (utils/with-service-ticket
+  (-> (test-utils/with-service-ticket
         (create-app nil)
         (mock/request :get url))
       :body
-      utils/parse-body))
+      test-utils/parse-body))
 
 (defn create-hoks [app]
   (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
@@ -27,11 +27,11 @@
                    (java.time.LocalDate/of 2019 3 18)
                    :osaamisen-hankkimisen-tarve false}]
     (-> app
-        (utils/with-service-ticket
+        (test-utils/with-service-ticket
           (-> (mock/request :post base-url)
               (mock/json-body hoks-data)))
         :body
-        utils/parse-body
+        test-utils/parse-body
         (get-in [:data :uri])
         get-authenticated
         :data)))
@@ -46,7 +46,7 @@
     (let [req (mock/request
                 method
                 full-url)]
-      (utils/with-service-ticket
+      (test-utils/with-service-ticket
         app
         (if (some? data)
           (mock/json-body req data)
@@ -101,16 +101,16 @@
         post-response (create-mock-post-request "" initial-hoks-data app)
         put-response (create-mock-hoks-put-request 1 updated-hoks app)
         get-response (create-mock-hoks-get-request 1 app)
-        get-response-data (:data (utils/parse-body (:body get-response)))]
+        get-response-data (:data (test-utils/parse-body (:body get-response)))]
     (is (= (:status post-response) 200))
     (is (= (:status put-response) 204))
     (is (= (:status get-response) 200))
-    (eq (utils/dissoc-module-ids (hoks-part get-response-data))
-        (utils/dissoc-module-ids (hoks-part updated-hoks)))))
+    (eq (test-utils/dissoc-module-ids (hoks-part get-response-data))
+        (test-utils/dissoc-module-ids (hoks-part updated-hoks)))))
 
 (defn assert-post-response-is-ok [post-path post-response]
   (is (= (:status post-response) 200))
-  (eq (utils/parse-body (:body post-response))
+  (eq (test-utils/parse-body (:body post-response))
       {:meta {:id 1}
        :data {:uri
               (format
@@ -126,9 +126,9 @@
       (assert-post-response-is-ok osa-path post-response)
       (is (= (:status get-response) 200))
       (eq (update
-            (utils/parse-body
+            (test-utils/parse-body
               (:body get-response))
-            :data utils/dissoc-module-ids)
+            :data test-utils/dissoc-module-ids)
           {:meta {} :data (assoc osa-data :id 1)}))))
 
 (defn compare-tarkentavat-tiedot-naytto-values
@@ -138,4 +138,4 @@
         ttn-patch-values
         (assoc (selector-function (:tarkentavat-tiedot-naytto original))
                :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
-    (eq (utils/dissoc-module-ids ttn-after-update) ttn-patch-values)))
+    (eq (test-utils/dissoc-module-ids ttn-after-update) ttn-patch-values)))
