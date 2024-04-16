@@ -233,10 +233,11 @@
             :paattokysely)
           (are [kyselytyyppi heratepvm]
                (= (select-keys
-                    (opiskelijapalaute/get-by-hoks-id-and-tyyppi!
-                      db/spec
-                      {:hoks-id      (:id hoks)
-                       :kyselytyyppi kyselytyyppi})
+                    (first
+                      (opiskelijapalaute/get-by-hoks-id-and-kyselytyypit!
+                        db/spec
+                        {:hoks-id      (:id hoks)
+                         :kyselytyypit [kyselytyyppi]}))
                     [:tila :kyselytyyppi :hoks-id :heratepvm :herate-source])
                   {:tila "odottaa_kasittelya"
                    :kyselytyyppi kyselytyyppi
@@ -244,13 +245,8 @@
                    :heratepvm (LocalDate/parse heratepvm)
                    :herate-source "ehoks_update"})
             "aloittaneet"  (:ensikertainen-hyvaksyminen hoks)
-            "valmistuneet" (:osaamisen-saavuttamisen-pvm hoks))))
-      (testing "logs appropriately when messages could not be send."
-        (with-log
-          (opiskelijapalaute/initiate!
-            :paattokysely
-            (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.20000000008")
-            (mock-get-opiskeluoikeus-info-raw "1.2.246.562.15.20000000008"))
-          (is (logged? 'oph.ehoks.palaute.opiskelija
-                       :info
-                       #"No ammatillinen suoritus in opiskeluoikeus")))))))
+            "valmistuneet" (:osaamisen-saavuttamisen-pvm hoks)))
+        (testing "doesn't initiate kysely if one already exists for HOKS"
+          (are [kysely] (nil? (opiskelijapalaute/initiate!
+                                kysely hoks opiskeluoikeus))
+            :aloituskysely :paattokysely))))))

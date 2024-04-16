@@ -10,6 +10,8 @@
 
 (hugsql/def-db-fns "oph/ehoks/db/sql/opiskelijapalaute.sql")
 
+(def paattokyselyt #{"valmistuneet" "osia_suorittaneet"})
+
 (defn- suoritustyyppi [suoritus] (get-in suoritus [:tyyppi :koodiarvo]))
 
 (defn- ammatillinen-suoritus?
@@ -103,33 +105,44 @@
    :kyselytyyppi  kyselytyyppi
    :herate-source "ehoks_update"})
 
+(defn kyselytyyppi
+  [kysely opiskeluoikeus]
+  (case kysely
+    :aloituskysely "aloittaneet"
+    :paattokysely  (->> opiskeluoikeus
+                        :suoritukset
+                        (find-first ammatillinen-suoritus?)
+                        suoritustyyppi
+                        koski-suoritustyyppi->kyselytyyppi)))
+
+(defn kysely-already-exists?!
+  [kysely hoks]
+  (some? (first (get-by-hoks-id-and-kyselytyypit!
+                  db/spec
+                  {:hoks-id      (:id hoks)
+                   :kyselytyypit (case kysely
+                                   :aloituskysely ["aloittaneet"]
+                                   :paattokysely  (vec paattokyselyt))}))))
+
 (defn initiate!
-  "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
-  `:paattokysely`) to appropriate DynamoDB table of Herätepalvelu and returns
-  `true` if kysely was successfully sent."
+  "Initiates opiskelijapalautekysely (`:aloituskysely` or `:paattokysely`).
+  Currently, stores kysely data to eHOKS DB `palautteet` table and also sends
+  the herate to AWS SQS for Herätepalvelu to process. Returns `true` if kysely
+  was successfully initiated, `nil` or `false` otherwise."
   [kysely hoks opiskeluoikeus]
   {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-  (case kysely
-    :aloituskysely (do (insert! db/spec (kysely-data hoks "aloittaneet"))
-                       (sqs/send-amis-palaute-message
-                         (sqs/build-hoks-hyvaksytty-msg hoks)))
-    :paattokysely
-    (if-let [kyselytyyppi (->> opiskeluoikeus
-                               :suoritukset
-                               (find-first ammatillinen-suoritus?)
-                               suoritustyyppi
-                               koski-suoritustyyppi->kyselytyyppi)]
-      (do (insert! db/spec (kysely-data hoks kyselytyyppi))
-          (->> (translate-kyselytyyppi kyselytyyppi)
-               (sqs/build-hoks-osaaminen-saavutettu-msg hoks)
-               sqs/send-amis-palaute-message))
-      (log/logf :info
-                (str "Not sending %s for HOKS `%s` - No "
-                     "ammatillinen suoritus in opiskeluoikeus "
-                     "`%s`.")
-                (name kysely)
-                (:id hoks)
-                (:oid opiskeluoikeus)))))
+  (if (kysely-already-exists?! kysely hoks)
+    (log/warnf "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
+    (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)]
+      (assert (some? kyselytyyppi))
+      (insert! db/spec (kysely-data hoks kyselytyyppi))
+      ; Seding herate to AWS SQS (will be removed when Herätepalvelu migration
+      ; is complete).
+      (sqs/send-amis-palaute-message
+        (case kysely
+          :aloituskysely (sqs/build-hoks-hyvaksytty-msg hoks)
+          :paattokysely  (sqs/build-hoks-osaaminen-saavutettu-msg
+                           hoks (translate-kyselytyyppi kyselytyyppi)))))))
 
 (defn initiate-if-needed!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
