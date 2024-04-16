@@ -8,7 +8,7 @@ values (:herate-source,
         :hoks-id)
 returning id
 
--- :name get-by-hoks-id-and-tyyppi! :? :1
+-- :name get-by-hoks-id-and-kyselytyypit! :? :*
 -- :doc Get opiskelijapalaute information by HOKS ID and kyselytyyppi
 select * from palautteet
-where hoks_id = :hoks-id AND kyselytyyppi = :kyselytyyppi
+where hoks_id = :hoks-id AND kyselytyyppi in (:v*:kyselytyypit)
