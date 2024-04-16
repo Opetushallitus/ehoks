@@ -131,7 +131,9 @@
     (jdbc/with-db-transaction
       [db-conn (db-ops/get-db-connection)]
       (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)
-      (let [updated-hoks (merge current-hoks new-values)]
+      (let [updated-hoks (merge current-hoks new-values)
+            opiskeluoikeus (koski/get-existing-opiskeluoikeus!
+                             (:opiskeluoikeus-oid updated-hoks))]
         (if (tuva-related? updated-hoks)
           (db-hoks/set-amisherate-kasittelytilat-to-true!
             amisherate-kasittelytila
@@ -142,14 +144,18 @@
                 (db-hoks/update-amisherate-kasittelytilat!
                   {:id (:id amisherate-kasittelytila)
                    :aloitusherate_kasitelty false})
-                (opiskelijapalaute/initiate! :aloituskysely updated-hoks))
+                (opiskelijapalaute/initiate! :aloituskysely
+                                             updated-hoks
+                                             opiskeluoikeus))
               (when (opiskelijapalaute/initiate? :paattokysely
                                                  current-hoks
                                                  updated-hoks)
                 (db-hoks/update-amisherate-kasittelytilat!
                   {:id (:id amisherate-kasittelytila)
                    :paattoherate_kasitelty false})
-                (opiskelijapalaute/initiate! :paattokysely updated-hoks))))))
+                (opiskelijapalaute/initiate! :paattokysely
+                                             updated-hoks
+                                             opiskeluoikeus))))))
     (db-hoks/select-hoks-by-id hoks-id)))
 
 (defn- merge-not-given-hoks-values
@@ -291,7 +297,9 @@
             [db-conn (db-ops/get-db-connection)]
             (replace-main-hoks! hoks-id new-values db-conn)
             (replace-parts! (assoc new-values :id hoks-id) db-conn))
-        updated-hoks (get-by-id hoks-id)]
+        updated-hoks (get-by-id hoks-id)
+        opiskeluoikeus (koski/get-existing-opiskeluoikeus!
+                         (:opiskeluoikeus-oid updated-hoks))]
     (if (tuva-related? updated-hoks)
       (db-hoks/set-amisherate-kasittelytilat-to-true!
         amisherate-kasittelytila
@@ -303,14 +311,18 @@
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :aloitusherate_kasitelty false})
-          (opiskelijapalaute/initiate! :aloituskysely updated-hoks))
+          (opiskelijapalaute/initiate! :aloituskysely
+                                       updated-hoks
+                                       opiskeluoikeus))
         (when (opiskelijapalaute/initiate? :paattokysely
                                            current-hoks
                                            updated-hoks)
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :paattoherate_kasitelty false})
-          (opiskelijapalaute/initiate! :paattokysely updated-hoks))))
+          (opiskelijapalaute/initiate! :paattokysely
+                                       updated-hoks
+                                       opiskeluoikeus))))
     updated-hoks))
 
 (defn check-for-update!
