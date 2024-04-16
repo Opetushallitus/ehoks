@@ -215,9 +215,10 @@
      :paattokysely  (:osaamisen-saavuttamisen-pvm hoks))})
 
 (deftest test-initiate!
-  (with-redefs [sqs/send-amis-palaute-message (fn [msg] (reset! sqs-msg msg))
-                k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus-info-raw]
-    (let [hoks (assoc test-data/hoks-data :id 1)]
+  (with-redefs [sqs/send-amis-palaute-message (fn [msg] (reset! sqs-msg msg))]
+    (let [hoks (assoc test-data/hoks-data :id 1)
+          opiskeluoikeus (mock-get-opiskeluoikeus-info-raw
+                           (:opiskeluoikeus-oid hoks))]
       (db-hoks/insert-hoks! {:oppija-oid         (:oppija-oid hoks)
                              :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)})
       (testing "Testing that function `initiate!`"
@@ -225,7 +226,8 @@
                       "successfully sends aloituskysely and paattokysely "
                       "herate to SQS queue")
           (are [kysely] (= (expected-msg kysely hoks)
-                           (do (opiskelijapalaute/initiate! kysely hoks)
+                           (do (opiskelijapalaute/initiate!
+                                 kysely hoks opiskeluoikeus)
                                @sqs-msg))
             :aloituskysely
             :paattokysely)
@@ -247,13 +249,8 @@
         (with-log
           (opiskelijapalaute/initiate!
             :paattokysely
-            (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.20000000008"))
+            (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.20000000008")
+            (mock-get-opiskeluoikeus-info-raw "1.2.246.562.15.20000000008"))
           (is (logged? 'oph.ehoks.palaute.opiskelija
                        :info
-                       #"No ammatillinen suoritus"))
-          (opiskelijapalaute/initiate!
-            :paattokysely
-            (assoc hoks :opiskeluoikeus-oid "1.2.246.562.15.30000000007"))
-          (is (logged? 'oph.ehoks.palaute.opiskelija
-                       :warn
-                       #"not found in Koski")))))))
+                       #"No ammatillinen suoritus in opiskeluoikeus")))))))
