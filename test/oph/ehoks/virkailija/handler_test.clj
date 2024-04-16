@@ -83,6 +83,42 @@
                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}
                    :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
            (.endsWith
+             url "/koski/api/opiskeluoikeus/1.2.246.562.15.12000000203")
+           {:status 200
+            :body {:oid "1.2.246.562.15.12000000203"
+                   :oppilaitos {:oid "1.2.246.562.10.12944436166"}
+                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}
+                   :päättymispäivä "2018-12-01"
+                   :tila {:opiskeluoikeusjaksot
+                          [{:alku "2018-12-01"
+                            :tila {:koodiarvo "valmistunut"
+                                   :nimi {:fi "Valmistunut"}
+                                   :koodistoUri
+                                   "koskiopiskeluoikeudentila"
+                                   :koodistoVersio 1}}]}}}
+           (.endsWith
+             url "/koski/api/opiskeluoikeus/1.2.246.562.15.12000000005")
+           {:status 200
+            :body {:oid "1.2.246.562.15.12000000005"
+                   :oppilaitos {:oid "1.2.246.562.10.12000000013"}
+                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}
+                   :päättymispäivä "2019-12-01"
+                   :tila {:opiskeluoikeusjaksot
+                          [{:alku "2019-12-01"
+                            :tila {:koodiarvo "katsotaaneronneeksi"
+                                   :nimi {:fi "Katsotaan eronneeksi"}
+                                   :koodistoUri
+                                   "koskiopiskeluoikeudentila"
+                                   :koodistoVersio 1}}]}}}
+           (.endsWith
+             url "/koski/api/opiskeluoikeus/1.2.246.562.15.44000000008")
+           (throw
+             (ex-info
+               "Testing404"
+               {:status 404
+                :body (str "[{\"key\":\"notFound."
+                           "opiskeluoikeuttaEiLöydyTaiEiOikeuksia\"}]")}))
+           (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.76000000018")
            {:status 200
             :body {:oid "1.2.246.562.15.76000000018"
@@ -1220,6 +1256,155 @@
             amount-body (utils/parse-body (:body amount-response))]
         (t/is (= (:status amount-response) 200))
         (t/is (= (:data amount-body) {:amount 1}))))))
+
+(t/deftest test-get-oppijan-hoksit-for-virkailija
+  (t/testing "Test getting oppija's other hokses when opiskeluoikeus active"
+    (utils/with-db
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+                           :oppilaitos-oid "1.2.246.562.10.12944436166"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
+      (v-utils/add-another-opiskeluoikeus
+        {:oppija-oid "1.2.246.562.24.44000000008"
+         :oid "1.2.246.562.15.76000000018"
+         :oppilaitos-oid "1.2.246.562.10.12000000013"
+         :tutkinto-nimi {:fi "Testitutkinto 2"}
+         :osaamisala-nimi {:fi "Testiosaamisala numero 2"}
+         :koulutustoimija-oid ""})
+      (db-hoks/insert-hoks!
+        {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
+         :oppija-oid "1.2.246.562.24.44000000008"
+         :osaamisen-hankkimisen-tarve false
+         :ensikertainen-hyvaksyminen
+         (java.time.LocalDate/of 2017 12 15)})
+      (db-hoks/insert-hoks!
+        {:opiskeluoikeus-oid "1.2.246.562.15.76000000018"
+         :oppija-oid "1.2.246.562.24.44000000008"
+         :osaamisen-hankkimisen-tarve false
+         :ensikertainen-hyvaksyminen
+         (java.time.LocalDate/of 2018 12 15)})
+
+      (let [get-response
+            (with-test-virkailija
+              (mock/request
+                :get
+                (str
+                  base-url
+                  "/virkailija/oppijat/1.2.246.562.24.44000000008/hoksit"))
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.12000000013"
+                 :privileges #{:write :read :update :delete}
+                 :oikeus "OPHPAAKAYTTAJA"
+                 :palvelu "EHOKS"
+                 :roles {:oph-super-user true}}]})
+            get-body (utils/parse-body (:body get-response))]
+        (t/is (= (:status get-response) 200))
+        (t/is (= (count (:data get-body)) 2)))))
+  (t/testing "Test getting only oppija's hokses in virkailija's oppilaitos"
+    (utils/with-db
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.12000000203"
+                           :oppilaitos-oid "1.2.246.562.10.12944436166"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
+      (v-utils/add-another-opiskeluoikeus
+        {:oppija-oid "1.2.246.562.24.44000000008"
+         :oid "1.2.246.562.15.12000000005"
+         :oppilaitos-oid "1.2.246.562.10.12000000013"
+         :tutkinto-nimi {:fi "Testitutkinto 1"}
+         :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+         :koulutustoimija-oid ""})
+      (db-hoks/insert-hoks!
+        {:opiskeluoikeus-oid "1.2.246.562.15.12000000203"
+         :oppija-oid "1.2.246.562.24.44000000008"
+         :osaamisen-hankkimisen-tarve false
+         :ensikertainen-hyvaksyminen
+         (java.time.LocalDate/of 2017 12 15)})
+      (db-hoks/insert-hoks!
+        {:opiskeluoikeus-oid "1.2.246.562.15.12000000005"
+         :oppija-oid "1.2.246.562.24.44000000008"
+         :osaamisen-hankkimisen-tarve false
+         :ensikertainen-hyvaksyminen
+         (java.time.LocalDate/of 2018 12 15)})
+      (let [get-response
+            (with-test-virkailija
+              (mock/request
+                :get
+                (str
+                  base-url
+                  "/virkailija/oppijat/1.2.246.562.24.44000000008/hoksit"))
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.12000000013"
+                 :privileges #{:write :read :update :delete}
+                 :oikeus "OPHPAAKAYTTAJA"
+                 :palvelu "EHOKS"
+                 :roles {:oph-super-user true}}]})
+            get-body (utils/parse-body (:body get-response))]
+        (t/is (= (:status get-response) 200))
+        (t/is (= (count (:data get-body)) 1))
+        (t/is (= (-> get-body
+                     :data
+                     first
+                     :opiskeluoikeus-oid) "1.2.246.562.15.12000000005")))))
+  (t/testing "Missing opiskeluoikeus is handled correctly"
+    (utils/with-db
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.12000000203"
+                           :oppilaitos-oid "1.2.246.562.10.12944436166"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
+      (v-utils/add-another-opiskeluoikeus
+        {:oppija-oid "1.2.246.562.24.44000000008"
+         :oid "1.2.246.562.15.44000000008"
+         :oppilaitos-oid "1.2.246.562.10.12000000013"
+         :tutkinto-nimi {:fi "Testitutkinto 1"}
+         :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+         :koulutustoimija-oid ""})
+      (db-hoks/insert-hoks!
+        {:opiskeluoikeus-oid "1.2.246.562.15.12000000203"
+         :oppija-oid "1.2.246.562.24.44000000008"
+         :osaamisen-hankkimisen-tarve false
+         :ensikertainen-hyvaksyminen
+         (java.time.LocalDate/of 2017 12 15)})
+      (db-hoks/insert-hoks!
+        {:opiskeluoikeus-oid "1.2.246.562.15.44000000008"
+         :oppija-oid "1.2.246.562.24.44000000008"
+         :osaamisen-hankkimisen-tarve false
+         :ensikertainen-hyvaksyminen
+         (java.time.LocalDate/of 2018 12 15)})
+      (let [get-response
+            (with-test-virkailija
+              (mock/request
+                :get
+                (str
+                  base-url
+                  "/virkailija/oppijat/1.2.246.562.24.44000000008/hoksit"))
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.12000000013"
+                 :privileges #{:write :read :update :delete}
+                 :oikeus "OPHPAAKAYTTAJA"
+                 :palvelu "EHOKS"
+                 :roles {:oph-super-user true}}]})
+            get-body (utils/parse-body (:body get-response))]
+        (t/is (= (:status get-response) 200))
+        (t/is (= (count (:data get-body)) 1))
+        (t/is (= (-> get-body
+                     :data
+                     first
+                     :opiskeluoikeus-oid) "1.2.246.562.15.44000000008"))))))
 
 (t/deftest test-get-kyselylinkit
   (t/testing "Test getting kyselylinkit"

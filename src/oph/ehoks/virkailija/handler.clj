@@ -116,22 +116,33 @@
         (assoc ::audit/changes {:new hoks}
                ::audit/target  (audit/hoks-target-data hoks-db)))))
 
-(defn- get-hoks-perustiedot
-  "Get basic information from HOKS"
-  [oppija-oid]
-  (if-let [hoksit (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
-    (assoc (restful/ok hoksit)
-           ::audit/target
-           {:hoks-ids            (map :id hoksit)
-            :oppija-oid          (:oppija-oid (first hoksit))
-            :opiskeluoikeus-oids (map :opiskeluoikeus-oid hoksit)})
-    (response/not-found {:message "HOKS not found"})))
-
 (defn- any-hoks-has-active-opiskeluoikeus?
   "Check if any of the HOKSes has an active opiskeluoikeus"
   [hoksit]
   (some #(some-> (koski/get-opiskeluoikeus! %) opiskeluoikeus/active?)
         (map :opiskeluoikeus-oid hoksit)))
+
+(defn- get-oppijan-hoksit-for-virkailija
+  "Get basic information from HOKS"
+  [oppija-oid ticket-user]
+  (if-let [hoksit (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
+    (let [virkailijan-oppilaitosten-hoksit
+          (filter #(user/has-privilege-to-hoks? % ticket-user :read)
+                  hoksit)
+          virkailijan-oppilaitosten-opiskeluoikeuksia-active?
+          (any-hoks-has-active-opiskeluoikeus? virkailijan-oppilaitosten-hoksit)
+          has-read-access-to-hoks?
+          (fn [hoks]
+            (or (some #(= (:id %) (:id hoks))
+                      virkailijan-oppilaitosten-hoksit)
+                virkailijan-oppilaitosten-opiskeluoikeuksia-active?))
+          visible-hoksit (filter has-read-access-to-hoks? hoksit)]
+      (assoc (restful/ok visible-hoksit)
+             ::audit/target
+             {:hoks-ids            (map :id visible-hoksit)
+              :oppija-oid          (:oppija-oid (first visible-hoksit))
+              :opiskeluoikeus-oids (map :opiskeluoikeus-oid visible-hoksit)}))
+    (response/not-found {:message "HOKS not found"})))
 
 (defn- get-oppilaitos-oid-by-oo-oid
   "Get oppilaitos OID by opiskeluoikeus OID"
@@ -544,10 +555,12 @@
 
                     (route-middleware
                       [m/wrap-virkailija-oppija-access]
-                      (c-api/GET "/" []
+                      (c-api/GET "/" [:as request]
                         :return (restful/response [hoks-schema/HOKS])
                         :summary "Oppijan hoksit (perustiedot)"
-                        (get-hoks-perustiedot oppija-oid))
+                        (get-oppijan-hoksit-for-virkailija
+                          oppija-oid
+                          (get-in request [:session :virkailija-user])))
 
                       (c-api/GET "/oppilaitos/:oppilaitos-oid" request
                         :path-params
