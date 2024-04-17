@@ -1,11 +1,9 @@
 (ns oph.ehoks.palaute.opiskelija-test
   (:require [clojure.test :refer [are deftest is testing use-fixtures]]
-            [clojure.tools.logging.test :refer [logged? with-log]]
             [medley.core :refer [assoc-some]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.external.koski :as k]
             [oph.ehoks.hoks.test-data :as test-data]
             [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
             [oph.ehoks.test-utils :as test-utils])
@@ -49,139 +47,6 @@
                 :puhelinnumero puh
                 :tuva-opiskeluoikeus-oid "1.2.246.562.15.88406700034")))
 
-(deftest test-initiate?
-  (testing "On HOKS creation or update"
-    (testing "don't initiate kysely if"
-      (testing "`osaamisen-hankkimisen-tarve` is missing or is `false`."
-        (doseq [hoks (filter #(not (:osaamisen-hankkimisen-tarve %)) hoksit)]
-          (is (not (opiskelijapalaute/initiate? :aloituskysely hoks)))
-          (is (not (opiskelijapalaute/initiate? :paattokysely  hoks))))
-        (doseq [current-hoks hoksit
-                updated-hoks (filter #(not (:osaamisen-hankkimisen-tarve %))
-                                     hoksit)]
-          (is (not (opiskelijapalaute/initiate? :aloituskysely
-                                                current-hoks
-                                                updated-hoks)))
-          (is (not (opiskelijapalaute/initiate? :paattokysely
-                                                current-hoks
-                                                updated-hoks)))))
-
-      (testing "HOKS is a TUVA-HOKS or a HOKS related to TUVA-HOKS."
-        (doseq [hoks (concat tuva-hoksit tuva-rinnakkaiset-ammat-hoksit)]
-          (is (not (opiskelijapalaute/initiate? :aloituskysely hoks)))
-          (is (not (opiskelijapalaute/initiate? :paattokysely  hoks))))
-        (doseq [current-hoks hoksit
-                updated-hoks (concat tuva-hoksit
-                                     tuva-rinnakkaiset-ammat-hoksit)]
-          (is (not (opiskelijapalaute/initiate? :aloituskysely
-                                                current-hoks
-                                                updated-hoks)))
-          (is (not (opiskelijapalaute/initiate? :paattokysely
-                                                current-hoks
-                                                updated-hoks)))))
-
-      (testing (str "don't initiate päättökysely if "
-                    "`osaamisen-saavuttamisen-pvm` is missing.")
-        (doseq [hoks (filter #(not (:osaamisen-saavuttamisen-pvm %)) hoksit)]
-          (is (not (opiskelijapalaute/initiate? :paattokysely  hoks))))
-        (doseq [current-hoks hoksit
-                updated-hoks (filter #(not (:osaamisen-saavuttamisen-pvm %))
-                                     hoksit)]
-          (is (not (opiskelijapalaute/initiate? :paattokysely
-                                                current-hoks
-                                                updated-hoks)))))))
-
-  (testing "On HOKS creation"
-    (testing
-     "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
-      (doseq [hoks (filter :osaamisen-hankkimisen-tarve hoksit)]
-        (is (opiskelijapalaute/initiate? :aloituskysely hoks))))
-
-    (testing (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
-                  "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
-      (doseq [hoks (filter #(and (:osaamisen-hankkimisen-tarve %)
-                                 (:osaamisen-saavuttamisen-pvm %))
-                           hoksit)]
-        (is (opiskelijapalaute/initiate? :paattokysely hoks)))))
-
-  (testing "On HOKS update"
-    (testing
-     "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is added to HOKS."
-      (doseq [current-hoks (filter #(not (:osaamisen-hankkimisen-tarve %))
-                                   hoksit)
-              updated-hoks (filter :osaamisen-hankkimisen-tarve hoksit)]
-        (is (opiskelijapalaute/initiate? :aloituskysely
-                                         current-hoks
-                                         updated-hoks))))
-
-    (testing (str "initiate aloituskysely if `sahkoposti` is added to HOKS and "
-                  "`osaamisen-hankkimisen-tarve` is `true`.")
-      (doseq [current-hoks (filter #(not (:sahkoposti %)) hoksit)
-              updated-hoks (filter #(and (:sahkoposti %)
-                                         (:osaamisen-hankkimisen-tarve %))
-                                   hoksit)]
-        (is (opiskelijapalaute/initiate? :aloituskysely
-                                         current-hoks
-                                         updated-hoks))))
-
-    (testing (str "initiate aloituskysely if `puhelinnumero` is added to HOKS "
-                  "and `osaamisen-hankkimisen-tarve` is `true`.")
-      (doseq [current-hoks (filter #(not (:puhelinnumero %)) hoksit)
-              updated-hoks (filter #(and (:puhelinnumero %)
-                                         (:osaamisen-hankkimisen-tarve %))
-                                   hoksit)]
-        (is (opiskelijapalaute/initiate? :aloituskysely
-                                         current-hoks
-                                         updated-hoks))))
-
-    (testing
-     "initiate päättökysely if `osaamisen-saavuttamisen-pvm` is added to HOKS."
-      (doseq [current-hoks (filter #(and (:osaamisen-hankkimisen-tarve %)
-                                         (not (:osaamisen-saavuttamisen-pvm %)))
-                                   hoksit)
-              updated-hoks (filter #(and (:osaamisen-hankkimisen-tarve %)
-                                         (:osaamisen-saavuttamisen-pvm %))
-                                   hoksit)]
-        (is (opiskelijapalaute/initiate? :paattokysely
-                                         current-hoks
-                                         updated-hoks))))
-
-    (testing "don't initiate aloituskysely if"
-      (testing "`sahkoposti` stays unchanged, is changed or is removed."
-        (are [old-val new-val]
-             (not (opiskelijapalaute/initiate?
-                    :aloituskysely
-                    {:osaamisen-hankkimisen-tarve true :sahkoposti old-val}
-                    {:osaamisen-hankkimisen-tarve true :sahkoposti new-val}))
-          "testi.testaaja@testidomain.testi" "testi.testaaja@testidomain.testi"
-          "testi.testaaja@testidomain.testi" "testi.testinen@testi.domain"
-          "testi.testaaja@testidomain.testi" nil))
-
-      (testing "`puhelinnumero` stays unchanged, is changed or is removed."
-        (are [old-val new-val]
-             (not (opiskelijapalaute/initiate?
-                    :aloituskysely
-                    {:osaamisen-hankkimisen-tarve true
-                     :puhelinnumero old-val}
-                    {:osaamisen-hankkimisen-tarve true
-                     :puhelinnumero new-val}))
-          "0123456789" "0123456789"
-          "0123456789" "0011223344"
-          "0123456789" nil)))
-
-    (testing (str "don't initiate päättökysely if `osaamisen-saavuttamisen-pvm`"
-                  " stays unchanged, is changed or is removed.")
-      (are [old-val new-val]
-           (not (opiskelijapalaute/initiate?
-                  :paattokysely
-                  {:osaamisen-hankkimisen-tarve true
-                   :osaamisen-saavuttamisen-pvm old-val}
-                  {:osaamisen-hankkimisen-tarve true
-                   :osaamisen-saavuttamisen-pvm new-val}))
-        "2023-09-01" "2023-09-01"
-        "2023-09-01" "2023-09-02"
-        "2023-09-01" nil))))
-
 (def sqs-msg (atom nil))
 
 (defn mock-get-opiskeluoikeus-info-raw
@@ -198,6 +63,169 @@
                     {:status 404
                      :body (str "[{\"key\": \"notFound.opiskeluoikeutta"
                                 "EiLöydyTaiEiOikeuksia\"}]")}))))
+
+(deftest test-initiate?
+  (let [opiskeluoikeus (mock-get-opiskeluoikeus-info-raw
+                         "1.2.246.562.15.10000000009")]
+    (testing "On HOKS creation or update"
+      (testing "don't initiate kysely if"
+        (testing "`osaamisen-hankkimisen-tarve` is missing or is `false`."
+          (doseq [hoks (filter #(not (:osaamisen-hankkimisen-tarve %)) hoksit)]
+            (is (not (opiskelijapalaute/initiate?
+                       :aloituskysely hoks opiskeluoikeus)))
+            (is (not (opiskelijapalaute/initiate?
+                       :paattokysely hoks opiskeluoikeus))))
+          (doseq [current-hoks hoksit
+                  updated-hoks (filter #(not (:osaamisen-hankkimisen-tarve %))
+                                       hoksit)]
+            (is (not (opiskelijapalaute/initiate? :aloituskysely
+                                                  current-hoks
+                                                  updated-hoks
+                                                  opiskeluoikeus)))
+            (is (not (opiskelijapalaute/initiate? :paattokysely
+                                                  current-hoks
+                                                  updated-hoks
+                                                  opiskeluoikeus)))))
+
+        (testing "there are no ammatillinen suoritus in opiskeluoikeus"
+          (let [opiskeluoikeus (mock-get-opiskeluoikeus-info-raw
+                                 "1.2.246.562.15.20000000008")]
+            (doseq [prev-hoks hoksit
+                    hoks     (filter :osaamisen-hankkimisen-tarve hoksit)]
+              (is (not (opiskelijapalaute/initiate?
+                         :aloituskysely hoks opiskeluoikeus)))
+              (is (not (opiskelijapalaute/initiate?
+                         :paattokysely hoks opiskeluoikeus)))
+              (is (not (opiskelijapalaute/initiate?
+                         :aloituskysely prev-hoks hoks opiskeluoikeus)))
+              (is (not (opiskelijapalaute/initiate?
+                         :paattokysely prev-hoks hoks opiskeluoikeus))))))
+
+        (testing "HOKS is a TUVA-HOKS or a HOKS related to TUVA-HOKS."
+          (doseq [hoks (concat tuva-hoksit tuva-rinnakkaiset-ammat-hoksit)]
+            (is (not (opiskelijapalaute/initiate?
+                       :aloituskysely hoks opiskeluoikeus)))
+            (is (not (opiskelijapalaute/initiate?
+                       :paattokysely hoks opiskeluoikeus))))
+          (doseq [current-hoks hoksit
+                  updated-hoks (concat tuva-hoksit
+                                       tuva-rinnakkaiset-ammat-hoksit)]
+            (is (not (opiskelijapalaute/initiate? :aloituskysely
+                                                  current-hoks
+                                                  updated-hoks
+                                                  opiskeluoikeus)))
+            (is (not (opiskelijapalaute/initiate? :paattokysely
+                                                  current-hoks
+                                                  updated-hoks
+                                                  opiskeluoikeus)))))
+
+        (testing (str "don't initiate päättökysely if "
+                      "`osaamisen-saavuttamisen-pvm` is missing.")
+          (doseq [hoks (filter #(not (:osaamisen-saavuttamisen-pvm %)) hoksit)]
+            (is (not (opiskelijapalaute/initiate?
+                       :paattokysely hoks opiskeluoikeus))))
+          (doseq [current-hoks hoksit
+                  updated-hoks (filter #(not (:osaamisen-saavuttamisen-pvm %))
+                                       hoksit)]
+            (is (not (opiskelijapalaute/initiate? :paattokysely
+                                                  current-hoks
+                                                  updated-hoks
+                                                  opiskeluoikeus)))))))
+
+    (testing "On HOKS creation"
+      (testing
+       "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
+        (doseq [hoks (filter :osaamisen-hankkimisen-tarve hoksit)]
+          (is (opiskelijapalaute/initiate?
+                :aloituskysely hoks opiskeluoikeus))))
+
+      (testing (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
+                    "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
+        (doseq [hoks (filter #(and (:osaamisen-hankkimisen-tarve %)
+                                   (:osaamisen-saavuttamisen-pvm %))
+                             hoksit)]
+          (is (opiskelijapalaute/initiate?
+                :paattokysely hoks opiskeluoikeus)))))
+
+    (testing "On HOKS update"
+      (testing (str "initiate aloituskysely if `osaamisen-hankkimisen-tarve` "
+                    "is added to HOKS.")
+        (doseq [current-hoks (filter #(not (:osaamisen-hankkimisen-tarve %))
+                                     hoksit)
+                updated-hoks (filter :osaamisen-hankkimisen-tarve hoksit)]
+          (is (opiskelijapalaute/initiate?
+                :aloituskysely current-hoks updated-hoks opiskeluoikeus))))
+
+      (testing (str "initiate aloituskysely if `sahkoposti` is added to HOKS "
+                    "and `osaamisen-hankkimisen-tarve` is `true`.")
+        (doseq [current-hoks (filter #(not (:sahkoposti %)) hoksit)
+                updated-hoks (filter #(and (:sahkoposti %)
+                                           (:osaamisen-hankkimisen-tarve %))
+                                     hoksit)]
+          (is (opiskelijapalaute/initiate?
+                :aloituskysely current-hoks updated-hoks opiskeluoikeus))))
+
+      (testing (str "initiate aloituskysely if `puhelinnumero` is added to "
+                    "HOKS and `osaamisen-hankkimisen-tarve` is `true`.")
+        (doseq [current-hoks (filter #(not (:puhelinnumero %)) hoksit)
+                updated-hoks (filter #(and (:puhelinnumero %)
+                                           (:osaamisen-hankkimisen-tarve %))
+                                     hoksit)]
+          (is (opiskelijapalaute/initiate?
+                :aloituskysely current-hoks updated-hoks opiskeluoikeus))))
+
+      (testing (str "initiate päättökysely if `osaamisen-saavuttamisen-pvm` is "
+                    "added to HOKS.")
+        (doseq [current-hoks (filter
+                               #(and (:osaamisen-hankkimisen-tarve %)
+                                     (not (:osaamisen-saavuttamisen-pvm %)))
+                               hoksit)
+                updated-hoks (filter #(and (:osaamisen-hankkimisen-tarve %)
+                                           (:osaamisen-saavuttamisen-pvm %))
+                                     hoksit)]
+          (is (opiskelijapalaute/initiate?
+                :paattokysely current-hoks updated-hoks opiskeluoikeus))))
+
+      (testing "don't initiate aloituskysely if"
+        (testing "`sahkoposti` stays unchanged, is changed or is removed."
+          (are [old-val new-val]
+               (not (opiskelijapalaute/initiate?
+                      :aloituskysely
+                      {:osaamisen-hankkimisen-tarve true :sahkoposti old-val}
+                      {:osaamisen-hankkimisen-tarve true :sahkoposti new-val}
+                      opiskeluoikeus))
+            "testi.testaaja@testidomain.testi"
+            "testi.testaaja@testidomain.testi"
+            "testi.testaaja@testidomain.testi" "testi.testinen@testi.domain"
+            "testi.testaaja@testidomain.testi" nil))
+
+        (testing "`puhelinnumero` stays unchanged, is changed or is removed."
+          (are [old-val new-val]
+               (not (opiskelijapalaute/initiate?
+                      :aloituskysely
+                      {:osaamisen-hankkimisen-tarve true
+                       :puhelinnumero old-val}
+                      {:osaamisen-hankkimisen-tarve true
+                       :puhelinnumero new-val}
+                      opiskeluoikeus))
+            "0123456789" "0123456789"
+            "0123456789" "0011223344"
+            "0123456789" nil)))
+
+      (testing
+       (str "don't initiate päättökysely if `osaamisen-saavuttamisen-pvm`"
+            " stays unchanged, is changed or is removed.")
+        (are [old-val new-val]
+             (not (opiskelijapalaute/initiate?
+                    :paattokysely
+                    {:osaamisen-hankkimisen-tarve true
+                     :osaamisen-saavuttamisen-pvm old-val}
+                    {:osaamisen-hankkimisen-tarve true
+                     :osaamisen-saavuttamisen-pvm new-val}
+                    opiskeluoikeus))
+          "2023-09-01" "2023-09-01"
+          "2023-09-01" "2023-09-02"
+          "2023-09-01" nil)))))
 
 (defn expected-msg
   [kysely hoks]
