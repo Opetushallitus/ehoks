@@ -6,7 +6,8 @@
             [oph.ehoks.db :as db]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.hoks.common :as c]))
+            [oph.ehoks.hoks.common :as c]
+            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]))
 
 (hugsql/def-db-fns "oph/ehoks/db/sql/opiskelijapalaute.sql")
 
@@ -70,7 +71,11 @@
 
     (and (= kysely :paattokysely)
          (not (added? :osaamisen-saavuttamisen-pvm prev-hoks hoks)))
-    "`osaamisen-saavuttamisen-pvm` has not yet been set for given HOKS."))
+    "`osaamisen-saavuttamisen-pvm` has not yet been set for given HOKS."
+
+    (opiskeluoikeus/linked-to-another? opiskeluoikeus)
+    (format "Opiskeluoikeus `%s` is linked to another opiskeluoikeus"
+            (:opiskeluoikeus-oid hoks))))
 
 (defn initiate?
   "Returns `true` when opiskelijapalautekysely (`kysely` being `:aloituskysely`
