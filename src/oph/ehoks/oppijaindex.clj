@@ -191,7 +191,7 @@
   "Get opiskeluoikeus info from Koski and convert to SQL-compatible format"
   [oid oppija-oid]
   (let [opiskeluoikeus (k/get-existing-opiskeluoikeus! oid)]
-    (when (:sisältyyOpiskeluoikeuteen opiskeluoikeus)
+    (when (opiskeluoikeus/linked-to-another? opiskeluoikeus)
       (throw (ex-info "Opiskeluoikeus sisältyy toiseen opiskeluoikeuteen"
                       {:type               :disallowed-update
                        :opiskeluoikeus-oid oid})))

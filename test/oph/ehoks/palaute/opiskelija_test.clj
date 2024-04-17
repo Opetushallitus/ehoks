@@ -59,6 +59,12 @@
     "1.2.246.562.15.20000000008" {:suoritukset
                                   [{:tyyppi {:koodiarvo "joku_muu"}}]
                                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}}
+    "1.2.246.562.15.30000000007" {:suoritukset
+                                  [{:tyyppi
+                                    {:koodiarvo "ammatillinentutkinto"}}]
+                                  :tyyppi {:koodiarvo "ammatillinenkoulutus"}
+                                  :sisältyyOpiskeluoikeuteen
+                                  {:oid "1.2.246.562.15.10000000009"}}
     (throw (ex-info "Opiskeluoikeus not found"
                     {:status 404
                      :body (str "[{\"key\": \"notFound.opiskeluoikeutta"
@@ -118,6 +124,20 @@
                                                   current-hoks
                                                   updated-hoks
                                                   opiskeluoikeus)))))
+
+        (testing "opiskeluoikeus is linked to another opiskeluoikeus"
+          (let [opiskeluoikeus (mock-get-opiskeluoikeus-info-raw
+                                 "1.2.246.562.15.30000000007")]
+            (doseq [prev-hoks hoksit
+                    hoks      (filter :osaamisen-hankkimisen-tarve hoksit)]
+              (is (not (opiskelijapalaute/initiate?
+                         :aloituskysely hoks opiskeluoikeus)))
+              (is (not (opiskelijapalaute/initiate?
+                         :paattokysely hoks opiskeluoikeus)))
+              (is (not (opiskelijapalaute/initiate?
+                         :aloituskysely prev-hoks hoks opiskeluoikeus)))
+              (is (not (opiskelijapalaute/initiate?
+                         :paattokysely prev-hoks hoks opiskeluoikeus))))))
 
         (testing (str "don't initiate päättökysely if "
                       "`osaamisen-saavuttamisen-pvm` is missing.")
