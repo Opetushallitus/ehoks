@@ -44,3 +44,8 @@
                  (find-first #(= (:oid %) opiskeluoikeus-oid))
                  active?))
       true)))
+
+(defn linked-to-another?
+  "Returns `true` if `opiskeluoikeus` is linked to another opiskeluoikeus."
+  [opiskeluoikeus]
+  (some? (:sisältyyOpiskeluoikeuteen opiskeluoikeus)))
