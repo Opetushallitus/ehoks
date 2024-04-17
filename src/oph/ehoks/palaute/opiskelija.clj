@@ -50,51 +50,51 @@
   [key* current-hoks updated-hoks]
   (and (some? (get updated-hoks key*)) (nil? (get current-hoks key*))))
 
+(defn- reason-for-not-initiating
+  "Runs several checks against HOKS to determine if opiskelijapalautekysely
+  should be initiated and if any of the checks fail, returns a reason
+  (string) that describes why kysely cannot be initiated. Returns `nil`
+  if there is no reason preventing kysely initiation."
+  [kysely prev-hoks hoks]
+  (cond
+    (not (:osaamisen-hankkimisen-tarve hoks))
+    "`osaamisen-hankkimisen-tarve` not set to `true` for given HOKS."
+
+    (c/tuva-related-hoks? hoks)
+    (str "HOKS is either TUVA-HOKS or \"ammatillisen koulutuksen HOKS\" "
+         "related to TUVA-HOKS.")
+
+    (and (= kysely :paattokysely)
+         (not (added? :osaamisen-saavuttamisen-pvm prev-hoks hoks)))
+    "`osaamisen-saavuttamisen-pvm` has not yet been set for given HOKS."))
+
 (defn initiate?
-  "Checks if aloituskysely or päättökysely should be initiated The function has
-  two arities, one for HOKS creation and the other for HOKS update. On HOKS
-  creation log printings will occur when kysely won't be initiated and on HOKS
-  update the other way around."
+  "Returns `true` when opiskelijapalautekysely (`kysely` being `:aloituskysely`
+  or `:paattokysely`) should be initiated. The function has two arities, one for
+  HOKS creation and the other for HOKS update."
   ([kysely hoks] ; on HOKS creation
     {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-    (let [msg (format "Not sending %s for HOKS `%s`. "
-                      (name kysely) (:id hoks))]
-      (cond
-        (not (:osaamisen-hankkimisen-tarve hoks))
-        (log/info msg "`osaamisen-hankkimisen-tarve` is not set to `true` "
-                  "for given HOKS.")
-        (c/tuva-related-hoks? hoks)
-        (log/info msg "HOKS is either TUVA-HOKS or \"ammatillisen "
-                  "koulutuksen HOKS\" related to TUVA-HOKS.")
-        (and (= kysely :paattokysely)
-             (nil? (:osaamisen-saavuttamisen-pvm hoks)))
-        (log/info msg "`osaamisen-saavuttamisen-pvm` has not yet been set "
-                  "for given HOKS.")
-        :else true)))
-  ([kysely current-hoks updated-hoks] ; on HOKS update
+    (initiate? kysely nil hoks))
+  ([kysely prev-hoks hoks] ; on HOKS update
     {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-    (let [msg (format "Sending %s for HOKS `%s`. "
-                      (name kysely) (:id updated-hoks))]
-      (and (:osaamisen-hankkimisen-tarve updated-hoks)
-           (not (c/tuva-related-hoks? updated-hoks))
-           (not ; In case of log prints `nil` is returned, convert to `true`.
-             (cond
-               (and (= kysely :aloituskysely)
-                    (not (:osaamisen-hankkimisen-tarve current-hoks)))
-               (log/info msg "`osaamisen-hankkimisen-tarve` updated from "
-                         "`false` to `true`.")
-               (and (= kysely :aloituskysely)
-                    (added? :sahkoposti current-hoks updated-hoks))
-               (log/info msg "`sahkoposti` has been added.")
-               (and (= kysely :aloituskysely)
-                    (added? :puhelinnumero current-hoks updated-hoks))
-               (log/info msg "`puhelinnumero` has been added.")
-               (and (= kysely :paattokysely)
-                    (added? :osaamisen-saavuttamisen-pvm
-                            current-hoks
-                            updated-hoks))
-               (log/info msg "`osaamisen-saavuttamisen-pvm` has been added.")
-               :else true)))))) ; will be converted to `false`.
+    (if-let [reason (reason-for-not-initiating kysely prev-hoks hoks)]
+      (log/infof "Not sending %s for HOKS `%d`. %s"
+                 (name kysely) (:id hoks) reason)
+      (not ; In case of log prints `nil` is returned, convert to `true`.
+        (when (and (some? prev-hoks) (= kysely :aloituskysely))
+          ; On following cases we log print when aloituskysely is initiated.
+          (let [msg (format "Sending aloituskysely for HOKS `%s`. " hoks)]
+            (cond
+              (not (:osaamisen-hankkimisen-tarve prev-hoks))
+              (log/info msg (str "`osaamisen-hankkimisen-tarve` updated from "
+                                 "`false` to `true`."))
+              (added? :sahkoposti prev-hoks hoks)
+              (log/info msg "`sahkoposti` has been added.")
+
+              (added? :puhelinnumero prev-hoks hoks)
+              (log/info msg "`puhelinnumero` has been added.")
+
+              :else true))))))) ; will be converted to `false`.
 
 (defn kysely-data
   [hoks kyselytyyppi]
