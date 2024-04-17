@@ -140,7 +140,8 @@
             (format tuva-hoks-msg-template (:id updated-hoks)))
           (do (when (opiskelijapalaute/initiate? :aloituskysely
                                                  current-hoks
-                                                 updated-hoks)
+                                                 updated-hoks
+                                                 opiskeluoikeus)
                 (db-hoks/update-amisherate-kasittelytilat!
                   {:id (:id amisherate-kasittelytila)
                    :aloitusherate_kasitelty false})
@@ -149,7 +150,8 @@
                                              opiskeluoikeus))
               (when (opiskelijapalaute/initiate? :paattokysely
                                                  current-hoks
-                                                 updated-hoks)
+                                                 updated-hoks
+                                                 opiskeluoikeus)
                 (db-hoks/update-amisherate-kasittelytilat!
                   {:id (:id amisherate-kasittelytila)
                    :paattoherate_kasitelty false})
@@ -307,7 +309,8 @@
       (do
         (when (opiskelijapalaute/initiate? :aloituskysely
                                            current-hoks
-                                           updated-hoks)
+                                           updated-hoks
+                                           opiskeluoikeus)
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :aloitusherate_kasitelty false})
@@ -316,7 +319,8 @@
                                        opiskeluoikeus))
         (when (opiskelijapalaute/initiate? :paattokysely
                                            current-hoks
-                                           updated-hoks)
+                                           updated-hoks
+                                           opiskeluoikeus)
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :paattoherate_kasitelty false})

@@ -55,10 +55,14 @@
   should be initiated and if any of the checks fail, returns a reason
   (string) that describes why kysely cannot be initiated. Returns `nil`
   if there is no reason preventing kysely initiation."
-  [kysely prev-hoks hoks]
+  [kysely prev-hoks hoks opiskeluoikeus]
   (cond
     (not (:osaamisen-hankkimisen-tarve hoks))
     "`osaamisen-hankkimisen-tarve` not set to `true` for given HOKS."
+
+    (not-any? ammatillinen-suoritus? (:suoritukset opiskeluoikeus))
+    (format "No ammatillinen suoritus in opiskeluoikeus `%s`."
+            (:opiskeluoikeus-oid hoks))
 
     (c/tuva-related-hoks? hoks)
     (str "HOKS is either TUVA-HOKS or \"ammatillisen koulutuksen HOKS\" "
@@ -72,12 +76,13 @@
   "Returns `true` when opiskelijapalautekysely (`kysely` being `:aloituskysely`
   or `:paattokysely`) should be initiated. The function has two arities, one for
   HOKS creation and the other for HOKS update."
-  ([kysely hoks] ; on HOKS creation
+  ([kysely hoks opiskeluoikeus] ; on HOKS creation
     {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-    (initiate? kysely nil hoks))
-  ([kysely prev-hoks hoks] ; on HOKS update
+    (initiate? kysely nil hoks opiskeluoikeus))
+  ([kysely prev-hoks hoks opiskeluoikeus] ; on HOKS update
     {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-    (if-let [reason (reason-for-not-initiating kysely prev-hoks hoks)]
+    (if-let [reason (reason-for-not-initiating
+                      kysely prev-hoks hoks opiskeluoikeus)]
       (log/infof "Not sending %s for HOKS `%d`. %s"
                  (name kysely) (:id hoks) reason)
       (not ; In case of log prints `nil` is returned, convert to `true`.
@@ -151,7 +156,8 @@
   [kysely hoks]
   (let [opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                          (:opiskeluoikeus-oid hoks))]
-    (when (initiate? kysely hoks) (initiate! kysely hoks opiskeluoikeus))))
+    (when (initiate? kysely hoks opiskeluoikeus)
+      (initiate! kysely hoks opiskeluoikeus))))
 
 (defn initiate-every-needed!
   "Effectively the same as running `initiate-if-needed!` for multiple HOKSes,
