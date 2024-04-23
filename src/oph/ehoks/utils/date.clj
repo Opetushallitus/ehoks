@@ -3,4 +3,4 @@
   `java.time/LocalDate` that can be mocked in the tests."
   (:import [java.time LocalDate]))
 
-(defn now [] (LocalDate/now))
+(defn now ^LocalDate [] (LocalDate/now))
