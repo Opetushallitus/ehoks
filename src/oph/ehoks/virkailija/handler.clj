@@ -129,14 +129,10 @@
     (let [virkailijan-oppilaitosten-hoksit
           (filter #(user/has-privilege-to-hoks? % ticket-user :read)
                   hoksit)
-          virkailijan-oppilaitosten-opiskeluoikeuksia-active?
-          (any-hoks-has-active-opiskeluoikeus? virkailijan-oppilaitosten-hoksit)
-          has-read-access-to-hoks?
-          (fn [hoks]
-            (or (some #(= (:id %) (:id hoks))
-                      virkailijan-oppilaitosten-hoksit)
-                virkailijan-oppilaitosten-opiskeluoikeuksia-active?))
-          visible-hoksit (filter has-read-access-to-hoks? hoksit)]
+          visible-hoksit (if (any-hoks-has-active-opiskeluoikeus?
+                               virkailijan-oppilaitosten-hoksit)
+                           hoksit
+                           virkailijan-oppilaitosten-hoksit)]
       (assoc (restful/ok visible-hoksit)
              ::audit/target
              {:hoks-ids            (map :id visible-hoksit)
