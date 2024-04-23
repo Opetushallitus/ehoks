@@ -1,14 +1,16 @@
 (ns oph.ehoks.hoks.hoks-save-test
   (:require [clojure.test :refer :all]
-            [oph.ehoks.test-utils :as test-utils :refer [eq]]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
             [oph.ehoks.hoks :as hoks]
-            [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
+            [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
+            [oph.ehoks.test-utils :as test-utils :refer [eq]]
+            [oph.ehoks.utils.date :as date])
+  (:import [java.time LocalDate]))
 
 (use-fixtures :once test-utils/migrate-database)
 (use-fixtures :each test-utils/empty-database-after-test)
@@ -547,7 +549,8 @@
   (testing "save: forms opiskelijapalaute when has osaamisen-hankkimisen-tarve"
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
+                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
+                    date/now (constantly (LocalDate/of 2018 7 1))]
         (hoks/save! hoks-osaaminen-saavutettu)
         (is (true? (test-utils/wait-for
                      (fn [_] (= @sqs-call-counter 2)) 5000)))))))
@@ -566,7 +569,8 @@
                 "osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
+                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
+                    date/now (constantly (LocalDate/of 2018 7 1))]
         (let [saved-hoks (hoks/save! hoks-data)]
           (hoks/update! (:id saved-hoks) hoks-osaaminen-saavutettu)
           (is (= @sqs-call-counter 2)))))))
@@ -586,7 +590,8 @@
 (deftest form-opiskelijapalaute-in-hoks-replace
   (let [sqs-call-counter (atom 0)]
     (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                  k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
+                  k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
+                  date/now (constantly (LocalDate/of 2018 7 1))]
       (testing "When existing HOKS is replaced with a new one, "
         (testing
          "form opiskelijapalaute if `osaamisen-hankkimisen-tarve` is `true`"
