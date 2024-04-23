@@ -7,11 +7,15 @@
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
-            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]))
+            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
+            [oph.ehoks.palaute :as palaute])
+  (:import [java.time LocalDate]))
 
 (hugsql/def-db-fns "oph/ehoks/db/sql/opiskelijapalaute.sql")
 
 (def paattokyselyt #{"valmistuneet" "osia_suorittaneet"})
+(def herate-date-basis {:aloituskysely :ensikertainen-hyvaksyminen
+                        :paattokysely  :osaamisen-saavuttamisen-pvm})
 
 (defn- suoritustyyppi [suoritus] (get-in suoritus [:tyyppi :koodiarvo]))
 
@@ -57,25 +61,30 @@
   (string) that describes why kysely cannot be initiated. Returns `nil`
   if there is no reason preventing kysely initiation."
   [kysely prev-hoks hoks opiskeluoikeus]
-  (cond
-    (not (:osaamisen-hankkimisen-tarve hoks))
-    "`osaamisen-hankkimisen-tarve` not set to `true` for given HOKS."
+  (if-let [herate-date (get hoks (herate-date-basis kysely))]
+    (cond
+      (not (:osaamisen-hankkimisen-tarve hoks))
+      "`osaamisen-hankkimisen-tarve` not set to `true` for given HOKS."
 
-    (not-any? ammatillinen-suoritus? (:suoritukset opiskeluoikeus))
-    (format "No ammatillinen suoritus in opiskeluoikeus `%s`."
-            (:opiskeluoikeus-oid hoks))
+      (not-any? ammatillinen-suoritus? (:suoritukset opiskeluoikeus))
+      (format "No ammatillinen suoritus in opiskeluoikeus `%s`."
+              (:opiskeluoikeus-oid hoks))
 
-    (c/tuva-related-hoks? hoks)
-    (str "HOKS is either TUVA-HOKS or \"ammatillisen koulutuksen HOKS\" "
-         "related to TUVA-HOKS.")
+      (c/tuva-related-hoks? hoks)
+      (str "HOKS is either TUVA-HOKS or \"ammatillisen koulutuksen HOKS\" "
+           "related to TUVA-HOKS.")
 
-    (and (= kysely :paattokysely)
-         (not (added? :osaamisen-saavuttamisen-pvm prev-hoks hoks)))
-    "`osaamisen-saavuttamisen-pvm` has not yet been set for given HOKS."
+      (and (= kysely :paattokysely)
+           (not (added? :osaamisen-saavuttamisen-pvm prev-hoks hoks)))
+      "`osaamisen-saavuttamisen-pvm` has not yet been set for given HOKS."
 
-    (opiskeluoikeus/linked-to-another? opiskeluoikeus)
-    (format "Opiskeluoikeus `%s` is linked to another opiskeluoikeus"
-            (:opiskeluoikeus-oid hoks))))
+      (not (palaute/valid-herate-date? herate-date))
+      (format "Herate date `%s` is invalid." herate-date)
+
+      (opiskeluoikeus/linked-to-another? opiskeluoikeus)
+      (format "Opiskeluoikeus `%s` is linked to another opiskeluoikeus"
+              (:opiskeluoikeus-oid hoks)))
+    (format "`%s` has not been set (is `nil`)." (herate-date-basis kysely))))
 
 (defn initiate?
   "Returns `true` when opiskelijapalautekysely (`kysely` being `:aloituskysely`
