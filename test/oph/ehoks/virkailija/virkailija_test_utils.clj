@@ -30,6 +30,20 @@
                                         {:fi "Osaamisala suomeksi"
                                          :sv "På svenska"})}))
 
+(defn add-another-opiskeluoikeus [opiskeluoikeus]
+  (db-opiskeluoikeus/insert-opiskeluoikeus!
+    {:oid (:oid opiskeluoikeus)
+     :oppija_oid (:oppija-oid opiskeluoikeus)
+     :oppilaitos_oid (:oppilaitos-oid opiskeluoikeus)
+     :koulutustoimija_oid (:koulutustoimija-oid opiskeluoikeus)
+     :tutkinto-nimi (:tutkinto-nimi opiskeluoikeus
+                                    {:fi "Testialan perustutkinto"
+                                     :sv "Grundexamen inom testsbranschen"
+                                     :en "Testing"})
+     :osaamisala-nimi (:osaamisala-nimi opiskeluoikeus
+                                        {:fi "Osaamisala suomeksi"
+                                         :sv "På svenska"})}))
+
 (defn add-hoks [oppija]
   (db-hoks/insert-hoks! {:oppija-oid (:oid oppija)
                          :opiskeluoikeus-oid (:opiskeluoikeus-oid
