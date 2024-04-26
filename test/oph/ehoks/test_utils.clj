@@ -174,6 +174,7 @@
                                       :koodistoVersio 1}}]}
                       :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.10.12944436166")}
+                      :koulutustoimija {:oid "1.2.246.562.10.346830761110"}
                       :suoritukset
                       [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
                       :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}

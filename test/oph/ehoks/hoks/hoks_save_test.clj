@@ -529,6 +529,7 @@
                    :koodistoUri
                    "koskiopiskeluoikeudentila"
                    :koodistoVersio 1}}]}
+   :koulutustoimija {:oid "1.2.246.562.10.346830761110"}
    :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
 
 (def hoks-osaaminen-saavutettu

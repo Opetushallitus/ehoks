@@ -1,6 +1,7 @@
 (ns oph.ehoks.palaute.opiskelija-test
   (:require [clojure.test :refer [are deftest is testing use-fixtures]]
             [clojure.tools.logging.test :refer [logged? with-log]]
+            [medley.core :refer [remove-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.aws-sqs :as sqs]
@@ -48,7 +49,9 @@
     "1.2.246.562.15.10000000009" {:suoritukset
                                   [{:tyyppi
                                     {:koodiarvo "ammatillinentutkinto"}}]
-                                  :tyyppi {:koodiarvo "ammatillinenkoulutus"}}
+                                  :tyyppi {:koodiarvo "ammatillinenkoulutus"}
+                                  :koulutustoimija
+                                  {:oid "1.2.246.562.10.346830761110"}}
     "1.2.246.562.15.20000000008" {:suoritukset
                                   [{:tyyppi {:koodiarvo "joku_muu"}}]
                                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}}
@@ -249,17 +252,17 @@
             :aloituskysely
             :paattokysely)
           (are [kyselytyyppi heratepvm]
-               (= (select-keys
-                    (first
-                      (opiskelijapalaute/get-by-hoks-id-and-kyselytyypit!
-                        db/spec
-                        {:hoks-id      (:id hoks)
-                         :kyselytyypit [kyselytyyppi]}))
-                    [:tila :kyselytyyppi :hoks-id :heratepvm :herate-source])
+               (= (-> (opiskelijapalaute/get-by-hoks-id-and-kyselytyypit!
+                        db/spec {:hoks-id (:id hoks)
+                                 :kyselytyypit [kyselytyyppi]})
+                      first
+                      (dissoc :id :created-at :updated-at)
+                      (->> (remove-vals nil?)))
                   {:tila "odottaa_kasittelya"
                    :kyselytyyppi kyselytyyppi
                    :hoks-id 1
                    :heratepvm heratepvm
+                   :koulutustoimija "1.2.246.562.10.346830761110"
                    :herate-source "ehoks_update"})
             "aloittaneet"  (LocalDate/parse (:ensikertainen-hyvaksyminen hoks))
             "valmistuneet" (LocalDate/parse
