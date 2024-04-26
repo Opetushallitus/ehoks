@@ -1,7 +1,6 @@
 (ns oph.ehoks.palaute.opiskelija
   "A namespace for everything related to opiskelijapalaute"
-  (:require [clojure.tools.logging :as log]
-            [hugsql.core :as hugsql]
+  (:require [clojure.tools.logging :as log] [hugsql.core :as hugsql]
             [medley.core :refer [find-first]]
             [oph.ehoks.db :as db]
             [oph.ehoks.external.aws-sqs :as sqs]
@@ -116,13 +115,14 @@
               :else true))))))) ; will be converted to `false`.
 
 (defn kysely-data
-  [hoks kyselytyyppi]
-  {:hoks-id       (:id hoks)
-   :heratepvm     (if (= kyselytyyppi "aloittaneet")
-                    (:ensikertainen-hyvaksyminen hoks)
-                    (:osaamisen-saavuttamisen-pvm hoks))
-   :kyselytyyppi  kyselytyyppi
-   :herate-source "ehoks_update"})
+  [hoks kyselytyyppi koulutustoimija]
+  {:hoks-id         (:id hoks)
+   :heratepvm       (if (= kyselytyyppi "aloittaneet")
+                      (:ensikertainen-hyvaksyminen hoks)
+                      (:osaamisen-saavuttamisen-pvm hoks))
+   :kyselytyyppi    kyselytyyppi
+   :koulutustoimija koulutustoimija
+   :herate-source   "ehoks_update"})
 
 (defn kyselytyyppi
   [kysely opiskeluoikeus]
@@ -152,9 +152,10 @@
   {:pre [(#{:aloituskysely :paattokysely} kysely)]}
   (if (kysely-already-exists?! kysely hoks)
     (log/warnf "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
-    (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)]
+    (let [kyselytyyppi    (kyselytyyppi kysely opiskeluoikeus)
+          koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)]
       (assert (some? kyselytyyppi))
-      (insert! db/spec (kysely-data hoks kyselytyyppi))
+      (insert! db/spec (kysely-data hoks kyselytyyppi koulutustoimija))
       ; Seding herate to AWS SQS (will be removed when Herätepalvelu migration
       ; is complete).
       (sqs/send-amis-palaute-message
