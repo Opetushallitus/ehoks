@@ -176,7 +176,8 @@
                                             "1.2.246.562.10.12944436166")}
                       :koulutustoimija {:oid "1.2.246.562.10.346830761110"}
                       :suoritukset
-                      [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+                      [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
+                        :suorituskieli {:koodiarvo "fi"}}]
                       :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000017")

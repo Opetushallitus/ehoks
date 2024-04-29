@@ -521,7 +521,8 @@
 
 (defn mock-get-opiskeluoikeus
   [_]
-  {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+  {:suoritukset [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
+                  :suorituskieli {:koodiarvo "fi"}}]
    :tila {:opiskeluoikeusjaksot
           [{:alku "2020-07-03"
             :tila {:koodiarvo "lasna"

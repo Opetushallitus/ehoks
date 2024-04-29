@@ -48,7 +48,8 @@
   (case oid
     "1.2.246.562.15.10000000009" {:suoritukset
                                   [{:tyyppi
-                                    {:koodiarvo "ammatillinentutkinto"}}]
+                                    {:koodiarvo "ammatillinentutkinto"}
+                                    :suorituskieli {:koodiarvo "fi"}}]
                                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}
                                   :koulutustoimija
                                   {:oid "1.2.246.562.10.346830761110"}}
@@ -263,6 +264,7 @@
                    :hoks-id 1
                    :heratepvm heratepvm
                    :koulutustoimija "1.2.246.562.10.346830761110"
+                   :suorituskieli "fi"
                    :herate-source "ehoks_update"})
             "aloittaneet"  (LocalDate/parse (:ensikertainen-hyvaksyminen hoks))
             "valmistuneet" (LocalDate/parse
