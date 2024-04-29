@@ -5,13 +5,15 @@ insert into palautteet (herate_source,
                         kyselytyyppi,
                         tila,
                         hoks_id,
-                        koulutustoimija)
+                        koulutustoimija,
+                        suorituskieli)
 values (:herate-source,
         :heratepvm,
         :kyselytyyppi,
         'odottaa_kasittelya',
         :hoks-id,
-        :koulutustoimija)
+        :koulutustoimija,
+        :suorituskieli)
 returning id
 
 -- :name get-by-hoks-id-and-kyselytyypit! :? :*
