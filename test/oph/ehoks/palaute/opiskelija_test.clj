@@ -240,7 +240,8 @@
           :paattokysely  (:osaamisen-saavuttamisen-pvm hoks)))})
 
 (deftest test-initiate!
-  (with-redefs [sqs/send-amis-palaute-message (fn [msg] (reset! sqs-msg msg))]
+  (with-redefs [sqs/send-amis-palaute-message (fn [msg] (reset! sqs-msg msg))
+                date/now (constantly (LocalDate/of 2023 4 18))]
     (db-hoks/insert-hoks! {:id                 (:id test-hoks)
                            :oppija-oid         (:oppija-oid test-hoks)
                            :opiskeluoikeus-oid (:opiskeluoikeus-oid test-hoks)})
@@ -254,22 +255,26 @@
                              @sqs-msg))
           :aloituskysely
           :paattokysely)
-        (are [kyselytyyppi heratepvm]
+        (are [kyselytyyppi herate-basis voimassa-alkupvm voimassa-loppupvm]
              (= (-> (opiskelijapalaute/get-by-hoks-id-and-kyselytyypit!
-                      db/spec {:hoks-id (:id test-hoks)
-                               :kyselytyypit [kyselytyyppi]})
+                      db/spec {:hoks-id      (:id test-hoks)
+                               :kyselytyypit  [kyselytyyppi]})
                     first
                     (dissoc :id :created-at :updated-at)
                     (->> (remove-vals nil?)))
-                {:tila "odottaa_kasittelya"
-                 :kyselytyyppi kyselytyyppi
-                 :hoks-id 12345
-                 :heratepvm heratepvm
-                 :koulutustoimija "1.2.246.562.10.346830761110"
-                 :suorituskieli "fi"
-                 :herate-source "ehoks_update"})
-          "aloittaneet"  (:ensikertainen-hyvaksyminen test-hoks)
-          "valmistuneet" (:osaamisen-saavuttamisen-pvm test-hoks)))
+                {:tila              "odottaa_kasittelya"
+                 :kyselytyyppi      kyselytyyppi
+                 :hoks-id           12345
+                 :heratepvm         (get test-hoks herate-basis)
+                 :koulutustoimija   "1.2.246.562.10.346830761110"
+                 :suorituskieli     "fi"
+                 :voimassa-alkupvm  (LocalDate/parse voimassa-alkupvm)
+                 :voimassa-loppupvm (LocalDate/parse voimassa-loppupvm)
+                 :herate-source     "ehoks_update"})
+          "aloittaneet"  :ensikertainen-hyvaksyminen
+          "2023-04-18"   "2023-05-17"
+          "valmistuneet" :osaamisen-saavuttamisen-pvm
+          "2024-02-05"   "2024-03-05"))
       (testing "doesn't initiate kysely if one already exists for HOKS"
         (are [kysely] (nil? (opiskelijapalaute/initiate!
                               kysely test-hoks opiskeluoikeus-1))

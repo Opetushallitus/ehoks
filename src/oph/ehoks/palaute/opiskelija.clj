@@ -105,14 +105,18 @@
 
 (defn kysely-data
   [hoks kyselytyyppi koulutustoimija suoritus]
-  {:hoks-id         (:id hoks)
-   :heratepvm       (if (= kyselytyyppi "aloittaneet")
-                      (:ensikertainen-hyvaksyminen hoks)
-                      (:osaamisen-saavuttamisen-pvm hoks))
-   :kyselytyyppi    kyselytyyppi
-   :koulutustoimija koulutustoimija
-   :suorituskieli   (suoritus/kieli suoritus)
-   :herate-source   "ehoks_update"})
+  (let [heratepvm (if (= kyselytyyppi "aloittaneet")
+                    (:ensikertainen-hyvaksyminen hoks)
+                    (:osaamisen-saavuttamisen-pvm hoks))
+        alkupvm   (palaute/vastaamisajan-alkupvm heratepvm)]
+    {:hoks-id           (:id hoks)
+     :heratepvm         heratepvm
+     :kyselytyyppi      kyselytyyppi
+     :koulutustoimija   koulutustoimija
+     :voimassa-alkupvm  alkupvm
+     :voimassa-loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
+     :suorituskieli     (suoritus/kieli suoritus)
+     :herate-source     "ehoks_update"}))
 
 (defn kyselytyyppi
   [kysely opiskeluoikeus]

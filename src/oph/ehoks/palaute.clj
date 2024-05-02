@@ -25,3 +25,22 @@
     koulutustoimija-oid
     (:parentOid (organisaatio/get-existing-organisaatio!
                   (get-in opiskeluoikeus [:oppilaitos :oid])))))
+
+(defn vastaamisajan-alkupvm
+  "Laskee vastausajan alkupäivämäärän: annettu päivämäärä jos se on vielä
+  tulevaisuudessa; muuten tämä päivä."
+  [^LocalDate herate-date]
+  (let [now (date/now)]
+    (if (.isAfter herate-date now)
+      herate-date
+      now)))
+
+(defn vastaamisajan-loppupvm
+  "Laskee vastausajan loppupäivämäärän: 30 päivän päästä (inklusiivisesti),
+  mutta ei myöhempi kuin 60 päivää (inklusiivisesti) herätepäivän jälkeen."
+  [^LocalDate herate ^LocalDate alku]
+  (let [last   (.plusDays herate 59)
+        normal (.plusDays alku 29)]
+    (if (.isBefore last normal)
+      last
+      normal)))
