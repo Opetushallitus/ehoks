@@ -9,6 +9,7 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
+            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute])
   (:import [java.time LocalDate]))
 
@@ -17,15 +18,6 @@
 (def paattokyselyt #{"valmistuneet" "osia_suorittaneet"})
 (def herate-date-basis {:aloituskysely :ensikertainen-hyvaksyminen
                         :paattokysely  :osaamisen-saavuttamisen-pvm})
-
-(defn- suoritustyyppi [suoritus] (get-in suoritus [:tyyppi :koodiarvo]))
-
-(defn- ammatillinen-suoritus?
-  "Varmistaa, että suorituksen tyyppi on joko ammatillinen tutkinto tai
-  osittainen ammatillinen tutkinto."
-  [suoritus]
-  (some? (#{"ammatillinentutkinto" "ammatillinentutkintoosittainen"}
-           (suoritustyyppi suoritus))))
 
 (def ^:private koski-suoritustyyppi->kyselytyyppi
   {"ammatillinentutkinto"           "valmistuneet"
@@ -38,11 +30,6 @@
   {"valmistuneet"      "tutkinnon_suorittaneet"
    "osia_suorittaneet" "tutkinnon_osia_suorittaneet"})
 
-(defn- telma-suoritus?
-  "Tarkistaa, onko suorituksen tyyppi TELMA (työhön ja elämään valmentava)."
-  [suoritus]
-  (some? (#{"telma", "telmakoulutuksenosa"} (suoritustyyppi suoritus))))
-
 (defn kuuluu-palautteen-kohderyhmaan?
   "Kuuluuko opiskeluoikeus palautteen kohderyhmään?  Tällä hetkellä
   vain katsoo, onko kyseessä TELMA-opiskeluoikeus, joka ei ole tutkintoon
@@ -50,7 +37,7 @@
   ovat tulevaisuudessa koulutuksen rahoitus ja muut kriteerit, joista
   voidaan katsoa, onko koulutus tutkintoon tähtäävä."
   [opiskeluoikeus]
-  (every? (complement telma-suoritus?) (:suoritukset opiskeluoikeus)))
+  (every? (complement suoritus/telma?) (:suoritukset opiskeluoikeus)))
 
 (defn- added?
   [key* current-hoks updated-hoks]
@@ -67,7 +54,7 @@
       (not (:osaamisen-hankkimisen-tarve hoks))
       "`osaamisen-hankkimisen-tarve` not set to `true` for given HOKS."
 
-      (not-any? ammatillinen-suoritus? (:suoritukset opiskeluoikeus))
+      (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
       (format "No ammatillinen suoritus in opiskeluoikeus `%s`."
               (:opiskeluoikeus-oid hoks))
 
@@ -124,7 +111,7 @@
                       (:osaamisen-saavuttamisen-pvm hoks))
    :kyselytyyppi    kyselytyyppi
    :koulutustoimija koulutustoimija
-   :suorituskieli   (string/lower-case (:koodiarvo (:suorituskieli suoritus)))
+   :suorituskieli   (suoritus/kieli suoritus)
    :herate-source   "ehoks_update"})
 
 (defn kyselytyyppi
@@ -133,8 +120,8 @@
     :aloituskysely "aloittaneet"
     :paattokysely  (->> opiskeluoikeus
                         :suoritukset
-                        (find-first ammatillinen-suoritus?)
-                        suoritustyyppi
+                        (find-first suoritus/ammatillinen?)
+                        suoritus/tyyppi
                         koski-suoritustyyppi->kyselytyyppi)))
 
 (defn kysely-already-exists?!
@@ -157,7 +144,7 @@
     (log/warnf "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
     (let [kyselytyyppi    (kyselytyyppi kysely opiskeluoikeus)
           koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
-          suoritus        (find-first ammatillinen-suoritus?
+          suoritus        (find-first suoritus/ammatillinen?
                                       (:suoritukset opiskeluoikeus))]
       (assert (some? kyselytyyppi))
       (insert! db/spec (kysely-data hoks kyselytyyppi koulutustoimija suoritus))
