@@ -107,23 +107,24 @@
 
       (c-api/DELETE "/tyopaikkaohjaajan-yhteystiedot" []
         :summary "Poistaa työpaikkaohjaajan yhteystiedot yli kolme kuukautta
-            sitten päättyneistä työpaikkajaksoista. Käsittelee max 5000 jaksoa
+            sitten päättyneistä työpaikkajaksoista. Käsittelee max 100 jaksoa
             kerrallaan. Palauttaa kyseisten jaksojen id:t (hankkimistapa-id)
-            herätepalvelua varten. POISTETTU KÄYTÖSTÄ TILAPÄISESTI."
+            herätepalvelua varten."
         :header-params [caller-id :- s/Str]
         :return {:hankkimistapa-ids [s/Int]}
-        (let [hankkimistavat
-              []] ;(db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)]
-          ; TODO lisää auditlog entry, kun siivous enabloidaan
-          (restful/ok {:hankkimistapa-ids hankkimistavat})))
+        (let [hankkimistavat (db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)]
+          (assoc
+            (restful/ok {:hankkimistapa-ids hankkimistavat})
+            ::audit/target {:oht-ids hankkimistavat})))
 
       (c-api/DELETE "/opiskelijan-yhteystiedot" []
         :summary "Poistaa opiskelijan yhteystiedot yli kolme kuukautta
-            sitten päättyneistä hokseista. Käsittelee max 500 opiskelijan
+            sitten päättyneistä hokseista. Käsittelee max 100 opiskelijan
             tiedot kerrallaan. Palauttaa kyseisten tapausten hoks id:t
-            herätepalvelua varten. POISTETTU KÄYTÖSTÄ TILAPÄISESTI."
+            herätepalvelua varten."
         :header-params [caller-id :- s/Str]
         :return {:hoks-ids [s/Int]}
-        (let [hoks-ids []] ;(db-hoks/delete-opiskelijan-yhteystiedot!)]
-          ; TODO lisää auditlog entry, kun siivous enabloidaan
-          (restful/ok {:hoks-ids hoks-ids}))))))
+        (let [hoks-ids (db-hoks/delete-opiskelijan-yhteystiedot!)]
+          (assoc
+            (restful/ok {:hoks-ids hoks-ids})
+            :audit/target {:hoks-ids hoks-ids}))))))
