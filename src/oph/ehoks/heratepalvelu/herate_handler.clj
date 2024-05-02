@@ -113,8 +113,9 @@
         :header-params [caller-id :- s/Str]
         :return {:hankkimistapa-ids [s/Int]}
         (let [hankkimistavat (db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)]
-          ; TODO lisää auditlog entry, kun siivous enabloidaan
-          (restful/ok {:hankkimistapa-ids hankkimistavat})))
+          (assoc
+            (restful/ok {:hankkimistapa-ids hankkimistavat})
+            ::audit/target {:oht-ids hankkimistavat})))
 
       (c-api/DELETE "/opiskelijan-yhteystiedot" []
         :summary "Poistaa opiskelijan yhteystiedot yli kolme kuukautta
@@ -124,5 +125,6 @@
         :header-params [caller-id :- s/Str]
         :return {:hoks-ids [s/Int]}
         (let [hoks-ids (db-hoks/delete-opiskelijan-yhteystiedot!)]
-          ; TODO lisää auditlog entry, kun siivous enabloidaan
-          (restful/ok {:hoks-ids hoks-ids}))))))
+          (assoc
+            (restful/ok {:hoks-ids hoks-ids})
+            :audit/target {:hoks-ids hoks-ids}))))))
