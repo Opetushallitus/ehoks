@@ -169,6 +169,9 @@
       "heratepalvelu/select_paattyneet_tyoelamajaksot_hyto.sql")
 (defq select-paattyneet-tyoelamajaksot-3kk
       "hoksit/select_paattyneet_tyoelamajaksot_3kk.sql")
+;; TODO: tätä voisi optimoida hajottamalla eri kyselyihin päättyneet
+;; HOKSit ja "unohtuneet" HOKSit jotka etsitään
+;; osaamisenhankkimisjaksojen vanhenemisen perusteella
 (defq select-vanhat-hoksit-having-yhteystiedot
       "hoksit/select_vanhat_hoksit_having_yhteystiedot.sql")
 (defq select-amisherate-kasittelytilat-by-hoks-id

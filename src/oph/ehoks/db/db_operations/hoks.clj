@@ -785,19 +785,18 @@
 
 (defn delete-tyopaikkaohjaajan-yhteystiedot!
   "Poistaa työpaikkaohjaajan yhteystiedot yli kolme kuukautta sitten
-   päättyneistä työpaikkajaksoista. Käsittelee max 5000 jaksoa kerrallaan.
+   päättyneistä työpaikkajaksoista. Käsittelee max 100 jaksoa kerrallaan.
    Palauttaa kyseisten jaksojen id:t (hankkimistapa-id) herätepalvelua varten."
   []
   (jdbc/with-db-transaction
     [conn (db-ops/get-db-connection)]
     (let [jaksot (jdbc/query conn
-                             [queries/select-paattyneet-tyoelamajaksot-3kk 5000]
+                             [queries/select-paattyneet-tyoelamajaksot-3kk 100]
                              {:row-fn db-ops/from-sql})]
       (doseq [jakso jaksot]
-        (log/info (str "Poistetaan ohjaajan yhteystiedot "
-                       "(tyopaikalla_jarjestettavat_koulutukset.id = "
-                       (:tjk-id jakso)
-                       ")"))
+        (log/info "Poistetaan ohjaajan yhteystiedot"
+                  "(tyopaikalla_jarjestettavat_koulutukset.id ="
+                  (:tjk-id jakso) ")")
         (db-ops/update! :tyopaikalla_jarjestettavat_koulutukset
                         {:vastuullinen_tyopaikka_ohjaaja_sahkoposti nil
                          :vastuullinen_tyopaikka_ohjaaja_puhelinnumero nil}
@@ -818,22 +817,20 @@
 
 (defn delete-opiskelijan-yhteystiedot!
   "Poistaa opiskelijan yhteystiedot yli kolme kuukautta sitten
-   päättyneistä hokseista. Käsittelee max 500 hoksia kerrallaan. Palauttaa
+   päättyneistä hokseista. Käsittelee max 100 hoksia kerrallaan. Palauttaa
    kyseisten tapausten hoks id:t herätepalvelua varten."
   []
   (jdbc/with-db-transaction
     [conn (db-ops/get-db-connection)]
-    (let [hoksit (jdbc/query conn
-                             [queries/select-vanhat-hoksit-having-yhteystiedot
-                              500]
-                             {:row-fn db-ops/from-sql})
+    (let [hoksit (jdbc/query
+                   conn [queries/select-vanhat-hoksit-having-yhteystiedot 100]
+                   {:row-fn db-ops/from-sql})
           _ (log/info (str "Haettiin " (count hoksit) " hoksia kannasta"))
           paattyneet (filter filter-by-oo-paattymispaiva hoksit)]
       (log/info (str "Käsitellään " (count paattyneet) " päättynyttä hoksia"))
       (doseq [hoks paattyneet]
-        (log/info (str "Poistetaan opiskelijan yhteystiedot (hoks.id = "
-                       (:id hoks)
-                       ")"))
+        (log/info "Poistetaan opiskelijan yhteystiedot"
+                  "(hoks.id =" (:id hoks) ")")
         (update-hoks-by-id! (:id hoks) {:sahkoposti nil
                                         :puhelinnumero nil} conn))
       (let [ei-paattyneet (s/difference (set hoksit) (set paattyneet))]
