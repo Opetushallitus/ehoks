@@ -16,6 +16,8 @@
 
 (def test-hoks
   {:id                          12345
+   :oppija-oid                  "1.2.246.562.24.12312312319"
+   :opiskeluoikeus-oid          "1.2.246.562.15.10000000009"
    :osaamisen-hankkimisen-tarve true
    :ensikertainen-hyvaksyminen  (LocalDate/of 2023 04 16)
    :osaamisen-saavuttamisen-pvm (LocalDate/of 2024 02 05)
@@ -27,8 +29,10 @@
 
 (def opiskeluoikeus-1
   "Opiskeluoikeus with ammatillinen suoritus"
-  {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
-   :tyyppi      {:koodiarvo "ammatillinenkoulutus"}})
+  {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}
+                  :suorituskieli {:koodiarvo "fi"}}]
+   :tyyppi      {:koodiarvo "ammatillinenkoulutus"}
+   :koulutustoimija {:oid "1.2.246.562.10.346830761110"}})
 
 (def opiskeluoikeus-2
   "Opiskeluoikeus without ammatillinen suoritus"
@@ -222,54 +226,51 @@
 
 (defn expected-msg
   [kysely hoks]
-  {:ehoks-id (:id hoks)
-   :kyselytyyppi (case kysely
-                   :aloituskysely "aloittaneet"
-                   :paattokysely  "tutkinnon_suorittaneet")
+  {:ehoks-id           (:id hoks)
+   :kyselytyyppi       (case kysely
+                         :aloituskysely "aloittaneet"
+                         :paattokysely  "tutkinnon_suorittaneet")
    :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-   :oppija-oid (:oppija-oid hoks)
-   :sahkoposti (:sahkoposti hoks)
-   :puhelinnumero (:puhelinnumero hoks)
+   :oppija-oid         (:oppija-oid hoks)
+   :sahkoposti         (:sahkoposti hoks)
+   :puhelinnumero      (:puhelinnumero hoks)
    :alkupvm
-   (case kysely
-     :aloituskysely (:ensikertainen-hyvaksyminen hoks)
-     :paattokysely  (:osaamisen-saavuttamisen-pvm hoks))})
+   (str (case kysely
+          :aloituskysely (:ensikertainen-hyvaksyminen hoks)
+          :paattokysely  (:osaamisen-saavuttamisen-pvm hoks)))})
 
 (deftest test-initiate!
   (with-redefs [sqs/send-amis-palaute-message (fn [msg] (reset! sqs-msg msg))]
-    (let [hoks (assoc test-data/hoks-data :id 1)
-          opiskeluoikeus (mock-get-opiskeluoikeus-info-raw
-                           (:opiskeluoikeus-oid hoks))]
-      (db-hoks/insert-hoks! {:oppija-oid         (:oppija-oid hoks)
-                             :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)})
-      (testing "Testing that function `initiate!`"
-        (testing (str "stores kysely info to `palautteet` DB table and "
-                      "successfully sends aloituskysely and paattokysely "
-                      "herate to SQS queue")
-          (are [kysely] (= (expected-msg kysely hoks)
-                           (do (opiskelijapalaute/initiate!
-                                 kysely hoks opiskeluoikeus)
-                               @sqs-msg))
-            :aloituskysely
-            :paattokysely)
-          (are [kyselytyyppi heratepvm]
-               (= (-> (opiskelijapalaute/get-by-hoks-id-and-kyselytyypit!
-                        db/spec {:hoks-id (:id hoks)
-                                 :kyselytyypit [kyselytyyppi]})
-                      first
-                      (dissoc :id :created-at :updated-at)
-                      (->> (remove-vals nil?)))
-                  {:tila "odottaa_kasittelya"
-                   :kyselytyyppi kyselytyyppi
-                   :hoks-id 1
-                   :heratepvm heratepvm
-                   :koulutustoimija "1.2.246.562.10.346830761110"
-                   :suorituskieli "fi"
-                   :herate-source "ehoks_update"})
-            "aloittaneet"  (LocalDate/parse (:ensikertainen-hyvaksyminen hoks))
-            "valmistuneet" (LocalDate/parse
-                             (:osaamisen-saavuttamisen-pvm hoks))))
-        (testing "doesn't initiate kysely if one already exists for HOKS"
-          (are [kysely] (nil? (opiskelijapalaute/initiate!
-                                kysely hoks opiskeluoikeus))
-            :aloituskysely :paattokysely))))))
+    (db-hoks/insert-hoks! {:id                 (:id test-hoks)
+                           :oppija-oid         (:oppija-oid test-hoks)
+                           :opiskeluoikeus-oid (:opiskeluoikeus-oid test-hoks)})
+    (testing "Testing that function `initiate!`"
+      (testing (str "stores kysely info to `palautteet` DB table and "
+                    "successfully sends aloituskysely and paattokysely "
+                    "herate to SQS queue")
+        (are [kysely] (= (expected-msg kysely test-hoks)
+                         (do (opiskelijapalaute/initiate!
+                               kysely test-hoks opiskeluoikeus-1)
+                             @sqs-msg))
+          :aloituskysely
+          :paattokysely)
+        (are [kyselytyyppi heratepvm]
+             (= (-> (opiskelijapalaute/get-by-hoks-id-and-kyselytyypit!
+                      db/spec {:hoks-id (:id test-hoks)
+                               :kyselytyypit [kyselytyyppi]})
+                    first
+                    (dissoc :id :created-at :updated-at)
+                    (->> (remove-vals nil?)))
+                {:tila "odottaa_kasittelya"
+                 :kyselytyyppi kyselytyyppi
+                 :hoks-id 12345
+                 :heratepvm heratepvm
+                 :koulutustoimija "1.2.246.562.10.346830761110"
+                 :suorituskieli "fi"
+                 :herate-source "ehoks_update"})
+          "aloittaneet"  (:ensikertainen-hyvaksyminen test-hoks)
+          "valmistuneet" (:osaamisen-saavuttamisen-pvm test-hoks)))
+      (testing "doesn't initiate kysely if one already exists for HOKS"
+        (are [kysely] (nil? (opiskelijapalaute/initiate!
+                              kysely test-hoks opiskeluoikeus-1))
+          :aloituskysely :paattokysely)))))
