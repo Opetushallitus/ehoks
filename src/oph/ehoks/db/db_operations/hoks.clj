@@ -793,6 +793,8 @@
     (let [jaksot (jdbc/query conn
                              [queries/select-paattyneet-tyoelamajaksot-3kk 100]
                              {:row-fn db-ops/from-sql})]
+      ;; TODO: käsitellään batchissa nämä ettei turhaan ammuta
+      ;; tietokantaan monta kyselyä
       (doseq [jakso jaksot]
         (log/info "Poistetaan ohjaajan yhteystiedot"
                   "(tyopaikalla_jarjestettavat_koulutukset.id ="
@@ -804,16 +806,13 @@
                         conn))
       (set (map :hankkimistapa-id jaksot)))))
 
-(defn filter-by-oo-paattymispaiva
-  "Suodattaa hoksin opiskeluoikeuden päättymispäivämäärän perusteella. Yli
-   kolme kuukautta sitten päättyneet opiskeluoikeudet = true."
+(defn old-opiskeluoikeus?
+  "Onko hoksin opiskeluoikeus päättynyt yli kolme kuukautta sitten?"
   [hoks]
-  (let [opiskeluoikeus (k/get-existing-opiskeluoikeus!
-                         (:opiskeluoikeus-oid hoks))]
-    (if-let [paattymispaiva (:päättymispäivä opiskeluoikeus)]
+  (when-let [oo (k/get-opiskeluoikeus! (:opiskeluoikeus-oid hoks))]
+    (when-let [paattymispaiva (:päättymispäivä oo)]
       (.isBefore (LocalDate/parse paattymispaiva)
-                 (.minusMonths (LocalDate/now) 3))
-      false)))
+                 (.minusMonths (LocalDate/now) 3)))))
 
 (defn delete-opiskelijan-yhteystiedot!
   "Poistaa opiskelijan yhteystiedot yli kolme kuukautta sitten
@@ -826,7 +825,7 @@
                    conn [queries/select-vanhat-hoksit-having-yhteystiedot 100]
                    {:row-fn db-ops/from-sql})
           _ (log/info (str "Haettiin " (count hoksit) " hoksia kannasta"))
-          paattyneet (filter filter-by-oo-paattymispaiva hoksit)]
+          paattyneet (filter old-opiskeluoikeus? hoksit)]
       (log/info (str "Käsitellään " (count paattyneet) " päättynyttä hoksia"))
       (doseq [hoks paattyneet]
         (log/info "Poistetaan opiskelijan yhteystiedot"
