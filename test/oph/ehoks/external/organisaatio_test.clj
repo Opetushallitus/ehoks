@@ -10,6 +10,18 @@
 
 (use-fixtures :each cache-clean-fixture)
 
+(defn mock-get-organisaatio!
+  [oid]
+  (cond
+    (= oid "1.2.246.562.10.52251087186")
+    {:parentOid "1.2.246.562.10.346830761110"}
+
+    (= oid "1.2.246.562.10.12312312312")
+    {:oid "1.2.246.562.10.12312312312" :tyypit ["organisaatiotyyppi_03"]}
+
+    (= oid "1.2.246.562.10.23423423427")
+    {:oid "1.2.246.562.10.23423423427" :tyypit ["organisaatiotyyppi_02"]}))
+
 (defn mocked-with-api-headers [{url :url options :options}]
   {:status 200
    :url url

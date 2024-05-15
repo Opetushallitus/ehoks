@@ -26,6 +26,17 @@
     (:parentOid (organisaatio/get-existing-organisaatio!
                   (get-in opiskeluoikeus [:oppilaitos :oid])))))
 
+(defn toimipiste-oid!
+  "Palauttaa toimipisteen OID jos sen organisaatiotyyppi on toimipiste. Tämä
+  tarkistetaan tekemällä request organisaatiopalveluun. Jos organisaatiotyyppi
+  ei ole toimipiste, palauttaa nil."
+  [suoritus]
+  (let [oid          (:oid (:toimipiste suoritus))
+        organisaatio (organisaatio/get-organisaatio! oid)
+        org-tyypit   (:tyypit organisaatio)]
+    (when (some #{"organisaatiotyyppi_03"} org-tyypit)
+      oid)))
+
 (defn vastaamisajan-alkupvm
   "Laskee vastausajan alkupäivämäärän: annettu päivämäärä jos se on vielä
   tulevaisuudessa; muuten tämä päivä."
