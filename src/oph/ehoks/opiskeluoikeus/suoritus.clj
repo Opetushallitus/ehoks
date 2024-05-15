@@ -18,3 +18,16 @@
 (defn kieli
   [suoritus]
   (string/lower-case (:koodiarvo (:suorituskieli suoritus))))
+
+(defn tutkintotunnus
+  [suoritus]
+  (get-in suoritus [:koulutusmoduuli :tunniste :koodiarvo]))
+
+(defn tutkintonimike
+  "Palauttaa suoritukseen liittyvien tutkintonimikkeiden koodiarvot merkkijonona
+  muodossa (\"12345\",\"23456\")."
+  [suoritus]
+  (->> (:tutkintonimike suoritus)
+       (map :koodiarvo)
+       (string/join "\",\"")
+       (format "(\"%s\")")))
