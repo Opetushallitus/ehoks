@@ -1,7 +1,6 @@
 (ns oph.ehoks.palaute.opiskelija
   "A namespace for everything related to opiskelijapalaute"
-  (:require [clojure.string :as string]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
             [medley.core :refer [find-first]]
             [oph.ehoks.db :as db]
@@ -10,8 +9,7 @@
             [oph.ehoks.hoks.common :as c]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
-            [oph.ehoks.palaute :as palaute])
-  (:import [java.time LocalDate]))
+            [oph.ehoks.palaute :as palaute]))
 
 (hugsql/def-db-fns "oph/ehoks/db/sql/opiskelijapalaute.sql")
 
@@ -27,7 +25,8 @@
   "Translate kyselytyyppi name to the equivalent one used in Herätepalvelu,
   i.e., `lhs` is the one used in eHOKS and `rhs` is the one used Herätepalvelu.
   This should not be needed when eHOKS-Herätepalvelu integration is done."
-  {"valmistuneet"      "tutkinnon_suorittaneet"
+  {"aloittaneet"       "aloittaneet"
+   "valmistuneet"      "tutkinnon_suorittaneet"
    "osia_suorittaneet" "tutkinnon_osia_suorittaneet"})
 
 (defn kuuluu-palautteen-kohderyhmaan?
@@ -103,21 +102,6 @@
 
               :else true))))))) ; will be converted to `false`.
 
-(defn kysely-data
-  [hoks kyselytyyppi koulutustoimija suoritus]
-  (let [heratepvm (if (= kyselytyyppi "aloittaneet")
-                    (:ensikertainen-hyvaksyminen hoks)
-                    (:osaamisen-saavuttamisen-pvm hoks))
-        alkupvm   (palaute/vastaamisajan-alkupvm heratepvm)]
-    {:hoks-id           (:id hoks)
-     :heratepvm         heratepvm
-     :kyselytyyppi      kyselytyyppi
-     :koulutustoimija   koulutustoimija
-     :voimassa-alkupvm  alkupvm
-     :voimassa-loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
-     :suorituskieli     (suoritus/kieli suoritus)
-     :herate-source     "ehoks_update"}))
-
 (defn kyselytyyppi
   [kysely opiskeluoikeus]
   (case kysely
@@ -146,19 +130,35 @@
   {:pre [(#{:aloituskysely :paattokysely} kysely)]}
   (if (kysely-already-exists?! kysely hoks)
     (log/warnf "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
-    (let [kyselytyyppi    (kyselytyyppi kysely opiskeluoikeus)
-          koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
-          suoritus        (find-first suoritus/ammatillinen?
-                                      (:suoritukset opiskeluoikeus))]
+    (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)
+          suoritus     (find-first suoritus/ammatillinen?
+                                   (:suoritukset opiskeluoikeus))
+          heratepvm    (get hoks (herate-date-basis kysely))
+          alkupvm      (palaute/vastaamisajan-alkupvm heratepvm)]
       (assert (some? kyselytyyppi))
-      (insert! db/spec (kysely-data hoks kyselytyyppi koulutustoimija suoritus))
-      ; Seding herate to AWS SQS (will be removed when Herätepalvelu migration
-      ; is complete).
+      (insert!
+        db/spec
+        {:hoks-id           (:id hoks)
+         :heratepvm         heratepvm
+         :kyselytyyppi      kyselytyyppi
+         :koulutustoimija   (palaute/koulutustoimija-oid! opiskeluoikeus)
+         :voimassa-alkupvm  alkupvm
+         :voimassa-loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
+         :suorituskieli     (suoritus/kieli suoritus)
+         :toimipiste-oid    (palaute/toimipiste-oid! suoritus)
+         :tutkintonimike    (suoritus/tutkintonimike suoritus)
+         :tutkintotunnus    (suoritus/tutkintotunnus suoritus)
+         :herate-source     "ehoks_update"})
+      ; Sending herate to AWS SQS (will be removed when Herätepalvelu
+      ; migration is complete).
       (sqs/send-amis-palaute-message
-        (case kysely
-          :aloituskysely (sqs/build-hoks-hyvaksytty-msg hoks)
-          :paattokysely  (sqs/build-hoks-osaaminen-saavutettu-msg
-                           hoks (translate-kyselytyyppi kyselytyyppi)))))))
+        {:ehoks-id           (:id hoks)
+         :kyselytyyppi       (translate-kyselytyyppi kyselytyyppi)
+         :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+         :oppija-oid         (:oppija-oid hoks)
+         :sahkoposti         (:sahkoposti hoks)
+         :puhelinnumero      (:puhelinnumero hoks)
+         :alkupvm            (str (get hoks (herate-date-basis kysely)))}))))
 
 (defn initiate-if-needed!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or

@@ -1,14 +1,10 @@
 (ns oph.ehoks.palaute-test
   (:require [clojure.test :refer [are deftest is testing]]
             [oph.ehoks.external.organisaatio :as organisaatio]
+            [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.utils.date :as date])
   (:import [java.time LocalDate]))
-
-(defn- mock-get-organisaatio [oid]
-  (cond
-    (= oid "1.2.246.562.10.52251087186")
-    {:parentOid "1.2.246.562.10.346830761110"}))
 
 (deftest test-valid-herate-date?
   (testing "True if heratepvm is >= [rahoituskausi start year]-07-01"
@@ -24,7 +20,7 @@
 (deftest test-koulutustoimija-oid!
   (testing "Get koulutustoimija oid"
     (with-redefs
-     [organisaatio/get-organisaatio! mock-get-organisaatio]
+     [organisaatio/get-organisaatio! organisaatio-test/mock-get-organisaatio!]
       (do
         (is (= "1.2.246.562.10.346830761110"
                (palaute/koulutustoimija-oid!
@@ -55,3 +51,18 @@
          (= (palaute/vastaamisajan-loppupvm herate-date alkupvm) expected))
     "2024-04-26" "2024-03-28" "2024-04-26"
     "2024-02-24" "2024-03-28" "2024-04-23"))
+
+(deftest test-get-toimipiste
+  (with-redefs [organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
+    (testing (str "`toimipiste-oid!` returns the OID when organisaatio has "
+                  "\"organisaatiotyyppi_03\" in `:tyypit`.")
+      (is (= "1.2.246.562.10.12312312312"
+             (palaute/toimipiste-oid!
+               {:toimipiste {:oid "1.2.246.562.10.12312312312"}}))))
+    (testing "`toimipiste-oid! returns `nil` when`"
+      (testing "`:toimipiste` doesn't have \"organisaatiotyyppi_03\" code"
+        (is (nil? (palaute/toimipiste-oid!
+                    {:toimipiste {:oid "1.2.246.562.10.23423423427"}}))))
+      (testing "`there is no :toimipiste` in `suoritus`"
+        (is (nil? (palaute/toimipiste-oid! {})))))))

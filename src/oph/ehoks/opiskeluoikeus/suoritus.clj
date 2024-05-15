@@ -1,6 +1,5 @@
 (ns oph.ehoks.opiskeluoikeus.suoritus
-  (:require
-   [clojure.string :as string]))
+  (:require [clojure.string :as string]))
 
 (defn tyyppi [suoritus] (get-in suoritus [:tyyppi :koodiarvo]))
 

@@ -4,6 +4,8 @@
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
+            [oph.ehoks.external.organisaatio :as organisaatio]
+            [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
@@ -552,6 +554,8 @@
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
                     k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
+                    organisaatio/get-organisaatio!
+                    organisaatio-test/mock-get-organisaatio!
                     date/now (constantly (LocalDate/of 2018 7 1))]
         (hoks/save! hoks-osaaminen-saavutettu)
         (is (true? (test-utils/wait-for
@@ -572,6 +576,8 @@
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
                     k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
+                    organisaatio/get-organisaatio!
+                    organisaatio-test/mock-get-organisaatio!
                     date/now (constantly (LocalDate/of 2018 7 1))]
         (let [saved-hoks (hoks/save! hoks-data)]
           (hoks/update! (:id saved-hoks) hoks-osaaminen-saavutettu)
@@ -593,6 +599,8 @@
   (let [sqs-call-counter (atom 0)]
     (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
                   k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
+                  organisaatio/get-organisaatio!
+                  organisaatio-test/mock-get-organisaatio!
                   date/now (constantly (LocalDate/of 2018 7 1))]
       (testing "When existing HOKS is replaced with a new one, "
         (testing
