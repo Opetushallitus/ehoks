@@ -8,6 +8,8 @@ insert into palautteet (herate_source,
                         koulutustoimija,
                         suorituskieli,
                         toimipiste_oid,
+                        tutkintonimike,
+                        tutkintotunnus,
                         voimassa_alkupvm,
                         voimassa_loppupvm)
 values (:herate-source,
@@ -18,6 +20,8 @@ values (:herate-source,
         :koulutustoimija,
         :suorituskieli,
         :toimipiste-oid,
+        :tutkintonimike,
+        :tutkintotunnus,
         :voimassa-alkupvm,
         :voimassa-loppupvm)
 returning id
