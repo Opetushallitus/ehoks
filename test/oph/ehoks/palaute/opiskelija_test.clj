@@ -5,7 +5,8 @@
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.hoks.test-data :as test-data]
+            [oph.ehoks.external.organisaatio :as organisaatio]
+            [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date])
@@ -29,9 +30,10 @@
 
 (def opiskeluoikeus-1
   "Opiskeluoikeus with ammatillinen suoritus"
-  {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}
-                  :suorituskieli {:koodiarvo "fi"}}]
-   :tyyppi      {:koodiarvo "ammatillinenkoulutus"}
+  {:suoritukset     [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
+                      :suorituskieli {:koodiarvo "fi"}
+                      :toimipiste    {:oid "1.2.246.562.10.12312312312"}}]
+   :tyyppi          {:koodiarvo "ammatillinenkoulutus"}
    :koulutustoimija {:oid "1.2.246.562.10.346830761110"}})
 
 (def opiskeluoikeus-2
@@ -241,7 +243,9 @@
 
 (deftest test-initiate!
   (with-redefs [sqs/send-amis-palaute-message (fn [msg] (reset! sqs-msg msg))
-                date/now (constantly (LocalDate/of 2023 4 18))]
+                date/now (constantly (LocalDate/of 2023 4 18))
+                organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
     (db-hoks/insert-hoks! {:id                 (:id test-hoks)
                            :oppija-oid         (:oppija-oid test-hoks)
                            :opiskeluoikeus-oid (:opiskeluoikeus-oid test-hoks)})
@@ -268,6 +272,7 @@
                  :heratepvm         (get test-hoks herate-basis)
                  :koulutustoimija   "1.2.246.562.10.346830761110"
                  :suorituskieli     "fi"
+                 :toimipiste-oid    "1.2.246.562.10.12312312312"
                  :voimassa-alkupvm  (LocalDate/parse voimassa-alkupvm)
                  :voimassa-loppupvm (LocalDate/parse voimassa-loppupvm)
                  :herate-source     "ehoks_update"})
