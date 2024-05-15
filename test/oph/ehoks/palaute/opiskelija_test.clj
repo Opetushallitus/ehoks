@@ -30,9 +30,12 @@
 
 (def opiskeluoikeus-1
   "Opiskeluoikeus with ammatillinen suoritus"
-  {:suoritukset     [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
-                      :suorituskieli {:koodiarvo "fi"}
-                      :toimipiste    {:oid "1.2.246.562.10.12312312312"}}]
+  {:suoritukset     [{:tyyppi          {:koodiarvo "ammatillinentutkinto"}
+                      :suorituskieli   {:koodiarvo "fi"}
+                      :tutkintonimike  [{:koodiarvo "12345"}
+                                        {:koodiarvo "23456"}]
+                      :toimipiste      {:oid "1.2.246.562.10.12312312312"}
+                      :koulutusmoduuli {:tunniste {:koodiarvo 351407}}}]
    :tyyppi          {:koodiarvo "ammatillinenkoulutus"}
    :koulutustoimija {:oid "1.2.246.562.10.346830761110"}})
 
@@ -273,6 +276,8 @@
                  :koulutustoimija   "1.2.246.562.10.346830761110"
                  :suorituskieli     "fi"
                  :toimipiste-oid    "1.2.246.562.10.12312312312"
+                 :tutkintotunnus    351407
+                 :tutkintonimike    "(\"12345\",\"23456\")"
                  :voimassa-alkupvm  (LocalDate/parse voimassa-alkupvm)
                  :voimassa-loppupvm (LocalDate/parse voimassa-loppupvm)
                  :herate-source     "ehoks_update"})
