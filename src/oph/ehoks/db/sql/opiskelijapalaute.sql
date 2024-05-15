@@ -7,6 +7,7 @@ insert into palautteet (herate_source,
                         hoks_id,
                         koulutustoimija,
                         suorituskieli,
+                        toimipiste_oid,
                         voimassa_alkupvm,
                         voimassa_loppupvm)
 values (:herate-source,
@@ -16,6 +17,7 @@ values (:herate-source,
         :hoks-id,
         :koulutustoimija,
         :suorituskieli,
+        :toimipiste-oid,
         :voimassa-alkupvm,
         :voimassa-loppupvm)
 returning id
