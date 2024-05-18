@@ -355,7 +355,7 @@
       <dependency>
         <groupId>com.googlecode.libphonenumber</groupId>
         <artifactId>libphonenumber</artifactId>
-        <version>8.13.26</version>
+        <version>8.13.35</version>
       </dependency>
       <dependency>
         <groupId>com.rpl</groupId>
