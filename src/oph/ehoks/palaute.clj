@@ -1,5 +1,8 @@
 (ns oph.ehoks.palaute
-  (:require [oph.ehoks.external.organisaatio :as organisaatio]
+  (:require [clojure.tools.logging :as log]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.organisaatio :as organisaatio]
+            [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.utils.date :as date])
   (:import [java.time LocalDate]))
 
@@ -36,6 +39,23 @@
         org-tyypit   (:tyypit organisaatio)]
     (when (some #{"organisaatiotyyppi_03"} org-tyypit)
       oid)))
+
+(defn hankintakoulutuksen-toteuttaja!
+  "Hakee hankintakoulutuksen toteuttajan OID:n eHOKS-palvelusta ja Koskesta."
+  [hoks]
+  (let [hoks-id (:id hoks)
+        oids    (oppijaindex/get-hankintakoulutus-oids-by-master-oid
+                  (:opiskeluoikeus-oid hoks))]
+    (when (not-empty oids)
+      (if (> (count oids) 1)
+        (log/warn "Enemmän kuin yksi linkitetty opiskeluoikeus! HOKS-id:"
+                  hoks-id)
+        (let [opiskeluoikeus (koski/get-opiskeluoikeus! (first oids))
+              toteuttaja-oid (get-in opiskeluoikeus [:koulutustoimija :oid])]
+          (log/infof "Hoks `%d`, hankintakoulutuksen toteuttaja: %s"
+                     hoks-id
+                     toteuttaja-oid)
+          toteuttaja-oid)))))
 
 (defn vastaamisajan-alkupvm
   "Laskee vastausajan alkupäivämäärän: annettu päivämäärä jos se on vielä
