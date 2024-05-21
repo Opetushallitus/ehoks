@@ -147,6 +147,8 @@
          :suorituskieli     (suoritus/kieli suoritus)
          :toimipiste-oid    (palaute/toimipiste-oid! suoritus)
          :tutkintonimike    (suoritus/tutkintonimike suoritus)
+         :hankintakoulutuksen-toteuttaja
+         (palaute/hankintakoulutuksen-toteuttaja! hoks)
          :tutkintotunnus    (suoritus/tutkintotunnus suoritus)
          :herate-source     "ehoks_update"})
       ; Sending herate to AWS SQS (will be removed when Herätepalvelu

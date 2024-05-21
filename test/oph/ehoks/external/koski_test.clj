@@ -28,9 +28,19 @@
 (defn mock-get-opiskeluoikeus-raw
   [oid]
   (case oid
+    "1.2.246.562.15.10000000009"
+    {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+     :koulutustoimija {:oid "1.2.246.562.10.10000000009"}}
     "1.246.562.15.12345678911" {}
     "1.246.562.15.12345678910" (throw (ex-info "Internal server error"
                                                {:status 500}))
+    "1.2.246.562.15.12345678903" {}
+    "1.2.246.562.15.23456789017"
+    {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+     :koulutustoimija {:oid "1.2.246.562.10.23456789017"}}
+    "1.2.246.562.15.34567890123"
+    {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+     :koulutustoimija {:oid "1.2.246.562.10.34567890123"}}
     (throw (ex-info "Asd" {:status 404
                            :body (str "[{\"key\": \"notFound.opiskeluoikeutta"
                                       "EiLöydyTaiEiOikeuksia\"}]")}))))

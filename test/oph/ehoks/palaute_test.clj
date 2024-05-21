@@ -1,7 +1,12 @@
 (ns oph.ehoks.palaute-test
   (:require [clojure.test :refer [are deftest is testing]]
+            [clojure.tools.logging.test :refer [logged? with-log]]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.koski-test :as koski-test]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.external.organisaatio-test :as organisaatio-test]
+            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.oppijaindex-test :as oppijaindex-test]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.utils.date :as date])
   (:import [java.time LocalDate]))
@@ -66,3 +71,24 @@
                     {:toimipiste {:oid "1.2.246.562.10.23423423427"}}))))
       (testing "`there is no :toimipiste` in `suoritus`"
         (is (nil? (palaute/toimipiste-oid! {})))))))
+
+(deftest test-get-hankintakoulutuksen-toteuttaja
+  (with-redefs [oppijaindex/get-hankintakoulutus-oids-by-master-oid
+                oppijaindex-test/mock-get-hankintakoulutus-oids-by-master-oid
+                koski/get-opiskeluoikeus-info-raw
+                koski-test/mock-get-opiskeluoikeus-raw]
+    (testing "The function returns `nil` when` there"
+      (testing "is no hankintakoulutus linked to given HOKS."
+        (is (nil? (palaute/hankintakoulutuksen-toteuttaja!
+                    {:opiskeluoikeus-oid "1.2.246.562.15.12345678903"}))))
+      (testing "are more than one linked opiskeluoikeus."
+        (with-log
+          (is (nil? (palaute/hankintakoulutuksen-toteuttaja!
+                      {:opiskeluoikeus-oid "1.2.246.562.15.23456789017"})))
+          (is (logged? 'oph.ehoks.palaute
+                       :warn #"Enemmän kuin yksi linkitetty")))))
+    (testing (str "The function retuns hankintakolutus when there is exactly one
+                  opiskeluoikeus linked to given HOKS.")
+      (is (= (palaute/hankintakoulutuksen-toteuttaja!
+               {:opiskeluoikeus-oid "1.2.246.562.15.34567890123"})
+             "1.2.246.562.10.34567890123")))))

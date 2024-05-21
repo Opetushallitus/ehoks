@@ -1,16 +1,22 @@
 (ns oph.ehoks.palaute.opiskelija-test
-  (:require [clojure.test :refer [are deftest is testing use-fixtures]]
-            [clojure.tools.logging.test :refer [logged? with-log]]
-            [medley.core :refer [remove-vals]]
-            [oph.ehoks.db :as db]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.external.organisaatio :as organisaatio]
-            [oph.ehoks.external.organisaatio-test :as organisaatio-test]
-            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
-            [oph.ehoks.test-utils :as test-utils]
-            [oph.ehoks.utils.date :as date])
-  (:import (java.time LocalDate)))
+  (:require
+   [clojure.test :refer [are deftest is testing use-fixtures]]
+   [clojure.tools.logging.test :refer [logged? with-log]]
+   [medley.core :refer [remove-vals]]
+   [oph.ehoks.db :as db]
+   [oph.ehoks.db.db-operations.hoks :as db-hoks]
+   [oph.ehoks.external.aws-sqs :as sqs]
+   [oph.ehoks.external.koski :as koski]
+   [oph.ehoks.external.koski-test :as koski-test]
+   [oph.ehoks.external.organisaatio :as organisaatio]
+   [oph.ehoks.external.organisaatio-test :as organisaatio-test]
+   [oph.ehoks.oppijaindex :as oppijaindex]
+   [oph.ehoks.oppijaindex-test :as oppijaindex-test]
+   [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
+   [oph.ehoks.test-utils :as test-utils]
+   [oph.ehoks.utils.date :as date])
+  (:import
+   (java.time LocalDate)))
 
 (use-fixtures :once test-utils/migrate-database)
 (use-fixtures :each test-utils/empty-database-after-test)
@@ -247,6 +253,10 @@
 (deftest test-initiate!
   (with-redefs [sqs/send-amis-palaute-message (fn [msg] (reset! sqs-msg msg))
                 date/now (constantly (LocalDate/of 2023 4 18))
+                oppijaindex/get-hankintakoulutus-oids-by-master-oid
+                oppijaindex-test/mock-get-hankintakoulutus-oids-by-master-oid
+                koski/get-opiskeluoikeus-info-raw
+                koski-test/mock-get-opiskeluoikeus-raw
                 organisaatio/get-organisaatio!
                 organisaatio-test/mock-get-organisaatio!]
     (db-hoks/insert-hoks! {:id                 (:id test-hoks)
@@ -269,18 +279,21 @@
                     first
                     (dissoc :id :created-at :updated-at)
                     (->> (remove-vals nil?)))
-                {:tila              "odottaa_kasittelya"
-                 :kyselytyyppi      kyselytyyppi
-                 :hoks-id           12345
-                 :heratepvm         (get test-hoks herate-basis)
-                 :koulutustoimija   "1.2.246.562.10.346830761110"
-                 :suorituskieli     "fi"
-                 :toimipiste-oid    "1.2.246.562.10.12312312312"
-                 :tutkintotunnus    351407
-                 :tutkintonimike    "(\"12345\",\"23456\")"
-                 :voimassa-alkupvm  (LocalDate/parse voimassa-alkupvm)
-                 :voimassa-loppupvm (LocalDate/parse voimassa-loppupvm)
-                 :herate-source     "ehoks_update"})
+                {:tila                           "odottaa_kasittelya"
+                 :kyselytyyppi                   kyselytyyppi
+                 :hoks-id                        12345
+                 :heratepvm                      (get test-hoks herate-basis)
+                 :koulutustoimija                "1.2.246.562.10.346830761110"
+                 :suorituskieli                  "fi"
+                 :toimipiste-oid                 "1.2.246.562.10.12312312312"
+                 :tutkintotunnus                 351407
+                 :tutkintonimike                 "(\"12345\",\"23456\")"
+                 :hankintakoulutuksen-toteuttaja "1.2.246.562.10.10000000009"
+                 :voimassa-alkupvm               (LocalDate/parse
+                                                   voimassa-alkupvm)
+                 :voimassa-loppupvm              (LocalDate/parse
+                                                   voimassa-loppupvm)
+                 :herate-source                  "ehoks_update"})
           "aloittaneet"  :ensikertainen-hyvaksyminen
           "2023-04-18"   "2023-05-17"
           "valmistuneet" :osaamisen-saavuttamisen-pvm
