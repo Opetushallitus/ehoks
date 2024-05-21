@@ -31,7 +31,7 @@
         :query-params [start :- LocalDate
                        end :- LocalDate
                        limit :- (s/maybe s/Int)]
-        :return s/Int
+        :return (restful/response s/Int)
         (let [l (or limit 10)
               periods (hp/process-finished-workplace-periods start end l)]
           (restful/ok (count periods))))
@@ -41,7 +41,7 @@
         :query-params [start :- LocalDate
                        end :- LocalDate
                        limit :- (s/maybe s/Int)]
-        :return s/Int
+        :return (restful/response s/Int)
         (let [l (or limit 10)
               hoksit (hp/process-hoksit-without-kyselylinkit start end l)]
           (restful/ok (count hoksit))))
@@ -66,7 +66,7 @@
         :header-params [caller-id :- s/Str]
         :query-params [from :- LocalDate
                        to :- LocalDate]
-        :return {:count s/Int}
+        :return (restful/response {:count s/Int})
         (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
               count  (op/send-every-needed! :aloituskysely hoksit)]
           (restful/ok {:count count})))
@@ -76,7 +76,7 @@
         :header-params [caller-id :- s/Str]
         :query-params [from :- LocalDate
                        to :- LocalDate]
-        :return {:count s/Int}
+        :return (restful/response {:count s/Int})
         (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
               count  (op/send-every-needed! :paattokysely hoksit)]
           (restful/ok {:count count})))
@@ -111,7 +111,7 @@
             kerrallaan. Palauttaa kyseisten jaksojen id:t (hankkimistapa-id)
             herätepalvelua varten."
         :header-params [caller-id :- s/Str]
-        :return {:hankkimistapa-ids [s/Int]}
+        :return (restful/response {:hankkimistapa-ids [s/Int]})
         (let [hankkimistavat (db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)]
           (assoc
             (restful/ok {:hankkimistapa-ids hankkimistavat})
@@ -123,7 +123,7 @@
             tiedot kerrallaan. Palauttaa kyseisten tapausten hoks id:t
             herätepalvelua varten."
         :header-params [caller-id :- s/Str]
-        :return {:hoks-ids [s/Int]}
+        :return (restful/response {:hoks-ids [s/Int]})
         (let [hoks-ids (db-hoks/delete-opiskelijan-yhteystiedot!)]
           (assoc
             (restful/ok {:hoks-ids hoks-ids})
