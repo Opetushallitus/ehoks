@@ -606,7 +606,7 @@
         (testing
          "form opiskelijapalaute if `osaamisen-hankkimisen-tarve` is `true`"
           (let [saved-hoks (hoks/save! hoks-data)]
-            (Thread/sleep 10) ; in ms, workaround to make the test pass
+            (Thread/sleep 15) ; in ms, workaround to make the test pass
             (is (= @sqs-call-counter 1)) ; sent herate for aloituskysely
             (hoks/replace! (:id saved-hoks) hoks-osaaminen-saavutettu)
             (is (= @sqs-call-counter 2))) ; herate sent for paattokysely
@@ -619,7 +619,7 @@
           ; following assertions can be removed once that is fixed.
           (testing ", even when `opiskeluoikeus-oid` is missing from new HOKS"
             (let [saved-hoks (hoks/save! hoks-data)]
-              (Thread/sleep 10) ; in ms, workaround to make the test pass
+              (Thread/sleep 15) ; in ms, workaround to make the test pass
               (is (= @sqs-call-counter 1)) ; herate sent for aloituskysely
               (hoks/replace! (:id saved-hoks)
                              (dissoc hoks-osaaminen-saavutettu
