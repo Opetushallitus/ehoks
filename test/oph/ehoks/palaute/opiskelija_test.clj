@@ -1,22 +1,20 @@
 (ns oph.ehoks.palaute.opiskelija-test
-  (:require
-   [clojure.test :refer [are deftest is testing use-fixtures]]
-   [clojure.tools.logging.test :refer [logged? with-log]]
-   [medley.core :refer [remove-vals]]
-   [oph.ehoks.db :as db]
-   [oph.ehoks.db.db-operations.hoks :as db-hoks]
-   [oph.ehoks.external.aws-sqs :as sqs]
-   [oph.ehoks.external.koski :as koski]
-   [oph.ehoks.external.koski-test :as koski-test]
-   [oph.ehoks.external.organisaatio :as organisaatio]
-   [oph.ehoks.external.organisaatio-test :as organisaatio-test]
-   [oph.ehoks.oppijaindex :as oppijaindex]
-   [oph.ehoks.oppijaindex-test :as oppijaindex-test]
-   [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
-   [oph.ehoks.test-utils :as test-utils]
-   [oph.ehoks.utils.date :as date])
-  (:import
-   (java.time LocalDate)))
+  (:require [clojure.test :refer [are deftest is testing use-fixtures]]
+            [clojure.tools.logging.test :refer [logged? with-log]]
+            [medley.core :refer [remove-vals]]
+            [oph.ehoks.db :as db]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.koski-test :as koski-test]
+            [oph.ehoks.external.organisaatio :as organisaatio]
+            [oph.ehoks.external.organisaatio-test :as organisaatio-test]
+            [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.oppijaindex-test :as oppijaindex-test]
+            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
+            [oph.ehoks.test-utils :as test-utils]
+            [oph.ehoks.utils.date :as date])
+  (:import (java.time LocalDate)))
 
 (use-fixtures :once test-utils/migrate-database)
 (use-fixtures :each test-utils/empty-database-after-test)
