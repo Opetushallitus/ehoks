@@ -5,16 +5,9 @@
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
-            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute])
+            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
+            [oph.ehoks.palaute.tyoelamapalaute :as tep])
   (:import (java.time LocalDate)))
-
-(defn find-finished-workplace-periods
-  "Queries for all finished workplace periods between start and end"
-  [start end limit]
-  (let [hytos (db-hoks/select-paattyneet-tyoelamajaksot "hyto" start end limit)
-        hptos (db-hoks/select-paattyneet-tyoelamajaksot "hpto" start end limit)
-        hatos (db-hoks/select-paattyneet-tyoelamajaksot "hato" start end limit)]
-    (concat hytos hptos hatos)))
 
 (defn send-workplace-periods
   "Formats and sends a list of periods to a SQS queue"
@@ -26,7 +19,7 @@
   "Finds all finished workplace periods between dates start and
   end and sends them to a SQS queue"
   [start end limit]
-  (let [periods (find-finished-workplace-periods start end limit)]
+  (let [periods (tep/finished-workplace-periods! start end limit)]
     (log/infof
       "Sending %d  (limit %d) finished workplace periods between %s - %s"
       (count periods) limit start end)
