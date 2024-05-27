@@ -92,3 +92,44 @@
       (is (= (palaute/hankintakoulutuksen-toteuttaja!
                {:opiskeluoikeus-oid "1.2.246.562.15.34567890123"})
              "1.2.246.562.10.34567890123")))))
+
+(defn- construct-opiskeluoikeus [jaksot]
+  {:tila {:opiskeluoikeusjaksot
+          (for [[alku tila rahoitus] jaksot]
+            {:alku alku
+             :tila {:koodiarvo tila}
+             :opintojenRahoitus {:koodiarvo (str rahoitus)}})}})
+
+(deftest test-feedback-collecting-prevented?
+  (testing
+   "Tunnistetaan oikein opiskeluoikeuden tila, jossa palautekyselyitä
+   ei lähetetä."
+    (are [input result]
+         (-> input
+             (construct-opiskeluoikeus)
+             (palaute/feedback-collecting-prevented? "2021-07-15")
+             (= result))
+      [["2021-07-30" "lasna" 3]] false
+      [["2018-06-20" "valmistunut" 1]] false
+      [["2020-06-20" "lasna" 14]] true
+      [["2019-01-03" "lasna" 1] ["2022-09-01" "lasna" 1]] false
+      [["2019-01-03" "lasna" 6] ["2019-09-01" "valmistunut" 6]] true
+      [["2020-03-15" "lasna" 3] ["2019-09-01" "lasna" 6]] false
+      [["2021-03-15" "valmistunut" 2]
+       ["2020-03-15" "lasna" 14]
+       ["2019-09-01" "lasna" 14]] false
+      [["2019-01-03" "lasna" 5] ["2019-09-01" "lasna" 15]] true)
+    (are [input date result] (-> input
+                                 (construct-opiskeluoikeus)
+                                 (palaute/feedback-collecting-prevented? date)
+                                 (= result))
+      [["2020-06-20" "lasna" 14]] "2019-01-01" true
+      [["2021-03-15" "valmistunut" 2]
+       ["2020-03-15" "lasna" 14]
+       ["2019-09-01" "lasna" 14]] "2020-07-01" true
+      [["2021-03-15" "valmistunut" 2]
+       ["2020-03-15" "lasna" 14]
+       ["2019-09-01" "lasna" 14]] "2019-12-01" true
+      [["2021-03-15" "valmistunut" 2]
+       ["2020-03-15" "lasna" 14]
+       ["2019-09-01" "lasna" 14]] "2019-07-01" true)))
