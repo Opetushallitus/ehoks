@@ -18,13 +18,51 @@
    :tyopaikan-nimi "Testityöpaikka"
    :tyopaikan-ytunnus "1234567-8"
    :tyopaikkaohjaaja-nimi "Testi Ojaaja"
-   :alku "2021-09-09"
-   :loppu "2021-12-15"
+   :alku "2023-09-09"
+   :loppu "2023-12-15"
+   :osa-aikaisuustieto 100
    :oppija-oid "123.456.789"
    :tyyppi "test-tyyppi"
    :tutkinnonosa-id "test-tutkinnonosa-id"
+   :keskeytymisajanjaksot [{:alku "2023-09-28" :loppu "2023-09-29"}]
    :hankkimistapa-id 2
    :hankkimistapa-tyyppi "koulutussopimus_01"})
+
+(deftest test-initiate?
+  (testing "On HOKS creation or update"
+    (letfn [(test-not-initiated [jakso opiskeluoikeus log-msg]
+              (with-log
+                (is (not (tep/initiate? jakso opiskeluoikeus)))
+                (is (logged? 'oph.ehoks.palaute.tyoelamapalaute
+                             :info
+                             log-msg))))]
+      (testing "don't initiate kysely if"
+        (testing "opiskeluoikeus is in terminal state."
+          (test-not-initiated
+            test-jakso op-test/opiskeluoikeus-5 #"terminal state"))
+        (testing "osa-aikaisuus is missing from työpaikkajakso"
+          (test-not-initiated
+            (dissoc test-jakso :osa-aikaisuustieto)
+            op-test/opiskeluoikeus-1
+            #"Osa-aikaisuus missing"))
+        (testing "työpaikkajakso is interrupted on it's end date"
+          (test-not-initiated
+            (assoc-in test-jakso
+                      [:keskeytymisajanjaksot 1]
+                      {:alku "2023-12-01" :loppu "2023-12-15"})
+            op-test/opiskeluoikeus-1
+            #"interrupted"))
+        (testing "opiskeluoikeus doesn't have any ammatillinen suoritus"
+          (test-not-initiated
+            test-jakso op-test/opiskeluoikeus-2 #"No ammatillinen suoritus"))
+        (testing "there is a feedback preventing code in opiskeluoikeusjakso."
+          (test-not-initiated
+            test-jakso op-test/opiskeluoikeus-4 #"funding basis"))
+        (testing "opiskeluoikeus is linked to another opiskeluoikeus"
+          (test-not-initiated
+            test-jakso op-test/opiskeluoikeus-3 #"linked to another")))
+      (testing "initiate kysely if when all of the checks are OK."
+        (is (tep/initiate? test-jakso op-test/opiskeluoikeus-1))))))
 
 (deftest test-initiate!
   (db-hoks/insert-hoks!
@@ -50,8 +88,8 @@
                                                 (:loppu test-jakso))
               :tutkintotunnus                 351407
               :tutkintonimike                 "(\"12345\",\"23456\")"
-              :voimassa-alkupvm               (LocalDate/parse "2021-12-16")
-              :voimassa-loppupvm              (LocalDate/parse "2022-02-14")
+              :voimassa-alkupvm               (LocalDate/parse "2023-12-16")
+              :voimassa-loppupvm              (LocalDate/parse "2024-02-14")
               :koulutustoimija                "1.2.246.562.10.346830761110"
               :herate-source                  "ehoks_update"})))
     (testing

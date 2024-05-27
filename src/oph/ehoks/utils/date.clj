@@ -4,3 +4,13 @@
   (:import [java.time LocalDate]))
 
 (defn now ^LocalDate [] (LocalDate/now))
+
+(defn is-after
+  "Wrapper .isAfter-metodin ympäri, jolla on tyyppianotaatiot."
+  [^LocalDate one-date ^LocalDate other-date]
+  (.isAfter one-date other-date))
+
+(defn is-before
+  "Wrapper .isBefore-metodin ympäri, jolla on tyyppianotaatiot."
+  [^LocalDate one-date ^LocalDate other-date]
+  (.isBefore one-date other-date))

@@ -75,3 +75,27 @@
     (if (.isBefore last normal)
       last
       normal)))
+
+(defn get-opiskeluoikeusjakso-for-date
+  "Hakee opiskeluoikeudesta jakson, joka on voimassa tiettynä päivänä."
+  [opiskeluoikeus vahvistus-pvm mode]
+  (let [offset (if (= mode :one-day-offset) 1 0)
+        jaksot (sort-by :alku (:opiskeluoikeusjaksot (:tila opiskeluoikeus)))]
+    (reduce (fn [res next]
+              (if (>= (compare vahvistus-pvm (:alku next)) offset)
+                next
+                (reduced res)))
+            (first jaksot)
+            jaksot)))
+
+(def feedback-collecting-preventing-codes #{"6" "14" "15"})
+
+(defn feedback-collecting-prevented?
+  "Jätetäänkö palaute keräämättä sen vuoksi, että opiskelijan opiskelu on
+  tällä hetkellä rahoitettu muilla rahoituslähteillä?"
+  [opiskeluoikeus heratepvm]
+  (-> opiskeluoikeus
+      (get-opiskeluoikeusjakso-for-date heratepvm :normal)
+      (get-in [:opintojenRahoitus :koodiarvo])
+      (feedback-collecting-preventing-codes)
+      (some?)))
