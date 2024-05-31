@@ -2,11 +2,11 @@
   (:require [clj-time.core :as t]
             [clojure.test :refer [deftest testing is use-fixtures]]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
-            [oph.ehoks.utils :as utils]
+            [oph.ehoks.test-utils :as test-utils]
             [ring.mock.request :as mock]))
 
-(use-fixtures :once utils/migrate-database)
-(use-fixtures :each utils/empty-database-after-test)
+(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :each test-utils/empty-database-after-test)
 
 (def base-url "/ehoks-virkailija-backend/api/v1")
 
@@ -26,6 +26,8 @@
                 {:start (str (t/minus (t/today) (t/days 1)))
                  :end (str (t/plus (t/today) (t/days 1)))
                  :limit 10})
-          res (utils/with-service-ticket app req "1.2.246.562.10.00000000001")]
-      (is (= 1
-             (:data (utils/parse-body (:body res))))))))
+          res (test-utils/with-service-ticket
+                app
+                req
+                "1.2.246.562.10.00000000001")]
+      (is (= 1 (:data (test-utils/parse-body (:body res))))))))

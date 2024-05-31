@@ -1,4 +1,4 @@
-(ns oph.ehoks.opiskelijapalaute
+(ns oph.ehoks.palaute.opiskelija
   (:require [clojure.tools.logging :as log]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
@@ -45,11 +45,11 @@
   [key* current-hoks updated-hoks]
   (and (some? (get updated-hoks key*)) (nil? (get current-hoks key*))))
 
-(defn send?
-  "Checks if aloituskysely or päättökysely should be sent. The function has two
-  arities, one for HOKS creation and the other for HOKS update. On HOKS creation
-  log printings will occur when kysely won't be sent and on HOKS update the
-  other way around."
+(defn initiate?
+  "Checks if aloituskysely or päättökysely should be initiated The function has
+  two arities, one for HOKS creation and the other for HOKS update. On HOKS
+  creation log printings will occur when kysely won't be initiated and on HOKS
+  update the other way around."
   ([kysely hoks] ; on HOKS creation
     {:pre [(#{:aloituskysely :paattokysely} kysely)]}
     (let [msg (format "Not sending %s for HOKS `%s`. "
@@ -91,7 +91,7 @@
                (log/info msg "`osaamisen-saavuttamisen-pvm` has been added.")
                :else true)))))) ; will be converted to `false`.
 
-(defn send!
+(defn initiate!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
   `:paattokysely`) to appropriate DynamoDB table of Herätepalvelu and returns
   `true` if kysely was successfully sent."
@@ -124,17 +124,17 @@
                 (.getMessage e)
                 (ex-data e)))))
 
-(defn send-if-needed!
+(defn initiate-if-needed!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
   `:paattokysely`) to appropriate DynamoDB table of Herätepalvelu if no check is
   preventing the sending. Returns `true` if kysely was successfully sent."
   [kysely hoks]
-  (when (send? kysely hoks) (send! kysely hoks)))
+  (when (initiate? kysely hoks) (initiate! kysely hoks)))
 
-(defn send-every-needed!
-  "Effectively the same as running `send-if-needed!` for multiple HOKSes, but
-  also returns a count of the number of kyselys sent."
+(defn initiate-every-needed!
+  "Effectively the same as running `initiate-if-needed!` for multiple HOKSes,
+  but also returns a count of the number of kyselys initiated."
   [kysely hoksit]
   (->> hoksit
-       (filter #(send-if-needed! kysely %))
+       (filter #(initiate-if-needed! kysely %))
        count))

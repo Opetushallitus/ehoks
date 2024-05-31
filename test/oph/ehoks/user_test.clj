@@ -5,9 +5,9 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.user :as user]
-            [oph.ehoks.utils :as utils :refer [eq with-db]]))
+            [oph.ehoks.test-utils :as test-utils :refer [eq with-db]]))
 
-(t/use-fixtures :once utils/migrate-database)
+(t/use-fixtures :once test-utils/migrate-database)
 
 (deftest get-auth-info-test
   (testing "Mapping kayttooikeus-service data to eHOKS privileges"

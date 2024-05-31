@@ -1,12 +1,12 @@
 (ns oph.ehoks.hoks.hoks-parts.aiemmin-hankitut-handler-test
   (:require [clojure.test :refer [deftest testing is use-fixtures]]
-            [oph.ehoks.utils :as utils :refer [eq]]
+            [oph.ehoks.test-utils :as test-utils :refer [eq]]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.hoks.test-data :as test-data]
             [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]))
 
-(use-fixtures :once utils/migrate-database)
-(use-fixtures :each utils/empty-database-after-test)
+(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :each test-utils/empty-database-after-test)
 
 (def ahyto-path "aiemmin-hankittu-yhteinen-tutkinnon-osa")
 (def ahato-path "aiemmin-hankittu-ammat-tutkinnon-osa")
@@ -48,7 +48,9 @@
                            osa-path app osa-patched-data)
           get-response
           (hoks-utils/create-mock-hoks-osa-get-request osa-path app hoks)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
+          get-response-data (-> (:body get-response)
+                                test-utils/parse-body
+                                :data)]
       (is (= (:status post-response) 200))
       (is (= (:status patch-response) 204))
       (is (= (:status get-response) 200))
@@ -66,7 +68,7 @@
     updated-data parts-test-data/multiple-ahyto-values-patched first)
   (hoks-utils/compare-tarkentavat-tiedot-naytto-values
     updated-data parts-test-data/multiple-ahyto-values-patched second)
-  (eq (utils/dissoc-module-ids (:osa-alueet updated-data))
+  (eq (test-utils/dissoc-module-ids (:osa-alueet updated-data))
       (:osa-alueet parts-test-data/multiple-ahyto-values-patched)))
 
 (deftest patch-aiemmin-hankittu-yhteinen-tutkinnon-osa
@@ -92,7 +94,9 @@
           post-response
           (hoks-utils/create-mock-post-request "" test-data/hoks-data app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
+          get-response-data (-> (:body get-response)
+                                test-utils/parse-body
+                                :data)]
       (is (= (:status post-response) 200))
       (is (= (:status get-response) 200))
       (let [output-arvioija (get-arvioija get-response-data)
@@ -133,7 +137,7 @@
   (eq (:tarkentavat-tiedot-osaamisen-arvioija updated-data)
       (:tarkentavat-tiedot-osaamisen-arvioija
         parts-test-data/multiple-ahpto-values-patched))
-  (eq (utils/dissoc-module-ids
+  (eq (test-utils/dissoc-module-ids
         (first (:tarkentavat-tiedot-naytto updated-data)))
       (first (:tarkentavat-tiedot-naytto
                parts-test-data/multiple-ahpto-values-patched)))

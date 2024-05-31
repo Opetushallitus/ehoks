@@ -1,7 +1,7 @@
 (ns oph.ehoks.oppija.oppija-external-test
   (:require [clojure.test :as t]
             [oph.ehoks.external.http-client :as client]
-            [oph.ehoks.utils :as utils]
+            [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
             [ring.mock.request :as mock]
@@ -13,7 +13,7 @@
   (let [store (atom {})
         app (common-api/create-app
               handler/app-routes (test-session-store store))]
-    (utils/with-authenticated-oid
+    (test-utils/with-authenticated-oid
       store
       "1.2.246.562.24.12312312319"
       app
@@ -35,6 +35,6 @@
                                base-url
                                "koodisto"
                                "ammatillisenoppiaineet_VVTL")))
-          body (utils/parse-body (:body response))]
+          body (test-utils/parse-body (:body response))]
       (t/is (= 200 (:status response)))
       (t/is (= "error.codeelement.not.found" (:data body))))))

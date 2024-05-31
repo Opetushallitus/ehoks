@@ -5,11 +5,11 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.hoks.test-data :as test-data]
             [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]
-            [oph.ehoks.utils :as utils])
+            [oph.ehoks.test-utils :as test-utils])
   (:import [java.time LocalDate]))
 
-(use-fixtures :once utils/migrate-database)
-(use-fixtures :each utils/empty-database-after-test)
+(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :each test-utils/empty-database-after-test)
 
 (deftest prevent-creating-hoks-with-existing-opiskeluoikeus
   (testing "Prevent POST HOKS with existing opiskeluoikeus"
@@ -22,7 +22,7 @@
       (let [response
             (hoks-utils/mock-st-post app base-url hoks-data)]
         (is (= (:status response) 400))
-        (is (= (utils/parse-body (:body response))
+        (is (= (test-utils/parse-body (:body response))
                {:error
                 "HOKS with the same opiskeluoikeus-oid already exists"}))))))
 
@@ -42,7 +42,7 @@
       (db-hoks/soft-delete-hoks-by-hoks-id 1)
       (let [post-response (hoks-utils/mock-st-post app base-url new-hoks-data)]
         (is (= (:status post-response) 400))
-        (is (= (utils/parse-body (:body post-response))
+        (is (= (test-utils/parse-body (:body post-response))
                {:error
                 (str "Archived HOKS with given opiskeluoikeus "
                      "oid found. Contact eHOKS support for more "
@@ -58,7 +58,7 @@
             (hoks-utils/mock-st-post
               (hoks-utils/create-app nil) base-url hoks-data)]
         (is (= (:status response) 400))
-        (is (= (utils/parse-body (:body response))
+        (is (= (test-utils/parse-body (:body response))
                {:error (str "Oppija `1.2.246.562.24.40404040406` not found in "
                             "Oppijanumerorekisteri")}))))))
 
@@ -81,12 +81,12 @@
                      :osaamisen-hankkimisen-tarve false}]
 
       (let [response
-            (utils/with-service-ticket
+            (test-utils/with-service-ticket
               (hoks-utils/create-app nil)
               (-> (mock/request :post base-url)
                   (mock/json-body hoks-data))
               "1.2.246.562.10.47861388602")
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (is (= (:status
                  (hoks-utils/mock-st-get (hoks-utils/create-app nil)
                                          (get-in body [:data :uri])))
@@ -103,7 +103,7 @@
                :oppija-oid "1.2.246.562.24.12312312319"
                :ensikertainen-hyvaksyminen "2018-12-15"
                :osaamisen-hankkimisen-tarve false})
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (is (= (get
                  (hoks-utils/mock-st-patch
                    app
@@ -125,7 +125,7 @@
                204)
             "Should not return bad request for updating oppija oid if the
              oid is not changed")
-        (let [get-body (utils/parse-body
+        (let [get-body (test-utils/parse-body
                          (get
                            (hoks-utils/mock-st-get
                              app
@@ -149,7 +149,7 @@
                :oppija-oid "1.2.246.562.24.12312312319"
                :ensikertainen-hyvaksyminen "2018-12-15"
                :osaamisen-hankkimisen-tarve false})
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (is (= (get
                  (hoks-utils/mock-st-patch
                    app
@@ -160,7 +160,7 @@
                400)
             "Should return bad request for updating oppija oid if the
              oid is changed")
-        (let [get-body (utils/parse-body
+        (let [get-body (test-utils/parse-body
                          (get
                            (hoks-utils/mock-st-get
                              app
@@ -181,7 +181,7 @@
                :oppija-oid "1.2.246.562.24.12312312319"
                :ensikertainen-hyvaksyminen "2018-12-15"
                :osaamisen-hankkimisen-tarve false})
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (is (= (get
                  (hoks-utils/mock-st-patch
                    app
@@ -192,7 +192,7 @@
                400)
             "Should return bad request for updating opiskeluoikeus oid
              if the oid is changed")
-        (let [get-body (utils/parse-body
+        (let [get-body (test-utils/parse-body
                          (get
                            (hoks-utils/mock-st-get
                              app
@@ -220,7 +220,7 @@
                          app)]
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 400))
-      (is (= (utils/parse-body (:body put-response))
+      (is (= (test-utils/parse-body (:body put-response))
              {:error
               "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"})))))
 
@@ -242,7 +242,7 @@
                          app)]
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 400))
-      (is (= (utils/parse-body (:body put-response))
+      (is (= (test-utils/parse-body (:body put-response))
              {:error "Updating `oppija-oid` in HOKS is not allowed!"})))))
 
 (deftest prevent-invalid-osaamisen-hankkimistapa
@@ -275,12 +275,12 @@
           invalid-post-response-4
           (hoks-utils/create-mock-post-request "" invalid-data-4 app)]
       (is (= (:status invalid-post-response-1) 400))
-      (is (-> (utils/parse-body (:body invalid-post-response-1))
+      (is (-> (test-utils/parse-body (:body invalid-post-response-1))
               (get-in [:errors :hankittavat-yhteiset-tutkinnon-osat 0
                        :osa-alueet 0 :osaamisen-hankkimistavat 0])
               (->> (re-find #"Korjaa alku- ja loppupäivä"))))
       (is (= (:status invalid-post-response-2) 400))
-      (is (-> (utils/parse-body (:body invalid-post-response-2))
+      (is (-> (test-utils/parse-body (:body invalid-post-response-2))
               (get-in [:errors :hankittavat-ammat-tutkinnon-osat 0
                        :osaamisen-hankkimistavat 0])
               (->> (re-find #"5 vuoden pituiseksi"))))
@@ -311,7 +311,7 @@
           (hoks-utils/create-mock-post-request "" ok-data app)]
       (is (= (:status ok-post-response) 200))
       (is (= (:status invalid-post-response) 400))
-      (is (-> (utils/parse-body (:body invalid-post-response))
+      (is (-> (test-utils/parse-body (:body invalid-post-response))
               (get-in [:errors :hankittavat-ammat-tutkinnon-osat 0
                        :osaamisen-hankkimistavat 0])
               (->> (re-find #"yksilöivä tunniste")))))))
@@ -336,14 +336,18 @@
       (is (= (:status invalid-post-response) 400))
       (is (->> invalid-post-response
                :body
-               utils/parse-body
+               test-utils/parse-body
                :errors
                :osaamisen-saavuttamisen-pvm
                (re-find #"kaksi viikkoa")))
       (is (= (:status post-response) 200))
       (is (= (:status invalid-patch-response-1) 400))
       (is (= [:osaamisen-saavuttamisen-pvm]
-             (-> invalid-patch-response-1 :body utils/parse-body :errors keys)))
+             (-> invalid-patch-response-1
+                 :body
+                 test-utils/parse-body
+                 :errors
+                 keys)))
       (is (= (:status invalid-patch-response-2) 400)))))
 
 (deftest patching-of-hoks-part-not-allowed
@@ -402,7 +406,7 @@
                        dissoc :tyopaikan-y-tunnus))]
       (is (= (:status response-1) 400))
       (is (-> (:body response-1)
-              (utils/parse-body)
+              (test-utils/parse-body)
               (get-in [:errors :hankittavat-ammat-tutkinnon-osat 0
                        :osaamisen-hankkimistavat 0])
               (->> (re-find #"Y-tunnus"))))
@@ -421,7 +425,7 @@
                                           :tyopaikan-y-tunnus]
                                          y-tunnus))]]
         (is (= (:status response) 400))
-        (is (= (:errors (utils/parse-body (:body response)))
+        (is (= (:errors (test-utils/parse-body (:body response)))
                (expected-error y-tunnus)))))))
 
 (deftest schema-not-present-in-bad-requests
@@ -430,5 +434,5 @@
                      (hoks-utils/create-app nil) base-url {})]
       (is (= (:status response) 400))
       (is (nil? (-> (:body response)
-                    (utils/parse-body)
+                    (test-utils/parse-body)
                     :schema))))))

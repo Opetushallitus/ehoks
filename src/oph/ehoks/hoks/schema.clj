@@ -1,8 +1,8 @@
 (ns oph.ehoks.hoks.schema
   (:require [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.middleware :refer [get-current-opiskeluoikeus]]
-            [oph.ehoks.opiskelijapalaute :refer
-             [kuuluu-palautteen-kohderyhmaan?]]
+            [oph.ehoks.palaute.opiskelija
+             :refer [kuuluu-palautteen-kohderyhmaan?]]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.schema-tools :refer [describe modify]]
             [oph.ehoks.schema.generator :as g]

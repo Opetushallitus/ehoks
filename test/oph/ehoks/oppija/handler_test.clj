@@ -8,18 +8,18 @@
             [oph.ehoks.hoks.hoks-save-test :refer [hoks-data]]
             [oph.ehoks.hoks.hoks-test-utils :as virkailija-utils]
             [oph.ehoks.hoks.test-data :as test-data]
-            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.utils :as utils
+            [oph.ehoks.test-utils :as test-utils
              :refer [eq parse-body with-authentication]]
             [ring.mock.request :as mock])
   (:import [java.time LocalDate]))
 
 (def url "/ehoks-oppija-backend/api/v1/oppija/oppijat")
 
-(use-fixtures :once utils/migrate-database)
-(use-fixtures :each utils/empty-database-after-test)
+(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :each test-utils/empty-database-after-test)
 
 (def dates #{:alku :loppu :lahetetty-arvioitavaksi :ensikertainen-hyvaksyminen})
 
@@ -36,7 +36,7 @@
     c))
 
 (defn- mock-oppija-get-request [store oppija-oid oppija-app]
-  (utils/with-authenticated-oid
+  (test-utils/with-authenticated-oid
     store
     oppija-oid
     oppija-app
@@ -54,22 +54,22 @@
           post-response (virkailija-utils/create-mock-post-request
                           "" test-data/hoks-data virkailja-app)
           get-response (mock-oppija-get-request store oppija-oid oppija-app)
-          body (utils/parse-body (:body get-response))]
+          body (test-utils/parse-body (:body get-response))]
       (is (= (:status post-response) 200))
       (is (= (:status get-response) 200))
       (-> test-data/hoks-data
-          (utils/dissoc-module-ids)
+          (test-utils/dissoc-module-ids)
           (assoc :eid (get-in body [:data 0 :eid])
                  :manuaalisyotto false)
           (dates-to-str)
           (vector)
-          (eq (utils/dissoc-module-ids (:data body)))))))
+          (eq (test-utils/dissoc-module-ids (:data body)))))))
 
 (defn- mock-authenticated [request]
   (let [store (atom {})
         app (common-api/create-app
               handler/app-routes (test-session-store store))]
-    (utils/with-authenticated-oid
+    (test-utils/with-authenticated-oid
       store
       "1.2.246.562.24.12312312319"
       app
@@ -88,7 +88,7 @@
                 :get (str
                        "/ehoks-oppija-backend/api/v1/oppija"
                        "/external/organisaatio/1.2.246.562.10.12345678911")))
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (eq
           (:data body)
@@ -149,7 +149,7 @@
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
       (with-redefs [koski/get-opiskeluoikeus-info-raw
-                    utils/mock-get-opiskeluoikeus-info-raw]
+                    test-utils/mock-get-opiskeluoikeus-info-raw]
         (hoks/save! hoks-data))
       (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
                              :alkupvm (LocalDate/now)
@@ -168,14 +168,14 @@
                                           "T00:00:00.000Z"),
                     :vastattu false}})))
       (let [response
-            (utils/with-authenticated-oid
+            (test-utils/with-authenticated-oid
               store
               oppija-oid
               app
               (mock/request
                 :get
                 (format "%s/%s/kyselylinkit" url oppija-oid)))
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (eq
           (:data body)
@@ -188,7 +188,7 @@
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
       (with-redefs [koski/get-opiskeluoikeus-info-raw
-                    utils/mock-get-opiskeluoikeus-info-raw]
+                    test-utils/mock-get-opiskeluoikeus-info-raw]
         (hoks/save! hoks-data))
       (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
                              :alkupvm (LocalDate/now)
@@ -220,14 +220,14 @@
                                           "T00:00:00.000Z"),
                     :vastattu true}})))
       (let [response
-            (utils/with-authenticated-oid
+            (test-utils/with-authenticated-oid
               store
               oppija-oid
               app
               (mock/request
                 :get
                 (format "%s/%s/kyselylinkit" url oppija-oid)))
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (eq
           (:data body)
@@ -240,7 +240,7 @@
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
       (with-redefs [koski/get-opiskeluoikeus-info-raw
-                    utils/mock-get-opiskeluoikeus-info-raw]
+                    test-utils/mock-get-opiskeluoikeus-info-raw]
         (hoks/save! hoks-data))
       (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
                              :alkupvm (LocalDate/now)
@@ -272,14 +272,14 @@
                                           "T00:00:00.000Z"),
                     :vastattu false}})))
       (let [response
-            (utils/with-authenticated-oid
+            (test-utils/with-authenticated-oid
               store
               oppija-oid
               app
               (mock/request
                 :get
                 (format "%s/%s/kyselylinkit" url oppija-oid)))
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (eq
           (:data body)
@@ -292,7 +292,7 @@
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
       (with-redefs [koski/get-opiskeluoikeus-info-raw
-                    utils/mock-get-opiskeluoikeus-info-raw]
+                    test-utils/mock-get-opiskeluoikeus-info-raw]
         (hoks/save! hoks-data))
       (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
                              :alkupvm (.plusDays (LocalDate/now) 1)
@@ -311,14 +311,14 @@
                                           "T00:00:00.000Z"),
                     :vastattu false}})))
       (let [response
-            (utils/with-authenticated-oid
+            (test-utils/with-authenticated-oid
               store
               oppija-oid
               app
               (mock/request
                 :get
                 (format "%s/%s/kyselylinkit" url oppija-oid)))
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (eq
           (:data body)

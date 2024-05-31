@@ -14,7 +14,7 @@
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
-            [oph.ehoks.opiskelijapalaute :as opiskelijapalaute]
+            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.oppijaindex :as oppijaindex])
   (:import [java.time LocalDate]
@@ -115,8 +115,8 @@
                    (:id hoks) tuva-hoks conn)
                  (save-parts! hoks conn)))]
     (future
-      (opiskelijapalaute/send-if-needed! :aloituskysely hoks)
-      (opiskelijapalaute/send-if-needed! :paattokysely hoks))
+      (opiskelijapalaute/initiate-if-needed! :aloituskysely hoks)
+      (opiskelijapalaute/initiate-if-needed! :paattokysely hoks))
     hoks))
 
 (def ^:private tuva-hoks-msg-template
@@ -136,20 +136,20 @@
           (db-hoks/set-amisherate-kasittelytilat-to-true!
             amisherate-kasittelytila
             (format tuva-hoks-msg-template (:id updated-hoks)))
-          (do (when (opiskelijapalaute/send? :aloituskysely
-                                             current-hoks
-                                             updated-hoks)
+          (do (when (opiskelijapalaute/initiate? :aloituskysely
+                                                 current-hoks
+                                                 updated-hoks)
                 (db-hoks/update-amisherate-kasittelytilat!
                   {:id (:id amisherate-kasittelytila)
                    :aloitusherate_kasitelty false})
-                (opiskelijapalaute/send! :aloituskysely updated-hoks))
-              (when (opiskelijapalaute/send? :paattokysely
-                                             current-hoks
-                                             updated-hoks)
+                (opiskelijapalaute/initiate! :aloituskysely updated-hoks))
+              (when (opiskelijapalaute/initiate? :paattokysely
+                                                 current-hoks
+                                                 updated-hoks)
                 (db-hoks/update-amisherate-kasittelytilat!
                   {:id (:id amisherate-kasittelytila)
                    :paattoherate_kasitelty false})
-                (opiskelijapalaute/send! :paattokysely updated-hoks))))))
+                (opiskelijapalaute/initiate! :paattokysely updated-hoks))))))
     (db-hoks/select-hoks-by-id hoks-id)))
 
 (defn- merge-not-given-hoks-values
@@ -297,16 +297,20 @@
         amisherate-kasittelytila
         (format tuva-hoks-msg-template (:id updated-hoks)))
       (do
-        (when (opiskelijapalaute/send? :aloituskysely current-hoks updated-hoks)
+        (when (opiskelijapalaute/initiate? :aloituskysely
+                                           current-hoks
+                                           updated-hoks)
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :aloitusherate_kasitelty false})
-          (opiskelijapalaute/send! :aloituskysely updated-hoks))
-        (when (opiskelijapalaute/send? :paattokysely current-hoks updated-hoks)
+          (opiskelijapalaute/initiate! :aloituskysely updated-hoks))
+        (when (opiskelijapalaute/initiate? :paattokysely
+                                           current-hoks
+                                           updated-hoks)
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :paattoherate_kasitelty false})
-          (opiskelijapalaute/send! :paattokysely updated-hoks))))
+          (opiskelijapalaute/initiate! :paattokysely updated-hoks))))
     updated-hoks))
 
 (defn check-for-update!

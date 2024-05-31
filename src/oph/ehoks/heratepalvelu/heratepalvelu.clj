@@ -4,8 +4,8 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
-            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
-            [oph.ehoks.opiskelijapalaute :as opiskelijapalaute])
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute])
   (:import (java.time LocalDate)))
 
 (defn find-finished-workplace-periods
@@ -75,8 +75,8 @@
     (log/infof
       "Sending %d (limit %d) hoksit between %s and %s"
       (count hoksit) (* 2 limit) start end)
-    (opiskelijapalaute/send-every-needed! :aloituskysely aloittaneet)
-    (opiskelijapalaute/send-every-needed! :paattokysely  paattyneet)
+    (opiskelijapalaute/initiate-every-needed! :aloituskysely aloittaneet)
+    (opiskelijapalaute/initiate-every-needed! :paattokysely  paattyneet)
     hoksit))
 
 (defn set-aloitusherate-kasitelty

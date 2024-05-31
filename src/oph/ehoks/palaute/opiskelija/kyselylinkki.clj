@@ -1,4 +1,4 @@
-(ns oph.ehoks.opiskelijapalaute.kyselylinkki
+(ns oph.ehoks.palaute.opiskelija.kyselylinkki
   (:require [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 

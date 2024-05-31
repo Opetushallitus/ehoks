@@ -25,7 +25,7 @@
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus]]
             [oph.ehoks.misc.handler :as misc-handler]
-            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.resources :as resources]

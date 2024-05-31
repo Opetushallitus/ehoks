@@ -1,12 +1,11 @@
 (ns oph.ehoks.db.tyopaikkaohjaajan_yhteystiedot_test
   (:require [clojure.test :refer :all]
-            [oph.ehoks.utils :as utils :refer [empty-database-after-test
-                                               migrate-database]]
+            [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 
-(use-fixtures :once migrate-database)
-(use-fixtures :each empty-database-after-test)
+(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :each test-utils/empty-database-after-test)
 
 (def hpto-data
   [{:koulutuksen-jarjestaja-oid "1.2.246.562.10.54453921329"

@@ -1,4 +1,4 @@
-(ns oph.ehoks.utils
+(ns oph.ehoks.test-utils
   (:require [cheshire.core :as cheshire]
             [ring.mock.request :as mock]
             [clj-time.core :as time]

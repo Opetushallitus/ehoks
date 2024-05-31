@@ -13,12 +13,12 @@
             [oph.ehoks.hoks.hoks-parts.parts-test-data :as parts-test-data]
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils :refer [base-url]]
             [oph.ehoks.hoks.test-data :as test-data]
-            [oph.ehoks.opiskelijapalaute.kyselylinkki :as kyselylinkki]
-            [oph.ehoks.utils :as utils :refer [eq]]
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.test-utils :as test-utils :refer [eq]]
             [ring.mock.request :as mock]))
 
-(use-fixtures :once utils/migrate-database)
-(use-fixtures :each utils/empty-database-after-test)
+(use-fixtures :once test-utils/migrate-database)
+(use-fixtures :each test-utils/empty-database-after-test)
 
 (defn add-empty-hoks-values [hoks]
   (assoc
@@ -41,7 +41,7 @@
           response
           (hoks-utils/mock-st-post
             (hoks-utils/create-app nil) base-url hoks-data)
-          body (utils/parse-body (:body response))]
+          body (test-utils/parse-body (:body response))]
       (is (= (:status response) 200))
       (eq body {:data {:uri (format "%s/1" base-url)} :meta {:id 1}})
       (let [hoks
@@ -63,7 +63,7 @@
           response
           (hoks-utils/mock-st-post
             (hoks-utils/create-app nil) base-url hoks-data)
-          body (utils/parse-body (:body response))]
+          body (test-utils/parse-body (:body response))]
       (is (= (:status response) 200))
       (eq body {:data {:uri (format "%s/1" base-url)} :meta {:id 1}})
       (let [hoks
@@ -85,7 +85,7 @@
           response
           (hoks-utils/mock-st-post
             (hoks-utils/create-app nil) base-url hoks-data)
-          body (utils/parse-body (:body response))]
+          body (test-utils/parse-body (:body response))]
       (is (= (:status response) 400))
       (is (not (nil? (-> body
                          :errors
@@ -100,7 +100,7 @@
       (let [response
             (hoks-utils/mock-st-post
               (hoks-utils/create-app nil) base-url hoks-data)
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (eq body
             {:data {:uri (format "%s/1" base-url)} :meta {:id 1}})
@@ -132,7 +132,7 @@
                            :laajuus 10.4}]}
               response (hoks-utils/mock-st-post
                          (hoks-utils/create-app nil) base-url hoks-data)
-              body (utils/parse-body (:body response))
+              body (test-utils/parse-body (:body response))
               hoks-id (get-in body [:meta :id])
               kasittelytilat
               (first
@@ -150,7 +150,7 @@
     (let [hoks-data test-data/new-hoks-with-valid-osa-aikaisuus
           response  (hoks-utils/mock-st-post
                       (hoks-utils/create-app nil) base-url hoks-data)
-          body      (utils/parse-body (:body response))]
+          body      (test-utils/parse-body (:body response))]
       (is (= (:status response) 200)))))
 
 (deftest create-new-hoks-without-osa-aikaisuus
@@ -158,7 +158,7 @@
     (let [hoks-data test-data/new-hoks-without-osa-aikaisuus
           response  (hoks-utils/mock-st-post
                       (hoks-utils/create-app nil) base-url hoks-data)
-          body      (utils/parse-body (:body response))]
+          body      (test-utils/parse-body (:body response))]
       (is (= (:status response) 400))
       (is (eq (:errors body)
               {:hankittavat-ammat-tutkinnon-osat
@@ -171,7 +171,7 @@
     (let [hoks-data test-data/new-hoks-without-osa-aikaisuus-telma
           response  (hoks-utils/mock-st-post
                       (hoks-utils/create-app nil) base-url hoks-data)
-          body      (utils/parse-body (:body response))]
+          body      (test-utils/parse-body (:body response))]
       (is (= (:status response) 200))
       (is (= (get-in body [:data :uri]) (str base-url "/1"))))))
 
@@ -188,7 +188,9 @@
                 [(dissoc parts-test-data/hpto-data :osaamisen-hankkimistavat)]}
           post-response (hoks-utils/create-mock-post-request "" hoks app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
+          get-response-data (-> (:body get-response)
+                                test-utils/parse-body
+                                :data)]
       (is (= (:status post-response) 200))
       (is (= (:status get-response) 200))
       (is (empty?
@@ -214,7 +216,9 @@
           patch-response (hoks-utils/create-mock-hoks-patch-request
                            1 one-value-of-hoks-patched app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
+          get-response-data (-> (:body get-response)
+                                test-utils/parse-body
+                                :data)]
       (is (= (:status post-response) 200))
       (is (= (:status patch-response) 204))
       (is (= (:status get-response) 200))
@@ -237,7 +241,9 @@
           patch-response (hoks-utils/create-mock-hoks-patch-request
                            1 osaaminen-saavutettu-patch app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
+          get-response-data (-> (:body get-response)
+                                test-utils/parse-body
+                                :data)]
       ; TODO: Marking hoks with osaaminen-saavuttaminen-pvm triggers sending
       ; a message to herätepalvelu that should be tested also when it's done
       (is (= (:status post-response) 200))
@@ -263,7 +269,9 @@
           put-response (hoks-utils/create-mock-hoks-put-request
                          1 main-level-of-hoks-updated app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
+          get-response-data (-> (:body get-response)
+                                test-utils/parse-body
+                                :data)]
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 204))
       (is (= (:status get-response) 200))
@@ -290,7 +298,9 @@
             put-response (hoks-utils/create-mock-hoks-put-request
                            1 main-level-of-hoks-updated app)
             get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-            get-response-data (:data (utils/parse-body (:body get-response)))]
+            get-response-data (-> (:body get-response)
+                                  test-utils/parse-body
+                                  :data)]
         (is (= (:status post-response) 200))
         (is (= (:status put-response) 500))
         (is (= (:status get-response) 200))
@@ -325,13 +335,15 @@
                              (dissoc :opiskeluoikeus-oid :oppija-oid))
                          app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
+          get-response-data (-> (:body get-response)
+                                test-utils/parse-body
+                                :data)]
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 204))
       (is (= (:status get-response) 200))
-      (eq (utils/dissoc-module-ids
+      (eq (test-utils/dissoc-module-ids
             (:opiskeluvalmiuksia-tukevat-opinnot test-data/hoks-data))
-          (utils/dissoc-module-ids
+          (test-utils/dissoc-module-ids
             (:opiskeluvalmiuksia-tukevat-opinnot get-response-data))))))
 
 (deftest hoks-put-updates-oht-using-yksiloiva-tunniste
@@ -355,7 +367,7 @@
                   test-data/hyto-data-oht-matching-and-new-tunniste))
             app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))
+          get-response-data (:data (test-utils/parse-body (:body get-response)))
           hao-hankkimistavat (:osaamisen-hankkimistavat
                                (first (:hankittavat-ammat-tutkinnon-osat
                                         get-response-data)))
@@ -461,7 +473,9 @@
           put-response (hoks-utils/create-mock-hoks-put-request
                          1 main-level-of-hoks-updated app)
           get-response (hoks-utils/create-mock-hoks-get-request 1 app)
-          get-response-data (:data (utils/parse-body (:body get-response)))]
+          get-response-data (-> (:body get-response)
+                                test-utils/parse-body
+                                :data)]
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 204))
       (is (= (:status get-response) 200))
@@ -514,7 +528,7 @@
               app
               (format "%s/opiskeluoikeus/%s"
                       base-url opiskeluoikeus-oid))
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (is (= (-> body
                    :data
@@ -572,7 +586,7 @@
                               (mock/header "Caller-Id" "test")
                               (mock/header "ticket" "ST-testitiketti")))]
         (is (= (:status response) 403))
-        (is (= (utils/parse-body (:body response))
+        (is (= (test-utils/parse-body (:body response))
                {:error "User type 'PALVELU' is required"}))))))
 
 (deftest post-kyselylinkki
@@ -591,7 +605,7 @@
               :tyyppi "aloittaneet"
               :lahetystila "ei_lahetetty"}]
 
-    (utils/with-service-ticket
+    (test-utils/with-service-ticket
       app
       (mock/json-body req data)
       "1.2.246.562.10.00000000001")
@@ -623,7 +637,7 @@
                     :sahkoposti "testi@testi.fi"
                     :lahetystila "viestintapalvelussa"}]
 
-    (utils/with-service-ticket
+    (test-utils/with-service-ticket
       app
       (mock/json-body req1 data-post)
       "1.2.246.562.10.00000000001")
@@ -631,7 +645,7 @@
     (is (nil? (:sahkoposti (first (kyselylinkki/get-by-oppija-oid!
                                     "1.2.246.562.24.12312312319")))))
 
-    (utils/with-service-ticket
+    (test-utils/with-service-ticket
       app
       (mock/json-body req2 data-patch)
       "1.2.246.562.10.00000000001")
@@ -652,17 +666,17 @@
           app (hoks-utils/create-app nil)
           post-response (hoks-utils/mock-st-post app base-url hoks-data)]
       (is (= (:status post-response) 200))
-      (let [hoks-uri (-> (utils/parse-body (:body post-response))
+      (let [hoks-uri (-> (test-utils/parse-body (:body post-response))
                          :data
                          :uri)
             get-response (hoks-utils/mock-st-get app hoks-uri)]
         (is (= (:status get-response) 200))
-        (let [hoks (-> (utils/parse-body (:body get-response))
+        (let [hoks (-> (test-utils/parse-body (:body get-response))
                        :data)
               paged-response (hoks-utils/mock-st-get
                                app (format "%s/paged" base-url))]
           (is (= (:status paged-response) 200))
-          (is (= (-> (utils/parse-body (:body paged-response))
+          (is (= (-> (test-utils/parse-body (:body paged-response))
                      :data
                      :result
                      first
@@ -679,18 +693,18 @@
           app (hoks-utils/create-app nil)
           post-response (hoks-utils/mock-st-post app base-url hoks-data)]
       (is (= (:status post-response) 200))
-      (let [hoks-uri (-> (utils/parse-body (:body post-response))
+      (let [hoks-uri (-> (test-utils/parse-body (:body post-response))
                          :data
                          :uri)
             get-response (hoks-utils/mock-st-get app hoks-uri)]
         (is (= (:status get-response) 200))
-        (let [hoks (-> (utils/parse-body (:body get-response))
+        (let [hoks (-> (test-utils/parse-body (:body get-response))
                        :data)
               hoks-id (-> hoks :id)]
           (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
           (let [paged-response (hoks-utils/mock-st-get
                                  app (format "%s/paged" base-url))
-                paged-body (utils/parse-body (:body paged-response))]
+                paged-body (test-utils/parse-body (:body paged-response))]
             (is (= (:status paged-response) 200))
             (is (= (-> paged-body
                        :data
@@ -726,17 +740,17 @@
           app (hoks-utils/create-app nil)
           post-response (hoks-utils/mock-st-post app base-url hoks-data)]
       (is (= (:status post-response) 200))
-      (let [hoks-uri (-> (utils/parse-body (:body post-response))
+      (let [hoks-uri (-> (test-utils/parse-body (:body post-response))
                          :data
                          :uri)
             get-response (hoks-utils/mock-st-get app hoks-uri)]
         (is (= (:status get-response) 200))
-        (let [hoks (-> (utils/parse-body (:body get-response))
+        (let [hoks (-> (test-utils/parse-body (:body get-response))
                        :data)
               hoks-id (-> hoks :id)
               paged-response (hoks-utils/mock-st-get
                                app (format "%s/paged" base-url))
-              paged-body (utils/parse-body (:body paged-response))
+              paged-body (test-utils/parse-body (:body paged-response))
               before-delete-ts (make-timestamp)]
           (is (= (:status paged-response) 200))
           (is (= (-> paged-body
@@ -755,13 +769,15 @@
                                      app (format "%s/paged?updated-after=%s"
                                                  base-url
                                                  before-delete-ts))
-                before-delete-body (utils/parse-body (:body before-delete-resp))
+                before-delete-body (test-utils/parse-body
+                                     (:body before-delete-resp))
                 after-delete-ts (make-timestamp 2000)
                 after-delete-resp (hoks-utils/mock-st-get
                                     app (format "%s/paged?updated-after=%s"
                                                 base-url
                                                 after-delete-ts))
-                after-delete-body (utils/parse-body (:body after-delete-resp))]
+                after-delete-body (test-utils/parse-body
+                                    (:body after-delete-resp))]
             (is (= (:status before-delete-resp) 200))
             (is (= (-> before-delete-body
                        :data
@@ -806,9 +822,9 @@
                      [parts-test-data/ahyto-data]}
           post-response (hoks-utils/mock-st-post app base-url hoks-data)]
       (is (= (:status post-response) 200))
-      (let [hoks-uri (-> post-response :body (utils/parse-body) :data :uri)
+      (let [hoks-uri (-> post-response :body (test-utils/parse-body) :data :uri)
             get-response (hoks-utils/mock-st-get app hoks-uri)
-            hoks (-> get-response :body (utils/parse-body) :data)
+            hoks (-> get-response :body (test-utils/parse-body) :data)
             hoks-id (:id hoks)]
         (is (= (:status get-response) 200))
         (is (some? (seq (:hankittavat-ammat-tutkinnon-osat hoks))))
@@ -848,7 +864,7 @@
         (db-hoks/undo-soft-delete hoks-id)
         (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
           (is (= (:status get-resp) 200))
-          (is (= (-> (utils/parse-body (:body get-resp))
+          (is (= (-> (test-utils/parse-body (:body get-resp))
                      :data) hoks)))))))
 
 (deftest test-hoks-delete-undo-patch-hoks-delete-undo
@@ -873,9 +889,9 @@
                      [parts-test-data/ahyto-data]}
           post-response (hoks-utils/mock-st-post app base-url hoks-data)]
       (is (= (:status post-response) 200))
-      (let [hoks-uri (-> post-response :body (utils/parse-body) :data :uri)
+      (let [hoks-uri (-> post-response :body (test-utils/parse-body) :data :uri)
             get-response (hoks-utils/mock-st-get app hoks-uri)
-            hoks (-> get-response :body (utils/parse-body) :data)
+            hoks (-> get-response :body (test-utils/parse-body) :data)
             hoks-id (:id hoks)]
         (is (= (:status get-response) 200))
         ; poista ja palauta
@@ -883,7 +899,7 @@
         (db-hoks/undo-soft-delete hoks-id)
         (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
           (is (= (:status get-resp) 200))
-          (is (= (-> (utils/parse-body (:body get-resp))
+          (is (= (-> (test-utils/parse-body (:body get-resp))
                      :data) hoks)))
         ; päivitä hoksia
         (let [patch-response
@@ -895,7 +911,7 @@
           (is (= (:status patch-response) 204))
           (let [get-hoks-after-patch (hoks-utils/mock-st-get app hoks-uri)
                 hoks-after-patch
-                (-> get-hoks-after-patch :body (utils/parse-body) :data)]
+                (-> get-hoks-after-patch :body (test-utils/parse-body) :data)]
             (is (= (:status get-hoks-after-patch) 200))
             (is (= "2023-12-31"
                    (:osaamisen-saavuttamisen-pvm hoks-after-patch)))
@@ -904,7 +920,7 @@
             (db-hoks/undo-soft-delete hoks-id)
             (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
               (is (= (:status get-resp) 200))
-              (is (= (-> (utils/parse-body (:body get-resp))
+              (is (= (-> (test-utils/parse-body (:body get-resp))
                          :data) hoks-after-patch)))))))))
 
 (deftest test-hoks-delete-undo-patch-hato-delete-undo
@@ -929,9 +945,9 @@
                      [parts-test-data/ahyto-data]}
           post-response (hoks-utils/mock-st-post app base-url hoks-data)]
       (is (= (:status post-response) 200))
-      (let [hoks-uri (-> post-response :body (utils/parse-body) :data :uri)
+      (let [hoks-uri (-> post-response :body (test-utils/parse-body) :data :uri)
             get-response (hoks-utils/mock-st-get app hoks-uri)
-            hoks (-> get-response :body (utils/parse-body) :data)
+            hoks (-> get-response :body (test-utils/parse-body) :data)
             hoks-id (:id hoks)]
         (is (= (:status get-response) 200))
         ; poista ja palauta
@@ -939,7 +955,7 @@
         (db-hoks/undo-soft-delete hoks-id)
         (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
           (is (= (:status get-resp) 200))
-          (is (= (-> (utils/parse-body (:body get-resp))
+          (is (= (-> (test-utils/parse-body (:body get-resp))
                      :data) hoks)))
         ; päivitä hankittavaa ammatillista tutkinnon osaa
         (let [patch-response
@@ -952,7 +968,7 @@
           (is (= (:status patch-response) 204))
           (let [get-hoks-after-patch (hoks-utils/mock-st-get app hoks-uri)
                 hoks-after-patch
-                (-> get-hoks-after-patch :body (utils/parse-body) :data)]
+                (-> get-hoks-after-patch :body (test-utils/parse-body) :data)]
             (is (= (:status get-hoks-after-patch) 200))
             (is (= (-> hoks-after-patch
                        :hankittavat-ammat-tutkinnon-osat
@@ -964,7 +980,7 @@
             (db-hoks/undo-soft-delete hoks-id)
             (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
               (is (= (:status get-resp) 200))
-              (is (= (-> (utils/parse-body (:body get-resp))
+              (is (= (-> (test-utils/parse-body (:body get-resp))
                          :data) hoks-after-patch)))))))))
 
 (deftest test-hoks-delete-undo-update-part-delete-undo
@@ -989,9 +1005,9 @@
                      [parts-test-data/ahyto-data]}
           post-response (hoks-utils/mock-st-post app base-url hoks-data)]
       (is (= (:status post-response) 200))
-      (let [hoks-uri (-> post-response :body (utils/parse-body) :data :uri)
+      (let [hoks-uri (-> post-response :body (test-utils/parse-body) :data :uri)
             get-response (hoks-utils/mock-st-get app hoks-uri)
-            hoks (-> get-response :body (utils/parse-body) :data)
+            hoks (-> get-response :body (test-utils/parse-body) :data)
             hoks-id (:id hoks)]
         (is (= (:status get-response) 200))
         ; poista ja palauta
@@ -999,7 +1015,7 @@
         (db-hoks/undo-soft-delete hoks-id)
         (let [get-resp (hoks-utils/mock-st-get app hoks-uri)]
           (is (= (:status get-resp) 200))
-          (is (= (-> (utils/parse-body (:body get-resp))
+          (is (= (-> (test-utils/parse-body (:body get-resp))
                      :data) hoks)))
         (let [hoks-update
               (assoc hoks-data
@@ -1012,14 +1028,14 @@
           (is (= (:status update-response) 204))
           (let [get-hoks-after-update (hoks-utils/mock-st-get app hoks-uri)
                 hoks-after-update
-                (-> get-hoks-after-update :body (utils/parse-body) :data)]
+                (-> get-hoks-after-update :body (test-utils/parse-body) :data)]
             (is (= (:status get-hoks-after-update) 200))
             ; poista ja palauta
             (db-hoks/soft-delete-hoks-by-hoks-id hoks-id)
             (db-hoks/undo-soft-delete hoks-id)
             (let [get-hoks-after-undo (hoks-utils/mock-st-get app hoks-uri)
                   hoks-after-undo
-                  (-> get-hoks-after-undo :body (utils/parse-body) :data)]
+                  (-> get-hoks-after-undo :body (test-utils/parse-body) :data)]
               (is (= (:status get-hoks-after-undo) 200))
               (is (= hoks-after-update hoks-after-undo)))
             (let [hatos (db-ops/query
@@ -1064,7 +1080,7 @@
                        app
                        (format "%s/1/hankittava-ammat-tutkinnon-osa/1"
                                base-url))
-            body     (utils/parse-body (:body response))]
+            body     (test-utils/parse-body (:body response))]
         (is (= (:status response) 200))
         (is (= (-> (:data body)
                    (update-in [:osaamisen-osoittaminen 0] dissoc :module-id)
@@ -1109,7 +1125,7 @@
                             (mock/header "Caller-Id" "test")
                             (mock/header "ticket" "ST-testitiketti")))]
       (is (= (:status response) 401))
-      (is (= (utils/parse-body (:body response))
+      (is (= (test-utils/parse-body (:body response))
              {:reason "Unable to check access rights"})))))
 
 (deftest test-bypasses-oht-date-checks-when-eronnut

@@ -8,13 +8,13 @@
             [oph.ehoks.hoks.hoks-save-test :as hoks-data]
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.session-store :refer [test-session-store]]
-            [oph.ehoks.utils :as utils]
+            [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]
             [ring.mock.request :as mock])
   (:import [java.time LocalDate]))
 
-(t/use-fixtures :once utils/migrate-database)
-(t/use-fixtures :each utils/empty-database-after-test)
+(t/use-fixtures :once test-utils/migrate-database)
+(t/use-fixtures :each test-utils/empty-database-after-test)
 
 (def share-base-url "/ehoks-oppija-backend/api/v1/oppija/jaot")
 
@@ -37,7 +37,7 @@
   (let [store (atom {})
         app (common-api/create-app
               handler/app-routes (test-session-store store))]
-    (utils/with-authenticated-oid
+    (test-utils/with-authenticated-oid
       store
       "1.2.246.562.24.12312312319"
       app
@@ -52,7 +52,7 @@
                          :post
                          (format "%s/%s" share-base-url "jakolinkit"))
                        (assoc jakolinkki-data :hoks-eid (:eid hoks))))
-          body (utils/parse-body (:body response))]
+          body (test-utils/parse-body (:body response))]
       (t/is (= 200 (:status response)))
       (t/is (:meta body))
       (t/is (get-in body [:data :uri]))))
@@ -64,7 +64,7 @@
                          :post
                          (format "%s/%s" share-base-url "jakolinkit"))
                        {:wrong "things"}))
-          body (utils/parse-body (:body response))]
+          body (test-utils/parse-body (:body response))]
       (t/is (= 400 (:status response)))
       (t/is (nil? (:schema body)))))
 
@@ -77,7 +77,7 @@
                        (assoc jakolinkki-data
                               :voimassaolo-loppu (LocalDate/of 1986 11 17)
                               :hoks-eid "not relevant")))
-          body (utils/parse-body (:body response))]
+          body (test-utils/parse-body (:body response))]
       (t/is (= 400 (:status response)))
       (t/is (= "Shared link end date cannot be in the past"
                (:error body)))))
@@ -93,7 +93,7 @@
                        :voimassaolo-alku (.plusMonths (LocalDate/now) 2)
                        :voimassaolo-loppu (.plusMonths (LocalDate/now) 1)
                        :hoks-eid "not relevant")))
-        body (utils/parse-body (:body response))]
+        body (test-utils/parse-body (:body response))]
     (t/is (= 400 (:status response)))
     (t/is (= "Shared link end date cannot be before the start date"
              (:error body)))))
@@ -102,7 +102,7 @@
   (t/testing "Existing shared hato with osaamisenhankkiminen can be retrieved"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
-                             utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw]
                  (hoks/save! full-hoks-data))
           tuo-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
                                       :module_id]))
@@ -123,7 +123,7 @@
                                share-base-url
                                "jakolinkit"
                                share-id)))
-          data (:data (utils/parse-body (:body response)))]
+          data (:data (test-utils/parse-body (:body response)))]
       (t/is (= 200 (:status response)))
       (t/is (= (:module-id (:osaamisen-hankkimistapa data)) module-uuid))
       (t/is (nil? (:osaamisen-osoittaminen data)))
@@ -133,7 +133,7 @@
   (t/testing "Existing shared hato with osaamisenosoittaminen can be retrieved"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
-                             utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw]
                  (hoks/save! full-hoks-data))
           tuo-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
                                       :module_id]))
@@ -153,7 +153,7 @@
                                share-base-url
                                "jakolinkit"
                                share-id)))
-          data (:data (utils/parse-body (:body response)))]
+          data (:data (test-utils/parse-body (:body response)))]
       (t/is (= 200 (:status response)))
       (t/is (= (:module-id (:osaamisen-osoittaminen data)) module-uuid))
       (t/is (nil? (:osaamisen-hankkimistapa data)))
@@ -163,7 +163,7 @@
   (t/testing "Existing shared hpto with osaamisenosoittaminen can be retrieved"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
-                             utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw]
                  (hoks/save! full-hoks-data))
           tuo-uuid (str (get-in hoks [:hankittavat-paikalliset-tutkinnon-osat 0
                                       :module_id]))
@@ -186,7 +186,7 @@
                                share-base-url
                                "jakolinkit"
                                share-id)))
-          data (:data (utils/parse-body (:body response)))]
+          data (:data (test-utils/parse-body (:body response)))]
       (t/is (= 200 (:status response)))
       (t/is (= (:module-id (:osaamisen-osoittaminen data)) module-uuid))
       (t/is (nil? (:osaamisen-hankkimistapa data)))
@@ -196,7 +196,7 @@
   (t/testing "Existing shared hpto with osaamisenosoittaminen can be retrieved"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
-                             utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw]
                  (hoks/save! full-hoks-data))
           tuo-uuid (str (get-in hoks [:hankittavat-yhteiset-tutkinnon-osat 0
                                       :module_id]))
@@ -219,7 +219,7 @@
                                share-base-url
                                "jakolinkit"
                                share-id)))
-          data (:data (utils/parse-body (:body response)))]
+          data (:data (test-utils/parse-body (:body response)))]
       (t/is (= 200 (:status response)))
       (t/is (= (:module-id (:osaamisen-hankkimistapa data)) module-uuid))
       (t/is (nil? (:osaamisen-osoittaminen data)))
@@ -252,7 +252,7 @@
                                  share-base-url
                                  "jakolinkit"
                                  share-id)))
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (t/is (= 410 (:status response)))
         (t/is (= "Shared link is expired" (:message body)))))))
 
@@ -272,7 +272,7 @@
                                  share-base-url
                                  "jakolinkit"
                                  share-id)))
-            body (utils/parse-body (:body response))]
+            body (test-utils/parse-body (:body response))]
         (t/is (= 423 (:status response)))
         (t/is (= "Shared link not yet active" (:message body)))))))
 
@@ -313,7 +313,7 @@
   (t/testing "Multiple shared links for a single module can be fetched"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
-                             utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw]
                  (hoks/save! full-hoks-data))
           tuo1-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
                                        :module_id]))
@@ -346,7 +346,7 @@
                                share-base-url
                                "moduulit"
                                module1-uuid)))
-          data (:data (utils/parse-body (:body response)))]
+          data (:data (test-utils/parse-body (:body response)))]
       (t/is (= 200 (:status response)))
       (t/is (= 2 (count data)))
       (t/is (empty? (filter #(= (:share-id wrong-share) (:share-id %)) data)))))
@@ -360,4 +360,4 @@
                                "moduulit"
                                "11111111-1111-1111-1111-111111111111")))]
       (t/is (= 200 (:status response)))
-      (t/is (empty? (:data (utils/parse-body (:body response))))))))
+      (t/is (empty? (:data (test-utils/parse-body (:body response))))))))

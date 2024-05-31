@@ -5,9 +5,9 @@
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.virkailija.handler :as handler]
             [oph.ehoks.common.api :as common-api]
-            [oph.ehoks.utils :as utils :refer [parse-body with-db]]))
+            [oph.ehoks.test-utils :as test-utils :refer [parse-body with-db]]))
 
-(t/use-fixtures :once utils/migrate-database)
+(t/use-fixtures :once test-utils/migrate-database)
 
 (def session-url "/ehoks-virkailija-backend/api/v1/virkailija/session")
 
