@@ -112,7 +112,7 @@
                         suoritus/tyyppi
                         koski-suoritustyyppi->kyselytyyppi)))
 
-(defn kysely-already-exists?!
+(defn already-initiated?!
   [kysely hoks]
   (some? (first (get-by-hoks-id-and-kyselytyypit!
                   db/spec
@@ -128,7 +128,7 @@
   was successfully initiated, `nil` or `false` otherwise."
   [kysely hoks opiskeluoikeus]
   {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-  (if (kysely-already-exists?! kysely hoks)
+  (if (already-initiated?! kysely hoks)
     (log/warnf "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
     (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)
           suoritus     (find-first suoritus/ammatillinen?

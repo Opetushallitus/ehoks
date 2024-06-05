@@ -1,8 +1,10 @@
 (ns oph.ehoks.db.tyopaikkaohjaajan_yhteystiedot_test
   (:require [clojure.test :refer :all]
-            [oph.ehoks.test-utils :as test-utils]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.koski-test :as koski-test]
             [oph.ehoks.hoks :as hoks]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
+            [oph.ehoks.test-utils :as test-utils]))
 
 (use-fixtures :once test-utils/migrate-database)
 (use-fixtures :each test-utils/empty-database-after-test)
@@ -74,25 +76,27 @@
                 :hankittavat-paikalliset-tutkinnon-osat hpto-data})
 
 (deftest delete-tyopaikkaohjaajan-yhteystiedot-test
-  (testing "Työpaikkaohjaajan yhteystiedot poistetaan yli kolme kuukautta
-            sitten päättyneestä työelämäjaksosta"
-    (let [saved-hoks (hoks/save! hoks-data)
-          affected-jakso-ids (db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)
-          hoks (hoks/get-by-id (:id saved-hoks))
-          osaamisen-hankkimistavat (-> hoks
-                                       :hankittavat-paikalliset-tutkinnon-osat
-                                       first
-                                       :osaamisen-hankkimistavat)]
-      (is (= (-> osaamisen-hankkimistavat
-                 first
-                 :tyopaikalla-jarjestettava-koulutus
-                 :vastuullinen-tyopaikka-ohjaaja)
-             {:nimi "Olli Ohjaaja"}))
-      (is (= (-> osaamisen-hankkimistavat
-                 second
-                 :tyopaikalla-jarjestettava-koulutus
-                 :vastuullinen-tyopaikka-ohjaaja)
-             {:nimi "Opo Ohjaaja"
-              :sahkoposti "opo.ohjaaja@esimerkki.com"
-              :puhelinnumero "0402222222"}))
-      (is (= affected-jakso-ids #{1})))))
+  (with-redefs [koski/get-opiskeluoikeus-info-raw
+                koski-test/mock-get-opiskeluoikeus-raw]
+    (testing "Työpaikkaohjaajan yhteystiedot poistetaan yli kolme kuukautta
+              sitten päättyneestä työelämäjaksosta"
+      (let [saved-hoks (hoks/save! hoks-data)
+            affected-jakso-ids (db-hoks/delete-tyopaikkaohjaajan-yhteystiedot!)
+            hoks (hoks/get-by-id (:id saved-hoks))
+            osaamisen-hankkimistavat (-> hoks
+                                         :hankittavat-paikalliset-tutkinnon-osat
+                                         first
+                                         :osaamisen-hankkimistavat)]
+        (is (= (-> osaamisen-hankkimistavat
+                   first
+                   :tyopaikalla-jarjestettava-koulutus
+                   :vastuullinen-tyopaikka-ohjaaja)
+               {:nimi "Olli Ohjaaja"}))
+        (is (= (-> osaamisen-hankkimistavat
+                   second
+                   :tyopaikalla-jarjestettava-koulutus
+                   :vastuullinen-tyopaikka-ohjaaja)
+               {:nimi "Opo Ohjaaja"
+                :sahkoposti "opo.ohjaaja@esimerkki.com"
+                :puhelinnumero "0402222222"}))
+        (is (= affected-jakso-ids #{1}))))))

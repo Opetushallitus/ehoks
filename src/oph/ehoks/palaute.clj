@@ -95,7 +95,7 @@
   tällä hetkellä rahoitettu muilla rahoituslähteillä?"
   [opiskeluoikeus heratepvm]
   (-> opiskeluoikeus
-      (get-opiskeluoikeusjakso-for-date heratepvm :normal)
+      (get-opiskeluoikeusjakso-for-date (str heratepvm) :normal)
       (get-in [:opintojenRahoitus :koodiarvo])
       (feedback-collecting-preventing-codes)
       (some?)))

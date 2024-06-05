@@ -1,4 +1,4 @@
--- :name get-jakso-by-hoks-id-and-yksiloiva-tunniste! :? :1
+-- :name get-by-hoks-id-and-yksiloiva-tunniste! :? :1
 -- :doc Get palaute information for työpaikkajakso by HOKS ID and yksiloiva
 --      tunniste.
 select * from palautteet
@@ -13,6 +13,7 @@ insert into palautteet (herate_source,
                         hoks_id,
                         jakson_yksiloiva_tunniste,
                         koulutustoimija,
+                        toimipiste_oid,
                         tutkintonimike,
                         tutkintotunnus,
                         voimassa_alkupvm,
@@ -24,6 +25,7 @@ values (:herate-source,
         :hoks-id,
         :yksiloiva-tunniste,
         :koulutustoimija,
+        :toimipiste-oid,
         :tutkintonimike,
         :tutkintotunnus,
         :voimassa-alkupvm,
