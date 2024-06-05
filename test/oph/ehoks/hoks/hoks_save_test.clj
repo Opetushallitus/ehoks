@@ -588,7 +588,9 @@
                 "does not have osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
+                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
+                    organisaatio/get-organisaatio!
+                    organisaatio-test/mock-get-organisaatio!]
         (let [saved-hoks (hoks/save! hoks-ei-osaamisen-hankkimisen-tarvetta)]
           (hoks/update!
             (:id saved-hoks)
@@ -632,7 +634,9 @@
                 "does not have osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
+                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
+                    organisaatio/get-organisaatio!
+                    organisaatio-test/mock-get-organisaatio!]
         (let [saved-hoks (hoks/save! hoks-ei-osaamisen-hankkimisen-tarvetta)]
           (hoks/replace!
             (:id saved-hoks)

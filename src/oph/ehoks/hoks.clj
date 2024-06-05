@@ -16,7 +16,8 @@
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute])
+            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
+            [oph.ehoks.palaute.tyoelama :as tyoelamapalaute])
   (:import [java.time LocalDate]
            [java.util UUID]))
 
@@ -107,17 +108,21 @@
 (defn save!
   "Tallentaa yhden HOKSin arvot tietokantaan."
   [hoks]
-  (let [hoks (jdbc/with-db-transaction
-               [conn (db-ops/get-db-connection)]
-               (let [hoks (merge hoks (db-hoks/insert-hoks! hoks conn))
-                     tuva-hoks (tuva-related? hoks)]
-                 (db-hoks/insert-amisherate-kasittelytilat!
-                   (:id hoks) tuva-hoks conn)
-                 (save-parts! hoks conn)))]
+  (let [hoks-db       (jdbc/with-db-transaction
+                        [conn (db-ops/get-db-connection)]
+                        (let [hoks (merge hoks (db-hoks/insert-hoks! hoks conn))
+                              tuva-hoks (tuva-related? hoks)]
+                          (db-hoks/insert-amisherate-kasittelytilat!
+                            (:id hoks) tuva-hoks conn)
+                          (save-parts! hoks conn)))
+        hoks           (assoc hoks :id (:id hoks-db))
+        opiskeluoikeus (koski/get-existing-opiskeluoikeus!
+                         (:opiskeluoikeus-oid hoks))]
     (future
       (opiskelijapalaute/initiate-if-needed! :aloituskysely hoks)
-      (opiskelijapalaute/initiate-if-needed! :paattokysely hoks))
-    hoks))
+      (opiskelijapalaute/initiate-if-needed! :paattokysely hoks)
+      (tyoelamapalaute/initiate-all-uninitiated! hoks opiskeluoikeus))
+    hoks-db))
 
 (def ^:private tuva-hoks-msg-template
   "HOKS `%s` is a TUVA-HOKS or rinnakkainen ammatillinen HOKS.")
@@ -157,7 +162,9 @@
                    :paattoherate_kasitelty false})
                 (opiskelijapalaute/initiate! :paattokysely
                                              updated-hoks
-                                             opiskeluoikeus))))))
+                                             opiskeluoikeus))))
+        (tyoelamapalaute/initiate-all-uninitiated!
+          updated-hoks opiskeluoikeus)))
     (db-hoks/select-hoks-by-id hoks-id)))
 
 (defn- merge-not-given-hoks-values
@@ -326,7 +333,9 @@
              :paattoherate_kasitelty false})
           (opiskelijapalaute/initiate! :paattokysely
                                        updated-hoks
-                                       opiskeluoikeus))))
+                                       opiskeluoikeus))
+        (tyoelamapalaute/initiate-all-uninitiated!
+          updated-hoks opiskeluoikeus)))
     updated-hoks))
 
 (defn check-for-update!

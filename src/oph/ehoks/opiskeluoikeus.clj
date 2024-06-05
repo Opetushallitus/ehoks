@@ -51,7 +51,7 @@
 
 (defn get-opiskeluoikeusjakso-for-date
   "Hakee opiskeluoikeudesta jakson, joka on voimassa tiettynä päivänä."
-  [opiskeluoikeus vahvistus-pvm mode]
+  [opiskeluoikeus ^String vahvistus-pvm mode]
   (let [offset (if (= mode :one-day-offset) 1 0)
         jaksot (sort-by :alku (:opiskeluoikeusjaksot (:tila opiskeluoikeus)))]
     (reduce (fn [res next]
@@ -68,7 +68,7 @@
   date `pvm`."
   [opiskeluoikeus pvm]
   (let [jakso (get-opiskeluoikeusjakso-for-date
-                opiskeluoikeus pvm :one-day-offset)
+                opiskeluoikeus (str pvm) :one-day-offset)
         tila  (get-in jakso [:tila :koodiarvo])]
     (some? (when (terminal-states tila)
              (log/warnf "Opiskeluoikeus `%s` on terminaalitilassa `%s`."
