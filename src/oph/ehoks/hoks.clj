@@ -16,7 +16,8 @@
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute])
+            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
+            [oph.ehoks.palaute.tyoelama :as tyoelamapalaute])
   (:import [java.time LocalDate]
            [java.util UUID]))
 
@@ -113,10 +114,13 @@
                      tuva-hoks (tuva-related? hoks)]
                  (db-hoks/insert-amisherate-kasittelytilat!
                    (:id hoks) tuva-hoks conn)
-                 (save-parts! hoks conn)))]
+                 (save-parts! hoks conn)))
+        opiskeluoikeus (koski/get-existing-opiskeluoikeus!
+                         (:opiskeluoikeus-oid hoks))]
     (future
       (opiskelijapalaute/initiate-if-needed! :aloituskysely hoks)
-      (opiskelijapalaute/initiate-if-needed! :paattokysely hoks))
+      (opiskelijapalaute/initiate-if-needed! :paattokysely hoks)
+      (tyoelamapalaute/initiate-all-uninitiated! hoks opiskeluoikeus))
     hoks))
 
 (def ^:private tuva-hoks-msg-template
