@@ -6,7 +6,7 @@
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
-            [oph.ehoks.palaute.tyoelamapalaute :as tep])
+            [oph.ehoks.palaute.tyoelama :as tep])
   (:import (java.time LocalDate)))
 
 (defn send-workplace-periods
