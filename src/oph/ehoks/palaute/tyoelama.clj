@@ -1,4 +1,4 @@
-(ns oph.ehoks.palaute.tyoelamapalaute
+(ns oph.ehoks.palaute.tyoelama
   (:require [clojure.string :as string]
             [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
@@ -13,6 +13,15 @@
 
 (hugsql/def-db-fns "oph/ehoks/db/sql/tyoelamapalaute.sql")
 
+(def tyopaikkajakso-types
+  #{"osaamisenhankkimistapa_koulutussopimus"
+    "osaamisenhankkimistapa_oppisopimus"})
+
+(defn tyopaikkajakso?
+  "Returns `true` if osaamisen hankkimistapa `oht` is tyopaikkajakso."
+  [oht]
+  (some? (tyopaikkajakso-types (:osaamisen-hankkimistapa-koodi-uri oht))))
+
 (defn finished-workplace-periods!
   "Queries for all finished workplace periods between start and end"
   [start end limit]
@@ -20,6 +29,17 @@
         hptos (db-hoks/select-paattyneet-tyoelamajaksot "hpto" start end limit)
         hatos (db-hoks/select-paattyneet-tyoelamajaksot "hato" start end limit)]
     (concat hytos hptos hatos)))
+
+(defn tyopaikkajaksot
+  "Takes `hoks` as an input and extracts from it all osaamisen hankkimistavat
+  that are tyopaikkajaksos. Returns a lazy sequence."
+  [hoks]
+  (->> (lazy-cat
+         (:hankittavat-ammat-tutkinnon-osat hoks)
+         (:hankittavat-paikalliset-tutkinnon-osat hoks)
+         (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))
+       (mapcat :osaamisen-hankkimistavat)
+       (filter tyopaikkajakso?)))
 
 (defn next-niputus-date
   "Palauttaa seuraavan niputuspäivämäärän annetun päivämäärän jälkeen.
@@ -33,6 +53,12 @@
         (= 6 month) (LocalDate/of year 6 30)
         (= 12 month) (LocalDate/of (inc year) 1 1)
         :else (LocalDate/of year (inc month) 1)))))
+
+(defn voimassa-loppupvm
+  "Given `voimassa-alkupvm`, calculates `voimassa-loppupvm`, which is currently
+  60 days after `voimassa-alkupvm`."
+  [^LocalDate voimassa-alkupvm]
+  (.plusDays voimassa-alkupvm 60))
 
 (defn osa-aikaisuus-missing?
   "Puuttuuko tieto osa-aikaisuudesta jaksosta, jossa sen pitäisi olla?"
@@ -87,11 +113,11 @@
             opiskeluoikeus)))
 
 (defn initiate?
-  [jakso opiskeluoikeus]
+  [jakso hoks opiskeluoikeus]
   (if-let [reason (reason-for-not-initiating jakso opiskeluoikeus)]
     (log/infof (str "Not initiating tyoelamapalautekysely for jakso with HOKS "
                     "ID `%s` and yksiloiva tunniste `%s`. %s")
-               (:hoks-id jakso)
+               (:id hoks)
                (:yksiloiva-tunniste jakso)
                reason)
     true))
@@ -104,24 +130,35 @@
             :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})))
 
 (defn initiate!
-  [jakso opiskeluoikeus]
-  (let [suoritus         (->> opiskeluoikeus
-                              :suoritukset
-                              (find-first suoritus/ammatillinen?))
-        voimassa-alkupvm (next-niputus-date (:loppu jakso))]
+  [jakso hoks suoritus koulutustoimija toimipiste-oid]
+  (let [voimassa-alkupvm (next-niputus-date (:loppu jakso))]
     (if (already-initiated?! jakso)
       (log/warnf (str "Palaute has already been initiated for työpaikkajakso "
                       "with HOKS ID `%d` and yksiloiva tunniste `%s`.")
-                 (:hoks-id jakso)
+                 (:id hoks)
                  (:yksiloiva-tunniste jakso))
       (insert!
         db/spec
-        {:hoks-id            (:hoks-id jakso)
+        {:hoks-id            (:id hoks)
          :yksiloiva-tunniste (:yksiloiva-tunniste jakso)
          :heratepvm          (LocalDate/parse (:loppu jakso))
-         :koulutustoimija    (palaute/koulutustoimija-oid! opiskeluoikeus)
          :voimassa-alkupvm   voimassa-alkupvm
-         :voimassa-loppupvm  (.plusDays voimassa-alkupvm 60)
+         :voimassa-loppupvm  (voimassa-loppupvm voimassa-alkupvm)
+         :koulutustoimija    koulutustoimija
+         :toimipiste-oid     toimipiste-oid
          :tutkintonimike     (suoritus/tutkintonimike suoritus)
          :tutkintotunnus     (suoritus/tutkintotunnus suoritus)
          :herate-source      "ehoks_update"}))))
+
+(defn initiate-all-uninitiated!
+  "Takes a `hoks` and `opiskeluoikeus` and initiates tyoelamapalaute for all
+  tyopaikkajaksos in HOKS for which palaute has not been already initiated."
+  [hoks opiskeluoikeus]
+  (let [suoritus        (find-first suoritus/ammatillinen?
+                                    (:suoritukset opiskeluoikeus))
+        koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
+        toimipiste-oid  (palaute/toimipiste-oid! suoritus)]
+    (->> (tyopaikkajaksot hoks)
+         (filter #(initiate? % hoks opiskeluoikeus))
+         (map #(initiate! % hoks suoritus koulutustoimija toimipiste-oid))
+         doall)))
