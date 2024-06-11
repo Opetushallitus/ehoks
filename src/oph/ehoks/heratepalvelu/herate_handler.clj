@@ -7,7 +7,7 @@
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [wrap-user-details]]
-            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
+            [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.schema.oid :as oid-schema]
@@ -68,8 +68,7 @@
                        to :- LocalDate]
         :return (restful/response {:count s/Int})
         (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
-              count  (opiskelijapalaute/initiate-every-needed! :aloituskysely
-                                                               hoksit)]
+              count  (op/initiate-every-needed! :aloituskysely hoksit)]
           (restful/ok {:count count})))
 
       (c-api/POST "/hoksit/resend-paattoherate" request
@@ -79,8 +78,7 @@
                        to :- LocalDate]
         :return (restful/response {:count s/Int})
         (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
-              count  (opiskelijapalaute/initiate-every-needed! :paattokysely
-                                                               hoksit)]
+              count  (op/initiate-every-needed! :paattokysely hoksit)]
           (restful/ok {:count count})))
 
       (c-api/POST "/opiskeluoikeus-update" request

@@ -5,7 +5,7 @@
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
-            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
+            [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.palaute.tyoelama :as tep])
   (:import (java.time LocalDate)))
 
@@ -68,8 +68,8 @@
     (log/infof
       "Sending %d (limit %d) hoksit between %s and %s"
       (count hoksit) (* 2 limit) start end)
-    (opiskelijapalaute/initiate-every-needed! :aloituskysely aloittaneet)
-    (opiskelijapalaute/initiate-every-needed! :paattokysely  paattyneet)
+    (op/initiate-every-needed! :aloituskysely aloittaneet)
+    (op/initiate-every-needed! :paattokysely  paattyneet)
     hoksit))
 
 (defn set-aloitusherate-kasitelty
