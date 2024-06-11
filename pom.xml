@@ -13,7 +13,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>c6bf4ec66f97ceab73eacae053736236e0447c33</tag>
+    <tag>812a51e2b62ac9b727bff5542a71a8ad0d78cf08</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -297,6 +297,11 @@
         <version>42.7.2</version>
       </dependency>
       <dependency>
+        <groupId>com.layerware</groupId>
+        <artifactId>hugsql</artifactId>
+        <version>0.5.3</version>
+      </dependency>
+      <dependency>
         <groupId>dev.weavejester</groupId>
         <artifactId>medley</artifactId>
         <version>1.7.0</version>
@@ -440,6 +445,10 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.layerware</groupId>
+      <artifactId>hugsql</artifactId>
     </dependency>
     <dependency>
       <groupId>ring</groupId>
