@@ -17,8 +17,8 @@
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
-            [oph.ehoks.palaute.tyoelama :as tyoelamapalaute])
+            [oph.ehoks.palaute.opiskelija :as op]
+            [oph.ehoks.palaute.tyoelama :as tep])
   (:import [java.time LocalDate]
            [java.util UUID]))
 
@@ -120,9 +120,9 @@
         opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                          (:opiskeluoikeus-oid hoks))]
     (future
-      (opiskelijapalaute/initiate-if-needed! :aloituskysely hoks)
-      (opiskelijapalaute/initiate-if-needed! :paattokysely hoks)
-      (tyoelamapalaute/initiate-all-uninitiated! hoks opiskeluoikeus))
+      (op/initiate-if-needed! :aloituskysely hoks)
+      (op/initiate-if-needed! :paattokysely hoks)
+      (tep/initiate-all-uninitiated! hoks opiskeluoikeus))
     hoks-db))
 
 (def ^:private tuva-hoks-msg-template
@@ -144,28 +144,20 @@
           (db-hoks/set-amisherate-kasittelytilat-to-true!
             amisherate-kasittelytila
             (format tuva-hoks-msg-template (:id updated-hoks)))
-          (do (when (opiskelijapalaute/initiate? :aloituskysely
-                                                 current-hoks
-                                                 updated-hoks
-                                                 opiskeluoikeus)
+          (do (when (op/initiate?
+                      :aloituskysely current-hoks updated-hoks opiskeluoikeus)
                 (db-hoks/update-amisherate-kasittelytilat!
                   {:id (:id amisherate-kasittelytila)
                    :aloitusherate_kasitelty false})
-                (opiskelijapalaute/initiate! :aloituskysely
-                                             updated-hoks
-                                             opiskeluoikeus))
-              (when (opiskelijapalaute/initiate? :paattokysely
-                                                 current-hoks
-                                                 updated-hoks
-                                                 opiskeluoikeus)
+                (op/initiate!
+                  :aloituskysely updated-hoks opiskeluoikeus))
+              (when (op/initiate?
+                      :paattokysely current-hoks updated-hoks opiskeluoikeus)
                 (db-hoks/update-amisherate-kasittelytilat!
                   {:id (:id amisherate-kasittelytila)
                    :paattoherate_kasitelty false})
-                (opiskelijapalaute/initiate! :paattokysely
-                                             updated-hoks
-                                             opiskeluoikeus))))
-        (tyoelamapalaute/initiate-all-uninitiated!
-          updated-hoks opiskeluoikeus)))
+                (op/initiate! :paattokysely updated-hoks opiskeluoikeus))))
+        (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))
     (db-hoks/select-hoks-by-id hoks-id)))
 
 (defn- merge-not-given-hoks-values
@@ -315,28 +307,20 @@
         amisherate-kasittelytila
         (format tuva-hoks-msg-template (:id updated-hoks)))
       (do
-        (when (opiskelijapalaute/initiate? :aloituskysely
-                                           current-hoks
-                                           updated-hoks
-                                           opiskeluoikeus)
+        (when (op/initiate?
+                :aloituskysely current-hoks updated-hoks opiskeluoikeus)
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :aloitusherate_kasitelty false})
-          (opiskelijapalaute/initiate! :aloituskysely
-                                       updated-hoks
-                                       opiskeluoikeus))
-        (when (opiskelijapalaute/initiate? :paattokysely
-                                           current-hoks
-                                           updated-hoks
-                                           opiskeluoikeus)
+          (op/initiate!
+            :aloituskysely updated-hoks opiskeluoikeus))
+        (when (op/initiate?
+                :paattokysely current-hoks updated-hoks opiskeluoikeus)
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :paattoherate_kasitelty false})
-          (opiskelijapalaute/initiate! :paattokysely
-                                       updated-hoks
-                                       opiskeluoikeus))
-        (tyoelamapalaute/initiate-all-uninitiated!
-          updated-hoks opiskeluoikeus)))
+          (op/initiate! :paattokysely updated-hoks opiskeluoikeus))
+        (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))
     updated-hoks))
 
 (defn- oppija-oid-changed?

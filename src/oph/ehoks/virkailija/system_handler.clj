@@ -9,7 +9,7 @@
             [oph.ehoks.external.cache :as c]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.logging.audit :as audit]
-            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
+            [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.restful :as restful]
             [oph.ehoks.schema.oid :as oid-schema]
@@ -249,7 +249,7 @@
       :path-params [hoks-id :- s/Int]
       (assoc
         (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
-          (if (opiskelijapalaute/initiate-if-needed! :aloituskysely hoks)
+          (if (op/initiate-if-needed! :aloituskysely hoks)
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false` or "
@@ -265,7 +265,7 @@
       :path-params [hoks-id :- s/Int]
       (assoc
         (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
-          (if (opiskelijapalaute/initiate-if-needed! :paattokysely hoks)
+          (if (op/initiate-if-needed! :paattokysely hoks)
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false`, "
@@ -283,8 +283,7 @@
                      to :- LocalDate]
       :return {:count s/Int}
       (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
-            count  (opiskelijapalaute/initiate-every-needed! :aloituskysely
-                                                             hoksit)]
+            count  (op/initiate-every-needed! :aloituskysely hoksit)]
         (assoc (restful/ok {:count count})
                ::audit/operation :system/resend-aloitusheratteet
                ::audit/target {:hoksit-from from
@@ -297,8 +296,7 @@
                      to :- LocalDate]
       :return {:count s/Int}
       (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
-            count  (opiskelijapalaute/initiate-every-needed! :paattokysely
-                                                             hoksit)]
+            count  (op/initiate-every-needed! :paattokysely hoksit)]
         (assoc (restful/ok {:count count})
                ::audit/operation :system/resend-paattoheratteet
                ::audit/target    {:hoksit-from from
