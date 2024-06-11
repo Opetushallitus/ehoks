@@ -53,6 +53,9 @@
       (not (:osaamisen-hankkimisen-tarve hoks))
       "`osaamisen-hankkimisen-tarve` not set to `true` for given HOKS."
 
+      (and (= kysely :aloituskysely) (not (:sahkoposti hoks)))
+      "`sahkoposti` is mandatory for aloituskysely and it's currently missing."
+
       (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
       (format "No ammatillinen suoritus in opiskeluoikeus `%s`."
               (:opiskeluoikeus-oid hoks))

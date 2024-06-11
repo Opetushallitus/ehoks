@@ -83,11 +83,16 @@
             (test-not-initiated
               hoks-test/hoks-1 oo-test/opiskeluoikeus-3 #"linked to another")))
 
-        (testing (str "don't initiate aloituskysely if "
-                      "`ensikertainen-hyvaksyminen` is missing.")
-          (let [hoks (dissoc hoks-test/hoks-1 :ensikertainen-hyvaksyminen)]
-            (test-not-initiated
-              :aloituskysely hoks oo-test/opiskeluoikeus-1 #"nen` has not")))
+        (testing "don't initiate aloituskysely if"
+          (testing "`ensikertainen-hyvaksyminen` is missing."
+            (let [hoks (dissoc hoks-test/hoks-1 :ensikertainen-hyvaksyminen)]
+              (test-not-initiated
+                :aloituskysely hoks oo-test/opiskeluoikeus-1 #"nen` has not")))
+
+          (testing "`sahkoposti` is missing."
+            (let [hoks (dissoc hoks-test/hoks-1 :sahkoposti)]
+              (test-not-initiated
+                :aloituskysely hoks oo-test/opiskeluoikeus-1 #"`sahkoposti`"))))
 
         (testing (str "don't initiate päättökysely if "
                       "`osaamisen-saavuttamisen-pvm` is missing.")
