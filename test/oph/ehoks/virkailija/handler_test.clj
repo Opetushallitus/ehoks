@@ -142,9 +142,50 @@
            {:status 200
             :body {:oid (last (string/split url #"/"))
                    :oppilaitos {:oid "1.2.246.562.10.12000000203"}
-                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}))
+                   :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
+           (.endsWith
+             url
+             (str "/oppijanumerorekisteri-service/henkilo/"
+                  "1.2.246.562.24.45000000007"))
+           {:status 200
+            :body {:oidHenkilo "1.2.246.562.24.45000000007"
+                   :duplicate false}}
+           (.endsWith
+             url (str "/oppijanumerorekisteri-service/henkilo/"
+                      "1.2.246.562.24.45000000007/slaves"))
+           {:status 200
+            :body []}
+           (.endsWith
+             url
+             (str "/oppijanumerorekisteri-service/henkilo/"
+                  "1.2.246.562.24.12312312319"))
+           {:status 200
+            :body {:oidHenkilo "1.2.246.562.24.12312312319"
+                   :duplicate false}}
+           (.endsWith
+             url (str "/oppijanumerorekisteri-service/henkilo/"
+                      "1.2.246.562.24.12312312319/slaves"))
+           {:status 200
+            :body [{:oidHenkilo "1.2.246.562.24.44000000008"}]}
+           (.endsWith
+             url (str "/oppijanumerorekisteri-service/henkilo/"
+                      "1.2.246.562.24.44000000008/master"))
+           {:status 200
+            :body {:oidHenkilo "1.2.246.562.24.12312312319"}}
+           (.endsWith
+             url (str "/oppijanumerorekisteri-service/henkilo/"
+                      "1.2.246.562.24.12000000014"))
+           {:status 200
+            :body {:oidHenkilo "1.2.246.562.24.12000000014"
+                   :duplicate true}}))
        (fn [^String url options]
          (cond
+           (.endsWith url "/v1/tickets")
+           {:status 201
+            :headers {"location" "http://test.ticket/1234"}}
+           (= url "http://test.ticket/1234")
+           {:status 200
+            :body "ST-1234-testi"}
            (.endsWith
              url "/koski/api/sure/oids")
            {:status 200
@@ -1222,6 +1263,42 @@
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
                  {:error "Updating `oppija-oid` in HOKS is not allowed!"}))))))
+
+(t/deftest test-allow-updating-oppija-oid
+  (t/testing "Allows changing a slave oppija-oid to master"
+    (test-utils/with-db
+      (v-utils/add-oppija {:oid "1.2.246.562.24.44000000008"
+                           :nimi "Teuvo Testaaja"
+                           :opiskeluoikeus-oid "1.2.246.562.15.76000000018"
+                           :oppilaitos-oid "1.2.246.562.10.12000000013"
+                           :tutkinto-nimi {:fi "Testitutkinto 1"}
+                           :osaamisala-nimi {:fi "Testiosaamisala numero 1"}
+                           :koulutustoimija-oid ""})
+      (let [response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :post
+                  (str
+                    base-url
+                    "/virkailija/oppijat/1.2.246.562.24.44000000008/hoksit"))
+                hoks-data)
+              virkailija-for-test)
+            body (test-utils/parse-body (:body response))
+            hoks-url (get-in body [:data :uri])
+            put-response
+            (with-test-virkailija
+              (mock/json-body
+                (mock/request
+                  :put
+                  hoks-url)
+                {:id (get-in body [:meta :id])
+                 :osaamisen-hankkimisen-tarve false
+                 :ensikertainen-hyvaksyminen "2018-12-15"
+                 :opiskeluoikeus-oid "1.2.246.562.15.76000000018"
+                 :oppija-oid "1.2.246.562.24.12312312319"})
+              virkailija-for-test)]
+        (t/is (= (:status put-response) 204))))))
 
 (t/deftest test-get-amount
   (t/testing "Test getting the amount of hokses"
