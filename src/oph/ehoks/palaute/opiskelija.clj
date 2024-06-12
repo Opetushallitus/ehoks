@@ -113,13 +113,21 @@
                         koski-suoritustyyppi->kyselytyyppi)))
 
 (defn already-initiated?!
-  [kysely hoks]
-  (some? (first (get-by-hoks-id-and-kyselytyypit!
-                  db/spec
-                  {:hoks-id      (:id hoks)
-                   :kyselytyypit (case kysely
-                                   :aloituskysely ["aloittaneet"]
-                                   :paattokysely  (vec paattokyselyt))}))))
+  "Returns `true` if aloituskysely or paattokysely with same oppija and
+  koulutustoimija has already been initiated within the same rahoituskausi."
+  [kysely hoks koulutustoimija]
+  (let [rahoituskausi (->> (herate-date-basis kysely)
+                           (get hoks)
+                           palaute/rahoituskausi)]
+    (->> (get-by-kyselytyyppi-oppija-and-koulutustoimija!
+           db/spec
+           {:kyselytyypit    (case kysely
+                               :aloituskysely ["aloittaneet"]
+                               :paattokysely  (vec paattokyselyt))
+            :oppija-oid       (:oppija-oid hoks)
+            :koulutustoimija  koulutustoimija})
+         (map (comp palaute/rahoituskausi :heratepvm))
+         (some #(= % rahoituskausi)))))
 
 (defn initiate!
   "Initiates opiskelijapalautekysely (`:aloituskysely` or `:paattokysely`).
@@ -128,39 +136,40 @@
   was successfully initiated, `nil` or `false` otherwise."
   [kysely hoks opiskeluoikeus]
   {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-  (if (already-initiated?! kysely hoks)
-    (log/warnf "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
-    (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)
-          suoritus     (find-first suoritus/ammatillinen?
-                                   (:suoritukset opiskeluoikeus))
-          heratepvm    (get hoks (herate-date-basis kysely))
-          alkupvm      (palaute/vastaamisajan-alkupvm heratepvm)]
-      (assert (some? kyselytyyppi))
-      (insert!
-        db/spec
-        {:hoks-id           (:id hoks)
-         :heratepvm         heratepvm
-         :kyselytyyppi      kyselytyyppi
-         :koulutustoimija   (palaute/koulutustoimija-oid! opiskeluoikeus)
-         :voimassa-alkupvm  alkupvm
-         :voimassa-loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
-         :suorituskieli     (suoritus/kieli suoritus)
-         :toimipiste-oid    (palaute/toimipiste-oid! suoritus)
-         :tutkintonimike    (suoritus/tutkintonimike suoritus)
-         :hankintakoulutuksen-toteuttaja
-         (palaute/hankintakoulutuksen-toteuttaja! hoks)
-         :tutkintotunnus    (suoritus/tutkintotunnus suoritus)
-         :herate-source     "ehoks_update"})
-      ; Sending herate to AWS SQS (will be removed when Herätepalvelu
-      ; migration is complete).
-      (sqs/send-amis-palaute-message
-        {:ehoks-id           (:id hoks)
-         :kyselytyyppi       (translate-kyselytyyppi kyselytyyppi)
-         :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-         :oppija-oid         (:oppija-oid hoks)
-         :sahkoposti         (:sahkoposti hoks)
-         :puhelinnumero      (:puhelinnumero hoks)
-         :alkupvm            (str (get hoks (herate-date-basis kysely)))}))))
+  (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)]
+    (if (already-initiated?! kysely hoks koulutustoimija)
+      (log/warnf "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
+      (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)
+            suoritus     (find-first suoritus/ammatillinen?
+                                     (:suoritukset opiskeluoikeus))
+            heratepvm    (get hoks (herate-date-basis kysely))
+            alkupvm      (palaute/vastaamisajan-alkupvm heratepvm)]
+        (assert (some? kyselytyyppi))
+        (insert!
+          db/spec
+          {:hoks-id          (:id hoks)
+           :heratepvm         heratepvm
+           :kyselytyyppi      kyselytyyppi
+           :koulutustoimija   koulutustoimija
+           :voimassa-alkupvm  alkupvm
+           :voimassa-loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
+           :suorituskieli     (suoritus/kieli suoritus)
+           :toimipiste-oid    (palaute/toimipiste-oid! suoritus)
+           :tutkintonimike    (suoritus/tutkintonimike suoritus)
+           :hankintakoulutuksen-toteuttaja
+           (palaute/hankintakoulutuksen-toteuttaja! hoks)
+           :tutkintotunnus    (suoritus/tutkintotunnus suoritus)
+           :herate-source     "ehoks_update"})
+        ; Sending herate to AWS SQS (will be removed when Herätepalvelu
+        ; migration is complete).
+        (sqs/send-amis-palaute-message
+          {:ehoks-id           (:id hoks)
+           :kyselytyyppi       (translate-kyselytyyppi kyselytyyppi)
+           :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+           :oppija-oid         (:oppija-oid hoks)
+           :sahkoposti         (:sahkoposti hoks)
+           :puhelinnumero      (:puhelinnumero hoks)
+           :alkupvm            (str (get hoks (herate-date-basis kysely)))})))))
 
 (defn initiate-if-needed!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or

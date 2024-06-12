@@ -69,3 +69,23 @@
 
 (def hoks-2
   (dissoc hoks-1 :osaamisen-hankkimisen-tarve :osaamisen-saavuttamisen-pvm))
+
+(def hoks-3
+  {:id                          12346
+   :oppija-oid                  "1.2.246.562.24.12312312319"
+   :opiskeluoikeus-oid          "1.2.246.562.15.20000000008"
+   :osaamisen-hankkimisen-tarve true
+   :ensikertainen-hyvaksyminen  (LocalDate/of 2023 06 16)
+   :osaamisen-saavuttamisen-pvm (LocalDate/of 2024 04 05)
+   :sahkoposti                  "testi.testaaja@testidomain.testi"
+   :puhelinnumero               "0123456789"})
+
+(def hoks-4
+  {:id                          12347
+   :oppija-oid                  "1.2.246.562.24.12312312319"
+   :opiskeluoikeus-oid          "1.2.246.562.15.30000000007"
+   :osaamisen-hankkimisen-tarve true
+   :ensikertainen-hyvaksyminen  (LocalDate/of 2024 8 16)
+   :osaamisen-saavuttamisen-pvm (LocalDate/of 2024 11 05)
+   :sahkoposti                  "testi.testaaja@testidomain.testi"
+   :puhelinnumero               "0123456789"})
