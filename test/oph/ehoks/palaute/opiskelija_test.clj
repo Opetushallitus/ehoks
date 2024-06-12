@@ -13,7 +13,7 @@
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppijaindex-test :as oppijaindex-test]
-            [oph.ehoks.palaute.opiskelija :as opiskelijapalaute]
+            [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date])
   (:import (java.time LocalDate)))
@@ -35,7 +35,7 @@
                                       [:aloituskysely :paattokysely])
                           prev-hoks [nil hoks-test/hoks-2]]
                     (with-log
-                      (is (not (opiskelijapalaute/initiate?
+                      (is (not (op/initiate?
                                  kysely prev-hoks hoks opiskeluoikeus)))
                       (is (logged? 'oph.ehoks.palaute.opiskelija
                                    :info
@@ -98,26 +98,26 @@
     (testing "On HOKS creation"
       (testing
        "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
-        (is (opiskelijapalaute/initiate?
+        (is (op/initiate?
               :aloituskysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1)))
 
       (testing
        (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
             "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
-        (is (opiskelijapalaute/initiate?
+        (is (op/initiate?
               :paattokysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1))))
 
     (testing "On HOKS update"
       (testing (str "initiate aloituskysely if `osaamisen-hankkimisen-tarve` "
                     "is added to HOKS.")
-        (is (opiskelijapalaute/initiate? :aloituskysely
-                                         hoks-test/hoks-2
-                                         hoks-test/hoks-1
-                                         oo-test/opiskeluoikeus-1)))
+        (is (op/initiate? :aloituskysely
+                          hoks-test/hoks-2
+                          hoks-test/hoks-1
+                          oo-test/opiskeluoikeus-1)))
 
       (testing (str "initiate aloituskysely if `sahkoposti` is added to HOKS "
                     "and `osaamisen-hankkimisen-tarve` is `true`.")
-        (is (opiskelijapalaute/initiate?
+        (is (op/initiate?
               :aloituskysely
               (dissoc hoks-test/hoks-1 :sahkoposti)
               hoks-test/hoks-1
@@ -125,7 +125,7 @@
 
       (testing (str "initiate aloituskysely if `puhelinnumero` is added to "
                     "HOKS and `osaamisen-hankkimisen-tarve` is `true`.")
-        (is (opiskelijapalaute/initiate?
+        (is (op/initiate?
               :aloituskysely
               (dissoc hoks-test/hoks-1 :puhelinnumero)
               hoks-test/hoks-1
@@ -134,7 +134,7 @@
       (testing
        (str "initiate päättökysely if `osaamisen-saavuttamisen-pvm` is "
             "added to HOKS.")
-        (is (opiskelijapalaute/initiate?
+        (is (op/initiate?
               :paattokysely
               (dissoc hoks-test/hoks-1 :osaamisen-saavuttamisen-pvm)
               hoks-test/hoks-1
@@ -143,7 +143,7 @@
       (testing "don't initiate aloituskysely if"
         (testing "`sahkoposti` stays unchanged, is changed or is removed."
           (are [old-val new-val]
-               (not (opiskelijapalaute/initiate?
+               (not (op/initiate?
                       :aloituskysely
                       {:osaamisen-hankkimisen-tarve true :sahkoposti old-val}
                       {:osaamisen-hankkimisen-tarve true :sahkoposti new-val}
@@ -155,7 +155,7 @@
 
         (testing "`puhelinnumero` stays unchanged, is changed or is removed."
           (are [old-val new-val]
-               (not (opiskelijapalaute/initiate?
+               (not (op/initiate?
                       :aloituskysely
                       {:osaamisen-hankkimisen-tarve true
                        :puhelinnumero old-val}
@@ -170,7 +170,7 @@
        (str "don't initiate päättökysely if `osaamisen-saavuttamisen-pvm`"
             " stays unchanged, is changed or is removed.")
         (are [old-val new-val]
-             (not (opiskelijapalaute/initiate?
+             (not (op/initiate?
                     :paattokysely
                     {:osaamisen-hankkimisen-tarve true
                      :osaamisen-saavuttamisen-pvm (LocalDate/parse old-val)}
@@ -197,6 +197,39 @@
           :aloituskysely (:ensikertainen-hyvaksyminen hoks)
           :paattokysely  (:osaamisen-saavuttamisen-pvm hoks)))})
 
+(deftest test-already-initiated?!
+  (with-redefs [organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
+    (db-hoks/insert-hoks!
+      {:id                  (:id hoks-test/hoks-1)
+       :oppija-oid         (:oppija-oid hoks-test/hoks-1)
+       :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks-test/hoks-1)})
+    (doseq [kysely [:aloituskysely :paattokysely]]
+      (op/initiate! kysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1))
+
+    (testing
+     (str "Kysely is considered already initiated if it is for same "
+          "oppija with same koulutustoimija and within same rahoituskausi.")
+      (are [kysely] (op/already-initiated?! kysely
+                                            hoks-test/hoks-3
+                                            "1.2.246.562.10.346830761110")
+        :aloituskysely :paattokysely))
+
+    (testing "Kysely is not considered already initiated when"
+      (testing "koulutustoimija differs."
+        (are [kysely] (not (op/already-initiated?!
+                             kysely
+                             hoks-test/hoks-3
+                             "1.2.246.562.10.45678901237"))
+          :aloituskysely :paattokysely))
+
+      (testing "heratepvm is within different rahoituskausi."
+        (are [kysely] (not (op/already-initiated?!
+                             kysely
+                             hoks-test/hoks-4
+                             "1.2.246.562.10.346830761110"))
+          :aloituskysely :paattokysely)))))
+
 (deftest test-initiate!
   (with-redefs [sqs/send-amis-palaute-message (fn [msg] (reset! sqs-msg msg))
                 date/now (constantly (LocalDate/of 2023 4 18))
@@ -215,13 +248,13 @@
                     "successfully sends aloituskysely and paattokysely "
                     "herate to SQS queue")
         (are [kysely] (= (expected-msg kysely hoks-test/hoks-1)
-                         (do (opiskelijapalaute/initiate!
+                         (do (op/initiate!
                                kysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
                              @sqs-msg))
           :aloituskysely
           :paattokysely)
         (are [kyselytyyppi herate-basis voimassa-alkupvm voimassa-loppupvm]
-             (= (-> (opiskelijapalaute/get-by-hoks-id-and-kyselytyypit!
+             (= (-> (op/get-by-hoks-id-and-kyselytyypit!
                       db/spec {:hoks-id      (:id hoks-test/hoks-1)
                                :kyselytyypit  [kyselytyyppi]})
                     first
@@ -248,6 +281,6 @@
           "valmistuneet" :osaamisen-saavuttamisen-pvm
           "2024-02-05"   "2024-03-05"))
       (testing "doesn't initiate kysely if one already exists for HOKS"
-        (are [kysely] (nil? (opiskelijapalaute/initiate!
+        (are [kysely] (nil? (op/initiate!
                               kysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1))
           :aloituskysely :paattokysely)))))

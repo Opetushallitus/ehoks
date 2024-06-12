@@ -31,4 +31,12 @@ returning id
 -- :name get-by-hoks-id-and-kyselytyypit! :? :*
 -- :doc Get opiskelijapalaute information by HOKS ID and kyselytyyppi
 select * from palautteet
-where hoks_id = :hoks-id AND kyselytyyppi in (:v*:kyselytyypit)
+where hoks_id = :hoks-id and kyselytyyppi in (:v*:kyselytyypit)
+
+-- :name get-by-kyselytyyppi-oppija-and-koulutustoimija! :? :*
+-- :doc Get kyselyt by kyselytyyppi, oppija OID, and koulutustoimija.
+select p.heratepvm from palautteet p
+join hoksit h on (h.id = p.hoks_id)
+where h.oppija_oid = :oppija-oid
+  and p.kyselytyyppi in (:v*:kyselytyypit)
+  and p.koulutustoimija = :koulutustoimija
