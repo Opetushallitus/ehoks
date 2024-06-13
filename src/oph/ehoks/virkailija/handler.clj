@@ -290,15 +290,16 @@
 (defn- get-tep-jakso-raportti-handler!
   "Handler for `GET /tep-jakso-raportti`"
   [request & {:keys [tutkinto oppilaitos-oid start end page-size page-offset]}]
-  ; FIXME: This handler does different things depending on type of user
-  ; (super user vs. oppilaitos virkailija). This handler was only simplified
-  ; as part of refactoring, but this obviously still needs to be fixed.
+  ; This handler does different things depending on type of user
+  ; (super user vs. oppilaitos virkailija).
   (let [user       (get-in request [:session :virkailija-user])
         oppilaitos (organisaatio/get-organisaatio! oppilaitos-oid)]
     (assoc
       (cond
         (user/oph-super-user? user)
-        (restful/ok (pc/select-oht-by-tutkinto-between tutkinto start end))
+        (-> (pc/get-oht-by-tutkinto-between-memoized! tutkinto start end)
+            (paginate page-size page-offset)
+            restful/ok)
 
         (nil? oppilaitos)
         (response/bad-request {:error "`oppilaitos` missing from request."})
@@ -307,7 +308,7 @@
         (-> (pc/get-oppilaitos-oids-cached-memoized! ;; 5min cache
               tutkinto oppilaitos-oid start end)
             (paginate page-size page-offset)
-            response/ok)
+            restful/ok)
 
         :else (response/forbidden
                 {:error "User privileges do not match organisation"}))
@@ -326,7 +327,7 @@
                    :read)
       (-> (db-hoks/select-hoksit-by-oo-oppilaitos-and-koski404 oppilaitos-oid)
           (paginate page-size page-offset)
-          response/ok)
+          restful/ok)
       (response/forbidden
         {:error "User privileges does not match organisation"}))
     ::audit/target {:oppilaitos-oid oppilaitos-oid}))
@@ -404,12 +405,12 @@
                                end :- LocalDate
                                {pagesize :- s/Int 25}
                                {pageindex :- s/Int 0}]
-                :return {:count s/Int
-                         :pagecount s/Int
-                         :result [s/Any]}
+                :return (restful/response {:count s/Int
+                                           :pagecount s/Int
+                                           :result [s/Any]})
                 (get-tep-jakso-raportti-handler! request
                                                  {:tutkinto tutkinto
-                                                  :oppilaitos oppilaitos
+                                                  :oppilaitos-oid oppilaitos
                                                   :start start
                                                   :end end
                                                   :page-size pagesize
@@ -435,9 +436,9 @@
                 :path-params [oppilaitos-oid :- oid-s/OrganisaatioOID]
                 :query-params [{pagesize :- s/Int 25}
                                {pageindex :- s/Int 0}]
-                :return {:count s/Int
-                         :pagecount s/Int
-                         :result [s/Any]}
+                :return (restful/response {:count s/Int
+                                           :pagecount s/Int
+                                           :result [s/Any]})
                 (get-hoksit-with-missing-opiskeluoikeus-handler!
                   request oppilaitos-oid pagesize pageindex))
 
