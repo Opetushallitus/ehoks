@@ -1,0 +1,114 @@
+{
+  "TableName": "pallero-services-heratepalvelu-tep-nippuTableDE910D47-102WQ3OSVMOEI",
+  "KeySchema": [
+    {
+      "AttributeName": "ohjaaja_ytunnus_kj_tutkinto",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "niputuspvm",
+      "KeyType": "RANGE"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "kasittelytila",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "lahetyspvm",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "muistutukset",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "niputuspvm",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ohjaaja_ytunnus_kj_tutkinto",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "sms_kasittelytila",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "sms_lahetyspvm",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "sms_muistutukset",
+      "AttributeType": "N"
+    }
+  ],
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "niputusIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "kasittelytila",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "niputuspvm",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      }
+    },
+    {
+      "IndexName": "emailMuistutusIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "muistutukset",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "lahetyspvm",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      }
+    },
+    {
+      "IndexName": "smsIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "sms_kasittelytila",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "niputuspvm",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      }
+    },
+    {
+      "IndexName": "smsMuistutusIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "sms_muistutukset",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "sms_lahetyspvm",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      }
+    }
+  ],
+  "BillingMode": "PAY_PER_REQUEST"
+}

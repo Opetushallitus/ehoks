@@ -7,6 +7,7 @@
                  [cheshire]
                  [com.googlecode.libphonenumber/libphonenumber]
                  [dev.weavejester/medley]
+                 [com.taoensso/faraday]
                  [metosin/compojure-api]
                  [org.flywaydb/flyway-core]
                  [org.clojure/java.jdbc]
@@ -72,6 +73,7 @@
 
                          ;; other
                          [dev.weavejester/medley "1.7.0"]
+                         [com.taoensso/faraday "1.12.2"]
                          [org.clojure/core.async "1.6.681"]
                          [org.clojure/core.memoize "1.0.257"]
                          [commons-codec "1.16.0"]

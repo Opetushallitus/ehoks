@@ -1,0 +1,16 @@
+{
+  "TableName": "pallero-services-heratepalvelu-tpk-tpkNippuTable1661483C-1WS0R6U71N7GD",
+  "KeySchema": [
+    {
+      "AttributeName": "nippu-id",
+      "KeyType": "HASH"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "nippu-id",
+      "AttributeType": "S"
+    }
+  ],
+  "BillingMode": "PAY_PER_REQUEST"
+}

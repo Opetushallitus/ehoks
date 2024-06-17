@@ -1,0 +1,12 @@
+#!/bin/bash
+
+test -z "$1" && echo "Usage: $0 <tablename>" 1>&2 && exit 1
+
+aws dynamodb --profile oph-dev describe-table --table-name "$1" \
+| jq '.Table | {TableName, KeySchema, AttributeDefinitions}
+	+ (try {LocalSecondaryIndexes: [ .LocalSecondaryIndexes[]
+		| {IndexName, KeySchema, Projection} ]} // {})
+	+ (try {GlobalSecondaryIndexes: [ .GlobalSecondaryIndexes[]
+		| {IndexName, KeySchema, Projection} ]} // {})
+	+ {BillingMode: "PAY_PER_REQUEST"}'
+

@@ -17,6 +17,23 @@ stamps/db-schema: stamps/db-running
 	lein dbmigrate
 	touch $@
 
+stamps/local-ddb-running:
+	docker ps --format '{{.Names}}' | grep -qx 'ehoks-dynamodb' \
+	|| docker run -d --rm --name ehoks-dynamodb -p 18000:8000 \
+		docker.io/amazon/dynamodb-local > $@ || (rm $@ && false)
+	touch $@
+
+DDB_TABLES = amisherate jaksotunnus tep-nippu tpk-nippu
+
+stamps/local-ddb-schema: $(DDB_TABLES:%=stamps/local-ddb-schema-%)
+	touch $@
+
+stamps/local-ddb-schema-%: resources/dev/demo-data/%-schema.json
+	AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar \
+	aws dynamodb create-table --region eu-west-1 \
+	--endpoint http://localhost:18000 --cli-input-json "$$(cat $<)"
+	touch $@
+
 MAVEN_REPO = $(HOME)/.m2/repository
 SS_JAR = $(MAVEN_REPO)/net/sourceforge/schemaspy/schemaspy/5.0.0/schemaspy-5.0.0.jar
 PG_JAR = $(MAVEN_REPO)/org/postgresql/postgresql/42.2.12/postgresql-42.2.12.jar

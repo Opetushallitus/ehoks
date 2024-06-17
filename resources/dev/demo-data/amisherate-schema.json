@@ -1,0 +1,136 @@
+{
+  "TableName": "pallero-services-heratepalvelu-AMISHerateTable717F426F-1NY1YMTKJOF7Y",
+  "KeySchema": [
+    {
+      "AttributeName": "toimija_oppija",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "tyyppi_kausi",
+      "KeyType": "RANGE"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "alkupvm",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ehoks-id",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "kyselylinkki",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "lahetyspvm",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "lahetystila",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "muistutukset",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "sms-lahetystila",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "toimija_oppija",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "tyyppi_kausi",
+      "AttributeType": "S"
+    }
+  ],
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "resendIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "kyselylinkki",
+          "KeyType": "HASH"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "INCLUDE",
+        "NonKeyAttributes": [
+          "sahkoposti",
+          "kyselylinkki"
+        ]
+      }
+    },
+    {
+      "IndexName": "lahetysIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "lahetystila",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "alkupvm",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      }
+    },
+    {
+      "IndexName": "smsIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "sms-lahetystila",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "alkupvm",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      }
+    },
+    {
+      "IndexName": "muistutusIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "muistutukset",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "lahetyspvm",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "INCLUDE",
+        "NonKeyAttributes": [
+          "suorituskieli",
+          "sahkoposti",
+          "kyselytyyppi",
+          "kyselylinkki"
+        ]
+      }
+    },
+    {
+      "IndexName": "ehoksIdIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "ehoks-id",
+          "KeyType": "HASH"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "KEYS_ONLY"
+      }
+    }
+  ],
+  "BillingMode": "PAY_PER_REQUEST"
+}
