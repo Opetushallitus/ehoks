@@ -325,8 +325,8 @@
         old-oppija-oid (:oppija-oid old-hoks)]
     (when (oppija-oid-changed? new-oppija-oid old-oppija-oid)
       (oppijaindex/add-oppija! new-oppija-oid)
-      (oppijaindex/update-opiskeluoikeus-without-error-forwarding!
-        (:opiskeluoikeus-oid old-hoks) new-oppija-oid))))
+      (db-oo/update-opiskeluoikeus!
+        (:opiskeluoikeus-oid old-hoks) {:oppija-oid new-oppija-oid}))))
 
 (defn check-for-update!
   "Tarkistaa, saako HOKSin päivittää uusilla arvoilla."

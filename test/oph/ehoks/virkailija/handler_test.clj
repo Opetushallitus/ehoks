@@ -1302,7 +1302,11 @@
                  :opiskeluoikeus-oid "1.2.246.562.15.76000000018"
                  :oppija-oid "1.2.246.562.24.12312312319"})
               virkailija-for-test)]
-        (t/is (= (:status put-response) 204))))))
+        (t/is (= (:status put-response) 204))
+        (t/is (= (:oppija-oid
+                   (db-opiskeluoikeus/select-opiskeluoikeus-by-oid
+                     "1.2.246.562.15.76000000018"))
+                 "1.2.246.562.24.12312312319"))))))
 
 (t/deftest test-get-amount
   (t/testing "Test getting the amount of hokses"
