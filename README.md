@@ -11,25 +11,11 @@ rajapinnat.
 Tällä hetkellä sovellus jakaa koodipohjan eri osien välillä ja ainoastaan
 rajapintojen polut on jaettu palveluittain.
 
-## Teknologiat
+Frontend ks. [Github Repository](https://github.com/Opetushallitus/ehoks-ui)
 
-### Frontend
+## Riippuvuudet
 
-[Github Repository](https://github.com/Opetushallitus/ehoks-ui)
-
-### Backend
-
-+ [Clojure 1.9.0](https://clojure.org/)
-+ [Clojure.test](https://clojure.github.io/clojure/clojure.test-api.html)
-+ [Compojure-api 2](https://github.com/metosin/compojure-api/)
-+ [Leiningen](https://leiningen.org/)
-+ [PostgreSQL 9.5](https://www.postgresql.org/docs/9.5/static/index.html)
-+ [Flyway](https://flywaydb.org/)
-+ [clj-http](https://github.com/dakrone/clj-http)
-+ [Cheshire](https://github.com/dakrone/cheshire)
-+ [Environ](https://github.com/weavejester/environ)
-+ [Logback](https://logback.qos.ch/)
-+ [tools.logging](https://github.com/clojure/tools.logging)
+Katso [Leiningenin määrityksistä](./project.clj).
 
 Muut riippuvuudet:
 
@@ -38,8 +24,10 @@ Muut riippuvuudet:
 + Ehkä: `make` automaatiosääntöjen käyttöön (ks alla)
 + Ehkä: `graphviz` tietokantakaavioihin kun tekee `make schemaDoc`
 + Ehkä: `curl` jos haluaa käyttää rajapintaa suoraan (esim luoda testidataa)
++ Ehkä: `jq` joidenkin skriptien toimintaan
 
-#### RESTful API
+### RESTful API
+
 Backend pyrkii seuraamaan
 [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer)
 periaatteita. Kaikki vastaukset (paitsi no content) sisältävät meta- ja
@@ -55,6 +43,9 @@ Repossa on `.editorconfig` jonka avulla voit kertoa editorillesi käytettävät
 tyylit.
 
 ### Testien ajaminen
+
+(Pystytä ensin tietokanta, testit toimivat aitoa tietokantaa vasten:
+`make stamps/db-schema`)
 
 Kerran:
 
@@ -91,13 +82,6 @@ lein bikeshed
 lein eastwood
 lein cljfmt check
 ```
-
-### Lisää tietoa
-
-+ [kibit](https://github.com/jonase/kibit)
-+ [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
-+ [eastwood](https://github.com/jonase/eastwood)
-+ [cljfmt](https://github.com/weavejester/cljfmt)
 
 ## Kehitys
 
