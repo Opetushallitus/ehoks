@@ -1069,7 +1069,9 @@
               virkailija-for-test)]
         (t/is (= (:status patch-response) 400))
         (t/is (= (test-utils/parse-body (:body patch-response))
-                 {:error "Updating `oppija-oid` in HOKS is not allowed!"}))))))
+                 {:error
+                  (str "Updating `oppija-oid` in HOKS is only allowed with "
+                       "latest master oppija oid!")}))))))
 
 (def hoks-data
   {:opiskeluoikeus-oid "1.2.246.562.15.76000000018"
@@ -1262,7 +1264,9 @@
             put-body (test-utils/parse-body (:body put-response))]
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
-                 {:error "Updating `oppija-oid` in HOKS is not allowed!"}))))))
+                 {:error
+                  (str "Updating `oppija-oid` in HOKS is only allowed with "
+                       "latest master oppija oid!")}))))))
 
 (t/deftest test-allow-updating-oppija-oid
   (t/testing "Allows changing a slave oppija-oid to master"

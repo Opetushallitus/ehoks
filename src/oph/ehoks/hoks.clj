@@ -353,7 +353,8 @@
                            :oidHenkilo)]
         (when (not= master-oid new-oppija-oid)
           (throw (ex-info
-                   "Updating `oppija-oid` in HOKS is not allowed!"
+                   (str "Updating `oppija-oid` in HOKS is only allowed with "
+                        "latest master oppija oid!")
                    {:type           :disallowed-update
                     :old-oppija-oid old-oppija-oid
                     :new-oppija-oid new-oppija-oid})))))))
