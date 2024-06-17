@@ -22,9 +22,10 @@ Muut riippuvuudet:
 + Podman tai Docker, kehitysympäristön tietokantaa varten
 + Ehkä: `psql`, kehitysympäristön tietokannan tutkimiseen
 + Ehkä: `make` automaatiosääntöjen käyttöön (ks alla)
-+ Ehkä: `graphviz` tietokantakaavioihin kun tekee `make schemaDoc`
-+ Ehkä: `curl` jos haluaa käyttää rajapintaa suoraan (esim luoda testidataa)
++ Ehkä: `curl` jos haluaa käyttää rajapintaa suoraan (esim luoda testidataa), myös jotkin skriptit käyttävät tätä
 + Ehkä: `jq` joidenkin skriptien toimintaan
++ Ehkä: `aws` kun tarvitsee käsitellä DynamoDB:tä
++ Ehkä: `graphviz` tietokantakaavioihin kun tekee `make schemaDoc`
 
 ### RESTful API
 
@@ -34,6 +35,8 @@ periaatteita. Kaikki vastaukset (paitsi no content) sisältävät meta- ja
 dataobjektit.
 
 Avaimet seuraavat Clojuren notaatiota.
+
+Hakemistossa [scripts](./scripts) on paljon erilaisia esimerkkejä siitä, miten eHOKSin rajapintoja käytetään ja miten siitä riippuvaisia palveluita.
 
 ## QA
 
@@ -170,6 +173,19 @@ Tietokannan migraatiot voi ajaa komennolla
 make stamps/db-schema  # tai käsin: lein dbmigrate
 ```
 
+Tietokantaan voi viedä myös esimerkkidataa komennolla
+``` shell
+make stamps/example-data
+```
+Yllä oleva komento ajaa serverin taustalla ja syöttää esimerkkidatat sen
+kautta.  Jos haluat itse ajaa serveriä, tee näin:
+``` shell
+make stamps/db-schema
+# pystytä serveri tässä
+touch stamps/server-running
+make stamps/example-data
+```
+
 Tietokannan QA-ympäristön skeemaversio on dokumentoituna osoitteessa
 https://db-documentation.testiopintopolku.fi/ehoks/public/index.html .
 Samanlaisen dokumentaation voi luoda testiympäristöstä komennolla `make
@@ -226,6 +242,16 @@ Kontin ajaminen onnistuu `make stamps/db-running` tai käsin:
 
 ``` shell
 docker run --rm --name ehoks-postgres -p 5432:5432 --volume pgdata:/var/lib/postgresql/data ehoks-postgres
+```
+
+### DynamoDB
+
+Palaute-backend kirjoittaa tietoja suoraan vanhan herätepalvelun kantaan
+(ainakin niin kauan kuin kyseinen kanta on olemassa).  Näiden kirjoitusten
+paikallinen testaus käyttää paikallista DynamoDB:tä, jonka voi ajaa komennolla:
+
+``` shell
+make stamps/local-ddb-schema
 ```
 
 ### API-kutsujen schemat
