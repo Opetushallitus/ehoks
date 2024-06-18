@@ -25,7 +25,7 @@ stamps/local-ddb-running:
 
 DDB_TABLES = amisherate jaksotunnus tep-nippu tpk-nippu
 
-stamps/local-ddb-schema: $(DDB_TABLES:%=stamps/local-ddb-schema-%)
+stamps/local-ddb-schema: stamps/local-ddb-running $(DDB_TABLES:%=stamps/local-ddb-schema-%)
 	touch $@
 
 stamps/local-ddb-schema-%: resources/dev/demo-data/%-schema.json
@@ -90,4 +90,6 @@ stop:
 	-rm stamps/db-running
 	-test -f stamps/server-running && kill $$(cat stamps/server-running)
 	-rm stamps/server-running
+	-test -f stamps/local-ddb-running && docker rm -f ehoks-dynamodb
+	-rm stamps/local-ddb-running
 
