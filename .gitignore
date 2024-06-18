@@ -8,6 +8,7 @@
 /checkouts
 /classes
 /lib
+/myenv
 /scripts/session-cookie.txt
 /scripts/cas-tgt-url.txt
 /resources/uberjar/buildversion.txt

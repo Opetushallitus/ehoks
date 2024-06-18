@@ -25,12 +25,20 @@ stamps/local-ddb-running:
 
 DDB_TABLES = amisherate jaksotunnus tep-nippu tpk-nippu
 
-stamps/local-ddb-schema: stamps/local-ddb-running $(DDB_TABLES:%=stamps/local-ddb-schema-%)
+myenv:
+	python3 -m venv myenv
+
+stamps/install-awscli: myenv
+	./myenv/bin/pip install awscli
 	touch $@
 
-stamps/local-ddb-schema-%: resources/dev/demo-data/%-schema.json
+stamps/local-ddb-schema: $(DDB_TABLES:%=stamps/local-ddb-schema-%)
+	touch $@
+
+stamps/local-ddb-schema-%: resources/dev/demo-data/%-schema.json \
+		stamps/local-ddb-running stamps/install-awscli
 	AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar \
-	aws dynamodb create-table --region eu-west-1 \
+	./myenv/bin/aws dynamodb create-table --region eu-west-1 \
 	--endpoint http://localhost:18000 --cli-input-json "$$(cat $<)"
 	touch $@
 
@@ -59,7 +67,8 @@ stamps/example-data: stamps/server-running
 	touch $@
 
 tags::
-	ctags -R --exclude='*.min.js' --exclude='json-schema-viewer' .
+	ctags -R --exclude='*.min.js' --exclude='json-schema-viewer' \
+		--exclude='myenv' .
 
 pom.xml::
 	lein pom
