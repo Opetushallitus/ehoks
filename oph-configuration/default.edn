@@ -15,6 +15,9 @@
  :heratepalvelu-queue "services-heratepalvelu-eHOKSHerateQueue"
  :heratepalvelu-tyoelamapalaute-queue "services-heratepalvelu-tep-HerateQueue"
  :heratepalvelu-resend-queue "services-heratepalvelu-eHOKSAmisResendQueue"
+ :heratepalvelu-amis-table "pallero-services-heratepalvelu-AMISHerateTable717F426F-1NY1YMTKJOF7Y"
+ :heratepalvelu-jakso-table "pallero-services-heratepalvelu-tep-jaksotunnusTable87D50EF4-1KUH8IGOE8ZV3"
+ :heratepalvelu-nippu-table "pallero-services-heratepalvelu-tep-nippuTableDE910D47-102WQ3OSVMOEI"
  :send-herate-messages? false
  :audit? true
  :db-type "postgresql"
