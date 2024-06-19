@@ -12,6 +12,7 @@
                  [org.flywaydb/flyway-core]
                  [org.clojure/java.jdbc]
                  [org.postgresql/postgresql]
+                 [com.layerware/hugsql]
                  [ring/ring-jetty-adapter]
                  [clj-time]
                  [org.clojure/core.async]
@@ -70,6 +71,7 @@
                          [org.clojure/java.jdbc "0.7.12"]
                          [org.flywaydb/flyway-core "6.5.7"]
                          [org.postgresql/postgresql "42.7.2"]
+                         [com.layerware/hugsql "0.5.3"]
 
                          ;; other
                          [dev.weavejester/medley "1.7.0"]
