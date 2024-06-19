@@ -1,6 +1,7 @@
 (ns oph.ehoks.db.dynamodb
   (:require [taoensso.faraday :as far]
-            [environ.core :refer [env]])
+            [environ.core :refer [env]]
+            [oph.ehoks.config :refer [config]])
   (:import (com.amazonaws.auth BasicAWSCredentials AWSStaticCredentialsProvider)
            (com.amazonaws.client.builder AwsClientBuilder$EndpointConfiguration)
            (com.amazonaws.services.dynamodbv2 AmazonDynamoDBClientBuilder)))
@@ -35,3 +36,6 @@
     (.build (AmazonDynamoDBClientBuilder/standard))))
 
 (def faraday-opts (delay {:client (get-client)}))
+(def amis-table (delay (keyword (:heratepalvelu-amis-table config))))
+(def jakso-table (delay (keyword (:heratepalvelu-jakso-table config))))
+(def nippu-table (delay (keyword (:heratepalvelu-nippu-table config))))
