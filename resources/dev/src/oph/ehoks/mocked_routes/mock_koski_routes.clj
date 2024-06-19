@@ -74,8 +74,7 @@
                  :koodistoUri "koulutus"
                  :koodistoVersio 11}
                 :perusteenDiaarinumero "77/011/2014"
-                :perusteenNimi
-                {:fi tutkinto}
+                :perusteenNimi {:fi tutkinto}
                 :koulutustyyppi
                 {:koodiarvo "1"
                  :nimi
@@ -92,7 +91,7 @@
                 :alkamispäivä "2016-08-05"
                 :suorituskieli {}
                 :osasuoritukset []
-                :tyyppi {}}]
+                :tyyppi {:koodiarvo "ammatillinentutkinto"}}]
               :tyyppi
               {:koodiarvo opiskeluoikeus-tyyppi
                :nimi

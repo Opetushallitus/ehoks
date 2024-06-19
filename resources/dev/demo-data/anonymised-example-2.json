@@ -10,7 +10,7 @@
 				"osaamisen-hankkimistavat": []
 			}
 		],
-		"ensikertainen-hyvaksyminen": "2021-08-13",
+		"ensikertainen-hyvaksyminen": "2023-08-13",
 		"hankittavat-koulutuksen-osat": [],
 		"sahkoposti": "siibarbiibar@edu.keuda.fi",
 		"osaamisen-hankkimisen-tarve": true,
@@ -279,11 +279,11 @@
 								}
 							}
 						],
-						"alku": "2022-04-20",
+						"alku": "2024-04-20",
 						"yksilolliset-kriteerit": [
 							""
 						],
-						"loppu": "2022-05-27"
+						"loppu": "2024-05-27"
 					}
 				],
 				"osaamisen-hankkimistavat": [
@@ -294,14 +294,14 @@
 						"yksiloiva-tunniste": "33895328003589565523",
 						"muut-oppimisymparistot": [
 							{
-								"alku": "2021-12-02",
-								"loppu": "2022-02-09",
+								"alku": "2023-12-02",
+								"loppu": "2024-02-09",
 								"oppimisymparisto-koodi-uri": "oppimisymparistot_0001",
 								"oppimisymparisto-koodi-versio": 1
 							}
 						],
-						"alku": "2021-12-02",
-						"loppu": "2022-02-09"
+						"alku": "2023-12-02",
+						"loppu": "2024-02-09"
 					},
 					{
 						"keskeytymisajanjaksot": [],
@@ -322,8 +322,8 @@
 						"osaamisen-hankkimistapa-koodi-versio": 1,
 						"yksiloiva-tunniste": "338953280041441482914144148322",
 						"muut-oppimisymparistot": [],
-						"alku": "2022-04-12",
-						"loppu": "2022-05-27"
+						"alku": "2024-04-12",
+						"loppu": "2024-05-27"
 					},
 					{
 						"keskeytymisajanjaksot": [],
@@ -332,14 +332,14 @@
 						"yksiloiva-tunniste": "33895328004177443373",
 						"muut-oppimisymparistot": [
 							{
-								"alku": "2021-08-09",
-								"loppu": "2021-10-10",
+								"alku": "2023-08-09",
+								"loppu": "2023-10-10",
 								"oppimisymparisto-koodi-uri": "oppimisymparistot_0001",
 								"oppimisymparisto-koodi-versio": 1
 							}
 						],
-						"alku": "2021-08-09",
-						"loppu": "2021-10-10"
+						"alku": "2023-08-09",
+						"loppu": "2023-10-10"
 					}
 				]
 			},
@@ -373,9 +373,9 @@
 								}
 							}
 						],
-						"alku": "2023-08-15",
+						"alku": "2025-08-15",
 						"yksilolliset-kriteerit": [],
-						"loppu": "2023-08-21"
+						"loppu": "2025-08-21"
 					}
 				],
 				"osaamisen-hankkimistavat": [
@@ -386,14 +386,14 @@
 						"yksiloiva-tunniste": "33895328025056794728",
 						"muut-oppimisymparistot": [
 							{
-								"alku": "2023-02-13",
-								"loppu": "2023-06-02",
+								"alku": "2025-02-13",
+								"loppu": "2025-06-02",
 								"oppimisymparisto-koodi-uri": "oppimisymparistot_0001",
 								"oppimisymparisto-koodi-versio": 1
 							}
 						],
-						"alku": "2023-02-13",
-						"loppu": "2023-06-02"
+						"alku": "2025-02-13",
+						"loppu": "2025-06-02"
 					},
 					{
 						"keskeytymisajanjaksot": [],
@@ -402,14 +402,14 @@
 						"yksiloiva-tunniste": "33895328025346931574",
 						"muut-oppimisymparistot": [
 							{
-								"alku": "2023-06-03",
-								"loppu": "2023-08-13",
+								"alku": "2025-06-03",
+								"loppu": "2025-08-13",
 								"oppimisymparisto-koodi-uri": "oppimisymparistot_0003",
 								"oppimisymparisto-koodi-versio": 1
 							}
 						],
-						"alku": "2023-06-03",
-						"loppu": "2023-08-13"
+						"alku": "2025-06-03",
+						"loppu": "2025-08-13"
 					}
 				]
 			},
@@ -427,14 +427,14 @@
 						"yksiloiva-tunniste": "33895328045587728569",
 						"muut-oppimisymparistot": [
 							{
-								"alku": "2023-08-14",
-								"loppu": "2023-09-09",
+								"alku": "2025-08-14",
+								"loppu": "2025-09-09",
 								"oppimisymparisto-koodi-uri": "oppimisymparistot_0001",
 								"oppimisymparisto-koodi-versio": 1
 							}
 						],
-						"alku": "2023-08-14",
-						"loppu": "2023-09-09"
+						"alku": "2025-08-14",
+						"loppu": "2025-09-09"
 					},
 					{
 						"keskeytymisajanjaksot": [],
@@ -443,14 +443,14 @@
 						"yksiloiva-tunniste": "33895328045699528135",
 						"muut-oppimisymparistot": [
 							{
-								"alku": "2023-10-07",
-								"loppu": "2023-12-22",
+								"alku": "2025-10-07",
+								"loppu": "2025-12-22",
 								"oppimisymparisto-koodi-uri": "oppimisymparistot_0001",
 								"oppimisymparisto-koodi-versio": 1
 							}
 						],
-						"alku": "2023-10-07",
-						"loppu": "2023-12-22"
+						"alku": "2025-10-07",
+						"loppu": "2025-12-22"
 					}
 				]
 			},
@@ -500,9 +500,9 @@
 								}
 							}
 						],
-						"alku": "2022-09-13",
+						"alku": "2024-09-13",
 						"yksilolliset-kriteerit": [],
-						"loppu": "2022-09-28"
+						"loppu": "2024-09-28"
 					}
 				],
 				"osaamisen-hankkimistavat": [
@@ -520,12 +520,13 @@
 								"valmistautua asiakaspalvelutilanteisiin\n\npalvella asiakkaita, myydä ja tarjoilla kahvilan ruoka- ja juomatuotteita\n\nrekisteröidä myyntiä ja laskuttaa asiakkaita\nhyödyntää alakohtaista kielitaitoa asiakaspalvelussa\ntehdä työvuoron tilityksen ja valmistella seuraavaa työvuoroa\narvioida omaa osaamistaan ja toimintaansa työyhteisön jäsenenä.\n"
 							]
 						},
+						"osa-aikaisuustieto": 100,
 						"osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_koulutussopimus",
 						"osaamisen-hankkimistapa-koodi-versio": 1,
 						"yksiloiva-tunniste": "338953281646081596934608159694",
 						"muut-oppimisymparistot": [],
-						"alku": "2022-09-12",
-						"loppu": "2022-09-28"
+						"alku": "2024-09-12",
+						"loppu": "2024-09-28"
 					}
 				]
 			},
@@ -551,14 +552,14 @@
 						"yksiloiva-tunniste": "33895328284510474639",
 						"muut-oppimisymparistot": [
 							{
-								"alku": "2022-08-10",
-								"loppu": "2022-12-16",
+								"alku": "2024-08-10",
+								"loppu": "2024-12-16",
 								"oppimisymparisto-koodi-uri": "oppimisymparistot_0001",
 								"oppimisymparisto-koodi-versio": 1
 							}
 						],
-						"alku": "2022-08-10",
-						"loppu": "2022-12-16"
+						"alku": "2024-08-10",
+						"loppu": "2024-12-16"
 					}
 				]
 			}
