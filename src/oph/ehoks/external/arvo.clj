@@ -4,16 +4,22 @@
             [clojure.string :as string])
   (:import (clojure.lang ExceptionInfo)))
 
+(defn arvo-call!
+  "Apufunktio, jota kaikki API-kutsut Arvoon käyttävät."
+  [method url-suffix options]
+  (-> options
+      (assoc :basic-auth [(:arvo-username config) (:arvo-password config)]
+             :as :json)
+      (->> (hash-map :method method, :service (:arvo-url config),
+                     :url (str (:arvo-url config) url-suffix),
+                     :options))
+      (c/with-api-headers)
+      :body))
+
 (defn get-kyselytunnus-status!
   "Hakee kyselytunnuksen tilan Arvosta."
   [tunnus]
-  (:body (c/with-api-headers {:method :get
-                              :service (:arvo-url config)
-                              :url (str (:arvo-url config) "/status/" tunnus)
-                              :options {:basic-auth
-                                        [(:arvo-username config)
-                                         (:arvo-password config)]
-                                        :as :json}})))
+  (arvo-call! :get (str "/status/" tunnus) {}))
 
 (defn get-kyselylinkki-status
   "Hakee kyselylinkin tilan Arvosta."
@@ -30,12 +36,12 @@
                      (= 404 (:status (ex-data e))))
         (throw e)))))
 
+(defn create-kyselytunnus!
+  "Luo kyselylinkin Arvoon."
+  [kyselylinkki-params]
+  (arvo-call! :post "" {:form-params kyselylinkki-params :content-type :json}))
+
 (defn delete-kyselytunnus
   "Poistaa kyselytunnuksen Arvosta."
   [tunnus]
-  (c/with-api-headers {:method :delete
-                       :service (:arvo-url config)
-                       :url (str (:arvo-url config) "/" tunnus)
-                       :options {:basic-auth [(:arvo-username config)
-                                              (:arvo-password config)]
-                                 :as :json}}))
+  (arvo-call! :delete (str "/" tunnus) {}))
