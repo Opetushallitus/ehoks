@@ -40,3 +40,9 @@ join hoksit h on (h.id = p.hoks_id)
 where h.oppija_oid = :oppija-oid
   and p.kyselytyyppi in (:v*:kyselytyypit)
   and p.koulutustoimija = :koulutustoimija
+
+-- :name list-palautteet-for-arvo :? :*
+-- :doc Returns a list of palautteet that needs creating kyselylinkkis in Arvo
+select * from palaute_for_arvo
+where palautteen_tila = 'odottaa_kasittelya'
+  and heratepvm <= :older-than
