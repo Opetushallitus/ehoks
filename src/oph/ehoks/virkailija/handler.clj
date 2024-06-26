@@ -195,6 +195,7 @@
     (hoks/check-for-update! old-hoks hoks)
     (let [new-hoks (db-handler (:id (:hoks request))
                                (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
+      (hoks/handle-oppija-oid-changes-in-indexes! new-hoks old-hoks)
       (assoc (response/no-content)
              ::audit/changes {:old old-hoks :new new-hoks}))))
 

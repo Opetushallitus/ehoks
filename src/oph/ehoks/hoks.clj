@@ -10,6 +10,7 @@
             [oph.ehoks.db.postgresql.hankittavat :as db-ha]
             [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as db-ot]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
@@ -313,6 +314,20 @@
           (opiskelijapalaute/initiate! :paattokysely updated-hoks))))
     updated-hoks))
 
+(defn- oppija-oid-changed?
+  [new-oppija-oid old-oppija-oid]
+  (and (some? new-oppija-oid)
+       (not= new-oppija-oid old-oppija-oid)))
+
+(defn handle-oppija-oid-changes-in-indexes!
+  [new-hoks old-hoks]
+  (let [new-oppija-oid (:oppija-oid new-hoks)
+        old-oppija-oid (:oppija-oid old-hoks)]
+    (when (oppija-oid-changed? new-oppija-oid old-oppija-oid)
+      (oppijaindex/add-oppija! new-oppija-oid)
+      (db-oo/update-opiskeluoikeus!
+        (:opiskeluoikeus-oid old-hoks) {:oppija-oid new-oppija-oid}))))
+
 (defn check-for-update!
   "Tarkistaa, saako HOKSin päivittää uusilla arvoilla."
   [old-hoks new-hoks]
@@ -331,12 +346,18 @@
                       {:type                   :disallowed-update
                        :old-opiskeluoikeus-oid old-opiskeluoikeus-oid
                        :new-opiskeluoikeus-oid new-opiskeluoikeus-oid})))
-    (when (and (some? new-oppija-oid)
-               (not= new-oppija-oid old-oppija-oid))
-      (throw (ex-info "Updating `oppija-oid` in HOKS is not allowed!"
-                      {:type           :disallowed-update
-                       :old-oppija-oid old-oppija-oid
-                       :new-oppija-oid new-oppija-oid})))))
+    (when (oppija-oid-changed? new-oppija-oid old-oppija-oid)
+      (let [master-oid (-> (onr/get-master-of-slave-oppija-oid
+                             old-oppija-oid)
+                           :body
+                           :oidHenkilo)]
+        (when (not= master-oid new-oppija-oid)
+          (throw (ex-info
+                   (str "Updating `oppija-oid` in HOKS is only allowed with "
+                        "latest master oppija oid!")
+                   {:type           :disallowed-update
+                    :old-oppija-oid old-oppija-oid
+                    :new-oppija-oid new-oppija-oid})))))))
 
 (defn check-and-save!
   "Tekee uuden HOKSin tarkistukset ja tallentaa sen, jos kaikki on OK."

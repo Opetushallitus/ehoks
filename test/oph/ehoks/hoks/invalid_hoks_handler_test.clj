@@ -243,7 +243,9 @@
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 400))
       (is (= (test-utils/parse-body (:body put-response))
-             {:error "Updating `oppija-oid` in HOKS is not allowed!"})))))
+             {:error
+              (str "Updating `oppija-oid` in HOKS is only allowed with "
+                   "latest master oppija oid!")})))))
 
 (deftest prevent-invalid-osaamisen-hankkimistapa
   (testing "Start and end dates of OHT are checked"
