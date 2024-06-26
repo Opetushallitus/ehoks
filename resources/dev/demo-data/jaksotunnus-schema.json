@@ -1,0 +1,114 @@
+{
+  "TableName": "pallero-services-heratepalvelu-tep-jaksotunnusTable87D50EF4-1KUH8IGOE8ZV3",
+  "KeySchema": [
+    {
+      "AttributeName": "hankkimistapa_id",
+      "KeyType": "HASH"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "hankkimistapa_id",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "jakso_loppupvm",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "niputuspvm",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ohjaaja_ytunnus_kj_tutkinto",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "oppija_oid",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "tpk-niputuspvm",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "tunnus",
+      "AttributeType": "S"
+    }
+  ],
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "niputusIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "ohjaaja_ytunnus_kj_tutkinto",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "niputuspvm",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      }
+    },
+    {
+      "IndexName": "tepDbChangerIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "oppija_oid",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "niputuspvm",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      }
+    },
+    {
+      "IndexName": "tpkNiputusIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "tpk-niputuspvm",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "jakso_loppupvm",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "INCLUDE",
+        "NonKeyAttributes": [
+          "hankkimistapa_id",
+          "tyopaikan_nimi",
+          "hankkimistapa_tyyppi",
+          "oppisopimuksen_perusta",
+          "tyopaikan_ytunnus",
+          "koulutustoimija"
+        ]
+      }
+    },
+    {
+      "IndexName": "uniikkiusIndex",
+      "KeySchema": [
+        {
+          "AttributeName": "tunnus",
+          "KeyType": "HASH"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "INCLUDE",
+        "NonKeyAttributes": [
+          "hoks_id",
+          "request_id"
+        ]
+      }
+    }
+  ],
+  "BillingMode": "PAY_PER_REQUEST"
+}

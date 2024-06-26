@@ -1,4 +1,5 @@
 (ns oph.ehoks.palaute.opiskelija.kyselylinkki
+  "A namespace for handling opiskelijapalaute kyselylinkit"
   (:require [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]))
 

@@ -13,6 +13,15 @@
 (t/use-fixtures :once test-utils/migrate-database)
 (t/use-fixtures :each test-utils/empty-database-after-test)
 
+(defn mock-get-hankintakoulutus-oids-by-master-oid
+  [oid]
+  (case oid
+    "1.2.246.562.15.10000000009" ["1.2.246.562.15.10000000009"]
+    "1.2.246.562.15.12345678903" []
+    "1.2.246.562.15.23456789017" ["1.2.246.562.15.12345678903"
+                                  "1.2.246.562.15.23456789017"]
+    "1.2.246.562.15.34567890123" ["1.2.246.562.15.34567890123"]))
+
 (def opiskeluoikeus-data
   {:oppilaitos {:oid "1.2.246.562.10.22222222220"}
    :tila {:opiskeluoikeusjaksot

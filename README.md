@@ -11,41 +11,32 @@ rajapinnat.
 Tällä hetkellä sovellus jakaa koodipohjan eri osien välillä ja ainoastaan
 rajapintojen polut on jaettu palveluittain.
 
-## Teknologiat
+Frontend ks. [Github Repository](https://github.com/Opetushallitus/ehoks-ui)
 
-### Frontend
+## Riippuvuudet
 
-[Github Repository](https://github.com/Opetushallitus/ehoks-ui)
-
-### Backend
-
-+ [Clojure 1.9.0](https://clojure.org/)
-+ [Clojure.test](https://clojure.github.io/clojure/clojure.test-api.html)
-+ [Compojure-api 2](https://github.com/metosin/compojure-api/)
-+ [Leiningen](https://leiningen.org/)
-+ [PostgreSQL 9.5](https://www.postgresql.org/docs/9.5/static/index.html)
-+ [Flyway](https://flywaydb.org/)
-+ [clj-http](https://github.com/dakrone/clj-http)
-+ [Cheshire](https://github.com/dakrone/cheshire)
-+ [Environ](https://github.com/weavejester/environ)
-+ [Logback](https://logback.qos.ch/)
-+ [tools.logging](https://github.com/clojure/tools.logging)
+Katso [Leiningenin määrityksistä](./project.clj).
 
 Muut riippuvuudet:
 
 + Podman tai Docker, kehitysympäristön tietokantaa varten
 + Ehkä: `psql`, kehitysympäristön tietokannan tutkimiseen
 + Ehkä: `make` automaatiosääntöjen käyttöön (ks alla)
++ Ehkä: `curl` jos haluaa käyttää rajapintaa suoraan (esim luoda testidataa), myös jotkin skriptit käyttävät tätä
++ Ehkä: `jq` joidenkin skriptien toimintaan
++ Ehkä: `aws` kun tarvitsee käsitellä DynamoDB:tä
 + Ehkä: `graphviz` tietokantakaavioihin kun tekee `make schemaDoc`
-+ Ehkä: `curl` jos haluaa käyttää rajapintaa suoraan (esim luoda testidataa)
 
-#### RESTful API
+### RESTful API
+
 Backend pyrkii seuraamaan
 [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer)
 periaatteita. Kaikki vastaukset (paitsi no content) sisältävät meta- ja
 dataobjektit.
 
 Avaimet seuraavat Clojuren notaatiota.
+
+Hakemistossa [scripts](./scripts) on paljon erilaisia esimerkkejä siitä, miten eHOKSin rajapintoja käytetään ja miten siitä riippuvaisia palveluita.
 
 ## QA
 
@@ -55,6 +46,9 @@ Repossa on `.editorconfig` jonka avulla voit kertoa editorillesi käytettävät
 tyylit.
 
 ### Testien ajaminen
+
+(Pystytä ensin tietokanta, testit toimivat aitoa tietokantaa vasten:
+`make stamps/db-schema`)
 
 Kerran:
 
@@ -91,13 +85,6 @@ lein bikeshed
 lein eastwood
 lein cljfmt check
 ```
-
-### Lisää tietoa
-
-+ [kibit](https://github.com/jonase/kibit)
-+ [lein-bikeshed](https://github.com/dakrone/lein-bikeshed)
-+ [eastwood](https://github.com/jonase/eastwood)
-+ [cljfmt](https://github.com/weavejester/cljfmt)
 
 ## Kehitys
 
@@ -186,6 +173,19 @@ Tietokannan migraatiot voi ajaa komennolla
 make stamps/db-schema  # tai käsin: lein dbmigrate
 ```
 
+Tietokantaan voi viedä myös esimerkkidataa komennolla
+``` shell
+make stamps/example-data
+```
+Yllä oleva komento ajaa serverin taustalla ja syöttää esimerkkidatat sen
+kautta.  Jos haluat itse ajaa serveriä, tee näin:
+``` shell
+make stamps/db-schema
+# pystytä serveri tässä
+touch stamps/server-running
+make stamps/example-data
+```
+
 Tietokannan QA-ympäristön skeemaversio on dokumentoituna osoitteessa
 https://db-documentation.testiopintopolku.fi/ehoks/public/index.html .
 Samanlaisen dokumentaation voi luoda testiympäristöstä komennolla `make
@@ -242,6 +242,16 @@ Kontin ajaminen onnistuu `make stamps/db-running` tai käsin:
 
 ``` shell
 docker run --rm --name ehoks-postgres -p 5432:5432 --volume pgdata:/var/lib/postgresql/data ehoks-postgres
+```
+
+### DynamoDB
+
+Palaute-backend kirjoittaa tietoja suoraan vanhan herätepalvelun kantaan
+(ainakin niin kauan kuin kyseinen kanta on olemassa).  Näiden kirjoitusten
+paikallinen testaus käyttää paikallista DynamoDB:tä, jonka voi ajaa komennolla:
+
+``` shell
+make stamps/local-ddb-schema
 ```
 
 ### API-kutsujen schemat

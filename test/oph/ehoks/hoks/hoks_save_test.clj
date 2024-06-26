@@ -1,14 +1,18 @@
 (ns oph.ehoks.hoks.hoks-save-test
   (:require [clojure.test :refer :all]
-            [oph.ehoks.test-utils :as test-utils :refer [eq]]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as k]
+            [oph.ehoks.external.organisaatio :as organisaatio]
+            [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.hoks :as hoks]
-            [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
+            [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]))
+            [oph.ehoks.test-utils :as test-utils :refer [eq]]
+            [oph.ehoks.utils.date :as date])
+  (:import [java.time LocalDate]))
 
 (use-fixtures :once test-utils/migrate-database)
 (use-fixtures :each test-utils/empty-database-after-test)
@@ -519,7 +523,8 @@
 
 (defn mock-get-opiskeluoikeus
   [_]
-  {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+  {:suoritukset [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
+                  :suorituskieli {:koodiarvo "fi"}}]
    :tila {:opiskeluoikeusjaksot
           [{:alku "2020-07-03"
             :tila {:koodiarvo "lasna"
@@ -527,6 +532,7 @@
                    :koodistoUri
                    "koskiopiskeluoikeudentila"
                    :koodistoVersio 1}}]}
+   :koulutustoimija {:oid "1.2.246.562.10.346830761110"}
    :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
 
 (def hoks-osaaminen-saavutettu
@@ -547,7 +553,10 @@
   (testing "save: forms opiskelijapalaute when has osaamisen-hankkimisen-tarve"
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
+                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
+                    organisaatio/get-organisaatio!
+                    organisaatio-test/mock-get-organisaatio!
+                    date/now (constantly (LocalDate/of 2018 7 1))]
         (hoks/save! hoks-osaaminen-saavutettu)
         (is (true? (test-utils/wait-for
                      (fn [_] (= @sqs-call-counter 2)) 5000)))))))
@@ -566,7 +575,10 @@
                 "osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
+                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
+                    organisaatio/get-organisaatio!
+                    organisaatio-test/mock-get-organisaatio!
+                    date/now (constantly (LocalDate/of 2018 7 1))]
         (let [saved-hoks (hoks/save! hoks-data)]
           (hoks/update! (:id saved-hoks) hoks-osaaminen-saavutettu)
           (is (= @sqs-call-counter 2)))))))
@@ -586,11 +598,15 @@
 (deftest form-opiskelijapalaute-in-hoks-replace
   (let [sqs-call-counter (atom 0)]
     (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                  k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
+                  k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
+                  organisaatio/get-organisaatio!
+                  organisaatio-test/mock-get-organisaatio!
+                  date/now (constantly (LocalDate/of 2018 7 1))]
       (testing "When existing HOKS is replaced with a new one, "
         (testing
          "form opiskelijapalaute if `osaamisen-hankkimisen-tarve` is `true`"
           (let [saved-hoks (hoks/save! hoks-data)]
+            (Thread/sleep 15) ; in ms, workaround to make the test pass
             (is (= @sqs-call-counter 1)) ; sent herate for aloituskysely
             (hoks/replace! (:id saved-hoks) hoks-osaaminen-saavutettu)
             (is (= @sqs-call-counter 2))) ; herate sent for paattokysely
@@ -603,6 +619,7 @@
           ; following assertions can be removed once that is fixed.
           (testing ", even when `opiskeluoikeus-oid` is missing from new HOKS"
             (let [saved-hoks (hoks/save! hoks-data)]
+              (Thread/sleep 15) ; in ms, workaround to make the test pass
               (is (= @sqs-call-counter 1)) ; herate sent for aloituskysely
               (hoks/replace! (:id saved-hoks)
                              (dissoc hoks-osaaminen-saavutettu
