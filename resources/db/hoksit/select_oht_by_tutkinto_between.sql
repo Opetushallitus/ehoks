@@ -8,6 +8,7 @@ SELECT
   oh.loppu AS loppupvm,
   oh.osa_aikaisuustieto AS "osaAikaisuus",
   oh.oppisopimuksen_perusta_koodi_uri AS "oppisopimuksenPerusta",
+  oo.oppilaitos_oid AS "oppilaitosOid",
   tjk.tyopaikan_nimi AS "tyopaikanNimi",
   tjk.tyopaikan_y_tunnus AS ytunnus,
   tjk.vastuullinen_tyopaikka_ohjaaja_nimi AS "ohjaajaNimi",
