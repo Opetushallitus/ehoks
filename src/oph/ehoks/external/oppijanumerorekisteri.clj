@@ -60,6 +60,16 @@
               :options {:as :json}}]
     (cas/with-service-ticket data)))
 
+(defn get-master-of-slave-oppija-oid
+  "Gets master oppija oid of a slave duplicate."
+  [oid]
+  (let [data {:method :get
+              :service (u/get-url "oppijanumerorekisteri-url")
+              :url (u/get-url
+                     "oppijanumerorekisteri.get-master-by-slave-oid" oid)
+              :options {:as :json}}]
+    (cas/with-service-ticket data)))
+
 (defn- convert-contact-values
   "Rename contact info keys to :value and :type"
   [contact-item]

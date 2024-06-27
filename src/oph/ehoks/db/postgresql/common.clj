@@ -229,7 +229,7 @@
   (memo/ttl
     select-oht-by-tutkinto-and-oppilaitos-between
     {}
-    :ttl/threshold 300))
+    :ttl/threshold 300000)) ; 5 minutes
 
 (defn select-oht-by-tutkinto-between
   "Hakee osaamisen hankkimistapoja tutkinnon perusteella tietylle aikavälille."
@@ -237,3 +237,10 @@
   (db-ops/query [queries/select-oht-by-tutkinto-between tutkinto start end]
                 {:identifiers #(do %)
                  :row-fn      db-ops/from-sql}))
+
+(def get-oht-by-tutkinto-between-memoized!
+  "Memoized get tutkinto between"
+  (memo/ttl
+    select-oht-by-tutkinto-between
+    {}
+    :ttl/threshold 300000)) ;5 minutes

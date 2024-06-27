@@ -306,6 +306,7 @@
       (response/not-found {:error "HOKS not found with given HOKS ID"})
       (do (hoks/check-for-update! old-hoks hoks)
           (let [new-hoks (db-handler (get-in request [:hoks :id]) hoks)]
+            (hoks/handle-oppija-oid-changes-in-indexes! new-hoks old-hoks)
             (assoc (response/no-content)
                    ::audit/changes {:old old-hoks :new new-hoks}))))))
 
