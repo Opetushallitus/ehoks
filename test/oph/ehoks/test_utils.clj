@@ -174,8 +174,11 @@
                                       :koodistoVersio 1}}]}
                       :oppilaitos {:oid (or oppilaitos-oid
                                             "1.2.246.562.10.12944436166")}
+                      :koulutustoimija {:oid "1.2.246.562.10.346830761110"}
                       :suoritukset
-                      [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+                      [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
+                        :suorituskieli {:koodiarvo "fi"}
+                        :toimipiste {:oid "1.2.246.562.10.12345678903"}}]
                       :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
               (.endsWith
                 url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000017")
@@ -268,6 +271,11 @@
                                               "1.2.246.562.10.12944436166")
                          :kayttooikeudet [{:palvelu "EHOKS"
                                            :oikeus "CRUD"}]}]}]}
+              (.endsWith
+                url "/rest/organisaatio/v4/1.2.246.562.10.12345678903")
+              {:status 200
+               :body {:oid           "1.2.246.562.10.12345678903"
+                      :parentOidPath "|"}}
               (.endsWith
                 url "/rest/organisaatio/v4/1.2.246.562.10.47861388602")
               {:status 200
