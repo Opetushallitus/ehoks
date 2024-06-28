@@ -133,45 +133,55 @@
   "Initiates opiskelijapalautekysely (`:aloituskysely` or `:paattokysely`).
   Currently, stores kysely data to eHOKS DB `palautteet` table and also sends
   the herate to AWS SQS for Herätepalvelu to process. Returns `true` if kysely
-  was successfully initiated, `nil` or `false` otherwise."
-  [kysely hoks opiskeluoikeus]
-  {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-  (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)]
-    (if (already-initiated?! kysely hoks koulutustoimija)
-      (log/warnf "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
-      (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)
-            suoritus     (find-first suoritus/ammatillinen?
-                                     (:suoritukset opiskeluoikeus))
-            heratepvm    (get hoks (herate-date-basis kysely))
-            alkupvm      (palaute/vastaamisajan-alkupvm heratepvm)]
-        (assert (some? kyselytyyppi))
-        (insert!
-          db/spec
-          {:hoks-id          (:id hoks)
-           :heratepvm         heratepvm
-           :kyselytyyppi      kyselytyyppi
-           :koulutustoimija   koulutustoimija
-           :voimassa-alkupvm  alkupvm
-           :voimassa-loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
-           :suorituskieli     (suoritus/kieli suoritus)
-           :toimipiste-oid    (palaute/toimipiste-oid! suoritus)
-           :tutkintonimike    (suoritus/tutkintonimike suoritus)
-           :hankintakoulutuksen-toteuttaja
-           (palaute/hankintakoulutuksen-toteuttaja! hoks)
-           :tutkintotunnus    (suoritus/tutkintotunnus suoritus)
-           :herate-source     "ehoks_update"})
-        ; Sending herate to AWS SQS (will be removed when Herätepalvelu
-        ; migration is complete).
-        (sqs/send-amis-palaute-message
-          {:ehoks-id           (:id hoks)
-           :kyselytyyppi       (translate-kyselytyyppi kyselytyyppi)
-           :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-           :oppija-oid         (:oppija-oid hoks)
-           :sahkoposti         (:sahkoposti hoks)
-           :puhelinnumero      (:puhelinnumero hoks)
-           :alkupvm            (str (get hoks (herate-date-basis kysely)))})))))
+  was successfully initiated, `nil` or `false` otherwise.
 
-(defn initiate-if-needed!
+  If `resend?` boolean flag is set, don't check if kysely is already
+  intiated, i.e., resend herate straight to Herätepalvelu. Also skip the
+  insertion to eHOKS `palautteet` table. Without this flag, the functionality to
+  resend heratteet to Herätepalvelu wouldn't work. This should be removed once
+  Herätepalvelu functionality has been fully migrated to eHOKS."
+  ([kysely hoks opiskeluoikeus] (initiate! kysely hoks opiskeluoikeus false))
+  ([kysely hoks opiskeluoikeus resend?]
+    {:pre [(#{:aloituskysely :paattokysely} kysely)]}
+    (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)]
+      (if (and (not resend?) (already-initiated?! kysely hoks koulutustoimija))
+        (log/warnf "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
+        (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)
+              suoritus     (find-first suoritus/ammatillinen?
+                                       (:suoritukset opiskeluoikeus))
+              heratepvm    (get hoks (herate-date-basis kysely))
+              alkupvm      (palaute/vastaamisajan-alkupvm heratepvm)]
+          (assert (some? kyselytyyppi))
+          (when-not resend?
+            (insert!
+              db/spec
+              {:hoks-id          (:id hoks)
+               :heratepvm         heratepvm
+               :kyselytyyppi      kyselytyyppi
+               :koulutustoimija   koulutustoimija
+               :voimassa-alkupvm  alkupvm
+               :voimassa-loppupvm (palaute/vastaamisajan-loppupvm
+                                    heratepvm alkupvm)
+               :suorituskieli     (suoritus/kieli suoritus)
+               :toimipiste-oid    (palaute/toimipiste-oid! suoritus)
+               :tutkintonimike    (suoritus/tutkintonimike suoritus)
+               :hankintakoulutuksen-toteuttaja
+               (palaute/hankintakoulutuksen-toteuttaja! hoks)
+               :tutkintotunnus    (suoritus/tutkintotunnus suoritus)
+               :herate-source     "ehoks_update"}))
+         ; Sending herate to AWS SQS (will be removed when Herätepalvelu
+         ; migration is complete).
+          (sqs/send-amis-palaute-message
+            {:ehoks-id           (:id hoks)
+             :kyselytyyppi       (translate-kyselytyyppi kyselytyyppi)
+             :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+             :oppija-oid         (:oppija-oid hoks)
+             :sahkoposti         (:sahkoposti hoks)
+             :puhelinnumero      (:puhelinnumero hoks)
+             :alkupvm            (str (get hoks
+                                           (herate-date-basis kysely)))}))))))
+
+(defn resend-if-needed!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
   `:paattokysely`) to appropriate DynamoDB table of Herätepalvelu if no check is
   preventing the sending. Returns `true` if kysely was successfully sent."
@@ -179,12 +189,12 @@
   (let [opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                          (:opiskeluoikeus-oid hoks))]
     (when (initiate? kysely hoks opiskeluoikeus)
-      (initiate! kysely hoks opiskeluoikeus))))
+      (initiate! kysely hoks opiskeluoikeus true))))
 
-(defn initiate-every-needed!
+(defn resend-every-needed!
   "Effectively the same as running `initiate-if-needed!` for multiple HOKSes,
   but also returns a count of the number of kyselys initiated."
   [kysely hoksit]
   (->> hoksit
-       (filter #(initiate-if-needed! kysely %))
+       (filter #(resend-if-needed! kysely %))
        count))

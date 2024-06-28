@@ -118,8 +118,8 @@
         opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                          (:opiskeluoikeus-oid hoks))]
     (future
-      (op/initiate-if-needed! :aloituskysely hoks)
-      (op/initiate-if-needed! :paattokysely hoks)
+      (op/resend-if-needed! :aloituskysely hoks)
+      (op/resend-if-needed! :paattokysely hoks)
       (tep/initiate-all-uninitiated! hoks opiskeluoikeus))
     hoks))
 
