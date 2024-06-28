@@ -3,6 +3,7 @@
             [clojure.test :as t]
             [clojure.tools.logging.test :as logtest]
             [oph.ehoks.common.api :as common-api]
+            [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.external.http-client :as client]
@@ -75,7 +76,9 @@
              url "/rest/organisaatio/v4/")
            {:status 200
             :body {:oid           (last (string/split url #"/"))
-                   :parentOidPath "|"}}
+                   :parentOidPath (str "|1.2.246.562.10.00000000001|"
+                                       (last (string/split url #"/"))
+                                       "|")}}
            (.endsWith
              url "/koski/api/opiskeluoikeus/1.2.246.562.15.10000000009")
            {:status 200
@@ -1621,3 +1624,104 @@
               delete-body (test-utils/parse-body (:body delete-response))]
           (t/is (= (:status delete-response) 200))
           (t/is (= (:success delete-body) hoks-id)))))))
+
+(t/deftest test-tep-jakso-raportti-structure
+  (t/testing "report tep-jakso-raportti returns expected structure"
+    (test-utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
+      (t/is (= (-> (post-new-hoks
+                     "1.2.246.562.15.76000000018" "1.2.246.562.10.12000000013"
+                     {:hankittavat-ammat-tutkinnon-osat hato-data})
+                   :status) 200))
+      (db-helpers/update! :osaamisen_hankkimistavat
+                          {:osa_aikaisuustieto nil}
+                          [])
+
+      (t/testing "with oppilaitos user"
+        (let [report-response
+              (with-test-virkailija
+                (mock/request
+                  :get
+                  (str base-url
+                       "/virkailija/tep-jakso-raportti"
+                       "?tutkinto=%7B%7D&start=2019-01-01&end=2023-12-31"
+                       "&pagesize=10&pageindex=0"
+                       "&oppilaitos=1.2.246.562.10.12000000013"))
+                {:name "Testivirkailija"
+                 :kayttajaTyyppi "VIRKAILIJA"
+                 :organisation-privileges
+                 [{:oid "1.2.246.562.10.12000000013"
+                   :privileges #{:write :read :update :delete}}]})
+              data (-> report-response
+                       :body
+                       test-utils/parse-body
+                       :data)]
+          (t/is (= (:status report-response) 200))
+          (t/is (= (:count data) 2))
+          (t/is (= (:pagecount data) 1))
+          (t/is (= (map :tyopaikanNimi (:result data))
+                   ["Ohjausyhtiö 1 Oy" "Ohjausyhtiö 2 Oy"]))))
+
+      (t/testing "with OPH user"
+        (let [report-response
+              (with-test-virkailija
+                (mock/request
+                  :get
+                  (str base-url
+                       "/virkailija/tep-jakso-raportti"
+                       "?tutkinto=%7B%7D&start=2019-01-01&end=2023-12-31"
+                       "&pagesize=10&pageindex=0"
+                       "&oppilaitos=1.2.246.562.10.12000000013"))
+                {:name "OPH-virkailija"
+                 :kayttajaTyyppi "VIRKAILIJA"
+                 :organisation-privileges
+                 [{:oid "1.2.246.562.10.00000000001"
+                   :privileges #{:write :read :update :delete}
+                   :oikeus "OPHPAAKAYTTAJA"
+                   :palvelu "EHOKS"
+                   :roles {:oph-super-user true}}]})
+              data (-> report-response
+                       :body
+                       test-utils/parse-body
+                       :data)]
+          (t/is (= (:status report-response) 200))
+          (t/is (= (:count data) 2))
+          (t/is (= (:pagecount data) 1))
+          (t/is (= (map :tyopaikanNimi (:result data))
+                   ["Ohjausyhtiö 1 Oy" "Ohjausyhtiö 2 Oy"])))))))
+
+(t/deftest test-missing-oo-hoksit-structure
+  (t/testing "report missing-oo-hoksit returns expected structure"
+    (test-utils/with-db
+      (create-oppija-for-hoks-post "1.2.246.562.10.12000000005")
+      (t/is (= (-> (post-new-hoks "1.2.246.562.15.76000000018"
+                                  "1.2.246.562.10.12000000013"
+                                  {})
+                   :status) 200))
+      (db-helpers/update! :opiskeluoikeudet
+                          {:koski404 true}
+                          ["oid = ?" "1.2.246.562.15.76000000018"])
+
+      (let [report-response
+            (with-test-virkailija
+              (mock/request
+                :get
+                (str base-url
+                     "/virkailija/missing-oo-hoksit/1.2.246.562.10.12000000013"
+                     "?pagesize=10&pageindex=0"))
+              {:name "Testivirkailija"
+               :kayttajaTyyppi "VIRKAILIJA"
+               :organisation-privileges
+               [{:oid "1.2.246.562.10.12000000013"
+                 :privileges #{:write :read :update :delete}}]})
+            data (-> report-response
+                     :body
+                     test-utils/parse-body
+                     :data)]
+        (t/is (= (:status report-response) 200))
+        (t/is (= (:count data) 1))
+        (t/is (= (:pagecount data) 1))
+        (t/is (= 1 (-> data
+                       :result
+                       first
+                       :hoksId)))))))
