@@ -283,4 +283,9 @@
       (testing "doesn't initiate kysely if one already exists for HOKS"
         (are [kysely] (nil? (op/initiate!
                               kysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1))
+          :aloituskysely :paattokysely))
+      (testing "sends kysely info to AWS SQS when `:resend?` option is given."
+        (are [kysely] (some? (op/initiate!
+                               kysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1
+                               {:resend? true}))
           :aloituskysely :paattokysely)))))

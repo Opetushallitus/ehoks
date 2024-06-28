@@ -249,7 +249,7 @@
       :path-params [hoks-id :- s/Int]
       (assoc
         (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
-          (if (op/initiate-if-needed! :aloituskysely hoks)
+          (if (op/initiate-if-needed! :aloituskysely hoks {:resend? true})
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false` or "
@@ -265,7 +265,7 @@
       :path-params [hoks-id :- s/Int]
       (assoc
         (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
-          (if (op/initiate-if-needed! :paattokysely hoks)
+          (if (op/initiate-if-needed! :paattokysely hoks {:resend? true})
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false`, "
@@ -283,7 +283,8 @@
                      to :- LocalDate]
       :return {:count s/Int}
       (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
-            count  (op/initiate-every-needed! :aloituskysely hoksit)]
+            count  (op/initiate-every-needed!
+                     :aloituskysely hoksit {:resend? true})]
         (assoc (restful/ok {:count count})
                ::audit/operation :system/resend-aloitusheratteet
                ::audit/target {:hoksit-from from
@@ -296,7 +297,8 @@
                      to :- LocalDate]
       :return {:count s/Int}
       (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
-            count  (op/initiate-every-needed! :paattokysely hoksit)]
+            count  (op/initiate-every-needed!
+                     :paattokysely hoksit {:resend? true})]
         (assoc (restful/ok {:count count})
                ::audit/operation :system/resend-paattoheratteet
                ::audit/target    {:hoksit-from from
