@@ -296,6 +296,11 @@
         <version>42.7.2</version>
       </dependency>
       <dependency>
+        <groupId>com.layerware</groupId>
+        <artifactId>hugsql</artifactId>
+        <version>0.5.3</version>
+      </dependency>
+      <dependency>
         <groupId>dev.weavejester</groupId>
         <artifactId>medley</artifactId>
         <version>1.7.0</version>
@@ -448,6 +453,10 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.layerware</groupId>
+      <artifactId>hugsql</artifactId>
     </dependency>
     <dependency>
       <groupId>ring</groupId>
