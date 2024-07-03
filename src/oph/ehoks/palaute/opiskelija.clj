@@ -135,16 +135,19 @@
   the herate to AWS SQS for Herätepalvelu to process. Returns `true` if kysely
   was successfully initiated, `nil` or `false` otherwise.
 
-  If `resend?` boolean flag is set, don't check if kysely is already
-  intiated, i.e., resend herate straight to Herätepalvelu. Also skip the
-  insertion to eHOKS `palautteet` table. Without this flag, the functionality to
-  resend heratteet to Herätepalvelu wouldn't work. This should be removed once
-  Herätepalvelu functionality has been fully migrated to eHOKS."
-  ([kysely hoks opiskeluoikeus] (initiate! kysely hoks opiskeluoikeus false))
-  ([kysely hoks opiskeluoikeus resend?]
+  Supported options in `opts`:
+  `:resend?`  If set to true, don't check if kysely is already
+              intiated, i.e., resend herate straight to Herätepalvelu. Also skip
+              the insertion to eHOKS `palautteet` table. Without this flag, the
+              functionality to resend heratteet to Herätepalvelu wouldn't work.
+              This should be removed once Herätepalvelu functionality has been
+              fully migrated to eHOKS."
+  ([kysely hoks opiskeluoikeus] (initiate! kysely hoks opiskeluoikeus nil))
+  ([kysely hoks opiskeluoikeus opts]
     {:pre [(#{:aloituskysely :paattokysely} kysely)]}
     (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)]
-      (if (and (not resend?) (already-initiated?! kysely hoks koulutustoimija))
+      (if (and (not (:resend? opts))
+               (already-initiated?! kysely hoks koulutustoimija))
         (log/warnf "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
         (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)
               suoritus     (find-first suoritus/ammatillinen?
@@ -152,7 +155,7 @@
               heratepvm    (get hoks (herate-date-basis kysely))
               alkupvm      (palaute/vastaamisajan-alkupvm heratepvm)]
           (assert (some? kyselytyyppi))
-          (when-not resend?
+          (when-not (:resend? opts)
             (insert!
               db/spec
               {:hoks-id          (:id hoks)
@@ -181,20 +184,38 @@
              :alkupvm            (str (get hoks
                                            (herate-date-basis kysely)))}))))))
 
-(defn resend-if-needed!
+(defn initiate-if-needed!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
   `:paattokysely`) to appropriate DynamoDB table of Herätepalvelu if no check is
-  preventing the sending. Returns `true` if kysely was successfully sent."
-  [kysely hoks]
-  (let [opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                         (:opiskeluoikeus-oid hoks))]
-    (when (initiate? kysely hoks opiskeluoikeus)
-      (initiate! kysely hoks opiskeluoikeus true))))
+  preventing the sending. Returns `true` if kysely was successfully sent.
 
-(defn resend-every-needed!
+  Supported options in `opts`:
+  `:resend?`  If set to true, don't check if kysely is already
+              intiated, i.e., resend herate straight to Herätepalvelu. Also skip
+              the insertion to eHOKS `palautteet` table. Without this flag, the
+              functionality to resend heratteet to Herätepalvelu wouldn't work.
+              This should be removed once Herätepalvelu functionality has been
+              fully migrated to eHOKS."
+  ([kysely hoks] (initiate-if-needed! kysely hoks nil))
+  ([kysely hoks opts]
+    (let [opiskeluoikeus (koski/get-existing-opiskeluoikeus!
+                           (:opiskeluoikeus-oid hoks))]
+      (when (initiate? kysely hoks opiskeluoikeus)
+        (initiate! kysely hoks opiskeluoikeus opts)))))
+
+(defn initiate-every-needed!
   "Effectively the same as running `initiate-if-needed!` for multiple HOKSes,
-  but also returns a count of the number of kyselys initiated."
-  [kysely hoksit]
-  (->> hoksit
-       (filter #(resend-if-needed! kysely %))
-       count))
+  but also returns a count of the number of kyselys initiated.
+
+  Supported options in `opts`:
+  `:resend?`  If set to true, don't check if kysely is already
+              intiated, i.e., resend herate straight to Herätepalvelu. Also skip
+              the insertion to eHOKS `palautteet` table. Without this flag, the
+              functionality to resend heratteet to Herätepalvelu wouldn't work.
+              This should be removed once Herätepalvelu functionality has been
+              fully migrated to eHOKS."
+  ([kysely hoksit] (initiate-every-needed! kysely hoksit nil))
+  ([kysely hoksit opts]
+    (->> hoksit
+         (filter #(initiate-if-needed! kysely % opts))
+         count)))
