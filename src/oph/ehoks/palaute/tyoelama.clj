@@ -159,6 +159,8 @@
         koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
         toimipiste-oid  (palaute/toimipiste-oid! suoritus)]
     (->> (tyopaikkajaksot hoks)
+         (#(do (log/infof "Tyopaikkajaksot: %s" %) %))
          (filter #(initiate? % hoks opiskeluoikeus))
+         (#(do (log/infof "To be initiated: %s" %) %))
          (map #(initiate! % hoks suoritus koulutustoimija toimipiste-oid))
          doall)))
