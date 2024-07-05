@@ -1,6 +1,5 @@
 (ns oph.ehoks.palaute.tyoelama
-  (:require [clojure.string :as string]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
             [medley.core :refer [find-first]]
             [oph.ehoks.db :as db]
@@ -44,9 +43,10 @@
 (defn next-niputus-date
   "Palauttaa seuraavan niputuspäivämäärän annetun päivämäärän jälkeen.
   Niputuspäivämäärät ovat kuun ensimmäinen ja kuudestoista päivä."
-  ^LocalDate [pvm-str]
-  (let [[^int year ^int month ^int day] (map #(Integer/parseInt %)
-                                             (string/split pvm-str #"-"))]
+  ^LocalDate [^LocalDate pvm]
+  (let [year  (.getYear pvm)
+        month (.getMonthValue pvm)
+        day   (.getDayOfMonth pvm)]
     (if (< day 16)
       (LocalDate/of year month 16)
       (cond
@@ -64,30 +64,14 @@
   "Puuttuuko tieto osa-aikaisuudesta jaksosta, jossa sen pitäisi olla?"
   [jakso]
   (and (not (:osa-aikaisuustieto jakso))
-       (date/is-after (LocalDate/parse (:loppu jakso))
-                      (LocalDate/of 2023 6 30))))
-
-(defn alku-and-loppu-to-localdate
-  "Muuntaa parametrina annetun hashmapin :alku ja :loppu -avaimien
-  merkkijonomuotoiset päivämäärät LocalDate:iksi."
-  [jakso]
-  (cond-> jakso
-    (:alku jakso)  (update :alku  #(LocalDate/parse %))
-    (:loppu jakso) (update :loppu #(LocalDate/parse %))))
-
-(defn sort-process-keskeytymisajanjaksot
-  "Järjestää TEP-jakso keskeytymisajanjaksot, parsii niiden alku- ja
-  loppupäivämäärät LocalDateiksi, ja palauttaa tuloslistan."
-  [jakso]
-  (map alku-and-loppu-to-localdate
-       (sort-by :alku (:keskeytymisajanjaksot jakso))))
+       (date/is-after (:loppu jakso) (LocalDate/of 2023 6 30))))
 
 (defn fully-keskeytynyt?
   "Palauttaa true, jos TEP-jakso on keskeytynyt sen loppupäivämäärällä."
   [jakso]
-  (let [kjaksot (sort-process-keskeytymisajanjaksot jakso)]
+  (let [kjaksot (sort-by :alku (:keskeytymisajanjaksot jakso))]
     (when-let [kjakso-loppu (:loppu (last kjaksot))]
-      (not (date/is-after (LocalDate/parse (:loppu jakso)) kjakso-loppu)))))
+      (not (date/is-after (:loppu jakso) kjakso-loppu)))))
 
 (defn- reason-for-not-initiating
   [jakso opiskeluoikeus]
@@ -141,7 +125,7 @@
         db/spec
         {:hoks-id            (:id hoks)
          :yksiloiva-tunniste (:yksiloiva-tunniste jakso)
-         :heratepvm          (LocalDate/parse (:loppu jakso))
+         :heratepvm          (:loppu jakso)
          :voimassa-alkupvm   voimassa-alkupvm
          :voimassa-loppupvm  (voimassa-loppupvm voimassa-alkupvm)
          :koulutustoimija    koulutustoimija

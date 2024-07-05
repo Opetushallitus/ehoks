@@ -23,19 +23,20 @@
    :tyopaikan-nimi "Testityöpaikka"
    :tyopaikan-ytunnus "1234567-8"
    :tyopaikkaohjaaja-nimi "Testi Ohjaaja"
-   :alku "2023-09-09"
-   :loppu "2023-12-15"
+   :alku (LocalDate/of 2023 9 9)
+   :loppu (LocalDate/of 2023 12 15)
    :osa-aikaisuustieto 100
    :oppija-oid "123.456.789"
    :tyyppi "test-tyyppi"
    :tutkinnonosa-id "test-tutkinnonosa-id"
-   :keskeytymisajanjaksot [{:alku "2023-09-28" :loppu "2023-09-29"}]
+   :keskeytymisajanjaksot [{:alku  (LocalDate/of 2023 9 28)
+                            :loppu (LocalDate/of 2023 9 29)}]
    :hankkimistapa-id 2
    :hankkimistapa-tyyppi "koulutussopimus_01"})
 
 (deftest test-next-niputus-date
   (testing "The function returns the correct niputus date when given `pvm-str`."
-    (are [pvm-str expected] (= (tep/next-niputus-date pvm-str)
+    (are [pvm-str expected] (= (tep/next-niputus-date (LocalDate/parse pvm-str))
                                (LocalDate/parse expected))
       "2021-12-03" "2021-12-16"
       "2021-12-27" "2022-01-01"
@@ -46,28 +47,28 @@
   (testing "The function returns"
     (testing "`true` when osa-aikaisuus is missing."
       (are [jakso] (true? (tep/osa-aikaisuus-missing? jakso))
-        {:osa-aikaisuustieto nil :loppu "2023-08-01"}
-        {:loppu "2023-08-01"}))
+        {:osa-aikaisuustieto nil :loppu (LocalDate/of 2023 8 1)}
+        {:loppu (LocalDate/of 2023 8 1)}))
     (testing "falsey value when osa-aikaisuus is not missing."
       (are [jakso] (not (tep/osa-aikaisuus-missing? jakso))
-        {:osa-aikaisuustieto nil :loppu "2023-06-30"}
-        {:loppu "2023-06-30"}
-        {:osa-aikaisuustieto 30 :loppu "2023-08-01"}))))
+        {:osa-aikaisuustieto nil :loppu (LocalDate/of 2023 6 30)}
+        {:loppu (LocalDate/of 2023 6 30)}
+        {:osa-aikaisuustieto 30 :loppu (LocalDate/of 2023 8 1)}))))
 
 (deftest test-fully-keskeytynyt?
   (testing "fully-keskeytynyt?"
-    (let [herate1 {:keskeytymisajanjaksot [{:alku "2021-08-08"
-                                            :loppu "2021-08-10"}
-                                           {:alku "2021-08-01"
-                                            :loppu "2021-08-04"}]
-                   :loppu "2021-08-09"}
-          herate2 {:keskeytymisajanjaksot [{:alku "2021-08-08"
-                                            :loppu "2021-08-10"}
-                                           {:alku "2021-08-01"
-                                            :loppu "2021-08-04"}]
-                   :loppu "2021-08-11"}
+    (let [herate1 {:keskeytymisajanjaksot [{:alku  (LocalDate/of 2021 8 8)
+                                            :loppu (LocalDate/of 2021 8 10)}
+                                           {:alku  (LocalDate/of 2021 8 1)
+                                            :loppu (LocalDate/of 2021 8 4)}]
+                   :loppu (LocalDate/of 2021 8 9)}
+          herate2 {:keskeytymisajanjaksot [{:alku  (LocalDate/of 2021 8 8)
+                                            :loppu (LocalDate/of 2021 8 10)}
+                                           {:alku  (LocalDate/of 2021 8 1)
+                                            :loppu (LocalDate/of 2021 8 4)}]
+                   :loppu (LocalDate/of 2021 8 11)}
           herate3 {}
-          herate4 {:keskeytymisajanjaksot [{:alku "2021-08-08"}]}]
+          herate4 {:keskeytymisajanjaksot [{:alku (LocalDate/of 2021 8 8)}]}]
       (is (tep/fully-keskeytynyt? herate1))
       (is (not (tep/fully-keskeytynyt? herate2)))
       (is (not (tep/fully-keskeytynyt? herate3)))
@@ -103,7 +104,8 @@
           (test-not-initiated
             (assoc-in test-jakso
                       [:keskeytymisajanjaksot 1]
-                      {:alku "2023-12-01" :loppu "2023-12-15"})
+                      {:alku  (LocalDate/of 2023 12 1)
+                       :loppu (LocalDate/of 2023 12 15)})
             oo-test/opiskeluoikeus-1
             #"interrupted"))
         (testing "opiskeluoikeus doesn't have any ammatillinen suoritus"
@@ -127,7 +129,7 @@
      :kyselytyyppi                   "tyopaikkajakson_suorittaneet"
      :hoks-id                        (:id hoks)
      :jakson-yksiloiva-tunniste      (:yksiloiva-tunniste jakso)
-     :heratepvm                      (LocalDate/parse (:loppu jakso))
+     :heratepvm                      (:loppu jakso)
      :tutkintotunnus                 351407
      :tutkintonimike                 "(\"12345\",\"23456\")"
      :voimassa-alkupvm               voimassa-alkupvm

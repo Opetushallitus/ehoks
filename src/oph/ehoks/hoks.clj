@@ -109,20 +109,21 @@
 (defn save!
   "Tallentaa yhden HOKSin arvot tietokantaan."
   [hoks]
-  (let [hoks (jdbc/with-db-transaction
-               [conn (db-ops/get-db-connection)]
-               (let [hoks (merge hoks (db-hoks/insert-hoks! hoks conn))
-                     tuva-hoks (tuva-related? hoks)]
-                 (db-hoks/insert-amisherate-kasittelytilat!
-                   (:id hoks) tuva-hoks conn)
-                 (save-parts! hoks conn)))
+  (let [hoks-db       (jdbc/with-db-transaction
+                        [conn (db-ops/get-db-connection)]
+                        (let [hoks (merge hoks (db-hoks/insert-hoks! hoks conn))
+                              tuva-hoks (tuva-related? hoks)]
+                          (db-hoks/insert-amisherate-kasittelytilat!
+                            (:id hoks) tuva-hoks conn)
+                          (save-parts! hoks conn)))
+        hoks           (assoc hoks :id (:id hoks-db))
         opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                          (:opiskeluoikeus-oid hoks))]
     (future
       (op/initiate-if-needed! :aloituskysely hoks)
       (op/initiate-if-needed! :paattokysely hoks)
       (tep/initiate-all-uninitiated! hoks opiskeluoikeus))
-    hoks))
+    hoks-db))
 
 (def ^:private tuva-hoks-msg-template
   "HOKS `%s` is a TUVA-HOKS or rinnakkainen ammatillinen HOKS.")
@@ -155,8 +156,8 @@
                 (db-hoks/update-amisherate-kasittelytilat!
                   {:id (:id amisherate-kasittelytila)
                    :paattoherate_kasitelty false})
-                (op/initiate!
-                  :paattokysely updated-hoks opiskeluoikeus))))))
+                (op/initiate! :paattokysely updated-hoks opiskeluoikeus))))
+        (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))
     (db-hoks/select-hoks-by-id hoks-id)))
 
 (defn- merge-not-given-hoks-values
@@ -318,8 +319,8 @@
           (db-hoks/update-amisherate-kasittelytilat!
             {:id (:id amisherate-kasittelytila)
              :paattoherate_kasitelty false})
-          (op/initiate!
-            :paattokysely updated-hoks opiskeluoikeus))))
+          (op/initiate! :paattokysely updated-hoks opiskeluoikeus))
+        (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))
     updated-hoks))
 
 (defn- oppija-oid-changed?
