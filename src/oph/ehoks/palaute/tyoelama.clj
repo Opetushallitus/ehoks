@@ -107,16 +107,16 @@
     true))
 
 (defn already-initiated?!
-  [jakso]
-  (some? (get-jakso-by-hoks-id-and-yksiloiva-tunniste!
+  [jakso hoks]
+  (some? (get-by-hoks-id-and-yksiloiva-tunniste!
            db/spec
-           {:hoks-id            (:hoks-id jakso)
+           {:hoks-id            (:id hoks)
             :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})))
 
 (defn initiate!
   [jakso hoks suoritus koulutustoimija toimipiste-oid]
   (let [voimassa-alkupvm (next-niputus-date (:loppu jakso))]
-    (if (already-initiated?! jakso)
+    (if (already-initiated?! jakso hoks)
       (log/warnf (str "Palaute has already been initiated for työpaikkajakso "
                       "with HOKS ID `%d` and yksiloiva tunniste `%s`.")
                  (:id hoks)
@@ -142,11 +142,7 @@
                                     (:suoritukset opiskeluoikeus))
         koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
         toimipiste-oid  (palaute/toimipiste-oid! suoritus)]
-    (->> hoks
-         (#(do (log/infof "HOKS: %s" %) %))
-         tyopaikkajaksot
-         (#(do (log/infof "Tyopaikkajaksot: %s" (vec %)) %))
+    (->> (tyopaikkajaksot hoks)
          (filter #(initiate? % hoks opiskeluoikeus))
-         (#(do (log/infof "To be initiated: %s" (vec %)) %))
          (map #(initiate! % hoks suoritus koulutustoimija toimipiste-oid))
          doall)))

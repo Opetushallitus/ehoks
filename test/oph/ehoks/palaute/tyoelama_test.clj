@@ -154,7 +154,7 @@
                     "herate to SQS queue")
         (tep/initiate!
           test-jakso hoks-test/hoks-1 suoritus koulutustoimija toimipiste-oid)
-        (is (= (-> (tep/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
+        (is (= (-> (tep/get-by-hoks-id-and-yksiloiva-tunniste!
                      db/spec
                      {:hoks-id            (:id hoks-test/hoks-1)
                       :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)})
@@ -182,7 +182,7 @@
                   "tyopaikkajakso in HOKS.")
       (tep/initiate-all-uninitiated! hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
       (doseq [jakso (tep/tyopaikkajaksot hoks-test/hoks-1)]
-        (is (= (-> (tep/get-jakso-by-hoks-id-and-yksiloiva-tunniste!
+        (is (= (-> (tep/get-by-hoks-id-and-yksiloiva-tunniste!
                      db/spec
                      {:hoks-id            (:id hoks-test/hoks-1)
                       :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})

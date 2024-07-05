@@ -1,4 +1,4 @@
--- :name get-jakso-by-hoks-id-and-yksiloiva-tunniste! :? :1
+-- :name get-by-hoks-id-and-yksiloiva-tunniste! :? :1
 -- :doc Get palaute information for työpaikkajakso by HOKS ID and yksiloiva
 --      tunniste.
 select * from palautteet
