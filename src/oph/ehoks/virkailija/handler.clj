@@ -450,11 +450,12 @@
                                {alkupvm-loppu :- LocalDate (LocalDate/now)}
                                {limit :- s/Int 2000}
                                {from-id :- s/Int 0}]
-                :return {:last-id s/Int
-                         :paattokysely-total-count s/Int
-                         :o-s-pvm-ilman-vahvistuspvm-count s/Int
-                         :vahvistuspvm-ilman-o-s-pvm-count s/Int
-                         :vahvistuspvm-ja-o-s-pvm s/Int}
+                :return (restful/response
+                          {:last-id s/Int
+                           :paattokysely-total-count s/Int
+                           :o-s-pvm-ilman-vahvistuspvm-count s/Int
+                           :vahvistuspvm-ilman-o-s-pvm-count s/Int
+                           :vahvistuspvm-ja-o-s-pvm s/Int})
                 (let [data (db-hoks/select-kyselylinkit-by-date-and-type-temp
                              alkupvm alkupvm-loppu from-id limit)
                       last-id (:hoks-id (last data))
@@ -499,9 +500,9 @@
                 true."
                 :query-params [{limit :- s/Int 2000}
                                {from-id :- s/Int 0}]
-                :return {:count s/Int
-                         :ids [s/Int]
-                         :last-id s/Int}
+                :return (restful/response {:count s/Int
+                                           :ids [s/Int]
+                                           :last-id s/Int})
                 (let [hoksit (db-hoks/select-hokses-greater-than-id
                                from-id
                                limit
@@ -584,7 +585,7 @@
                         :path-params [hoks-id :- s/Int]
                         :summary "Hoksin tiedot.
                                 Vaatii manuaalisyöttäjän oikeudet"
-                        :return hoks-schema/HOKS
+                        :return (restful/response hoks-schema/HOKS)
                         (get-hoks hoks-id request))
 
                       (c-api/POST "/:hoks-id/resend-palaute" request
@@ -592,7 +593,7 @@
                                   uudelleen lähetykselle"
                         :path-params [hoks-id :- s/Int]
                         :body [data hoks-schema/palaute-resend]
-                        :return {:sahkoposti s/Str}
+                        :return (restful/response {:sahkoposti s/Str})
                         (let [kyselylinkit
                               (heratepalvelu/get-oppija-kyselylinkit
                                 oppija-oid)
@@ -666,7 +667,7 @@
                           :summary "Asettaa HOKSin
                               poistetuksi(shallow delete) id:n perusteella."
                           :body [data hoks-schema/shallow-delete-hoks]
-                          :return {:success s/Int}
+                          :return (restful/response {:success s/Int})
                           (shallow-delete-hoks-handler! request hoks-id data)))
 
                       (route-middleware
@@ -675,7 +676,7 @@
                         (c-api/GET "/" []
                           :summary "Kaikki hoksit (perustiedot).
                         Tarvitsee OPH-pääkäyttäjän oikeudet"
-                          :return [s/Any]
+                          :return (restful/response [s/Any])
                           (restful/ok (db-hoks/select-hoksit))))))
 
                   (route-middleware
