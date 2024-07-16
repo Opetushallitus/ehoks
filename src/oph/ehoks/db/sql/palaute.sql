@@ -20,7 +20,29 @@ insert into palautteet (
   :herate-source, :heratepvm, :hoks-id, :koulutustoimija, :kyselytyyppi, :tila,
   :toimipiste-oid, :tutkintonimike, :tutkintotunnus, :voimassa-alkupvm,
   :voimassa-loppupvm
-) returning id
+) returning *
+
+-- :name get-tep-palautteet-needing-vastaajatunnus! :? :*
+-- :doc Get all unprocessed palaute for Arvo call.
+select * from tep_palaute
+where tila = 'odottaa_kasittelya'
+  and heratepvm <= current_date
+  and arvo_tunniste is null
+  and tep_kasitelty = false
+
+-- :name update-arvo-tunniste! :? :*
+-- :doc Update arvo-tunniste for palaute with given id.
+update palautteet
+set arvo_tunniste = :tunnus, updated_at = now(), tila = 'vastaajatunnus_muodostettu'
+where id = :id
+  and arvo_tunniste is null
+  and tila = 'odottaa_kasittelya'
+returning *
+
+-- :name get-single-palaute-needing-vastaajatunnus! :? :1
+-- :doc Get single palaute data for Arvo call.
+select * from tep_palaute
+where id = :id
 
 -- :name update! :? :1
 -- :doc Update palaute in DB

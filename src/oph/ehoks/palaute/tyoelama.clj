@@ -1,15 +1,22 @@
 (ns oph.ehoks.palaute.tyoelama
-  (:require [clojure.java.jdbc :as jdbc]
+  (:require [chime.core :as chime]
+            [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
             [medley.core :refer [find-first]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.external.arvo :as arvo]
+            [oph.ehoks.external.organisaatio :as org]
+            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.utils.date :as date])
-  (:import (java.time LocalDate)))
+  (:import (java.text Normalizer Normalizer$Form)
+           (java.time LocalDate)
+           (java.lang AutoCloseable)
+           (java.util UUID)))
 
 (def kyselytyypit #{"tyopaikkajakson_suorittaneet"})
 (def tyopaikkajakso-types
@@ -19,7 +26,12 @@
 (defn tyopaikkajakso?
   "Returns `true` if osaamisen hankkimistapa `oht` is tyopaikkajakso."
   [oht]
-  (some? (tyopaikkajakso-types (:osaamisen-hankkimistapa-koodi-uri oht))))
+  (and (some? (tyopaikkajakso-types (:osaamisen-hankkimistapa-koodi-uri oht)))
+       (every?
+         #(get-in oht %)
+         [[:tyopaikalla-jarjestettava-koulutus :vastuullinen-tyopaikka-ohjaaja]
+          [:tyopaikalla-jarjestettava-koulutus :tyopaikan-nimi]
+          [:tyopaikalla-jarjestettava-koulutus :tyopaikan-y-tunnus]])))
 
 (defn finished-workplace-periods!
   "Queries for all finished workplace periods between start and end"
@@ -72,6 +84,10 @@
     (when-let [kjakso-loppu (:loppu (last kjaksot))]
       (not (date/is-after (:loppu jakso) kjakso-loppu)))))
 
+(defn jakso-in-the-past?
+  [jakso]
+  (not (.isBefore (date/now) (:loppu jakso))))
+
 (defn initial-palaute-state-and-reason
   "Runs several checks against tyopaikkajakso and opiskeluoikeus to determine if
   tyoelamapalaute process should be initiated for jakso. Returns the initial
@@ -83,6 +99,9 @@
     (cond
       (palaute/already-initiated? (vec existing-herate))
       [nil nil :jaksolle-loytyy-jo-herate]
+
+      (jakso-in-the-past? jakso)
+      [:ei-laheteta :loppu :menneisyydessa]
 
       (opiskeluoikeus/in-terminal-state? opiskeluoikeus (:loppu jakso))
       [:ei-laheteta :opiskeluoikeus-oid :opiskeluoikeus-terminaalitilassa]
@@ -161,3 +180,83 @@
   (->> (tyopaikkajaksot hoks)
        (map #(initiate-if-needed! % hoks opiskeluoikeus))
        doall))
+
+(defn- deaccent-string
+  "Poistaa diakriittiset merkit stringistä ja palauttaa muokatun stringin."
+  [utf8-string]
+  (string/replace (Normalizer/normalize utf8-string Normalizer$Form/NFD)
+                  #"\p{InCombiningDiacriticalMarks}+"
+                  ""))
+
+(defn normalize-string
+  "Muuttaa muut merkit kuin kirjaimet ja numerot alaviivaksi."
+  [string]
+  (string/lower-case (string/replace (deaccent-string string) #"\W+" "_")))
+
+(defn create-and-save-arvo-vastaajatunnus!
+  [tep-palaute tx]
+  (let [opiskeluoikeus (koski/get-opiskeluoikeus!
+                        (:opiskeluoikeus-oid tep-palaute))]
+    (if-not opiskeluoikeus
+      (log/warnf "Opiskeluoikeus not found for palaute %d, skipping processing"
+                 (:id tep-palaute))
+      (let [koulutustoimija (opiskeluoikeus-koulutustoimija-oid opiskeluoikeus)
+            alkupvm         (next-niputus-date (:loppupvm tep-palaute))
+            arvo-request    (arvo/build-jaksotunnus-request-body
+                             tep-palaute
+                             (normalize-string
+                              (:tyopaikan-nimi tep-palaute))
+                             opiskeluoikeus
+                             (str (UUID/randomUUID))
+                             koulutustoimija
+                             (find-first suoritus/ammatillinen?
+                                         (:suoritukset opiskeluoikeus))
+                             (str alkupvm))
+            tunnus          (:tunnus (arvo/create-jaksotunnus arvo-request))]
+        (try
+          (assert (update-arvo-tunniste! tx {:id (:id tep-palaute)
+                                             :tunnus tunnus}))
+          ; TODO lisää palaute_tapahtuma EH-1687:n logiikan avulla; aseta
+          ;      arvo-request tapahtuman lisätietoihin, jotta mm. request-id
+          ;      jää talteen
+          ; TODO synkronoi jakso & nippu herätepalveluun
+          ;(ddb/sync-jakso-herate! tep-palaute)
+          ; TODO aseta tep-kasitelty trueksi jaksolle, jotta herätepalvelu ei
+          ;      yritä luoda jaksosta duplikaattia (vai disabloidaanko
+          ;      herätepalvelun jaksojen pull-toiminto/timedoperationshandler?)
+          (catch Exception e
+            (log/errorf e
+                        (str "Error updating palaute %d, "
+                             "trying to remove vastaajatunnus from Arvo: %s")
+                        (:id tep-palaute)
+                        tunnus)
+            (arvo/delete-jaksotunnus tunnus)
+            (throw e)))))))
+
+(defn create-and-save-arvo-vastaajatunnus-for-all-needed!
+  "Creates vastaajatunnus for all herates that are waiting for processing,
+  do not have vastaajatunnus and have heratepvm today or in the past."
+  [_]
+  (log/info "Starting to create vastaajatunnus unprocessed työelämäpalaute.")
+  (jdbc/with-db-transaction
+    [tx db/spec]
+    (doseq [palaute (get-tep-palautteet-needing-vastaajatunnus! tx {})]
+      (create-and-save-arvo-vastaajatunnus! palaute tx)))
+  (log/info "Done creating vastaajatunnus for unprocessed työelämäpalaute."))
+
+(defn run-scheduler!
+  ^AutoCloseable [start-time rate]
+  (log/info "Starting tep-palaute scheduler.")
+  (let [scheduler
+        (chime/chime-at (chime/periodic-seq start-time rate)
+                        create-and-save-arvo-vastaajatunnus-for-all-needed!
+                        {:on-finished
+                         (fn []
+                           (log/info "Tep-palaute scheduler stopped."))
+                         :error-handler
+                         (fn [e]
+                           (log/warn e "Error in scheduler"))})]
+    (.addShutdownHook (Runtime/getRuntime)
+                      (Thread. (fn []
+                                 (log/info "Stopping tep-palaute scheduler.")
+                                 (.close scheduler))))))
