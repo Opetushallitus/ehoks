@@ -212,7 +212,8 @@
           "oppija with same koulutustoimija and within same rahoituskausi.")
       (are [kysely] (op/already-initiated?! kysely
                                             hoks-test/hoks-3
-                                            "1.2.246.562.10.346830761110")
+                                            "1.2.246.562.10.346830761110"
+                                            db/spec)
         :aloituskysely :paattokysely))
 
     (testing "Kysely is not considered already initiated when"
@@ -220,14 +221,16 @@
         (are [kysely] (not (op/already-initiated?!
                              kysely
                              hoks-test/hoks-3
-                             "1.2.246.562.10.45678901237"))
+                             "1.2.246.562.10.45678901237"
+                             db/spec))
           :aloituskysely :paattokysely))
 
       (testing "heratepvm is within different rahoituskausi."
         (are [kysely] (not (op/already-initiated?!
                              kysely
                              hoks-test/hoks-4
-                             "1.2.246.562.10.346830761110"))
+                             "1.2.246.562.10.346830761110"
+                             db/spec))
           :aloituskysely :paattokysely)))))
 
 (deftest test-initiate!

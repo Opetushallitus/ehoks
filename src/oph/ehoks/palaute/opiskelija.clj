@@ -1,6 +1,7 @@
 (ns oph.ehoks.palaute.opiskelija
   "A namespace for everything related to opiskelijapalaute"
   (:require [clojure.tools.logging :as log]
+            [clojure.java.jdbc :as jdbc]
             [hugsql.core :as hugsql]
             [medley.core :refer [find-first]]
             [oph.ehoks.db :as db]
@@ -115,12 +116,12 @@
 (defn already-initiated?!
   "Returns `true` if aloituskysely or paattokysely with same oppija and
   koulutustoimija has already been initiated within the same rahoituskausi."
-  [kysely hoks koulutustoimija]
+  [kysely hoks koulutustoimija tx]
   (let [rahoituskausi (->> (herate-date-basis kysely)
                            (get hoks)
                            palaute/rahoituskausi)]
     (->> (get-by-kyselytyyppi-oppija-and-koulutustoimija!
-           db/spec
+           tx
            {:kyselytyypit    (case kysely
                                :aloituskysely ["aloittaneet"]
                                :paattokysely  (vec paattokyselyt))
@@ -146,44 +147,48 @@
   ([kysely hoks opiskeluoikeus opts]
     {:pre [(#{:aloituskysely :paattokysely} kysely)]}
     (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)]
-      (if (and (not (:resend? opts))
-               (already-initiated?! kysely hoks koulutustoimija))
-        (log/warnf "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
-        (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)
-              suoritus     (find-first suoritus/ammatillinen?
-                                       (:suoritukset opiskeluoikeus))
-              heratepvm    (get hoks (herate-date-basis kysely))
-              alkupvm      (palaute/vastaamisajan-alkupvm heratepvm)]
-          (assert (some? kyselytyyppi))
-          (log/info "Making" kysely "heräte for HOKS" (:id hoks))
-          (if (:resend? opts)
-            (log/info "Not putting in DB because :resend? is set")
-            (insert! db/spec
-                     {:hoks-id          (:id hoks)
-                      :heratepvm         heratepvm
-                      :kyselytyyppi      kyselytyyppi
-                      :koulutustoimija   koulutustoimija
-                      :voimassa-alkupvm  alkupvm
-                      :voimassa-loppupvm (palaute/vastaamisajan-loppupvm
-                                           heratepvm alkupvm)
-                      :suorituskieli     (suoritus/kieli suoritus)
-                      :toimipiste-oid    (palaute/toimipiste-oid! suoritus)
-                      :tutkintonimike    (suoritus/tutkintonimike suoritus)
-                      :hankintakoulutuksen-toteuttaja
-                      (palaute/hankintakoulutuksen-toteuttaja! hoks)
-                      :tutkintotunnus    (suoritus/tutkintotunnus suoritus)
-                      :herate-source     "ehoks_update"}))
-          ; Sending herate to AWS SQS (will be removed when Herätepalvelu
-          ; migration is complete).
-          (sqs/send-amis-palaute-message
-            {:ehoks-id           (:id hoks)
-             :kyselytyyppi       (translate-kyselytyyppi kyselytyyppi)
-             :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-             :oppija-oid         (:oppija-oid hoks)
-             :sahkoposti         (:sahkoposti hoks)
-             :puhelinnumero      (:puhelinnumero hoks)
-             :alkupvm            (str (get hoks
-                                           (herate-date-basis kysely)))}))))))
+      (jdbc/with-db-transaction
+        [tx db/spec]
+        (if (and (not (:resend? opts))
+                 (already-initiated?! kysely hoks koulutustoimija tx))
+          (log/warnf
+            "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
+          (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)
+                suoritus     (find-first suoritus/ammatillinen?
+                                         (:suoritukset opiskeluoikeus))
+                heratepvm    (get hoks (herate-date-basis kysely))
+                alkupvm      (palaute/vastaamisajan-alkupvm heratepvm)]
+            (assert (some? kyselytyyppi))
+            (log/info "Making" kysely "heräte for HOKS" (:id hoks))
+            (if (:resend? opts)
+              (log/info "Not putting in DB because :resend? is set")
+              (insert! db/spec
+                       {:hoks-id          (:id hoks)
+                        :heratepvm         heratepvm
+                        :kyselytyyppi      kyselytyyppi
+                        :koulutustoimija   koulutustoimija
+                        :voimassa-alkupvm  alkupvm
+                        :voimassa-loppupvm (palaute/vastaamisajan-loppupvm
+                                             heratepvm alkupvm)
+                        :suorituskieli     (suoritus/kieli suoritus)
+                        :toimipiste-oid    (palaute/toimipiste-oid! suoritus)
+                        :tutkintonimike    (suoritus/tutkintonimike suoritus)
+                        :hankintakoulutuksen-toteuttaja
+                        (palaute/hankintakoulutuksen-toteuttaja! hoks)
+                        :tutkintotunnus    (suoritus/tutkintotunnus suoritus)
+                        :herate-source     "ehoks_update"}))
+            ; Sending herate to AWS SQS (will be removed when Herätepalvelu
+            ; migration is complete).
+            (sqs/send-amis-palaute-message
+              {:ehoks-id           (:id hoks)
+               :kyselytyyppi       (translate-kyselytyyppi kyselytyyppi)
+               :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+               :oppija-oid         (:oppija-oid hoks)
+               :sahkoposti         (:sahkoposti hoks)
+               :puhelinnumero      (:puhelinnumero hoks)
+               :alkupvm            (str
+                                     (get hoks
+                                          (herate-date-basis kysely)))})))))))
 
 (defn initiate-if-needed!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
