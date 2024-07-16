@@ -1,5 +1,6 @@
 (ns oph.ehoks.db.dynamodb
   (:require [taoensso.faraday :as far]
+            [clojure.string :as str]
             [environ.core :refer [env]]
             [oph.ehoks.config :refer [config]])
   (:import (com.amazonaws.auth BasicAWSCredentials AWSStaticCredentialsProvider)
@@ -36,6 +37,53 @@
     (.build (AmazonDynamoDBClientBuilder/standard))))
 
 (def faraday-opts (delay {:client (get-client)}))
-(def amis-table (delay (keyword (:heratepalvelu-amis-table config))))
-(def jakso-table (delay (keyword (:heratepalvelu-jakso-table config))))
-(def nippu-table (delay (keyword (:heratepalvelu-nippu-table config))))
+
+(def tables
+  {:amis (delay (keyword (:heratepalvelu-amis-table config)))
+   :jakso (delay (keyword (:heratepalvelu-jakso-table config)))
+   :nippu (delay (keyword (:heratepalvelu-nippu-table config)))})
+
+(def table-keys
+  {:amis [:toimija_oppija :tyyppi_kausi]
+   :jakso [:hankkimistapa_id]
+   :nippu [:ohjaaja_ytunnus_kj_tutkinto :niputuspvm]})
+
+(defn sync-item
+  "Does a partial upsert on item in DDB: if the item doesn't exist,
+  it is created with the given values.  If it does exist, then only the
+  given fields are updated, with the rest left intact.  sync-item is a
+  wrapper for faraday/update-item."
+  [table item]
+  (let [table-name @(tables table)
+        key-names (table-keys table)
+        item-key (zipmap key-names (map item key-names))
+        rest-item (apply dissoc item key-names)
+        attr-names (zipmap (map (partial str "#") (range))
+                           (map name (keys rest-item)))
+        attr-values (zipmap (map (partial str ":") (range)) (vals rest-item))
+        updates (map #(str %1 " = " %2)
+                     (sort (keys attr-names))
+                     (sort (keys attr-values)))
+        update-expr (str "SET " (str/join ", " updates))]
+    (far/update-item @faraday-opts table-name item-key
+                     {:update-expr update-expr :expr-attr-names attr-names
+                      :expr-attr-vals attr-values})))
+
+(def map-keys-to-ddb
+  (some-fn {:toimija-oppija :toimija_oppija, :tyyppi-kausi :tyyppi_kausi}
+           identity))
+
+(defn sync-amis-herate!
+  "Update the herätepalvelu AMISheratetable to have the same content
+  for given heräte as palaute-backend has in its own database.
+  sync-amis-herate! only updates fields it 'owns': currently that
+  means that the messaging tracking fields are left intact (because
+  herätepalvelu will update those)."
+  [hoks-id kyselytyyppi]
+  (-> {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]}
+      (->> (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit! db/spec))
+      (first)
+      (remove-nils)
+      (update-keys map-keys-to-ddb)
+      (dissoc :internal-kyselytyyppi)
+      (->> (sync-item! :amis))))
