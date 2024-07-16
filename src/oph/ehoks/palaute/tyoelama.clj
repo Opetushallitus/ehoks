@@ -1,6 +1,5 @@
 (ns oph.ehoks.palaute.tyoelama
-  (:require [chime.core :as chime]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [clojure.java.jdbc :as jdbc]
             [clojure.string :as string]
             [hugsql.core :as hugsql]
@@ -249,20 +248,3 @@
     (doseq [palaute (get-tep-palautteet-needing-vastaajatunnus! tx {})]
       (create-and-save-arvo-vastaajatunnus! palaute tx)))
   (log/info "Done creating vastaajatunnus for unprocessed työelämäpalaute."))
-
-(defn run-scheduler!
-  ^AutoCloseable [start-time rate]
-  (log/info "Starting tep-palaute scheduler.")
-  (let [scheduler
-        (chime/chime-at (chime/periodic-seq start-time rate)
-                        create-and-save-arvo-vastaajatunnus-for-all-needed!
-                        {:on-finished
-                         (fn []
-                           (log/info "Tep-palaute scheduler stopped."))
-                         :error-handler
-                         (fn [e]
-                           (log/warn e "Error in scheduler"))})]
-    (.addShutdownHook (Runtime/getRuntime)
-                      (Thread. (fn []
-                                 (log/info "Stopping tep-palaute scheduler.")
-                                 (.close scheduler))))))
