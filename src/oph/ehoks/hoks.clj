@@ -119,10 +119,9 @@
         hoks           (assoc hoks :id (:id hoks-db))
         opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                          (:opiskeluoikeus-oid hoks))]
-    (future
-      (op/initiate-if-needed! :aloituskysely hoks)
-      (op/initiate-if-needed! :paattokysely hoks)
-      (tep/initiate-all-uninitiated! hoks opiskeluoikeus))
+    (op/initiate-if-needed! :aloituskysely hoks)
+    (op/initiate-if-needed! :paattokysely hoks)
+    (tep/initiate-all-uninitiated! hoks opiskeluoikeus)
     hoks-db))
 
 (def ^:private tuva-hoks-msg-template
