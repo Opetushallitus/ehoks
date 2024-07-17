@@ -49,10 +49,9 @@
         day   (.getDayOfMonth pvm)]
     (if (< day 16)
       (LocalDate/of year month 16)
-      (cond
-        (= 6 month) (LocalDate/of year 6 30)
-        (= 12 month) (LocalDate/of (inc year) 1 1)
-        :else (LocalDate/of year (inc month) 1)))))
+      (if (= 12 month)
+        (LocalDate/of (inc year) 1 1)
+        (LocalDate/of year (inc month) 1)))))
 
 (defn voimassa-loppupvm
   "Given `voimassa-alkupvm`, calculates `voimassa-loppupvm`, which is currently
