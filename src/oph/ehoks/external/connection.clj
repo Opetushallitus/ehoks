@@ -4,39 +4,6 @@
             [clojure.string :as cstr])
   (:import [com.fasterxml.jackson.core JsonParseException]))
 
-(def allowed-params
-  "Allowed parameters"
-  #{:tutkintonimikkeet :tutkinnonosat :osaamisalat :category})
-
-(def oid-pattern
-  "Pattern that all OIDs must match"
-  #"(\d+\.){5}\d+")
-
-(defn sanitaze-path
-  "Remove oids from path"
-  [path]
-  (when (some? path)
-    (cstr/replace
-      path
-      oid-pattern
-      "*FILTERED*")))
-
-(defn sanitaze-params
-  "Remove non-allower params"
-  [options]
-  (if (and (some? options) (some? (:query-params options)))
-    (assoc
-      options
-      :query-params
-      (reduce
-        (fn [n [k v]]
-          (if (contains? allowed-params k)
-            (assoc n k v)
-            (assoc n k "*FILTERED*")))
-        {}
-        (:query-params options)))
-    options))
-
 (defn- get-client-fn
   "Get appropriate REST function for given keyword."
   [method]
@@ -68,7 +35,6 @@
                       (merge
                         (ex-data e)
                         {:log-data {:method method
-                                    :url (sanitaze-path url)
-                                    :query-params (sanitaze-params
-                                                    (:query-params options))}})
+                                    :url url
+                                    :query-params (:query-params options)}})
                       e)))))
