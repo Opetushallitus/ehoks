@@ -4,11 +4,13 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.shared-modules :as sdb]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.hoks-save-test :as hoks-data]
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.session-store :refer [test-session-store]]
             [oph.ehoks.test-utils :as test-utils]
+            [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.virkailija.virkailija-test-utils :as v-utils]
             [ring.mock.request :as mock])
   (:import [java.time LocalDate]))
@@ -44,20 +46,24 @@
       request)))
 
 (t/deftest create-shared-link
-  (t/testing "Shared link with valid data can be created"
-    (let [hoks (db-hoks/insert-hoks! min-hoks-data)
-          response (mock-authenticated
-                     (mock/json-body
-                       (mock/request
-                         :post
-                         (format "%s/%s" share-base-url "jakolinkit"))
-                       (assoc jakolinkki-data :hoks-eid (:eid hoks))))
-          body (test-utils/parse-body (:body response))]
-      (t/is (= 200 (:status response)))
-      (t/is (:meta body))
-      (t/is (get-in body [:data :uri]))))
+  (t/testing
+    "Shared link with valid data can be created"
+    (with-redefs [organisaatio/get-organisaatio!
+                  organisaatio-test/mock-get-organisaatio!]
+      (let [hoks (db-hoks/insert-hoks! min-hoks-data)
+            response (mock-authenticated
+                       (mock/json-body
+                         (mock/request
+                           :post
+                           (format "%s/%s" share-base-url "jakolinkit"))
+                         (assoc jakolinkki-data :hoks-eid (:eid hoks))))
+            body (test-utils/parse-body (:body response))]
+        (t/is (= 200 (:status response)))
+        (t/is (:meta body))
+        (t/is (get-in body [:data :uri])))))
 
-  (t/testing "Invalid shared link data returns error"
+  (t/testing
+    "Invalid shared link data returns error"
     (let [response (mock-authenticated
                      (mock/json-body
                        (mock/request
@@ -68,7 +74,8 @@
       (t/is (= 400 (:status response)))
       (t/is (nil? (:schema body)))))
 
-  (t/testing "Shared link end date cannot be in the past"
+  (t/testing
+    "Shared link end date cannot be in the past"
     (let [response (mock-authenticated
                      (mock/json-body
                        (mock/request
@@ -82,58 +89,64 @@
       (t/is (= "Shared link end date cannot be in the past"
                (:error body)))))
 
-  (t/testing "Shared link start date cannot be before end date")
-  (let [response (mock-authenticated
-                   (mock/json-body
-                     (mock/request
-                       :post
-                       (format "%s/%s" share-base-url "jakolinkit"))
-                     (assoc
-                       jakolinkki-data
-                       :voimassaolo-alku (.plusMonths (LocalDate/now) 2)
-                       :voimassaolo-loppu (.plusMonths (LocalDate/now) 1)
-                       :hoks-eid "not relevant")))
-        body (test-utils/parse-body (:body response))]
-    (t/is (= 400 (:status response)))
-    (t/is (= "Shared link end date cannot be before the start date"
-             (:error body)))))
+  (t/testing
+    "Shared link start date cannot be before end date"
+    (let [response (mock-authenticated
+                     (mock/json-body
+                       (mock/request
+                         :post
+                         (format "%s/%s" share-base-url "jakolinkit"))
+                       (assoc
+                         jakolinkki-data
+                         :voimassaolo-alku (.plusMonths (LocalDate/now) 2)
+                         :voimassaolo-loppu (.plusMonths (LocalDate/now) 1)
+                         :hoks-eid "not relevant")))
+          body (test-utils/parse-body (:body response))]
+      (t/is (= 400 (:status response)))
+      (t/is (= "Shared link end date cannot be before the start date"
+               (:error body))))))
 
 (t/deftest get-shared-hato-osaamisenhankkiminen-link
-  (t/testing "Existing shared hato with osaamisenhankkiminen can be retrieved"
-    (let [_ (v-utils/add-oppija v-utils/dummy-user)
-          hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
-                             test-utils/mock-get-opiskeluoikeus-info-raw]
-                 (hoks/save! full-hoks-data))
-          tuo-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
-                                      :module_id]))
-          module-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
-                                         :osaamisen-hankkimistavat 0
-                                         :module_id]))
-          share (sdb/insert-shared-module!
-                  (assoc jakolinkki-data
-                         :hoks-eid (:eid hoks)
-                         :tutkinnonosa-module-uuid tuo-uuid
-                         :shared-module-uuid module-uuid
-                         :shared-module-tyyppi "osaamisenhankkiminen"))
-          share-id (:share_id share)
-          response (mock-authenticated
-                     (mock/request
-                       :get
-                       (format "%s/%s/%s"
-                               share-base-url
-                               "jakolinkit"
-                               share-id)))
-          data (:data (test-utils/parse-body (:body response)))]
-      (t/is (= 200 (:status response)))
-      (t/is (= (:module-id (:osaamisen-hankkimistapa data)) module-uuid))
-      (t/is (nil? (:osaamisen-osoittaminen data)))
-      (t/is (= (get-in data [:tutkinnonosa :module-id]) tuo-uuid)))))
+  (t/testing
+    "Existing shared hato with osaamisenhankkiminen can be retrieved"
+    (with-redefs [koski/get-opiskeluoikeus-info-raw
+                  test-utils/mock-get-opiskeluoikeus-info-raw
+                  organisaatio/get-organisaatio!
+                  organisaatio-test/mock-get-organisaatio!]
+      (let [_ (v-utils/add-oppija v-utils/dummy-user)
+            hoks (hoks/save! full-hoks-data)
+            tuo-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
+                                        :module_id]))
+            module-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
+                                           :osaamisen-hankkimistavat 0
+                                           :module_id]))
+            share (sdb/insert-shared-module!
+                    (assoc jakolinkki-data
+                           :hoks-eid (:eid hoks)
+                           :tutkinnonosa-module-uuid tuo-uuid
+                           :shared-module-uuid module-uuid
+                           :shared-module-tyyppi "osaamisenhankkiminen"))
+            share-id (:share_id share)
+            response (mock-authenticated
+                       (mock/request
+                         :get
+                         (format "%s/%s/%s"
+                                 share-base-url
+                                 "jakolinkit"
+                                 share-id)))
+            data (:data (test-utils/parse-body (:body response)))]
+        (t/is (= 200 (:status response)))
+        (t/is (= (:module-id (:osaamisen-hankkimistapa data)) module-uuid))
+        (t/is (nil? (:osaamisen-osoittaminen data)))
+        (t/is (= (get-in data [:tutkinnonosa :module-id]) tuo-uuid))))))
 
 (t/deftest get-shared-hato-osaamisenosoittaminen-link
   (t/testing "Existing shared hato with osaamisenosoittaminen can be retrieved"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
-                             test-utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw
+                             organisaatio/get-organisaatio!
+                             organisaatio-test/mock-get-organisaatio!]
                  (hoks/save! full-hoks-data))
           tuo-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
                                       :module_id]))
@@ -163,7 +176,9 @@
   (t/testing "Existing shared hpto with osaamisenosoittaminen can be retrieved"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
-                             test-utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw
+                             organisaatio/get-organisaatio!
+                             organisaatio-test/mock-get-organisaatio!]
                  (hoks/save! full-hoks-data))
           tuo-uuid (str (get-in hoks [:hankittavat-paikalliset-tutkinnon-osat 0
                                       :module_id]))
@@ -196,7 +211,9 @@
   (t/testing "Existing shared hpto with osaamisenosoittaminen can be retrieved"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
-                             test-utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw
+                             organisaatio/get-organisaatio!
+                             organisaatio-test/mock-get-organisaatio!]
                  (hoks/save! full-hoks-data))
           tuo-uuid (str (get-in hoks [:hankittavat-yhteiset-tutkinnon-osat 0
                                       :module_id]))
@@ -237,7 +254,9 @@
       (t/is (= 404 (:status response))))))
 
 (t/deftest get-expired-shared-link
-  (with-redefs [sdb/validate-share-dates (fn [_])]
+  (with-redefs [sdb/validate-share-dates (fn [_])
+                organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
     (t/testing "Expired shared link returns gone"
       (let [hoks (db-hoks/insert-hoks! min-hoks-data)
             share (sdb/insert-shared-module!
@@ -257,7 +276,9 @@
         (t/is (= "Shared link is expired" (:message body)))))))
 
 (t/deftest get-not-yet-active-shared-link
-  (with-redefs [sdb/validate-share-dates (fn [_])]
+  (with-redefs [sdb/validate-share-dates (fn [_])
+                organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
     (t/testing "Not yet active shared link returns locked"
       (let [hoks (db-hoks/insert-hoks! min-hoks-data)
             share (sdb/insert-shared-module!
@@ -277,43 +298,48 @@
         (t/is (= "Shared link not yet active" (:message body)))))))
 
 (t/deftest delete-shared-link
-  (t/testing "Existing shared link can be deleted"
-    (let [hoks (db-hoks/insert-hoks! min-hoks-data)
-          share (sdb/insert-shared-module!
-                  (assoc jakolinkki-data :hoks-eid (:eid hoks)))
-          share-id (:share_id share)
-          delete-res (mock-authenticated
+  (with-redefs [organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
+    (t/testing "Existing shared link can be deleted"
+               (let [hoks (db-hoks/insert-hoks! min-hoks-data)
+                     share (sdb/insert-shared-module!
+                             (assoc jakolinkki-data :hoks-eid (:eid hoks)))
+                     share-id (:share_id share)
+                     delete-res (mock-authenticated
+                                  (mock/request
+                                    :delete
+                                    (format "%s/%s/%s"
+                                            share-base-url
+                                            "jakolinkit"
+                                            share-id)))
+                     fetch-res (mock-authenticated
+                                 (mock/request
+                                   :get
+                                   (format "%s/%s/%s"
+                                           share-base-url
+                                           "jakolinkit"
+                                           share-id)))]
+                 (t/is (= 200 (:status delete-res)))
+                 (t/is (= 404 (:status fetch-res)))))
+
+    (t/testing "Nonexisting shared link deletion returns not found"
+               (let [response
+                     (mock-authenticated
                        (mock/request
                          :delete
                          (format "%s/%s/%s"
                                  share-base-url
                                  "jakolinkit"
-                                 share-id)))
-          fetch-res (mock-authenticated
-                      (mock/request
-                        :get
-                        (format "%s/%s/%s"
-                                share-base-url
-                                "jakolinkit"
-                                share-id)))]
-      (t/is (= 200 (:status delete-res)))
-      (t/is (= 404 (:status fetch-res)))))
-
-  (t/testing "Nonexisting shared link deletion returns not found"
-    (let [response (mock-authenticated
-                     (mock/request
-                       :delete
-                       (format "%s/%s/%s"
-                               share-base-url
-                               "jakolinkit"
-                               "00000000-0000-0000-0000-000000000000")))]
-      (t/is (= 404 (:status response))))))
+                                 "00000000-0000-0000-0000-000000000000")))]
+                 (t/is (= 404 (:status response)))))))
 
 (t/deftest get-shared-modules
   (t/testing "Multiple shared links for a single module can be fetched"
     (let [_ (v-utils/add-oppija v-utils/dummy-user)
           hoks (with-redefs [koski/get-opiskeluoikeus-info-raw
-                             test-utils/mock-get-opiskeluoikeus-info-raw]
+                             test-utils/mock-get-opiskeluoikeus-info-raw
+                             organisaatio/get-organisaatio!
+                             organisaatio-test/mock-get-organisaatio!]
                  (hoks/save! full-hoks-data))
           tuo1-uuid (str (get-in hoks [:hankittavat-ammat-tutkinnon-osat 0
                                        :module_id]))
