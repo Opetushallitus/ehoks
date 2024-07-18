@@ -1,5 +1,6 @@
 (ns oph.ehoks.external.organisaatio
   (:require [clojure.data.json :as json]
+            [clojure.tools.logging :as log]
             [oph.ehoks.external.cache :as cache]
             [oph.ehoks.external.oph-url :as u]
             [ring.util.http-status :as status])
@@ -11,12 +12,15 @@
   exception in case of excetional status codes."
   [oid]
   (try
-    (:body (cache/with-cache!
-             {:method :get
-              :service (u/get-url "organisaatio-service-url")
-              :url (u/get-url "organisaatio-service.get-organisaatio" oid)
-              :options {:as :json}}))
+    (->> {:method :get
+          :service (u/get-url "organisaatio-service-url")
+          :url (u/get-url "organisaatio-service.get-organisaatio" oid)
+          :options {:as :json}}
+         (cache/with-cache!)
+         :body
+         (when oid))
     (catch ExceptionInfo e
+      (log/warn e "Error while fetching" oid "from organisaatiopalvelu")
       (when-not (= (:status (ex-data e)) status/not-found)
         (throw (ex-info (str "Error while fetching organisation from "
                              "Organisaatiopalvelu")

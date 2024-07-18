@@ -26,7 +26,7 @@
         (mock-gen/json-response-file
           "dev-routes/kayttooikeus-service_kayttooikeus_kayttaja.json")))
 
-    (GET "/api/vastauslinkki/v1/status/:linkId" request
+    (GET "/api/vastauslinkki/v1/status/:linkId" []
       (mock-gen/json-response
         {:vastattu false
          :voimassa_loppupvm (time/plus (time/now) (time/hours 2))}))
