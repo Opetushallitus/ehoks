@@ -371,4 +371,5 @@
 
 (defn mock-get-opiskeluoikeus-info-raw
   [_]
-  {:tyyppi {:koodiarvo "ammatillinenkoulutus"}})
+  {:koulutustoimija {:oid "1.2.3.4.5"}
+   :tyyppi {:koodiarvo "ammatillinenkoulutus"}})

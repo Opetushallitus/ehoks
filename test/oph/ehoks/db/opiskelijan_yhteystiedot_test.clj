@@ -69,7 +69,8 @@
    :puhelinnumero               "0401234568"})
 
 (defn mocked-get-opiskeluoikeus-info-raw [oid]
-  {:päättymispäivä "2022-09-01"})
+  {:koulutustoimija {:oid "1.2.3.4.5.6"}
+   :päättymispäivä "2022-09-01"})
 
 (deftest delete-opiskelijan-yhteystiedot-test
   (testing "Opiskelijan yhteystiedot poistetaan yli kolme kuukautta sitten
