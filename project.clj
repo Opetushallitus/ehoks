@@ -134,9 +134,7 @@
             "genmigration" ["run" "-m" "oph.ehoks.migration-tools/lein-genmigration"]}
   :cljfmt {:indents {#".*" [[:block 0]]}}
   :eastwood {}
-  :profiles {:test {:resource-paths ["resources/test"
-                                     "resources/test/src"
-                                     "resources/test/config"]
+  :profiles {:test {:resource-paths ["resources/test" "resources/test/src"]
                     :dependencies [[ring/ring-mock]
                                    [ring/ring-devel]]
                     :env {:config "oph-configuration/test.edn"}}

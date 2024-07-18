@@ -68,6 +68,9 @@ Testien kattavuus:
 lein with-profile test cloverage
 ```
 
+Jos tarvitset enemmän lokiviestejä, muuta rootLogger.level
+[asetustiedostossa](./resources/test/log4j2.properties).
+
 ### Lintterit
 
 Staattiset linterit ajetaan:
