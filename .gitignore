@@ -4,6 +4,7 @@
 .idea
 /.lein-*
 /.nrepl-port
+/.eastwood
 /checkouts
 /classes
 /lib

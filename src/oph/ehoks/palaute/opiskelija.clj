@@ -158,21 +158,21 @@
           (log/info "Making" kysely "heräte for HOKS" (:id hoks))
           (if (:resend? opts)
             (log/info "Not putting in DB because :resend? is set")
-            (->> {:hoks-id          (:id hoks)
-                  :heratepvm         heratepvm
-                  :kyselytyyppi      kyselytyyppi
-                  :koulutustoimija   koulutustoimija
-                  :voimassa-alkupvm  alkupvm
-                  :voimassa-loppupvm (palaute/vastaamisajan-loppupvm
-                                       heratepvm alkupvm)
-                  :suorituskieli     (suoritus/kieli suoritus)
-                  :toimipiste-oid    (palaute/toimipiste-oid! suoritus)
-                  :tutkintonimike    (suoritus/tutkintonimike suoritus)
-                  :hankintakoulutuksen-toteuttaja
-                  (palaute/hankintakoulutuksen-toteuttaja! hoks)
-                  :tutkintotunnus    (suoritus/tutkintotunnus suoritus)
-                  :herate-source     "ehoks_update"}
-                 (insert! db/spec)))
+            (insert! db/spec
+                     {:hoks-id          (:id hoks)
+                      :heratepvm         heratepvm
+                      :kyselytyyppi      kyselytyyppi
+                      :koulutustoimija   koulutustoimija
+                      :voimassa-alkupvm  alkupvm
+                      :voimassa-loppupvm (palaute/vastaamisajan-loppupvm
+                                           heratepvm alkupvm)
+                      :suorituskieli     (suoritus/kieli suoritus)
+                      :toimipiste-oid    (palaute/toimipiste-oid! suoritus)
+                      :tutkintonimike    (suoritus/tutkintonimike suoritus)
+                      :hankintakoulutuksen-toteuttaja
+                      (palaute/hankintakoulutuksen-toteuttaja! hoks)
+                      :tutkintotunnus    (suoritus/tutkintotunnus suoritus)
+                      :herate-source     "ehoks_update"}))
           ; Sending herate to AWS SQS (will be removed when Herätepalvelu
           ; migration is complete).
           (sqs/send-amis-palaute-message

@@ -47,7 +47,7 @@
 
 (t/deftest create-shared-link
   (t/testing
-    "Shared link with valid data can be created"
+   "Shared link with valid data can be created"
     (with-redefs [organisaatio/get-organisaatio!
                   organisaatio-test/mock-get-organisaatio!]
       (let [hoks (db-hoks/insert-hoks! min-hoks-data)
@@ -63,7 +63,7 @@
         (t/is (get-in body [:data :uri])))))
 
   (t/testing
-    "Invalid shared link data returns error"
+   "Invalid shared link data returns error"
     (let [response (mock-authenticated
                      (mock/json-body
                        (mock/request
@@ -75,7 +75,7 @@
       (t/is (nil? (:schema body)))))
 
   (t/testing
-    "Shared link end date cannot be in the past"
+   "Shared link end date cannot be in the past"
     (let [response (mock-authenticated
                      (mock/json-body
                        (mock/request
@@ -90,7 +90,7 @@
                (:error body)))))
 
   (t/testing
-    "Shared link start date cannot be before end date"
+   "Shared link start date cannot be before end date"
     (let [response (mock-authenticated
                      (mock/json-body
                        (mock/request
@@ -108,7 +108,7 @@
 
 (t/deftest get-shared-hato-osaamisenhankkiminen-link
   (t/testing
-    "Existing shared hato with osaamisenhankkiminen can be retrieved"
+   "Existing shared hato with osaamisenhankkiminen can be retrieved"
     (with-redefs [koski/get-opiskeluoikeus-info-raw
                   test-utils/mock-get-opiskeluoikeus-info-raw
                   organisaatio/get-organisaatio!
@@ -301,37 +301,37 @@
   (with-redefs [organisaatio/get-organisaatio!
                 organisaatio-test/mock-get-organisaatio!]
     (t/testing "Existing shared link can be deleted"
-               (let [hoks (db-hoks/insert-hoks! min-hoks-data)
-                     share (sdb/insert-shared-module!
-                             (assoc jakolinkki-data :hoks-eid (:eid hoks)))
-                     share-id (:share_id share)
-                     delete-res (mock-authenticated
-                                  (mock/request
-                                    :delete
-                                    (format "%s/%s/%s"
-                                            share-base-url
-                                            "jakolinkit"
-                                            share-id)))
-                     fetch-res (mock-authenticated
-                                 (mock/request
-                                   :get
-                                   (format "%s/%s/%s"
-                                           share-base-url
-                                           "jakolinkit"
-                                           share-id)))]
-                 (t/is (= 200 (:status delete-res)))
-                 (t/is (= 404 (:status fetch-res)))))
+      (let [hoks (db-hoks/insert-hoks! min-hoks-data)
+            share (sdb/insert-shared-module!
+                    (assoc jakolinkki-data :hoks-eid (:eid hoks)))
+            share-id (:share_id share)
+            delete-res (mock-authenticated
+                         (mock/request
+                           :delete
+                           (format "%s/%s/%s"
+                                   share-base-url
+                                   "jakolinkit"
+                                   share-id)))
+            fetch-res (mock-authenticated
+                        (mock/request
+                          :get
+                          (format "%s/%s/%s"
+                                  share-base-url
+                                  "jakolinkit"
+                                  share-id)))]
+        (t/is (= 200 (:status delete-res)))
+        (t/is (= 404 (:status fetch-res)))))
 
     (t/testing "Nonexisting shared link deletion returns not found"
-               (let [response
-                     (mock-authenticated
-                       (mock/request
-                         :delete
-                         (format "%s/%s/%s"
-                                 share-base-url
-                                 "jakolinkit"
-                                 "00000000-0000-0000-0000-000000000000")))]
-                 (t/is (= 404 (:status response)))))))
+      (let [response
+            (mock-authenticated
+              (mock/request
+                :delete
+                (format "%s/%s/%s"
+                        share-base-url
+                        "jakolinkit"
+                        "00000000-0000-0000-0000-000000000000")))]
+        (t/is (= 404 (:status response)))))))
 
 (t/deftest get-shared-modules
   (t/testing "Multiple shared links for a single module can be fetched"
