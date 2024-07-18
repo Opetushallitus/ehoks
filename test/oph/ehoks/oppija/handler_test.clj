@@ -4,6 +4,7 @@
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.hoks-save-test :refer [hoks-data]]
             [oph.ehoks.hoks.hoks-test-utils :as virkailija-utils]
@@ -11,6 +12,7 @@
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.oppija.handler :as handler]
             [oph.ehoks.session-store :refer [test-session-store]]
+            [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.test-utils :as test-utils
              :refer [eq parse-body with-authentication]]
             [ring.mock.request :as mock])
@@ -149,7 +151,9 @@
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
       (with-redefs [koski/get-opiskeluoikeus-info-raw
-                    test-utils/mock-get-opiskeluoikeus-info-raw]
+                    test-utils/mock-get-opiskeluoikeus-info-raw
+                    organisaatio/get-organisaatio!
+                    organisaatio-test/mock-get-organisaatio!]
         (hoks/save! hoks-data))
       (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
                              :alkupvm (LocalDate/now)
@@ -188,7 +192,9 @@
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
       (with-redefs [koski/get-opiskeluoikeus-info-raw
-                    test-utils/mock-get-opiskeluoikeus-info-raw]
+                    test-utils/mock-get-opiskeluoikeus-info-raw
+                    organisaatio/get-organisaatio!
+                    organisaatio-test/mock-get-organisaatio!]
         (hoks/save! hoks-data))
       (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
                              :alkupvm (LocalDate/now)
@@ -240,7 +246,9 @@
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
       (with-redefs [koski/get-opiskeluoikeus-info-raw
-                    test-utils/mock-get-opiskeluoikeus-info-raw]
+                    test-utils/mock-get-opiskeluoikeus-info-raw
+                    organisaatio/get-organisaatio!
+                    organisaatio-test/mock-get-organisaatio!]
         (hoks/save! hoks-data))
       (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
                              :alkupvm (LocalDate/now)
@@ -292,7 +300,9 @@
           app (common-api/create-app
                 handler/app-routes (test-session-store store))]
       (with-redefs [koski/get-opiskeluoikeus-info-raw
-                    test-utils/mock-get-opiskeluoikeus-info-raw]
+                    test-utils/mock-get-opiskeluoikeus-info-raw
+                    organisaatio/get-organisaatio!
+                    organisaatio-test/mock-get-organisaatio!]
         (hoks/save! hoks-data))
       (kyselylinkki/insert! {:kyselylinkki "https://palaute.fi/abc123"
                              :alkupvm (.plusDays (LocalDate/now) 1)

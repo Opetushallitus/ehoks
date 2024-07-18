@@ -17,7 +17,7 @@
 
 (defn kieli
   [suoritus]
-  (string/lower-case (:koodiarvo (:suorituskieli suoritus))))
+  (some-> suoritus :suorituskieli :koodiarvo (string/lower-case)))
 
 (defn tutkintotunnus
   [suoritus]

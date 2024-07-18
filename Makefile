@@ -59,7 +59,7 @@ stamps/example-data: stamps/server-running
 	touch $@
 
 tags::
-	ctags -R --exclude='*.min.js' --exclude='json-schema-viewer.js' .
+	ctags -R --exclude='*.min.js' --exclude='json-schema-viewer' .
 
 pom.xml::
 	lein pom

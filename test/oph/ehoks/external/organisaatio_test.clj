@@ -20,7 +20,10 @@
     {:oid "1.2.246.562.10.12312312312" :tyypit ["organisaatiotyyppi_03"]}
 
     (= oid "1.2.246.562.10.23423423427")
-    {:oid "1.2.246.562.10.23423423427" :tyypit ["organisaatiotyyppi_02"]}))
+    {:oid "1.2.246.562.10.23423423427" :tyypit ["organisaatiotyyppi_02"]}
+
+    :else
+    {:oid oid :parentOid "1.2.246.562.10.346830761110"}))
 
 (defn mocked-with-api-headers [{url :url options :options}]
   {:status 200
