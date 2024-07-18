@@ -2,10 +2,20 @@
   (:require [taoensso.faraday :as far]
             [clojure.string :as str]
             [environ.core :refer [env]]
-            [oph.ehoks.config :refer [config]])
+            [clojure.tools.logging :as log]
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.db :as db]
+            [oph.ehoks.db.db-operations.db-helpers :refer [remove-nils]]
+            [oph.ehoks.palaute.opiskelija :refer
+             [get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!]])
   (:import (com.amazonaws.auth BasicAWSCredentials AWSStaticCredentialsProvider)
            (com.amazonaws.client.builder AwsClientBuilder$EndpointConfiguration)
-           (com.amazonaws.services.dynamodbv2 AmazonDynamoDBClientBuilder)))
+           (com.amazonaws.services.dynamodbv2 AmazonDynamoDBClientBuilder)
+           (com.amazonaws.services.dynamodbv2.model AttributeValue)))
+
+(extend-protocol far/ISerializable
+  java.time.LocalDate (serialize [date]
+                        ^AttributeValue (far/serialize (str date))))
 
 (defn get-test-client
   "Local DynamoDB needs a region even when the endpoint has been
@@ -48,10 +58,10 @@
    :jakso [:hankkimistapa_id]
    :nippu [:ohjaaja_ytunnus_kj_tutkinto :niputuspvm]})
 
-(defn sync-item
+(defn sync-item!
   "Does a partial upsert on item in DDB: if the item doesn't exist,
   it is created with the given values.  If it does exist, then only the
-  given fields are updated, with the rest left intact.  sync-item is a
+  given fields are updated, with the rest left intact.  sync-item! is a
   wrapper for faraday/update-item."
   [table item]
   (let [table-name @(tables table)

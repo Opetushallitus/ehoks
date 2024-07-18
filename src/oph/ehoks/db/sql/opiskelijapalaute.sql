@@ -40,3 +40,9 @@ join hoksit h on (h.id = p.hoks_id)
 where h.oppija_oid = :oppija-oid
   and p.kyselytyyppi in (:v*:kyselytyypit)
   and p.koulutustoimija = :koulutustoimija
+
+-- :name get-for-heratepalvelu-by-hoks-id-and-kyselytyypit! :? :*
+-- :doc get AMIS-palaute in the format for putting into herätepalvelu
+select * from palaute_for_amis_heratepalvelu
+where ehoks_id = :hoks-id
+  and internal_kyselytyyppi in (:v*:kyselytyypit)
