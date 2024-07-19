@@ -7,7 +7,8 @@ stamps/db-running: stamps/db-image
 	docker ps --format '{{.Names}}' | grep -qx 'ehoks-postgres' \
 	|| docker run -d --rm --name ehoks-postgres \
 		-p 5432:5432 ehoks-postgres > $@ || (rm $@ && false)
-	until echo pingping | nc localhost 5432; do \
+	until psql -h localhost -U postgres ehoks -c "SELECT 3" \
+			| grep -x ' *3 *'; do \
 		echo "Waiting for database to come up..."; \
 		sleep 1; \
 	done
