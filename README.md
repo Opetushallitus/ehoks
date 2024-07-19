@@ -24,7 +24,6 @@ Muut riippuvuudet:
 + Ehkä: `make` automaatiosääntöjen käyttöön (ks alla)
 + Ehkä: `curl` jos haluaa käyttää rajapintaa suoraan (esim luoda testidataa), myös jotkin skriptit käyttävät tätä
 + Ehkä: `jq` joidenkin skriptien toimintaan
-+ Ehkä: `aws` kun tarvitsee käsitellä DynamoDB:tä
 + Ehkä: `graphviz` tietokantakaavioihin kun tekee `make schemaDoc`
 
 ### RESTful API
@@ -47,8 +46,9 @@ tyylit.
 
 ### Testien ajaminen
 
-(Pystytä ensin tietokanta, testit toimivat aitoa tietokantaa vasten:
-`make stamps/db-schema`)
+Pystytä ensin tietokanta, testit toimivat aitoa tietokantaa vasten:
+`make stamps/db-schema`.  DynamoDB-testit tarvitsevat myös lokaalin
+DynamoDB:n: `make stamps/local-ddb-schema`.
 
 Kerran:
 

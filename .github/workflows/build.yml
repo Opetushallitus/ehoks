@@ -28,14 +28,14 @@ jobs:
           git clone https://github.com/Opetushallitus/ci-tools.git
           lein deps
 
-      # Do the tests even use the database?
-      - name: Run Database
+      - name: Run Databases
         shell: bash
         env:
           CONFIG: oph-configuration/test-ci.edn
         run: |
           ./scripts/ci-scripts/run_postgres.sh
           lein dbmigrate
+          make stamps/local-ddb-schema   # DynamoDB
 
       - name: Pre-Build
         shell: bash

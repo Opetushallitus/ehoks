@@ -137,7 +137,9 @@
   :profiles {:test {:resource-paths ["resources/test" "resources/test/src"]
                     :dependencies [[ring/ring-mock]
                                    [ring/ring-devel]]
-                    :env {:config "oph-configuration/test.edn"}}
+                    :env {:config "oph-configuration/test.edn"
+                          :aws-region "eu-west-1"
+                          :aws-endpoint-url "http://localhost:18000"}}
              :schemaspy {:dependencies [[net.sourceforge.schemaspy/schemaspy "5.0.0"]]}
              :dev {:main oph.ehoks.dev-server
                    :dependencies [[ring/ring-mock]

@@ -167,9 +167,9 @@
     (replace-in m kss kst)))
 
 (defn remove-nils
-  "Remove all keys mapped to value nil."
+  "Return same map, but without keys pointing to nil values"
   [m]
-  (apply dissoc m (filter #(nil? (get m %)) (keys m))))
+  (into {} (filter (fn [[k v]] (some? v)) m)))
 
 (defn convert-sql
   "Handle removals and replacements in maps."

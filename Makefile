@@ -7,7 +7,8 @@ stamps/db-running: stamps/db-image
 	docker ps --format '{{.Names}}' | grep -qx 'ehoks-postgres' \
 	|| docker run -d --rm --name ehoks-postgres \
 		-p 5432:5432 ehoks-postgres > $@ || (rm $@ && false)
-	until echo pingping | nc localhost 5432; do \
+	until psql -h localhost -U postgres ehoks -c "SELECT 3" \
+			| grep -x ' *3 *'; do \
 		echo "Waiting for database to come up..."; \
 		sleep 1; \
 	done
@@ -25,12 +26,20 @@ stamps/local-ddb-running:
 
 DDB_TABLES = amisherate jaksotunnus tep-nippu tpk-nippu
 
+myenv:
+	python3 -m venv myenv
+
+stamps/install-awscli: myenv
+	./myenv/bin/pip install awscli
+	touch $@
+
 stamps/local-ddb-schema: $(DDB_TABLES:%=stamps/local-ddb-schema-%)
 	touch $@
 
-stamps/local-ddb-schema-%: resources/dev/demo-data/%-schema.json
+stamps/local-ddb-schema-%: resources/dev/demo-data/%-schema.json \
+		stamps/local-ddb-running stamps/install-awscli
 	AWS_ACCESS_KEY_ID=foo AWS_SECRET_ACCESS_KEY=bar \
-	aws dynamodb create-table --region eu-west-1 \
+	./myenv/bin/aws dynamodb create-table --region eu-west-1 \
 	--endpoint http://localhost:18000 --cli-input-json "$$(cat $<)"
 	touch $@
 
@@ -59,7 +68,8 @@ stamps/example-data: stamps/server-running
 	touch $@
 
 tags::
-	ctags -R --exclude='*.min.js' --exclude='json-schema-viewer' .
+	ctags -R --exclude='*.min.js' --exclude='json-schema-viewer' \
+		--exclude='myenv' .
 
 pom.xml::
 	lein pom
@@ -90,4 +100,6 @@ stop:
 	-rm stamps/db-running
 	-test -f stamps/server-running && kill $$(cat stamps/server-running)
 	-rm stamps/server-running
+	-test -f stamps/local-ddb-running && docker rm -f ehoks-dynamodb
+	-rm stamps/local-ddb-running
 
