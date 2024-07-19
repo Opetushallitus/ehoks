@@ -70,7 +70,11 @@
   [table item]
   (let [table-name @(tables table)
         key-names (table-keys table)
-        item-key (zipmap key-names (map item key-names))
+        item-key (zipmap key-names
+                         (map #(or (item %)
+                                   (throw (ex-info "item key missing"
+                                                   {:key-name % :item item})))
+                              key-names))
         rest-item (apply dissoc item key-names)
         attr-names (zipmap (map (partial str "#") (range))
                            (map name (keys rest-item)))
@@ -97,6 +101,9 @@
   (-> {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]}
       (->> (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit! db/spec))
       (first)
+      (not-empty)
+      (or (throw (ex-info "palaute not found"
+                          {:hoks-id hoks-id :kyselytyyppi kyselytyyppi})))
       (remove-nils)
       (update-keys map-keys-to-ddb)
       (dissoc :internal-kyselytyyppi)

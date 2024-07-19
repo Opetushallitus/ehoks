@@ -16,6 +16,21 @@
 (use-fixtures :once test-utils/migrate-database)
 (use-fixtures :each test-utils/empty-database-after-test)
 
+(deftest amis-field-mapping
+  (testing "map-keys-to-ddb maps correctly"
+    (is (= (ddb/map-keys-to-ddb :foo) :foo))
+    (is (= (ddb/map-keys-to-ddb :toimija-oppija) :toimija_oppija))
+    (is (= (ddb/map-keys-to-ddb :sahkoposti) :sahkoposti))))
+
+(deftest missing-sync-test
+  (testing "sync-item! fails when not enough information is available
+  for identifying the item"
+    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"item key missing"
+                          (ddb/sync-item! :amis {}))))
+  (testing "sync-amis-herate! fails when there is no information in db"
+    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"palaute not found"
+                          (ddb/sync-amis-herate! 54343 "aloittaneet")))))
+
 (def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
                 :oppija-oid "1.2.246.562.24.12312312319"
                 :ensikertainen-hyvaksyminen (LocalDate/now)
