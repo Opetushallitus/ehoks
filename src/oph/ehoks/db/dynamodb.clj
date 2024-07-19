@@ -8,7 +8,8 @@
             [oph.ehoks.db.db-operations.db-helpers :refer [remove-nils]]
             [oph.ehoks.palaute.opiskelija :refer
              [get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!]])
-  (:import (com.amazonaws.auth BasicAWSCredentials AWSStaticCredentialsProvider)
+  (:import (com.amazonaws.auth BasicSessionCredentials
+                               AWSStaticCredentialsProvider)
            (com.amazonaws.client.builder AwsClientBuilder$EndpointConfiguration)
            (com.amazonaws.services.dynamodbv2 AmazonDynamoDBClientBuilder)
            (com.amazonaws.services.dynamodbv2.model AttributeValue)))
@@ -33,6 +34,9 @@
   []
   (let [^AmazonDynamoDBClientBuilder builder
         (doto (AmazonDynamoDBClientBuilder/standard)
+          (.setCredentials
+            (AWSStaticCredentialsProvider.
+              (BasicSessionCredentials. "foo" "bar" "baz")))
           (.setEndpointConfiguration
             (AwsClientBuilder$EndpointConfiguration.
               (env :aws-endpoint-url) (env :aws-region))))]
