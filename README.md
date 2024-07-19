@@ -46,8 +46,9 @@ tyylit.
 
 ### Testien ajaminen
 
-(Pystytä ensin tietokanta, testit toimivat aitoa tietokantaa vasten:
-`make stamps/db-schema`)
+Pystytä ensin tietokanta, testit toimivat aitoa tietokantaa vasten:
+`make stamps/db-schema`.  DynamoDB-testit tarvitsevat myös lokaalin
+DynamoDB:n: `make stamps/local-ddb-schema`.
 
 Kerran:
 
