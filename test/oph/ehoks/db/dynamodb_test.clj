@@ -37,11 +37,23 @@
             hoks (hoks/get-by-id (:id saved-hoks))]
         (is (= (:sahkoposti hoks) "irma.isomerkki@esimerkki.com"))
         (ddb/sync-amis-herate! (:id saved-hoks) "aloittaneet")
-        (let [ddb-item
-              (->> {:tyyppi_kausi
-                    (str "aloittaneet/" (palaute/rahoituskausi (LocalDate/now)))
-                    :toimija_oppija
-                    "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"}
-                   (far/get-item @ddb/faraday-opts @(ddb/tables :amis)))]
+        (let [ddb-key {:tyyppi_kausi
+                       (str "aloittaneet/"
+                            (palaute/rahoituskausi (LocalDate/now)))
+                       :toimija_oppija
+                       "1.2.246.562.10.10000000009/1.2.246.562.24.12312312319"}
+              ddb-item (far/get-item
+                         @ddb/faraday-opts @(ddb/tables :amis) ddb-key)]
           (is (= (:sahkoposti ddb-item) "irma.isomerkki@esimerkki.com"))
-          (is (= (:herate-source ddb-item) "sqs_viesti_ehoksista")))))))
+          (is (= (:herate-source ddb-item) "sqs_viesti_ehoksista"))
+          (far/update-item @ddb/faraday-opts @(ddb/tables :amis) ddb-key
+                           {:update-expr "SET lahetystila = :1"
+                            :expr-attr-vals {":1" "lahetetty"}})
+          (hoks/update! (:id saved-hoks)
+                        (assoc hoks-data :sahkoposti "foo@bar.com"))
+          (ddb/sync-amis-herate! (:id saved-hoks) "aloittaneet")
+          ; fields that are owned by herätepalvelu are not overwritten
+          (let [new-ddb-item
+                (far/get-item @ddb/faraday-opts @(ddb/tables :amis) ddb-key)]
+            (is (= (:sahkoposti new-ddb-item) "foo@bar.com"))
+            (is (= (:lahetystila new-ddb-item) "lahetetty"))))))))
