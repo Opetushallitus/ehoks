@@ -99,13 +99,13 @@
       (testing
        "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
         (is (op/initiate?
-              :aloituskysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1)))
+              :aloituskysely nil hoks-test/hoks-1 oo-test/opiskeluoikeus-1)))
 
       (testing
        (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
             "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
         (is (op/initiate?
-              :paattokysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1))))
+              :paattokysely nil hoks-test/hoks-1 oo-test/opiskeluoikeus-1))))
 
     (testing "On HOKS update"
       (testing (str "initiate aloituskysely if `osaamisen-hankkimisen-tarve` "

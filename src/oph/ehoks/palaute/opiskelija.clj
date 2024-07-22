@@ -5,6 +5,7 @@
             [hugsql.core :as hugsql]
             [medley.core :refer [find-first]]
             [oph.ehoks.db :as db]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
@@ -49,8 +50,11 @@
   (string) that describes why kysely cannot be initiated. Returns `nil`
   if there is no reason preventing kysely initiation."
   [kysely prev-hoks hoks opiskeluoikeus]
-  (if-let [herate-date (get hoks (herate-date-basis kysely))]
+  (let [herate-date (get hoks (herate-date-basis kysely))]
     (cond
+      (not herate-date)
+      (format "`%s` has not been set (is `nil`)." (herate-date-basis kysely))
+
       (not (:osaamisen-hankkimisen-tarve hoks))
       "`osaamisen-hankkimisen-tarve` not set to `true` for given HOKS."
 
@@ -71,37 +75,33 @@
 
       (opiskeluoikeus/linked-to-another? opiskeluoikeus)
       (format "Opiskeluoikeus `%s` is linked to another opiskeluoikeus"
-              (:opiskeluoikeus-oid hoks)))
-    (format "`%s` has not been set (is `nil`)." (herate-date-basis kysely))))
+              (:opiskeluoikeus-oid hoks)))))
 
 (defn initiate?
   "Returns `true` when opiskelijapalautekysely (`kysely` being `:aloituskysely`
   or `:paattokysely`) should be initiated. The function has two arities, one for
   HOKS creation and the other for HOKS update."
-  ([kysely hoks opiskeluoikeus] ; on HOKS creation
-    {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-    (initiate? kysely nil hoks opiskeluoikeus))
-  ([kysely prev-hoks hoks opiskeluoikeus] ; on HOKS update
-    {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-    (if-let [reason (reason-for-not-initiating
-                      kysely prev-hoks hoks opiskeluoikeus)]
-      (log/infof "Not sending %s for HOKS `%d`. %s"
-                 (name kysely) (:id hoks) reason)
-      (not ; In case of log prints `nil` is returned, convert to `true`.
-        (when (and (some? prev-hoks) (= kysely :aloituskysely))
-          ; On following cases we log print when aloituskysely is initiated.
-          (let [msg (format "Sending aloituskysely for HOKS `%s`. " hoks)]
-            (cond
-              (not (:osaamisen-hankkimisen-tarve prev-hoks))
-              (log/info msg (str "`osaamisen-hankkimisen-tarve` updated from "
-                                 "`false` to `true`."))
-              (added? :sahkoposti prev-hoks hoks)
-              (log/info msg "`sahkoposti` has been added.")
+  [kysely prev-hoks hoks opiskeluoikeus] ; on HOKS creation, prev-hoks is nil
+  {:pre [(#{:aloituskysely :paattokysely} kysely)]}
+  (if-let [reason (reason-for-not-initiating
+                    kysely prev-hoks hoks opiskeluoikeus)]
+    (log/infof "Not sending %s for HOKS `%d`. %s"
+               (name kysely) (:id hoks) reason)
+    (not ; In case of log prints `nil` is returned, convert to `true`.
+      (when (and (some? prev-hoks) (= kysely :aloituskysely))
+        ; On following cases we log print when aloituskysely is initiated.
+        (let [msg (format "Sending aloituskysely for HOKS `%s`. " hoks)]
+          (cond
+            (not (:osaamisen-hankkimisen-tarve prev-hoks))
+            (log/info msg (str "`osaamisen-hankkimisen-tarve` updated from "
+                               "`false` to `true`."))
+            (added? :sahkoposti prev-hoks hoks)
+            (log/info msg "`sahkoposti` has been added.")
 
-              (added? :puhelinnumero prev-hoks hoks)
-              (log/info msg "`puhelinnumero` has been added.")
+            (added? :puhelinnumero prev-hoks hoks)
+            (log/info msg "`puhelinnumero` has been added.")
 
-              :else true))))))) ; will be converted to `false`.
+            :else true)))))) ; will be converted to `false`.
 
 (defn kyselytyyppi
   [kysely opiskeluoikeus]
@@ -190,6 +190,10 @@
                                      (get hoks
                                           (herate-date-basis kysely)))})))))))
 
+(def kysely-kasittely-field-mapping
+  {:aloituskysely :aloitusherate_kasitelty
+   :paattokysely :paattoherate_kasitelty})
+
 (defn initiate-if-needed!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
   `:paattokysely`) to appropriate DynamoDB table of Herätepalvelu if no check is
@@ -202,11 +206,17 @@
               functionality to resend heratteet to Herätepalvelu wouldn't work.
               This should be removed once Herätepalvelu functionality has been
               fully migrated to eHOKS."
-  ([kysely hoks] (initiate-if-needed! kysely hoks nil))
-  ([kysely hoks opts]
+  ([kysely prev-hoks hoks] (initiate-if-needed! kysely prev-hoks hoks nil))
+  ([kysely prev-hoks hoks opts]
     (let [opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                            (:opiskeluoikeus-oid hoks))]
-      (when (initiate? kysely hoks opiskeluoikeus)
+      (when (initiate? kysely prev-hoks hoks opiskeluoikeus)
+        (let [amisherate-kasittelytila
+              (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id!
+                (:id hoks))]
+          (db-hoks/update-amisherate-kasittelytilat!
+            {:id (:id amisherate-kasittelytila)
+             (kysely-kasittely-field-mapping kysely) false}))
         (initiate! kysely hoks opiskeluoikeus opts)))))
 
 (defn initiate-every-needed!
@@ -223,5 +233,5 @@
   ([kysely hoksit] (initiate-every-needed! kysely hoksit nil))
   ([kysely hoksit opts]
     (->> hoksit
-         (filter #(initiate-if-needed! kysely % opts))
+         (filter #(initiate-if-needed! kysely nil % opts))
          count)))
