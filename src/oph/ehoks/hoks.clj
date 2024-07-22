@@ -120,8 +120,8 @@
         opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                          (:opiskeluoikeus-oid hoks))]
     (try
-      (op/initiate-if-needed! :aloituskysely hoks)
-      (op/initiate-if-needed! :paattokysely hoks)
+      (op/initiate-if-needed! :aloituskysely nil hoks)
+      (op/initiate-if-needed! :paattokysely nil hoks)
       (tep/initiate-all-uninitiated! hoks opiskeluoikeus)
       (catch clojure.lang.ExceptionInfo e
         (if (= :organisaatio/organisation-not-found (:type (ex-data e)))
@@ -139,9 +139,7 @@
 (defn update!
   "Päivittää HOKSin ylätason arvoja."
   [hoks-id new-values]
-  (let [current-hoks (db-hoks/select-hoks-by-id hoks-id)
-        amisherate-kasittelytila
-        (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id! hoks-id)]
+  (let [current-hoks (db-hoks/select-hoks-by-id hoks-id)]
     (jdbc/with-db-transaction
       [db-conn (db-ops/get-db-connection)]
       (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)
@@ -150,22 +148,11 @@
                              (:opiskeluoikeus-oid updated-hoks))]
         (if (tuva-related? updated-hoks)
           (db-hoks/set-amisherate-kasittelytilat-to-true!
-            amisherate-kasittelytila
-            (format tuva-hoks-msg-template (:id updated-hoks)))
-          (do (when (op/initiate?
-                      :aloituskysely current-hoks updated-hoks opiskeluoikeus)
-                (db-hoks/update-amisherate-kasittelytilat!
-                  {:id (:id amisherate-kasittelytila)
-                   :aloitusherate_kasitelty false})
-                (op/initiate!
-                  :aloituskysely updated-hoks opiskeluoikeus))
-              (when (op/initiate?
-                      :paattokysely current-hoks updated-hoks opiskeluoikeus)
-                (db-hoks/update-amisherate-kasittelytilat!
-                  {:id (:id amisherate-kasittelytila)
-                   :paattoherate_kasitelty false})
-                (op/initiate! :paattokysely updated-hoks opiskeluoikeus))))
-        (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))
+            hoks-id (format tuva-hoks-msg-template (:id updated-hoks)))
+          (do
+            (op/initiate-if-needed! :aloituskysely current-hoks updated-hoks)
+            (op/initiate-if-needed! :paattokysely current-hoks updated-hoks)
+            (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))))
     (db-hoks/select-hoks-by-id hoks-id)))
 
 (defn- merge-not-given-hoks-values
@@ -301,8 +288,6 @@
   "Korvaa kokonaisen HOKSin (ml. tutkinnon osat) annetuilla arvoilla."
   [hoks-id new-values]
   (let [current-hoks (get-by-id hoks-id)
-        amisherate-kasittelytila
-        (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id! hoks-id)
         _ (jdbc/with-db-transaction
             [db-conn (db-ops/get-db-connection)]
             (replace-main-hoks! hoks-id new-values db-conn)
@@ -312,22 +297,10 @@
                          (:opiskeluoikeus-oid updated-hoks))]
     (if (tuva-related? updated-hoks)
       (db-hoks/set-amisherate-kasittelytilat-to-true!
-        amisherate-kasittelytila
-        (format tuva-hoks-msg-template (:id updated-hoks)))
+        hoks-id (format tuva-hoks-msg-template (:id updated-hoks)))
       (do
-        (when (op/initiate?
-                :aloituskysely current-hoks updated-hoks opiskeluoikeus)
-          (db-hoks/update-amisherate-kasittelytilat!
-            {:id (:id amisherate-kasittelytila)
-             :aloitusherate_kasitelty false})
-          (op/initiate!
-            :aloituskysely updated-hoks opiskeluoikeus))
-        (when (op/initiate?
-                :paattokysely current-hoks updated-hoks opiskeluoikeus)
-          (db-hoks/update-amisherate-kasittelytilat!
-            {:id (:id amisherate-kasittelytila)
-             :paattoherate_kasitelty false})
-          (op/initiate! :paattokysely updated-hoks opiskeluoikeus))
+        (op/initiate-if-needed! :aloituskysely current-hoks updated-hoks)
+        (op/initiate-if-needed! :paattokysely current-hoks updated-hoks)
         (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))
     updated-hoks))
 
