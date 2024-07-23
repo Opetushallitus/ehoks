@@ -40,65 +40,68 @@
   [opiskeluoikeus]
   (every? (complement suoritus/telma?) (:suoritukset opiskeluoikeus)))
 
+(defn already-initiated?
+  "Returns `true` if aloituskysely or paattokysely with same oppija and
+  koulutustoimija has already been initiated within the same rahoituskausi."
+  [kysely hoks existing-heratteet]
+  (let [rahoituskausi (->> (herate-date-basis kysely)
+                           (get hoks)
+                           palaute/rahoituskausi)]
+    (some #(= rahoituskausi (palaute/rahoituskausi (:heratepvm %)))
+          existing-heratteet)))
+
 (defn- added?
   [key* current-hoks updated-hoks]
   (and (some? (get updated-hoks key*)) (nil? (get current-hoks key*))))
 
-(defn- reason-for-not-initiating
-  "Runs several checks against HOKS to determine if opiskelijapalautekysely
-  should be initiated and if any of the checks fail, returns a reason
-  (string) that describes why kysely cannot be initiated. Returns `nil`
-  if there is no reason preventing kysely initiation."
-  [kysely prev-hoks hoks opiskeluoikeus]
-  (let [herate-date (get hoks (herate-date-basis kysely))]
+(defn initial-palaute-state-and-reason
+  "Runs several checks against HOKS and opiskeluoikeus to determine if
+  opiskelijapalautekysely should be initiated.  Returns the initial state
+  of the palaute (or nil if it cannot be formed at all), the field the
+  decision was based on, and the reason for picking that state."
+  [kysely prev-hoks hoks opiskeluoikeus existing-heratteet]
+  (let [herate-basis (herate-date-basis kysely)
+        herate-date (get hoks herate-basis)]
     (cond
       (not herate-date)
-      (format "`%s` has not been set (is `nil`)." (herate-date-basis kysely))
+      [nil herate-basis :ei-ole]
 
       (not (palaute/valid-herate-date? herate-date))
-      (format "Herate date `%s` is invalid (not on this funding period)."
-              herate-date)
+      [:ei-laheteta herate-basis :eri-rahoituskaudella]
 
       (not (:osaamisen-hankkimisen-tarve hoks))
-      "`osaamisen-hankkimisen-tarve` not set to `true` for given HOKS."
+      [:ei-laheteta :osaamisen-hankkimisen-tarve :ei-ole]
 
       (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
-      (format "No ammatillinen suoritus in opiskeluoikeus `%s`."
-              (:opiskeluoikeus-oid hoks))
+      [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
 
       (c/tuva-related-hoks? hoks)
-      (str "HOKS is either TUVA-HOKS or \"ammatillisen koulutuksen HOKS\" "
-           "related to TUVA-HOKS.")
+      [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
+
+      (opiskeluoikeus/is-tuva? opiskeluoikeus)
+      [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus]
 
       (opiskeluoikeus/linked-to-another? opiskeluoikeus)
-      (format "Opiskeluoikeus `%s` is linked to another opiskeluoikeus"
-              (:opiskeluoikeus-oid hoks)))))
+      [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]
 
-(defn initiate?
-  "Returns `true` when opiskelijapalautekysely (`kysely` being `:aloituskysely`
-  or `:paattokysely`) should be initiated. The function has two arities, one for
-  HOKS creation and the other for HOKS update."
-  [kysely prev-hoks hoks opiskeluoikeus] ; on HOKS creation, prev-hoks is nil
-  {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-  (if-let [reason (reason-for-not-initiating
-                    kysely prev-hoks hoks opiskeluoikeus)]
-    (log/infof "Not sending %s for HOKS `%d`. %s"
-               (name kysely) (:id hoks) reason)
-    (not ; In case of log prints `nil` is returned, convert to `true`.
-      (when (and (some? prev-hoks) (= kysely :aloituskysely))
-        ; On following cases we log print when aloituskysely is initiated.
-        (let [msg (format "Sending aloituskysely for HOKS `%s`. " hoks)]
-          (cond
-            (not (:osaamisen-hankkimisen-tarve prev-hoks))
-            (log/info msg (str "`osaamisen-hankkimisen-tarve` updated from "
-                               "`false` to `true`."))
-            (added? :sahkoposti prev-hoks hoks)
-            (log/info msg "`sahkoposti` has been added.")
+      (already-initiated? kysely hoks existing-heratteet)
+      [nil herate-basis :jo-lahetetty-talla-rahoituskaudella]
 
-            (added? :puhelinnumero prev-hoks hoks)
-            (log/info msg "`puhelinnumero` has been added.")
+      (and (some? prev-hoks) (= kysely :aloituskysely)
+           (not (:osaamisen-hankkimisen-tarve prev-hoks)))
+      [:odottaa-kasittelya :osaamisen-hankkimisen-tarve :lisatty]
 
-            :else true)))))) ; will be converted to `false`.
+      (and (= kysely :aloituskysely) (added? :sahkoposti prev-hoks hoks))
+      [:odottaa-kasittelya :sahkoposti :lisatty]
+
+      (and (= kysely :aloituskysely) (added? :puhelinnumero prev-hoks hoks))
+      [:odottaa-kasittelya :puhelinnumero :lisatty]
+
+      (and (some? prev-hoks) (= kysely :aloituskysely))
+      [:ei-laheteta nil :ei-muutosta]
+
+      :else
+      [:odottaa-kasittelya nil :hoks-tallennettu])))
 
 (defn kyselytyyppi
   [kysely opiskeluoikeus]
@@ -110,22 +113,19 @@
                         suoritus/tyyppi
                         koski-suoritustyyppi->kyselytyyppi)))
 
-(defn already-initiated?!
-  "Returns `true` if aloituskysely or paattokysely with same oppija and
-  koulutustoimija has already been initiated within the same rahoituskausi."
+(def kysely-kasittely-field-mapping
+  {:aloituskysely :aloitusherate_kasitelty
+   :paattokysely :paattoherate_kasitelty})
+
+(defn existing-heratteet!
   [kysely hoks koulutustoimija tx]
-  (let [rahoituskausi (->> (herate-date-basis kysely)
-                           (get hoks)
-                           palaute/rahoituskausi)]
-    (->> (get-by-kyselytyyppi-oppija-and-koulutustoimija!
-           tx
-           {:kyselytyypit    (case kysely
-                               :aloituskysely ["aloittaneet"]
-                               :paattokysely  (vec paattokyselyt))
-            :oppija-oid       (:oppija-oid hoks)
-            :koulutustoimija  koulutustoimija})
-         (map (comp palaute/rahoituskausi :heratepvm))
-         (some #(= % rahoituskausi)))))
+  (let [kyselytyypit (case kysely
+                       :aloituskysely ["aloittaneet"]
+                       :paattokysely  (vec paattokyselyt))
+        params {:kyselytyypit     kyselytyypit
+                :oppija-oid       (:oppija-oid hoks)
+                :koulutustoimija  koulutustoimija}]
+    (get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params)))
 
 (defn initiate!
   "Initiates opiskelijapalautekysely (`:aloituskysely` or `:paattokysely`).
@@ -140,56 +140,47 @@
               functionality to resend heratteet to Herätepalvelu wouldn't work.
               This should be removed once Herätepalvelu functionality has been
               fully migrated to eHOKS."
-  ([kysely hoks opiskeluoikeus] (initiate! kysely hoks opiskeluoikeus nil))
-  ([kysely hoks opiskeluoikeus opts]
-    {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-    (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)]
-      (jdbc/with-db-transaction
-        [tx db/spec]
-        (if (and (not (:resend? opts))
-                 (already-initiated?! kysely hoks koulutustoimija tx))
-          (log/warnf
-            "%s already exists for HOKS `%d`." (name kysely) (:id hoks))
-          (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)
-                suoritus     (find-first suoritus/ammatillinen?
-                                         (:suoritukset opiskeluoikeus))
-                heratepvm    (get hoks (herate-date-basis kysely))
-                alkupvm      (palaute/vastaamisajan-alkupvm heratepvm)]
-            (assert (some? kyselytyyppi))
-            (log/info "Making" kysely "heräte for HOKS" (:id hoks))
-            (if (:resend? opts)
-              (log/info "Not putting in DB because :resend? is set")
-              (insert! db/spec
-                       {:hoks-id          (:id hoks)
-                        :heratepvm         heratepvm
-                        :kyselytyyppi      kyselytyyppi
-                        :koulutustoimija   koulutustoimija
-                        :voimassa-alkupvm  alkupvm
-                        :voimassa-loppupvm (palaute/vastaamisajan-loppupvm
-                                             heratepvm alkupvm)
-                        :suorituskieli     (suoritus/kieli suoritus)
-                        :toimipiste-oid    (palaute/toimipiste-oid! suoritus)
-                        :tutkintonimike    (suoritus/tutkintonimike suoritus)
-                        :hankintakoulutuksen-toteuttaja
-                        (palaute/hankintakoulutuksen-toteuttaja! hoks)
-                        :tutkintotunnus    (suoritus/tutkintotunnus suoritus)
-                        :herate-source     "ehoks_update"}))
-            ; Sending herate to AWS SQS (will be removed when Herätepalvelu
-            ; migration is complete).
-            (sqs/send-amis-palaute-message
-              {:ehoks-id           (:id hoks)
-               :kyselytyyppi       (translate-kyselytyyppi kyselytyyppi)
-               :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-               :oppija-oid         (:oppija-oid hoks)
-               :sahkoposti         (:sahkoposti hoks)
-               :puhelinnumero      (:puhelinnumero hoks)
-               :alkupvm            (str
-                                     (get hoks
-                                          (herate-date-basis kysely)))})))))))
+  [kysely hoks opiskeluoikeus koulutustoimija tx opts]
+  {:pre [(#{:aloituskysely :paattokysely} kysely)]}
 
-(def kysely-kasittely-field-mapping
-  {:aloituskysely :aloitusherate_kasitelty
-   :paattokysely :paattoherate_kasitelty})
+  (let [amisherate-kasittelytila
+        (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id! (:id hoks))]
+    (db-hoks/update-amisherate-kasittelytilat!
+      {:id (:id amisherate-kasittelytila)
+       (kysely-kasittely-field-mapping kysely) false}))
+
+  (let [kyselytyyppi (kyselytyyppi kysely opiskeluoikeus)
+        suoritus     (find-first suoritus/ammatillinen?
+                                 (:suoritukset opiskeluoikeus))
+        heratepvm    (get hoks (herate-date-basis kysely))
+        alkupvm      (palaute/vastaamisajan-alkupvm heratepvm)]
+    (assert (some? kyselytyyppi))
+    (log/info "Making" kysely "heräte for HOKS" (:id hoks))
+
+    (insert-palaute! db/spec
+      {:hoks-id          (:id hoks)
+       :heratepvm        heratepvm
+       :kyselytyyppi     kyselytyyppi
+       :koulutustoimija  koulutustoimija
+       :voimassa-alkupvm alkupvm
+       :voimassa-loppupvm
+       (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
+       :suorituskieli    (suoritus/kieli suoritus)
+       :toimipiste-oid   (palaute/toimipiste-oid! suoritus)
+       :tutkintonimike   (suoritus/tutkintonimike suoritus)
+       :hankintakoulutuksen-toteuttaja
+       (palaute/hankintakoulutuksen-toteuttaja! hoks)
+       :tutkintotunnus   (suoritus/tutkintotunnus suoritus)
+       :herate-source    "ehoks_update"})
+
+    (sqs/send-amis-palaute-message
+      {:ehoks-id           (:id hoks)
+       :kyselytyyppi       (translate-kyselytyyppi kyselytyyppi)
+       :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+       :oppija-oid         (:oppija-oid hoks)
+       :sahkoposti         (:sahkoposti hoks)
+       :puhelinnumero      (:puhelinnumero hoks)
+       :alkupvm            (str heratepvm)})))
 
 (defn initiate-if-needed!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
@@ -205,16 +196,24 @@
               fully migrated to eHOKS."
   ([kysely prev-hoks hoks] (initiate-if-needed! kysely prev-hoks hoks nil))
   ([kysely prev-hoks hoks opts]
-    (let [opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                           (:opiskeluoikeus-oid hoks))]
-      (when (initiate? kysely prev-hoks hoks opiskeluoikeus)
-        (let [amisherate-kasittelytila
-              (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id!
-                (:id hoks))]
-          (db-hoks/update-amisherate-kasittelytilat!
-            {:id (:id amisherate-kasittelytila)
-             (kysely-kasittely-field-mapping kysely) false}))
-        (initiate! kysely hoks opiskeluoikeus opts)))))
+   (jdbc/with-db-transaction
+     [tx db/spec]
+     (let [opiskeluoikeus
+           (koski/get-existing-opiskeluoikeus! (:opiskeluoikeus-oid hoks))
+           koulutustoimija
+           (palaute/koulutustoimija-oid! opiskeluoikeus)
+           existing-heratteet
+           (when-not (:resend? opts)
+             (existing-heratteet! kysely hoks koulutustoimija tx))
+           [init-state field reason]
+           (initial-palaute-state-and-reason
+             kysely prev-hoks hoks opiskeluoikeus existing-heratteet)]
+       (log/info "Initial state for" kysely "for HOKS" (:id hoks)
+                 "will be" (or init-state :ei-luoda-ollenkaan)
+                 "because of" reason "in" field)
+       (when (= init-state :odottaa-kasittelya)
+         (initiate! kysely hoks opiskeluoikeus koulutustoimija tx
+                    (assoc opts :initial-state init-state)))))))
 
 (defn initiate-every-needed!
   "Effectively the same as running `initiate-if-needed!` for multiple HOKSes,
@@ -229,6 +228,4 @@
               fully migrated to eHOKS."
   ([kysely hoksit] (initiate-every-needed! kysely hoksit nil))
   ([kysely hoksit opts]
-    (->> hoksit
-         (filter #(initiate-if-needed! kysely nil % opts))
-         count)))
+   (count (filter #(initiate-if-needed! kysely nil % opts) hoksit))))

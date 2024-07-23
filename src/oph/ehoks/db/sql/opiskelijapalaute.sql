@@ -1,4 +1,4 @@
--- :name insert! :? :1
+-- :name insert-palaute! :? :1
 -- :doc Insert opiskelijapalautekysely information to DB
 insert into palautteet (herate_source,
                         heratepvm,
