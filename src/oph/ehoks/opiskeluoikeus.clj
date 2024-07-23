@@ -80,3 +80,8 @@
   "Returns `true` if `opiskeluoikeus` is linked to another opiskeluoikeus."
   [opiskeluoikeus]
   (some? (:sisältyyOpiskeluoikeuteen opiskeluoikeus)))
+
+(defn is-tuva?
+  "Onko opiskeluoikeus TUVA?"
+  [opiskeluoikeus]
+  (= "tuva" (get-in opiskeluoikeus [:tyyppi :koodiarvo])))

@@ -13,12 +13,9 @@
   (:import (java.time LocalDate)
            (java.util UUID)))
 
-(defn- is-tuva-opiskeluoikeus?
-  "Onko opiskeluoikeus TUVA?"
+(defn is-tuva-opiskeluoikeus?
   [koulutuksenosa]
-  (-> (get-current-opiskeluoikeus)
-      (get-in [:tyyppi :koodiarvo])
-      (= "tuva")))
+  (opiskeluoikeus/is-tuva? (get-current-opiskeluoikeus)))
 
 (def TutkinnonOsaKoodiUri
   "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosat)."
