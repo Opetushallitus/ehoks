@@ -55,6 +55,10 @@
       (not herate-date)
       (format "`%s` has not been set (is `nil`)." (herate-date-basis kysely))
 
+      (not (palaute/valid-herate-date? herate-date))
+      (format "Herate date `%s` is invalid (not on this funding period)."
+              herate-date)
+
       (not (:osaamisen-hankkimisen-tarve hoks))
       "`osaamisen-hankkimisen-tarve` not set to `true` for given HOKS."
 
@@ -65,13 +69,6 @@
       (c/tuva-related-hoks? hoks)
       (str "HOKS is either TUVA-HOKS or \"ammatillisen koulutuksen HOKS\" "
            "related to TUVA-HOKS.")
-
-      (and (= kysely :paattokysely)
-           (not (added? :osaamisen-saavuttamisen-pvm prev-hoks hoks)))
-      "`osaamisen-saavuttamisen-pvm` has not yet been set for given HOKS."
-
-      (not (palaute/valid-herate-date? herate-date))
-      (format "Herate date `%s` is invalid." herate-date)
 
       (opiskeluoikeus/linked-to-another? opiskeluoikeus)
       (format "Opiskeluoikeus `%s` is linked to another opiskeluoikeus"
