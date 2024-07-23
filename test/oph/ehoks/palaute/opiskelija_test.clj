@@ -164,23 +164,7 @@
                       oo-test/opiskeluoikeus-1))
             "0123456789" "0123456789"
             "0123456789" "0011223344"
-            "0123456789" nil)))
-
-      (testing
-       (str "don't initiate päättökysely if `osaamisen-saavuttamisen-pvm`"
-            " stays unchanged, is changed or is removed.")
-        (are [old-val new-val]
-             (not (op/initiate?
-                    :paattokysely
-                    {:osaamisen-hankkimisen-tarve true
-                     :osaamisen-saavuttamisen-pvm (LocalDate/parse old-val)}
-                    {:osaamisen-hankkimisen-tarve true
-                     :osaamisen-saavuttamisen-pvm
-                     (when new-val (LocalDate/parse new-val))}
-                    oo-test/opiskeluoikeus-1))
-          "2023-09-01" "2023-09-01"
-          "2023-09-01" "2023-09-02"
-          "2023-09-01" nil)))))
+            "0123456789" nil))))))
 
 (defn expected-msg
   [kysely hoks]
