@@ -1,4 +1,4 @@
-(ns oph.ehoks.db.opiskelijan_yhteystiedot_test
+(ns oph.ehoks.db.opiskelijan-yhteystiedot-test
   (:require [clojure.test :refer :all]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.hoks :as hoks]
