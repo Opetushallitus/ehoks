@@ -106,8 +106,9 @@
   "Takes a date `pvm` and returns rahoituskausi it belongs to in a string format
   \"YYYY-YYYY\", e.g., \"2023-2024\"."
   [^LocalDate pvm]
-  (let [year  (.getYear pvm)
-        month (.getMonthValue pvm)]
-    (if (> month 6)
-      (str year "-" (inc year))
-      (str (dec year) "-" year))))
+  (when pvm
+    (let [year  (.getYear pvm)
+          month (.getMonthValue pvm)]
+      (if (> month 6)
+        (str year "-" (inc year))
+        (str (dec year) "-" year)))))
