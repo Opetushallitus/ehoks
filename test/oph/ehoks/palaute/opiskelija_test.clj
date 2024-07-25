@@ -259,6 +259,11 @@
                              @sqs-msg))
           :aloituskysely
           :paattokysely)
+        (is (= (set (map (juxt :kyselytyyppi :uusi-tila :syy)
+                         (op/palaute-tapahtumat!
+                           db/spec {:hoks-id (:id hoks-test/hoks-1)})))
+               #{["aloittaneet" "odottaa_kasittelya" "hoks_tallennettu"]
+                 ["valmistuneet" "odottaa_kasittelya" "hoks_tallennettu"]}))
         (are [kyselytyyppi herate-basis voimassa-alkupvm voimassa-loppupvm]
              (= (-> (op/get-by-hoks-id-and-kyselytyypit!
                       db/spec {:hoks-id      (:id hoks-test/hoks-1)

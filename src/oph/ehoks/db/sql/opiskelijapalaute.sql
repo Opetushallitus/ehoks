@@ -47,6 +47,31 @@ set	herate_source = :herate-source,
 where	id = :id
 returning id
 
+-- :name insert-palaute-tapahtuma! :? :1
+-- :doc Create new tapahtuma for given palaute
+insert into palaute_tapahtumat (
+	palaute_id,
+	vanha_tila,
+	uusi_tila,
+	tyyppi,
+	syy,
+	lisatiedot)
+values (
+	:palaute-id,
+	:vanha-tila,
+	:uusi-tila,
+	:tapahtumatyyppi,
+	:syy,
+	:lisatiedot)
+returning id
+
+-- :name palaute-tapahtumat! :? :*
+-- :doc All palautteet with their tapahtumat for a given HOKS
+select p.kyselytyyppi, p.heratepvm, pt.*
+from palaute_tapahtumat pt
+join palautteet p on (pt.palaute_id = p.id)
+where hoks_id = :hoks-id
+
 -- :name get-by-hoks-id-and-kyselytyypit! :? :*
 -- :doc Get opiskelijapalaute information by HOKS ID and kyselytyyppi
 select * from palautteet

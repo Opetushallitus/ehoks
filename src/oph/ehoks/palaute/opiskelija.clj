@@ -3,7 +3,7 @@
   (:require [clojure.tools.logging :as log]
             [clojure.java.jdbc :as jdbc]
             [hugsql.core :as hugsql]
-            [medley.core :refer [find-first]]
+            [medley.core :refer [find-first map-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
@@ -50,8 +50,10 @@
   (not-every? palaute-unhandled? existing-heratteet))
 
 (defn- added?
-  [key* current-hoks updated-hoks]
-  (and (some? (get updated-hoks key*)) (nil? (get current-hoks key*))))
+  [field current-hoks updated-hoks]
+  (and (some? current-hoks)
+       (not (get current-hoks field))
+       (some? (get updated-hoks field))))
 
 (defn initial-palaute-state-and-reason
   "Runs several checks against HOKS and opiskeluoikeus to determine if
@@ -86,8 +88,8 @@
       (already-initiated? kysely hoks existing-heratteet)
       [nil herate-basis :jo-lahetetty-talla-rahoituskaudella]
 
-      (and (some? prev-hoks) (= kysely :aloituskysely)
-           (not (:osaamisen-hankkimisen-tarve prev-hoks)))
+      (and (= kysely :aloituskysely)
+           (added? :osaamisen-hankkimisen-tarve prev-hoks hoks))
       [:odottaa-kasittelya :osaamisen-hankkimisen-tarve :lisatty]
 
       (and (= kysely :aloituskysely) (added? :sahkoposti prev-hoks hoks))
@@ -132,11 +134,19 @@
 (defn insert-or-update-palaute!
   "Add new palaute in the database, or set the values of an already
   created palaute to correspond to the current values from HOKS."
-  [tx palaute existing-heratteet]
-  (let [updateable-herate (find-first palaute-unhandled? existing-heratteet)]
-    (if (:id updateable-herate)
-      (update-palaute! tx (assoc palaute :id (:id updateable-herate)))
-      (insert-palaute! tx palaute))))
+  [tx palaute existing-heratteet reason other-info]
+  (let [updateable-herate (find-first palaute-unhandled? existing-heratteet)
+        db-handler (if (:id updateable-herate) update-palaute! insert-palaute!)
+        result (db-handler tx (assoc palaute :id (:id updateable-herate)))
+        palaute-id (:id result)]
+    (insert-palaute-tapahtuma!
+      tx
+      {:palaute-id palaute-id
+       :vanha-tila (or (:tila updateable-herate) (:tila palaute))
+       :uusi-tila (:tila palaute)
+       :tapahtumatyyppi "hoks_tallennus"
+       :syy (db-ops/to-underscore-str (or reason :hoks-tallennettu))
+       :lisatiedot (map-vals str other-info)})))
 
 (defn initiate!
   "Initiates opiskelijapalautekysely (`:aloituskysely` or `:paattokysely`).
@@ -152,7 +162,7 @@
               This should be removed once Herätepalvelu functionality has been
               fully migrated to eHOKS."
   [kysely hoks opiskeluoikeus koulutustoimija tx
-   {:keys [initial-state existing-heratteet]
+   {:keys [initial-state existing-heratteet reason other-info]
     :or {initial-state :odottaa-kasittelya}}]
   {:pre [(#{:aloituskysely :paattokysely} kysely)]}
 
@@ -189,7 +199,7 @@
        (palaute/hankintakoulutuksen-toteuttaja! hoks)
        :tutkintotunnus   (suoritus/tutkintotunnus suoritus)
        :herate-source    "ehoks_update"}
-      existing-heratteet)
+      existing-heratteet reason other-info)
 
     (when (= :odottaa-kasittelya initial-state)
       (sqs/send-amis-palaute-message
@@ -234,6 +244,8 @@
           (initiate! kysely hoks opiskeluoikeus koulutustoimija tx
                      (assoc opts
                             :initial-state init-state
+                            :reason reason
+                            :other-info (select-keys hoks [field])
                             :existing-heratteet existing-heratteet)))
         init-state))))
 
