@@ -3,6 +3,7 @@
             [medley.core :refer [remove-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.koski-test :as koski-test]
@@ -29,15 +30,15 @@
 
 (defn test-not-initiated
   ([hoks opiskeluoikeus reason]
-   (test-not-initiated nil hoks opiskeluoikeus reason))
+    (test-not-initiated nil hoks opiskeluoikeus reason))
   ([kysely hoks opiskeluoikeus reason]
-   (doseq [kysely    (if kysely
-                       [kysely]
-                       [:aloituskysely :paattokysely])
-           prev-hoks [nil hoks-test/hoks-2]]
-     (is (not (initiate? kysely prev-hoks hoks opiskeluoikeus)))
-     (is (= reason (get (op/initial-palaute-state-and-reason
-                          kysely prev-hoks hoks opiskeluoikeus nil) 2))))))
+    (doseq [kysely    (if kysely
+                        [kysely]
+                        [:aloituskysely :paattokysely])
+            prev-hoks [nil hoks-test/hoks-2]]
+      (is (not (initiate? kysely prev-hoks hoks opiskeluoikeus)))
+      (is (= reason (get (op/initial-palaute-state-and-reason
+                           kysely prev-hoks hoks opiskeluoikeus nil) 2))))))
 
 (deftest test-initial-palaute-state-and-reason
   (with-redefs [date/now (constantly (LocalDate/of 2023 1 1))]
@@ -100,13 +101,13 @@
 
     (testing "On HOKS creation"
       (testing
-        "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
+       "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
         (is (initiate?
               :aloituskysely nil hoks-test/hoks-1 oo-test/opiskeluoikeus-1)))
 
       (testing
-        (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
-             "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
+       (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
+            "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
         (is (initiate?
               :paattokysely nil hoks-test/hoks-1 oo-test/opiskeluoikeus-1))))
 
@@ -114,9 +115,9 @@
       (testing (str "initiate aloituskysely if `osaamisen-hankkimisen-tarve` "
                     "is added to HOKS.")
         (is (initiate? :aloituskysely
-                          hoks-test/hoks-2
-                          hoks-test/hoks-1
-                          oo-test/opiskeluoikeus-1)))
+                       hoks-test/hoks-2
+                       hoks-test/hoks-1
+                       oo-test/opiskeluoikeus-1)))
 
       (testing (str "initiate aloituskysely if `sahkoposti` is added to HOKS "
                     "and `osaamisen-hankkimisen-tarve` is `true`.")
@@ -206,6 +207,8 @@
        :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks-test/hoks-1)})
     (doseq [kysely [:aloituskysely :paattokysely]]
       (op/initiate-if-needed! kysely nil hoks-test/hoks-1))
+    (db-ops/query ["UPDATE palautteet SET tila='lahetetty'
+                   WHERE hoks_id=? RETURNING *" (:id hoks-test/hoks-1)])
 
     (testing
      (str "Kysely is considered already initiated if it is for same "
@@ -283,12 +286,15 @@
           "2023-04-18"   "2023-05-17"
           "valmistuneet" :osaamisen-saavuttamisen-pvm
           "2024-02-05"   "2024-03-05"))
+      (db-ops/query ["UPDATE palautteet SET tila='lahetetty'
+                     WHERE hoks_id=12345 RETURNING *"])
       (testing "doesn't initiate kysely if one already exists for HOKS"
-        (are [kysely] (nil? (op/initiate-if-needed!
+        (are [kysely] (not= :odottaa-kasittelya
+                            (op/initiate-if-needed!
                               kysely nil hoks-test/hoks-1))
           :aloituskysely :paattokysely))
       (testing "sends kysely info to AWS SQS when `:resend?` option is given."
-        (are [kysely] (some? (op/initiate-if-needed!
-                               kysely nil hoks-test/hoks-1
-                               {:resend? true}))
+        (are [kysely] (= :odottaa-kasittelya
+                         (op/initiate-if-needed!
+                           kysely nil hoks-test/hoks-1 {:resend? true}))
           :aloituskysely :paattokysely)))))

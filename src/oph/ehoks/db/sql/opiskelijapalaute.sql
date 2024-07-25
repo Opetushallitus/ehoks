@@ -1,5 +1,5 @@
 -- :name insert-palaute! :? :1
--- :doc Insert opiskelijapalautekysely information to DB
+-- :doc Insert opiskelijapalautekysely to DB
 insert into palautteet (herate_source,
                         heratepvm,
                         kyselytyyppi,
@@ -16,7 +16,7 @@ insert into palautteet (herate_source,
 values (:herate-source,
         :heratepvm,
         :kyselytyyppi,
-        'odottaa_kasittelya',
+        :tila,
         :hankintakoulutuksen-toteuttaja,
         :hoks-id,
         :koulutustoimija,
@@ -28,6 +28,25 @@ values (:herate-source,
         :voimassa-loppupvm)
 returning id
 
+-- :name update-palaute! :? :1
+-- :doc Update opiskelijapalautekysely in DB
+update	palautteet
+set	herate_source = :herate-source,
+	heratepvm = :heratepvm,
+	kyselytyyppi = :kyselytyyppi,
+	tila = :tila,
+	hankintakoulutuksen_toteuttaja = :hankintakoulutuksen-toteuttaja,
+	hoks_id = :hoks-id,
+	koulutustoimija = :koulutustoimija,
+	suorituskieli = :suorituskieli,
+	toimipiste_oid = :toimipiste-oid,
+	tutkintonimike = :tutkintonimike,
+	tutkintotunnus = :tutkintotunnus,
+	voimassa_alkupvm = :voimassa-alkupvm,
+	voimassa_loppupvm = :voimassa-loppupvm
+where	id = :id
+returning id
+
 -- :name get-by-hoks-id-and-kyselytyypit! :? :*
 -- :doc Get opiskelijapalaute information by HOKS ID and kyselytyyppi
 select * from palautteet
@@ -35,7 +54,8 @@ where hoks_id = :hoks-id and kyselytyyppi in (:v*:kyselytyypit)
 
 -- :name get-by-kyselytyyppi-oppija-and-koulutustoimija! :? :*
 -- :doc Get kyselyt by kyselytyyppi, oppija OID, and koulutustoimija.
-select p.heratepvm from palautteet p
+select p.id, p.heratepvm, p.tila
+from palautteet p
 join hoksit h on (h.id = p.hoks_id)
 where h.oppija_oid = :oppija-oid
   and p.kyselytyyppi in (:v*:kyselytyypit)

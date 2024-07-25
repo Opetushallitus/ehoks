@@ -249,7 +249,9 @@
       :path-params [hoks-id :- s/Int]
       (assoc
         (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
-          (if (op/initiate-if-needed! :aloituskysely nil hoks {:resend? true})
+          (if (= :odottaa-kasittelya
+                 (op/initiate-if-needed!
+                   :aloituskysely nil hoks {:resend? true}))
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false` or "
@@ -265,7 +267,9 @@
       :path-params [hoks-id :- s/Int]
       (assoc
         (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
-          (if (op/initiate-if-needed! :paattokysely nil hoks {:resend? true})
+          (if (= :odottaa-kasittelya
+                 (op/initiate-if-needed!
+                   :paattokysely nil hoks {:resend? true}))
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false`, "
