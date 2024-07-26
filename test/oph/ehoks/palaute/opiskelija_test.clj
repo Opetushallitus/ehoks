@@ -55,6 +55,18 @@
                               oo-test/opiskeluoikeus-2
                               :ei-ammatillinen))
 
+        (testing "opiskeluoikeus is in terminal state"
+          (test-not-initiated
+            (assoc hoks-test/hoks-1
+                   :ensikertainen-hyvaksyminen (LocalDate/of 2023 9 10)
+                   :osaamisen-saavuttamisen-pvm (LocalDate/of 2023 10 10))
+            oo-test/opiskeluoikeus-4 :ulkoisesti-rahoitettu))
+
+        (testing "opiskeluoikeus is externally funded"
+          (test-not-initiated hoks-test/hoks-1
+                              oo-test/opiskeluoikeus-5
+                              :opiskelu-paattynyt))
+
         (testing "heratepvm is invalid"
           (doseq [pvm ["2023-07-01" "2023-09-04" "2024-07-01"]]
             (with-redefs [date/now (constantly (LocalDate/parse pvm))]

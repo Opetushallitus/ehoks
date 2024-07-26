@@ -69,6 +69,12 @@
         (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
         [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
 
+        (opiskeluoikeus/in-terminal-state? opiskeluoikeus herate-date)
+        [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt]
+
+        (palaute/feedback-collecting-prevented? opiskeluoikeus herate-date)
+        [:ei-laheteta :opiskeluoikeus-oid :ulkoisesti-rahoitettu]
+
         (c/tuva-related-hoks? hoks)
         [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
 
