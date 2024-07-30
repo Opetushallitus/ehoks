@@ -1,18 +1,19 @@
 (ns oph.ehoks.palaute.opiskelija
   "A namespace for everything related to opiskelijapalaute"
-  (:require [clojure.tools.logging :as log]
-            [clojure.java.jdbc :as jdbc]
+  (:require [clojure.java.jdbc :as jdbc]
+            [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
-            [medley.core :refer [find-first map-vals]]
+            [medley.core :refer [find-first greatest map-vals]]
             [oph.ehoks.db :as db]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
-            [oph.ehoks.palaute :as palaute]))
+            [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.utils.date :as date]))
 
 (hugsql/def-db-fns "oph/ehoks/db/sql/opiskelijapalaute.sql")
 
@@ -179,8 +180,7 @@
                                  (:suoritukset opiskeluoikeus))
         kyselytyyppi (kyselytyyppi kysely suoritus)
         heratepvm    (get hoks (herate-date-basis kysely))
-        alkupvm      (palaute/vastaamisajan-alkupvm heratepvm)]
-
+        alkupvm      (greatest heratepvm (date/now))]
     (log/info "Making" kysely "heräte for HOKS" (:id hoks))
     (insert-or-update-palaute!
       tx

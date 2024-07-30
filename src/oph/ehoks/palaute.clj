@@ -57,17 +57,6 @@
                      toteuttaja-oid)
           toteuttaja-oid)))))
 
-(defn vastaamisajan-alkupvm
-  "Laskee vastausajan alkupäivämäärän: annettu päivämäärä jos se on vielä
-  tulevaisuudessa; muuten tämä päivä."
-  [^LocalDate herate-date]
-  ; FIXME: tämän pitäisi olla puhdas funktio ja tässä tämän päivän sijaan
-  ; ehkäpä HOKSin tallennuspäivä.
-  (let [now (date/now)]
-    (if (.isAfter herate-date now)
-      herate-date
-      now)))
-
 (defn vastaamisajan-loppupvm
   "Laskee vastausajan loppupäivämäärän: 30 päivän päästä (inklusiivisesti),
   mutta ei myöhempi kuin 60 päivää (inklusiivisesti) herätepäivän jälkeen."
