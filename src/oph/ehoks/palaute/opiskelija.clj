@@ -2,7 +2,6 @@
   "A namespace for everything related to opiskelijapalaute"
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
-            [hugsql.core :as hugsql]
             [medley.core :refer [find-first greatest map-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
@@ -13,9 +12,8 @@
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [oph.ehoks.utils.date :as date]))
-
-(hugsql/def-db-fns "oph/ehoks/db/sql/opiskelijapalaute.sql")
 
 (def paattokyselyt #{"valmistuneet" "osia_suorittaneet"})
 (def herate-date-basis {:aloituskysely :ensikertainen-hyvaksyminen
@@ -130,17 +128,17 @@
                 :koulutustoimija  koulutustoimija}]
     (filter
       #(= rahoituskausi (palaute/rahoituskausi (:heratepvm %)))
-      (get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params))))
+      (palaute/get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params))))
 
 (defn insert-or-update-palaute!
   "Add new palaute in the database, or set the values of an already
   created palaute to correspond to the current values from HOKS."
   [tx palaute existing-heratteet reason other-info]
   (let [updateable-herate (find-first palaute-unhandled? existing-heratteet)
-        db-handler (if (:id updateable-herate) update-palaute! insert-palaute!)
+        db-handler (if (:id updateable-herate) palaute/update! palaute/insert!)
         result (db-handler tx (assoc palaute :id (:id updateable-herate)))
         palaute-id (:id result)]
-    (insert-palaute-tapahtuma!
+    (palautetapahtuma/insert!
       tx
       {:palaute-id palaute-id
        :vanha-tila (or (:tila updateable-herate) (:tila palaute))

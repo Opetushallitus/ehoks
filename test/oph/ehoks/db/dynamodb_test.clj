@@ -8,7 +8,7 @@
             [oph.ehoks.oppijaindex :as oi]
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
-            [oph.ehoks.palaute.opiskelija :refer
+            [oph.ehoks.palaute :refer
              [get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!]]
             [oph.ehoks.test-utils :as test-utils])
   (:import (java.time LocalDate)))

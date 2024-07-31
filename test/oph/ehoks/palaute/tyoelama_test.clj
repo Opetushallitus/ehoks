@@ -9,6 +9,7 @@
             [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
+            [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date])
@@ -154,7 +155,7 @@
                     "herate to SQS queue")
         (tep/initiate!
           test-jakso hoks-test/hoks-1 suoritus koulutustoimija toimipiste-oid)
-        (is (= (-> (tep/get-by-hoks-id-and-yksiloiva-tunniste!
+        (is (= (-> (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
                      db/spec
                      {:hoks-id            (:id hoks-test/hoks-1)
                       :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)})
@@ -182,7 +183,7 @@
                   "tyopaikkajakso in HOKS.")
       (tep/initiate-all-uninitiated! hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
       (doseq [jakso (tep/tyopaikkajaksot hoks-test/hoks-1)]
-        (is (= (-> (tep/get-by-hoks-id-and-yksiloiva-tunniste!
+        (is (= (-> (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
                      db/spec
                      {:hoks-id            (:id hoks-test/hoks-1)
                       :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})

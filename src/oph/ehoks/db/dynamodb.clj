@@ -6,7 +6,7 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.db-helpers :refer [remove-nils]]
-            [oph.ehoks.palaute.opiskelija :refer
+            [oph.ehoks.palaute :refer
              [get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!]])
   (:import (com.amazonaws.auth BasicSessionCredentials
                                AWSStaticCredentialsProvider)
