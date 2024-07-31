@@ -13,6 +13,8 @@
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppijaindex-test :as oppijaindex-test]
+            [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date])
@@ -260,12 +262,12 @@
           :aloituskysely
           :paattokysely)
         (is (= (set (map (juxt :kyselytyyppi :uusi-tila :syy)
-                         (op/palaute-tapahtumat!
+                         (palautetapahtuma/get-all-by-hoks-id!
                            db/spec {:hoks-id (:id hoks-test/hoks-1)})))
                #{["aloittaneet" "odottaa_kasittelya" "hoks_tallennettu"]
                  ["valmistuneet" "odottaa_kasittelya" "hoks_tallennettu"]}))
         (are [kyselytyyppi herate-basis voimassa-alkupvm voimassa-loppupvm]
-             (= (-> (op/get-by-hoks-id-and-kyselytyypit!
+             (= (-> (palaute/get-by-hoks-id-and-kyselytyypit!
                       db/spec {:hoks-id      (:id hoks-test/hoks-1)
                                :kyselytyypit  [kyselytyyppi]})
                     first
