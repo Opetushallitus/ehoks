@@ -1,10 +1,13 @@
 (ns oph.ehoks.palaute
   (:require [clojure.tools.logging :as log]
+            [hugsql.core :as hugsql]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.utils.date :as date])
   (:import [java.time LocalDate]))
+
+(hugsql/def-db-fns "oph/ehoks/db/sql/palaute.sql")
 
 (defn current-rahoituskausi-alkupvm
   ^LocalDate []

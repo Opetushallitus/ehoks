@@ -1,6 +1,5 @@
 (ns oph.ehoks.palaute.tyoelama
   (:require [clojure.tools.logging :as log]
-            [hugsql.core :as hugsql]
             [medley.core :refer [find-first]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
@@ -9,8 +8,6 @@
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.utils.date :as date])
   (:import (java.time LocalDate)))
-
-(hugsql/def-db-fns "oph/ehoks/db/sql/tyoelamapalaute.sql")
 
 (def tyopaikkajakso-types
   #{"osaamisenhankkimistapa_koulutussopimus"
@@ -107,7 +104,7 @@
 
 (defn already-initiated?!
   [jakso hoks]
-  (some? (get-by-hoks-id-and-yksiloiva-tunniste!
+  (some? (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
            db/spec
            {:hoks-id            (:id hoks)
             :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})))
@@ -120,9 +117,11 @@
                       "with HOKS ID `%d` and yksiloiva tunniste `%s`.")
                  (:id hoks)
                  (:yksiloiva-tunniste jakso))
-      (insert!
+      (palaute/insert!
         db/spec
-        {:hoks-id            (:id hoks)
+        {:kyselytyyppi       "tyopaikkajakson_suorittaneet"
+         :tila               "odottaa_kasittelya"
+         :hoks-id            (:id hoks)
          :yksiloiva-tunniste (:yksiloiva-tunniste jakso)
          :heratepvm          (:loppu jakso)
          :voimassa-alkupvm   voimassa-alkupvm
