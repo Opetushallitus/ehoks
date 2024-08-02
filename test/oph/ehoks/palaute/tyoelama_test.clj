@@ -82,46 +82,48 @@
     (is (= (map :yksiloiva-tunniste (tep/tyopaikkajaksot hoks-test/hoks-1))
            '("1" "3" "4" "7" "9")))))
 
-(deftest test-initiate?
+(deftest test-initial-palaute-and-reason
   (testing "On HOKS creation or update"
-    (letfn [(test-not-initiated [jakso opiskeluoikeus log-msg]
-              (with-log
-                (is (not (tep/initiate? jakso
-                                        hoks-test/hoks-1
-                                        opiskeluoikeus)))
-                (is (logged? 'oph.ehoks.palaute.tyoelama
-                             :info
-                             log-msg))))]
-      (testing "don't initiate kysely if"
-        (testing "opiskeluoikeus is in terminal state."
-          (test-not-initiated
-            test-jakso oo-test/opiskeluoikeus-5 #"terminal state"))
-        (testing "osa-aikaisuus is missing from työpaikkajakso"
-          (test-not-initiated
-            (dissoc test-jakso :osa-aikaisuustieto)
-            oo-test/opiskeluoikeus-1
-            #"Osa-aikaisuus missing"))
-        (testing "työpaikkajakso is interrupted on it's end date"
-          (test-not-initiated
-            (assoc-in test-jakso
-                      [:keskeytymisajanjaksot 1]
-                      {:alku  (LocalDate/of 2023 12 1)
-                       :loppu (LocalDate/of 2023 12 15)})
-            oo-test/opiskeluoikeus-1
-            #"interrupted"))
-        (testing "opiskeluoikeus doesn't have any ammatillinen suoritus"
-          (test-not-initiated
-            test-jakso oo-test/opiskeluoikeus-2 #"No ammatillinen suoritus"))
-        (testing "there is a feedback preventing code in opiskeluoikeusjakso."
-          (test-not-initiated
-            test-jakso oo-test/opiskeluoikeus-4 #"funding basis"))
-        (testing "opiskeluoikeus is linked to another opiskeluoikeus"
-          (test-not-initiated
-            test-jakso oo-test/opiskeluoikeus-3 #"linked to another")))
-      (testing "initiate kysely if when all of the checks are OK."
-        (is (tep/initiate? test-jakso
-                           hoks-test/hoks-1
-                           oo-test/opiskeluoikeus-1))))))
+    (testing "don't initiate kysely if"
+      (testing "opiskeluoikeus is in terminal state."
+        (is (= (tep/initial-palaute-state-and-reason
+                 test-jakso oo-test/opiskeluoikeus-5)
+               [:ei-laheteta
+                :opiskeluoikeus-oid
+                :opiskeluoikeus-terminaalitilassa])))
+      (testing "osa-aikaisuus is missing from työpaikkajakso"
+        (is (= (tep/initial-palaute-state-and-reason
+                 (dissoc test-jakso :osa-aikaisuustieto)
+                 oo-test/opiskeluoikeus-1)
+               [:ei-laheteta nil :osa-aikaisuus-puuttuu])))
+      (testing "työpaikkajakso is interrupted on it's end date"
+        (is (= (tep/initial-palaute-state-and-reason
+                 (assoc-in test-jakso
+                           [:keskeytymisajanjaksot 1]
+                           {:alku  (LocalDate/of 2023 12 1)
+                            :loppu (LocalDate/of 2023 12 15)})
+                 oo-test/opiskeluoikeus-1)
+               [:ei-laheteta nil :tyopaikkajakso-keskeytynyt])))
+      (testing "opiskeluoikeus doesn't have any ammatillinen suoritus"
+        (is (= (tep/initial-palaute-state-and-reason
+                 test-jakso
+                 oo-test/opiskeluoikeus-2)
+               [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen])))
+      (testing "there is a feedback preventing code in opiskeluoikeusjakso."
+        (is (= (tep/initial-palaute-state-and-reason
+                 test-jakso
+                 oo-test/opiskeluoikeus-4)
+               [:ei-laheteta :opiskeluoikeus-oid :rahoitusperuste])))
+      (testing "opiskeluoikeus is linked to another opiskeluoikeus"
+        (is (= (tep/initial-palaute-state-and-reason
+                 test-jakso
+                 oo-test/opiskeluoikeus-3)
+               [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]))))
+    (testing "initiate kysely if when all of the checks are OK."
+        (is (= (tep/initial-palaute-state-and-reason
+                 test-jakso
+                 oo-test/opiskeluoikeus-1)
+               [:odottaa-kasittelya nil :hoks-tallennettu])))))
 
 (defn- build-expected-herate
   [jakso hoks]
