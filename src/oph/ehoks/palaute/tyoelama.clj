@@ -69,38 +69,45 @@
     (when-let [kjakso-loppu (:loppu (last kjaksot))]
       (not (date/is-after (:loppu jakso) kjakso-loppu)))))
 
-(defn- reason-for-not-initiating
+(defn initial-palaute-state-and-reason
+  "Runs several checks against tyopaikkajakso and opiskeluoikeus to determine if
+  tyoelamapalaute process should be initiated for jakso. Returns the initial
+  state of the palaute (or nil if it cannot be formed at all), the field the
+  decision was based on, and the reason for picking that state."
   [jakso opiskeluoikeus]
   (cond
     (opiskeluoikeus/in-terminal-state? opiskeluoikeus (:loppu jakso))
-    (str "Opiskeluoikeus is in terminal state" opiskeluoikeus)
+    [:ei-laheteta :opiskeluoikeus-oid :opiskeluoikeus-terminaalitilassa]
 
     (osa-aikaisuus-missing? jakso)
-    "Osa-aikaisuus missing from työpaikkajakso"
+    [:ei-laheteta nil :osa-aikaisuus-puuttuu]
 
     (fully-keskeytynyt? jakso)
-    "Työpaikkajakso is fully interrupted."
+    [:ei-laheteta nil :tyopaikkajakso-keskeytynyt]
 
     (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
-    (format "No ammatillinen suoritus in opiskeluoikeus: `%s`."
-            opiskeluoikeus)
+    [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
 
     (palaute/feedback-collecting-prevented? opiskeluoikeus (:loppu jakso))
-    (str "Feedback won't be collected because of funding basis:" opiskeluoikeus)
+    [:ei-laheteta :opiskeluoikeus-oid :rahoitusperuste]
 
     (opiskeluoikeus/linked-to-another? opiskeluoikeus)
-    (format "Opiskeluoikeus is linked to another opiskeluoikeus: %s"
-            opiskeluoikeus)))
+    [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]
+
+    :else
+    [:odottaa-kasittelya nil :hoks-tallennettu]))
 
 (defn initiate?
   [jakso hoks opiskeluoikeus]
-  (if-let [reason (reason-for-not-initiating jakso opiskeluoikeus)]
-    (log/infof (str "Not initiating tyoelamapalautekysely for jakso with HOKS "
-                    "ID `%s` and yksiloiva tunniste `%s`. %s")
-               (:id hoks)
-               (:yksiloiva-tunniste jakso)
-               reason)
-    true))
+  (let [[initial-state _ reason]
+        (initial-palaute-state-and-reason jakso opiskeluoikeus)]
+    (if (not= initial-state :odottaa-kasittelya)
+      (log/infof (str "Not initiating tyoelamapalautekysely for jakso with HOKS "
+                      "ID `%s` and yksiloiva tunniste `%s`. %s")
+                 (:id hoks)
+                 (:yksiloiva-tunniste jakso)
+                 reason)
+      true)))
 
 (defn already-initiated?!
   [jakso hoks]
