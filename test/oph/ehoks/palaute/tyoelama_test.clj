@@ -1,15 +1,15 @@
 (ns oph.ehoks.palaute.tyoelama-test
   (:require [clojure.test :refer [are deftest is testing use-fixtures]]
             [clojure.tools.logging.test :refer [logged? with-log]]
-            [medley.core :refer [find-first remove-vals]]
+            [medley.core :refer [remove-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
-            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date])
@@ -85,6 +85,12 @@
 (deftest test-initial-palaute-and-reason
   (testing "On HOKS creation or update"
     (testing "don't initiate kysely if"
+      (testing "there is already herate for tyopaikkajakso."
+        (is (= (tep/initial-palaute-state-and-reason
+                 test-jakso
+                 oo-test/opiskeluoikeus-5
+                 {:yksiloiva-tunniste "asd"})
+               [nil nil :jaksolle-loytyy-jo-herate])))
       (testing "opiskeluoikeus is in terminal state."
         (is (= (tep/initial-palaute-state-and-reason
                  test-jakso oo-test/opiskeluoikeus-5)
@@ -120,10 +126,10 @@
                  oo-test/opiskeluoikeus-3)
                [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]))))
     (testing "initiate kysely if when all of the checks are OK."
-        (is (= (tep/initial-palaute-state-and-reason
-                 test-jakso
-                 oo-test/opiskeluoikeus-1)
-               [:odottaa-kasittelya nil :hoks-tallennettu])))))
+      (is (= (tep/initial-palaute-state-and-reason
+               test-jakso
+               oo-test/opiskeluoikeus-1)
+             [:odottaa-kasittelya nil :hoks-tallennettu])))))
 
 (defn- build-expected-herate
   [jakso hoks]
@@ -141,37 +147,48 @@
      :toimipiste-oid                 "1.2.246.562.10.12312312312"
      :herate-source                  "ehoks_update"}))
 
-(deftest test-initiate!
-  (db-hoks/insert-hoks!
-    {:id                 (:id hoks-test/hoks-1)
-     :oppija-oid         (:oppija-oid hoks-test/hoks-1)
-     :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks-test/hoks-1)})
-  (let [suoritus        (find-first suoritus/ammatillinen?
-                                    (:suoritukset oo-test/opiskeluoikeus-1))
-        koulutustoimija (get-in oo-test/opiskeluoikeus-1
-                                [:koulutustoimija :oid])
-        toimipiste-oid  (get-in suoritus [:toimipiste :oid])]
+(deftest test-initiate-if-needed!
+  (with-redefs [date/now (constantly (LocalDate/of 2023 10 18))
+                organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
+    (db-hoks/insert-hoks!
+      {:id                 (:id hoks-test/hoks-1)
+       :oppija-oid         (:oppija-oid hoks-test/hoks-1)
+       :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks-test/hoks-1)})
     (testing "Testing that function `initiate!`"
       (testing (str "stores kysely info to `palautteet` DB table and "
-                    "successfully sends aloituskysely and paattokysely "
-                    "herate to SQS queue")
-        (tep/initiate!
-          test-jakso hoks-test/hoks-1 suoritus koulutustoimija toimipiste-oid)
+                    "tapahtuma info to `palaute_tapahtumat` table.")
+        (tep/initiate-if-needed!
+          test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
         (is (= (-> (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
                      db/spec
                      {:hoks-id            (:id hoks-test/hoks-1)
                       :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)})
                    (dissoc :id :created-at :updated-at)
                    (->> (remove-vals nil?)))
-               (build-expected-herate test-jakso hoks-test/hoks-1))))
+               (build-expected-herate test-jakso hoks-test/hoks-1)))
+        (let [tapahtumat (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                           db/spec
+                           {:hoks-id      (:id hoks-test/hoks-1)
+                            :kyselytyypit tep/kyselytyypit})]
+          (is (= (count tapahtumat) 1))
+          (is (= (dissoc (first tapahtumat) :id :created-at :updated-at)
+                 {:palaute-id   1
+                  :kyselytyyppi "tyopaikkajakson_suorittaneet"
+                  :vanha-tila   "odottaa_kasittelya"
+                  :uusi-tila    "odottaa_kasittelya"
+                  :heratepvm    (LocalDate/of 2023 12 15)
+                  :tyyppi       "hoks_tallennus"
+                  :syy          "hoks_tallennettu"
+                  :lisatiedot   {}}))))
       (testing
        "doesn't initiate tyoelamapalaute if it has already been initiated"
         (with-log
-          (tep/initiate!
-            test-jakso hoks-test/hoks-1 suoritus koulutustoimija toimipiste-oid)
+          (tep/initiate-if-needed!
+            test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
           (is (logged? 'oph.ehoks.palaute.tyoelama
-                       :warn
-                       #"Palaute has already been initiated")))))))
+                       :info
+                       #"`:jaksolle-loytyy-jo-herate`")))))))
 
 (deftest test-initiate-all-uninitiated!
   (with-redefs [date/now (constantly (LocalDate/of 2023 10 18))

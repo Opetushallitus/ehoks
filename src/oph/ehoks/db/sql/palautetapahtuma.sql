@@ -16,10 +16,10 @@ values (
 	:lisatiedot)
 returning id
 
--- :name get-all-by-hoks-id! :? :*
+-- :name get-all-by-hoks-id-and-kyselytyypit! :? :*
 -- :doc All palautetapahtumat for a given HOKS
 select p.kyselytyyppi, p.heratepvm, pt.*
 from palaute_tapahtumat pt
 join palautteet p on (pt.palaute_id = p.id)
-where hoks_id = :hoks-id
+where p.hoks_id = :hoks-id and p.kyselytyyppi in (:v*:kyselytyypit)
 
