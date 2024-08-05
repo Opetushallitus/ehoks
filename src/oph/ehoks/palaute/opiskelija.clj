@@ -40,12 +40,6 @@
   [opiskeluoikeus]
   (every? (complement suoritus/telma?) (:suoritukset opiskeluoikeus)))
 
-(defn already-initiated?
-  "Returns `true` if aloituskysely or paattokysely with same oppija and
-  koulutustoimija has already been initiated within the same rahoituskausi."
-  [kysely hoks existing-heratteet]
-  (not-every? palaute/unhandled? existing-heratteet))
-
 (defn- added?
   [field current-hoks updated-hoks]
   (and (some? current-hoks)
@@ -82,7 +76,7 @@
       (opiskeluoikeus/linked-to-another? opiskeluoikeus)
       [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]
 
-      (already-initiated? kysely hoks existing-heratteet)
+      (palaute/already-initiated? existing-heratteet)
       [nil herate-basis :jo-lahetetty-talla-rahoituskaudella]
 
       (and (= kysely :aloituskysely)

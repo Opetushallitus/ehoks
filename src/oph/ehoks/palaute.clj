@@ -14,6 +14,12 @@
 
 (def unhandled? (comp #{"odottaa_kasittelya" "ei_laheteta"} :tila))
 
+(defn already-initiated?
+  "Returns `true` if palautekysely has already been initiated, i.e., there
+  already exists a herate for kysely that has already been handled."
+  [existing-heratteet]
+  (not-every? unhandled? existing-heratteet))
+
 (defn upsert!
   "Add new palaute in the database, or set the values of an already
   created palaute to correspond to the current values from HOKS. Also insert
