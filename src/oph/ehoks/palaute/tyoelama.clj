@@ -80,7 +80,7 @@
     (initial-palaute-state-and-reason jakso opiskeluoikeus nil))
   ([jakso opiskeluoikeus existing-herate]
     (cond
-      (some? existing-herate)
+      (palaute/already-initiated? (vec existing-herate))
       [nil nil :jaksolle-loytyy-jo-herate]
 
       (opiskeluoikeus/in-terminal-state? opiskeluoikeus (:loppu jakso))

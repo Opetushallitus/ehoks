@@ -188,10 +188,8 @@
 
 (defn already-initiated?!
   [kysely hoks koulutustoimija tx]
-  (op/already-initiated?
-    kysely hoks
-    (op/existing-heratteet!
-      kysely hoks koulutustoimija tx)))
+  (palaute/already-initiated?
+    (op/existing-heratteet! kysely hoks koulutustoimija tx)))
 
 (defn mock-get-opiskeluoikeus-info-raw [oo]
   oo-test/opiskeluoikeus-1)
