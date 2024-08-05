@@ -186,22 +186,17 @@
           :aloituskysely (:ensikertainen-hyvaksyminen hoks)
           :paattokysely  (:osaamisen-saavuttamisen-pvm hoks)))})
 
-(defn already-initiated?!
-  [kysely hoks koulutustoimija tx]
-  (palaute/already-initiated?
-    (op/existing-heratteet! kysely hoks koulutustoimija tx)))
-
 (defn mock-get-opiskeluoikeus-info-raw [oo]
   oo-test/opiskeluoikeus-1)
 
-(deftest test-already-initiated?
+(deftest test-existing-heratteet!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
                 organisaatio/get-organisaatio!
                 organisaatio-test/mock-get-organisaatio!
                 koski/get-opiskeluoikeus-info-raw
                 mock-get-opiskeluoikeus-info-raw]
     (db-hoks/insert-hoks!
-      {:id                  (:id hoks-test/hoks-1)
+      {:id                 (:id hoks-test/hoks-1)
        :oppija-oid         (:oppija-oid hoks-test/hoks-1)
        :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks-test/hoks-1)})
     (doseq [kysely [:aloituskysely :paattokysely]]
@@ -212,27 +207,29 @@
     (testing
      (str "Kysely is considered already initiated if it is for same "
           "oppija with same koulutustoimija and within same rahoituskausi.")
-      (are [kysely] (already-initiated?! kysely
-                                         hoks-test/hoks-3
-                                         "1.2.246.562.10.346830761110"
-                                         db/spec)
+      (are [kysely] (= (:tila (first (op/existing-heratteet!
+                                       kysely
+                                       hoks-test/hoks-3
+                                       "1.2.246.562.10.346830761110"
+                                       db/spec)))
+                       "lahetetty")
         :aloituskysely :paattokysely))
 
     (testing "Kysely is not considered already initiated when"
       (testing "koulutustoimija differs."
-        (are [kysely] (not (already-initiated?!
-                             kysely
-                             hoks-test/hoks-3
-                             "1.2.246.562.10.45678901237"
-                             db/spec))
+        (are [kysely] (empty? (op/existing-heratteet!
+                                kysely
+                                hoks-test/hoks-3
+                                "1.2.246.562.10.45678901237"
+                                db/spec))
           :aloituskysely :paattokysely))
 
       (testing "heratepvm is within different rahoituskausi."
-        (are [kysely] (not (already-initiated?!
-                             kysely
-                             hoks-test/hoks-4
-                             "1.2.246.562.10.346830761110"
-                             db/spec))
+        (are [kysely] (empty? (op/existing-heratteet!
+                                kysely
+                                hoks-test/hoks-4
+                                "1.2.246.562.10.346830761110"
+                                db/spec))
           :aloituskysely :paattokysely)))))
 
 (deftest test-initiate-if-needed!
