@@ -6,7 +6,6 @@
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.external.koski-test :as koski-test]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.hoks-test :as hoks-test]
@@ -262,8 +261,9 @@
           :aloituskysely
           :paattokysely)
         (is (= (set (map (juxt :kyselytyyppi :uusi-tila :syy)
-                         (palautetapahtuma/get-all-by-hoks-id!
-                           db/spec {:hoks-id (:id hoks-test/hoks-1)})))
+                         (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                           db/spec {:hoks-id (:id hoks-test/hoks-1)
+                                    :kyselytyypit op/kyselytyypit})))
                #{["aloittaneet" "odottaa_kasittelya" "hoks_tallennettu"]
                  ["valmistuneet" "odottaa_kasittelya" "hoks_tallennettu"]}))
         (are [kyselytyyppi herate-basis voimassa-alkupvm voimassa-loppupvm]
