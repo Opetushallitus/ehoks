@@ -1,14 +1,12 @@
 (ns oph.ehoks.palaute.tyoelama
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
-            [medley.core :refer [find-first map-vals]]
+            [medley.core :refer [find-first]]
             [oph.ehoks.db :as db]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [oph.ehoks.utils.date :as date])
   (:import (java.time LocalDate)))
 
@@ -73,22 +71,6 @@
     (when-let [kjakso-loppu (:loppu (last kjaksot))]
       (not (date/is-after (:loppu jakso) kjakso-loppu)))))
 
-(defn insert-or-update-palaute!
-  "Add new palaute in the database, or set the values of an already
-  created palaute to correspond to the current values from HOKS."
-  [tx palaute existing-herate reason other-info]
-  (let [db-handler (if (:id existing-herate) palaute/update! palaute/insert!)
-        result (db-handler tx (assoc palaute :id (:id existing-herate)))
-        palaute-id (:id result)]
-    (palautetapahtuma/insert!
-      tx
-      {:palaute-id palaute-id
-       :vanha-tila (or (:tila existing-herate) (:tila palaute))
-       :uusi-tila (:tila palaute)
-       :tapahtumatyyppi "hoks_tallennus"
-       :syy (db-ops/to-underscore-str (or reason :hoks-tallennettu))
-       :lisatiedot (map-vals str other-info)})))
-
 (defn initial-palaute-state-and-reason
   "Runs several checks against tyopaikkajakso and opiskeluoikeus to determine if
   tyoelamapalaute process should be initiated for jakso. Returns the initial
@@ -146,7 +128,7 @@
               koulutustoimija  (palaute/koulutustoimija-oid! opiskeluoikeus)
               toimipiste-oid   (palaute/toimipiste-oid! suoritus)
               other-info       (select-keys hoks [field])]
-          (insert-or-update-palaute!
+          (palaute/upsert!
             tx
             {:kyselytyyppi       "tyopaikkajakson_suorittaneet"
              :tila               "odottaa_kasittelya"
@@ -160,7 +142,7 @@
              :tutkintonimike     (suoritus/tutkintonimike suoritus)
              :tutkintotunnus     (suoritus/tutkintotunnus suoritus)
              :herate-source      "ehoks_update"}
-            existing-herate
+            [existing-herate]
             reason
             other-info))))))
 
