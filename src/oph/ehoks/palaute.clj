@@ -1,13 +1,38 @@
 (ns oph.ehoks.palaute
   (:require [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
+            [medley.core :refer [find-first map-vals]]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [oph.ehoks.utils.date :as date])
   (:import [java.time LocalDate]))
 
 (hugsql/def-db-fns "oph/ehoks/db/sql/palaute.sql")
+
+(def unhandled? (comp #{"odottaa_kasittelya" "ei_laheteta"} :tila))
+
+(defn upsert!
+  "Add new palaute in the database, or set the values of an already
+  created palaute to correspond to the current values from HOKS. Also insert
+  palautetapahtuma entry."
+  [tx palaute existing-heratteet reason other-info]
+  (let [updateable-herate (find-first unhandled? existing-heratteet)
+        db-handler        (if (:id updateable-herate) update! insert!)
+        result            (db-handler tx (assoc palaute
+                                                :id
+                                                (:id updateable-herate)))
+        palaute-id        (:id result)]
+    (palautetapahtuma/insert!
+      tx
+      {:palaute-id      palaute-id
+       :vanha-tila      (or (:tila updateable-herate) (:tila palaute))
+       :uusi-tila       (:tila palaute)
+       :tapahtumatyyppi "hoks_tallennus"
+       :syy             (db-ops/to-underscore-str (or reason :hoks-tallennettu))
+       :lisatiedot      (map-vals str other-info)})))
 
 (defn current-rahoituskausi-alkupvm
   ^LocalDate []
