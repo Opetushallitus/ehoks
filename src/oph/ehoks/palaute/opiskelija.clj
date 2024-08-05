@@ -51,49 +51,55 @@
   opiskelijapalautekysely should be initiated.  Returns the initial state
   of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [kysely prev-hoks hoks opiskeluoikeus existing-heratteet]
-  (let [herate-basis (herate-date-basis kysely)
-        herate-date (get hoks herate-basis)]
-    (cond
-      (not herate-date)
-      [nil herate-basis :ei-ole]
+  ([kysely prev-hoks hoks opiskeluoikeus]
+    (initial-palaute-state-and-reason kysely prev-hoks hoks opiskeluoikeus nil))
+  ([kysely prev-hoks hoks opiskeluoikeus existing-heratteet]
+    (let [herate-basis (herate-date-basis kysely)
+          herate-date (get hoks herate-basis)]
+      (cond
+        (not herate-date)
+        [nil herate-basis :ei-ole]
 
-      (not (palaute/valid-herate-date? herate-date))
-      [:ei-laheteta herate-basis :eri-rahoituskaudella]
+        (not (palaute/valid-herate-date? herate-date))
+        [:ei-laheteta herate-basis :eri-rahoituskaudella]
 
-      (not (:osaamisen-hankkimisen-tarve hoks))
-      [:ei-laheteta :osaamisen-hankkimisen-tarve :ei-ole]
+        (not (:osaamisen-hankkimisen-tarve hoks))
+        [:ei-laheteta :osaamisen-hankkimisen-tarve :ei-ole]
 
-      (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
-      [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
+        (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
+        [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
 
-      (c/tuva-related-hoks? hoks)
-      [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
+        (c/tuva-related-hoks? hoks)
+        [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
 
-      (opiskeluoikeus/is-tuva? opiskeluoikeus)
-      [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus]
+        (opiskeluoikeus/is-tuva? opiskeluoikeus)
+        [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus]
 
-      (opiskeluoikeus/linked-to-another? opiskeluoikeus)
-      [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]
+        (opiskeluoikeus/linked-to-another? opiskeluoikeus)
+        [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]
 
-      (palaute/already-initiated? existing-heratteet)
-      [nil herate-basis :jo-lahetetty-talla-rahoituskaudella]
+        (palaute/already-initiated? existing-heratteet)
+        [nil herate-basis :jo-lahetetty-talla-rahoituskaudella]
 
-      (and (= kysely :aloituskysely)
-           (added? :osaamisen-hankkimisen-tarve prev-hoks hoks))
-      [:odottaa-kasittelya :osaamisen-hankkimisen-tarve :lisatty]
+        (and (= kysely :aloituskysely)
+             (added? :osaamisen-hankkimisen-tarve prev-hoks hoks))
+        [:odottaa-kasittelya :osaamisen-hankkimisen-tarve :lisatty]
 
-      (and (= kysely :aloituskysely) (added? :sahkoposti prev-hoks hoks))
-      [:odottaa-kasittelya :sahkoposti :lisatty]
+        (and (= kysely :aloituskysely) (added? :sahkoposti prev-hoks hoks))
+        [:odottaa-kasittelya :sahkoposti :lisatty]
 
-      (and (= kysely :aloituskysely) (added? :puhelinnumero prev-hoks hoks))
-      [:odottaa-kasittelya :puhelinnumero :lisatty]
+        (and (= kysely :aloituskysely) (added? :puhelinnumero prev-hoks hoks))
+        [:odottaa-kasittelya :puhelinnumero :lisatty]
 
-      (and (some? prev-hoks) (= kysely :aloituskysely))
-      [:ei-laheteta nil :ei-muutosta]
+        (and (= kysely :paattokysely)
+             (added? :osaamisen-saavuttamisen-pvm prev-hoks hoks))
+        [:odottaa-kasittelya :osaamisen-saavuttamisen-pvm :lisatty]
 
-      :else
-      [:odottaa-kasittelya nil :hoks-tallennettu])))
+        (and (some? prev-hoks) (= kysely :aloituskysely))
+        [:ei-laheteta nil :ei-muutosta]
+
+        :else
+        [:odottaa-kasittelya nil :hoks-tallennettu]))))
 
 (defn kyselytyyppi
   [kysely suoritus]

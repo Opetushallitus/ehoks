@@ -24,11 +24,6 @@
 
 (def sqs-msg (atom nil))
 
-(defn initiate? [kysely prev-hoks hoks oo]
-  (let [state-and-reason
-        (op/initial-palaute-state-and-reason kysely prev-hoks hoks oo nil)]
-    (= :odottaa-kasittelya (first state-and-reason))))
-
 (defn test-not-initiated
   ([hoks opiskeluoikeus reason]
     (test-not-initiated nil hoks opiskeluoikeus reason))
@@ -37,9 +32,11 @@
                         [kysely]
                         [:aloituskysely :paattokysely])
             prev-hoks [nil hoks-test/hoks-2]]
-      (is (not (initiate? kysely prev-hoks hoks opiskeluoikeus)))
-      (is (= reason (get (op/initial-palaute-state-and-reason
-                           kysely prev-hoks hoks opiskeluoikeus nil) 2))))))
+      (let [state-and-reason
+            (op/initial-palaute-state-and-reason
+              kysely prev-hoks hoks opiskeluoikeus nil)]
+        (is (contains? #{:ei-laheteta nil} (first state-and-reason)))
+        (is (= (last state-and-reason) reason))))))
 
 (deftest test-initial-palaute-state-and-reason
   (with-redefs [date/now (constantly (LocalDate/of 2023 1 1))]
@@ -103,56 +100,68 @@
     (testing "On HOKS creation"
       (testing
        "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
-        (is (initiate?
-              :aloituskysely nil hoks-test/hoks-1 oo-test/opiskeluoikeus-1)))
+        (is (= (op/initial-palaute-state-and-reason
+                 :aloituskysely nil hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
+               [:odottaa-kasittelya nil :hoks-tallennettu])))
 
       (testing
        (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
             "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
-        (is (initiate?
-              :paattokysely nil hoks-test/hoks-1 oo-test/opiskeluoikeus-1))))
+        (is (= (op/initial-palaute-state-and-reason
+                 :paattokysely nil hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
+               [:odottaa-kasittelya nil :hoks-tallennettu]))))
 
     (testing "On HOKS update"
       (testing (str "initiate aloituskysely if `osaamisen-hankkimisen-tarve` "
                     "is added to HOKS.")
-        (is (initiate? :aloituskysely
-                       hoks-test/hoks-2
-                       hoks-test/hoks-1
-                       oo-test/opiskeluoikeus-1)))
+        (is (= (op/initial-palaute-state-and-reason
+                 :aloituskysely
+                 hoks-test/hoks-2
+                 hoks-test/hoks-1
+                 oo-test/opiskeluoikeus-1)
+               [:odottaa-kasittelya :osaamisen-hankkimisen-tarve :lisatty])))
 
       (testing (str "initiate aloituskysely if `sahkoposti` is added to HOKS "
                     "and `osaamisen-hankkimisen-tarve` is `true`.")
-        (is (initiate?
-              :aloituskysely
-              (dissoc hoks-test/hoks-1 :sahkoposti)
-              hoks-test/hoks-1
-              oo-test/opiskeluoikeus-1)))
+        (is (= (op/initial-palaute-state-and-reason
+                 :aloituskysely
+                 (dissoc hoks-test/hoks-1 :sahkoposti)
+                 hoks-test/hoks-1
+                 oo-test/opiskeluoikeus-1)
+               [:odottaa-kasittelya :sahkoposti :lisatty])))
 
       (testing (str "initiate aloituskysely if `puhelinnumero` is added to "
                     "HOKS and `osaamisen-hankkimisen-tarve` is `true`.")
-        (is (initiate?
-              :aloituskysely
-              (dissoc hoks-test/hoks-1 :puhelinnumero)
-              hoks-test/hoks-1
-              oo-test/opiskeluoikeus-1)))
+        (is (= (op/initial-palaute-state-and-reason
+                 :aloituskysely
+                 (dissoc hoks-test/hoks-1 :puhelinnumero)
+                 hoks-test/hoks-1
+                 oo-test/opiskeluoikeus-1)
+               [:odottaa-kasittelya :puhelinnumero :lisatty])))
 
       (testing
        (str "initiate päättökysely if `osaamisen-saavuttamisen-pvm` is "
             "added to HOKS.")
-        (is (initiate?
-              :paattokysely
-              (dissoc hoks-test/hoks-1 :osaamisen-saavuttamisen-pvm)
-              hoks-test/hoks-1
-              oo-test/opiskeluoikeus-1)))
+        (is (= (op/initial-palaute-state-and-reason
+                 :paattokysely
+                 (dissoc hoks-test/hoks-1 :osaamisen-saavuttamisen-pvm)
+                 hoks-test/hoks-1
+                 oo-test/opiskeluoikeus-1)
+               [:odottaa-kasittelya :osaamisen-saavuttamisen-pvm :lisatty])))
 
       (testing "don't initiate aloituskysely if"
         (testing "`sahkoposti` stays unchanged, is changed or is removed."
           (are [old-val new-val]
-               (not (initiate?
-                      :aloituskysely
-                      {:osaamisen-hankkimisen-tarve true :sahkoposti old-val}
-                      {:osaamisen-hankkimisen-tarve true :sahkoposti new-val}
-                      oo-test/opiskeluoikeus-1))
+               (= (op/initial-palaute-state-and-reason
+                    :aloituskysely
+                    {:osaamisen-hankkimisen-tarve true
+                     :ensikertainen-hyvaksyminen (LocalDate/of 2024 1 1)
+                     :sahkoposti old-val}
+                    {:osaamisen-hankkimisen-tarve true
+                     :ensikertainen-hyvaksyminen (LocalDate/of 2024 1 1)
+                     :sahkoposti new-val}
+                    oo-test/opiskeluoikeus-1)
+                  [:ei-laheteta nil :ei-muutosta])
             "testi.testaaja@testidomain.testi"
             "testi.testaaja@testidomain.testi"
             "testi.testaaja@testidomain.testi" "testi.testinen@testi.domain"
@@ -160,13 +169,16 @@
 
         (testing "`puhelinnumero` stays unchanged, is changed or is removed."
           (are [old-val new-val]
-               (not (initiate?
-                      :aloituskysely
-                      {:osaamisen-hankkimisen-tarve true
-                       :puhelinnumero old-val}
-                      {:osaamisen-hankkimisen-tarve true
-                       :puhelinnumero new-val}
-                      oo-test/opiskeluoikeus-1))
+               (= (op/initial-palaute-state-and-reason
+                    :aloituskysely
+                    {:osaamisen-hankkimisen-tarve true
+                     :ensikertainen-hyvaksyminen (LocalDate/of 2024 1 1)
+                     :puhelinnumero old-val}
+                    {:osaamisen-hankkimisen-tarve true
+                     :ensikertainen-hyvaksyminen (LocalDate/of 2024 1 1)
+                     :puhelinnumero new-val}
+                    oo-test/opiskeluoikeus-1)
+                  [:ei-laheteta nil :ei-muutosta])
             "0123456789" "0123456789"
             "0123456789" "0011223344"
             "0123456789" nil))))))
