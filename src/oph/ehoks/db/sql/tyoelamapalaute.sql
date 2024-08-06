@@ -38,7 +38,7 @@ returning *
 -- :doc Get all unprocessed palaute for Arvo call.
 select * from tep_palaute
 where tila = 'odottaa_kasittelya'
-  and heratepvm <= current_date
+  and heratepvm <= :heratepvm
   and arvo_tunniste is null
   and tep_kasitelty = false
 
@@ -51,7 +51,16 @@ where id = :id
   and tila = 'odottaa_kasittelya'
 returning *
 
--- :name get-single-palaute-needing-vastaajatunnus! :? :1
--- :doc Get single palaute data for Arvo call.
-select * from tep_palaute
+-- :name get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste! :? :*
+-- :doc get tep-jaksopalaute in the format for putting into herätepalvelu
+select * from palaute_for_tep_heratepalvelu
+where hoks_id = :hoks-id
+  and jakson_yksiloiva_tunniste = :jakson-yksiloiva-tunniste
+  and internal_kyselytyyppi = 'tyopaikkajakson_suorittaneet'
+
+-- :name update-tep-kasitelty! :? :1
+-- :doc Updates tep_kasitelty flag after getting vastaajatunnus from Arvo.
+update osaamisen_hankkimistavat
+set tep_kasitelty = :tep-kasitelty, updated_at = now()
 where id = :id
+returning *
