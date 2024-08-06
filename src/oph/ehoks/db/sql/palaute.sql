@@ -88,3 +88,17 @@ where hoks_id = :hoks-id AND jakson_yksiloiva_tunniste = :yksiloiva-tunniste
 select * from palaute_for_amis_heratepalvelu
 where ehoks_id = :hoks-id
   and internal_kyselytyyppi in (:v*:kyselytyypit)
+
+-- :name get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste! :? :*
+-- :doc get tep-jaksopalaute in the format for putting into herätepalvelu
+select * from palaute_for_tep_heratepalvelu
+where hoks_id = :hoks-id
+  and jakson_yksiloiva_tunniste = :jakson-yksiloiva-tunniste
+  and internal_kyselytyyppi = 'tyopaikkajakson_suorittaneet'
+
+-- :name update-tep-kasitelty! :? :1
+-- :doc Updates tep_kasitelty flag after getting vastaajatunnus from Arvo.
+update osaamisen_hankkimistavat
+set tep_kasitelty = :tep-kasitelty, updated_at = now()
+where id = :id
+returning *

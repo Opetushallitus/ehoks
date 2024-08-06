@@ -4,7 +4,9 @@
             [clojure.tools.logging :as log]
             [medley.core :refer [find-first]]
             [oph.ehoks.db :as db]
+            [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.organisaatio :as org]
             [oph.ehoks.external.koski :as koski]
@@ -193,25 +195,84 @@
   [string]
   (string/lower-case (string/replace (deaccent-string string) #"\W+" "_")))
 
+(defn opiskeluoikeus-koulutustoimija-oid
+  "Hakee koulutustoimijan OID:n opiskeluoikeudesta, tai organisaatiopalvelusta
+  jos sitä ei löydy opiskeluoikeudesta."
+  [opiskeluoikeus]
+  (if-let [koulutustoimija-oid (:oid (:koulutustoimija opiskeluoikeus))]
+    koulutustoimija-oid
+    (do
+      (log/info "Ei koulutustoimijaa opiskeluoikeudessa "
+                (:oid opiskeluoikeus) ", haetaan Organisaatiopalvelusta")
+      (:parentOid (org/get-organisaatio!
+                    (get-in opiskeluoikeus [:oppilaitos :oid]))))))
+
+(defn add-keys
+  [tep-palaute opiskeluoikeus request-id tunnus]
+  (let [niputuspvm (str (next-niputus-date (date/now)))
+        alkupvm (next-niputus-date
+                  (LocalDate/parse (:jakso-loppupvm tep-palaute)))
+        koulutustoimija (opiskeluoikeus-koulutustoimija-oid opiskeluoikeus)
+        oo-suoritus (find-first suoritus/ammatillinen?
+                                (:suoritukset opiskeluoikeus))
+        tutkinto (get-in oo-suoritus
+                         [:koulutusmoduuli :tunniste :koodiarvo])]
+    (assoc tep-palaute
+           :tallennuspvm (str (date/now))
+           :alkupvm (str alkupvm)
+           :koulutustoimija koulutustoimija
+           :niputuspvm niputuspvm
+           :ohjaaja-ytunnus-kj-tutkinto (str (:ohjaaja-nimi tep-palaute) "/"
+                                             (:tyopaikan-ytunnus tep-palaute)
+                                             "/" koulutustoimija "/" tutkinto)
+           :oppilaitos (:oid (:oppilaitos opiskeluoikeus))
+           :osaamisala (str (seq (suoritus/get-osaamisalat
+                                   oo-suoritus (:oid opiskeluoikeus))))
+           :request-id request-id
+           :toimipiste-oid (str (org/get-toimipiste oo-suoritus))
+           :tpk-niputuspvm "ei_maaritelty"
+           :tunnus tunnus
+           :tutkinto tutkinto
+           :tutkintonimike (str (seq (map :koodiarvo
+                                          (:tutkintonimike oo-suoritus))))
+           :tyopaikan-normalisoitu-nimi (normalize-string
+                                          (:tyopaikan-nimi tep-palaute))
+           :viimeinen-vastauspvm (str (.plusDays alkupvm 60)))))
+
+(defn sync-jakso-to-heratepalvelu!
+  [tx tep-palaute opiskeluoikeus request-id tunnus]
+  (let [query {:jakson-yksiloiva-tunniste
+               (:jakson-yksiloiva-tunniste tep-palaute)
+               :hoks-id (:hoks-id tep-palaute)}]
+    (-> (get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste! tx query)
+        (first)
+        (not-empty)
+        (or (throw (ex-info "palaute not found" query)))
+        (add-keys opiskeluoikeus request-id tunnus)
+        (dissoc :internal-kyselytyyppi :jakson-yksiloiva-tunniste)
+        (db-helpers/remove-nils)
+        (ddb/sync-jakso-herate!))))
+
 (defn create-and-save-arvo-vastaajatunnus!
   [tep-palaute tx]
   (let [opiskeluoikeus (koski/get-opiskeluoikeus!
-                        (:opiskeluoikeus-oid tep-palaute))]
+                         (:opiskeluoikeus-oid tep-palaute))]
     (if-not opiskeluoikeus
       (log/warnf "Opiskeluoikeus not found for palaute %d, skipping processing"
                  (:id tep-palaute))
       (let [koulutustoimija (opiskeluoikeus-koulutustoimija-oid opiskeluoikeus)
             alkupvm         (next-niputus-date (:loppupvm tep-palaute))
+            request-id      (str (UUID/randomUUID))
             arvo-request    (arvo/build-jaksotunnus-request-body
-                             tep-palaute
-                             (normalize-string
-                              (:tyopaikan-nimi tep-palaute))
-                             opiskeluoikeus
-                             (str (UUID/randomUUID))
-                             koulutustoimija
-                             (find-first suoritus/ammatillinen?
-                                         (:suoritukset opiskeluoikeus))
-                             (str alkupvm))
+                              tep-palaute
+                              (normalize-string
+                                (:tyopaikan-nimi tep-palaute))
+                              opiskeluoikeus
+                              request-id
+                              koulutustoimija
+                              (find-first suoritus/ammatillinen?
+                                          (:suoritukset opiskeluoikeus))
+                              (str alkupvm))
             tunnus          (:tunnus (arvo/create-jaksotunnus arvo-request))]
         (try
           (assert (update-arvo-tunniste! tx {:id (:id tep-palaute)
@@ -219,11 +280,14 @@
           ; TODO lisää palaute_tapahtuma EH-1687:n logiikan avulla; aseta
           ;      arvo-request tapahtuman lisätietoihin, jotta mm. request-id
           ;      jää talteen
-          ; TODO synkronoi jakso & nippu herätepalveluun
-          ;(ddb/sync-jakso-herate! tep-palaute)
-          ; TODO aseta tep-kasitelty trueksi jaksolle, jotta herätepalvelu ei
-          ;      yritä luoda jaksosta duplikaattia (vai disabloidaanko
-          ;      herätepalvelun jaksojen pull-toiminto/timedoperationshandler?)
+          (sync-jakso-to-heratepalvelu!
+            tx tep-palaute opiskeluoikeus request-id tunnus)
+          ; Aseta tep_kasitelty arvoon true jotta herätepalvelu ei yritä
+          ; tehdä vastaavaa operaatiota siirtymävaiheen/asennuksien aikana.
+          ; FIXME poista tep_kasitelty-logiikka siirtymävaiheen jälkeen?
+          (assert
+            (update-tep-kasitelty! tx {:tep-kasitelty true
+                                       :id (:hankkimistapa-id tep-palaute)}))
           (catch Exception e
             (log/errorf e
                         (str "Error updating palaute %d, "
@@ -240,6 +304,7 @@
   (log/info "Starting to create vastaajatunnus unprocessed työelämäpalaute.")
   (jdbc/with-db-transaction
     [tx db/spec]
-    (doseq [palaute (get-tep-palautteet-needing-vastaajatunnus! tx {})]
+    (doseq [palaute (get-tep-palautteet-needing-vastaajatunnus!
+                      tx {:heratepvm (str (date/now))})]
       (create-and-save-arvo-vastaajatunnus! palaute tx)))
   (log/info "Done creating vastaajatunnus for unprocessed työelämäpalaute."))
