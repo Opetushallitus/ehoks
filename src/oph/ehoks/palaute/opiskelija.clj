@@ -78,7 +78,7 @@
         (c/tuva-related-hoks? hoks)
         [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
 
-        (opiskeluoikeus/is-tuva? opiskeluoikeus)
+        (opiskeluoikeus/tuva? opiskeluoikeus)
         [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus]
 
         (opiskeluoikeus/linked-to-another? opiskeluoikeus)

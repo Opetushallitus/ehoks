@@ -4,6 +4,7 @@
             [medley.core :refer [find-first]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.hoks.common :as c]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
@@ -76,9 +77,9 @@
   tyoelamapalaute process should be initiated for jakso. Returns the initial
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  ([jakso opiskeluoikeus]
-    (initial-palaute-state-and-reason jakso opiskeluoikeus nil))
-  ([jakso opiskeluoikeus existing-herate]
+  ([jakso hoks opiskeluoikeus]
+    (initial-palaute-state-and-reason jakso hoks opiskeluoikeus nil))
+  ([jakso hoks opiskeluoikeus existing-herate]
     (cond
       (palaute/already-initiated? (vec existing-herate))
       [nil nil :jaksolle-loytyy-jo-herate]
@@ -98,6 +99,12 @@
       (palaute/feedback-collecting-prevented? opiskeluoikeus (:loppu jakso))
       [:ei-laheteta :opiskeluoikeus-oid :rahoitusperuste]
 
+      (c/tuva-related-hoks? hoks)
+      [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
+
+      (opiskeluoikeus/tuva? opiskeluoikeus)
+      [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus]
+
       (opiskeluoikeus/linked-to-another? opiskeluoikeus)
       [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]
 
@@ -112,8 +119,9 @@
                             tx
                             {:hoks-id            (:id hoks)
                              :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
-          [init-state field reason] (initial-palaute-state-and-reason
-                                      jakso opiskeluoikeus existing-herate)]
+          [init-state field reason]
+          (initial-palaute-state-and-reason
+            jakso hoks opiskeluoikeus existing-herate)]
       (log/infof (str "Initial state for jakso `%s` of HOKS `%d` will be `%s` "
                       "because of `%s` in `%s`.")
                  (:yksiloiva-tunniste jakso)
