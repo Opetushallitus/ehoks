@@ -81,7 +81,7 @@
   [opiskeluoikeus]
   (some? (:sisältyyOpiskeluoikeuteen opiskeluoikeus)))
 
-(defn is-tuva?
+(defn tuva?
   "Onko opiskeluoikeus TUVA?"
   [opiskeluoikeus]
   (= "tuva" (get-in opiskeluoikeus [:tyyppi :koodiarvo])))

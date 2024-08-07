@@ -92,6 +92,12 @@
             (test-not-initiated
               hoks oo-test/opiskeluoikeus-1 :tuva-opiskeluoikeus)))
 
+        (testing "opiskeluoikeus is TUVA related."
+          (test-not-initiated
+            hoks-test/hoks-1
+            (assoc-in oo-test/opiskeluoikeus-1 [:tyyppi :koodiarvo] "tuva")
+            :tuva-opiskeluoikeus))
+
         (testing "opiskeluoikeus is linked to another opiskeluoikeus"
           (test-not-initiated
             hoks-test/hoks-1 oo-test/opiskeluoikeus-3

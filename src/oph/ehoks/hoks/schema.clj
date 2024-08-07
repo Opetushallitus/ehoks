@@ -15,7 +15,7 @@
 
 (defn is-tuva-opiskeluoikeus?
   [koulutuksenosa]
-  (opiskeluoikeus/is-tuva? (get-current-opiskeluoikeus)))
+  (opiskeluoikeus/tuva? (get-current-opiskeluoikeus)))
 
 (def TutkinnonOsaKoodiUri
   "Tutkinnon osan Koodisto-koodi-URI ePerusteet palvelussa (tutkinnonosat)."
