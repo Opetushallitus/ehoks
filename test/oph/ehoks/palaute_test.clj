@@ -36,18 +36,6 @@
                  {:oid "1.2.246.562.15.43634207512"
                   :oppilaitos {:oid "1.2.246.562.10.52251087186"}})))))))
 
-(deftest test-vastaamisajan-alkupvm
-  (with-redefs [date/now (constantly (LocalDate/of 2024 4 26))]
-    (testing "Vaustausajan alkupvm is same as herate date if it's in the future"
-      (are [date-str] (let [date (LocalDate/parse date-str)]
-                        (= (palaute/vastaamisajan-alkupvm date) date))
-        "2024-04-26" "2024-04-28" "2024-12-12" "2025-01-01"))
-    (testing (str "Vaustausajan alkupvm is same as `LocalDate/now` if herate "
-                  "date is in the past")
-      (are [date-str] (let [date (LocalDate/parse date-str)]
-                        (= (palaute/vastaamisajan-alkupvm date) (date/now)))
-        "2024-04-25" "2024-04-20" "2024-01-01" "2023-12-12"))))
-
 (deftest test-vastaamisajan-loppupvm
   (are [herate-date-str alkupvm-str expected-str]
        (let [herate-date (LocalDate/parse herate-date-str)

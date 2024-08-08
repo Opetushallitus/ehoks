@@ -581,7 +581,7 @@
                     date/now (constantly (LocalDate/of 2018 7 1))]
         (let [saved-hoks (hoks/save! hoks-data)]
           (hoks/update! (:id saved-hoks) hoks-osaaminen-saavutettu)
-          (is (= @sqs-call-counter 2)))))))
+          (is (= @sqs-call-counter 3)))))))
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-update
   (testing (str "update: does not form opiskelijapalaute when "
@@ -611,7 +611,7 @@
             (Thread/sleep 15) ; in ms, workaround to make the test pass
             (is (= @sqs-call-counter 1)) ; sent herate for aloituskysely
             (hoks/replace! (:id saved-hoks) hoks-osaaminen-saavutettu)
-            (is (= @sqs-call-counter 2))) ; herate sent for paattokysely
+            (is (= @sqs-call-counter 3))) ; herate sent for both kyselyt
 
           (reset! sqs-call-counter 0)
           (test-utils/clear-db)
@@ -626,7 +626,7 @@
               (hoks/replace! (:id saved-hoks)
                              (dissoc hoks-osaaminen-saavutettu
                                      :opiskeluoikeus-oid))
-              (is (= @sqs-call-counter 2))))))))) ; herate sent for paattokysely
+              (is (= @sqs-call-counter 3))))))))) ; herate sent for both kyselys
 
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-replace

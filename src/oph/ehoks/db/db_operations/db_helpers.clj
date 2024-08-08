@@ -121,10 +121,14 @@
     (apply
       dissoc m remove-columns)))
 
+(defn to-underscore-str
+  [kw]
+  (.replace (name kw) \- \_))
+
 (defn to-underscore-keys
   "Convert dashes in keys to underscores."
   [m]
-  (map-keys #(keyword (.replace (name %) \- \_)) m))
+  (map-keys #(keyword (to-underscore-str %)) m))
 
 (defn to-dash-keys
   "Convert underscores in keys to dashes."

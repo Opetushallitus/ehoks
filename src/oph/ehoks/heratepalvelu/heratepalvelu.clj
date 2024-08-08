@@ -57,20 +57,17 @@
   to the SQS queue"
   [start end limit]
   (let [aloittaneet
-        (db-hoks/select-hoksit-with-kasittelemattomat-aloitusheratteet start
-                                                                       end
-                                                                       limit)
+        (db-hoks/select-hoksit-with-kasittelemattomat-aloitusheratteet
+          start end limit)
         paattyneet
-        (db-hoks/select-hoksit-with-kasittelemattomat-paattoheratteet start
-                                                                      end
-                                                                      limit)
-        hoksit (concat aloittaneet paattyneet)]
+        (db-hoks/select-hoksit-with-kasittelemattomat-paattoheratteet
+          start end limit)]
     (log/infof
       "Sending %d (limit %d) hoksit between %s and %s"
-      (count hoksit) (* 2 limit) start end)
+      (+ (count aloittaneet) (count paattyneet)) (* 2 limit) start end)
     (op/initiate-every-needed! :aloituskysely aloittaneet {:resend? true})
     (op/initiate-every-needed! :paattokysely  paattyneet {:resend? true})
-    hoksit))
+    (concat aloittaneet paattyneet)))
 
 (defn set-aloitusherate-kasitelty
   "Marks aloitusheräte handled (käsitelty) for a given HOKS."
