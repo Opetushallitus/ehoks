@@ -51,9 +51,9 @@
   opiskelijapalautekysely should be initiated.  Returns the initial state
   of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  ([kysely prev-hoks hoks opiskeluoikeus]
-    (initial-palaute-state-and-reason kysely prev-hoks hoks opiskeluoikeus nil))
-  ([kysely prev-hoks hoks opiskeluoikeus existing-heratteet]
+  ([kysely hoks opiskeluoikeus]
+    (initial-palaute-state-and-reason kysely hoks opiskeluoikeus nil))
+  ([kysely hoks opiskeluoikeus existing-heratteet]
     (let [herate-basis (herate-date-basis kysely)
           herate-date (get hoks herate-basis)]
       (cond
@@ -86,23 +86,6 @@
 
         (palaute/already-initiated? existing-heratteet)
         [nil herate-basis :jo-lahetetty-talla-rahoituskaudella]
-
-        (and (= kysely :aloituskysely)
-             (added? :osaamisen-hankkimisen-tarve prev-hoks hoks))
-        [:odottaa-kasittelya :osaamisen-hankkimisen-tarve :lisatty]
-
-        (and (= kysely :aloituskysely) (added? :sahkoposti prev-hoks hoks))
-        [:odottaa-kasittelya :sahkoposti :lisatty]
-
-        (and (= kysely :aloituskysely) (added? :puhelinnumero prev-hoks hoks))
-        [:odottaa-kasittelya :puhelinnumero :lisatty]
-
-        (and (= kysely :paattokysely)
-             (added? :osaamisen-saavuttamisen-pvm prev-hoks hoks))
-        [:odottaa-kasittelya :osaamisen-saavuttamisen-pvm :lisatty]
-
-        (and (some? prev-hoks) (= kysely :aloituskysely))
-        [:ei-laheteta nil :ei-muutosta]
 
         :else
         [:odottaa-kasittelya nil :hoks-tallennettu]))))
@@ -208,8 +191,8 @@
               functionality to resend heratteet to Herätepalvelu wouldn't work.
               This should be removed once Herätepalvelu functionality has been
               fully migrated to eHOKS."
-  ([kysely prev-hoks hoks] (initiate-if-needed! kysely prev-hoks hoks nil))
-  ([kysely prev-hoks hoks opts]
+  ([kysely hoks] (initiate-if-needed! kysely hoks nil))
+  ([kysely hoks opts]
     (jdbc/with-db-transaction
       [tx db/spec]
       (let [opiskeluoikeus
@@ -220,7 +203,7 @@
             (existing-heratteet! kysely hoks koulutustoimija tx)
             [init-state field reason]
             (initial-palaute-state-and-reason
-              kysely prev-hoks hoks opiskeluoikeus
+              kysely hoks opiskeluoikeus
               (when-not (:resend? opts) existing-heratteet))]
         (log/info "Initial state for" kysely "for HOKS" (:id hoks)
                   "will be" (or init-state :ei-luoda-ollenkaan)
@@ -248,4 +231,4 @@
   ([kysely hoksit] (initiate-every-needed! kysely hoksit nil))
   ([kysely hoksit opts]
     (count (filter #(= :odottaa-kasittelya
-                       (initiate-if-needed! kysely nil % opts)) hoksit))))
+                       (initiate-if-needed! kysely % opts)) hoksit))))

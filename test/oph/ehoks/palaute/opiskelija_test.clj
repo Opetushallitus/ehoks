@@ -28,13 +28,12 @@
   ([hoks opiskeluoikeus reason]
     (test-not-initiated nil hoks opiskeluoikeus reason))
   ([kysely hoks opiskeluoikeus reason]
-    (doseq [kysely    (if kysely
-                        [kysely]
-                        [:aloituskysely :paattokysely])
-            prev-hoks [nil hoks-test/hoks-2]]
+    (doseq [kysely (if kysely
+                     [kysely]
+                     [:aloituskysely :paattokysely])]
       (let [state-and-reason
             (op/initial-palaute-state-and-reason
-              kysely prev-hoks hoks opiskeluoikeus nil)]
+              kysely hoks opiskeluoikeus nil)]
         (is (contains? #{:ei-laheteta nil} (first state-and-reason)))
         (is (= (last state-and-reason) reason))))))
 
@@ -119,87 +118,15 @@
       (testing
        "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
         (is (= (op/initial-palaute-state-and-reason
-                 :aloituskysely nil hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
+                 :aloituskysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
                [:odottaa-kasittelya nil :hoks-tallennettu])))
 
       (testing
        (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
             "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
         (is (= (op/initial-palaute-state-and-reason
-                 :paattokysely nil hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
-               [:odottaa-kasittelya nil :hoks-tallennettu]))))
-
-    (testing "On HOKS update"
-      (testing (str "initiate aloituskysely if `osaamisen-hankkimisen-tarve` "
-                    "is added to HOKS.")
-        (is (= (op/initial-palaute-state-and-reason
-                 :aloituskysely
-                 hoks-test/hoks-2
-                 hoks-test/hoks-1
-                 oo-test/opiskeluoikeus-1)
-               [:odottaa-kasittelya :osaamisen-hankkimisen-tarve :lisatty])))
-
-      (testing (str "initiate aloituskysely if `sahkoposti` is added to HOKS "
-                    "and `osaamisen-hankkimisen-tarve` is `true`.")
-        (is (= (op/initial-palaute-state-and-reason
-                 :aloituskysely
-                 (dissoc hoks-test/hoks-1 :sahkoposti)
-                 hoks-test/hoks-1
-                 oo-test/opiskeluoikeus-1)
-               [:odottaa-kasittelya :sahkoposti :lisatty])))
-
-      (testing (str "initiate aloituskysely if `puhelinnumero` is added to "
-                    "HOKS and `osaamisen-hankkimisen-tarve` is `true`.")
-        (is (= (op/initial-palaute-state-and-reason
-                 :aloituskysely
-                 (dissoc hoks-test/hoks-1 :puhelinnumero)
-                 hoks-test/hoks-1
-                 oo-test/opiskeluoikeus-1)
-               [:odottaa-kasittelya :puhelinnumero :lisatty])))
-
-      (testing
-       (str "initiate päättökysely if `osaamisen-saavuttamisen-pvm` is "
-            "added to HOKS.")
-        (is (= (op/initial-palaute-state-and-reason
-                 :paattokysely
-                 (dissoc hoks-test/hoks-1 :osaamisen-saavuttamisen-pvm)
-                 hoks-test/hoks-1
-                 oo-test/opiskeluoikeus-1)
-               [:odottaa-kasittelya :osaamisen-saavuttamisen-pvm :lisatty])))
-
-      (testing "don't initiate aloituskysely if"
-        (testing "`sahkoposti` stays unchanged, is changed or is removed."
-          (are [old-val new-val]
-               (= (op/initial-palaute-state-and-reason
-                    :aloituskysely
-                    {:osaamisen-hankkimisen-tarve true
-                     :ensikertainen-hyvaksyminen (LocalDate/of 2024 1 1)
-                     :sahkoposti old-val}
-                    {:osaamisen-hankkimisen-tarve true
-                     :ensikertainen-hyvaksyminen (LocalDate/of 2024 1 1)
-                     :sahkoposti new-val}
-                    oo-test/opiskeluoikeus-1)
-                  [:ei-laheteta nil :ei-muutosta])
-            "testi.testaaja@testidomain.testi"
-            "testi.testaaja@testidomain.testi"
-            "testi.testaaja@testidomain.testi" "testi.testinen@testi.domain"
-            "testi.testaaja@testidomain.testi" nil))
-
-        (testing "`puhelinnumero` stays unchanged, is changed or is removed."
-          (are [old-val new-val]
-               (= (op/initial-palaute-state-and-reason
-                    :aloituskysely
-                    {:osaamisen-hankkimisen-tarve true
-                     :ensikertainen-hyvaksyminen (LocalDate/of 2024 1 1)
-                     :puhelinnumero old-val}
-                    {:osaamisen-hankkimisen-tarve true
-                     :ensikertainen-hyvaksyminen (LocalDate/of 2024 1 1)
-                     :puhelinnumero new-val}
-                    oo-test/opiskeluoikeus-1)
-                  [:ei-laheteta nil :ei-muutosta])
-            "0123456789" "0123456789"
-            "0123456789" "0011223344"
-            "0123456789" nil))))))
+                 :paattokysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
+               [:odottaa-kasittelya nil :hoks-tallennettu]))))))
 
 (defn expected-msg
   [kysely hoks]
@@ -230,7 +157,7 @@
        :oppija-oid         (:oppija-oid hoks-test/hoks-1)
        :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks-test/hoks-1)})
     (doseq [kysely [:aloituskysely :paattokysely]]
-      (op/initiate-if-needed! kysely nil hoks-test/hoks-1))
+      (op/initiate-if-needed! kysely hoks-test/hoks-1))
     (db-ops/query ["UPDATE palautteet SET tila='lahetetty'
                    WHERE hoks_id=? RETURNING *" (:id hoks-test/hoks-1)])
 
@@ -280,8 +207,7 @@
                     "successfully sends aloituskysely and paattokysely "
                     "herate to SQS queue")
         (are [kysely] (= (expected-msg kysely hoks-test/hoks-1)
-                         (do (op/initiate-if-needed!
-                               kysely nil hoks-test/hoks-1)
+                         (do (op/initiate-if-needed! kysely hoks-test/hoks-1)
                              @sqs-msg))
           :aloituskysely
           :paattokysely)
@@ -322,11 +248,10 @@
                      WHERE hoks_id=12345 RETURNING *"])
       (testing "doesn't initiate kysely if one already exists for HOKS"
         (are [kysely] (not= :odottaa-kasittelya
-                            (op/initiate-if-needed!
-                              kysely nil hoks-test/hoks-1))
+                            (op/initiate-if-needed! kysely hoks-test/hoks-1))
           :aloituskysely :paattokysely))
       (testing "sends kysely info to AWS SQS when `:resend?` option is given."
         (are [kysely] (= :odottaa-kasittelya
                          (op/initiate-if-needed!
-                           kysely nil hoks-test/hoks-1 {:resend? true}))
+                           kysely hoks-test/hoks-1 {:resend? true}))
           :aloituskysely :paattokysely)))))
