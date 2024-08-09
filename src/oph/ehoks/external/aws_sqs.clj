@@ -92,6 +92,7 @@
    :opiskeluoikeus-oid (:opiskeluoikeus_oid msg)
    :oppija-oid (:oppija_oid msg)
    :hankkimistapa-id (:hankkimistapa_id msg)
+   :yksiloiva-tunniste (:yksiloiva_tunniste msg)
    :hankkimistapa-tyyppi (:hankkimistapa_tyyppi msg)
    :tutkinnonosa-id (:tutkinnonosa_id msg)
    :tutkinnonosa-koodi (:tutkinnonosa_koodi msg)
