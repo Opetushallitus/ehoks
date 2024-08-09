@@ -34,8 +34,8 @@ values (:herate-source,
         :voimassa-loppupvm)
 returning *
 
--- :name get-tep-palautteet-needing-vastaajatunnus! :? :*
--- :doc Get all unprocessed palaute for Arvo call.
+-- :name get-tep-palautteet-waiting-for-vastaajatunnus! :? :*
+-- :doc Gets all palautteet waiting for vastaajatunnus from Arvo.
 select * from tep_palaute
 where tila = 'odottaa_kasittelya'
   and heratepvm <= :heratepvm
