@@ -5,6 +5,7 @@ SELECT
   osa.id AS tutkinnonosa_id,
   osa.nimi AS tutkinnonosa_nimi,
   oh.id AS hankkimistapa_id,
+  oh.yksiloiva_tunniste AS yksiloiva_tunniste,
   oh.osaamisen_hankkimistapa_koodi_uri AS hankkimistapa_tyyppi,
   oh.alku AS alkupvm,
   oh.loppu AS loppupvm,
