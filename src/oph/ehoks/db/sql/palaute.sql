@@ -22,7 +22,7 @@ insert into palautteet (
   :voimassa-loppupvm
 ) returning *
 
--- :name get-tep-palautteet-needing-vastaajatunnus! :? :*
+-- :name get-tep-palautteet-waiting-for-vastaajatunnus! :? :*
 -- :doc Get all unprocessed palaute for Arvo call.
 select * from tep_palaute
 where tila = 'odottaa_kasittelya'
