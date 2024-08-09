@@ -108,3 +108,40 @@
       (update-keys map-keys-to-ddb)
       (dissoc :internal-kyselytyyppi)
       (->> (sync-item! :amis))))
+
+(def map-jakso-keys-to-ddb
+  (some-fn {:hankkimistapa-id :hankkimistapa_id,
+            :hankkimistapa-tyyppi :hankkimistapa_tyyppi,
+            :hoks-id :hoks_id,
+            :jakso-alkupvm :jakso_alkupvm,
+            :jakso-loppupvm :jakso_loppupvm,
+            :ohjaaja-email :ohjaaja_email,
+            :ohjaaja-nimi :ohjaaja_nimi,
+            :ohjaaja-puhelinnumero :ohjaaja_puhelinnumero,
+            :ohjaaja-ytunnus-kj-tutkinto :ohjaaja_ytunnus_kj_tutkinto,
+            :opiskeluoikeus-oid :opiskeluoikeus_oid,
+            :oppija-oid :oppija_oid,
+            :oppisopimuksen-perusta :oppisopimuksen_perusta,
+            :osa-aikaisuus :osa_aikaisuus,
+            :request-id :request_id,
+            :toimipiste-oid :toimipiste_oid,
+            :tutkinnonosa-id :tutkinnonosa_id,
+            :tutkinnonosa-koodi :tutkinnonosa_koodi,
+            :tutkinnonosa-nimi :tutkinnonosa_nimi,
+            :tutkinnonosa-tyyppi :tutkinnonosa_tyyppi,
+            :tyopaikan-nimi :tyopaikan_nimi,
+            :tyopaikan-normalisoitu-nimi :tyopaikan_normalisoitu_nimi,
+            :tyopaikan-ytunnus :tyopaikan_ytunnus,
+            :viimeinen-vastauspvm :viimeinen_vastauspvm}
+           identity))
+
+(defn sync-jakso-herate!
+  "Update the herätepalvelu jaksotunnustable to have the same content
+  for given heräte as palaute-backend has in its own database.
+  sync-jakso-herate! only updates fields it 'owns': currently that
+  means that the messaging tracking fields are left intact (because
+  herätepalvelu will update those)."
+  [tep-palaute]
+  (-> tep-palaute
+      (update-keys map-jakso-keys-to-ddb)
+      (->> (sync-item! :jakso))))

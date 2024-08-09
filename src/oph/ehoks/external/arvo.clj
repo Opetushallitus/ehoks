@@ -1,19 +1,27 @@
 (ns oph.ehoks.external.arvo
   (:require [oph.ehoks.external.connection :as c]
+            [oph.ehoks.external.organisaatio :as org]
             [oph.ehoks.config :refer [config]]
+            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [clojure.string :as string])
   (:import (clojure.lang ExceptionInfo)))
+
+(defn arvo-call!
+  "Apufunktio, jota kaikki API-kutsut Arvoon käyttävät."
+  [method url-suffix options]
+  (-> options
+      (assoc :basic-auth [(:arvo-username config) (:arvo-password config)]
+             :as :json)
+      (->> (hash-map :method method, :service (:arvo-url config),
+                     :url (str (:arvo-url config) url-suffix),
+                     :options))
+      (c/with-api-headers)
+      :body))
 
 (defn get-kyselytunnus-status!
   "Hakee kyselytunnuksen tilan Arvosta."
   [tunnus]
-  (:body (c/with-api-headers {:method :get
-                              :service (:arvo-url config)
-                              :url (str (:arvo-url config) "/status/" tunnus)
-                              :options {:basic-auth
-                                        [(:arvo-username config)
-                                         (:arvo-password config)]
-                                        :as :json}})))
+  (arvo-call! :get (str "/vastauslinkki/v1/status/" tunnus) {}))
 
 (defn get-kyselylinkki-status
   "Hakee kyselylinkin tilan Arvosta."
@@ -30,12 +38,71 @@
                      (= 404 (:status (ex-data e))))
         (throw e)))))
 
+(defn create-kyselytunnus!
+  "Luo kyselylinkin Arvoon."
+  [kyselylinkki-params]
+  (arvo-call! :post
+              "/vastauslinkki/v1"
+              {:form-params kyselylinkki-params :content-type :json}))
+
 (defn delete-kyselytunnus
   "Poistaa kyselytunnuksen Arvosta."
   [tunnus]
-  (c/with-api-headers {:method :delete
-                       :service (:arvo-url config)
-                       :url (str (:arvo-url config) "/" tunnus)
-                       :options {:basic-auth [(:arvo-username config)
-                                              (:arvo-password config)]
-                                 :as :json}}))
+  (arvo-call! :delete (str "/vastauslinkki/v1/" tunnus) {}))
+
+(defn build-jaksotunnus-request-body
+  "Luo dataobjektin TEP-jaksotunnuksen luomisrequestille."
+  [herate
+   tyopaikka-normalisoitu
+   opiskeluoikeus
+   request-id
+   koulutustoimija
+   suoritus
+   niputuspvm]
+  {:koulutustoimija_oid       koulutustoimija
+   :tyonantaja                (:tyopaikan-ytunnus herate)
+   :tyopaikka                 (:tyopaikan-nimi herate)
+   :tyopaikka_normalisoitu    tyopaikka-normalisoitu
+   :tutkintotunnus            (get-in
+                                suoritus
+                                [:koulutusmoduuli
+                                 :tunniste
+                                 :koodiarvo])
+   :tutkinnon_osa             (when (:tutkinnonosa-koodi herate)
+                                (last
+                                  (string/split
+                                    (:tutkinnonosa-koodi herate)
+                                    #"_")))
+   :paikallinen_tutkinnon_osa (:tutkinnonosa-nimi herate)
+   :tutkintonimike            (map
+                                :koodiarvo
+                                (:tutkintonimike suoritus))
+   :osaamisala                (suoritus/get-osaamisalat
+                                suoritus (:oid opiskeluoikeus))
+   :tyopaikkajakson_alkupvm   (str (:alkupvm herate))
+   :tyopaikkajakson_loppupvm  (str (:loppupvm herate))
+   :rahoituskausi_pvm         (str (:loppupvm herate))
+   :osa_aikaisuus             (:osa-aikaisuus herate)
+   :sopimustyyppi             (last
+                                (string/split
+                                  (:hankkimistapa-tyyppi herate)
+                                  #"_"))
+   :oppisopimuksen_perusta    (when (:oppisopimuksen-perusta herate)
+                                (last
+                                  (string/split
+                                    (:oppisopimuksen-perusta herate)
+                                    #"_")))
+   :vastaamisajan_alkupvm     niputuspvm
+   :oppilaitos_oid            (:oid (:oppilaitos opiskeluoikeus))
+   :toimipiste_oid            (org/get-toimipiste suoritus)
+   :request_id                request-id})
+
+(defn create-jaksotunnus
+  [data]
+  (arvo-call! :post
+              "/tyoelamapalaute/v1/vastaajatunnus"
+              {:form-params data :content-type :json}))
+
+(defn delete-jaksotunnus
+  [tunnus]
+  (arvo-call! :delete (str "/tyoelamapalaute/v1/vastaajatunnus/" tunnus) {}))
