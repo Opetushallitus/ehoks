@@ -297,9 +297,14 @@
         (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! {})
         (let [palautteet (palautteet-joissa-vastaajatunnus)
               ddb-jaksot
-              (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})]
+              (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})
+              tapahtumat
+              (db-helpers/query
+                [(str "select * from palaute_tapahtumat "
+                      "where uusi_tila = 'vastaajatunnus_muodostettu'")])]
           (is (= (count palautteet) 5))
           (is (= (count ddb-jaksot) 5))
+          (is (= (count tapahtumat) 5))
           (is (= (set (map :arvo_tunniste palautteet))
                  (set (map :tunnus ddb-jaksot))))))))
 

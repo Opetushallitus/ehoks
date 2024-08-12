@@ -16,6 +16,7 @@
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [oph.ehoks.utils.date :as date])
   (:import (clojure.lang ExceptionInfo)
            (java.text Normalizer Normalizer$Form)
@@ -287,9 +288,15 @@
             (try
               (assert (palaute/update-arvo-tunniste! tx {:id (:id tep-palaute)
                                                          :tunnus tunnus}))
-              ; TODO lisää palaute_tapahtuma EH-1687:n logiikan avulla; aseta
-              ;      arvo-request tapahtuman lisätietoihin, jotta mm. request-id
-              ;      jää talteen
+              (palautetapahtuma/insert!
+                tx
+                {:palaute-id      (:id tep-palaute)
+                 :vanha-tila      (:tila tep-palaute)
+                 :uusi-tila       "vastaajatunnus_muodostettu"
+                 :tapahtumatyyppi "arvo_luonti"
+                 :syy             (db-helpers/to-underscore-str
+                                    :vastaajatunnus-muodostettu)
+                 :lisatiedot      {:arvo-request arvo-request}})
               (sync-jakso-to-heratepalvelu!
                 tx tep-palaute opiskeluoikeus request-id tunnus)
               ; Aseta tep_kasitelty arvoon true jotta herätepalvelu ei yritä
