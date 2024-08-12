@@ -39,11 +39,6 @@ where id = :id
   and tila = 'odottaa_kasittelya'
 returning *
 
--- :name get-single-palaute-needing-vastaajatunnus! :? :1
--- :doc Get single palaute data for Arvo call.
-select * from tep_palaute
-where id = :id
-
 -- :name update! :? :1
 -- :doc Update palaute in DB
 update	palautteet
