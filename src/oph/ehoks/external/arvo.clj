@@ -6,7 +6,7 @@
             [clojure.string :as string])
   (:import (clojure.lang ExceptionInfo)))
 
-(defn arvo-call!
+(defn call!
   "Apufunktio, jota kaikki API-kutsut Arvoon käyttävät."
   [method url-suffix options]
   (-> options
@@ -21,7 +21,7 @@
 (defn get-kyselytunnus-status!
   "Hakee kyselytunnuksen tilan Arvosta."
   [tunnus]
-  (arvo-call! :get (str "/vastauslinkki/v1/status/" tunnus) {}))
+  (call! :get (str "/vastauslinkki/v1/status/" tunnus) {}))
 
 (defn get-kyselylinkki-status
   "Hakee kyselylinkin tilan Arvosta."
@@ -41,14 +41,14 @@
 (defn create-kyselytunnus!
   "Luo kyselylinkin Arvoon."
   [kyselylinkki-params]
-  (arvo-call! :post
-              "/vastauslinkki/v1"
-              {:form-params kyselylinkki-params :content-type :json}))
+  (call! :post
+         "/vastauslinkki/v1"
+         {:form-params kyselylinkki-params :content-type :json}))
 
 (defn delete-kyselytunnus
   "Poistaa kyselytunnuksen Arvosta."
   [tunnus]
-  (arvo-call! :delete (str "/vastauslinkki/v1/" tunnus) {}))
+  (call! :delete (str "/vastauslinkki/v1/" tunnus) {}))
 
 (defn build-jaksotunnus-request-body
   "Luo dataobjektin TEP-jaksotunnuksen luomisrequestille."
@@ -99,10 +99,10 @@
 
 (defn create-jaksotunnus
   [data]
-  (arvo-call! :post
-              "/tyoelamapalaute/v1/vastaajatunnus"
-              {:form-params data :content-type :json}))
+  (call! :post
+         "/tyoelamapalaute/v1/vastaajatunnus"
+         {:form-params data :content-type :json}))
 
 (defn delete-jaksotunnus
   [tunnus]
-  (arvo-call! :delete (str "/tyoelamapalaute/v1/vastaajatunnus/" tunnus) {}))
+  (call! :delete (str "/tyoelamapalaute/v1/vastaajatunnus/" tunnus) {}))
