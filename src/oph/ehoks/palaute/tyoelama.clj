@@ -1,5 +1,6 @@
 (ns oph.ehoks.palaute.tyoelama
   (:require [chime.core :as chime]
+            [clojure.tools.logging :as log]
             [clojure.java.jdbc :as jdbc]
             [clojure.string :as string]
             [hugsql.core :as hugsql]
@@ -246,7 +247,8 @@
   (let [query {:jakson-yksiloiva-tunniste
                (:jakson-yksiloiva-tunniste tep-palaute)
                :hoks-id (:hoks-id tep-palaute)}]
-    (-> (get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste! tx query)
+    (-> (palaute/get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste!
+          tx query)
         (first)
         (not-empty)
         (or (throw (ex-info "palaute not found" query)))
@@ -283,8 +285,8 @@
                 tunnus          (:tunnus (arvo/create-jaksotunnus
                                            arvo-request))]
             (try
-              (assert (update-arvo-tunniste! tx {:id (:id tep-palaute)
-                                                 :tunnus tunnus}))
+              (assert (palaute/update-arvo-tunniste! tx {:id (:id tep-palaute)
+                                                         :tunnus tunnus}))
               ; TODO lisää palaute_tapahtuma EH-1687:n logiikan avulla; aseta
               ;      arvo-request tapahtuman lisätietoihin, jotta mm. request-id
               ;      jää talteen
@@ -294,9 +296,8 @@
               ; tehdä vastaavaa operaatiota siirtymävaiheen/asennuksien aikana.
               ; FIXME poista tep_kasitelty-logiikka siirtymävaiheen jälkeen?
               (assert
-                (update-tep-kasitelty! tx
-                                       {:tep-kasitelty true
-                                        :id (:hankkimistapa-id tep-palaute)}))
+                (palaute/update-tep-kasitelty!
+                  tx {:tep-kasitelty true :id (:hankkimistapa-id tep-palaute)}))
               (catch Exception e
                 (log/errorf
                   e
@@ -316,7 +317,7 @@
   [_]
   (log/info
     "Starting to create vastaajatunnus for unprocessed työelämäpalaute.")
-  (doseq [palaute (get-tep-palautteet-waiting-for-vastaajatunnus!
+  (doseq [palaute (palaute/get-tep-palautteet-waiting-for-vastaajatunnus!
                     db/spec {:heratepvm (str (date/now))})]
     (create-and-save-arvo-vastaajatunnus! palaute))
   (log/info "Done creating vastaajatunnus for unprocessed työelämäpalaute."))
