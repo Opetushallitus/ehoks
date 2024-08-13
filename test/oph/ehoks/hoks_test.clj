@@ -58,7 +58,8 @@
         :keskeiset-tyotehtavat ["Hälytysten valvonta"
                                 "Vuoronvaihdon tarkistukset"]}}]}]
    :hankittavat-paikalliset-tutkinnon-osat
-   [{:osaamisen-hankkimistavat
+   [{:nimi "Testiosa"
+     :osaamisen-hankkimistavat
      [{:yksiloiva-tunniste "4"
        :osaamisen-hankkimistapa-koodi-uri
        "osaamisenhankkimistapa_koulutussopimus"
@@ -75,7 +76,8 @@
         :tyopaikan-y-tunnus "5523718-7"
         :keskeiset-tyotehtavat ["Hälytysten valvonta"
                                 "Vuoronvaihdon tarkistukset"]}}]}
-    {:osaamisen-hankkimistavat
+    {:nimi "Testiosa 2"
+     :osaamisen-hankkimistavat
      [{:yksiloiva-tunniste "5"
        :osaamisen-hankkimistapa-koodi-uri
        "osaamisenhankkimistapa_oppilaitosmuotoinenkoulutus"

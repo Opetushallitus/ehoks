@@ -41,7 +41,7 @@ returning *
 
 -- :name update! :? :1
 -- :doc Update palaute in DB
-update	palautteet
+update palautteet
 set	herate_source = :herate-source,
 	heratepvm = :heratepvm,
 	kyselytyyppi = :kyselytyyppi,

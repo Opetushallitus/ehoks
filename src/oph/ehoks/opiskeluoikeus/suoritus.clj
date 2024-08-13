@@ -1,6 +1,5 @@
 (ns oph.ehoks.opiskeluoikeus.suoritus
-  (:require [clojure.string :as string])
-  (:import (java.time LocalDate)))
+  (:require [clojure.string :as string]))
 
 (defn tyyppi [suoritus] (get-in suoritus [:tyyppi :koodiarvo]))
 
@@ -34,16 +33,16 @@
        (format "(\"%s\")")))
 
 (defn get-osaamisalat
-  "Hakee voimassa olevat osaamisalat suorituksesta."
-  [suoritus opiskeluoikeus-oid]
+  "Hakee voimassa olevat osaamisalat suorituksesta haluttuna päivämääränä."
+  [suoritus opiskeluoikeus-oid pvm]
   (->> (:osaamisala suoritus)
        (filter #(and (or (nil? (:loppu %1))
                          (>= (compare (:loppu %1)
-                                      (str (LocalDate/now)))
+                                      (str pvm))
                              0))
                      (or (nil? (:alku %1))
                          (<= (compare (:alku %1)
-                                      (str (LocalDate/now)))
+                                      (str pvm))
                              0))))
        (map #(or (:koodiarvo (:osaamisala %1))
                  (:koodiarvo %1)))))

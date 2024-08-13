@@ -56,14 +56,3 @@
   "Find organisaatiot"
   [oids]
   (:body (try-to-get-organisaatiot-from-cache! oids)))
-
-(defn get-toimipiste
-  "Palauttaa toimipisteen OID jos sen organisaatiotyyppi on toimipiste. Tämä
-  tarkistetaan tekemällä request organisaatiopalveluun. Jos organisaatiotyyppi
-  ei ole toimipiste, palauttaa nil."
-  [suoritus]
-  (let [oid (:oid (:toimipiste suoritus))
-        org (get-organisaatio! oid)
-        org-tyypit (:tyypit org)]
-    (when (some #{"organisaatiotyyppi_03"} org-tyypit)
-      oid)))

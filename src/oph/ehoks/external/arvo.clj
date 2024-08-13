@@ -57,10 +57,11 @@
    opiskeluoikeus
    request-id
    koulutustoimija
+   toimipiste
    suoritus
    niputuspvm]
   {:koulutustoimija_oid       koulutustoimija
-   :tyonantaja                (:tyopaikan-ytunnus herate)
+   :tyonantaja                (:tyopaikan-y-tunnus herate)
    :tyopaikka                 (:tyopaikan-nimi herate)
    :tyopaikka_normalisoitu    tyopaikka-normalisoitu
    :tutkintotunnus            (get-in
@@ -68,33 +69,34 @@
                                 [:koulutusmoduuli
                                  :tunniste
                                  :koodiarvo])
-   :tutkinnon_osa             (when (:tutkinnonosa-koodi herate)
+   :tutkinnon_osa             (when (:tutkinnon-osa-koodi-uri herate)
                                 (last
                                   (string/split
-                                    (:tutkinnonosa-koodi herate)
+                                    (:tutkinnon-osa-koodi-uri herate)
                                     #"_")))
    :paikallinen_tutkinnon_osa (:tutkinnonosa-nimi herate)
    :tutkintonimike            (map
                                 :koodiarvo
                                 (:tutkintonimike suoritus))
    :osaamisala                (suoritus/get-osaamisalat
-                                suoritus (:oid opiskeluoikeus))
+                                suoritus (:oid opiskeluoikeus)
+                                (:heratepvm herate))
    :tyopaikkajakson_alkupvm   (str (:alkupvm herate))
    :tyopaikkajakson_loppupvm  (str (:loppupvm herate))
    :rahoituskausi_pvm         (str (:loppupvm herate))
-   :osa_aikaisuus             (:osa-aikaisuus herate)
+   :osa_aikaisuus             (:osa-aikaisuustieto herate)
    :sopimustyyppi             (last
                                 (string/split
-                                  (:hankkimistapa-tyyppi herate)
+                                  (:osaamisen-hankkimistapa-koodi-uri herate)
                                   #"_"))
-   :oppisopimuksen_perusta    (when (:oppisopimuksen-perusta herate)
+   :oppisopimuksen_perusta    (when (:oppisopimuksen-perusta-koodi-uri herate)
                                 (last
                                   (string/split
-                                    (:oppisopimuksen-perusta herate)
+                                    (:oppisopimuksen-perusta-koodi-uri herate)
                                     #"_")))
    :vastaamisajan_alkupvm     niputuspvm
    :oppilaitos_oid            (:oid (:oppilaitos opiskeluoikeus))
-   :toimipiste_oid            (org/get-toimipiste suoritus)
+   :toimipiste_oid            toimipiste
    :request_id                request-id})
 
 (defn create-jaksotunnus

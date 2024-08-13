@@ -3,25 +3,25 @@ SELECT
   jakson_yksiloiva_tunniste,
   kyselytyyppi AS internal_kyselytyyppi,
   hankkimistapa_id,
-  hankkimistapa_tyyppi,
+  osaamisen_hankkimistapa_koodi_uri,
   hoks_id,
   alkupvm::text AS jakso_alkupvm,
   loppupvm::text AS jakso_loppupvm,
-  tyopaikkaohjaaja_email AS ohjaaja_email,
-  tyopaikkaohjaaja_nimi AS ohjaaja_nimi,
-  tyopaikkaohjaaja_puhelinnumero AS ohjaaja_puhelinnumero,
+  vastuullinen_tyopaikka_ohjaaja_sahkoposti,
+  vastuullinen_tyopaikka_ohjaaja_nimi,
+  vastuullinen_tyopaikka_ohjaaja_puhelinnumero,
   opiskeluoikeus_oid,
-  oppisopimuksen_perusta,
-  osa_aikaisuus,
+  oppisopimuksen_perusta_koodi_uri,
+  osa_aikaisuustieto,
   CASE WHEN EXTRACT(MONTH FROM heratepvm) <= 6
     THEN CONCAT(EXTRACT(YEAR FROM heratepvm) - 1, '-',
                 EXTRACT(YEAR FROM heratepvm))
     ELSE CONCAT(EXTRACT(YEAR FROM heratepvm), '-',
                 EXTRACT(YEAR FROM heratepvm) + 1) END AS rahoituskausi,
   tutkinnonosa_id,
-  tutkinnonosa_koodi,
+  tutkinnon_osa_koodi_uri,
   tutkinnonosa_nimi,
   tyyppi AS tutkinnonosa_tyyppi,
   tyopaikan_nimi,
-  tyopaikan_ytunnus
+  tyopaikan_y_tunnus
 FROM tep_palaute

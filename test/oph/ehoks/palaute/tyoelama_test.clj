@@ -1,6 +1,7 @@
 (ns oph.ehoks.palaute.tyoelama-test
   (:require [clojure.test :refer [are deftest is testing use-fixtures]]
             [clojure.tools.logging.test :refer [logged? with-log]]
+            [clojure.set :as s]
             [medley.core :refer [remove-vals]]
             [taoensso.faraday :as far]
             [oph.ehoks.db :as db]
@@ -240,113 +241,165 @@
                    (->> (remove-vals nil?)))
                (build-expected-herate jakso hoks-test/hoks-1)))))))
 
-(letfn [(kasittelemattomat-palauteet []
-          (db-helpers/query
-            [(str "select * from palautteet "
-                  "where arvo_tunniste is null and "
-                  "tila = 'odottaa_kasittelya' and "
-                  "kyselytyyppi = 'tyopaikkajakson_suorittaneet'")]))
-        (palautteet-joissa-vastaajatunnus []
-          (db-helpers/query
-            [(str "select * from palautteet "
-                  "where arvo_tunniste is not null and "
-                  "tila = 'vastaajatunnus_muodostettu' and "
-                  "kyselytyyppi = 'tyopaikkajakson_suorittaneet'")]))
-        (create-hoks-in-the-past! []
-          (with-redefs [date/now #(LocalDate/of 2023 8 1)]
-            (hoks-utils/mock-st-post (hoks-utils/create-app nil)
-                                     base-url
-                                     (dissoc hoks-test/hoks-1 :id))))
-        (mock-get-opiskeluoikeus! [oid]
-          {:oid oid
-           :tila {:opiskeluoikeusjaksot
-                  [{:alku "2010-01-01"
-                    :tila {:koodiarvo "lasna"
-                           :nimi {:fi "Läsnä"}
-                           :koodistoUri "koskiopiskeluoikeudentila"
-                           :koodistoVersio 1}}]}
-           :oppilaitos {:oid "1.2.246.562.10.12944436166"}
-           :koulutustoimija {:oid "1.2.246.562.10.346830761110"}
-           :suoritukset
-           [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
-             :suorituskieli {:koodiarvo "fi"}
-             :toimipiste {:oid "1.2.246.562.10.12345678903"}
-             :koulutusmoduuli {:tunniste {:koodiarvo "123456"}}
-             :osaamisala [{:koodiarvo "test-osaamisala"}]
-             :tutkintonimike  [{:koodiarvo "12345"}
-                               {:koodiarvo "23456"}]}]
-           :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
-        (mock-get-organisaatio! [oid]
-          {:oid oid :tyypit #{"organisaatiotyyppi_03"}})
-        (mock-create-jaksotunnus [_]
-          {:tunnus (str (UUID/randomUUID))})
-        (clear-ddb-jakso-table! []
-          (doseq [jakso (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})]
-            (far/delete-item @ddb/faraday-opts @(ddb/tables :jakso)
-                             {:hankkimistapa_id (:hankkimistapa_id jakso)})))]
+(defn kasittelemattomat-palauteet []
+  (db-helpers/query
+    [(str "select * from palautteet "
+          "where arvo_tunniste is null and "
+          "tila = 'odottaa_kasittelya' and "
+          "kyselytyyppi = 'tyopaikkajakson_suorittaneet'")]))
 
-  (deftest test-create-and-save-arvo-vastaajatunnus!
-    (clear-ddb-jakso-table!)
-    (testing (str "create-and-save-arvo-vastaajatunnus! calls Arvo, saves "
-                  "vastaajatunnus to db, and syncs palaute to heratepalvelu")
-      (with-redefs [organisaatio/get-organisaatio! mock-get-organisaatio!
-                    koski/get-opiskeluoikeus! mock-get-opiskeluoikeus!
-                    arvo/create-jaksotunnus mock-create-jaksotunnus
-                    date/now #(LocalDate/of 2024 6 30)]
-        (is (= (:status (create-hoks-in-the-past!)) 200))
-        (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! {})
-        (let [palautteet (palautteet-joissa-vastaajatunnus)
-              ddb-jaksot
-              (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})
-              tapahtumat
-              (db-helpers/query
-                [(str "select * from palaute_tapahtumat "
-                      "where uusi_tila = 'vastaajatunnus_muodostettu'")])]
-          (is (= (count palautteet) 5))
-          (is (= (count ddb-jaksot) 5))
-          (is (= (count tapahtumat) 5))
-          (is (= (set (map :arvo_tunniste palautteet))
-                 (set (map :tunnus ddb-jaksot))))))))
+(defn palautteet-joissa-vastaajatunnus []
+  (db-helpers/query
+    [(str "select * from palautteet "
+          "where arvo_tunniste is not null and "
+          "tila = 'vastaajatunnus_muodostettu' and "
+          "kyselytyyppi = 'tyopaikkajakson_suorittaneet'")]))
 
-  (deftest test-create-and-save-arvo-vastaajatunnus!-error-handling
-    (testing (str "create-and-save-arvo-vastaajatunnus! error handling "
-                  "when error occurs in")
-      (with-redefs [organisaatio/get-organisaatio! mock-get-organisaatio!
-                    koski/get-opiskeluoikeus! mock-get-opiskeluoikeus!
-                    arvo/create-jaksotunnus mock-create-jaksotunnus
-                    date/now #(LocalDate/of 2024 6 30)]
-        (is (= (:status (create-hoks-in-the-past!)) 200))
-        (is (= (count (kasittelemattomat-palauteet)) 5))
+(defn create-hoks-in-the-past! []
+  (with-redefs [date/now #(LocalDate/of 2023 8 1)]
+    (hoks-utils/mock-st-post (hoks-utils/create-app nil)
+                             base-url
+                             (dissoc hoks-test/hoks-1 :id))))
 
-        (testing "Arvo call it should rollback palaute to earlier state"
-          (with-redefs [arvo/create-jaksotunnus
-                        (fn [_] (throw (ex-info "Arvo error" {})))]
+(defn mock-get-opiskeluoikeus! [oid]
+  {:oid oid
+   :tila {:opiskeluoikeusjaksot
+          [{:alku "2010-01-01"
+            :tila {:koodiarvo "lasna"
+                   :nimi {:fi "Läsnä"}
+                   :koodistoUri "koskiopiskeluoikeudentila"
+                   :koodistoVersio 1}}]}
+   :oppilaitos {:oid "1.2.246.562.10.12944436166"}
+   :koulutustoimija {:oid "1.2.246.562.10.346830761110"}
+   :suoritukset
+   [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
+     :suorituskieli {:koodiarvo "fi"}
+     :toimipiste {:oid "1.2.246.562.10.12345678903"}
+     :koulutusmoduuli {:tunniste {:koodiarvo "123456"}}
+     :osaamisala [{:koodiarvo "test-osaamisala"}]
+     :tutkintonimike  [{:koodiarvo "12345"}
+                       {:koodiarvo "23456"}]}]
+   :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
+
+(defn mock-get-organisaatio! [oid]
+  {:oid oid :tyypit #{"organisaatiotyyppi_03"}})
+
+(defn mock-create-jaksotunnus [_]
+  {:tunnus (str (UUID/randomUUID))})
+
+(defn clear-ddb-jakso-table! []
+  (doseq [jakso (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})]
+    (far/delete-item @ddb/faraday-opts @(ddb/tables :jakso)
+                     {:hankkimistapa_id (:hankkimistapa_id jakso)})))
+
+(def required-jakso-keys
+  #{:ohjaaja_nimi
+    :opiskeluoikeus_oid
+    :hoks_id
+    :hankkimistapa_tyyppi
+    :tyopaikan_nimi
+    :tyopaikan_ytunnus
+    :jakso_loppupvm
+    :ohjaaja_puhelinnumero
+    :osaamisala
+    :osa_aikaisuus
+    :tutkinnonosa_tyyppi
+    :tpk-niputuspvm
+    :tallennuspvm
+    :oppilaitos
+    :tunnus
+    :ohjaaja_ytunnus_kj_tutkinto
+    :tutkinnonosa_id
+    :niputuspvm
+    :tyopaikan_normalisoitu_nimi
+    :toimipiste_oid
+    :tutkinto
+    :alkupvm
+    :koulutustoimija
+    :jakso_alkupvm
+    :ohjaaja_email
+    :hankkimistapa_id
+    :rahoituskausi
+    :tutkintonimike
+    :viimeinen_vastauspvm
+    :request_id})
+
+(def optional-jakso-keys
+  #{:tutkinnonosa_koodi
+    :tutkinnonosa_nimi
+    :oppisopimuksen_perusta})
+
+(deftest test-create-and-save-arvo-vastaajatunnus-for-all-needed!
+  (clear-ddb-jakso-table!)
+  (testing (str "create-and-save-arvo-vastaajatunnus-for-all-needed! "
+                "calls Arvo, saves vastaajatunnus to db, "
+                "and syncs palaute to heratepalvelu")
+    (with-redefs [organisaatio/get-organisaatio! mock-get-organisaatio!
+                  koski/get-opiskeluoikeus! mock-get-opiskeluoikeus!
+                  arvo/create-jaksotunnus mock-create-jaksotunnus
+                  date/now #(LocalDate/of 2024 6 30)]
+      (is (= (:status (create-hoks-in-the-past!)) 200))
+      (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! {})
+      (let [palautteet (palautteet-joissa-vastaajatunnus)
+            ddb-jaksot
+            (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})
+            tapahtumat
+            (db-helpers/query
+              [(str "select * from palaute_tapahtumat "
+                    "where uusi_tila = 'vastaajatunnus_muodostettu'")])]
+        (is (= (count palautteet) 5))
+        (is (= (count ddb-jaksot) 5))
+        (is (= (count tapahtumat) 5))
+        (is (= (set (map :arvo_tunniste palautteet))
+               (set (map :tunnus ddb-jaksot))))
+        (doseq [jakso ddb-jaksot]
+          (is (every? some? (map #(get jakso %) required-jakso-keys)))
+          (is (empty? (s/difference
+                       (set (keys jakso))
+                       (set (concat required-jakso-keys
+                                    optional-jakso-keys))))))))))
+
+(deftest test-create-and-save-arvo-vastaajatunnus-for-all-needed!-error-handling
+  (testing (str "create-and-save-arvo-vastaajatunnus-for-all-needed! "
+                "error handling when error occurs in")
+    (with-redefs [organisaatio/get-organisaatio! mock-get-organisaatio!
+                  koski/get-opiskeluoikeus! mock-get-opiskeluoikeus!
+                  arvo/create-jaksotunnus mock-create-jaksotunnus
+                  date/now #(LocalDate/of 2024 6 30)]
+      (is (= (:status (create-hoks-in-the-past!)) 200))
+      (is (= (count (kasittelemattomat-palauteet)) 5))
+
+      (testing "Arvo call it should rollback palaute to earlier state"
+        (with-redefs [arvo/create-jaksotunnus
+                      (fn [_] (throw (ex-info "Arvo error" {})))]
+          (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! {})
+          (is (= (count (kasittelemattomat-palauteet)) 5))))
+
+      (testing (str "DynamoDB sync it should rollback palaute to earlier "
+                    "state and try to delete vastaajatunnus from Arvo")
+        (let [delete-count (atom 0)]
+          (with-redefs [tep/sync-jakso-to-heratepalvelu!
+                        (fn [_ __ ___ ____ _____]
+                          (throw (ex-info "DDB sync error" {})))
+                        arvo/delete-jaksotunnus
+                        (fn [tunnus]
+                          (assert tunnus)
+                          (swap! delete-count inc))]
             (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! {})
-            (is (= (count (kasittelemattomat-palauteet)) 5))))
+            (is (= @delete-count 5))
+            (is (= (count (kasittelemattomat-palauteet)) 5)))))
 
-        (testing (str "DynamoDB sync it should rollback palaute to earlier "
-                      "state and try to delete vastaajatunnus from Arvo")
-          (let [delete-count (atom 0)]
-            (with-redefs [tep/sync-jakso-to-heratepalvelu!
-                          (fn [_ __ ___ ____ _____]
-                            (throw (ex-info "DDB sync error" {})))
-                          arvo/delete-jaksotunnus
-                          (fn [_] (swap! delete-count inc))]
-              (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! {})
-              (is (= @delete-count 5))
-              (is (= (count (kasittelemattomat-palauteet)) 5)))))
-
-        (testing (str "getting opiskeluoikeus from Koski (not found) it "
-                      "should skip getting vastaajatunnus for that "
-                      "jakso/hoks")
-          (with-redefs [koski/get-opiskeluoikeus! (fn [_] nil)]
-            (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! {})
-            (is (= (count (kasittelemattomat-palauteet)) 5))))
-        (testing (str "getting opiskeluoikeus from Koski (other http error) "
-                      "it should skip getting vastaajatunnus for that "
-                      "jakso/hoks")
-          (with-redefs [koski/get-opiskeluoikeus!
-                        (fn [oid]
-                          (throw (ex-info "Koski error" {:status 500})))]
-            (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! {})
-            (is (= (count (kasittelemattomat-palauteet)) 5))))))))
+      (testing (str "getting opiskeluoikeus from Koski (not found) it "
+                    "should skip getting vastaajatunnus for that "
+                    "jakso/hoks")
+        (with-redefs [koski/get-opiskeluoikeus! (fn [_] nil)]
+          (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! {})
+          (is (= (count (kasittelemattomat-palauteet)) 5))))
+      (testing (str "getting opiskeluoikeus from Koski (other http error) "
+                    "it should skip getting vastaajatunnus for that "
+                    "jakso/hoks")
+        (with-redefs [koski/get-opiskeluoikeus!
+                      (fn [oid]
+                        (throw (ex-info "Koski error" {:status 500})))]
+          (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! {})
+          (is (= (count (kasittelemattomat-palauteet)) 5)))))))

@@ -111,7 +111,7 @@
 
 (def map-jakso-keys-to-ddb
   (some-fn {:hankkimistapa-id :hankkimistapa_id,
-            :hankkimistapa-tyyppi :hankkimistapa_tyyppi,
+            :osaamisen-hankkimistapa-koodi-uri :hankkimistapa_tyyppi,
             :hoks-id :hoks_id,
             :jakso-alkupvm :jakso_alkupvm,
             :jakso-loppupvm :jakso_loppupvm,
@@ -121,17 +121,21 @@
             :ohjaaja-ytunnus-kj-tutkinto :ohjaaja_ytunnus_kj_tutkinto,
             :opiskeluoikeus-oid :opiskeluoikeus_oid,
             :oppija-oid :oppija_oid,
-            :oppisopimuksen-perusta :oppisopimuksen_perusta,
-            :osa-aikaisuus :osa_aikaisuus,
+            :oppisopimuksen-perusta-koodi-uri :oppisopimuksen_perusta,
+            :osa-aikaisuustieto :osa_aikaisuus,
             :request-id :request_id,
             :toimipiste-oid :toimipiste_oid,
             :tutkinnonosa-id :tutkinnonosa_id,
-            :tutkinnonosa-koodi :tutkinnonosa_koodi,
+            :tutkinnon-osa-koodi-uri :tutkinnonosa_koodi,
             :tutkinnonosa-nimi :tutkinnonosa_nimi,
             :tutkinnonosa-tyyppi :tutkinnonosa_tyyppi,
             :tyopaikan-nimi :tyopaikan_nimi,
             :tyopaikan-normalisoitu-nimi :tyopaikan_normalisoitu_nimi,
-            :tyopaikan-ytunnus :tyopaikan_ytunnus,
+            :tyopaikan-y-tunnus :tyopaikan_ytunnus,
+            :vastuullinen-tyopaikka-ohjaaja-nimi :ohjaaja_nimi,
+            :vastuullinen-tyopaikka-ohjaaja-sahkoposti :ohjaaja_email,
+            :vastuullinen-tyopaikka-ohjaaja-puhelinnumero
+            :ohjaaja_puhelinnumero,
             :viimeinen-vastauspvm :viimeinen_vastauspvm}
            identity))
 
