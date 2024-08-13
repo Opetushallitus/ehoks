@@ -304,7 +304,7 @@
           (save-arvo-tunniste!
             tx tep-palaute tunnus {:arvo-request arvo-request})
           (sync-jakso-to-heratepalvelu!
-           tx tep-palaute opiskeluoikeus request-id tunnus)
+            tx tep-palaute opiskeluoikeus request-id tunnus)
 
           ; TODO lisää nipputunniste palautteet-tauluun (uusi kantamigraatio)
           ; TODO päättele jaksosta nipputunniste

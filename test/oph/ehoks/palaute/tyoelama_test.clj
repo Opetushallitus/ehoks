@@ -355,9 +355,9 @@
         (doseq [jakso ddb-jaksot]
           (is (every? some? (map #(get jakso %) required-jakso-keys)))
           (is (empty? (s/difference
-                       (set (keys jakso))
-                       (set (concat required-jakso-keys
-                                    optional-jakso-keys))))))))))
+                        (set (keys jakso))
+                        (set (concat required-jakso-keys
+                                     optional-jakso-keys))))))))))
 
 (deftest test-create-and-save-arvo-vastaajatunnus-for-all-needed!-error-handling
   (testing (str "create-and-save-arvo-vastaajatunnus-for-all-needed! "
