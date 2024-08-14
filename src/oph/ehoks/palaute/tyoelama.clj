@@ -183,9 +183,7 @@
   "Takes a `hoks` and `opiskeluoikeus` and initiates tyoelamapalaute for all
   tyopaikkajaksos in HOKS for which palaute has not been already initiated."
   [hoks opiskeluoikeus]
-  (->> (tyopaikkajaksot hoks)
-       (map #(initiate-if-needed! % hoks opiskeluoikeus))
-       doall))
+  (run! #(initiate-if-needed! % hoks opiskeluoikeus) (tyopaikkajaksot hoks)))
 
 (defn- deaccent-string
   "Poistaa diakriittiset merkit stringistä ja palauttaa muokatun stringin."
