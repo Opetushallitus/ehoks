@@ -3,6 +3,7 @@
             [oph.ehoks.external.organisaatio :as org]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
+            [clojure.tools.logging :as log]
             [clojure.string :as string])
   (:import (clojure.lang ExceptionInfo)))
 
@@ -41,9 +42,10 @@
 (defn create-kyselytunnus!
   "Luo kyselylinkin Arvoon."
   [kyselylinkki-params]
-  (call! :post
-         "/vastauslinkki/v1"
-         {:form-params kyselylinkki-params :content-type :json}))
+  (if-not (contains? (set (:arvo-responsibilities config)) :create-kyselytunnus)
+    (log/warn "create-kyselytunnus!: configured to not do anything")
+    (call! :post "/vastauslinkki/v1"
+           {:form-params kyselylinkki-params :content-type :json})))
 
 (defn delete-kyselytunnus
   "Poistaa kyselytunnuksen Arvosta."
@@ -101,9 +103,10 @@
 
 (defn create-jaksotunnus
   [data]
-  (call! :post
-         "/tyoelamapalaute/v1/vastaajatunnus"
-         {:form-params data :content-type :json}))
+  (if-not (contains? (set (:arvo-responsibilities config)) :create-jaksotunnus)
+    (log/warn "create-jaksotunnus!: configured to not do anything")
+    (call! :post "/tyoelamapalaute/v1/vastaajatunnus"
+           {:form-params data :content-type :json})))
 
 (defn delete-jaksotunnus
   [tunnus]

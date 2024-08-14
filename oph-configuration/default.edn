@@ -19,6 +19,7 @@
  :heratepalvelu-jakso-table "pallero-services-heratepalvelu-tep-jaksotunnusTable87D50EF4-1KUH8IGOE8ZV3"
  :heratepalvelu-nippu-table "pallero-services-heratepalvelu-tep-nippuTableDE910D47-102WQ3OSVMOEI"
  :send-herate-messages? false
+ :heratepalvelu-responsibities [:sync-amis-heratteet :sync-jakso-heratteet]
  :audit? true
  :db-type "postgresql"
  :db-server "localhost"
@@ -29,6 +30,7 @@
  :arvo-username "ehoks"
  :arvo-password ""
  :arvo-url "http://localhost:3000/api"
+ :arvo-responsibilities [:create-kyselytunnus :create-jaksotunnus]
  :enforce-opiskeluoikeus-match? false
  :prevent-finished-opiskeluoikeus-updates? false
  :koski-opiskeluoikeus-cache-ttl-millis 2000

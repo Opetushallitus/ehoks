@@ -98,16 +98,19 @@
   means that the messaging tracking fields are left intact (because
   herätepalvelu will update those)."
   [hoks-id kyselytyyppi]
-  (-> {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]}
-      (->> (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit! db/spec))
-      (first)
-      (not-empty)
-      (or (throw (ex-info "palaute not found"
-                          {:hoks-id hoks-id :kyselytyyppi kyselytyyppi})))
-      (remove-nils)
-      (update-keys map-keys-to-ddb)
-      (dissoc :internal-kyselytyyppi)
-      (->> (sync-item! :amis))))
+  (if-not (contains? (set (:heratepalvelu-responsibities config))
+                     :sync-amis-heratteet)
+    (log/warn "sync-amis-herate!: configured to not do anything")
+    (-> {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]}
+        (->> (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit! db/spec))
+        (first)
+        (not-empty)
+        (or (throw (ex-info "palaute not found"
+                            {:hoks-id hoks-id :kyselytyyppi kyselytyyppi})))
+        (remove-nils)
+        (update-keys map-keys-to-ddb)
+        (dissoc :internal-kyselytyyppi)
+        (->> (sync-item! :amis)))))
 
 (def map-jakso-keys-to-ddb
   (some-fn {:hankkimistapa-id :hankkimistapa_id,
@@ -146,6 +149,9 @@
   means that the messaging tracking fields are left intact (because
   herätepalvelu will update those)."
   [tep-palaute]
-  (-> tep-palaute
-      (update-keys map-jakso-keys-to-ddb)
-      (->> (sync-item! :jakso))))
+  (if-not (contains? (set (:heratepalvelu-responsibities config))
+                     :sync-jakso-heratteet)
+    (log/warn "sync-jakso-herate!: configured to not do anything")
+    (-> tep-palaute
+        (update-keys map-jakso-keys-to-ddb)
+        (->> (sync-item! :jakso)))))
