@@ -1049,7 +1049,10 @@
         (t/is (= (:status patch-response) 400))
         (t/is (= (test-utils/parse-body (:body patch-response))
                  {:error
-                  "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"}))))))
+                  (str "Tried to update `opiskeluoikeus-oid` from "
+                       "`1.2.246.562.15.76000000018` to "
+                       "`1.2.246.562.15.76000000000` but updating "
+                       "`opiskeluoikeus-oid` in HOKS is not allowed!")}))))))
 
 (t/deftest prevent-patch-hoks-with-updated-oppija-oid
   (t/testing "PATCH hoks virkailija"
@@ -1072,9 +1075,11 @@
               virkailija-for-test)]
         (t/is (= (:status patch-response) 400))
         (t/is (= (test-utils/parse-body (:body patch-response))
-                 {:error
-                  (str "Updating `oppija-oid` in HOKS is only allowed with "
-                       "latest master oppija oid!")}))))))
+                 {:error (str "Tried to update `oppija-oid` from "
+                              "`1.2.246.562.24.44000000008` to "
+                              "`1.2.246.562.24.12000000014` but updating "
+                              "`oppija-oid` in HOKS is only allowed with "
+                              "latest master oppija oid!")}))))))
 
 (def hoks-data
   {:opiskeluoikeus-oid "1.2.246.562.15.76000000018"
@@ -1226,7 +1231,10 @@
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
                  {:error
-                  "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"}))))))
+                  (str "Tried to update `opiskeluoikeus-oid` from "
+                       "`1.2.246.562.15.76000000018` to "
+                       "`1.2.246.562.15.76000000000` but updating "
+                       "`opiskeluoikeus-oid` in HOKS is not allowed!")}))))))
 
 (t/deftest test-put-prevent-updating-oppija-oid
   (t/testing "PUT hoks virkailija"
@@ -1267,9 +1275,11 @@
             put-body (test-utils/parse-body (:body put-response))]
         (t/is (= (:status put-response) 400))
         (t/is (= put-body
-                 {:error
-                  (str "Updating `oppija-oid` in HOKS is only allowed with "
-                       "latest master oppija oid!")}))))))
+                 {:error (str "Tried to update `oppija-oid` from "
+                              "`1.2.246.562.24.44000000008` to "
+                              "`1.2.246.562.24.45000000007` but updating "
+                              "`oppija-oid` in HOKS is only allowed with "
+                              "latest master oppija oid!")}))))))
 
 (t/deftest test-allow-updating-oppija-oid
   (t/testing "Allows changing a slave oppija-oid to master"

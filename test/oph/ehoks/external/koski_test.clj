@@ -35,7 +35,10 @@
      :koulutustoimija {:oid "1.2.246.562.10.10000000009"}}
     "1.246.562.15.12345678911" {}
     "1.246.562.15.12345678910"
-    (throw (ex-info "Internal server error" {:status 500}))
+    (throw (ex-info
+             "Bad request"
+             {:status 400
+              :body   (str "[{\"key\": \"badRequest.format.number\"}]")}))
     "1.2.246.562.15.12345678903" {}
     "1.2.246.562.15.23456789017"
     {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
@@ -58,7 +61,10 @@
     (testing "The function throws on exceptional status codes."
       (is (thrown-with-msg?
             ExceptionInfo
-            #"Error while fetching opiskeluoikeus from Koski"
+            (re-pattern
+              (str "Error while fetching opiskeluoikeus "
+                   "`1.246.562.15.12345678910` from Koski. "
+                   "Koski-virhekoodi is `badRequest.format.number`."))
             (k/get-opiskeluoikeus! "1.246.562.15.12345678910"))))))
 
 (deftest test-get-existing-opiskeluoikeus!
@@ -72,8 +78,12 @@
     (testing "The function throws on exceptional status codes."
       (is (thrown-with-msg?
             ExceptionInfo
-            #"Error while fetching opiskeluoikeus from Koski"
+            (re-pattern
+              (str "Error while fetching opiskeluoikeus "
+                   "`1.246.562.15.12345678910` from Koski. "
+                   "Koski-virhekoodi is `badRequest.format.number`."))
             (k/get-opiskeluoikeus! "1.246.562.15.12345678910"))))))
+
 (deftest test-get-oppija-opiskeluoikeudet
   (testing "Get opiskeluoikeudet for oppija"
     (client/set-post!

@@ -325,13 +325,18 @@
         new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-hoks)
         old-opiskeluoikeus-oid (:opiskeluoikeus-oid old-hoks)]
     (when-not (opiskeluoikeus/still-active? new-opiskeluoikeus-oid)
-      (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
+      (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active."
                               new-opiskeluoikeus-oid)
                       {:type               ::disallowed-update
                        :opiskeluoikeus-oid new-opiskeluoikeus-oid})))
     (when (and (some? new-opiskeluoikeus-oid)
                (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
-      (throw (ex-info "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"
+      (throw (ex-info (format
+                        (str "Tried to update `opiskeluoikeus-oid` from `%s` "
+                             "to `%s` but updating `opiskeluoikeus-oid` in "
+                             "HOKS is not allowed!")
+                        old-opiskeluoikeus-oid
+                        new-opiskeluoikeus-oid)
                       {:type                   ::disallowed-update
                        :old-opiskeluoikeus-oid old-opiskeluoikeus-oid
                        :new-opiskeluoikeus-oid new-opiskeluoikeus-oid})))
@@ -342,8 +347,12 @@
                            :oidHenkilo)]
         (when (not= master-oid new-oppija-oid)
           (throw (ex-info
-                   (str "Updating `oppija-oid` in HOKS is only allowed with "
-                        "latest master oppija oid!")
+                   (format
+                     (str "Tried to update `oppija-oid` from `%s` to `%s` but "
+                          "updating `oppija-oid` in HOKS is only allowed with "
+                          "latest master oppija oid!")
+                     old-oppija-oid
+                     new-oppija-oid)
                    {:type           ::disallowed-update
                     :old-oppija-oid old-oppija-oid
                     :new-oppija-oid new-oppija-oid})))))))

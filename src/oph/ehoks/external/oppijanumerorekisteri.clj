@@ -24,7 +24,9 @@
        (catch ExceptionInfo e
          (when-not (= (:status (ex-data e)) 404)
            (throw
-             (ex-info "Error while fetching oppija from Oppijanumerorekisteri"
+             (ex-info (format (str "Error while fetching oppija `%s` from "
+                                   "Oppijanumerorekisteri")
+                              oid)
                       {:type       ::oppija-fetching-error
                        :oppija-oid oid}
                       e))))))

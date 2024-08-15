@@ -22,8 +22,9 @@
     (catch ExceptionInfo e
       (log/warn e "Error while fetching" oid "from organisaatiopalvelu")
       (when-not (= (:status (ex-data e)) status/not-found)
-        (throw (ex-info (str "Error while fetching organisation from "
-                             "Organisaatiopalvelu")
+        (throw (ex-info (format (str "Error while fetching organisation `%s` "
+                                     "from Organisaatiopalvelu.")
+                                oid)
                         {:type             ::organisation-fetching-error
                          :organisation-oid oid}
                         e))))))

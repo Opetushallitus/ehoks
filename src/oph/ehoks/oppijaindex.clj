@@ -192,9 +192,11 @@
   [oid oppija-oid]
   (let [opiskeluoikeus (k/get-existing-opiskeluoikeus! oid)]
     (when (opiskeluoikeus/linked-to-another? opiskeluoikeus)
-      (throw (ex-info "Opiskeluoikeus sisältyy toiseen opiskeluoikeuteen"
-                      {:type               ::invalid-opiskeluoikeus
-                       :opiskeluoikeus-oid oid})))
+      (throw (ex-info
+               (format "Opiskeluoikeus `%s` sisältyy toiseen opiskeluoikeuteen."
+                       oid)
+               {:type               ::invalid-opiskeluoikeus
+                :opiskeluoikeus-oid oid})))
     (when (> (count (:suoritukset opiskeluoikeus)) 1)
       (log/warnf
         "Opiskeluoikeus %s has multiple suoritukset. First is used for tutkinto"

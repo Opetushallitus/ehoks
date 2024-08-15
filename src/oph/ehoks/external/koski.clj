@@ -97,7 +97,11 @@
         (when-not (and (= (:status (ex-data e)) status/not-found)
                        (= koski-virhekoodi
                           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
-          (throw (ex-info "Error while fetching opiskeluoikeus from Koski"
+          (throw (ex-info (format
+                            (str "Error while fetching opiskeluoikeus `%s` "
+                                 "from Koski. Koski-virhekoodi is `%s`.")
+                            oid
+                            koski-virhekoodi)
                           {:type              ::opiskeluoikeus-fetching-error
                            :opiskeluoikeus-oid oid
                            :koski-virhekoodi   koski-virhekoodi}
