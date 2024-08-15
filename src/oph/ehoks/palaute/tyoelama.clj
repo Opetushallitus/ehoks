@@ -314,9 +314,11 @@
           ; Aseta tep_kasitelty arvoon true jotta herätepalvelu ei yritä
           ; tehdä vastaavaa operaatiota siirtymävaiheen/asennuksien aikana.
           ; FIXME poista tep_kasitelty-logiikka siirtymävaiheen jälkeen?
-          (assert
-            (palaute/update-tep-kasitelty!
-              tx {:tep-kasitelty true :id (:hankkimistapa-id tep-palaute)}))
+          (if-not tunnus
+            (log/warn "No vastaajatunnus got from arvo, so not marking handled")
+            (assert
+              (palaute/update-tep-kasitelty!
+                tx {:tep-kasitelty true :id (:hankkimistapa-id tep-palaute)})))
           (catch ExceptionInfo e
             (log/errorf e
                         (str "Error updating palaute %d, trying to remove "
