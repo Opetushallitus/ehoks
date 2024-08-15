@@ -147,6 +147,7 @@
                    :dependencies [[ring/ring-mock]
                                   [ring/ring-devel]
                                   [camel-snake-kebab]]
+                   :env {:config "oph-configuration/dev.edn"}
                    :resource-paths ["resources/dev"
                                     "resources/test/src"
                                     "resources/dev/src"

@@ -1,0 +1,6 @@
+{:db-server "localhost"
+ :send-herate-messages? false
+ :enforce-opiskeluoikeus-match? false
+ :prevent-finished-opiskeluoikeus-updates? false
+ :heratepalvelu-responsibities [:sync-amis-heratteet :sync-jakso-heratteet]
+ :arvo-responsibilities [:create-kyselytunnus :create-jaksotunnus]}
