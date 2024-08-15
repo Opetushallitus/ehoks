@@ -53,6 +53,7 @@
               :heratepalvelu-jakso-table s/Str
               :heratepalvelu-nippu-table s/Str
               :send-herate-messages? s/Bool
+              :heratepalvelu-responsibities [s/Keyword]
               :audit? s/Bool
               :db-type s/Str
               :db-server s/Str
@@ -63,6 +64,7 @@
               :arvo-password s/Str
               :arvo-username s/Str
               :arvo-url s/Str
+              :arvo-responsibilities [s/Keyword]
               :enforce-opiskeluoikeus-match? s/Bool
               :prevent-finished-opiskeluoikeus-updates? s/Bool
               :heratepalvelu-resend-queue s/Str

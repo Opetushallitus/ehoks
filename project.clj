@@ -15,6 +15,7 @@
                  [com.layerware/hugsql]
                  [ring/ring-jetty-adapter]
                  [clj-time]
+                 [jarohen/chime]
                  [org.clojure/core.async]
                  [org.clojure/tools.logging]
                  [org.apache.logging.log4j/log4j-api]
@@ -55,6 +56,7 @@
                          ;; date, time
                          [joda-time "2.12.5"]
                          [clj-time "0.15.2"]
+                         [jarohen/chime "0.3.3"]
 
                          ;; json
                          [com.fasterxml.jackson.core/jackson-annotations "2.16.0"]
@@ -145,6 +147,7 @@
                    :dependencies [[ring/ring-mock]
                                   [ring/ring-devel]
                                   [camel-snake-kebab]]
+                   :env {:config "oph-configuration/dev.edn"}
                    :resource-paths ["resources/dev"
                                     "resources/test/src"
                                     "resources/dev/src"
