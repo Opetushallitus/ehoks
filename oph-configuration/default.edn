@@ -27,5 +27,7 @@
  :arvo-username "ehoks"
  :arvo-password ""
  :arvo-url "http://localhost:3000/api"
+ :heratepalvelu-responsibities []
+ :arvo-responsibilities []
  :koski-opiskeluoikeus-cache-ttl-millis 2000
  :koski-oppija-cache-ttl-millis 5000}
