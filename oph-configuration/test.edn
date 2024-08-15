@@ -2,12 +2,6 @@
  :ext-cache-lifetime-minutes 30
  :opintopolku-host "localhost:3001"
  :audit? true
- :db-server "localhost"
  :db-name "ehoks_test"
- :send-herate-messages? false
- :enforce-opiskeluoikeus-match? false
- :prevent-finished-opiskeluoikeus-updates? false
- :heratepalvelu-responsibities [:sync-amis-heratteet :sync-jakso-heratteet]
- :arvo-responsibilities [:create-kyselytunnus :create-jaksotunnus]
  :koski-opiskeluoikeus-cache-ttl-millis 1
  :koski-oppija-cache-ttl-millis 1}

@@ -98,60 +98,13 @@
   means that the messaging tracking fields are left intact (because
   herätepalvelu will update those)."
   [hoks-id kyselytyyppi]
-  (if-not (contains? (set (:heratepalvelu-responsibities config))
-                     :sync-amis-heratteet)
-    (log/warn "sync-amis-herate!: configured to not do anything")
-    (-> {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]}
-        (->> (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit! db/spec))
-        (first)
-        (not-empty)
-        (or (throw (ex-info "palaute not found"
-                            {:hoks-id hoks-id :kyselytyyppi kyselytyyppi})))
-        (remove-nils)
-        (update-keys map-keys-to-ddb)
-        (dissoc :internal-kyselytyyppi)
-        (->> (sync-item! :amis)))))
-
-(def map-jakso-keys-to-ddb
-  (some-fn {:hankkimistapa-id :hankkimistapa_id,
-            :osaamisen-hankkimistapa-koodi-uri :hankkimistapa_tyyppi,
-            :hoks-id :hoks_id,
-            :jakso-alkupvm :jakso_alkupvm,
-            :jakso-loppupvm :jakso_loppupvm,
-            :ohjaaja-email :ohjaaja_email,
-            :ohjaaja-nimi :ohjaaja_nimi,
-            :ohjaaja-puhelinnumero :ohjaaja_puhelinnumero,
-            :ohjaaja-ytunnus-kj-tutkinto :ohjaaja_ytunnus_kj_tutkinto,
-            :opiskeluoikeus-oid :opiskeluoikeus_oid,
-            :oppija-oid :oppija_oid,
-            :oppisopimuksen-perusta-koodi-uri :oppisopimuksen_perusta,
-            :osa-aikaisuustieto :osa_aikaisuus,
-            :request-id :request_id,
-            :toimipiste-oid :toimipiste_oid,
-            :tutkinnonosa-id :tutkinnonosa_id,
-            :tutkinnon-osa-koodi-uri :tutkinnonosa_koodi,
-            :tutkinnonosa-nimi :tutkinnonosa_nimi,
-            :tutkinnonosa-tyyppi :tutkinnonosa_tyyppi,
-            :tyopaikan-nimi :tyopaikan_nimi,
-            :tyopaikan-normalisoitu-nimi :tyopaikan_normalisoitu_nimi,
-            :tyopaikan-y-tunnus :tyopaikan_ytunnus,
-            :vastuullinen-tyopaikka-ohjaaja-nimi :ohjaaja_nimi,
-            :vastuullinen-tyopaikka-ohjaaja-sahkoposti :ohjaaja_email,
-            :vastuullinen-tyopaikka-ohjaaja-puhelinnumero
-            :ohjaaja_puhelinnumero,
-            :viimeinen-vastauspvm :viimeinen_vastauspvm}
-           identity))
-
-(defn sync-jakso-herate!
-  "Update the herätepalvelu jaksotunnustable to have the same content
-  for given heräte as palaute-backend has in its own database.
-  sync-jakso-herate! only updates fields it 'owns': currently that
-  means that the messaging tracking fields are left intact (because
-  herätepalvelu will update those)."
-  [tep-palaute]
-  (if-not (contains? (set (:heratepalvelu-responsibities config))
-                     :sync-jakso-heratteet)
-    (log/warn "sync-jakso-herate!: configured to not do anything")
-    (-> tep-palaute
-        (update-keys map-jakso-keys-to-ddb)
-        (->> (sync-item! :jakso)))))
+  (-> {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]}
+      (->> (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit! db/spec))
+      (first)
+      (not-empty)
+      (or (throw (ex-info "palaute not found"
+                          {:hoks-id hoks-id :kyselytyyppi kyselytyyppi})))
+      (remove-nils)
+      (update-keys map-keys-to-ddb)
+      (dissoc :internal-kyselytyyppi)
+      (->> (sync-item! :amis))))

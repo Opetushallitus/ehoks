@@ -4,7 +4,6 @@
             [oph.ehoks.config :refer [config] :as c]
             [oph.ehoks.mocked-routes.mock-routes :as mock]
             [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.palaute.scheduler :as scheduler]
             [compojure.core :refer [GET defroutes routes]]
             [ring.util.http-response :refer [ok not-found]]
             [ring.adapter.jetty :as jetty]
@@ -14,8 +13,7 @@
             [clojure.string :as c-str]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
-            [oph.ehoks.dev-tools :as dev-tools])
-  (:import (java.time Instant Duration)))
+            [oph.ehoks.dev-tools :as dev-tools]))
 
 (defn uri-to-filename [uri]
   (-> uri
@@ -96,8 +94,6 @@
   (log/infof "Starting %s development server..." app-name)
   (log/info "Not safe for production or public environments.")
   (populate-oppijaindex)
-  (when (= app-name "ehoks-palaute")
-    (scheduler/run-scheduler! (Instant/now) (Duration/ofSeconds 60)))
   (jetty/run-jetty app
                    {:port (:port config)
                     :join? false

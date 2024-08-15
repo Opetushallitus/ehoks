@@ -20,28 +20,11 @@ insert into palautteet (
   :herate-source, :heratepvm, :hoks-id, :koulutustoimija, :kyselytyyppi, :tila,
   :toimipiste-oid, :tutkintonimike, :tutkintotunnus, :voimassa-alkupvm,
   :voimassa-loppupvm
-) returning *
-
--- :name get-tep-palautteet-waiting-for-vastaajatunnus! :? :*
--- :doc Get all unprocessed palaute for Arvo call.
-select * from tep_palaute
-where tila = 'odottaa_kasittelya'
-  and heratepvm <= current_date
-  and arvo_tunniste is null
-  and tep_kasitelty = false
-
--- :name update-arvo-tunniste! :? :*
--- :doc Update arvo-tunniste for palaute with given id.
-update palautteet
-set arvo_tunniste = :tunnus, updated_at = now(), tila = 'vastaajatunnus_muodostettu'
-where id = :id
-  and arvo_tunniste is null
-  and tila = 'odottaa_kasittelya'
-returning *
+) returning id
 
 -- :name update! :? :1
 -- :doc Update palaute in DB
-update palautteet
+update	palautteet
 set	herate_source = :herate-source,
 	heratepvm = :heratepvm,
 	kyselytyyppi = :kyselytyyppi,
@@ -83,17 +66,3 @@ where hoks_id = :hoks-id AND jakson_yksiloiva_tunniste = :yksiloiva-tunniste
 select * from palaute_for_amis_heratepalvelu
 where ehoks_id = :hoks-id
   and internal_kyselytyyppi in (:v*:kyselytyypit)
-
--- :name get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste! :? :*
--- :doc get tep-jaksopalaute in the format for putting into herätepalvelu
-select * from palaute_for_tep_heratepalvelu
-where hoks_id = :hoks-id
-  and jakson_yksiloiva_tunniste = :jakson-yksiloiva-tunniste
-  and internal_kyselytyyppi = 'tyopaikkajakson_suorittaneet'
-
--- :name update-tep-kasitelty! :? :1
--- :doc Updates tep_kasitelty flag after getting vastaajatunnus from Arvo.
-update osaamisen_hankkimistavat
-set tep_kasitelty = :tep-kasitelty, updated_at = now()
-where id = :id
-returning *

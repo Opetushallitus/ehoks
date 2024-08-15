@@ -9,9 +9,7 @@
             [oph.ehoks.ehoks-app :as ehoks-app]
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.palaute.scheduler :as scheduler]
-            [ring.adapter.jetty :as jetty])
-  (:import (java.time Instant LocalTime ZonedDateTime ZoneId Period)))
+            [ring.adapter.jetty :as jetty]))
 
 (defn has-arg?
   "Is arg present"
@@ -50,13 +48,6 @@
         (log/info "Updating oppijaindex finished"))
       (when audit/enabled?
         (audit/start-heartbeat!))
-      (when (= app-name "ehoks-palaute")
-        (scheduler/run-scheduler! (-> (LocalTime/of 6 0 0)
-                                      (.adjustInto
-                                        (ZonedDateTime/now
-                                          (ZoneId/of "Europe/Helsinki")))
-                                      Instant/from)
-                                  (Period/ofDays 1)))
       (jetty/run-jetty hoks-app {:port (:port config)
                                  :join? true
                                  :async? true}))))

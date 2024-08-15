@@ -124,7 +124,7 @@ lein with-profile +dev run ehoks-virkailija
 tai
 
 ``` shell
-lein trampoline with-profile +dev run ehoks-palaute
+lein with-profile +dev run ehoks-palaute
 ```
 
 Replissä `lein with-profiles +dev repl`:

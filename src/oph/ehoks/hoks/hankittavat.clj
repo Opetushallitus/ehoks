@@ -1,7 +1,6 @@
 (ns oph.ehoks.hoks.hankittavat
   (:require [oph.ehoks.db.postgresql.hankittavat :as db]
             [oph.ehoks.hoks.common :as c]
-            [oph.ehoks.utils.date :as date]
             [clojure.java.jdbc :as jdbc]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks])
@@ -275,7 +274,7 @@
       [conn db-conn]
       (let [tho (db/insert-tyopaikalla-jarjestettava-koulutus!
                   (:tyopaikalla-jarjestettava-koulutus oh) conn)
-            to-upsert (assoc (if (.isBefore (date/now) (:loppu oh))
+            to-upsert (assoc (if (.isBefore (LocalDate/now) (:loppu oh))
                                oh
                                (assoc oh :tep_kasitelty true))
                              :tyopaikalla-jarjestettava-koulutus-id

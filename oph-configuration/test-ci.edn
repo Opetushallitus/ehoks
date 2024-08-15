@@ -8,10 +8,5 @@
  :db-password "ehoks"
  :opintopolku-host "localhost:3001"
  :audit? true
- :send-herate-messages? false
- :enforce-opiskeluoikeus-match? false
- :prevent-finished-opiskeluoikeus-updates? false
- :heratepalvelu-responsibities [:sync-amis-heratteet :sync-jakso-heratteet]
- :arvo-responsibilities [:create-kyselytunnus :create-jaksotunnus]
  :koski-opiskeluoikeus-cache-ttl-millis 1
  :koski-oppija-cache-ttl-millis 1}

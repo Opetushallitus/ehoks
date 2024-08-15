@@ -11,11 +11,9 @@
  :db-name "{{ehoks_db_name}}"
  :db-username "{{postgres_app_user}}"
  :db-password "{{ehoks_db_app_password}}"
+ :send-herate-messages? {{ehoks_send_herate_messages}}
  :arvo-username "{{ehoks_arvo_username}}"
  :arvo-password "{{ehoks_arvo_password}}"
  :arvo-url "{{ehoks_arvo_url}}"
- :heratepalvelu-responsibities {{ehoks_heratepalvelu_responsibilities}}
- :arvo-responsibilities {{ehoks_arvo_responsibilities}}
- :send-herate-messages? {{ehoks_send_herate_messages}}
  :enforce-opiskeluoikeus-match? {{ehoks_enforce_opiskeluoikeus_match}}
  :prevent-finished-opiskeluoikeus-updates? {{ehoks_prevent_finished_opiskeluoikeus_updates}}}
