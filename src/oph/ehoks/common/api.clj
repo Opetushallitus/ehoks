@@ -1,6 +1,9 @@
 (ns oph.ehoks.common.api
   (:require [compojure.api.exception :as c-ex]
             [oph.ehoks.config :refer [config]]
+            [oph.ehoks.hoks :as hoks]
+            [oph.ehoks.external.cas :as cas]
+            [oph.ehoks.external.koodisto :as koodisto]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.organisaatio :as organisaatio]
@@ -71,11 +74,12 @@
    ;; We don't need to do audit logging in the handlers below because
    ;; exceptions thrown go through `audit/wrap-logger` middleware.
    ::organisaatio/organisation-not-found bad-request-handler
-   :disallowed-update                    bad-request-handler
+   ::hoks/disallowed-update              bad-request-handler
    :opiskeluoikeus-already-exists        bad-request-handler
    ::koski/opiskeluoikeus-not-found      bad-request-handler
    ::onr/oppija-not-found                bad-request-handler
    ::oi/opiskeluoikeus-not-found         bad-request-handler
+   ::oi/invalid-opiskeluoikeus           bad-request-handler
    :shared-link-validation-error         bad-request-handler
    :shared-link-expired                  (c-ex/with-logging
                                            (custom-ex-handler response/gone
@@ -85,8 +89,8 @@
                                            (custom-ex-handler response/locked
                                                               :message)
                                            :warn)
-   :not-found                            not-found-handler
-   :unauthorized                         unauthorized-handler
+   ::koodisto/code-element-not-found     not-found-handler
+   ::cas/unauthorized                    unauthorized-handler
 
    ::c-ex/default                        c-ex/safe-handler})
 

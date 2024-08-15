@@ -127,7 +127,7 @@
         (if (= :organisaatio/organisation-not-found (:type (ex-data e)))
           (throw (ex-info (str "HOKS contains an unknown organisation"
                                (:organisation-oid (ex-data e)))
-                          (assoc (ex-data e) :type :disallowed-update)))
+                          (assoc (ex-data e) :type ::disallowed-update)))
           (log/error e "exception in heräte initiation with" (ex-data e))))
       (catch Exception e
         (log/error e "exception in heräte initiation")))
@@ -327,12 +327,12 @@
     (when-not (opiskeluoikeus/still-active? new-opiskeluoikeus-oid)
       (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
                               new-opiskeluoikeus-oid)
-                      {:type               :disallowed-update
+                      {:type               ::disallowed-update
                        :opiskeluoikeus-oid new-opiskeluoikeus-oid})))
     (when (and (some? new-opiskeluoikeus-oid)
                (not= new-opiskeluoikeus-oid old-opiskeluoikeus-oid))
       (throw (ex-info "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"
-                      {:type                   :disallowed-update
+                      {:type                   ::disallowed-update
                        :old-opiskeluoikeus-oid old-opiskeluoikeus-oid
                        :new-opiskeluoikeus-oid new-opiskeluoikeus-oid})))
     (when (oppija-oid-changed? new-oppija-oid old-oppija-oid)
@@ -344,7 +344,7 @@
           (throw (ex-info
                    (str "Updating `oppija-oid` in HOKS is only allowed with "
                         "latest master oppija oid!")
-                   {:type           :disallowed-update
+                   {:type           ::disallowed-update
                     :old-oppija-oid old-oppija-oid
                     :new-oppija-oid new-oppija-oid})))))))
 
@@ -359,14 +359,14 @@
       (-> (format "Opiskeluoikeus `%s` does not match any held by oppija `%s`"
                   opiskeluoikeus-oid
                   oppija-oid)
-          (ex-info {:type               :disallowed-update
+          (ex-info {:type               ::disallowed-update
                     :opiskeluoikeus-oid opiskeluoikeus-oid
                     :oppija-oid         oppija-oid})
           throw))
     (when-not (opiskeluoikeus/still-active? hoks opiskeluoikeudet)
       (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
                               opiskeluoikeus-oid)
-                      {:type               :disallowed-update
+                      {:type               ::disallowed-update
                        :opiskeluoikeus-oid opiskeluoikeus-oid})))
     (save! hoks)))
 
