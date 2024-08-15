@@ -132,7 +132,7 @@
                      nil
                      (catch Exception e
                        e))]
-        (is (= :unauthorized (:type (ex-data result)))))
+        (is (= ::c/unauthorized (:type (ex-data result)))))
       (is (= @get-st-call-count 2))))
   (testing "Add service ticket immediately throws when get ST returns 500"
     (let [get-st-call-count (atom 0)]
@@ -148,7 +148,7 @@
                      nil
                      (catch Exception e
                        e))]
-        (is (= :unauthorized (:type (ex-data result)))))
+        (is (= ::c/unauthorized (:type (ex-data result)))))
       ; not trying to retry in this case
       (is (= @get-st-call-count 1)))))
 

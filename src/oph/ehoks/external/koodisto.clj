@@ -38,7 +38,7 @@
       (throw
         (if (= (:body (ex-data e)) "error.codeelement.not.found")
           (ex-info "Code Element not found"
-                   {:type :not-found
+                   {:type ::code-element-not-found
                     :url url}
                    e)
           e)))))

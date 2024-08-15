@@ -77,10 +77,10 @@
                            (get-service-ticket (:url @grant-ticket) service)
                            (catch Exception ex
                              (throw (ex-info "Error getting Service Ticket"
-                                             {:type :unauthorized}
+                                             {:type ::unauthorized}
                                              ex)))))
                        (throw (ex-info "Error getting Service Ticket"
-                                       {:type :unauthorized}
+                                       {:type ::unauthorized}
                                        e)))))]
       (-> data
           (assoc-in [:headers "accept"] "*/*")
