@@ -222,7 +222,10 @@
       (is (= (:status put-response) 400))
       (is (= (test-utils/parse-body (:body put-response))
              {:error
-              "Updating `opiskeluoikeus-oid` in HOKS is not allowed!"})))))
+              (str "Tried to update `opiskeluoikeus-oid` from "
+                   "`1.2.246.562.15.10000000009` to "
+                   "`1.2.246.562.15.20000000008` but updating "
+                   "`opiskeluoikeus-oid` in HOKS is not allowed!")})))))
 
 (deftest prevent-updating-oppija-oid
   (testing "Prevent PUT HOKS with existing opiskeluoikeus"
@@ -243,9 +246,11 @@
       (is (= (:status post-response) 200))
       (is (= (:status put-response) 400))
       (is (= (test-utils/parse-body (:body put-response))
-             {:error
-              (str "Updating `oppija-oid` in HOKS is only allowed with "
-                   "latest master oppija oid!")})))))
+             {:error (str "Tried to update `oppija-oid` from "
+                          "`1.2.246.562.24.12312312319` to "
+                          "`1.2.246.562.24.12312312322` but updating "
+                          "`oppija-oid` in HOKS is only allowed with latest "
+                          "master oppija oid!")})))))
 
 (deftest prevent-invalid-osaamisen-hankkimistapa
   (testing "Start and end dates of OHT are checked"

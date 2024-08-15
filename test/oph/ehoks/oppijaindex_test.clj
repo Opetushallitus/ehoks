@@ -655,7 +655,8 @@
       (t/is
         (thrown-with-msg?
           ExceptionInfo
-          #"Opiskeluoikeus sisältyy toiseen opiskeluoikeuteen"
+          (re-pattern (str "Opiskeluoikeus `1.2.246.562.15.50000000005` "
+                           "sisältyy toiseen opiskeluoikeuteen."))
           (sut/add-opiskeluoikeus!
             "1.2.246.562.15.50000000005" "1.2.246.562.24.11111111110")))
       (t/is
