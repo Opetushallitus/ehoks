@@ -133,7 +133,7 @@
 (defn get-hankintakoulutus-oids-by-master-oid
   "Get hankintakoulutus by master OID"
   [oid]
-  (db-opiskeluoikeus/select-hankintakoulutus-oids-by-master-oid oid))
+  (map :oid (db-opiskeluoikeus/select-hankintakoulutus-oids-by-master-oid oid)))
 
 (defn get-oppilaitos-oids
   "Get oppilaitos OIDs, filtering out nils"
