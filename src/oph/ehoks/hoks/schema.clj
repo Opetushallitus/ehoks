@@ -1,6 +1,6 @@
 (ns oph.ehoks.hoks.schema
   (:require [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
-            [oph.ehoks.middleware :refer [get-current-opiskeluoikeus]]
+            [oph.ehoks.middleware :as mw :refer [get-current-opiskeluoikeus]]
             [oph.ehoks.palaute.opiskelija
              :refer [kuuluu-palautteen-kohderyhmaan?]]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
@@ -10,8 +10,20 @@
                                           OppijaOID
                                           OrganisaatioOID]]
             [schema.core :as s])
-  (:import (java.time LocalDate)
+  (:import (clojure.lang ExceptionInfo)
+           (java.time LocalDate)
            (java.util UUID)))
+
+(defn protect-against-not-running-in-wrap-opiskeluoikeus
+  "Wrap a validation function so that if it uses
+  get-current-opiskeluoikeus it still succeeds even if we are running
+  outside wrap-opiskeluoikeus"
+  [pred]
+  (fn [& args]
+    (try (apply pred args)
+         (catch ExceptionInfo e
+           (or (= ::mw/not-in-wrap-opiskeluoikeus (:type (ex-data e)))
+               (throw e))))))
 
 (defn is-tuva-opiskeluoikeus?
   [koulutuksenosa]
@@ -295,21 +307,24 @@
   ^{:doc "Osaamisen hankkimistavan schema eri toiminnoille."
     :type ::g/schema-template
     :constraints
-    [{:check osa-aikaisuustieto-valid?
+    [{:check (protect-against-not-running-in-wrap-opiskeluoikeus
+               osa-aikaisuustieto-valid?)
       :description "Lisää osa-aikaisuustieto, joka on välillä 1-100."}
      {:check tyopaikkajakso-has-yksiloiva-tunniste?
       :except-methods #{:put-virkailija :post-virkailija :patch-virkailija}
       :description "Lisää työpaikkajaksoon yksilöivä tunniste."}
-     {:check #(not (oht/y-tunnus-missing? %))
+     {:check (comp not oht/y-tunnus-missing?)
       :description "Lisää työpaikkajaksoon työpaikan Y-tunnus."}
      {:check oppisopimus-has-perusta?
       :description "Lisää jaksoon oppisopimuksen perustan koodi-uri."}
      {:check nonnegative-duration?
       :description "Korjaa alku- ja loppupäivämäärä oikein päin."}
-     {:check starts-after-opiskeluoikeus?
+     {:check (protect-against-not-running-in-wrap-opiskeluoikeus
+               starts-after-opiskeluoikeus?)
       :description (str "Korjaa alkupäivä aikaisintaan opiskeluoikeuden "
                         "alkamispäiväksi.")}
-     {:check ends-before-opiskeluoikeus?
+     {:check (protect-against-not-running-in-wrap-opiskeluoikeus
+               ends-before-opiskeluoikeus?)
       :description (str "Korjaa loppupäivä viimeistään opiskeluoikeuden "
                         "arvioiduksi päättymispäiväksi.")}
      {:check duration-max-5-years?
@@ -592,7 +607,7 @@
    :opetus-ja-ohjaus-maara
    {:methods {:any :optional}
     :types {:any (s/constrained
-                   s/Num #(not (neg? %))
+                   s/Num (comp not neg?)
                    "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")}
     :description (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen "
                       "ja ohjauksen määrä tunteina.")}})
@@ -615,7 +630,8 @@
 (def HankittavaYhteinenTutkinnonOsa-template
   ^{:doc "Hankittava Yhteinen Tutkinnon osa (YTO)"
     :constraints
-    [{:check (comp not is-tuva-opiskeluoikeus?)
+    [{:check (protect-against-not-running-in-wrap-opiskeluoikeus
+               (comp not is-tuva-opiskeluoikeus?))
       :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
     :type ::g/schema-template
     :name "HankittavaYhteinenTutkinnonOsa"}
@@ -660,7 +676,8 @@
 (def OpiskeluvalmiuksiaTukevatOpinnot-template
   ^{:doc "Opiskeluvalmiuksia tukevien opintojen schema."
     :constraints
-    [{:check (comp not is-tuva-opiskeluoikeus?)
+    [{:check (protect-against-not-running-in-wrap-opiskeluoikeus
+               (comp not is-tuva-opiskeluoikeus?))
       :description "Ota tukevat opinnot pois, koska opiskeluoikeus on TUVA."}]
     :type ::g/schema-template
     :name "OpiskeluvalmiuksiaTukevatOpinnot"}
@@ -692,7 +709,8 @@
 (def HankittavaAmmatillinenTutkinnonOsa-template
   ^{:doc "Hankittavan ammatillisen tutkinnon osan schema."
     :constraints
-    [{:check (comp not is-tuva-opiskeluoikeus?)
+    [{:check (protect-against-not-running-in-wrap-opiskeluoikeus
+               (comp not is-tuva-opiskeluoikeus?))
       :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
     :type ::g/schema-template
     :name "HankittavaAmmatillinenTutkinnonOsa"}
@@ -744,7 +762,7 @@
    :opetus-ja-ohjaus-maara
    {:methods {:any :optional}
     :types {:any (s/constrained
-                   s/Num #(not (neg? %))
+                   s/Num (comp not neg?)
                    "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")}
     :description (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen "
                       "ja ohjauksen määrä tunteina.")}})
@@ -761,7 +779,8 @@
 (def HankittavaPaikallinenTutkinnonOsa-template
   ^{:doc "Hankittavan paikallisen tutkinnon osan schema."
     :constraints
-    [{:check (comp not is-tuva-opiskeluoikeus?)
+    [{:check (protect-against-not-running-in-wrap-opiskeluoikeus
+               (comp not is-tuva-opiskeluoikeus?))
       :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
     :type ::g/schema-template
     :name "HankittavaPaikallinenTutkinnonOsa"}
@@ -816,7 +835,7 @@
    :opetus-ja-ohjaus-maara
    {:methods {:any :optional}
     :types {:any (s/constrained
-                   s/Num #(not (neg? %))
+                   s/Num (comp not neg?)
                    "Opetuksen ja ohjauksen määrä ei saa olla negatiivinen.")}
     :description (str "Tutkinnon osan osa-alueeseen suunnitellun opetuksen "
                       "ja ohjauksen määrä tunteina.")}})
@@ -837,7 +856,8 @@
       :prosessi-required)
     {:doc "Aiemmin hankitun paikallisen tutkinnon osan schema."
      :constraints
-     [{:check (comp not is-tuva-opiskeluoikeus?)
+     [{:check (protect-against-not-running-in-wrap-opiskeluoikeus
+                (comp not is-tuva-opiskeluoikeus?))
        :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
      :type ::g/schema-template
      :name "AiemminHankittuPaikallinenTutkinnonOsa"}))
@@ -861,7 +881,8 @@
                         :description "YTOn osa-alueet"})
     {:doc "Aiemmin hankitun yhteisen tutkinnon osan schema."
      :constraints
-     [{:check (comp not is-tuva-opiskeluoikeus?)
+     [{:check (protect-against-not-running-in-wrap-opiskeluoikeus
+                (comp not is-tuva-opiskeluoikeus?))
        :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
      :type ::g/schema-template
      :name "AiemminHankittuYhteinenTutkinnonOsa"}))
@@ -880,7 +901,8 @@
     (hankittava->aiemmin-hankittu HankittavaAmmatillinenTutkinnonOsa-template)
     {:doc "Aiemmin hankitun ammatillisen tutkinnon osan schema."
      :constraints
-     [{:check (comp not is-tuva-opiskeluoikeus?)
+     [{:check (protect-against-not-running-in-wrap-opiskeluoikeus
+                (comp not is-tuva-opiskeluoikeus?))
        :description "Ota tutkinnonosa pois, koska opiskeluoikeus on TUVA."}]
      :type ::g/schema-template
      :name "AiemminHankittuAmmatillinenTutkinnonOsa"}))
@@ -912,11 +934,11 @@
       :loppu LocalDate "Loppupäivämäärä muodossa YYYY-MM-DD"
       :laajuus
       (s/constrained s/Num
-                     #(not (neg? %))
+                     (comp not neg?)
                      "Muuta koulutuksen osan laajuus positiiviseksi.")
       (str "Tutkintoon valmentavan koulutuksen koulutuksen osan laajuus "
            "TUVA-viikkoina."))
-    is-tuva-opiskeluoikeus?
+    (protect-against-not-running-in-wrap-opiskeluoikeus is-tuva-opiskeluoikeus?)
     "Ota koulutuksenosa pois, koska opiskeluoikeus ei ole TUVA."))
 
 (s/defschema
@@ -976,7 +998,9 @@
    :tuva-opiskeluoikeus-oid
    {:methods {:any :optional}
     :types {:any (s/constrained
-                   OpiskeluoikeusOID (comp not is-tuva-opiskeluoikeus?)
+                   OpiskeluoikeusOID
+                   (protect-against-not-running-in-wrap-opiskeluoikeus
+                     (comp not is-tuva-opiskeluoikeus?))
                    (str "Ota tuva-opiskeluoikeus-oid pois, koska se on "
                         "sallittu vain TUVA-opiskeluoikeuden kanssa "
                         "rinnakkaiselle opiskeluoikeudelle, ei TUVA-"

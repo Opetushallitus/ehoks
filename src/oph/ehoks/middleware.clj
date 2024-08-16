@@ -123,7 +123,8 @@
   []
   (when (= :none *current-opiskeluoikeus*)
     (throw (ex-info "get-current-opiskeluoikeus outside wrap-opiskeluoikeus"
-                    {:error-type :internal})))
+                    {:type ::not-in-wrap-opiskeluoikeus
+                     :error-type :internal})))
   *current-opiskeluoikeus*)
 
 (defn wrap-opiskeluoikeus
