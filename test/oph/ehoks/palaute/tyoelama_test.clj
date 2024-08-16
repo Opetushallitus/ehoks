@@ -78,11 +78,14 @@
                                             :loppu (LocalDate/of 2021 8 4)}]
                    :loppu (LocalDate/of 2021 8 11)}
           herate3 {}
-          herate4 {:keskeytymisajanjaksot [{:alku (LocalDate/of 2021 8 8)}]}]
+          herate4 {:keskeytymisajanjaksot [{:alku (LocalDate/of 2021 8 8)}]
+                   :loppu (LocalDate/of 2021 8 11)}
+          herate5 {:keskeytymisajanjaksot [{:alku (LocalDate/of 2021 8 8)}]}]
       (is (tep/fully-keskeytynyt? herate1))
       (is (not (tep/fully-keskeytynyt? herate2)))
       (is (not (tep/fully-keskeytynyt? herate3)))
-      (is (not (tep/fully-keskeytynyt? herate4))))))
+      (is (tep/fully-keskeytynyt? herate4))
+      (is (not (tep/fully-keskeytynyt? herate5))))))
 
 (deftest test-tyopaikkajaksot
   (testing (str "The function returns osaamisen hankkimistavat with koodi-uri"

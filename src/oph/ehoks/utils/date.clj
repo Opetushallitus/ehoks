@@ -10,6 +10,11 @@
   [^LocalDate one-date ^LocalDate other-date]
   (.isAfter one-date other-date))
 
+(defn is-same-or-before
+  "Käännetty .isAfter"
+  [^LocalDate one-date ^LocalDate other-date]
+  (not (is-after one-date other-date)))
+
 (defn is-before
   "Wrapper .isBefore-metodin ympäri, jolla on tyyppianotaatiot."
   [^LocalDate one-date ^LocalDate other-date]

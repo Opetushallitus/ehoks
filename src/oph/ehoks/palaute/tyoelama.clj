@@ -51,7 +51,7 @@
   "Takes `hoks` as an input and extracts from it all osaamisen hankkimistavat
   that are tyopaikkajaksos. Returns a lazy sequence."
   [hoks]
-  (->> (lazy-cat
+  (->> (concat
          (:hankittavat-ammat-tutkinnon-osat hoks)
          (:hankittavat-paikalliset-tutkinnon-osat hoks)
          (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))
@@ -85,14 +85,18 @@
 
 (defn fully-keskeytynyt?
   "Palauttaa true, jos TEP-jakso on keskeytynyt sen loppupäivämäärällä."
-  [jakso]
-  (let [kjaksot (sort-by :alku (:keskeytymisajanjaksot jakso))]
-    (when-let [kjakso-loppu (:loppu (last kjaksot))]
-      (not (date/is-after (:loppu jakso) kjakso-loppu)))))
+  [tyoelamajakso]
+  (some (fn [k-jakso]
+          (and (:loppu tyoelamajakso)
+               (date/is-same-or-before (:alku k-jakso) (:loppu tyoelamajakso))
+               (or (not (:loppu k-jakso))
+                   (date/is-same-or-before (:loppu tyoelamajakso)
+                                           (:loppu k-jakso)))))
+        (:keskeytymisajanjaksot tyoelamajakso)))
 
 (defn jakso-in-the-past?
   [jakso]
-  (not (.isBefore (date/now) (:loppu jakso))))
+  (not (date/is-before (date/now) (:loppu jakso))))
 
 (defn initial-palaute-state-and-reason
   "Runs several checks against tyopaikkajakso and opiskeluoikeus to determine if
