@@ -1,5 +1,6 @@
 (ns oph.ehoks.hoks.hoks-save-test
   (:require [clojure.test :refer :all]
+            [schema.core :as s]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.external.aws-sqs :as sqs]
@@ -7,6 +8,7 @@
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.hoks :as hoks]
+            [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
@@ -78,12 +80,12 @@
                    "1.2.246.562.10.93270534261"}
 
       :nayttoymparisto {:nimi "Testi Oyj"
-                        :y-tunnus "1289211-2"
+                        :y-tunnus "1289211-4"
                         :kuvaus "Testiyhtiö"}
       :tyoelama-osaamisen-arvioijat
       [{:nimi "Terttu Testihenkilö"
         :organisaatio {:nimi "Testi Oyj"
-                       :y-tunnus "1289211-2"}}]
+                       :y-tunnus "1289211-4"}}]
       :sisallon-kuvaus ["Testauksen suunnittelu"
                         "Jokin toinen testi"]
       :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
@@ -196,12 +198,12 @@
                      "1.2.246.562.10.55890967908"}
 
         :nayttoymparisto {:nimi "Ab Yhtiö Oy"
-                          :y-tunnus "1234128-1"
+                          :y-tunnus "1234128-3"
                           :kuvaus "Testi"}
         :tyoelama-osaamisen-arvioijat
         [{:nimi "Tellervo Työntekijä"
           :organisaatio {:nimi "Ab Yhtiö Oy"
-                         :y-tunnus "1234128-1"}}]
+                         :y-tunnus "1234128-3"}}]
         :sisallon-kuvaus ["Testaus" "Kirjoitus"]
         :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
         :alku (java.time.LocalDate/of 2019 1 4)
@@ -217,12 +219,12 @@
       :jarjestaja {:oppilaitos-oid
                    "1.2.246.562.10.93270579092"}
       :nayttoymparisto {:nimi "Testi Oy"
-                        :y-tunnus "1289235-2"
+                        :y-tunnus "1289234-1"
                         :kuvaus "Testiyhtiö"}
       :tyoelama-osaamisen-arvioijat
       [{:nimi "Tapio Testihenkilö"
         :organisaatio {:nimi "Testi Oy"
-                       :y-tunnus "1289235-2"}}]
+                       :y-tunnus "1289234-1"}}]
       :sisallon-kuvaus ["Testauksen suunnittelu"
                         "Jokin toinen testi"]
       :yksilolliset-kriteerit ["kriteeri 1" "kriteeri2"]
@@ -339,6 +341,10 @@
 
 (def min-hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"})
 
+(deftest hoks-schema-test
+  (testing "Example HOKS passes schema checks"
+    (is (= hoks-data (s/validate hoks-schema/HOKSLuonti hoks-data)))))
+
 (deftest get-aiemmin-hankitut-ammat-tutkinnon-osat-test
   (testing "Set HOKS aiemmin hankitut tutkinnon osat"
     (let [hoks (db-hoks/insert-hoks! min-hoks-data)]
@@ -412,8 +418,11 @@
   (testing "Save and get full HOKS"
     (let [hoks (with-redefs [k/get-opiskeluoikeus-info-raw
                              test-utils/mock-get-opiskeluoikeus-info-raw]
-                 (hoks/save! hoks-data))]
-      (eq (test-utils/dissoc-module-ids (hoks/get-by-id (:id hoks)))
+                 (hoks/save! hoks-data))
+          hoks-from-database (hoks/get-by-id (:id hoks))]
+      (is (= hoks-from-database
+             (s/validate hoks-schema/HOKS hoks-from-database)))
+      (eq (test-utils/dissoc-module-ids hoks-from-database)
           (assoc
             (test-utils/dissoc-module-ids hoks-data)
             :id 1
@@ -427,8 +436,11 @@
                  (hoks/save!
                    (assoc hoks-data
                           :tuva-opiskeluoikeus-oid
-                          "1.2.246.562.15.20000000008")))]
-      (eq (-> (test-utils/dissoc-module-ids (hoks/get-by-id (:id hoks)))
+                          "1.2.246.562.15.20000000008")))
+          hoks-from-database (hoks/get-by-id (:id hoks))]
+      (is (= hoks-from-database
+             (s/validate hoks-schema/HOKS hoks-from-database)))
+      (eq (-> (test-utils/dissoc-module-ids hoks-from-database)
               (select-keys [:id :tuva-opiskeluoikeus-oid]))
           {:id 1
            :tuva-opiskeluoikeus-oid "1.2.246.562.15.20000000008"}))))
