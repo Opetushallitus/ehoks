@@ -102,19 +102,17 @@
           (is (= (tep/initial-palaute-state-and-reason
                    test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-5
                    {:yksiloiva-tunniste "asd"})
-                 [nil nil :jaksolle-loytyy-jo-herate])))
+                 [nil :yksiloiva-tunniste :jo-lahetetty])))
         (testing "opiskeluoikeus is in terminal state."
           (is (= (tep/initial-palaute-state-and-reason
                    test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-5)
-                 [:ei-laheteta
-                  :opiskeluoikeus-oid
-                  :opiskeluoikeus-terminaalitilassa])))
+                 [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt])))
         (testing "osa-aikaisuus is missing from työpaikkajakso"
           (is (= (tep/initial-palaute-state-and-reason
                    (dissoc test-jakso :osa-aikaisuustieto)
                    hoks-test/hoks-1
                    oo-test/opiskeluoikeus-1)
-                 [:ei-laheteta nil :osa-aikaisuus-puuttuu])))
+                 [:ei-laheteta :osa-aikaisuustieto :ei-ole])))
         (testing "työpaikkajakso is interrupted on it's end date"
           (is (= (tep/initial-palaute-state-and-reason
                    (assoc-in test-jakso
@@ -123,7 +121,7 @@
                               :loppu (LocalDate/of 2023 12 15)})
                    hoks-test/hoks-1
                    oo-test/opiskeluoikeus-1)
-                 [:ei-laheteta nil :tyopaikkajakso-keskeytynyt])))
+                 [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt])))
         (testing "opiskeluoikeus doesn't have any ammatillinen suoritus"
           (is (= (tep/initial-palaute-state-and-reason
                    test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-2)
@@ -131,7 +129,7 @@
         (testing "there is a feedback preventing code in opiskeluoikeusjakso."
           (is (= (tep/initial-palaute-state-and-reason
                    test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-4)
-                 [:ei-laheteta :opiskeluoikeus-oid :rahoitusperuste])))
+                 [:ei-laheteta :opiskeluoikeus-oid :ulkoisesti-rahoitettu])))
         (testing "HOKS is a TUVA-HOKS or a HOKS related to TUVA-HOKS."
           (doseq [test-hoks [(assoc hoks-test/hoks-1
                                     :hankittavat-koulutuksen-osat
@@ -154,12 +152,7 @@
         (testing "opiskeluoikeus is linked to another opiskeluoikeus"
           (is (= (tep/initial-palaute-state-and-reason
                    test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-3)
-                 [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus])))
-        (with-redefs [date/now #(LocalDate/of 2024 6 30)]
-          (testing "jakso is in the past"
-            (is (= (tep/initial-palaute-state-and-reason
-                     test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
-                   [:ei-laheteta :loppu :menneisyydessa])))))
+                 [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]))))
       (testing "initiate kysely if when all of the checks are OK."
         (is (= (tep/initial-palaute-state-and-reason
                  test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
@@ -222,7 +215,7 @@
             test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
           (is (logged? 'oph.ehoks.palaute.tyoelama
                        :info
-                       #"`:jaksolle-loytyy-jo-herate`")))))))
+                       #"`:jo-lahetetty`")))))))
 
 (deftest test-initiate-all-uninitiated!
   (with-redefs [date/now (constantly (LocalDate/of 2023 10 18))

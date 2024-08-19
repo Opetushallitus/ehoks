@@ -94,10 +94,6 @@
                                            (:loppu k-jakso)))))
         (:keskeytymisajanjaksot tyoelamajakso)))
 
-(defn jakso-in-the-past?
-  [jakso]
-  (not (date/is-before (date/now) (:loppu jakso))))
-
 (defn initial-palaute-state-and-reason
   "Runs several checks against tyopaikkajakso and opiskeluoikeus to determine if
   tyoelamapalaute process should be initiated for jakso. Returns the initial
@@ -107,26 +103,23 @@
     (initial-palaute-state-and-reason jakso hoks opiskeluoikeus nil))
   ([jakso hoks opiskeluoikeus existing-herate]
     (cond
-      (palaute/already-initiated? (vec existing-herate))
-      [nil nil :jaksolle-loytyy-jo-herate]
-
-      (jakso-in-the-past? jakso)
-      [:ei-laheteta :loppu :menneisyydessa]
+      (palaute/already-initiated? existing-herate)
+      [nil :yksiloiva-tunniste :jo-lahetetty]
 
       (opiskeluoikeus/in-terminal-state? opiskeluoikeus (:loppu jakso))
-      [:ei-laheteta :opiskeluoikeus-oid :opiskeluoikeus-terminaalitilassa]
+      [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt]
 
       (osa-aikaisuus-missing? jakso)
-      [:ei-laheteta nil :osa-aikaisuus-puuttuu]
+      [:ei-laheteta :osa-aikaisuustieto :ei-ole]
 
       (fully-keskeytynyt? jakso)
-      [:ei-laheteta nil :tyopaikkajakso-keskeytynyt]
+      [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt]
 
       (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
       [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
 
       (palaute/feedback-collecting-prevented? opiskeluoikeus (:loppu jakso))
-      [:ei-laheteta :opiskeluoikeus-oid :rahoitusperuste]
+      [:ei-laheteta :opiskeluoikeus-oid :ulkoisesti-rahoitettu]
 
       (c/tuva-related-hoks? hoks)
       [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
