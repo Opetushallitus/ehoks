@@ -1,5 +1,6 @@
 (ns oph.ehoks.mocked-routes.mock-koski-routes
   (:require [oph.ehoks.mocked-routes.mock-gen :as mock-gen]
+            [ring.util.http-response :as response]
             [compojure.core :refer [GET POST routes]]))
 
 (def mock-routes
@@ -15,6 +16,12 @@
     (GET "/koski/api/opiskeluoikeus/1.2.246.562.15.60063016194" []
          (mock-gen/json-response-file
            "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.60063016194.json"))
+
+    (GET "/koski/api/opiskeluoikeus/1.2.246.562.15.57401181193" []
+         (-> (response/not-found
+               (str "[{\"key\": \"notFound.opiskeluoikeuttaEiLöydy"
+                    "TaiEiOikeuksia\"}]"))
+             (response/content-type "application/json")))
 
     (GET "/koski/api/opiskeluoikeus/:oid" request
          (let [opiskeluoikeus-oid (get-in request [:params :oid])

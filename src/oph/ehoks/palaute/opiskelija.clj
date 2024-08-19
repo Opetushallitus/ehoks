@@ -57,6 +57,9 @@
     (let [herate-basis (herate-date-basis kysely)
           herate-date (get hoks herate-basis)]
       (cond
+        (not opiskeluoikeus)
+        [nil :opiskeluoikeus-oid :ei-loydy]
+
         (not herate-date)
         [nil herate-basis :ei-ole]
 
@@ -196,9 +199,9 @@
     (jdbc/with-db-transaction
       [tx db/spec]
       (let [opiskeluoikeus
-            (koski/get-existing-opiskeluoikeus! (:opiskeluoikeus-oid hoks))
+            (koski/get-opiskeluoikeus! (:opiskeluoikeus-oid hoks))
             koulutustoimija
-            (palaute/koulutustoimija-oid! opiskeluoikeus)
+            (when opiskeluoikeus (palaute/koulutustoimija-oid! opiskeluoikeus))
             existing-heratteet
             (existing-heratteet! kysely hoks koulutustoimija tx)
             [init-state field reason]

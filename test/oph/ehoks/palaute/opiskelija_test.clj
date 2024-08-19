@@ -144,7 +144,12 @@
           :paattokysely  (:osaamisen-saavuttamisen-pvm hoks)))})
 
 (defn mock-get-opiskeluoikeus-info-raw [oo]
-  oo-test/opiskeluoikeus-1)
+  (if (= oo "1.2.246.562.15.57401181193")
+    (throw (ex-info "opiskeluoikeus not found"
+                    {:status 404
+                     :body (str "[{\"key\": \"notFound.opiskeluoikeuttaEiLöydy"
+                                "TaiEiOikeuksia\"}]")}))
+    oo-test/opiskeluoikeus-1))
 
 (deftest test-existing-heratteet!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
@@ -244,12 +249,23 @@
           "2023-04-18"   "2023-05-17"
           "valmistuneet" :osaamisen-saavuttamisen-pvm
           "2024-02-05"   "2024-03-05"))
+
+      (testing "doesn't initiate kysely if opiskeluoikeus is not found"
+        (are [kysely] (nil? (op/initiate-if-needed!
+                              kysely
+                              (assoc hoks-test/hoks-1
+                                     :opiskeluoikeus-oid
+                                     "1.2.246.562.15.57401181193")))
+          :aloituskysely :paattokysely))
+
       (db-ops/query ["UPDATE palautteet SET tila='lahetetty'
                      WHERE hoks_id=12345 RETURNING *"])
+
       (testing "doesn't initiate kysely if one already exists for HOKS"
         (are [kysely] (not= :odottaa-kasittelya
                             (op/initiate-if-needed! kysely hoks-test/hoks-1))
           :aloituskysely :paattokysely))
+
       (testing "sends kysely info to AWS SQS when `:resend?` option is given."
         (are [kysely] (= :odottaa-kasittelya
                          (op/initiate-if-needed!
