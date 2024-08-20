@@ -42,7 +42,7 @@
          (:hankittavat-paikalliset-tutkinnon-osat hoks)
          (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))
        (mapcat :osaamisen-hankkimistavat)
-       (filter oht/palautteenkeruu-allowed-tyopaikkajakso?)))
+       (filter oht/tyopaikkajakso?)))
 
 (defn next-niputus-date
   "Palauttaa seuraavan niputuspäivämäärän annetun päivämäärän jälkeen.
@@ -79,6 +79,9 @@
     (cond
       (palaute/already-initiated? existing-herate)
       [nil :yksiloiva-tunniste :jo-lahetetty]
+
+      (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
+      [:ei-laheteta :tyopaikalla-jarjestettava-koulutus :puuttuva-yhteystieto]
 
       (opiskeluoikeus/in-terminal-state? opiskeluoikeus (:loppu jakso))
       [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt]

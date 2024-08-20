@@ -27,6 +27,10 @@
 (use-fixtures :once test-utils/migrate-database)
 (use-fixtures :each test-utils/empty-database-after-test)
 
+;; FIXME: there is some kind of misunderstanding in the format of this
+;; data.  It's fed to initiate-if-needed! and
+;; initial-palaute-state-and-reason but seems mostly to be in SQS
+;; format, which is not what is fed to those functions.
 (def test-jakso
   {:hoks-id (:id hoks-test/hoks-1)
    :yksiloiva-tunniste "1"
@@ -40,8 +44,12 @@
    :oppija-oid "123.456.789"
    :tyyppi "test-tyyppi"
    :tutkinnonosa-id "test-tutkinnonosa-id"
-   :keskeytymisajanjaksot [{:alku  (LocalDate/of 2023 9 28)
-                            :loppu (LocalDate/of 2023 9 29)}]
+   :keskeytymisajanjaksot
+   [{:alku  (LocalDate/of 2023 9 28) :loppu (LocalDate/of 2023 9 29)}]
+   :tyopaikalla-jarjestettava-koulutus
+   {:vastuullinen-tyopaikka-ohjaaja "Esi Merkki"
+    :tyopaikan-nimi "Kohtuu mesta Oy"
+    :tyopaikan-y-tunnus "1234567-1"}
    :hankkimistapa-id 2
    :hankkimistapa-tyyppi "koulutussopimus_01"})
 
@@ -102,6 +110,14 @@
                    hoks-test/hoks-1
                    oo-test/opiskeluoikeus-1)
                  [:ei-laheteta :osa-aikaisuustieto :ei-ole])))
+        (testing "workplace information is missing from työpaikkajakso"
+          (is (= (tep/initial-palaute-state-and-reason
+                   (update test-jakso :tyopaikalla-jarjestettava-koulutus
+                           dissoc :tyopaikan-y-tunnus)
+                   hoks-test/hoks-1
+                   oo-test/opiskeluoikeus-1)
+                 [:ei-laheteta :tyopaikalla-jarjestettava-koulutus
+                  :puuttuva-yhteystieto])))
         (testing "työpaikkajakso is interrupted on it's end date"
           (is (= (tep/initial-palaute-state-and-reason
                    (assoc-in test-jakso
