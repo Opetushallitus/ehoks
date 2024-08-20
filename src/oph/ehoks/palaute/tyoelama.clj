@@ -75,9 +75,9 @@
   decision was based on, and the reason for picking that state."
   ([jakso hoks opiskeluoikeus]
     (initial-palaute-state-and-reason jakso hoks opiskeluoikeus nil))
-  ([jakso hoks opiskeluoikeus existing-herate]
+  ([jakso hoks opiskeluoikeus existing-heratteet]
     (cond
-      (palaute/already-initiated? existing-herate)
+      (palaute/already-initiated? existing-heratteet)
       [nil :yksiloiva-tunniste :jo-lahetetty]
 
       (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
@@ -114,13 +114,14 @@
   [jakso hoks opiskeluoikeus]
   (jdbc/with-db-transaction
     [tx db/spec]
-    (let [existing-herate (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
-                            tx
-                            {:hoks-id            (:id hoks)
-                             :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
+    (let [existing-heratteet  ; always 0 or 1 herate
+          (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
+            tx
+            {:hoks-id            (:id hoks)
+             :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
           [init-state field reason]
           (initial-palaute-state-and-reason
-            jakso hoks opiskeluoikeus existing-herate)]
+            jakso hoks opiskeluoikeus existing-heratteet)]
       (log/infof (str "Initial state for jakso `%s` of HOKS `%d` will be `%s` "
                       "because of `%s` in `%s`.")
                  (:yksiloiva-tunniste jakso)
@@ -151,7 +152,7 @@
              :tutkintonimike     (suoritus/tutkintonimike suoritus)
              :tutkintotunnus     (suoritus/tutkintotunnus suoritus)
              :herate-source      "ehoks_update"}
-            [existing-herate]
+            existing-heratteet
             reason
             other-info))))))
 
