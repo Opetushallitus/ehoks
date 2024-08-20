@@ -14,7 +14,6 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
-            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
@@ -73,9 +72,10 @@
   tyoelamapalaute process should be initiated for jakso. Returns the initial
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  ([jakso hoks opiskeluoikeus]
-    (initial-palaute-state-and-reason jakso hoks opiskeluoikeus nil))
-  ([jakso hoks opiskeluoikeus existing-heratteet]
+  [jakso hoks opiskeluoikeus existing-heratteet]
+  (or
+    (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
+      :loppu jakso opiskeluoikeus)
     (cond
       (palaute/already-initiated? existing-heratteet)
       [nil :yksiloiva-tunniste :jo-lahetetty]
@@ -83,29 +83,14 @@
       (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
       [:ei-laheteta :tyopaikalla-jarjestettava-koulutus :puuttuva-yhteystieto]
 
-      (opiskeluoikeus/in-terminal-state? opiskeluoikeus (:loppu jakso))
-      [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt]
-
       (not (oht/has-required-osa-aikaisuustieto? jakso))
       [:ei-laheteta :osa-aikaisuustieto :ei-ole]
 
       (fully-keskeytynyt? jakso)
       [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt]
 
-      (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
-      [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
-
-      (palaute/feedback-collecting-prevented? opiskeluoikeus (:loppu jakso))
-      [:ei-laheteta :opiskeluoikeus-oid :ulkoisesti-rahoitettu]
-
       (c/tuva-related-hoks? hoks)
       [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
-
-      (opiskeluoikeus/tuva? opiskeluoikeus)
-      [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus]
-
-      (opiskeluoikeus/linked-to-another? opiskeluoikeus)
-      [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]
 
       :else
       [:odottaa-kasittelya nil :hoks-tallennettu])))
