@@ -36,6 +36,7 @@
    :alku (LocalDate/of 2023 9 9)
    :loppu (LocalDate/of 2023 12 15)
    :osa-aikaisuustieto 100
+   :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
    :oppija-oid "123.456.789"
    :tyyppi "test-tyyppi"
    :tutkinnonosa-id "test-tutkinnonosa-id"
@@ -52,18 +53,6 @@
       "2021-12-27" "2022-01-01"
       "2021-04-25" "2021-05-01"
       "2022-06-24" "2022-07-01")))
-
-(deftest test-osa-aikaisuus-missing?
-  (testing "The function returns"
-    (testing "`true` when osa-aikaisuus is missing."
-      (are [jakso] (true? (tep/osa-aikaisuus-missing? jakso))
-        {:osa-aikaisuustieto nil :loppu (LocalDate/of 2023 8 1)}
-        {:loppu (LocalDate/of 2023 8 1)}))
-    (testing "falsey value when osa-aikaisuus is not missing."
-      (are [jakso] (not (tep/osa-aikaisuus-missing? jakso))
-        {:osa-aikaisuustieto nil :loppu (LocalDate/of 2023 6 30)}
-        {:loppu (LocalDate/of 2023 6 30)}
-        {:osa-aikaisuustieto 30 :loppu (LocalDate/of 2023 8 1)}))))
 
 (deftest test-fully-keskeytynyt?
   (testing "fully-keskeytynyt?"
@@ -199,7 +188,7 @@
         (let [tapahtumat (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                            db/spec
                            {:hoks-id      (:id hoks-test/hoks-1)
-                            :kyselytyypit tep/kyselytyypit})]
+                            :kyselytyypit ["tyopaikkajakson_suorittaneet"]})]
           (is (= (count tapahtumat) 1))
           (is (= (dissoc (first tapahtumat) :id :created-at :updated-at)
                  {:palaute-id   1

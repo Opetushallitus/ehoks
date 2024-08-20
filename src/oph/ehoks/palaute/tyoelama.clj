@@ -13,6 +13,7 @@
             [oph.ehoks.external.organisaatio :as org]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
+            [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
@@ -23,21 +24,6 @@
            (java.time LocalDate)
            (java.lang AutoCloseable)
            (java.util UUID)))
-
-(def kyselytyypit #{"tyopaikkajakson_suorittaneet"})
-(def tyopaikkajakso-types
-  #{"osaamisenhankkimistapa_koulutussopimus"
-    "osaamisenhankkimistapa_oppisopimus"})
-
-(defn tyopaikkajakso?
-  "Returns `true` if osaamisen hankkimistapa `oht` is tyopaikkajakso."
-  [oht]
-  (and (some? (tyopaikkajakso-types (:osaamisen-hankkimistapa-koodi-uri oht)))
-       (every?
-         #(get-in oht %)
-         [[:tyopaikalla-jarjestettava-koulutus :vastuullinen-tyopaikka-ohjaaja]
-          [:tyopaikalla-jarjestettava-koulutus :tyopaikan-nimi]
-          [:tyopaikalla-jarjestettava-koulutus :tyopaikan-y-tunnus]])))
 
 (defn finished-workplace-periods!
   "Queries for all finished workplace periods between start and end"
@@ -56,7 +42,7 @@
          (:hankittavat-paikalliset-tutkinnon-osat hoks)
          (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))
        (mapcat :osaamisen-hankkimistavat)
-       (filter tyopaikkajakso?)))
+       (filter oht/palautteenkeruu-allowed-tyopaikkajakso?)))
 
 (defn next-niputus-date
   "Palauttaa seuraavan niputuspäivämäärän annetun päivämäärän jälkeen.
@@ -70,12 +56,6 @@
       (if (= 12 month)
         (LocalDate/of (inc year) 1 1)
         (LocalDate/of year (inc month) 1)))))
-
-(defn osa-aikaisuus-missing?
-  "Puuttuuko tieto osa-aikaisuudesta jaksosta, jossa sen pitäisi olla?"
-  [jakso]
-  (and (not (:osa-aikaisuustieto jakso))
-       (date/is-after (:loppu jakso) (LocalDate/of 2023 6 30))))
 
 (defn fully-keskeytynyt?
   "Palauttaa true, jos TEP-jakso on keskeytynyt sen loppupäivämäärällä."
@@ -103,7 +83,7 @@
       (opiskeluoikeus/in-terminal-state? opiskeluoikeus (:loppu jakso))
       [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt]
 
-      (osa-aikaisuus-missing? jakso)
+      (not (oht/has-required-osa-aikaisuustieto? jakso))
       [:ei-laheteta :osa-aikaisuustieto :ei-ole]
 
       (fully-keskeytynyt? jakso)

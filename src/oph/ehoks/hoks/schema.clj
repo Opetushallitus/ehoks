@@ -237,14 +237,8 @@
   "Varmistaa, että jakson osa-aikaisuustieto on välillä 1-100, mikäli
   työpaikkajakson loppupäivä on 1.7.2023 tai sen jälkeen."
   [oht]
-  (let [osa-aikaisuustieto (:osa-aikaisuustieto oht)]
-    (if (and (.isAfter ^LocalDate (:loppu oht) (LocalDate/of 2023 6 30))
-             (oht/tyopaikkajakso? oht)
-             (kuuluu-palautteen-kohderyhmaan? (get-current-opiskeluoikeus)))
-      (and (some? osa-aikaisuustieto)
-           (<= osa-aikaisuustieto 100)
-           (>= osa-aikaisuustieto 1))
-      true)))
+  (or (not (kuuluu-palautteen-kohderyhmaan? (get-current-opiskeluoikeus)))
+      (oht/has-required-osa-aikaisuustieto? oht)))
 
 (defn- oppisopimus-has-perusta?
   "Varmistaa, että osaamisen hankkimistavassa on oppisopimuksen perusta, jos
