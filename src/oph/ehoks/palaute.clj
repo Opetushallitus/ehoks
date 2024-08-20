@@ -94,12 +94,10 @@
 (defn vastaamisajan-loppupvm
   "Laskee vastausajan loppupäivämäärän: 30 päivän päästä (inklusiivisesti),
   mutta ei myöhempi kuin 60 päivää (inklusiivisesti) herätepäivän jälkeen."
-  [^LocalDate herate ^LocalDate alku]
-  (let [last   (.plusDays herate 59)
-        normal (.plusDays alku 29)]
-    (if (.isBefore last normal)
-      last
-      normal)))
+  [^LocalDate heratepvm ^LocalDate alkupvm]
+  (let [last   (.plusDays heratepvm 59)
+        normal (.plusDays alkupvm 29)]
+    (if (.isBefore last normal) last normal)))
 
 (defn get-opiskeluoikeusjakso-for-date
   "Hakee opiskeluoikeudesta jakson, joka on voimassa tiettynä päivänä."

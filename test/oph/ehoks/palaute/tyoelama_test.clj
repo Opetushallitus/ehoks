@@ -160,16 +160,18 @@
 
 (defn- build-expected-herate
   [jakso hoks]
-  (let [voimassa-alkupvm (tep/next-niputus-date (:loppu jakso))]
+  (let [heratepvm (:loppu jakso)
+        voimassa-alkupvm (tep/next-niputus-date heratepvm)]
     {:tila                           "odottaa_kasittelya"
      :kyselytyyppi                   "tyopaikkajakson_suorittaneet"
      :hoks-id                        (:id hoks)
      :jakson-yksiloiva-tunniste      (:yksiloiva-tunniste jakso)
-     :heratepvm                      (:loppu jakso)
+     :heratepvm                      heratepvm
      :tutkintotunnus                 351407
      :tutkintonimike                 "(\"12345\",\"23456\")"
      :voimassa-alkupvm               voimassa-alkupvm
-     :voimassa-loppupvm              (tep/voimassa-loppupvm voimassa-alkupvm)
+     :voimassa-loppupvm              (palaute/vastaamisajan-loppupvm
+                                       heratepvm voimassa-alkupvm)
      :koulutustoimija                "1.2.246.562.10.346830761110"
      :toimipiste-oid                 "1.2.246.562.10.12312312312"
      :herate-source                  "ehoks_update"}))

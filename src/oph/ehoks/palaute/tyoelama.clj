@@ -71,12 +71,6 @@
         (LocalDate/of (inc year) 1 1)
         (LocalDate/of year (inc month) 1)))))
 
-(defn voimassa-loppupvm
-  "Given `voimassa-alkupvm`, calculates `voimassa-loppupvm`, which is currently
-  60 days after `voimassa-alkupvm`."
-  [^LocalDate voimassa-alkupvm]
-  (.plusDays voimassa-alkupvm 60))
-
 (defn osa-aikaisuus-missing?
   "Puuttuuko tieto osa-aikaisuudesta jaksosta, jossa sen pitäisi olla?"
   [jakso]
@@ -157,6 +151,7 @@
                                            (:suoritukset opiskeluoikeus))
               koulutustoimija  (palaute/koulutustoimija-oid! opiskeluoikeus)
               toimipiste-oid   (palaute/toimipiste-oid! suoritus)
+              heratepvm        (:loppu jakso)
               other-info       (select-keys hoks [field])]
           (palaute/upsert!
             tx
@@ -164,9 +159,10 @@
              :tila               "odottaa_kasittelya"
              :hoks-id            (:id hoks)
              :yksiloiva-tunniste (:yksiloiva-tunniste jakso)
-             :heratepvm          (:loppu jakso)
+             :heratepvm          heratepvm
              :voimassa-alkupvm   voimassa-alkupvm
-             :voimassa-loppupvm  (voimassa-loppupvm voimassa-alkupvm)
+             :voimassa-loppupvm  (palaute/vastaamisajan-loppupvm
+                                   heratepvm voimassa-alkupvm)
              :koulutustoimija    koulutustoimija
              :toimipiste-oid     toimipiste-oid
              :tutkintonimike     (suoritus/tutkintonimike suoritus)
