@@ -122,13 +122,10 @@
           [init-state field reason]
           (initial-palaute-state-and-reason
             jakso hoks opiskeluoikeus existing-heratteet)]
-      (log/infof (str "Initial state for jakso `%s` of HOKS `%d` will be `%s` "
-                      "because of `%s` in `%s`.")
-                 (:yksiloiva-tunniste jakso)
-                 (:id hoks)
-                 (or init-state :ei-luoda-ollenkaan)
-                 reason
-                 field)
+      (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
+                "of HOKS" (:id hoks) "will be"
+                (or init-state :ei-luoda-ollenkaan)
+                "because of" reason "in" field)
       (when init-state
         (let [voimassa-alkupvm (next-niputus-date (:loppu jakso))
               suoritus         (find-first suoritus/ammatillinen?
