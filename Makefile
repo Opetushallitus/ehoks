@@ -91,7 +91,7 @@ psql: stamps/db-running
 	psql -h localhost -U postgres ehoks
 
 .PHONY: test
-test:
+test: stamps/db-schema stamps/local-ddb-schema
 	lein test
 
 .PHONY: stop
