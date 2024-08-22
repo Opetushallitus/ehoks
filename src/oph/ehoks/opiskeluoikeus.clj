@@ -49,32 +49,43 @@
                  active?))
       true)))
 
+(defn string-leq?
+  "Is s1 lexicographically less than or equal to s2?"
+  [s1 s2]
+  (<= (compare s1 s2) 0))
+
 (defn get-opiskeluoikeusjakso-for-date
   "Hakee opiskeluoikeudesta jakson, joka on voimassa tiettynä päivänä."
-  [opiskeluoikeus ^String vahvistus-pvm mode]
-  (let [offset (if (= mode :one-day-offset) 1 0)
-        jaksot (sort-by :alku (:opiskeluoikeusjaksot (:tila opiskeluoikeus)))]
-    (reduce (fn [res next]
-              (if (>= (compare vahvistus-pvm (:alku next)) offset)
-                next
-                (reduced res)))
-            (first jaksot)
-            jaksot)))
+  [opiskeluoikeus ^String pvm]
+  (->> (get-in opiskeluoikeus [:tila :opiskeluoikeusjaksot])
+       (sort-by :alku)
+       (partition 2 1 [:viimeinen])
+       (find-first (fn [[this-jakso next-jakso]]
+                     (and (string-leq? (:alku this-jakso) pvm)
+                          (or (= :viimeinen next-jakso)
+                              (not (string-leq? (:alku next-jakso) pvm))))))
+       (first)))
+
+(defn in-terminal-state-on-date?
+  "Is opiskeluoikeus in terminal state on the given day?"
+  [opiskeluoikeus pvm]
+  (-> (get-opiskeluoikeusjakso-for-date opiskeluoikeus (str pvm))
+      (get-in [:tila :koodiarvo])
+      (terminal-states)
+      (some?)))
+
+(defn prev-date
+  "Returns the previous date (as string) for a date (a string)"
+  [date]
+  (str (.minusDays (LocalDate/parse (str date)) 1)))
 
 (defn in-terminal-state?
-  "Returns `true` if opiskeluoikeus is in terminal state. Different terminal
-  states are defined in `terminal-statuses`. Note that the function also returns
-  `true` in case when opiskeluoikeus has transferred into terminal state during
-  date `pvm`."
+  "Returns `true` if opiskeluoikeus is in terminal state.  As per EH-1228,
+  a terminal state that has begun on the same day as the herate is on
+  is not deemed a terminal state."
   [opiskeluoikeus pvm]
-  (let [jakso (get-opiskeluoikeusjakso-for-date
-                opiskeluoikeus (str pvm) :one-day-offset)
-        tila  (get-in jakso [:tila :koodiarvo])]
-    (some? (when (terminal-states tila)
-             (log/warnf "Opiskeluoikeus `%s` on terminaalitilassa `%s`."
-                        (:oid opiskeluoikeus)
-                        tila)
-             true))))
+  (and (in-terminal-state-on-date? opiskeluoikeus pvm)
+       (in-terminal-state-on-date? opiskeluoikeus (prev-date pvm))))
 
 (defn linked-to-another?
   "Returns `true` if `opiskeluoikeus` is linked to another opiskeluoikeus."

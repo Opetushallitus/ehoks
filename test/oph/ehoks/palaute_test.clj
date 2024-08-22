@@ -111,7 +111,7 @@
                                  (construct-opiskeluoikeus)
                                  (palaute/feedback-collecting-prevented? date)
                                  (= result))
-      [["2020-06-20" "lasna" 14]] "2019-01-01" true
+      [["2020-06-20" "lasna" 14]] "2019-01-01" false
       [["2021-03-15" "valmistunut" 2]
        ["2020-03-15" "lasna" 14]
        ["2019-09-01" "lasna" 14]] "2020-07-01" true
@@ -120,4 +120,4 @@
        ["2019-09-01" "lasna" 14]] "2019-12-01" true
       [["2021-03-15" "valmistunut" 2]
        ["2020-03-15" "lasna" 14]
-       ["2019-09-01" "lasna" 14]] "2019-07-01" true)))
+       ["2019-09-01" "lasna" 14]] "2021-07-01" false)))
