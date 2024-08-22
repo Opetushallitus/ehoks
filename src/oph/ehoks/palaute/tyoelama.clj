@@ -3,7 +3,6 @@
             [clojure.tools.logging :as log]
             [clojure.java.jdbc :as jdbc]
             [clojure.string :as string]
-            [hugsql.core :as hugsql]
             [medley.core :refer [find-first]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
@@ -118,7 +117,7 @@
               koulutustoimija  (palaute/koulutustoimija-oid! opiskeluoikeus)
               toimipiste-oid   (palaute/toimipiste-oid! suoritus)
               heratepvm        (:loppu jakso)
-              other-info       (select-keys hoks [field])]
+              other-info       (select-keys (merge jakso hoks) [field])]
           (palaute/upsert!
             tx
             {:kyselytyyppi       "tyopaikkajakson_suorittaneet"
