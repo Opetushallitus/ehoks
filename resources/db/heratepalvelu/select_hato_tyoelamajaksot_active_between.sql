@@ -1,6 +1,8 @@
 SELECT
+  h.id AS hoks_id,
   h.opiskeluoikeus_oid AS opiskeluoikeus_oid,
   oh.id AS hankkimistapa_id,
+  oh.yksiloiva_tunniste AS yksiloiva_tunniste,
   oh.alku AS jakso_alkupvm,
   oh.loppu AS jakso_loppupvm,
   oh.osa_aikaisuustieto AS osa_aikaisuus
