@@ -101,6 +101,52 @@
         normal (.plusDays alkupvm 29)]
     (if (.isBefore last normal) last normal)))
 
+(def ^:private koski-suoritustyyppi->kyselytyyppi
+  {"ammatillinentutkinto"           "valmistuneet"
+   "ammatillinentutkintoosittainen" "osia_suorittaneet"})
+
+(defn kyselytyyppi
+  [kysely opiskeluoikeus]
+  (case kysely
+    :aloituskysely "aloittaneet"
+    :paattokysely  (-> (find-first suoritus/ammatillinen?
+                                   (:suoritukset opiskeluoikeus))
+                       (suoritus/tyyppi)
+                       (koski-suoritustyyppi->kyselytyyppi)
+                       (or "valmistuneet"))
+    :tyopaikkakysely "tyopaikkajakson_suorittaneet"))
+
+(defn upsert-from-data!
+  "Create a palaute record from various pieces of information, and ensure
+  it is in the palaute database."
+  [{:keys [kysely hoks jakso opiskeluoikeus tx
+           alkupvm heratepvm koulutustoimija
+           initial-state existing-heratteet reason other-info]
+    :or {initial-state :odottaa-kasittelya}}]
+
+  (let [; this may be nil if this is an :ei-laheteta palaute for
+        ; non-ammatillinen opiskeluoikeus
+        suoritus     (find-first suoritus/ammatillinen?
+                                 (:suoritukset opiskeluoikeus))]
+    (upsert!
+      tx
+      {:kyselytyyppi       (kyselytyyppi kysely opiskeluoikeus)
+       :hoks-id            (:id hoks)
+       :yksiloiva-tunniste (:yksiloiva-tunniste jakso)
+       :tila               (db-ops/to-underscore-str initial-state)
+       :heratepvm          heratepvm
+       :voimassa-alkupvm   alkupvm
+       :voimassa-loppupvm  (vastaamisajan-loppupvm heratepvm alkupvm)
+       :suorituskieli      (suoritus/kieli suoritus)
+       :koulutustoimija    (or koulutustoimija
+                               (koulutustoimija-oid! opiskeluoikeus))
+       :toimipiste-oid     (toimipiste-oid! suoritus)
+       :tutkintonimike     (suoritus/tutkintonimike suoritus)
+       :tutkintotunnus     (suoritus/tutkintotunnus suoritus)
+       :hankintakoulutuksen-toteuttaja (hankintakoulutuksen-toteuttaja! hoks)
+       :herate-source      "ehoks_update"}
+      existing-heratteet reason other-info)))
+
 (defn feedback-collecting-prevented?
   "Jätetäänkö palaute keräämättä sen vuoksi, että opiskelijan opiskelu on
   tällä hetkellä rahoitettu muilla rahoituslähteillä?"

@@ -19,10 +19,6 @@
 (def herate-date-basis {:aloituskysely :ensikertainen-hyvaksyminen
                         :paattokysely  :osaamisen-saavuttamisen-pvm})
 
-(def ^:private koski-suoritustyyppi->kyselytyyppi
-  {"ammatillinentutkinto"           "valmistuneet"
-   "ammatillinentutkintoosittainen" "osia_suorittaneet"})
-
 (def ^:private translate-kyselytyyppi
   "Translate kyselytyyppi name to the equivalent one used in Herätepalvelu,
   i.e., `lhs` is the one used in eHOKS and `rhs` is the one used Herätepalvelu.
@@ -61,15 +57,6 @@
         :else
         [:odottaa-kasittelya nil :hoks-tallennettu]))))
 
-(defn kyselytyyppi
-  [kysely suoritus]
-  (case kysely
-    :aloituskysely "aloittaneet"
-    :paattokysely  (-> suoritus
-                       suoritus/tyyppi
-                       koski-suoritustyyppi->kyselytyyppi
-                       (or "valmistuneet"))))
-
 (def kysely-kasittely-field-mapping
   {:aloituskysely :aloitusherate_kasitelty
    :paattokysely :paattoherate_kasitelty})
@@ -102,8 +89,7 @@
               This should be removed once Herätepalvelu functionality has been
               fully migrated to eHOKS."
   [kysely hoks opiskeluoikeus koulutustoimija tx
-   {:keys [initial-state existing-heratteet reason other-info]
-    :or {initial-state :odottaa-kasittelya}}]
+   {:keys [initial-state] :or {initial-state :odottaa-kasittelya} :as options}]
   {:pre [(#{:aloituskysely :paattokysely} kysely)]}
 
   (let [target-kasittelytila (not= initial-state :odottaa-kasittelya)
@@ -113,37 +99,19 @@
       {:id (:id amisherate-kasittelytila)
        (kysely-kasittely-field-mapping kysely) target-kasittelytila}))
 
-  (let [; this may be nil if this is an :ei-laheteta palaute for
-        ; non-ammatillinen opiskeluoikeus
-        suoritus     (find-first suoritus/ammatillinen?
-                                 (:suoritukset opiskeluoikeus))
-        kyselytyyppi (kyselytyyppi kysely suoritus)
-        heratepvm    (get hoks (herate-date-basis kysely))
-        alkupvm      (greatest heratepvm (date/now))]
-    (log/info "Making" kysely "heräte for HOKS" (:id hoks))
-    (palaute/upsert!
-      tx
-      {:hoks-id          (:id hoks)
-       :tila             (db-ops/to-underscore-str initial-state)
-       :heratepvm        heratepvm
-       :kyselytyyppi     kyselytyyppi
-       :koulutustoimija  koulutustoimija
-       :voimassa-alkupvm alkupvm
-       :voimassa-loppupvm
-       (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
-       :suorituskieli    (suoritus/kieli suoritus)
-       :toimipiste-oid   (palaute/toimipiste-oid! suoritus)
-       :tutkintonimike   (suoritus/tutkintonimike suoritus)
-       :hankintakoulutuksen-toteuttaja
-       (palaute/hankintakoulutuksen-toteuttaja! hoks)
-       :tutkintotunnus   (suoritus/tutkintotunnus suoritus)
-       :herate-source    "ehoks_update"}
-      existing-heratteet reason other-info)
+  (let [heratepvm (get hoks (herate-date-basis kysely))]
+    (palaute/upsert-from-data!
+      (merge options {:hoks hoks :opiskeluoikeus opiskeluoikeus :tx tx
+                      :koulutustoimija koulutustoimija
+                      :kysely kysely :heratepvm heratepvm
+                      :alkupvm (greatest heratepvm (date/now))}))
 
     (when (= :odottaa-kasittelya initial-state)
+      (log/info "Making" kysely "heräte for HOKS" (:id hoks))
       (sqs/send-amis-palaute-message
         {:ehoks-id           (:id hoks)
-         :kyselytyyppi       (translate-kyselytyyppi kyselytyyppi)
+         :kyselytyyppi       (translate-kyselytyyppi
+                               (palaute/kyselytyyppi kysely opiskeluoikeus))
          :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
          :oppija-oid         (:oppija-oid hoks)
          :sahkoposti         (:sahkoposti hoks)
