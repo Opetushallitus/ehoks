@@ -1,8 +1,7 @@
 (ns oph.ehoks.hoks.schema
   (:require [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.middleware :as mw :refer [get-current-opiskeluoikeus]]
-            [oph.ehoks.palaute.opiskelija
-             :refer [kuuluu-palautteen-kohderyhmaan?]]
+            [oph.ehoks.palaute :refer [kuuluu-palautteen-kohderyhmaan?]]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.schema-tools :refer [describe modify]]
             [oph.ehoks.schema.generator :as g]
@@ -237,6 +236,9 @@
   "Varmistaa, että jakson osa-aikaisuustieto on välillä 1-100, mikäli
   työpaikkajakson loppupäivä on 1.7.2023 tai sen jälkeen."
   [oht]
+  ;; FIXME: tämän pitäisi ehkä käyttää suoraan
+  ;; initial-palaute-state-and-reason-if-not-kohderyhma, jossa on paljon
+  ;; enemmän sääntöjä.
   (or (not (kuuluu-palautteen-kohderyhmaan? (get-current-opiskeluoikeus)))
       (oht/has-required-osa-aikaisuustieto? oht)))
 

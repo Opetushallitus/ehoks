@@ -122,6 +122,15 @@
         (str year "-" (inc year))
         (str (dec year) "-" year)))))
 
+(defn kuuluu-palautteen-kohderyhmaan?
+  "Kuuluuko opiskeluoikeus palautteen kohderyhmään?  Tällä hetkellä
+  vain katsoo, onko kyseessä TELMA-opiskeluoikeus, joka ei ole tutkintoon
+  tähtäävä koulutus (ks. OY-4433).  Muita mahdollisia kriteereitä
+  ovat tulevaisuudessa koulutuksen rahoitus ja muut kriteerit, joista
+  voidaan katsoa, onko koulutus tutkintoon tähtäävä."
+  [opiskeluoikeus]
+  (every? (complement suoritus/telma?) (:suoritukset opiskeluoikeus)))
+
 (defn initial-palaute-state-and-reason-if-not-kohderyhma
   "Partial function; returns initial state, field causing it, and why the
   field causes the initial state - but only if the palaute is not to be
@@ -139,6 +148,9 @@
       [:ei-laheteta herate-date-field :eri-rahoituskaudella]
 
       (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
+      [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
+
+      (not (kuuluu-palautteen-kohderyhmaan? opiskeluoikeus))
       [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
 
       (opiskeluoikeus/in-terminal-state? opiskeluoikeus herate-date)

@@ -31,15 +31,6 @@
    "valmistuneet"      "tutkinnon_suorittaneet"
    "osia_suorittaneet" "tutkinnon_osia_suorittaneet"})
 
-(defn kuuluu-palautteen-kohderyhmaan?
-  "Kuuluuko opiskeluoikeus palautteen kohderyhmään?  Tällä hetkellä
-  vain katsoo, onko kyseessä TELMA-opiskeluoikeus, joka ei ole tutkintoon
-  tähtäävä koulutus (ks. OY-4433).  Muita mahdollisia kriteereitä
-  ovat tulevaisuudessa koulutuksen rahoitus ja muut kriteerit, joista
-  voidaan katsoa, onko koulutus tutkintoon tähtäävä."
-  [opiskeluoikeus]
-  (every? (complement suoritus/telma?) (:suoritukset opiskeluoikeus)))
-
 (defn- added?
   [field current-hoks updated-hoks]
   (and (some? current-hoks)
