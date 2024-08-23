@@ -33,7 +33,7 @@
                      [:aloituskysely :paattokysely])]
       (let [state-and-reason
             (op/initial-palaute-state-and-reason
-              kysely hoks opiskeluoikeus nil)]
+              kysely hoks opiskeluoikeus [])]
         (is (contains? #{:ei-laheteta nil} (first state-and-reason)))
         (is (= (last state-and-reason) reason))))))
 
@@ -118,14 +118,14 @@
       (testing
        "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
         (is (= (op/initial-palaute-state-and-reason
-                 :aloituskysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
+                 :aloituskysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1 [])
                [:odottaa-kasittelya nil :hoks-tallennettu])))
 
       (testing
        (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
             "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
         (is (= (op/initial-palaute-state-and-reason
-                 :paattokysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
+                 :paattokysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1 [])
                [:odottaa-kasittelya nil :hoks-tallennettu]))))))
 
 (defn expected-msg

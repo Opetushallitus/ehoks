@@ -3,7 +3,6 @@
             [clojure.tools.logging :as log]
             [clojure.java.jdbc :as jdbc]
             [clojure.string :as string]
-            [hugsql.core :as hugsql]
             [medley.core :refer [find-first]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
@@ -13,7 +12,7 @@
             [oph.ehoks.external.organisaatio :as org]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
-            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
+            [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
@@ -23,21 +22,6 @@
            (java.time LocalDate)
            (java.lang AutoCloseable)
            (java.util UUID)))
-
-(def kyselytyypit #{"tyopaikkajakson_suorittaneet"})
-(def tyopaikkajakso-types
-  #{"osaamisenhankkimistapa_koulutussopimus"
-    "osaamisenhankkimistapa_oppisopimus"})
-
-(defn tyopaikkajakso?
-  "Returns `true` if osaamisen hankkimistapa `oht` is tyopaikkajakso."
-  [oht]
-  (and (some? (tyopaikkajakso-types (:osaamisen-hankkimistapa-koodi-uri oht)))
-       (every?
-         #(get-in oht %)
-         [[:tyopaikalla-jarjestettava-koulutus :vastuullinen-tyopaikka-ohjaaja]
-          [:tyopaikalla-jarjestettava-koulutus :tyopaikan-nimi]
-          [:tyopaikalla-jarjestettava-koulutus :tyopaikan-y-tunnus]])))
 
 (defn finished-workplace-periods!
   "Queries for all finished workplace periods between start and end"
@@ -51,12 +35,12 @@
   "Takes `hoks` as an input and extracts from it all osaamisen hankkimistavat
   that are tyopaikkajaksos. Returns a lazy sequence."
   [hoks]
-  (->> (lazy-cat
+  (->> (concat
          (:hankittavat-ammat-tutkinnon-osat hoks)
          (:hankittavat-paikalliset-tutkinnon-osat hoks)
          (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))
        (mapcat :osaamisen-hankkimistavat)
-       (filter tyopaikkajakso?)))
+       (filter oht/tyopaikkajakso?)))
 
 (defn next-niputus-date
   "Palauttaa seuraavan niputuspäivämäärän annetun päivämäärän jälkeen.
@@ -71,67 +55,41 @@
         (LocalDate/of (inc year) 1 1)
         (LocalDate/of year (inc month) 1)))))
 
-(defn voimassa-loppupvm
-  "Given `voimassa-alkupvm`, calculates `voimassa-loppupvm`, which is currently
-  60 days after `voimassa-alkupvm`."
-  [^LocalDate voimassa-alkupvm]
-  (.plusDays voimassa-alkupvm 60))
-
-(defn osa-aikaisuus-missing?
-  "Puuttuuko tieto osa-aikaisuudesta jaksosta, jossa sen pitäisi olla?"
-  [jakso]
-  (and (not (:osa-aikaisuustieto jakso))
-       (date/is-after (:loppu jakso) (LocalDate/of 2023 6 30))))
-
 (defn fully-keskeytynyt?
   "Palauttaa true, jos TEP-jakso on keskeytynyt sen loppupäivämäärällä."
-  [jakso]
-  (let [kjaksot (sort-by :alku (:keskeytymisajanjaksot jakso))]
-    (when-let [kjakso-loppu (:loppu (last kjaksot))]
-      (not (date/is-after (:loppu jakso) kjakso-loppu)))))
-
-(defn jakso-in-the-past?
-  [jakso]
-  (not (.isBefore (date/now) (:loppu jakso))))
+  [tyoelamajakso]
+  (some (fn [k-jakso]
+          (and (:loppu tyoelamajakso)
+               (date/is-same-or-before (:alku k-jakso) (:loppu tyoelamajakso))
+               (or (not (:loppu k-jakso))
+                   (date/is-same-or-before (:loppu tyoelamajakso)
+                                           (:loppu k-jakso)))))
+        (:keskeytymisajanjaksot tyoelamajakso)))
 
 (defn initial-palaute-state-and-reason
   "Runs several checks against tyopaikkajakso and opiskeluoikeus to determine if
   tyoelamapalaute process should be initiated for jakso. Returns the initial
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  ([jakso hoks opiskeluoikeus]
-    (initial-palaute-state-and-reason jakso hoks opiskeluoikeus nil))
-  ([jakso hoks opiskeluoikeus existing-herate]
+  [jakso hoks opiskeluoikeus existing-heratteet]
+  (or
+    (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
+      :loppu jakso opiskeluoikeus)
     (cond
-      (palaute/already-initiated? (vec existing-herate))
-      [nil nil :jaksolle-loytyy-jo-herate]
+      (palaute/already-initiated? existing-heratteet)
+      [nil :yksiloiva-tunniste :jo-lahetetty]
 
-      (jakso-in-the-past? jakso)
-      [:ei-laheteta :loppu :menneisyydessa]
+      (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
+      [:ei-laheteta :tyopaikalla-jarjestettava-koulutus :puuttuva-yhteystieto]
 
-      (opiskeluoikeus/in-terminal-state? opiskeluoikeus (:loppu jakso))
-      [:ei-laheteta :opiskeluoikeus-oid :opiskeluoikeus-terminaalitilassa]
-
-      (osa-aikaisuus-missing? jakso)
-      [:ei-laheteta nil :osa-aikaisuus-puuttuu]
+      (not (oht/has-required-osa-aikaisuustieto? jakso))
+      [:ei-laheteta :osa-aikaisuustieto :ei-ole]
 
       (fully-keskeytynyt? jakso)
-      [:ei-laheteta nil :tyopaikkajakso-keskeytynyt]
-
-      (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
-      [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
-
-      (palaute/feedback-collecting-prevented? opiskeluoikeus (:loppu jakso))
-      [:ei-laheteta :opiskeluoikeus-oid :rahoitusperuste]
+      [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt]
 
       (c/tuva-related-hoks? hoks)
       [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
-
-      (opiskeluoikeus/tuva? opiskeluoikeus)
-      [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus]
-
-      (opiskeluoikeus/linked-to-another? opiskeluoikeus)
-      [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]
 
       :else
       [:odottaa-kasittelya nil :hoks-tallennettu])))
@@ -140,42 +98,42 @@
   [jakso hoks opiskeluoikeus]
   (jdbc/with-db-transaction
     [tx db/spec]
-    (let [existing-herate (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
-                            tx
-                            {:hoks-id            (:id hoks)
-                             :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
+    (let [existing-heratteet  ; always 0 or 1 herate
+          (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
+            tx
+            {:hoks-id            (:id hoks)
+             :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
           [init-state field reason]
           (initial-palaute-state-and-reason
-            jakso hoks opiskeluoikeus existing-herate)]
-      (log/infof (str "Initial state for jakso `%s` of HOKS `%d` will be `%s` "
-                      "because of `%s` in `%s`.")
-                 (:yksiloiva-tunniste jakso)
-                 (:id hoks)
-                 (or init-state :ei-luoda-ollenkaan)
-                 reason
-                 field)
+            jakso hoks opiskeluoikeus existing-heratteet)]
+      (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
+                "of HOKS" (:id hoks) "will be"
+                (or init-state :ei-luoda-ollenkaan)
+                "because of" reason "in" field)
       (when init-state
         (let [voimassa-alkupvm (next-niputus-date (:loppu jakso))
               suoritus         (find-first suoritus/ammatillinen?
                                            (:suoritukset opiskeluoikeus))
               koulutustoimija  (palaute/koulutustoimija-oid! opiskeluoikeus)
               toimipiste-oid   (palaute/toimipiste-oid! suoritus)
-              other-info       (select-keys hoks [field])]
+              heratepvm        (:loppu jakso)
+              other-info       (select-keys (merge jakso hoks) [field])]
           (palaute/upsert!
             tx
             {:kyselytyyppi       "tyopaikkajakson_suorittaneet"
              :tila               "odottaa_kasittelya"
              :hoks-id            (:id hoks)
              :yksiloiva-tunniste (:yksiloiva-tunniste jakso)
-             :heratepvm          (:loppu jakso)
+             :heratepvm          heratepvm
              :voimassa-alkupvm   voimassa-alkupvm
-             :voimassa-loppupvm  (voimassa-loppupvm voimassa-alkupvm)
+             :voimassa-loppupvm  (palaute/vastaamisajan-loppupvm
+                                   heratepvm voimassa-alkupvm)
              :koulutustoimija    koulutustoimija
              :toimipiste-oid     toimipiste-oid
              :tutkintonimike     (suoritus/tutkintonimike suoritus)
              :tutkintotunnus     (suoritus/tutkintotunnus suoritus)
              :herate-source      "ehoks_update"}
-            [existing-herate]
+            existing-heratteet
             reason
             other-info))))))
 
@@ -183,9 +141,7 @@
   "Takes a `hoks` and `opiskeluoikeus` and initiates tyoelamapalaute for all
   tyopaikkajaksos in HOKS for which palaute has not been already initiated."
   [hoks opiskeluoikeus]
-  (->> (tyopaikkajaksot hoks)
-       (map #(initiate-if-needed! % hoks opiskeluoikeus))
-       doall))
+  (run! #(initiate-if-needed! % hoks opiskeluoikeus) (tyopaikkajaksot hoks)))
 
 (defn- deaccent-string
   "Poistaa diakriittiset merkit stringistä ja palauttaa muokatun stringin."

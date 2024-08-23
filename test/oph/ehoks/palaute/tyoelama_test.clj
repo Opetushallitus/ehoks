@@ -27,6 +27,10 @@
 (use-fixtures :once test-utils/migrate-database)
 (use-fixtures :each test-utils/empty-database-after-test)
 
+;; FIXME: there is some kind of misunderstanding in the format of this
+;; data.  It's fed to initiate-if-needed! and
+;; initial-palaute-state-and-reason but seems mostly to be in SQS
+;; format, which is not what is fed to those functions.
 (def test-jakso
   {:hoks-id (:id hoks-test/hoks-1)
    :yksiloiva-tunniste "1"
@@ -36,11 +40,16 @@
    :alku (LocalDate/of 2023 9 9)
    :loppu (LocalDate/of 2023 12 15)
    :osa-aikaisuustieto 100
+   :osaamisen-hankkimistapa-koodi-uri "osaamisenhankkimistapa_oppisopimus"
    :oppija-oid "123.456.789"
    :tyyppi "test-tyyppi"
    :tutkinnonosa-id "test-tutkinnonosa-id"
-   :keskeytymisajanjaksot [{:alku  (LocalDate/of 2023 9 28)
-                            :loppu (LocalDate/of 2023 9 29)}]
+   :keskeytymisajanjaksot
+   [{:alku  (LocalDate/of 2023 9 28) :loppu (LocalDate/of 2023 9 29)}]
+   :tyopaikalla-jarjestettava-koulutus
+   {:vastuullinen-tyopaikka-ohjaaja "Esi Merkki"
+    :tyopaikan-nimi "Kohtuu mesta Oy"
+    :tyopaikan-y-tunnus "1234567-1"}
    :hankkimistapa-id 2
    :hankkimistapa-tyyppi "koulutussopimus_01"})
 
@@ -52,18 +61,6 @@
       "2021-12-27" "2022-01-01"
       "2021-04-25" "2021-05-01"
       "2022-06-24" "2022-07-01")))
-
-(deftest test-osa-aikaisuus-missing?
-  (testing "The function returns"
-    (testing "`true` when osa-aikaisuus is missing."
-      (are [jakso] (true? (tep/osa-aikaisuus-missing? jakso))
-        {:osa-aikaisuustieto nil :loppu (LocalDate/of 2023 8 1)}
-        {:loppu (LocalDate/of 2023 8 1)}))
-    (testing "falsey value when osa-aikaisuus is not missing."
-      (are [jakso] (not (tep/osa-aikaisuus-missing? jakso))
-        {:osa-aikaisuustieto nil :loppu (LocalDate/of 2023 6 30)}
-        {:loppu (LocalDate/of 2023 6 30)}
-        {:osa-aikaisuustieto 30 :loppu (LocalDate/of 2023 8 1)}))))
 
 (deftest test-fully-keskeytynyt?
   (testing "fully-keskeytynyt?"
@@ -78,11 +75,14 @@
                                             :loppu (LocalDate/of 2021 8 4)}]
                    :loppu (LocalDate/of 2021 8 11)}
           herate3 {}
-          herate4 {:keskeytymisajanjaksot [{:alku (LocalDate/of 2021 8 8)}]}]
+          herate4 {:keskeytymisajanjaksot [{:alku (LocalDate/of 2021 8 8)}]
+                   :loppu (LocalDate/of 2021 8 11)}
+          herate5 {:keskeytymisajanjaksot [{:alku (LocalDate/of 2021 8 8)}]}]
       (is (tep/fully-keskeytynyt? herate1))
       (is (not (tep/fully-keskeytynyt? herate2)))
       (is (not (tep/fully-keskeytynyt? herate3)))
-      (is (not (tep/fully-keskeytynyt? herate4))))))
+      (is (tep/fully-keskeytynyt? herate4))
+      (is (not (tep/fully-keskeytynyt? herate5))))))
 
 (deftest test-tyopaikkajaksot
   (testing (str "The function returns osaamisen hankkimistavat with koodi-uri"
@@ -97,38 +97,41 @@
       (testing "don't initiate kysely if"
         (testing "there is already herate for tyopaikkajakso."
           (is (= (tep/initial-palaute-state-and-reason
-                   test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-5
-                   {:yksiloiva-tunniste "asd"})
-                 [nil nil :jaksolle-loytyy-jo-herate])))
+                   test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1
+                   [{:yksiloiva-tunniste "asd"}])
+                 [nil :yksiloiva-tunniste :jo-lahetetty])))
         (testing "opiskeluoikeus is in terminal state."
           (is (= (tep/initial-palaute-state-and-reason
-                   test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-5)
-                 [:ei-laheteta
-                  :opiskeluoikeus-oid
-                  :opiskeluoikeus-terminaalitilassa])))
+                   test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-5 [])
+                 [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt])))
         (testing "osa-aikaisuus is missing from työpaikkajakso"
           (is (= (tep/initial-palaute-state-and-reason
                    (dissoc test-jakso :osa-aikaisuustieto)
-                   hoks-test/hoks-1
-                   oo-test/opiskeluoikeus-1)
-                 [:ei-laheteta nil :osa-aikaisuus-puuttuu])))
+                   hoks-test/hoks-1 oo-test/opiskeluoikeus-1 [])
+                 [:ei-laheteta :osa-aikaisuustieto :ei-ole])))
+        (testing "workplace information is missing from työpaikkajakso"
+          (is (= (tep/initial-palaute-state-and-reason
+                   (update test-jakso :tyopaikalla-jarjestettava-koulutus
+                           dissoc :tyopaikan-y-tunnus)
+                   hoks-test/hoks-1 oo-test/opiskeluoikeus-1 [])
+                 [:ei-laheteta :tyopaikalla-jarjestettava-koulutus
+                  :puuttuva-yhteystieto])))
         (testing "työpaikkajakso is interrupted on it's end date"
           (is (= (tep/initial-palaute-state-and-reason
                    (assoc-in test-jakso
                              [:keskeytymisajanjaksot 1]
                              {:alku  (LocalDate/of 2023 12 1)
                               :loppu (LocalDate/of 2023 12 15)})
-                   hoks-test/hoks-1
-                   oo-test/opiskeluoikeus-1)
-                 [:ei-laheteta nil :tyopaikkajakso-keskeytynyt])))
+                   hoks-test/hoks-1 oo-test/opiskeluoikeus-1 [])
+                 [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt])))
         (testing "opiskeluoikeus doesn't have any ammatillinen suoritus"
           (is (= (tep/initial-palaute-state-and-reason
-                   test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-2)
+                   test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-2 [])
                  [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen])))
         (testing "there is a feedback preventing code in opiskeluoikeusjakso."
           (is (= (tep/initial-palaute-state-and-reason
-                   test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-4)
-                 [:ei-laheteta :opiskeluoikeus-oid :rahoitusperuste])))
+                   test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-4 [])
+                 [:ei-laheteta :opiskeluoikeus-oid :ulkoisesti-rahoitettu])))
         (testing "HOKS is a TUVA-HOKS or a HOKS related to TUVA-HOKS."
           (doseq [test-hoks [(assoc hoks-test/hoks-1
                                     :hankittavat-koulutuksen-osat
@@ -137,7 +140,7 @@
                                     :tuva-opiskeluoikeus-oid
                                     "1.2.246.562.15.88406700034")]]
             (is (= (tep/initial-palaute-state-and-reason
-                     test-jakso test-hoks oo-test/opiskeluoikeus-1)
+                     test-jakso test-hoks oo-test/opiskeluoikeus-1 [])
                    [:ei-laheteta
                     :tuva-opiskeluoikeus-oid
                     :tuva-opiskeluoikeus]))))
@@ -146,34 +149,32 @@
                    test-jakso
                    hoks-test/hoks-1
                    (assoc-in oo-test/opiskeluoikeus-1
-                             [:tyyppi :koodiarvo] "tuva"))
+                             [:tyyppi :koodiarvo] "tuva")
+                   [])
                  [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus])))
         (testing "opiskeluoikeus is linked to another opiskeluoikeus"
           (is (= (tep/initial-palaute-state-and-reason
-                   test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-3)
-                 [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus])))
-        (with-redefs [date/now #(LocalDate/of 2024 6 30)]
-          (testing "jakso is in the past"
-            (is (= (tep/initial-palaute-state-and-reason
-                     test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
-                   [:ei-laheteta :loppu :menneisyydessa])))))
+                   test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-3 [])
+                 [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]))))
       (testing "initiate kysely if when all of the checks are OK."
         (is (= (tep/initial-palaute-state-and-reason
-                 test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
+                 test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1 [])
                [:odottaa-kasittelya nil :hoks-tallennettu]))))))
 
 (defn- build-expected-herate
   [jakso hoks]
-  (let [voimassa-alkupvm (tep/next-niputus-date (:loppu jakso))]
+  (let [heratepvm (:loppu jakso)
+        voimassa-alkupvm (tep/next-niputus-date heratepvm)]
     {:tila                           "odottaa_kasittelya"
      :kyselytyyppi                   "tyopaikkajakson_suorittaneet"
      :hoks-id                        (:id hoks)
      :jakson-yksiloiva-tunniste      (:yksiloiva-tunniste jakso)
-     :heratepvm                      (:loppu jakso)
+     :heratepvm                      heratepvm
      :tutkintotunnus                 351407
      :tutkintonimike                 "(\"12345\",\"23456\")"
      :voimassa-alkupvm               voimassa-alkupvm
-     :voimassa-loppupvm              (tep/voimassa-loppupvm voimassa-alkupvm)
+     :voimassa-loppupvm              (palaute/vastaamisajan-loppupvm
+                                       heratepvm voimassa-alkupvm)
      :koulutustoimija                "1.2.246.562.10.346830761110"
      :toimipiste-oid                 "1.2.246.562.10.12312312312"
      :herate-source                  "ehoks_update"}))
@@ -201,7 +202,7 @@
         (let [tapahtumat (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                            db/spec
                            {:hoks-id      (:id hoks-test/hoks-1)
-                            :kyselytyypit tep/kyselytyypit})]
+                            :kyselytyypit ["tyopaikkajakson_suorittaneet"]})]
           (is (= (count tapahtumat) 1))
           (is (= (dissoc (first tapahtumat) :id :created-at :updated-at)
                  {:palaute-id   1
@@ -219,7 +220,7 @@
             test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
           (is (logged? 'oph.ehoks.palaute.tyoelama
                        :info
-                       #"`:jaksolle-loytyy-jo-herate`")))))))
+                       #":jo-lahetetty")))))))
 
 (deftest test-initiate-all-uninitiated!
   (with-redefs [date/now (constantly (LocalDate/of 2023 10 18))

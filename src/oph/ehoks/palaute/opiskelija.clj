@@ -51,44 +51,21 @@
   opiskelijapalautekysely should be initiated.  Returns the initial state
   of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  ([kysely hoks opiskeluoikeus]
-    (initial-palaute-state-and-reason kysely hoks opiskeluoikeus nil))
-  ([kysely hoks opiskeluoikeus existing-heratteet]
-    (let [herate-basis (herate-date-basis kysely)
-          herate-date (get hoks herate-basis)]
+  [kysely hoks opiskeluoikeus existing-heratteet]
+  (let [herate-basis (herate-date-basis kysely)
+        herate-date (get hoks herate-basis)]
+    (or
+      (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
+        herate-basis hoks opiskeluoikeus)
       (cond
-        (not opiskeluoikeus)
-        [nil :opiskeluoikeus-oid :ei-loydy]
-
-        (not herate-date)
-        [nil herate-basis :ei-ole]
-
-        (not (palaute/valid-herate-date? herate-date))
-        [:ei-laheteta herate-basis :eri-rahoituskaudella]
+        (palaute/already-initiated? existing-heratteet)
+        [nil :id :jo-lahetetty]
 
         (not (:osaamisen-hankkimisen-tarve hoks))
         [:ei-laheteta :osaamisen-hankkimisen-tarve :ei-ole]
 
-        (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
-        [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
-
-        (opiskeluoikeus/in-terminal-state? opiskeluoikeus herate-date)
-        [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt]
-
-        (palaute/feedback-collecting-prevented? opiskeluoikeus herate-date)
-        [:ei-laheteta :opiskeluoikeus-oid :ulkoisesti-rahoitettu]
-
         (c/tuva-related-hoks? hoks)
         [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
-
-        (opiskeluoikeus/tuva? opiskeluoikeus)
-        [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus]
-
-        (opiskeluoikeus/linked-to-another? opiskeluoikeus)
-        [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]
-
-        (palaute/already-initiated? existing-heratteet)
-        [nil herate-basis :jo-lahetetty-talla-rahoituskaudella]
 
         :else
         [:odottaa-kasittelya nil :hoks-tallennettu]))))

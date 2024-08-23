@@ -6,6 +6,8 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
+            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [oph.ehoks.utils.date :as date])
   (:import [java.time LocalDate]))
@@ -94,12 +96,10 @@
 (defn vastaamisajan-loppupvm
   "Laskee vastausajan loppupäivämäärän: 30 päivän päästä (inklusiivisesti),
   mutta ei myöhempi kuin 60 päivää (inklusiivisesti) herätepäivän jälkeen."
-  [^LocalDate herate ^LocalDate alku]
-  (let [last   (.plusDays herate 59)
-        normal (.plusDays alku 29)]
-    (if (.isBefore last normal)
-      last
-      normal)))
+  [^LocalDate heratepvm ^LocalDate alkupvm]
+  (let [last   (.plusDays heratepvm 59)
+        normal (.plusDays alkupvm 29)]
+    (if (.isBefore last normal) last normal)))
 
 (defn get-opiskeluoikeusjakso-for-date
   "Hakee opiskeluoikeudesta jakson, joka on voimassa tiettynä päivänä."
@@ -135,3 +135,34 @@
       (if (> month 6)
         (str year "-" (inc year))
         (str (dec year) "-" year)))))
+
+(defn initial-palaute-state-and-reason-if-not-kohderyhma
+  "Partial function; returns initial state, field causing it, and why the
+  field causes the initial state - but only if the palaute is not to be
+  collected because it's not part of kohderyhmä; otherwise returns nil."
+  [herate-date-field hoks-or-jakso opiskeluoikeus]
+  (let [herate-date (get hoks-or-jakso herate-date-field)]
+    (cond
+      (not opiskeluoikeus)
+      [nil :opiskeluoikeus-oid :ei-loydy]
+
+      (not herate-date)
+      [nil herate-date-field :ei-ole]
+
+      (not (valid-herate-date? herate-date))
+      [:ei-laheteta herate-date-field :eri-rahoituskaudella]
+
+      (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
+      [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
+
+      (opiskeluoikeus/in-terminal-state? opiskeluoikeus herate-date)
+      [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt]
+
+      (feedback-collecting-prevented? opiskeluoikeus herate-date)
+      [:ei-laheteta :opiskeluoikeus-oid :ulkoisesti-rahoitettu]
+
+      (opiskeluoikeus/tuva? opiskeluoikeus)
+      [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus]
+
+      (opiskeluoikeus/linked-to-another? opiskeluoikeus)
+      [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus])))
