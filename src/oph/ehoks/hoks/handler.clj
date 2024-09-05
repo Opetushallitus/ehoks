@@ -289,9 +289,9 @@
   [hoks request]
   (oppijaindex/add-hoks-dependents-in-index! hoks)
   (m/check-hoks-access! hoks request)
-  (let [hoks-db   (hoks/check-and-save! hoks)
-        resp-body {:uri (format "%s/%d" (:uri request) (:id hoks-db))}]
-    (-> resp-body
+  (hoks/check! hoks)
+  (let [hoks-db   (hoks/save! hoks)]
+    (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
         (rest/ok :id (:id hoks-db))
         (assoc ::audit/changes {:new hoks}
                ::audit/target  (audit/hoks-target-data hoks-db)))))

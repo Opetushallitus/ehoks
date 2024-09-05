@@ -108,9 +108,10 @@
   [hoks request]
   (oi/add-hoks-dependents-in-index! hoks)
   (check-virkailija-privileges hoks request)
+  (hoks/check! hoks)
   (let [hoks-db (-> (hoks/add-missing-oht-yksiloiva-tunniste hoks)
                     (assoc :manuaalisyotto true)
-                    (hoks/check-and-save!))]
+                    (hoks/save!))]
     (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
         (restful/ok :id (:id hoks-db))
         (assoc ::audit/changes {:new hoks}
