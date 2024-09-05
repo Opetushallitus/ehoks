@@ -357,7 +357,7 @@
                     :old-oppija-oid old-oppija-oid
                     :new-oppija-oid new-oppija-oid})))))))
 
-(defn check-and-save!
+(defn check!
   "Tekee uuden HOKSin tarkistukset ja tallentaa sen, jos kaikki on OK."
   [hoks]
   (let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
@@ -376,8 +376,7 @@
       (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
                               opiskeluoikeus-oid)
                       {:type               ::disallowed-update
-                       :opiskeluoikeus-oid opiskeluoikeus-oid})))
-    (save! hoks)))
+                       :opiskeluoikeus-oid opiskeluoikeus-oid})))))
 
 (defn get-with-hankittavat-koulutuksen-osat!
   [hoks-id]
