@@ -90,11 +90,11 @@
         ::audit/target {:oppilaitos-oid oppilaitos-oid
                         :hoks-id hoks-id}))))
 
-(defn- check-virkailija-privileges
+(defn- check-virkailija-privileges!
   "Check whether virkailija user has write privileges in HOKS"
   [hoks request]
   (let [user (get-in request [:session :virkailija-user])]
-    (when-not (user/has-privilege-to-hoks? hoks user :write)
+    (when-not (user/has-privilege-to-hoks?! hoks user :write)
       (log/warnf "User %s privileges don't match oppija %s"
                  (get-in request [:session
                                   :virkailija-user
@@ -103,20 +103,6 @@
       (response/forbidden!
         {:error
          (str "User has unsufficient privileges")}))))
-
-(defn- post-hoks!
-  "Add new HOKS for oppija"
-  [hoks request]
-  (oi/add-hoks-dependents-in-index! hoks)
-  (check-virkailija-privileges hoks request)
-  (hoks/check hoks (get-current-opiskeluoikeus))
-  (let [hoks-db (-> (hoks/add-missing-oht-yksiloiva-tunniste hoks)
-                    (assoc :manuaalisyotto true)
-                    (hoks/save!))]
-    (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
-        (restful/ok :id (:id hoks-db))
-        (assoc ::audit/changes {:new hoks}
-               ::audit/target  (audit/hoks-target-data hoks-db)))))
 
 (defn- any-hoks-has-active-opiskeluoikeus?
   "Check if any of the HOKSes has an active opiskeluoikeus"
@@ -129,7 +115,7 @@
   [oppija-oid ticket-user]
   (if-let [hoksit (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
     (let [virkailijan-oppilaitosten-hoksit
-          (filter #(user/has-privilege-to-hoks? % ticket-user :read)
+          (filter #(user/has-privilege-to-hoks?! % ticket-user :read)
                   hoksit)
           visible-hoksit (if (any-hoks-has-active-opiskeluoikeus?
                                virkailijan-oppilaitosten-hoksit)
@@ -552,7 +538,8 @@
                                     "HOKSLuonti-virkailija" :post-virkailija
                                     "HOKS-dokumentin luonti")]
                       :return (restful/response schema/POSTResponse :id s/Int)
-                      (post-hoks! hoks request))
+                      (hoks-handler/post-hoks!
+                        :virkailija hoks request check-virkailija-privileges!))
 
                     (route-middleware
                       [m/wrap-virkailija-oppija-access]
