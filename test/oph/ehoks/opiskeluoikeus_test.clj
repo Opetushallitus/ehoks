@@ -1,5 +1,5 @@
 (ns oph.ehoks.opiskeluoikeus-test
-  (:require [clojure.test :refer [are deftest testing]]
+  (:require [clojure.test :refer [are deftest is testing]]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]))
 
 (def opiskeluoikeus-1
@@ -59,6 +59,41 @@
    :tyyppi          {:koodiarvo "ammatillinenkoulutus"}
    :koulutustoimija {:oid "1.2.246.562.10.346830761110"}})
 
+(def opiskeluoikeus-data
+  {:oppilaitos {:oid "1.2.246.562.10.22222222220"}
+   :tila {:opiskeluoikeusjaksot
+          [{:alku "2023-07-03"
+            :tila {:koodiarvo "lasna"
+                   :nimi {:fi "Läsnä"}
+                   :koodistoUri "koskiopiskeluoikeudentila"
+                   :koodistoVersio 1}}]}
+   :suoritukset
+   [{:koulutusmoduuli
+     {:tunniste
+      {:koodiarvo "351407"
+       :nimi {:fi "Testialan perustutkinto"
+              :sv "Grundexamen inom testsbranschen"
+              :en "Testing"}}}}]
+   :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
+
+(def tila-data
+  {:opiskeluoikeusjaksot
+   [{:alku "2018-01-01"
+     :tila {:koodiarvo "eronnut"
+            :nimi {:fi "Eronnut"}
+            :koodistoUri "koskiopiskeluoikeudentila"
+            :koodistoVersio 1}}
+    {:alku "2019-01-01"
+     :tila {:koodiarvo "lasna"
+            :nimi {:fi "Läsnä"}
+            :koodistoUri "koskiopiskeluoikeudentila"
+            :koodistoVersio 1}}
+    {:alku "2020-01-01"
+     :tila {:koodiarvo "lasna"
+            :nimi {:fi "Läsnä"}
+            :koodistoUri "koskiopiskeluoikeudentila"
+            :koodistoVersio 1}}]})
+
 (deftest test-in-terminal-state?
   (testing "Opiskeluoikeuden tilan tarkastus. Keskeytetty opiskeluoikeus estää
            jakson käsittelyn. Jakson päättymispäivänä keskeytetty opiskeluoikeus
@@ -105,3 +140,41 @@
         opiskeluoikeus-eronnut-samana-paivana false
         opiskeluoikeus-eronnut-tulevaisuudessa false
         opiskeluoikeus-eronnut-paivaa-aiemmin true))))
+
+(deftest test-still-active?
+  (with-redefs [oph.ehoks.config/config
+                {:prevent-finished-opiskeluoikeus-updates? true}]
+    (testing "Active opiskeluoikeus returns true"
+      (is (opiskeluoikeus/still-active?
+            (assoc opiskeluoikeus-data
+                   :oid "1.2.246.562.15.55003456344"
+                   :tila {:opiskeluoikeusjaksot
+                          [{:alku "2018-01-01"
+                            :tila {:koodiarvo "lasna"
+                                   :nimi {:fi "Läsnä"}
+                                   :koodistoUri "koskiopiskeluoikeudentila"
+                                   :koodistoVersio 1}}]}))))
+
+    (testing "Finished opiskeluoikeus returns false"
+      (is (not (opiskeluoikeus/still-active?
+                 (assoc opiskeluoikeus-data
+                        :oid "1.2.246.562.15.55003456345"
+                        :tila {:opiskeluoikeusjaksot
+                               [{:alku "2018-01-01"
+                                 :tila {:koodiarvo "eronnut"
+                                        :nimi {:fi "Eronnut"}
+                                        :koodistoUri "koskiopiskeluoikeudentila"
+                                        :koodistoVersio 1}}]})))))
+
+    (testing "Active opiskeluoikeus matching hoks is filtered from multiple"
+      (is (opiskeluoikeus/still-active? (assoc opiskeluoikeus-data
+                                               :oid "1.2.246.562.15.55003456346"
+                                               :tila tila-data))))
+
+    (testing "Active opiskeluoikeus is parsed from hoks and opiskeluoikeudet"
+      (is (opiskeluoikeus/still-active? (assoc opiskeluoikeus-data
+                                               :oid "1.2.246.562.15.55003456346"
+                                               :tila tila-data)))))
+
+  (testing "Without feature flag enabled always returns true"
+    (is (opiskeluoikeus/still-active? "not an opiskeluoikeus-oid"))))

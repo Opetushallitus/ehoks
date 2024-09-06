@@ -3,6 +3,7 @@
             [clojure.set :refer [rename-keys]]
             [clojure.tools.logging :as log]
             [clojure.walk :as walk]
+            [oph.ehoks.config :refer [config]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
@@ -319,12 +320,12 @@
 
 (defn check-for-update!
   "Tarkistaa, saako HOKSin päivittää uusilla arvoilla."
-  [old-hoks new-hoks]
+  [old-hoks new-hoks opiskeluoikeus]
   (let [new-oppija-oid (:oppija-oid new-hoks)
         old-oppija-oid (:oppija-oid old-hoks)
         new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-hoks)
         old-opiskeluoikeus-oid (:opiskeluoikeus-oid old-hoks)]
-    (when-not (opiskeluoikeus/still-active? new-opiskeluoikeus-oid)
+    (when-not (opiskeluoikeus/still-active? opiskeluoikeus)
       (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active."
                               new-opiskeluoikeus-oid)
                       {:type               ::disallowed-update
@@ -357,14 +358,12 @@
                     :old-oppija-oid old-oppija-oid
                     :new-oppija-oid new-oppija-oid})))))))
 
-(defn check!
+(defn check
   "Tekee uuden HOKSin tarkistukset ja tallentaa sen, jos kaikki on OK."
-  [hoks]
+  [hoks opiskeluoikeus]
   (let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-        oppija-oid         (:oppija-oid hoks)
-        opiskeluoikeudet (koski/fetch-opiskeluoikeudet-by-oppija-id oppija-oid)]
-    (when-not (oppijaindex/oppija-opiskeluoikeus-match? opiskeluoikeudet
-                                                        opiskeluoikeus-oid)
+        oppija-oid         (:oppija-oid hoks)]
+    (when (and (nil? opiskeluoikeus) (:enforce-opiskeluoikeus-match? config))
       (-> (format "Opiskeluoikeus `%s` does not match any held by oppija `%s`"
                   opiskeluoikeus-oid
                   oppija-oid)
@@ -372,7 +371,7 @@
                     :opiskeluoikeus-oid opiskeluoikeus-oid
                     :oppija-oid         oppija-oid})
           throw))
-    (when-not (opiskeluoikeus/still-active? hoks opiskeluoikeudet)
+    (when-not (opiskeluoikeus/still-active? opiskeluoikeus)
       (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
                               opiskeluoikeus-oid)
                       {:type               ::disallowed-update
