@@ -59,6 +59,19 @@
    :tyyppi          {:koodiarvo "ammatillinenkoulutus"}
    :koulutustoimija {:oid "1.2.246.562.10.346830761110"}})
 
+(def opiskeluoikeus-6
+  {:suoritukset [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
+                  :suorituskieli {:koodiarvo "fi"}}]
+   :tila {:opiskeluoikeusjaksot
+          [{:alku "2020-07-03"
+            :tila {:koodiarvo "lasna"
+                   :nimi {:fi "Läsnä"}
+                   :koodistoUri
+                   "koskiopiskeluoikeudentila"
+                   :koodistoVersio 1}}]}
+   :koulutustoimija {:oid "1.2.246.562.10.346830761110"}
+   :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
+
 (def opiskeluoikeus-data
   {:oppilaitos {:oid "1.2.246.562.10.22222222220"}
    :tila {:opiskeluoikeusjaksot

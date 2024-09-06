@@ -110,29 +110,13 @@
 (defn save!
   "Tallentaa yhden HOKSin arvot tietokantaan."
   [hoks]
-  (let [hoks-db       (jdbc/with-db-transaction
-                        [conn (db-ops/get-db-connection)]
-                        (let [hoks (merge hoks (db-hoks/insert-hoks! hoks conn))
-                              tuva-hoks (tuva-related? hoks)]
-                          (db-hoks/insert-amisherate-kasittelytilat!
-                            (:id hoks) tuva-hoks conn)
-                          (save-parts! hoks conn)))
-        hoks           (assoc hoks :id (:id hoks-db))
-        opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                         (:opiskeluoikeus-oid hoks))]
-    (try
-      (op/initiate-if-needed! :aloituskysely hoks)
-      (op/initiate-if-needed! :paattokysely hoks)
-      (tep/initiate-all-uninitiated! hoks opiskeluoikeus)
-      (catch clojure.lang.ExceptionInfo e
-        (if (= :organisaatio/organisation-not-found (:type (ex-data e)))
-          (throw (ex-info (str "HOKS contains an unknown organisation"
-                               (:organisation-oid (ex-data e)))
-                          (assoc (ex-data e) :type ::disallowed-update)))
-          (log/error e "exception in heräte initiation with" (ex-data e))))
-      (catch Exception e
-        (log/error e "exception in heräte initiation")))
-    hoks-db))
+  (jdbc/with-db-transaction
+    [conn (db-ops/get-db-connection)]
+    (let [hoks (merge hoks (db-hoks/insert-hoks! hoks conn))
+          tuva-hoks (tuva-related? hoks)]
+      (db-hoks/insert-amisherate-kasittelytilat!
+        (:id hoks) tuva-hoks conn)
+      (save-parts! hoks conn))))
 
 (def ^:private tuva-hoks-msg-template
   "HOKS `%s` is a TUVA-HOKS or rinnakkainen ammatillinen HOKS.")
