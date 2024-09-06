@@ -23,7 +23,8 @@
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.logging.audit :as audit]
-            [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus]]
+            [oph.ehoks.middleware :refer [get-current-opiskeluoikeus
+                                          wrap-hoks wrap-opiskeluoikeus]]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
@@ -108,7 +109,7 @@
   [hoks request]
   (oi/add-hoks-dependents-in-index! hoks)
   (check-virkailija-privileges hoks request)
-  (hoks/check! hoks)
+  (hoks/check hoks (get-current-opiskeluoikeus))
   (let [hoks-db (-> (hoks/add-missing-oht-yksiloiva-tunniste hoks)
                     (assoc :manuaalisyotto true)
                     (hoks/save!))]
@@ -193,7 +194,7 @@
   (let [old-hoks (if (= (:request-method request) :put)
                    (hoks/get-values (:hoks request))
                    (:hoks request))]
-    (hoks/check-for-update! old-hoks hoks)
+    (hoks/check-for-update! old-hoks hoks (get-current-opiskeluoikeus))
     (let [new-hoks (db-handler (:id (:hoks request))
                                (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
       (hoks/handle-oppija-oid-changes-in-indexes! new-hoks old-hoks)

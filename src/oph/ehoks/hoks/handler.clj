@@ -1,26 +1,28 @@
 (ns oph.ehoks.hoks.handler
   (:require [clojure.tools.logging :as log]
             [compojure.api.core :refer [route-middleware]]
-            [ring.util.http-response :as response]
             [compojure.api.sweet :as c-api]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.postgresql.common :refer [select-kyselylinkki]]
             [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as pdb-ot]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
-            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
-            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
             [oph.ehoks.logging.audit :as audit]
-            [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus
+            [oph.ehoks.middleware :refer [get-current-opiskeluoikeus
+                                          wrap-hoks wrap-opiskeluoikeus
                                           wrap-user-details]]
             [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.schema.oid :as oid-schema]
+            [ring.util.http-response :as response]
             [schema.core :as s]))
 
 (def ^:private hankittava-paikallinen-tutkinnon-osa
@@ -289,7 +291,7 @@
   [hoks request]
   (oppijaindex/add-hoks-dependents-in-index! hoks)
   (m/check-hoks-access! hoks request)
-  (hoks/check! hoks)
+  (hoks/check hoks (get-current-opiskeluoikeus))
   (let [hoks-db   (hoks/save! hoks)]
     (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
         (rest/ok :id (:id hoks-db))
@@ -304,7 +306,7 @@
                    (:hoks request))]
     (if (empty? old-hoks)
       (response/not-found {:error "HOKS not found with given HOKS ID"})
-      (do (hoks/check-for-update! old-hoks hoks)
+      (do (hoks/check-for-update! old-hoks hoks (get-current-opiskeluoikeus))
           (let [new-hoks (db-handler (get-in request [:hoks :id]) hoks)]
             (hoks/handle-oppija-oid-changes-in-indexes! new-hoks old-hoks)
             (assoc (response/no-content)
