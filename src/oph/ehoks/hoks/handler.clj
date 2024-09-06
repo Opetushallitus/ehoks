@@ -5,7 +5,6 @@
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.postgresql.common :refer [select-kyselylinkki]]
             [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as pdb-ot]
-            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
@@ -286,13 +285,18 @@
                (pdb-ot/select-opiskeluvalmiuksia-tukevat-opinnot-by-id id)}))
         (response/not-found {:error "OTO not found with given OTO ID"})))))
 
-(defn- post-hoks!
+(defn post-hoks!
   "Käsittelee HOKS-luontipyynnön."
-  [hoks request]
+  [api hoks request check-privileges]
+  {:pre [(#{:hoks :virkailija} api)]}
   (oppijaindex/add-hoks-dependents-in-index! hoks)
-  (m/check-hoks-access! hoks request)
+  (check-privileges hoks request)
   (hoks/check hoks (get-current-opiskeluoikeus))
-  (let [hoks-db   (hoks/save! hoks)]
+  (let [hoks    (if (= api :virkailija)
+                  (assoc (hoks/add-missing-oht-yksiloiva-tunniste hoks)
+                         :manuaalisyotto true)
+                  hoks)
+        hoks-db (hoks/save! hoks)]
     (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
         (rest/ok :id (:id hoks-db))
         (assoc ::audit/changes {:new hoks}
@@ -418,17 +422,17 @@
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
-        (post-hoks! hoks request))
+        (post-hoks! :hoks hoks request m/check-hoks-access!))
 
       (c-api/GET "/:hoks-id" request
-        :middleware [m/wrap-hoks-access]
+        :middleware [m/wrap-hoks-access!]
         :summary "Palauttaa HOKSin"
         :return (rest/response hoks-schema/HOKS)
         (rest/ok (hoks/get-values (:hoks request))))
 
       (c-api/context "/:hoks-id" []
         (route-middleware
-          [m/wrap-hoks-access wrap-opiskeluoikeus]
+          [m/wrap-hoks-access! wrap-opiskeluoikeus]
 
           (c-api/PATCH "/" request
             :summary
