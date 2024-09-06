@@ -302,16 +302,21 @@
         (assoc ::audit/changes {:new hoks}
                ::audit/target  (audit/hoks-target-data hoks-db)))))
 
-(defn- change-hoks!
+(defn change-hoks!
   "Käsittelee HOKS-muutospyynnön."
-  [hoks request db-handler]
+  [api hoks request db-handler]
+  {:pre [(#{:hoks :virkailija} api)]}
   (let [old-hoks (if (= (:request-method request) :put)
                    (hoks/get-values (:hoks request))
                    (:hoks request))]
     (if (empty? old-hoks)
       (response/not-found {:error "HOKS not found with given HOKS ID"})
       (do (hoks/check-for-update! old-hoks hoks (get-current-opiskeluoikeus))
-          (let [new-hoks (db-handler (get-in request [:hoks :id]) hoks)]
+          (let [new-hoks (db-handler (:id (:hoks request))
+                                     (if (= api :virkailija)
+                                       (hoks/add-missing-oht-yksiloiva-tunniste
+                                         hoks)
+                                       hoks))]
             (hoks/handle-oppija-oid-changes-in-indexes! new-hoks old-hoks)
             (assoc (response/no-content)
                    ::audit/changes {:old old-hoks :new new-hoks}))))))
@@ -438,12 +443,12 @@
             :summary
             "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
             :body [hoks hoks-schema/HOKSPaivitys]
-            (change-hoks! hoks request hoks/update!))
+            (change-hoks! :hoks hoks request hoks/update!))
 
           (c-api/PUT "/" request
             :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
             :body [hoks hoks-schema/HOKSKorvaus]
-            (change-hoks! hoks request hoks/replace!))
+            (change-hoks! :hoks hoks request hoks/replace!))
 
           (c-api/GET "/hankintakoulutukset" request
             :summary "Palauttaa hoksin hankintakoulutus opiskeluoikeus-oidit"

@@ -174,19 +174,6 @@
           (get-in request [:params :oppija-oid]))
         (response/forbidden {:error "User has insufficient privileges"})))))
 
-(defn- change-hoks!
-  "Change contents of HOKS with particular ID"
-  [hoks request db-handler]
-  (let [old-hoks (if (= (:request-method request) :put)
-                   (hoks/get-values (:hoks request))
-                   (:hoks request))]
-    (hoks/check-for-update! old-hoks hoks (get-current-opiskeluoikeus))
-    (let [new-hoks (db-handler (:id (:hoks request))
-                               (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
-      (hoks/handle-oppija-oid-changes-in-indexes! new-hoks old-hoks)
-      (assoc (response/no-content)
-             ::audit/changes {:old old-hoks :new new-hoks}))))
-
 (defn- update-kyselylinkki-status!
   "Takes a `linkki-info` map, fetches the latest kyselylinkki status from Arvo
   and returns an updated `kyselylinkki-info` map. The functions *throws* if
@@ -639,7 +626,8 @@
                                    (hoks-schema/generate-hoks-schema
                                      "HOKSKorvaus-virkailija" :put-virkailija
                                      "HOKS-dokumentin korvaus")]
-                            (change-hoks! hoks-values request hoks/replace!))
+                            (hoks-handler/change-hoks!
+                              :virkailija hoks-values request hoks/replace!))
 
                           (c-api/PATCH "/" request
                             :body [hoks-values
@@ -647,7 +635,8 @@
                                      "HOKSPaivitys-virkailija" :patch-virkailija
                                      "HOKS-dokumentin päivitys")]
                             :summary "Oppijan hoksin päätason arvojen päivitys"
-                            (change-hoks! hoks-values request hoks/update!))))
+                            (hoks-handler/change-hoks!
+                              :virkailija hoks-values request hoks/update!))))
 
                       (c-api/context "/:hoks-id" []
                         :path-params [hoks-id :- s/Int]
