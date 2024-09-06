@@ -14,10 +14,13 @@
             [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [get-current-opiskeluoikeus
-                                          wrap-hoks wrap-opiskeluoikeus
+                                          wrap-hoks
+                                          wrap-opiskeluoikeus
                                           wrap-user-details]]
             [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.schema.oid :as oid-schema]
@@ -285,6 +288,24 @@
                (pdb-ot/select-opiskeluvalmiuksia-tukevat-opinnot-by-id id)}))
         (response/not-found {:error "OTO not found with given OTO ID"})))))
 
+(defn save-hoks-and-initiate-palautteet!
+  [hoks opiskeluoikeus]
+  (let [hoks-db (hoks/save! hoks)
+        hoks    (assoc hoks :id (:id hoks-db))]
+    (try
+      (op/initiate-if-needed! :aloituskysely hoks)
+      (op/initiate-if-needed! :paattokysely hoks)
+      (tep/initiate-all-uninitiated! hoks opiskeluoikeus)
+      (catch clojure.lang.ExceptionInfo e
+        (if (= :organisaatio/organisation-not-found (:type (ex-data e)))
+          (throw (ex-info (str "HOKS contains an unknown organisation"
+                               (:organisation-oid (ex-data e)))
+                          (assoc (ex-data e) :type ::disallowed-update)))
+          (log/error e "exception in heräte initiation with" (ex-data e))))
+      (catch Exception e
+        (log/error e "exception in heräte initiation")))
+    hoks))
+
 (defn post-hoks!
   "Käsittelee HOKS-luontipyynnön."
   [api hoks request check-privileges]
@@ -292,15 +313,16 @@
   (oppijaindex/add-hoks-dependents-in-index! hoks)
   (check-privileges hoks request)
   (hoks/check hoks (get-current-opiskeluoikeus))
-  (let [hoks    (if (= api :virkailija)
-                  (assoc (hoks/add-missing-oht-yksiloiva-tunniste hoks)
-                         :manuaalisyotto true)
-                  hoks)
-        hoks-db (hoks/save! hoks)]
-    (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
-        (rest/ok :id (:id hoks-db))
+  (let [opiskeluoikeus (get-current-opiskeluoikeus)
+        hoks (-> (if (= api :virkailija)
+                   (assoc (hoks/add-missing-oht-yksiloiva-tunniste hoks)
+                          :manuaalisyotto true)
+                   hoks)
+                 (save-hoks-and-initiate-palautteet! opiskeluoikeus))]
+    (-> {:uri (format "%s/%d" (:uri request) (:id hoks))}
+        (rest/ok :id (:id hoks))
         (assoc ::audit/changes {:new hoks}
-               ::audit/target  (audit/hoks-target-data hoks-db)))))
+               ::audit/target  (audit/hoks-target-data hoks)))))
 
 (defn change-hoks!
   "Käsittelee HOKS-muutospyynnön."
