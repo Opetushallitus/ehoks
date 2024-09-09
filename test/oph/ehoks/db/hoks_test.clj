@@ -1,10 +1,10 @@
 (ns oph.ehoks.db.hoks-test
   (:require [clojure.test :as t]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]))
+            [oph.ehoks.common.utils :as utils]))
 
 (t/deftest replace-with-in-test
   (t/testing "Empty replace"
-    (t/is (empty? (db-ops/replace-with-in
+    (t/is (empty? (utils/replace-with-in
                     {:hello {}}
                     [:hello :world]
                     :hello-world)))))

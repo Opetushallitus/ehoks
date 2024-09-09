@@ -1,16 +1,15 @@
 (ns oph.ehoks.palaute.tyoelama
-  (:require [chime.core :as chime]
-            [clojure.tools.logging :as log]
-            [clojure.java.jdbc :as jdbc]
+  (:require [clojure.java.jdbc :as jdbc]
             [clojure.string :as string]
+            [clojure.tools.logging :as log]
             [medley.core :refer [find-first]]
+            [oph.ehoks.common.utils :as utils]
             [oph.ehoks.db :as db]
-            [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.arvo :as arvo]
-            [oph.ehoks.external.organisaatio :as org]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.organisaatio :as org]
             [oph.ehoks.hoks.common :as c]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
@@ -20,7 +19,6 @@
   (:import (clojure.lang ExceptionInfo)
            (java.text Normalizer Normalizer$Form)
            (java.time LocalDate)
-           (java.lang AutoCloseable)
            (java.util UUID)))
 
 (defn finished-workplace-periods!
@@ -197,7 +195,7 @@
         (or (throw (ex-info "palaute not found" query)))
         (add-keys opiskeluoikeus request-id tunnus)
         (dissoc :internal-kyselytyyppi :jakson-yksiloiva-tunniste)
-        (db-helpers/remove-nils)
+        (utils/remove-nils)
         (ddb/sync-jakso-herate!))))
 
 (defn save-arvo-tunniste!
@@ -210,8 +208,7 @@
      :vanha-tila      (:tila tep-palaute)
      :uusi-tila       "vastaajatunnus_muodostettu"
      :tapahtumatyyppi "arvo_luonti"
-     :syy             (db-helpers/to-underscore-str
-                        :vastaajatunnus-muodostettu)
+     :syy             (utils/to-underscore-str :vastaajatunnus-muodostettu)
      :lisatiedot      lisatiedot}))
 
 (defn create-and-save-arvo-vastaajatunnus!

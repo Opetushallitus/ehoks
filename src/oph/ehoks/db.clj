@@ -1,8 +1,8 @@
 (ns oph.ehoks.db
   (:require [hugsql.adapter :refer [result-many result-one]]
             [hugsql.core :as hugsql]
-            [oph.ehoks.config :refer [config]]
-            [oph.ehoks.db.db-operations.db-helpers :as db-helpers]))
+            [oph.ehoks.common.utils :as utils]
+            [oph.ehoks.config :refer [config]]))
 
 (def spec
   "Database specification"
@@ -18,11 +18,11 @@
 
 (defn result-one-snake->kebab
   [this result options]
-  (db-helpers/to-dash-keys (result-one this result options)))
+  (utils/to-dash-keys (result-one this result options)))
 
 (defn result-many-snake->kebab
   [this result options]
-  (map db-helpers/to-dash-keys (result-many this result options)))
+  (map utils/to-dash-keys (result-many this result options)))
 
 (defmethod hugsql/hugsql-result-fn :1
   [_] 'oph.ehoks.db/result-one-snake->kebab)
