@@ -259,6 +259,7 @@
             (assert
               (palaute/update-tep-kasitelty!
                 tx {:tep-kasitelty true :id (:hankkimistapa-id tep-palaute)})))
+          tunnus
           (catch ExceptionInfo e
             (log/errorf e
                         (str "Error updating palaute %d, trying to remove "
@@ -273,15 +274,18 @@
   do not have vastaajatunnus and have heratepvm today or in the past."
   [_]
   (log/info
-    "Starting to create vastaajatunnus for unprocessed työelämäpalaute.")
-  (doseq [tep-palaute (palaute/get-tep-palautteet-waiting-for-vastaajatunnus!
-                        db/spec {:heratepvm (str (date/now))})]
-    (try
-      (jdbc/with-db-transaction
-        [tx db/spec]
-        (create-and-save-arvo-vastaajatunnus! tx tep-palaute))
-      (catch ExceptionInfo e
-        (log/errorf e
-                    "Error processing tep-palaute %s, rolling back"
-                    tep-palaute))))
-  (log/info "Done creating vastaajatunnus for unprocessed työelämäpalaute."))
+    "Creating vastaajatunnus for unprocessed työelämäpalaute.")
+  (->> (palaute/get-tep-palautteet-waiting-for-vastaajatunnus!
+         db/spec {:heratepvm (str (date/now))})
+       (map (fn [tep-palaute]
+              (try
+                (jdbc/with-db-transaction
+                  [tx db/spec]
+                  (log/infof "Creating vastaajatunnus for %d"
+                             (:id tep-palaute))
+                  (create-and-save-arvo-vastaajatunnus! tx tep-palaute))
+                (catch ExceptionInfo e
+                  (log/errorf e
+                              "Error processing tep-palaute %s"
+                              tep-palaute)))))
+       doall))

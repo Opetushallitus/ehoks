@@ -3,8 +3,13 @@
             [oph.ehoks.virkailija.handler :as handler]
             [clojure.test :refer [is]]
             [oph.ehoks.common.api :as common-api]
+            [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
             [oph.ehoks.external.cache :as cache]
-            [oph.ehoks.test-utils :as test-utils :refer [eq]]))
+            [oph.ehoks.hoks-test :as hoks-test]
+            [oph.ehoks.utils.date :as date]
+            [oph.ehoks.test-utils :as test-utils :refer [eq]])
+  (:import (java.time LocalDate)
+           (java.util UUID)))
 
 (def base-url "/ehoks-virkailija-backend/api/v1/hoks")
 (def virkailija-base-url "/ehoks-virkailija-backend/api/v1/virkailija")
@@ -139,3 +144,49 @@
         (assoc (selector-function (:tarkentavat-tiedot-naytto original))
                :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
     (eq (test-utils/dissoc-module-ids ttn-after-update) ttn-patch-values)))
+
+(defn create-hoks-in-the-past! []
+  (with-redefs [date/now #(LocalDate/of 2023 8 1)]
+    (mock-st-post (create-app nil)
+                  base-url
+                  (dissoc hoks-test/hoks-1 :id))))
+
+(defn kasittelemattomat-palauteet []
+  (db-helpers/query
+    [(str "select * from palautteet "
+          "where arvo_tunniste is null and "
+          "tila = 'odottaa_kasittelya' and "
+          "kyselytyyppi = 'tyopaikkajakson_suorittaneet'")]))
+
+(defn palautteet-joissa-vastaajatunnus []
+  (db-helpers/query
+    [(str "select * from palautteet "
+          "where arvo_tunniste is not null and "
+          "tila = 'vastaajatunnus_muodostettu' and "
+          "kyselytyyppi = 'tyopaikkajakson_suorittaneet'")]))
+
+(defn mock-get-opiskeluoikeus! [oid]
+  {:oid oid
+   :tila {:opiskeluoikeusjaksot
+          [{:alku "2010-01-01"
+            :tila {:koodiarvo "lasna"
+                   :nimi {:fi "Läsnä"}
+                   :koodistoUri "koskiopiskeluoikeudentila"
+                   :koodistoVersio 1}}]}
+   :oppilaitos {:oid "1.2.246.562.10.12944436166"}
+   :koulutustoimija {:oid "1.2.246.562.10.346830761110"}
+   :suoritukset
+   [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
+     :suorituskieli {:koodiarvo "fi"}
+     :toimipiste {:oid "1.2.246.562.10.12345678903"}
+     :koulutusmoduuli {:tunniste {:koodiarvo "123456"}}
+     :osaamisala [{:koodiarvo "test-osaamisala"}]
+     :tutkintonimike  [{:koodiarvo "12345"}
+                       {:koodiarvo "23456"}]}]
+   :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
+
+(defn mock-get-organisaatio! [oid]
+  {:oid oid :tyypit #{"organisaatiotyyppi_03"}})
+
+(defn mock-create-jaksotunnus [_]
+  {:tunnus (str (UUID/randomUUID))})

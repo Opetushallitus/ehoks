@@ -30,6 +30,15 @@ where tila = 'odottaa_kasittelya'
   and arvo_tunniste is null
   and tep_kasitelty = false
 
+-- :name get-tep-palaute-waiting-for-vastaajatunnus! :? :1
+-- :doc Get single unprocessed palaute for Arvo call.
+select * from tep_palaute
+where id = :palaute-id
+  and tila = 'odottaa_kasittelya'
+  and heratepvm <= current_date
+  and arvo_tunniste is null
+  and tep_kasitelty = false
+
 -- :name update-arvo-tunniste! :? :*
 -- :doc Update arvo-tunniste for palaute with given id.
 update palautteet
