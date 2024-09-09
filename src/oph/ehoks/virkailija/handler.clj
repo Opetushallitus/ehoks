@@ -8,7 +8,7 @@
             [compojure.route :as compojure-route]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
-            [oph.ehoks.common.utils :refer [apply-when]]
+            [oph.ehoks.utils :refer [apply-when]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
             [oph.ehoks.db.postgresql.common :as pc]

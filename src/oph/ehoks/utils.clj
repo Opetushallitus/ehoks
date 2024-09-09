@@ -1,4 +1,4 @@
-(ns oph.ehoks.common.utils
+(ns oph.ehoks.utils
   (:require [medley.core :refer [map-keys]]))
 
 (defn apply-when

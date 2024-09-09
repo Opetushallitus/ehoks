@@ -1,6 +1,6 @@
 (ns oph.ehoks.db.hoks-test
   (:require [clojure.test :as t]
-            [oph.ehoks.common.utils :as utils]))
+            [oph.ehoks.utils :as utils]))
 
 (t/deftest replace-with-in-test
   (t/testing "Empty replace"
