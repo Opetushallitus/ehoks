@@ -2,12 +2,12 @@
   (:require [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
             [medley.core :refer [find-first map-vals]]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.common.utils :as utils]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
-            [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
+            [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [oph.ehoks.utils.date :as date])
   (:import [java.time LocalDate]))
@@ -39,7 +39,7 @@
        :vanha-tila      (or (:tila updateable-herate) (:tila palaute))
        :uusi-tila       (:tila palaute)
        :tapahtumatyyppi "hoks_tallennus"
-       :syy             (db-ops/to-underscore-str (or reason :hoks-tallennettu))
+       :syy             (utils/to-underscore-str (or reason :hoks-tallennettu))
        :lisatiedot      (map-vals str other-info)})))
 
 (defn current-rahoituskausi-alkupvm
@@ -133,7 +133,7 @@
       {:kyselytyyppi       (kyselytyyppi kysely opiskeluoikeus)
        :hoks-id            (:id hoks)
        :yksiloiva-tunniste (:yksiloiva-tunniste jakso)
-       :tila               (db-ops/to-underscore-str initial-state)
+       :tila               (utils/to-underscore-str initial-state)
        :heratepvm          heratepvm
        :voimassa-alkupvm   alkupvm
        :voimassa-loppupvm  (vastaamisajan-loppupvm heratepvm alkupvm)

@@ -1,15 +1,15 @@
 (ns oph.ehoks.db.dynamodb
-  (:require [taoensso.faraday :as far]
-            [clojure.string :as str]
-            [environ.core :refer [env]]
+  (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
+            [environ.core :refer [env]]
+            [oph.ehoks.common.utils :as utils]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
-            [oph.ehoks.db.db-operations.db-helpers :refer [remove-nils]]
             [oph.ehoks.palaute :refer
-             [get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!]])
-  (:import (com.amazonaws.auth BasicSessionCredentials
-                               AWSStaticCredentialsProvider)
+             [get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!]]
+            [taoensso.faraday :as far])
+  (:import (com.amazonaws.auth AWSStaticCredentialsProvider
+                               BasicSessionCredentials)
            (com.amazonaws.client.builder AwsClientBuilder$EndpointConfiguration)
            (com.amazonaws.services.dynamodbv2 AmazonDynamoDBClientBuilder)
            (com.amazonaws.services.dynamodbv2.model AttributeValue)))
@@ -107,7 +107,7 @@
         (not-empty)
         (or (throw (ex-info "palaute not found"
                             {:hoks-id hoks-id :kyselytyyppi kyselytyyppi})))
-        (remove-nils)
+        (utils/remove-nils)
         (update-keys map-keys-to-ddb)
         (dissoc :internal-kyselytyyppi)
         (->> (sync-item! :amis)))))
