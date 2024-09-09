@@ -35,10 +35,9 @@
   "Takes `hoks` as an input and extracts from it all osaamisen hankkimistavat
   that are tyopaikkajaksos. Returns a lazy sequence."
   [hoks]
-  (->> (concat
-         (:hankittavat-ammat-tutkinnon-osat hoks)
-         (:hankittavat-paikalliset-tutkinnon-osat hoks)
-         (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks)))
+  (->> (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks))
+       (concat (:hankittavat-ammat-tutkinnon-osat hoks)
+               (:hankittavat-paikalliset-tutkinnon-osat hoks))
        (mapcat :osaamisen-hankkimistavat)
        (filter oht/tyopaikkajakso?)))
 
@@ -111,31 +110,16 @@
                 (or init-state :ei-luoda-ollenkaan)
                 "because of" reason "in" field)
       (when init-state
-        (let [voimassa-alkupvm (next-niputus-date (:loppu jakso))
-              suoritus         (find-first suoritus/ammatillinen?
-                                           (:suoritukset opiskeluoikeus))
-              koulutustoimija  (palaute/koulutustoimija-oid! opiskeluoikeus)
-              toimipiste-oid   (palaute/toimipiste-oid! suoritus)
-              heratepvm        (:loppu jakso)
-              other-info       (select-keys (merge jakso hoks) [field])]
-          (palaute/upsert!
-            tx
-            {:kyselytyyppi       "tyopaikkajakson_suorittaneet"
-             :tila               "odottaa_kasittelya"
-             :hoks-id            (:id hoks)
-             :yksiloiva-tunniste (:yksiloiva-tunniste jakso)
-             :heratepvm          heratepvm
-             :voimassa-alkupvm   voimassa-alkupvm
-             :voimassa-loppupvm  (palaute/vastaamisajan-loppupvm
-                                   heratepvm voimassa-alkupvm)
-             :koulutustoimija    koulutustoimija
-             :toimipiste-oid     toimipiste-oid
-             :tutkintonimike     (suoritus/tutkintonimike suoritus)
-             :tutkintotunnus     (suoritus/tutkintotunnus suoritus)
-             :herate-source      "ehoks_update"}
-            existing-heratteet
-            reason
-            other-info))))))
+        (palaute/upsert-from-data!
+          {:jakso jakso :hoks hoks :opiskeluoikeus opiskeluoikeus :tx tx
+           :kysely :tyopaikkakysely
+           :alkupvm (next-niputus-date (:loppu jakso))
+           :heratepvm (:loppu jakso)
+           :initial-state init-state
+           :reason reason
+           :other-info (select-keys (merge jakso hoks) [field])
+           :existing-heratteet existing-heratteet})
+        init-state))))
 
 (defn initiate-all-uninitiated!
   "Takes a `hoks` and `opiskeluoikeus` and initiates tyoelamapalaute for all

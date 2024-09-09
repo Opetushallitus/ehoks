@@ -170,6 +170,7 @@
      :hoks-id                        (:id hoks)
      :jakson-yksiloiva-tunniste      (:yksiloiva-tunniste jakso)
      :heratepvm                      heratepvm
+     :suorituskieli                  "fi"
      :tutkintotunnus                 351407
      :tutkintonimike                 "(\"12345\",\"23456\")"
      :voimassa-alkupvm               voimassa-alkupvm
@@ -192,13 +193,15 @@
                     "tapahtuma info to `palaute_tapahtumat` table.")
         (tep/initiate-if-needed!
           test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
-        (is (= (-> (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
-                     db/spec
-                     {:hoks-id            (:id hoks-test/hoks-1)
-                      :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)})
-                   (dissoc :id :created-at :updated-at)
-                   (->> (remove-vals nil?)))
-               (build-expected-herate test-jakso hoks-test/hoks-1)))
+        (let [real (-> (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
+                         db/spec
+                         {:hoks-id            (:id hoks-test/hoks-1)
+                          :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)})
+                       (dissoc :id :created-at :updated-at)
+                       (->> (remove-vals nil?)))
+              expected (build-expected-herate test-jakso hoks-test/hoks-1)]
+          (is (= real expected)
+              ["diff: " (clojure.data/diff real expected)]))
         (let [tapahtumat (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                            db/spec
                            {:hoks-id      (:id hoks-test/hoks-1)
@@ -234,13 +237,15 @@
                   "tyopaikkajakso in HOKS.")
       (tep/initiate-all-uninitiated! hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
       (doseq [jakso (tep/tyopaikkajaksot hoks-test/hoks-1)]
-        (is (= (-> (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
-                     db/spec
-                     {:hoks-id            (:id hoks-test/hoks-1)
-                      :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
-                   (dissoc :id :created-at :updated-at)
-                   (->> (remove-vals nil?)))
-               (build-expected-herate jakso hoks-test/hoks-1)))))))
+        (let [real (-> (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
+                         db/spec
+                         {:hoks-id            (:id hoks-test/hoks-1)
+                          :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
+                       (dissoc :id :created-at :updated-at)
+                       (->> (remove-vals nil?)))
+              expected (build-expected-herate jakso hoks-test/hoks-1)]
+          (is (= real expected)
+              ["diff: " (clojure.data/diff real expected)]))))))
 
 (defn kasittelemattomat-palauteet []
   (db-helpers/query

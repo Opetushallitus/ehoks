@@ -101,28 +101,60 @@
         normal (.plusDays alkupvm 29)]
     (if (.isBefore last normal) last normal)))
 
-(defn get-opiskeluoikeusjakso-for-date
-  "Hakee opiskeluoikeudesta jakson, joka on voimassa tiettynä päivänä."
-  [opiskeluoikeus vahvistus-pvm mode]
-  (let [offset (if (= mode :one-day-offset) 1 0)
-        jaksot (sort-by :alku (:opiskeluoikeusjaksot (:tila opiskeluoikeus)))]
-    (reduce (fn [res next]
-              (if (>= (compare vahvistus-pvm (:alku next)) offset)
-                next
-                (reduced res)))
-            (first jaksot)
-            jaksot)))
+(def ^:private koski-suoritustyyppi->kyselytyyppi
+  {"ammatillinentutkinto"           "valmistuneet"
+   "ammatillinentutkintoosittainen" "osia_suorittaneet"})
 
-(def feedback-collecting-preventing-codes #{"6" "14" "15"})
+(defn kyselytyyppi
+  [kysely opiskeluoikeus]
+  (case kysely
+    :aloituskysely "aloittaneet"
+    :paattokysely  (-> (find-first suoritus/ammatillinen?
+                                   (:suoritukset opiskeluoikeus))
+                       (suoritus/tyyppi)
+                       (koski-suoritustyyppi->kyselytyyppi)
+                       (or "valmistuneet"))
+    :tyopaikkakysely "tyopaikkajakson_suorittaneet"))
+
+(defn upsert-from-data!
+  "Create a palaute record from various pieces of information, and ensure
+  it is in the palaute database."
+  [{:keys [kysely hoks jakso opiskeluoikeus tx
+           alkupvm heratepvm koulutustoimija
+           initial-state existing-heratteet reason other-info]
+    :or {initial-state :odottaa-kasittelya}}]
+
+  (let [; this may be nil if this is an :ei-laheteta palaute for
+        ; non-ammatillinen opiskeluoikeus
+        suoritus     (find-first suoritus/ammatillinen?
+                                 (:suoritukset opiskeluoikeus))]
+    (upsert!
+      tx
+      {:kyselytyyppi       (kyselytyyppi kysely opiskeluoikeus)
+       :hoks-id            (:id hoks)
+       :yksiloiva-tunniste (:yksiloiva-tunniste jakso)
+       :tila               (db-ops/to-underscore-str initial-state)
+       :heratepvm          heratepvm
+       :voimassa-alkupvm   alkupvm
+       :voimassa-loppupvm  (vastaamisajan-loppupvm heratepvm alkupvm)
+       :suorituskieli      (suoritus/kieli suoritus)
+       :koulutustoimija    (or koulutustoimija
+                               (koulutustoimija-oid! opiskeluoikeus))
+       :toimipiste-oid     (toimipiste-oid! suoritus)
+       :tutkintonimike     (suoritus/tutkintonimike suoritus)
+       :tutkintotunnus     (suoritus/tutkintotunnus suoritus)
+       :hankintakoulutuksen-toteuttaja (hankintakoulutuksen-toteuttaja! hoks)
+       :herate-source      "ehoks_update"}
+      existing-heratteet reason other-info)))
 
 (defn feedback-collecting-prevented?
   "Jätetäänkö palaute keräämättä sen vuoksi, että opiskelijan opiskelu on
   tällä hetkellä rahoitettu muilla rahoituslähteillä?"
   [opiskeluoikeus heratepvm]
   (-> opiskeluoikeus
-      (get-opiskeluoikeusjakso-for-date (str heratepvm) :normal)
+      (opiskeluoikeus/get-opiskeluoikeusjakso-for-date (str heratepvm))
       (get-in [:opintojenRahoitus :koodiarvo])
-      (feedback-collecting-preventing-codes)
+      #{"6" "14" "15"}
       (some?)))
 
 (defn rahoituskausi
@@ -135,6 +167,15 @@
       (if (> month 6)
         (str year "-" (inc year))
         (str (dec year) "-" year)))))
+
+(defn kuuluu-palautteen-kohderyhmaan?
+  "Kuuluuko opiskeluoikeus palautteen kohderyhmään?  Tällä hetkellä
+  vain katsoo, onko kyseessä TELMA-opiskeluoikeus, joka ei ole tutkintoon
+  tähtäävä koulutus (ks. OY-4433).  Muita mahdollisia kriteereitä
+  ovat tulevaisuudessa koulutuksen rahoitus ja muut kriteerit, joista
+  voidaan katsoa, onko koulutus tutkintoon tähtäävä."
+  [opiskeluoikeus]
+  (every? (complement suoritus/telma?) (:suoritukset opiskeluoikeus)))
 
 (defn initial-palaute-state-and-reason-if-not-kohderyhma
   "Partial function; returns initial state, field causing it, and why the
@@ -153,6 +194,9 @@
       [:ei-laheteta herate-date-field :eri-rahoituskaudella]
 
       (not-any? suoritus/ammatillinen? (:suoritukset opiskeluoikeus))
+      [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
+
+      (not (kuuluu-palautteen-kohderyhmaan? opiskeluoikeus))
       [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen]
 
       (opiskeluoikeus/in-terminal-state? opiskeluoikeus herate-date)
