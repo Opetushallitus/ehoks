@@ -302,6 +302,6 @@
                   (create-and-save-arvo-vastaajatunnus! tx tep-palaute))
                 (catch ExceptionInfo e
                   (log/errorf e
-                              "Error processing tep-palaute %s, rolling back"
+                              "Error processing tep-palaute %s"
                               tep-palaute)))))
        doall))
