@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [clojure.tools.logging :as log]
             [medley.core :refer [find-first]]
-            [oph.ehoks.common.utils :as utils]
+            [oph.ehoks.utils :as utils]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as ddb]

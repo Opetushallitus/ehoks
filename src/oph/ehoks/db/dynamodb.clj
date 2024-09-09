@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
-            [oph.ehoks.common.utils :as utils]
+            [oph.ehoks.utils :as utils]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
             [oph.ehoks.palaute :refer

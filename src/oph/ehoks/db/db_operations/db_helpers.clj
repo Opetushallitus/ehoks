@@ -3,7 +3,7 @@
             [clojure.data.json :as json]
             [clojure.java.jdbc :as jdbc]
             [clojure.set :refer [difference]]
-            [oph.ehoks.common.utils :as utils]
+            [oph.ehoks.utils :as utils]
             [oph.ehoks.config :refer [config]])
   (:import (org.postgresql.util PGobject)))
 

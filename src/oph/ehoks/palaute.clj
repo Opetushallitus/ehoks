@@ -2,7 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
             [medley.core :refer [find-first map-vals]]
-            [oph.ehoks.common.utils :as utils]
+            [oph.ehoks.utils :as utils]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]

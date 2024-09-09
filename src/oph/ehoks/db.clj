@@ -1,7 +1,7 @@
 (ns oph.ehoks.db
   (:require [hugsql.adapter :refer [result-many result-one]]
             [hugsql.core :as hugsql]
-            [oph.ehoks.common.utils :as utils]
+            [oph.ehoks.utils :as utils]
             [oph.ehoks.config :refer [config]]))
 
 (def spec
