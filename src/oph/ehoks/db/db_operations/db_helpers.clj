@@ -128,7 +128,7 @@
   (as-> m x
     (reduce
       (fn [c [kss kst]]
-        (utils/replace-with-in c kss kst))
+        (utils/replace-in c kss kst))
       x
       replaces)
     (apply dissoc x removals)))
