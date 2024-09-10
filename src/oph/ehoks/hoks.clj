@@ -135,8 +135,12 @@
           (db-hoks/set-amisherate-kasittelytilat-to-true!
             hoks-id (format tuva-hoks-msg-template (:id updated-hoks)))
           (do
-            (op/initiate-if-needed! :aloituskysely updated-hoks)
-            (op/initiate-if-needed! :paattokysely updated-hoks)
+            (op/initiate-if-needed! {:hoks           updated-hoks
+                                     :opiskeluoikeus opiskeluoikeus}
+                                    :aloituskysely)
+            (op/initiate-if-needed! {:hoks           updated-hoks
+                                     :opiskeluoikeus opiskeluoikeus}
+                                    :paattokysely)
             (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))))
     (db-hoks/select-hoks-by-id hoks-id)))
 
@@ -283,8 +287,12 @@
       (db-hoks/set-amisherate-kasittelytilat-to-true!
         hoks-id (format tuva-hoks-msg-template (:id updated-hoks)))
       (do
-        (op/initiate-if-needed! :aloituskysely updated-hoks)
-        (op/initiate-if-needed! :paattokysely updated-hoks)
+        (op/initiate-if-needed! {:hoks           updated-hoks
+                                 :opiskeluoikeus opiskeluoikeus}
+                                :aloituskysely)
+        (op/initiate-if-needed! {:hoks           updated-hoks
+                                 :opiskeluoikeus opiskeluoikeus}
+                                 :paattokysely)
         (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))
     updated-hoks))
 

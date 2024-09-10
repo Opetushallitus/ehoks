@@ -1,17 +1,15 @@
 (ns oph.ehoks.db.dynamodb-test
-  (:require
-   [clojure.test :refer [deftest is testing use-fixtures]]
-   [oph.ehoks.db.db-operations.db-helpers :as db-ops]
-   [oph.ehoks.db.dynamodb :as ddb]
-   [oph.ehoks.external.koski :as koski]
-   [oph.ehoks.external.koski-test :as koski-test]
-   [oph.ehoks.hoks :as hoks]
-   [oph.ehoks.hoks.handler :as hoks-handler]
-   [oph.ehoks.opiskeluoikeus-test :as oo-test]
-   [oph.ehoks.oppijaindex :as oi]
-   [oph.ehoks.palaute :as palaute]
-   [oph.ehoks.test-utils :as test-utils]
-   [taoensso.faraday :as far])
+  (:require [clojure.test :refer [deftest is testing use-fixtures]]
+            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.dynamodb :as ddb]
+            [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.koski-test :as koski-test]
+            [oph.ehoks.hoks :as hoks]
+            [oph.ehoks.hoks.handler :as hoks-handler]
+            [oph.ehoks.oppijaindex :as oi]
+            [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.test-utils :as test-utils]
+            [taoensso.faraday :as far])
   (:import
    (java.time LocalDate)))
 
@@ -50,8 +48,11 @@
       (oi/add-opiskeluoikeus!
         (:opiskeluoikeus-oid hoks-data)
         (:oppija-oid hoks-data))
-      (let [saved-hoks (hoks-handler/save-hoks-and-initiate-palautteet!
-                         hoks-data oo-test/opiskeluoikeus-6)
+      (let [saved-hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
+                         {:hoks           hoks-data
+                          :opiskeluoikeus
+                          (koski-test/mock-get-opiskeluoikeus-raw
+                            (:opiskeluoikeus-oid hoks-data))})
             hoks (hoks/get-by-id (:id saved-hoks))]
         (is (= (:sahkoposti hoks) "irma.isomerkki@esimerkki.com"))
         (ddb/sync-amis-herate! (:id saved-hoks) "aloittaneet")

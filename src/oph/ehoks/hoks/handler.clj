@@ -1,31 +1,30 @@
 (ns oph.ehoks.hoks.handler
-  (:require [clojure.tools.logging :as log]
-            [compojure.api.core :refer [route-middleware]]
-            [compojure.api.sweet :as c-api]
-            [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.db.postgresql.common :refer [select-kyselylinkki]]
-            [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as pdb-ot]
-            [oph.ehoks.hoks :as hoks]
-            [oph.ehoks.hoks.aiemmin-hankitut :as ah]
-            [oph.ehoks.hoks.hankittavat :as ha]
-            [oph.ehoks.hoks.middleware :as m]
-            [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
-            [oph.ehoks.hoks.schema :as hoks-schema]
-            [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
-            [oph.ehoks.logging.audit :as audit]
-            [oph.ehoks.middleware :refer [get-current-opiskeluoikeus
-                                          wrap-hoks
-                                          wrap-opiskeluoikeus
-                                          wrap-user-details]]
-            [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.palaute.opiskelija :as op]
-            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
-            [oph.ehoks.palaute.tyoelama :as tep]
-            [oph.ehoks.restful :as rest]
-            [oph.ehoks.schema :as schema]
-            [oph.ehoks.schema.oid :as oid-schema]
-            [ring.util.http-response :as response]
-            [schema.core :as s]))
+  (:require
+   [clojure.tools.logging :as log]
+   [compojure.api.core :refer [route-middleware]]
+   [compojure.api.sweet :as c-api]
+   [oph.ehoks.db.db-operations.hoks :as db-hoks]
+   [oph.ehoks.db.postgresql.common :refer [select-kyselylinkki]]
+   [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as pdb-ot]
+   [oph.ehoks.hoks :as hoks]
+   [oph.ehoks.hoks.aiemmin-hankitut :as ah]
+   [oph.ehoks.hoks.hankittavat :as ha]
+   [oph.ehoks.hoks.middleware :as m]
+   [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
+   [oph.ehoks.hoks.schema :as hoks-schema]
+   [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
+   [oph.ehoks.logging.audit :as audit]
+   [oph.ehoks.middleware :refer [get-current-opiskeluoikeus wrap-hoks
+                                 wrap-opiskeluoikeus wrap-user-details]]
+   [oph.ehoks.oppijaindex :as oppijaindex]
+   [oph.ehoks.palaute.opiskelija :as op]
+   [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
+   [oph.ehoks.palaute.tyoelama :as tep]
+   [oph.ehoks.restful :as rest]
+   [oph.ehoks.schema :as schema]
+   [oph.ehoks.schema.oid :as oid-schema]
+   [ring.util.http-response :as response]
+   [schema.core :as s]))
 
 (def ^:private hankittava-paikallinen-tutkinnon-osa
   "Hankittavan paikallisen tutkinnon osan reitit."
@@ -288,37 +287,34 @@
                (pdb-ot/select-opiskeluvalmiuksia-tukevat-opinnot-by-id id)}))
         (response/not-found {:error "OTO not found with given OTO ID"})))))
 
-(defn save-hoks-and-initiate-palautteet!
-  [hoks opiskeluoikeus]
-  (let [hoks-db (hoks/save! hoks)
-        hoks    (assoc hoks :id (:id hoks-db))]
-    (try
-      (op/initiate-if-needed! :aloituskysely hoks)
-      (op/initiate-if-needed! :paattokysely hoks)
-      (tep/initiate-all-uninitiated! hoks opiskeluoikeus)
-      (catch clojure.lang.ExceptionInfo e
-        (if (= :organisaatio/organisation-not-found (:type (ex-data e)))
-          (throw (ex-info (str "HOKS contains an unknown organisation"
-                               (:organisation-oid (ex-data e)))
-                          (assoc (ex-data e) :type ::disallowed-update)))
-          (log/error e "exception in heräte initiation with" (ex-data e))))
-      (catch Exception e
-        (log/error e "exception in heräte initiation")))
+(defn initiate-all-palautteet!
+  [{:keys [hoks opiskeluoikeus] :as ctx}]
+  (try
+    (op/initiate-if-needed! ctx :aloituskysely)
+    (op/initiate-if-needed! ctx :paattokysely)
+    (tep/initiate-all-uninitiated! hoks opiskeluoikeus)
+    (catch clojure.lang.ExceptionInfo e
+      (if (= :organisaatio/organisation-not-found (:type (ex-data e)))
+        (throw (ex-info (str "HOKS contains an unknown organisation"
+                             (:organisation-oid (ex-data e)))
+                        (assoc (ex-data e) :type ::disallowed-update)))
+        (log/error e "exception in heräte initiation with" (ex-data e))))
+    (catch Exception e
+      (log/error e "exception in heräte initiation"))))
+
+(defn save-hoks-and-initiate-all-palautteet!
+  [{:keys [hoks] :as ctx}]
+  (let [hoks (assoc hoks :id (:id (hoks/save! hoks)))]
+    (initiate-all-palautteet! (assoc ctx :hoks hoks))
     hoks))
 
 (defn post-hoks!
   "Käsittelee HOKS-luontipyynnön."
-  [api hoks request check-privileges]
-  {:pre [(#{:hoks :virkailija} api)]}
+  [{:keys [request hoks opiskeluoikeus] :as ctx} check-privileges]
   (oppijaindex/add-hoks-dependents-in-index! hoks)
   (check-privileges hoks request)
-  (hoks/check hoks (get-current-opiskeluoikeus))
-  (let [opiskeluoikeus (get-current-opiskeluoikeus)
-        hoks (-> (if (= api :virkailija)
-                   (assoc (hoks/add-missing-oht-yksiloiva-tunniste hoks)
-                          :manuaalisyotto true)
-                   hoks)
-                 (save-hoks-and-initiate-palautteet! opiskeluoikeus))]
+  (hoks/check hoks opiskeluoikeus)
+  (let [hoks (save-hoks-and-initiate-all-palautteet! ctx)]
     (-> {:uri (format "%s/%d" (:uri request) (:id hoks))}
         (rest/ok :id (:id hoks))
         (assoc ::audit/changes {:new hoks}
@@ -449,7 +445,10 @@
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
-        (post-hoks! :hoks hoks request m/check-hoks-access!))
+        (post-hoks! {:request        request
+                     :hoks           hoks
+                     :opiskeluoikeus (get-current-opiskeluoikeus)}
+                    m/check-hoks-access!))
 
       (c-api/GET "/:hoks-id" request
         :middleware [m/wrap-hoks-access!]

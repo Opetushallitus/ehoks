@@ -655,11 +655,11 @@
 (defn update-amisherate-kasittelytilat!
   "Päivittää AMIS-herätteen käsittelytilat tietokantaan."
   ([tilat]
-    (update-amisherate-kasittelytilat! tilat (db-ops/get-db-connection)))
-  ([tilat db-conn]
+    (update-amisherate-kasittelytilat! (db-ops/get-db-connection) tilat))
+  ([tx tilat]
     (db-ops/update! :amisherate_kasittelytilat
                     (db-ops/to-sql (dissoc tilat :id))
-                    ["id = ?" (:id tilat)] db-conn)))
+                    ["id = ?" (:id tilat)] tx)))
 
 (declare get-or-create-amisherate-kasittelytila-by-hoks-id!)
 
