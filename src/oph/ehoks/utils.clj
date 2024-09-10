@@ -1,5 +1,6 @@
 (ns oph.ehoks.utils
-  (:require [medley.core :refer [map-keys]]))
+  (:require
+   [medley.core :refer [dissoc-in map-keys]]))
 
 (defn apply-when
   "Apply function `f` to value `v` if predicate `(pred v)` returns `true`.
@@ -22,39 +23,15 @@
   (map-keys #(keyword (.replace (name %) \_ \-)) m))
 
 (defn replace-in
-  "Associate the value associated with sk with the new key or sequence of nested
-  keys tks in h, and then dissociate sk."
-  [h sk tks]
-  (if (some? (get h sk))
-    (dissoc (assoc-in h tks (get h sk)) sk)
-    h))
-
-(defn replace-from
-  "Functions similarly to replace-in, but can accept a sequence of nested keys
-  as the source and expects a keyword as the destination."
-  [h sks tk]
-  (cond
-    (get-in h sks)
-    (if (= (count (get-in h (drop-last sks))) 1)
-      (apply
-        dissoc
-        (assoc h tk (get-in h sks))
-        (drop-last sks))
-      (update-in
-        (assoc h tk (get-in h sks))
-        (drop-last sks)
-        dissoc
-        (last sks)))
-    (empty? (get-in h (drop-last sks)))
-    (apply dissoc h (drop-last sks))
-    :else h))
-
-(defn replace-with-in
-  "Handles replacing one (possibly nested) key with another in a map."
-  [m kss kst]
-  (if (coll? kss)
-    (replace-from m kss kst)
-    (replace-in m kss kst)))
+  "Associate the value associated with `sks` with the new key or sequence
+  keys `dks` in `m`, and then dissociate `sks`. Both `sks` and `dks` can be a
+  single keyword or sequence of keywords."
+  [m sks dks]
+  (let [sks (if (coll? sks) sks [sks])
+        dks (if (coll? dks) dks [dks])]
+    (if-let [value (get-in m sks)]
+      (dissoc-in (assoc-in m dks value) sks)
+      m)))
 
 (defn remove-nils
   "Return same map, but without keys pointing to nil values"
