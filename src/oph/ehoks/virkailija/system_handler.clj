@@ -7,6 +7,7 @@
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-opiskeluoikeus]
             [oph.ehoks.db.db-operations.oppija :as db-oppija]
             [oph.ehoks.external.cache :as c]
+            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.palaute.opiskelija :as op]
@@ -250,7 +251,12 @@
       (assoc
         (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
           (if (= :odottaa-kasittelya
-                 (op/initiate-if-needed! :aloituskysely hoks {:resend? true}))
+                 (op/initiate-if-needed!
+                   {:hoks           hoks
+                    :opiskeluoikeus (koski/get-existing-opiskeluoikeus!
+                                      (:opiskeluoikeus-oid hoks))}
+                   :aloituskysely
+                   {:resend? true}))
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false` or "
@@ -267,7 +273,12 @@
       (assoc
         (if-let [hoks (hoks/get-with-hankittavat-koulutuksen-osat! hoks-id)]
           (if (= :odottaa-kasittelya
-                 (op/initiate-if-needed! :paattokysely hoks {:resend? true}))
+                 (op/initiate-if-needed!
+                   {:hoks hoks
+                    :opiskeluoikeus (koski/get-existing-opiskeluoikeus!
+                                      (:opiskeluoikeus-oid hoks))}
+                   :paattokysely
+                   {:resend? true}))
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false`, "

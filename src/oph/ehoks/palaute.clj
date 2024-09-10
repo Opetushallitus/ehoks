@@ -119,8 +119,8 @@
 (defn upsert-from-data!
   "Create a palaute record from various pieces of information, and ensure
   it is in the palaute database."
-  [{:keys [kysely hoks jakso opiskeluoikeus tx
-           alkupvm heratepvm koulutustoimija
+  [{:keys [tx hoks opiskeluoikeus koulutustoimija]}
+   {:keys [kysely jakso alkupvm heratepvm
            initial-state existing-heratteet reason other-info]
     :or {initial-state :odottaa-kasittelya}}]
 

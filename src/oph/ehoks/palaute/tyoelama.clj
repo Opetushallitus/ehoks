@@ -109,7 +109,8 @@
                 "because of" reason "in" field)
       (when init-state
         (palaute/upsert-from-data!
-          {:jakso jakso :hoks hoks :opiskeluoikeus opiskeluoikeus :tx tx
+          {:hoks hoks :opiskeluoikeus opiskeluoikeus :tx tx}
+          {:jakso jakso
            :kysely :tyopaikkakysely
            :alkupvm (next-niputus-date (:loppu jakso))
            :heratepvm (:loppu jakso)

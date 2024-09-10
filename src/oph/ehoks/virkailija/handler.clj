@@ -526,7 +526,12 @@
                                     "HOKS-dokumentin luonti")]
                       :return (restful/response schema/POSTResponse :id s/Int)
                       (hoks-handler/post-hoks!
-                        :virkailija hoks request check-virkailija-privileges!))
+                        {:request request
+                         :hoks    (-> hoks
+                                      hoks/add-missing-oht-yksiloiva-tunniste
+                                      (assoc :manuaalisyotto true))
+                         :opiskeluoikeus (get-current-opiskeluoikeus)}
+                        check-virkailija-privileges!))
 
                     (route-middleware
                       [m/wrap-virkailija-oppija-access]
