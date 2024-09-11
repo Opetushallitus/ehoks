@@ -81,7 +81,7 @@ where h.oppija_oid = :oppija-oid
   and p.kyselytyyppi in (:v*:kyselytyypit)
   and p.koulutustoimija = :koulutustoimija
 
--- :name get-by-hoks-id-and-yksiloiva-tunniste! :? :1
+-- :name get-by-hoks-id-and-yksiloiva-tunniste! :? :*
 -- :doc Get palaute information for työpaikkajakso by HOKS ID and yksiloiva
 --      tunniste.
 select * from palautteet
