@@ -638,6 +638,17 @@
                 (assoc :osaamisen-saavuttamisen-pvm (LocalDate/of 2022 11 1))
                 (assoc :osaamisen-hankkimisen-tarve true)
                 (update
+                  :hankittavat-paikalliset-tutkinnon-osat
+                  (fn [hptos]
+                    (map (fn [hpto]
+                           (update
+                             hpto :osaamisen-hankkimistavat
+                             (fn [ohts]
+                               (map #(assoc % :keskeytymisajanjaksot
+                                            [{:alku (LocalDate/of 2019 2 15)}])
+                                    ohts))))
+                         hptos)))
+                (update
                   :hankittavat-ammat-tutkinnon-osat
                   (fn [hatos]
                     (map (fn [hato]
@@ -655,7 +666,7 @@
                           {:hoks-id (:id hoks-db)
                            :kyselytyypit ["aloittaneet" "valmistuneet"
                                           "tyopaikkajakson_suorittaneet"]})))
-              #{["odottaa_kasittelya" "tyopaikkajakson_suorittaneet"
+              #{["ei_laheteta" "tyopaikkajakson_suorittaneet"
                  "abcd" (LocalDate/parse "2019-02-16")]
                 ["odottaa_kasittelya" "tyopaikkajakson_suorittaneet"
                  "1234567890" (LocalDate/parse "2019-07-16")]
