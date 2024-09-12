@@ -158,7 +158,7 @@
       (testing "initiate kysely if when all of the checks are OK."
         (is (= (tep/initial-palaute-state-and-reason
                  test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1 [])
-               [:odottaa-kasittelya nil :hoks-tallennettu]))))))
+               [:odottaa-kasittelya :loppu :hoks-tallennettu]))))))
 
 (defn- build-expected-herate
   [jakso hoks]
@@ -215,7 +215,7 @@
                   :heratepvm    (LocalDate/of 2023 12 15)
                   :tyyppi       "hoks_tallennus"
                   :syy          "hoks_tallennettu"
-                  :lisatiedot   {}}))))
+                  :lisatiedot   {:loppu "2023-12-15"}}))))
       (testing
        "doesn't initiate tyoelamapalaute if it has already been initiated"
         (with-log

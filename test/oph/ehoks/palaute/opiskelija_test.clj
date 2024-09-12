@@ -119,14 +119,16 @@
        "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
         (is (= (op/initial-palaute-state-and-reason
                  :aloituskysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1 [])
-               [:odottaa-kasittelya nil :hoks-tallennettu])))
+               [:odottaa-kasittelya :ensikertainen-hyvaksyminen
+                :hoks-tallennettu])))
 
       (testing
        (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
             "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
         (is (= (op/initial-palaute-state-and-reason
                  :paattokysely hoks-test/hoks-1 oo-test/opiskeluoikeus-1 [])
-               [:odottaa-kasittelya nil :hoks-tallennettu]))))))
+               [:odottaa-kasittelya :osaamisen-saavuttamisen-pvm
+                :hoks-tallennettu]))))))
 
 (defn expected-msg
   [kysely hoks]

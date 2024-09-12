@@ -55,7 +55,7 @@
         [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
 
         :else
-        [:odottaa-kasittelya nil :hoks-tallennettu]))))
+        [:odottaa-kasittelya herate-basis :hoks-tallennettu]))))
 
 (def kysely-kasittely-field-mapping
   {:aloituskysely :aloitusherate_kasitelty
