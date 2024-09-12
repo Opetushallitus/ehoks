@@ -564,7 +564,52 @@
          :osaamisen-hankkimisen-tarve false
          :osaamisen-saavuttamisen-pvm (java.time.LocalDate/of 2022 12 15)))
 
-(deftest form-opiskelijapalaute-in-hoks-save
+(def ^:private amis-palautteet-after-creation
+  #{["odottaa_kasittelya" "aloittaneet"
+     (LocalDate/of 2019 3 18) (LocalDate/of 2019 4 16)]
+    ["odottaa_kasittelya" "valmistuneet"
+     (LocalDate/of 2022 12 15) (LocalDate/of 2023 1 13)]})
+
+(def ^:private tep-palautteet-after-creation
+  #{["ei_laheteta" "1"
+     (LocalDate/of 2019 3 1) (LocalDate/of 2019 3 30)]
+    ["odottaa_kasittelya" "1234567890"
+     (LocalDate/of 2019 3 16) (LocalDate/of 2019 4 14)]
+    ["odottaa_kasittelya" "abcd"
+     (LocalDate/of 2019 2 16) (LocalDate/of 2019 3 17)]})
+
+(def ^:private palaute-tapahtumat-after-creation
+  #{["aloittaneet" (LocalDate/of 2019 3 18)
+     "odottaa_kasittelya" "hoks_tallennettu"]
+    ["valmistuneet" (LocalDate/of 2022 12 15)
+     "odottaa_kasittelya" "hoks_tallennettu"]
+    ["tyopaikkajakson_suorittaneet" (LocalDate/of 2019 3 14)
+     "odottaa_kasittelya" "hoks_tallennettu"]
+    ["tyopaikkajakson_suorittaneet" (LocalDate/of 2019 2 15)
+     "odottaa_kasittelya" "hoks_tallennettu"]
+    ["tyopaikkajakson_suorittaneet" (LocalDate/of 2019 2 19)
+     "ei_laheteta" "puuttuva_yhteystieto"]})
+
+(def ^:private palautteet-after-kohderyhma-exclusion
+  #{["ei_laheteta" "aloittaneet"] ["ei_laheteta" "valmistuneet"]})
+
+(def ^:private tapahtumat-after-kohderyhma-exclusion
+  #{["valmistuneet" "hoks_tallennettu"] ["valmistuneet" "ei_ole"]
+    ["aloittaneet" "hoks_tallennettu"] ["aloittaneet" "ei_ole"]})
+
+(def ^:private palautteet-after-updated-hoks
+  #{["ei_laheteta" "tyopaikkajakson_suorittaneet"
+     "abcd" (LocalDate/parse "2019-02-16")]
+    ["odottaa_kasittelya" "tyopaikkajakson_suorittaneet"
+     "1234567890" (LocalDate/parse "2019-07-16")]
+    ["ei_laheteta" "tyopaikkajakson_suorittaneet"
+     "1" (LocalDate/parse "2019-03-01")]
+    ["odottaa_kasittelya" "valmistuneet"
+     nil (LocalDate/parse "2022-11-01")]
+    ["odottaa_kasittelya" "aloittaneet"
+     nil (LocalDate/parse "2019-03-18")]})
+
+(deftest form-opiskelijapalaute-in-hoks-creation-and-change
   (testing "save: forms opiskelijapalaute when has osaamisen-hankkimisen-tarve"
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
@@ -585,29 +630,12 @@
                                             "tyopaikkajakson_suorittaneet"]})]
           (eq (set (map (juxt :tila :kyselytyyppi
                               :voimassa-alkupvm :voimassa-loppupvm) amis))
-              #{["odottaa_kasittelya" "aloittaneet"
-                 (LocalDate/of 2019 3 18) (LocalDate/of 2019 4 16)]
-                ["odottaa_kasittelya" "valmistuneet"
-                 (LocalDate/of 2022 12 15) (LocalDate/of 2023 1 13)]})
+              amis-palautteet-after-creation)
           (eq (set (map (juxt :tila :jakson-yksiloiva-tunniste
                               :voimassa-alkupvm :voimassa-loppupvm) tep))
-              #{["ei_laheteta" "1"
-                 (LocalDate/of 2019 3 1) (LocalDate/of 2019 3 30)]
-                ["odottaa_kasittelya" "1234567890"
-                 (LocalDate/of 2019 3 16) (LocalDate/of 2019 4 14)]
-                ["odottaa_kasittelya" "abcd"
-                 (LocalDate/of 2019 2 16) (LocalDate/of 2019 3 17)]})
+              tep-palautteet-after-creation)
           (eq (set (map (juxt :kyselytyyppi :heratepvm :uusi-tila :syy) tap))
-              #{["aloittaneet" (LocalDate/of 2019 3 18)
-                 "odottaa_kasittelya" "hoks_tallennettu"]
-                ["valmistuneet" (LocalDate/of 2022 12 15)
-                 "odottaa_kasittelya" "hoks_tallennettu"]
-                ["tyopaikkajakson_suorittaneet" (LocalDate/of 2019 3 14)
-                 "odottaa_kasittelya" "hoks_tallennettu"]
-                ["tyopaikkajakson_suorittaneet" (LocalDate/of 2019 2 15)
-                 "odottaa_kasittelya" "hoks_tallennettu"]
-                ["tyopaikkajakson_suorittaneet" (LocalDate/of 2019 2 19)
-                 "ei_laheteta" "puuttuva_yhteystieto"]})
+              palaute-tapahtumat-after-creation)
           (is (true? (test-utils/wait-for
                        (fn [_] (= @sqs-call-counter 2)) 5000)))
           ;; with changed HOKS
@@ -618,17 +646,13 @@
                           db/spec
                           {:hoks-id (:id hoks-db)
                            :kyselytyypit ["aloittaneet" "valmistuneet"]})))
-              #{["ei_laheteta" "aloittaneet"]
-                ["ei_laheteta" "valmistuneet"]})
+              palautteet-after-kohderyhma-exclusion)
           (eq (set (map (juxt :kyselytyyppi :syy)
                         (tapahtumat/get-all-by-hoks-id-and-kyselytyypit!
                           db/spec
                           {:hoks-id (:id hoks-db)
                            :kyselytyypit ["aloittaneet" "valmistuneet"]})))
-              #{["valmistuneet" "hoks_tallennettu"]
-                ["valmistuneet" "ei_ole"]
-                ["aloittaneet" "hoks_tallennettu"]
-                ["aloittaneet" "ei_ole"]})
+              tapahtumat-after-kohderyhma-exclusion)
           ;; with changed dates in HOKS
           (hoks/replace!
             (:id hoks-db)
@@ -666,16 +690,7 @@
                           {:hoks-id (:id hoks-db)
                            :kyselytyypit ["aloittaneet" "valmistuneet"
                                           "tyopaikkajakson_suorittaneet"]})))
-              #{["ei_laheteta" "tyopaikkajakson_suorittaneet"
-                 "abcd" (LocalDate/parse "2019-02-16")]
-                ["odottaa_kasittelya" "tyopaikkajakson_suorittaneet"
-                 "1234567890" (LocalDate/parse "2019-07-16")]
-                ["ei_laheteta" "tyopaikkajakson_suorittaneet"
-                 "1" (LocalDate/parse "2019-03-01")]
-                ["odottaa_kasittelya" "valmistuneet"
-                 nil (LocalDate/parse "2022-11-01")]
-                ["odottaa_kasittelya" "aloittaneet"
-                 nil (LocalDate/parse "2019-03-18")]}))))))
+              palautteet-after-updated-hoks))))))
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-save
   (testing (str "save: does not form opiskelijapalaute when "
