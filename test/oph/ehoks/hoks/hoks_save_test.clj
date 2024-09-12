@@ -727,6 +727,13 @@
           (hoks/update!
             (:id saved-hoks)
             hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta)
+          (eq (set (map (juxt :tila :kyselytyyppi)
+                        (palaute/get-by-hoks-id-and-kyselytyypit!
+                          db/spec
+                          {:hoks-id (:id saved-hoks)
+                           :kyselytyypit ["aloittaneet" "valmistuneet"]})))
+              #{["ei_laheteta" "aloittaneet"]
+                ["ei_laheteta" "valmistuneet"]})
           (is (= @sqs-call-counter 0)))))))
 
 (deftest form-opiskelijapalaute-in-hoks-replace
