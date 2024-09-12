@@ -695,8 +695,24 @@
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!
                     date/now (constantly (LocalDate/of 2018 7 1))]
-        (let [saved-hoks (hoks/save! hoks-data)]
-          (hoks/update! (:id saved-hoks) hoks-osaaminen-saavutettu)
+        (let [saved-hoks (hoks/save! hoks-data)
+              aloitus-herate (palaute/get-by-hoks-id-and-kyselytyypit!
+                               db/spec {:hoks-id (:id saved-hoks)
+                                        :kyselytyypit ["aloittaneet"]})]
+          (palaute/update! db/spec (assoc (first aloitus-herate)
+                                          :tila "lahetetty"))
+          (hoks/update!
+            (:id saved-hoks)
+            (assoc hoks-osaaminen-saavutettu
+                   :ensikertainen-hyvaksyminen (LocalDate/of 2021 1 1)))
+          (eq (set (map (juxt :tila :kyselytyyppi :heratepvm)
+                        (palaute/get-by-hoks-id-and-kyselytyypit!
+                          db/spec
+                          {:hoks-id (:id saved-hoks)
+                           :kyselytyypit ["aloittaneet" "valmistuneet"]})))
+              #{["odottaa_kasittelya" "aloittaneet" (LocalDate/of 2021 1 1)]
+                ["odottaa_kasittelya" "valmistuneet" (LocalDate/of 2022 12 15)]
+                ["lahetetty" "aloittaneet" (LocalDate/of 2019 3 18)]})
           (is (= @sqs-call-counter 3)))))))
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-update
