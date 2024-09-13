@@ -799,7 +799,8 @@
        :rooli "Opettaja"
        :oppilaitos-oid "1.2.246.562.10.54452422428"}
       :alku "2023-01-11"
-      :loppu "2023-03-14"}]
+      :loppu "2023-03-14"
+      :yksiloiva-tunniste "testi-toinen-yks-tunn"}]
     :koulutuksen-jarjestaja-oid "1.2.246.562.10.54411232223"}])
 
 (t/deftest test-virkailija-create-hoks
@@ -809,7 +810,9 @@
       (let [post-response
             (post-new-hoks
               "1.2.246.562.15.76000000018" "1.2.246.562.10.12000000013"
-              {:hankittavat-ammat-tutkinnon-osat hato-data})]
+              {:hankittavat-ammat-tutkinnon-osat
+               (update-in hato-data [0 :osaamisen-hankkimistavat 1]
+                          dissoc :yksiloiva-tunniste)})]
         (t/is (= (:status post-response) 200))
         (let [get-response (get-created-hoks post-response)
               body (test-utils/parse-body (:body get-response))]
@@ -1129,7 +1132,8 @@
                     :ensikertainen-hyvaksyminen "2018-12-17"
                     :paivitetty "2019-01-02T10:20:30.001Z"
                     :hankittavat-ammat-tutkinnon-osat
-                    hato-data))
+                    (update-in hato-data [0 :osaamisen-hankkimistavat 1]
+                               dissoc :yksiloiva-tunniste)))
                 virkailija-for-test)
               get-response
               (with-test-virkailija
@@ -1152,6 +1156,12 @@
                 (get-in body [:data :hankittavat-ammat-tutkinnon-osat]))
               (test-utils/dissoc-module-ids
                 (-> hato-data
+                    (assoc-in [0 :osaamisen-hankkimistavat 1
+                               :yksiloiva-tunniste]
+                              (get-in body [:data
+                                            :hankittavat-ammat-tutkinnon-osat 0
+                                            :osaamisen-hankkimistavat 1
+                                            :yksiloiva-tunniste]))
                     (update-in [0
                                 :osaamisen-hankkimistavat
                                 0

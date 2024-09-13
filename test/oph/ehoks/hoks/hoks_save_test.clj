@@ -1,6 +1,7 @@
 (ns oph.ehoks.hoks.hoks-save-test
   (:require [clojure.test :refer :all]
             [schema.core :as s]
+            [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.postgresql.aiemmin-hankitut :as db-ah]
             [oph.ehoks.external.aws-sqs :as sqs]
@@ -12,6 +13,8 @@
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
+            [oph.ehoks.palaute.tapahtuma :as tapahtumat]
+            [oph.ehoks.palaute :as palaute]
             [oph.ehoks.test-utils :as test-utils :refer [eq]]
             [oph.ehoks.utils.date :as date])
   (:import [java.time LocalDate]))
@@ -561,7 +564,52 @@
          :osaamisen-hankkimisen-tarve false
          :osaamisen-saavuttamisen-pvm (java.time.LocalDate/of 2022 12 15)))
 
-(deftest form-opiskelijapalaute-in-hoks-save
+(def ^:private amis-palautteet-after-creation
+  #{["odottaa_kasittelya" "aloittaneet"
+     (LocalDate/of 2019 3 18) (LocalDate/of 2019 4 16)]
+    ["odottaa_kasittelya" "valmistuneet"
+     (LocalDate/of 2022 12 15) (LocalDate/of 2023 1 13)]})
+
+(def ^:private tep-palautteet-after-creation
+  #{["ei_laheteta" "1"
+     (LocalDate/of 2019 3 1) (LocalDate/of 2019 3 30)]
+    ["odottaa_kasittelya" "1234567890"
+     (LocalDate/of 2019 3 16) (LocalDate/of 2019 4 14)]
+    ["odottaa_kasittelya" "abcd"
+     (LocalDate/of 2019 2 16) (LocalDate/of 2019 3 17)]})
+
+(def ^:private palaute-tapahtumat-after-creation
+  #{["aloittaneet" (LocalDate/of 2019 3 18)
+     "odottaa_kasittelya" "hoks_tallennettu"]
+    ["valmistuneet" (LocalDate/of 2022 12 15)
+     "odottaa_kasittelya" "hoks_tallennettu"]
+    ["tyopaikkajakson_suorittaneet" (LocalDate/of 2019 3 14)
+     "odottaa_kasittelya" "hoks_tallennettu"]
+    ["tyopaikkajakson_suorittaneet" (LocalDate/of 2019 2 15)
+     "odottaa_kasittelya" "hoks_tallennettu"]
+    ["tyopaikkajakson_suorittaneet" (LocalDate/of 2019 2 19)
+     "ei_laheteta" "puuttuva_yhteystieto"]})
+
+(def ^:private palautteet-after-kohderyhma-exclusion
+  #{["ei_laheteta" "aloittaneet"] ["ei_laheteta" "valmistuneet"]})
+
+(def ^:private tapahtumat-after-kohderyhma-exclusion
+  #{["valmistuneet" "hoks_tallennettu"] ["valmistuneet" "ei_ole"]
+    ["aloittaneet" "hoks_tallennettu"] ["aloittaneet" "ei_ole"]})
+
+(def ^:private palautteet-after-updated-hoks
+  #{["ei_laheteta" "tyopaikkajakson_suorittaneet"
+     "abcd" (LocalDate/parse "2019-02-16")]
+    ["odottaa_kasittelya" "tyopaikkajakson_suorittaneet"
+     "1234567890" (LocalDate/parse "2019-07-16")]
+    ["ei_laheteta" "tyopaikkajakson_suorittaneet"
+     "1" (LocalDate/parse "2019-03-01")]
+    ["odottaa_kasittelya" "valmistuneet"
+     nil (LocalDate/parse "2022-11-01")]
+    ["odottaa_kasittelya" "aloittaneet"
+     nil (LocalDate/parse "2019-03-18")]})
+
+(deftest form-opiskelijapalaute-in-hoks-creation-and-change
   (testing "save: forms opiskelijapalaute when has osaamisen-hankkimisen-tarve"
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
@@ -569,9 +617,80 @@
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!
                     date/now (constantly (LocalDate/of 2018 7 1))]
-        (hoks/save! hoks-osaaminen-saavutettu)
-        (is (true? (test-utils/wait-for
-                     (fn [_] (= @sqs-call-counter 2)) 5000)))))))
+        (let [hoks-db (hoks/save! hoks-osaaminen-saavutettu)
+              amis (palaute/get-by-hoks-id-and-kyselytyypit!
+                     db/spec {:hoks-id (:id hoks-db)
+                              :kyselytyypit ["aloittaneet" "valmistuneet"]})
+              tep (palaute/get-by-hoks-id-and-kyselytyypit!
+                    db/spec {:hoks-id (:id hoks-db)
+                             :kyselytyypit ["tyopaikkajakson_suorittaneet"]})
+              tap (tapahtumat/get-all-by-hoks-id-and-kyselytyypit!
+                    db/spec {:hoks-id (:id hoks-db)
+                             :kyselytyypit ["aloittaneet" "valmistuneet"
+                                            "tyopaikkajakson_suorittaneet"]})]
+          (eq (set (map (juxt :tila :kyselytyyppi
+                              :voimassa-alkupvm :voimassa-loppupvm) amis))
+              amis-palautteet-after-creation)
+          (eq (set (map (juxt :tila :jakson-yksiloiva-tunniste
+                              :voimassa-alkupvm :voimassa-loppupvm) tep))
+              tep-palautteet-after-creation)
+          (eq (set (map (juxt :kyselytyyppi :heratepvm :uusi-tila :syy) tap))
+              palaute-tapahtumat-after-creation)
+          (is (true? (test-utils/wait-for
+                       (fn [_] (= @sqs-call-counter 2)) 5000)))
+          ;; with changed HOKS
+          (hoks/update! (:id hoks-db)
+                        {:osaamisen-hankkimisen-tarve false})
+          (eq (set (map (juxt :tila :kyselytyyppi)
+                        (palaute/get-by-hoks-id-and-kyselytyypit!
+                          db/spec
+                          {:hoks-id (:id hoks-db)
+                           :kyselytyypit ["aloittaneet" "valmistuneet"]})))
+              palautteet-after-kohderyhma-exclusion)
+          (eq (set (map (juxt :kyselytyyppi :syy)
+                        (tapahtumat/get-all-by-hoks-id-and-kyselytyypit!
+                          db/spec
+                          {:hoks-id (:id hoks-db)
+                           :kyselytyypit ["aloittaneet" "valmistuneet"]})))
+              tapahtumat-after-kohderyhma-exclusion)
+          ;; with changed dates in HOKS
+          (hoks/replace!
+            (:id hoks-db)
+            (-> (:id hoks-db)
+                (hoks/get-by-id)
+                (test-utils/dissoc-module-ids)
+                (assoc :osaamisen-saavuttamisen-pvm (LocalDate/of 2022 11 1))
+                (assoc :osaamisen-hankkimisen-tarve true)
+                (update
+                  :hankittavat-paikalliset-tutkinnon-osat
+                  (fn [hptos]
+                    (map (fn [hpto]
+                           (update
+                             hpto :osaamisen-hankkimistavat
+                             (fn [ohts]
+                               (map #(assoc % :keskeytymisajanjaksot
+                                            [{:alku (LocalDate/of 2019 2 15)}])
+                                    ohts))))
+                         hptos)))
+                (update
+                  :hankittavat-ammat-tutkinnon-osat
+                  (fn [hatos]
+                    (map (fn [hato]
+                           (update
+                             hato :osaamisen-hankkimistavat
+                             (fn [ohts]
+                               (map #(assoc % :alku (LocalDate/of 2019 05 15)
+                                            :loppu (LocalDate/of 2019 07 15))
+                                    ohts))))
+                         hatos)))))
+          (eq (set (map (juxt :tila :kyselytyyppi :jakson-yksiloiva-tunniste
+                              :voimassa-alkupvm)
+                        (palaute/get-by-hoks-id-and-kyselytyypit!
+                          db/spec
+                          {:hoks-id (:id hoks-db)
+                           :kyselytyypit ["aloittaneet" "valmistuneet"
+                                          "tyopaikkajakson_suorittaneet"]})))
+              palautteet-after-updated-hoks))))))
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-save
   (testing (str "save: does not form opiskelijapalaute when "
@@ -591,8 +710,24 @@
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!
                     date/now (constantly (LocalDate/of 2018 7 1))]
-        (let [saved-hoks (hoks/save! hoks-data)]
-          (hoks/update! (:id saved-hoks) hoks-osaaminen-saavutettu)
+        (let [saved-hoks (hoks/save! hoks-data)
+              aloitus-herate (palaute/get-by-hoks-id-and-kyselytyypit!
+                               db/spec {:hoks-id (:id saved-hoks)
+                                        :kyselytyypit ["aloittaneet"]})]
+          (palaute/update! db/spec (assoc (first aloitus-herate)
+                                          :tila "lahetetty"))
+          (hoks/update!
+            (:id saved-hoks)
+            (assoc hoks-osaaminen-saavutettu
+                   :ensikertainen-hyvaksyminen (LocalDate/of 2021 1 1)))
+          (eq (set (map (juxt :tila :kyselytyyppi :heratepvm)
+                        (palaute/get-by-hoks-id-and-kyselytyypit!
+                          db/spec
+                          {:hoks-id (:id saved-hoks)
+                           :kyselytyypit ["aloittaneet" "valmistuneet"]})))
+              #{["odottaa_kasittelya" "aloittaneet" (LocalDate/of 2021 1 1)]
+                ["odottaa_kasittelya" "valmistuneet" (LocalDate/of 2022 12 15)]
+                ["lahetetty" "aloittaneet" (LocalDate/of 2019 3 18)]})
           (is (= @sqs-call-counter 3)))))))
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-update
@@ -607,6 +742,13 @@
           (hoks/update!
             (:id saved-hoks)
             hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta)
+          (eq (set (map (juxt :tila :kyselytyyppi)
+                        (palaute/get-by-hoks-id-and-kyselytyypit!
+                          db/spec
+                          {:hoks-id (:id saved-hoks)
+                           :kyselytyypit ["aloittaneet" "valmistuneet"]})))
+              #{["ei_laheteta" "aloittaneet"]
+                ["ei_laheteta" "valmistuneet"]})
           (is (= @sqs-call-counter 0)))))))
 
 (deftest form-opiskelijapalaute-in-hoks-replace

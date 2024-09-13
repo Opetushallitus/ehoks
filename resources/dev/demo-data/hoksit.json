@@ -213,6 +213,7 @@
       ],
       "osaamisen-hankkimistavat": [
         {
+	  "yksiloiva-tunniste": "oht1",
           "osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_koulutussopimus",
           "hankkijan-edustaja": {
             "nimi": "Hanken, Hank",
@@ -295,6 +296,7 @@
       ],
       "osaamisen-hankkimistavat": [
         {
+	  "yksiloiva-tunniste": "oht2",
           "tyopaikalla-jarjestettava-koulutus": {
             "vastuullinen-tyopaikka-ohjaaja": {
               "nimi": "Vastuullinen, Vesku",
@@ -390,6 +392,7 @@
       ],
       "osaamisen-hankkimistavat": [
         {
+	  "yksiloiva-tunniste": "oht3",
           "tyopaikalla-jarjestettava-koulutus": {
             "vastuullinen-tyopaikka-ohjaaja": {
               "nimi": "Vastuussa, Veera",
@@ -515,6 +518,7 @@
       ],
       "osaamisen-hankkimistavat": [
         {
+	  "yksiloiva-tunniste": "oht4",
           "tyopaikalla-jarjestettava-koulutus": {
             "vastuullinen-tyopaikka-ohjaaja": {
               "nimi": "Vastuussa, Veera",
@@ -554,6 +558,7 @@
           "osa-aikaisuustieto": 5
         },
         {
+	  "yksiloiva-tunniste": "oht5",
           "osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_muu",
           "osaamisen-hankkimistapa-koodi-versio": 1,
           "muut-oppimisymparistot": [
@@ -610,6 +615,7 @@
           "koulutuksen-jarjestaja-oid": "1.2.246.562.10.10054425555",
           "osaamisen-hankkimistavat": [
             {
+	      "yksiloiva-tunniste": "oht6",
               "tyopaikalla-jarjestettava-koulutus": {
                 "vastuullinen-tyopaikka-ohjaaja": {
                   "nimi": "Ohjaaja, Osa",
@@ -624,6 +630,7 @@
               },
               "osaamisen-hankkimistapa-koodi-uri": "osaamisenhankkimistapa_koulutussopimus",
               "osaamisen-hankkimistapa-koodi-versio": 1,
+	      "osa-aikaisuustieto": 80,
               "hankkijan-edustaja": {
                 "nimi": "Hankkija, Heikki",
                 "rooli": "Jonkinlainen hankkija",
@@ -696,6 +703,7 @@
           ],
           "osaamisen-hankkimistavat": [
             {
+	      "yksiloiva-tunniste": "oht7",
               "tyopaikalla-jarjestettava-koulutus": {
                 "vastuullinen-tyopaikka-ohjaaja": {
                   "nimi": "Vastuussa, Veera",
@@ -777,6 +785,7 @@
           ],
           "osaamisen-hankkimistavat": [
             {
+	      "yksiloiva-tunniste": "oht8",
               "tyopaikalla-jarjestettava-koulutus": {
                 "vastuullinen-tyopaikka-ohjaaja": {
                   "nimi": "Vastuussa, Veera",

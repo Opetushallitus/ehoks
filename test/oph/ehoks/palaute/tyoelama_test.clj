@@ -158,7 +158,7 @@
       (testing "initiate kysely if when all of the checks are OK."
         (is (= (tep/initial-palaute-state-and-reason
                  test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1 [])
-               [:odottaa-kasittelya nil :hoks-tallennettu]))))))
+               [:odottaa-kasittelya :loppu :hoks-tallennettu]))))))
 
 (defn- build-expected-herate
   [jakso hoks]
@@ -196,6 +196,7 @@
                          db/spec
                          {:hoks-id            (:id hoks-test/hoks-1)
                           :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)})
+                       (first)
                        (dissoc :id :created-at :updated-at)
                        (->> (remove-vals nil?)))
               expected (build-expected-herate test-jakso hoks-test/hoks-1)]
@@ -214,15 +215,21 @@
                   :heratepvm    (LocalDate/of 2023 12 15)
                   :tyyppi       "hoks_tallennus"
                   :syy          "hoks_tallennettu"
-                  :lisatiedot   {}}))))
+                  :lisatiedot   {:loppu "2023-12-15"}}))))
       (testing
        "doesn't initiate tyoelamapalaute if it has already been initiated"
         (with-log
-          (tep/initiate-if-needed!
-            test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
-          (is (logged? 'oph.ehoks.palaute.tyoelama
-                       :info
-                       #":jo-lahetetty")))))))
+          (let [existing
+                (->> {:hoks-id (:id hoks-test/hoks-1)
+                      :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)}
+                     (palaute/get-by-hoks-id-and-yksiloiva-tunniste! db/spec)
+                     (first))]
+            (palaute/update! db/spec (assoc existing :tila "lahetetty"))
+            (tep/initiate-if-needed!
+              test-jakso hoks-test/hoks-1 oo-test/opiskeluoikeus-1)
+            (is (logged? 'oph.ehoks.palaute.tyoelama
+                         :info
+                         #":jo-lahetetty"))))))))
 
 (deftest test-initiate-all-uninitiated!
   (with-redefs [date/now (constantly (LocalDate/of 2023 10 18))
@@ -240,6 +247,7 @@
                          db/spec
                          {:hoks-id            (:id hoks-test/hoks-1)
                           :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
+                       (first)
                        (dissoc :id :created-at :updated-at)
                        (->> (remove-vals nil?)))
               expected (build-expected-herate jakso hoks-test/hoks-1)]

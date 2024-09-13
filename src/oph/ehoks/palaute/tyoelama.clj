@@ -91,7 +91,7 @@
       [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
 
       :else
-      [:odottaa-kasittelya nil :hoks-tallennettu])))
+      [:odottaa-kasittelya :loppu :hoks-tallennettu])))
 
 (defn initiate-if-needed!
   [jakso hoks opiskeluoikeus]
