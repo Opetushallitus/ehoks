@@ -79,7 +79,7 @@ from palautteet p
 join hoksit h on (h.id = p.hoks_id)
 where h.oppija_oid = :oppija-oid
   and p.kyselytyyppi in (:v*:kyselytyypit)
-  and p.koulutustoimija = :koulutustoimija
+  and (p.koulutustoimija = :koulutustoimija or (:koulutustoimija)::text is null)
 
 -- :name get-by-hoks-id-and-yksiloiva-tunniste! :? :*
 -- :doc Get palaute information for työpaikkajakso by HOKS ID and yksiloiva
