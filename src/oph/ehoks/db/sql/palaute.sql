@@ -77,7 +77,7 @@ where hoks_id = :hoks-id and kyselytyyppi in (:v*:kyselytyypit)
 select p.id, p.heratepvm, p.tila
 from palautteet p
 join hoksit h on (h.id = p.hoks_id)
-where h.oppija_oid = :oppija-oid
+where h.oppija_oid = :oppija-oid  -- FIXME: should probably have deleted_at cond
   and p.kyselytyyppi in (:v*:kyselytyypit)
   and (p.koulutustoimija = :koulutustoimija or (:koulutustoimija)::text is null)
 
@@ -90,7 +90,7 @@ where hoks_id = :hoks-id AND jakson_yksiloiva_tunniste = :yksiloiva-tunniste
 -- :name get-for-heratepalvelu-by-hoks-id-and-kyselytyypit! :? :*
 -- :doc get AMIS-palaute in the format for putting into herätepalvelu
 select * from palaute_for_amis_heratepalvelu
-where ehoks_id = :hoks-id
+where ehoks_id = :hoks-id  -- FIXME: should probably have deleted_at cond
   and internal_kyselytyyppi in (:v*:kyselytyypit)
 
 -- :name get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste! :? :*
