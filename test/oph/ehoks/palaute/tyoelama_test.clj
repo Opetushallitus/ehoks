@@ -334,6 +334,7 @@
     (with-redefs [organisaatio/get-organisaatio!
                   hoks-utils/mock-get-organisaatio!
                   koski/get-opiskeluoikeus! hoks-utils/mock-get-opiskeluoikeus!
+                  ;; FIXME: better to have real Arvo fake to test against
                   arvo/create-jaksotunnus hoks-utils/mock-create-jaksotunnus
                   date/now #(LocalDate/of 2024 6 30)]
       (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
