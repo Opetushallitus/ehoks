@@ -244,7 +244,9 @@ docker volume create pgdata
 Kontin ajaminen onnistuu `make stamps/db-running` tai käsin:
 
 ``` shell
-docker run --rm --name ehoks-postgres -p 5432:5432 --volume pgdata:/var/lib/postgresql/data ehoks-postgres
+docker run --rm --name ehoks-postgres -p 5432:5432 \
+  --volume pgdata:/var/lib/postgresql/data \
+  -e POSTGRES_HOST_AUTH_METHOD=trust ehoks-postgres
 ```
 
 ### DynamoDB
