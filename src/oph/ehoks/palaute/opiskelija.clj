@@ -3,6 +3,7 @@
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
             [medley.core :refer [greatest]]
+            [clojure.set :refer [rename-keys]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.aws-sqs :as sqs]
@@ -189,3 +190,11 @@
       (dissoc :tila :tutkinnonosat_koulutussopimus :tutkinnonosat_oppisopimus
               :tutkinnonosat_oppilaitosmuotoinenkoulutus)
       (arvo/create-kyselytunnus!)))
+
+(defn create-and-save-arvo-kyselylinkki!
+  "Update given palaute with a kyselylinkki from Arvo-."
+  [palaute]
+  (-> palaute
+      (create-arvo-kyselylinkki!)
+      (rename-keys {:kysely_linkki :url})
+      (#(palaute/save-arvo-tunniste! db/spec palaute % {:arvo_response %}))))

@@ -32,7 +32,7 @@ where tila = 'odottaa_kasittelya'
 
 -- :name get-amis-palautteet-waiting-for-kyselylinkki! :? :*
 -- :doc Get HOKS-id and kyselytyyppi of amispalaute without kyselylinkki
-select	hoks_id, kyselytyyppi
+select	id, hoks_id, tila, kyselytyyppi
 from	palautteet
 where	tila = 'odottaa_kasittelya'
 and	kyselytyyppi in ('aloittaneet','valmistuneet','osia_suorittaneet')
@@ -53,6 +53,7 @@ where id = :palaute-id
 -- :doc Update arvo-tunniste for palaute with given id.
 update	palautteet
 set	arvo_tunniste = :tunnus,
+	kyselylinkki = :url,
 	updated_at = now(),
 	tila = 'vastaajatunnus_muodostettu'
 where	id = :id
