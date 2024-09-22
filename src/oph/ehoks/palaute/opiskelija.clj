@@ -6,10 +6,13 @@
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.utils.date :as date]))
+            [oph.ehoks.utils :as utils]
+            [oph.ehoks.utils.date :as date])
+  (:import (java.util UUID)))
 
 (def kyselytyypit #{"aloittaneet" "valmistuneet" "osia_suorittaneet"})
 (def paattokyselyt #{"valmistuneet" "osia_suorittaneet"})
@@ -160,3 +163,29 @@
                          kysely-type
                          opts))
                    hoksit))))
+
+(defn create-arvo-kyselylinkki!
+  "For the given palaute, make Arvo call for creating its kyselylinkki
+  and return the Arvo reply."
+  [palaute]
+  (-> palaute
+      (select-keys [:hoks-id :kyselytyyppi])
+      (->> (palaute/get-for-arvo-by-hoks-id-and-kyselytyyppi! db/spec))
+      (or (throw (ex-info "No Arvo-processable palaute found"
+                          {:palaute palaute})))
+      (utils/to-underscore-keys)
+      ;; FIXME: add up-to-date values from Koski here
+      (assoc :metatiedot {:tila "ei_lahetetty"}
+             :request_id (str (UUID/randomUUID)))
+      (#(assoc % :tutkinnonosat_hankkimistavoittain
+               {:oppisopimus (:tutkinnonosat_oppisopimus %)
+                :koulutussopimus (:tutkinnonosat_koulutussopimus %)
+                :oppilaitosmuotoinenkoulutus
+                (:tutkinnonosat_oppilaitosmuotoinenkoulutus %)}))
+      (update :tutkinnon_suorituskieli #(or % "fi"))
+      (update :koulutustoimija_oid #(or % ""))
+      (update :tutkintotunnus str)
+      (update :kyselyn_tyyppi translate-kyselytyyppi)
+      (dissoc :tila :tutkinnonosat_koulutussopimus :tutkinnonosat_oppisopimus
+              :tutkinnonosat_oppilaitosmuotoinenkoulutus)
+      (arvo/create-kyselytunnus!)))
