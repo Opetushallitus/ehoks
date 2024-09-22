@@ -2,6 +2,7 @@
   "A namespace for everything related to opiskelijapalaute"
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
+            [clojure.set :refer [rename-keys]]
             [medley.core :refer [find-first greatest map-keys]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
@@ -199,3 +200,11 @@
       (dissoc :tila :tutkinnonosat_koulutussopimus :tutkinnonosat_oppisopimus
               :tutkinnonosat_oppilaitosmuotoinenkoulutus)
       (arvo/create-kyselytunnus!)))
+
+(defn create-and-save-arvo-kyselylinkki!
+  "Update given palaute with a kyselylinkki from Arvo-."
+  [palaute]
+  (-> palaute
+      (create-arvo-kyselylinkki!)
+      (rename-keys {:kysely_linkki :url})
+      (#(palaute/save-arvo-tunniste! db/spec palaute % {:arvo_response %}))))

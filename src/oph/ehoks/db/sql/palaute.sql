@@ -53,6 +53,7 @@ where id = :palaute-id
 -- :doc Update arvo-tunniste for palaute with given id.
 update	palautteet
 set	arvo_tunniste = :tunnus,
+	kyselylinkki = :url,
 	updated_at = now(),
 	tila = 'vastaajatunnus_muodostettu'
 where	id = :id

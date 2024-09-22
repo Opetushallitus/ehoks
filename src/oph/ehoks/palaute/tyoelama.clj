@@ -201,20 +201,6 @@
         (db-helpers/remove-nils)
         (ddb/sync-jakso-herate!))))
 
-(defn save-arvo-tunniste!
-  [tx tep-palaute tunnus lisatiedot]
-  (assert (palaute/update-arvo-tunniste! tx {:id (:id tep-palaute)
-                                             :tunnus tunnus}))
-  (palautetapahtuma/insert!
-    tx
-    {:palaute-id      (:id tep-palaute)
-     :vanha-tila      (:tila tep-palaute)
-     :uusi-tila       "vastaajatunnus_muodostettu"
-     :tapahtumatyyppi "arvo_luonti"
-     :syy             (db-helpers/to-underscore-str
-                        :vastaajatunnus-muodostettu)
-     :lisatiedot      lisatiedot}))
-
 (defn create-and-save-arvo-vastaajatunnus!
   [tx tep-palaute]
   (let [opiskeluoikeus (koski/get-opiskeluoikeus!
@@ -239,12 +225,12 @@
                               (palaute/toimipiste-oid! suoritus)
                               suoritus
                               (str alkupvm))
-            tunnus          (:tunnus (arvo/create-jaksotunnus
-                                       arvo-request))]
+            arvo-response   (arvo/create-jaksotunnus arvo-request)
+            tunnus          (:tunnus arvo-response)]
         (try
           ;; FIXME: create tapahtuma
-          (save-arvo-tunniste!
-            tx tep-palaute tunnus {:arvo-request arvo-request})
+          (palaute/save-arvo-tunniste!
+            tx tep-palaute arvo-response {:arvo-response arvo-response})
           (sync-jakso-to-heratepalvelu!
             tx tep-palaute opiskeluoikeus request-id tunnus)
 
