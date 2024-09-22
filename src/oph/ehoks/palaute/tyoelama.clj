@@ -188,9 +188,7 @@
 ;; ylimalkaisen testin tälle funktiolle.
 (defn sync-jakso-to-heratepalvelu!
   [tx tep-palaute opiskeluoikeus request-id tunnus]
-  (let [query {:jakson-yksiloiva-tunniste
-               (:jakson-yksiloiva-tunniste tep-palaute)
-               :hoks-id (:hoks-id tep-palaute)}]
+  (let [query (select-keys tep-palaute [:jakson-yksiloiva-tunniste :hoks-id])]
     (-> (palaute/get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste!
           tx query)
         (first)
