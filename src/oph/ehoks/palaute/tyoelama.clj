@@ -185,11 +185,12 @@
                                           (:tyopaikan-nimi tep-palaute))
            :viimeinen-vastauspvm (str (.plusDays alkupvm 60)))))
 
+;; FIXME: tältä puuttuu yksikkötesti.
+;; test-create-and-save-arvo-vastaajatunnus-for-all-needed! sisältää
+;; ylimalkaisen testin tälle funktiolle.
 (defn sync-jakso-to-heratepalvelu!
   [tx tep-palaute opiskeluoikeus request-id tunnus]
-  (let [query {:jakson-yksiloiva-tunniste
-               (:jakson-yksiloiva-tunniste tep-palaute)
-               :hoks-id (:hoks-id tep-palaute)}]
+  (let [query (select-keys tep-palaute [:jakson-yksiloiva-tunniste :hoks-id])]
     (-> (palaute/get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste!
           tx query)
         (first)
@@ -200,20 +201,6 @@
         (db-helpers/remove-nils)
         (ddb/sync-jakso-herate!))))
 
-(defn save-arvo-tunniste!
-  [tx tep-palaute tunnus lisatiedot]
-  (assert (palaute/update-arvo-tunniste! tx {:id (:id tep-palaute)
-                                             :tunnus tunnus}))
-  (palautetapahtuma/insert!
-    tx
-    {:palaute-id      (:id tep-palaute)
-     :vanha-tila      (:tila tep-palaute)
-     :uusi-tila       "vastaajatunnus_muodostettu"
-     :tapahtumatyyppi "arvo_luonti"
-     :syy             (db-helpers/to-underscore-str
-                        :vastaajatunnus-muodostettu)
-     :lisatiedot      lisatiedot}))
-
 (defn create-and-save-arvo-vastaajatunnus!
   [tx tep-palaute]
   (let [opiskeluoikeus (koski/get-opiskeluoikeus!
@@ -221,7 +208,7 @@
     (if-not opiskeluoikeus
       (log/warnf
         "Opiskeluoikeus not found for palaute %d, skipping processing"
-        (:id tep-palaute))
+        (:id tep-palaute))  ; FIXME: create tapahtuma and update state
       (let [koulutustoimija (opiskeluoikeus-koulutustoimija-oid
                               opiskeluoikeus)
             alkupvm         (next-niputus-date (:loppupvm tep-palaute))
@@ -238,11 +225,12 @@
                               (palaute/toimipiste-oid! suoritus)
                               suoritus
                               (str alkupvm))
-            tunnus          (:tunnus (arvo/create-jaksotunnus
-                                       arvo-request))]
+            arvo-response   (arvo/create-jaksotunnus arvo-request)
+            tunnus          (:tunnus arvo-response)]
         (try
-          (save-arvo-tunniste!
-            tx tep-palaute tunnus {:arvo-request arvo-request})
+          ;; FIXME: create tapahtuma
+          (palaute/save-arvo-tunniste!
+            tx tep-palaute arvo-response {:arvo-response arvo-response})
           (sync-jakso-to-heratepalvelu!
             tx tep-palaute opiskeluoikeus request-id tunnus)
 
@@ -266,6 +254,7 @@
                              "vastaajatunnus from Arvo: %s")
                         (:id tep-palaute)
                         tunnus)
+            ;; FIXME: tapahtuma
             (arvo/delete-jaksotunnus tunnus)
             (throw e)))))))
 

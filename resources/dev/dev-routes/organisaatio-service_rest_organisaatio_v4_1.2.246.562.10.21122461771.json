@@ -1,0 +1,103 @@
+{
+  "yhteishaunKoulukoodi": "",
+  "maskingActive": false,
+  "lyhytNimi": {
+    "fi": "Lappeenrannan musiikkiopisto",
+    "sv": "Lappeenrannan musiikkiopisto",
+    "en": "Lappeenrannan musiikkiopisto"
+  },
+  "piilotettu": false,
+  "parentOid": "1.2.246.562.10.84189747029",
+  "kuvaus2": {},
+  "maaUri": "maatjavaltiot1_fin",
+  "kotipaikkaUri": "kunta_405",
+  "toimipistekoodi": "0196301",
+  "vuosiluokat": [],
+  "lisatiedot": [],
+  "ryhmatyypit": [],
+  "opetuspisteenJarjNro": "01",
+  "nimet": [
+    {
+      "nimi": {
+        "fi": "Lappeenrannan musiikkiopisto",
+        "sv": "Lappeenrannan musiikkiopisto",
+        "en": "Lappeenrannan musiikkiopisto"
+      },
+      "alkuPvm": "1992-01-01",
+      "version": 1
+    }
+  ],
+  "kayttoryhmat": [],
+  "yhteystietoArvos": [],
+  "yhteystiedot": [
+    {
+      "kieli": "kieli_fi#1",
+      "yhteystietoOid": "1.2.246.562.5.60097573129",
+      "id": "45414",
+      "email": "musiikkiopisto@lprmo.fi"
+    },
+    {
+      "kieli": "kieli_fi#1",
+      "numero": "0400 770 228",
+      "tyyppi": "puhelin",
+      "yhteystietoOid": "1.2.246.562.5.41987429903",
+      "id": "45416"
+    },
+    {
+      "kieli": "kieli_fi#1",
+      "www": "http://www.lprmo.fi",
+      "yhteystietoOid": "1.2.246.562.5.56767564778",
+      "id": "45417"
+    },
+    {
+      "osoiteTyyppi": "kaynti",
+      "kieli": "kieli_fi#1",
+      "postinumeroUri": "posti_53100",
+      "yhteystietoOid": "1.2.246.562.5.51243936591",
+      "id": "45419",
+      "postitoimipaikka": "LAPPEENRANTA",
+      "osoite": "Koulukatu 36"
+    },
+    {
+      "osoiteTyyppi": "posti",
+      "kieli": "kieli_fi#1",
+      "postinumeroUri": "posti_53100",
+      "yhteystietoOid": "1.2.246.562.5.765937133410",
+      "id": "45418",
+      "postitoimipaikka": "LAPPEENRANTA",
+      "osoite": "Koulukatu 36"
+    }
+  ],
+  "muutKotipaikatUris": [],
+  "muutOppilaitosTyyppiUris": [],
+  "kayntiosoite": {
+    "postinumeroUri": "posti_53100",
+    "osoiteTyyppi": "kaynti",
+    "yhteystietoOid": "1.2.246.562.5.51243936591",
+    "postitoimipaikka": "LAPPEENRANTA",
+    "osoite": "Koulukatu 36"
+  },
+  "postiosoite": {
+    "postinumeroUri": "posti_53100",
+    "osoiteTyyppi": "posti",
+    "yhteystietoOid": "1.2.246.562.5.765937133410",
+    "postitoimipaikka": "LAPPEENRANTA",
+    "osoite": "Koulukatu 36"
+  },
+  "oid": "1.2.246.562.10.21122461771",
+  "nimi": {
+    "fi": "Lappeenrannan musiikkiopisto",
+    "sv": "Lappeenrannan musiikkiopisto",
+    "en": "Lappeenrannan musiikkiopisto"
+  },
+  "alkuPvm": "1992-01-01",
+  "kieletUris": [
+    "oppilaitoksenopetuskieli_1#1"
+  ],
+  "parentOidPath": "|1.2.246.562.10.00000000001|1.2.246.562.10.63964626889|1.2.246.562.10.84189747029|",
+  "tyypit": [
+    "organisaatiotyyppi_03"
+  ],
+  "status": "AKTIIVINEN",
+  "version": 1
+}

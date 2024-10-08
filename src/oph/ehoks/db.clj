@@ -1,8 +1,10 @@
 (ns oph.ehoks.db
   (:require [hugsql.adapter :refer [result-many result-one]]
             [hugsql.core :as hugsql]
+            [medley.core :refer [map-vals]]
             [oph.ehoks.config :refer [config]]
-            [oph.ehoks.db.db-operations.db-helpers :as db-helpers]))
+            [oph.ehoks.db.db-operations.db-helpers :as db-helpers])
+  (:import (org.postgresql.jdbc PgArray)))
 
 (def spec
   "Database specification"
@@ -16,13 +18,23 @@
    :password (:db-password config)
    :stringtype "unspecified"}) ; HACK to support enums
 
+(defn pgarray->vec
+  "If the argument is a PgArray, convert it to vector."
+  [obj]
+  (if (instance? PgArray obj) (vec (.getArray ^PgArray obj)) obj))
+
+(def convert-result
+  "Fix the results of hugsql to more clojuresque format."
+  (comp db-helpers/to-dash-keys
+        (partial map-vals pgarray->vec)))
+
 (defn result-one-snake->kebab
   [this result options]
-  (db-helpers/to-dash-keys (result-one this result options)))
+  (convert-result (result-one this result options)))
 
 (defn result-many-snake->kebab
   [this result options]
-  (map db-helpers/to-dash-keys (result-many this result options)))
+  (map convert-result (result-many this result options)))
 
 (defmethod hugsql/hugsql-result-fn :1
   [_] 'oph.ehoks.db/result-one-snake->kebab)

@@ -6,6 +6,7 @@ stamps/db-image: $(wildcard scripts/postgres-docker/*)
 stamps/db-running: stamps/db-image
 	docker ps --format '{{.Names}}' | grep -qx 'ehoks-postgres' \
 	|| docker run -d --rm --name ehoks-postgres \
+		-e POSTGRES_HOST_AUTH_METHOD=trust \
 		-p 5432:5432 ehoks-postgres > $@ || (rm $@ && false)
 	until psql -h localhost -U postgres ehoks -c "SELECT 3" \
 			| grep -x ' *3 *'; do \
