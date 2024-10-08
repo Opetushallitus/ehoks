@@ -15,7 +15,7 @@
         :b :e         {:a 1 :d 3 :e {:c 2}}))
     (testing (str "The function returns the map unchanged if no value is found "
                   "with given source keys.")
-        (are [sks dks] (= (utils/replace-in test-map sks dks)
-                          test-map)
-          :f      :a
-          [:b :a] :a))))
+      (are [sks dks] (= (utils/replace-in test-map sks dks)
+                        test-map)
+        :f      :a
+        [:b :a] :a))))

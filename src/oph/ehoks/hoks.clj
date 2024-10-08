@@ -123,25 +123,11 @@
 
 (defn update!
   "Päivittää HOKSin ylätason arvoja."
-  [hoks-id new-values]
-  (let [current-hoks (db-hoks/select-hoks-by-id hoks-id)]
+  [hoks]
+  (let [hoks-id (:id hoks)]
     (jdbc/with-db-transaction
       [db-conn (db-ops/get-db-connection)]
-      (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)
-      (let [updated-hoks (merge current-hoks new-values)
-            opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                             (:opiskeluoikeus-oid updated-hoks))]
-        (if (tuva-related? updated-hoks)
-          (db-hoks/set-amisherate-kasittelytilat-to-true!
-            hoks-id (format tuva-hoks-msg-template (:id updated-hoks)))
-          (do
-            (op/initiate-if-needed! {:hoks           updated-hoks
-                                     :opiskeluoikeus opiskeluoikeus}
-                                    :aloituskysely)
-            (op/initiate-if-needed! {:hoks           updated-hoks
-                                     :opiskeluoikeus opiskeluoikeus}
-                                    :paattokysely)
-            (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))))
+      (db-hoks/update-hoks-by-id! hoks-id hoks db-conn))
     (db-hoks/select-hoks-by-id hoks-id)))
 
 (defn- merge-not-given-hoks-values
@@ -275,26 +261,12 @@
 
 (defn replace!
   "Korvaa kokonaisen HOKSin (ml. tutkinnon osat) annetuilla arvoilla."
-  [hoks-id new-values]
+  [hoks]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
-    (replace-main-hoks! hoks-id new-values db-conn)
-    (replace-parts! (assoc new-values :id hoks-id) db-conn))
-  (let [updated-hoks   (get-by-id hoks-id)
-        opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                         (:opiskeluoikeus-oid updated-hoks))]
-    (if (tuva-related? updated-hoks)
-      (db-hoks/set-amisherate-kasittelytilat-to-true!
-        hoks-id (format tuva-hoks-msg-template (:id updated-hoks)))
-      (do
-        (op/initiate-if-needed! {:hoks           updated-hoks
-                                 :opiskeluoikeus opiskeluoikeus}
-                                :aloituskysely)
-        (op/initiate-if-needed! {:hoks           updated-hoks
-                                 :opiskeluoikeus opiskeluoikeus}
-                                 :paattokysely)
-        (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))
-    updated-hoks))
+    (replace-main-hoks! (:id hoks) hoks db-conn)
+    (replace-parts! hoks db-conn))
+  (get-by-id (:id hoks)))
 
 (defn- oppija-oid-changed?
   [new-oppija-oid old-oppija-oid]
