@@ -1,7 +1,9 @@
 (ns oph.ehoks.hoks.handler
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.java.jdbc :as jdbc]
+            [clojure.tools.logging :as log]
             [compojure.api.core :refer [route-middleware]]
             [compojure.api.sweet :as c-api]
+            [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.postgresql.common :refer [select-kyselylinkki]]
             [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as pdb-ot]
@@ -288,7 +290,7 @@
 (def ^:private tuva-hoks-msg-template
   "HOKS `%s` is a TUVA-HOKS or rinnakkainen ammatillinen HOKS.")
 
-(defn initiate-all-palautteet!
+(defn- initiate-all-palautteet!
   [{:keys [hoks] :as ctx}]
   (if (hoks/tuva-related? hoks)
     (db-hoks/set-amisherate-kasittelytilat-to-true!
@@ -308,15 +310,19 @@
 
 (defn save-hoks-and-initiate-all-palautteet!
   [{:keys [hoks] :as ctx}]
-  (let [hoks (assoc hoks :id (:id (hoks/save! hoks)))]
-    (initiate-all-palautteet! (assoc ctx :hoks hoks))
-    hoks))
+  (jdbc/with-db-transaction
+    [tx db/spec]
+    (let [hoks (assoc hoks :id (:id (hoks/save! hoks)))]
+      (initiate-all-palautteet! (assoc ctx :hoks hoks :tx tx))
+      hoks)))
 
 (defn change-hoks-and-initiate-all-palautteet!
   [{:keys [hoks] :as ctx} db-handler]
-  (let [updated-hoks (db-handler hoks)]
-    (initiate-all-palautteet! (assoc ctx :hoks updated-hoks))
-    updated-hoks))
+  (jdbc/with-db-transaction
+    [tx db/spec]
+    (let [updated-hoks (db-handler hoks)]
+      (initiate-all-palautteet! (assoc ctx :hoks updated-hoks :tx tx))
+      updated-hoks)))
 
 (defn post-hoks!
   "Käsittelee HOKS-luontipyynnön."
