@@ -49,7 +49,7 @@
              (+ sum (* digit (first multipliers))))
       (mod (- 10 (mod sum 10)) 10))))
 
-(defn- valid-oid?
+(defn valid-oid?
   "Takes an `oid` and returns `true` if it's valid. For the last component of
   the OID, a checksum is calculated and checked that it matches the last digit.
   IBM 1-3-7 checksum algorithm is used for henkilo/oppija (node 24) OIDs and
