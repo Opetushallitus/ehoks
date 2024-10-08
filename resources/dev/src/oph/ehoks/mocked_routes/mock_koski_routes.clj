@@ -94,7 +94,7 @@
                  :koodistoUri "koulutustyyppi"
                  :koodistoVersio 2}
                 :suoritustapa {}
-                :toimipiste {}
+                :toimipiste {:oid "1.2.246.562.10.47353291801"}
                 :alkamispäivä "2016-08-05"
                 :suorituskieli {}
                 :osasuoritukset []
