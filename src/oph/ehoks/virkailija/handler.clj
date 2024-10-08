@@ -632,7 +632,11 @@
                                      "HOKSKorvaus-virkailija" :put-virkailija
                                      "HOKS-dokumentin korvaus")]
                             (hoks-handler/change-hoks!
-                              :virkailija hoks-values request hoks/replace!))
+                              {:request request
+                               :hoks    (hoks/add-missing-oht-yksiloiva-tunniste
+                                          hoks-values)
+                               :opiskeluoikeus (get-current-opiskeluoikeus)}
+                              hoks/replace!))
 
                           (c-api/PATCH "/" request
                             :body [hoks-values
@@ -641,7 +645,11 @@
                                      "HOKS-dokumentin päivitys")]
                             :summary "Oppijan hoksin päätason arvojen päivitys"
                             (hoks-handler/change-hoks!
-                              :virkailija hoks-values request hoks/update!))))
+                              {:request request
+                               :hoks    (hoks/add-missing-oht-yksiloiva-tunniste
+                                          hoks-values)
+                               :opiskeluoikeus (get-current-opiskeluoikeus)}
+                              hoks/update!))))
 
                       (c-api/context "/:hoks-id" []
                         :path-params [hoks-id :- s/Int]

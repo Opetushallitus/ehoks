@@ -41,8 +41,7 @@
   of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
   [{:keys [hoks opiskeluoikeus]} kysely existing-heratteet]
-  (let [herate-basis (herate-date-basis kysely)
-        herate-date (get hoks herate-basis)]
+  (let [herate-basis (herate-date-basis kysely)]
     (or
       (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
         herate-basis hoks opiskeluoikeus)
@@ -90,15 +89,10 @@
               functionality to resend heratteet to Herätepalvelu wouldn't work.
               This should be removed once Herätepalvelu functionality has been
               fully migrated to eHOKS."
-  ; [kysely hoks opiskeluoikeus koulutustoimija tx
-  ;  {:keys [initial-state] :or {initial-state :odottaa-kasittelya} :as options}]
-  [{:keys [tx hoks opiskeluoikeus koulutustoimija] :as ctx}
+  [{:keys [tx hoks opiskeluoikeus] :as ctx}
    kysely
-   {:keys [initial-state existing-heratteet reason other-info]
-    :or {initial-state :odottaa-kasittelya}
-    :as options}]
+   {:keys [initial-state] :or {initial-state :odottaa-kasittelya} :as options}]
   {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-
   (let [target-kasittelytila (not= initial-state :odottaa-kasittelya)
         amisherate-kasittelytila
         (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id! (:id hoks))]
@@ -107,11 +101,10 @@
           (kysely-kasittely-field-mapping kysely) target-kasittelytila}))
 
   (let [heratepvm (get hoks (herate-date-basis kysely))]
-    (palaute/upsert-from-data! ctx
-                               (merge options
-                                      {:kysely kysely
-                                       :heratepvm heratepvm
-                                       :alkupvm (greatest heratepvm (date/now))}))
+    (palaute/upsert-from-data!
+      ctx (merge options {:kysely kysely
+                          :heratepvm heratepvm
+                          :alkupvm (greatest heratepvm (date/now))}))
 
     (when (= :odottaa-kasittelya initial-state)
       (log/info "Making" kysely "heräte for HOKS" (:id hoks))
@@ -141,9 +134,10 @@
   ([{:keys [hoks opiskeluoikeus] :as ctx} kysely opts]
     (jdbc/with-db-transaction
       [tx db/spec]
-      (let [ctx (assoc ctx :tx              tx
-                           :koulutustoimija (palaute/koulutustoimija-oid!
-                                              opiskeluoikeus))
+      (let [ctx (assoc ctx
+                       :tx              tx
+                       :koulutustoimija (palaute/koulutustoimija-oid!
+                                          opiskeluoikeus))
             existing-heratteet (existing-heratteet! ctx kysely)
             [init-state field reason]
             (initial-palaute-state-and-reason

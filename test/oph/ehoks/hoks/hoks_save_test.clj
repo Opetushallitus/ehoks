@@ -538,20 +538,6 @@
   [counter]
   (fn [_] (swap! counter inc)))
 
-(defn mock-get-opiskeluoikeus
-  [_]
-  {:suoritukset [{:tyyppi        {:koodiarvo "ammatillinentutkinto"}
-                  :suorituskieli {:koodiarvo "fi"}}]
-   :tila {:opiskeluoikeusjaksot
-          [{:alku "2020-07-03"
-            :tila {:koodiarvo "lasna"
-                   :nimi {:fi "Läsnä"}
-                   :koodistoUri
-                   "koskiopiskeluoikeudentila"
-                   :koodistoVersio 1}}]}
-   :koulutustoimija {:oid "1.2.246.562.10.346830761110"}
-   :tyyppi {:koodiarvo "ammatillinenkoulutus"}})
-
 (def hoks-osaaminen-saavutettu
   (assoc hoks-data
          :osaamisen-saavuttamisen-pvm (java.time.LocalDate/of 2022 12 15)))
@@ -615,15 +601,15 @@
   (testing "save: forms opiskelijapalaute when has osaamisen-hankkimisen-tarve"
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!
                     date/now (constantly (LocalDate/of 2018 7 1))]
         ; (is (true? (test-utils/wait-for
         ;              (fn [_] (= @sqs-call-counter 2)) 5000)))))))
-        (let [hoks-db (hoks-handler/save-hoks-and-initiate-all-palautteet!
+        (let [opiskeluoikeus oo-test/opiskeluoikeus-1
+              hoks-db (hoks-handler/save-hoks-and-initiate-all-palautteet!
                         {:hoks           hoks-osaaminen-saavutettu
-                         :opiskeluoikeus oo-test/opiskeluoikeus-1})
+                         :opiskeluoikeus opiskeluoikeus})
               amis (palaute/get-by-hoks-id-and-kyselytyypit!
                      db/spec {:hoks-id (:id hoks-db)
                               :kyselytyypit ["aloittaneet" "valmistuneet"]})
@@ -645,8 +631,11 @@
           (is (true? (test-utils/wait-for
                        (fn [_] (= @sqs-call-counter 2)) 5000)))
           ;; with changed HOKS
-          (hoks/update! (:id hoks-db)
-                        {:osaamisen-hankkimisen-tarve false})
+          (hoks-handler/change-hoks-and-initiate-all-palautteet!
+            {:hoks           {:id (:id hoks-db)
+                              :osaamisen-hankkimisen-tarve false}
+             :opiskeluoikeus opiskeluoikeus}
+            hoks/update!)
           (eq (set (map (juxt :tila :kyselytyyppi)
                         (palaute/get-by-hoks-id-and-kyselytyypit!
                           db/spec
@@ -660,35 +649,37 @@
                            :kyselytyypit ["aloittaneet" "valmistuneet"]})))
               tapahtumat-after-kohderyhma-exclusion)
           ;; with changed dates in HOKS
-          (hoks/replace!
-            (:id hoks-db)
-            (-> (:id hoks-db)
-                (hoks/get-by-id)
-                (test-utils/dissoc-module-ids)
-                (assoc :osaamisen-saavuttamisen-pvm (LocalDate/of 2022 11 1))
-                (assoc :osaamisen-hankkimisen-tarve true)
-                (update
-                  :hankittavat-paikalliset-tutkinnon-osat
-                  (fn [hptos]
-                    (map (fn [hpto]
-                           (update
-                             hpto :osaamisen-hankkimistavat
-                             (fn [ohts]
-                               (map #(assoc % :keskeytymisajanjaksot
-                                            [{:alku (LocalDate/of 2019 2 15)}])
-                                    ohts))))
-                         hptos)))
-                (update
-                  :hankittavat-ammat-tutkinnon-osat
-                  (fn [hatos]
-                    (map (fn [hato]
-                           (update
-                             hato :osaamisen-hankkimistavat
-                             (fn [ohts]
-                               (map #(assoc % :alku (LocalDate/of 2019 05 15)
-                                            :loppu (LocalDate/of 2019 07 15))
-                                    ohts))))
-                         hatos)))))
+          (hoks-handler/change-hoks-and-initiate-all-palautteet!
+            {:hoks
+             (-> (:id hoks-db)
+                 (hoks/get-by-id)
+                 (test-utils/dissoc-module-ids)
+                 (assoc :osaamisen-saavuttamisen-pvm (LocalDate/of 2022 11 1))
+                 (assoc :osaamisen-hankkimisen-tarve true)
+                 (update
+                   :hankittavat-paikalliset-tutkinnon-osat
+                   (fn [hptos]
+                     (map (fn [hpto]
+                            (update
+                              hpto :osaamisen-hankkimistavat
+                              (fn [ohts]
+                                (map #(assoc % :keskeytymisajanjaksot
+                                             [{:alku (LocalDate/of 2019 2 15)}])
+                                     ohts))))
+                          hptos)))
+                 (update
+                   :hankittavat-ammat-tutkinnon-osat
+                   (fn [hatos]
+                     (map (fn [hato]
+                            (update
+                              hato :osaamisen-hankkimistavat
+                              (fn [ohts]
+                                (map #(assoc % :alku (LocalDate/of 2019 05 15)
+                                             :loppu (LocalDate/of 2019 07 15))
+                                     ohts))))
+                          hatos))))
+             :opiskeluoikeus opiskeluoikeus}
+            hoks/replace!)
           (eq (set (map (juxt :tila :kyselytyyppi :jakson-yksiloiva-tunniste
                               :voimassa-alkupvm)
                         (palaute/get-by-hoks-id-and-kyselytyypit!
@@ -703,7 +694,8 @@
                 "does not have osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus]
+                    organisaatio/get-organisaatio!
+                    organisaatio-test/mock-get-organisaatio!]
         (hoks-handler/save-hoks-and-initiate-all-palautteet!
           {:hoks hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta
            :opiskeluoikeus oo-test/opiskeluoikeus-1})
@@ -714,24 +706,26 @@
                 "osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!
                     date/now (constantly (LocalDate/of 2018 7 1))]
         ; (let [saved-hoks (hoks-handler/save-hoks-and-initiate-palautteet!
         ;                    hoks-data oo-test/opiskeluoikeus-6)
-        (let [saved-hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
+        (let [opiskeluoikeus oo-test/opiskeluoikeus-1
+              saved-hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
                            {:hoks           hoks-data
-                            :opiskeluoikeus oo-test/opiskeluoikeus-1})
+                            :opiskeluoikeus opiskeluoikeus})
               aloitus-herate (palaute/get-by-hoks-id-and-kyselytyypit!
                                db/spec {:hoks-id (:id saved-hoks)
                                         :kyselytyypit ["aloittaneet"]})]
           (palaute/update! db/spec (assoc (first aloitus-herate)
                                           :tila "lahetetty"))
-          (hoks/update!
-            (:id saved-hoks)
-            (assoc hoks-osaaminen-saavutettu
-                   :ensikertainen-hyvaksyminen (LocalDate/of 2021 1 1)))
+          (hoks-handler/change-hoks-and-initiate-all-palautteet!
+            {:hoks (assoc hoks-osaaminen-saavutettu
+                          :id (:id saved-hoks)
+                          :ensikertainen-hyvaksyminen (LocalDate/of 2021 1 1))
+             :opiskeluoikeus opiskeluoikeus}
+            hoks/update!)
           (eq (set (map (juxt :tila :kyselytyyppi :heratepvm)
                         (palaute/get-by-hoks-id-and-kyselytyypit!
                           db/spec
@@ -747,16 +741,19 @@
                 "does not have osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!]
-        (let [saved-hoks
+        (let [opiskeluoikeus oo-test/opiskeluoikeus-1
+              saved-hoks
               (hoks-handler/save-hoks-and-initiate-all-palautteet!
                 {:hoks           hoks-ei-osaamisen-hankkimisen-tarvetta
-                 :opiskeluoikeus oo-test/opiskeluoikeus-1})]
-          (hoks/update!
-            (:id saved-hoks)
-            hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta)
+                 :opiskeluoikeus opiskeluoikeus})]
+          (hoks-handler/change-hoks-and-initiate-all-palautteet!
+            {:hoks
+             (assoc hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta
+                    :id (:id saved-hoks))
+             :opiskeluoikeus opiskeluoikeus}
+            hoks/update!)
           (eq (set (map (juxt :tila :kyselytyyppi)
                         (palaute/get-by-hoks-id-and-kyselytyypit!
                           db/spec
@@ -769,7 +766,6 @@
 (deftest form-opiskelijapalaute-in-hoks-replace
   (let [sqs-call-counter (atom 0)]
     (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                  k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
                   organisaatio/get-organisaatio!
                   organisaatio-test/mock-get-organisaatio!
                   date/now (constantly (LocalDate/of 2018 7 1))]
@@ -781,7 +777,11 @@
                               :opiskeluoikeus oo-test/opiskeluoikeus-1})]
             (Thread/sleep 15) ; in ms, workaround to make the test pass
             (is (= @sqs-call-counter 1)) ; sent herate for aloituskysely
-            (hoks/replace! (:id saved-hoks) hoks-osaaminen-saavutettu)
+            (hoks-handler/change-hoks-and-initiate-all-palautteet!
+              {:hoks           (assoc hoks-osaaminen-saavutettu
+                                      :id (:id saved-hoks))
+               :opiskeluoikeus oo-test/opiskeluoikeus-1}
+              hoks/replace!)
             (is (= @sqs-call-counter 3))) ; herate sent for both kyselyt
 
           (reset! sqs-call-counter 0)
@@ -791,30 +791,37 @@
           ; `HOKSKorvaus` schema, even though it probably should be. The
           ; following assertions can be removed once that is fixed.
           (testing ", even when `opiskeluoikeus-oid` is missing from new HOKS"
-            (let [saved-hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
-                               {:hoks           hoks-data
-                                :opiskeluoikeus oo-test/opiskeluoikeus-1})]
+            (let [opiskeluoikeus oo-test/opiskeluoikeus-1
+                  saved-hoks
+                  (hoks-handler/save-hoks-and-initiate-all-palautteet!
+                    {:hoks           hoks-data
+                     :opiskeluoikeus opiskeluoikeus})]
               (Thread/sleep 15) ; in ms, workaround to make the test pass
               (is (= @sqs-call-counter 1)) ; herate sent for aloituskysely
-              (hoks/replace! (:id saved-hoks)
-                             (dissoc hoks-osaaminen-saavutettu
-                                     :opiskeluoikeus-oid))
+              (hoks-handler/change-hoks-and-initiate-all-palautteet!
+                {:hoks
+                 (assoc (dissoc hoks-osaaminen-saavutettu :opiskeluoikeus-oid)
+                        :id (:id saved-hoks))
+                 :opiskeluoikeus opiskeluoikeus}
+                hoks/replace!)
               (is (= @sqs-call-counter 3))))))))) ; herate sent for both kyselys
-
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-replace
   (testing (str "replace: does not form opiskelijapalaute when "
                 "does not have osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
-                    k/get-opiskeluoikeus-info-raw mock-get-opiskeluoikeus
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!]
-        (let [saved-hoks
+        (let [opiskeluoikeus oo-test/opiskeluoikeus-1
+              saved-hoks
               (hoks-handler/save-hoks-and-initiate-all-palautteet!
                 {:hoks           hoks-ei-osaamisen-hankkimisen-tarvetta
-                 :opiskeluoikeus oo-test/opiskeluoikeus-1})]
-          (hoks/replace!
-            (:id saved-hoks)
-            hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta)
+                 :opiskeluoikeus opiskeluoikeus})]
+          (hoks-handler/change-hoks-and-initiate-all-palautteet!
+            {:hoks (assoc
+                     hoks-osaaminen-saavutettu-ei-osaamisen-hankkimisen-tarvetta
+                     :id (:id saved-hoks))
+             :opiskeluoikeus opiskeluoikeus}
+            hoks/replace!)
           (is (= @sqs-call-counter 0)))))))

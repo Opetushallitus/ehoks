@@ -68,7 +68,7 @@
   tyoelamapalaute process should be initiated for jakso. Returns the initial
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [jakso hoks opiskeluoikeus existing-heratteet]
+  [{:keys [hoks opiskeluoikeus]} jakso existing-heratteet]
   (or
     (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
       :loppu jakso opiskeluoikeus)
@@ -92,7 +92,7 @@
       [:odottaa-kasittelya :loppu :hoks-tallennettu])))
 
 (defn initiate-if-needed!
-  [jakso hoks opiskeluoikeus]
+  [{:keys [hoks] :as ctx} jakso]
   (jdbc/with-db-transaction
     [tx db/spec]
     (let [existing-heratteet  ; always 0 or 1 herate
@@ -101,15 +101,14 @@
             {:hoks-id            (:id hoks)
              :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
           [init-state field reason]
-          (initial-palaute-state-and-reason
-            jakso hoks opiskeluoikeus existing-heratteet)]
+          (initial-palaute-state-and-reason ctx jakso existing-heratteet)]
       (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
                 "of HOKS" (:id hoks) "will be"
                 (or init-state :ei-luoda-ollenkaan)
                 "because of" reason "in" field)
       (when init-state
         (palaute/upsert-from-data!
-          {:hoks hoks :opiskeluoikeus opiskeluoikeus :tx tx}
+          (assoc ctx :tx tx)
           {:jakso jakso
            :kysely :tyopaikkakysely
            :alkupvm (next-niputus-date (:loppu jakso))
@@ -123,8 +122,8 @@
 (defn initiate-all-uninitiated!
   "Takes a `hoks` and `opiskeluoikeus` and initiates tyoelamapalaute for all
   tyopaikkajaksos in HOKS for which palaute has not been already initiated."
-  [hoks opiskeluoikeus]
-  (run! #(initiate-if-needed! % hoks opiskeluoikeus) (tyopaikkajaksot hoks)))
+  [{:keys [hoks] :as ctx}]
+  (run! #(initiate-if-needed! ctx %) (tyopaikkajaksot hoks)))
 
 (defn- deaccent-string
   "Poistaa diakriittiset merkit stringistä ja palauttaa muokatun stringin."

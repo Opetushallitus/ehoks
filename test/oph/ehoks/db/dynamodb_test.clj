@@ -10,8 +10,7 @@
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.test-utils :as test-utils]
             [taoensso.faraday :as far])
-  (:import
-   (java.time LocalDate)))
+  (:import (java.time LocalDate)))
 
 (use-fixtures :once test-utils/migrate-database)
 (use-fixtures :each test-utils/empty-database-after-test)
@@ -48,11 +47,11 @@
       (oi/add-opiskeluoikeus!
         (:opiskeluoikeus-oid hoks-data)
         (:oppija-oid hoks-data))
-      (let [saved-hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
+      (let [opiskeluoikeus (koski-test/mock-get-opiskeluoikeus-raw
+                             (:opiskeluoikeus-oid hoks-data))
+            saved-hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
                          {:hoks           hoks-data
-                          :opiskeluoikeus
-                          (koski-test/mock-get-opiskeluoikeus-raw
-                            (:opiskeluoikeus-oid hoks-data))})
+                          :opiskeluoikeus opiskeluoikeus})
             hoks (hoks/get-by-id (:id saved-hoks))]
         (is (= (:sahkoposti hoks) "irma.isomerkki@esimerkki.com"))
         (ddb/sync-amis-herate! (:id saved-hoks) "aloittaneet")
@@ -68,8 +67,12 @@
           (far/update-item @ddb/faraday-opts @(ddb/tables :amis) ddb-key
                            {:update-expr "SET lahetystila = :1"
                             :expr-attr-vals {":1" "lahetetty"}})
-          (hoks/update! (:id saved-hoks)
-                        (assoc hoks-data :sahkoposti "foo@bar.com"))
+          (hoks-handler/change-hoks-and-initiate-all-palautteet!
+            {:hoks           (assoc hoks-data
+                                    :id (:id saved-hoks)
+                                    :sahkoposti "foo@bar.com")
+             :opiskeluoikeus opiskeluoikeus}
+            hoks/update!)
           (ddb/sync-amis-herate! (:id saved-hoks) "aloittaneet")
           ; fields that are owned by herätepalvelu are not overwritten
           (let [new-ddb-item

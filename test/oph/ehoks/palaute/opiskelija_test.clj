@@ -117,18 +117,18 @@
     (testing "On HOKS creation"
       (let [ctx {:hoks hoks-test/hoks-1
                  :opiskeluoikeus oo-test/opiskeluoikeus-1}]
-      (testing
-       "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
-        (is (= (op/initial-palaute-state-and-reason ctx :aloituskysely [])
-               [:odottaa-kasittelya :ensikertainen-hyvaksyminen
-                :hoks-tallennettu])))
+        (testing
+         "initiate aloituskysely if `osaamisen-hankkimisen-tarve` is `true`."
+          (is (= (op/initial-palaute-state-and-reason ctx :aloituskysely [])
+                 [:odottaa-kasittelya :ensikertainen-hyvaksyminen
+                  :hoks-tallennettu])))
 
-      (testing
-       (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
-            "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
-        (is (= (op/initial-palaute-state-and-reason ctx :paattokysely [])
-               [:odottaa-kasittelya :osaamisen-saavuttamisen-pvm
-                :hoks-tallennettu])))))))
+        (testing
+         (str "initiate paattokysely if `osaamisen-hankkimisen-tarve` is "
+              "`true` and `osaamisen-saavuttamisen-pvm` is not missing.")
+          (is (= (op/initial-palaute-state-and-reason ctx :paattokysely [])
+                 [:odottaa-kasittelya :osaamisen-saavuttamisen-pvm
+                  :hoks-tallennettu])))))))
 
 (defn expected-msg
   [kysely hoks]
@@ -219,10 +219,11 @@
                                @sqs-msg))
             :aloituskysely
             :paattokysely)
-          (is (= (set (map (juxt :kyselytyyppi :uusi-tila :syy)
-                           (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
-                             db/spec {:hoks-id (:id hoks-test/hoks-1)
-                                      :kyselytyypit op/kyselytyypit})))
+          (is (= (set (map
+                        (juxt :kyselytyyppi :uusi-tila :syy)
+                        (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                          db/spec {:hoks-id      (:id hoks-test/hoks-1)
+                                   :kyselytyypit op/kyselytyypit})))
                  #{["aloittaneet" "odottaa_kasittelya" "hoks_tallennettu"]
                    ["valmistuneet" "odottaa_kasittelya" "hoks_tallennettu"]}))
           (are [kyselytyyppi herate-basis voimassa-alkupvm voimassa-loppupvm]
