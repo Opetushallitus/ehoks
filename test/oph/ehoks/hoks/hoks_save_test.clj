@@ -604,8 +604,6 @@
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!
                     date/now (constantly (LocalDate/of 2018 7 1))]
-        ; (is (true? (test-utils/wait-for
-        ;              (fn [_] (= @sqs-call-counter 2)) 5000)))))))
         (let [opiskeluoikeus oo-test/opiskeluoikeus-1
               hoks-db (hoks-handler/save-hoks-and-initiate-all-palautteet!
                         {:hoks           hoks-osaaminen-saavutettu

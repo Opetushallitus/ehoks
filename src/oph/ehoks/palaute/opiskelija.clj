@@ -2,14 +2,12 @@
   "A namespace for everything related to opiskelijapalaute"
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
-            [medley.core :refer [find-first greatest]]
-            [oph.ehoks.utils :as utils]
+            [medley.core :refer [greatest]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
-            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.utils.date :as date]))
 
@@ -25,15 +23,6 @@
   {"aloittaneet"       "aloittaneet"
    "valmistuneet"      "tutkinnon_suorittaneet"
    "osia_suorittaneet" "tutkinnon_osia_suorittaneet"})
-
-(defn kuuluu-palautteen-kohderyhmaan?
-  "Kuuluuko opiskeluoikeus palautteen kohderyhmään?  Tällä hetkellä
-  vain katsoo, onko kyseessä TELMA-opiskeluoikeus, joka ei ole tutkintoon
-  tähtäävä koulutus (ks. OY-4433).  Muita mahdollisia kriteereitä
-  ovat tulevaisuudessa koulutuksen rahoitus ja muut kriteerit, joista
-  voidaan katsoa, onko koulutus tutkintoon tähtäävä."
-  [opiskeluoikeus]
-  (every? (complement suoritus/telma?) (:suoritukset opiskeluoikeus)))
 
 (defn initial-palaute-state-and-reason
   "Runs several checks against HOKS and opiskeluoikeus to determine if
