@@ -17,9 +17,7 @@
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
-            [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.palaute.opiskelija :as op]
-            [oph.ehoks.palaute.tyoelama :as tep])
+            [oph.ehoks.oppijaindex :as oppijaindex])
   (:import [java.time LocalDate]
            [java.util UUID]))
 
@@ -117,9 +115,6 @@
       (db-hoks/insert-amisherate-kasittelytilat!
         (:id hoks) tuva-hoks conn)
       (save-parts! hoks conn))))
-
-(def ^:private tuva-hoks-msg-template
-  "HOKS `%s` is a TUVA-HOKS or rinnakkainen ammatillinen HOKS.")
 
 (defn update!
   "Päivittää HOKSin ylätason arvoja."
@@ -323,7 +318,8 @@
                     :new-oppija-oid new-oppija-oid})))))))
 
 (defn check
-  "Tekee uuden HOKSin tarkistukset ja tallentaa sen, jos kaikki on OK."
+  "Tekee uuden HOKSin tarkistukset ja nostaa poikkeuksen jos HOKS ei läpäise
+  jotain tarkistuksista."
   [hoks opiskeluoikeus]
   (let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
         oppija-oid         (:oppija-oid hoks)]

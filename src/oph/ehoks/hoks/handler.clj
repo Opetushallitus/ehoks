@@ -309,6 +309,8 @@
         (log/error e "exception in heräte initiation")))))
 
 (defn save-hoks-and-initiate-all-palautteet!
+  "Saves a HOKS to DB and initializes all palautteet (opiskelija & tyoelama)
+  that need to be initialized."
   [{:keys [hoks] :as ctx}]
   (jdbc/with-db-transaction
     [tx db/spec]
@@ -317,6 +319,9 @@
       hoks)))
 
 (defn change-hoks-and-initiate-all-palautteet!
+  "Updates a HOKS in DB with `db-handler` (either update or replace) and
+  initializes all palautteet (opiskelija & tyoelama) that need to be
+  initialized."
   [{:keys [hoks] :as ctx} db-handler]
   (jdbc/with-db-transaction
     [tx db/spec]
