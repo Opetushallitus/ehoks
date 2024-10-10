@@ -1,16 +1,15 @@
 (ns oph.ehoks.palaute.tyoelama
-  (:require [chime.core :as chime]
-            [clojure.tools.logging :as log]
-            [clojure.java.jdbc :as jdbc]
+  (:require [clojure.java.jdbc :as jdbc]
             [clojure.string :as string]
+            [clojure.tools.logging :as log]
             [medley.core :refer [find-first]]
+            [oph.ehoks.utils :as utils]
             [oph.ehoks.db :as db]
-            [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.arvo :as arvo]
-            [oph.ehoks.external.organisaatio :as org]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.organisaatio :as org]
             [oph.ehoks.hoks.common :as c]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
@@ -20,7 +19,6 @@
   (:import (clojure.lang ExceptionInfo)
            (java.text Normalizer Normalizer$Form)
            (java.time LocalDate)
-           (java.lang AutoCloseable)
            (java.util UUID)))
 
 (defn finished-workplace-periods!
@@ -70,12 +68,12 @@
   tyoelamapalaute process should be initiated for jakso. Returns the initial
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [jakso hoks opiskeluoikeus existing-heratteet]
+  [{:keys [hoks opiskeluoikeus jakso] :as ctx} palaute]
   (or
     (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
       :loppu jakso opiskeluoikeus)
     (cond
-      (palaute/already-initiated? existing-heratteet)
+      (palaute/already-initiated? palaute)
       [nil :yksiloiva-tunniste :jo-lahetetty]
 
       (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
@@ -94,38 +92,38 @@
       [:odottaa-kasittelya :loppu :hoks-tallennettu])))
 
 (defn initiate-if-needed!
-  [jakso hoks opiskeluoikeus]
+  [{:keys [hoks] :as ctx} jakso]
   (jdbc/with-db-transaction
     [tx db/spec]
-    (let [existing-heratteet  ; always 0 or 1 herate
-          (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
-            tx
-            {:hoks-id            (:id hoks)
-             :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
-          [init-state field reason]
-          (initial-palaute-state-and-reason
-            jakso hoks opiskeluoikeus existing-heratteet)]
+    (let [ctx     (assoc ctx :jakso jakso :tx tx)
+          palaute {:type      :tyopaikkakysely
+                   :alkupvm   (next-niputus-date (:loppu jakso))
+                   :heratepvm (:loppu jakso)
+                   :existing-heratteet  ; always 0 or 1 herate
+                   (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
+                     tx {:hoks-id            (:id hoks)
+                         :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})}
+          [state field reason]
+          (initial-palaute-state-and-reason ctx palaute)]
       (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
                 "of HOKS" (:id hoks) "will be"
-                (or init-state :ei-luoda-ollenkaan)
+                (or state :ei-luoda-ollenkaan)
                 "because of" reason "in" field)
-      (when init-state
-        (palaute/upsert-from-data!
-          {:jakso jakso :hoks hoks :opiskeluoikeus opiskeluoikeus :tx tx
-           :kysely :tyopaikkakysely
-           :alkupvm (next-niputus-date (:loppu jakso))
-           :heratepvm (:loppu jakso)
-           :initial-state init-state
-           :reason reason
-           :other-info (select-keys (merge jakso hoks) [field])
-           :existing-heratteet existing-heratteet})
-        init-state))))
+      (when state
+        (palaute/upsert!
+          ctx
+          (assoc palaute
+                 :state     state
+                 :tapahtuma {:reason reason
+                             :other-info (select-keys
+                                           (merge jakso hoks) [field])}))
+        state))))
 
 (defn initiate-all-uninitiated!
   "Takes a `hoks` and `opiskeluoikeus` and initiates tyoelamapalaute for all
   tyopaikkajaksos in HOKS for which palaute has not been already initiated."
-  [hoks opiskeluoikeus]
-  (run! #(initiate-if-needed! % hoks opiskeluoikeus) (tyopaikkajaksot hoks)))
+  [{:keys [hoks] :as ctx}]
+  (run! #(initiate-if-needed! ctx %) (tyopaikkajaksot hoks)))
 
 (defn- deaccent-string
   "Poistaa diakriittiset merkit stringistä ja palauttaa muokatun stringin."
@@ -197,7 +195,7 @@
         (or (throw (ex-info "palaute not found" query)))
         (add-keys opiskeluoikeus request-id tunnus)
         (dissoc :internal-kyselytyyppi :jakson-yksiloiva-tunniste)
-        (db-helpers/remove-nils)
+        (utils/remove-nils)
         (ddb/sync-jakso-herate!))))
 
 (defn save-arvo-tunniste!
@@ -210,8 +208,7 @@
      :vanha-tila      (:tila tep-palaute)
      :uusi-tila       "vastaajatunnus_muodostettu"
      :tapahtumatyyppi "arvo_luonti"
-     :syy             (db-helpers/to-underscore-str
-                        :vastaajatunnus-muodostettu)
+     :syy             (utils/to-underscore-str :vastaajatunnus-muodostettu)
      :lisatiedot      lisatiedot}))
 
 (defn create-and-save-arvo-vastaajatunnus!

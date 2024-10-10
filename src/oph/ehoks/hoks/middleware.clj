@@ -20,7 +20,7 @@
     (let [ticket-user (:service-ticket-user request)
           privilege   (get rest-method->privilege-type
                            (:request-method request))]
-      (when-not (user/has-privilege-to-hoks? hoks ticket-user privilege)
+      (when-not (user/has-privilege-to-hoks?! hoks ticket-user privilege)
         (log/warnf "User %s has no access to hoks %d with opiskeluoikeus %s"
                    (:username ticket-user)
                    (:id hoks)
@@ -29,7 +29,7 @@
           {:error (str "No access is allowed. Check Opintopolku privileges and "
                        "'opiskeluoikeus'")})))))
 
-(defn wrap-hoks-access
+(defn wrap-hoks-access!
   "Wrap with hoks access"
   [handler]
   (fn
@@ -40,7 +40,7 @@
                              (:request-method request))]
         (if (nil? hoks)
           (respond (response/not-found {:error "HOKS not found"}))
-          (if (user/has-privilege-to-hoks? hoks ticket-user privilege)
+          (if (user/has-privilege-to-hoks?! hoks ticket-user privilege)
             (handler request respond raise)
             (do
               (log/warnf
@@ -59,7 +59,7 @@
                              (:request-method request))]
         (if (nil? hoks)
           (response/not-found {:error "HOKS not found"})
-          (if (user/has-privilege-to-hoks? hoks ticket-user privilege)
+          (if (user/has-privilege-to-hoks?! hoks ticket-user privilege)
             (handler request)
             (do
               (log/warnf

@@ -136,7 +136,8 @@
    "changes"
    [{"path" ""
      "newValue"
-     {"ensikertainen-hyvaksyminen" "2019-03-18"
+     {"id" 1
+      "ensikertainen-hyvaksyminen" "2019-03-18"
       "osaamisen-hankkimisen-tarve" false
       "opiskeluoikeus-oid" "1.2.246.562.15.10000000009"
       "oppija-oid" "1.2.246.562.24.12312312319"}}]

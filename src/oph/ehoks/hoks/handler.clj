@@ -1,26 +1,29 @@
 (ns oph.ehoks.hoks.handler
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.java.jdbc :as jdbc]
+            [clojure.tools.logging :as log]
             [compojure.api.core :refer [route-middleware]]
-            [ring.util.http-response :as response]
             [compojure.api.sweet :as c-api]
+            [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.postgresql.common :refer [select-kyselylinkki]]
             [oph.ehoks.db.postgresql.opiskeluvalmiuksia-tukevat :as pdb-ot]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.aiemmin-hankitut :as ah]
             [oph.ehoks.hoks.hankittavat :as ha]
-            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
-            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.hoks.vipunen-schema :as hoks-schema-vipunen]
             [oph.ehoks.logging.audit :as audit]
-            [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus
-                                          wrap-user-details]]
+            [oph.ehoks.middleware :as mw]
             [oph.ehoks.oppijaindex :as oppijaindex]
+            [oph.ehoks.palaute.opiskelija :as op]
+            [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
+            [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.restful :as rest]
             [oph.ehoks.schema :as schema]
             [oph.ehoks.schema.oid :as oid-schema]
+            [ring.util.http-response :as response]
             [schema.core :as s]))
 
 (def ^:private hankittava-paikallinen-tutkinnon-osa
@@ -284,28 +287,71 @@
                (pdb-ot/select-opiskeluvalmiuksia-tukevat-opinnot-by-id id)}))
         (response/not-found {:error "OTO not found with given OTO ID"})))))
 
-(defn- post-hoks!
-  "Käsittelee HOKS-luontipyynnön."
-  [hoks request]
-  (oppijaindex/add-hoks-dependents-in-index! hoks)
-  (m/check-hoks-access! hoks request)
-  (let [hoks-db   (hoks/check-and-save! hoks)
-        resp-body {:uri (format "%s/%d" (:uri request) (:id hoks-db))}]
-    (-> resp-body
-        (rest/ok :id (:id hoks-db))
-        (assoc ::audit/changes {:new hoks}
-               ::audit/target  (audit/hoks-target-data hoks-db)))))
+(def ^:private tuva-hoks-msg-template
+  "HOKS `%s` is a TUVA-HOKS or rinnakkainen ammatillinen HOKS.")
 
-(defn- change-hoks!
+(defn- initiate-all-palautteet!
+  [{:keys [hoks] :as ctx}]
+  (if (hoks/tuva-related? hoks)
+    (db-hoks/set-amisherate-kasittelytilat-to-true!
+      (:id hoks) (format tuva-hoks-msg-template (:id hoks)))
+    (try
+      (op/initiate-if-needed! ctx :aloituskysely)
+      (op/initiate-if-needed! ctx :paattokysely)
+      (tep/initiate-all-uninitiated! ctx)
+      (catch clojure.lang.ExceptionInfo e
+        (if (= :organisaatio/organisation-not-found (:type (ex-data e)))
+          (throw (ex-info (str "HOKS contains an unknown organisation"
+                               (:organisation-oid (ex-data e)))
+                          (assoc (ex-data e) :type ::disallowed-update)))
+          (log/error e "exception in heräte initiation with" (ex-data e))))
+      (catch Exception e
+        (log/error e "exception in heräte initiation")))))
+
+(defn save-hoks-and-initiate-all-palautteet!
+  "Saves a HOKS to DB and initializes all palautteet (opiskelija & tyoelama)
+  that need to be initialized."
+  [{:keys [hoks] :as ctx}]
+  (jdbc/with-db-transaction
+    [tx db/spec]
+    (let [hoks (assoc hoks :id (:id (hoks/save! hoks)))]
+      (initiate-all-palautteet! (assoc ctx :hoks hoks :tx tx))
+      hoks)))
+
+(defn change-hoks-and-initiate-all-palautteet!
+  "Updates a HOKS in DB with `db-handler` (either update or replace) and
+  initializes all palautteet (opiskelija & tyoelama) that need to be
+  initialized."
+  [{:keys [hoks] :as ctx} db-handler]
+  (jdbc/with-db-transaction
+    [tx db/spec]
+    (let [updated-hoks (db-handler hoks)]
+      (initiate-all-palautteet! (assoc ctx :hoks updated-hoks :tx tx))
+      updated-hoks)))
+
+(defn post-hoks!
+  "Käsittelee HOKS-luontipyynnön."
+  [{:keys [request hoks opiskeluoikeus] :as ctx} check-privileges]
+  (oppijaindex/add-hoks-dependents-in-index! hoks)
+  (check-privileges hoks request)
+  (hoks/check hoks opiskeluoikeus)
+  (let [hoks (save-hoks-and-initiate-all-palautteet! ctx)]
+    (-> {:uri (format "%s/%d" (:uri request) (:id hoks))}
+        (rest/ok :id (:id hoks))
+        (assoc ::audit/changes {:new hoks}
+               ::audit/target  (audit/hoks-target-data hoks)))))
+
+(defn change-hoks!
   "Käsittelee HOKS-muutospyynnön."
-  [hoks request db-handler]
+  [{:keys [request hoks opiskeluoikeus] :as ctx} db-handler]
   (let [old-hoks (if (= (:request-method request) :put)
                    (hoks/get-values (:hoks request))
                    (:hoks request))]
     (if (empty? old-hoks)
       (response/not-found {:error "HOKS not found with given HOKS ID"})
-      (do (hoks/check-for-update! old-hoks hoks)
-          (let [new-hoks (db-handler (get-in request [:hoks :id]) hoks)]
+      (do (hoks/check-for-update! old-hoks hoks opiskeluoikeus)
+          (let [new-hoks (change-hoks-and-initiate-all-palautteet!
+                           ctx db-handler)]
             (hoks/handle-oppija-oid-changes-in-indexes! new-hoks old-hoks)
             (assoc (response/no-content)
                    ::audit/changes {:old old-hoks :new new-hoks}))))))
@@ -318,9 +364,9 @@
                     caller-id :- s/Str]
 
     (route-middleware
-      [wrap-user-details
+      [mw/wrap-user-details
        m/wrap-require-service-user
-       wrap-hoks
+       mw/wrap-hoks
        audit/wrap-logger]
 
       (c-api/GET "/opiskeluoikeus/:opiskeluoikeus-oid" request
@@ -412,32 +458,41 @@
             ::audit/target {:kyselylinkki (:kyselylinkki data)})))
 
       (c-api/POST "/" [:as request]
-        :middleware [wrap-opiskeluoikeus]
+        :middleware [mw/wrap-opiskeluoikeus]
         :summary "Luo uuden HOKSin"
         :body [hoks hoks-schema/HOKSLuonti]
         :return (rest/response schema/POSTResponse :id s/Int)
-        (post-hoks! hoks request))
+        (post-hoks! {:request        request
+                     :hoks           hoks
+                     :opiskeluoikeus (mw/get-current-opiskeluoikeus)}
+                    m/check-hoks-access!))
 
       (c-api/GET "/:hoks-id" request
-        :middleware [m/wrap-hoks-access]
+        :middleware [m/wrap-hoks-access!]
         :summary "Palauttaa HOKSin"
         :return (rest/response hoks-schema/HOKS)
         (rest/ok (hoks/get-values (:hoks request))))
 
       (c-api/context "/:hoks-id" []
         (route-middleware
-          [m/wrap-hoks-access wrap-opiskeluoikeus]
+          [m/wrap-hoks-access! mw/wrap-opiskeluoikeus]
 
           (c-api/PATCH "/" request
             :summary
             "Päivittää olemassa olevan HOKSin ylätason arvoa tai arvoja"
             :body [hoks hoks-schema/HOKSPaivitys]
-            (change-hoks! hoks request hoks/update!))
+            (change-hoks! {:request        request
+                           :hoks           hoks
+                           :opiskeluoikeus (mw/get-current-opiskeluoikeus)}
+                          hoks/update!))
 
           (c-api/PUT "/" request
             :summary "Ylikirjoittaa olemassa olevan HOKSin arvon tai arvot"
             :body [hoks hoks-schema/HOKSKorvaus]
-            (change-hoks! hoks request hoks/replace!))
+            (change-hoks! {:request        request
+                           :hoks           hoks
+                           :opiskeluoikeus (mw/get-current-opiskeluoikeus)}
+                          hoks/replace!))
 
           (c-api/GET "/hankintakoulutukset" request
             :summary "Palauttaa hoksin hankintakoulutus opiskeluoikeus-oidit"

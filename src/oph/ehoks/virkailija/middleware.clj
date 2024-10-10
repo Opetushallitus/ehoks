@@ -56,7 +56,7 @@
   (let [hoks (db-hoks/select-hoks-by-id
                (Integer/parseInt (get-in request [:params :hoks-id])))
         user (get-in request [:session :virkailija-user])]
-    (when-not (user/has-privilege-to-hoks? hoks user :write)
+    (when-not (user/has-privilege-to-hoks?! hoks user :write)
       (log/warnf
         "User %s privileges do not match opiskeluoikeus
                                 %s of oppija %s"

@@ -8,7 +8,7 @@
             [compojure.route :as compojure-route]
             [oph.ehoks.common.api :as common-api]
             [oph.ehoks.common.schema :as common-schema]
-            [oph.ehoks.common.utils :refer [apply-when]]
+            [oph.ehoks.utils :refer [apply-when]]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
             [oph.ehoks.db.postgresql.common :as pc]
@@ -23,7 +23,8 @@
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.logging.audit :as audit]
-            [oph.ehoks.middleware :refer [wrap-hoks wrap-opiskeluoikeus]]
+            [oph.ehoks.middleware :refer [get-current-opiskeluoikeus
+                                          wrap-hoks wrap-opiskeluoikeus]]
             [oph.ehoks.misc.handler :as misc-handler]
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
@@ -89,11 +90,11 @@
         ::audit/target {:oppilaitos-oid oppilaitos-oid
                         :hoks-id hoks-id}))))
 
-(defn- check-virkailija-privileges
+(defn- check-virkailija-privileges!
   "Check whether virkailija user has write privileges in HOKS"
   [hoks request]
   (let [user (get-in request [:session :virkailija-user])]
-    (when-not (user/has-privilege-to-hoks? hoks user :write)
+    (when-not (user/has-privilege-to-hoks?! hoks user :write)
       (log/warnf "User %s privileges don't match oppija %s"
                  (get-in request [:session
                                   :virkailija-user
@@ -102,19 +103,6 @@
       (response/forbidden!
         {:error
          (str "User has unsufficient privileges")}))))
-
-(defn- post-hoks!
-  "Add new HOKS for oppija"
-  [hoks request]
-  (oi/add-hoks-dependents-in-index! hoks)
-  (check-virkailija-privileges hoks request)
-  (let [hoks-db (-> (hoks/add-missing-oht-yksiloiva-tunniste hoks)
-                    (assoc :manuaalisyotto true)
-                    (hoks/check-and-save!))]
-    (-> {:uri (format "%s/%d" (:uri request) (:id hoks-db))}
-        (restful/ok :id (:id hoks-db))
-        (assoc ::audit/changes {:new hoks}
-               ::audit/target  (audit/hoks-target-data hoks-db)))))
 
 (defn- any-hoks-has-active-opiskeluoikeus?
   "Check if any of the HOKSes has an active opiskeluoikeus"
@@ -127,7 +115,7 @@
   [oppija-oid ticket-user]
   (if-let [hoksit (db-hoks/select-hoks-by-oppija-oid oppija-oid)]
     (let [virkailijan-oppilaitosten-hoksit
-          (filter #(user/has-privilege-to-hoks? % ticket-user :read)
+          (filter #(user/has-privilege-to-hoks?! % ticket-user :read)
                   hoksit)
           visible-hoksit (if (any-hoks-has-active-opiskeluoikeus?
                                virkailijan-oppilaitosten-hoksit)
@@ -185,19 +173,6 @@
                            :oidHenkilo])
           (get-in request [:params :oppija-oid]))
         (response/forbidden {:error "User has insufficient privileges"})))))
-
-(defn- change-hoks!
-  "Change contents of HOKS with particular ID"
-  [hoks request db-handler]
-  (let [old-hoks (if (= (:request-method request) :put)
-                   (hoks/get-values (:hoks request))
-                   (:hoks request))]
-    (hoks/check-for-update! old-hoks hoks)
-    (let [new-hoks (db-handler (:id (:hoks request))
-                               (hoks/add-missing-oht-yksiloiva-tunniste hoks))]
-      (hoks/handle-oppija-oid-changes-in-indexes! new-hoks old-hoks)
-      (assoc (response/no-content)
-             ::audit/changes {:old old-hoks :new new-hoks}))))
 
 (defn- update-kyselylinkki-status!
   "Takes a `linkki-info` map, fetches the latest kyselylinkki status from Arvo
@@ -550,7 +525,13 @@
                                     "HOKSLuonti-virkailija" :post-virkailija
                                     "HOKS-dokumentin luonti")]
                       :return (restful/response schema/POSTResponse :id s/Int)
-                      (post-hoks! hoks request))
+                      (hoks-handler/post-hoks!
+                        {:request request
+                         :hoks    (-> hoks
+                                      hoks/add-missing-oht-yksiloiva-tunniste
+                                      (assoc :manuaalisyotto true))
+                         :opiskeluoikeus (get-current-opiskeluoikeus)}
+                        check-virkailija-privileges!))
 
                     (route-middleware
                       [m/wrap-virkailija-oppija-access]
@@ -650,7 +631,12 @@
                                    (hoks-schema/generate-hoks-schema
                                      "HOKSKorvaus-virkailija" :put-virkailija
                                      "HOKS-dokumentin korvaus")]
-                            (change-hoks! hoks-values request hoks/replace!))
+                            (hoks-handler/change-hoks!
+                              {:request request
+                               :hoks    (hoks/add-missing-oht-yksiloiva-tunniste
+                                          hoks-values)
+                               :opiskeluoikeus (get-current-opiskeluoikeus)}
+                              hoks/replace!))
 
                           (c-api/PATCH "/" request
                             :body [hoks-values
@@ -658,7 +644,12 @@
                                      "HOKSPaivitys-virkailija" :patch-virkailija
                                      "HOKS-dokumentin päivitys")]
                             :summary "Oppijan hoksin päätason arvojen päivitys"
-                            (change-hoks! hoks-values request hoks/update!))))
+                            (hoks-handler/change-hoks!
+                              {:request request
+                               :hoks    (hoks/add-missing-oht-yksiloiva-tunniste
+                                          hoks-values)
+                               :opiskeluoikeus (get-current-opiskeluoikeus)}
+                              hoks/update!))))
 
                       (c-api/context "/:hoks-id" []
                         :path-params [hoks-id :- s/Int]

@@ -3,6 +3,7 @@
             [clojure.set :refer [rename-keys]]
             [clojure.tools.logging :as log]
             [clojure.walk :as walk]
+            [oph.ehoks.config :refer [config]]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.opiskeluoikeus :as db-oo]
@@ -16,9 +17,7 @@
             [oph.ehoks.hoks.hankittavat :as ha]
             [oph.ehoks.hoks.opiskeluvalmiuksia-tukevat :as ot]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
-            [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.palaute.opiskelija :as op]
-            [oph.ehoks.palaute.tyoelama :as tep])
+            [oph.ehoks.oppijaindex :as oppijaindex])
   (:import [java.time LocalDate]
            [java.util UUID]))
 
@@ -109,50 +108,21 @@
 (defn save!
   "Tallentaa yhden HOKSin arvot tietokantaan."
   [hoks]
-  (let [hoks-db       (jdbc/with-db-transaction
-                        [conn (db-ops/get-db-connection)]
-                        (let [hoks (merge hoks (db-hoks/insert-hoks! hoks conn))
-                              tuva-hoks (tuva-related? hoks)]
-                          (db-hoks/insert-amisherate-kasittelytilat!
-                            (:id hoks) tuva-hoks conn)
-                          (save-parts! hoks conn)))
-        hoks           (assoc hoks :id (:id hoks-db))
-        opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                         (:opiskeluoikeus-oid hoks))]
-    (try
-      (op/initiate-if-needed! :aloituskysely hoks)
-      (op/initiate-if-needed! :paattokysely hoks)
-      (tep/initiate-all-uninitiated! hoks opiskeluoikeus)
-      (catch clojure.lang.ExceptionInfo e
-        (if (= :organisaatio/organisation-not-found (:type (ex-data e)))
-          (throw (ex-info (str "HOKS contains an unknown organisation"
-                               (:organisation-oid (ex-data e)))
-                          (assoc (ex-data e) :type ::disallowed-update)))
-          (log/error e "exception in heräte initiation with" (ex-data e))))
-      (catch Exception e
-        (log/error e "exception in heräte initiation")))
-    hoks-db))
-
-(def ^:private tuva-hoks-msg-template
-  "HOKS `%s` is a TUVA-HOKS or rinnakkainen ammatillinen HOKS.")
+  (jdbc/with-db-transaction
+    [conn (db-ops/get-db-connection)]
+    (let [hoks (merge hoks (db-hoks/insert-hoks! hoks conn))
+          tuva-hoks (tuva-related? hoks)]
+      (db-hoks/insert-amisherate-kasittelytilat!
+        (:id hoks) tuva-hoks conn)
+      (save-parts! hoks conn))))
 
 (defn update!
   "Päivittää HOKSin ylätason arvoja."
-  [hoks-id new-values]
-  (let [current-hoks (db-hoks/select-hoks-by-id hoks-id)]
+  [hoks]
+  (let [hoks-id (:id hoks)]
     (jdbc/with-db-transaction
       [db-conn (db-ops/get-db-connection)]
-      (db-hoks/update-hoks-by-id! hoks-id new-values db-conn)
-      (let [updated-hoks (merge current-hoks new-values)
-            opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                             (:opiskeluoikeus-oid updated-hoks))]
-        (if (tuva-related? updated-hoks)
-          (db-hoks/set-amisherate-kasittelytilat-to-true!
-            hoks-id (format tuva-hoks-msg-template (:id updated-hoks)))
-          (do
-            (op/initiate-if-needed! :aloituskysely updated-hoks)
-            (op/initiate-if-needed! :paattokysely updated-hoks)
-            (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))))
+      (db-hoks/update-hoks-by-id! hoks-id hoks db-conn))
     (db-hoks/select-hoks-by-id hoks-id)))
 
 (defn- merge-not-given-hoks-values
@@ -286,22 +256,12 @@
 
 (defn replace!
   "Korvaa kokonaisen HOKSin (ml. tutkinnon osat) annetuilla arvoilla."
-  [hoks-id new-values]
+  [hoks]
   (jdbc/with-db-transaction
     [db-conn (db-ops/get-db-connection)]
-    (replace-main-hoks! hoks-id new-values db-conn)
-    (replace-parts! (assoc new-values :id hoks-id) db-conn))
-  (let [updated-hoks   (get-by-id hoks-id)
-        opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                         (:opiskeluoikeus-oid updated-hoks))]
-    (if (tuva-related? updated-hoks)
-      (db-hoks/set-amisherate-kasittelytilat-to-true!
-        hoks-id (format tuva-hoks-msg-template (:id updated-hoks)))
-      (do
-        (op/initiate-if-needed! :aloituskysely updated-hoks)
-        (op/initiate-if-needed! :paattokysely updated-hoks)
-        (tep/initiate-all-uninitiated! updated-hoks opiskeluoikeus)))
-    updated-hoks))
+    (replace-main-hoks! (:id hoks) hoks db-conn)
+    (replace-parts! hoks db-conn))
+  (get-by-id (:id hoks)))
 
 (defn- oppija-oid-changed?
   [new-oppija-oid old-oppija-oid]
@@ -319,12 +279,12 @@
 
 (defn check-for-update!
   "Tarkistaa, saako HOKSin päivittää uusilla arvoilla."
-  [old-hoks new-hoks]
+  [old-hoks new-hoks opiskeluoikeus]
   (let [new-oppija-oid (:oppija-oid new-hoks)
         old-oppija-oid (:oppija-oid old-hoks)
         new-opiskeluoikeus-oid (:opiskeluoikeus-oid new-hoks)
         old-opiskeluoikeus-oid (:opiskeluoikeus-oid old-hoks)]
-    (when-not (opiskeluoikeus/still-active? new-opiskeluoikeus-oid)
+    (when-not (opiskeluoikeus/still-active? opiskeluoikeus)
       (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active."
                               new-opiskeluoikeus-oid)
                       {:type               ::disallowed-update
@@ -357,14 +317,13 @@
                     :old-oppija-oid old-oppija-oid
                     :new-oppija-oid new-oppija-oid})))))))
 
-(defn check-and-save!
-  "Tekee uuden HOKSin tarkistukset ja tallentaa sen, jos kaikki on OK."
-  [hoks]
+(defn check
+  "Tekee uuden HOKSin tarkistukset ja nostaa poikkeuksen jos HOKS ei läpäise
+  jotain tarkistuksista."
+  [hoks opiskeluoikeus]
   (let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-        oppija-oid         (:oppija-oid hoks)
-        opiskeluoikeudet (koski/fetch-opiskeluoikeudet-by-oppija-id oppija-oid)]
-    (when-not (oppijaindex/oppija-opiskeluoikeus-match? opiskeluoikeudet
-                                                        opiskeluoikeus-oid)
+        oppija-oid         (:oppija-oid hoks)]
+    (when (and (nil? opiskeluoikeus) (:enforce-opiskeluoikeus-match? config))
       (-> (format "Opiskeluoikeus `%s` does not match any held by oppija `%s`"
                   opiskeluoikeus-oid
                   oppija-oid)
@@ -372,12 +331,11 @@
                     :opiskeluoikeus-oid opiskeluoikeus-oid
                     :oppija-oid         oppija-oid})
           throw))
-    (when-not (opiskeluoikeus/still-active? hoks opiskeluoikeudet)
+    (when-not (opiskeluoikeus/still-active? opiskeluoikeus)
       (throw (ex-info (format "Opiskeluoikeus `%s` is no longer active"
                               opiskeluoikeus-oid)
                       {:type               ::disallowed-update
-                       :opiskeluoikeus-oid opiskeluoikeus-oid})))
-    (save! hoks)))
+                       :opiskeluoikeus-oid opiskeluoikeus-oid})))))
 
 (defn get-with-hankittavat-koulutuksen-osat!
   [hoks-id]

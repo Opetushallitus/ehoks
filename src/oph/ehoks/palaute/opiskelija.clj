@@ -2,15 +2,12 @@
   "A namespace for everything related to opiskelijapalaute"
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
-            [medley.core :refer [find-first greatest]]
+            [medley.core :refer [greatest]]
             [oph.ehoks.db :as db]
-            [oph.ehoks.db.db-operations.db-helpers :as db-ops]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
-            [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
-            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.utils.date :as date]))
 
@@ -27,25 +24,18 @@
    "valmistuneet"      "tutkinnon_suorittaneet"
    "osia_suorittaneet" "tutkinnon_osia_suorittaneet"})
 
-(defn- added?
-  [field current-hoks updated-hoks]
-  (and (some? current-hoks)
-       (not (get current-hoks field))
-       (some? (get updated-hoks field))))
-
 (defn initial-palaute-state-and-reason
   "Runs several checks against HOKS and opiskeluoikeus to determine if
   opiskelijapalautekysely should be initiated.  Returns the initial state
   of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [kysely hoks opiskeluoikeus existing-heratteet]
-  (let [herate-basis (herate-date-basis kysely)
-        herate-date (get hoks herate-basis)]
+  [{:keys [hoks opiskeluoikeus] :as ctx} {:keys [type] :as palaute}]
+  (let [herate-basis (herate-date-basis type)]
     (or
       (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
         herate-basis hoks opiskeluoikeus)
       (cond
-        (palaute/already-initiated? existing-heratteet)
+        (palaute/already-initiated? palaute)
         [nil :id :jo-lahetetty]
 
         (not (:osaamisen-hankkimisen-tarve hoks))
@@ -62,15 +52,15 @@
    :paattokysely :paattoherate_kasitelty})
 
 (defn existing-heratteet!
-  [kysely hoks koulutustoimija tx]
-  (let [rahoituskausi
-        (palaute/rahoituskausi (get hoks (herate-date-basis kysely)))
-        kyselytyypit (case kysely
-                       :aloituskysely ["aloittaneet"]
-                       :paattokysely  (vec paattokyselyt))
-        params {:kyselytyypit     kyselytyypit
-                :oppija-oid       (:oppija-oid hoks)
-                :koulutustoimija  koulutustoimija}]
+  [{:keys [tx hoks koulutustoimija] :as ctx} kysely-type]
+  (let [rahoituskausi (palaute/rahoituskausi
+                        (get hoks (herate-date-basis kysely-type)))
+        kyselytyypit  (case kysely-type
+                        :aloituskysely ["aloittaneet"]
+                        :paattokysely  (vec paattokyselyt))
+        params        {:kyselytyypit     kyselytyypit
+                       :oppija-oid       (:oppija-oid hoks)
+                       :koulutustoimija  koulutustoimija}]
     (filter
       #(= rahoituskausi (palaute/rahoituskausi (:heratepvm %)))
       (palaute/get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params))))
@@ -88,30 +78,27 @@
               functionality to resend heratteet to Herätepalvelu wouldn't work.
               This should be removed once Herätepalvelu functionality has been
               fully migrated to eHOKS."
-  [kysely hoks opiskeluoikeus koulutustoimija tx
-   {:keys [initial-state] :or {initial-state :odottaa-kasittelya} :as options}]
-  {:pre [(#{:aloituskysely :paattokysely} kysely)]}
-
-  (let [target-kasittelytila (not= initial-state :odottaa-kasittelya)
+  [{:keys [tx hoks opiskeluoikeus] :as ctx}
+   {:keys [type state] :or {state :odottaa-kasittelya} :as palaute}]
+  {:pre [(#{:aloituskysely :paattokysely} type)]}
+  (let [target-kasittelytila (not= state :odottaa-kasittelya)
         amisherate-kasittelytila
         (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id! (:id hoks))]
     (db-hoks/update-amisherate-kasittelytilat!
-      {:id (:id amisherate-kasittelytila)
-       (kysely-kasittely-field-mapping kysely) target-kasittelytila}))
+      tx {:id (:id amisherate-kasittelytila)
+          (kysely-kasittely-field-mapping type) target-kasittelytila}))
 
-  (let [heratepvm (get hoks (herate-date-basis kysely))]
-    (palaute/upsert-from-data!
-      (merge options {:hoks hoks :opiskeluoikeus opiskeluoikeus :tx tx
-                      :koulutustoimija koulutustoimija
-                      :kysely kysely :heratepvm heratepvm
-                      :alkupvm (greatest heratepvm (date/now))}))
-
-    (when (= :odottaa-kasittelya initial-state)
-      (log/info "Making" kysely "heräte for HOKS" (:id hoks))
+  (let [heratepvm (get hoks (herate-date-basis type))]
+    (palaute/upsert!
+      ctx (assoc palaute
+                 :heratepvm heratepvm
+                 :alkupvm   (greatest heratepvm (date/now))))
+    (when (= :odottaa-kasittelya state)
+      (log/info "Making" type "heräte for HOKS" (:id hoks))
       (sqs/send-amis-palaute-message
         {:ehoks-id           (:id hoks)
          :kyselytyyppi       (translate-kyselytyyppi
-                               (palaute/kyselytyyppi kysely opiskeluoikeus))
+                               (palaute/kyselytyyppi palaute opiskeluoikeus))
          :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
          :oppija-oid         (:oppija-oid hoks)
          :sahkoposti         (:sahkoposti hoks)
@@ -130,31 +117,27 @@
               functionality to resend heratteet to Herätepalvelu wouldn't work.
               This should be removed once Herätepalvelu functionality has been
               fully migrated to eHOKS."
-  ([kysely hoks] (initiate-if-needed! kysely hoks nil))
-  ([kysely hoks opts]
+  ([ctx kysely-type] (initiate-if-needed! ctx kysely-type nil))
+  ([{:keys [hoks opiskeluoikeus] :as ctx} kysely-type opts]
     (jdbc/with-db-transaction
       [tx db/spec]
-      (let [opiskeluoikeus
-            (koski/get-opiskeluoikeus! (:opiskeluoikeus-oid hoks))
-            koulutustoimija
-            (when opiskeluoikeus (palaute/koulutustoimija-oid! opiskeluoikeus))
-            existing-heratteet
-            (existing-heratteet! kysely hoks koulutustoimija tx)
-            [init-state field reason]
-            (initial-palaute-state-and-reason
-              kysely hoks opiskeluoikeus
-              (when-not (:resend? opts) existing-heratteet))]
-        (log/info "Initial state for" kysely "for HOKS" (:id hoks)
-                  "will be" (or init-state :ei-luoda-ollenkaan)
+      (let [ctx     (assoc ctx
+                           :tx              tx
+                           :koulutustoimija (palaute/koulutustoimija-oid!
+                                              opiskeluoikeus))
+            palaute {:type kysely-type
+                     :existing-heratteet
+                     (when-not (:resend? opts)
+                       (existing-heratteet! ctx kysely-type))}
+            [state field reason] (initial-palaute-state-and-reason ctx palaute)
+            tapahtuma {:reason     reason
+                       :other-info (select-keys hoks [field])}]
+        (log/info "Initial state for" type "for HOKS" (:id hoks)
+                  "will be" (or state :ei-luoda-ollenkaan)
                   "because of" reason "in" field)
-        (when init-state
-          (initiate! kysely hoks opiskeluoikeus koulutustoimija tx
-                     (assoc opts
-                            :initial-state init-state
-                            :reason reason
-                            :other-info (select-keys hoks [field])
-                            :existing-heratteet existing-heratteet)))
-        init-state))))
+        (when state
+          (initiate! ctx (assoc palaute :state state :tapahtuma tapahtuma)))
+        state))))
 
 (defn initiate-every-needed!
   "Effectively the same as running `initiate-if-needed!` for multiple HOKSes,
@@ -167,7 +150,13 @@
               functionality to resend heratteet to Herätepalvelu wouldn't work.
               This should be removed once Herätepalvelu functionality has been
               fully migrated to eHOKS."
-  ([kysely hoksit] (initiate-every-needed! kysely hoksit nil))
-  ([kysely hoksit opts]
+  ([kysely-type hoksit] (initiate-every-needed! kysely-type hoksit nil))
+  ([kysely-type hoksit opts]
     (count (filter #(= :odottaa-kasittelya
-                       (initiate-if-needed! kysely % opts)) hoksit))))
+                       (initiate-if-needed!
+                         {:hoks           %
+                          :opiskeluoikeus (koski/get-opiskeluoikeus!
+                                            (:opiskeluoikeus-oid %))}
+                         kysely-type
+                         opts))
+                   hoksit))))

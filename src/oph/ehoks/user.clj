@@ -83,7 +83,7 @@
          (reduce into)
          not-empty)))
 
-(defn has-privilege-to-hoks?
+(defn has-privilege-to-hoks?!
   "Returns `true` if user has a specified `privilege` to hoks."
   [hoks ticket-user privilege]
   (some-> (hoks/get-oppilaitos! hoks)

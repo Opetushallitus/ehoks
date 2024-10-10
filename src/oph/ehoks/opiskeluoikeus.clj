@@ -37,17 +37,10 @@
   eronnut, katsotaaneronneeksi.
   Alternatively checks from the list of all opiskeluoikeudet held by the oppija
   that the opiskeluoikeus associated with the hoks is still valid."
-  ([opiskeluoikeus-oid]
-    (if (:prevent-finished-opiskeluoikeus-updates? config)
-      (active? (koski/get-existing-opiskeluoikeus! opiskeluoikeus-oid))
-      true))
-  ([hoks opiskeluoikeudet]
-    (if (:prevent-finished-opiskeluoikeus-updates? config)
-      (let [opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)]
-        (some->> opiskeluoikeudet
-                 (find-first #(= (:oid %) opiskeluoikeus-oid))
-                 active?))
-      true)))
+  [opiskeluoikeus]
+  (if (:prevent-finished-opiskeluoikeus-updates? config)
+    (active? opiskeluoikeus)
+    true))
 
 (defn string-leq?
   "Is s1 lexicographically less than or equal to s2?"
