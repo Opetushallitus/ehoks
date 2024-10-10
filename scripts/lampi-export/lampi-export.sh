@@ -4,10 +4,20 @@ export_log_file="export.log"
 lampi_manifest_file="manifest.json"
 echo "{}" > $lampi_manifest_file
 local_s3_bucket="ehoks-export-$ENV_NAME"
-lampi_s3_bucket="oph-lampi-$ENV_NAME"
 system_name="ehoks"
 version="v2" # vanha koko kannan dumppina vievä siirto on v1
 reporting_schema_name="reporting"
+
+case $ENV_NAME in
+  "sade")
+    lampi_s3_bucket="oph-lampi-prod"
+    ;;
+  "pallero")
+    lampi_s3_bucket="oph-lampi-qa"
+    ;;
+  *)
+    lampi_s3_bucket="oph-lampi-dev"
+esac
 
 dump_and_upload_db_to_lampi() {
     local -r db_hostname="$1"
