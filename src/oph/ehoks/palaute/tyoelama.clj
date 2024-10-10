@@ -68,12 +68,12 @@
   tyoelamapalaute process should be initiated for jakso. Returns the initial
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [{:keys [hoks opiskeluoikeus]} jakso existing-heratteet]
+  [{:keys [hoks opiskeluoikeus jakso] :as ctx} palaute]
   (or
     (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
       :loppu jakso opiskeluoikeus)
     (cond
-      (palaute/already-initiated? existing-heratteet)
+      (palaute/already-initiated? palaute)
       [nil :yksiloiva-tunniste :jo-lahetetty]
 
       (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
@@ -95,29 +95,29 @@
   [{:keys [hoks] :as ctx} jakso]
   (jdbc/with-db-transaction
     [tx db/spec]
-    (let [existing-heratteet  ; always 0 or 1 herate
-          (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
-            tx
-            {:hoks-id            (:id hoks)
-             :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
-          [init-state field reason]
-          (initial-palaute-state-and-reason ctx jakso existing-heratteet)]
+    (let [ctx     (assoc ctx :jakso jakso :tx tx)
+          palaute {:type      :tyopaikkakysely
+                   :alkupvm   (next-niputus-date (:loppu jakso))
+                   :heratepvm (:loppu jakso)
+                   :existing-heratteet  ; always 0 or 1 herate
+                   (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
+                     tx {:hoks-id            (:id hoks)
+                         :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})}
+          [state field reason]
+          (initial-palaute-state-and-reason ctx palaute)]
       (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
                 "of HOKS" (:id hoks) "will be"
-                (or init-state :ei-luoda-ollenkaan)
+                (or state :ei-luoda-ollenkaan)
                 "because of" reason "in" field)
-      (when init-state
-        (palaute/upsert-from-data!
-          (assoc ctx :tx tx)
-          {:jakso jakso
-           :kysely :tyopaikkakysely
-           :alkupvm (next-niputus-date (:loppu jakso))
-           :heratepvm (:loppu jakso)
-           :initial-state init-state
-           :reason reason
-           :other-info (select-keys (merge jakso hoks) [field])
-           :existing-heratteet existing-heratteet})
-        init-state))))
+      (when state
+        (palaute/upsert!
+          ctx
+          (assoc palaute
+                 :state     state
+                 :tapahtuma {:reason reason
+                             :other-info (select-keys
+                                           (merge jakso hoks) [field])}))
+        state))))
 
 (defn initiate-all-uninitiated!
   "Takes a `hoks` and `opiskeluoikeus` and initiates tyoelamapalaute for all
