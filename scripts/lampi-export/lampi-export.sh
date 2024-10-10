@@ -6,7 +6,7 @@ echo "{}" > $lampi_manifest_file
 local_s3_bucket="ehoks-export-$ENV_NAME"
 lampi_s3_bucket="oph-lampi-$ENV_NAME"
 system_name="ehoks"
-version="v1"
+version="v2" # vanha koko kannan dumppina vievä siirto on v1
 reporting_schema_name="reporting"
 
 dump_and_upload_db_to_lampi() {
