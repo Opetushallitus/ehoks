@@ -23,7 +23,7 @@ dump_and_upload_db_to_lampi() {
     local -r db_hostname="$1"
     local -r db_name="$2"
     local -r db_secret_id="$3"
-    log "DEBUG" "Params db_hostname ${db_hostname} db_name ${db_name} db_secret_id ${db_secret_id}, ENV_NAME $ENV_NAME"
+    log "DEBUG" "Params: db_hostname ${db_hostname}, db_name ${db_name}, db_secret_id ${db_secret_id}, ENV_NAME $ENV_NAME, local_s3_bucket $local_s3_bucket, lampi_s3_bucket $lampi_s3_bucket"
 
     # returns '{"Parameter":{"Value":"foobar"}}'
     local -r pw_json=$(aws ssm get-parameter --name ${db_secret_id} --with-decryption --region eu-west-1)
@@ -67,10 +67,10 @@ copy_table_to_lampi() {
     fi
 
     log "INFO" "Concatenating and compressing $source_url ($file_parts part(s)) to $target_url"
-    eval "($fetch_cmd) | gzip | aws s3 cp --profile oph-datalake - $target_url"
+    eval "($fetch_cmd) | gzip | aws s3 cp - $target_url"
 
     log "INFO" "Fetch object version for $s3_key in $lampi_s3_bucket"
-    local -r obj_version=$(aws s3api head-object --region eu-west-1 --profile oph-datalake --bucket "$lampi_s3_bucket" --key "$s3_key" --output json | jq -r .VersionId)
+    local -r obj_version=$(aws s3api head-object --region eu-west-1 --bucket "$lampi_s3_bucket" --key "$s3_key" --output json | jq -r .VersionId)
 
     log "INFO" "Update received object version to manifest: $s3_key = $obj_version"
     local -r item=$(lampi_manifest_item "$s3_key" "$obj_version")
@@ -101,7 +101,7 @@ generate_and_upload_schema_file() {
     local -r schema_file="ehoks-$reporting_schema_name.schema"
     touch "$schema_file"
     log "INFO" "Generating schema file $schema_file"
-    PGPASSWORD="${db_password}" pg_dump --host $db_hostname --username app --dbname $db_name --schema-only --no-owner --file "$schema_file" --schema "$reporting_schema_name" -t "$reporting_schema_name.*"
+    PGPASSWORD="${db_password}" pg_dump --host $db_hostname --username app --schema-only --no-owner --file "$schema_file" --schema "$reporting_schema_name" -t "$reporting_schema_name.*" "$db_name"
     sed -i -e "s/CREATE TABLE $reporting_schema_name\./CREATE TABLE /g" "$schema_file"
     local -r schema=$(upload_file_to_lampi $schema_file)
     add_to_manifest ".schema += $schema"
@@ -111,9 +111,9 @@ upload_file_to_lampi() {
     local -r file="$1"
     local -r file_s3_key="fulldump/$system_name/$version/$file"
     local -r file_s3_url="s3://$local_s3_bucket/$file_s3_key"
-    log "INFO" "Uploading file" $file_s3_key "to local S3"
+    log "INFO" "Uploading file" $file_s3_key "to local S3 $file_s3_url"
     local -r obj_version=$(aws s3api put-object --region eu-west-1 --body "$file" --bucket "$local_s3_bucket" --key "$file_s3_key" --output json | jq -r .VersionId)
-    log "INFO" "Uploading file $file_s3_key with version $obj_version to Lampi $file_s3_url"
-    aws s3 cp "$file_s3_url" "s3://oph-lampi-$ENV_NAME/$file_s3_key" --profile oph-datalake
+    log "INFO" "Uploading file $file_s3_key with version $obj_version to Lampi s3://$lampi_s3_bucket/$file_s3_key"
+    aws s3 cp "$file_s3_url" "s3://$lampi_s3_bucket/$file_s3_key"
     echo $(lampi_manifest_item "$file_s3_key" "$obj_version")
 }
