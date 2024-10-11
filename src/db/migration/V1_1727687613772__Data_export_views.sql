@@ -103,7 +103,8 @@ SELECT oh.id                                   AS id,
        oh.osa_aikaisuustieto                   AS osa_aikaisuustieto,
        oh.oppisopimuksen_perusta_koodi_uri     AS oppisopimuksen_perusta_koodi_uri,
        oh.oppisopimuksen_perusta_koodi_versio  AS oppisopimuksen_perusta_koodi_versio,
-       oh.yksiloiva_tunniste                   AS yksiloiva_tunniste
+       oh.yksiloiva_tunniste                   AS yksiloiva_tunniste,
+       oh.tyopaikalla_jarjestettava_koulutus_id AS tyopaikalla_jarjestettava_koulutus_id
 FROM osaamisen_hankkimistavat oh
          JOIN yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat ytooaoh
               on oh.id = ytooaoh.osaamisen_hankkimistapa_id
@@ -134,7 +135,8 @@ SELECT oh.id                                   AS id,
        oh.osa_aikaisuustieto                   AS osa_aikaisuustieto,
        oh.oppisopimuksen_perusta_koodi_uri     AS oppisopimuksen_perusta_koodi_uri,
        oh.oppisopimuksen_perusta_koodi_versio  AS oppisopimuksen_perusta_koodi_versio,
-       oh.yksiloiva_tunniste                   AS yksiloiva_tunniste
+       oh.yksiloiva_tunniste                   AS yksiloiva_tunniste,
+       oh.tyopaikalla_jarjestettava_koulutus_id AS tyopaikalla_jarjestettava_koulutus_id
 FROM osaamisen_hankkimistavat oh
          JOIN hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat atooh
               ON oh.id = atooh.osaamisen_hankkimistapa_id
@@ -163,7 +165,8 @@ SELECT oh.id                                   AS id,
        oh.osa_aikaisuustieto                   AS osa_aikaisuustieto,
        oh.oppisopimuksen_perusta_koodi_uri     AS oppisopimuksen_perusta_koodi_uri,
        oh.oppisopimuksen_perusta_koodi_versio  AS oppisopimuksen_perusta_koodi_versio,
-       oh.yksiloiva_tunniste                   AS yksiloiva_tunniste
+       oh.yksiloiva_tunniste                   AS yksiloiva_tunniste,
+       oh.tyopaikalla_jarjestettava_koulutus_id AS tyopaikalla_jarjestettava_koulutus_id
 FROM osaamisen_hankkimistavat oh
          JOIN hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat ptooh
               ON oh.id = ptooh.osaamisen_hankkimistapa_id
@@ -341,6 +344,74 @@ SELECT created_at                                               AS created_at,
 FROM yhteisen_tutkinnon_osan_osa_alueen_naytot;
 
 
+CREATE OR REPLACE FUNCTION add_reporting_constraints(target_schema TEXT) RETURNS BOOLEAN AS
+$BODY$
+BEGIN
+    IF lower(target_schema) = 'public' THEN
+        RETURN false;
+    ELSE
+        -- Primary keys
+        EXECUTE format('ALTER TABLE %I.oppijat ADD CONSTRAINT oppijat_pkey PRIMARY KEY (oid)', target_schema);
+        EXECUTE format('ALTER TABLE %I.opiskeluoikeudet ADD CONSTRAINT opiskeluoikeudet_pkey PRIMARY KEY (oid)', target_schema);
+        EXECUTE format('ALTER TABLE %I.hoksit ADD CONSTRAINT hoksit_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.aiemmin_hankitut_tutkinnon_osat ADD CONSTRAINT aiemmin_hankitut_tutkinnon_osat_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.hankittavat_tutkinnon_osat ADD CONSTRAINT hankittavat_tutkinnon_osat_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.hankittavat_koulutuksen_osat ADD CONSTRAINT hankittavat_koulutuksen_osat_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_hankkimistavat ADD CONSTRAINT osaamisen_hankkimistavat_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_osoittamiset ADD CONSTRAINT osaamisen_osoittamiset_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_osoittamisen_yksilolliset_kriteerit ADD CONSTRAINT osaamisen_osoittamisen_yksilolliset_kriteerit_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_osoittamisen_sisallot ADD CONSTRAINT osaamisen_osoittamisen_sisallot_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.nayttoymparistot ADD CONSTRAINT nayttoymparistot_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.keskeytymisajanjaksot ADD CONSTRAINT keskeytymisajanjaksot_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.koulutuksen_jarjestaja_osaamisen_arvioijat ADD CONSTRAINT koulutuksen_jarjestaja_osaamisen_arvioijat_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.koodisto_koodit ADD CONSTRAINT koodisto_koodit_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.palautteet ADD CONSTRAINT palautteet_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.muut_oppimisymparistot ADD CONSTRAINT muut_oppimisymparistot_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.tyopaikalla_jarjestettavat_koulutukset ADD CONSTRAINT tyopaikalla_jarjestettavat_koulutukset_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat ADD CONSTRAINT tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.opiskeluvalmiuksia_tukevat_opinnot ADD CONSTRAINT opiskeluvalmiuksia_tukevat_opinnot_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.tyoelama_osaamisen_arvioijat ADD CONSTRAINT tyoelama_osaamisen_arvioijat_pkey PRIMARY KEY (id)', target_schema);
+        EXECUTE format('ALTER TABLE %I.todennettu_arviointi_lisatiedot ADD CONSTRAINT todennettu_arviointi_lisatiedot_pkey PRIMARY KEY (id)', target_schema);
+
+        -- Foreign keys
+        EXECUTE format('ALTER TABLE %I.opiskeluoikeudet ADD CONSTRAINT oppijat_fkey FOREIGN KEY (oppija_oid) REFERENCES %I.oppijat (oid)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.aiemmin_hankitut_tutkinnon_osat ADD CONSTRAINT hoksit_fkey FOREIGN KEY (hoks_id) REFERENCES %I.hoksit (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.hankittavat_tutkinnon_osat ADD CONSTRAINT hoksit_fkey FOREIGN KEY (hoks_id) REFERENCES %I.hoksit (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.hankittavat_koulutuksen_osat ADD CONSTRAINT hoksit_fkey FOREIGN KEY (hoks_id) REFERENCES %I.hoksit (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_hankkimistavat ADD CONSTRAINT hoksit_fkey FOREIGN KEY (hoks_id) REFERENCES %I.hoksit (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.opiskeluvalmiuksia_tukevat_opinnot ADD CONSTRAINT hoksit_fkey FOREIGN KEY (hoks_id) REFERENCES %I.hoksit (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_hankkimistavat ADD CONSTRAINT tyopaikalla_jarjestettavat_koulutukset_fkey FOREIGN KEY (tyopaikalla_jarjestettava_koulutus_id) REFERENCES %I.tyopaikalla_jarjestettavat_koulutukset (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_hankkimistavat ADD CONSTRAINT hankittavat_tutkinnon_osat_fkey FOREIGN KEY (osa_id) REFERENCES %I.hankittavat_tutkinnon_osat (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.tyopaikalla_jarjestettavan_koulutuksen_tyotehtavat ADD CONSTRAINT tyopaikalla_jarjestettavat_koulutukset_fkey FOREIGN KEY (tyopaikalla_jarjestettava_koulutus_id) REFERENCES %I.tyopaikalla_jarjestettavat_koulutukset (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.aiemmin_hankitun_tutkinnon_osan_arvioijat ADD CONSTRAINT koulutuksen_jarjestaja_osaamisen_arvioijat_fkey FOREIGN KEY (koulutuksen_jarjestaja_osaamisen_arvioija_id) REFERENCES %I.koulutuksen_jarjestaja_osaamisen_arvioijat (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.aiemmin_hankitun_tutkinnon_osan_arvioijat ADD CONSTRAINT aiemmin_hankitut_tutkinnon_osat_fkey FOREIGN KEY (osa_id) REFERENCES %I.aiemmin_hankitut_tutkinnon_osat (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.aiemmin_hankitun_tutkinnon_osan_naytto ADD CONSTRAINT aiemmin_hankitut_tutkinnon_osat_fkey FOREIGN KEY (osa_id) REFERENCES %I.aiemmin_hankitut_tutkinnon_osat (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.aiemmin_hankitun_tutkinnon_osan_naytto ADD CONSTRAINT osaamisen_osoittamiset_fkey FOREIGN KEY (osaamisen_osoittaminen_id) REFERENCES %I.osaamisen_osoittamiset (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.hankittavan_tutkinnon_osan_naytto ADD CONSTRAINT osaamisen_osoittamiset_fkey FOREIGN KEY (osaamisen_osoittaminen_id) REFERENCES %I.osaamisen_osoittamiset (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.hankittavan_tutkinnon_osan_naytto ADD CONSTRAINT hankittavat_tutkinnon_osat_fkey FOREIGN KEY (osa_id) REFERENCES %I.hankittavat_tutkinnon_osat (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_osoittamiset ADD CONSTRAINT nayttoymparistot_fkey FOREIGN KEY (nayttoymparisto_id) REFERENCES %I.nayttoymparistot (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_osoittamisen_osa_alueet ADD CONSTRAINT koodisto_koodit_fkey FOREIGN KEY (koodisto_koodi_id) REFERENCES %I.koodisto_koodit (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_osoittamisen_osa_alueet ADD CONSTRAINT osaamisen_osoittamiset_fkey FOREIGN KEY (osaamisen_osoittaminen_id) REFERENCES %I.osaamisen_osoittamiset (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_osoittamisen_tyoelama_arvioija ADD CONSTRAINT osaamisen_osoittamiset_fkey FOREIGN KEY (osaamisen_osoittaminen_id) REFERENCES %I.osaamisen_osoittamiset (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_osoittamisen_tyoelama_arvioija ADD CONSTRAINT tyoelama_osaamisen_arvioijat_fkey FOREIGN KEY (tyoelama_arvioija_id) REFERENCES %I.tyoelama_osaamisen_arvioijat (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija ADD CONSTRAINT osaamisen_osoittamiset_fkey FOREIGN KEY (osaamisen_osoittaminen_id) REFERENCES %I.osaamisen_osoittamiset (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_osoittamisen_koulutuksen_jarjestaja_arvioija ADD CONSTRAINT koulutuksen_jarjestaja_osaamisen_arvioijat_fkey FOREIGN KEY (koulutuksen_jarjestaja_osaamisen_arvioija_id) REFERENCES %I.koulutuksen_jarjestaja_osaamisen_arvioijat (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_osoittamisen_yksilolliset_kriteerit ADD CONSTRAINT osaamisen_osoittamiset_fkey FOREIGN KEY (osaamisen_osoittaminen_id) REFERENCES %I.osaamisen_osoittamiset (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.osaamisen_osoittamisen_sisallot ADD CONSTRAINT osaamisen_osoittamiset_fkey FOREIGN KEY (osaamisen_osoittaminen_id) REFERENCES %I.osaamisen_osoittamiset (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.keskeytymisajanjaksot ADD CONSTRAINT osaamisen_hankkimistavat_fkey FOREIGN KEY (osaamisen_hankkimistapa_id) REFERENCES %I.osaamisen_hankkimistavat (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.muut_oppimisymparistot ADD CONSTRAINT osaamisen_hankkimistavat_fkey FOREIGN KEY (osaamisen_hankkimistapa_id) REFERENCES %I.osaamisen_hankkimistavat (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.todennettu_arviointi_arvioijat ADD CONSTRAINT todennettu_arviointi_lisatiedot_fkey FOREIGN KEY (todennettu_arviointi_lisatiedot_id) REFERENCES %I.todennettu_arviointi_lisatiedot (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.todennettu_arviointi_arvioijat ADD CONSTRAINT koulutuksen_jarjestaja_osaamisen_arvioijat_fkey FOREIGN KEY (koulutuksen_jarjestaja_osaamisen_arvioija_id) REFERENCES %I.koulutuksen_jarjestaja_osaamisen_arvioijat (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.palaute_viestit ADD CONSTRAINT palautteet_fkey FOREIGN KEY (palaute_id) REFERENCES %I.palautteet (id)', target_schema, target_schema);
+        EXECUTE format('ALTER TABLE %I.palaute_tapahtumat ADD CONSTRAINT palautteet_fkey FOREIGN KEY (palaute_id) REFERENCES %I.palautteet (id)', target_schema, target_schema);
+
+        RETURN true;
+    END IF;
+END;
+$BODY$
+    LANGUAGE plpgsql;
+
+
 CREATE OR REPLACE FUNCTION refresh_reporting (target_schema TEXT) RETURNS BOOLEAN AS
 $BODY$
 DECLARE tbl RECORD;
@@ -387,6 +458,9 @@ BEGIN
         EXECUTE format('CREATE TABLE %I.aiemmin_hankitun_tutkinnon_osan_naytto AS SELECT * FROM public.v_aiemmin_hankitun_tutkinnon_osan_naytto', target_schema);
         EXECUTE format('CREATE TABLE %I.aiemmin_hankitun_tutkinnon_osan_arvioijat AS SELECT * FROM public.v_aiemmin_hankitun_tutkinnon_osan_arvioijat', target_schema);
         EXECUTE format('CREATE TABLE %I.hankittavan_tutkinnon_osan_naytto AS SELECT * FROM public.v_hankittavan_tutkinnon_osan_naytto', target_schema);
+
+        SELECT add_reporting_constraints(target_schema);
+
         RETURN true;
     END IF;
 END;
