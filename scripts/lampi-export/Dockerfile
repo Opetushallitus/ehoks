@@ -11,4 +11,4 @@ WORKDIR /opt/export
 
 COPY scripts/lampi-export/lampi-export.sh /opt/export
 
-ENTRYPOINT source ./lampi-export.sh && dump_and_upload_db_to_lampi "ehoks.db.$ENV_NAME.internal" "ehoks" "/$ENV_NAME/postgresqls/ehoks/app-user-password"
+ENTRYPOINT ./lampi-export.sh
