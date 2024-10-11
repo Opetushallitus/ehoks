@@ -1,0 +1,28 @@
+name: Create Lampi export runner image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Dependencies
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          git clone https://github.com/Opetushallitus/ci-tools.git
+
+      - uses: actions/checkout@v4
+      - name: Build the Docker image
+        run: docker build . --file scripts/lampi-export/Dockerfile --tag ehoks-lampi-export:$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT
+
+      - name: Upload Package
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          source ci-tools/common/setup-tools.sh
+          ./ci-tools/github-build/upload-image.sh ehoks-lampi-export
