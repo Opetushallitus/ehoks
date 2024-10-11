@@ -11,6 +11,7 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date])
   (:import (java.util UUID)))
@@ -192,9 +193,31 @@
       (arvo/create-kyselytunnus!)))
 
 (defn create-and-save-arvo-kyselylinkki!
-  "Update given palaute with a kyselylinkki from Arvo-."
+  "Update given palaute with a kyselylinkki from Arvo."
   [palaute]
-  (-> palaute
-      (create-arvo-kyselylinkki!)
-      (rename-keys {:kysely_linkki :url})
-      (#(palaute/save-arvo-tunniste! db/spec palaute % {:arvo_response %}))))
+  (try
+    (jdbc/with-db-transaction
+      [tx db/spec]
+      (let [response (create-arvo-kyselylinkki! palaute)
+            for-db (rename-keys response {:kysely_linkki :url})]
+        (try
+          (palaute/save-arvo-tunniste! tx palaute for-db
+                                       {:arvo_response response})
+          (catch Exception e
+            (log/error "error while saving arvo tunniste" (:tunnus response)
+                       "; trying to delete kyselylinkki")
+            (arvo/delete-kyselytunnus (:tunnus response))
+            (log/info "successfully deleted kyselylinkki" (:tunnus response))
+            (throw e)))))
+    (catch Exception e
+      (log/error e "while processing palaute" palaute)
+      (palautetapahtuma/insert!
+        db/spec
+        {:palaute-id      (:id palaute)
+         :vanha-tila      (:tila palaute)
+         :uusi-tila       (:tila palaute)
+         :tapahtumatyyppi "arvo_luonti"
+         :syy             "arvo_kutsu_epaonnistui"
+         :lisatiedot      {:msg (.getMessage e)
+                           :body (:body (ex-data e))}})
+      (throw e))))
