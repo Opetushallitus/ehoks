@@ -6,22 +6,26 @@
 (def mock-routes
   (routes
     (GET "/koski/api/oppija/*" []
-         (mock-gen/json-response-file
-           "dev-routes/koski_api_oppija_1.2.246.562.24.44651722625.json"))
+      (mock-gen/json-response-file
+        "dev-routes/koski_api_oppija_1.2.246.562.24.44651722625.json"))
 
     (GET "/koski/api/opiskeluoikeus/1.2.246.562.15.76811932037" []
-         (mock-gen/json-response-file
-           "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.76811932037.json"))
+      (mock-gen/json-response-file
+        "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.76811932037.json"))
 
     (GET "/koski/api/opiskeluoikeus/1.2.246.562.15.60063016194" []
-         (mock-gen/json-response-file
-           "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.60063016194.json"))
+      (mock-gen/json-response-file
+        "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.60063016194.json"))
 
     (GET "/koski/api/opiskeluoikeus/1.2.246.562.15.57401181193" []
          (-> (response/not-found
                (str "[{\"key\": \"notFound.opiskeluoikeuttaEiLöydy"
                     "TaiEiOikeuksia\"}]"))
              (response/content-type "application/json")))
+
+    (GET "/koski/api/opiskeluoikeus/1.2.246.562.15.13312692646" []
+      (mock-gen/json-response-file
+        "dev-routes/koski_api_opiskeluoikeus_1.2.246.562.15.13312692646.json"))
 
     (GET "/koski/api/opiskeluoikeus/:oid" request
          (let [opiskeluoikeus-oid (get-in request [:params :oid])

@@ -46,7 +46,7 @@
           "koodistoUri": "koskiopiskeluoikeudentila",
           "koodistoVersio": 1
         },
-        "alku": "2022-12-07",
+        "alku": "2015-12-07",
         "opintojenRahoitus": {
           "koodiarvo": "14",
           "nimi": {
@@ -54,6 +54,24 @@
             "sv": "Finansiering av Servicecentret för kontinuerligt lärande och sysselsättning",
             "en": "Jatkuvan oppimisen ja työllisuuden palvelukeskuksen rahoitus"
           },
+          "koodistoUri": "opintojenrahoitus",
+          "koodistoVersio": 1
+        }
+      },
+      {
+        "tila": {
+          "koodiarvo": "lasna",
+          "nimi": {
+            "fi": "Läsnä",
+            "sv": "Närvarande",
+            "en": "Present"
+          },
+          "koodistoUri": "koskiopiskeluoikeudentila",
+          "koodistoVersio": 1
+        },
+        "alku": "2023-12-07",
+        "opintojenRahoitus": {
+          "koodiarvo": "1",
           "koodistoUri": "opintojenrahoitus",
           "koodistoVersio": 1
         }
@@ -127,6 +145,59 @@
         "koodistoUri": "kieli",
         "koodistoVersio": 1
       }
+    },
+    {
+      "koulutusmoduuli": {
+        "tunniste": {
+          "koodiarvo": "351407",
+          "nimi": {
+            "fi": "Sähkö- ja automaatioalan perustutkinto",
+            "sv": "Grundexamen inom el- och automationsbranschen",
+            "en": "Vocational qualification in Electrical Engineering and Automation Technology"
+          },
+          "lyhytNimi": {
+            "fi": "Sähkö- ja automaatioalan pt",
+            "sv": "Grundexamen inom el- och automationsbranschen",
+            "en": "Vocational qualification in Electrical Engineering and Automation Technology"
+          },
+          "koodistoUri": "koulutus",
+          "koodistoVersio": 11
+        },
+        "perusteenDiaarinumero": "77/011/2014",
+        "perusteenNimi": {
+          "fi": "Sähkö- ja automaatiotekniikan perustutkinto",
+          "sv": "Grundexamen inom el- och automationsteknik"
+        },
+        "koulutustyyppi": {
+          "koodiarvo": "1",
+          "nimi": {
+            "fi": "Ammatillinen perustutkinto",
+            "sv": "Yrkesinriktad grundexamen",
+            "en": "Vocational upper secondary qualification"
+          },
+          "lyhytNimi": {
+            "fi": "Ammatillinen perustutkinto",
+            "sv": "Yrkesinriktad grundexamen"
+          },
+          "koodistoUri": "koulutustyyppi",
+          "koodistoVersio": 2
+        }
+      },
+      "suoritustapa": {},
+      "toimipiste": {},
+      "alkamispäivä": "2016-08-05",
+      "suorituskieli": {},
+      "osasuoritukset": [],
+      "tyyppi": {
+        "koodiarvo": "ammatillinentutkinto",
+        "nimi": {
+          "fi": "Ammatillinen tutkinto",
+          "sv": "Yrkesinriktad examen",
+          "en": "Vocational education  qualification"
+        },
+        "koodistoUri": "suorituksentyyppi",
+        "koodistoVersio": 1
+      }
     }
   ],
   "tyyppi": {
@@ -142,5 +213,5 @@
     "koodistoUri": "opiskeluoikeudentyyppi",
     "koodistoVersio": 1
   },
-  "alkamispäivä": "2022-12-07"
+  "alkamispäivä": "2015-12-07"
 }
