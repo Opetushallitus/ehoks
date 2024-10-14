@@ -1,13 +1,16 @@
 (ns oph.ehoks.palaute.opiskelija-test
   (:require [clojure.test :refer [are deftest is testing use-fixtures]]
-            [medley.core :refer [remove-vals]]
+            [medley.core :refer [remove-vals find-first]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.external.organisaatio-test :as organisaatio-test]
+            [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
             [oph.ehoks.oppijaindex :as oppijaindex]
@@ -152,7 +155,7 @@
                     {:status 404
                      :body (str "[{\"key\": \"notFound.opiskeluoikeuttaEiLöydy"
                                 "TaiEiOikeuksia\"}]")}))
-    oo-test/opiskeluoikeus-1))
+    (assoc oo-test/opiskeluoikeus-1 :oid oo)))
 
 (deftest test-existing-heratteet!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))]
@@ -276,3 +279,67 @@
                                 (op/initiate-if-needed!
                                   ctx kysely-type {:resend? true}))
             :aloituskysely :paattokysely))))))
+
+(deftest test-create-arvo-kyselylinkki!
+  (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
+                koski/get-oppija-opiskeluoikeudet
+                (fn [_]
+                  [{:oid "1.2.246.562.15.55003456345"
+                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}
+                   {:oid "1.2.246.562.15.55003456345"
+                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}])
+                koski/get-opiskeluoikeus-info-raw
+                mock-get-opiskeluoikeus-info-raw
+                organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
+    (oppijaindex/add-hoks-dependents-in-index! hoks-test/hoks-1)
+    (let [hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
+                 {:hoks hoks-test/hoks-1
+                  :opiskeluoikeus oo-test/opiskeluoikeus-1})
+          heratteet
+          (palaute/get-amis-palautteet-waiting-for-kyselylinkki! db/spec)]
+      (testing "HOKS creation marks correct palautteet as actionable"
+        (is (= [["odottaa_kasittelya" "aloittaneet"]
+                ["odottaa_kasittelya" "valmistuneet"]]
+               (->> {:hoks-id (:id hoks)
+                     :kyselytyypit ["aloittaneet" "valmistuneet"]}
+                    (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+                    (map (juxt :tila :kyselytyyppi)))))
+        (is (= [["odottaa_kasittelya" "aloittaneet"]
+                ["odottaa_kasittelya" "valmistuneet"]]
+               (map (juxt :tila :kyselytyyppi) heratteet))))
+      (testing "Arvo call for amispalaute is done"
+        (client/set-post!
+          (fn [^String url options]
+            (when (.endsWith url "/api/vastauslinkki/v1")
+              {:status 200
+               :body {:tunnus "foo"
+                      :kysely_linkki "https://arvovastaus.csc.fi/v/foo"
+                      :voimassa_loppupvm "2024-10-10"}})))
+        (are [kysely-type]
+             (let [herate (find-first
+                            (comp (partial = kysely-type) :kyselytyyppi)
+                            heratteet)
+                   resp (op/create-arvo-kyselylinkki! herate)]
+               (= [:kysely_linkki :tunnus :voimassa_loppupvm]
+                  (sort (keys resp))))
+          "aloittaneet" "valmistuneet")
+        (client/reset-functions!))
+      (testing "Arvo is given correct values"
+        (let [saved-req (atom nil)]
+          (with-redefs [arvo/create-kyselytunnus!
+                        (fn [request] (reset! saved-req request) {:tunnus "a"})]
+            (->> heratteet
+                 (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
+                 (op/create-arvo-kyselylinkki!))
+            (is (= (:tutkinnonosat_hankkimistavoittain @saved-req)
+                   {:oppisopimus
+                    ["tutkinnonosat_300268" "tutkinnonosat_300271"]
+                    :koulutussopimus
+                    ["tutkinnonosat_300269" "tutkinnonosat_300270"]
+                    :oppilaitosmuotoinenkoulutus
+                    ["tutkinnonosat_300268" "tutkinnonosat_300270"]}))
+            (is (= ((juxt :koulutustoimija_oid :kyselyn_tyyppi :tutkintotunnus
+                          :tutkinnon_suorituskieli :toimipiste_oid) @saved-req)
+                   ["1.2.246.562.10.346830761110" "tutkinnon_suorittaneet"
+                    "351407" "fi" "1.2.246.562.10.12312312312"]))))))))
