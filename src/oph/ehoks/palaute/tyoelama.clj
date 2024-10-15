@@ -183,11 +183,12 @@
                                           (:tyopaikan-nimi tep-palaute))
            :viimeinen-vastauspvm (str (.plusDays alkupvm 60)))))
 
+;; FIXME: tältä puuttuu yksikkötesti.
+;; test-create-and-save-arvo-vastaajatunnus-for-all-needed! sisältää
+;; ylimalkaisen testin tälle funktiolle.
 (defn sync-jakso-to-heratepalvelu!
   [tx tep-palaute opiskeluoikeus request-id tunnus]
-  (let [query {:jakson-yksiloiva-tunniste
-               (:jakson-yksiloiva-tunniste tep-palaute)
-               :hoks-id (:hoks-id tep-palaute)}]
+  (let [query (select-keys tep-palaute [:jakson-yksiloiva-tunniste :hoks-id])]
     (-> (palaute/get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste!
           tx query)
         (first)
@@ -218,7 +219,7 @@
     (if-not opiskeluoikeus
       (log/warnf
         "Opiskeluoikeus not found for palaute %d, skipping processing"
-        (:id tep-palaute))
+        (:id tep-palaute))  ; FIXME: create tapahtuma and update state
       (let [koulutustoimija (opiskeluoikeus-koulutustoimija-oid
                               opiskeluoikeus)
             alkupvm         (next-niputus-date (:loppupvm tep-palaute))
@@ -238,6 +239,7 @@
             tunnus          (:tunnus (arvo/create-jaksotunnus
                                        arvo-request))]
         (try
+          ;; FIXME: create tapahtuma
           (save-arvo-tunniste!
             tx tep-palaute tunnus {:arvo-request arvo-request})
           (sync-jakso-to-heratepalvelu!
@@ -263,6 +265,7 @@
                              "vastaajatunnus from Arvo: %s")
                         (:id tep-palaute)
                         tunnus)
+            ;; FIXME: tapahtuma
             (arvo/delete-jaksotunnus tunnus)
             (throw e)))))))
 
