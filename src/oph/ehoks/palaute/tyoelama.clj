@@ -200,7 +200,7 @@
         (ddb/sync-jakso-herate!))))
 
 (defn create-and-save-arvo-vastaajatunnus!
-  [tx tep-palaute]
+  [tep-palaute]
   (let [opiskeluoikeus (koski/get-opiskeluoikeus!
                          (:opiskeluoikeus-oid tep-palaute))]
     (if-not opiskeluoikeus
@@ -225,12 +225,13 @@
                               (str alkupvm))
             arvo-response   (arvo/create-jaksotunnus arvo-request)
             tunnus          (:tunnus arvo-response)]
-        (try
-          ;; FIXME: create tapahtuma
-          (palaute/save-arvo-tunniste!
-            tx tep-palaute arvo-response {:arvo-response arvo-response})
-          (sync-jakso-to-heratepalvelu!
-            tx tep-palaute opiskeluoikeus request-id tunnus)
+        (jdbc/with-db-transaction
+          [tx db/spec]
+          (try
+            (palaute/save-arvo-tunniste!
+              tx tep-palaute arvo-response {:arvo-response arvo-response})
+            (sync-jakso-to-heratepalvelu!
+              tx tep-palaute opiskeluoikeus request-id tunnus)
 
           ; TODO lisää nipputunniste palautteet-tauluun (uusi kantamigraatio)
           ; TODO päättele jaksosta nipputunniste
@@ -240,21 +241,21 @@
           ; Aseta tep_kasitelty arvoon true jotta herätepalvelu ei yritä
           ; tehdä vastaavaa operaatiota siirtymävaiheen/asennuksien aikana.
           ; FIXME poista tep_kasitelty-logiikka siirtymävaiheen jälkeen?
-          (if-not tunnus
-            (log/warn "No vastaajatunnus got from arvo, so not marking handled")
-            (assert
-              (palaute/update-tep-kasitelty!
-                tx {:tep-kasitelty true :id (:hankkimistapa-id tep-palaute)})))
-          tunnus
-          (catch ExceptionInfo e
-            (log/errorf e
-                        (str "Error updating palaute %d, trying to remove "
-                             "vastaajatunnus from Arvo: %s")
-                        (:id tep-palaute)
-                        tunnus)
-            ;; FIXME: tapahtuma
-            (arvo/delete-jaksotunnus tunnus)
-            (throw e)))))))
+            (if-not tunnus
+              (log/warn "No vastaajatunnus got from arvo, so not marking handled")
+              (assert
+                (palaute/update-tep-kasitelty!
+                  tx {:tep-kasitelty true :id (:hankkimistapa-id tep-palaute)})))
+            tunnus
+            (catch ExceptionInfo e
+              (log/errorf e
+                          (str "Error updating palaute %s, trying to remove "
+                               "vastaajatunnus from Arvo: %s")
+                          (:id tep-palaute)
+                          tunnus)
+              ;; FIXME: tapahtuma
+              (arvo/delete-jaksotunnus tunnus)
+              (throw e))))))))
 
 (defn create-and-save-arvo-vastaajatunnus-for-all-needed!
   "Creates vastaajatunnus for all herates that are waiting for processing,
@@ -266,13 +267,9 @@
          db/spec {:heratepvm (str (date/now))})
        (map (fn [tep-palaute]
               (try
-                (jdbc/with-db-transaction
-                  [tx db/spec]
-                  (log/infof "Creating vastaajatunnus for %d"
-                             (:id tep-palaute))
-                  (create-and-save-arvo-vastaajatunnus! tx tep-palaute))
+                (log/infof "Creating vastaajatunnus for %d" (:id tep-palaute))
+                (create-and-save-arvo-vastaajatunnus! tep-palaute)
                 (catch ExceptionInfo e
-                  (log/errorf e
-                              "Error processing tep-palaute %s"
+                  (log/errorf e "Error processing tep-palaute %s"
                               tep-palaute)))))
        doall))

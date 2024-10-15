@@ -50,17 +50,15 @@
               :header-params [caller-id :- s/Str
                               ticket :- s/Str]
               :path-params [palaute-id :- s/Int]
-              (jdbc/with-db-transaction
-                [tx db/spec]
-                (if-let [tep-palaute
-                         (palaute/get-tep-palaute-waiting-for-vastaajatunnus!
-                           tx {:palaute-id palaute-id})]
-                  (let [vastaajatunnus (tep/create-and-save-arvo-vastaajatunnus!
-                                         tx tep-palaute)]
-                    (assoc (restful/ok {:vastaajatunnus vastaajatunnus})
-                           ::audit/target {:vastaajatunnus vastaajatunnus
-                                           :palaute-id palaute-id}))
-                  (response/not-found {:message "Palaute not found"}))))))))
+              (if-let [tep-palaute
+                       (palaute/get-tep-palaute-waiting-for-vastaajatunnus!
+                         db/spec {:palaute-id palaute-id})]
+                (let [vastaajatunnus (tep/create-and-save-arvo-vastaajatunnus!
+                                       tep-palaute)]
+                  (assoc (restful/ok {:vastaajatunnus vastaajatunnus})
+                         ::audit/target {:vastaajatunnus vastaajatunnus
+                                         :palaute-id palaute-id}))
+                (response/not-found {:message "Palaute not found"})))))))
 
     (c-api/undocumented
       (GET "/buildversion.txt" []
