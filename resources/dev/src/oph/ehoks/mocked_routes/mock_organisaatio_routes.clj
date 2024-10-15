@@ -42,8 +42,15 @@
          :nimi {:fi "Osa-alueen järjestäjä-organisaatio"}
          :parentOidPath "|1.2.246.562.10.00000000001|"}))
 
+    (GET "/organisaatio-service/rest/organisaatio/v4/1.2.246.562.10.21122461771"
+      []
+      (mock-gen/json-response-file
+        (str "dev-routes/organisaatio-service_rest_organisaatio_v4_"
+             "1.2.246.562.10.21122461771.json")))
+
     (GET "/organisaatio-service/rest/organisaatio/v4/:oid" [oid]
       (mock-gen/json-response
         {:oid oid
          :nimi {:fi "Esimerkki-organisaatio"}
+         :tyypit ["organisaatiotyyppi_02" "organisaatiotyyppi_03"]  ; toimipiste
          :parentOidPath "|1.2.246.562.10.00000000001|"}))))

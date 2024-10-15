@@ -28,14 +28,14 @@
                         {:type             ::organisation-fetching-error
                          :organisation-oid oid}
                         e))))))
-;
+
 (defn get-existing-organisaatio!
   "Like `get-organisaatio!` but expects an organisation with `oid` to be found
   from Organisaatiopalvelu, and thus, throws an exception if no organisation
   is found."
   [oid]
-  (if-let [organisaatio (get-organisaatio! oid)]
-    organisaatio
+  (or
+    (get-organisaatio! oid)
     (throw (ex-info
              (format "Organisation `%s` not found from Organisaatiopalvelu" oid)
              {:type             ::organisation-not-found

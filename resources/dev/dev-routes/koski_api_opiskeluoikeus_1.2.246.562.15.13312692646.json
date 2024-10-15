@@ -1,0 +1,217 @@
+{
+  "oid": "1.2.246.562.15.13312692646",
+  "versionumero": 1,
+  "aikaleima": "2022-12-07T11:49:57.234985",
+  "oppilaitos": {
+    "oid": "1.2.246.562.10.32506551657",
+    "nimi": {
+      "fi": "Keuda"
+    },
+    "kotipaikka": {
+      "koodiarvo": "005",
+      "nimi": {
+        "fi": "Alajärvi",
+        "sv": "Alajärvi"
+      },
+      "koodistoUri": "kunta",
+      "koodistoVersio": 2
+    }
+  },
+  "koulutustoimija": {
+    "oid": "1.2.246.562.10.55867603791",
+    "nimi": {
+      "fi": " Keski-Uudenmaan koulutuskuntayhtymä"
+    },
+    "yTunnus": "7011260-6",
+    "kotipaikka": {
+      "koodiarvo": "005",
+      "nimi": {
+        "fi": "Alajärvi",
+        "sv": "Alajärvi"
+      },
+      "koodistoUri": "kunta",
+      "koodistoVersio": 2
+    }
+  },
+  "tila": {
+    "opiskeluoikeusjaksot": [
+      {
+        "tila": {
+          "koodiarvo": "lasna",
+          "nimi": {
+            "fi": "Läsnä",
+            "sv": "Närvarande",
+            "en": "Present"
+          },
+          "koodistoUri": "koskiopiskeluoikeudentila",
+          "koodistoVersio": 1
+        },
+        "alku": "2015-12-07",
+        "opintojenRahoitus": {
+          "koodiarvo": "14",
+          "nimi": {
+            "fi": "Jatkuvan oppimisen ja työllisuuden palvelukeskuksen rahoitus",
+            "sv": "Finansiering av Servicecentret för kontinuerligt lärande och sysselsättning",
+            "en": "Jatkuvan oppimisen ja työllisuuden palvelukeskuksen rahoitus"
+          },
+          "koodistoUri": "opintojenrahoitus",
+          "koodistoVersio": 1
+        }
+      },
+      {
+        "tila": {
+          "koodiarvo": "lasna",
+          "nimi": {
+            "fi": "Läsnä",
+            "sv": "Närvarande",
+            "en": "Present"
+          },
+          "koodistoUri": "koskiopiskeluoikeudentila",
+          "koodistoVersio": 1
+        },
+        "alku": "2023-12-07",
+        "opintojenRahoitus": {
+          "koodiarvo": "1",
+          "koodistoUri": "opintojenrahoitus",
+          "koodistoVersio": 1
+        }
+      }
+    ]
+  },
+  "suoritukset": [
+    {
+      "koulutusmoduuli": {
+        "tunniste": {
+          "koodiarvo": "999951",
+          "nimi": {
+            "fi": "Muu kuin säännelty koulutus",
+            "sv": "Muu kuin säännelty koulutus",
+            "en": "Muu kuin säännelty koulutus"
+          },
+          "lyhytNimi": {
+            "fi": "MUKS",
+            "sv": "MUKS",
+            "en": "MUKS"
+          },
+          "koodistoUri": "koulutus",
+          "koodistoVersio": 12
+        },
+        "opintokokonaisuus": {
+          "koodiarvo": "4405",
+          "nimi": {
+            "fi": "10 kaatomaalaustekniikkaa"
+          },
+          "koodistoUri": "opintokokonaisuudet",
+          "koodistoVersio": 1
+        }
+      },
+      "tyyppi": {
+        "koodiarvo": "muukuinsaanneltykoulutus",
+        "nimi": {
+          "fi": "Muu kuin säännelty koulutus",
+          "sv": "Muu kuin säännelty koulutus",
+          "en": "Muu kuin säännelty koulutus"
+        },
+        "koodistoUri": "suorituksentyyppi",
+        "koodistoVersio": 1
+      },
+      "toimipiste": {
+        "oid": "1.2.246.562.10.43682075486",
+        "nimi": {
+          "fi": "Kerava, Keskikatu"
+        },
+        "kotipaikka": {
+          "koodiarvo": "005",
+          "nimi": {
+            "fi": "Alajärvi",
+            "sv": "Alajärvi"
+          },
+          "koodistoUri": "kunta",
+          "koodistoVersio": 2
+        }
+      },
+      "suorituskieli": {
+        "koodiarvo": "FI",
+        "nimi": {
+          "fi": "suomi",
+          "sv": "finska",
+          "en": "Finnish"
+        },
+        "lyhytNimi": {
+          "fi": "suomi",
+          "sv": "finska",
+          "en": "Finnish"
+        },
+        "koodistoUri": "kieli",
+        "koodistoVersio": 1
+      }
+    },
+    {
+      "koulutusmoduuli": {
+        "tunniste": {
+          "koodiarvo": "351407",
+          "nimi": {
+            "fi": "Sähkö- ja automaatioalan perustutkinto",
+            "sv": "Grundexamen inom el- och automationsbranschen",
+            "en": "Vocational qualification in Electrical Engineering and Automation Technology"
+          },
+          "lyhytNimi": {
+            "fi": "Sähkö- ja automaatioalan pt",
+            "sv": "Grundexamen inom el- och automationsbranschen",
+            "en": "Vocational qualification in Electrical Engineering and Automation Technology"
+          },
+          "koodistoUri": "koulutus",
+          "koodistoVersio": 11
+        },
+        "perusteenDiaarinumero": "77/011/2014",
+        "perusteenNimi": {
+          "fi": "Sähkö- ja automaatiotekniikan perustutkinto",
+          "sv": "Grundexamen inom el- och automationsteknik"
+        },
+        "koulutustyyppi": {
+          "koodiarvo": "1",
+          "nimi": {
+            "fi": "Ammatillinen perustutkinto",
+            "sv": "Yrkesinriktad grundexamen",
+            "en": "Vocational upper secondary qualification"
+          },
+          "lyhytNimi": {
+            "fi": "Ammatillinen perustutkinto",
+            "sv": "Yrkesinriktad grundexamen"
+          },
+          "koodistoUri": "koulutustyyppi",
+          "koodistoVersio": 2
+        }
+      },
+      "suoritustapa": {},
+      "toimipiste": {},
+      "alkamispäivä": "2016-08-05",
+      "suorituskieli": {},
+      "osasuoritukset": [],
+      "tyyppi": {
+        "koodiarvo": "ammatillinentutkinto",
+        "nimi": {
+          "fi": "Ammatillinen tutkinto",
+          "sv": "Yrkesinriktad examen",
+          "en": "Vocational education  qualification"
+        },
+        "koodistoUri": "suorituksentyyppi",
+        "koodistoVersio": 1
+      }
+    }
+  ],
+  "tyyppi": {
+    "koodiarvo": "muukuinsaanneltykoulutus",
+    "nimi": {
+      "fi": "Muu kuin säännelty koulutus",
+      "sv": "Muu kuin säännelty koulutus"
+    },
+    "lyhytNimi": {
+      "fi": "MUKS",
+      "sv": "MUKS"
+    },
+    "koodistoUri": "opiskeluoikeudentyyppi",
+    "koodistoVersio": 1
+  },
+  "alkamispäivä": "2015-12-07"
+}
