@@ -8,11 +8,13 @@
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.http-client :as client]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.external.oppijanumerorekisteri :as onr]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.external.organisaatio-test :as organisaatio-test]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks-test :as hoks-test]
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
+            [oph.ehoks.oppija.auth-handler-test :refer [mock-get-oppija-raw!]]
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppijaindex-test :as oppijaindex-test]
             [oph.ehoks.palaute :as palaute]
@@ -290,6 +292,8 @@
                     :oppilaitos {:oid "1.2.246.562.10.12944436166"}}])
                 koski/get-opiskeluoikeus-info-raw
                 mock-get-opiskeluoikeus-info-raw
+                onr/get-oppija-raw!
+                mock-get-oppija-raw!
                 organisaatio/get-organisaatio!
                 organisaatio-test/mock-get-organisaatio!]
     (oppijaindex/add-hoks-dependents-in-index! hoks-test/hoks-1)
@@ -343,3 +347,90 @@
                           :tutkinnon_suorituskieli :toimipiste_oid) @saved-req)
                    ["1.2.246.562.10.346830761110" "tutkinnon_suorittaneet"
                     "351407" "fi" "1.2.246.562.10.12312312312"]))))))))
+
+(deftest test-create-and-save-arvo-kyselylinkki!
+  (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
+                koski/get-oppija-opiskeluoikeudet
+                (fn [_]
+                  [{:oid "1.2.246.562.15.55003456345"
+                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}
+                   {:oid "1.2.246.562.15.55003456345"
+                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}])
+                koski/get-opiskeluoikeus-info-raw
+                mock-get-opiskeluoikeus-info-raw
+                onr/get-oppija-raw!
+                mock-get-oppija-raw!
+                organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
+    (oppijaindex/add-hoks-dependents-in-index! hoks-test/hoks-1)
+    (let [hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
+                 {:hoks hoks-test/hoks-1
+                  :opiskeluoikeus oo-test/opiskeluoikeus-1})
+          vastauslinkki-counter (atom 0)
+          heratteet
+          (palaute/get-amis-palautteet-waiting-for-kyselylinkki! db/spec)]
+      (testing "successful Arvo call for amispalaute"
+        (client/set-post!
+          (fn [^String url options]
+            (when (.endsWith url "/api/vastauslinkki/v1")
+              (swap! vastauslinkki-counter inc)
+              {:status 200
+               :body {:tunnus (str "foo" @vastauslinkki-counter)
+                      :kysely_linkki (str "https://arvovastaus.csc.fi/v/foo"
+                                          @vastauslinkki-counter)
+                      :voimassa_loppupvm "2024-10-10"}})))
+        (is (= [:id]
+               (->> heratteet
+                    (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
+                    (op/create-and-save-arvo-kyselylinkki!)
+                    (keys))))
+        (is (= [["odottaa_kasittelya" "aloittaneet"]
+                ["vastaajatunnus_muodostettu" "valmistuneet"]]
+               (->> {:hoks-id (:id hoks)
+                     :kyselytyypit ["aloittaneet" "valmistuneet"]}
+                    (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+                    (map (juxt :tila :kyselytyyppi)))))
+        (is (= [["odottaa_kasittelya" "odottaa_kasittelya"
+                 {:osaamisen-saavuttamisen-pvm "2024-02-05"}]
+                ["odottaa_kasittelya" "vastaajatunnus_muodostettu"
+                 {:arvo_response
+                  {:tunnus "foo1"
+                   :kysely_linkki "https://arvovastaus.csc.fi/v/foo1"
+                   :voimassa_loppupvm "2024-10-10"}}]]
+               (->> {:hoks-id (:id hoks) :kyselytyypit ["valmistuneet"]}
+                    (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                      db/spec)
+                    (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
+        (client/reset-functions!))
+      (testing "unsuccessful Arvo call for amispalaute"
+        (client/set-post!
+          (fn [^String url options]
+            (when (.endsWith url "/api/vastauslinkki/v1")
+              (throw
+                (ex-info "not found"
+                         {:status 404
+                          :body {:error "ei_kyselykertaa"
+                                 :msg "Huonosti menee"}})))))
+        (is (thrown?
+              clojure.lang.ExceptionInfo
+              (->> heratteet
+                   (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
+                   (op/create-and-save-arvo-kyselylinkki!)
+                   (keys))))
+        (is (= [["odottaa_kasittelya" "aloittaneet"]
+                ["vastaajatunnus_muodostettu" "valmistuneet"]]
+               (->> {:hoks-id (:id hoks)
+                     :kyselytyypit ["aloittaneet" "valmistuneet"]}
+                    (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+                    (map (juxt :tila :kyselytyyppi)))))
+        (is (= [["odottaa_kasittelya" "odottaa_kasittelya"
+                 {:ensikertainen-hyvaksyminen "2023-04-16"}]
+                ["odottaa_kasittelya" "odottaa_kasittelya"
+                 {:errormsg "HTTP request error: not found"
+                  :body {:msg "Huonosti menee", :error "ei_kyselykertaa"}}]]
+               (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
+                    (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                      db/spec)
+                    (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
+        (client/reset-functions!))
+      )))

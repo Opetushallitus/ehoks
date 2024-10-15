@@ -218,6 +218,6 @@
          :uusi-tila       (:tila palaute)
          :tapahtumatyyppi "arvo_luonti"
          :syy             "arvo_kutsu_epaonnistui"
-         :lisatiedot      {:msg (.getMessage e)
+         :lisatiedot      {:errormsg (.getMessage e)
                            :body (:body (ex-data e))}})
       (throw e))))
