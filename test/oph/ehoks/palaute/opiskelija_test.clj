@@ -1,9 +1,11 @@
 (ns oph.ehoks.palaute.opiskelija-test
   (:require [clojure.test :refer [are deftest is testing use-fixtures]]
+            [taoensso.faraday :as far]
             [medley.core :refer [remove-vals find-first]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
+            [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.http-client :as client]
@@ -401,6 +403,15 @@
                       db/spec)
                     (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
         (client/reset-functions!))
+      (testing "Palaute is synced to herätepalvelu after Arvo call"
+        (let [ddb-key {:tyyppi_kausi "tutkinnon_suorittaneet/2023-2024"
+                       :toimija_oppija
+                       "1.2.246.562.10.346830761110/1.2.246.562.24.12312312319"}
+              ddb-item (far/get-item
+                         @ddb/faraday-opts @(ddb/tables :amis) ddb-key)]
+          (is (= "testi.testaaja@testidomain.testi" (:sahkoposti ddb-item)))
+          (is (= "https://arvovastaus.csc.fi/v/foo1" (:kyselylinkki ddb-item)))
+          (is (= 351407 (:tutkintotunnus ddb-item)))))
       (testing "unsuccessful Arvo call for amispalaute"
         (client/set-post!
           (fn [^String url options]
