@@ -31,6 +31,30 @@
           [wrap-user-details m/wrap-require-service-user
            audit/wrap-logger m/wrap-require-oph-privileges]
 
+          (c-api/context "/opiskelijapalaute" []
+            :tags ["opiskelijapalaute"]
+
+            (c-api/POST ":hoks-id/kyselylinkki" [hoks-id]
+              :summary "Luo yhden HOKSin kyselylinkit, jos niitä ei ole luotu."
+              (let [palautteet
+                    (palaute/get-by-hoks-id-and-kyselytyypit! hoks-id
+                      ["aloittaneet" "valmistuneet" "osia_suorittaneet"])]
+                (->> palautteet
+                     (map amis/create-and-save-arvo-kyselylinkki!)
+                     (hash-map :kyselylinkit)
+                     (restful/ok)
+                     (assoc ::audit/target {:palautteet palautteet}))))
+
+            (c-api/POST "/kyselylinkit" []
+              :summary "Luo kyselylinkit niille palautteille, jotka
+                       odottavat käsittelyä."
+              (let [palautteet
+                    (amis/create-and-save-arvo-kyselylinkki-for-all-needed!
+                      {})]
+                (-> {:kyselylinkit palautteet}
+                    (restful/ok)
+                    (assoc ::audit/target {:palautteet palautteet})))))
+
           (c-api/context "/tyoelamapalaute" []
             :tags ["tyoelamapalaute"]
 
