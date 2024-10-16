@@ -303,7 +303,8 @@
                  {:hoks hoks-test/hoks-1
                   :opiskeluoikeus oo-test/opiskeluoikeus-1})
           heratteet
-          (palaute/get-amis-palautteet-waiting-for-kyselylinkki! db/spec)]
+          (palaute/get-amis-palautteet-waiting-for-kyselylinkki!
+            db/spec {:heratepvm (LocalDate/of 2024 4 20)})]
       (testing "HOKS creation marks correct palautteet as actionable"
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["odottaa_kasittelya" "valmistuneet"]]
@@ -370,7 +371,8 @@
                   :opiskeluoikeus oo-test/opiskeluoikeus-1})
           vastauslinkki-counter (atom 0)
           heratteet
-          (palaute/get-amis-palautteet-waiting-for-kyselylinkki! db/spec)]
+          (palaute/get-amis-palautteet-waiting-for-kyselylinkki!
+            db/spec {:heratepvm (LocalDate/of 2024 4 20)})]
       (testing "successful Arvo call for amispalaute"
         (client/set-post!
           (fn [^String url options]
@@ -442,5 +444,42 @@
                     (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                       db/spec)
                     (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
-        (client/reset-functions!))
-      )))
+        (client/reset-functions!)))))
+
+(deftest test-create-and-save-arvo-kyselylinkki-for-all-needed!
+  (with-redefs [date/now (constantly (LocalDate/of 2024 12 18))
+                koski/get-oppija-opiskeluoikeudet
+                (fn [_]
+                  [{:oid "1.2.246.562.15.55003456345"
+                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}
+                   {:oid "1.2.246.562.15.55003456345"
+                    :oppilaitos {:oid "1.2.246.562.10.12944436166"}}])
+                koski/get-opiskeluoikeus-info-raw
+                mock-get-opiskeluoikeus-info-raw
+                onr/get-oppija-raw!
+                mock-get-oppija-raw!
+                organisaatio/get-organisaatio!
+                organisaatio-test/mock-get-organisaatio!]
+    (oppijaindex/add-hoks-dependents-in-index! hoks-test/hoks-4)
+    (let [hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
+                 {:hoks hoks-test/hoks-4
+                  :opiskeluoikeus oo-test/opiskeluoikeus-1})
+          vastauslinkki-counter (atom 0)]
+      (testing "create-and-save-arvo-kyselylinkki-for-all-needed!"
+        (client/set-post!
+          (fn [^String url options]
+            (when (.endsWith url "/api/vastauslinkki/v1")
+              (swap! vastauslinkki-counter inc)
+              {:status 200
+               :body {:tunnus (str "bar" @vastauslinkki-counter)
+                      :kysely_linkki (str "https://arvovastaus.csc.fi/v/bar"
+                                          @vastauslinkki-counter)
+                      :voimassa_loppupvm "2024-10-10"}})))
+        (op/create-and-save-arvo-kyselylinkki-for-all-needed! {})
+        (is (= [["vastaajatunnus_muodostettu" "aloittaneet"]
+                ["vastaajatunnus_muodostettu" "valmistuneet"]]
+               (->> {:hoks-id (:id hoks)
+                     :kyselytyypit ["aloittaneet" "valmistuneet"]}
+                    (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
+                    (map (juxt :tila :kyselytyyppi)))))
+        (client/reset-functions!)))))

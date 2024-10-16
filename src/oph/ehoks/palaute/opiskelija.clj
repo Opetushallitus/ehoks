@@ -15,7 +15,8 @@
             [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date])
-  (:import (java.util UUID)))
+  (:import (java.util UUID)
+           (clojure.lang ExceptionInfo)))
 
 (def kyselytyypit #{"aloittaneet" "valmistuneet" "osia_suorittaneet"})
 (def paattokyselyt #{"valmistuneet" "osia_suorittaneet"})
@@ -224,3 +225,16 @@
                            :body (:body (ex-data e))}})
       (throw e)))
   (dynamodb/sync-amis-herate! (:hoks-id palaute) (:kyselytyyppi palaute)))
+
+(defn create-and-save-arvo-kyselylinkki-for-all-needed!
+  "Create kyselylinkki for palautteet whose herätepvm has come but
+  which don't have a kyselylinkki yet."
+  [_]
+  (log/info "Creating kyselylinkki for unprocessed amispalaute.")
+  (doseq [palaute (palaute/get-amis-palautteet-waiting-for-kyselylinkki!
+                    db/spec {:heratepvm (date/now)})]
+    (try
+      (log/infof "Creating kyselylinkki for %d" (:id palaute))
+      (create-and-save-arvo-kyselylinkki! palaute)
+      (catch ExceptionInfo e
+        (log/errorf e "Error processing amispalaute %s" palaute)))))

@@ -11,6 +11,7 @@
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.opiskelija :as amis]
             [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.restful :as restful]
             [ring.util.http-response :as response]

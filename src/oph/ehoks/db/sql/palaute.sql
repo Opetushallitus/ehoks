@@ -36,7 +36,7 @@ select	id, hoks_id, tila, kyselytyyppi
 from	palautteet
 where	tila = 'odottaa_kasittelya'
 and	kyselytyyppi in ('aloittaneet','valmistuneet','osia_suorittaneet')
-and	heratepvm <= now()
+and	heratepvm <= :heratepvm
 and	arvo_tunniste is null
 and	deleted_at is null
 
