@@ -37,7 +37,8 @@
             (c-api/POST ":hoks-id/kyselylinkki" [hoks-id]
               :summary "Luo yhden HOKSin kyselylinkit, jos niitä ei ole luotu."
               (let [palautteet
-                    (palaute/get-by-hoks-id-and-kyselytyypit! hoks-id
+                    (palaute/get-by-hoks-id-and-kyselytyypit!
+                      hoks-id
                       ["aloittaneet" "valmistuneet" "osia_suorittaneet"])]
                 (->> palautteet
                      (map amis/create-and-save-arvo-kyselylinkki!)
