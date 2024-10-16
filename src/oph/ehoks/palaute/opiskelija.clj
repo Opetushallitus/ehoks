@@ -6,6 +6,7 @@
             [clojure.set :refer [rename-keys]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.dynamodb :as dynamodb]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.koski :as koski]
@@ -206,6 +207,7 @@
           (catch Exception e
             (log/error "error while saving arvo tunniste" (:tunnus response)
                        "; trying to delete kyselylinkki")
+            ;; FIXME: create chained exception if this throws
             (arvo/delete-kyselytunnus (:tunnus response))
             (log/info "successfully deleted kyselylinkki" (:tunnus response))
             (throw e)))))
@@ -220,4 +222,5 @@
          :syy             "arvo_kutsu_epaonnistui"
          :lisatiedot      {:errormsg (.getMessage e)
                            :body (:body (ex-data e))}})
-      (throw e))))
+      (throw e)))
+  (dynamodb/sync-amis-herate! (:hoks-id palaute) (:kyselytyyppi palaute)))

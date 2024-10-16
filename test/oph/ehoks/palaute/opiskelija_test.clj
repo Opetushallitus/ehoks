@@ -379,11 +379,10 @@
                       :kysely_linkki (str "https://arvovastaus.csc.fi/v/foo"
                                           @vastauslinkki-counter)
                       :voimassa_loppupvm "2024-10-10"}})))
-        (is (= [:id]
-               (->> heratteet
-                    (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
-                    (op/create-and-save-arvo-kyselylinkki!)
-                    (keys))))
+        (is (->> heratteet
+                 (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
+                 (op/create-and-save-arvo-kyselylinkki!)
+                 (nil?)))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["vastaajatunnus_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)

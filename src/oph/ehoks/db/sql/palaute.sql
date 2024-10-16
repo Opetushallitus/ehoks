@@ -104,6 +104,7 @@ where hoks_id = :hoks-id AND jakson_yksiloiva_tunniste = :yksiloiva-tunniste
 -- :doc get AMIS-palaute in the format for putting into herätepalvelu
 select * from palaute_for_amis_heratepalvelu
 where ehoks_id = :hoks-id  -- FIXME: should probably have deleted_at cond
+			   -- FIXME: should choose the newest palaute
   and internal_kyselytyyppi in (:v*:kyselytyypit)
 
 -- :name get-for-arvo-by-hoks-id-and-kyselytyyppi! :? :1
