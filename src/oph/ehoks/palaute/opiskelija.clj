@@ -3,13 +3,20 @@
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
             [medley.core :refer [greatest]]
+            [clojure.set :refer [rename-keys]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
+            [oph.ehoks.db.dynamodb :as dynamodb]
             [oph.ehoks.external.aws-sqs :as sqs]
+            [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.hoks.common :as c]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.utils.date :as date]))
+            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
+            [oph.ehoks.utils :as utils]
+            [oph.ehoks.utils.date :as date])
+  (:import (java.util UUID)
+           (clojure.lang ExceptionInfo)))
 
 (def kyselytyypit #{"aloittaneet" "valmistuneet" "osia_suorittaneet"})
 (def paattokyselyt #{"valmistuneet" "osia_suorittaneet"})
@@ -160,3 +167,74 @@
                          kysely-type
                          opts))
                    hoksit))))
+
+(defn create-arvo-kyselylinkki!
+  "For the given palaute, make Arvo call for creating its kyselylinkki
+  and return the Arvo reply."
+  [palaute]
+  (-> palaute
+      (select-keys [:hoks-id :kyselytyyppi])
+      (->> (palaute/get-for-arvo-by-hoks-id-and-kyselytyyppi! db/spec))
+      (or (throw (ex-info "No Arvo-processable palaute found"
+                          {:palaute palaute})))
+      (utils/to-underscore-keys)
+      ;; FIXME: add up-to-date values from Koski here
+      (assoc :metatiedot {:tila "ei_lahetetty"}
+             :request_id (str (UUID/randomUUID)))
+      (#(assoc % :tutkinnonosat_hankkimistavoittain
+               {:oppisopimus (:tutkinnonosat_oppisopimus %)
+                :koulutussopimus (:tutkinnonosat_koulutussopimus %)
+                :oppilaitosmuotoinenkoulutus
+                (:tutkinnonosat_oppilaitosmuotoinenkoulutus %)}))
+      (update :tutkinnon_suorituskieli #(or % "fi"))
+      (update :koulutustoimija_oid #(or % ""))
+      (update :tutkintotunnus str)
+      (update :kyselyn_tyyppi translate-kyselytyyppi)
+      (dissoc :tila :tutkinnonosat_koulutussopimus :tutkinnonosat_oppisopimus
+              :tutkinnonosat_oppilaitosmuotoinenkoulutus)
+      (arvo/create-kyselytunnus!)))
+
+(defn create-and-save-arvo-kyselylinkki!
+  "Update given palaute with a kyselylinkki from Arvo."
+  [palaute]
+  (try
+    (jdbc/with-db-transaction
+      [tx db/spec]
+      (let [response (create-arvo-kyselylinkki! palaute)
+            for-db (rename-keys response {:kysely_linkki :url})]
+        (try
+          (palaute/save-arvo-tunniste! tx palaute for-db
+                                       {:arvo_response response})
+          (catch Exception e
+            (log/error "error while saving arvo tunniste" (:tunnus response)
+                       "; trying to delete kyselylinkki")
+            ;; FIXME: create chained exception if this throws
+            (arvo/delete-kyselytunnus (:tunnus response))
+            (log/info "successfully deleted kyselylinkki" (:tunnus response))
+            (throw e)))))
+    (catch Exception e
+      (log/error e "while processing palaute" palaute)
+      (palautetapahtuma/insert!
+        db/spec
+        {:palaute-id      (:id palaute)
+         :vanha-tila      (:tila palaute)
+         :uusi-tila       (:tila palaute)
+         :tapahtumatyyppi "arvo_luonti"
+         :syy             "arvo_kutsu_epaonnistui"
+         :lisatiedot      {:errormsg (.getMessage e)
+                           :body (:body (ex-data e))}})
+      (throw e)))
+  (dynamodb/sync-amis-herate! (:hoks-id palaute) (:kyselytyyppi palaute)))
+
+(defn create-and-save-arvo-kyselylinkki-for-all-needed!
+  "Create kyselylinkki for palautteet whose herätepvm has come but
+  which don't have a kyselylinkki yet."
+  [_]
+  (log/info "Creating kyselylinkki for unprocessed amispalaute.")
+  (doseq [palaute (palaute/get-amis-palautteet-waiting-for-kyselylinkki!
+                    db/spec {:heratepvm (date/now)})]
+    (try
+      (log/infof "Creating kyselylinkki for %d" (:id palaute))
+      (create-and-save-arvo-kyselylinkki! palaute)
+      (catch ExceptionInfo e
+        (log/errorf e "Error processing amispalaute %s" palaute)))))

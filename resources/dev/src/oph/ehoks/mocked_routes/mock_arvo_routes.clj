@@ -14,5 +14,5 @@
     (let [tunnus (subs (str (java.util.UUID/randomUUID)) 30)]
       (mock-gen/json-response
         {:tunnus tunnus
-         :kysely_linkki (str (:arvo-url config) "/" tunnus)
+         :kysely_linkki (str "https://arvovastaus-dev.csc.fi/v/" tunnus)
          :voimassa_loppupvm (str (time/now))}))))

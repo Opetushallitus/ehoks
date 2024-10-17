@@ -11,6 +11,7 @@
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.opiskelija :as amis]
             [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.restful :as restful]
             [ring.util.http-response :as response]
@@ -29,6 +30,31 @@
         (route-middleware
           [wrap-user-details m/wrap-require-service-user
            audit/wrap-logger m/wrap-require-oph-privileges]
+
+          (c-api/context "/opiskelijapalaute" []
+            :tags ["opiskelijapalaute"]
+
+            (c-api/POST ":hoks-id/kyselylinkki" [hoks-id]
+              :summary "Luo yhden HOKSin kyselylinkit, jos niitä ei ole luotu."
+              (let [palautteet
+                    (palaute/get-by-hoks-id-and-kyselytyypit!
+                      hoks-id
+                      ["aloittaneet" "valmistuneet" "osia_suorittaneet"])]
+                (->> palautteet
+                     (map amis/create-and-save-arvo-kyselylinkki!)
+                     (hash-map :kyselylinkit)
+                     (restful/ok)
+                     (assoc ::audit/target {:palautteet palautteet}))))
+
+            (c-api/POST "/kyselylinkit" []
+              :summary "Luo kyselylinkit niille palautteille, jotka
+                       odottavat käsittelyä."
+              (let [palautteet
+                    (amis/create-and-save-arvo-kyselylinkki-for-all-needed!
+                      {})]
+                (-> {:kyselylinkit palautteet}
+                    (restful/ok)
+                    (assoc ::audit/target {:palautteet palautteet})))))
 
           (c-api/context "/tyoelamapalaute" []
             :tags ["tyoelamapalaute"]
@@ -50,17 +76,15 @@
               :header-params [caller-id :- s/Str
                               ticket :- s/Str]
               :path-params [palaute-id :- s/Int]
-              (jdbc/with-db-transaction
-                [tx db/spec]
-                (if-let [tep-palaute
-                         (palaute/get-tep-palaute-waiting-for-vastaajatunnus!
-                           tx {:palaute-id palaute-id})]
-                  (let [vastaajatunnus (tep/create-and-save-arvo-vastaajatunnus!
-                                         tx tep-palaute)]
-                    (assoc (restful/ok {:vastaajatunnus vastaajatunnus})
-                           ::audit/target {:vastaajatunnus vastaajatunnus
-                                           :palaute-id palaute-id}))
-                  (response/not-found {:message "Palaute not found"}))))))))
+              (if-let [tep-palaute
+                       (palaute/get-tep-palaute-waiting-for-vastaajatunnus!
+                         db/spec {:palaute-id palaute-id})]
+                (let [vastaajatunnus (tep/create-and-save-arvo-vastaajatunnus!
+                                       tep-palaute)]
+                  (assoc (restful/ok {:vastaajatunnus vastaajatunnus})
+                         ::audit/target {:vastaajatunnus vastaajatunnus
+                                         :palaute-id palaute-id}))
+                (response/not-found {:message "Palaute not found"})))))))
 
     (c-api/undocumented
       (GET "/buildversion.txt" []

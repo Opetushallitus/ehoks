@@ -1,12 +1,14 @@
 (ns oph.ehoks.palaute.scheduler
   (:require [chime.core :as chime]
             [clojure.tools.logging :as log]
+            [oph.ehoks.palaute.opiskelija :as amis]
             [oph.ehoks.palaute.tyoelama :as tep])
   (:import (java.lang AutoCloseable)))
 
 (defn- run-sequence
   "Run these tasks sequentially."
   [opts]
+  (amis/create-and-save-arvo-kyselylinkki-for-all-needed! opts)
   (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! opts))
 
 (defn run-scheduler!

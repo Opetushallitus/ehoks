@@ -7,6 +7,7 @@
             [oph.ehoks.db :as db]
             [oph.ehoks.palaute :refer
              [get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!]]
+            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [taoensso.faraday :as far])
   (:import (com.amazonaws.auth AWSStaticCredentialsProvider
                                BasicSessionCredentials)
@@ -101,16 +102,31 @@
   (if-not (contains? (set (:heratepalvelu-responsibities config))
                      :sync-amis-heratteet)
     (log/warn "sync-amis-herate!: configured to not do anything")
-    (-> {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]}
-        (->> (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit! db/spec))
-        (first)
-        (not-empty)
-        (or (throw (ex-info "palaute not found"
-                            {:hoks-id hoks-id :kyselytyyppi kyselytyyppi})))
-        (utils/remove-nils)
-        (update-keys map-keys-to-ddb)
-        (dissoc :internal-kyselytyyppi)
-        (->> (sync-item! :amis)))))
+    (let [palautteet (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!
+                       db/spec
+                       {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]})
+          palaute (-> (not-empty palautteet)
+                      (or (throw (ex-info "palaute not found"
+                                          {:hoks-id hoks-id
+                                           :kyselytyyppi kyselytyyppi})))
+                      (first))]
+      (try (-> palaute
+               (utils/remove-nils)
+               (update-keys map-keys-to-ddb)
+               (dissoc :internal-kyselytyyppi)
+               (->> (sync-item! :amis)))
+           (catch Exception e
+             (log/error e "while processing palaute" palaute)
+             (palautetapahtuma/insert!
+               db/spec
+               {:palaute-id      (:id palaute)
+                :vanha-tila      (:tila palaute)
+                :uusi-tila       (:tila palaute)
+                :tapahtumatyyppi "heratepalvelu_sync"
+                :syy             "synkronointi_epaonnistui"
+                :lisatiedot      {:errormsg (.getMessage e)
+                                  :body (:body (ex-data e))}})
+             (throw e))))))
 
 (def map-jakso-keys-to-ddb
   (some-fn {:hankkimistapa-id :hankkimistapa_id,
