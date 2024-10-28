@@ -385,7 +385,7 @@ FROM yhteisen_tutkinnon_osan_osa_alueen_naytot;
 CREATE OR REPLACE FUNCTION add_reporting_constraints(target_schema TEXT) RETURNS BOOLEAN AS
 $BODY$
 BEGIN
-    IF lower(target_schema) = 'public' THEN
+    IF lower(target_schema) NOT LIKE 'repo%' THEN
         RETURN false;
     ELSE
         -- Primary keys
@@ -454,7 +454,7 @@ CREATE OR REPLACE FUNCTION refresh_reporting (target_schema TEXT) RETURNS BOOLEA
 $BODY$
 DECLARE tbl RECORD;
 BEGIN
-    IF lower(target_schema) = 'public' THEN
+    IF lower(target_schema) NOT LIKE 'repo%' THEN
         RETURN false;
     ELSE
         EXECUTE format('DROP SCHEMA IF EXISTS %I CASCADE', target_schema);
