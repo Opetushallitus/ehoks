@@ -40,10 +40,12 @@
   "Hakee koulutustoimijan OID:n opiskeluoikeudesta, tai organisaatiopalvelusta
   jos sitä ei löydy opiskeluoikeudesta."
   [opiskeluoikeus]
-  (if-let [koulutustoimija-oid (:oid (:koulutustoimija opiskeluoikeus))]
-    koulutustoimija-oid
-    (:parentOid (organisaatio/get-existing-organisaatio!
-                  (get-in opiskeluoikeus [:oppilaitos :oid])))))
+  (or (:oid (:koulutustoimija opiskeluoikeus))
+      (do
+        (log/info "Ei koulutustoimijaa opiskeluoikeudessa "
+                  (:oid opiskeluoikeus) ", haetaan Organisaatiopalvelusta")
+        (:parentOid (organisaatio/get-organisaatio!
+                      (get-in opiskeluoikeus [:oppilaitos :oid]))))))
 
 (defn toimipiste-oid!
   "Palauttaa toimipisteen OID jos sen organisaatiotyyppi on toimipiste. Tämä

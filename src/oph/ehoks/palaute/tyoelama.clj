@@ -153,7 +153,7 @@
   (let [niputuspvm (str (next-niputus-date (date/now)))
         alkupvm (next-niputus-date
                   (LocalDate/parse (:jakso-loppupvm tep-palaute)))
-        koulutustoimija (opiskeluoikeus-koulutustoimija-oid opiskeluoikeus)
+        koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
         oo-suoritus (find-first suoritus/ammatillinen?
                                 (:suoritukset opiskeluoikeus))
         tutkinto (get-in oo-suoritus
@@ -207,8 +207,7 @@
       (log/warnf
         "Opiskeluoikeus not found for palaute %d, skipping processing"
         (:id tep-palaute))  ; FIXME: create tapahtuma and update state
-      (let [koulutustoimija (opiskeluoikeus-koulutustoimija-oid
-                              opiskeluoikeus)
+      (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
             alkupvm         (next-niputus-date (:loppupvm tep-palaute))
             request-id      (str (UUID/randomUUID))
             suoritus        (find-first suoritus/ammatillinen?
