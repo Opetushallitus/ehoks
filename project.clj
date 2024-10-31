@@ -33,7 +33,7 @@
 
                          ;; http server
                          [javax.servlet/javax.servlet-api "4.0.1"]
-                         [metosin/compojure-api "2.0.0-alpha32" :exclusions [medley]]
+                         [metosin/compojure-api "2.0.0-alpha31" :exclusions [medley]]
                          [ring/ring-codec "1.2.0"]
                          [ring/ring-core "1.13.0"]
                          [ring/ring-jetty-adapter "1.13.0" :exclusions [org.slf4j/slf4j-api]]
