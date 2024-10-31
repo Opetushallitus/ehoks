@@ -17,6 +17,8 @@ Frontend ks. [Github Repository](https://github.com/Opetushallitus/ehoks-ui)
 
 Katso [Leiningenin määrityksistä](./project.clj).
 
+Java 21.
+
 Muut riippuvuudet:
 
 + Podman tai Docker, kehitysympäristön tietokantaa varten
