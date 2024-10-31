@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>a6e4b292cf59a0546ca1baa049d2d715b105a854</tag>
+    <tag>53f34987c35a1fa88605c2011556a670e4169c44</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -149,7 +149,7 @@
       <dependency>
         <groupId>metosin</groupId>
         <artifactId>compojure-api</artifactId>
-        <version>2.0.0-alpha32</version>
+        <version>2.0.0-alpha31</version>
         <exclusions>
           <exclusion>
             <artifactId>medley</artifactId>
