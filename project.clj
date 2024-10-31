@@ -53,6 +53,7 @@
                          [org.clojure/tools.logging "1.3.0"]
                          [org.apache.logging.log4j/log4j-api "2.24.1"]
                          [org.apache.logging.log4j/log4j-core "2.24.1"]
+                         ; pipes ring/jetty logging (slf4j) to log4j2
                          [org.apache.logging.log4j/log4j-slf4j-impl "2.24.1"]
 
                          ;; date, time
