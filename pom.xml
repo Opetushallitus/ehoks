@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>53f34987c35a1fa88605c2011556a670e4169c44</tag>
+    <tag>f522f819d9d9d8b6044327113aae4717fc353301</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -408,6 +408,11 @@
         <groupId>camel-snake-kebab</groupId>
         <artifactId>camel-snake-kebab</artifactId>
         <version>0.4.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mozilla</groupId>
+        <artifactId>rhino</artifactId>
+        <version>1.7.12</version>
       </dependency>
       <dependency>
         <groupId>org.clojure</groupId>
