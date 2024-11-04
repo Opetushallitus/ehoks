@@ -96,6 +96,7 @@
                          [ring/ring-devel "1.13.0" :exclusions [ring/ring-core
                                                                 org.clojure/java.classpath]]
                          [camel-snake-kebab "0.4.3"]
+                         [org.mozilla/rhino "1.7.12"]
 
                          ;; Plugins
                          [org.clojure/tools.reader "1.5.0"]
