@@ -86,7 +86,7 @@
               This should be removed once Herätepalvelu functionality has been
               fully migrated to eHOKS."
   [{:keys [tx hoks opiskeluoikeus] :as ctx}
-   {:keys [type state] :or {state :odottaa-kasittelya} :as palaute}]
+   {:keys [type state] :or {state :odottaa-kasittelya} :as creation-params}]
   {:pre [(#{:aloituskysely :paattokysely} type)]}
   (let [target-kasittelytila (not= state :odottaa-kasittelya)
         amisherate-kasittelytila
@@ -97,7 +97,7 @@
 
   (let [heratepvm (get hoks (herate-date-basis type))]
     (palaute/upsert!
-      ctx (assoc palaute
+      ctx (assoc creation-params
                  :heratepvm heratepvm
                  :alkupvm   (greatest heratepvm (date/now))))
     (when (= :odottaa-kasittelya state)
@@ -105,7 +105,7 @@
       (sqs/send-amis-palaute-message
         {:ehoks-id           (:id hoks)
          :kyselytyyppi       (translate-kyselytyyppi
-                               (palaute/kyselytyyppi palaute opiskeluoikeus))
+                               (palaute/kyselytyyppi type opiskeluoikeus))
          :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
          :oppija-oid         (:oppija-oid hoks)
          :sahkoposti         (:sahkoposti hoks)
