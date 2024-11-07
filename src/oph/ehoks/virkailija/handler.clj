@@ -18,7 +18,7 @@
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.healthcheck.handler :as healthcheck-handler]
             [oph.ehoks.heratepalvelu.herate-handler :as herate-handler]
-            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]
+            [oph.ehoks.heratepalvelu :as heratepalvelu]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.handler :as hoks-handler]
             [oph.ehoks.hoks.schema :as hoks-schema]

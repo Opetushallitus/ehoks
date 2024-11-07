@@ -1,4 +1,4 @@
-(ns oph.ehoks.heratepalvelu.heratepalvelu
+(ns oph.ehoks.heratepalvelu
   (:require [clojure.string :as string]
             [clojure.tools.logging :as log]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
