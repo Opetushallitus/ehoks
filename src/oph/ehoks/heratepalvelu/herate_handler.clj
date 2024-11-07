@@ -2,7 +2,7 @@
   (:require [compojure.api.core :refer [route-middleware]]
             [compojure.api.sweet :as c-api]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
-            [oph.ehoks.heratepalvelu.heratepalvelu :as hp]
+            [oph.ehoks.heratepalvelu :as hp]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.logging.audit :as audit]
