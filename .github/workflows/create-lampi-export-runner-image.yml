@@ -7,16 +7,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Install Dependencies
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Clone CI tools
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           git clone https://github.com/Opetushallitus/ci-tools.git
 
-      - uses: actions/checkout@v4
       - name: Build the Docker image
-        run: docker build . --file scripts/lampi-export/Dockerfile --tag ehoks-lampi-export:$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT
+        run: |
+          source ci-tools/common/setup-tools.sh
+          docker build . --file scripts/lampi-export/Dockerfile --tag ehoks-lampi-export:$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT
 
       - name: Upload Package
         shell: bash
