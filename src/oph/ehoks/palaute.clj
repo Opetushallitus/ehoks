@@ -90,8 +90,8 @@
    "ammatillinentutkintoosittainen" "osia_suorittaneet"})
 
 (defn kyselytyyppi
-  [tyyppi opiskeluoikeus]
-  (case tyyppi
+  [kyselytyyppi opiskeluoikeus]
+  (case kyselytyyppi
     :aloituskysely "aloittaneet"
     :paattokysely  (-> (find-first suoritus/ammatillinen?
                                    (:suoritukset opiskeluoikeus))
