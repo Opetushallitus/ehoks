@@ -19,8 +19,8 @@
 (defn already-initiated?
   "Returns `true` if palautekysely has already been initiated, i.e., there
   already exists a herate for kysely that has already been handled."
-  [palaute]
-  (not-every? unhandled? (:existing-heratteet palaute)))
+  [existing-heratteet]
+  (not-every? unhandled? existing-heratteet))
 
 (defn current-rahoituskausi-alkupvm
   ^LocalDate []
@@ -103,9 +103,11 @@
   created palaute to correspond to the current values from HOKS. Also insert
   palautetapahtuma entry."
   [{:keys [hoks opiskeluoikeus jakso koulutustoimija tx] :as ctx}
-   {:keys [existing-heratteet alkupvm heratepvm state tapahtuma]
+   {:keys [alkupvm heratepvm state tapahtuma]
     :or {state :odottaa-kasittelya}
-    :as palaute}]
+    :as palaute}
+   existing-heratteet]
+  {:pre [(or (nil? existing-heratteet) (sequential? existing-heratteet))]}
   (let [updateable-herate (find-first unhandled? existing-heratteet)
         db-handler        (if (:id updateable-herate) update! insert!)
         ; this may be nil if this is an :ei-laheteta palaute for
