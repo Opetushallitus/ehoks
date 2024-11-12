@@ -98,21 +98,21 @@
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-1
                     :jakso          test-jakso}
-                   {:existing-heratteet [{:yksiloiva-tunniste "asd"}]})
+                   {:yksiloiva-tunniste "asd"})
                  [nil :yksiloiva-tunniste :jo-lahetetty])))
         (testing "opiskeluoikeus is in terminal state."
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-5
                     :jakso test-jakso}
-                   {})
+                   nil)
                  [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt])))
         (testing "osa-aikaisuus is missing from työpaikkajakso"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-1
                     :jakso (dissoc test-jakso :osa-aikaisuustieto)}
-                   {})
+                   nil)
                  [:ei-laheteta :osa-aikaisuustieto :ei-ole])))
         (testing "workplace information is missing from työpaikkajakso"
           (is (= (tep/initial-palaute-state-and-reason
@@ -122,7 +122,7 @@
                                    :tyopaikalla-jarjestettava-koulutus
                                    dissoc
                                    :tyopaikan-y-tunnus)}
-                   {})
+                   nil)
                  [:ei-laheteta :tyopaikalla-jarjestettava-koulutus
                   :puuttuva-yhteystieto])))
         (testing "työpaikkajakso is interrupted on it's end date"
@@ -133,21 +133,21 @@
                                      [:keskeytymisajanjaksot 1]
                                      {:alku  (LocalDate/of 2023 12 1)
                                       :loppu (LocalDate/of 2023 12 15)})}
-                   {})
+                   nil)
                  [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt])))
         (testing "opiskeluoikeus doesn't have any ammatillinen suoritus"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-2
                     :jakso test-jakso}
-                   {})
+                   nil)
                  [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen])))
         (testing "there is a feedback preventing code in opiskeluoikeusjakso."
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-4
                     :jakso test-jakso}
-                   {})
+                   nil)
                  [:ei-laheteta :opiskeluoikeus-oid :ulkoisesti-rahoitettu])))
         (testing "HOKS is a TUVA-HOKS or a HOKS related to TUVA-HOKS."
           (doseq [test-hoks [(assoc hoks-test/hoks-1
@@ -160,7 +160,7 @@
                      {:hoks           test-hoks
                       :opiskeluoikeus oo-test/opiskeluoikeus-1
                       :jakso test-jakso}
-                     {})
+                     nil)
                    [:ei-laheteta
                     :tuva-opiskeluoikeus-oid
                     :tuva-opiskeluoikeus]))))
@@ -170,21 +170,21 @@
                     :opiskeluoikeus (assoc-in oo-test/opiskeluoikeus-1
                                               [:tyyppi :koodiarvo] "tuva")
                     :jakso test-jakso}
-                   {})
+                   nil)
                  [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus])))
         (testing "opiskeluoikeus is linked to another opiskeluoikeus"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-3
                     :jakso test-jakso}
-                   {})
+                   nil)
                  [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]))))
       (testing "initiate kysely if when all of the checks are OK."
         (is (= (tep/initial-palaute-state-and-reason
                  {:hoks           hoks-test/hoks-1
                   :opiskeluoikeus oo-test/opiskeluoikeus-1
                   :jakso test-jakso}
-                 {})
+                 nil)
                [:odottaa-kasittelya :loppu :hoks-tallennettu]))))))
 
 (defn- build-expected-herate
@@ -224,7 +224,6 @@
                          db/spec
                          {:hoks-id            (:id hoks-test/hoks-1)
                           :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)})
-                       (first)
                        (dissoc :id :created-at :updated-at)
                        (->> (remove-vals nil?)))
               expected (build-expected-herate test-jakso hoks-test/hoks-1)]
@@ -248,10 +247,10 @@
        "doesn't initiate tyoelamapalaute if it has already been initiated"
         (with-log
           (let [existing
-                (->> {:hoks-id (:id hoks-test/hoks-1)
-                      :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)}
-                     (palaute/get-by-hoks-id-and-yksiloiva-tunniste! db/spec)
-                     (first))]
+                (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
+                  db/spec
+                  {:hoks-id (:id hoks-test/hoks-1)
+                   :yksiloiva-tunniste (:yksiloiva-tunniste test-jakso)})]
             (palaute/update! db/spec (assoc existing :tila "lahetetty"))
             (tep/initiate-if-needed! {:hoks           hoks-test/hoks-1
                                       :opiskeluoikeus oo-test/opiskeluoikeus-1}
@@ -277,7 +276,6 @@
                          db/spec
                          {:hoks-id            (:id hoks-test/hoks-1)
                           :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
-                       (first)
                        (dissoc :id :created-at :updated-at)
                        (->> (remove-vals nil?)))
               expected (build-expected-herate jakso hoks-test/hoks-1)]

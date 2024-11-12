@@ -19,8 +19,8 @@
 (defn already-initiated?
   "Returns `true` if palautekysely has already been initiated, i.e., there
   already exists a herate for kysely that has already been handled."
-  [palaute]
-  (not-every? unhandled? (:existing-heratteet palaute)))
+  [existing-heratteet]
+  (not-every? unhandled? existing-heratteet))
 
 (defn current-rahoituskausi-alkupvm
   ^LocalDate []
@@ -88,8 +88,8 @@
    "ammatillinentutkintoosittainen" "osia_suorittaneet"})
 
 (defn kyselytyyppi
-  [tyyppi opiskeluoikeus]
-  (case tyyppi
+  [palaute opiskeluoikeus]
+  (case (:type palaute)
     :aloituskysely "aloittaneet"
     :paattokysely  (-> (find-first suoritus/ammatillinen?
                                    (:suoritukset opiskeluoikeus))
@@ -103,45 +103,55 @@
   created palaute to correspond to the current values from HOKS. Also insert
   palautetapahtuma entry."
   [{:keys [hoks opiskeluoikeus jakso koulutustoimija tx] :as ctx}
-   {:keys [type existing-heratteet alkupvm heratepvm state tapahtuma]
-    :or {state :odottaa-kasittelya}}]
-  (let [suoritus (find-first suoritus/ammatillinen?
-                             (:suoritukset opiskeluoikeus))
-        updateable-herate (find-first unhandled? existing-heratteet)
-        palaute {:id                 (:id updateable-herate)
-                 :kyselytyyppi       (kyselytyyppi type opiskeluoikeus)
-                 :hoks-id            (:id hoks)
-                 :yksiloiva-tunniste (:yksiloiva-tunniste jakso)
-                 :tila               (utils/to-underscore-str state)
-                 :heratepvm          heratepvm
-                 :voimassa-alkupvm   alkupvm
-                 :voimassa-loppupvm  (vastaamisajan-loppupvm heratepvm alkupvm)
-                 :suorituskieli      (suoritus/kieli suoritus)
-                 :koulutustoimija    (or koulutustoimija
-                                         (koulutustoimija-oid! opiskeluoikeus))
-                 :toimipiste-oid     (toimipiste-oid! suoritus)
-                 :tutkintonimike     (suoritus/tutkintonimike suoritus)
-                 :tutkintotunnus     (suoritus/tutkintotunnus suoritus)
-                 :hankintakoulutuksen-toteuttaja
-                 (hankintakoulutuksen-toteuttaja! hoks)
-                 :herate-source      "ehoks_update"}]
-    (log/info "Upserting palaute"
-              ((juxt :hoks-id :kyselytyyppi
-                     :yksiloiva-tunniste :heratepvm) palaute)
-              "with already existing heratteet"
-              (map (juxt :tila :created-at) existing-heratteet)
-              "of which we will update" updateable-herate)
-    (let [db-handler (if (:id updateable-herate) update! insert!)
-          palaute-id (:id (db-handler tx palaute))]
-      (palautetapahtuma/insert!
-        tx
-        {:palaute-id      palaute-id
-         :vanha-tila      (or (:tila updateable-herate) (:tila palaute))
-         :uusi-tila       (:tila palaute)
-         :tapahtumatyyppi "hoks_tallennus"
-         :syy             (utils/to-underscore-str (or (:reason tapahtuma)
-                                                       :hoks-tallennettu))
-         :lisatiedot      (map-vals str (:other-info tapahtuma))}))))
+   {:keys [alkupvm heratepvm state tapahtuma]
+    :or {state :odottaa-kasittelya}
+    :as palaute}
+   existing-heratteet]
+  {:pre [(or (nil? existing-heratteet) (sequential? existing-heratteet))]}
+  (let [updateable-herate (find-first unhandled? existing-heratteet)
+        db-handler        (if (:id updateable-herate) update! insert!)
+        ; this may be nil if this is an :ei-laheteta palaute for
+        ; non-ammatillinen opiskeluoikeus
+        suoritus     (find-first suoritus/ammatillinen?
+                                 (:suoritukset opiskeluoikeus))
+        tila         (utils/to-underscore-str state)
+        result
+        (do
+          (log/info (str "Upserting palaute %s with already existing heratteet "
+                         "%s of which we will update %s")
+                    ((juxt :hoks-id :kyselytyyppi
+                           :yksiloiva-tunniste :heratepvm) palaute)
+                    (map (juxt :tila :created-at) existing-heratteet)
+                    updateable-herate)
+          (db-handler
+            tx
+            {:id                 (:id updateable-herate)
+             :kyselytyyppi       (kyselytyyppi palaute opiskeluoikeus)
+             :hoks-id            (:id hoks)
+             :yksiloiva-tunniste (:yksiloiva-tunniste jakso)
+             :tila               tila
+             :heratepvm          heratepvm
+             :voimassa-alkupvm   alkupvm
+             :voimassa-loppupvm  (vastaamisajan-loppupvm heratepvm alkupvm)
+             :suorituskieli      (suoritus/kieli suoritus)
+             :koulutustoimija    (or koulutustoimija
+                                     (koulutustoimija-oid! opiskeluoikeus))
+             :toimipiste-oid     (toimipiste-oid! suoritus)
+             :tutkintonimike     (suoritus/tutkintonimike suoritus)
+             :tutkintotunnus     (suoritus/tutkintotunnus suoritus)
+             :hankintakoulutuksen-toteuttaja
+             (hankintakoulutuksen-toteuttaja! hoks)
+             :herate-source      "ehoks_update"}))
+        palaute-id        (:id result)]
+    (palautetapahtuma/insert!
+      tx
+      {:palaute-id      palaute-id
+       :vanha-tila      (or (:tila updateable-herate) tila)
+       :uusi-tila       tila
+       :tapahtumatyyppi "hoks_tallennus"
+       :syy             (utils/to-underscore-str (or (:reason tapahtuma)
+                                                     :hoks-tallennettu))
+       :lisatiedot      (map-vals str (:other-info tapahtuma))})))
 
 (defn feedback-collecting-prevented?
   "Jätetäänkö palaute keräämättä sen vuoksi, että opiskelijan opiskelu on
