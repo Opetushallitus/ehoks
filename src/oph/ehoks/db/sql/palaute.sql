@@ -94,7 +94,7 @@ where h.oppija_oid = :oppija-oid  -- FIXME: should probably have deleted_at cond
   and p.kyselytyyppi in (:v*:kyselytyypit)
   and (p.koulutustoimija = :koulutustoimija or (:koulutustoimija)::text is null)
 
--- :name get-by-hoks-id-and-yksiloiva-tunniste! :? :*
+-- :name get-by-hoks-id-and-yksiloiva-tunniste! :? :1
 -- :doc Get palaute information for työpaikkajakso by HOKS ID and yksiloiva
 --      tunniste.
 select * from palautteet

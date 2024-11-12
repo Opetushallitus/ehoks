@@ -68,12 +68,12 @@
   tyoelamapalaute process should be initiated for jakso. Returns the initial
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [{:keys [hoks opiskeluoikeus jakso] :as ctx} palaute]
+  [{:keys [hoks opiskeluoikeus jakso] :as ctx} existing-palaute]
   (or
     (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
       :loppu jakso opiskeluoikeus)
     (cond
-      (palaute/already-initiated? palaute)
+      (and (some? existing-palaute) (not (palaute/unhandled? existing-palaute)))
       [nil :yksiloiva-tunniste :jo-lahetetty]
 
       (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
@@ -95,16 +95,16 @@
   [{:keys [hoks] :as ctx} jakso]
   (jdbc/with-db-transaction
     [tx db/spec]
-    (let [ctx     (assoc ctx :jakso jakso :tx tx)
+    (let [ctx (assoc ctx :jakso jakso :tx tx)
+          existing-palaute
+          (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
+            tx {:hoks-id            (:id hoks)
+                :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
           palaute {:type      :tyopaikkakysely
                    :alkupvm   (next-niputus-date (:loppu jakso))
-                   :heratepvm (:loppu jakso)
-                   :existing-heratteet  ; always 0 or 1 herate
-                   (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
-                     tx {:hoks-id            (:id hoks)
-                         :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})}
+                   :heratepvm (:loppu jakso)}
           [state field reason]
-          (initial-palaute-state-and-reason ctx palaute)]
+          (initial-palaute-state-and-reason ctx existing-palaute)]
       (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
                 "of HOKS" (:id hoks) "will be"
                 (or state :ei-luoda-ollenkaan)
@@ -116,7 +116,8 @@
                  :state     state
                  :tapahtuma {:reason reason
                              :other-info (select-keys
-                                           (merge jakso hoks) [field])}))
+                                           (merge jakso hoks) [field])})
+          [existing-palaute])
         state))))
 
 (defn initiate-all-uninitiated!

@@ -1,9 +1,9 @@
 (ns oph.ehoks.db
   (:require [hugsql.adapter :refer [result-many result-one]]
             [hugsql.core :as hugsql]
-            [oph.ehoks.utils :as utils]
             [medley.core :refer [map-vals]]
-            [oph.ehoks.config :refer [config]])
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.utils :as utils])
   (:import (org.postgresql.jdbc PgArray)))
 
 (def spec
