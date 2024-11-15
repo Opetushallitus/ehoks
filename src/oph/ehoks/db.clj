@@ -1,7 +1,7 @@
 (ns oph.ehoks.db
   (:require [hugsql.adapter :refer [result-many result-one]]
             [hugsql.core :as hugsql]
-            [medley.core :refer [map-vals]]
+            [medley.core :refer [map-vals remove-vals]]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.utils :as utils])
   (:import (org.postgresql.jdbc PgArray)))
@@ -25,8 +25,10 @@
 
 (def convert-result
   "Fix the results of hugsql to more clojuresque format."
-  (comp utils/to-dash-keys
-        (partial map-vals pgarray->vec)))
+  (comp #(dissoc % :created-at :updated-at :deleted-at)
+        utils/to-dash-keys
+        (partial map-vals pgarray->vec)
+        (partial remove-vals nil?)))
 
 (defn result-one-snake->kebab
   [this result options]

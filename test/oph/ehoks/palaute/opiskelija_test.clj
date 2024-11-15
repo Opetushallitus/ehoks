@@ -177,8 +177,8 @@
      (str "Kysely is considered already initiated if it is for same "
           "oppija with same koulutustoimija and within same rahoituskausi.")
       (are [kysely-type] (= (:tila (first (op/existing-heratteet!
-                                            {:tx   db/spec
-                                             :hoks hoks-test/hoks-3
+                                            db/spec
+                                            {:hoks hoks-test/hoks-3
                                              :koulutustoimija
                                              "1.2.246.562.10.346830761110"}
                                             kysely-type)))
@@ -188,8 +188,8 @@
     (testing "Kysely is not considered already initiated when"
       (testing "koulutustoimija differs."
         (are [kysely-type] (empty? (op/existing-heratteet!
-                                     {:tx db/spec
-                                      :hoks hoks-test/hoks-3
+                                     db/spec
+                                     {:hoks hoks-test/hoks-3
                                       :koulutustoimija
                                       "1.2.246.562.10.45678901237"}
                                      kysely-type))
@@ -197,8 +197,8 @@
 
       (testing "heratepvm is within different rahoituskausi."
         (are [kysely-type] (empty? (op/existing-heratteet!
-                                     {:tx db/spec
-                                      :hoks hoks-test/hoks-4
+                                     db/spec
+                                     {:hoks hoks-test/hoks-4
                                       :koulutustoimija
                                       "1.2.246.562.10.346830761110"}
                                      kysely-type))
