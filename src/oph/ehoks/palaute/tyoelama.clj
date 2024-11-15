@@ -14,6 +14,7 @@
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date])
   (:import (clojure.lang ExceptionInfo)
@@ -91,18 +92,32 @@
       :else
       [:odottaa-kasittelya :loppu :hoks-tallennettu])))
 
+(defn build!
+  "Builds tyoelamapalaute to be inserted to DB. Uses `palaute/build!` to build
+  an initial `palaute` map, then `assoc`s tyoelamapalaute specific values to
+  that."
+  [{:keys [jakso] :as ctx} tila existing-palaute]
+  {:pre [(some? tila)
+         (or (nil? existing-palaute) (palaute/unhandled? existing-palaute))]}
+  (let [heratepvm (:loppu jakso)
+        alkupvm   (next-niputus-date heratepvm)]
+    (assoc (palaute/build! ctx tila existing-palaute)
+           :kyselytyyppi              "tyopaikkajakson_suorittaneet"
+           :jakson-yksiloiva-tunniste (:yksiloiva-tunniste jakso)
+           :heratepvm                 heratepvm
+           :voimassa-alkupvm          alkupvm
+           :voimassa-loppupvm         (palaute/vastaamisajan-loppupvm
+                                        heratepvm alkupvm))))
+
 (defn initiate-if-needed!
   [{:keys [hoks] :as ctx} jakso]
   (jdbc/with-db-transaction
     [tx db/spec]
-    (let [ctx (assoc ctx :jakso jakso :tx tx)
+    (let [ctx (assoc ctx :jakso jakso)
           existing-palaute
           (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
             tx {:hoks-id            (:id hoks)
                 :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
-          palaute {:type      :tyopaikkakysely
-                   :alkupvm   (next-niputus-date (:loppu jakso))
-                   :heratepvm (:loppu jakso)}
           [state field reason]
           (initial-palaute-state-and-reason ctx existing-palaute)]
       (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
@@ -110,14 +125,10 @@
                 (or state :ei-luoda-ollenkaan)
                 "because of" reason "in" field)
       (when state
-        (palaute/upsert!
-          ctx
-          (assoc palaute
-                 :state     state
-                 :tapahtuma {:reason reason
-                             :other-info (select-keys
-                                           (merge jakso hoks) [field])})
-          [existing-palaute])
+        (->> (build! ctx state existing-palaute)
+             (palaute/upsert! tx)
+             (palautetapahtuma/build ctx state field reason existing-palaute)
+             (palautetapahtuma/insert! tx))
         state))))
 
 (defn initiate-all-uninitiated!
@@ -247,9 +258,8 @@
               (log/warn "No vastaajatunnus got from arvo,"
                         "so not marking handled")
               (assert
-                (palaute/update-tep-kasitelty!
-                  tx {:tep-kasitelty true
-                      :id (:hankkimistapa-id tep-palaute)})))
+                (oht/update! tx {:id            (:hankkimistapa-id tep-palaute)
+                                 :tep-kasitelty true})))
             tunnus
             (catch ExceptionInfo e
               (log/errorf e
