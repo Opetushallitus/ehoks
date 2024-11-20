@@ -63,6 +63,11 @@
    :jakso [:hankkimistapa_id]
    :nippu [:ohjaaja_ytunnus_kj_tutkinto :niputuspvm]})
 
+(defn get-item!
+  "A wrapper for `taoensso.faraday/get-item`."
+  [table prim-kvs]
+  (far/get-item @faraday-opts @(tables table) prim-kvs))
+
 (defn sync-item!
   "Does a partial upsert on item in DDB: if the item doesn't exist,
   it is created with the given values.  If it does exist, then only the
@@ -171,3 +176,17 @@
     (-> tep-palaute
         (update-keys map-jakso-keys-to-ddb)
         (->> (sync-item! :jakso)))))
+
+(defn sync-tpo-nippu-herate!
+  "Update the Herätepalvelu nipputable to have the same content for given heräte
+  as palaute-backend has in its own database."
+  [nippu]
+  (if-not (contains? (set (:heratepalvelu-responsibities config))
+                     :sync-jakso-heratteet)
+    (log/warn "sync-tpo-nippu-herate!: configured to not do anything")
+    (if-let [existing-nippu (get-item! :nippu
+                                       (select-keys
+                                         nippu [:ohjaaja_ytunnus_kj_tutkinto
+                                                :niputuspvm]))]
+      (log/info "Tietokannassa on jo nippu: " existing-nippu)
+      (sync-item! :nippu nippu))))
