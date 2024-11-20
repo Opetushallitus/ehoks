@@ -36,6 +36,11 @@
                 :osaamisen-hankkimisen-tarve true
                 :sahkoposti "irma.isomerkki@esimerkki.com"})
 
+(deftest test-sync-tpo-nippu-herate!
+  (with-redefs [koski/get-opiskeluoikeus-info-raw
+                koski-test/mock-get-opiskeluoikeus-raw]
+    nil))
+
 (deftest sync-herate-to-dynamodb
   (with-redefs [koski/get-opiskeluoikeus-info-raw
                 koski-test/mock-get-opiskeluoikeus-raw]
