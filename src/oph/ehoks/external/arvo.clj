@@ -1,10 +1,10 @@
 (ns oph.ehoks.external.arvo
-  (:require [oph.ehoks.external.connection :as c]
-            [oph.ehoks.external.organisaatio :as org]
-            [oph.ehoks.config :refer [config]]
-            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
+  (:require [clojure.string :as string]
             [clojure.tools.logging :as log]
-            [clojure.string :as string])
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.external.connection :as c]
+            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
+            [oph.ehoks.utils :as utils])
   (:import (clojure.lang ExceptionInfo)))
 
 (defn call!
@@ -54,18 +54,13 @@
 
 (defn build-jaksotunnus-request-body
   "Luo dataobjektin TEP-jaksotunnuksen luomisrequestille."
-  [herate
-   tyopaikka-normalisoitu
-   opiskeluoikeus
-   request-id
-   koulutustoimija
-   toimipiste
-   suoritus
-   niputuspvm]
+  [{:keys [opiskeluoikeus suoritus koulutustoimija toimipiste niputuspvm]
+    :as ctx}
+   herate request-id]
   {:koulutustoimija_oid       koulutustoimija
    :tyonantaja                (:tyopaikan-y-tunnus herate)
    :tyopaikka                 (:tyopaikan-nimi herate)
-   :tyopaikka_normalisoitu    tyopaikka-normalisoitu
+   :tyopaikka_normalisoitu    (utils/normalize-string (:tyopaikan-nimi herate))
    :tutkintotunnus            (get-in
                                 suoritus
                                 [:koulutusmoduuli
@@ -96,7 +91,7 @@
                                   (string/split
                                     (:oppisopimuksen-perusta-koodi-uri herate)
                                     #"_")))
-   :vastaamisajan_alkupvm     niputuspvm
+   :vastaamisajan_alkupvm     (str niputuspvm)
    :oppilaitos_oid            (:oid (:oppilaitos opiskeluoikeus))
    :toimipiste_oid            toimipiste
    :request_id                request-id})
