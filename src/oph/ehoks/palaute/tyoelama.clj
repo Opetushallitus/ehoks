@@ -1,6 +1,5 @@
 (ns oph.ehoks.palaute.tyoelama
   (:require [clojure.java.jdbc :as jdbc]
-            [clojure.string :as string]
             [clojure.tools.logging :as log]
             [medley.core :refer [find-first]]
             [oph.ehoks.config :refer [config]]
@@ -15,10 +14,10 @@
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
+            [oph.ehoks.palaute.tyoelama.nippu :as nippu]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date])
   (:import (clojure.lang ExceptionInfo)
-           (java.text Normalizer Normalizer$Form)
            (java.time LocalDate)
            (java.util UUID)))
 
@@ -137,34 +136,11 @@
   [{:keys [hoks] :as ctx}]
   (run! #(initiate-if-needed! ctx %) (tyopaikkajaksot hoks)))
 
-(defn- deaccent-string
-  "Poistaa diakriittiset merkit stringistä ja palauttaa muokatun stringin."
-  [utf8-string]
-  (string/replace (Normalizer/normalize utf8-string Normalizer$Form/NFD)
-                  #"\p{InCombiningDiacriticalMarks}+"
-                  ""))
-
-(defn normalize-string
-  "Muuttaa muut merkit kuin kirjaimet ja numerot alaviivaksi."
-  [string]
-  (string/lower-case (string/replace (deaccent-string string) #"\W+" "_")))
-
-(defn opiskeluoikeus-koulutustoimija-oid
-  "Hakee koulutustoimijan OID:n opiskeluoikeudesta, tai organisaatiopalvelusta
-  jos sitä ei löydy opiskeluoikeudesta."
-  [opiskeluoikeus]
-  (or (:oid (:koulutustoimija opiskeluoikeus))
-      (do
-        (log/info "Ei koulutustoimijaa opiskeluoikeudessa "
-                  (:oid opiskeluoikeus) ", haetaan Organisaatiopalvelusta")
-        (:parentOid (org/get-organisaatio!
-                      (get-in opiskeluoikeus [:oppilaitos :oid]))))))
-
 (defn add-keys
-  [tep-palaute opiskeluoikeus request-id tunnus]
+  [tep-palaute {:keys [opiskeluoikeus niputuspvm] :as ctx} request-id tunnus]
   ;; TODO: check this niputuspvm rule when palaute-backend is
   ;; responsible for niputus
-  (let [niputuspvm (str (next-niputus-date (date/now)))
+  (let [niputuspvm niputuspvm
         alkupvm (next-niputus-date
                   (LocalDate/parse (:jakso-loppupvm tep-palaute)))
         koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
@@ -173,15 +149,11 @@
         tutkinto (get-in oo-suoritus
                          [:koulutusmoduuli :tunniste :koodiarvo])]
     (assoc tep-palaute
-           :tallennuspvm (str (date/now))
-           :alkupvm (str alkupvm)
+           :tallennuspvm (date/now)
+           :alkupvm alkupvm
            :koulutustoimija koulutustoimija
            :niputuspvm niputuspvm
-           :ohjaaja-ytunnus-kj-tutkinto (str
-                                          (:vastuullinen-tyopaikka-ohjaaja-nimi
-                                            tep-palaute) "/"
-                                          (:tyopaikan-y-tunnus tep-palaute) "/"
-                                          koulutustoimija "/" tutkinto)
+           :ohjaaja-ytunnus-kj-tutkinto (nippu/tunniste ctx tep-palaute)
            :oppilaitos (:oid (:oppilaitos opiskeluoikeus))
            :osaamisala (str (seq (suoritus/get-osaamisalat
                                    oo-suoritus (:oid opiskeluoikeus)
@@ -193,7 +165,7 @@
            :tutkinto tutkinto
            :tutkintonimike (str (seq (map :koodiarvo
                                           (:tutkintonimike oo-suoritus))))
-           :tyopaikan-normalisoitu-nimi (normalize-string
+           :tyopaikan-normalisoitu-nimi (utils/normalize-string
                                           (:tyopaikan-nimi tep-palaute))
            :viimeinen-vastauspvm (str (.plusDays alkupvm 60)))))
 
@@ -201,75 +173,85 @@
 ;; test-create-and-save-arvo-vastaajatunnus-for-all-needed! sisältää
 ;; ylimalkaisen testin tälle funktiolle.
 (defn sync-jakso-to-heratepalvelu!
-  [tx tep-palaute opiskeluoikeus request-id tunnus]
+  [tx ctx tep-palaute request-id tunnus]
   (let [query (select-keys tep-palaute [:jakson-yksiloiva-tunniste :hoks-id])]
     (-> (palaute/get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste!
           tx query)
         (first)
         (not-empty)
         (or (throw (ex-info "palaute not found" query)))
-        (add-keys opiskeluoikeus request-id tunnus)
+        (add-keys ctx request-id tunnus)
         (dissoc :internal-kyselytyyppi :jakson-yksiloiva-tunniste)
         (utils/remove-nils)
         (ddb/sync-jakso-herate!))))
 
 (defn create-and-save-arvo-vastaajatunnus!
   [tep-palaute]
-  (let [opiskeluoikeus (koski/get-opiskeluoikeus!
-                         (:opiskeluoikeus-oid tep-palaute))]
-    (if-not opiskeluoikeus
-      (log/warnf
-        "Opiskeluoikeus not found for palaute %d, skipping processing"
-        (:id tep-palaute))  ; FIXME: create tapahtuma and update state
-      (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
-            alkupvm         (next-niputus-date (:loppupvm tep-palaute))
-            request-id      (str (UUID/randomUUID))
-            suoritus        (find-first suoritus/ammatillinen?
-                                        (:suoritukset opiskeluoikeus))
-            arvo-request    (arvo/build-jaksotunnus-request-body
-                              tep-palaute
-                              (normalize-string
-                                (:tyopaikan-nimi tep-palaute))
-                              opiskeluoikeus
-                              request-id
-                              koulutustoimija
-                              (palaute/toimipiste-oid! suoritus)
-                              suoritus
-                              (str alkupvm))
-            arvo-response   (arvo/create-jaksotunnus arvo-request)
-            tunnus          (:tunnus arvo-response)]
-        (jdbc/with-db-transaction
-          [tx db/spec]
-          (try
-            (palaute/save-arvo-tunniste!
-              tx tep-palaute arvo-response {:arvo-response arvo-response})
-            (sync-jakso-to-heratepalvelu!
-              tx tep-palaute opiskeluoikeus request-id tunnus)
+  {:pre [(:vastuullinen-tyopaikka-ohjaaja-nimi tep-palaute)
+         (:tyopaikan-nimi tep-palaute) (:tyopaikan-y-tunnus tep-palaute)]}
+  (if-let [opiskeluoikeus (koski/get-opiskeluoikeus!
+                            (:opiskeluoikeus-oid tep-palaute))]
+    (let [suoritus (find-first suoritus/ammatillinen?
+                               (:suoritukset opiskeluoikeus))
+          ctx {:opiskeluoikeus  opiskeluoikeus
+               :suoritus        suoritus
+               :koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
+               :toimipiste      (palaute/toimipiste-oid! suoritus)
+               :niputuspvm      (next-niputus-date (date/now))}]
+      ; The following attributes are required for TPO-nippu.
+      (assert (and (:koulutustoimija ctx) (:niputuspvm ctx) (:suoritus ctx)))
+      (jdbc/with-db-transaction
+        [tx db/spec]
+        (let [keskeytymisajanjaksot
+              (oht/get-keskeytymisajanjaksot!
+                tx {:oht-id (:hankkimistapa-id tep-palaute)})
+              nippu (nippu/build-tpo-nippu-for-heratepalvelu
+                      ctx tep-palaute keskeytymisajanjaksot)]
+          (if (= (:kasittelytila nippu) "ei_niputettu")
+            (let [request-id    (str (UUID/randomUUID))
+                  arvo-request  (arvo/build-jaksotunnus-request-body
+                                  ctx tep-palaute request-id)
+                  arvo-response (arvo/create-jaksotunnus arvo-request)
+                  tunnus        (:tunnus arvo-response)]
+              (try
+                (if-not tunnus
+                  (log/warn "No vastaajatunnus got from arvo,"
+                            "so not marking handled")
+                  (do (palaute/save-arvo-tunniste!
+                        tx tep-palaute arvo-response
+                        {:arvo-response arvo-response})
+                      (sync-jakso-to-heratepalvelu!
+                        tx ctx tep-palaute request-id tunnus)
+                      (assert
+                        (oht/update!
+                          tx {:id            (:hankkimistapa-id tep-palaute)
+                              :tep-kasitelty true}))))
+                (ddb/sync-tpo-nippu-herate! nippu)
 
-          ; TODO lisää nipputunniste palautteet-tauluun (uusi kantamigraatio)
-          ; TODO päättele jaksosta nipputunniste
-          ; TODO lisää uusi nippu, jos sitä ei löydy nipputunnisteella kannasta
-          ; TODO synkkaa uusi nippu herätepalveluun
+                ; TODO lisää nipputunniste palautteet-tauluun (uusi
+                ;      kantamigraatio)
+                ; TODO lisää uusi nippu, jos sitä ei löydy nipputunnisteella
+                ;      kannasta
 
-          ; Aseta tep_kasitelty arvoon true jotta herätepalvelu ei yritä
-          ; tehdä vastaavaa operaatiota siirtymävaiheen/asennuksien aikana.
-          ; FIXME poista tep_kasitelty-logiikka siirtymävaiheen jälkeen?
-            (if-not tunnus
-              (log/warn "No vastaajatunnus got from arvo,"
-                        "so not marking handled")
-              (assert
-                (oht/update! tx {:id            (:hankkimistapa-id tep-palaute)
-                                 :tep-kasitelty true})))
-            tunnus
-            (catch ExceptionInfo e
-              (log/errorf e
-                          (str "Error updating palaute %s, trying to remove "
-                               "vastaajatunnus from Arvo: %s")
-                          (:id tep-palaute)
-                          tunnus)
-              ;; FIXME: tapahtuma
-              (arvo/delete-jaksotunnus tunnus)
-              (throw e))))))))
+                ; Aseta tep_kasitelty arvoon true jotta herätepalvelu ei yritä
+                ; tehdä vastaavaa operaatiota siirtymävaiheen/asennuksien
+                ; aikana.
+                ;FIXME poista tep_kasitelty-logiikka siirtymävaiheen jälkeen?
+                tunnus
+                (catch ExceptionInfo e
+                  (log/errorf
+                    e
+                    (str "Error updating palaute %s, trying to remove "
+                         "vastaajatunnus from Arvo: %s")
+                    (:id tep-palaute)
+                    tunnus)
+                  ;; FIXME: tapahtuma
+                  (when tunnus (arvo/delete-jaksotunnus tunnus))
+                  (throw e))))
+            (ddb/sync-tpo-nippu-herate! nippu)))))
+    (log/warnf
+      "Opiskeluoikeus not found for palaute %d, skipping processing"
+      (:id tep-palaute))))  ; FIXME: create tapahtuma and update state
 
 (defn create-and-save-arvo-vastaajatunnus-for-all-needed!
   "Creates vastaajatunnus for all herates that are waiting for processing,

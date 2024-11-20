@@ -47,12 +47,16 @@
        :osaamisen-hankkimistapa-koodi-versio 1
        :alku (LocalDate/of 2023 11 1)
        :loppu (LocalDate/of 2023 11 25)
+       :keskeytymisajanjaksot [{:alku (LocalDate/of 2023 11 5)
+                                :loppu (LocalDate/of 2023 11 8)}
+                               {:alku (LocalDate/of 2023 11 16)
+                                :loppu (LocalDate/of 2023 11 16)}]
        :osa-aikaisuustieto 80
        :tyopaikalla-jarjestettava-koulutus
        {:vastuullinen-tyopaikka-ohjaaja
-        {:nimi "Olli Ohjaaja"
-         :sahkoposti "olli.ohjaaja@esimerkki.com"
-         :puhelinnumero "0401111111"}
+        {:nimi "Matti Meikäläinen"
+         :sahkoposti "matti.meikalainen@esimerkki.com"
+         :puhelinnumero "0402222222"}
         :tyopaikan-nimi "Ohjaus Oy"
         :tyopaikan-y-tunnus "5523718-7"
         :keskeiset-tyotehtavat ["Hälytysten valvonta"
@@ -108,9 +112,9 @@
          :osa-aikaisuustieto 60
          :tyopaikalla-jarjestettava-koulutus
          {:vastuullinen-tyopaikka-ohjaaja
-          {:nimi "Olli Ohjaaja"
-           :sahkoposti "olli.ohjaaja@esimerkki.com"
-           :puhelinnumero "0401111111"}
+          {:nimi "Matti Meikäläinen"
+           :sahkoposti "matti.meikalainen@esimerkki.com"
+           :puhelinnumero "0402222222"}
           :tyopaikan-nimi "Ohjaus Oy"
           :tyopaikan-y-tunnus "5523718-7"
           :keskeiset-tyotehtavat ["Hälytysten valvonta"

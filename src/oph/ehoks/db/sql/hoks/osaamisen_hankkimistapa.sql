@@ -11,3 +11,8 @@ update osaamisen_hankkimistavat set
 ~*/
 where id = :id
 returning *
+
+-- :name get-keskeytymisajanjaksot! :? :*
+-- :doc Get keskeytymisajanjaksot for osaamisen hankkimistapa
+select * from keskeytymisajanjaksot
+where osaamisen_hankkimistapa_id = :oht-id

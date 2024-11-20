@@ -51,6 +51,28 @@
    :hankkimistapa-id 2
    :hankkimistapa-tyyppi "koulutussopimus_01"})
 
+(def expected-ddb-niput
+  [{:tyopaikka                   "Ohjaus Oy"
+    :ytunnus                     "5523718-7"
+    :ohjaaja                     "Matti Meikäläinen"
+    :ohjaaja_ytunnus_kj_tutkinto (str "Matti Meikäläinen/5523718-7/"
+                                      "1.2.246.562.10.346830761110/123456")
+    :niputuspvm                  "2024-07-01"
+    :sms_kasittelytila           "ei_lahetetty"
+    :tutkinto                    "123456"
+    :koulutuksenjarjestaja       "1.2.246.562.10.346830761110"
+    :kasittelytila               "ei_niputettu"}
+   {:tyopaikka                   "Ohjaus Oy"
+    :ytunnus                     "5523718-7"
+    :ohjaaja                     "Olli Ohjaaja"
+    :ohjaaja_ytunnus_kj_tutkinto (str "Olli Ohjaaja/5523718-7/"
+                                      "1.2.246.562.10.346830761110/123456")
+    :niputuspvm                  "2024-07-01"
+    :sms_kasittelytila           "ei_lahetetty"
+    :tutkinto                    "123456"
+    :koulutuksenjarjestaja       "1.2.246.562.10.346830761110"
+    :kasittelytila               "ei_niputettu"}])
+
 (deftest test-next-niputus-date
   (testing "The function returns the correct niputus date when given `pvm-str`."
     (are [pvm-str expected] (= (tep/next-niputus-date (LocalDate/parse pvm-str))
@@ -329,7 +351,7 @@
   (clear-ddb-jakso-table!)
   (testing (str "create-and-save-arvo-vastaajatunnus-for-all-needed! "
                 "calls Arvo, saves vastaajatunnus to db, "
-                "and syncs palaute to heratepalvelu")
+                "and syncs both palaute and TPO-nippu to heratepalvelu")
     (with-redefs [organisaatio/get-organisaatio!
                   hoks-utils/mock-get-organisaatio!
                   koski/get-opiskeluoikeus! hoks-utils/mock-get-opiskeluoikeus!
@@ -339,14 +361,15 @@
       (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
       (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! {})
       (let [palautteet (hoks-utils/palautteet-joissa-vastaajatunnus)
-            ddb-jaksot
-            (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})
-            tapahtumat
-            (db-helpers/query
-              [(str "select * from palaute_tapahtumat "
-                    "where uusi_tila = 'vastaajatunnus_muodostettu'")])]
+            ddb-jaksot (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})
+            ddb-niput  (far/scan @ddb/faraday-opts @(ddb/tables :nippu) {})
+            tapahtumat (db-helpers/query
+                         [(str "select * from palaute_tapahtumat "
+                               "where uusi_tila = "
+                               "'vastaajatunnus_muodostettu'")])]
         (is (= (count palautteet) 5))
         (is (= (count ddb-jaksot) 5))
+        (is (= ddb-niput expected-ddb-niput))
         (is (= (count tapahtumat) 5))
         (is (= (set (map :arvo_tunniste palautteet))
                (set (map :tunnus ddb-jaksot))))
