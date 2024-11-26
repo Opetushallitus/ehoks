@@ -33,7 +33,8 @@
 
                          ;; http server
                          [javax.servlet/javax.servlet-api "4.0.1"]
-                         [metosin/compojure-api "2.0.0-alpha31" :exclusions [medley]]
+                         [metosin/compojure-api "2.0.0-alpha31" :exclusions [medley com.google.code.findbugs/jsr305]]
+                         [com.google.guava/guava "32.0.0-jre"]
                          [ring/ring-codec "1.2.0"]
                          [ring/ring-core "1.13.0"]
                          [ring/ring-jetty-adapter "1.13.0" :exclusions [org.slf4j/slf4j-api]]
@@ -89,7 +90,7 @@
                          [hiccup "1.0.5"]
                          [org.clojure/tools.namespace "1.5.0"]
                          [environ "1.2.0"]
-                         [software.amazon.awssdk/sqs "2.29.4" :exclusions [org.slf4j/slf4j-api]]
+                         [software.amazon.awssdk/sqs "2.29.21" :exclusions [org.slf4j/slf4j-api]]
                          [com.googlecode.libphonenumber/libphonenumber "8.13.49"]
                          [com.rpl/specter "1.1.4"]
                          [ring/ring-mock "0.4.0"]

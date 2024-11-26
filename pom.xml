@@ -12,7 +12,7 @@
     <url>https://github.com/Opetushallitus/ehoks</url>
     <connection>scm:git:git://github.com/Opetushallitus/ehoks.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ehoks.git</developerConnection>
-    <tag>f522f819d9d9d8b6044327113aae4717fc353301</tag>
+    <tag>d14b505ed2803c00cd9f1b94dc5c17471fc9199e</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -155,7 +155,16 @@
             <artifactId>medley</artifactId>
             <groupId>medley</groupId>
           </exclusion>
+          <exclusion>
+            <artifactId>jsr305</artifactId>
+            <groupId>com.google.code.findbugs</groupId>
+          </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>32.0.0-jre</version>
       </dependency>
       <dependency>
         <groupId>ring</groupId>
@@ -366,7 +375,7 @@
       <dependency>
         <groupId>software.amazon.awssdk</groupId>
         <artifactId>sqs</artifactId>
-        <version>2.29.4</version>
+        <version>2.29.21</version>
         <exclusions>
           <exclusion>
             <artifactId>slf4j-api</artifactId>
