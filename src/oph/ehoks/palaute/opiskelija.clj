@@ -68,9 +68,12 @@
         params        {:kyselytyypit     kyselytyypit
                        :oppija-oid       (:oppija-oid hoks)
                        :koulutustoimija  koulutustoimija}]
-    (filter
-      #(= rahoituskausi (palaute/rahoituskausi (:heratepvm %)))
-      (palaute/get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params))))
+    (->>
+      (palaute/get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params)
+      (vec)
+      (log/spyf :info "existing-heratteet!: before rk filtering: %s")
+      (filterv #(= rahoituskausi (palaute/rahoituskausi (:heratepvm %))))
+      (log/spyf :info "existing-heratteet!: after rk filtering: %s"))))
 
 (defn initiate!
   "Initiates opiskelijapalautekysely (`:aloituskysely` or `:paattokysely`).
