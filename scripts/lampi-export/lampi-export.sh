@@ -13,7 +13,6 @@ else
     db_hostname="ehoks.db.${ENV_NAME}opintopolku.fi"
 fi
 db_name="ehoks"
-db_secret_id="/$ENV_NAME/postgresqls/ehoks/app-user-password"
 db_user="app"
 
 case $ENV_NAME in
@@ -28,13 +27,11 @@ case $ENV_NAME in
 esac
 
 dump_and_upload_db_to_lampi() {
-    log "DEBUG" "Params: db_hostname ${db_hostname}, db_name ${db_name}, db_secret_id ${db_secret_id}, ENV_NAME $ENV_NAME, local_s3_bucket $local_s3_bucket, lampi_s3_bucket $lampi_s3_bucket"
-
-    # returns '{"Parameter":{"Value":"foobar"}}'
-    local -r pw_json=$(aws ssm get-parameter --name ${db_secret_id} --with-decryption --region eu-west-1)
-    local -r db_password=$(jq -r '.Parameter.Value' <<<"${pw_json}")
+    log "DEBUG" "Params: db_hostname ${db_hostname}, db_name ${db_name}, ENV_NAME $ENV_NAME, local_s3_bucket $local_s3_bucket, lampi_s3_bucket $lampi_s3_bucket"
 
     log "INFO" "Starting ${db_name} database data dump"
+
+    local -r db_password="$app_user_password"
 
     pg_command $db_password "CREATE EXTENSION IF NOT EXISTS aws_s3 CASCADE" > /dev/null
 
