@@ -7,7 +7,11 @@ local_s3_bucket="ehoks-export-$ENV_NAME"
 system_name="ehoks"
 version="v2" # vanha koko kannan dumppina vievä siirto on v1
 reporting_schema_name="reporting"
-db_hostname="ehoks.db.$ENV_NAME.internal"
+if [ $ENV_NAME == "sade" ]; then
+    db_hostname="ehoks.db.opintopolku.fi"
+else
+    db_hostname="ehoks.db.${ENV_NAME}opintopolku.fi"
+fi
 db_name="ehoks"
 db_secret_id="/$ENV_NAME/postgresqls/ehoks/app-user-password"
 db_user="app"
