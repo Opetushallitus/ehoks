@@ -31,7 +31,7 @@ dump_and_upload_db_to_lampi() {
 
     log "INFO" "Starting ${db_name} database data dump"
 
-    local -r db_password="$app_user_password"
+    local -r db_password="$ssm_app_user_password"
 
     pg_command $db_password "CREATE EXTENSION IF NOT EXISTS aws_s3 CASCADE" > /dev/null
 
