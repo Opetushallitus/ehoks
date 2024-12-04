@@ -11,7 +11,7 @@ gpgcheck=0
 END
 yum makecache
 yum update -y
-yum install -y jq postgresql14
+yum install -y jq postgresql14 postgresql14-server
 yum clean all
 EOF
 
