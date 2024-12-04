@@ -3,7 +3,7 @@
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.set :refer [rename-keys]]
             [clojure.tools.logging :as log]
-            [medley.core :refer [find-first greatest]]
+            [medley.core :refer [greatest]]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
