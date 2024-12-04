@@ -1,10 +1,17 @@
 FROM amazon/aws-cli
 
 RUN <<EOF
-yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+amazon-linux-extras install -y epel
+tee /etc/yum.repos.d/pgdg.repo<<END
+[pgdg14]
+name=PostgreSQL 14 for RHEL/CentOS 7 - ARM64
+baseurl=http://download.postgresql.org/pub/repos/yum/14/redhat/rhel-7-aarch64
+enabled=1
+gpgcheck=0
+END
+yum makecache
 yum update -y
-yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum install -y jq postgresql15-server
+yum install -y jq postgresql14
 yum clean all
 EOF
 
