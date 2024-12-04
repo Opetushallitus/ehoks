@@ -68,14 +68,11 @@
   tyoelamapalaute process should be initiated for jakso. Returns the initial
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [{:keys [hoks opiskeluoikeus jakso] :as ctx} existing-palaute]
+  [{:keys [jakso] :as ctx}]
+  {:pre [(some? jakso)]}
   (or
-    (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
-      :loppu jakso opiskeluoikeus)
+    (palaute/initial-palaute-state-and-reason-if-not-kohderyhma ctx :loppu)
     (cond
-      (and (some? existing-palaute) (not (palaute/unhandled? existing-palaute)))
-      [nil :yksiloiva-tunniste :jo-lahetetty]
-
       (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
       [:ei-laheteta :tyopaikalla-jarjestettava-koulutus :puuttuva-yhteystieto]
 
@@ -85,9 +82,6 @@
       (fully-keskeytynyt? jakso)
       [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt]
 
-      (c/tuva-related-hoks? hoks)
-      [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
-
       :else
       [:odottaa-kasittelya :loppu :hoks-tallennettu])))
 
@@ -95,12 +89,11 @@
   "Builds tyoelamapalaute to be inserted to DB. Uses `palaute/build!` to build
   an initial `palaute` map, then `assoc`s tyoelamapalaute specific values to
   that."
-  [{:keys [jakso] :as ctx} tila existing-palaute]
-  {:pre [(some? tila)
-         (or (nil? existing-palaute) (palaute/unhandled? existing-palaute))]}
+  [{:keys [jakso] :as ctx} tila]
+  {:pre [(some? tila)]}
   (let [heratepvm (:loppu jakso)
         alkupvm   (next-niputus-date heratepvm)]
-    (assoc (palaute/build! ctx tila existing-palaute)
+    (assoc (palaute/build! ctx tila)
            :kyselytyyppi              "tyopaikkajakson_suorittaneet"
            :jakson-yksiloiva-tunniste (:yksiloiva-tunniste jakso)
            :heratepvm                 heratepvm
@@ -112,21 +105,22 @@
   [{:keys [hoks] :as ctx} jakso]
   (jdbc/with-db-transaction
     [tx db/spec]
-    (let [ctx (assoc ctx :jakso jakso)
-          existing-palaute
-          (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
-            tx {:hoks-id            (:id hoks)
-                :yksiloiva-tunniste (:yksiloiva-tunniste jakso)})
+    (let [ctx (assoc ctx
+                     :jakso jakso
+                     :existing-palaute
+                     (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
+                       tx {:hoks-id            (:id hoks)
+                           :yksiloiva-tunniste (:yksiloiva-tunniste jakso)}))
           [state field reason]
-          (initial-palaute-state-and-reason ctx existing-palaute)]
+          (initial-palaute-state-and-reason ctx)]
       (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
                 "of HOKS" (:id hoks) "will be"
                 (or state :ei-luoda-ollenkaan)
                 "because of" reason "in" field)
       (when state
-        (->> (build! ctx state existing-palaute)
+        (->> (build! ctx state)
              (palaute/upsert! tx)
-             (palautetapahtuma/build ctx state field reason existing-palaute)
+             (palautetapahtuma/build ctx state field reason)
              (palautetapahtuma/insert! tx))
         state))))
 

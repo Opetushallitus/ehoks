@@ -115,26 +115,25 @@
   (testing "On HOKS creation or update"
     (with-redefs [date/now #(LocalDate/of 2023 7 1)]
       (testing "don't initiate kysely if"
-        (testing "there is already herate for tyopaikkajakso."
+        (testing "there is already a handled herate for tyopaikkajakso."
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-1
-                    :jakso          test-jakso}
-                   {:yksiloiva-tunniste "asd"})
+                    :jakso          test-jakso
+                    :existing-palaute {:yksiloiva-tunniste "asd"
+                                       :tila "vastaajatunnus_muodostettu"}})
                  [nil :yksiloiva-tunniste :jo-lahetetty])))
         (testing "opiskeluoikeus is in terminal state."
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-5
-                    :jakso test-jakso}
-                   nil)
+                    :jakso test-jakso})
                  [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt])))
         (testing "osa-aikaisuus is missing from työpaikkajakso"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-1
-                    :jakso (dissoc test-jakso :osa-aikaisuustieto)}
-                   nil)
+                    :jakso (dissoc test-jakso :osa-aikaisuustieto)})
                  [:ei-laheteta :osa-aikaisuustieto :ei-ole])))
         (testing "workplace information is missing from työpaikkajakso"
           (is (= (tep/initial-palaute-state-and-reason
@@ -143,8 +142,7 @@
                     :jakso (update test-jakso
                                    :tyopaikalla-jarjestettava-koulutus
                                    dissoc
-                                   :tyopaikan-y-tunnus)}
-                   nil)
+                                   :tyopaikan-y-tunnus)})
                  [:ei-laheteta :tyopaikalla-jarjestettava-koulutus
                   :puuttuva-yhteystieto])))
         (testing "työpaikkajakso is interrupted on it's end date"
@@ -154,22 +152,19 @@
                     :jakso (assoc-in test-jakso
                                      [:keskeytymisajanjaksot 1]
                                      {:alku  (LocalDate/of 2023 12 1)
-                                      :loppu (LocalDate/of 2023 12 15)})}
-                   nil)
+                                      :loppu (LocalDate/of 2023 12 15)})})
                  [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt])))
         (testing "opiskeluoikeus doesn't have any ammatillinen suoritus"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-2
-                    :jakso test-jakso}
-                   nil)
+                    :jakso test-jakso})
                  [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen])))
         (testing "there is a feedback preventing code in opiskeluoikeusjakso."
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-4
-                    :jakso test-jakso}
-                   nil)
+                    :jakso test-jakso})
                  [:ei-laheteta :opiskeluoikeus-oid :ulkoisesti-rahoitettu])))
         (testing "HOKS is a TUVA-HOKS or a HOKS related to TUVA-HOKS."
           (doseq [test-hoks [(assoc hoks-test/hoks-1
@@ -181,8 +176,7 @@
             (is (= (tep/initial-palaute-state-and-reason
                      {:hoks           test-hoks
                       :opiskeluoikeus oo-test/opiskeluoikeus-1
-                      :jakso test-jakso}
-                     nil)
+                      :jakso test-jakso})
                    [:ei-laheteta
                     :tuva-opiskeluoikeus-oid
                     :tuva-opiskeluoikeus]))))
@@ -191,22 +185,19 @@
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus (assoc-in oo-test/opiskeluoikeus-1
                                               [:tyyppi :koodiarvo] "tuva")
-                    :jakso test-jakso}
-                   nil)
+                    :jakso test-jakso})
                  [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus])))
         (testing "opiskeluoikeus is linked to another opiskeluoikeus"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-3
-                    :jakso test-jakso}
-                   nil)
+                    :jakso test-jakso})
                  [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]))))
       (testing "initiate kysely if when all of the checks are OK."
         (is (= (tep/initial-palaute-state-and-reason
                  {:hoks           hoks-test/hoks-1
                   :opiskeluoikeus oo-test/opiskeluoikeus-1
-                  :jakso test-jakso}
-                 nil)
+                  :jakso test-jakso})
                [:odottaa-kasittelya :loppu :hoks-tallennettu]))))))
 
 (defn- build-expected-herate
