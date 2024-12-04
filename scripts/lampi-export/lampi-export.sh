@@ -7,9 +7,12 @@ local_s3_bucket="ehoks-export-$ENV_NAME"
 system_name="ehoks"
 version="v2" # vanha koko kannan dumppina vievä siirto on v1
 reporting_schema_name="reporting"
-db_hostname="ehoks.db.$ENV_NAME.internal"
+if [ "$ENV_NAME" = "sade" ]; then
+    db_hostname="ehoks.db.opintopolku.fi"
+else
+    db_hostname="ehoks.db.${ENV_NAME}opintopolku.fi"
+fi
 db_name="ehoks"
-db_secret_id="/$ENV_NAME/postgresqls/ehoks/app-user-password"
 db_user="app"
 
 case $ENV_NAME in
@@ -24,15 +27,15 @@ case $ENV_NAME in
 esac
 
 dump_and_upload_db_to_lampi() {
-    log "DEBUG" "Params: db_hostname ${db_hostname}, db_name ${db_name}, db_secret_id ${db_secret_id}, ENV_NAME $ENV_NAME, local_s3_bucket $local_s3_bucket, lampi_s3_bucket $lampi_s3_bucket"
-
-    # returns '{"Parameter":{"Value":"foobar"}}'
-    local -r pw_json=$(aws ssm get-parameter --name ${db_secret_id} --with-decryption --region eu-west-1)
-    local -r db_password=$(jq -r '.Parameter.Value' <<<"${pw_json}")
+    log "DEBUG" "Params: db_hostname ${db_hostname}, db_name ${db_name}, ENV_NAME $ENV_NAME, local_s3_bucket $local_s3_bucket, lampi_s3_bucket $lampi_s3_bucket"
 
     log "INFO" "Starting ${db_name} database data dump"
 
-    pg_command $db_password "CREATE EXTENSION IF NOT EXISTS aws_s3 CASCADE" > /dev/null
+    local -r db_password="$ssm_app_user_password"
+
+    # aws s3 extension and granting privileges need to be created with master user:
+    # CREATE EXTENSION IF NOT EXISTS aws_s3 CASCADE;
+    # GRANT ALL ON SCHEMA aws_s3 TO app;
 
     log "INFO" "Refreshing $reporting_schema_name schema"
     pg_command $db_password "SELECT refresh_reporting('${reporting_schema_name}')" > /dev/null
@@ -41,9 +44,9 @@ dump_and_upload_db_to_lampi() {
       local s3_key="fulldump/$system_name/$version/ehoks_${db_table}.csv"
       local s3_url="s3://$local_s3_bucket/$s3_key"
       log "INFO" "Exporting table $db_table to local S3 $s3_url"
-      local files_uploaded=$(pg_command $db_password "SELECT files_uploaded FROM aws_s3.query_export_to_s3('SELECT * FROM ${db_table}', aws_commons.create_s3_uri('$local_s3_bucket', '$s3_key', 'eu-west-1'), options := 'format csv, header true')" 1 1)
-      log "INFO" "Successfully exported table ${db_table} to local S3 $s3_url"
-      copy_table_to_lampi "$s3_url" "$files_uploaded"
+      local files_uploaded=$(pg_command $db_password "SELECT files_uploaded FROM aws_s3.query_export_to_s3('SELECT * FROM ${reporting_schema_name}.${db_table}', aws_commons.create_s3_uri('$local_s3_bucket', '$s3_key', 'eu-west-1'), options := 'format csv, header true')" 1 1)
+      log "INFO" "Successfully exported table ${reporting_schema_name}.${db_table} to local S3 $s3_url"
+      copy_table_to_lampi "$s3_url" $files_uploaded
     done
 
     generate_and_upload_schema_file $db_password
@@ -72,14 +75,14 @@ pg_command() {
 
 copy_table_to_lampi() {
     local -r source_url="$1"
-    local -r file_parts="$2"
+    local -r file_parts=$2
 
     local -r s3_key="fulldump/$system_name/$version/$(basename "${source_url}").gz"
     local -r target_url="s3://$lampi_s3_bucket/$s3_key"
 
     log "INFO" "Concatenating and compressing $source_url ($file_parts part(s)) to $target_url"
     (aws s3 cp $source_url - ;
-    if (( "$file_parts" > 1 )); then
+    if (( $file_parts > 1 )); then
         for i in $(seq 2 "$file_parts"); do
             aws s3 cp "${source_url}_part${i}" -
         done
