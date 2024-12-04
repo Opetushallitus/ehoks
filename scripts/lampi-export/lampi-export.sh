@@ -33,7 +33,8 @@ dump_and_upload_db_to_lampi() {
 
     local -r db_password="$ssm_app_user_password"
 
-    pg_command $db_password "CREATE EXTENSION IF NOT EXISTS aws_s3 CASCADE" > /dev/null
+    # aws s3 extension needs to be created with master user
+    # pg_command $db_password "CREATE EXTENSION IF NOT EXISTS aws_s3 CASCADE" > /dev/null
 
     log "INFO" "Refreshing $reporting_schema_name schema"
     pg_command $db_password "SELECT refresh_reporting('${reporting_schema_name}')" > /dev/null
