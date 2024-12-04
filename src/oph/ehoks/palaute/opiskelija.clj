@@ -3,7 +3,7 @@
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.set :refer [rename-keys]]
             [clojure.tools.logging :as log]
-            [medley.core :refer [find-first greatest]]
+            [medley.core :refer [greatest]]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
@@ -11,7 +11,6 @@
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.hoks.common :as c]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
             [oph.ehoks.utils :as utils]
@@ -37,20 +36,14 @@
   opiskelijapalautekysely should be initiated.  Returns the initial state
   of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [{:keys [hoks opiskeluoikeus] :as ctx} kysely-type existing-heratteet]
+  [{:keys [hoks] :as ctx} kysely-type]
   (let [herate-basis (herate-date-basis kysely-type)]
     (or
       (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
-        herate-basis hoks opiskeluoikeus)
+        ctx herate-basis)
       (cond
-        (palaute/already-initiated? existing-heratteet)
-        [nil :id :jo-lahetetty]
-
         (not (:osaamisen-hankkimisen-tarve hoks))
         [:ei-laheteta :osaamisen-hankkimisen-tarve :ei-ole]
-
-        (c/tuva-related-hoks? hoks)
-        [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
 
         :else
         [:odottaa-kasittelya herate-basis :hoks-tallennettu]))))
@@ -59,7 +52,9 @@
   {:aloituskysely :aloitusherate_kasitelty
    :paattokysely :paattoherate_kasitelty})
 
-(defn existing-heratteet!
+(defn existing-palaute!
+  "Returns an existing palaute if one already exists for `kysely-type` and
+  for rahoituskausi corresponding to herate date."
   [tx {:keys [hoks koulutustoimija] :as ctx} kysely-type]
   (let [rahoituskausi (palaute/rahoituskausi
                         (get hoks (herate-date-basis kysely-type)))
@@ -69,23 +64,23 @@
         params        {:kyselytyypit     kyselytyypit
                        :oppija-oid       (:oppija-oid hoks)
                        :koulutustoimija  koulutustoimija}]
-    (->>
-      (palaute/get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params)
-      (vec)
-      (log/spyf :info "existing-heratteet!: before rk filtering: %s")
-      (filterv #(= rahoituskausi (palaute/rahoituskausi (:heratepvm %))))
-      (log/spyf :info "existing-heratteet!: after rk filtering: %s"))))
+    (->> (palaute/get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params)
+         (vec)
+         (log/spyf :info "existing-heratteet!: before rk filtering: %s")
+         (filterv #(= rahoituskausi (palaute/rahoituskausi (:heratepvm %))))
+         (log/spyf :info "existing-heratteet!: after rk filtering: %s")
+         (utils/assert-pred #(contains? #{0 1} (count %)))
+         first)))
 
 (defn build!
   "Builds opiskelijapalaute to be inserted to DB. Uses `palaute/build!` to build
   an initial `palaute` map, then `assoc`s opiskelijapalaute specific values to
   that."
-  [{:keys [hoks opiskeluoikeus] :as ctx} tyyppi tila existing-palaute]
-  {:pre [(some? tila)
-         (or (nil? existing-palaute) (palaute/unhandled? existing-palaute))]}
+  [{:keys [hoks opiskeluoikeus] :as ctx} tyyppi tila]
+  {:pre [(some? tila)]}
   (let [heratepvm (get hoks (herate-date-basis tyyppi))
         alkupvm   (greatest heratepvm (date/now))]
-    (assoc (palaute/build! ctx tila existing-palaute)
+    (assoc (palaute/build! ctx tila)
            :kyselytyyppi      (palaute/kyselytyyppi tyyppi opiskeluoikeus)
            :heratepvm         heratepvm
            :voimassa-alkupvm  alkupvm
@@ -108,19 +103,19 @@
   ([{:keys [hoks opiskeluoikeus] :as ctx} kysely-type opts]
     (jdbc/with-db-transaction
       [tx db/spec]
-      (let [ctx (assoc ctx :koulutustoimija (palaute/koulutustoimija-oid!
-                                              opiskeluoikeus))
-            existing-heratteet (when-not (:resend? opts)
-                                 (existing-heratteet! tx ctx kysely-type))
+      (let [ctx (assoc
+                  ctx
+                  :koulutustoimija (palaute/koulutustoimija-oid!
+                                     opiskeluoikeus)
+                  :existing-palaute (when-not (:resend? opts)
+                                      (existing-palaute! tx ctx kysely-type)))
             [state field reason] (initial-palaute-state-and-reason
-                                   ctx kysely-type existing-heratteet)]
+                                   ctx kysely-type)]
         (log/info "Initial state for" kysely-type "for HOKS" (:id hoks)
                   "will be" (or state :ei-luoda-ollenkaan)
                   "because of" reason "in" field)
         (when state
-          (let [heratepvm       (get hoks (herate-date-basis kysely-type))
-                existing-herate (find-first palaute/unhandled?
-                                            existing-heratteet)
+          (let [heratepvm            (get hoks (herate-date-basis kysely-type))
                 target-kasittelytila (not= state :odottaa-kasittelya)
                 amisherate-kasittelytila
                 (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id!
@@ -129,9 +124,9 @@
               tx {:id (:id amisherate-kasittelytila)
                   (kysely-kasittely-field-mapping kysely-type)
                   target-kasittelytila})
-            (->> (build! ctx kysely-type state existing-herate)
+            (->> (build! ctx kysely-type state)
                  (palaute/upsert! tx)
-                 (palautetapahtuma/build ctx state field reason existing-herate)
+                 (palautetapahtuma/build ctx state field reason)
                  (palautetapahtuma/insert! tx))
             (when (= :odottaa-kasittelya state)
               (log/info "Making" type "heräte for HOKS" (:id hoks))
