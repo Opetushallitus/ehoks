@@ -81,7 +81,7 @@ copy_table_to_lampi() {
 
     log "INFO" "Concatenating and compressing $source_url ($file_parts part(s)) to $target_url"
     (aws s3 cp $source_url - ;
-    if (( "$file_parts" > 1 )); then
+    if (( "$file_parts" -gt 1 )); then
         for i in $(seq 2 "$file_parts"); do
             aws s3 cp "${source_url}_part${i}" -
         done
