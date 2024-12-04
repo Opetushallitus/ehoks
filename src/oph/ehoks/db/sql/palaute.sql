@@ -1,10 +1,10 @@
 -- :name insert! :? :1
 -- :doc Insert palaute to DB
--- :require [clojure.string :as string]
+-- :require [oph.ehoks.db.sql :as sql]
 insert into palautteet (
---~ (string/join "," (map #(.replace (name %) \- \_) (keys params)))
+--~ (sql/target-columns-for-insert params)
 ) values (
---~ (string/join "," (map #(str ":v:" (name %)) (keys params)))
+--~ (sql/values-for-insert params)
 ) returning *
 
 -- :name get-tep-palautteet-waiting-for-vastaajatunnus! :? :*
@@ -48,15 +48,9 @@ returning *
 
 -- :name update! :? :1
 -- :doc Update palaute in DB
-/* :require [clojure.string :as string]
-            [hugsql.parameters :refer [identifier-param-quote]] */
-update palautteet set
-/*~
-(string/join ","
-  (for [[field _] params]
-    (str (identifier-param-quote (.replace (name field) \- \_) options)
-      " = :v:" (name field))))
-~*/
+-- :require [oph.ehoks.db.sql :as sql]
+update palautteet
+--~ (sql/set-clause-for-update params options)
 where	id = :id
 returning *
 

@@ -4,6 +4,7 @@
             [medley.core :refer [assoc-some find-first]]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
+            [oph.ehoks.hoks :as hoks]
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.oppijaindex :as oppijaindex]
@@ -14,13 +15,14 @@
 
 (hugsql/def-db-fns "oph/ehoks/db/sql/palaute.sql")
 
-(def unhandled? (comp #{"odottaa_kasittelya" "ei_laheteta"} :tila))
+(defn unhandled?
+  [palaute]
+  {:pre [(:tila palaute)]}
+  (#{"odottaa_kasittelya" "ei_laheteta"} (:tila palaute)))
 
-(defn already-initiated?
-  "Returns `true` if palautekysely has already been initiated, i.e., there
-  already exists a herate for kysely that has already been handled."
-  [existing-heratteet]
-  (not-every? unhandled? existing-heratteet))
+(defn nil-or-unhandled?
+  [palaute]
+  (or (nil? palaute) (unhandled? palaute)))
 
 (defn current-rahoituskausi-alkupvm
   ^LocalDate []
@@ -105,9 +107,8 @@
 
   NOTE: This doesn't build a complete palaute that should be inserted to DB but
   only part of it."
-  [{:keys [hoks opiskeluoikeus koulutustoimija] :as ctx} tila existing-palaute]
-  {:pre [(some? tila)
-         (or (nil? existing-palaute) (unhandled? existing-palaute))]}
+  [{:keys [hoks opiskeluoikeus koulutustoimija existing-palaute] :as ctx} tila]
+  {:pre [(some? tila) (nil-or-unhandled? existing-palaute)]}
   (let [suoritus (find-first suoritus/ammatillinen?
                              (:suoritukset opiskeluoikeus))]
     (assoc-some
@@ -167,9 +168,13 @@
   "Partial function; returns initial state, field causing it, and why the
   field causes the initial state - but only if the palaute is not to be
   collected because it's not part of kohderyhmä; otherwise returns nil."
-  [herate-date-field hoks-or-jakso opiskeluoikeus]
-  (let [herate-date (get hoks-or-jakso herate-date-field)]
+  [{:keys [hoks opiskeluoikeus jakso existing-palaute] :as ctx}
+   herate-date-field]
+  (let [herate-date (get (or jakso hoks) herate-date-field)]
     (cond
+      (not (nil-or-unhandled? existing-palaute))
+      [nil (if jakso :yksiloiva-tunniste :id) :jo-lahetetty]
+
       (not opiskeluoikeus)
       [nil :opiskeluoikeus-oid :ei-loydy]
 
@@ -193,6 +198,9 @@
 
       (opiskeluoikeus/tuva? opiskeluoikeus)
       [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus]
+
+      (hoks/tuva-related? hoks)
+      [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
 
       (opiskeluoikeus/linked-to-another? opiskeluoikeus)
       [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus])))

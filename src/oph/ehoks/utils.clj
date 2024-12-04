@@ -9,6 +9,14 @@
   [v pred f]
   (if (pred v) (f v) v))
 
+(defn assert-pred
+  "Takes a predicate `pred` and a value `v` that is given to the predicate.
+  Asserts that `(pred v)` returns `true` and then returns `v`. Useful when used
+  in a threading macro."
+  [pred v]
+  (assert (pred v))
+  v)
+
 (defn- deaccent-string
   "Poistaa diakriittiset merkit stringistä ja palauttaa muokatun stringin."
   [utf8-string]

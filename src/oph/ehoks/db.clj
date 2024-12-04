@@ -23,12 +23,14 @@
   [obj]
   (if (instance? PgArray obj) (vec (.getArray ^PgArray obj)) obj))
 
-(def convert-result
+(defn convert-result
   "Fix the results of hugsql to more clojuresque format."
-  (comp #(dissoc % :created-at :updated-at :deleted-at)
-        utils/to-dash-keys
-        (partial map-vals pgarray->vec)
-        (partial remove-vals nil?)))
+  [result]
+  (as-> result r
+    (remove-vals nil? r)
+    (map-vals pgarray->vec r)
+    (utils/to-dash-keys r)
+    (dissoc r :created-at :updated-at :deleted-at)))
 
 (defn result-one-snake->kebab
   [this result options]
