@@ -127,20 +127,24 @@
 (defn send-amis-palaute-message
   "Lähettää AMIS-palauteviestin."
   [msg]
-  (if (some? herate-queue-url)
-    (do
-      (log/infof (str "Sending AMIS-kysely for hoks id %s. "
-                      "Type: %s. "
-                      "Opiskeluoikeus: %s. "
-                      "Oppija: %s. "
-                      "Alkupvm: %s.")
-                 (:ehoks-id msg)
-                 (:kyselytyyppi msg)
-                 (:opiskeluoikeus-oid msg)
-                 (:oppija-oid msg)
-                 (:alkupvm msg))
-      (send-message msg herate-queue-url))
-    (log/error "No AMIS-palaute queue!")))
+  (if (contains? (set (:heratepalvelu-responsibities config))
+                 :sync-amis-heratteet)
+    (log/warn "We are syncing AMIS-herätteet directly to Herätepalvelu,"
+              "so SQS disabled")
+    (if (some? herate-queue-url)
+      (do
+        (log/infof (str "Sending AMIS-kysely for hoks id %s. "
+                        "Type: %s. "
+                        "Opiskeluoikeus: %s. "
+                        "Oppija: %s. "
+                        "Alkupvm: %s.")
+                   (:ehoks-id msg)
+                   (:kyselytyyppi msg)
+                   (:opiskeluoikeus-oid msg)
+                   (:oppija-oid msg)
+                   (:alkupvm msg))
+        (send-message msg herate-queue-url))
+      (log/error "No AMIS-palaute queue!"))))
 
 (defn send-delete-tunnus-message
   "Lähettää tunnuksen poistoviestin."
@@ -152,9 +156,13 @@
 (defn send-tyoelamapalaute-message
   "Lähettää työelämäpalauteviestin."
   [msg]
-  (if (some? tyoelamapalaute-queue-url)
-    (send-message msg tyoelamapalaute-queue-url)
-    (log/error "No työelämäpalaute queue!")))
+  (if (contains? (set (:heratepalvelu-responsibities config))
+                 :sync-jakso-heratteet)
+    (log/warn "We are syncing TEP-herätteet directly to Herätepalvelu,"
+              "so SQS disabled")
+    (if (some? tyoelamapalaute-queue-url)
+      (send-message msg tyoelamapalaute-queue-url)
+      (log/error "No työelämäpalaute queue!"))))
 
 (defn send-palaute-resend-message
   "Lähettää palautteen uudelleenlähetysviestin."
