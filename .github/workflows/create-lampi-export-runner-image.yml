@@ -17,11 +17,13 @@ jobs:
         run: |
           git clone https://github.com/Opetushallitus/ci-tools.git
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Build the Docker image
         run: |
           source ci-tools/common/setup-tools.sh
-          sudo apt-get install -y qemu qemu-user-static
-          docker build . --file scripts/lampi-export/Dockerfile --tag ${ECR_REPO}/ehoks-lampi-export:ga-${GITHUB_RUN_NUMBER} --platform linux/arm64
+          docker buildx build . --file scripts/lampi-export/Dockerfile --tag ${ECR_REPO}/ehoks-lampi-export:ga-${GITHUB_RUN_NUMBER} --platform linux/arm64
 
       - name: Upload Package
         shell: bash
