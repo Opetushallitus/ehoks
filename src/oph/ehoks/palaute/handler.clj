@@ -34,7 +34,7 @@
           (c-api/context "/opiskelijapalaute" []
             :tags ["opiskelijapalaute"]
 
-            (c-api/POST ":hoks-id/kyselylinkki" [hoks-id]
+            (c-api/POST "/:hoks-id/kyselylinkki" [hoks-id]
               :summary "Luo yhden HOKSin kyselylinkit, jos niitä ei ole luotu."
               (let [palautteet
                     (palaute/get-by-hoks-id-and-kyselytyypit!
