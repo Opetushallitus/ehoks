@@ -23,7 +23,7 @@ jobs:
       - name: Build the Docker image
         run: |
           source ci-tools/common/setup-tools.sh
-          docker buildx build . --file scripts/lampi-export/Dockerfile --tag ${ECR_REPO}/ehoks-lampi-export:ga-${GITHUB_RUN_NUMBER} --platform linux/arm64
+          docker buildx build . --file scripts/lampi-export/Dockerfile --tag ${ECR_REPO}/ehoks-lampi-export:ga-${GITHUB_RUN_NUMBER} --platform linux/amd64
 
       - name: Upload Package
         shell: bash
