@@ -17,13 +17,13 @@ db_user="app"
 
 case $ENV_NAME in
   "sade")
-    lampi_s3_bucket="oph-lampi-prod.s3.eu-west-1.amazonaws.com "
+    lampi_s3_bucket="oph-lampi-prod.s3.eu-west-1.amazonaws.com"
     ;;
   "pallero")
-    lampi_s3_bucket="oph-lampi-qa.s3.eu-west-1.amazonaws.com "
+    lampi_s3_bucket="oph-lampi-qa.s3.eu-west-1.amazonaws.com"
     ;;
   *)
-    lampi_s3_bucket="oph-lampi-dev.s3.eu-west-1.amazonaws.com "
+    lampi_s3_bucket="oph-lampi-dev.s3.eu-west-1.amazonaws.com"
 esac
 
 dump_and_upload_db_to_lampi() {
