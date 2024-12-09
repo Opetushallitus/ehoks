@@ -142,10 +142,9 @@ upload_file_to_lampi() {
     local -r session_token="$4"
     local -r file_s3_key="fulldump/$system_name/$version/$file"
     local -r file_s3_url="s3://$local_s3_bucket/$file_s3_key"
-    log "INFO" "Uploading file" $file_s3_key "to local S3 $file_s3_url"
-    local -r obj_version=$(aws s3api put-object --region eu-west-1 --body "$file" --bucket "$local_s3_bucket" --key "$file_s3_key" --output json | jq -r .VersionId)
-    log "INFO" "Uploading file $file_s3_key with version $obj_version to Lampi s3://$lampi_s3_bucket/$file_s3_key"
-    aws s3 cp "$file_s3_url" - | AWS_ACCESS_KEY_ID="$access_key_id" AWS_SECRET_ACCESS_KEY="$secret_access_key" AWS_SESSION_TOKEN="$session_token" aws s3 cp - "s3://$lampi_s3_bucket/$file_s3_key"
+    local -r put_result=$(aws s3api put-object --region eu-west-1 --body "$file" --bucket "$local_s3_bucket" --key "$file_s3_key" --output json)
+    local -r cp_result=$(aws s3 cp "$file_s3_url" - | AWS_ACCESS_KEY_ID="$access_key_id" AWS_SECRET_ACCESS_KEY="$secret_access_key" AWS_SESSION_TOKEN="$session_token" aws s3 cp - "s3://$lampi_s3_bucket/$file_s3_key")
+    local -r obj_version=$(AWS_ACCESS_KEY_ID="$access_key_id" AWS_SECRET_ACCESS_KEY="$secret_access_key" AWS_SESSION_TOKEN="$session_token" aws s3api head-object --region eu-west-1 --bucket "$lampi_s3_bucket" --key "$file_s3_key" --output json | jq -r .VersionId)
     echo $(lampi_manifest_item "$file_s3_key" "$obj_version")
 }
 
