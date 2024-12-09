@@ -48,7 +48,7 @@ dump_and_upload_db_to_lampi() {
     pg_command "$db_password" "SELECT refresh_reporting('${reporting_schema_name}')" > /dev/null
 
     for db_table in $(pg_command "$db_password" "SELECT table_name FROM information_schema.tables WHERE table_schema = '$reporting_schema_name'" 1); do
-      local s3_key="fulldump/$system_name/$version/ehoks_${db_table}.csv"
+      local s3_key="fulldump/$system_name/$version/${db_table}.csv"
       local s3_url="s3://$local_s3_bucket/$s3_key"
       log "INFO" "Exporting table $db_table to local S3 $s3_url"
       local files_uploaded=$(pg_command "$db_password" "SELECT files_uploaded FROM aws_s3.query_export_to_s3('SELECT * FROM ${reporting_schema_name}.${db_table}', aws_commons.create_s3_uri('$local_s3_bucket', '$s3_key', 'eu-west-1'), options := 'format csv, header true')" 1 1)
@@ -76,7 +76,6 @@ pg_command() {
         then
             cmd="$cmd --csv"
     fi
-    log "DEBUG" "cmd: $cmd"
     echo $(eval "$cmd")
 }
 
