@@ -1,4 +1,5 @@
 DROP VIEW palaute_for_tep_heratepalvelu;
+
 CREATE VIEW palaute_for_tep_heratepalvelu AS
 SELECT
   jakson_yksiloiva_tunniste,
@@ -14,6 +15,10 @@ SELECT
   opiskeluoikeus_oid,
   oppisopimuksen_perusta_koodi_uri AS oppisopimuksen_perusta,
   osa_aikaisuustieto AS osa_aikaisuus,
+  CASE tila
+    WHEN 'odottaa_kasittelya' THEN 'ei_niputettu'
+    WHEN 'vastaajatunnus_muodostettu' THEN 'ei_niputettu'
+    ELSE tila::text END AS kasittelytila,
   CASE WHEN EXTRACT(MONTH FROM heratepvm) <= 6
     THEN CONCAT(EXTRACT(YEAR FROM heratepvm) - 1, '-',
                 EXTRACT(YEAR FROM heratepvm))
