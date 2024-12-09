@@ -2,6 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
+            [medley.core :refer [map-keys]]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
@@ -128,36 +129,6 @@
                                   :body (:body (ex-data e))}})
              (throw e))))))
 
-(def map-jakso-keys-to-ddb
-  (some-fn {:hankkimistapa-id :hankkimistapa_id,
-            :osaamisen-hankkimistapa-koodi-uri :hankkimistapa_tyyppi,
-            :hoks-id :hoks_id,
-            :jakso-alkupvm :jakso_alkupvm,
-            :jakso-loppupvm :jakso_loppupvm,
-            :ohjaaja-email :ohjaaja_email,
-            :ohjaaja-nimi :ohjaaja_nimi,
-            :ohjaaja-puhelinnumero :ohjaaja_puhelinnumero,
-            :ohjaaja-ytunnus-kj-tutkinto :ohjaaja_ytunnus_kj_tutkinto,
-            :opiskeluoikeus-oid :opiskeluoikeus_oid,
-            :oppija-oid :oppija_oid,
-            :oppisopimuksen-perusta-koodi-uri :oppisopimuksen_perusta,
-            :osa-aikaisuustieto :osa_aikaisuus,
-            :request-id :request_id,
-            :toimipiste-oid :toimipiste_oid,
-            :tutkinnonosa-id :tutkinnonosa_id,
-            :tutkinnon-osa-koodi-uri :tutkinnonosa_koodi,
-            :tutkinnonosa-nimi :tutkinnonosa_nimi,
-            :tutkinnonosa-tyyppi :tutkinnonosa_tyyppi,
-            :tyopaikan-nimi :tyopaikan_nimi,
-            :tyopaikan-normalisoitu-nimi :tyopaikan_normalisoitu_nimi,
-            :tyopaikan-y-tunnus :tyopaikan_ytunnus,
-            :vastuullinen-tyopaikka-ohjaaja-nimi :ohjaaja_nimi,
-            :vastuullinen-tyopaikka-ohjaaja-sahkoposti :ohjaaja_email,
-            :vastuullinen-tyopaikka-ohjaaja-puhelinnumero
-            :ohjaaja_puhelinnumero,
-            :viimeinen-vastauspvm :viimeinen_vastauspvm}
-           identity))
-
 (defn sync-jakso-herate!
   "Update the herätepalvelu jaksotunnustable to have the same content
   for given heräte as palaute-backend has in its own database.
@@ -168,6 +139,8 @@
   (if-not (contains? (set (:heratepalvelu-responsibities config))
                      :sync-jakso-heratteet)
     (log/warn "sync-jakso-herate!: configured to not do anything")
-    (-> tep-palaute
-        (update-keys map-jakso-keys-to-ddb)
-        (->> (sync-item! :jakso)))))
+    (->> tep-palaute
+         ;; the only field that has dashes in its name is tpk-niputuspvm
+         utils/to-underscore-keys
+         (map-keys (some-fn {:tpk_niputuspvm :tpk-niputuspvm} identity))
+         (sync-item! :jakso))))

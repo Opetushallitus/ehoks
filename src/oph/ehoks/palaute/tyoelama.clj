@@ -150,6 +150,8 @@
 
 (defn add-keys
   [tep-palaute opiskeluoikeus request-id tunnus]
+  ;; TODO: check this niputuspvm rule when palaute-backend is
+  ;; responsible for niputus
   (let [niputuspvm (str (next-niputus-date (date/now)))
         alkupvm (next-niputus-date
                   (LocalDate/parse (:jakso-loppupvm tep-palaute)))
