@@ -53,11 +53,11 @@ dump_and_upload_db_to_lampi() {
       log "INFO" "Exporting table $db_table to local S3 $s3_url"
       local files_uploaded=$(pg_command "$db_password" "SELECT files_uploaded FROM aws_s3.query_export_to_s3('SELECT * FROM ${reporting_schema_name}.${db_table}', aws_commons.create_s3_uri('$local_s3_bucket', '$s3_key', 'eu-west-1'), options := 'format csv, header true')" 1 1)
       log "INFO" "Successfully exported table ${reporting_schema_name}.${db_table} to local S3 $s3_url"
-      copy_table_to_lampi "$s3_url" $files_uploaded "$assume_role_session_token" "$assume_role_secret_access_key" "$assume_role_session_token"
+      copy_table_to_lampi "$s3_url" $files_uploaded "$assume_role_access_key_id" "$assume_role_secret_access_key" "$assume_role_session_token"
     done
 
-    generate_and_upload_schema_file "$db_password" "$assume_role_session_token" "$assume_role_secret_access_key" "$assume_role_session_token"
-    upload_file_to_lampi "$lampi_manifest_file" "$assume_role_session_token" "$assume_role_secret_access_key" "$assume_role_session_token" > /dev/null
+    generate_and_upload_schema_file "$db_password" "$assume_role_access_key_id" "$assume_role_secret_access_key" "$assume_role_session_token"
+    upload_file_to_lampi "$lampi_manifest_file" "$assume_role_access_key_id" "$assume_role_secret_access_key" "$assume_role_session_token" > /dev/null
     cat "$export_log_file"
     cat "$lampi_manifest_file"
 }
