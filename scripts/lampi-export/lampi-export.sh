@@ -27,6 +27,7 @@ case $ENV_NAME in
 esac
 
 dump_and_upload_db_to_lampi() {
+    log "INFO" "Start dump_and_upload_db_to_lampi"
     log "DEBUG" "Params: db_hostname ${db_hostname}, db_name ${db_name}, ENV_NAME $ENV_NAME, local_s3_bucket $local_s3_bucket, lampi_s3_bucket $lampi_s3_bucket"
 
     log "INFO" "Starting ${db_name} database data dump"
