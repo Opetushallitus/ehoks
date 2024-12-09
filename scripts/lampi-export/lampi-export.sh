@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export_log_file="export.log"
 lampi_manifest_file="manifest.json"
 echo "{}" > $lampi_manifest_file
 local_s3_bucket="ehoks-export-$ENV_NAME"
@@ -58,8 +57,7 @@ dump_and_upload_db_to_lampi() {
 
     generate_and_upload_schema_file "$db_password" "$assume_role_access_key_id" "$assume_role_secret_access_key" "$assume_role_session_token"
     upload_file_to_lampi "$lampi_manifest_file" "$assume_role_access_key_id" "$assume_role_secret_access_key" "$assume_role_session_token" > /dev/null
-    cat "$export_log_file"
-    cat "$lampi_manifest_file"
+    log "INFO" "manifest.json" $(cat "$lampi_manifest_file")
 }
 
 pg_command() {
@@ -112,8 +110,7 @@ add_to_manifest() {
 }
 
 log() {
-    touch "$export_log_file"
-    echo "[$(date +"%Y-%m-%d"+"%T")]: $*" >> "$export_log_file"
+    echo "[$(date +"%Y-%m-%d"+"%T")]: $*"
 }
 
 lampi_manifest_item() {
