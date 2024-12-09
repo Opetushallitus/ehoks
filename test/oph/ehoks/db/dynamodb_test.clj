@@ -65,8 +65,10 @@
           (is (= (:sahkoposti ddb-item) "irma.isomerkki@esimerkki.com"))
           (is (= (:herate-source ddb-item) "sqs_viesti_ehoksista"))
           (far/update-item @ddb/faraday-opts @(ddb/tables :amis) ddb-key
-                           {:update-expr "SET lahetystila = :1"
-                            :expr-attr-vals {":1" "lahetetty"}})
+                           {:update-expr "SET lahetystila = :1, #2 = :2"
+                            :expr-attr-names {"#2" "viestintapalvelu-id"}
+                            :expr-attr-vals {":1" "lahetetty"
+                                             ":2" "2027-05-06"}})
           (hoks-handler/change-hoks-and-initiate-all-palautteet!
             {:hoks           (assoc hoks-data
                                     :id (:id saved-hoks)
@@ -78,4 +80,5 @@
           (let [new-ddb-item
                 (far/get-item @ddb/faraday-opts @(ddb/tables :amis) ddb-key)]
             (is (= (:sahkoposti new-ddb-item) "foo@bar.com"))
-            (is (= (:lahetystila new-ddb-item) "lahetetty"))))))))
+            (is (= (:viestintapalvelu-id new-ddb-item) "2027-05-06"))
+            (is (= (:lahetystila new-ddb-item) "ei_lahetetty"))))))))
