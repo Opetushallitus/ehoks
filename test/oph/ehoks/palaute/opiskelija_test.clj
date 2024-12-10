@@ -388,14 +388,14 @@
                  (op/create-and-save-arvo-kyselylinkki!)
                  (nil?)))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
-                ["vastaajatunnus_muodostettu" "valmistuneet"]]
+                ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
                      :kyselytyypit ["aloittaneet" "valmistuneet"]}
                     (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
                     (map (juxt :tila :kyselytyyppi)))))
         (is (= [["odottaa_kasittelya" "odottaa_kasittelya"
                  {:osaamisen-saavuttamisen-pvm "2024-02-05"}]
-                ["odottaa_kasittelya" "vastaajatunnus_muodostettu"
+                ["odottaa_kasittelya" "kysely_muodostettu"
                  {:arvo_response
                   {:tunnus "foo1"
                    :kysely_linkki "https://arvovastaus.csc.fi/v/foo1"
@@ -430,7 +430,7 @@
                    (op/create-and-save-arvo-kyselylinkki!)
                    (keys))))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
-                ["vastaajatunnus_muodostettu" "valmistuneet"]]
+                ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
                      :kyselytyypit ["aloittaneet" "valmistuneet"]}
                     (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)
@@ -476,8 +476,8 @@
                                           @vastauslinkki-counter)
                       :voimassa_loppupvm "2024-10-10"}})))
         (op/create-and-save-arvo-kyselylinkki-for-all-needed! {})
-        (is (= [["vastaajatunnus_muodostettu" "aloittaneet"]
-                ["vastaajatunnus_muodostettu" "valmistuneet"]]
+        (is (= [["kysely_muodostettu" "aloittaneet"]
+                ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
                      :kyselytyypit ["aloittaneet" "valmistuneet"]}
                     (palaute/get-by-hoks-id-and-kyselytyypit! db/spec)

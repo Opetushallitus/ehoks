@@ -207,16 +207,19 @@
 
 (defn save-arvo-tunniste!
   [tx palaute arvo-vastaus lisatiedot]
-  (-> arvo-vastaus
-      (assoc :id (:id palaute))
-      (update :url identity)  ; ensure key exists
-      (->> (update-arvo-tunniste! tx))
-      (assert))
-  (palautetapahtuma/insert!
-    tx
-    {:palaute-id      (:id palaute)
-     :vanha-tila      (:tila palaute)
-     :uusi-tila       "vastaajatunnus_muodostettu"
-     :tapahtumatyyppi "arvo_luonti"
-     :syy             "arvo_kutsu_onnistui"
-     :lisatiedot      lisatiedot}))
+  (let [new-state
+        (if (= (:kyselytyyppi palaute) "tyopaikkajakson_suorittaneet")
+          "vastaajatunnus_muodostettu" "kysely_muodostettu")]
+    (-> arvo-vastaus
+        (assoc :id (:id palaute) :tila new-state)
+        (update :url identity)  ; ensure key exists
+        (->> (update-arvo-tunniste! tx))
+        (assert))
+    (palautetapahtuma/insert!
+      tx
+      {:palaute-id      (:id palaute)
+       :vanha-tila      (:tila palaute)
+       :uusi-tila       new-state
+       :tapahtumatyyppi "arvo_luonti"
+       :syy             "arvo_kutsu_onnistui"
+       :lisatiedot      lisatiedot})))
