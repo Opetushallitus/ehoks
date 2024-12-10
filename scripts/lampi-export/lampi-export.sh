@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 lampi_manifest_file="manifest.json"
 echo "{}" > $lampi_manifest_file
 local_s3_bucket="ehoks-export-$ENV_NAME"
