@@ -55,7 +55,7 @@ update	palautteet
 set	arvo_tunniste = :tunnus,
 	kyselylinkki = :url,
 	updated_at = now(),
-	tila = 'vastaajatunnus_muodostettu'
+	tila = :tila
 where	id = :id
   and	arvo_tunniste is null
   and	tila = 'odottaa_kasittelya'

@@ -306,6 +306,7 @@
     :oppilaitos
     :tunnus
     :ohjaaja_ytunnus_kj_tutkinto
+    :kasittelytila
     :tutkinnonosa_id
     :niputuspvm
     :tyopaikan_normalisoitu_nimi
