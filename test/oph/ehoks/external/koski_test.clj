@@ -63,8 +63,9 @@
             ExceptionInfo
             (re-pattern
               (str "Error while fetching opiskeluoikeus "
-                   "`1.246.562.15.12345678910` from Koski. "
-                   "Koski-virhekoodi is `badRequest.format.number`."))
+                   "`1.246.562.15.12345678910` from Koski. Got response with "
+                   "HTTP status 400 and Koski-virhekoodi "
+                   "`badRequest.format.number`."))
             (k/get-opiskeluoikeus! "1.246.562.15.12345678910"))))))
 
 (deftest test-get-existing-opiskeluoikeus!
@@ -80,8 +81,9 @@
             ExceptionInfo
             (re-pattern
               (str "Error while fetching opiskeluoikeus "
-                   "`1.246.562.15.12345678910` from Koski. "
-                   "Koski-virhekoodi is `badRequest.format.number`."))
+                   "`1.246.562.15.12345678910` from Koski. Got response with "
+                   "HTTP status 400 and Koski-virhekoodi "
+                   "`badRequest.format.number`."))
             (k/get-opiskeluoikeus! "1.246.562.15.12345678910"))))))
 
 (deftest test-get-oppija-opiskeluoikeudet

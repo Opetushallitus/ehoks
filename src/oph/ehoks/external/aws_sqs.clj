@@ -153,7 +153,7 @@
     (send-message {:kyselylinkki kyselylinkki} delete-tunnus-queue-url)
     (log/error "No AMIS delete tunnus queue!")))
 
-(defn send-tyoelamapalaute-message
+(defn send-tyoelamapalaute-message!
   "Lähettää työelämäpalauteviestin."
   [msg]
   (if (contains? (set (:heratepalvelu-responsibities config))

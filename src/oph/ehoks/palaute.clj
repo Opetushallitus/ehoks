@@ -1,8 +1,10 @@
 (ns oph.ehoks.palaute
-  (:require [clojure.set :refer [rename-keys]]
+  (:require [clojure.java.jdbc :as jdbc]
+            [clojure.set :refer [rename-keys]]
             [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
             [medley.core :refer [assoc-some find-first]]
+            [oph.ehoks.db :as db]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.external.organisaatio :as organisaatio]
             [oph.ehoks.hoks :as hoks]
@@ -135,6 +137,13 @@
   (let [db-handler (if (:id palaute) update! insert!)]
     (db-handler tx palaute)))
 
+(defn update-tila!
+  [{:keys [existing-palaute] :as ctx} tila reason lisatiedot]
+  (jdbc/with-db-transaction
+    [tx db/spec]
+    (update! tx {:id (:id existing-palaute) :tila tila})
+    (tapahtuma/build-and-insert! ctx "ei_laheteta" reason lisatiedot)))
+
 (defn feedback-collecting-prevented?
   "Jätetäänkö palaute keräämättä sen vuoksi, että opiskelijan opiskelu on
   tällä hetkellä rahoitettu muilla rahoituslähteillä?"
@@ -207,19 +216,23 @@
       [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus])))
 
 (defn save-arvo-tunniste!
-  [{:keys [tx existing-palaute] :as ctx} arvo-vastaus]
+  [{:keys [tx existing-palaute] :as ctx} arvo-response]
+  {:pre [(:tunnus arvo-response)]}
   (let [new-state (if (= (:kyselytyyppi existing-palaute)
                          "tyopaikkajakson_suorittaneet")
                     :vastaajatunnus-muodostettu :kysely-muodostettu)]
-    (-> arvo-vastaus
-        (rename-keys {:kysely_linkki :url})
-        (assoc :id   (:id existing-palaute)
-               :tila (utils/to-underscore-str new-state))
-        (update :url identity)  ; ensure key exists
-        (->> (update-arvo-tunniste! tx))
-        (assert))
-    (tapahtuma/build-and-insert!
-      ctx
-      new-state
-      :arvo-kutsu-onnistui
-      {:arvo_response arvo-vastaus})))
+    (try (-> arvo-response
+             (rename-keys {:kysely_linkki :url})
+             (assoc :id   (:id existing-palaute)
+                    :tila (utils/to-underscore-str new-state))
+             (update :url identity)  ; ensure key exists
+             (->> (update-arvo-tunniste! tx))
+             (assert))
+         (tapahtuma/build-and-insert!
+           ctx new-state :arvo-kutsu-onnistui {:arvo_response arvo-response})
+         (catch Exception e
+           (throw (ex-info "Failed to save Arvo-tunnus to DB"
+                           {:type        :failed-to-save-arvo-tunnus
+                            :arvo-tunnus (:tunnus arvo-response)}
+                           e)))))
+  (:tunnus arvo-response))

@@ -151,6 +151,9 @@
                   base-url
                   (dissoc hoks-test/hoks-1 :id))))
 
+(defn palautteet []
+  (db-helpers/query ["select * from palautteet"]))
+
 (defn kasittelemattomat-palauteet []
   (db-helpers/query
     [(str "select * from palautteet "

@@ -65,8 +65,7 @@
               :header-params [caller-id :- s/Str
                               ticket :- s/Str]
               (let [vastaajatunnukset
-                    (tep/create-and-save-arvo-vastaajatunnus-for-all-needed!
-                      {})]
+                    (tep/handle-all-palautteet-waiting-for-vastaajatunnus! {})]
                 (assoc
                   (restful/ok {:vastaajatunnukset vastaajatunnukset})
                   ::audit/target {:vastaajatunnukset vastaajatunnukset})))
@@ -79,8 +78,9 @@
               (if-let [tep-palaute
                        (palaute/get-tep-palaute-waiting-for-vastaajatunnus!
                          db/spec {:palaute-id palaute-id})]
-                (let [vastaajatunnus (tep/create-and-save-arvo-vastaajatunnus!
-                                       tep-palaute)]
+                (let [vastaajatunnus
+                      (tep/handle-palaute-waiting-for-vastaajatunnus!
+                        tep-palaute)]
                   (assoc (restful/ok {:vastaajatunnus vastaajatunnus})
                          ::audit/target {:vastaajatunnus vastaajatunnus
                                          :palaute-id palaute-id}))
