@@ -8,8 +8,6 @@
             [oph.ehoks.db.dynamodb :as ddb]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.external.organisaatio :as org]
-            [oph.ehoks.hoks.common :as c]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
