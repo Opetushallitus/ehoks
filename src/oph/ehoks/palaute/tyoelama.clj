@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [clojure.tools.logging :as log]
             [medley.core :refer [find-first]]
-            [oph.ehoks.utils :as utils]
+            [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.dynamodb :as ddb]
@@ -14,7 +14,7 @@
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
+            [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date])
   (:import (clojure.lang ExceptionInfo)
            (java.text Normalizer Normalizer$Form)
@@ -265,15 +265,17 @@
   "Creates vastaajatunnus for all herates that are waiting for processing,
   do not have vastaajatunnus and have heratepvm today or in the past."
   [_]
-  (log/info
-    "Creating vastaajatunnus for unprocessed työelämäpalaute.")
-  (->> (palaute/get-tep-palautteet-waiting-for-vastaajatunnus!
-         db/spec {:heratepvm (str (date/now))})
-       (map (fn [tep-palaute]
-              (try
-                (log/infof "Creating vastaajatunnus for %d" (:id tep-palaute))
-                (create-and-save-arvo-vastaajatunnus! tep-palaute)
-                (catch ExceptionInfo e
-                  (log/errorf e "Error processing tep-palaute %s"
-                              tep-palaute)))))
-       doall))
+  (if-not (contains? (set (:arvo-responsibilities config)) :create-jaksotunnus)
+    (log/warn "`create-and-save-arvo-vastaajatunnus-for-all-needed!` "
+              "configured not to do anything")
+    (do (log/info "Creating vastaajatunnus for unprocessed työelämäpalaute.")
+        (->> (palaute/get-tep-palautteet-waiting-for-vastaajatunnus!
+               db/spec {:heratepvm (str (date/now))})
+             (map (fn [tep-palaute]
+                    (try (log/infof "Creating vastaajatunnus for %d"
+                                    (:id tep-palaute))
+                         (create-and-save-arvo-vastaajatunnus! tep-palaute)
+                         (catch ExceptionInfo e
+                           (log/errorf e "Error processing tep-palaute %s"
+                                       tep-palaute)))))
+             doall))))
