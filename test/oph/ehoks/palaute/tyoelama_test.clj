@@ -16,7 +16,7 @@
             [oph.ehoks.hoks.hoks-test-utils :as hoks-utils]
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date])
@@ -242,7 +242,7 @@
               expected (build-expected-herate test-jakso hoks-test/hoks-1)]
           (is (= real expected)
               ["diff: " (clojure.data/diff real expected)]))
-        (let [tapahtumat (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+        (let [tapahtumat (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                            db/spec
                            {:hoks-id      (:id hoks-test/hoks-1)
                             :kyselytyypit ["tyopaikkajakson_suorittaneet"]})]

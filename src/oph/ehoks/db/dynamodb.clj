@@ -7,7 +7,7 @@
             [oph.ehoks.db :as db]
             [oph.ehoks.palaute :refer
              [get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!]]
-            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.utils :as utils]
             [taoensso.faraday :as far])
   (:import (com.amazonaws.auth AWSStaticCredentialsProvider
@@ -104,16 +104,17 @@
   sync-amis-herate! only updates fields it 'owns': currently that
   means that the messaging tracking fields are left intact (because
   herätepalvelu will update those)."
-  [hoks-id kyselytyyppi]
+  [{:keys [existing-palaute] :as ctx}]
   (if-not (contains? (set (:heratepalvelu-responsibities config))
                      :sync-amis-heratteet)
     (log/warn "sync-amis-herate!: configured to not do anything")
-    (let [palautteet (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!
-                       db/spec
-                       {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]})
+    (let [hoks-id      (:hoks-id existing-palaute)
+          kyselytyyppi (:kyselytyyppi existing-palaute)
+          palautteet (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!
+                       db/spec {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]})
           palaute (-> (not-empty palautteet)
                       (or (throw (ex-info "palaute not found"
-                                          {:hoks-id hoks-id
+                                          {:hoks-id      hoks-id
                                            :kyselytyyppi kyselytyyppi})))
                       (first))]
       (try (-> palaute
@@ -123,15 +124,10 @@
                (->> (sync-item! :amis)))
            (catch Exception e
              (log/error e "while processing palaute" palaute)
-             (palautetapahtuma/insert!
-               db/spec
-               {:palaute-id      (:id palaute)
-                :vanha-tila      (:tila palaute)
-                :uusi-tila       (:tila palaute)
-                :tapahtumatyyppi "heratepalvelu_sync"
-                :syy             "synkronointi_epaonnistui"
-                :lisatiedot      {:errormsg (.getMessage e)
-                                  :body (:body (ex-data e))}})
+             (tapahtuma/build-and-insert!
+               (assoc ctx :tapahtumatyyppi :heratepalvelu-sync)
+               :synkronointi-epaonnistui
+               {:errormsg (.getMessage e) :body (:body (ex-data e))})
              (throw e))))))
 
 (def map-jakso-keys-to-ddb

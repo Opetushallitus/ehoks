@@ -27,8 +27,12 @@
     (is (thrown-with-msg? clojure.lang.ExceptionInfo #"item key missing"
                           (ddb/sync-item! :amis {}))))
   (testing "sync-amis-herate! fails when there is no information in db"
-    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"palaute not found"
-                          (ddb/sync-amis-herate! 54343 "aloittaneet")))))
+    (is (thrown-with-msg?
+          clojure.lang.ExceptionInfo
+          #"palaute not found"
+          (ddb/sync-amis-herate!
+            {:existing-palaute {:hoks-id 54343
+                                :kyselytyyppi "aloittaneet"}})))))
 
 (def hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
                 :oppija-oid "1.2.246.562.24.12312312319"
@@ -54,7 +58,9 @@
                           :opiskeluoikeus opiskeluoikeus})
             hoks (hoks/get-by-id (:id saved-hoks))]
         (is (= (:sahkoposti hoks) "irma.isomerkki@esimerkki.com"))
-        (ddb/sync-amis-herate! (:id saved-hoks) "aloittaneet")
+        (ddb/sync-amis-herate!
+          {:existing-palaute {:hoks-id      (:id saved-hoks)
+                              :kyselytyyppi "aloittaneet"}})
         (let [ddb-key {:tyyppi_kausi
                        (str "aloittaneet/"
                             (palaute/rahoituskausi (LocalDate/now)))
@@ -75,7 +81,9 @@
                                     :sahkoposti "foo@bar.com")
              :opiskeluoikeus opiskeluoikeus}
             hoks/update!)
-          (ddb/sync-amis-herate! (:id saved-hoks) "aloittaneet")
+          (ddb/sync-amis-herate!
+            {:existing-palaute {:hoks-id      (:id saved-hoks)
+                                :kyselytyyppi "aloittaneet"}})
           ; fields that are owned by herätepalvelu are not overwritten
           (let [new-ddb-item
                 (far/get-item @ddb/faraday-opts @(ddb/tables :amis) ddb-key)]
