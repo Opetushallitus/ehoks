@@ -1,7 +1,7 @@
 (ns oph.ehoks.palaute.tyoelama
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
-            [medley.core :refer [find-first]]
+            [medley.core :refer [find-first map-vals]]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
@@ -11,7 +11,7 @@
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.tyoelama.nippu :as nippu]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date])
@@ -104,13 +104,16 @@
   (jdbc/with-db-transaction
     [tx db/spec]
     (let [ctx (assoc ctx
-                     :jakso jakso
+                     :tapahtumatyyppi :hoks-tallennus
+                     :tx              tx
+                     :jakso           jakso
                      :existing-palaute
                      (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
                        tx {:hoks-id            (:id hoks)
                            :yksiloiva-tunniste (:yksiloiva-tunniste jakso)}))
           [state field reason]
-          (initial-palaute-state-and-reason ctx)]
+          (initial-palaute-state-and-reason ctx)
+          lisatiedot (map-vals str (select-keys (merge jakso hoks) [field]))]
       (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
                 "of HOKS" (:id hoks) "will be"
                 (or state :ei-luoda-ollenkaan)
@@ -118,8 +121,7 @@
       (when state
         (->> (build! ctx state)
              (palaute/upsert! tx)
-             (palautetapahtuma/build ctx state field reason)
-             (palautetapahtuma/insert! tx))
+             (tapahtuma/build-and-insert! ctx state reason lisatiedot))
         state))))
 
 (defn initiate-all-uninitiated!
@@ -185,16 +187,19 @@
                             (:opiskeluoikeus-oid tep-palaute))]
     (let [suoritus (find-first suoritus/ammatillinen?
                                (:suoritukset opiskeluoikeus))
-          ctx {:opiskeluoikeus  opiskeluoikeus
-               :suoritus        suoritus
-               :koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
-               :toimipiste      (palaute/toimipiste-oid! suoritus)
-               :niputuspvm      (next-niputus-date (date/now))}]
+          ctx {:tapahtumatyyppi  :arvo-luonti
+               :existing-palaute tep-palaute
+               :opiskeluoikeus   opiskeluoikeus
+               :suoritus         suoritus
+               :koulutustoimija  (palaute/koulutustoimija-oid! opiskeluoikeus)
+               :toimipiste       (palaute/toimipiste-oid! suoritus)
+               :niputuspvm       (next-niputus-date (date/now))}]
       ; The following attributes are required for TPO-nippu.
       (assert (and (:koulutustoimija ctx) (:niputuspvm ctx) (:suoritus ctx)))
       (jdbc/with-db-transaction
         [tx db/spec]
-        (let [keskeytymisajanjaksot
+        (let [ctx (assoc ctx :tx tx)
+              keskeytymisajanjaksot
               (oht/get-keskeytymisajanjaksot!
                 tx {:oht-id (:hankkimistapa-id tep-palaute)})
               nippu (nippu/build-tpo-nippu-for-heratepalvelu
@@ -209,9 +214,7 @@
                 (if-not tunnus
                   (log/warn "No vastaajatunnus got from arvo,"
                             "so not marking handled")
-                  (do (palaute/save-arvo-tunniste!
-                        tx tep-palaute arvo-response
-                        {:arvo-response arvo-response})
+                  (do (palaute/save-arvo-tunniste! ctx arvo-response)
                       (sync-jakso-to-heratepalvelu!
                         tx ctx tep-palaute request-id tunnus)
                       (assert
