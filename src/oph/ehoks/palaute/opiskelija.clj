@@ -1,9 +1,8 @@
 (ns oph.ehoks.palaute.opiskelija
   "A namespace for everything related to opiskelijapalaute"
   (:require [clojure.java.jdbc :as jdbc]
-            [clojure.set :refer [rename-keys]]
             [clojure.tools.logging :as log]
-            [medley.core :refer [greatest]]
+            [medley.core :refer [greatest map-vals]]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
@@ -12,7 +11,7 @@
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date])
   (:import (clojure.lang ExceptionInfo)
@@ -105,12 +104,15 @@
       [tx db/spec]
       (let [ctx (assoc
                   ctx
+                  :tapahtumatyyppi :hoks-tallennus
+                  :tx              tx
                   :koulutustoimija (palaute/koulutustoimija-oid!
                                      opiskeluoikeus)
                   :existing-palaute (when-not (:resend? opts)
                                       (existing-palaute! tx ctx kysely-type)))
             [state field reason] (initial-palaute-state-and-reason
-                                   ctx kysely-type)]
+                                   ctx kysely-type)
+            lisatiedot (map-vals str (select-keys hoks [field]))]
         (log/info "Initial state for" kysely-type "for HOKS" (:id hoks)
                   "will be" (or state :ei-luoda-ollenkaan)
                   "because of" reason "in" field)
@@ -126,8 +128,7 @@
                   target-kasittelytila})
             (->> (build! ctx kysely-type state)
                  (palaute/upsert! tx)
-                 (palautetapahtuma/build ctx state field reason)
-                 (palautetapahtuma/insert! tx))
+                 (tapahtuma/build-and-insert! ctx state reason lisatiedot))
             (when (= :odottaa-kasittelya state)
               (log/info "Making" type "heräte for HOKS" (:id hoks))
               (sqs/send-amis-palaute-message
@@ -193,34 +194,29 @@
 (defn create-and-save-arvo-kyselylinkki!
   "Update given palaute with a kyselylinkki from Arvo."
   [palaute]
-  (try
-    (jdbc/with-db-transaction
-      [tx db/spec]
-      (let [response (create-arvo-kyselylinkki! palaute)
-            for-db (rename-keys response {:kysely_linkki :url})]
-        (try
-          (palaute/save-arvo-tunniste! tx palaute for-db
-                                       {:arvo_response response})
-          (catch Exception e
-            (log/error "error while saving arvo tunniste" (:tunnus response)
-                       "; trying to delete kyselylinkki")
-            ;; FIXME: create chained exception if this throws
-            (arvo/delete-kyselytunnus (:tunnus response))
-            (log/info "successfully deleted kyselylinkki" (:tunnus response))
-            (throw e)))))
-    (catch Exception e
-      (log/error e "while processing palaute" palaute)
-      (palautetapahtuma/insert!
-        db/spec
-        {:palaute-id      (:id palaute)
-         :vanha-tila      (:tila palaute)
-         :uusi-tila       (:tila palaute)
-         :tapahtumatyyppi "arvo_luonti"
-         :syy             "arvo_kutsu_epaonnistui"
-         :lisatiedot      {:errormsg (.getMessage e)
-                           :body (:body (ex-data e))}})
-      (throw e)))
-  (dynamodb/sync-amis-herate! (:hoks-id palaute) (:kyselytyyppi palaute)))
+  (let [ctx {:tapahtumatyyppi  :arvo-luonti
+             :existing-palaute palaute}]
+    (try
+      (jdbc/with-db-transaction
+        [tx db/spec]
+        (let [ctx      (assoc ctx :tx tx)
+              response (create-arvo-kyselylinkki! palaute)
+              tunnus   (:tunnus response)]
+          (try (palaute/save-arvo-tunniste! ctx response)
+               (catch Exception e
+                 (log/error "error while saving arvo tunniste" tunnus
+                            "; trying to delete kyselylinkki")
+                 ; FIXME: create chained exception if this throws
+                 (arvo/delete-kyselytunnus tunnus)
+                 (log/info "successfully deleted kyselylinkki" tunnus)
+                 (throw e)))))
+      (catch Exception e
+        (log/error e "while processing palaute" palaute)
+        (tapahtuma/build-and-insert!
+          ctx :arvo-kutsu-epaonnistui {:errormsg (.getMessage e)
+                                       :body     (:body (ex-data e))})
+        (throw e)))
+    (dynamodb/sync-amis-herate! ctx)))
 
 (defn create-and-save-arvo-kyselylinkki-for-all-needed!
   "Create kyselylinkki for palautteet whose herätepvm has come but

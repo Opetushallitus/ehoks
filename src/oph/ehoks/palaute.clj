@@ -1,5 +1,6 @@
 (ns oph.ehoks.palaute
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.set :refer [rename-keys]]
+            [clojure.tools.logging :as log]
             [hugsql.core :as hugsql]
             [medley.core :refer [assoc-some find-first]]
             [oph.ehoks.external.koski :as koski]
@@ -8,7 +9,7 @@
             [oph.ehoks.opiskeluoikeus :as opiskeluoikeus]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.oppijaindex :as oppijaindex]
-            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date])
   (:import [java.time LocalDate]))
@@ -206,20 +207,19 @@
       [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus])))
 
 (defn save-arvo-tunniste!
-  [tx palaute arvo-vastaus lisatiedot]
-  (let [new-state
-        (if (= (:kyselytyyppi palaute) "tyopaikkajakson_suorittaneet")
-          "vastaajatunnus_muodostettu" "kysely_muodostettu")]
+  [{:keys [tx existing-palaute] :as ctx} arvo-vastaus]
+  (let [new-state (if (= (:kyselytyyppi existing-palaute)
+                         "tyopaikkajakson_suorittaneet")
+                    :vastaajatunnus-muodostettu :kysely-muodostettu)]
     (-> arvo-vastaus
-        (assoc :id (:id palaute) :tila new-state)
+        (rename-keys {:kysely_linkki :url})
+        (assoc :id   (:id existing-palaute)
+               :tila (utils/to-underscore-str new-state))
         (update :url identity)  ; ensure key exists
         (->> (update-arvo-tunniste! tx))
         (assert))
-    (palautetapahtuma/insert!
-      tx
-      {:palaute-id      (:id palaute)
-       :vanha-tila      (:tila palaute)
-       :uusi-tila       new-state
-       :tapahtumatyyppi "arvo_luonti"
-       :syy             "arvo_kutsu_onnistui"
-       :lisatiedot      lisatiedot})))
+    (tapahtuma/build-and-insert!
+      ctx
+      new-state
+      :arvo-kutsu-onnistui
+      {:arvo_response arvo-vastaus})))

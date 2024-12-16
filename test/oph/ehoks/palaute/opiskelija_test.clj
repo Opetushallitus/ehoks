@@ -20,7 +20,7 @@
             [oph.ehoks.oppijaindex :as oppijaindex]
             [oph.ehoks.oppijaindex-test :as oppijaindex-test]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date])
@@ -243,7 +243,7 @@
             :paattokysely)
           (is (= (set (map
                         (juxt :kyselytyyppi :uusi-tila :syy)
-                        (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                        (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                           db/spec {:hoks-id      (:id hoks-test/hoks-1)
                                    :kyselytyypit op/kyselytyypit})))
                  #{["aloittaneet" "odottaa_kasittelya" "hoks_tallennettu"]
@@ -411,7 +411,7 @@
                    :kysely_linkki "https://arvovastaus.csc.fi/v/foo1"
                    :voimassa_loppupvm "2024-10-10"}}]]
                (->> {:hoks-id (:id hoks) :kyselytyypit ["valmistuneet"]}
-                    (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                    (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                       db/spec)
                     (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
         (client/reset-functions!))
@@ -451,7 +451,7 @@
                  {:errormsg "HTTP request error: not found"
                   :body {:msg "Huonosti menee", :error "ei_kyselykertaa"}}]]
                (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
-                    (palautetapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                    (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                       db/spec)
                     (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
         (client/reset-functions!)))))
