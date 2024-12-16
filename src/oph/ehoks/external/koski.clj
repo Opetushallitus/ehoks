@@ -93,17 +93,21 @@
   (try
     (get-opiskeluoikeus-info-raw oid)
     (catch ExceptionInfo e
-      (let [koski-virhekoodi (virhekoodi e)]
-        (when-not (and (= (:status (ex-data e)) status/not-found)
+      (let [http-status      (:status (ex-data e))
+            koski-virhekoodi (virhekoodi e)]
+        (when-not (and (= http-status status/not-found)
                        (= koski-virhekoodi
                           "notFound.opiskeluoikeuttaEiLöydyTaiEiOikeuksia"))
           (throw (ex-info (format
                             (str "Error while fetching opiskeluoikeus `%s` "
-                                 "from Koski. Koski-virhekoodi is `%s`.")
+                                 "from Koski. Got response with HTTP status %d "
+                                 "and Koski-virhekoodi `%s`.")
                             oid
+                            http-status
                             koski-virhekoodi)
                           {:type              ::opiskeluoikeus-fetching-error
                            :opiskeluoikeus-oid oid
+                           :http-status        http-status
                            :koski-virhekoodi   koski-virhekoodi}
                           e)))))))
 

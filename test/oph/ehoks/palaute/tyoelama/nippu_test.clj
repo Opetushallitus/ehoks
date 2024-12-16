@@ -16,32 +16,14 @@
    :niputuspvm                  (LocalDate/of 2024 12 16)})
 
 (deftest test-build-tpo-nippu-for-heratepalvelu
-  (let [ctx {:koulutustoimija "1.2.246.562.10.346830761110"
-             :suoritus        {:koulutusmoduuli
-                               {:tunniste {:koodiarvo "12345"}}}
-             :niputuspvm      (LocalDate/of 2024 12 16)}
-        tep-palaute
+  (let [tep-palaute
         {:vastuullinen-tyopaikka-ohjaaja-nimi "Matti Meikäläinen"
          :tyopaikan-y-tunnus                  "1234567-1"
-         :tyopaikan-nimi                      "Meikäläisen Murkinat Oy"}]
-    (testing "Kasittelytila for nippu will be"
-      (testing "\"ei_niputettu\" when"
-        (testing "there are no keskeytymisajanjaksos"
-          (is (= (nippu/build-tpo-nippu-for-heratepalvelu ctx tep-palaute {})
-                 expected-tpo-nippu-data)))
-        (testing "there are keskeytymisajanjaksos but they're all closed"
-          (is (= (nippu/build-tpo-nippu-for-heratepalvelu
-                   ctx tep-palaute [{:alku  (LocalDate/of 2023 11 1)
-                                     :loppu (LocalDate/of 2023 11 16)}
-                                    {:alku  (LocalDate/of 2024 02 5)
-                                     :loppu (LocalDate/of 2024 02 8)}])
-                 expected-tpo-nippu-data))))
-      (testing
-       "\"ei_niputeta\" when there are one or more open keskeytymisajanjakso"
-        (is (= (nippu/build-tpo-nippu-for-heratepalvelu
-                 ctx tep-palaute [{:alku  (LocalDate/of 2023 11 1)
-                                   :loppu (LocalDate/of 2023 11 16)}
-                                  {:alku  (LocalDate/of 2024 02 5)}])
-               (assoc expected-tpo-nippu-data
-                      :kasittelytila     "ei_niputeta"
-                      :sms_kasittelytila "ei_niputeta")))))))
+         :tyopaikan-nimi                      "Meikäläisen Murkinat Oy"}
+        ctx {:existing-palaute tep-palaute
+             :koulutustoimija "1.2.246.562.10.346830761110"
+             :suoritus        {:koulutusmoduuli
+                               {:tunniste {:koodiarvo "12345"}}}
+             :niputuspvm      (LocalDate/of 2024 12 16)}]
+    (is (= (nippu/build-tpo-nippu-for-heratepalvelu ctx)
+           expected-tpo-nippu-data))))

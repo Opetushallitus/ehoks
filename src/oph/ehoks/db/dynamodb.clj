@@ -64,10 +64,18 @@
    :jakso [:hankkimistapa_id]
    :nippu [:ohjaaja_ytunnus_kj_tutkinto :niputuspvm]})
 
+(defn jaksot [] (far/scan @faraday-opts @(tables :jakso) {}))
+(defn niput  [] (far/scan @faraday-opts @(tables :nippu) {}))
+
 (defn get-item!
   "A wrapper for `taoensso.faraday/get-item`."
   [table prim-kvs]
   (far/get-item @faraday-opts @(tables table) prim-kvs))
+
+(defn delete-item!
+  "A wrapper for `taoensso.faraday/delete-item`."
+  [table prim-kvs]
+  (far/delete-item @faraday-opts @(tables table) prim-kvs))
 
 (defn sync-item!
   "Does a partial upsert on item in DDB: if the item doesn't exist,
@@ -129,63 +137,3 @@
                :synkronointi-epaonnistui
                {:errormsg (.getMessage e) :body (:body (ex-data e))})
              (throw e))))))
-
-(def map-jakso-keys-to-ddb
-  (some-fn {:hankkimistapa-id :hankkimistapa_id,
-            :osaamisen-hankkimistapa-koodi-uri :hankkimistapa_tyyppi,
-            :hoks-id :hoks_id,
-            :jakso-alkupvm :jakso_alkupvm,
-            :jakso-loppupvm :jakso_loppupvm,
-            :ohjaaja-email :ohjaaja_email,
-            :ohjaaja-nimi :ohjaaja_nimi,
-            :ohjaaja-puhelinnumero :ohjaaja_puhelinnumero,
-            :ohjaaja-ytunnus-kj-tutkinto :ohjaaja_ytunnus_kj_tutkinto,
-            :opiskeluoikeus-oid :opiskeluoikeus_oid,
-            :oppija-oid :oppija_oid,
-            :oppisopimuksen-perusta-koodi-uri :oppisopimuksen_perusta,
-            :osa-aikaisuustieto :osa_aikaisuus,
-            :request-id :request_id,
-            :toimipiste-oid :toimipiste_oid,
-            :tutkinnonosa-id :tutkinnonosa_id,
-            :tutkinnon-osa-koodi-uri :tutkinnonosa_koodi,
-            :tutkinnonosa-nimi :tutkinnonosa_nimi,
-            :tutkinnonosa-tyyppi :tutkinnonosa_tyyppi,
-            :tyopaikan-nimi :tyopaikan_nimi,
-            :tyopaikan-normalisoitu-nimi :tyopaikan_normalisoitu_nimi,
-            :tyopaikan-y-tunnus :tyopaikan_ytunnus,
-            :vastuullinen-tyopaikka-ohjaaja-nimi :ohjaaja_nimi,
-            :vastuullinen-tyopaikka-ohjaaja-sahkoposti :ohjaaja_email,
-            :vastuullinen-tyopaikka-ohjaaja-puhelinnumero
-            :ohjaaja_puhelinnumero,
-            :viimeinen-vastauspvm :viimeinen_vastauspvm}
-           identity))
-
-(defn sync-jakso-herate!
-  "Update the herätepalvelu jaksotunnustable to have the same content
-  for given heräte as palaute-backend has in its own database.
-  sync-jakso-herate! only updates fields it 'owns': currently that
-  means that the messaging tracking fields are left intact (because
-  herätepalvelu will update those)."
-  [tep-palaute]
-  (if-not (contains? (set (:heratepalvelu-responsibities config))
-                     :sync-jakso-heratteet)
-    (log/warn "sync-jakso-herate!: configured to not do anything")
-    (-> tep-palaute
-        utils/to-underscore-keys
-        ;; the only field that has dashes in its name is tpk-niputuspvm
-        (rename-keys {:tpk_niputuspvm :tpk-niputuspvm})
-        (->> (sync-item! :jakso)))))
-
-(defn sync-tpo-nippu-herate!
-  "Update the Herätepalvelu nipputable to have the same content for given heräte
-  as palaute-backend has in its own database."
-  [nippu]
-  (if-not (contains? (set (:heratepalvelu-responsibities config))
-                     :sync-jakso-heratteet)
-    (log/warn "sync-tpo-nippu-herate!: configured to not do anything")
-    (if-let [existing-nippu (get-item! :nippu
-                                       (select-keys
-                                         nippu [:ohjaaja_ytunnus_kj_tutkinto
-                                                :niputuspvm]))]
-      (log/info "Tietokannassa on jo nippu: " existing-nippu)
-      (sync-item! :nippu nippu))))
