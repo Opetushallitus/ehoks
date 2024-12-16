@@ -8,8 +8,10 @@
 (defn build
   ([{:keys [existing-palaute] :as ctx} reason lisatiedot]
     (build ctx (:tila existing-palaute) reason lisatiedot nil))
+
   ([ctx state reason lisatiedot]
     (build ctx state reason lisatiedot nil))
+
   ([{:keys [tapahtumatyyppi existing-palaute] :as ctx}
     state reason lisatiedot palaute]
     {:pre [(some? tapahtumatyyppi) (some? state)]}

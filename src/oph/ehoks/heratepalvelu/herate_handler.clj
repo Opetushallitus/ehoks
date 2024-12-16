@@ -3,6 +3,7 @@
             [compojure.api.sweet :as c-api]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.heratepalvelu :as hp]
+            [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.middleware :as m]
             [oph.ehoks.logging.audit :as audit]
@@ -33,7 +34,7 @@
                        limit :- (s/maybe s/Int)]
         :return (restful/response s/Int)
         (let [l (or limit 10)
-              periods (hp/process-finished-workplace-periods start end l)]
+              periods (tep/process-finished-workplace-periods! start end l)]
           (restful/ok (count periods))))
 
       (c-api/GET "/kasittelemattomat-heratteet" []
