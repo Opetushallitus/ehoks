@@ -129,10 +129,7 @@ generate_and_upload_schema_file() {
     local -r schema_file="ehoks-$reporting_schema_name.schema"
     touch "$schema_file"
     log "INFO" "Generating schema file $schema_file"
-    PGPASSWORD="${db_password}" pg_dump --host "$db_hostname" --username "$db_user" --schema-only --no-owner --file "$schema_file" --schema "$reporting_schema_name" -t "$reporting_schema_name.*" "$db_name"
-    sed -i -e "s/CREATE TABLE $reporting_schema_name\./CREATE TABLE /g" "$schema_file"
-    sed -i -e "s/ALTER TABLE ONLY $reporting_schema_name\./ALTER TABLE ONLY /g" "$schema_file"
-    sed -i -e "s/REFERENCES $reporting_schema_name\./REFERENCES /g" "$schema_file"
+    PGPASSWORD="${db_password}" pg_dump -Fc --section=pre-data --section=post-data --no-comments --no-privilege --no-owner --host "$db_hostname" --username "$db_user" --schema-only --file "$schema_file" --schema "$reporting_schema_name" -t "$reporting_schema_name.*" "$db_name"
     local -r schema=$(upload_file_to_lampi "$schema_file" "$access_key_id" "$secret_access_key" "$session_token")
     add_to_manifest ".schema += $schema"
 }
