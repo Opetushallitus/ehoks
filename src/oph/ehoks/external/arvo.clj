@@ -1,10 +1,10 @@
 (ns oph.ehoks.external.arvo
-  (:require [oph.ehoks.external.connection :as c]
-            [oph.ehoks.external.organisaatio :as org]
-            [oph.ehoks.config :refer [config]]
-            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
+  (:require [clojure.string :as string]
             [clojure.tools.logging :as log]
-            [clojure.string :as string])
+            [oph.ehoks.config :refer [config]]
+            [oph.ehoks.external.connection :as c]
+            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
+            [oph.ehoks.utils :as utils])
   (:import (clojure.lang ExceptionInfo)))
 
 (defn call!
@@ -54,60 +54,73 @@
 
 (defn build-jaksotunnus-request-body
   "Luo dataobjektin TEP-jaksotunnuksen luomisrequestille."
-  [herate
-   tyopaikka-normalisoitu
-   opiskeluoikeus
-   request-id
-   koulutustoimija
-   toimipiste
-   suoritus
-   niputuspvm]
+  [{:keys [opiskeluoikeus existing-palaute suoritus koulutustoimija toimipiste
+           niputuspvm]
+    :as ctx}
+   request-id]
   {:koulutustoimija_oid       koulutustoimija
-   :tyonantaja                (:tyopaikan-y-tunnus herate)
-   :tyopaikka                 (:tyopaikan-nimi herate)
-   :tyopaikka_normalisoitu    tyopaikka-normalisoitu
+   :tyonantaja                (:tyopaikan-y-tunnus existing-palaute)
+   :tyopaikka                 (:tyopaikan-nimi existing-palaute)
+   :tyopaikka_normalisoitu    (utils/normalize-string
+                                (:tyopaikan-nimi existing-palaute))
    :tutkintotunnus            (get-in
                                 suoritus
                                 [:koulutusmoduuli
                                  :tunniste
                                  :koodiarvo])
-   :tutkinnon_osa             (when (:tutkinnon-osa-koodi-uri herate)
+   :tutkinnon_osa             (when (:tutkinnon-osa-koodi-uri existing-palaute)
                                 (last
                                   (string/split
-                                    (:tutkinnon-osa-koodi-uri herate)
+                                    (:tutkinnon-osa-koodi-uri existing-palaute)
                                     #"_")))
-   :paikallinen_tutkinnon_osa (:tutkinnonosa-nimi herate)
+   :paikallinen_tutkinnon_osa (:tutkinnonosa-nimi existing-palaute)
    :tutkintonimike            (map
                                 :koodiarvo
                                 (:tutkintonimike suoritus))
    :osaamisala                (suoritus/get-osaamisalat
                                 suoritus (:oid opiskeluoikeus)
-                                (:heratepvm herate))
-   :tyopaikkajakson_alkupvm   (str (:alkupvm herate))
-   :tyopaikkajakson_loppupvm  (str (:loppupvm herate))
-   :rahoituskausi_pvm         (str (:loppupvm herate))
-   :osa_aikaisuus             (:osa-aikaisuustieto herate)
+                                (:heratepvm existing-palaute))
+   :tyopaikkajakson_alkupvm   (str (:alkupvm existing-palaute))
+   :tyopaikkajakson_loppupvm  (str (:loppupvm existing-palaute))
+   :rahoituskausi_pvm         (str (:loppupvm existing-palaute))
+   :osa_aikaisuus             (:osa-aikaisuustieto existing-palaute)
    :sopimustyyppi             (last
                                 (string/split
-                                  (:osaamisen-hankkimistapa-koodi-uri herate)
+                                  (:osaamisen-hankkimistapa-koodi-uri
+                                    existing-palaute)
                                   #"_"))
-   :oppisopimuksen_perusta    (when (:oppisopimuksen-perusta-koodi-uri herate)
+   :oppisopimuksen_perusta    (when (:oppisopimuksen-perusta-koodi-uri
+                                      existing-palaute)
                                 (last
                                   (string/split
-                                    (:oppisopimuksen-perusta-koodi-uri herate)
+                                    (:oppisopimuksen-perusta-koodi-uri
+                                      existing-palaute)
                                     #"_")))
-   :vastaamisajan_alkupvm     niputuspvm
+   :vastaamisajan_alkupvm     (str niputuspvm)
    :oppilaitos_oid            (:oid (:oppilaitos opiskeluoikeus))
    :toimipiste_oid            toimipiste
    :request_id                request-id})
 
-(defn create-jaksotunnus
-  [data]
-  (if-not (contains? (set (:arvo-responsibilities config)) :create-jaksotunnus)
-    (log/warn "create-jaksotunnus!: configured to not do anything")
-    (call! :post "/tyoelamapalaute/v1/vastaajatunnus"
-           {:form-params data :content-type :json})))
+(defn create-jaksotunnus!
+  [request]
+  (let [configured-to-call-arvo? (contains?
+                                   (set (:arvo-responsibilities config))
+                                   :create-jaksotunnus)
+        response (when configured-to-call-arvo?
+                   (call! :post "/tyoelamapalaute/v1/vastaajatunnus"
+                          {:form-params request :content-type :json}))]
+    (if (:tunnus response)
+      response
+      (throw (ex-info
+               (if configured-to-call-arvo?
+                 (format (str "No jaksotunnus got from Arvo with request %s. "
+                              "Response from Arvo was %s.")
+                         request response)
+                 "create-jaksotunnus!: configured to not do anything.")
+               {:type                     ::no-jaksotunnus-created
+                :configured-to-call-arvo? configured-to-call-arvo?})))))
 
 (defn delete-jaksotunnus
   [tunnus]
+  {:pre [(some? tunnus)]}
   (call! :delete (str "/tyoelamapalaute/v1/vastaajatunnus/" tunnus) {}))

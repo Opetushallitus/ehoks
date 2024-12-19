@@ -11,7 +11,7 @@
             [oph.ehoks.oppija.schema :as oppija-schema]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.heratepalvelu.heratepalvelu :as heratepalvelu]
+            [oph.ehoks.heratepalvelu :as heratepalvelu]
             [oph.ehoks.middleware :refer [wrap-authorize]]
             [oph.ehoks.oppija.auth-handler :as auth-handler]
             [oph.ehoks.lokalisointi.handler :as lokalisointi-handler]

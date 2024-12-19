@@ -1,25 +1,10 @@
 -- :name insert! :? :1
 -- :doc Insert palaute to DB
+-- :require [oph.ehoks.db.sql :as sql]
 insert into palautteet (
-  --~ (when (:arvo-tunniste params) "arvo_tunniste,")
-  --~ (when (:hankintakoulutuksen-toteuttaja params) "hankintakoulutuksen_toteuttaja,")
-  --~ (when (:yksiloiva-tunniste params) "jakson_yksiloiva_tunniste,")
-  --~ (when (:kyselylinkki params) "kyselylinkki,")
-  --~ (when (:nippu-id params) "nippu_id,")
-  --~ (when (:suorituskieli params) "suorituskieli,")
-  herate_source, heratepvm, hoks_id, koulutustoimija, kyselytyyppi, tila,
-  toimipiste_oid, tutkintonimike, tutkintotunnus, voimassa_alkupvm,
-  voimassa_loppupvm
+--~ (sql/target-columns-for-insert params)
 ) values (
-  --~ (when (:arvo-tunniste params) ":arvo-tunniste,")
-  --~ (when (:hankintakoulutuksen-toteuttaja params) ":hankintakoulutuksen-toteuttaja,")
-  --~ (when (:yksiloiva-tunniste params) ":yksiloiva-tunniste,")
-  --~ (when (:kyselylinkki params) ":kyselylinkki,")
-  --~ (when (:nippu-id params) ":nippu-id,")
-  --~ (when (:suorituskieli params) ":suorituskieli,")
-  :herate-source, :heratepvm, :hoks-id, :koulutustoimija, :kyselytyyppi, :tila,
-  :toimipiste-oid, :tutkintonimike, :tutkintotunnus, :voimassa-alkupvm,
-  :voimassa-loppupvm
+--~ (sql/values-for-insert params)
 ) returning *
 
 -- :name get-tep-palautteet-waiting-for-vastaajatunnus! :? :*
@@ -63,22 +48,11 @@ returning *
 
 -- :name update! :? :1
 -- :doc Update palaute in DB
+-- :require [oph.ehoks.db.sql :as sql]
 update palautteet
-set	herate_source = :herate-source,
-	heratepvm = :heratepvm,
-	kyselytyyppi = :kyselytyyppi,
-	tila = :tila,
-	hankintakoulutuksen_toteuttaja = :hankintakoulutuksen-toteuttaja,
-	hoks_id = :hoks-id,
-	koulutustoimija = :koulutustoimija,
-	suorituskieli = :suorituskieli,
-	toimipiste_oid = :toimipiste-oid,
-	tutkintonimike = :tutkintonimike,
-	tutkintotunnus = :tutkintotunnus,
-	voimassa_alkupvm = :voimassa-alkupvm,
-	voimassa_loppupvm = :voimassa-loppupvm
+--~ (sql/set-clause-for-update params options)
 where	id = :id
-returning id
+returning *
 
 -- :name get-by-hoks-id-and-kyselytyypit! :? :*
 -- :doc Get opiskelijapalaute information by HOKS ID and kyselytyyppi
@@ -94,7 +68,12 @@ where h.oppija_oid = :oppija-oid  -- FIXME: should probably have deleted_at cond
   and p.kyselytyyppi in (:v*:kyselytyypit)
   and (p.koulutustoimija = :koulutustoimija or (:koulutustoimija)::text is null)
 
--- :name get-by-hoks-id-and-yksiloiva-tunniste! :? :*
+-- :name get-by-id! :? :1
+-- :doc Get palaute by palaute id.
+select * from palautteet
+where id = :id
+
+-- :name get-by-hoks-id-and-yksiloiva-tunniste! :? :1
 -- :doc Get palaute information for työpaikkajakso by HOKS ID and yksiloiva
 --      tunniste.
 select * from palautteet
@@ -183,10 +162,3 @@ select * from palaute_for_tep_heratepalvelu
 where hoks_id = :hoks-id
   and jakson_yksiloiva_tunniste = :jakson-yksiloiva-tunniste
   and internal_kyselytyyppi = 'tyopaikkajakson_suorittaneet'
-
--- :name update-tep-kasitelty! :? :1
--- :doc Updates tep_kasitelty flag after getting vastaajatunnus from Arvo.
-update osaamisen_hankkimistavat
-set tep_kasitelty = :tep-kasitelty, updated_at = now()
-where id = :id
-returning *

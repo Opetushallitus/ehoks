@@ -9,7 +9,7 @@
   "Run these tasks sequentially."
   [opts]
   (amis/create-and-save-arvo-kyselylinkki-for-all-needed! opts)
-  (tep/create-and-save-arvo-vastaajatunnus-for-all-needed! opts))
+  (tep/handle-all-palautteet-waiting-for-vastaajatunnus! opts))
 
 (defn run-scheduler!
   "Simple (daily) scheduler for palaute scheduled tasks. Will be replaced with

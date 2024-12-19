@@ -1,14 +1,14 @@
 (ns oph.ehoks.db.dynamodb
-  (:require [clojure.string :as str]
+  (:require [clojure.set :refer [rename-keys]]
+            [clojure.string :as str]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
-            [medley.core :refer [map-keys]]
-            [oph.ehoks.utils :as utils]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
             [oph.ehoks.palaute :refer
              [get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!]]
-            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
+            [oph.ehoks.utils :as utils]
             [taoensso.faraday :as far])
   (:import (com.amazonaws.auth AWSStaticCredentialsProvider
                                BasicSessionCredentials)
@@ -64,6 +64,19 @@
    :jakso [:hankkimistapa_id]
    :nippu [:ohjaaja_ytunnus_kj_tutkinto :niputuspvm]})
 
+(defn jaksot [] (far/scan @faraday-opts @(tables :jakso) {}))
+(defn niput  [] (far/scan @faraday-opts @(tables :nippu) {}))
+
+(defn get-item!
+  "A wrapper for `taoensso.faraday/get-item`."
+  [table prim-kvs]
+  (far/get-item @faraday-opts @(tables table) prim-kvs))
+
+(defn delete-item!
+  "A wrapper for `taoensso.faraday/delete-item`."
+  [table prim-kvs]
+  (far/delete-item @faraday-opts @(tables table) prim-kvs))
+
 (defn sync-item!
   "Does a partial upsert on item in DDB: if the item doesn't exist,
   it is created with the given values.  If it does exist, then only the
@@ -99,16 +112,17 @@
   sync-amis-herate! only updates fields it 'owns': currently that
   means that the messaging tracking fields are left intact (because
   herätepalvelu will update those)."
-  [hoks-id kyselytyyppi]
+  [{:keys [existing-palaute] :as ctx}]
   (if-not (contains? (set (:heratepalvelu-responsibities config))
                      :sync-amis-heratteet)
     (log/warn "sync-amis-herate!: configured to not do anything")
-    (let [palautteet (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!
-                       db/spec
-                       {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]})
+    (let [hoks-id      (:hoks-id existing-palaute)
+          kyselytyyppi (:kyselytyyppi existing-palaute)
+          palautteet (get-for-heratepalvelu-by-hoks-id-and-kyselytyypit!
+                       db/spec {:hoks-id hoks-id :kyselytyypit [kyselytyyppi]})
           palaute (-> (not-empty palautteet)
                       (or (throw (ex-info "palaute not found"
-                                          {:hoks-id hoks-id
+                                          {:hoks-id      hoks-id
                                            :kyselytyyppi kyselytyyppi})))
                       (first))]
       (try (-> palaute
@@ -118,29 +132,8 @@
                (->> (sync-item! :amis)))
            (catch Exception e
              (log/error e "while processing palaute" palaute)
-             (palautetapahtuma/insert!
-               db/spec
-               {:palaute-id      (:id palaute)
-                :vanha-tila      (:tila palaute)
-                :uusi-tila       (:tila palaute)
-                :tapahtumatyyppi "heratepalvelu_sync"
-                :syy             "synkronointi_epaonnistui"
-                :lisatiedot      {:errormsg (.getMessage e)
-                                  :body (:body (ex-data e))}})
+             (tapahtuma/build-and-insert!
+               (assoc ctx :tapahtumatyyppi :heratepalvelu-sync)
+               :synkronointi-epaonnistui
+               {:errormsg (.getMessage e) :body (:body (ex-data e))})
              (throw e))))))
-
-(defn sync-jakso-herate!
-  "Update the herätepalvelu jaksotunnustable to have the same content
-  for given heräte as palaute-backend has in its own database.
-  sync-jakso-herate! only updates fields it 'owns': currently that
-  means that the messaging tracking fields are left intact (because
-  herätepalvelu will update those)."
-  [tep-palaute]
-  (if-not (contains? (set (:heratepalvelu-responsibities config))
-                     :sync-jakso-heratteet)
-    (log/warn "sync-jakso-herate!: configured to not do anything")
-    (->> tep-palaute
-         ;; the only field that has dashes in its name is tpk-niputuspvm
-         utils/to-underscore-keys
-         (map-keys (some-fn {:tpk_niputuspvm :tpk-niputuspvm} identity))
-         (sync-item! :jakso))))
