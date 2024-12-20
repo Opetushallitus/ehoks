@@ -10,6 +10,8 @@ version="v2" # vanha koko kannan dumppina vievä siirto on v1
 reporting_schema_name="reporting"
 if [ "$ENV_NAME" = "sade" ]; then
     db_hostname="ehoks.db.opintopolku.fi"
+elif [ "$ENV_NAME" = "pallero" ]; then
+    db_hostname="ehoks.db.testiopintopolku.fi"
 else
     db_hostname="ehoks.db.${ENV_NAME}opintopolku.fi"
 fi
