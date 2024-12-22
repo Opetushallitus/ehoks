@@ -86,6 +86,44 @@
            :voimassa-loppupvm (palaute/vastaamisajan-loppupvm
                                 heratepvm alkupvm))))
 
+(defn initiate!
+  "Initiates opiskelijapalautekysely (`:aloituskysely` or `:paattokysely`).
+  Currently, stores kysely data to eHOKS DB `palautteet` table and also sends
+  the herate to AWS SQS for Herätepalvelu to process. Returns `true` if kysely
+  was successfully initiated, `nil` or `false` otherwise.
+  Supported options in `opts`:
+  `:resend?`  If set to true, don't check if kysely is already
+              intiated, i.e., resend herate straight to Herätepalvelu. Also skip
+              the insertion to eHOKS `palautteet` table. Without this flag, the
+              functionality to resend heratteet to Herätepalvelu wouldn't work.
+              This should be removed once Herätepalvelu functionality has been
+              fully migrated to eHOKS."
+  [{:keys [tx hoks opiskeluoikeus state reason lisatiedot] :as ctx} kysely-type]
+  (let [heratepvm            (get hoks (herate-date-basis kysely-type))
+        target-kasittelytila (not= state :odottaa-kasittelya)
+        amisherate-kasittelytila
+        (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id!
+          (:id hoks))]
+    (db-hoks/update-amisherate-kasittelytilat!
+      tx {:id (:id amisherate-kasittelytila)
+          (kysely-kasittely-field-mapping kysely-type)
+          target-kasittelytila})
+    (->> (build! ctx kysely-type state)
+         (palaute/upsert! tx)
+         (tapahtuma/build-and-insert! ctx state reason lisatiedot))
+    (when (= :odottaa-kasittelya state)
+      (log/info "Making" type "heräte for HOKS" (:id hoks))
+      (sqs/send-amis-palaute-message
+        {:ehoks-id           (:id hoks)
+         :kyselytyyppi       (translate-kyselytyyppi
+                               (palaute/kyselytyyppi
+                                 kysely-type opiskeluoikeus))
+         :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+         :oppija-oid         (:oppija-oid hoks)
+         :sahkoposti         (:sahkoposti hoks)
+         :puhelinnumero      (:puhelinnumero hoks)
+         :alkupvm            (str heratepvm)}))))
+
 (defn initiate-if-needed!
   "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
   `:paattokysely`) to appropriate DynamoDB table of Herätepalvelu if no check is
@@ -117,30 +155,9 @@
                   "will be" (or state :ei-luoda-ollenkaan)
                   "because of" reason "in" field)
         (when state
-          (let [heratepvm            (get hoks (herate-date-basis kysely-type))
-                target-kasittelytila (not= state :odottaa-kasittelya)
-                amisherate-kasittelytila
-                (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id!
-                  (:id hoks))]
-            (db-hoks/update-amisherate-kasittelytilat!
-              tx {:id (:id amisherate-kasittelytila)
-                  (kysely-kasittely-field-mapping kysely-type)
-                  target-kasittelytila})
-            (->> (build! ctx kysely-type state)
-                 (palaute/upsert! tx)
-                 (tapahtuma/build-and-insert! ctx state reason lisatiedot))
-            (when (= :odottaa-kasittelya state)
-              (log/info "Making" type "heräte for HOKS" (:id hoks))
-              (sqs/send-amis-palaute-message
-                {:ehoks-id           (:id hoks)
-                 :kyselytyyppi       (translate-kyselytyyppi
-                                       (palaute/kyselytyyppi
-                                         kysely-type opiskeluoikeus))
-                 :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
-                 :oppija-oid         (:oppija-oid hoks)
-                 :sahkoposti         (:sahkoposti hoks)
-                 :puhelinnumero      (:puhelinnumero hoks)
-                 :alkupvm            (str heratepvm)}))))
+          (initiate!
+            (assoc ctx :state state :reason reason :lisatiedot lisatiedot)
+            kysely-type))
         state))))
 
 (defn initiate-every-needed!
