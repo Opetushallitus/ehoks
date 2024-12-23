@@ -1,0 +1,5 @@
+[pgdg15]
+name=PostgreSQL 15 for Redhat Linux – x86_64
+baseurl=https://download.postgresql.org/pub/repos/yum/15/redhat/rhel-7.10-x86_64
+enabled=1
+gpgcheck=0
