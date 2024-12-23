@@ -86,7 +86,7 @@ FROM hankittavat_paikalliset_tutkinnon_osat;
 
 CREATE OR REPLACE VIEW v_osaamisen_hankkimistavat AS
 SELECT concat('yto_alue_', ytooa.id,'_oh_', oh.id) AS id,
-       oh.id                                       AS oh_id,
+       oh.id                                       AS osaamisen_hankkimistapa_id,
        oh.created_at                               AS created_at,
        oh.updated_at                               AS updated_at,
        oh.deleted_at                               AS deleted_at,
@@ -125,7 +125,7 @@ FROM osaamisen_hankkimistavat oh
               on ytooa.yhteinen_tutkinnon_osa_id = yto.id
 UNION
 SELECT concat('ato_', ato.id,'_oh_', oh.id)     AS id,
-       oh.id                                    AS oh_id,
+       oh.id                                    AS osaamisen_hankkimistapa_id,
        oh.created_at                            AS created_at,
        oh.updated_at                            AS updated_at,
        oh.deleted_at                            AS deleted_at,
@@ -162,7 +162,7 @@ FROM osaamisen_hankkimistavat oh
               on atooh.hankittava_ammat_tutkinnon_osa_id = ato.id
 UNION
 SELECT concat('pto_', pto.id,'_oh_', oh.id)     AS id,
-       oh.id                                    AS oh_id,
+       oh.id                                    AS osaamisen_hankkimistapa_id,
        oh.created_at                            AS created_at,
        oh.updated_at                            AS updated_at,
        oh.deleted_at                            AS deleted_at,
@@ -528,12 +528,6 @@ BEGIN
                 target_schema, target_schema);
         EXECUTE format(
                 'ALTER TABLE %I.osaamisen_osoittamisen_sisallot ADD CONSTRAINT osaamisen_osoittamiset_fkey FOREIGN KEY (osaamisen_osoittaminen_id) REFERENCES %I.osaamisen_osoittamiset (id)',
-                target_schema, target_schema);
-        EXECUTE format(
-                'ALTER TABLE %I.keskeytymisajanjaksot ADD CONSTRAINT osaamisen_hankkimistavat_fkey FOREIGN KEY (osaamisen_hankkimistapa_id) REFERENCES %I.osaamisen_hankkimistavat (oh_id)',
-                target_schema, target_schema);
-        EXECUTE format(
-                'ALTER TABLE %I.muut_oppimisymparistot ADD CONSTRAINT osaamisen_hankkimistavat_fkey FOREIGN KEY (osaamisen_hankkimistapa_id) REFERENCES %I.osaamisen_hankkimistavat (oh_id)',
                 target_schema, target_schema);
         EXECUTE format(
                 'ALTER TABLE %I.todennettu_arviointi_arvioijat ADD CONSTRAINT todennettu_arviointi_lisatiedot_fkey FOREIGN KEY (todennettu_arviointi_lisatiedot_id) REFERENCES %I.todennettu_arviointi_lisatiedot (id)',
