@@ -46,6 +46,9 @@ dump_and_upload_db_to_lampi() {
     # aws s3 extension and granting privileges need to be created with master user:
     # CREATE EXTENSION IF NOT EXISTS aws_s3 CASCADE;
     # GRANT ALL ON SCHEMA aws_s3 TO app;
+    # GRANT ALL ON ALL FUNCTIONS IN SCHEMA aws_s3 TO app;
+    # GRANT ALL ON SCHEMA aws_commons TO app;
+    # GRANT ALL ON ALL FUNCTIONS IN SCHEMA aws_commons TO app;
 
     log "INFO" "Refreshing $reporting_schema_name schema"
     pg_command "$db_password" "SELECT refresh_reporting('${reporting_schema_name}')" > /dev/null
