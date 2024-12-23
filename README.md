@@ -334,6 +334,19 @@ Repositorioon on lisätty jonkin verran selvitystyötä ja testaamista helpottav
 skriptejä. Näiden toimintaperiaatteesta voi lukea niille osoitetusta
 [dokumentaatiosta](./doc/scripts.md).
 
+## Lampi export
+
+eHOKSista viedään tiedot päivittäin Lampeen. Prosessia hoitaa
+`lampi-export`-niminen ajastettu ECS Task. Docker image kyseiselle taskille
+luodaan ajamalla [`Create Lampi export runner image`](https://github.com/Opetushallitus/ehoks/actions/workflows/create-lampi-export-runner-image.yml)
+GitHub workflow käsin valitusta haarasta (oletuksena master). Infra-määritykset
+ECS Taskille löytyvät `cloud-base`-reposta.
+
+ECS Task kutsuu eHOKSin tietokannassa olevia funktioita, jotka päivittävät
+`reporting`-skeemaan ajantasaiset tiedot `public`-skeeman tauluista ja
+näkymistä. `reporting`-skeeman rakenne eroaa operatiivisesta skeemasta jossain
+määrin, jotta eHOKS-tietojen hyödyntäminen Lammesta olisi helpompaa.
+
 ## Swagger
 
  * [Virkailijan swagger](http://localhost:3000/ehoks-virkailija-backend/doc)
