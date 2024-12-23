@@ -85,36 +85,37 @@ FROM hankittavat_paikalliset_tutkinnon_osat;
 
 
 CREATE OR REPLACE VIEW v_osaamisen_hankkimistavat AS
-SELECT oh.id                                    AS id,
-       oh.created_at                            AS created_at,
-       oh.updated_at                            AS updated_at,
-       oh.deleted_at                            AS deleted_at,
-       yto.hoks_id                              AS hoks_id,
-       concat('yto_alue_', ytooa.id)            AS osa_id,
-       oh.jarjestajan_edustaja_nimi             AS jarjestajan_edustaja_nimi,
-       oh.jarjestajan_edustaja_rooli            AS jarjestajan_edustaja_rooli,
-       oh.jarjestajan_edustaja_oppilaitos_oid   AS jarjestajan_edustaja_oppilaitos_oid,
-       oh.ajanjakson_tarkenne                   AS ajanjakson_tarkenne,
+SELECT concat('yto_alue_', ytooa.id,'_oh_', oh.id) AS id,
+       oh.id                                       AS oh_id,
+       oh.created_at                               AS created_at,
+       oh.updated_at                               AS updated_at,
+       oh.deleted_at                               AS deleted_at,
+       yto.hoks_id                                 AS hoks_id,
+       concat('yto_alue_', ytooa.id)               AS osa_id,
+       oh.jarjestajan_edustaja_nimi                AS jarjestajan_edustaja_nimi,
+       oh.jarjestajan_edustaja_rooli               AS jarjestajan_edustaja_rooli,
+       oh.jarjestajan_edustaja_oppilaitos_oid      AS jarjestajan_edustaja_oppilaitos_oid,
+       oh.ajanjakson_tarkenne                      AS ajanjakson_tarkenne,
        split_part(oh.osaamisen_hankkimistapa_koodi_uri, '_',
-                  1)                            AS osaamisen_hankkimistapa_koodisto_uri,
+                  1)                               AS osaamisen_hankkimistapa_koodisto_uri,
        split_part(oh.osaamisen_hankkimistapa_koodi_uri, '_',
-                  2)                            AS osaamisen_hankkimistapa_koodiarvo,
-       oh.osaamisen_hankkimistapa_koodi_versio  AS osaamisen_hankkimistapa_koodi_versio,
-       oh.hankkijan_edustaja_nimi               AS hankkijan_edustaja_nimi,
-       oh.hankkijan_edustaja_rooli              AS hankkijan_edustaja_rooli,
-       oh.hankkijan_edustaja_oppilaitos_oid     AS hankkijan_edustaja_oppilaitos_oid,
-       oh.alku                                  AS alku,
-       oh.loppu                                 AS loppu,
-       oh.module_id                             AS module_id,
-       oh.tep_kasitelty                         AS tep_kasitelty,
-       oh.osa_aikaisuustieto                    AS osa_aikaisuustieto,
+                  2)                               AS osaamisen_hankkimistapa_koodiarvo,
+       oh.osaamisen_hankkimistapa_koodi_versio     AS osaamisen_hankkimistapa_koodi_versio,
+       oh.hankkijan_edustaja_nimi                  AS hankkijan_edustaja_nimi,
+       oh.hankkijan_edustaja_rooli                 AS hankkijan_edustaja_rooli,
+       oh.hankkijan_edustaja_oppilaitos_oid        AS hankkijan_edustaja_oppilaitos_oid,
+       oh.alku                                     AS alku,
+       oh.loppu                                    AS loppu,
+       oh.module_id                                AS module_id,
+       oh.tep_kasitelty                            AS tep_kasitelty,
+       oh.osa_aikaisuustieto                       AS osa_aikaisuustieto,
        split_part(oh.oppisopimuksen_perusta_koodi_uri, '_',
-                  1)                            AS oppisopimuksen_perusta_koodisto_uri,
+                  1)                               AS oppisopimuksen_perusta_koodisto_uri,
        split_part(oh.oppisopimuksen_perusta_koodi_uri, '_',
-                  2)                            AS oppisopimuksen_perusta_koodiarvo,
-       oh.oppisopimuksen_perusta_koodi_versio   AS oppisopimuksen_perusta_koodi_versio,
-       oh.yksiloiva_tunniste                    AS yksiloiva_tunniste,
-       oh.tyopaikalla_jarjestettava_koulutus_id AS tyopaikalla_jarjestettava_koulutus_id
+                  2)                               AS oppisopimuksen_perusta_koodiarvo,
+       oh.oppisopimuksen_perusta_koodi_versio      AS oppisopimuksen_perusta_koodi_versio,
+       oh.yksiloiva_tunniste                       AS yksiloiva_tunniste,
+       oh.tyopaikalla_jarjestettava_koulutus_id    AS tyopaikalla_jarjestettava_koulutus_id
 FROM osaamisen_hankkimistavat oh
          JOIN yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat ytooaoh
               on oh.id = ytooaoh.osaamisen_hankkimistapa_id
@@ -123,7 +124,8 @@ FROM osaamisen_hankkimistavat oh
          JOIN hankittavat_yhteiset_tutkinnon_osat yto
               on ytooa.yhteinen_tutkinnon_osa_id = yto.id
 UNION
-SELECT oh.id                                    AS id,
+SELECT concat('ato_', ato.id,'_oh_', oh.id)     AS id,
+       oh.id                                    AS oh_id,
        oh.created_at                            AS created_at,
        oh.updated_at                            AS updated_at,
        oh.deleted_at                            AS deleted_at,
@@ -159,7 +161,8 @@ FROM osaamisen_hankkimistavat oh
          JOIN hankittavat_ammat_tutkinnon_osat ato
               on atooh.hankittava_ammat_tutkinnon_osa_id = ato.id
 UNION
-SELECT oh.id                                    AS id,
+SELECT concat('pto_', pto.id,'_oh_', oh.id)     AS id,
+       oh.id                                    AS oh_id,
        oh.created_at                            AS created_at,
        oh.updated_at                            AS updated_at,
        oh.deleted_at                            AS deleted_at,
@@ -527,10 +530,10 @@ BEGIN
                 'ALTER TABLE %I.osaamisen_osoittamisen_sisallot ADD CONSTRAINT osaamisen_osoittamiset_fkey FOREIGN KEY (osaamisen_osoittaminen_id) REFERENCES %I.osaamisen_osoittamiset (id)',
                 target_schema, target_schema);
         EXECUTE format(
-                'ALTER TABLE %I.keskeytymisajanjaksot ADD CONSTRAINT osaamisen_hankkimistavat_fkey FOREIGN KEY (osaamisen_hankkimistapa_id) REFERENCES %I.osaamisen_hankkimistavat (id)',
+                'ALTER TABLE %I.keskeytymisajanjaksot ADD CONSTRAINT osaamisen_hankkimistavat_fkey FOREIGN KEY (osaamisen_hankkimistapa_id) REFERENCES %I.osaamisen_hankkimistavat (oh_id)',
                 target_schema, target_schema);
         EXECUTE format(
-                'ALTER TABLE %I.muut_oppimisymparistot ADD CONSTRAINT osaamisen_hankkimistavat_fkey FOREIGN KEY (osaamisen_hankkimistapa_id) REFERENCES %I.osaamisen_hankkimistavat (id)',
+                'ALTER TABLE %I.muut_oppimisymparistot ADD CONSTRAINT osaamisen_hankkimistavat_fkey FOREIGN KEY (osaamisen_hankkimistapa_id) REFERENCES %I.osaamisen_hankkimistavat (oh_id)',
                 target_schema, target_schema);
         EXECUTE format(
                 'ALTER TABLE %I.todennettu_arviointi_arvioijat ADD CONSTRAINT todennettu_arviointi_lisatiedot_fkey FOREIGN KEY (todennettu_arviointi_lisatiedot_id) REFERENCES %I.todennettu_arviointi_lisatiedot (id)',
