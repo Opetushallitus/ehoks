@@ -20,4 +20,4 @@ WORKDIR /opt/export
 COPY scripts/lampi-export/lampi-export.sh /opt/export
 COPY scripts/lampi-export/send-error-message.sh /opt/export
 
-ENTRYPOINT ["./lampi-export.sh", "||", "./send-error-message.sh"]
+ENTRYPOINT exec ./lampi-export.sh || ./send-error-message.sh
