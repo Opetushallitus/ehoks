@@ -1,5 +1,8 @@
 (ns oph.ehoks.hoks.osaamisen-hankkimistapa
+  (:require [hugsql.core :as hugsql])
   (:import [java.time LocalDate]))
+
+(hugsql/def-db-fns "oph/ehoks/db/sql/hoks/osaamisen_hankkimistapa.sql")
 
 (def tyopaikkajakso-type?
   #{"osaamisenhankkimistapa_koulutussopimus"

@@ -1,9 +1,8 @@
 (ns oph.ehoks.palaute.opiskelija
   "A namespace for everything related to opiskelijapalaute"
   (:require [clojure.java.jdbc :as jdbc]
-            [clojure.set :refer [rename-keys]]
             [clojure.tools.logging :as log]
-            [medley.core :refer [greatest]]
+            [medley.core :refer [greatest map-vals]]
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
@@ -11,9 +10,8 @@
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
-            [oph.ehoks.hoks.common :as c]
             [oph.ehoks.palaute :as palaute]
-            [oph.ehoks.palaute.tapahtuma :as palautetapahtuma]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date])
   (:import (clojure.lang ExceptionInfo)
@@ -37,20 +35,14 @@
   opiskelijapalautekysely should be initiated.  Returns the initial state
   of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [{:keys [hoks opiskeluoikeus] :as ctx} {:keys [type] :as palaute}]
-  (let [herate-basis (herate-date-basis type)]
+  [{:keys [hoks] :as ctx} kysely-type]
+  (let [herate-basis (herate-date-basis kysely-type)]
     (or
       (palaute/initial-palaute-state-and-reason-if-not-kohderyhma
-        herate-basis hoks opiskeluoikeus)
+        ctx herate-basis)
       (cond
-        (palaute/already-initiated? palaute)
-        [nil :id :jo-lahetetty]
-
         (not (:osaamisen-hankkimisen-tarve hoks))
         [:ei-laheteta :osaamisen-hankkimisen-tarve :ei-ole]
-
-        (c/tuva-related-hoks? hoks)
-        [:ei-laheteta :tuva-opiskeluoikeus-oid :tuva-opiskeluoikeus]
 
         :else
         [:odottaa-kasittelya herate-basis :hoks-tallennettu]))))
@@ -59,8 +51,10 @@
   {:aloituskysely :aloitusherate_kasitelty
    :paattokysely :paattoherate_kasitelty})
 
-(defn existing-heratteet!
-  [{:keys [tx hoks koulutustoimija] :as ctx} kysely-type]
+(defn existing-palaute!
+  "Returns an existing palaute if one already exists for `kysely-type` and
+  for rahoituskausi corresponding to herate date."
+  [tx {:keys [hoks koulutustoimija] :as ctx} kysely-type]
   (let [rahoituskausi (palaute/rahoituskausi
                         (get hoks (herate-date-basis kysely-type)))
         kyselytyypit  (case kysely-type
@@ -69,19 +63,34 @@
         params        {:kyselytyypit     kyselytyypit
                        :oppija-oid       (:oppija-oid hoks)
                        :koulutustoimija  koulutustoimija}]
-    (->>
-      (palaute/get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params)
-      (vec)
-      (log/spyf :info "existing-heratteet!: before rk filtering: %s")
-      (filterv #(= rahoituskausi (palaute/rahoituskausi (:heratepvm %))))
-      (log/spyf :info "existing-heratteet!: after rk filtering: %s"))))
+    (->> (palaute/get-by-kyselytyyppi-oppija-and-koulutustoimija! tx params)
+         (vec)
+         (log/spyf :info "existing-heratteet!: before rk filtering: %s")
+         (filterv #(= rahoituskausi (palaute/rahoituskausi (:heratepvm %))))
+         (log/spyf :info "existing-heratteet!: after rk filtering: %s")
+         (utils/assert-pred #(contains? #{0 1} (count %)))
+         first)))
+
+(defn build!
+  "Builds opiskelijapalaute to be inserted to DB. Uses `palaute/build!` to build
+  an initial `palaute` map, then `assoc`s opiskelijapalaute specific values to
+  that."
+  [{:keys [hoks opiskeluoikeus] :as ctx} tyyppi tila]
+  {:pre [(some? tila)]}
+  (let [heratepvm (get hoks (herate-date-basis tyyppi))
+        alkupvm   (greatest heratepvm (date/now))]
+    (assoc (palaute/build! ctx tila)
+           :kyselytyyppi      (palaute/kyselytyyppi tyyppi opiskeluoikeus)
+           :heratepvm         heratepvm
+           :voimassa-alkupvm  alkupvm
+           :voimassa-loppupvm (palaute/vastaamisajan-loppupvm
+                                heratepvm alkupvm))))
 
 (defn initiate!
   "Initiates opiskelijapalautekysely (`:aloituskysely` or `:paattokysely`).
   Currently, stores kysely data to eHOKS DB `palautteet` table and also sends
   the herate to AWS SQS for Herätepalvelu to process. Returns `true` if kysely
   was successfully initiated, `nil` or `false` otherwise.
-
   Supported options in `opts`:
   `:resend?`  If set to true, don't check if kysely is already
               intiated, i.e., resend herate straight to Herätepalvelu. Also skip
@@ -89,27 +98,26 @@
               functionality to resend heratteet to Herätepalvelu wouldn't work.
               This should be removed once Herätepalvelu functionality has been
               fully migrated to eHOKS."
-  [{:keys [tx hoks opiskeluoikeus] :as ctx}
-   {:keys [type state] :or {state :odottaa-kasittelya} :as creation-params}]
-  {:pre [(#{:aloituskysely :paattokysely} type)]}
-  (let [target-kasittelytila (not= state :odottaa-kasittelya)
+  [{:keys [tx hoks opiskeluoikeus state reason lisatiedot] :as ctx} kysely-type]
+  (let [heratepvm            (get hoks (herate-date-basis kysely-type))
+        target-kasittelytila (not= state :odottaa-kasittelya)
         amisherate-kasittelytila
-        (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id! (:id hoks))]
+        (db-hoks/get-or-create-amisherate-kasittelytila-by-hoks-id!
+          (:id hoks))]
     (db-hoks/update-amisherate-kasittelytilat!
       tx {:id (:id amisherate-kasittelytila)
-          (kysely-kasittely-field-mapping type) target-kasittelytila}))
-
-  (let [heratepvm (get hoks (herate-date-basis type))]
-    (palaute/upsert!
-      ctx (assoc creation-params
-                 :heratepvm heratepvm
-                 :alkupvm   (greatest heratepvm (date/now))))
+          (kysely-kasittely-field-mapping kysely-type)
+          target-kasittelytila})
+    (->> (build! ctx kysely-type state)
+         (palaute/upsert! tx)
+         (tapahtuma/build-and-insert! ctx state reason lisatiedot))
     (when (= :odottaa-kasittelya state)
       (log/info "Making" type "heräte for HOKS" (:id hoks))
       (sqs/send-amis-palaute-message
         {:ehoks-id           (:id hoks)
          :kyselytyyppi       (translate-kyselytyyppi
-                               (palaute/kyselytyyppi type opiskeluoikeus))
+                               (palaute/kyselytyyppi
+                                 kysely-type opiskeluoikeus))
          :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
          :oppija-oid         (:oppija-oid hoks)
          :sahkoposti         (:sahkoposti hoks)
@@ -132,22 +140,24 @@
   ([{:keys [hoks opiskeluoikeus] :as ctx} kysely-type opts]
     (jdbc/with-db-transaction
       [tx db/spec]
-      (let [ctx     (assoc ctx
-                           :tx              tx
-                           :koulutustoimija (palaute/koulutustoimija-oid!
-                                              opiskeluoikeus))
-            palaute {:type kysely-type
-                     :existing-heratteet
-                     (when-not (:resend? opts)
-                       (existing-heratteet! ctx kysely-type))}
-            [state field reason] (initial-palaute-state-and-reason ctx palaute)
-            tapahtuma {:reason     reason
-                       :other-info (select-keys hoks [field])}]
+      (let [ctx (assoc
+                  ctx
+                  :tapahtumatyyppi :hoks-tallennus
+                  :tx              tx
+                  :koulutustoimija (palaute/koulutustoimija-oid!
+                                     opiskeluoikeus)
+                  :existing-palaute (when-not (:resend? opts)
+                                      (existing-palaute! tx ctx kysely-type)))
+            [state field reason] (initial-palaute-state-and-reason
+                                   ctx kysely-type)
+            lisatiedot (map-vals str (select-keys hoks [field]))]
         (log/info "Initial state for" kysely-type "for HOKS" (:id hoks)
                   "will be" (or state :ei-luoda-ollenkaan)
                   "because of" reason "in" field)
         (when state
-          (initiate! ctx (assoc palaute :state state :tapahtuma tapahtuma)))
+          (initiate!
+            (assoc ctx :state state :reason reason :lisatiedot lisatiedot)
+            kysely-type))
         state))))
 
 (defn initiate-every-needed!
@@ -201,34 +211,29 @@
 (defn create-and-save-arvo-kyselylinkki!
   "Update given palaute with a kyselylinkki from Arvo."
   [palaute]
-  (try
-    (jdbc/with-db-transaction
-      [tx db/spec]
-      (let [response (create-arvo-kyselylinkki! palaute)
-            for-db (rename-keys response {:kysely_linkki :url})]
-        (try
-          (palaute/save-arvo-tunniste! tx palaute for-db
-                                       {:arvo_response response})
-          (catch Exception e
-            (log/error "error while saving arvo tunniste" (:tunnus response)
-                       "; trying to delete kyselylinkki")
-            ;; FIXME: create chained exception if this throws
-            (arvo/delete-kyselytunnus (:tunnus response))
-            (log/info "successfully deleted kyselylinkki" (:tunnus response))
-            (throw e)))))
-    (catch Exception e
-      (log/error e "while processing palaute" palaute)
-      (palautetapahtuma/insert!
-        db/spec
-        {:palaute-id      (:id palaute)
-         :vanha-tila      (:tila palaute)
-         :uusi-tila       (:tila palaute)
-         :tapahtumatyyppi "arvo_luonti"
-         :syy             "arvo_kutsu_epaonnistui"
-         :lisatiedot      {:errormsg (.getMessage e)
-                           :body (:body (ex-data e))}})
-      (throw e)))
-  (dynamodb/sync-amis-herate! (:hoks-id palaute) (:kyselytyyppi palaute)))
+  (let [ctx {:tapahtumatyyppi  :arvo-luonti
+             :existing-palaute palaute}]
+    (try
+      (jdbc/with-db-transaction
+        [tx db/spec]
+        (let [ctx      (assoc ctx :tx tx)
+              response (create-arvo-kyselylinkki! palaute)
+              tunnus   (:tunnus response)]
+          (try (palaute/save-arvo-tunniste! ctx response)
+               (catch Exception e
+                 (log/error "error while saving arvo tunniste" tunnus
+                            "; trying to delete kyselylinkki")
+                 ; FIXME: create chained exception if this throws
+                 (arvo/delete-kyselytunnus tunnus)
+                 (log/info "successfully deleted kyselylinkki" tunnus)
+                 (throw e)))))
+      (catch Exception e
+        (log/error e "while processing palaute" palaute)
+        (tapahtuma/build-and-insert!
+          ctx :arvo-kutsu-epaonnistui {:errormsg (.getMessage e)
+                                       :body     (:body (ex-data e))})
+        (throw e)))
+    (dynamodb/sync-amis-herate! ctx)))
 
 (defn create-and-save-arvo-kyselylinkki-for-all-needed!
   "Create kyselylinkki for palautteet whose herätepvm has come but
