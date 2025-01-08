@@ -4,7 +4,7 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.connection :as c]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
-            [oph.ehoks.utils :as utils])
+            [oph.ehoks.utils.string :as u-str])
   (:import (clojure.lang ExceptionInfo)))
 
 (defn call!
@@ -61,7 +61,7 @@
   {:koulutustoimija_oid       koulutustoimija
    :tyonantaja                (:tyopaikan-y-tunnus existing-palaute)
    :tyopaikka                 (:tyopaikan-nimi existing-palaute)
-   :tyopaikka_normalisoitu    (utils/normalize-string
+   :tyopaikka_normalisoitu    (u-str/normalize
                                 (:tyopaikan-nimi existing-palaute))
    :tutkintotunnus            (get-in
                                 suoritus
