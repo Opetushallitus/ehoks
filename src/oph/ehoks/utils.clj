@@ -17,18 +17,6 @@
   (assert (pred v))
   v)
 
-(defn- deaccent-string
-  "Poistaa diakriittiset merkit stringistä ja palauttaa muokatun stringin."
-  [utf8-string]
-  (string/replace (Normalizer/normalize utf8-string Normalizer$Form/NFD)
-                  #"\p{InCombiningDiacriticalMarks}+"
-                  ""))
-
-(defn normalize-string
-  "Muuttaa muut merkit kuin kirjaimet ja numerot alaviivaksi."
-  [string]
-  (string/lower-case (string/replace (deaccent-string string) #"\W+" "_")))
-
 (defn to-underscore-str
   [kw]
   (.replace (name kw) \- \_))

@@ -14,7 +14,8 @@
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.palaute.tyoelama.nippu :as nippu]
             [oph.ehoks.utils :as utils]
-            [oph.ehoks.utils.date :as date])
+            [oph.ehoks.utils.date :as date]
+            [oph.ehoks.utils.string :as u-str])
   (:import (java.time LocalDate)))
 
 (defn send-workplace-periods!
@@ -111,7 +112,7 @@
            :tutkinto tutkinto
            :tutkintonimike (str (seq (map :koodiarvo
                                           (:tutkintonimike oo-suoritus))))
-           :tyopaikan-normalisoitu-nimi (utils/normalize-string
+           :tyopaikan-normalisoitu-nimi (u-str/normalize
                                           (:tyopaikan-nimi palaute))
            :viimeinen-vastauspvm
            (str (.plusDays ^LocalDate vastaamisajan-alkupvm 60)))))
@@ -142,11 +143,15 @@
                (not-empty)
                (or (throw (ex-info "palaute not found" query)))
                (add-keys ctx request-id tunnus)
-               (dissoc :internal-kyselytyyppi :jakson-yksiloiva-tunniste)
+               (dissoc :internal-kyselytyyppi)
+               (update :hankkimistapa-tyyppi #(last (string/split % #"_")))
+               (update :oppisopimuksen-perusta #(when %
+                                                  (last (string/split % #"_"))))
                (utils/remove-nils)
                utils/to-underscore-keys
                ;; the only field that has dashes in its name is tpk-niputuspvm
-               (rename-keys {:tpk_niputuspvm :tpk-niputuspvm})
+               (rename-keys {:jakson_yksiloiva_tunniste :yksiloiva_tunniste
+                             :tpk_niputuspvm            :tpk-niputuspvm})
                (sync-jakso!*))
            (catch Exception e
              (throw (ex-info (format (str "Failed to sync jakso `%s` of HOKS "

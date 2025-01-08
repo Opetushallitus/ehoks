@@ -55,6 +55,175 @@
    :hankkimistapa-id 2
    :hankkimistapa-tyyppi "koulutussopimus_01"})
 
+(def expected-ddb-jaksot
+  [{:osa_aikaisuus 100
+    :ohjaaja_nimi "Olli Ohjaaja"
+    :opiskeluoikeus_oid "1.2.246.562.15.10000000009"
+    :hankkimistapa_tyyppi "oppisopimus"
+    :hoks_id 1
+    :oppisopimuksen_perusta "01"
+    :tyopaikan_nimi "Ohjaus Oy"
+    :tyopaikan_ytunnus "5523718-7"
+    :jakso_loppupvm "2023-12-05"
+    :ohjaaja_puhelinnumero "0401111111"
+    :osaamisala "(\"test-osaamisala\")"
+    :tutkinnonosa_tyyppi "hato"
+    :yksiloiva_tunniste "1"
+    :tutkinnonosa_koodi "tutkinnonosat_300268"
+    :tpk-niputuspvm "ei_maaritelty"
+    :tallennuspvm "2024-06-30"
+    :oppilaitos "1.2.246.562.10.12944436166"
+    :ohjaaja_ytunnus_kj_tutkinto
+    "Olli Ohjaaja/5523718-7/1.2.246.562.10.346830761110/123456"
+    :tutkinnonosa_id 1
+    :niputuspvm "2024-07-01"
+    :tyopaikan_normalisoitu_nimi "ohjaus_oy"
+    :toimipiste_oid "1.2.246.562.10.12345678903"
+    :tutkinto "123456"
+    :alkupvm "2023-12-16"
+    :koulutustoimija "1.2.246.562.10.346830761110"
+    :jakso_alkupvm "2023-12-01"
+    :ohjaaja_email "olli.ohjaaja@esimerkki.com"
+    :hankkimistapa_id 12
+    :oppija_oid "1.2.246.562.24.12312312319"
+    :rahoituskausi "2023-2024"
+    :tutkintonimike "(\"12345\" \"23456\")"
+    :viimeinen_vastauspvm "2024-02-14"
+    :kasittelytila "ei_niputettu"}
+   {:osa_aikaisuus 100
+    :ohjaaja_nimi "Olli Ohjaaja"
+    :tutkinnonosa_nimi "Testiosa"
+    :opiskeluoikeus_oid "1.2.246.562.15.10000000009"
+    :hankkimistapa_tyyppi "koulutussopimus"
+    :hoks_id 1
+    :tyopaikan_nimi "Ohjaus Oy"
+    :tyopaikan_ytunnus "5523718-7"
+    :jakso_loppupvm "2024-01-06"
+    :ohjaaja_puhelinnumero "0401111111"
+    :osaamisala "(\"test-osaamisala\")"
+    :tutkinnonosa_tyyppi "hpto"
+    :yksiloiva_tunniste "4"
+    :tpk-niputuspvm "ei_maaritelty"
+    :tallennuspvm "2024-06-30"
+    :oppilaitos "1.2.246.562.10.12944436166"
+    :ohjaaja_ytunnus_kj_tutkinto
+    "Olli Ohjaaja/5523718-7/1.2.246.562.10.346830761110/123456"
+    :tutkinnonosa_id 1
+    :niputuspvm "2024-07-01"
+    :tyopaikan_normalisoitu_nimi "ohjaus_oy"
+    :toimipiste_oid "1.2.246.562.10.12345678903"
+    :tutkinto "123456"
+    :alkupvm "2024-01-16"
+    :koulutustoimija "1.2.246.562.10.346830761110"
+    :jakso_alkupvm "2024-01-01"
+    :ohjaaja_email "olli.ohjaaja@esimerkki.com"
+    :hankkimistapa_id 10
+    :oppija_oid "1.2.246.562.24.12312312319"
+    :rahoituskausi "2023-2024"
+    :tutkintonimike "(\"12345\" \"23456\")"
+    :viimeinen_vastauspvm "2024-03-16"
+    :kasittelytila "ei_niputettu"}
+   {:osa_aikaisuus 80
+    :ohjaaja_nimi "Matti Meikäläinen"
+    :opiskeluoikeus_oid "1.2.246.562.15.10000000009"
+    :hankkimistapa_tyyppi "koulutussopimus"
+    :hoks_id 1
+    :tyopaikan_nimi "Ohjaus Oy"
+    :tyopaikan_ytunnus "5523718-7"
+    :jakso_loppupvm "2023-11-25"
+    :ohjaaja_puhelinnumero "0402222222"
+    :osaamisala "(\"test-osaamisala\")"
+    :tutkinnonosa_tyyppi "hato"
+    :yksiloiva_tunniste "3"
+    :tutkinnonosa_koodi "tutkinnonosat_300269"
+    :tpk-niputuspvm "ei_maaritelty"
+    :tallennuspvm "2024-06-30"
+    :oppilaitos "1.2.246.562.10.12944436166"
+    :ohjaaja_ytunnus_kj_tutkinto
+    "Matti Meikäläinen/5523718-7/1.2.246.562.10.346830761110/123456"
+    :tutkinnonosa_id 2
+    :niputuspvm "2024-07-01"
+    :tyopaikan_normalisoitu_nimi "ohjaus_oy"
+    :toimipiste_oid "1.2.246.562.10.12345678903"
+    :tutkinto "123456"
+    :alkupvm "2023-12-01"
+    :koulutustoimija "1.2.246.562.10.346830761110"
+    :jakso_alkupvm "2023-11-01"
+    :ohjaaja_email "matti.meikalainen@esimerkki.com"
+    :hankkimistapa_id 14
+    :oppija_oid "1.2.246.562.24.12312312319"
+    :rahoituskausi "2023-2024"
+    :tutkintonimike "(\"12345\" \"23456\")"
+    :viimeinen_vastauspvm "2024-01-30"
+    :kasittelytila "ei_niputettu"}
+   {:osa_aikaisuus 60
+    :ohjaaja_nimi "Matti Meikäläinen"
+    :opiskeluoikeus_oid "1.2.246.562.15.10000000009"
+    :hankkimistapa_tyyppi "koulutussopimus"
+    :hoks_id 1
+    :tyopaikan_nimi "Ohjaus Oy"
+    :tyopaikan_ytunnus "5523718-7"
+    :jakso_loppupvm "2024-01-25"
+    :ohjaaja_puhelinnumero "0402222222"
+    :osaamisala "(\"test-osaamisala\")"
+    :tutkinnonosa_tyyppi "hyto"
+    :yksiloiva_tunniste "7"
+    :tutkinnonosa_koodi "tutkinnonosat_300270"
+    :tpk-niputuspvm "ei_maaritelty"
+    :tallennuspvm "2024-06-30"
+    :oppilaitos "1.2.246.562.10.12944436166"
+    :ohjaaja_ytunnus_kj_tutkinto
+    "Matti Meikäläinen/5523718-7/1.2.246.562.10.346830761110/123456"
+    :tutkinnonosa_id 4
+    :niputuspvm "2024-07-01"
+    :tyopaikan_normalisoitu_nimi "ohjaus_oy"
+    :toimipiste_oid "1.2.246.562.10.12345678903"
+    :tutkinto "123456"
+    :alkupvm "2024-02-01"
+    :koulutustoimija "1.2.246.562.10.346830761110"
+    :jakso_alkupvm "2024-01-01"
+    :ohjaaja_email "matti.meikalainen@esimerkki.com"
+    :hankkimistapa_id 16
+    :oppija_oid "1.2.246.562.24.12312312319"
+    :rahoituskausi "2023-2024"
+    :tutkintonimike "(\"12345\" \"23456\")"
+    :viimeinen_vastauspvm "2024-04-01"
+    :kasittelytila "ei_niputettu"}
+   {:osa_aikaisuus 80
+    :ohjaaja_nimi "Olli Ohjaaja"
+    :opiskeluoikeus_oid "1.2.246.562.15.10000000009"
+    :hankkimistapa_tyyppi "oppisopimus"
+    :hoks_id 1
+    :oppisopimuksen_perusta "01"
+    :tyopaikan_nimi "Ohjaus Oy"
+    :tyopaikan_ytunnus "5523718-7"
+    :jakso_loppupvm "2024-04-05"
+    :ohjaaja_puhelinnumero "0401111111"
+    :osaamisala "(\"test-osaamisala\")"
+    :tutkinnonosa_tyyppi "hyto"
+    :yksiloiva_tunniste "9"
+    :tutkinnonosa_koodi "tutkinnonosat_300271"
+    :tpk-niputuspvm "ei_maaritelty"
+    :tallennuspvm "2024-06-30"
+    :oppilaitos "1.2.246.562.10.12944436166"
+    :ohjaaja_ytunnus_kj_tutkinto
+    "Olli Ohjaaja/5523718-7/1.2.246.562.10.346830761110/123456"
+    :tutkinnonosa_id 6
+    :niputuspvm "2024-07-01"
+    :tyopaikan_normalisoitu_nimi "ohjaus_oy"
+    :toimipiste_oid "1.2.246.562.10.12345678903"
+    :tutkinto "123456"
+    :alkupvm "2024-04-16"
+    :koulutustoimija "1.2.246.562.10.346830761110"
+    :jakso_alkupvm "2024-04-01"
+    :ohjaaja_email "olli.ohjaaja@esimerkki.com"
+    :hankkimistapa_id 18
+    :oppija_oid "1.2.246.562.24.12312312319"
+    :rahoituskausi "2023-2024"
+    :tutkintonimike "(\"12345\" \"23456\")"
+    :viimeinen_vastauspvm "2024-06-15"
+    :kasittelytila "ei_niputettu"}])
+
 (def expected-ddb-niput
   [{:tyopaikka                   "Ohjaus Oy"
     :ytunnus                     "5523718-7"
@@ -314,7 +483,9 @@
 (def required-jakso-keys
   #{:ohjaaja_nimi
     :opiskeluoikeus_oid
+    :oppija_oid
     :hoks_id
+    :yksiloiva_tunniste
     :hankkimistapa_tyyppi
     :tyopaikan_nimi
     :tyopaikan_ytunnus
@@ -373,6 +544,8 @@
                                "'vastaajatunnus_muodostettu'")])]
         (is (= (count palautteet) 5))
         (is (= (count ddb-jaksot) 5))
+        (is (= (map #(dissoc % :tunnus :request_id) ddb-jaksot)
+               expected-ddb-jaksot))
         (is (= ddb-niput expected-ddb-niput))
         (is (= (count tapahtumat) 5))
         (is (= (set (map :arvo_tunniste palautteet))
