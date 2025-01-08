@@ -1,21 +1,11 @@
 (ns oph.ehoks.utils
-  (:require [clojure.string :as string]
-            [medley.core :refer [dissoc-in map-keys]])
-  (:import (java.text Normalizer Normalizer$Form)))
+  (:require [medley.core :refer [dissoc-in map-keys]]))
 
 (defn apply-when
   "Apply function `f` to value `v` if predicate `(pred v)` returns `true`.
   Otherwise returns value `v` unchanged. Useful when used in a threading macro."
   [v pred f]
   (if (pred v) (f v) v))
-
-(defn assert-pred
-  "Takes a predicate `pred` and a value `v` that is given to the predicate.
-  Asserts that `(pred v)` returns `true` and then returns `v`. Useful when used
-  in a threading macro."
-  [pred v]
-  (assert (pred v))
-  v)
 
 (defn to-underscore-str
   [kw]
