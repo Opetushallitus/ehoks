@@ -68,7 +68,14 @@
          (log/spyf :info "existing-heratteet!: before rk filtering: %s")
          (filterv #(= rahoituskausi (palaute/rahoituskausi (:heratepvm %))))
          (log/spyf :info "existing-heratteet!: after rk filtering: %s")
-         (utils/assert-pred #(contains? #{0 1} (count %)))
+         ((fn [existing-palautteet]
+            (when (> (count existing-palautteet) 1)
+              (log/errorf (str "Found more than one existing herate for "
+                               "`%s` of HOKS `%d` in rahoituskausi `%s`.")
+                          kysely-type
+                          (:id hoks)
+                          rahoituskausi))
+            existing-palautteet))
          first)))
 
 (defn build!
