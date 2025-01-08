@@ -255,8 +255,7 @@
                    {:hoks           hoks
                     :opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                                       (:opiskeluoikeus-oid hoks))}
-                   :aloituskysely
-                   {:resend? true}))
+                   :aloituskysely))
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false` or "
@@ -277,8 +276,7 @@
                    {:hoks hoks
                     :opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                                       (:opiskeluoikeus-oid hoks))}
-                   :paattokysely
-                   {:resend? true}))
+                   :paattokysely))
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false`, "
@@ -296,8 +294,7 @@
                      to :- LocalDate]
       :return {:count s/Int}
       (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
-            count  (op/initiate-every-needed!
-                     :aloituskysely hoksit {:resend? true})]
+            count  (op/initiate-every-needed! :aloituskysely hoksit)]
         (assoc (restful/ok {:count count})
                ::audit/operation :system/resend-aloitusheratteet
                ::audit/target {:hoksit-from from
@@ -310,8 +307,7 @@
                      to :- LocalDate]
       :return {:count s/Int}
       (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
-            count  (op/initiate-every-needed!
-                     :paattokysely hoksit {:resend? true})]
+            count  (op/initiate-every-needed! :paattokysely hoksit)]
         (assoc (restful/ok {:count count})
                ::audit/operation :system/resend-paattoheratteet
                ::audit/target    {:hoksit-from from
