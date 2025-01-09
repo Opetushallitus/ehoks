@@ -1,5 +1,5 @@
 SELECT * FROM hoksit h
-    WHERE h.created_at >= ?
+    WHERE h.created_at >= ?  -- FIXME: is this correct, what about updated_at?
     AND h.created_at <= ?
     AND h.deleted_at IS NULL
     AND h.tuva_opiskeluoikeus_oid IS NULL

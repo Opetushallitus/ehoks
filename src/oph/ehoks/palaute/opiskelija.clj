@@ -168,6 +168,7 @@
   palautteet ja lähettää SQS-viestit samaan tapaan kuin HOKSit olisi
   juuri tallennettu."
   [kyselytyyppi from to]
+  (log/info "Reinitiating" kyselytyyppi "for HOKSit between" from "and" to)
   (->> (db-hoks/select-non-tuva-hoksit-created-between from to)
        (initiate-every-needed! kyselytyyppi)))
 

@@ -15,6 +15,7 @@
             [oph.ehoks.hoks.schema :as hoks-schema]
             [oph.ehoks.opiskeluoikeus-test :as oo-test]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.opiskelija :as opalaute]
             [oph.ehoks.palaute.tapahtuma :as tapahtumat]
             [oph.ehoks.test-utils :as test-utils :refer [eq]]
             [oph.ehoks.utils.date :as date]
@@ -704,11 +705,10 @@
                 "osaamisen-hankkimisen-tarve")
     (let [sqs-call-counter (atom 0)]
       (with-redefs [sqs/send-amis-palaute-message (mock-call sqs-call-counter)
+                    k/get-opiskeluoikeus! (fn [oid] oo-test/opiskeluoikeus-1)
                     organisaatio/get-organisaatio!
                     organisaatio-test/mock-get-organisaatio!
                     date/now (constantly (LocalDate/of 2018 7 1))]
-        ; (let [saved-hoks (hoks-handler/save-hoks-and-initiate-palautteet!
-        ;                    hoks-data oo-test/opiskeluoikeus-6)
         (let [opiskeluoikeus oo-test/opiskeluoikeus-1
               saved-hoks (hoks-handler/save-hoks-and-initiate-all-palautteet!
                            {:hoks           hoks-data
@@ -732,7 +732,21 @@
               #{["odottaa_kasittelya" "aloittaneet" (LocalDate/of 2021 1 1)]
                 ["odottaa_kasittelya" "valmistuneet" (LocalDate/of 2022 12 15)]
                 ["lahetetty" "aloittaneet" (LocalDate/of 2019 3 18)]})
-          (is (= @sqs-call-counter 3)))))))
+          (is (= @sqs-call-counter 3))
+          (is (= 1 (opalaute/reinitiate-hoksit-between!
+                     :aloituskysely (LocalDate/now) (.plusDays (LocalDate/now) 1))))
+          (is (= @sqs-call-counter 4))
+          (is (= 1 (opalaute/reinitiate-hoksit-between!
+                     :paattokysely (LocalDate/now) (.plusDays (LocalDate/now) 1))))
+          (is (= @sqs-call-counter 5))
+          (eq (set (map (juxt :tila :kyselytyyppi :heratepvm)
+                        (palaute/get-by-hoks-id-and-kyselytyypit!
+                          db/spec
+                          {:hoks-id (:id saved-hoks)
+                           :kyselytyypit ["aloittaneet" "valmistuneet"]})))
+              #{["odottaa_kasittelya" "aloittaneet" (LocalDate/of 2021 1 1)]
+                ["odottaa_kasittelya" "valmistuneet" (LocalDate/of 2022 12 15)]
+                ["lahetetty" "aloittaneet" (LocalDate/of 2019 3 18)]}))))))
 
 (deftest do-not-form-opiskelijapalaute-in-hoks-update
   (testing (str "update: does not form opiskelijapalaute when "
