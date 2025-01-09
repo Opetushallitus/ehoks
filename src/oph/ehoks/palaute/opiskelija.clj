@@ -163,6 +163,14 @@
                        kysely-type))
                  hoksit)))
 
+(defn reinitiate-hoksit-between!
+  "Hakee ei-TUVA-HOKSit tietyllä aikavälillä ja päivittää niiden
+  palautteet ja lähettää SQS-viestit samaan tapaan kuin HOKSit olisi
+  juuri tallennettu."
+  [kyselytyyppi from to]
+  (->> (db-hoks/select-non-tuva-hoksit-created-between from to)
+       (initiate-every-needed! kyselytyyppi)))
+
 (defn create-arvo-kyselylinkki!
   "For the given palaute, make Arvo call for creating its kyselylinkki
   and return the Arvo reply."

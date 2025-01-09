@@ -288,27 +288,27 @@
         ::audit/target    {:hoks-id hoks-id}))
 
     (c-api/POST "/hoks/resend-aloitusherate" request
-      :summary "Lähettää uudet aloituskyselyherätteet herätepalveluun"
+      :summary "Lähettää uudet aloituskyselyherätteet herätepalveluun.
+               Tätä kutsutaan käsin käyttöliittymän ylläpitonäkymästä."
       :header-params [caller-id :- s/Str]
       :query-params [from :- LocalDate
                      to :- LocalDate]
       :return {:count s/Int}
-      (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
-            count  (op/initiate-every-needed! :aloituskysely hoksit)]
-        (assoc (restful/ok {:count count})
+      (let [result (op/reinitiate-hoksit-between! :aloituskysely from to)]
+        (assoc (restful/ok {:count result})
                ::audit/operation :system/resend-aloitusheratteet
                ::audit/target {:hoksit-from from
                                :hoksit-to   to})))
 
     (c-api/POST "/hoks/resend-paattoherate" request
-      :summary "Lähettää uudet päättökyselyherätteet herätepalveluun"
+      :summary "Lähettää uudet päättökyselyherätteet herätepalveluun.
+               Tätä kutsutaan käsin käyttöliittymän ylläpitonäkymästä."
       :header-params [caller-id :- s/Str]
       :query-params [from :- LocalDate
                      to :- LocalDate]
       :return {:count s/Int}
-      (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
-            count  (op/initiate-every-needed! :paattokysely hoksit)]
-        (assoc (restful/ok {:count count})
+      (let [result (op/reinitiate-hoksit-between! :paattokysely from to)]
+        (assoc (restful/ok {:count result})
                ::audit/operation :system/resend-paattoheratteet
                ::audit/target    {:hoksit-from from
                                   :hoksit-to   to})))))
