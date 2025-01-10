@@ -734,10 +734,14 @@
                 ["lahetetty" "aloittaneet" (LocalDate/of 2019 3 18)]})
           (is (= @sqs-call-counter 3))
           (is (= 1 (opalaute/reinitiate-hoksit-between!
-                     :aloituskysely (LocalDate/now) (.plusDays (LocalDate/now) 1))))
+                     :aloituskysely
+                     (LocalDate/of 2021 1 1)
+                     (LocalDate/of 2021 6 1))))
           (is (= @sqs-call-counter 4))
           (is (= 1 (opalaute/reinitiate-hoksit-between!
-                     :paattokysely (LocalDate/now) (.plusDays (LocalDate/now) 1))))
+                     :paattokysely
+                     (LocalDate/of 2022 12 1)
+                     (LocalDate/of 2022 12 30))))
           (is (= @sqs-call-counter 5))
           (eq (set (map (juxt :tila :kyselytyyppi :heratepvm)
                         (palaute/get-by-hoks-id-and-kyselytyypit!

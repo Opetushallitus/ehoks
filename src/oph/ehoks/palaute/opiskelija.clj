@@ -169,8 +169,11 @@
   juuri tallennettu."
   [kyselytyyppi from to]
   (log/info "Reinitiating" kyselytyyppi "for HOKSit between" from "and" to)
-  (->> (db-hoks/select-non-tuva-hoksit-created-between from to)
-       (initiate-every-needed! kyselytyyppi)))
+  (let [fetcher
+        (case kyselytyyppi
+          :aloituskysely db-hoks/select-non-tuva-hoksit-started-between
+          :paattokysely db-hoks/select-non-tuva-hoksit-finished-between)]
+    (initiate-every-needed! kyselytyyppi (fetcher from to))))
 
 (defn create-arvo-kyselylinkki!
   "For the given palaute, make Arvo call for creating its kyselylinkki
