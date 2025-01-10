@@ -121,12 +121,10 @@
                      (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
                        tx {:hoks-id            (:id hoks)
                            :yksiloiva-tunniste (:yksiloiva-tunniste jakso)}))
-          [state field reason]
-          (initial-palaute-state-and-reason ctx)
+          [state field reason] (initial-palaute-state-and-reason ctx)
           lisatiedot (map-vals str (select-keys (merge jakso hoks) [field]))]
       (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
-                "of HOKS" (:id hoks) "will be"
-                (or state :ei-luoda-ollenkaan)
+                "of HOKS" (:id hoks) "will be" (or state :ei-luoda-ollenkaan)
                 "because of" reason "in" field)
       (when state
         (->> (build! ctx state)

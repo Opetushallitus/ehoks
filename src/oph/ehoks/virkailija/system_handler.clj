@@ -255,8 +255,7 @@
                    {:hoks           hoks
                     :opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                                       (:opiskeluoikeus-oid hoks))}
-                   :aloituskysely
-                   {:resend? true}))
+                   :aloituskysely))
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false` or "
@@ -277,8 +276,7 @@
                    {:hoks hoks
                     :opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                                       (:opiskeluoikeus-oid hoks))}
-                   :paattokysely
-                   {:resend? true}))
+                   :paattokysely))
             (response/no-content)
             (response/bad-request
               {:error (str "Either `osaamisen-hankkimisen-tarve` is `false`, "
@@ -290,29 +288,27 @@
         ::audit/target    {:hoks-id hoks-id}))
 
     (c-api/POST "/hoks/resend-aloitusherate" request
-      :summary "Lähettää uudet aloituskyselyherätteet herätepalveluun"
+      :summary "Lähettää uudet aloituskyselyherätteet herätepalveluun.
+               Tätä kutsutaan käsin käyttöliittymän ylläpitonäkymästä."
       :header-params [caller-id :- s/Str]
       :query-params [from :- LocalDate
                      to :- LocalDate]
       :return {:count s/Int}
-      (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
-            count  (op/initiate-every-needed!
-                     :aloituskysely hoksit {:resend? true})]
-        (assoc (restful/ok {:count count})
+      (let [result (op/reinitiate-hoksit-between! :aloituskysely from to)]
+        (assoc (restful/ok {:count result})
                ::audit/operation :system/resend-aloitusheratteet
                ::audit/target {:hoksit-from from
                                :hoksit-to   to})))
 
     (c-api/POST "/hoks/resend-paattoherate" request
-      :summary "Lähettää uudet päättökyselyherätteet herätepalveluun"
+      :summary "Lähettää uudet päättökyselyherätteet herätepalveluun.
+               Tätä kutsutaan käsin käyttöliittymän ylläpitonäkymästä."
       :header-params [caller-id :- s/Str]
       :query-params [from :- LocalDate
                      to :- LocalDate]
       :return {:count s/Int}
-      (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
-            count  (op/initiate-every-needed!
-                     :paattokysely hoksit {:resend? true})]
-        (assoc (restful/ok {:count count})
+      (let [result (op/reinitiate-hoksit-between! :paattokysely from to)]
+        (assoc (restful/ok {:count result})
                ::audit/operation :system/resend-paattoheratteet
                ::audit/target    {:hoksit-from from
                                   :hoksit-to   to})))))

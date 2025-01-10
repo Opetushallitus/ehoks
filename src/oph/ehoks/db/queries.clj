@@ -60,8 +60,8 @@
 (defq select-hoksit-created-between "hoksit/select_hoksit_created_between.sql")
 (defq select-hoksit-finished-between
       "hoksit/select_hoksit_finished_between.sql")
-(defq select-non-tuva-hoksit-created-between
-      "hoksit/select_non_tuva_hoksit_created_between.sql")
+(defq select-non-tuva-hoksit-started-between
+      "hoksit/select_non_tuva_hoksit_started_between.sql")
 (defq select-non-tuva-hoksit-finished-between
       "hoksit/select_non_tuva_hoksit_finished_between.sql")
 (defq select-hoks-oppijat-without-index

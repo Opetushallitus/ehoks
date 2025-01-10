@@ -286,12 +286,6 @@
           (db-ops/query ["UPDATE palautteet SET tila='lahetetty'
                          WHERE hoks_id=12345 RETURNING *"])
           (are [kysely-type] (nil? (op/initiate-if-needed! ctx kysely-type))
-            :aloituskysely :paattokysely))
-
-        (testing "sends kysely info to AWS SQS when `:resend?` option is given."
-          (are [kysely-type] (= :odottaa-kasittelya
-                                (op/initiate-if-needed!
-                                  ctx kysely-type {:resend? true}))
             :aloituskysely :paattokysely))))))
 
 (deftest test-create-arvo-kyselylinkki!
