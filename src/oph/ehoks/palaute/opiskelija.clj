@@ -97,14 +97,7 @@
   "Initiates opiskelijapalautekysely (`:aloituskysely` or `:paattokysely`).
   Currently, stores kysely data to eHOKS DB `palautteet` table and also sends
   the herate to AWS SQS for Herätepalvelu to process. Returns `true` if kysely
-  was successfully initiated, `nil` or `false` otherwise.
-  Supported options in `opts`:
-  `:resend?`  If set to true, don't check if kysely is already
-              intiated, i.e., resend herate straight to Herätepalvelu. Also skip
-              the insertion to eHOKS `palautteet` table. Without this flag, the
-              functionality to resend heratteet to Herätepalvelu wouldn't work.
-              This should be removed once Herätepalvelu functionality has been
-              fully migrated to eHOKS."
+  was successfully initiated, `nil` or `false` otherwise."
   [{:keys [tx hoks opiskeluoikeus state reason lisatiedot] :as ctx} kysely-type]
   (let [heratepvm            (get hoks (herate-date-basis kysely-type))
         target-kasittelytila (not= state :odottaa-kasittelya)
@@ -132,62 +125,55 @@
          :alkupvm            (str heratepvm)}))))
 
 (defn initiate-if-needed!
-  "Sends heräte data required for opiskelijapalautekysely (`:aloituskysely` or
-  `:paattokysely`) to appropriate DynamoDB table of Herätepalvelu if no check is
-  preventing the sending. Returns `true` if kysely was successfully sent.
-
-  Supported options in `opts`:
-  `:resend?`  If set to true, don't check if kysely is already
-              intiated, i.e., resend herate straight to Herätepalvelu. Also skip
-              the insertion to eHOKS `palautteet` table. Without this flag, the
-              functionality to resend heratteet to Herätepalvelu wouldn't work.
-              This should be removed once Herätepalvelu functionality has been
-              fully migrated to eHOKS."
-  ([ctx kysely-type] (initiate-if-needed! ctx kysely-type nil))
-  ([{:keys [hoks opiskeluoikeus] :as ctx} kysely-type opts]
-    (jdbc/with-db-transaction
-      [tx db/spec]
-      (let [ctx (assoc
-                  ctx
-                  :tapahtumatyyppi :hoks-tallennus
-                  :tx              tx
-                  :koulutustoimija (palaute/koulutustoimija-oid!
-                                     opiskeluoikeus)
-                  :existing-palaute (when-not (:resend? opts)
-                                      (existing-palaute! tx ctx kysely-type)))
-            [state field reason] (initial-palaute-state-and-reason
-                                   ctx kysely-type)
-            lisatiedot (map-vals str (select-keys hoks [field]))]
-        (log/info "Initial state for" kysely-type "for HOKS" (:id hoks)
-                  "will be" (or state :ei-luoda-ollenkaan)
-                  "because of" reason "in" field)
-        (when state
-          (initiate!
-            (assoc ctx :state state :reason reason :lisatiedot lisatiedot)
-            kysely-type))
-        state))))
+  "Saves heräte data required for opiskelijapalautekysely
+  (`:aloituskysely` or `:paattokysely`) to database and sends it to
+  appropriate DynamoDB table of Herätepalvelu if no check is preventing
+  the sending. Returns the initial state of kysely if it was created,
+  `nil` otherwise."
+  [{:keys [hoks opiskeluoikeus] :as ctx} kysely-type]
+  (jdbc/with-db-transaction
+    [tx db/spec]
+    (let [ctx (assoc
+                ctx
+                :tapahtumatyyppi :hoks-tallennus
+                :tx              tx
+                :koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
+                :existing-palaute (existing-palaute! tx ctx kysely-type))
+          [state field reason]
+          (initial-palaute-state-and-reason ctx kysely-type)
+          lisatiedot (map-vals str (select-keys hoks [field]))]
+      (log/info "Initial state for" kysely-type "for HOKS" (:id hoks)
+                "will be" (or state :ei-luoda-ollenkaan)
+                "because of" reason "in" field)
+      (when state
+        (initiate!
+          (assoc ctx :state state :reason reason :lisatiedot lisatiedot)
+          kysely-type))
+      state)))
 
 (defn initiate-every-needed!
   "Effectively the same as running `initiate-if-needed!` for multiple HOKSes,
-  but also returns a count of the number of kyselys initiated.
+  but also returns a count of the number of kyselys initiated."
+  [kysely-type hoksit]
+  (count (filter #(= :odottaa-kasittelya
+                     (initiate-if-needed!
+                       {:hoks           %
+                        :opiskeluoikeus (koski/get-opiskeluoikeus!
+                                          (:opiskeluoikeus-oid %))}
+                       kysely-type))
+                 hoksit)))
 
-  Supported options in `opts`:
-  `:resend?`  If set to true, don't check if kysely is already
-              intiated, i.e., resend herate straight to Herätepalvelu. Also skip
-              the insertion to eHOKS `palautteet` table. Without this flag, the
-              functionality to resend heratteet to Herätepalvelu wouldn't work.
-              This should be removed once Herätepalvelu functionality has been
-              fully migrated to eHOKS."
-  ([kysely-type hoksit] (initiate-every-needed! kysely-type hoksit nil))
-  ([kysely-type hoksit opts]
-    (count (filter #(= :odottaa-kasittelya
-                       (initiate-if-needed!
-                         {:hoks           %
-                          :opiskeluoikeus (koski/get-opiskeluoikeus!
-                                            (:opiskeluoikeus-oid %))}
-                         kysely-type
-                         opts))
-                   hoksit))))
+(defn reinitiate-hoksit-between!
+  "Hakee ei-TUVA-HOKSit tietyllä aikavälillä ja päivittää niiden
+  palautteet ja lähettää SQS-viestit samaan tapaan kuin HOKSit olisi
+  juuri tallennettu."
+  [kyselytyyppi from to]
+  (log/info "Reinitiating" kyselytyyppi "for HOKSit between" from "and" to)
+  (let [fetcher
+        (case kyselytyyppi
+          :aloituskysely db-hoks/select-non-tuva-hoksit-started-between
+          :paattokysely db-hoks/select-non-tuva-hoksit-finished-between)]
+    (initiate-every-needed! kyselytyyppi (fetcher from to))))
 
 (defn create-arvo-kyselylinkki!
   "For the given palaute, make Arvo call for creating its kyselylinkki

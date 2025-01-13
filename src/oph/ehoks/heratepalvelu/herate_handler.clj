@@ -38,7 +38,10 @@
           (restful/ok (count periods))))
 
       (c-api/GET "/kasittelemattomat-heratteet" []
-        :summary "HOKSit, joilla on käsittelemättömiä herätteitä"
+        :summary
+        "lähettää uudestaan herätepalveluun herätteet HOKSeista,
+        joilla on käsittelemättömiä herätteitä.  Herätepalvelu
+        kutsuu tätä säännöllisesti."
         :query-params [start :- LocalDate
                        end :- LocalDate
                        limit :- (s/maybe s/Int)]
@@ -63,26 +66,30 @@
         (response/no-content))
 
       (c-api/POST "/hoksit/resend-aloitusherate" request
-        :summary "Lähettää uudet aloituskyselyherätteet herätepalveluun"
+        :summary
+        "Lähettää uudet aloituskyselyherätteet herätepalveluun.
+        Herätepalvelu kutsuu tätä viikon välein saadakseen
+        varmistettua kahden viime viikon herätteet (jotka lähetetään
+        uudestaan)."
         :header-params [caller-id :- s/Str]
         :query-params [from :- LocalDate
                        to :- LocalDate]
         :return (restful/response {:count s/Int})
-        (let [hoksit (db-hoks/select-non-tuva-hoksit-created-between from to)
-              count  (op/initiate-every-needed!
-                       :aloituskysely hoksit {:resend? true})]
-          (restful/ok {:count count})))
+        (let [result (op/reinitiate-hoksit-between! :aloituskysely from to)]
+          (restful/ok {:count result})))
 
       (c-api/POST "/hoksit/resend-paattoherate" request
-        :summary "Lähettää uudet päättökyselyherätteet herätepalveluun"
+        :summary
+        "Lähettää uudet päättökyselyherätteet herätepalveluun.
+        Herätepalvelu kutsuu tätä viikon välein saadakseen
+        varmistettua kahden viime viikon herätteet (jotka lähetetään
+        uudestaan)."
         :header-params [caller-id :- s/Str]
         :query-params [from :- LocalDate
                        to :- LocalDate]
         :return (restful/response {:count s/Int})
-        (let [hoksit (db-hoks/select-non-tuva-hoksit-finished-between from to)
-              count  (op/initiate-every-needed!
-                       :paattokysely hoksit {:resend? true})]
-          (restful/ok {:count count})))
+        (let [result (op/reinitiate-hoksit-between! :paattokysely from to)]
+          (restful/ok {:count result})))
 
       (c-api/POST "/opiskeluoikeus-update" request
         :summary "Päivittää aktiivisten hoksien opiskeluoikeudet Koskesta"

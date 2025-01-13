@@ -426,17 +426,17 @@
     [queries/select-hoksit-finished-between from to]
     {:row-fn hoks-from-sql}))
 
-(defn select-non-tuva-hoksit-created-between
-  "Hakee tietokannasta ne HOKSit, jotka on luotu annettujen ajankohtien
-  välillä ja jotka eivät ole TUVA-HOKSeja tai TUVA-HOKSien kanssa
-  rinnakkaisia ammatillisia HOKSeja."
+(defn select-non-tuva-hoksit-started-between
+  "Hakee tietokannasta ne HOKSit, jotka on merkitty alkaneiksi annettujen
+  ajankohtien välillä ja jotka eivät ole TUVA-HOKSeja tai TUVA-HOKSien
+  kanssa rinnakkaisia ammatillisia HOKSeja."
   [from to]
   (db-ops/query
-    [queries/select-non-tuva-hoksit-created-between from to]
+    [queries/select-non-tuva-hoksit-started-between from to]
     {:row-fn hoks-from-sql}))
 
 (defn select-non-tuva-hoksit-finished-between
-  "Hakee tietokannasta ne HOKSit, jotka on merkattu valmiiksi annettujen
+  "Hakee tietokannasta ne HOKSit, jotka on merkitty valmiiksi annettujen
   ajankohtien välillä ja jotka eivät ole TUVA-HOKSeja tai TUVA-HOKSien kanssa
   rinnakkaisia ammatillisia HOKSeja."
   [from to]
