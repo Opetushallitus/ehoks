@@ -544,7 +544,7 @@
   "Hakee tietokannasta kyselylinkit oppijan OID:n perusteella."
   [oid]
   (db-ops/query
-    [queries/select-kyselylinkit-by-oppija-oid oid]
+    [queries/select-kyselylinkit-by-oppija-oid oid oid]
     {:row-fn db-ops/from-sql}))
 
 (defn- select-keskeytymisajanjaksot
