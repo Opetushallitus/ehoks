@@ -261,6 +261,22 @@
                       :suoritukset
                       [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
                       :tyyppi {:koodiarvo "ammatillinenkoulutus"}}}
+              (.endsWith
+                url "/koski/api/opiskeluoikeus/1.2.246.562.15.60000000012")
+              {:status 200
+               :body {:oid "1.2.246.562.15.60000000012"
+                      :tila {:opiskeluoikeusjaksot
+                             [{:alku "2025-01-01"
+                               :tila {:koodiarvo "lasna"
+                                      :nimi {:fi "Läsnä"}
+                                      :koodistoUri "koskiopiskeluoikeudentila"
+                                      :koodistoVersio 1}}]}
+                      :oppilaitos {:oid (or oppilaitos-oid
+                                            "1.2.246.562.10.12944436166")}
+                      :alkamispäivä "2025-01-01"
+                      :arvioituPäättymispäivä "2025-12-01"
+                      :suoritukset []
+                      :tyyppi {:koodiarvo "lukiokoulutus"}}}
               (.endsWith url "/kayttooikeus-service/kayttooikeus/kayttaja")
               {:status 200
                :body [{:oidHenkilo "1.2.246.562.24.11474338834"

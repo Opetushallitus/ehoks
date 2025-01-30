@@ -31,6 +31,7 @@
     "1.2.246.562.15.10000000009"
     {:oid "1.2.246.562.15.10000000009"
      :oppilaitos {:oid "1.2.246.562.10.12944436166"}
+     :tyyppi {:koodiarvo "ammatillinenkoulutus"}
      :suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
      :koulutustoimija {:oid "1.2.246.562.10.10000000009"}}
     "1.246.562.15.12345678911" {}
@@ -41,10 +42,12 @@
               :body   (str "[{\"key\": \"badRequest.format.number\"}]")}))
     "1.2.246.562.15.12345678903" {}
     "1.2.246.562.15.23456789017"
-    {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+    {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
+     :suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
      :koulutustoimija {:oid "1.2.246.562.10.23456789017"}}
     "1.2.246.562.15.34567890123"
-    {:suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
+    {:tyyppi {:koodiarvo "ammatillinenkoulutus"}
+     :suoritukset [{:tyyppi {:koodiarvo "ammatillinentutkinto"}}]
      :koulutustoimija {:oid "1.2.246.562.10.34567890123"}}
     (->> {:status 404
           :body (str "[{\"key\": \"notFound.opiskeluoikeutta"
