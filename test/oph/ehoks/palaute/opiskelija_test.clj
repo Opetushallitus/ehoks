@@ -1,7 +1,9 @@
 (ns oph.ehoks.palaute.opiskelija-test
   (:require [clojure.test :refer [are deftest is testing use-fixtures]]
+            [clojure.java.jdbc :as jdbc]
             [taoensso.faraday :as far]
             [medley.core :refer [remove-vals find-first]]
+            [oph.ehoks.heratepalvelu :as heratepalvelu]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
             [oph.ehoks.db.db-operations.db-helpers :as db-ops]
@@ -24,7 +26,7 @@
             [oph.ehoks.palaute.opiskelija :as op]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date])
-  (:import (java.time LocalDate)))
+  (:import (java.time LocalDate LocalDateTime)))
 
 (use-fixtures :once test-utils/migrate-database)
 (use-fixtures :each test-utils/empty-database-after-test)
@@ -409,6 +411,32 @@
                       db/spec)
                     (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
         (client/reset-functions!))
+      (testing "get kyselylinkit returns linkki from palaute"
+        (let [loppupvm (.plusMonths (LocalDateTime/now) 1)]
+          (with-redefs [oph.ehoks.external.arvo/get-kyselylinkki-status
+                        (fn [_]
+                          {:vastattu false
+                           :voimassa_loppupvm (str loppupvm "Z")})]
+            (let [kyselylinkit (heratepalvelu/get-oppija-kyselylinkit
+                                 "1.2.246.562.24.12312312319")]
+              (is (= 1 (count kyselylinkit)))
+              (is
+                (= (select-keys (first kyselylinkit)
+                                [:hoks-id
+                                 :oppija-oid
+                                 :tyyppi
+                                 :kyselylinkki
+                                 :vastattu
+                                 :sahkoposti
+                                 :voimassa-loppupvm])
+                   {:hoks-id           12345
+                    :oppija-oid        "1.2.246.562.24.12312312319"
+                    :tyyppi            "tutkinnon_suorittaneet"
+                    :kyselylinkki
+                    "https://arvovastaus.csc.fi/v/foo1"
+                    :vastattu          false
+                    :sahkoposti        "testi.testaaja@testidomain.testi"
+                    :voimassa-loppupvm (LocalDate/from loppupvm)}))))))
       (testing "Palaute is synced to herätepalvelu after Arvo call"
         (let [ddb-key {:tyyppi_kausi "tutkinnon_suorittaneet/2023-2024"
                        :toimija_oppija
