@@ -1,15 +1,14 @@
 (ns oph.ehoks.palaute.scheduler
   (:require [chime.core :as chime]
             [clojure.tools.logging :as log]
-            [oph.ehoks.palaute.opiskelija :as amis]
-            [oph.ehoks.palaute.tyoelama :as tep])
+            [oph.ehoks.palaute.vastaajatunnus :as palaute])
   (:import (java.lang AutoCloseable)))
 
-(defn- run-sequence
-  "Run these tasks sequentially."
+(defn daily-actions!
+  "Run all palaute checks that need to be run on a daily basis."
   [opts]
-  (amis/create-and-save-arvo-kyselylinkki-for-all-needed! opts)
-  (tep/handle-all-palautteet-waiting-for-vastaajatunnus! opts))
+  (palaute/handle-palautteet-waiting-for-heratepvm! opts)
+  true)
 
 (defn run-scheduler!
   "Simple (daily) scheduler for palaute scheduled tasks. Will be replaced with
@@ -20,7 +19,7 @@
              rate)
   (let [scheduler
         (chime/chime-at (chime/periodic-seq start-time rate)
-                        run-sequence
+                        daily-actions!
                         {:on-finished
                          (fn []
                            (log/info "Palaute scheduler stopped."))
