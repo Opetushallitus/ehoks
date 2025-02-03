@@ -216,9 +216,10 @@
                (catch Exception e
                  (log/error "error while saving arvo tunniste" tunnus
                             "; trying to delete kyselylinkki")
-                 ; FIXME: create chained exception if this throws
-                 (arvo/delete-kyselytunnus tunnus)
-                 (log/info "successfully deleted kyselylinkki" tunnus)
+                 (when tunnus
+                   ; FIXME: create chained exception if this throws
+                   (arvo/delete-kyselytunnus tunnus)
+                   (log/info "successfully deleted kyselylinkki" tunnus))
                  (throw e)))))
       (catch Exception e
         (log/error e "while processing palaute" palaute)
@@ -232,13 +233,10 @@
   "Create kyselylinkki for palautteet whose herätepvm has come but
   which don't have a kyselylinkki yet."
   [_]
-  (if-not (contains? (set (:arvo-responsibilities config)) :create-kyselytunnus)
-    (log/warn "`create-and-save-arvo-kyselylinkki-for-all-needed!` configured"
-              "not to do anything")
-    (do (log/info "Creating kyselylinkki for unprocessed amispalaute.")
-        (doseq [palaute (palaute/get-amis-palautteet-waiting-for-kyselylinkki!
-                          db/spec {:heratepvm (date/now)})]
-          (try (log/infof "Creating kyselylinkki for %d" (:id palaute))
-               (create-and-save-arvo-kyselylinkki! palaute)
-               (catch ExceptionInfo e
-                 (log/errorf e "Error processing amispalaute %s" palaute)))))))
+  (log/info "Creating kyselylinkki for unprocessed amispalaute.")
+  (doseq [palaute (palaute/get-amis-palautteet-waiting-for-kyselylinkki!
+                    db/spec {:heratepvm (date/now)})]
+    (try (log/infof "Creating kyselylinkki for %d" (:id palaute))
+         (create-and-save-arvo-kyselylinkki! palaute)
+         (catch ExceptionInfo e
+           (log/errorf e "Error processing amispalaute %s" palaute)))))
