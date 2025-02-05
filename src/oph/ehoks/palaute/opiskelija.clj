@@ -220,7 +220,8 @@
                    ; FIXME: create chained exception if this throws
                    (arvo/delete-kyselytunnus tunnus)
                    (log/info "successfully deleted kyselylinkki" tunnus))
-                 (throw e)))))
+                 (throw e)))
+          tunnus))
       (catch Exception e
         (log/error e "while processing palaute" palaute)
         (tapahtuma/build-and-insert!
@@ -228,15 +229,3 @@
                                        :body     (:body (ex-data e))})
         (throw e)))
     (dynamodb/sync-amis-herate! ctx)))
-
-(defn create-and-save-arvo-kyselylinkki-for-all-needed!
-  "Create kyselylinkki for palautteet whose herätepvm has come but
-  which don't have a kyselylinkki yet."
-  [_]
-  (log/info "Creating kyselylinkki for unprocessed amispalaute.")
-  (doseq [palaute (palaute/get-amis-palautteet-waiting-for-kyselylinkki!
-                    db/spec {:heratepvm (date/now)})]
-    (try (log/infof "Creating kyselylinkki for %d" (:id palaute))
-         (create-and-save-arvo-kyselylinkki! palaute)
-         (catch ExceptionInfo e
-           (log/errorf e "Error processing amispalaute %s" palaute)))))

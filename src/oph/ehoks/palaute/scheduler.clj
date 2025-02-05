@@ -7,7 +7,9 @@
 (defn daily-actions!
   "Run all palaute checks that need to be run on a daily basis."
   [opts]
-  (palaute/handle-palautteet-waiting-for-heratepvm! opts)
+  (palaute/handle-palautteet-waiting-for-heratepvm!
+    ["aloittaneet" "valmistuneet" "osia_suorittaneet"
+     "tyopaikkajakson_suorittaneet"])
   true)
 
 (defn run-scheduler!

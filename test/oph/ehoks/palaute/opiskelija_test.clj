@@ -24,6 +24,7 @@
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.opiskelija :as op]
+            [oph.ehoks.palaute.vastaajatunnus :as vt]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date])
   (:import (java.time LocalDate LocalDateTime)))
@@ -507,7 +508,7 @@
                       :kysely_linkki (str "https://arvovastaus.csc.fi/v/bar"
                                           @vastauslinkki-counter)
                       :voimassa_loppupvm "2024-10-10"}})))
-        (op/create-and-save-arvo-kyselylinkki-for-all-needed! {})
+        (vt/create-and-save-arvo-kyselylinkki-for-all-needed! {})
         (is (= [["kysely_muodostettu" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
