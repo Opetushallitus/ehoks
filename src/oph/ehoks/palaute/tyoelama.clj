@@ -1,7 +1,6 @@
 (ns oph.ehoks.palaute.tyoelama
   (:require [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
-            [clojure.walk :refer [walk]]
             [medley.core :refer [find-first map-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
@@ -147,119 +146,45 @@
        (palaute/save-arvo-tunniste! ctx)))
 
 (defn- throw-if-keskeytynyt!
-  "Checks if jakso corresponding to `tep-palaute` is keskeytynyt (i.e., has
-  one or more open keskeytymisajanjakso), in which case the function throws an
-  exception, interrupting further palaute processing."
-  [tx tep-palaute]
-  (let [keskeytymisajanjaksot (oht/get-keskeytymisajanjaksot!
-                                tx {:oht-id (:hankkimistapa-id tep-palaute)})]
+  "Checks if jakso corresponding to `jakso` is keskeytynyt (i.e., has
+  one or more open keskeytymisajanjakso), in which case the function
+  throws an exception, interrupting further palaute processing."
+  ;; FIXME: remove when checked as part of other checks
+  ;; (initial-palaute-state-and-reason)
+  [jakso]
+  (let [keskeytymisajanjaksot (:keskeytymisajanjaksot jakso)]
+    ;; FIXME: this is wrong, also a period ending on heratepvm should do
     (when (not-every? #(some? (:loppu %)) keskeytymisajanjaksot)
-      (throw (ex-info (format (str "Jakso `%s` of HOKS `%d` has one or more "
+      (throw (ex-info (format (str "Jakso `%s` has one or more "
                                    "open keskeytymisajanjakso")
-                              (:jakson-yksiloiva-tunniste tep-palaute)
-                              (:hoks-id tep-palaute))
+                              (:yksiloiva-tunniste jakso))
                       {:type                  ::jakso-keskeytynyt
                        :keskeytymisajanjaksot keskeytymisajanjaksot})))))
 
-(defn- enrich-ctx!
-  [ctx tep-palaute]
-  (let [opiskeluoikeus (koski/get-existing-opiskeluoikeus!
-                         (:opiskeluoikeus-oid tep-palaute))
-        suoritus       (find-first suoritus/ammatillinen?
-                                   (:suoritukset opiskeluoikeus))]
-    (assoc ctx
-           :opiskeluoikeus        opiskeluoikeus
-           :suoritus              suoritus
-           :koulutustoimija       (palaute/koulutustoimija-oid! opiskeluoikeus)
-           :toimipiste            (palaute/toimipiste-oid! suoritus)
-           :niputuspvm            (next-niputus-date (date/now))
-           :vastaamisajan-alkupvm (next-niputus-date (:loppupvm tep-palaute)))))
-
-(defn- handle-exception
-  "Handles an ExceptionInfo `ex` based on `:type` in `ex-data`. If `ex` doesn't
-  match any of the cases below, re-throws `ex`."
-  [{:keys [existing-palaute] :as ctx} ex]
-  (let [ex-data (ex-data ex)
-        ex-type (:type ex-data)
-        tunnus  (:arvo-tunnus ex-data)]
-    (when tunnus
-      (log/infof "Trying to delete jaksotunnus `%s` from Arvo" tunnus)
-      (arvo/delete-jaksotunnus tunnus))
-    (case ex-type
-      ::koski/opiskeluoikeus-not-found
-      (do (log/warnf "%s. Setting `tila` to \"ei_laheteta\" for palaute `%d`."
-                     (ex-message ex)
-                     (:id existing-palaute))
-          (palaute/update-tila!
-            ctx "ei_laheteta" ex-type (select-keys existing-palaute
-                                                   [:opiskeluoikeus-oid])))
-
-      ::jakso-keskeytynyt
-      (do (log/warnf "%s. Setting `tila` to `ei_laheteta` for palaute `%d`. "
-                     (ex-message ex)
-                     (:id existing-palaute))
-          (palaute/update-tila!
-            ctx "ei_laheteta" ex-type
-            (walk (fn [[k v]] [(name k) (str v)])
-                  identity
-                  (select-keys ex-data [:keskeytymisajanjaksot]))))
-
-      ::arvo/no-jaksotunnus-created
-      (log/logf (if (:configured-to-call-arvo? ex-data) :error :warn)
-                (str (ex-message ex) " Skipping processing for palaute `%d`")
-                (:id existing-palaute))
-
-      ::heratepalvelu/tpo-nippu-sync-failed
-      (do (log/errorf (str "%s. Trying to delete jakso corresponding to "
-                           "palaute `%d` from Herätepalvelu")
-                      (ex-message ex)
-                      (:id existing-palaute))
-          (heratepalvelu/delete-jakso-herate! existing-palaute)
-          (throw ex))
-
-      ;; FIXME: tapahtuma)
-      (throw ex))))
+(defn add-times-to-context
+  [{:keys [existing-palaute] :as ctx}]
+  (assoc ctx
+         :niputuspvm            (next-niputus-date (date/now))
+         :vastaamisajan-alkupvm (next-niputus-date
+                                  (:heratepvm existing-palaute))))
 
 (defn handle-palaute-waiting-for-vastaajatunnus!
-  "Creates vastaajatunnus for `tep-palaute`, then synchronizes the palaute
-  palaute and the corresponding TPO-nippu to Herätepalvelu."
-  [tep-palaute]
-  {:pre [(:vastuullinen-tyopaikka-ohjaaja-nimi tep-palaute)
-         (:tyopaikan-nimi tep-palaute) (:tyopaikan-y-tunnus tep-palaute)]}
-  (let [ctx {:tapahtumatyyppi :arvo-luonti
-             :existing-palaute tep-palaute}]
-    (try
-      (let [ctx (enrich-ctx! ctx tep-palaute)]
-        (jdbc/with-db-transaction
-          [tx db/spec]
-          (throw-if-keskeytynyt! tx tep-palaute)
-          (let [ctx        (assoc ctx :tx tx)
-                request-id (str (UUID/randomUUID))
-                tunnus     (create-and-save-arvo-tunnus! ctx request-id)]
-            (heratepalvelu/sync-jakso! ctx request-id tunnus)
-            ; FIXME poista tep_kasitelty-logiikka siirtymävaiheen jälkeen?
-            (assert (oht/update! tx {:id (:hankkimistapa-id tep-palaute)
-                                     :tep-kasitelty true}))
-            ; TODO lisää nipputunniste palautteet-tauluun (uusi kantamigraatio)
-            ; TODO lisää uusi nippu jos sitä ei löydy nipputunnisteella kannasta
-            (heratepalvelu/sync-tpo-nippu!
-              (nippu/build-tpo-nippu-for-heratepalvelu ctx) tunnus)
-            tunnus)))
-      (catch ExceptionInfo e
-        (handle-exception ctx e)))))
-
-(defn handle-all-palautteet-waiting-for-vastaajatunnus!
-  "Creates vastaajatunnus for all herates that are waiting for processing,
-  do not have vastaajatunnus and have heratepvm today or in the past."
-  [_]
-  (log/info "Creating vastaajatunnus for unprocessed työelämäpalaute.")
-  (->> (palaute/get-tep-palautteet-waiting-for-vastaajatunnus!
-         db/spec {:heratepvm (str (date/now))})
-       (map (fn [tep-palaute]
-              (try
-                (log/infof "Creating vastaajatunnus for %d" (:id tep-palaute))
-                (handle-palaute-waiting-for-vastaajatunnus! tep-palaute)
-                (catch ExceptionInfo e
-                  (log/errorf e "Error processing tep-palaute %s"
-                              tep-palaute)))))
-       doall))
+  "Creates vastaajatunnus for `existing-palaute` in ctx, then synchronizes
+  the palaute palaute and the corresponding TPO-nippu to Herätepalvelu."
+  [{:keys [hoks opiskeluoikeus tx jakso existing-palaute] :as ctx}]
+  {:pre [(get-in jakso [:tyopaikalla-jarjestettava-koulutus
+                        :vastuullinen-tyopaikka-ohjaaja :nimi])
+         (get-in jakso [:tyopaikalla-jarjestettava-koulutus
+                        :tyopaikan-y-tunnus])]}
+  (let [ctx (add-times-to-context ctx)
+        request-id (str (UUID/randomUUID))]
+    (throw-if-keskeytynyt! jakso) ; FIXME: remove
+    (let [tunnus (create-and-save-arvo-tunnus! ctx request-id)]
+      (heratepalvelu/sync-jakso! ctx request-id tunnus)
+      (heratepalvelu/sync-tpo-nippu!
+        (nippu/build-tpo-nippu-for-heratepalvelu ctx)
+        tunnus)
+      ; FIXME tarvitaanko tähän enää :tep-kasitelty päivitys?
+      ; TODO lisää nipputunniste palautteet-tauluun (uusi kantamigraatio)
+      ; TODO lisää uusi nippu jos sitä ei löydy nipputunnisteella kannasta
+      tunnus)))

@@ -19,6 +19,7 @@
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.tyoelama :as tep]
+            [oph.ehoks.palaute.vastaajatunnus :as vt]
             [oph.ehoks.test-utils :as test-utils]
             [oph.ehoks.utils.date :as date]
             [taoensso.faraday :as far])
@@ -534,7 +535,7 @@
                   arvo/create-jaksotunnus! hoks-utils/mock-create-jaksotunnus
                   date/now #(LocalDate/of 2024 6 30)]
       (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
-      (tep/handle-all-palautteet-waiting-for-vastaajatunnus! {})
+      (vt/handle-all-palautteet-waiting-for-vastaajatunnus! {})
       (let [palautteet (hoks-utils/palautteet-joissa-vastaajatunnus)
             ddb-jaksot (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})
             ddb-niput  (far/scan @ddb/faraday-opts @(ddb/tables :nippu) {})
@@ -561,12 +562,21 @@
   (clear-ddb-jakso-table!)
   (clear-ddb-tpo-nippu-table!)
   ; Test initialization
-  (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
+  (is (-> #(assoc-in % [:hankittavat-ammat-tutkinnon-osat 0
+                        :osaamisen-hankkimistavat 0
+                        :keskeytymisajanjaksot]
+                     [{:alku  (LocalDate/of 2023 11 1)
+                       :loppu (LocalDate/of 2023 11 16)}
+                      {:alku  (LocalDate/of 2024 02 5)}])
+          (hoks-utils/create-hoks-in-the-past!)
+          :status
+          (= 200)))
 
-  (let [initial-palautteet  (hoks-utils/palautteet)
-        tep-palaute (nth
-                      (palaute/get-tep-palautteet-waiting-for-vastaajatunnus!
-                        db/spec {:heratepvm (str (date/now))}) 1)
+  (let [initial-palautteet (hoks-utils/palautteet)
+        palautteet
+        (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]}
+             (palaute/get-palautteet-waiting-for-vastaajatunnus! db/spec))
+        tep-palaute (second palautteet)
         create-jaksotunnus-counter (atom 0)
         arvo-tunnukset (atom [])
         check-current-state-is-same-as-initial-state
@@ -595,8 +605,7 @@
             (is (thrown-with-msg?
                   ExceptionInfo
                   #"Arvo error"
-                  (tep/handle-palaute-waiting-for-vastaajatunnus!
-                    tep-palaute))))
+                  (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
           (check-current-state-is-same-as-initial-state))
         (testing "jakso sync to Herätepalvelu fails."
           (with-redefs [heratepalvelu/sync-jakso!*
@@ -604,8 +613,7 @@
             (is (thrown-with-msg?
                   ExceptionInfo
                   #"Failed to sync jakso"
-                  (tep/handle-palaute-waiting-for-vastaajatunnus!
-                    tep-palaute))))
+                  (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
           (check-current-state-is-same-as-initial-state))
         (testing "nippu sync to Herätepalvelu fails."
           (with-redefs
@@ -614,8 +622,7 @@
             (is (thrown-with-msg?
                   ExceptionInfo
                   #"Failed to sync TPO-nippu"
-                  (tep/handle-palaute-waiting-for-vastaajatunnus!
-                    tep-palaute))))
+                  (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
           (check-current-state-is-same-as-initial-state)))
       (let [counter-value-before-fn-call @create-jaksotunnus-counter]
         (testing (str "When getting other than \"404 Not found\" error from "
@@ -631,25 +638,21 @@
             (is (thrown-with-msg?
                   ExceptionInfo
                   #"Error while fetching opiskeluoikeus"
-                  (tep/handle-palaute-waiting-for-vastaajatunnus! tep-palaute)))
+                  (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)))
             (is (= counter-value-before-fn-call @create-jaksotunnus-counter)))
           (check-current-state-is-same-as-initial-state))
         (testing (str "When opiskeluoikeus for palaute is not found from from "
                       "Koski, `tila` for it should be marked as `ei_laheteta`. "
                       "No call to Arvo should be made.")
           (with-redefs [koski/get-opiskeluoikeus! (fn [_] nil)]
-            (tep/handle-palaute-waiting-for-vastaajatunnus! tep-palaute)
+            (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)
             (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
             (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
                    "ei_laheteta"))))
         (testing (str "Palaute should be marked as \"ei_laheteta\" when there "
                       "are one or more open keskeytymisajanjakso. No call to "
                       "Arvo should be made.")
-          (with-redefs [oht/get-keskeytymisajanjaksot!
-                        (fn [_ __] [{:alku  (LocalDate/of 2023 11 1)
-                                     :loppu (LocalDate/of 2023 11 16)}
-                                    {:alku  (LocalDate/of 2024 02 5)}])]
-            (tep/handle-palaute-waiting-for-vastaajatunnus! tep-palaute)
-            (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
-            (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
-                   "ei_laheteta"))))))))
+          (vt/handle-palaute-waiting-for-heratepvm! (first palautteet))
+          (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
+          (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
+                 "ei_laheteta")))))))

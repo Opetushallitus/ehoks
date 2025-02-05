@@ -52,54 +52,43 @@
   [tunnus]
   (call! :delete (str "/vastauslinkki/v1/" tunnus) {}))
 
+(defn koodiuri->koodi [koodiuri]
+  (some-> koodiuri (string/split #"_") (last)))
+
 (defn build-jaksotunnus-request-body
   "Luo dataobjektin TEP-jaksotunnuksen luomisrequestille."
-  [{:keys [opiskeluoikeus existing-palaute suoritus koulutustoimija toimipiste
-           niputuspvm]
+  [{:keys [opiskeluoikeus existing-palaute jakso
+           suoritus koulutustoimija toimipiste niputuspvm]
     :as ctx}
    request-id]
-  {:koulutustoimija_oid       koulutustoimija
-   :tyonantaja                (:tyopaikan-y-tunnus existing-palaute)
-   :tyopaikka                 (:tyopaikan-nimi existing-palaute)
-   :tyopaikka_normalisoitu    (u-str/normalize
-                                (:tyopaikan-nimi existing-palaute))
-   :tutkintotunnus            (get-in
-                                suoritus
-                                [:koulutusmoduuli
-                                 :tunniste
-                                 :koodiarvo])
-   :tutkinnon_osa             (when (:tutkinnon-osa-koodi-uri existing-palaute)
-                                (last
-                                  (string/split
-                                    (:tutkinnon-osa-koodi-uri existing-palaute)
-                                    #"_")))
-   :paikallinen_tutkinnon_osa (:tutkinnonosa-nimi existing-palaute)
-   :tutkintonimike            (map
-                                :koodiarvo
-                                (:tutkintonimike suoritus))
-   :osaamisala                (suoritus/get-osaamisalat
-                                suoritus (:oid opiskeluoikeus)
-                                (:heratepvm existing-palaute))
-   :tyopaikkajakson_alkupvm   (str (:alkupvm existing-palaute))
-   :tyopaikkajakson_loppupvm  (str (:loppupvm existing-palaute))
-   :rahoituskausi_pvm         (str (:loppupvm existing-palaute))
-   :osa_aikaisuus             (:osa-aikaisuustieto existing-palaute)
-   :sopimustyyppi             (last
-                                (string/split
-                                  (:osaamisen-hankkimistapa-koodi-uri
-                                    existing-palaute)
-                                  #"_"))
-   :oppisopimuksen_perusta    (when (:oppisopimuksen-perusta-koodi-uri
-                                      existing-palaute)
-                                (last
-                                  (string/split
-                                    (:oppisopimuksen-perusta-koodi-uri
-                                      existing-palaute)
-                                    #"_")))
-   :vastaamisajan_alkupvm     (str niputuspvm)
-   :oppilaitos_oid            (:oid (:oppilaitos opiskeluoikeus))
-   :toimipiste_oid            toimipiste
-   :request_id                request-id})
+  (let [tjk (:tyopaikalla-jarjestettava-koulutus jakso)
+        t-nimi (:tyopaikan-nimi tjk)]
+    {:koulutustoimija_oid       koulutustoimija
+     :tyonantaja                (:tyopaikan-y-tunnus tjk)
+     :tyopaikka                 t-nimi
+     :tyopaikka_normalisoitu    (u-str/normalize t-nimi)
+     :tutkintotunnus            (get-in
+                                  suoritus
+                                  [:koulutusmoduuli :tunniste :koodiarvo])
+     :tutkinnon_osa             (koodiuri->koodi
+                                  (:tutkinnon-osa-koodi-uri jakso))
+     :paikallinen_tutkinnon_osa (:nimi jakso)
+     :tutkintonimike            (map :koodiarvo (:tutkintonimike suoritus))
+     :osaamisala                (suoritus/get-osaamisalat
+                                  suoritus (:oid opiskeluoikeus)
+                                  (:heratepvm existing-palaute))
+     :tyopaikkajakson_alkupvm   (str (:alku jakso))
+     :tyopaikkajakson_loppupvm  (str (:loppu jakso))
+     :rahoituskausi_pvm         (str (:loppu jakso))
+     :osa_aikaisuus             (:osa-aikaisuustieto jakso)
+     :sopimustyyppi             (koodiuri->koodi
+                                  (:osaamisen-hankkimistapa-koodi-uri jakso))
+     :oppisopimuksen_perusta    (koodiuri->koodi
+                                  (:oppisopimuksen-perusta-koodi-uri jakso))
+     :vastaamisajan_alkupvm     (str niputuspvm)
+     :oppilaitos_oid            (:oid (:oppilaitos opiskeluoikeus))
+     :toimipiste_oid            toimipiste
+     :request_id                request-id}))
 
 (defn create-jaksotunnus!
   [request]

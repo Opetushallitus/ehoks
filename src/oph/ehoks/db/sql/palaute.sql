@@ -25,6 +25,60 @@ and	heratepvm <= :heratepvm
 and	arvo_tunniste is null
 and	deleted_at is null
 
+-- :name get-palautteet-waiting-for-vastaajatunnus! :? :*
+-- :doc List all unhandled palautteet whose herätepäivä has come
+with oht_hoks_mapping as not materialized (
+ select	oht.id as hankkimistapa_id,
+	oht.yksiloiva_tunniste,
+	osa.hoks_id
+ from	hankittavat_ammat_tutkinnon_osat osa
+ join	hankittavan_ammat_tutkinnon_osan_osaamisen_hankkimistavat osaoh
+	on (osa.id = osaoh.hankittava_ammat_tutkinnon_osa_id)
+ join	osaamisen_hankkimistavat oht
+	on (osaoh.osaamisen_hankkimistapa_id = oht.id)
+ where	osa.deleted_at is null
+ and	osaoh.deleted_at is null
+ and	oht.deleted_at is null
+union
+ select	oht.id as hankkimistapa_id,
+	oht.yksiloiva_tunniste,
+	osa.hoks_id
+ from	hankittavat_paikalliset_tutkinnon_osat osa
+ join	hankittavan_paikallisen_tutkinnon_osan_osaamisen_hankkimistavat osaoh
+	on (osa.id = osaoh.hankittava_paikallinen_tutkinnon_osa_id)
+ join	osaamisen_hankkimistavat oht
+	on (osaoh.osaamisen_hankkimistapa_id = oht.id)
+ where	osa.deleted_at is null
+ and	osaoh.deleted_at is null
+ and	oht.deleted_at is null
+union
+ select	oht.id as hankkimistapa_id,
+	oht.yksiloiva_tunniste,
+	osa.hoks_id
+ from	hankittavat_yhteiset_tutkinnon_osat osa
+ join	yhteisen_tutkinnon_osan_osa_alueet alue
+	on (osa.id = alue.yhteinen_tutkinnon_osa_id)
+ join	yhteisen_tutkinnon_osan_osa_alueen_osaamisen_hankkimistavat alueoh
+	on (alue.id = alueoh.yhteisen_tutkinnon_osan_osa_alue_id)
+ join	osaamisen_hankkimistavat oht
+	on (alueoh.osaamisen_hankkimistapa_id = oht.id)
+ where	osa.deleted_at is null
+ and	alue.deleted_at is null
+ and	alueoh.deleted_at is null
+ and	oht.deleted_at is null
+)
+select	p.id, p.hoks_id, p.heratepvm, p.tila, p.kyselytyyppi,
+	p.jakson_yksiloiva_tunniste, ohm.hankkimistapa_id
+from	palautteet p
+left join oht_hoks_mapping ohm
+on	(p.hoks_id = ohm.hoks_id
+		and p.jakson_yksiloiva_tunniste = ohm.yksiloiva_tunniste)
+where	p.tila = 'odottaa_kasittelya'
+and	p.kyselytyyppi in (:v*:kyselytyypit)
+and	p.heratepvm <= now()
+and	p.deleted_at is null
+order by hoks_id asc
+
 -- :name get-tep-palaute-waiting-for-vastaajatunnus! :? :1
 -- :doc Get single unprocessed palaute for Arvo call.
 select * from tep_palaute

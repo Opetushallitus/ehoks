@@ -11,6 +11,7 @@
             [oph.ehoks.logging.audit :as audit]
             [oph.ehoks.middleware :refer [wrap-user-details]]
             [oph.ehoks.palaute :as palaute]
+            [oph.ehoks.palaute.vastaajatunnus :as vt]
             [oph.ehoks.palaute.opiskelija :as amis]
             [oph.ehoks.palaute.tyoelama :as tep]
             [oph.ehoks.restful :as restful]
@@ -50,8 +51,7 @@
               :summary "Luo kyselylinkit niille palautteille, jotka
                        odottavat käsittelyä."
               (let [palautteet
-                    (amis/create-and-save-arvo-kyselylinkki-for-all-needed!
-                      {})]
+                    (vt/create-and-save-arvo-kyselylinkki-for-all-needed! {})]
                 (-> {:kyselylinkit palautteet}
                     (restful/ok)
                     (assoc ::audit/target {:palautteet palautteet})))))
@@ -65,7 +65,7 @@
               :header-params [caller-id :- s/Str
                               ticket :- s/Str]
               (let [vastaajatunnukset
-                    (tep/handle-all-palautteet-waiting-for-vastaajatunnus! {})]
+                    (vt/handle-all-palautteet-waiting-for-vastaajatunnus! {})]
                 (assoc
                   (restful/ok {:vastaajatunnukset vastaajatunnukset})
                   ::audit/target {:vastaajatunnukset vastaajatunnukset})))
@@ -75,12 +75,10 @@
               :header-params [caller-id :- s/Str
                               ticket :- s/Str]
               :path-params [palaute-id :- s/Int]
-              (if-let [tep-palaute
-                       (palaute/get-tep-palaute-waiting-for-vastaajatunnus!
-                         db/spec {:palaute-id palaute-id})]
+              (if-let [tep-palaute (palaute/get-by-id!
+                                     db/spec {:id palaute-id})]
                 (let [vastaajatunnus
-                      (tep/handle-palaute-waiting-for-vastaajatunnus!
-                        tep-palaute)]
+                      (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)]
                   (assoc (restful/ok {:vastaajatunnus vastaajatunnus})
                          ::audit/target {:vastaajatunnus vastaajatunnus
                                          :palaute-id palaute-id}))

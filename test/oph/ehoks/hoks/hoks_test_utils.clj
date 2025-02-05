@@ -145,11 +145,11 @@
                :osa-alueet [] :tyoelama-osaamisen-arvioijat [])]
     (eq (test-utils/dissoc-module-ids ttn-after-update) ttn-patch-values)))
 
-(defn create-hoks-in-the-past! []
+(defn create-hoks-in-the-past! [& [transform]]
   (with-redefs [date/now #(LocalDate/of 2023 8 1)]
     (mock-st-post (create-app nil)
                   base-url
-                  (dissoc hoks-test/hoks-1 :id))))
+                  (dissoc ((or transform identity) hoks-test/hoks-1) :id))))
 
 (defn palautteet []
   (db-helpers/query ["select * from palautteet"]))

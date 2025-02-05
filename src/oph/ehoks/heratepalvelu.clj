@@ -89,18 +89,17 @@
 (defn- add-keys
   [palaute {:keys [opiskeluoikeus niputuspvm vastaamisajan-alkupvm] :as ctx}
    request-id tunnus]
-  (let [niputuspvm      niputuspvm
-        koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
+  (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
         oo-suoritus     (find-first suoritus/ammatillinen?
                                     (:suoritukset opiskeluoikeus))
         tutkinto        (get-in oo-suoritus
                                 [:koulutusmoduuli :tunniste :koodiarvo])]
     (assoc palaute
-           :tallennuspvm (date/now)
-           :alkupvm vastaamisajan-alkupvm
+           :tallennuspvm (str (date/now))
+           :alkupvm (str vastaamisajan-alkupvm)
            :koulutustoimija koulutustoimija
-           :niputuspvm niputuspvm
-           :ohjaaja-ytunnus-kj-tutkinto (nippu/tunniste ctx palaute)
+           :niputuspvm (str niputuspvm)
+           :ohjaaja-ytunnus-kj-tutkinto (nippu/tunniste ctx)
            :oppilaitos (:oid (:oppilaitos opiskeluoikeus))
            :osaamisala (str (seq (suoritus/get-osaamisalat
                                    oo-suoritus (:oid opiskeluoikeus)
