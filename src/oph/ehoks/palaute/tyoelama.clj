@@ -40,11 +40,7 @@
   "Takes `hoks` as an input and extracts from it all osaamisen hankkimistavat
   that are tyopaikkajaksos. Returns a lazy sequence."
   [hoks]
-  (->> (mapcat :osa-alueet (:hankittavat-yhteiset-tutkinnon-osat hoks))
-       (concat (:hankittavat-ammat-tutkinnon-osat hoks)
-               (:hankittavat-paikalliset-tutkinnon-osat hoks))
-       (mapcat :osaamisen-hankkimistavat)
-       (filter oht/tyopaikkajakso?)))
+  (filter oht/tyopaikkajakso? (oht/osaamisen-hankkimistavat hoks)))
 
 (defn next-niputus-date
   "Palauttaa seuraavan niputuspäivämäärän annetun päivämäärän jälkeen.

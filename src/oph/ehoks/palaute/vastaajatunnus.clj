@@ -5,6 +5,7 @@
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
             [oph.ehoks.hoks :as hoks]
+            [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.db :as db]
             [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
@@ -14,33 +15,6 @@
             [oph.ehoks.palaute.opiskelija :as amis]
             [oph.ehoks.palaute.tyoelama :as tep])
   (:import (clojure.lang ExceptionInfo)))
-
-(defn get-in-and-propagate-fields
-  "Hakee tietorakenteesta tietyn (listamuotoisen) kentän ja lisää
-  listan joka kohtaan tietyt kentät alkuperäisestä, eli propagoi
-  tietyt kentät syvemmälle tietorakenteessa."
-  [obj field-to-get fields-to-propagate]
-  (map #(merge % (select-keys obj fields-to-propagate))
-       (get-in obj field-to-get)))
-
-(defn osaamisen-hankkimistavat
-  "Hakee HOKSista kaikki osaamisen hankkimistavat."
-  [hoks]
-  (let [propagated-fields [:tutkinnon-osa-koodi-uri :nimi]]
-    (->>
-      (:hankittavat-yhteiset-tutkinnon-osat hoks)
-      (mapcat #(get-in-and-propagate-fields % [:osa-alueet] propagated-fields))
-      (concat (:hankittavat-paikalliset-tutkinnon-osat hoks))
-      (concat (:hankittavat-ammat-tutkinnon-osat hoks))
-      (mapcat #(get-in-and-propagate-fields
-                 % [:osaamisen-hankkimistavat] propagated-fields)))))
-
-(defn osaamisen-hankkimistapa-by-yksiloiva-tunniste
-  "Hakee HOKSista yhden osaamisen hankkimistavan yksilöivän tunnisteen
-  perusteella."
-  [hoks yks_tunn]
-  (find-first #(= yks_tunn (:yksiloiva-tunniste %))
-              (osaamisen-hankkimistavat hoks)))
 
 (defn- enrich-ctx!
   "Lisää muista palveluista saatavia tietoja kontekstiin myöhempää
@@ -111,7 +85,7 @@
       (let [hoks (hoks/get-by-id (:hoks-id palaute))
             jakso (some->>
                     (:jakson-yksiloiva-tunniste palaute)
-                    (osaamisen-hankkimistapa-by-yksiloiva-tunniste hoks))
+                    (oht/osaamisen-hankkimistapa-by-yksiloiva-tunniste hoks))
             ctx (enrich-ctx! {:hoks hoks :jakso jakso :tx tx
                               :existing-palaute palaute
                               :tapahtumatyyppi :arvo-luonti})]
