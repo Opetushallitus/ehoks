@@ -75,8 +75,7 @@
      :paikallinen_tutkinnon_osa (:nimi jakso)
      :tutkintonimike            (map :koodiarvo (:tutkintonimike suoritus))
      :osaamisala                (suoritus/get-osaamisalat
-                                  suoritus (:oid opiskeluoikeus)
-                                  (:heratepvm existing-palaute))
+                                  suoritus (:heratepvm existing-palaute))
      :tyopaikkajakson_alkupvm   (str (:alku jakso))
      :tyopaikkajakson_loppupvm  (str (:loppu jakso))
      :rahoituskausi_pvm         (str (:loppu jakso))

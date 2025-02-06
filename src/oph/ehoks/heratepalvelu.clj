@@ -102,8 +102,7 @@
            :ohjaaja-ytunnus-kj-tutkinto (nippu/tunniste ctx)
            :oppilaitos (:oid (:oppilaitos opiskeluoikeus))
            :osaamisala (str (seq (suoritus/get-osaamisalat
-                                   oo-suoritus (:oid opiskeluoikeus)
-                                   (:heratepvm palaute))))
+                                   oo-suoritus (:heratepvm palaute))))
            :request-id request-id
            :toimipiste-oid (str (palaute/toimipiste-oid! oo-suoritus))
            :tpk-niputuspvm "ei_maaritelty"
