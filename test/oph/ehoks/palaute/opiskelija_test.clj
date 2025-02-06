@@ -400,7 +400,7 @@
         (is (->> heratteet
                  (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
                  (call-create-and-save-arvo-kyselylinkki!-with-palaute)
-                 (nil?)))
+                 (some?)))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)

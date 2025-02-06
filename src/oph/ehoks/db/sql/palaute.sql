@@ -71,6 +71,7 @@ select	p.id,
 	p.hoks_id,
 	p.heratepvm,
 	p.tila,
+	p.herate_source,
 	p.kyselytyyppi,
 	p.jakson_yksiloiva_tunniste,
 	ohm.hankkimistapa_id
