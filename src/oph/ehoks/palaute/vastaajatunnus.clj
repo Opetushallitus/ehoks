@@ -75,6 +75,17 @@
       ;; FIXME: tapahtuma
       (throw ex))))
 
+(defn build-ctx
+  "Creates a full information context (i.e. background information)
+  for a given palaute."
+  [palaute]
+  (let [hoks (hoks/get-by-id (:hoks-id palaute))
+        jakso (some->>
+                (:jakson-yksiloiva-tunniste palaute)
+                (oht/osaamisen-hankkimistapa-by-yksiloiva-tunniste hoks))]
+    (enrich-ctx! {:hoks hoks :jakso jakso :existing-palaute palaute
+                  :tapahtumatyyppi :arvo-luonti})))
+
 (defn handle-palaute-waiting-for-heratepvm!
   "Check that palaute is part of kohderyhmä and create and save
   vastaajatunnus if so."
@@ -82,18 +93,13 @@
   (jdbc/with-db-transaction
     [tx db/spec]
     (try
-      (let [hoks (hoks/get-by-id (:hoks-id palaute))
-            jakso (some->>
-                    (:jakson-yksiloiva-tunniste palaute)
-                    (oht/osaamisen-hankkimistapa-by-yksiloiva-tunniste hoks))
-            ctx (enrich-ctx! {:hoks hoks :jakso jakso :tx tx
-                              :existing-palaute palaute
-                              :tapahtumatyyppi :arvo-luonti})]
-        (log/info "Creating vastaajatunnus for" (:kyselytyyppi palaute)
-                  "palaute" (:id palaute))
-        (if (:jakson-yksiloiva-tunniste palaute)
-          (tep/handle-palaute-waiting-for-vastaajatunnus! ctx)
-          (amis/create-and-save-arvo-kyselylinkki! palaute)))
+      (log/info "Creating vastaajatunnus for" (:kyselytyyppi palaute)
+                "palaute" (:id palaute))
+      (let [handler (if (:jakson-yksiloiva-tunniste palaute)
+                      tep/handle-palaute-waiting-for-vastaajatunnus!
+                      amis/create-and-save-arvo-kyselylinkki!)
+            ctx (assoc (build-ctx palaute) :tx tx)]
+        (handler ctx))
       (catch ExceptionInfo e
         (handle-exception
           {:existing-palaute palaute :tx tx :tapahtumatyyppi :arvo-luonti} e))

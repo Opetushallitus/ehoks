@@ -67,9 +67,7 @@
      :tyonantaja                (:tyopaikan-y-tunnus tjk)
      :tyopaikka                 t-nimi
      :tyopaikka_normalisoitu    (u-str/normalize t-nimi)
-     :tutkintotunnus            (get-in
-                                  suoritus
-                                  [:koulutusmoduuli :tunniste :koodiarvo])
+     :tutkintotunnus            (suoritus/tutkintotunnus suoritus)
      :tutkinnon_osa             (koodiuri->koodi
                                   (:tutkinnon-osa-koodi-uri jakso))
      :paikallinen_tutkinnon_osa (:nimi jakso)
