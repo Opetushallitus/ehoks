@@ -198,11 +198,10 @@
 (defn build-kyselylinkki-request-body
   "For the given palaute, create Arvo request for creating its kyselylinkki."
   [{:keys [existing-palaute hoks opiskeluoikeus suoritus
-           koulutustoimija toimipiste] :as ctx}]
+           koulutustoimija toimipiste hk-toteuttaja] :as ctx}]
   (let [heratepvm (:heratepvm existing-palaute)
         alkupvm (greatest heratepvm (date/now))]
-    {:hankintakoulutuksen_toteuttaja
-     (palaute/hankintakoulutuksen-toteuttaja! hoks)
+    {:hankintakoulutuksen_toteuttaja @hk-toteuttaja
      :tutkinnon_suorituskieli (or (suoritus/kieli suoritus) "fi")
      :kyselyn_tyyppi (translate-kyselytyyppi (:kyselytyyppi existing-palaute))
      :osaamisala (suoritus/get-osaamisalat suoritus heratepvm)
@@ -224,7 +223,7 @@
 (defn build-amisherate-record-for-heratepalvelu
   "Turns the information context into AMISherate in heratepalvelu format."
   [{:keys [existing-palaute hoks koulutustoimija suoritus kyselylinkki
-           opiskeluoikeus toimipiste] :as ctx}]
+           opiskeluoikeus toimipiste hk-toteuttaja] :as ctx}]
   (let [heratepvm (:heratepvm existing-palaute)
         oppija-oid (:oppija-oid hoks)
         rahoituskausi (palaute/rahoituskausi heratepvm)
@@ -238,8 +237,7 @@
        :toimipiste_oid toimipiste
        :lahetystila "ei_lahetetty"  ; FIXME when it can have other states
        :puhelinnumero (:puhelinnumero hoks)
-       :hankintakoulutuksen_toteuttaja
-       (palaute/hankintakoulutuksen-toteuttaja! hoks)
+       :hankintakoulutuksen_toteuttaja @hk-toteuttaja
        :ehoks_id (:id hoks)
        :herate-source (or (translate-source (:herate-source existing-palaute))
                           "sqs_viesti_ehoksista")

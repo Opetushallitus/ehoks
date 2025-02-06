@@ -25,10 +25,11 @@
         suoritus (find-first suoritus/ammatillinen?
                              (:suoritukset opiskeluoikeus))]
     (assoc ctx
-           :opiskeluoikeus        opiskeluoikeus
-           :suoritus              suoritus
-           :koulutustoimija       (palaute/koulutustoimija-oid! opiskeluoikeus)
-           :toimipiste            (palaute/toimipiste-oid! suoritus))))
+           :opiskeluoikeus opiskeluoikeus
+           :suoritus suoritus
+           :hk-toteuttaja (delay (palaute/hankintakoulutuksen-toteuttaja! hoks))
+           :koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
+           :toimipiste (palaute/toimipiste-oid! suoritus))))
 
 (defn- handle-exception
   "Handles an ExceptionInfo `ex` based on `:type` in `ex-data`. If `ex` doesn't
