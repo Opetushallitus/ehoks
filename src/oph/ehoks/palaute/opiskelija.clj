@@ -10,6 +10,7 @@
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.aws-sqs :as sqs]
             [oph.ehoks.external.koski :as koski]
+            [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.palaute.tapahtuma :as tapahtuma]
@@ -176,57 +177,64 @@
           :paattokysely db-hoks/select-non-tuva-hoksit-finished-between)]
     (initiate-every-needed! kyselytyyppi (fetcher from to))))
 
+(defn osaamisen-hankkimistavat->tutkinnonosat-hankkimistavoittain
+  [ohts]
+  (->> ohts
+       (map (juxt (comp keyword
+                        arvo/koodiuri->koodi
+                        :osaamisen-hankkimistapa-koodi-uri)
+                  :tutkinnon-osa-koodi-uri))
+       (filter second)  ; ei paikallisia (joilta tutkinnonosakoodi puuttuu)
+       (set)            ; ei duplikaatteja
+       (group-by first)
+       (map-vals (partial map second))))
+
+(defn build-kyselylinkki-request-body
+  "For the given palaute, create Arvo request for creating its kyselylinkki."
+  [{:keys [existing-palaute hoks opiskeluoikeus suoritus
+           koulutustoimija toimipiste] :as ctx}]
+  (let [heratepvm (:heratepvm existing-palaute)
+        alkupvm (greatest heratepvm (date/now))]
+    {:hankintakoulutuksen_toteuttaja
+     (palaute/hankintakoulutuksen-toteuttaja! hoks)
+     :tutkinnon_suorituskieli (or (suoritus/kieli suoritus) "fi")
+     :kyselyn_tyyppi (translate-kyselytyyppi (:kyselytyyppi existing-palaute))
+     :osaamisala (suoritus/get-osaamisalat suoritus heratepvm)
+     :tutkinnonosat_hankkimistavoittain
+     (osaamisen-hankkimistavat->tutkinnonosat-hankkimistavoittain
+       (oht/osaamisen-hankkimistavat hoks))
+     :vastaamisajan_alkupvm alkupvm
+     :vastaamisajan_loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
+     :toimipiste_oid toimipiste
+     :tutkintotunnus (str (suoritus/tutkintotunnus suoritus))
+     :oppilaitos_oid (:oid (:oppilaitos opiskeluoikeus))
+     :koulutustoimija_oid (or koulutustoimija "")
+     :heratepvm (:heratepvm existing-palaute)}))
+
 (defn create-arvo-kyselylinkki!
-  "For the given palaute, make Arvo call for creating its kyselylinkki
-  and return the Arvo reply."
-  [palaute]
-  (-> palaute
-      (select-keys [:hoks-id :kyselytyyppi])
-      (->> (palaute/get-for-arvo-by-hoks-id-and-kyselytyyppi! db/spec))
-      (or (throw (ex-info "No Arvo-processable palaute found"
-                          {:palaute palaute})))
-      (utils/to-underscore-keys)
-      ;; FIXME: add up-to-date values from Koski here
-      (assoc :metatiedot {:tila "ei_lahetetty"}
-             :request_id (str (UUID/randomUUID)))
-      (#(assoc % :tutkinnonosat_hankkimistavoittain
-               {:oppisopimus (:tutkinnonosat_oppisopimus %)
-                :koulutussopimus (:tutkinnonosat_koulutussopimus %)
-                :oppilaitosmuotoinenkoulutus
-                (:tutkinnonosat_oppilaitosmuotoinenkoulutus %)}))
-      (update :tutkinnon_suorituskieli #(or % "fi"))
-      (update :koulutustoimija_oid #(or % ""))
-      (update :tutkintotunnus str)
-      (update :kyselyn_tyyppi translate-kyselytyyppi)
-      (dissoc :tila :tutkinnonosat_koulutussopimus :tutkinnonosat_oppisopimus
-              :tutkinnonosat_oppilaitosmuotoinenkoulutus)
-      (arvo/create-kyselytunnus!)))
+  [ctx]
+  (arvo/create-kyselytunnus! (build-kyselylinkki-request-body ctx)))
 
 (defn create-and-save-arvo-kyselylinkki!
   "Update given palaute with a kyselylinkki from Arvo."
-  [palaute]
-  (let [ctx {:tapahtumatyyppi  :arvo-luonti
-             :existing-palaute palaute}]
-    (try
-      (jdbc/with-db-transaction
-        [tx db/spec]
-        (let [ctx      (assoc ctx :tx tx)
-              response (create-arvo-kyselylinkki! palaute)
-              tunnus   (:tunnus response)]
-          (try (palaute/save-arvo-tunniste! ctx response)
-               (catch Exception e
-                 (log/error "error while saving arvo tunniste" tunnus
-                            "; trying to delete kyselylinkki")
-                 (when tunnus
-                   ; FIXME: create chained exception if this throws
-                   (arvo/delete-kyselytunnus tunnus)
-                   (log/info "successfully deleted kyselylinkki" tunnus))
-                 (throw e)))
-          tunnus))
-      (catch Exception e
-        (log/error e "while processing palaute" palaute)
-        (tapahtuma/build-and-insert!
-          ctx :arvo-kutsu-epaonnistui {:errormsg (.getMessage e)
-                                       :body     (:body (ex-data e))})
-        (throw e)))
-    (dynamodb/sync-amis-herate! ctx)))
+  [{:keys [existing-palaute] :as ctx}]
+  (try
+    (let [response (create-arvo-kyselylinkki! ctx)
+          tunnus   (:tunnus response)]
+      (try (palaute/save-arvo-tunniste! ctx response)
+           (catch Exception e
+             (log/error e "error while saving arvo tunniste" tunnus
+                        "; trying to delete kyselylinkki")
+             (when tunnus
+               ; FIXME: create chained exception if this throws
+               (arvo/delete-kyselytunnus tunnus)
+               (log/info "successfully deleted kyselylinkki" tunnus))
+             (throw e)))
+      tunnus)
+    (catch Exception e
+      (log/error e "while processing palaute" existing-palaute)
+      (tapahtuma/build-and-insert!
+        ctx :arvo-kutsu-epaonnistui {:errormsg (.getMessage e)
+                                     :body     (:body (ex-data e))})
+      (throw e)))
+  (dynamodb/sync-amis-herate! ctx))

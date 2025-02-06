@@ -310,8 +310,8 @@
                  {:hoks hoks-test/hoks-1
                   :opiskeluoikeus oo-test/opiskeluoikeus-1})
           heratteet
-          (palaute/get-amis-palautteet-waiting-for-kyselylinkki!
-            db/spec {:heratepvm (LocalDate/of 2024 4 20)})]
+          (palaute/get-palautteet-waiting-for-vastaajatunnus!
+            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]})]
       (testing "HOKS creation marks correct palautteet as actionable"
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["odottaa_kasittelya" "valmistuneet"]]
@@ -334,7 +334,7 @@
              (let [herate (find-first
                             (comp (partial = kysely-type) :kyselytyyppi)
                             heratteet)
-                   resp (op/create-arvo-kyselylinkki! herate)]
+                   resp (op/create-arvo-kyselylinkki! (vt/build-ctx herate))]
                (= [:kysely_linkki :tunnus :voimassa_loppupvm]
                   (sort (keys resp))))
           "aloittaneet" "valmistuneet")
@@ -345,18 +345,25 @@
                         (fn [request] (reset! saved-req request) {:tunnus "a"})]
             (->> heratteet
                  (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
+                 (vt/build-ctx)
                  (op/create-arvo-kyselylinkki!))
             (is (= (:tutkinnonosat_hankkimistavoittain @saved-req)
                    {:oppisopimus
-                    ["tutkinnonosat_300268" "tutkinnonosat_300271"]
+                    ["tutkinnonosat_300271" "tutkinnonosat_300268"]
                     :koulutussopimus
-                    ["tutkinnonosat_300269" "tutkinnonosat_300270"]
+                    ["tutkinnonosat_300270" "tutkinnonosat_300269"]
                     :oppilaitosmuotoinenkoulutus
-                    ["tutkinnonosat_300268" "tutkinnonosat_300270"]}))
+                    ["tutkinnonosat_300270" "tutkinnonosat_300268"]}))
             (is (= ((juxt :koulutustoimija_oid :kyselyn_tyyppi :tutkintotunnus
                           :tutkinnon_suorituskieli :toimipiste_oid) @saved-req)
                    ["1.2.246.562.10.346830761110" "tutkinnon_suorittaneet"
                     "351407" "fi" "1.2.246.562.10.12312312312"]))))))))
+
+(defn call-create-and-save-arvo-kyselylinkki!-with-palaute [palaute]
+  (-> palaute
+      (vt/build-ctx)
+      (assoc :tx db/spec)
+      (op/create-and-save-arvo-kyselylinkki!)))
 
 (deftest test-create-and-save-arvo-kyselylinkki!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
@@ -378,8 +385,8 @@
                   :opiskeluoikeus oo-test/opiskeluoikeus-1})
           vastauslinkki-counter (atom 0)
           heratteet
-          (palaute/get-amis-palautteet-waiting-for-kyselylinkki!
-            db/spec {:heratepvm (LocalDate/of 2024 4 20)})]
+          (palaute/get-palautteet-waiting-for-vastaajatunnus!
+            db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"]})]
       (testing "successful Arvo call for amispalaute"
         (client/set-post!
           (fn [^String url options]
@@ -392,7 +399,7 @@
                       :voimassa_loppupvm "2024-10-10"}})))
         (is (->> heratteet
                  (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
-                 (op/create-and-save-arvo-kyselylinkki!)
+                 (call-create-and-save-arvo-kyselylinkki!-with-palaute)
                  (nil?)))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
@@ -460,8 +467,7 @@
               clojure.lang.ExceptionInfo
               (->> heratteet
                    (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
-                   (op/create-and-save-arvo-kyselylinkki!)
-                   (keys))))
+                   (call-create-and-save-arvo-kyselylinkki!-with-palaute))))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)
