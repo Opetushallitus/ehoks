@@ -1,6 +1,7 @@
 (ns oph.ehoks.palaute.opiskelija
   "A namespace for everything related to opiskelijapalaute"
   (:require [clojure.java.jdbc :as jdbc]
+            [clojure.string :as str]
             [clojure.tools.logging :as log]
             [medley.core :refer [greatest map-vals]]
             [oph.ehoks.config :refer [config]]
@@ -24,13 +25,18 @@
 (def herate-date-basis {:aloituskysely :ensikertainen-hyvaksyminen
                         :paattokysely  :osaamisen-saavuttamisen-pvm})
 
-(def ^:private translate-kyselytyyppi
+(def translate-kyselytyyppi
   "Translate kyselytyyppi name to the equivalent one used in Herätepalvelu,
   i.e., `lhs` is the one used in eHOKS and `rhs` is the one used Herätepalvelu.
   This should not be needed when eHOKS-Herätepalvelu integration is done."
   {"aloittaneet"       "aloittaneet"
    "valmistuneet"      "tutkinnon_suorittaneet"
    "osia_suorittaneet" "tutkinnon_osia_suorittaneet"})
+
+(def translate-source
+  "Translate palaute-db heräte source name to equivalent used in Herätepalvelu."
+  {"ehoks_update" "sqs_viesti_ehoksista"
+   "koski_update" "tiedot_muuttuneet_koskessa"})
 
 (defn initial-palaute-state-and-reason
   "Runs several checks against HOKS and opiskeluoikeus to determine if
@@ -215,26 +221,64 @@
   [ctx]
   (arvo/create-kyselytunnus! (build-kyselylinkki-request-body ctx)))
 
+(defn build-amisherate-record-for-heratepalvelu
+  "Turns the information context into AMISherate in heratepalvelu format."
+  [{:keys [existing-palaute hoks koulutustoimija suoritus kyselylinkki
+           opiskeluoikeus toimipiste] :as ctx}]
+  (let [heratepvm (:heratepvm existing-palaute)
+        oppija-oid (:oppija-oid hoks)
+        rahoituskausi (palaute/rahoituskausi heratepvm)
+        kyselytyyppi (translate-kyselytyyppi (:kyselytyyppi existing-palaute))
+        alkupvm (greatest heratepvm (date/now))]
+    (utils/remove-nils
+      {:sahkoposti (:sahkoposti hoks)
+       :heratepvm heratepvm
+       :alkupvm alkupvm
+       :voimassa-loppupvm (palaute/vastaamisajan-loppupvm heratepvm alkupvm)
+       :toimipiste_oid toimipiste
+       :lahetystila "ei_lahetetty"  ; FIXME when it can have other states
+       :puhelinnumero (:puhelinnumero hoks)
+       :hankintakoulutuksen_toteuttaja
+       (palaute/hankintakoulutuksen-toteuttaja! hoks)
+       :ehoks_id (:id hoks)
+       :herate-source (or (translate-source (:herate-source existing-palaute))
+                          "sqs_viesti_ehoksista")
+       :koulutustoimija koulutustoimija
+       :tutkintotunnus (suoritus/tutkintotunnus suoritus)
+       :kyselylinkki (or kyselylinkki (:kyselylinkki existing-palaute))
+       :kyselytyyppi kyselytyyppi
+       :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+       :oppija-oid oppija-oid
+       :oppilaitos (:oid (:oppilaitos opiskeluoikeus))
+       :osaamisala (str/join "," (suoritus/get-osaamisalat suoritus heratepvm))
+       :rahoituskausi rahoituskausi
+       :tallennuspvm (date/now)
+       :toimija_oppija (str koulutustoimija "/" oppija-oid)
+       :tyyppi_kausi (str kyselytyyppi "/" rahoituskausi)})))
+
 (defn create-and-save-arvo-kyselylinkki!
   "Update given palaute with a kyselylinkki from Arvo."
   [{:keys [existing-palaute] :as ctx}]
   (try
     (let [response (create-arvo-kyselylinkki! ctx)
           tunnus   (:tunnus response)]
-      (try (palaute/save-arvo-tunniste! ctx response)
-           (catch Exception e
-             (log/error e "error while saving arvo tunniste" tunnus
-                        "; trying to delete kyselylinkki")
-             (when tunnus
-               ; FIXME: create chained exception if this throws
-               (arvo/delete-kyselytunnus tunnus)
-               (log/info "successfully deleted kyselylinkki" tunnus))
-             (throw e)))
+      (try
+        (palaute/save-arvo-tunniste! ctx response)
+        (->> (assoc ctx :kyselylinkki (:kysely_linkki response))
+             (build-amisherate-record-for-heratepalvelu)
+             (dynamodb/sync-amis-herate! ctx))
+        (catch Exception e
+          (log/error e "error while saving arvo tunniste" tunnus
+                     "; trying to delete kyselylinkki")
+          (when tunnus
+            ; FIXME: create chained exception if this throws
+            (arvo/delete-kyselytunnus tunnus)
+            (log/info "successfully deleted kyselylinkki" tunnus))
+          (throw e)))
       tunnus)
     (catch Exception e
       (log/error e "while processing palaute" existing-palaute)
       (tapahtuma/build-and-insert!
         ctx :arvo-kutsu-epaonnistui {:errormsg (.getMessage e)
                                      :body     (:body (ex-data e))})
-      (throw e)))
-  (dynamodb/sync-amis-herate! ctx))
+      (throw e))))
