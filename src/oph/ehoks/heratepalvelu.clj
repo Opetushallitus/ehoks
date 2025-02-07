@@ -86,34 +86,50 @@
     (db-hoks/select-tyoelamajaksot-active-between "hpto" oppija start end)
     (db-hoks/select-tyoelamajaksot-active-between "hyto" oppija start end)))
 
-(defn- add-keys
-  [palaute {:keys [opiskeluoikeus niputuspvm vastaamisajan-alkupvm] :as ctx}
+(defn build-jaksoherate-record-for-heratepalvelu
+  [{:keys [existing-palaute opiskeluoikeus koulutustoimija hoks jakso
+           toimipiste niputuspvm suoritus vastaamisajan-alkupvm] :as ctx}
    request-id tunnus]
-  (let [koulutustoimija (palaute/koulutustoimija-oid! opiskeluoikeus)
-        oo-suoritus     (find-first suoritus/ammatillinen?
-                                    (:suoritukset opiskeluoikeus))
-        tutkinto        (get-in oo-suoritus
-                                [:koulutusmoduuli :tunniste :koodiarvo])]
-    (assoc palaute
-           :tallennuspvm (str (date/now))
-           :alkupvm (str vastaamisajan-alkupvm)
-           :koulutustoimija koulutustoimija
-           :niputuspvm (str niputuspvm)
-           :ohjaaja-ytunnus-kj-tutkinto (nippu/tunniste ctx)
-           :oppilaitos (:oid (:oppilaitos opiskeluoikeus))
-           :osaamisala (str (seq (suoritus/get-osaamisalat
-                                   oo-suoritus (:heratepvm palaute))))
-           :request-id request-id
-           :toimipiste-oid (str (palaute/toimipiste-oid! oo-suoritus))
-           :tpk-niputuspvm "ei_maaritelty"
-           :tunnus tunnus
-           :tutkinto tutkinto
-           :tutkintonimike (str (seq (map :koodiarvo
-                                          (:tutkintonimike oo-suoritus))))
-           :tyopaikan-normalisoitu-nimi (u-str/normalize
-                                          (:tyopaikan-nimi palaute))
-           :viimeinen-vastauspvm
-           (str (.plusDays ^LocalDate vastaamisajan-alkupvm 60)))))
+  (let [heratepvm (:heratepvm existing-palaute)
+        tjk (:tyopaikalla-jarjestettava-koulutus jakso)
+        ohjaaja (:vastuullinen-tyopaikka-ohjaaja tjk)]
+    (utils/remove-nils
+      {:yksiloiva_tunniste (:jakson-yksiloiva-tunniste existing-palaute)
+       :alkupvm (str vastaamisajan-alkupvm)
+       :hankkimistapa_id (:hankkimistapa-id existing-palaute)
+       :hankkimistapa_tyyppi (arvo/koodiuri->koodi
+                               (:osaamisen-hankkimistapa-koodi-uri jakso))
+       :oppisopimuksen_perusta (arvo/koodiuri->koodi
+                                 (:oppisopimuksen-perusta-koodi-uri jakso))
+       :hoks_id (:hoks-id existing-palaute)
+       :jakso_alkupvm (str (:alku jakso))
+       :jakso_loppupvm (str (:loppu jakso))
+       :koulutustoimija koulutustoimija
+       :niputuspvm (str niputuspvm)
+       :ohjaaja_email (:sahkoposti ohjaaja)
+       :ohjaaja_nimi (:nimi ohjaaja)
+       :ohjaaja_puhelinnumero (:puhelinnumero ohjaaja)
+       :ohjaaja_ytunnus_kj_tutkinto (nippu/tunniste ctx)
+       :opiskeluoikeus_oid (:opiskeluoikeus-oid hoks)
+       :oppija_oid (:oppija-oid hoks)
+       :oppilaitos (:oid (:oppilaitos opiskeluoikeus))
+       :osaamisala (str (seq (suoritus/get-osaamisalat suoritus heratepvm)))
+       :osa_aikaisuus (:osa-aikaisuustieto jakso)
+       :rahoituskausi (palaute/rahoituskausi heratepvm)
+       :request_id request-id
+       :tallennuspvm (str (date/now))
+       :toimipiste_oid toimipiste
+       :tpk-niputuspvm "ei_maaritelty"  ; sic! this has a dash, not underscore
+       :tunnus tunnus
+       :tutkinnonosa_koodi (:tutkinnon-osa-koodi-uri jakso)
+       :tutkinnonosa_nimi (:nimi jakso)
+       :tutkinto (suoritus/tutkintotunnus suoritus)
+       :tutkintonimike (str (seq (map :koodiarvo (:tutkintonimike suoritus))))
+       :tyopaikan_nimi (:tyopaikan-nimi tjk)
+       :tyopaikan_normalisoitu_nimi (u-str/normalize (:tyopaikan-nimi tjk))
+       :tyopaikan_ytunnus (:tyopaikan-y-tunnus tjk)
+       :viimeinen_vastauspvm (palaute/vastaamisajan-loppupvm
+                               heratepvm vastaamisajan-alkupvm)})))
 
 ; Helper functions that can be mocked in tests
 (def sync-jakso!*     (partial ddb/sync-item! :jakso))
@@ -128,37 +144,22 @@
   sync-jakso-herate! only updates fields it 'owns': currently that
   means that the messaging tracking fields are left intact (because
   herätepalvelu will update those)."
-  [{:keys [existing-palaute tx] :as ctx} request-id tunnus]
+  [{:keys [existing-palaute] :as ctx} request-id tunnus]
   {:pre [(some? tunnus)]}
   (if-not (contains? (set (:heratepalvelu-responsibities config))
                      :sync-jakso-heratteet)
     (log/warn "sync-jakso!: configured to not do anything")
-    (let [query (select-keys existing-palaute
-                             [:jakson-yksiloiva-tunniste :hoks-id])]
-      (try (-> (palaute/get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste!
-                 tx query)
-               (first)
-               (not-empty)
-               (or (throw (ex-info "palaute not found" query)))
-               (add-keys ctx request-id tunnus)
-               (dissoc :internal-kyselytyyppi)
-               (update :hankkimistapa-tyyppi #(last (string/split % #"_")))
-               (update :oppisopimuksen-perusta #(when %
-                                                  (last (string/split % #"_"))))
-               (utils/remove-nils)
-               utils/to-underscore-keys
-               ;; the only field that has dashes in its name is tpk-niputuspvm
-               (rename-keys {:jakson_yksiloiva_tunniste :yksiloiva_tunniste
-                             :tpk_niputuspvm            :tpk-niputuspvm})
-               (sync-jakso!*))
-           (catch Exception e
-             (throw (ex-info (format (str "Failed to sync jakso `%s` of HOKS "
-                                          "`%d` to Herätepalvelu")
-                                     (:jakson-yksiloiva-tunniste query)
-                                     (:hoks-id query))
-                             {:type        ::jakso-sync-failed
-                              :arvo-tunnus tunnus}
-                             e)))))))
+    (try
+      (sync-jakso!* (build-jaksoherate-record-for-heratepalvelu
+                      ctx request-id tunnus))
+      (catch Exception e
+        (throw (ex-info (format (str "Failed to sync jakso `%s` of HOKS "
+                                     "`%d` to Herätepalvelu")
+                                (:jakson-yksiloiva-tunniste existing-palaute)
+                                (:hoks-id existing-palaute))
+                        {:type        ::jakso-sync-failed
+                         :arvo-tunnus tunnus}
+                        e))))))
 
 (defn sync-tpo-nippu!
   "Update the Herätepalvelu nipputable to have the same content for given heräte

@@ -38,6 +38,7 @@
   (let [ex-data (ex-data ex)
         ex-type (:type ex-data)
         tunnus  (:arvo-tunnus ex-data)]
+    (log/infof ex "Handling exception in tunnus handling")
     (when tunnus
       (log/infof "Trying to delete jaksotunnus `%s` from Arvo" tunnus)
       (arvo/delete-jaksotunnus tunnus))
