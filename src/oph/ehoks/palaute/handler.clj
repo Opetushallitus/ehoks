@@ -1,5 +1,6 @@
 (ns oph.ehoks.palaute.handler
-  (:require [compojure.api.sweet :as c-api]
+  (:require [medley.core :refer [find-first]]
+            [compojure.api.sweet :as c-api]
             [compojure.api.core :refer [route-middleware]]
             [compojure.core :refer [GET]]
             [clojure.java.jdbc :as jdbc]
@@ -75,14 +76,19 @@
               :header-params [caller-id :- s/Str
                               ticket :- s/Str]
               :path-params [palaute-id :- s/Int]
-              (if-let [tep-palaute (palaute/get-by-id!
-                                     db/spec {:id palaute-id})]
-                (let [vastaajatunnus
-                      (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)]
-                  (assoc (restful/ok {:vastaajatunnus vastaajatunnus})
-                         ::audit/target {:vastaajatunnus vastaajatunnus
-                                         :palaute-id palaute-id}))
-                (response/not-found {:message "Palaute not found"})))))))
+              (let [tep-palautteet
+                    (palaute/get-palautteet-waiting-for-vastaajatunnus!
+                      db/spec
+                      {:kyselytyypit ["tyopaikkajakson_suorittaneet"]})
+                    tep-palaute (find-first #(= palaute-id (:id %))
+                                            tep-palautteet)]
+                (if tep-palaute
+                  (let [vastaajatunnus
+                        (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)]
+                    (assoc (restful/ok {:vastaajatunnus vastaajatunnus})
+                           ::audit/target {:vastaajatunnus vastaajatunnus
+                                           :palaute-id palaute-id}))
+                  (response/not-found {:message "Palaute not found"}))))))))
 
     (c-api/undocumented
       (GET "/buildversion.txt" []
