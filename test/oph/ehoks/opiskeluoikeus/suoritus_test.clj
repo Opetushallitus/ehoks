@@ -18,7 +18,7 @@
                                   :loppu "2022-01-25"
                                   :koodiarvo "lkhlkhjl"}]}
           expected ["test1" "test2"]]
-      (is (= (suoritus/get-osaamisalat
-               suoritus "1.2.3.4" (LocalDate/of 2022 2 2)) expected))
+      (is (= (suoritus/get-osaamisalat suoritus (LocalDate/of 2022 2 2))
+             expected))
       (is (empty? (suoritus/get-osaamisalat
-                    {:osaamisala []} "1.2.3.4" (LocalDate/of 2022 2 2)))))))
+                    {:osaamisala []} (LocalDate/of 2022 2 2)))))))

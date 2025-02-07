@@ -1,8 +1,36 @@
 (ns oph.ehoks.hoks.osaamisen-hankkimistapa
-  (:require [hugsql.core :as hugsql])
+  (:require [medley.core :refer [find-first]]
+            [hugsql.core :as hugsql])
   (:import [java.time LocalDate]))
 
 (hugsql/def-db-fns "oph/ehoks/db/sql/hoks/osaamisen_hankkimistapa.sql")
+
+(defn get-in-and-propagate-fields
+  "Hakee tietorakenteesta tietyn (listamuotoisen) kentän ja lisää
+  listan joka kohtaan tietyt kentät alkuperäisestä, eli propagoi
+  tietyt kentät syvemmälle tietorakenteessa."
+  [obj field-to-get fields-to-propagate]
+  (map #(merge % (select-keys obj fields-to-propagate))
+       (get-in obj field-to-get)))
+
+(defn osaamisen-hankkimistavat
+  "Hakee HOKSista kaikki osaamisen hankkimistavat."
+  [hoks]
+  (let [propagated-fields [:tutkinnon-osa-koodi-uri :nimi]]
+    (->>
+      (:hankittavat-yhteiset-tutkinnon-osat hoks)
+      (mapcat #(get-in-and-propagate-fields % [:osa-alueet] propagated-fields))
+      (concat (:hankittavat-paikalliset-tutkinnon-osat hoks))
+      (concat (:hankittavat-ammat-tutkinnon-osat hoks))
+      (mapcat #(get-in-and-propagate-fields
+                 % [:osaamisen-hankkimistavat] propagated-fields)))))
+
+(defn osaamisen-hankkimistapa-by-yksiloiva-tunniste
+  "Hakee HOKSista yhden osaamisen hankkimistavan yksilöivän tunnisteen
+  perusteella."
+  [hoks yks_tunn]
+  (find-first #(= yks_tunn (:yksiloiva-tunniste %))
+              (osaamisen-hankkimistavat hoks)))
 
 (def tyopaikkajakso-type?
   #{"osaamisenhankkimistapa_koulutussopimus"
