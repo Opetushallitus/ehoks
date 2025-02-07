@@ -61,12 +61,16 @@
   ([^Long id ^String part]
     (-> {:method :get
          :service (u/get-url "eperusteet-service-url")
-         :url (u/get-url "eperusteet-service.external-api.get-peruste" id part)
+         :url (u/get-url
+                (str "eperusteet-service.external-api.get-peruste"
+                     (when part "-part"))
+                id
+                part)
          :options {:as :json}}
         (cache/with-cache!)
         :body))
   ([^Long id]
-    (get-peruste-by-id id "")))
+    (get-peruste-by-id id nil)))
 
 (defn find-perusteet-external
   "Find perusteet using eperusteet external api. Returns eperusteet response
