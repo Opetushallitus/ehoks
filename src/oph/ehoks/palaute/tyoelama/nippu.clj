@@ -1,10 +1,11 @@
 (ns oph.ehoks.palaute.tyoelama.nippu
-  (:require [oph.ehoks.utils :as utils]))
+  (:require [oph.ehoks.utils :as utils]
+            [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]))
 
 (defn build-tpo-nippu-for-heratepalvelu
   [{:keys [jakso suoritus koulutustoimija niputuspvm] :as ctx}]
   {:pre [(:tyopaikalla-jarjestettava-koulutus jakso)]}
-  (let [tutkinto (get-in suoritus [:koulutusmoduuli :tunniste :koodiarvo])
+  (let [tutkinto           (suoritus/tutkintotunnus suoritus)
         tjk                (:tyopaikalla-jarjestettava-koulutus jakso)
         tyopaikan-nimi     (:tyopaikan-nimi tjk)
         tyopaikan-y-tunnus (:tyopaikan-y-tunnus tjk)

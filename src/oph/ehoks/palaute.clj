@@ -142,7 +142,7 @@
   (jdbc/with-db-transaction
     [tx db/spec]
     (update! tx {:id (:id existing-palaute) :tila tila})
-    (tapahtuma/build-and-insert! ctx "ei_laheteta" reason lisatiedot)))
+    (tapahtuma/build-and-insert! ctx tila reason lisatiedot)))
 
 (defn feedback-collecting-prevented?
   "Jätetäänkö palaute keräämättä sen vuoksi, että opiskelijan opiskelu on

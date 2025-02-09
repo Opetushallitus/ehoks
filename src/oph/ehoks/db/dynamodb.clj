@@ -100,21 +100,4 @@
                      {:update-expr update-expr :expr-attr-names attr-names
                       :expr-attr-vals attr-values})))
 
-(defn sync-amis-herate!
-  "Update the herätepalvelu AMISheratetable to have the same content
-  for given heräte as palaute-backend has in its own database.
-  sync-amis-herate! only updates fields it 'owns': currently that
-  means that the messaging tracking fields are left intact (because
-  herätepalvelu will update those)."
-  [{:keys [existing-palaute] :as ctx} amis-herate]
-  (if-not (contains? (set (:heratepalvelu-responsibities config))
-                     :sync-amis-heratteet)
-    (log/warn "sync-amis-herate!: configured to not do anything")
-    (try (sync-item! :amis amis-herate)
-         (catch Exception e
-           (log/error e "while processing palaute" existing-palaute)
-           (tapahtuma/build-and-insert!
-             (assoc ctx :tapahtumatyyppi :heratepalvelu-sync)
-             :synkronointi-epaonnistui
-             {:errormsg (.getMessage e) :body (:body (ex-data e))})
-           (throw e)))))
+(def sync-amis-herate! (partial sync-item! :amis))
