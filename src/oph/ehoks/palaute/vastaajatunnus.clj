@@ -1,5 +1,5 @@
 (ns oph.ehoks.palaute.vastaajatunnus
-  (:require [medley.core :refer [find-first]]
+  (:require [medley.core :refer [find-first map-vals]]
             [clojure.walk :refer [walk]]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.external.koski :as koski]
@@ -7,24 +7,31 @@
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.db :as db]
+            [oph.ehoks.db.dynamodb :as dynamodb]
+            [oph.ehoks.utils.date :as date]
             [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
             [oph.ehoks.palaute :as palaute]
             [oph.ehoks.external.koski :as koski]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
             [oph.ehoks.palaute.opiskelija :as amis]
+            [oph.ehoks.palaute.tapahtuma :as tapahtuma]
             [oph.ehoks.palaute.tyoelama :as tep])
-  (:import (clojure.lang ExceptionInfo)))
+  (:import (clojure.lang ExceptionInfo)
+           (java.util UUID)))
 
 (defn- enrich-ctx!
   "Lisää muista palveluista saatavia tietoja kontekstiin myöhempää
   käsittelyä varten."
-  [{:keys [hoks] :as ctx}]
+  [{:keys [hoks existing-palaute] :as ctx}]
   (let [opiskeluoikeus (koski/get-existing-opiskeluoikeus!
                          (:opiskeluoikeus-oid hoks))
         suoritus (find-first suoritus/ammatillinen?
                              (:suoritukset opiskeluoikeus))]
     (assoc ctx
+           :niputuspvm            (tep/next-niputus-date (date/now))
+           :vastaamisajan-alkupvm (tep/next-niputus-date
+                                    (:heratepvm existing-palaute))
            :opiskeluoikeus opiskeluoikeus
            :suoritus suoritus
            :hk-toteuttaja (delay (palaute/hankintakoulutuksen-toteuttaja! hoks))
@@ -35,9 +42,9 @@
   "Handles an ExceptionInfo `ex` based on `:type` in `ex-data`. If `ex` doesn't
   match any of the cases below, re-throws `ex`."
   [{:keys [existing-palaute] :as ctx} ex]
-  (let [ex-data (ex-data ex)
-        ex-type (:type ex-data)
-        tunnus  (:arvo-tunnus ex-data)]
+  (let [ex-params (ex-data ex)
+        ex-type (:type ex-params)
+        tunnus  (:arvo-tunnus ex-params)]
     (log/infof ex "Handling exception in tunnus handling")
     (when tunnus
       (log/infof "Trying to delete jaksotunnus `%s` from Arvo" tunnus)
@@ -59,10 +66,17 @@
             ctx "ei_laheteta" ex-type
             (walk (fn [[k v]] [(name k) (str v)])
                   identity
-                  (select-keys ex-data [:keskeytymisajanjaksot]))))
+                  (select-keys ex-params [:keskeytymisajanjaksot]))))
+
+      ::arvo-kutsu-epaonnistui
+      (let [arvo-ex (ex-cause ex)]
+        (log/warn "Arvo response:" (ex-message arvo-ex))
+        (tapahtuma/build-and-insert! (:ctx ex-params) :arvo-kutsu-epaonnistui
+                                     {:errormsg (ex-message arvo-ex)
+                                      :body     (:body (ex-data arvo-ex))}))
 
       ::arvo/no-jaksotunnus-created
-      (log/logf (if (:configured-to-call-arvo? ex-data) :error :warn)
+      (log/logf (if (:configured-to-call-arvo? ex-params) :error :warn)
                 (str (ex-message ex) " Skipping processing for palaute `%d`")
                 (:id existing-palaute))
 
@@ -88,6 +102,74 @@
     (enrich-ctx! {:hoks hoks :jakso jakso :existing-palaute palaute
                   :tapahtumatyyppi :arvo-luonti})))
 
+(defn make-kysely-type
+  "Map DB-level kyselytyyppi back into what is expected by
+  initial-palaute-state-and-reason"
+  [palaute]
+  (-> (:kyselytyyppi palaute)
+      ({"aloittaneet" :aloituskysely
+        "valmistuneet" :paattokysely
+        "osia_suorittaneet" :paattokysely
+        "tyopaikkajakson_suorittaneet" :ohjaajakysely})
+      (or (throw (ex-info (str "Unknown kyselytyyppi: "
+                               (:kyselytyyppi palaute))
+                          {:palaute palaute})))))
+
+;; these use vars (#') because otherwise with-redefs doesn't work on
+;; them (the map has the original definition even if the function in
+;; its namespace is redef'd)
+
+(def amis-handlers
+  {:check-palaute #'amis/initial-palaute-state-and-reason
+   :arvo-builder #'amis/build-kyselylinkki-request-body
+   :arvo-caller #'arvo/create-kyselytunnus!
+   :heratepalvelu-builder #'amis/build-amisherate-record-for-heratepalvelu
+   :heratepalvelu-caller #'dynamodb/sync-amis-herate!
+   :arvo-cleanup-handler #'arvo/delete-kyselytunnus
+   :extra-handlers []})
+
+(def tep-handlers
+  {:check-palaute #'tep/initial-palaute-state-and-reason
+   :arvo-builder #'arvo/build-jaksotunnus-request-body
+   :arvo-caller #'arvo/create-jaksotunnus!
+   :heratepalvelu-builder
+   #'heratepalvelu/build-jaksoherate-record-for-heratepalvelu
+   :heratepalvelu-caller #'heratepalvelu/sync-jakso!*
+   :arvo-cleanup-handler #'arvo/delete-kyselytunnus
+   :extra-handlers [#'tep/ensure-tpo-nippu!]})
+
+(defn palaute-check-call-arvo-save-and-sync!
+  "Check that palaute is part of kohderyhmä and create and save
+  vastaajatunnus if so, using the given functions for appropriately
+  handling different amis- and tep-palaute."
+  [{:keys [existing-palaute hoks jakso] :as ctx}
+   {:keys [check-palaute arvo-builder arvo-caller arvo-cleanup-handler
+           heratepalvelu-builder heratepalvelu-caller extra-handlers]}]
+  (let [[state field reason]
+        (check-palaute ctx (make-kysely-type existing-palaute))]
+    (if (not= :odottaa-kasittelya state)
+      (->> (map-vals str (select-keys (or hoks jakso) [field]))
+           (palaute/update-tila! ctx "ei_laheteta" reason))
+      (let [request-id (str (UUID/randomUUID))
+            arvo-req (arvo-builder ctx request-id)
+            response
+            (try (arvo-caller arvo-req)
+                 (catch ExceptionInfo e
+                   (throw (ex-info "Arvo call failed"
+                                   {:type ::arvo-kutsu-epaonnistui :ctx ctx}
+                                   e))))
+            tunnus (palaute/save-arvo-tunniste! ctx response)
+            new-ctx (assoc ctx :arvo-response response :request-id request-id)]
+        (try
+          (heratepalvelu-caller (heratepalvelu-builder new-ctx))
+          (doseq [handler extra-handlers] (handler new-ctx))
+          (catch ExceptionInfo e
+            (throw (ex-info (str "Failed to sync palaute "
+                                 (:id existing-palaute) " to Herätepalvelu")
+                            (assoc (ex-data e) :arvo-tunnus tunnus)
+                            e))))
+        tunnus))))
+
 (defn handle-palaute-waiting-for-heratepvm!
   "Check that palaute is part of kohderyhmä and create and save
   vastaajatunnus if so."
@@ -97,11 +179,9 @@
     (try
       (log/info "Creating vastaajatunnus for" (:kyselytyyppi palaute)
                 "palaute" (:id palaute))
-      (let [handler (if (:jakson-yksiloiva-tunniste palaute)
-                      tep/handle-palaute-waiting-for-vastaajatunnus!
-                      amis/create-and-save-arvo-kyselylinkki!)
-            ctx (assoc (build-ctx palaute) :tx tx)]
-        (handler ctx))
+      (palaute-check-call-arvo-save-and-sync!
+        (assoc (build-ctx palaute) :tx tx)
+        (if (:jakson-yksiloiva-tunniste palaute) tep-handlers amis-handlers))
       (catch ExceptionInfo e
         (handle-exception
           {:existing-palaute palaute :tx tx :tapahtumatyyppi :arvo-luonti} e))

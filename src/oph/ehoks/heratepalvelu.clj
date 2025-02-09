@@ -88,8 +88,8 @@
 
 (defn build-jaksoherate-record-for-heratepalvelu
   [{:keys [existing-palaute opiskeluoikeus koulutustoimija hoks jakso
-           toimipiste niputuspvm suoritus vastaamisajan-alkupvm] :as ctx}
-   request-id tunnus]
+           toimipiste niputuspvm suoritus vastaamisajan-alkupvm
+           request-id arvo-response] :as ctx}]
   (let [heratepvm (:heratepvm existing-palaute)
         tjk (:tyopaikalla-jarjestettava-koulutus jakso)
         ohjaaja (:vastuullinen-tyopaikka-ohjaaja tjk)]
@@ -120,7 +120,7 @@
        :tallennuspvm (str (date/now))
        :toimipiste_oid toimipiste
        :tpk-niputuspvm "ei_maaritelty"  ; sic! this has a dash, not underscore
-       :tunnus tunnus
+       :tunnus (:tunnus arvo-response)
        :tutkinnonosa_koodi (:tutkinnon-osa-koodi-uri jakso)
        :tutkinnonosa_nimi (:nimi jakso)
        :tutkinto (suoritus/tutkintotunnus suoritus)

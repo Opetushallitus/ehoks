@@ -198,7 +198,8 @@
 (defn build-kyselylinkki-request-body
   "For the given palaute, create Arvo request for creating its kyselylinkki."
   [{:keys [existing-palaute hoks opiskeluoikeus suoritus
-           koulutustoimija toimipiste hk-toteuttaja] :as ctx}]
+           koulutustoimija toimipiste hk-toteuttaja] :as ctx}
+   request-id]
   (let [heratepvm (:heratepvm existing-palaute)
         alkupvm (greatest heratepvm (date/now))]
     {:hankintakoulutuksen_toteuttaja @hk-toteuttaja
@@ -216,14 +217,11 @@
      :koulutustoimija_oid (or koulutustoimija "")
      :heratepvm (:heratepvm existing-palaute)}))
 
-(defn create-arvo-kyselylinkki!
-  [ctx]
-  (arvo/create-kyselytunnus! (build-kyselylinkki-request-body ctx)))
-
 (defn build-amisherate-record-for-heratepalvelu
   "Turns the information context into AMISherate in heratepalvelu format."
-  [{:keys [existing-palaute hoks koulutustoimija suoritus kyselylinkki
-           opiskeluoikeus toimipiste hk-toteuttaja] :as ctx}]
+  [{:keys [existing-palaute hoks koulutustoimija suoritus
+           opiskeluoikeus toimipiste hk-toteuttaja arvo-response
+           request-id] :as ctx}]
   (let [heratepvm (:heratepvm existing-palaute)
         oppija-oid (:oppija-oid hoks)
         rahoituskausi (palaute/rahoituskausi heratepvm)
@@ -243,7 +241,8 @@
                           "sqs_viesti_ehoksista")
        :koulutustoimija koulutustoimija
        :tutkintotunnus (suoritus/tutkintotunnus suoritus)
-       :kyselylinkki (or kyselylinkki (:kyselylinkki existing-palaute))
+       :kyselylinkki (or (:kysely_linkki arvo-response)
+                         (:kyselylinkki existing-palaute))
        :kyselytyyppi kyselytyyppi
        :opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
        :oppija-oid oppija-oid
@@ -253,30 +252,3 @@
        :tallennuspvm (date/now)
        :toimija_oppija (str koulutustoimija "/" oppija-oid)
        :tyyppi_kausi (str kyselytyyppi "/" rahoituskausi)})))
-
-(defn create-and-save-arvo-kyselylinkki!
-  "Update given palaute with a kyselylinkki from Arvo."
-  [{:keys [existing-palaute] :as ctx}]
-  (try
-    (let [response (create-arvo-kyselylinkki! ctx)
-          tunnus   (:tunnus response)]
-      (try
-        (palaute/save-arvo-tunniste! ctx response)
-        (->> (assoc ctx :kyselylinkki (:kysely_linkki response))
-             (build-amisherate-record-for-heratepalvelu)
-             (dynamodb/sync-amis-herate! ctx))
-        (catch Exception e
-          (log/error e "error while saving arvo tunniste" tunnus
-                     "; trying to delete kyselylinkki")
-          (when tunnus
-            ; FIXME: create chained exception if this throws
-            (arvo/delete-kyselytunnus tunnus)
-            (log/info "successfully deleted kyselylinkki" tunnus))
-          (throw e)))
-      tunnus)
-    (catch Exception e
-      (log/error e "while processing palaute" existing-palaute)
-      (tapahtuma/build-and-insert!
-        ctx :arvo-kutsu-epaonnistui {:errormsg (.getMessage e)
-                                     :body     (:body (ex-data e))})
-      (throw e))))

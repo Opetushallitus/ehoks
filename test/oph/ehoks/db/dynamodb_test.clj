@@ -53,7 +53,7 @@
             amis-herate
             (opiskelija/build-amisherate-record-for-heratepalvelu ctx)]
         (is (= (:sahkoposti (:hoks ctx)) "irma.isomerkki@esimerkki.com"))
-        (ddb/sync-amis-herate! ctx amis-herate)
+        (ddb/sync-amis-herate! amis-herate)
         (let [ddb-key {:tyyppi_kausi
                        (str "aloittaneet/"
                             (palaute/rahoituskausi (LocalDate/now)))
@@ -68,8 +68,7 @@
                             :expr-attr-names {"#2" "viestintapalvelu-id"}
                             :expr-attr-vals {":1" "lahetetty"
                                              ":2" "2027-05-06"}})
-          (ddb/sync-amis-herate!
-            ctx (assoc amis-herate :sahkoposti "foo@bar.com"))
+          (ddb/sync-amis-herate! (assoc amis-herate :sahkoposti "foo@bar.com"))
           ; fields that are owned by herätepalvelu are not overwritten
           (let [new-ddb-item
                 (far/get-item @ddb/faraday-opts @(ddb/tables :amis) ddb-key)]

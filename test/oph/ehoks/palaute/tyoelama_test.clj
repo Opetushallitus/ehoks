@@ -2,7 +2,7 @@
   (:require [clojure.set :as s]
             [clojure.test :refer [are deftest is testing use-fixtures]]
             [clojure.tools.logging.test :refer [logged? with-log]]
-            [medley.core :refer [remove-vals]]
+            [medley.core :refer [find-first remove-vals]]
             [oph.ehoks.db :as db]
             [oph.ehoks.db.db-operations.db-helpers :as db-helpers]
             [oph.ehoks.db.db-operations.hoks :as db-hoks]
@@ -275,19 +275,22 @@
                     :opiskeluoikeus oo-test/opiskeluoikeus-1
                     :jakso          test-jakso
                     :existing-palaute {:yksiloiva-tunniste "asd"
-                                       :tila "vastaajatunnus_muodostettu"}})
+                                       :tila "vastaajatunnus_muodostettu"}}
+                   :ohjaajakysely)
                  [nil :yksiloiva-tunniste :jo-lahetetty])))
         (testing "opiskeluoikeus is in terminal state."
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-5
-                    :jakso test-jakso})
+                    :jakso test-jakso}
+                   :ohjaajakysely)
                  [:ei-laheteta :opiskeluoikeus-oid :opiskelu-paattynyt])))
         (testing "osa-aikaisuus is missing from työpaikkajakso"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-1
-                    :jakso (dissoc test-jakso :osa-aikaisuustieto)})
+                    :jakso (dissoc test-jakso :osa-aikaisuustieto)}
+                   :ohjaajakysely)
                  [:ei-laheteta :osa-aikaisuustieto :ei-ole])))
         (testing "workplace information is missing from työpaikkajakso"
           (is (= (tep/initial-palaute-state-and-reason
@@ -296,7 +299,8 @@
                     :jakso (update test-jakso
                                    :tyopaikalla-jarjestettava-koulutus
                                    dissoc
-                                   :tyopaikan-y-tunnus)})
+                                   :tyopaikan-y-tunnus)}
+                   :ohjaajakysely)
                  [:ei-laheteta :tyopaikalla-jarjestettava-koulutus
                   :puuttuva-yhteystieto])))
         (testing "työpaikkajakso is interrupted on it's end date"
@@ -306,19 +310,22 @@
                     :jakso (assoc-in test-jakso
                                      [:keskeytymisajanjaksot 1]
                                      {:alku  (LocalDate/of 2023 12 1)
-                                      :loppu (LocalDate/of 2023 12 15)})})
+                                      :loppu (LocalDate/of 2023 12 15)})}
+                   :ohjaajakysely)
                  [:ei-laheteta :keskeytymisajanjaksot :jakso-keskeytynyt])))
         (testing "opiskeluoikeus doesn't have any ammatillinen suoritus"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-2
-                    :jakso test-jakso})
+                    :jakso test-jakso}
+                   :ohjaajakysely)
                  [:ei-laheteta :opiskeluoikeus-oid :ei-ammatillinen])))
         (testing "there is a feedback preventing code in opiskeluoikeusjakso."
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-4
-                    :jakso test-jakso})
+                    :jakso test-jakso}
+                   :ohjaajakysely)
                  [:ei-laheteta :opiskeluoikeus-oid :ulkoisesti-rahoitettu])))
         (testing "HOKS is a TUVA-HOKS or a HOKS related to TUVA-HOKS."
           (doseq [test-hoks [(assoc hoks-test/hoks-1
@@ -330,7 +337,8 @@
             (is (= (tep/initial-palaute-state-and-reason
                      {:hoks           test-hoks
                       :opiskeluoikeus oo-test/opiskeluoikeus-1
-                      :jakso test-jakso})
+                      :jakso test-jakso}
+                     :ohjaajakysely)
                    [:ei-laheteta
                     :tuva-opiskeluoikeus-oid
                     :tuva-opiskeluoikeus]))))
@@ -339,19 +347,22 @@
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus (assoc-in oo-test/opiskeluoikeus-1
                                               [:tyyppi :koodiarvo] "tuva")
-                    :jakso test-jakso})
+                    :jakso test-jakso}
+                   :ohjaajakysely)
                  [:ei-laheteta :opiskeluoikeus-oid :tuva-opiskeluoikeus])))
         (testing "opiskeluoikeus is linked to another opiskeluoikeus"
           (is (= (tep/initial-palaute-state-and-reason
                    {:hoks           hoks-test/hoks-1
                     :opiskeluoikeus oo-test/opiskeluoikeus-3
-                    :jakso test-jakso})
+                    :jakso test-jakso}
+                   :ohjaajakysely)
                  [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus]))))
       (testing "initiate kysely if when all of the checks are OK."
         (is (= (tep/initial-palaute-state-and-reason
                  {:hoks           hoks-test/hoks-1
                   :opiskeluoikeus oo-test/opiskeluoikeus-1
-                  :jakso test-jakso})
+                  :jakso test-jakso}
+                 :ohjaajakysely)
                [:odottaa-kasittelya :loppu :hoks-tallennettu]))))))
 
 (defn- build-expected-herate
@@ -551,16 +562,23 @@
                         :keskeytymisajanjaksot]
                      [{:alku  (LocalDate/of 2023 11 1)
                        :loppu (LocalDate/of 2023 11 16)}
-                      {:alku  (LocalDate/of 2024 02 5)}])
+                      {:alku  (LocalDate/of 2023 11 20)}])
           (hoks-utils/create-hoks-in-the-past!)
           :status
           (= 200)))
+  ;; to ensure that the keskeytynyt jakso is not already marked non-handleable
+  (db-helpers/query
+    ["UPDATE palautteet SET tila='odottaa_kasittelya'
+     WHERE jakson_yksiloiva_tunniste='1' RETURNING *"])
 
   (let [initial-palautteet (hoks-utils/palautteet)
         palautteet
         (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]}
              (palaute/get-palautteet-waiting-for-vastaajatunnus! db/spec))
-        tep-palaute (second palautteet)
+        tep-palaute (find-first
+                      #(= (:jakson-yksiloiva-tunniste %) "4") palautteet)
+        kesk-palaute (find-first
+                       #(= (:jakson-yksiloiva-tunniste %) "1") palautteet)
         create-jaksotunnus-counter (atom 0)
         arvo-tunnukset (atom [])
         check-current-state-is-same-as-initial-state
@@ -586,17 +604,15 @@
         (testing "Arvo call for vastaajatunnus creation fails."
           (with-redefs [arvo/create-jaksotunnus!
                         (fn [_] (throw (ex-info "Arvo error" {})))]
-            (is (thrown-with-msg?
-                  ExceptionInfo
-                  #"Arvo error"
-                  (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
+            (is (:id (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
+          ;; TODO: maybe check tapahtumat here?
           (check-current-state-is-same-as-initial-state))
         (testing "jakso sync to Herätepalvelu fails."
           (with-redefs [heratepalvelu/sync-jakso!*
                         (fn [_] (throw (ex-info "Jakso sync error" {})))]
             (is (thrown-with-msg?
                   ExceptionInfo
-                  #"Failed to sync jakso"
+                  #"Failed to sync palaute"
                   (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
           (check-current-state-is-same-as-initial-state))
         (testing "nippu sync to Herätepalvelu fails."
@@ -605,7 +621,7 @@
             (fn [_] (throw (ex-info "TPO-nippu sync failed" {})))]
             (is (thrown-with-msg?
                   ExceptionInfo
-                  #"Failed to sync TPO-nippu"
+                  #"Failed to sync palaute"
                   (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
           (check-current-state-is-same-as-initial-state)))
       (let [counter-value-before-fn-call @create-jaksotunnus-counter]
@@ -636,7 +652,7 @@
         (testing (str "Palaute should be marked as \"ei_laheteta\" when there "
                       "are one or more open keskeytymisajanjakso. No call to "
                       "Arvo should be made.")
-          (vt/handle-palaute-waiting-for-heratepvm! (first palautteet))
+          (vt/handle-palaute-waiting-for-heratepvm! kesk-palaute)
           (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
-          (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
+          (is (= (:tila (palaute/get-by-id! db/spec {:id (:id kesk-palaute)}))
                  "ei_laheteta")))))))

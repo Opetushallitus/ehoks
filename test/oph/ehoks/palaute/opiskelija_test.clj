@@ -291,6 +291,13 @@
           (are [kysely-type] (nil? (op/initiate-if-needed! ctx kysely-type))
             :aloituskysely :paattokysely))))))
 
+(defn create-arvo-kyselylinkki!
+  [palaute]
+  (-> palaute
+      (vt/build-ctx)
+      (op/build-kyselylinkki-request-body "request-id")
+      (arvo/create-kyselytunnus!)))
+
 (deftest test-create-arvo-kyselylinkki!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
                 koski/get-oppija-opiskeluoikeudet
@@ -334,7 +341,7 @@
              (let [herate (find-first
                             (comp (partial = kysely-type) :kyselytyyppi)
                             heratteet)
-                   resp (op/create-arvo-kyselylinkki! (vt/build-ctx herate))]
+                   resp (create-arvo-kyselylinkki! herate)]
                (= [:kysely_linkki :tunnus :voimassa_loppupvm]
                   (sort (keys resp))))
           "aloittaneet" "valmistuneet")
@@ -345,8 +352,7 @@
                         (fn [request] (reset! saved-req request) {:tunnus "a"})]
             (->> heratteet
                  (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
-                 (vt/build-ctx)
-                 (op/create-arvo-kyselylinkki!))
+                 (create-arvo-kyselylinkki!))
             (is (= (:tutkinnonosat_hankkimistavoittain @saved-req)
                    {:oppisopimus
                     ["tutkinnonosat_300271" "tutkinnonosat_300268"]
@@ -358,12 +364,6 @@
                           :tutkinnon_suorituskieli :toimipiste_oid) @saved-req)
                    ["1.2.246.562.10.346830761110" "tutkinnon_suorittaneet"
                     "351407" "fi" "1.2.246.562.10.12312312312"]))))))))
-
-(defn call-create-and-save-arvo-kyselylinkki!-with-palaute [palaute]
-  (-> palaute
-      (vt/build-ctx)
-      (assoc :tx db/spec)
-      (op/create-and-save-arvo-kyselylinkki!)))
 
 (deftest test-create-and-save-arvo-kyselylinkki!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
@@ -399,7 +399,7 @@
                       :voimassa_loppupvm "2024-10-10"}})))
         (is (->> heratteet
                  (find-first (comp (partial = "valmistuneet") :kyselytyyppi))
-                 (call-create-and-save-arvo-kyselylinkki!-with-palaute)
+                 (vt/handle-palaute-waiting-for-heratepvm!)
                  (some?)))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
@@ -463,11 +463,9 @@
                          {:status 404
                           :body {:error "ei_kyselykertaa"
                                  :msg "Huonosti menee"}})))))
-        (is (thrown?
-              clojure.lang.ExceptionInfo
-              (->> heratteet
-                   (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
-                   (call-create-and-save-arvo-kyselylinkki!-with-palaute))))
+        (->> heratteet
+             (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
+             (vt/handle-palaute-waiting-for-heratepvm!))
         (is (= [["odottaa_kasittelya" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)

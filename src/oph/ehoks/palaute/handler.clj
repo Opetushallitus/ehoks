@@ -38,15 +38,19 @@
 
             (c-api/POST "/:hoks-id/kyselylinkki" [hoks-id]
               :summary "Luo yhden HOKSin kyselylinkit, jos niitä ei ole luotu."
-              (let [palautteet
-                    (palaute/get-by-hoks-id-and-kyselytyypit!
-                      hoks-id
-                      ["aloittaneet" "valmistuneet" "osia_suorittaneet"])]
-                (->> palautteet
-                     (map amis/create-and-save-arvo-kyselylinkki!)
-                     (hash-map :kyselylinkit)
-                     (restful/ok)
-                     (assoc ::audit/target {:palautteet palautteet}))))
+              (let [amis-palautteet
+                    (palaute/get-palautteet-waiting-for-vastaajatunnus!
+                      db/spec {:kyselytyypit ["aloittaneet" "valmistuneet"
+                                              "osia_suorittaneet"]})
+                    amis-palaute (find-first #(= hoks-id (:hoks-id %))
+                                             amis-palautteet)]
+                (if amis-palaute
+                  (let [vastaajatunnus
+                        (vt/handle-palaute-waiting-for-heratepvm! amis-palaute)]
+                    (assoc (restful/ok {:vastaajatunnus vastaajatunnus})
+                           ::audit/target {:vastaajatunnus vastaajatunnus
+                                           :hoks-id hoks-id}))
+                  (response/not-found {:message "Palaute not found"}))))
 
             (c-api/POST "/kyselylinkit" []
               :summary "Luo kyselylinkit niille palautteille, jotka

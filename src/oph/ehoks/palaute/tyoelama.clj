@@ -71,7 +71,7 @@
   tyoelamapalaute process should be initiated for jakso. Returns the initial
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
-  [{:keys [jakso] :as ctx}]
+  [{:keys [jakso] :as ctx} kysely-type]
   {:pre [(some? jakso)]}
   (or
     (palaute/initial-palaute-state-and-reason-if-not-kohderyhma ctx :loppu)
@@ -116,7 +116,8 @@
                      (palaute/get-by-hoks-id-and-yksiloiva-tunniste!
                        tx {:hoks-id            (:id hoks)
                            :yksiloiva-tunniste (:yksiloiva-tunniste jakso)}))
-          [state field reason] (initial-palaute-state-and-reason ctx)
+          [state field reason]
+          (initial-palaute-state-and-reason ctx :ohjaajakysely)
           lisatiedot (map-vals str (select-keys (merge jakso hoks) [field]))]
       (log/info "Initial state for jakso" (:yksiloiva-tunniste jakso)
                 "of HOKS" (:id hoks) "will be" (or state :ei-luoda-ollenkaan)
@@ -133,54 +134,11 @@
   [{:keys [hoks] :as ctx}]
   (run! #(initiate-if-needed! ctx %) (tyopaikkajaksot hoks)))
 
-(defn- create-and-save-arvo-tunnus!
-  "Makes a request to Arvo for jaksotunnus creation and saves a successfully
-  created jaksotunnus to DB."
-  [ctx request-id]
-  (->> (arvo/build-jaksotunnus-request-body ctx request-id)
-       (arvo/create-jaksotunnus!)
-       (palaute/save-arvo-tunniste! ctx)))
-
-(defn- throw-if-keskeytynyt!
-  "Checks if jakso corresponding to `jakso` is keskeytynyt (i.e., has
-  one or more open keskeytymisajanjakso), in which case the function
-  throws an exception, interrupting further palaute processing."
-  ;; FIXME: remove when checked as part of other checks
-  ;; (initial-palaute-state-and-reason)
-  [jakso]
-  (let [keskeytymisajanjaksot (:keskeytymisajanjaksot jakso)]
-    ;; FIXME: this is wrong, also a period ending on heratepvm should do
-    (when (not-every? #(some? (:loppu %)) keskeytymisajanjaksot)
-      (throw (ex-info (format (str "Jakso `%s` has one or more "
-                                   "open keskeytymisajanjakso")
-                              (:yksiloiva-tunniste jakso))
-                      {:type                  ::jakso-keskeytynyt
-                       :keskeytymisajanjaksot keskeytymisajanjaksot})))))
-
-(defn add-times-to-context
-  [{:keys [existing-palaute] :as ctx}]
-  (assoc ctx
-         :niputuspvm            (next-niputus-date (date/now))
-         :vastaamisajan-alkupvm (next-niputus-date
-                                  (:heratepvm existing-palaute))))
-
-(defn handle-palaute-waiting-for-vastaajatunnus!
-  "Creates vastaajatunnus for `existing-palaute` in ctx, then synchronizes
-  the palaute palaute and the corresponding TPO-nippu to Herätepalvelu."
-  [{:keys [hoks opiskeluoikeus tx jakso existing-palaute] :as ctx}]
-  {:pre [(get-in jakso [:tyopaikalla-jarjestettava-koulutus
-                        :vastuullinen-tyopaikka-ohjaaja :nimi])
-         (get-in jakso [:tyopaikalla-jarjestettava-koulutus
-                        :tyopaikan-y-tunnus])]}
-  (let [ctx (add-times-to-context ctx)
-        request-id (str (UUID/randomUUID))]
-    (throw-if-keskeytynyt! jakso) ; FIXME: remove
-    (let [tunnus (create-and-save-arvo-tunnus! ctx request-id)]
-      (heratepalvelu/sync-jakso! ctx request-id tunnus)
-      (heratepalvelu/sync-tpo-nippu!
-        (nippu/build-tpo-nippu-for-heratepalvelu ctx)
-        tunnus)
-      ; FIXME tarvitaanko tähän enää :tep-kasitelty päivitys?
-      ; TODO lisää nipputunniste palautteet-tauluun (uusi kantamigraatio)
-      ; TODO lisää uusi nippu jos sitä ei löydy nipputunnisteella kannasta
-      tunnus)))
+(defn ensure-tpo-nippu!
+  "Makes sure that the nippu for the työelämäpalaute exists in
+  herätepalvelu's data base.  Without this, herätepalvelu doesn't know
+  what to niputtaa when it's time."
+  [{:keys [arvo-response] :as ctx}]
+  (heratepalvelu/sync-tpo-nippu!
+    (nippu/build-tpo-nippu-for-heratepalvelu ctx)
+    (:tunnus arvo-response)))
