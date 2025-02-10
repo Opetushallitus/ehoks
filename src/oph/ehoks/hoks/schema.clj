@@ -222,6 +222,13 @@
     (s/optional-key :loppu) LocalDate
     "Keskeytymisajanjakson päättymispäivämäärä."))
 
+(defn- valid-opiskeluoikeus-type?
+  "Palauttaa `true` jos opiskeluoikeuden tyyppi on joko `ammatillinenkoulutus`
+  tai `tuva`."
+  [_]
+  (contains? #{"ammatillinenkoulutus" "tuva"}
+             (get-in (get-current-opiskeluoikeus) [:tyyppi :koodiarvo])))
+
 (defn- not-overlapping?
   "Varmistaa, että keskeytymisajanjaksot eivät mene päällekkäin."
   [jaksot]
@@ -988,7 +995,13 @@
    :opiskeluoikeus-oid
    {:methods {:any :optional
               :post :required} ; FIXME: should be required for :put
-    :types {:any OpiskeluoikeusOID}
+    :types {:any (s/constrained
+                   OpiskeluoikeusOID
+                   (protect-against-not-running-in-wrap-opiskeluoikeus
+                     valid-opiskeluoikeus-type?)
+                   (str "Opiskeluoikeuden tyypin on oltava joko "
+                        "\"Ammatillinen koulutus\" tai \"Tutkintokoulutukseen "
+                        "valmentava koulutus (TUVA)\"."))}
     :description (str "Opiskeluoikeuden oid-tunniste Koski-järjestelmässä "
                       "muotoa '1.2.246.562.15.00000000001'.")}
    :tuva-opiskeluoikeus-oid

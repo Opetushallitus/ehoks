@@ -75,6 +75,21 @@
                  :eid (:eid hoks)
                  :manuaalisyotto false))))))
 
+(deftest opiskeluoikeus-type-is-validated
+  (testing "Opiskeluoikeus type is validated"
+    (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.60000000012"
+                     :oppija-oid "1.2.246.562.24.12312312319"
+                     :osaamisen-hankkimisen-tarve true
+                     :ensikertainen-hyvaksyminen "2025-01-01"}
+          response
+          (hoks-utils/mock-st-post
+            (hoks-utils/create-app nil) base-url hoks-data)
+          body (test-utils/parse-body (:body response))]
+      (is (= (:status response) 400))
+      (is (not (nil? (-> body
+                         :errors
+                         :opiskeluoikeus-oid)))))))
+
 (deftest tuva-oo-oid-is-validated
   (testing "TUVA opiskeluoikeus oid form is validated as oid"
     (let [hoks-data {:opiskeluoikeus-oid "1.2.246.562.15.10000000009"
