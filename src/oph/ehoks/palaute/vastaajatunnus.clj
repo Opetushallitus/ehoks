@@ -148,7 +148,8 @@
   (let [[state field reason]
         (check-palaute ctx (make-kysely-type existing-palaute))]
     (if (not= :odottaa-kasittelya state)
-      (->> (map-vals str (select-keys (or hoks jakso) [field]))
+      (->> (select-keys (or hoks jakso) [field])
+           (map-vals str)
            (palaute/update-tila! ctx "ei_laheteta" reason))
       (let [request-id (str (UUID/randomUUID))
             arvo-req (arvo-builder ctx request-id)

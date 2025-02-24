@@ -135,32 +135,6 @@
 (def sync-jakso!*     (partial ddb/sync-item! :jakso))
 (def sync-tpo-nippu!* (partial ddb/sync-item! :nippu))
 
-;; FIXME: tältä puuttuu yksikkötesti.
-;; test-create-and-save-arvo-vastaajatunnus-for-all-needed! sisältää
-;; ylimalkaisen testin tälle funktiolle.
-(defn sync-jakso!
-  "Update the herätepalvelu jaksotunnustable to have the same content
-  for given heräte as palaute-backend has in its own database.
-  sync-jakso-herate! only updates fields it 'owns': currently that
-  means that the messaging tracking fields are left intact (because
-  herätepalvelu will update those)."
-  [{:keys [existing-palaute] :as ctx} request-id tunnus]
-  {:pre [(some? tunnus)]}
-  (if-not (contains? (set (:heratepalvelu-responsibities config))
-                     :sync-jakso-heratteet)
-    (log/warn "sync-jakso!: configured to not do anything")
-    (try
-      (sync-jakso!* (build-jaksoherate-record-for-heratepalvelu
-                      ctx request-id tunnus))
-      (catch Exception e
-        (throw (ex-info (format (str "Failed to sync jakso `%s` of HOKS "
-                                     "`%d` to Herätepalvelu")
-                                (:jakson-yksiloiva-tunniste existing-palaute)
-                                (:hoks-id existing-palaute))
-                        {:type        ::jakso-sync-failed
-                         :arvo-tunnus tunnus}
-                        e))))))
-
 (defn sync-tpo-nippu!
   "Update the Herätepalvelu nipputable to have the same content for given heräte
   as palaute-backend has in its own database."
