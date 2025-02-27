@@ -95,17 +95,17 @@
         ohjaaja (:vastuullinen-tyopaikka-ohjaaja tjk)]
     (utils/remove-nils
       {:yksiloiva_tunniste (:jakson-yksiloiva-tunniste existing-palaute)
-       :alkupvm (str vastaamisajan-alkupvm)
+       :alkupvm vastaamisajan-alkupvm
        :hankkimistapa_id (:hankkimistapa-id existing-palaute)
        :hankkimistapa_tyyppi (arvo/koodiuri->koodi
                                (:osaamisen-hankkimistapa-koodi-uri jakso))
        :oppisopimuksen_perusta (arvo/koodiuri->koodi
                                  (:oppisopimuksen-perusta-koodi-uri jakso))
        :hoks_id (:hoks-id existing-palaute)
-       :jakso_alkupvm (str (:alku jakso))
-       :jakso_loppupvm (str (:loppu jakso))
+       :jakso_alkupvm (:alku jakso)
+       :jakso_loppupvm (:loppu jakso)
        :koulutustoimija koulutustoimija
-       :niputuspvm (str niputuspvm)
+       :niputuspvm niputuspvm
        :ohjaaja_email (:sahkoposti ohjaaja)
        :ohjaaja_nimi (:nimi ohjaaja)
        :ohjaaja_puhelinnumero (:puhelinnumero ohjaaja)
@@ -117,7 +117,7 @@
        :osa_aikaisuus (:osa-aikaisuustieto jakso)
        :rahoituskausi (palaute/rahoituskausi heratepvm)
        :request_id request-id
-       :tallennuspvm (str (date/now))
+       :tallennuspvm (date/now)
        :toimipiste_oid toimipiste
        :tpk-niputuspvm "ei_maaritelty"  ; sic! this has a dash, not underscore
        :tunnus (:tunnus arvo-response)
