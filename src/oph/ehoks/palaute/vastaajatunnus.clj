@@ -6,6 +6,7 @@
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.db :as db]
+            [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.date :as date]
             [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
@@ -113,6 +114,28 @@
                                (:kyselytyyppi palaute))
                           {:palaute palaute})))))
 
+(defn save-arvo-tunniste!
+  [{:keys [tx existing-palaute] :as ctx} arvo-response]
+  {:pre [(:tunnus arvo-response)]}
+  (let [new-state (if (= (:kyselytyyppi existing-palaute)
+                         "tyopaikkajakson_suorittaneet")
+                    :vastaajatunnus-muodostettu :kysely-muodostettu)]
+    (try (-> arvo-response
+             (clojure.set/rename-keys {:kysely_linkki :url})
+             (assoc :id   (:id existing-palaute)
+                    :tila (utils/to-underscore-str new-state))
+             (update :url identity)  ; ensure key exists
+             (->> (palaute/update-arvo-tunniste! tx))
+             (assert))
+         (tapahtuma/build-and-insert!
+           ctx new-state :arvo-kutsu-onnistui {:arvo_response arvo-response})
+         (catch Exception e
+           (throw (ex-info "Failed to save Arvo-tunnus to DB"
+                           {:type        :failed-to-save-arvo-tunnus
+                            :arvo-tunnus (:tunnus arvo-response)}
+                           e)))))
+  (:tunnus arvo-response))
+
 (defn create-and-save-tunnus!
   "Create and save vastaajatunnus for given palaute context."
   [ctx {:keys [arvo-builder arvo-caller] :as handlers}]
@@ -124,7 +147,7 @@
                (throw (ex-info "Arvo call failed"
                                {:type ::arvo-kutsu-epaonnistui :ctx ctx}
                                e))))
-        tunnus (palaute/save-arvo-tunniste! ctx response)]
+        tunnus (save-arvo-tunniste! ctx response)]
     (assoc ctx
            :arvo-tunnus tunnus
            :arvo-response response
