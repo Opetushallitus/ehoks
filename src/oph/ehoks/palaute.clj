@@ -214,25 +214,3 @@
 
       (opiskeluoikeus/linked-to-another? opiskeluoikeus)
       [:ei-laheteta :opiskeluoikeus-oid :liittyva-opiskeluoikeus])))
-
-(defn save-arvo-tunniste!
-  [{:keys [tx existing-palaute] :as ctx} arvo-response]
-  {:pre [(:tunnus arvo-response)]}
-  (let [new-state (if (= (:kyselytyyppi existing-palaute)
-                         "tyopaikkajakson_suorittaneet")
-                    :vastaajatunnus-muodostettu :kysely-muodostettu)]
-    (try (-> arvo-response
-             (rename-keys {:kysely_linkki :url})
-             (assoc :id   (:id existing-palaute)
-                    :tila (utils/to-underscore-str new-state))
-             (update :url identity)  ; ensure key exists
-             (->> (update-arvo-tunniste! tx))
-             (assert))
-         (tapahtuma/build-and-insert!
-           ctx new-state :arvo-kutsu-onnistui {:arvo_response arvo-response})
-         (catch Exception e
-           (throw (ex-info "Failed to save Arvo-tunnus to DB"
-                           {:type        :failed-to-save-arvo-tunnus
-                            :arvo-tunnus (:tunnus arvo-response)}
-                           e)))))
-  (:tunnus arvo-response))
