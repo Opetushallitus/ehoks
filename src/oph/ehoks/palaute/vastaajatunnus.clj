@@ -2,12 +2,10 @@
   (:require [medley.core :refer [find-first map-vals]]
             [clojure.walk :refer [walk]]
             [oph.ehoks.external.arvo :as arvo]
-            [oph.ehoks.external.koski :as koski]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
             [oph.ehoks.hoks :as hoks]
             [oph.ehoks.hoks.osaamisen-hankkimistapa :as oht]
             [oph.ehoks.db :as db]
-            [oph.ehoks.db.dynamodb :as dynamodb]
             [oph.ehoks.utils.date :as date]
             [clojure.java.jdbc :as jdbc]
             [clojure.tools.logging :as log]
@@ -115,29 +113,6 @@
                                (:kyselytyyppi palaute))
                           {:palaute palaute})))))
 
-;; these use vars (#') because otherwise with-redefs doesn't work on
-;; them (the map has the original definition even if the function in
-;; its namespace is redef'd)
-
-(def amis-handlers
-  {:check-palaute #'amis/initial-palaute-state-and-reason
-   :arvo-builder #'amis/build-kyselylinkki-request-body
-   :arvo-caller #'arvo/create-kyselytunnus!
-   :heratepalvelu-builder #'amis/build-amisherate-record-for-heratepalvelu
-   :heratepalvelu-caller #'dynamodb/sync-amis-herate!
-   :arvo-cleanup-handler #'arvo/delete-kyselytunnus
-   :extra-handlers []})
-
-(def tep-handlers
-  {:check-palaute #'tep/initial-palaute-state-and-reason
-   :arvo-builder #'arvo/build-jaksotunnus-request-body
-   :arvo-caller #'arvo/create-jaksotunnus!
-   :heratepalvelu-builder
-   #'heratepalvelu/build-jaksoherate-record-for-heratepalvelu
-   :heratepalvelu-caller #'heratepalvelu/sync-jakso!*
-   :arvo-cleanup-handler #'arvo/delete-kyselytunnus
-   :extra-handlers [#'tep/ensure-tpo-nippu!]})
-
 (defn palaute-check-call-arvo-save-and-sync!
   "Check that palaute is part of kohderyhmä and create and save
   vastaajatunnus if so, using the given functions for appropriately
@@ -182,7 +157,7 @@
                 "palaute" (:id palaute))
       (palaute-check-call-arvo-save-and-sync!
         (assoc (build-ctx palaute) :tx tx)
-        (if (:jakson-yksiloiva-tunniste palaute) tep-handlers amis-handlers))
+        (if (:jakson-yksiloiva-tunniste palaute) tep/handlers amis/handlers))
       (catch ExceptionInfo e
         (handle-exception
           {:existing-palaute palaute :tx tx :tapahtumatyyppi :arvo-luonti} e))
