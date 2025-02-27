@@ -80,11 +80,11 @@
           (is (= (:error body) "Caller-Id header is missing"))))
 
       (testing (str "POST /tyoelamapalaute/:palaute-id/vastaajatunnus with "
-                    "non-existing palaute id returns Palaute not found")
+                    "non-existing palaute id returns empty list")
         (let [resp (post! palaute-app "/tyoelamapalaute/10/vastaajatunnus")
               body (test-utils/parse-body (:body resp))]
-          (is (= (:status resp) 404))
-          (is (= (:message body) "Palaute not found"))))
+          (is (= (:status resp) 200))
+          (is (= (get-in body [:data :vastaajatunnukset]) []) body)))
 
       (testing "Creating vastaajatunnus with"
         (with-redefs [organisaatio/get-organisaatio!
@@ -102,7 +102,7 @@
                               "/tyoelamapalaute/7/vastaajatunnus")
                   data (:data (test-utils/parse-body (:body resp)))]
               (is (= (:status resp) 200) data)
-              (is (not (nil? (:vastaajatunnus data))))
+              (is (not (empty? (:vastaajatunnukset data))))
               ;; TODO: test here that the palaute is synced to DDB with
               ;; hankkimistapa-id
               (is (= (count (hoks-utils/palautteet-joissa-vastaajatunnus)) 1))))

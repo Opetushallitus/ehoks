@@ -81,6 +81,8 @@ on	(p.hoks_id = ohm.hoks_id
 		and p.jakson_yksiloiva_tunniste = ohm.yksiloiva_tunniste)
 where	p.tila = 'odottaa_kasittelya'
 and	p.kyselytyyppi in (:v*:kyselytyypit)
+and	(:hoks-id ::int is null or p.hoks_id = :hoks-id ::int)
+and	(:palaute-id ::int is null or p.id = :palaute-id ::int)
 and	p.heratepvm <= now()
 and	p.deleted_at is null
 order by hoks_id asc
