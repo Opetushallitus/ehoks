@@ -483,7 +483,7 @@
                     (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
         (client/reset-functions!)))))
 
-(deftest test-create-and-save-arvo-kyselylinkki-for-all-needed!
+(deftest test-handle-amis-palautteet-on-heratepvm!
   (with-redefs [date/now (constantly (LocalDate/of 2024 12 18))
                 koski/get-oppija-opiskeluoikeudet
                 (fn [_]
@@ -502,7 +502,7 @@
                  {:hoks hoks-test/hoks-4
                   :opiskeluoikeus oo-test/opiskeluoikeus-1})
           vastauslinkki-counter (atom 0)]
-      (testing "create-and-save-arvo-kyselylinkki-for-all-needed!"
+      (testing "handle-amis-palautteet-on-heratepvm!"
         (client/set-post!
           (fn [^String url options]
             (when (.endsWith url "/api/vastauslinkki/v1")
@@ -512,7 +512,7 @@
                       :kysely_linkki (str "https://arvovastaus.csc.fi/v/bar"
                                           @vastauslinkki-counter)
                       :voimassa_loppupvm "2024-10-10"}})))
-        (vt/create-and-save-arvo-kyselylinkki-for-all-needed! {})
+        (vt/handle-amis-palautteet-on-heratepvm! {})
         (is (= [["kysely_muodostettu" "aloittaneet"]
                 ["kysely_muodostettu" "valmistuneet"]]
                (->> {:hoks-id (:id hoks)

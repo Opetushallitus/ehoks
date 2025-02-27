@@ -56,7 +56,7 @@
               :summary "Luo kyselylinkit niille palautteille, jotka
                        odottavat käsittelyä."
               (let [palautteet
-                    (vt/create-and-save-arvo-kyselylinkki-for-all-needed! {})]
+                    (vt/handle-amis-palautteet-on-heratepvm! {})]
                 (-> {:kyselylinkit palautteet}
                     (restful/ok)
                     (assoc ::audit/target {:palautteet palautteet})))))
@@ -70,7 +70,7 @@
               :header-params [caller-id :- s/Str
                               ticket :- s/Str]
               (let [vastaajatunnukset
-                    (vt/handle-all-palautteet-waiting-for-vastaajatunnus! {})]
+                    (vt/handle-tep-palautteet-on-heratepvm! {})]
                 (assoc
                   (restful/ok {:vastaajatunnukset vastaajatunnukset})
                   ::audit/target {:vastaajatunnukset vastaajatunnukset})))

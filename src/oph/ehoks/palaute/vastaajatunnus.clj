@@ -208,14 +208,14 @@
               (palaute/get-palautteet-waiting-for-vastaajatunnus!
                 db/spec {:kyselytyypit kyselytyypit}))))
 
-(defn create-and-save-arvo-kyselylinkki-for-all-needed!
+(defn handle-amis-palautteet-on-heratepvm!
   "Create kyselylinkki for palautteet whose herätepvm has come but
   which don't have a kyselylinkki yet."
   [_]
   (handle-palautteet-waiting-for-heratepvm!
     ["aloittaneet" "valmistuneet" "osia_suorittaneet"]))
 
-(defn handle-all-palautteet-waiting-for-vastaajatunnus!
+(defn handle-tep-palautteet-on-heratepvm!
   "Creates vastaajatunnus for all herates that are waiting for processing,
   do not have vastaajatunnus and have heratepvm today or in the past."
   [_]
