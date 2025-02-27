@@ -187,7 +187,7 @@
   [ohts]
   (->> ohts
        (map (juxt (comp keyword
-                        arvo/koodiuri->koodi
+                        utils/koodiuri->koodi
                         :osaamisen-hankkimistapa-koodi-uri)
                   :tutkinnon-osa-koodi-uri))
        (filter second)  ; ei paikallisia (joilta tutkinnonosakoodi puuttuu)
