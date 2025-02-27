@@ -1,6 +1,7 @@
 (ns oph.ehoks.palaute.vastaajatunnus
   (:require [medley.core :refer [find-first map-vals]]
             [clojure.walk :refer [walk]]
+            [clojure.set]
             [oph.ehoks.external.arvo :as arvo]
             [oph.ehoks.heratepalvelu :as heratepalvelu]
             [oph.ehoks.hoks :as hoks]

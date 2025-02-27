@@ -1,5 +1,6 @@
 (ns oph.ehoks.utils
-  (:require [medley.core :refer [dissoc-in map-keys]]))
+  (:require [medley.core :refer [dissoc-in map-keys]]
+            [clojure.string]))
 
 (defn apply-when
   "Apply function `f` to value `v` if predicate `(pred v)` returns `true`.
