@@ -512,7 +512,7 @@
     :tutkinnonosa_tyyppi
     :oppisopimuksen_perusta})
 
-(deftest test-handle-all-palautteet-waiting-for-vastaajatunnus!
+(deftest test-handle-tep-palautteet-on-heratepvm!
   (clear-ddb-jakso-table!)
   (clear-ddb-tpo-nippu-table!)
   (testing (str "create-and-save-arvo-vastaajatunnus-for-all-needed! "
@@ -526,7 +526,7 @@
                   arvo/create-jaksotunnus! hoks-utils/mock-create-jaksotunnus
                   date/now #(LocalDate/of 2024 6 30)]
       (is (= (:status (hoks-utils/create-hoks-in-the-past!)) 200))
-      (vt/handle-all-palautteet-waiting-for-vastaajatunnus! {})
+      (vt/handle-tep-palautteet-on-heratepvm! {})
       (let [palautteet (hoks-utils/palautteet-joissa-vastaajatunnus)
             ddb-jaksot (far/scan @ddb/faraday-opts @(ddb/tables :jakso) {})
             ddb-niput  (far/scan @ddb/faraday-opts @(ddb/tables :nippu) {})
