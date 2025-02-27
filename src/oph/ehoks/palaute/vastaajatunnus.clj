@@ -113,37 +113,47 @@
                                (:kyselytyyppi palaute))
                           {:palaute palaute})))))
 
+(defn create-and-save-tunnus!
+  "Create and save vastaajatunnus for given palaute context."
+  [ctx {:keys [arvo-builder arvo-caller] :as handlers}]
+  (let [request-id (str (UUID/randomUUID))
+        arvo-req (arvo-builder ctx request-id)
+        response
+        (try (arvo-caller arvo-req)
+             (catch ExceptionInfo e
+               (throw (ex-info "Arvo call failed"
+                               {:type ::arvo-kutsu-epaonnistui :ctx ctx}
+                               e))))
+        tunnus (palaute/save-arvo-tunniste! ctx response)]
+    (assoc ctx
+           :arvo-tunnus tunnus
+           :arvo-response response
+           :request-id request-id)))
+
 (defn palaute-check-call-arvo-save-and-sync!
   "Check that palaute is part of kohderyhmä and create and save
   vastaajatunnus if so, using the given functions for appropriately
   handling different amis- and tep-palaute."
   [{:keys [existing-palaute hoks jakso] :as ctx}
-   {:keys [check-palaute arvo-builder arvo-caller arvo-cleanup-handler
-           heratepalvelu-builder heratepalvelu-caller extra-handlers]}]
+   {:keys [check-palaute heratepalvelu-builder heratepalvelu-caller
+           extra-handlers] :as handlers}]
   (let [[state field reason]
         (check-palaute ctx (make-kysely-type existing-palaute))]
     (if (not= :odottaa-kasittelya state)
       (->> (select-keys (or hoks jakso) [field])
            (map-vals str)
            (palaute/update-tila! ctx "ei_laheteta" reason))
-      (let [request-id (str (UUID/randomUUID))
-            arvo-req (arvo-builder ctx request-id)
-            response
-            (try (arvo-caller arvo-req)
-                 (catch ExceptionInfo e
-                   (throw (ex-info "Arvo call failed"
-                                   {:type ::arvo-kutsu-epaonnistui :ctx ctx}
-                                   e))))
-            tunnus (palaute/save-arvo-tunniste! ctx response)
-            new-ctx (assoc ctx :arvo-response response :request-id request-id)]
+      (let [new-ctx (create-and-save-tunnus! ctx handlers)
+            tunnus (:arvo-tunnus new-ctx)]
         (try
           (heratepalvelu-caller (heratepalvelu-builder new-ctx))
           (doseq [handler extra-handlers] (handler new-ctx))
           (catch ExceptionInfo e
-            (throw (ex-info (str "Failed to sync palaute "
-                                 (:id existing-palaute) " to Herätepalvelu")
-                            (assoc (ex-data e) :arvo-tunnus tunnus)
-                            e))))
+            (throw (ex-info
+                     (str "Failed to sync palaute " (:id existing-palaute)
+                          " to Herätepalvelu")
+                     (assoc (ex-data e) :arvo-tunnus tunnus)
+                     e))))
         tunnus))))
 
 (defn handle-palaute-waiting-for-heratepvm!
