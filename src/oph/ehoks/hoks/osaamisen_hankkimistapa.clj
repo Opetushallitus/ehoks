@@ -1,17 +1,10 @@
 (ns oph.ehoks.hoks.osaamisen-hankkimistapa
   (:require [medley.core :refer [find-first]]
+            [oph.ehoks.utils :refer [get-in-and-propagate-fields]]
             [hugsql.core :as hugsql])
   (:import [java.time LocalDate]))
 
 (hugsql/def-db-fns "oph/ehoks/db/sql/hoks/osaamisen_hankkimistapa.sql")
-
-(defn get-in-and-propagate-fields
-  "Hakee tietorakenteesta tietyn (listamuotoisen) kentän ja lisää
-  listan joka kohtaan tietyt kentät alkuperäisestä, eli propagoi
-  tietyt kentät syvemmälle tietorakenteessa."
-  [obj field-to-get fields-to-propagate]
-  (map #(merge % (select-keys obj fields-to-propagate))
-       (get-in obj field-to-get)))
 
 (defn osaamisen-hankkimistavat
   "Hakee HOKSista kaikki osaamisen hankkimistavat."
