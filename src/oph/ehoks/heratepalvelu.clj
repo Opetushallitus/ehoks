@@ -14,8 +14,7 @@
             [oph.ehoks.palaute.opiskelija.kyselylinkki :as kyselylinkki]
             [oph.ehoks.palaute.tyoelama.nippu :as nippu]
             [oph.ehoks.utils :as utils]
-            [oph.ehoks.utils.date :as date]
-            [oph.ehoks.utils.string :as u-str])
+            [oph.ehoks.utils.date :as date])
   (:import (java.time LocalDate)))
 
 (defn send-workplace-periods!
@@ -85,51 +84,6 @@
     (db-hoks/select-tyoelamajaksot-active-between "hato" oppija start end)
     (db-hoks/select-tyoelamajaksot-active-between "hpto" oppija start end)
     (db-hoks/select-tyoelamajaksot-active-between "hyto" oppija start end)))
-
-(defn build-jaksoherate-record-for-heratepalvelu
-  [{:keys [existing-palaute opiskeluoikeus koulutustoimija hoks jakso
-           toimipiste niputuspvm suoritus vastaamisajan-alkupvm
-           request-id arvo-response] :as ctx}]
-  (let [heratepvm (:heratepvm existing-palaute)
-        tjk (:tyopaikalla-jarjestettava-koulutus jakso)
-        ohjaaja (:vastuullinen-tyopaikka-ohjaaja tjk)]
-    (utils/remove-nils
-      {:yksiloiva_tunniste (:jakson-yksiloiva-tunniste existing-palaute)
-       :alkupvm vastaamisajan-alkupvm
-       :hankkimistapa_id (:hankkimistapa-id existing-palaute)
-       :hankkimistapa_tyyppi (arvo/koodiuri->koodi
-                               (:osaamisen-hankkimistapa-koodi-uri jakso))
-       :oppisopimuksen_perusta (arvo/koodiuri->koodi
-                                 (:oppisopimuksen-perusta-koodi-uri jakso))
-       :hoks_id (:hoks-id existing-palaute)
-       :jakso_alkupvm (:alku jakso)
-       :jakso_loppupvm (:loppu jakso)
-       :koulutustoimija koulutustoimija
-       :niputuspvm niputuspvm
-       :ohjaaja_email (:sahkoposti ohjaaja)
-       :ohjaaja_nimi (:nimi ohjaaja)
-       :ohjaaja_puhelinnumero (:puhelinnumero ohjaaja)
-       :ohjaaja_ytunnus_kj_tutkinto (nippu/tunniste ctx)
-       :opiskeluoikeus_oid (:opiskeluoikeus-oid hoks)
-       :oppija_oid (:oppija-oid hoks)
-       :oppilaitos (:oid (:oppilaitos opiskeluoikeus))
-       :osaamisala (str (seq (suoritus/get-osaamisalat suoritus heratepvm)))
-       :osa_aikaisuus (:osa-aikaisuustieto jakso)
-       :rahoituskausi (palaute/rahoituskausi heratepvm)
-       :request_id request-id
-       :tallennuspvm (date/now)
-       :toimipiste_oid toimipiste
-       :tpk-niputuspvm "ei_maaritelty"  ; sic! this has a dash, not underscore
-       :tunnus (:tunnus arvo-response)
-       :tutkinnonosa_koodi (:tutkinnon-osa-koodi-uri jakso)
-       :tutkinnonosa_nimi (:nimi jakso)
-       :tutkinto (suoritus/tutkintotunnus suoritus)
-       :tutkintonimike (str (seq (map :koodiarvo (:tutkintonimike suoritus))))
-       :tyopaikan_nimi (:tyopaikan-nimi tjk)
-       :tyopaikan_normalisoitu_nimi (u-str/normalize (:tyopaikan-nimi tjk))
-       :tyopaikan_ytunnus (:tyopaikan-y-tunnus tjk)
-       :viimeinen_vastauspvm (palaute/vastaamisajan-loppupvm
-                               heratepvm vastaamisajan-alkupvm)})))
 
 ; Helper functions that can be mocked in tests
 (def sync-jakso!*     (partial ddb/sync-item! :jakso))

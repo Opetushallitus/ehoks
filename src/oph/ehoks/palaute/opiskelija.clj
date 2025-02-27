@@ -252,3 +252,16 @@
        :tallennuspvm (date/now)
        :toimija_oppija (str koulutustoimija "/" oppija-oid)
        :tyyppi_kausi (str kyselytyyppi "/" rahoituskausi)})))
+
+;; these use vars (#') because otherwise with-redefs doesn't work on
+;; them (the map has the original definition even if the function in
+;; its namespace is redef'd)
+
+(def handlers
+  {:check-palaute #'initial-palaute-state-and-reason
+   :arvo-builder #'build-kyselylinkki-request-body
+   :arvo-caller #'arvo/create-kyselytunnus!
+   :heratepalvelu-builder #'build-amisherate-record-for-heratepalvelu
+   :heratepalvelu-caller #'dynamodb/sync-amis-herate!
+   :arvo-cleanup-handler #'arvo/delete-kyselytunnus
+   :extra-handlers []})
