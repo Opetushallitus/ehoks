@@ -4,6 +4,7 @@
             [oph.ehoks.config :refer [config]]
             [oph.ehoks.external.connection :as c]
             [oph.ehoks.opiskeluoikeus.suoritus :as suoritus]
+            [oph.ehoks.utils :as utils]
             [oph.ehoks.utils.string :as u-str])
   (:import (clojure.lang ExceptionInfo)))
 
@@ -52,9 +53,6 @@
   [tunnus]
   (call! :delete (str "/vastauslinkki/v1/" tunnus) {}))
 
-(defn koodiuri->koodi [koodiuri]
-  (some-> koodiuri (string/split #"_") (last)))
-
 (defn build-jaksotunnus-request-body
   "Luo dataobjektin TEP-jaksotunnuksen luomisrequestille."
   [{:keys [opiskeluoikeus existing-palaute jakso
@@ -68,7 +66,7 @@
      :tyopaikka                 t-nimi
      :tyopaikka_normalisoitu    (u-str/normalize t-nimi)
      :tutkintotunnus            (suoritus/tutkintotunnus suoritus)
-     :tutkinnon_osa             (koodiuri->koodi
+     :tutkinnon_osa             (utils/koodiuri->koodi
                                   (:tutkinnon-osa-koodi-uri jakso))
      :paikallinen_tutkinnon_osa (:nimi jakso)
      :tutkintonimike            (map :koodiarvo (:tutkintonimike suoritus))
@@ -78,9 +76,9 @@
      :tyopaikkajakson_loppupvm  (str (:loppu jakso))
      :rahoituskausi_pvm         (str (:loppu jakso))
      :osa_aikaisuus             (:osa-aikaisuustieto jakso)
-     :sopimustyyppi             (koodiuri->koodi
+     :sopimustyyppi             (utils/koodiuri->koodi
                                   (:osaamisen-hankkimistapa-koodi-uri jakso))
-     :oppisopimuksen_perusta    (koodiuri->koodi
+     :oppisopimuksen_perusta    (utils/koodiuri->koodi
                                   (:oppisopimuksen-perusta-koodi-uri jakso))
      :vastaamisajan_alkupvm     (str niputuspvm)
      :oppilaitos_oid            (:oid (:oppilaitos opiskeluoikeus))

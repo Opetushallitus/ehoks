@@ -44,3 +44,6 @@
   [obj field-to-get fields-to-propagate]
   (map #(merge % (select-keys obj fields-to-propagate))
        (get-in obj field-to-get)))
+
+(defn koodiuri->koodi [koodiuri]
+  (some-> koodiuri (clojure.string/split #"_") (last)))
