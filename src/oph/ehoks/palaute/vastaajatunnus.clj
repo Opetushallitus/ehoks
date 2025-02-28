@@ -80,7 +80,7 @@
                 (str (ex-message ex) " Skipping processing for palaute `%d`")
                 (:id existing-palaute))
 
-      ::heratepalvelu/tpo-nippu-sync-failed
+      ::heratepalvelu-sync-epaonnistui
       (do (log/errorf (str "%s. Trying to delete jakso corresponding to "
                            "palaute `%d` from Herätepalvelu")
                       (ex-message ex)
@@ -154,31 +154,39 @@
            :arvo-response response
            :request-id request-id)))
 
+(defn sync-to-heratepalvelu!
+  "Replicate information about just formed vastaajatunnus to heratepalvelu."
+  [{:keys [existing-palaute arvo-tunnus] :as ctx}
+   {:keys [heratepalvelu-builder heratepalvelu-caller extra-handlers]
+    :as handlers}]
+  (try
+    (heratepalvelu-caller (heratepalvelu-builder ctx))
+    (doseq [handler extra-handlers] (handler ctx))
+    (catch Exception e
+      (throw (ex-info
+               (str "Failed to sync palaute " (:id existing-palaute)
+                    " to Herätepalvelu")
+               (assoc (ex-data e)
+                      :type ::heratepalvelu-sync-epaonnistui
+                      :arvo-tunnus arvo-tunnus
+                      :kyselytyyppi (:kyselytyyppi existing-palaute))
+                     e))))
+  arvo-tunnus)
+
 (defn palaute-check-call-arvo-save-and-sync!
   "Check that palaute is part of kohderyhmä and create and save
   vastaajatunnus if so, using the given functions for appropriately
   handling different amis- and tep-palaute."
   [{:keys [existing-palaute hoks jakso] :as ctx}
-   {:keys [check-palaute heratepalvelu-builder heratepalvelu-caller
-           extra-handlers] :as handlers}]
+   {:keys [check-palaute] :as handlers}]
   (let [[state field reason]
         (check-palaute ctx (make-kysely-type existing-palaute))]
     (if (not= :odottaa-kasittelya state)
-      (->> (select-keys (or hoks jakso) [field])
+      (->> (select-keys (merge jakso hoks) [field])
            (map-vals str)
            (palaute/update-tila! ctx "ei_laheteta" reason))
-      (let [new-ctx (create-and-save-tunnus! ctx handlers)
-            tunnus (:arvo-tunnus new-ctx)]
-        (try
-          (heratepalvelu-caller (heratepalvelu-builder new-ctx))
-          (doseq [handler extra-handlers] (handler new-ctx))
-          (catch ExceptionInfo e
-            (throw (ex-info
-                     (str "Failed to sync palaute " (:id existing-palaute)
-                          " to Herätepalvelu")
-                     (assoc (ex-data e) :arvo-tunnus tunnus)
-                     e))))
-        tunnus))))
+      (-> (create-and-save-tunnus! ctx handlers)
+          (sync-to-heratepalvelu! handlers)))))
 
 (defn handle-palaute-waiting-for-heratepvm!
   "Check that palaute is part of kohderyhmä and create and save
