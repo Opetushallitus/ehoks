@@ -44,11 +44,14 @@
   [{:keys [existing-palaute] :as ctx} ex]
   (let [ex-params (ex-data ex)
         ex-type (:type ex-params)
-        tunnus  (:arvo-tunnus ex-params)]
+        tunnus  (:arvo-tunnus ex-params)
+        tunnus-cleanup-handler
+        (if (:jakson-yksiloiva-tunniste existing-palaute)
+          arvo/delete-jaksotunnus arvo/delete-kyselytunnus)]
     (log/infof ex "Handling exception in tunnus handling")
     (when tunnus
       (log/infof "Trying to delete jaksotunnus `%s` from Arvo" tunnus)
-      (arvo/delete-jaksotunnus tunnus))
+      (tunnus-cleanup-handler tunnus))
     (case ex-type
       ::koski/opiskeluoikeus-not-found
       (do (log/warnf "%s. Setting `tila` to \"ei_laheteta\" for palaute `%d`."
@@ -110,8 +113,7 @@
 (defn save-arvo-tunniste!
   [{:keys [tx existing-palaute] :as ctx} arvo-response]
   {:pre [(:tunnus arvo-response)]}
-  (let [new-state (if (= (:kyselytyyppi existing-palaute)
-                         "tyopaikkajakson_suorittaneet")
+  (let [new-state (if (:jakson-yksiloiva-tunniste existing-palaute)
                     :vastaajatunnus-muodostettu :kysely-muodostettu)]
     (try (-> arvo-response
              (clojure.set/rename-keys {:kysely_linkki :url})
@@ -124,7 +126,7 @@
            ctx new-state :arvo-kutsu-onnistui {:arvo_response arvo-response})
          (catch Exception e
            (throw (ex-info "Failed to save Arvo-tunnus to DB"
-                           {:type        :failed-to-save-arvo-tunnus
+                           {:type        ::failed-to-save-arvo-tunnus
                             :arvo-tunnus (:tunnus arvo-response)}
                            e)))))
   (:tunnus arvo-response))
@@ -160,8 +162,7 @@
                     " to Herätepalvelu")
                (assoc (ex-data e)
                       :type ::heratepalvelu-sync-epaonnistui
-                      :arvo-tunnus arvo-tunnus
-                      :kyselytyyppi (:kyselytyyppi existing-palaute))
+                      :arvo-tunnus arvo-tunnus)
                      e))))
   arvo-tunnus)
 

@@ -200,5 +200,4 @@
    :arvo-caller #'arvo/create-jaksotunnus!
    :heratepalvelu-builder #'build-jaksoherate-record-for-heratepalvelu
    :heratepalvelu-caller #'heratepalvelu/sync-jakso!*
-   :arvo-cleanup-handler #'arvo/delete-kyselytunnus
    :extra-handlers [#'ensure-tpo-nippu!]})
