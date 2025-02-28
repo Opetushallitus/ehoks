@@ -164,7 +164,7 @@
                (assoc (ex-data e)
                       :type ::heratepalvelu-sync-epaonnistui
                       :arvo-tunnus arvo-tunnus)
-                     e))))
+               e))))
   arvo-tunnus)
 
 (defn palaute-check-call-arvo-save-and-sync!
@@ -179,7 +179,8 @@
       (->> (select-keys (merge jakso hoks) [field])
            (map-vals str)
            (palaute/update-tila! ctx "ei_laheteta" reason))
-      (-> (create-and-save-tunnus! ctx handlers)
+      (-> ctx
+          (create-and-save-tunnus! handlers)
           (sync-to-heratepalvelu! handlers)))))
 
 (defn handle-palaute-waiting-for-heratepvm!
