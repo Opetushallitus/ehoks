@@ -605,25 +605,30 @@
         (testing "Arvo call for vastaajatunnus creation fails."
           (with-redefs [arvo/create-jaksotunnus!
                         (fn [_] (throw (ex-info "Arvo error" {})))]
-            (is (:id (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
-          ;; TODO: maybe check tapahtumat here?
+            (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
+          (is (contains?
+                (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]
+                      :hoks-id (:hoks-id tep-palaute)}
+                     (tapahtuma/get-all-by-hoks-id-and-kyselytyypit! db/spec)
+                     (map :syy) (set))
+                "arvo_kutsu_epaonnistui"))
           (check-current-state-is-same-as-initial-state))
         (testing "jakso sync to Herätepalvelu fails."
           (with-redefs [heratepalvelu/sync-jakso!*
                         (fn [_] (throw (ex-info "Jakso sync error" {})))]
-            (is (thrown-with-msg?
-                  ExceptionInfo
-                  #"Failed to sync palaute"
-                  (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
+            (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
+          (is (contains?
+                (->> {:kyselytyypit ["tyopaikkajakson_suorittaneet"]
+                      :hoks-id (:hoks-id tep-palaute)}
+                     (tapahtuma/get-all-by-hoks-id-and-kyselytyypit! db/spec)
+                     (map :syy) (set))
+                "heratepalvelu_sync_epaonnistui"))
           (check-current-state-is-same-as-initial-state))
         (testing "nippu sync to Herätepalvelu fails."
           (with-redefs
            [heratepalvelu/sync-tpo-nippu!*
             (fn [_] (throw (ex-info "TPO-nippu sync failed" {})))]
-            (is (thrown-with-msg?
-                  ExceptionInfo
-                  #"Failed to sync palaute"
-                  (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
+            (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
           (check-current-state-is-same-as-initial-state)))
       (let [counter-value-before-fn-call @create-jaksotunnus-counter]
         (testing (str "When getting other than \"404 Not found\" error from "
@@ -636,11 +641,8 @@
                        "Koski error"
                        {:status 500
                         :type   ::koski/opiskeluoikeus-fetching-error})))]
-            (is (thrown-with-msg?
-                  ExceptionInfo
-                  #"Error while fetching opiskeluoikeus"
-                  (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)))
-            (is (= counter-value-before-fn-call @create-jaksotunnus-counter)))
+            (is (nil? (vt/handle-palaute-waiting-for-heratepvm! tep-palaute))))
+          (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
           (check-current-state-is-same-as-initial-state))
         (testing (str "When opiskeluoikeus for palaute is not found from from "
                       "Koski, `tila` for it should be marked as `ei_laheteta`. "
