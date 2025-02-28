@@ -61,12 +61,13 @@
             ctx "ei_laheteta" ex-type (select-keys existing-palaute
                                                    [:opiskeluoikeus-oid])))
 
-      ::arvo-kutsu-epaonnistui
-      (let [arvo-ex (ex-cause ex)]
-        (log/warn "Arvo response:" (ex-message arvo-ex))
-        (tapahtuma/build-and-insert! ctx :arvo-kutsu-epaonnistui
-                                     {:errormsg (ex-message arvo-ex)
-                                      :body     (:body (ex-data arvo-ex))}))
+      (::arvo-kutsu-epaonnistui ::tunnus-tallennus-epaonnistui)
+      (let [cause (ex-cause ex)]
+        (log/error "Error" ex-type "because of" (ex-message cause)
+                   "for palaute" (:id existing-palaute))
+        (tapahtuma/build-and-insert!
+          ctx ex-type {:errormsg (ex-message cause)
+                       :body     (:body (ex-data cause))}))
 
       ::heratepalvelu-sync-epaonnistui
       (let [ddb-ex (ex-cause ex)]
@@ -74,13 +75,13 @@
                          "palaute `%d` from Herätepalvelu")
                     (ex-message ex)
                     (:id existing-palaute))
-        (tapahtuma/build-and-insert! ctx :heratepalvelu-sync-epaonnistui
-                                     {:errormsg (ex-message ddb-ex)
-                                      :body     (ex-data ddb-ex)})
+        (tapahtuma/build-and-insert!
+          ctx ex-type {:errormsg (ex-message ddb-ex)
+                       :body     (ex-data ddb-ex)})
         (heratepalvelu/delete-jakso-herate! existing-palaute))
 
       (let [cause-ex (ex-cause ex)]
-        (log/error ex "Unknown exception while processing palaute "
+        (log/error "Unknown exception while processing palaute "
                    (:id existing-palaute))
         (tapahtuma/build-and-insert! ctx :tuntematon-virhe
                                      {:errormsg (ex-message ex)
@@ -126,7 +127,7 @@
            ctx new-state :arvo-kutsu-onnistui {:arvo_response arvo-response})
          (catch Exception e
            (throw (ex-info "Failed to save Arvo-tunnus to DB"
-                           {:type        ::failed-to-save-arvo-tunnus
+                           {:type        ::tunnus-tallennus-epaonnistui
                             :arvo-tunnus (:tunnus arvo-response)}
                            e)))))
   (:tunnus arvo-response))
