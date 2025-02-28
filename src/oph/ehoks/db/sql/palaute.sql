@@ -7,24 +7,6 @@ insert into palautteet (
 --~ (sql/values-for-insert params)
 ) returning *
 
--- :name get-tep-palautteet-waiting-for-vastaajatunnus! :? :*
--- :doc Get all unprocessed palaute for Arvo call.
-select * from tep_palaute
-where tila = 'odottaa_kasittelya'
-  and heratepvm <= current_date
-  and arvo_tunniste is null
-  and tep_kasitelty = false
-
--- :name get-amis-palautteet-waiting-for-kyselylinkki! :? :*
--- :doc Get HOKS-id and kyselytyyppi of amispalaute without kyselylinkki
-select	id, hoks_id, tila, kyselytyyppi
-from	palautteet
-where	tila = 'odottaa_kasittelya'
-and	kyselytyyppi in ('aloittaneet','valmistuneet','osia_suorittaneet')
-and	heratepvm <= :heratepvm
-and	arvo_tunniste is null
-and	deleted_at is null
-
 -- :name get-palautteet-waiting-for-vastaajatunnus! :? :*
 -- :doc List all unhandled palautteet whose herätepäivä has come
 with oht_hoks_mapping as not materialized (
@@ -87,15 +69,6 @@ and	p.heratepvm <= now()
 and	p.deleted_at is null
 order by hoks_id asc
 
--- :name get-tep-palaute-waiting-for-vastaajatunnus! :? :1
--- :doc Get single unprocessed palaute for Arvo call.
-select * from tep_palaute
-where id = :palaute-id
-  and tila = 'odottaa_kasittelya'
-  and heratepvm <= current_date
-  and arvo_tunniste is null
-  and tep_kasitelty = false
-
 -- :name update-arvo-tunniste! :? :*
 -- :doc Update arvo-tunniste for palaute with given id.
 update	palautteet
@@ -140,17 +113,3 @@ where id = :id
 --      tunniste.
 select * from palautteet
 where hoks_id = :hoks-id AND jakson_yksiloiva_tunniste = :yksiloiva-tunniste
-
--- :name get-for-heratepalvelu-by-hoks-id-and-kyselytyypit! :? :*
--- :doc get AMIS-palaute in the format for putting into herätepalvelu
-select * from palaute_for_amis_heratepalvelu
-where ehoks_id = :hoks-id  -- FIXME: should probably have deleted_at cond
-			   -- FIXME: should choose the newest palaute
-  and internal_kyselytyyppi in (:v*:kyselytyypit)
-
--- :name get-for-heratepalvelu-by-hoks-id-and-yksiloiva-tunniste! :? :*
--- :doc get tep-jaksopalaute in the format for putting into herätepalvelu
-select * from palaute_for_tep_heratepalvelu
-where hoks_id = :hoks-id
-  and jakson_yksiloiva_tunniste = :jakson-yksiloiva-tunniste
-  and internal_kyselytyyppi = 'tyopaikkajakson_suorittaneet'
