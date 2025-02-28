@@ -58,16 +58,6 @@
             ctx "ei_laheteta" ex-type (select-keys existing-palaute
                                                    [:opiskeluoikeus-oid])))
 
-      ::tep/jakso-keskeytynyt
-      (do (log/warnf "%s. Setting `tila` to `ei_laheteta` for palaute `%d`. "
-                     (ex-message ex)
-                     (:id existing-palaute))
-          (palaute/update-tila!
-            ctx "ei_laheteta" ex-type
-            (walk (fn [[k v]] [(name k) (str v)])
-                  identity
-                  (select-keys ex-params [:keskeytymisajanjaksot]))))
-
       ::arvo-kutsu-epaonnistui
       (let [arvo-ex (ex-cause ex)]
         (log/warn "Arvo response:" (ex-message arvo-ex))
@@ -75,21 +65,23 @@
                                      {:errormsg (ex-message arvo-ex)
                                       :body     (:body (ex-data arvo-ex))}))
 
-      ::arvo/no-jaksotunnus-created
-      (log/logf (if (:configured-to-call-arvo? ex-params) :error :warn)
-                (str (ex-message ex) " Skipping processing for palaute `%d`")
-                (:id existing-palaute))
-
       ::heratepalvelu-sync-epaonnistui
-      (do (log/errorf (str "%s. Trying to delete jakso corresponding to "
-                           "palaute `%d` from Herätepalvelu")
-                      (ex-message ex)
-                      (:id existing-palaute))
-          (heratepalvelu/delete-jakso-herate! existing-palaute)
-          (throw ex))
+      (let [ddb-ex (ex-cause ex)]
+        (log/errorf (str "%s. Trying to delete jakso corresponding to "
+                         "palaute `%d` from Herätepalvelu")
+                    (ex-message ex)
+                    (:id existing-palaute))
+        (tapahtuma/build-and-insert! ctx :heratepalvelu-sync-epaonnistui
+                                     {:errormsg (ex-message ddb-ex)
+                                      :body     (ex-data ddb-ex)})
+        (heratepalvelu/delete-jakso-herate! existing-palaute))
 
-      ;; FIXME: tapahtuma
-      (throw ex))))
+      (let [cause-ex (ex-cause ex)]
+        (log/error ex "Unknown exception while processing palaute "
+                   (:id existing-palaute))
+        (tapahtuma/build-and-insert! ctx :tuntematon-virhe
+                                     {:errormsg (ex-message ex)
+                                      :causemsg (ex-message cause-ex)})))))
 
 (defn build-ctx
   "Creates a full information context (i.e. background information)
@@ -206,10 +198,10 @@
         (-> (:ctx (ex-data e))
             (or {:existing-palaute palaute})
             (assoc :tapahtumatyyppi :arvo-luonti :tx tx)
-            (handle-exception e))))
+            (handle-exception e)))
+      nil) ; no arvo-tunnus created
     (catch Exception e
-      (log/warn e "Error processing palaute" palaute)
-      (throw e))))
+      (log/error e "Unknown error processing palaute" palaute))))
 
 (defn handle-palautteet-waiting-for-heratepvm!
   "Fetch all unhandled palautteet whose heratepvm has come, check that
