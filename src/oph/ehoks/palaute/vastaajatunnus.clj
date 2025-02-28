@@ -71,7 +71,7 @@
       ::arvo-kutsu-epaonnistui
       (let [arvo-ex (ex-cause ex)]
         (log/warn "Arvo response:" (ex-message arvo-ex))
-        (tapahtuma/build-and-insert! (:ctx ex-params) :arvo-kutsu-epaonnistui
+        (tapahtuma/build-and-insert! ctx :arvo-kutsu-epaonnistui
                                      {:errormsg (ex-message arvo-ex)
                                       :body     (:body (ex-data arvo-ex))}))
 
@@ -184,20 +184,24 @@
   "Check that palaute is part of kohderyhmä and create and save
   vastaajatunnus if so."
   [palaute]
-  (jdbc/with-db-transaction
-    [tx db/spec]
-    (try
+  (try
+    (jdbc/with-db-transaction
+      [tx db/spec]
       (log/info "Creating vastaajatunnus for" (:kyselytyyppi palaute)
                 "palaute" (:id palaute))
       (palaute-check-call-arvo-save-and-sync!
         (assoc (build-ctx palaute) :tx tx)
-        (if (:jakson-yksiloiva-tunniste palaute) tep/handlers amis/handlers))
-      (catch ExceptionInfo e
-        (handle-exception
-          {:existing-palaute palaute :tx tx :tapahtumatyyppi :arvo-luonti} e))
-      (catch Exception e
-        (log/warn e "Error processing palaute" palaute)
-        (throw e)))))
+        (if (:jakson-yksiloiva-tunniste palaute) tep/handlers amis/handlers)))
+    (catch ExceptionInfo e
+      (jdbc/with-db-transaction
+        [tx db/spec]
+        (-> (:ctx (ex-data e))
+            (or {:existing-palaute palaute})
+            (assoc :tapahtumatyyppi :arvo-luonti :tx tx)
+            (handle-exception e))))
+    (catch Exception e
+      (log/warn e "Error processing palaute" palaute)
+      (throw e))))
 
 (defn handle-palautteet-waiting-for-heratepvm!
   "Fetch all unhandled palautteet whose heratepvm has come, check that
