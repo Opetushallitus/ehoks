@@ -263,5 +263,4 @@
    :arvo-caller #'arvo/create-kyselytunnus!
    :heratepalvelu-builder #'build-amisherate-record-for-heratepalvelu
    :heratepalvelu-caller #'dynamodb/sync-amis-herate!
-   :arvo-cleanup-handler #'arvo/delete-kyselytunnus
    :extra-handlers []})
