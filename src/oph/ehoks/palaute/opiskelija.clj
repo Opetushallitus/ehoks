@@ -197,9 +197,8 @@
 
 (defn build-kyselylinkki-request-body
   "For the given palaute, create Arvo request for creating its kyselylinkki."
-  [{:keys [existing-palaute hoks opiskeluoikeus suoritus
-           koulutustoimija toimipiste hk-toteuttaja] :as ctx}
-   request-id]
+  [{:keys [existing-palaute hoks opiskeluoikeus suoritus request-id
+           koulutustoimija toimipiste hk-toteuttaja] :as ctx}]
   (let [heratepvm (:heratepvm existing-palaute)
         alkupvm (greatest heratepvm (date/now))]
     {:hankintakoulutuksen_toteuttaja @hk-toteuttaja
@@ -215,7 +214,8 @@
      :tutkintotunnus (str (suoritus/tutkintotunnus suoritus))
      :oppilaitos_oid (:oid (:oppilaitos opiskeluoikeus))
      :koulutustoimija_oid (or koulutustoimija "")
-     :heratepvm (:heratepvm existing-palaute)}))
+     :heratepvm (:heratepvm existing-palaute)
+     :request_id request-id}))
 
 (defn build-amisherate-record-for-heratepalvelu
   "Turns the information context into AMISherate in heratepalvelu format."
@@ -251,7 +251,8 @@
        :rahoituskausi rahoituskausi
        :tallennuspvm (date/now)
        :toimija_oppija (str koulutustoimija "/" oppija-oid)
-       :tyyppi_kausi (str kyselytyyppi "/" rahoituskausi)})))
+       :tyyppi_kausi (str kyselytyyppi "/" rahoituskausi)
+       :request-id request-id})))
 
 ;; these use vars (#') because otherwise with-redefs doesn't work on
 ;; them (the map has the original definition even if the function in

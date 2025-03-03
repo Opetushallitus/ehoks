@@ -96,7 +96,8 @@
                 (:jakson-yksiloiva-tunniste palaute)
                 (oht/osaamisen-hankkimistapa-by-yksiloiva-tunniste hoks))]
     (enrich-ctx! {:hoks hoks :jakso jakso :existing-palaute palaute
-                  :tapahtumatyyppi :arvo-luonti})))
+                  :tapahtumatyyppi :arvo-luonti
+                  :request-id (str (UUID/randomUUID))})))
 
 (defn make-kysely-type
   "Map DB-level kyselytyyppi back into what is expected by
@@ -135,8 +136,7 @@
 (defn create-and-save-tunnus!
   "Create and save vastaajatunnus for given palaute context."
   [ctx {:keys [arvo-builder arvo-caller] :as handlers}]
-  (let [request-id (str (UUID/randomUUID))
-        arvo-req (arvo-builder ctx request-id)
+  (let [arvo-req (arvo-builder ctx)
         response
         (try (arvo-caller arvo-req)
              (catch ExceptionInfo e
@@ -144,10 +144,7 @@
                                {:type ::arvo-kutsu-epaonnistui :ctx ctx}
                                e))))
         tunnus (save-arvo-tunniste! ctx response)]
-    (assoc ctx
-           :arvo-tunnus tunnus
-           :arvo-response response
-           :request-id request-id)))
+    (assoc ctx :arvo-tunnus tunnus :arvo-response response)))
 
 (defn sync-to-heratepalvelu!
   "Replicate information about just formed vastaajatunnus to heratepalvelu."

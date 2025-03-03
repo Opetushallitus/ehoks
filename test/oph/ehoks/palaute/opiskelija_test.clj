@@ -295,7 +295,7 @@
   [palaute]
   (-> palaute
       (vt/build-ctx)
-      (op/build-kyselylinkki-request-body "request-id")
+      (op/build-kyselylinkki-request-body)
       (arvo/create-kyselytunnus!)))
 
 (deftest test-create-arvo-kyselylinkki!
@@ -394,6 +394,7 @@
           (fn [^String url options]
             (when (.endsWith url "/api/vastauslinkki/v1")
               (swap! vastauslinkki-counter inc)
+              (is (not (empty? (get-in options [:form-params :request_id]))))
               {:status 200
                :body {:tunnus (str "foo" @vastauslinkki-counter)
                       :kysely_linkki (str "https://arvovastaus.csc.fi/v/foo"
@@ -455,6 +456,7 @@
                          @ddb/faraday-opts @(ddb/tables :amis) ddb-key)]
           (is (= "testi.testaaja@testidomain.testi" (:sahkoposti ddb-item)))
           (is (= "https://arvovastaus.csc.fi/v/foo1" (:kyselylinkki ddb-item)))
+          (is (not (empty? (:request-id ddb-item))))
           (is (= 351407 (:tutkintotunnus ddb-item)))))
       (testing "unsuccessful Arvo call for amispalaute"
         (client/set-post!
