@@ -366,6 +366,9 @@
                    ["1.2.246.562.10.346830761110" "tutkinnon_suorittaneet"
                     "351407" "fi" "1.2.246.562.10.12312312312"]))))))))
 
+(def arvo-error-body
+  "{\"error\": \"required-fields-missing\", \"msg\": \"Huonosti menee\"}")
+
 (deftest test-create-and-save-arvo-kyselylinkki!
   (with-redefs [date/now (constantly (LocalDate/of 2023 4 18))
                 koski/get-oppija-opiskeluoikeudet
@@ -463,10 +466,7 @@
           (fn [^String url options]
             (when (.endsWith url "/api/vastauslinkki/v1")
               (throw
-                (ex-info "not found"
-                         {:status 404
-                          :body {:error "ei_kyselykertaa"
-                                 :msg "Huonosti menee"}})))))
+                (ex-info "bad request" {:status 400 :body arvo-error-body})))))
         (->> heratteet
              (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
              (vt/handle-palaute-waiting-for-heratepvm!))
@@ -479,8 +479,31 @@
         (is (= [["odottaa_kasittelya" "odottaa_kasittelya"
                  {:ensikertainen-hyvaksyminen "2023-04-16"}]
                 ["odottaa_kasittelya" "odottaa_kasittelya"
-                 {:errormsg "HTTP request error: not found"
-                  :body {:msg "Huonosti menee", :error "ei_kyselykertaa"}}]]
+                 {:errormsg "HTTP request error: bad request"
+                  :body arvo-error-body}]]
+               (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
+                    (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
+                      db/spec)
+                    (map (juxt :vanha-tila :uusi-tila :lisatiedot)))))
+        (client/reset-functions!))
+      (testing "non-recoverable error in Arvo call"
+        (client/set-post!
+          (fn [^String url options]
+            (when (.endsWith url "/api/vastauslinkki/v1")
+              (throw
+                (ex-info "not found"
+                         {:status 404 :body "{\"error\": \"ei-kyselya\"}"})))))
+        (->> heratteet
+             (find-first (comp (partial = "aloittaneet") :kyselytyyppi))
+             (vt/handle-palaute-waiting-for-heratepvm!))
+        (is (= [["odottaa_kasittelya" "odottaa_kasittelya"
+                 {:ensikertainen-hyvaksyminen "2023-04-16"}]
+                ["odottaa_kasittelya" "odottaa_kasittelya"
+                 {:errormsg "HTTP request error: bad request"
+                  :body arvo-error-body}]
+                ["odottaa_kasittelya" "ei_laheteta"
+                 {:heratepvm "2023-04-16"
+                  :opiskeluoikeus-oid "1.2.246.562.15.10000000009"}]]
                (->> {:hoks-id (:id hoks) :kyselytyypit ["aloittaneet"]}
                     (tapahtuma/get-all-by-hoks-id-and-kyselytyypit!
                       db/spec)
