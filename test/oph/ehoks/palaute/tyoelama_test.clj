@@ -652,6 +652,18 @@
             (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
             (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
                    "ei_laheteta"))))
+        (testing (str "If jakso has disappeared before checks, "
+                      "it should be marked as `ei_laheteta`.")
+          (db-helpers/query ["UPDATE osaamisen_hankkimistavat
+                             SET deleted_at=now()
+                             WHERE yksiloiva_tunniste='4' RETURNING *"])
+          (db-helpers/query ["UPDATE palautteet
+                             SET tila='odottaa_kasittelya'
+                             WHERE jakson_yksiloiva_tunniste='4' RETURNING *"])
+          (vt/handle-palaute-waiting-for-heratepvm! tep-palaute)
+          (is (= counter-value-before-fn-call @create-jaksotunnus-counter))
+          (is (= (:tila (palaute/get-by-id! db/spec {:id (:id tep-palaute)}))
+                 "ei_laheteta")))
         (testing (str "Palaute should be marked as \"ei_laheteta\" when there "
                       "are one or more open keskeytymisajanjakso. No call to "
                       "Arvo should be made.")

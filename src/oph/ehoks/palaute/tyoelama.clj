@@ -74,10 +74,12 @@
   state of the palaute (or nil if it cannot be formed at all), the field the
   decision was based on, and the reason for picking that state."
   [{:keys [jakso] :as ctx} kysely-type]
-  {:pre [(some? jakso)]}
   (or
     (palaute/initial-palaute-state-and-reason-if-not-kohderyhma ctx :loppu)
     (cond
+      (nil? jakso)
+      [nil :osaamisen-hankkimistapa :ei-ole]
+
       (not (oht/palautteenkeruu-allowed-tyopaikkajakso? jakso))
       [:ei-laheteta :tyopaikalla-jarjestettava-koulutus :puuttuva-yhteystieto]
 
