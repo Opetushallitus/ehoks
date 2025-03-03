@@ -41,7 +41,7 @@
 (defn- handle-exception
   "Handles an ExceptionInfo `ex` based on `:type` in `ex-data`. If `ex` doesn't
   match any of the cases below, re-throws `ex`."
-  [{:keys [existing-palaute] :as ctx} ex]
+  [{:keys [existing-palaute hoks] :as ctx} ex]
   (let [ex-params (ex-data ex)
         ex-type (:type ex-params)
         tunnus  (:arvo-tunnus ex-params)
@@ -53,13 +53,13 @@
       (log/infof "Trying to delete jaksotunnus `%s` from Arvo" tunnus)
       (tunnus-cleanup-handler tunnus))
     (case ex-type
-      ::koski/opiskeluoikeus-not-found
-      (do (log/warnf "%s. Setting `tila` to \"ei_laheteta\" for palaute `%d`."
-                     (ex-message ex)
-                     (:id existing-palaute))
+      (::koski/opiskeluoikeus-not-found ::arvossa-ei-kyselya)
+      (do (log/warnf "%s. Setting `tila` to `ei_laheteta` for palaute `%d`."
+                     (ex-message ex) (:id existing-palaute))
           (palaute/update-tila!
-            ctx "ei_laheteta" ex-type (select-keys existing-palaute
-                                                   [:opiskeluoikeus-oid])))
+            ctx "ei_laheteta" ex-type
+            {:opiskeluoikeus-oid (:opiskeluoikeus-oid hoks)
+             :heratepvm (str (:heratepvm existing-palaute))}))
 
       (::arvo-kutsu-epaonnistui ::tunnus-tallennus-epaonnistui)
       (let [cause (ex-cause ex)]
@@ -140,9 +140,14 @@
         response
         (try (arvo-caller arvo-req)
              (catch ExceptionInfo e
-               (throw (ex-info "Arvo call failed"
-                               {:type ::arvo-kutsu-epaonnistui :ctx ctx}
-                               e))))
+               (if (and (= 404 (:status (ex-data e)))
+                        (re-find #"\"ei-kyselya\"" (:body (ex-data e))))
+                 (throw (ex-info "No kysely open for this oppilaitos"
+                                 {:type ::arvossa-ei-kyselya :ctx ctx}
+                                 e))
+                 (throw (ex-info "Arvo call failed"
+                                 {:type ::arvo-kutsu-epaonnistui :ctx ctx}
+                                 e)))))
         tunnus (save-arvo-tunniste! ctx response)]
     (assoc ctx :arvo-tunnus tunnus :arvo-response response)))
 
