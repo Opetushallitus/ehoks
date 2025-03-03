@@ -64,6 +64,7 @@
       (::arvo-kutsu-epaonnistui ::tunnus-tallennus-epaonnistui)
       (let [cause (ex-cause ex)]
         (log/error "Error" ex-type "because of" (ex-message cause)
+                   "with error body" (:body (ex-data cause))
                    "for palaute" (:id existing-palaute))
         (tapahtuma/build-and-insert!
           ctx ex-type {:errormsg (ex-message cause)
@@ -73,8 +74,7 @@
       (let [ddb-ex (ex-cause ex)]
         (log/errorf (str "%s. Trying to delete jakso corresponding to "
                          "palaute `%d` from Herätepalvelu")
-                    (ex-message ex)
-                    (:id existing-palaute))
+                    (ex-message ddb-ex) (:id existing-palaute))
         (tapahtuma/build-and-insert!
           ctx ex-type {:errormsg (ex-message ddb-ex)
                        :body     (ex-data ddb-ex)})
