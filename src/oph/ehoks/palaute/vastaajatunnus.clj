@@ -127,8 +127,10 @@
          (tapahtuma/build-and-insert!
            ctx new-state :arvo-kutsu-onnistui {:arvo_response arvo-response})
          (catch Exception e
+           (log/error "Postgres error:" (ex-message e))
            (throw (ex-info "Failed to save Arvo-tunnus to DB"
                            {:type        ::tunnus-tallennus-epaonnistui
+                            :ctx         ctx
                             :arvo-tunnus (:tunnus arvo-response)}
                            e)))))
   (:tunnus arvo-response))
@@ -140,6 +142,8 @@
         response
         (try (arvo-caller arvo-req)
              (catch ExceptionInfo e
+               (log/warn "Arvo call error:" (ex-message e) (:body (ex-data e))
+                         "for request:" arvo-req)
                (if (and (= 404 (:status (ex-data e)))
                         (re-find #"\"ei-kyselya\"" (:body (ex-data e))))
                  (throw (ex-info "No kysely open for this oppilaitos"
@@ -160,11 +164,13 @@
     (heratepalvelu-caller (heratepalvelu-builder ctx))
     (doseq [handler extra-handlers] (handler ctx))
     (catch Exception e
+      (log/warn "Herätepalvelu sync error:" (ex-message e) (:body (ex-data e)))
       (throw (ex-info
                (str "Failed to sync palaute " (:id existing-palaute)
                     " to Herätepalvelu")
                (assoc (ex-data e)
                       :type ::heratepalvelu-sync-epaonnistui
+                      :ctx ctx
                       :arvo-tunnus arvo-tunnus)
                e))))
   arvo-tunnus)
