@@ -115,6 +115,8 @@
 (defn save-arvo-tunniste!
   [{:keys [tx existing-palaute] :as ctx} arvo-response]
   {:pre [(:tunnus arvo-response)]}
+  (log/info "Saving Arvo response" arvo-response
+            "for palaute" (:id existing-palaute))
   (let [new-state (if (:jakson-yksiloiva-tunniste existing-palaute)
                     :vastaajatunnus-muodostettu :kysely-muodostettu)]
     (try (-> arvo-response
@@ -137,7 +139,11 @@
 
 (defn create-and-save-tunnus!
   "Create and save vastaajatunnus for given palaute context."
-  [ctx {:keys [arvo-builder arvo-caller] :as handlers}]
+  [{:keys [existing-palaute] :as ctx}
+   {:keys [arvo-builder arvo-caller] :as handlers}]
+  (log/info "Calling arvo for palaute" (:id existing-palaute)
+            "of type" (:kyselytyyppi existing-palaute)
+            "of HOKS" (:hoks-id existing-palaute))
   (let [arvo-req (arvo-builder ctx)
         response
         (try (arvo-caller arvo-req)
@@ -160,6 +166,7 @@
   [{:keys [existing-palaute arvo-tunnus] :as ctx}
    {:keys [heratepalvelu-builder heratepalvelu-caller extra-handlers]
     :as handlers}]
+  (log/info "Replicating palaute" (:id existing-palaute) "to herätepalvelu")
   (try
     (heratepalvelu-caller (heratepalvelu-builder ctx))
     (doseq [handler extra-handlers] (handler ctx))
@@ -183,6 +190,9 @@
    {:keys [check-palaute] :as handlers}]
   (let [[state field reason]
         (check-palaute ctx (make-kysely-type existing-palaute))]
+    (log/info "Requested state for palaute" (:id existing-palaute)
+              "of HOKS" (:id hoks) "is" (or state :ei-kasitella)
+              "because of" reason "in" field)
     (if (not= :odottaa-kasittelya state)
       (->> (select-keys (merge jakso hoks) [field])
            (map-vals str)
