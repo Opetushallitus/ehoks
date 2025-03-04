@@ -279,10 +279,11 @@
             "valmistuneet" :osaamisen-saavuttamisen-pvm
             "2024-02-05"   "2024-03-05"))
 
-        (testing "doesn't initiate kysely if opiskeluoikeus is not found"
-          (are [kysely-type] (nil? (op/initiate-if-needed!
-                                     (assoc ctx :opiskeluoikeus nil)
-                                     kysely-type))
+        (testing "if opiskeluoikeus is not found, will wait for heratepvm"
+          (are [kysely-type]
+               (= :odottaa-kasittelya
+                  (op/initiate-if-needed! (assoc ctx :opiskeluoikeus nil)
+                                          kysely-type))
             :aloituskysely :paattokysely))
 
         (testing "doesn't initiate kysely if one already exists for HOKS"
